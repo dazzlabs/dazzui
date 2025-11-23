@@ -1,0 +1,22 @@
+{
+  "name": "@dazzlabs/dazzui-tokens",
+  "version": "0.0.0",
+  "description": "DazzUI Design Tokens",
+  "files": [
+    "dist",
+    "tokens"
+  ],
+  "exports": {
+    "./style.css": "./dist/style.css",
+    "./tokens/*": "./tokens/*",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "sync": "node scripts/build.mjs --sync"
+  },
+  "devDependencies": {
+    "@terrazzo/cli": "^0.10.3",
+    "@terrazzo/plugin-css": "^0.10.4"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "radius": {
+    "$type": "dimension",
+    "none": {
+      "$value": "0px"
+    },
+    "tiny": {
+      "$value": "{base.radius.xs}"
+    },
+    "small": {
+      "$value": "{base.radius.sm}"
+    },
+    "medium": {
+      "$value": "{base.radius.md}"
+    },
+    "large": {
+      "$value": "{base.radius.lg}"
+    },
+    "big": {
+      "$value": "{base.radius.xl}"
+    },
+    "full": {
+      "$value": "9999px"
+    }
+  }
+}

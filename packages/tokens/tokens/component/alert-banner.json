@@ -1,0 +1,76 @@
+{
+  "alert-banner": {
+    "small": {
+      "padding": {
+        "block": {
+          "$type": "dimension",
+          "$value": "{control.small.padding.block}"
+        },
+        "inline": {
+          "$type": "dimension",
+          "$value": "{control.small.padding.inline}"
+        }
+      },
+      "title": {
+        "$type": "typography",
+        "$value": "{titleSmall}"
+      },
+      "description": {
+        "$type": "typography",
+        "$value": "{bodySmall}"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.small}"
+      }
+    },
+    "medium": {
+      "padding": {
+        "block": {
+          "$type": "dimension",
+          "$value": "{control.medium.padding.block}"
+        },
+        "inline": {
+          "$type": "dimension",
+          "$value": "{control.medium.padding.inline}"
+        }
+      },
+      "title": {
+        "$type": "typography",
+        "$value": "{titleMedium}"
+      },
+      "description": {
+        "$type": "typography",
+        "$value": "{bodyMedium}"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.medium}"
+      }
+    },
+    "large": {
+      "padding": {
+        "block": {
+          "$type": "dimension",
+          "$value": "{control.large.padding.block}"
+        },
+        "inline": {
+          "$type": "dimension",
+          "$value": "{control.large.padding.inline}"
+        }
+      },
+      "title": {
+        "$type": "typography",
+        "$value": "{titleLarge}"
+      },
+      "description": {
+        "$type": "typography",
+        "$value": "{bodyLarge}"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.large}"
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "dazzui",
+  "version": "0.0.0",
+  "private": true,
+  "description": "DazzUI design system monorepo",
+  "scripts": {
+    "build": "pnpm run tokens && pnpm run storybook:build",
+    "tokens": "pnpm --filter @dazzlabs/dazzui-tokens build",
+    "storybook": "pnpm --filter @dazzlabs/dazzui-storybook dev",
+    "storybook:build": "pnpm --filter @dazzlabs/dazzui-storybook build",
+    "lint": "oxlint ./",
+    "lint:fix": "oxlint ./ --fix",
+    "format": "oxfmt ./",
+    "format:check": "oxfmt --check ./"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.16.0",
+    "oxlint": "^1.31.0"
+  },
+  "packageManager": "pnpm@11.24.0",
+  "engines": {
+    "node": ">=20"
+  }
+}

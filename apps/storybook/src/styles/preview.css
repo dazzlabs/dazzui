@@ -1,0 +1,19 @@
+/*
+ * Base styling for the gallery itself. The gallery dogfoods the tokens it
+ * documents, so everything here reads from `@dazzlabs/dazzui-tokens/style.css`.
+ */
+
+body {
+  margin: 0;
+  background: var(--color-surface);
+  color: var(--color-content);
+  font-family: var(--body-medium-font-family);
+  font-size: var(--body-medium-font-size);
+  font-weight: var(--body-medium-font-weight);
+  line-height: var(--body-medium-line-height);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
