@@ -17,9 +17,9 @@ importers:
 
   apps/storybook:
     dependencies:
-      '@dazzlabs/dazzui-tokens':
+      '@dazzlabs/dazzui':
         specifier: workspace:*
-        version: link:../../packages/tokens
+        version: link:../../packages/ui
       react:
         specifier: ^19.2.7
         version: 19.2.8
@@ -52,7 +52,7 @@ importers:
         specifier: ^8.1.5
         version: 8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(yaml@2.8.1)
 
-  packages/tokens:
+  packages/ui:
     devDependencies:
       '@terrazzo/cli':
         specifier: ^0.10.3

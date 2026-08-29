@@ -710,7 +710,7 @@ async function syncBasePrimitives() {
 
 async function updateToDazzuiFlutterPackage() {
   const sourceDir = path.join(process.cwd(), 'dist', 'flutter')
-  // From `packages/tokens`, the sibling repo lives three levels up.
+  // From `packages/ui`, the sibling repo lives three levels up.
   const targetDir = path.join(
     process.cwd(),
     '..',

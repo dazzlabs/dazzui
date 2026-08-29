@@ -6,7 +6,7 @@ Guidance for coding agents working in this repository.
 
 The DazzUI design system, as a pnpm workspace:
 
-- `packages/tokens` (`@dazzlabs/dazzui-tokens`) — the design tokens, built with
+- `packages/ui` (`@dazzlabs/dazzui`) — the design tokens, built with
   [Terrazzo](https://terrazzo.app/). This is the source of truth; everything
   else consumes its build output.
 - `apps/storybook` (`@dazzlabs/dazzui-storybook`) — a Storybook gallery that
@@ -21,7 +21,7 @@ pnpm install
 ```
 
 ```bash
-pnpm tokens            # build packages/tokens into dist/
+pnpm tokens            # build packages/ui into dist/
 ```
 
 ```bash
@@ -40,11 +40,11 @@ Typecheck the app with `pnpm --filter @dazzlabs/dazzui-storybook typecheck`.
 
 ## Token pipeline
 
-1. `packages/tokens/tokens/global/_base.json` holds the primitive layer and is
-   **generated** — `pnpm --filter @dazzlabs/dazzui-tokens sync` downloads
+1. `packages/ui/tokens/global/_base.json` holds the primitive layer and is
+   **generated** — `pnpm --filter @dazzlabs/dazzui sync` downloads
    Tailwind's `theme.css` and rewrites it. Never hand-edit that file.
 2. `tz build` reads the files listed in `terrazzo.config.mjs` and emits
-   `packages/tokens/dist/`:
+   `packages/ui/dist/`:
    - `style.css` — CSS custom properties (the contract consumers use)
    - `flutter/*.dart` — Dart sources for the sibling `dazzui-flutter` repo
 3. `node scripts/build.mjs --copy` copies the Dart output into
@@ -95,7 +95,7 @@ Two things that surprise people:
   oxlint defaults): single quotes, no semicolons, 80 columns, 2-space indent,
   omit parens on single-argument arrows.
 - Run `pnpm format` and `pnpm lint` before committing. One oxlint warning in
-  `packages/tokens` predates this setup.
+  `packages/ui` predates this setup.
 
 ## Commits
 

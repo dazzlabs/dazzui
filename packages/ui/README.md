@@ -1,4 +1,4 @@
-# @dazzlabs/dazzui-tokens
+# @dazzlabs/dazzui
 
 Design tokens for DazzUI, built with [Terrazzo](https://terrazzo.app/).
 
