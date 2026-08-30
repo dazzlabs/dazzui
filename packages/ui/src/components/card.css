@@ -1,0 +1,48 @@
+.dz-card {
+  display: flex;
+  flex-direction: column;
+  /* Transparent rather than absent, so `outlined` and `tinted` do not gain a
+     pixel per side and sit a hair larger than the filled variants. */
+  border: var(--spacing-px) solid transparent;
+}
+
+/* Sizes ------------------------------------------------------------------- */
+
+.dz-card[data-size='small'] {
+  padding: var(--card-small-padding);
+  gap: var(--card-small-gap);
+  border-radius: var(--card-small-radius);
+}
+
+.dz-card[data-size='medium'] {
+  padding: var(--card-medium-padding);
+  gap: var(--card-medium-gap);
+  border-radius: var(--card-medium-radius);
+}
+
+.dz-card[data-size='large'] {
+  padding: var(--card-large-padding);
+  gap: var(--card-large-gap);
+  border-radius: var(--card-large-radius);
+}
+
+/* Variants ---------------------------------------------------------------- */
+
+.dz-card[data-variant='raised'] {
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+/* Recessed panel: the fill alone separates it, so no border. */
+.dz-card[data-variant='sunken'] {
+  background-color: var(--color-surface-muted);
+}
+
+.dz-card[data-variant='outlined'] {
+  border-color: var(--color-border);
+}
+
+.dz-card[data-variant='tinted'] {
+  background-color: var(--tint-50);
+  border-color: var(--tint-200);
+}

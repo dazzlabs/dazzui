@@ -1,0 +1,59 @@
+/*
+ * A selectable card — the shape a small set of mutually exclusive choices
+ * takes when each needs a line of explanation and a radio row would not
+ * carry it.
+ */
+.dz-option-card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--option-card-gap);
+  padding-block: var(--option-card-padding-block);
+  padding-inline: var(--option-card-padding-inline);
+  border: var(--spacing-px) solid var(--color-border);
+  border-radius: var(--option-card-radius);
+  background-color: var(--color-surface);
+  text-align: left;
+  cursor: pointer;
+}
+
+.dz-option-card:hover {
+  background-color: var(--control-color-normal-surface-hovered);
+}
+
+/*
+ * Selected is the tinted recipe, with the outlined recipe's border on top: the
+ * fill says which one is chosen and the border makes it survive being read at
+ * a glance next to its neighbours.
+ */
+.dz-option-card[aria-checked='true'] {
+  background-color: var(--control-color-tinted-surface-normal);
+  border-color: var(--control-color-outlined-border-normal);
+}
+
+.dz-option-card:focus-visible {
+  outline: var(--focus-width) solid var(--tint-600);
+  outline-offset: var(--focus-offset);
+}
+
+.dz-option-card:disabled {
+  cursor: not-allowed;
+  background-color: var(--control-color-normal-surface-disabled);
+  color: var(--control-color-normal-content-disabled);
+}
+
+.dz-option-card__title {
+  color: var(--color-content);
+  font-family: var(--option-card-title-font-family);
+  font-size: var(--option-card-title-font-size);
+  font-weight: var(--option-card-title-font-weight);
+  line-height: var(--option-card-title-line-height);
+}
+
+.dz-option-card__description {
+  color: var(--color-content-muted);
+  font-family: var(--option-card-description-font-family);
+  font-size: var(--option-card-description-font-size);
+  font-weight: var(--option-card-description-font-weight);
+  line-height: var(--option-card-description-line-height);
+}

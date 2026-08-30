@@ -1,0 +1,78 @@
+/*
+ * Free-standing filter pills. Unlike a segmented control there is no track:
+ * each pill stands on the page, so an unselected one needs its own fill to be
+ * a target at all.
+ */
+.dz-pill-tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--pill-tabs-gap);
+  flex-wrap: wrap;
+}
+
+.dz-pill-tabs__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--control-tiny-gap);
+  border: 0;
+  border-radius: var(--pill-tabs-radius);
+  background-color: var(--color-surface-muted);
+  color: var(--color-content-muted);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.12s ease-out,
+    color 0.12s ease-out;
+}
+
+.dz-pill-tabs__tab:hover:not(:disabled):not([aria-selected='true']) {
+  color: var(--color-content);
+}
+
+.dz-pill-tabs__tab[aria-selected='true'] {
+  background-color: var(--control-color-filled-surface-normal);
+  color: var(--control-color-filled-content-normal);
+}
+
+.dz-pill-tabs__tab:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.dz-pill-tabs__tab:focus-visible {
+  outline: var(--focus-width) solid var(--tint-600);
+  outline-offset: var(--focus-offset);
+}
+
+/* The count rides inside the pill, dimmed against the label it follows. */
+.dz-pill-tabs__count {
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+.dz-pill-tabs[data-size='small'] .dz-pill-tabs__tab {
+  height: var(--pill-tabs-small-size);
+  padding-inline: var(--pill-tabs-small-padding-inline);
+  font-family: var(--pill-tabs-small-content-font-family);
+  font-size: var(--pill-tabs-small-content-font-size);
+  font-weight: var(--pill-tabs-small-content-font-weight);
+  line-height: var(--pill-tabs-small-content-line-height);
+}
+
+.dz-pill-tabs[data-size='medium'] .dz-pill-tabs__tab {
+  height: var(--pill-tabs-medium-size);
+  padding-inline: var(--pill-tabs-medium-padding-inline);
+  font-family: var(--pill-tabs-medium-content-font-family);
+  font-size: var(--pill-tabs-medium-content-font-size);
+  font-weight: var(--pill-tabs-medium-content-font-weight);
+  line-height: var(--pill-tabs-medium-content-line-height);
+}
+
+.dz-pill-tabs[data-size='large'] .dz-pill-tabs__tab {
+  height: var(--pill-tabs-large-size);
+  padding-inline: var(--pill-tabs-large-padding-inline);
+  font-family: var(--pill-tabs-large-content-font-family);
+  font-size: var(--pill-tabs-large-content-font-size);
+  font-weight: var(--pill-tabs-large-content-font-weight);
+  line-height: var(--pill-tabs-large-content-line-height);
+}

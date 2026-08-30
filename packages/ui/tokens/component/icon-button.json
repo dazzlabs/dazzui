@@ -1,0 +1,34 @@
+{
+  "icon-button": {
+    "small": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{control.small.size}"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.small}"
+      }
+    },
+    "medium": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{control.medium.size}"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.medium}"
+      }
+    },
+    "large": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{control.large.size}"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.large}"
+      }
+    }
+  }
+}

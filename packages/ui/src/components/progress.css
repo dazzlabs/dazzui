@@ -1,0 +1,51 @@
+.dz-progress {
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--progress-track);
+  border-radius: var(--progress-radius);
+}
+
+.dz-progress[data-size='small'] {
+  height: var(--progress-small-size);
+}
+
+.dz-progress[data-size='medium'] {
+  height: var(--progress-medium-size);
+}
+
+.dz-progress[data-size='large'] {
+  height: var(--progress-large-size);
+}
+
+.dz-progress__fill {
+  height: 100%;
+  background-color: var(--tint-600);
+  border-radius: inherit;
+  transition: width 0.3s ease-out;
+}
+
+/* An indeterminate bar has no width to animate, so it sweeps instead. */
+.dz-progress[data-indeterminate='true'] .dz-progress__fill {
+  width: 40%;
+  transition: none;
+  animation: dz-progress-sweep 1.2s ease-in-out infinite;
+}
+
+@keyframes dz-progress-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dz-progress__fill {
+    transition: none;
+  }
+
+  .dz-progress[data-indeterminate='true'] .dz-progress__fill {
+    animation-duration: 3s;
+  }
+}

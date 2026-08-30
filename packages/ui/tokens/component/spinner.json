@@ -1,0 +1,26 @@
+{
+  "spinner": {
+    "thickness": {
+      "$type": "dimension",
+      "$value": "{spacing.0.5}"
+    },
+    "small": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{spacing.3.5}"
+      }
+    },
+    "medium": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{spacing.4}"
+      }
+    },
+    "large": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{spacing.5}"
+      }
+    }
+  }
+}

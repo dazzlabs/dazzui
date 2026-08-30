@@ -1,0 +1,63 @@
+.dz-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* A transparent border rather than none, so `outlined` does not gain a pixel
+     per side and fall off the heights the other variants share. */
+  border: var(--spacing-px) solid transparent;
+  white-space: nowrap;
+}
+
+/* Sizes ------------------------------------------------------------------- */
+
+.dz-badge[data-size='small'] {
+  padding-block: var(--badge-small-padding-block);
+  padding-inline: var(--badge-small-padding-inline);
+  border-radius: var(--badge-small-radius);
+  font-family: var(--badge-small-content-font-family);
+  font-size: var(--badge-small-content-font-size);
+  font-weight: var(--badge-small-content-font-weight);
+  line-height: var(--badge-small-content-line-height);
+}
+
+.dz-badge[data-size='medium'] {
+  padding-block: var(--badge-medium-padding-block);
+  padding-inline: var(--badge-medium-padding-inline);
+  border-radius: var(--badge-medium-radius);
+  font-family: var(--badge-medium-content-font-family);
+  font-size: var(--badge-medium-content-font-size);
+  font-weight: var(--badge-medium-content-font-weight);
+  line-height: var(--badge-medium-content-line-height);
+}
+
+.dz-badge[data-size='large'] {
+  padding-block: var(--badge-large-padding-block);
+  padding-inline: var(--badge-large-padding-inline);
+  border-radius: var(--badge-large-radius);
+  font-family: var(--badge-large-content-font-family);
+  font-size: var(--badge-large-content-font-size);
+  font-weight: var(--badge-large-content-font-weight);
+  line-height: var(--badge-large-content-line-height);
+}
+
+/* Variants ----------------------------------------------------------------
+ * The three recipes a badge can wear, read at their resting state only. A
+ * badge is not interactive, so it deliberately skips the shared `data-control`
+ * state machine: `:hover` would fire on it just the same, and a label that
+ * changes colour under the pointer reads as something you can press.
+ */
+
+.dz-badge[data-variant='filled'] {
+  background-color: var(--control-color-filled-surface-normal);
+  color: var(--control-color-filled-content-normal);
+}
+
+.dz-badge[data-variant='tinted'] {
+  background-color: var(--control-color-tinted-surface-normal);
+  color: var(--control-color-tinted-content-normal);
+}
+
+.dz-badge[data-variant='outlined'] {
+  border-color: var(--control-color-outlined-border-normal);
+  color: var(--control-color-outlined-content-normal);
+}

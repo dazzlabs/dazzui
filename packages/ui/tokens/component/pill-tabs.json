@@ -1,0 +1,60 @@
+{
+  "pill-tabs": {
+    "gap": {
+      "$type": "dimension",
+      "$value": "{spacing.2}"
+    },
+    "radius": {
+      "$type": "dimension",
+      "$value": "{radius.full}"
+    },
+    "small": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{control.small.size}"
+      },
+      "padding": {
+        "inline": {
+          "$type": "dimension",
+          "$value": "{control.small.padding.inline}"
+        }
+      },
+      "content": {
+        "$type": "typography",
+        "$value": "{labelSmall}"
+      }
+    },
+    "medium": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{control.medium.size}"
+      },
+      "padding": {
+        "inline": {
+          "$type": "dimension",
+          "$value": "{control.medium.padding.inline}"
+        }
+      },
+      "content": {
+        "$type": "typography",
+        "$value": "{labelSmall}"
+      }
+    },
+    "large": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{control.large.size}"
+      },
+      "padding": {
+        "inline": {
+          "$type": "dimension",
+          "$value": "{control.large.padding.inline}"
+        }
+      },
+      "content": {
+        "$type": "typography",
+        "$value": "{labelMedium}"
+      }
+    }
+  }
+}

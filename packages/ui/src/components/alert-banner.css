@@ -1,0 +1,106 @@
+/*
+ * A tinted notice. It always wears the `tinted` treatment — a banner that
+ * needed a fill this loud would be a dialog, not a banner — so `tint` is the
+ * only color axis.
+ */
+.dz-alert-banner {
+  display: flex;
+  /* Not centered: once a description wraps, the icon belongs beside the first
+     line of the title rather than halfway down the block. */
+  align-items: flex-start;
+  border: var(--spacing-px) solid var(--tint-200);
+  background-color: var(--tint-50);
+}
+
+.dz-alert-banner__icon {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--tint-600);
+}
+
+.dz-alert-banner__body {
+  display: flex;
+  flex-direction: column;
+  /* The title/description pair is one block of text, so it is set tighter than
+     the gap separating it from the icon and the action. */
+  gap: var(--spacing-1);
+  min-width: 0;
+}
+
+.dz-alert-banner__title {
+  color: var(--tint-700);
+}
+
+.dz-alert-banner__description {
+  color: var(--tint-600);
+}
+
+.dz-alert-banner__action {
+  flex-shrink: 0;
+  margin-inline-start: auto;
+}
+
+/* Sizes ------------------------------------------------------------------- */
+
+.dz-alert-banner[data-size='small'] {
+  padding-block: var(--alert-banner-small-padding-block);
+  padding-inline: var(--alert-banner-small-padding-inline);
+  border-radius: var(--alert-banner-small-radius);
+  gap: var(--alert-banner-small-gap);
+}
+
+.dz-alert-banner[data-size='small'] .dz-alert-banner__title {
+  font-family: var(--alert-banner-small-title-font-family);
+  font-size: var(--alert-banner-small-title-font-size);
+  font-weight: var(--alert-banner-small-title-font-weight);
+  line-height: var(--alert-banner-small-title-line-height);
+}
+
+.dz-alert-banner[data-size='small'] .dz-alert-banner__description {
+  font-family: var(--alert-banner-small-description-font-family);
+  font-size: var(--alert-banner-small-description-font-size);
+  font-weight: var(--alert-banner-small-description-font-weight);
+  line-height: var(--alert-banner-small-description-line-height);
+}
+
+.dz-alert-banner[data-size='medium'] {
+  padding-block: var(--alert-banner-medium-padding-block);
+  padding-inline: var(--alert-banner-medium-padding-inline);
+  border-radius: var(--alert-banner-medium-radius);
+  gap: var(--alert-banner-medium-gap);
+}
+
+.dz-alert-banner[data-size='medium'] .dz-alert-banner__title {
+  font-family: var(--alert-banner-medium-title-font-family);
+  font-size: var(--alert-banner-medium-title-font-size);
+  font-weight: var(--alert-banner-medium-title-font-weight);
+  line-height: var(--alert-banner-medium-title-line-height);
+}
+
+.dz-alert-banner[data-size='medium'] .dz-alert-banner__description {
+  font-family: var(--alert-banner-medium-description-font-family);
+  font-size: var(--alert-banner-medium-description-font-size);
+  font-weight: var(--alert-banner-medium-description-font-weight);
+  line-height: var(--alert-banner-medium-description-line-height);
+}
+
+.dz-alert-banner[data-size='large'] {
+  padding-block: var(--alert-banner-large-padding-block);
+  padding-inline: var(--alert-banner-large-padding-inline);
+  border-radius: var(--alert-banner-large-radius);
+  gap: var(--alert-banner-large-gap);
+}
+
+.dz-alert-banner[data-size='large'] .dz-alert-banner__title {
+  font-family: var(--alert-banner-large-title-font-family);
+  font-size: var(--alert-banner-large-title-font-size);
+  font-weight: var(--alert-banner-large-title-font-weight);
+  line-height: var(--alert-banner-large-title-line-height);
+}
+
+.dz-alert-banner[data-size='large'] .dz-alert-banner__description {
+  font-family: var(--alert-banner-large-description-font-family);
+  font-size: var(--alert-banner-large-description-font-size);
+  font-weight: var(--alert-banner-large-description-font-weight);
+  line-height: var(--alert-banner-large-description-line-height);
+}

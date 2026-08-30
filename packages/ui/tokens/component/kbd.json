@@ -17,6 +17,10 @@
         "$type": "typography",
         "$value": "{labelSmall}"
       },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.small}"
+      },
       "padding": {
         "block": {
           "$type": "dimension",
@@ -33,6 +37,10 @@
         "$type": "typography",
         "$value": "{labelMedium}"
       },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.medium}"
+      },
       "padding": {
         "block": {
           "$type": "dimension",
@@ -48,6 +56,10 @@
       "text": {
         "$type": "typography",
         "$value": "{labelLarge}"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.large}"
       },
       "padding": {
         "block": {

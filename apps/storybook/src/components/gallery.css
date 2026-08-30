@@ -59,6 +59,20 @@
   gap: var(--spacing-4);
 }
 
+.dt-specimen {
+  display: grid;
+  grid-template-columns: var(--base-spacing-24) 1fr;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+.dt-specimen__stage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
 .dt-name {
   font-family: var(--base-font-mono);
   font-size: var(--caption-medium-font-size);

@@ -1,0 +1,104 @@
+.dz-menu {
+  position: relative;
+  display: inline-flex;
+}
+
+.dz-menu__panel {
+  position: absolute;
+  top: 100%;
+  z-index: 20;
+  margin-top: var(--menu-offset);
+  padding: var(--menu-padding);
+  background-color: var(--menu-surface);
+  border: var(--spacing-px) solid var(--menu-border);
+  border-radius: var(--menu-radius);
+  box-shadow: var(--menu-elevation);
+}
+
+.dz-menu__panel[data-align='start'] {
+  left: 0;
+}
+
+.dz-menu__panel[data-align='end'] {
+  right: 0;
+}
+
+.dz-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--menu-item-gap);
+  width: 100%;
+  padding-block: var(--menu-item-padding-block);
+  padding-inline: var(--menu-item-padding-inline);
+  border: 0;
+  border-radius: var(--menu-item-radius);
+  background: none;
+  color: var(--color-content);
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  font-family: var(--menu-item-content-font-family);
+  font-size: var(--menu-item-content-font-size);
+  font-weight: var(--menu-item-content-font-weight);
+  line-height: var(--menu-item-content-line-height);
+}
+
+/*
+ * The `normal` recipe, not `plain`. Both have no resting fill, but `plain` is
+ * the quiet *accent* control — its wash comes off the tinted ramp, which on a
+ * row would land heavier than a tinted selection sitting one step lower. A
+ * row's wash is neutral; only what it selects is tinted.
+ */
+.dz-menu__item:hover {
+  background-color: var(--control-color-normal-surface-hovered);
+}
+
+.dz-menu__item:active {
+  background-color: var(--control-color-normal-surface-pressed);
+}
+
+.dz-menu__item:disabled {
+  color: var(--control-color-normal-content-disabled);
+  cursor: not-allowed;
+}
+
+.dz-menu__item:disabled:hover {
+  background-color: transparent;
+}
+
+.dz-menu__item:focus-visible {
+  outline: var(--focus-width) solid var(--tint-600);
+  outline-offset: calc(var(--focus-offset) * -1);
+}
+
+/*
+ * The checkmark column. It holds its width whether or not the item is checked,
+ * so the labels of a radio group stay on one left edge.
+ */
+.dz-menu__check {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.dz-menu__check[data-checked='false'] {
+  visibility: hidden;
+}
+
+.dz-menu__icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--color-content-muted);
+}
+
+.dz-menu__label {
+  flex: 1;
+}
+
+.dz-menu__shortcut {
+  flex-shrink: 0;
+  margin-inline-start: auto;
+  color: var(--color-content-muted);
+}

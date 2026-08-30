@@ -1,0 +1,100 @@
+/*
+ * The box belongs to the wrapper, not the input, because the glyph and the
+ * trailing slot sit inside it — so the focus ring has to come from
+ * `:focus-within` rather than from the input itself.
+ */
+.dz-search-field {
+  display: flex;
+  align-items: center;
+  border: var(--spacing-px) solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-content);
+  transition:
+    border-color 0.12s ease-out,
+    background-color 0.12s ease-out;
+}
+
+.dz-search-field:focus-within {
+  border-color: var(--tint-600);
+  outline: var(--focus-width) solid var(--tint-200);
+}
+
+.dz-search-field__glyph {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--color-content-muted);
+}
+
+.dz-search-field__input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  outline: none;
+  font: inherit;
+}
+
+.dz-search-field__input::placeholder {
+  color: var(--color-content-muted);
+}
+
+/* The browser's own clear button would sit beside ours. */
+.dz-search-field__input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.dz-search-field__clear {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-content-muted);
+  cursor: pointer;
+  font: inherit;
+}
+
+.dz-search-field__clear:hover {
+  color: var(--color-content);
+}
+
+.dz-search-field__clear:focus-visible {
+  outline: var(--focus-width) solid var(--tint-600);
+  outline-offset: var(--focus-offset);
+}
+
+.dz-search-field[data-size='small'] {
+  height: var(--search-field-small-size);
+  gap: var(--search-field-small-gap);
+  padding-inline: var(--search-field-small-padding-inline);
+  border-radius: var(--search-field-small-radius);
+  font-family: var(--search-field-small-content-font-family);
+  font-size: var(--search-field-small-content-font-size);
+  font-weight: var(--search-field-small-content-font-weight);
+  line-height: var(--search-field-small-content-line-height);
+}
+
+.dz-search-field[data-size='medium'] {
+  height: var(--search-field-medium-size);
+  gap: var(--search-field-medium-gap);
+  padding-inline: var(--search-field-medium-padding-inline);
+  border-radius: var(--search-field-medium-radius);
+  font-family: var(--search-field-medium-content-font-family);
+  font-size: var(--search-field-medium-content-font-size);
+  font-weight: var(--search-field-medium-content-font-weight);
+  line-height: var(--search-field-medium-content-line-height);
+}
+
+.dz-search-field[data-size='large'] {
+  height: var(--search-field-large-size);
+  gap: var(--search-field-large-gap);
+  padding-inline: var(--search-field-large-padding-inline);
+  border-radius: var(--search-field-large-radius);
+  font-family: var(--search-field-large-content-font-family);
+  font-size: var(--search-field-large-content-font-size);
+  font-weight: var(--search-field-large-content-font-weight);
+  line-height: var(--search-field-large-content-line-height);
+}

@@ -1,0 +1,76 @@
+{
+  "search-field": {
+    "small": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{control.small.size}"
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{control.small.gap}"
+      },
+      "padding": {
+        "inline": {
+          "$type": "dimension",
+          "$value": "{control.small.padding.inline}"
+        }
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.small}"
+      },
+      "content": {
+        "$type": "typography",
+        "$value": "{labelSmall}"
+      }
+    },
+    "medium": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{control.medium.size}"
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{control.medium.gap}"
+      },
+      "padding": {
+        "inline": {
+          "$type": "dimension",
+          "$value": "{control.medium.padding.inline}"
+        }
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.medium}"
+      },
+      "content": {
+        "$type": "typography",
+        "$value": "{labelSmall}"
+      }
+    },
+    "large": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{control.large.size}"
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{control.large.gap}"
+      },
+      "padding": {
+        "inline": {
+          "$type": "dimension",
+          "$value": "{control.large.padding.inline}"
+        }
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.large}"
+      },
+      "content": {
+        "$type": "typography",
+        "$value": "{labelMedium}"
+      }
+    }
+  }
+}

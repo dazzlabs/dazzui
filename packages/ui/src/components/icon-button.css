@@ -1,0 +1,54 @@
+/* A square button. Colour comes from the shared control state machine. */
+.dz-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  cursor: pointer;
+  background-color: var(--control-surface);
+  color: var(--control-content);
+  border: var(--spacing-px) solid var(--control-border);
+  transition:
+    background-color 0.12s ease-out,
+    border-color 0.12s ease-out,
+    color 0.12s ease-out;
+}
+
+.dz-icon-button:disabled,
+.dz-icon-button[aria-disabled='true'] {
+  cursor: not-allowed;
+}
+
+.dz-icon-button:focus-visible {
+  outline: var(--focus-width) solid var(--tint-600);
+  outline-offset: var(--focus-offset);
+}
+
+/*
+ * A persistent on-state — a pin held down, a panel kept open. It is the
+ * tinted recipe whatever variant the button rests in, because "this is on" has
+ * to read the same wherever the button sits.
+ */
+.dz-icon-button[aria-pressed='true'] {
+  background-color: var(--control-color-tinted-surface-normal);
+  color: var(--control-color-tinted-content-normal);
+}
+
+.dz-icon-button[data-size='small'] {
+  width: var(--icon-button-small-size);
+  height: var(--icon-button-small-size);
+  border-radius: var(--icon-button-small-radius);
+}
+
+.dz-icon-button[data-size='medium'] {
+  width: var(--icon-button-medium-size);
+  height: var(--icon-button-medium-size);
+  border-radius: var(--icon-button-medium-radius);
+}
+
+.dz-icon-button[data-size='large'] {
+  width: var(--icon-button-large-size);
+  height: var(--icon-button-large-size);
+  border-radius: var(--icon-button-large-radius);
+}

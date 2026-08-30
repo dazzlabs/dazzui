@@ -5,7 +5,9 @@
   "description": "DazzUI design system monorepo",
   "scripts": {
     "build": "pnpm run tokens && pnpm run storybook:build",
-    "tokens": "pnpm --filter @dazzlabs/dazzui build",
+    "tokens": "pnpm --filter @dazzlabs/dazzui tokens",
+    "components": "pnpm --filter @dazzlabs/dazzui lib",
+    "typecheck": "pnpm -r typecheck",
     "storybook": "pnpm --filter @dazzlabs/dazzui-storybook dev",
     "storybook:build": "pnpm --filter @dazzlabs/dazzui-storybook build",
     "lint": "oxlint ./",

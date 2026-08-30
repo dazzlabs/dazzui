@@ -1,0 +1,71 @@
+/*
+ * A flex grid rather than a `<table>`: rows are often clickable and column
+ * widths are set by the design, both of which a real table fights. The `role`
+ * attributes keep it announced as a table anyway.
+ */
+.dz-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.dz-table__head {
+  display: flex;
+  padding-inline: var(--table-row-padding-inline);
+  background-color: var(--table-head-surface);
+  border-bottom: var(--spacing-px) solid var(--table-border);
+}
+
+.dz-table__row {
+  display: flex;
+  align-items: center;
+  padding-block: var(--table-row-padding-block);
+  padding-inline: var(--table-row-padding-inline);
+  border-bottom: var(--spacing-px) solid var(--table-border);
+  text-align: left;
+  font-family: var(--table-row-content-font-family);
+  font-size: var(--table-row-content-font-size);
+  font-weight: var(--table-row-content-font-weight);
+  line-height: var(--table-row-content-line-height);
+}
+
+.dz-table__row:last-child {
+  border-bottom: 0;
+}
+
+.dz-table__row[data-interactive='true'] {
+  cursor: pointer;
+}
+
+/* Neutral, because the tinted selection below sits one step lower on the ramp
+   and a tinted hover would read as the heavier of the two. */
+.dz-table__row[data-interactive='true']:hover {
+  background-color: var(--control-color-normal-surface-hovered);
+}
+
+/* Selection is the tinted recipe: the row is picked out, not pressed. */
+.dz-table__row[data-active='true'] {
+  background-color: var(--control-color-tinted-surface-normal);
+}
+
+.dz-table__row:focus-visible {
+  outline: var(--focus-width) solid var(--tint-600);
+  outline-offset: calc(var(--focus-offset) * -1);
+}
+
+.dz-table__cell {
+  min-width: 0;
+  flex: 1;
+}
+
+.dz-table__cell[data-align='end'] {
+  text-align: right;
+}
+
+.dz-table__cell[data-head='true'] {
+  padding-block: var(--table-head-padding-block);
+  color: var(--color-content-muted);
+  font-family: var(--table-head-content-font-family);
+  font-size: var(--table-head-content-font-size);
+  font-weight: var(--table-head-content-font-weight);
+  line-height: var(--table-head-content-line-height);
+}

@@ -1,0 +1,43 @@
+/*
+ * A ring with one segment picked out: the track sits low on the ramp, the head
+ * high, and the whole thing turns.
+ */
+.dz-spinner {
+  display: inline-block;
+  flex-shrink: 0;
+  /* 200 rather than 100: the track has to stay readable on a tinted surface,
+     where a 50 fill sits directly behind it. */
+  border: var(--spinner-thickness) solid var(--tint-200);
+  border-top-color: var(--tint-600);
+  border-radius: var(--radius-full);
+  animation: dz-spinner-turn 0.6s linear infinite;
+}
+
+.dz-spinner[data-size='small'] {
+  width: var(--spinner-small-size);
+  height: var(--spinner-small-size);
+}
+
+.dz-spinner[data-size='medium'] {
+  width: var(--spinner-medium-size);
+  height: var(--spinner-medium-size);
+}
+
+.dz-spinner[data-size='large'] {
+  width: var(--spinner-large-size);
+  height: var(--spinner-large-size);
+}
+
+@keyframes dz-spinner-turn {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* Slowed rather than stopped: a still spinner reads as a frozen app, which is
+   the opposite of what it is there to say. */
+@media (prefers-reduced-motion: reduce) {
+  .dz-spinner {
+    animation-duration: 2.4s;
+  }
+}

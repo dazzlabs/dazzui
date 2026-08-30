@@ -1,0 +1,174 @@
+/*
+ * The settings column.
+ *
+ * The spacing is the whole design here. Rows sit close together, a heading
+ * sits further from the section above it than from its own rows, and a group
+ * title stands further still — so a heading always reads as belonging to what
+ * follows it rather than floating between two blocks. Every level widens by
+ * the same rule, which is why the three gaps are separate tokens.
+ */
+
+.dz-preference-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.dz-preference-section__heading,
+.dz-preference-group__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+}
+
+.dz-preference-section__heading {
+  margin-bottom: var(--preference-section-heading-gap);
+}
+
+.dz-preference-section__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--preference-section-gap);
+}
+
+.dz-preference-section__footer {
+  margin-top: var(--preference-section-footer-gap);
+  color: var(--color-content-muted);
+  font-family: var(--preference-section-footer-content-font-family);
+  font-size: var(--preference-section-footer-content-font-size);
+  font-weight: var(--preference-section-footer-content-font-weight);
+  line-height: var(--preference-section-footer-content-line-height);
+}
+
+/*
+ * A heading's control sits in a zero-height slot it overhangs on both sides.
+ * Letting a 32px control size the line would make a heading with a button
+ * taller than one without, and two sections on the same page would then start
+ * at different heights. Zero rather than a negative margin, so it holds for
+ * any control height and any heading size.
+ */
+.dz-preference__heading-action {
+  display: flex;
+  align-items: center;
+  height: 0;
+}
+
+.dz-preference-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.dz-preference-group__heading {
+  margin-bottom: var(--preference-group-heading-gap);
+}
+
+.dz-preference-group__titles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1-5);
+}
+
+.dz-preference-group__title {
+  color: var(--color-content);
+  font-family: var(--preference-group-title-font-family);
+  font-size: var(--preference-group-title-font-size);
+  font-weight: var(--preference-group-title-font-weight);
+  line-height: var(--preference-group-title-line-height);
+}
+
+.dz-preference-group__description {
+  color: var(--color-content-muted);
+  font-family: var(--preference-group-description-font-family);
+  font-size: var(--preference-group-description-font-size);
+  font-weight: var(--preference-group-description-font-weight);
+  line-height: var(--preference-group-description-line-height);
+}
+
+.dz-preference-group__sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--preference-group-gap);
+}
+
+/*
+ * A row's height is a minimum plus a pad on its text, never a fixed height.
+ * The minimum keeps the text column in one rhythm whatever control sits on the
+ * right; the pad rides on the text so a row grows for content — a subtitle, a
+ * wrapped title — and never for a control.
+ */
+.dz-preference-row {
+  display: flex;
+  align-items: center;
+  gap: var(--preference-row-gap);
+  min-height: var(--preference-row-size);
+  width: 100%;
+  border: 0;
+  background: none;
+  text-align: left;
+  color: inherit;
+}
+
+.dz-preference-row[data-interactive='true'] {
+  cursor: pointer;
+  border-radius: var(--preference-row-radius);
+  /* Pulled out and pushed back in, so the wash is wider than the text while
+     the row still starts on the same left edge as the inert rows above it. */
+  margin-inline: calc(var(--spacing-2) * -1);
+  width: calc(100% + var(--spacing-2) * 2);
+  padding-inline: var(--spacing-2);
+}
+
+.dz-preference-row[data-interactive='true']:hover {
+  background-color: var(--control-color-normal-surface-hovered);
+}
+
+.dz-preference-row:focus-visible {
+  outline: var(--focus-width) solid var(--tint-600);
+  outline-offset: var(--focus-offset);
+}
+
+.dz-preference-row__icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--color-content-muted);
+}
+
+.dz-preference-row__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  min-width: 0;
+  padding-block: var(--spacing-1);
+}
+
+.dz-preference-row__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-content);
+  font-family: var(--preference-row-title-font-family);
+  font-size: var(--preference-row-title-font-size);
+  font-weight: var(--preference-row-title-font-weight);
+  line-height: var(--preference-row-title-line-height);
+}
+
+.dz-preference-row__subtitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-content-muted);
+  font-family: var(--preference-row-subtitle-font-family);
+  font-size: var(--preference-row-subtitle-font-size);
+  font-weight: var(--preference-row-subtitle-font-weight);
+  line-height: var(--preference-row-subtitle-line-height);
+}
+
+.dz-preference-row__trailing {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--preference-row-gap);
+  margin-inline-start: auto;
+  color: var(--color-content-muted);
+}

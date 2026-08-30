@@ -7,10 +7,18 @@ Guidance for coding agents working in this repository.
 The DazzUI design system, as a pnpm workspace:
 
 - `packages/ui` (`@dazzlabs/dazzui`) — the design tokens, built with
-  [Terrazzo](https://terrazzo.app/). This is the source of truth; everything
-  else consumes its build output.
+  [Terrazzo](https://terrazzo.app/), and the React components that consume
+  them. The tokens are the source of truth; everything else, the components
+  included, reads their build output.
 - `apps/storybook` (`@dazzlabs/dazzui-storybook`) — a Storybook gallery that
-  documents the tokens. Tokens only: there are no web components in this repo.
+  documents both: `Tokens/*` and `Base/*` for the token graph, `Components/*`
+  for the components.
+
+Every domain-free component from `beyondtranslate/packages/ui` has been
+migrated. What is left there is the desktop shell — WindowFrame, Sidebar,
+MiniWindow, BrowserFrame and friends — which is still pending a decision, and
+the mobile device frames, which are presentation props rather than system
+parts.
 
 ## Commands
 
@@ -21,11 +29,19 @@ pnpm install
 ```
 
 ```bash
-pnpm tokens            # build packages/ui into dist/
+pnpm tokens            # build the token graph into packages/ui/dist/
 ```
 
 ```bash
-pnpm storybook         # build tokens, then serve Storybook on :6006
+pnpm components        # build the component bundle into the same dist/
+```
+
+```bash
+pnpm storybook         # build both, then serve Storybook on :6006
+```
+
+```bash
+pnpm typecheck         # tsc over every workspace package
 ```
 
 ```bash
@@ -36,8 +52,6 @@ pnpm lint              # oxlint over the workspace
 pnpm format            # oxfmt over the workspace
 ```
 
-Typecheck the app with `pnpm --filter @dazzlabs/dazzui-storybook typecheck`.
-
 ## Token pipeline
 
 1. `packages/ui/tokens/global/_base.json` holds the primitive layer and is
@@ -47,12 +61,26 @@ Typecheck the app with `pnpm --filter @dazzlabs/dazzui-storybook typecheck`.
    `packages/ui/dist/`:
    - `style.css` — CSS custom properties (the contract consumers use)
    - `flutter/*.dart` — Dart sources for the sibling `dazzui-flutter` repo
+   - `control.css` — the ramp bindings and the resolved interactive color
+     recipes, from `plugins/control.mjs`; bundled into `components.css`
 3. `node scripts/build.mjs --copy` copies the Dart output into
    `../../../dazzui-flutter`. That path assumes the sibling repo is checked out
    next to this one; the flag is opt-in and safe to ignore otherwise.
 
 A new token file is only built once it is added to `terrazzo.config.mjs`.
 `dist/` is gitignored, so build before touching anything that reads it.
+
+## Component pipeline
+
+`vite build` bundles `packages/ui/src/` into the *same* `dist/`, which is why
+its config sets `emptyOutDir: false` — wiping the directory would take the
+freshly built tokens with it. It emits:
+
+- `index.js` + `*.d.ts` — the components; React stays external
+- `components.css` — every component stylesheet, via the `styles.ts` entry
+
+`src/styles/components.css` is the registry, the way `terrazzo.config.mjs` is
+for tokens: a component's stylesheet only ships once it is imported there.
 
 ## Token conventions
 
@@ -74,18 +102,62 @@ Two things that surprise people:
 - `tokens/theme/default/{light,dark}.json` are still empty, so there is no dark
   theme yet and the CSS output has no theme scoping.
 
+## Component conventions
+
+- One folder-level file pair per component: `src/components/<name>.tsx` and
+  `<name>.css`, both listed in their registries (`components/index.ts`,
+  `styles/components.css`).
+- Components are styled by plain CSS reading the token custom properties —
+  there is no Tailwind here. A value a component needs but no token carries is
+  a missing token: add it to `tokens/component/<name>.json` rather than writing
+  a literal into the CSS.
+- Variants are `data-*` attributes, not classes, so the CSS selector names the
+  axis (`[data-variant='tinted']`) and consumers can see the state in the DOM.
+- CSS cannot index a ramp by a variable, so the shade/alpha recipes are
+  resolved in the token build instead — `plugins/control.mjs` emits both the
+  `[data-tint]` ramp bindings (`--tint-50` … `--tint-950`) and a finished color
+  per variant/part/state (`--control-color-filled-surface-hovered`). Component
+  CSS names a state, never a shade; a shade written into a stylesheet would
+  drift the moment a recipe changed.
+- Both halves land on `[data-tint]`, not `:root`, and that is load bearing: a
+  custom property holding `var()` is substituted where it is *declared*, so
+  `:root { --x: var(--tint-600) }` would resolve against a root with no ramp
+  bound and every descendant would inherit the dead value. **Any component
+  reading `--control-color-*` must therefore carry `data-tint`.**
+- An interactive control opts into the shared state machine with `data-control`
+  plus `data-variant`, then reads `--control-surface` / `--control-content` /
+  `--control-border` and gets hover, press, and disabled for free. Button and
+  IconButton are the model. A component that is *not* interactive (Badge, Card)
+  must stay out of it and read the `-normal` recipes directly — `:hover` would
+  fire on it just the same, and a label that changes under the pointer reads as
+  something you can press.
+- Pick the recipe by what the part *is*, not by which colour looks right.
+  `normal` is the neutral control — its hover wash is `surface-muted`, which is
+  what a menu item, a table row, or a preference row wants. `plain` is the
+  quiet *accent* control, so its wash comes off the tinted ramp and would sit
+  heavier on a row than a `tinted` selection one step below it.
+- `tint` is a prop only where a component genuinely re-tints. Components whose
+  colors are already in the token graph (Kbd, Progress's track) read those
+  directly.
+- A `color` paired with an `alpha` anywhere else in the graph (`dialog.scrim`)
+  is resolved by the same plugin onto `:root`, so no component has to apply an
+  alpha in CSS.
+
 ## Storybook conventions
 
 - Stories live in `apps/storybook/src/stories/*.stories.tsx`, titled
-  `Tokens/<Group>` or `Base/<Group>`. Sidebar order is set in
-  `.storybook/preview.ts`.
+  `Tokens/<Group>`, `Components/<Name>`, or `Base/<Group>`. Sidebar order is
+  set in `.storybook/preview.ts`.
+- A component page ends with the token table it is drawn from
+  (`componentTokens('<name>')`), so the specimens and their source sit on one
+  page.
 - The gallery reads the **built** `dist/style.css`, not the token sources. It
   parses the `:root` block for each alias and resolves the `var()` chain via
   `getComputedStyle`, so every token shows both what it points at and what it
   evaluates to.
 - Because of that, adding or renaming tokens usually needs no story changes —
-  the existing pages pick them up. Reach for `byPrefix` / `groupScales` in
-  `src/lib/tokens.ts` before hardcoding a list of token names.
+  the existing pages pick them up. Reach for `byPrefix` / `groupScales` /
+  `componentTokens` in `src/lib/tokens.ts` before hardcoding token names.
 - Shared presentation lives in `src/components/gallery.tsx`. The gallery styles
   itself with DazzUI tokens; keep it that way.
 

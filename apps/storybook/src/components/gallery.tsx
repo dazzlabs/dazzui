@@ -63,6 +63,21 @@ export function Stack({ children }: { children: ReactNode }) {
   return <div className="dt-stack">{children}</div>
 }
 
+type SpecimenProps = {
+  label: string
+  children: ReactNode
+}
+
+/** One demo row: what the variation is called, and the live component. */
+export function Specimen({ label, children }: SpecimenProps) {
+  return (
+    <div className="dt-specimen">
+      <div className="dt-name">{label}</div>
+      <div className="dt-specimen__stage">{children}</div>
+    </div>
+  )
+}
+
 /** Inline styles that also set custom properties. */
 type CssVars = CSSProperties & Record<string, string>
 

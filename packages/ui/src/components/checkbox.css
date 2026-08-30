@@ -1,0 +1,101 @@
+/*
+ * A box and a label on one row. The row's height is the hit target — the
+ * shared control height — while the box is its own, much smaller square, which
+ * is why `checkbox.<size>.box` exists alongside `checkbox.<size>.size`.
+ */
+.dz-checkbox,
+.dz-radio {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  color: var(--color-content);
+}
+
+.dz-checkbox:disabled,
+.dz-radio:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.dz-checkbox:focus-visible,
+.dz-radio:focus-visible {
+  outline: var(--focus-width) solid var(--tint-600);
+  outline-offset: var(--focus-offset);
+}
+
+.dz-checkbox__box,
+.dz-radio__box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  /* Neutral while empty: an unchecked box is an outline, not a quiet accent. */
+  border: var(--checkbox-thickness) solid var(--color-border-muted);
+  background-color: transparent;
+}
+
+.dz-checkbox[aria-checked='true'] .dz-checkbox__box {
+  background-color: var(--control-color-filled-surface-normal);
+  border-color: var(--control-color-filled-surface-normal);
+  color: var(--control-color-filled-content-normal);
+}
+
+.dz-checkbox__label,
+.dz-radio__label {
+  min-width: 0;
+}
+
+/* A trailing note rides on the label rather than the row, so it wraps with it
+   instead of being pushed to the far edge like a control would be. */
+.dz-checkbox__note {
+  color: var(--color-content-muted);
+}
+
+.dz-checkbox[data-size='small'] {
+  min-height: var(--checkbox-small-size);
+  gap: var(--checkbox-small-gap);
+  font-family: var(--checkbox-small-content-font-family);
+  font-size: var(--checkbox-small-content-font-size);
+  font-weight: var(--checkbox-small-content-font-weight);
+  line-height: var(--checkbox-small-content-line-height);
+}
+
+.dz-checkbox[data-size='small'] .dz-checkbox__box {
+  width: var(--checkbox-small-box);
+  height: var(--checkbox-small-box);
+  border-radius: var(--checkbox-small-radius);
+}
+
+.dz-checkbox[data-size='medium'] {
+  min-height: var(--checkbox-medium-size);
+  gap: var(--checkbox-medium-gap);
+  font-family: var(--checkbox-medium-content-font-family);
+  font-size: var(--checkbox-medium-content-font-size);
+  font-weight: var(--checkbox-medium-content-font-weight);
+  line-height: var(--checkbox-medium-content-line-height);
+}
+
+.dz-checkbox[data-size='medium'] .dz-checkbox__box {
+  width: var(--checkbox-medium-box);
+  height: var(--checkbox-medium-box);
+  border-radius: var(--checkbox-medium-radius);
+}
+
+.dz-checkbox[data-size='large'] {
+  min-height: var(--checkbox-large-size);
+  gap: var(--checkbox-large-gap);
+  font-family: var(--checkbox-large-content-font-family);
+  font-size: var(--checkbox-large-content-font-size);
+  font-weight: var(--checkbox-large-content-font-weight);
+  line-height: var(--checkbox-large-content-line-height);
+}
+
+.dz-checkbox[data-size='large'] .dz-checkbox__box {
+  width: var(--checkbox-large-box);
+  height: var(--checkbox-large-box);
+  border-radius: var(--checkbox-large-radius);
+}

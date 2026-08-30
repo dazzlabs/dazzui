@@ -124,6 +124,23 @@ export function byPrefix(prefix: string, options: PrefixOptions = {}): Token[] {
   )
 }
 
+/** The shared control sizing scale, smallest first. */
+const CONTROL_SIZES = ['tiny', 'small', 'medium', 'large', 'big']
+
+/**
+ * One component's tokens: the parts shared across sizes first, then a group
+ * per size, so the table reads in the order the scale does.
+ */
+export function componentTokens(component: string): Token[] {
+  const prefix = `${component}-`
+  const rank = (token: Token) =>
+    CONTROL_SIZES.indexOf(token.name.slice(prefix.length).split('-')[0] ?? '')
+
+  return byPrefix(prefix).sort(
+    (a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name)
+  )
+}
+
 export type TokenScale = {
   /** The shared part of the name, e.g. `primary` for `color-primary-*`. */
   key: string

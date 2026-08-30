@@ -1,0 +1,17 @@
+/*
+ * A row of controls. It owns no colour and no box — only the rhythm — so it
+ * takes the shared control gap rather than a token of its own.
+ */
+.dz-action-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--control-medium-gap);
+}
+
+.dz-action-bar[data-align='end'] {
+  justify-content: flex-end;
+}
+
+.dz-action-bar[data-align='between'] {
+  justify-content: space-between;
+}

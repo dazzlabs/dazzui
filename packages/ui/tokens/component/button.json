@@ -5,6 +5,10 @@
         "$type": "dimension",
         "$value": "{control.small.size}"
       },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{control.small.gap}"
+      },
       "padding": {
         "block": {
           "$type": "dimension",
@@ -29,6 +33,10 @@
         "$type": "dimension",
         "$value": "{control.medium.size}"
       },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{control.medium.gap}"
+      },
       "padding": {
         "block": {
           "$type": "dimension",
@@ -52,6 +60,10 @@
       "size": {
         "$type": "dimension",
         "$value": "{control.large.size}"
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{control.large.gap}"
       },
       "padding": {
         "block": {

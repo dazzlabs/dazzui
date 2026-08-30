@@ -1,0 +1,85 @@
+/*
+ * Drawn as a field, not a key cap: a Kbd says "this is what the key is", a
+ * field says "you can change this".
+ */
+.dz-shortcut-recorder {
+  position: relative;
+  display: inline-flex;
+}
+
+.dz-shortcut-recorder__button {
+  height: var(--shortcut-recorder-size);
+  min-width: var(--shortcut-recorder-width);
+  padding-inline: var(--shortcut-recorder-padding-inline);
+  border: var(--spacing-px) solid var(--control-color-normal-border-normal);
+  border-radius: var(--shortcut-recorder-radius);
+  background-color: var(--control-color-normal-surface-normal);
+  color: var(--control-color-normal-content-normal);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  font-family: var(--shortcut-recorder-content-font-family);
+  font-size: var(--shortcut-recorder-content-font-size);
+  font-weight: var(--shortcut-recorder-content-font-weight);
+  line-height: var(--shortcut-recorder-content-line-height);
+}
+
+/* Unbound, or waiting with nothing held: the label is a prompt, not a value. */
+.dz-shortcut-recorder__button[data-glyphs='false'] {
+  color: var(--color-content-muted);
+}
+
+/* Room for the clear button, mirrored on the left so the keys stay centred
+   whether or not it is there. */
+.dz-shortcut-recorder__button[data-clearable='true'] {
+  padding-inline: var(--spacing-8);
+}
+
+.dz-shortcut-recorder__button[data-recording='true'] {
+  border-color: var(--tint-600);
+  outline: var(--focus-width) solid var(--tint-200);
+}
+
+/* A press the recorder could not take flashes the border rather than beeping. */
+.dz-shortcut-recorder__button[data-rejected='true'],
+.dz-shortcut-recorder__button[data-state='error'] {
+  border-color: var(--color-danger-500);
+  background-color: var(--color-danger-50);
+  color: var(--color-danger-700);
+}
+
+.dz-shortcut-recorder__button:focus-visible {
+  outline: var(--focus-width) solid var(--tint-600);
+  outline-offset: var(--focus-offset);
+}
+
+.dz-shortcut-recorder__button:disabled {
+  cursor: not-allowed;
+  border-color: var(--control-color-normal-border-disabled);
+  background-color: var(--control-color-normal-surface-disabled);
+  color: var(--control-color-normal-content-disabled);
+}
+
+.dz-shortcut-recorder__clear {
+  position: absolute;
+  inset-inline-end: var(--spacing-2);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-content-muted);
+  cursor: pointer;
+}
+
+.dz-shortcut-recorder__clear:hover {
+  color: var(--color-content);
+}
+
+.dz-shortcut-recorder__clear:focus-visible {
+  outline: var(--focus-width) solid var(--tint-600);
+  outline-offset: var(--focus-offset);
+}

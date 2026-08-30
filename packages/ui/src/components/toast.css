@@ -1,0 +1,115 @@
+/*
+ * A transient receipt for something that happened out of view. One line, no
+ * wrapping — anything needing a second sentence belongs in an AlertBanner in
+ * the flow instead.
+ */
+.dz-toast {
+  display: flex;
+  align-items: center;
+  gap: var(--toast-gap);
+  min-height: var(--toast-size);
+  /* Sized to its content but never past the viewport, so the stack needs no
+     magic width and a long message truncates instead of pushing wide. */
+  width: max-content;
+  max-width: 100%;
+  padding-block: var(--toast-padding-block);
+  padding-inline: var(--toast-padding-inline);
+  background-color: var(--toast-surface);
+  border: var(--spacing-px) solid var(--toast-border);
+  border-radius: var(--toast-radius);
+  box-shadow: var(--toast-elevation);
+  pointer-events: auto;
+  animation: dz-toast-in 0.26s cubic-bezier(0.21, 0.9, 0.35, 1.05) both;
+}
+
+.dz-toast__icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--tint-600);
+}
+
+.dz-toast__message {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-content);
+  font-family: var(--toast-content-font-family);
+  font-size: var(--toast-content-font-size);
+  font-weight: var(--toast-content-font-weight);
+  line-height: var(--toast-content-line-height);
+}
+
+.dz-toast__action {
+  flex-shrink: 0;
+  margin-inline-start: auto;
+}
+
+.dz-toast__dismiss {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--control-tiny-size);
+  height: var(--control-tiny-size);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-small);
+  background: none;
+  color: var(--color-content-muted);
+  cursor: pointer;
+}
+
+.dz-toast__dismiss:hover {
+  background-color: var(--control-color-normal-surface-hovered);
+  color: var(--color-content);
+}
+
+.dz-toast__dismiss:focus-visible {
+  outline: var(--focus-width) solid var(--tint-600);
+  outline-offset: var(--focus-offset);
+}
+
+@keyframes dz-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*
+ * Where a window's toasts land. Transparent to the pointer between them, so
+ * the page underneath stays usable while one is on screen.
+ */
+.dz-toast-viewport {
+  position: fixed;
+  inset-inline: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: var(--toast-viewport-gap);
+  padding: var(--toast-viewport-padding);
+  pointer-events: none;
+}
+
+/* Column direction keeps the newest toast nearest the edge it hangs from. */
+.dz-toast-viewport[data-placement='bottom'] {
+  bottom: 0;
+  flex-direction: column;
+}
+
+.dz-toast-viewport[data-placement='top'] {
+  top: 0;
+  flex-direction: column-reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dz-toast {
+    animation: none;
+  }
+}

@@ -1,0 +1,45 @@
+/*
+ * A key cap carries its own surface, content, and border colors — `kbd.*` in
+ * the token graph — so it takes no tint.
+ */
+.dz-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--spacing-px) solid var(--kbd-border);
+  background-color: var(--kbd-surface);
+  color: var(--kbd-content);
+  white-space: nowrap;
+}
+
+/* Sizes ------------------------------------------------------------------- */
+
+.dz-kbd[data-size='small'] {
+  padding-block: var(--kbd-small-padding-block);
+  padding-inline: var(--kbd-small-padding-inline);
+  border-radius: var(--kbd-small-radius);
+  font-family: var(--kbd-small-text-font-family);
+  font-size: var(--kbd-small-text-font-size);
+  font-weight: var(--kbd-small-text-font-weight);
+  line-height: var(--kbd-small-text-line-height);
+}
+
+.dz-kbd[data-size='medium'] {
+  padding-block: var(--kbd-medium-padding-block);
+  padding-inline: var(--kbd-medium-padding-inline);
+  border-radius: var(--kbd-medium-radius);
+  font-family: var(--kbd-medium-text-font-family);
+  font-size: var(--kbd-medium-text-font-size);
+  font-weight: var(--kbd-medium-text-font-weight);
+  line-height: var(--kbd-medium-text-line-height);
+}
+
+.dz-kbd[data-size='large'] {
+  padding-block: var(--kbd-large-padding-block);
+  padding-inline: var(--kbd-large-padding-inline);
+  border-radius: var(--kbd-large-radius);
+  font-family: var(--kbd-large-text-font-family);
+  font-size: var(--kbd-large-text-font-size);
+  font-weight: var(--kbd-large-text-font-weight);
+  line-height: var(--kbd-large-text-line-height);
+}

@@ -1,0 +1,85 @@
+/*
+ * Colour comes entirely from the shared control state machine: `data-control`
+ * plus `data-variant` puts the recipe's surface, content, and border on
+ * `--control-*`, and they track hover, press, and disabled on their own. So
+ * this file is only the box.
+ */
+.dz-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+  background-color: var(--control-surface);
+  color: var(--control-content);
+  border: var(--spacing-px) solid var(--control-border);
+  transition:
+    background-color 0.12s ease-out,
+    border-color 0.12s ease-out,
+    color 0.12s ease-out;
+}
+
+.dz-button:disabled,
+.dz-button[aria-disabled='true'] {
+  cursor: not-allowed;
+}
+
+.dz-button:focus-visible {
+  outline: var(--focus-width) solid var(--tint-600);
+  outline-offset: var(--focus-offset);
+}
+
+.dz-button[data-full-width='true'] {
+  width: 100%;
+}
+
+/*
+ * Every variant keeps the same box, `plain` included. `plain` looks like text
+ * at rest, but the recipe gives it a surface on hover and when disabled, and a
+ * wash needs somewhere to live — zeroing the padding would shrink-wrap it onto
+ * the glyphs. A genuinely inline affordance is a link, not a button.
+ */
+
+/* Sizes ------------------------------------------------------------------- */
+
+.dz-button[data-size='small'] {
+  height: var(--button-small-size);
+  gap: var(--button-small-gap);
+  padding-block: var(--button-small-padding-block);
+  padding-inline: var(--button-small-padding-inline);
+  border-radius: var(--button-small-radius);
+  font-family: var(--button-small-content-font-family);
+  font-size: var(--button-small-content-font-size);
+  font-weight: var(--button-small-content-font-weight);
+  line-height: var(--button-small-content-line-height);
+}
+
+.dz-button[data-size='medium'] {
+  height: var(--button-medium-size);
+  gap: var(--button-medium-gap);
+  padding-block: var(--button-medium-padding-block);
+  padding-inline: var(--button-medium-padding-inline);
+  border-radius: var(--button-medium-radius);
+  font-family: var(--button-medium-content-font-family);
+  font-size: var(--button-medium-content-font-size);
+  font-weight: var(--button-medium-content-font-weight);
+  line-height: var(--button-medium-content-line-height);
+}
+
+.dz-button[data-size='large'] {
+  height: var(--button-large-size);
+  gap: var(--button-large-gap);
+  padding-block: var(--button-large-padding-block);
+  padding-inline: var(--button-large-padding-inline);
+  border-radius: var(--button-large-radius);
+  font-family: var(--button-large-content-font-family);
+  font-size: var(--button-large-content-font-size);
+  font-weight: var(--button-large-content-font-weight);
+  line-height: var(--button-large-content-line-height);
+}
+
+/* A trailing shortcut is a hint, not part of the label. */
+.dz-button__shortcut {
+  opacity: 0.7;
+}

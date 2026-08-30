@@ -1,0 +1,82 @@
+/*
+ * The base row, box, label, and disabled treatment are shared with the
+ * checkbox — see checkbox.css. What differs is the shape: a radio is a ring
+ * that keeps its outline when selected and grows a dot inside it, where a
+ * checkbox fills solid.
+ */
+.dz-radio__box {
+  border-width: var(--radio-thickness);
+  border-radius: var(--radius-full);
+}
+
+.dz-radio[aria-checked='true'] .dz-radio__box {
+  border-color: var(--control-color-filled-surface-normal);
+}
+
+.dz-radio__dot {
+  border-radius: var(--radius-full);
+  background-color: var(--control-color-filled-surface-normal);
+}
+
+.dz-radio[data-size='small'] {
+  min-height: var(--radio-small-size);
+  gap: var(--radio-small-gap);
+  font-family: var(--radio-small-content-font-family);
+  font-size: var(--radio-small-content-font-size);
+  font-weight: var(--radio-small-content-font-weight);
+  line-height: var(--radio-small-content-line-height);
+}
+
+.dz-radio[data-size='small'] .dz-radio__box {
+  width: var(--radio-small-box);
+  height: var(--radio-small-box);
+}
+
+.dz-radio[data-size='small'] .dz-radio__dot {
+  width: var(--radio-small-dot);
+  height: var(--radio-small-dot);
+}
+
+.dz-radio[data-size='medium'] {
+  min-height: var(--radio-medium-size);
+  gap: var(--radio-medium-gap);
+  font-family: var(--radio-medium-content-font-family);
+  font-size: var(--radio-medium-content-font-size);
+  font-weight: var(--radio-medium-content-font-weight);
+  line-height: var(--radio-medium-content-line-height);
+}
+
+.dz-radio[data-size='medium'] .dz-radio__box {
+  width: var(--radio-medium-box);
+  height: var(--radio-medium-box);
+}
+
+.dz-radio[data-size='medium'] .dz-radio__dot {
+  width: var(--radio-medium-dot);
+  height: var(--radio-medium-dot);
+}
+
+.dz-radio[data-size='large'] {
+  min-height: var(--radio-large-size);
+  gap: var(--radio-large-gap);
+  font-family: var(--radio-large-content-font-family);
+  font-size: var(--radio-large-content-font-size);
+  font-weight: var(--radio-large-content-font-weight);
+  line-height: var(--radio-large-content-line-height);
+}
+
+.dz-radio[data-size='large'] .dz-radio__box {
+  width: var(--radio-large-box);
+  height: var(--radio-large-box);
+}
+
+.dz-radio[data-size='large'] .dz-radio__dot {
+  width: var(--radio-large-dot);
+  height: var(--radio-large-dot);
+}
+
+.dz-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--radio-medium-gap);
+}

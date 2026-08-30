@@ -1,0 +1,30 @@
+{
+  "option-card": {
+    "padding": {
+      "block": {
+        "$type": "dimension",
+        "$value": "{spacing.3}"
+      },
+      "inline": {
+        "$type": "dimension",
+        "$value": "{spacing.3}"
+      }
+    },
+    "gap": {
+      "$type": "dimension",
+      "$value": "{spacing.1}"
+    },
+    "radius": {
+      "$type": "dimension",
+      "$value": "{radius.medium}"
+    },
+    "title": {
+      "$type": "typography",
+      "$value": "{labelSmall}"
+    },
+    "description": {
+      "$type": "typography",
+      "$value": "{captionMedium}"
+    }
+  }
+}

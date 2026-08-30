@@ -1,0 +1,12 @@
+{
+  "focus": {
+    "width": {
+      "$type": "dimension",
+      "$value": "{spacing.0.5}"
+    },
+    "offset": {
+      "$type": "dimension",
+      "$value": "{spacing.px}"
+    }
+  }
+}

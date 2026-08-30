@@ -1,0 +1,8 @@
+/*
+ * Colour rides on `currentColor`, so an icon takes the tone of whatever text
+ * it sits in and no component has to pass a colour down to it.
+ */
+.dz-icon {
+  flex-shrink: 0;
+  fill: currentColor;
+}

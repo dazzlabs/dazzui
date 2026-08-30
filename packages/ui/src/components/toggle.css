@@ -1,0 +1,70 @@
+/*
+ * A switch: the track carries the state, the thumb slides to the side that
+ * says which. Both ends are laid out with `justify-content` rather than a
+ * translate, so the thumb lands on the padding whatever the track size is.
+ */
+.dz-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  padding: var(--toggle-padding);
+  border: 0;
+  border-radius: var(--toggle-radius);
+  background-color: var(--color-border);
+  cursor: pointer;
+  transition: background-color 0.15s ease-out;
+}
+
+.dz-toggle[aria-checked='true'] {
+  justify-content: flex-end;
+  background-color: var(--control-color-filled-surface-normal);
+}
+
+.dz-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.dz-toggle:focus-visible {
+  outline: var(--focus-width) solid var(--tint-600);
+  outline-offset: var(--focus-offset);
+}
+
+/* The thumb stays one colour in both states; only the track changes. A thumb
+   that darkened when off would read as the heavier of the two halves. */
+.dz-toggle__thumb {
+  display: block;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+}
+
+.dz-toggle[data-size='small'] {
+  width: var(--toggle-small-width);
+  height: var(--toggle-small-height);
+}
+
+.dz-toggle[data-size='small'] .dz-toggle__thumb {
+  width: var(--toggle-small-thumb);
+  height: var(--toggle-small-thumb);
+}
+
+.dz-toggle[data-size='medium'] {
+  width: var(--toggle-medium-width);
+  height: var(--toggle-medium-height);
+}
+
+.dz-toggle[data-size='medium'] .dz-toggle__thumb {
+  width: var(--toggle-medium-thumb);
+  height: var(--toggle-medium-thumb);
+}
+
+.dz-toggle[data-size='large'] {
+  width: var(--toggle-large-width);
+  height: var(--toggle-large-height);
+}
+
+.dz-toggle[data-size='large'] .dz-toggle__thumb {
+  width: var(--toggle-large-thumb);
+  height: var(--toggle-large-thumb);
+}

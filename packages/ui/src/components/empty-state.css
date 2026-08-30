@@ -1,0 +1,30 @@
+/*
+ * What a pane shows before it has content: one muted line and at most one
+ * action. The surrounding chrome already names the pane, so there is no
+ * heading, no explainer copy, and no illustration.
+ */
+.dz-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--empty-state-gap);
+  padding-block: var(--empty-state-padding-block);
+  padding-inline: var(--empty-state-padding-inline);
+  text-align: center;
+}
+
+.dz-empty-state__title {
+  color: var(--color-content-muted);
+  font-family: var(--empty-state-content-font-family);
+  font-size: var(--empty-state-content-font-size);
+  font-weight: var(--empty-state-content-font-weight);
+  line-height: var(--empty-state-content-line-height);
+}
+
+/* A row of controls, so it takes the control gap rather than the block gap. */
+.dz-empty-state__action {
+  display: flex;
+  align-items: center;
+  gap: var(--control-medium-gap);
+}

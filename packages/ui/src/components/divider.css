@@ -1,0 +1,23 @@
+.dz-divider {
+  flex-shrink: 0;
+  border: 0;
+  margin: 0;
+}
+
+.dz-divider[data-orientation='horizontal'] {
+  width: 100%;
+  height: var(--spacing-px);
+}
+
+.dz-divider[data-orientation='vertical'] {
+  align-self: stretch;
+  width: var(--spacing-px);
+}
+
+.dz-divider[data-tone='default'] {
+  background-color: var(--color-border);
+}
+
+.dz-divider[data-tone='muted'] {
+  background-color: var(--color-border-muted);
+}

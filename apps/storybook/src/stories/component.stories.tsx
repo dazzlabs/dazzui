@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { Page, Section, TokenTable } from '../components/gallery'
-import { byPrefix, type Token } from '../lib/tokens'
+import { componentTokens } from '../lib/tokens'
 
 const meta: Meta = {
   title: 'Tokens/Component',
@@ -9,20 +9,6 @@ const meta: Meta = {
 
 export default meta
 type Story = StoryObj<typeof meta>
-
-const SIZE_ORDER = ['tiny', 'small', 'medium', 'large', 'big']
-
-/** Shared tokens first, then one group per control size. */
-function rank(prefix: string, token: Token): number {
-  return SIZE_ORDER.indexOf(token.name.slice(prefix.length).split('-')[0])
-}
-
-function tokensFor(component: string): Token[] {
-  const prefix = `${component}-`
-  return byPrefix(prefix).sort(
-    (a, b) => rank(prefix, a) - rank(prefix, b) || a.name.localeCompare(b.name)
-  )
-}
 
 function ComponentPage({
   component,
@@ -35,7 +21,7 @@ function ComponentPage({
     <Page title={component} description={description}>
       <Section title="Tokens">
         <TokenTable
-          tokens={tokensFor(component)}
+          tokens={componentTokens(component)}
           labelOf={token => token.name.slice(component.length + 1)}
           nameHeader="Part"
         />

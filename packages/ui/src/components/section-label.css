@@ -1,0 +1,18 @@
+/*
+ * The micro-heading that organises a pane. One size, sentence case, no added
+ * tracking: tone is the only axis worth varying.
+ */
+.dz-section-label {
+  display: inline-block;
+  color: var(--color-content-muted);
+  font-family: var(--section-label-content-font-family);
+  font-size: var(--section-label-content-font-size);
+  font-weight: var(--section-label-content-font-weight);
+  line-height: var(--section-label-content-line-height);
+}
+
+/* Set only when the caller asks for a tint, so the untinted label keeps the
+   muted content color rather than resolving against a ramp it never chose. */
+.dz-section-label[data-tint] {
+  color: var(--tint-600);
+}

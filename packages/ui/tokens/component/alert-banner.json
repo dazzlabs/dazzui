@@ -11,6 +11,10 @@
           "$value": "{control.small.padding.inline}"
         }
       },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{control.small.gap}"
+      },
       "title": {
         "$type": "typography",
         "$value": "{titleSmall}"
@@ -35,6 +39,10 @@
           "$value": "{control.medium.padding.inline}"
         }
       },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{control.medium.gap}"
+      },
       "title": {
         "$type": "typography",
         "$value": "{titleMedium}"
@@ -58,6 +66,10 @@
           "$type": "dimension",
           "$value": "{control.large.padding.inline}"
         }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{control.large.gap}"
       },
       "title": {
         "$type": "typography",
