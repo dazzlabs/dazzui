@@ -149,6 +149,110 @@
   --control-color-tinted-surface-pressed: color-mix(in srgb, var(--tint-100) 80%, transparent);
 }
 
+[data-theme='studio-dark'] [data-tint],
+[data-theme='studio-dark'][data-tint],
+[data-theme='bright-dark'] [data-tint],
+[data-theme='bright-dark'][data-tint] {
+  --control-color-filled-border-disabled: transparent;
+  --control-color-filled-border-hovered: transparent;
+  --control-color-filled-border-normal: transparent;
+  --control-color-filled-border-pressed: transparent;
+  --control-color-filled-surface-disabled: color-mix(in srgb, var(--tint-500) 50%, transparent);
+  --control-color-filled-surface-hovered: var(--tint-600);
+  --control-color-filled-surface-normal: var(--tint-500);
+  --control-color-filled-surface-pressed: color-mix(in srgb, var(--tint-600) 80%, transparent);
+  --control-color-outlined-border-disabled: color-mix(in srgb, var(--tint-400) 50%, transparent);
+  --control-color-outlined-border-hovered: var(--tint-300);
+  --control-color-outlined-border-normal: var(--tint-400);
+  --control-color-outlined-border-pressed: color-mix(in srgb, var(--tint-300) 80%, transparent);
+  --control-color-outlined-content-disabled: color-mix(in srgb, var(--tint-300) 50%, transparent);
+  --control-color-outlined-content-hovered: var(--tint-200);
+  --control-color-outlined-content-normal: var(--tint-300);
+  --control-color-outlined-content-pressed: color-mix(in srgb, var(--tint-200) 80%, transparent);
+  --control-color-outlined-surface-disabled: color-mix(in srgb, var(--tint-950) 50%, transparent);
+  --control-color-outlined-surface-hovered: var(--tint-900);
+  --control-color-outlined-surface-pressed: color-mix(in srgb, var(--tint-900) 80%, transparent);
+  --control-color-plain-content-disabled: color-mix(in srgb, var(--tint-300) 50%, transparent);
+  --control-color-plain-content-hovered: var(--tint-200);
+  --control-color-plain-content-normal: var(--tint-300);
+  --control-color-plain-content-pressed: color-mix(in srgb, var(--tint-200) 80%, transparent);
+  --control-color-plain-surface-disabled: color-mix(in srgb, var(--tint-950) 50%, transparent);
+  --control-color-plain-surface-hovered: var(--tint-900);
+  --control-color-plain-surface-pressed: color-mix(in srgb, var(--tint-900) 80%, transparent);
+  --control-color-tinted-border-disabled: transparent;
+  --control-color-tinted-border-hovered: transparent;
+  --control-color-tinted-border-normal: transparent;
+  --control-color-tinted-border-pressed: transparent;
+  --control-color-tinted-content-disabled: color-mix(in srgb, var(--tint-300) 50%, transparent);
+  --control-color-tinted-content-hovered: var(--tint-200);
+  --control-color-tinted-content-normal: var(--tint-300);
+  --control-color-tinted-content-pressed: color-mix(in srgb, var(--tint-200) 80%, transparent);
+  --control-color-tinted-surface-disabled: color-mix(in srgb, var(--tint-950) 50%, transparent);
+  --control-color-tinted-surface-hovered: var(--tint-900);
+  --control-color-tinted-surface-normal: var(--tint-950);
+  --control-color-tinted-surface-pressed: color-mix(in srgb, var(--tint-900) 80%, transparent);
+}
+
+[data-size='tiny'] {
+  --control-size: var(--control-tiny-size);
+  --control-gap: var(--control-tiny-gap);
+  --control-padding-block: var(--control-tiny-padding-block);
+  --control-padding-inline: var(--control-tiny-padding-inline);
+  --control-radius: var(--control-tiny-radius);
+  --control-font-family: var(--control-tiny-content-font-family);
+  --control-font-size: var(--control-tiny-content-font-size);
+  --control-font-weight: var(--control-tiny-content-font-weight);
+  --control-line-height: var(--control-tiny-content-line-height);
+}
+
+[data-size='small'] {
+  --control-size: var(--control-small-size);
+  --control-gap: var(--control-small-gap);
+  --control-padding-block: var(--control-small-padding-block);
+  --control-padding-inline: var(--control-small-padding-inline);
+  --control-radius: var(--control-small-radius);
+  --control-font-family: var(--control-small-content-font-family);
+  --control-font-size: var(--control-small-content-font-size);
+  --control-font-weight: var(--control-small-content-font-weight);
+  --control-line-height: var(--control-small-content-line-height);
+}
+
+[data-size='medium'] {
+  --control-size: var(--control-medium-size);
+  --control-gap: var(--control-medium-gap);
+  --control-padding-block: var(--control-medium-padding-block);
+  --control-padding-inline: var(--control-medium-padding-inline);
+  --control-radius: var(--control-medium-radius);
+  --control-font-family: var(--control-medium-content-font-family);
+  --control-font-size: var(--control-medium-content-font-size);
+  --control-font-weight: var(--control-medium-content-font-weight);
+  --control-line-height: var(--control-medium-content-line-height);
+}
+
+[data-size='large'] {
+  --control-size: var(--control-large-size);
+  --control-gap: var(--control-large-gap);
+  --control-padding-block: var(--control-large-padding-block);
+  --control-padding-inline: var(--control-large-padding-inline);
+  --control-radius: var(--control-large-radius);
+  --control-font-family: var(--control-large-content-font-family);
+  --control-font-size: var(--control-large-content-font-size);
+  --control-font-weight: var(--control-large-content-font-weight);
+  --control-line-height: var(--control-large-content-line-height);
+}
+
+[data-size='big'] {
+  --control-size: var(--control-big-size);
+  --control-gap: var(--control-big-gap);
+  --control-padding-block: var(--control-big-padding-block);
+  --control-padding-inline: var(--control-big-padding-inline);
+  --control-radius: var(--control-big-radius);
+  --control-font-family: var(--control-big-content-font-family);
+  --control-font-size: var(--control-big-content-font-size);
+  --control-font-weight: var(--control-big-content-font-weight);
+  --control-line-height: var(--control-big-content-line-height);
+}
+
 [data-control][data-variant='normal'] {
   --control-surface: var(--control-color-normal-surface-normal);
   --control-content: var(--control-color-normal-content-normal);

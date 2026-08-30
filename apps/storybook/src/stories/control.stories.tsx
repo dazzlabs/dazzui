@@ -16,7 +16,16 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 const SIZES = ['tiny', 'small', 'medium', 'large', 'big']
-const METRICS = ['size', 'gap', 'padding-block', 'padding-inline']
+const METRICS = [
+  'size',
+  'gap',
+  'padding-block',
+  'padding-inline',
+  'radius',
+  'content-font-size',
+  'content-font-weight',
+  'content-line-height',
+]
 
 const VARIANTS = ['normal', 'filled', 'tinted', 'outlined', 'plain']
 const PARTS = ['surface', 'content', 'border']
@@ -89,7 +98,7 @@ export const Sizing: Story = {
   render: () => (
     <Page
       title="Control sizing"
-      description="The shared sizing scale every interactive control is built from. Button, checkbox, and badge tokens all alias these values rather than defining their own."
+      description="The shared size profile every sized control is built from. The build binds each row onto [data-size] as --control-size, --control-gap, --control-padding-*, --control-radius, and --control-font-*, so component stylesheets read those instead of declaring their own."
     >
       <Section title="Metrics">
         <div className="dt-table__scroll">

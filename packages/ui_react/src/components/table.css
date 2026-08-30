@@ -10,22 +10,22 @@
 
 .dz-table__head {
   display: flex;
-  padding-inline: var(--table-row-padding-inline);
-  background-color: var(--table-head-surface);
-  border-bottom: var(--spacing-px) solid var(--table-border);
+  padding-inline: var(--spacing-5);
+  background-color: var(--color-surface-muted);
+  border-bottom: var(--spacing-px) solid var(--color-border);
 }
 
 .dz-table__row {
   display: flex;
   align-items: center;
-  padding-block: var(--table-row-padding-block);
-  padding-inline: var(--table-row-padding-inline);
-  border-bottom: var(--spacing-px) solid var(--table-border);
+  padding-block: var(--spacing-3);
+  padding-inline: var(--spacing-5);
+  border-bottom: var(--spacing-px) solid var(--color-border);
   text-align: left;
-  font-family: var(--table-row-content-font-family);
-  font-size: var(--table-row-content-font-size);
-  font-weight: var(--table-row-content-font-weight);
-  line-height: var(--table-row-content-line-height);
+  font-family: var(--body-small-font-family);
+  font-size: var(--body-small-font-size);
+  font-weight: var(--body-small-font-weight);
+  line-height: var(--body-small-line-height);
 }
 
 .dz-table__row:last-child {
@@ -62,10 +62,10 @@
 }
 
 .dz-table__cell[data-head='true'] {
-  padding-block: var(--table-head-padding-block);
+  padding-block: var(--spacing-2);
   color: var(--color-content-muted);
-  font-family: var(--table-head-content-font-family);
-  font-size: var(--table-head-content-font-size);
-  font-weight: var(--table-head-content-font-weight);
-  line-height: var(--table-head-content-line-height);
+  font-family: var(--label-small-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--label-small-font-weight);
+  line-height: var(--label-small-line-height);
 }

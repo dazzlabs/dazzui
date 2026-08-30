@@ -1,0 +1,4 @@
+shortcut-recorder:
+  width:
+    $type: dimension
+    $value: 8.25rem

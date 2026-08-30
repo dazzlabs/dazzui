@@ -41,42 +41,24 @@
  * the glyphs. A genuinely inline affordance is a link, not a button.
  */
 
-/* Sizes ------------------------------------------------------------------- */
+/* Sizes -------------------------------------------------------------------
+ * Geometry and type both come off the shared size profile that `[data-size]`
+ * binds, with no per-size block at all. The profile carries the design's own
+ * control type — 11px on the smallest step and 12px from there up — so a
+ * button that re-pointed its type would be running a step ahead of every
+ * other control on the same row.
+ */
 
-.dz-button[data-size='small'] {
-  height: var(--button-small-size);
-  gap: var(--button-small-gap);
-  padding-block: var(--button-small-padding-block);
-  padding-inline: var(--button-small-padding-inline);
-  border-radius: var(--button-small-radius);
-  font-family: var(--button-small-content-font-family);
-  font-size: var(--button-small-content-font-size);
-  font-weight: var(--button-small-content-font-weight);
-  line-height: var(--button-small-content-line-height);
-}
-
-.dz-button[data-size='medium'] {
-  height: var(--button-medium-size);
-  gap: var(--button-medium-gap);
-  padding-block: var(--button-medium-padding-block);
-  padding-inline: var(--button-medium-padding-inline);
-  border-radius: var(--button-medium-radius);
-  font-family: var(--button-medium-content-font-family);
-  font-size: var(--button-medium-content-font-size);
-  font-weight: var(--button-medium-content-font-weight);
-  line-height: var(--button-medium-content-line-height);
-}
-
-.dz-button[data-size='large'] {
-  height: var(--button-large-size);
-  gap: var(--button-large-gap);
-  padding-block: var(--button-large-padding-block);
-  padding-inline: var(--button-large-padding-inline);
-  border-radius: var(--button-large-radius);
-  font-family: var(--button-large-content-font-family);
-  font-size: var(--button-large-content-font-size);
-  font-weight: var(--button-large-content-font-weight);
-  line-height: var(--button-large-content-line-height);
+.dz-button {
+  height: var(--control-size);
+  gap: var(--control-gap);
+  padding-block: var(--control-padding-block);
+  padding-inline: var(--control-padding-inline);
+  border-radius: var(--control-radius);
+  font-family: var(--control-font-family);
+  font-size: var(--control-font-size);
+  font-weight: var(--control-font-weight);
+  line-height: var(--control-line-height);
 }
 
 /* A trailing shortcut is a hint, not part of the label. */

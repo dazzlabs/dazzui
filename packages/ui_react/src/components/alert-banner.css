@@ -40,67 +40,70 @@
   margin-inline-start: auto;
 }
 
-/* Sizes ------------------------------------------------------------------- */
+/* Sizes -------------------------------------------------------------------
+ * A banner is not a control, so it reads the shared profile steps directly
+ * rather than opting into the `[data-size]` bindings.
+ */
 
 .dz-alert-banner[data-size='small'] {
-  padding-block: var(--alert-banner-small-padding-block);
-  padding-inline: var(--alert-banner-small-padding-inline);
-  border-radius: var(--alert-banner-small-radius);
-  gap: var(--alert-banner-small-gap);
+  padding-block: var(--control-small-padding-block);
+  padding-inline: var(--control-small-padding-inline);
+  border-radius: var(--radius-small);
+  gap: var(--control-small-gap);
 }
 
 .dz-alert-banner[data-size='small'] .dz-alert-banner__title {
-  font-family: var(--alert-banner-small-title-font-family);
-  font-size: var(--alert-banner-small-title-font-size);
-  font-weight: var(--alert-banner-small-title-font-weight);
-  line-height: var(--alert-banner-small-title-line-height);
+  font-family: var(--title-small-font-family);
+  font-size: var(--title-small-font-size);
+  font-weight: var(--title-small-font-weight);
+  line-height: var(--title-small-line-height);
 }
 
 .dz-alert-banner[data-size='small'] .dz-alert-banner__description {
-  font-family: var(--alert-banner-small-description-font-family);
-  font-size: var(--alert-banner-small-description-font-size);
-  font-weight: var(--alert-banner-small-description-font-weight);
-  line-height: var(--alert-banner-small-description-line-height);
+  font-family: var(--body-small-font-family);
+  font-size: var(--body-small-font-size);
+  font-weight: var(--body-small-font-weight);
+  line-height: var(--body-small-line-height);
 }
 
 .dz-alert-banner[data-size='medium'] {
-  padding-block: var(--alert-banner-medium-padding-block);
-  padding-inline: var(--alert-banner-medium-padding-inline);
-  border-radius: var(--alert-banner-medium-radius);
-  gap: var(--alert-banner-medium-gap);
+  padding-block: var(--control-medium-padding-block);
+  padding-inline: var(--control-medium-padding-inline);
+  border-radius: var(--radius-medium);
+  gap: var(--control-medium-gap);
 }
 
 .dz-alert-banner[data-size='medium'] .dz-alert-banner__title {
-  font-family: var(--alert-banner-medium-title-font-family);
-  font-size: var(--alert-banner-medium-title-font-size);
-  font-weight: var(--alert-banner-medium-title-font-weight);
-  line-height: var(--alert-banner-medium-title-line-height);
+  font-family: var(--title-medium-font-family);
+  font-size: var(--title-medium-font-size);
+  font-weight: var(--title-medium-font-weight);
+  line-height: var(--title-medium-line-height);
 }
 
 .dz-alert-banner[data-size='medium'] .dz-alert-banner__description {
-  font-family: var(--alert-banner-medium-description-font-family);
-  font-size: var(--alert-banner-medium-description-font-size);
-  font-weight: var(--alert-banner-medium-description-font-weight);
-  line-height: var(--alert-banner-medium-description-line-height);
+  font-family: var(--body-medium-font-family);
+  font-size: var(--body-medium-font-size);
+  font-weight: var(--body-medium-font-weight);
+  line-height: var(--body-medium-line-height);
 }
 
 .dz-alert-banner[data-size='large'] {
-  padding-block: var(--alert-banner-large-padding-block);
-  padding-inline: var(--alert-banner-large-padding-inline);
-  border-radius: var(--alert-banner-large-radius);
-  gap: var(--alert-banner-large-gap);
+  padding-block: var(--control-large-padding-block);
+  padding-inline: var(--control-large-padding-inline);
+  border-radius: var(--radius-large);
+  gap: var(--control-large-gap);
 }
 
 .dz-alert-banner[data-size='large'] .dz-alert-banner__title {
-  font-family: var(--alert-banner-large-title-font-family);
-  font-size: var(--alert-banner-large-title-font-size);
-  font-weight: var(--alert-banner-large-title-font-weight);
-  line-height: var(--alert-banner-large-title-line-height);
+  font-family: var(--title-large-font-family);
+  font-size: var(--title-large-font-size);
+  font-weight: var(--title-large-font-weight);
+  line-height: var(--title-large-line-height);
 }
 
 .dz-alert-banner[data-size='large'] .dz-alert-banner__description {
-  font-family: var(--alert-banner-large-description-font-family);
-  font-size: var(--alert-banner-large-description-font-size);
-  font-weight: var(--alert-banner-large-description-font-weight);
-  line-height: var(--alert-banner-large-description-line-height);
+  font-family: var(--body-large-font-family);
+  font-size: var(--body-large-font-size);
+  font-weight: var(--body-large-font-weight);
+  line-height: var(--body-large-line-height);
 }

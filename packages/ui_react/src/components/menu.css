@@ -7,12 +7,12 @@
   position: absolute;
   top: 100%;
   z-index: 20;
-  margin-top: var(--menu-offset);
-  padding: var(--menu-padding);
-  background-color: var(--menu-surface);
-  border: var(--spacing-px) solid var(--menu-border);
-  border-radius: var(--menu-radius);
-  box-shadow: var(--menu-elevation);
+  margin-top: var(--spacing-1);
+  padding: var(--spacing-1);
+  background-color: var(--color-surface);
+  border: var(--spacing-px) solid var(--color-border);
+  border-radius: var(--radius-medium);
+  box-shadow: var(--shadow-lg);
 }
 
 .dz-menu__panel[data-align='start'] {
@@ -23,24 +23,28 @@
   right: 0;
 }
 
+/*
+ * A menu item is always small-profile shaped — it does not carry `data-size`,
+ * so it reads the small profile's steps explicitly rather than the bindings.
+ */
 .dz-menu__item {
   display: flex;
   align-items: center;
-  gap: var(--menu-item-gap);
+  gap: var(--control-small-gap);
   width: 100%;
-  padding-block: var(--menu-item-padding-block);
-  padding-inline: var(--menu-item-padding-inline);
+  padding-block: var(--control-small-padding-block);
+  padding-inline: var(--spacing-2);
   border: 0;
-  border-radius: var(--menu-item-radius);
+  border-radius: var(--radius-small);
   background: none;
   color: var(--color-content);
   text-align: left;
   white-space: nowrap;
   cursor: pointer;
-  font-family: var(--menu-item-content-font-family);
-  font-size: var(--menu-item-content-font-size);
-  font-weight: var(--menu-item-content-font-weight);
-  line-height: var(--menu-item-content-line-height);
+  font-family: var(--label-small-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--label-small-font-weight);
+  line-height: var(--label-small-line-height);
 }
 
 /*

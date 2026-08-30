@@ -7,11 +7,11 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: var(--option-card-gap);
-  padding-block: var(--option-card-padding-block);
-  padding-inline: var(--option-card-padding-inline);
+  gap: var(--spacing-1);
+  padding-block: var(--spacing-3);
+  padding-inline: var(--spacing-3);
   border: var(--spacing-px) solid var(--color-border);
-  border-radius: var(--option-card-radius);
+  border-radius: var(--radius-medium);
   background-color: var(--color-surface);
   text-align: left;
   cursor: pointer;
@@ -44,16 +44,16 @@
 
 .dz-option-card__title {
   color: var(--color-content);
-  font-family: var(--option-card-title-font-family);
-  font-size: var(--option-card-title-font-size);
-  font-weight: var(--option-card-title-font-weight);
-  line-height: var(--option-card-title-line-height);
+  font-family: var(--label-small-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--label-small-font-weight);
+  line-height: var(--label-small-line-height);
 }
 
 .dz-option-card__description {
   color: var(--color-content-muted);
-  font-family: var(--option-card-description-font-family);
-  font-size: var(--option-card-description-font-size);
-  font-weight: var(--option-card-description-font-weight);
-  line-height: var(--option-card-description-line-height);
+  font-family: var(--caption-medium-font-family);
+  font-size: var(--caption-medium-font-size);
+  font-weight: var(--caption-medium-font-weight);
+  line-height: var(--caption-medium-line-height);
 }

@@ -1,20 +1,20 @@
 .dz-progress {
   width: 100%;
   overflow: hidden;
-  background-color: var(--progress-track);
-  border-radius: var(--progress-radius);
+  background-color: var(--color-surface-sunken);
+  border-radius: var(--radius-full);
 }
 
 .dz-progress[data-size='small'] {
-  height: var(--progress-small-size);
+  height: var(--spacing-1);
 }
 
 .dz-progress[data-size='medium'] {
-  height: var(--progress-medium-size);
+  height: var(--spacing-1-5);
 }
 
 .dz-progress[data-size='large'] {
-  height: var(--progress-large-size);
+  height: var(--spacing-2);
 }
 
 .dz-progress__fill {

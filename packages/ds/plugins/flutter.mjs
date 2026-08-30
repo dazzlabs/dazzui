@@ -1,8 +1,14 @@
+import YAML from 'yaml'
+
 /**
  * Terrazzo plugin to generate Flutter design tokens
  * Generates Dart code with proper type conversions for Flutter
  */
 class FlutterPlugin {
+  constructor(options = {}) {
+    this.modeSelectors = options.modeSelectors ?? []
+  }
+
   get name() {
     return '@dazzlabs/dazzui-ds-plugin-flutter'
   }
@@ -15,7 +21,11 @@ class FlutterPlugin {
     outputFile('flutter/colors.dart', colorsCode)
 
     // Generate theme_variables.dart file
-    const themeVariablesCode = generateThemeVariablesFile(tokens, sources)
+    const themeVariablesCode = generateThemeVariablesFile(
+      tokens,
+      sources,
+      this.modeSelectors
+    )
     outputFile('flutter/theme_variables.dart', themeVariablesCode)
   }
 }
@@ -24,32 +34,31 @@ class FlutterPlugin {
  * Create a Flutter plugin instance
  * Generates colors.dart and theme_variables.dart files
  */
-export default function flutterPlugin() {
-  return new FlutterPlugin()
+export default function flutterPlugin(options) {
+  return new FlutterPlugin(options)
 }
 
 /**
- * Generate colors.dart file from tokens/global/_base.json (base.color.*)
+ * Generate colors.dart file from tokens/global/_base.yaml (base.color.*)
  */
 function generateColorsFile(tokens, sources) {
   const colorTokens = []
 
-  // Filter tokens from tokens/global/_base.json (base.color.<name>.<shade>)
+  // Every `base.color.<name>.<shade>` in the graph becomes a swatch, from
+  // whichever file declares it. The primitive layer is two files — the
+  // generated `_base.yaml` and the hand-authored `_design.yaml` that adds
+  // the brand ramp — and a semantic token aliasing a ramp is emitted as
+  // `Colors.<ramp>[<shade>]!`, so a ramp this misses is a dangling
+  // reference in the generated Dart rather than a missing convenience.
   for (const source of sources || []) {
-    const filename = String(source.filename || '')
-    const normalizedPath = filename.replace(/\\/g, '/').replace('file://', '')
-
-    if (normalizedPath.includes('/tokens/global/_base.json')) {
-      try {
-        const sourceTokens = JSON.parse(source.src)
-        const baseColors = sourceTokens?.base?.color
-        if (baseColors && typeof baseColors === 'object') {
-          collectColorTokens(baseColors, 'base.color', colorTokens, tokens)
-        }
-      } catch (e) {
-        console.warn('Failed to parse _base.json for colors', e.message)
+    try {
+      const sourceTokens = YAML.parse(source.src)
+      const baseColors = sourceTokens?.base?.color
+      if (baseColors && typeof baseColors === 'object') {
+        collectColorTokens(baseColors, 'base.color', colorTokens, tokens)
       }
-      break
+    } catch (e) {
+      console.warn(`Failed to parse ${source.filename} for colors`, e.message)
     }
   }
 
@@ -167,7 +176,7 @@ function capitalize(str) {
 /**
  * Generate theme_variables.dart file
  */
-function generateThemeVariablesFile(tokens, sources) {
+function generateThemeVariablesFile(tokens, sources, modeSelectors = []) {
   const className = 'ThemeVariables'
   const imports = `import 'package:flutter/widgets.dart';
 import '../foundation/color_descriptor.dart';
@@ -194,7 +203,208 @@ ${fields}
 
 /// Global instance of ${className}
 const ${className.charAt(0).toLowerCase() + className.slice(1)} = ${className}();
-`
+${generateThemeInstances(tokens, modeSelectors)}`
+}
+
+const PALETTE_SHADE = /^color\.([^.]+)\.(\d+)$/
+
+/** `"{base.color.ink.600}"` -> `base.color.ink.600`, or null if not a ref. */
+function extractRefId(value) {
+  if (typeof value !== 'string') return null
+  const match = value.match(/^\{(.+)\}$/)
+  return match ? match[1] : null
+}
+
+const DARK_RECIPE_LEAF =
+  /^(control\.color\.[^.]+\.[^.]+)\.(normal|hovered|pressed|disabled)\.(shade|alpha)$/
+
+/** Opacities are written with a decimal point so Dart reads them as double. */
+function formatOpacity(value) {
+  const num = Number(value)
+  return num === Math.floor(num) ? `${num}.0` : String(num)
+}
+
+/**
+ * Which modes apply to each theme, in the order they would cascade in CSS.
+ *
+ * The themes are read back out of the same `modeSelectors` the stylesheets
+ * use, so the two platforms cannot drift: a theme selected by two modes gets
+ * both, later-wins, exactly as the equal-specificity CSS blocks would.
+ *
+ * `[data-theme='bright-dark']` -> ['bright', 'dark', 'bright-dark']
+ */
+function collectThemes(modeSelectors) {
+  const themes = new Map()
+
+  for (const { mode, selectors = [] } of modeSelectors) {
+    for (const selector of selectors) {
+      const match = /\[data-theme='([^']+)'\]/.exec(selector)
+      if (!match) continue
+      const name = match[1]
+      if (!themes.has(name)) themes.set(name, [])
+      themes.get(name).push(mode)
+    }
+  }
+  return themes
+}
+
+/** `bright-dark` -> `themeVariablesBrightDark`. */
+function themeInstanceName(theme) {
+  const suffix = theme
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('')
+  return `themeVariables${suffix}`
+}
+
+/** The value a token takes under one theme, or undefined if it never moves. */
+function valueForTheme(token, modes) {
+  let picked
+  for (const mode of modes) {
+    if (token.mode?.[mode]) picked = token.mode[mode]
+  }
+  return picked
+}
+
+/**
+ * One `ThemeVariables` instance per theme, beside the default.
+ *
+ * Dart has no cascade, so each instance is resolved whole rather than
+ * layered: a theme's mode chain is collapsed here, later mode winning, and
+ * only the tokens that actually move under it are named. Everything else
+ * falls through to the constructor default, and anything derived — the
+ * getters over these fields — follows on its own, because it reads the same
+ * instance rather than a captured value.
+ *
+ * The interactive recipes are the exception that has to be rebuilt rather
+ * than inherited: a `ColorDescriptor` is one const holding four states, so
+ * re-picking a single state's shade means re-emitting the whole descriptor,
+ * each state taking its themed shade where it has one and the default
+ * where it does not.
+ */
+function generateThemeInstances(tokens, modeSelectors) {
+  const themes = collectThemes(modeSelectors)
+  if (themes.size === 0) return ''
+
+  const blocks = []
+
+  // A ramp is one `ColorSwatch<int>` field rather than eleven `Color`s, so a
+  // theme that re-points a whole ramp has to re-point that one field. Any
+  // ramp whose every step moves to the same base ramp is emitted that way;
+  // one that moved only some of its steps has no field to assign and is
+  // reported rather than emitted as parameters that do not exist.
+  const rampSizes = new Map()
+  for (const id of Object.keys(tokens)) {
+    const palette = PALETTE_SHADE.exec(id)
+    if (palette) {
+      rampSizes.set(palette[1], (rampSizes.get(palette[1]) ?? 0) + 1)
+    }
+  }
+
+  for (const [theme, modes] of themes) {
+    const overrides = []
+    const descriptorBases = new Set()
+    const rampTargets = new Map()
+
+    for (const [id, token] of Object.entries(tokens)) {
+      if (id.startsWith('base.')) continue
+
+      const palette = PALETTE_SHADE.exec(id)
+      if (palette) {
+        const themed = valueForTheme(token, modes)
+        if (!themed) continue
+        const ref = extractRefId(themed.originalValue ?? themed.$value)
+        const base = ref && /^base\.color\.([^.]+)\.\d+$/.exec(ref)
+        let target = rampTargets.get(palette[1])
+        if (!target) {
+          target = { bases: new Set(), moved: 0 }
+          rampTargets.set(palette[1], target)
+        }
+        target.bases.add(base ? base[1] : null)
+        target.moved += 1
+        continue
+      }
+
+      const leaf = DARK_RECIPE_LEAF.exec(id)
+      if (leaf) {
+        if (valueForTheme(token, modes)) descriptorBases.add(leaf[1])
+        continue
+      }
+
+      const themed = valueForTheme(token, modes)
+      if (!themed) continue
+
+      const value = convertTokenValue(
+        {
+          ...token,
+          $value: themed.$value,
+          $originalValue: themed.originalValue ?? themed.$value,
+        },
+        tokens
+      )
+      overrides.push(`  ${tokenIdToVarName(id)}: ${value.value},`)
+    }
+
+    for (const [group, target] of [...rampTargets].sort()) {
+      const [base] = [...target.bases]
+      if (
+        target.bases.size !== 1 ||
+        base === null ||
+        target.moved !== rampSizes.get(group)
+      ) {
+        console.warn(
+          `Ramp color.${group} moves only part-way under "${theme}"; ` +
+            'a ramp is one ColorSwatch field, so it has to move whole. ' +
+            'Skipping it in the generated Dart.'
+        )
+        continue
+      }
+      overrides.push(`  color${capitalize(group)}: Colors.${base},`)
+    }
+
+    for (const baseId of [...descriptorBases].sort()) {
+      const params = []
+      for (const state of ['normal', 'hovered', 'pressed', 'disabled']) {
+        const shade = tokens[`${baseId}.${state}.shade`]
+        const alpha = tokens[`${baseId}.${state}.alpha`]
+        if (shade) {
+          const themed = valueForTheme(shade, modes)
+          params.push(`    ${state}Shade: ${themed?.$value ?? shade.$value},`)
+        }
+        if (alpha) {
+          const themed = valueForTheme(alpha, modes)
+          params.push(
+            `    ${state}Opacity: ${formatOpacity(
+              themed?.$value ?? alpha.$value
+            )},`
+          )
+        }
+      }
+      if (params.length === 0) continue
+
+      overrides.push(
+        `  ${tokenIdToVarName(baseId)}: ColorDescriptor(`,
+        ...params,
+        `  ),`
+      )
+    }
+
+    if (overrides.length === 0) continue
+
+    blocks.push(`
+/// The \`${theme}\` counterpart of [themeVariables].
+///
+/// Every token that moves under this theme is named here; the rest fall
+/// through to the default, and the derived getters follow this instance.
+/// DO NOT EDIT - This file is auto-generated
+const ${themeInstanceName(theme)} = ThemeVariables(
+${overrides.join('\n')}
+);
+`)
+  }
+
+  return blocks.join('')
 }
 
 /**
@@ -213,7 +423,7 @@ function categorizeTokensBySource(tokens, sources) {
       const normalizedPath = filename.replace(/\\/g, '/').replace('file://', '')
 
       // Extract category and subcategory from path
-      // Example: /path/to/tokens/global/_base.json
+      // Example: /path/to/tokens/global/_base.yaml
       const tokensIndex = normalizedPath.lastIndexOf('/tokens/')
       if (tokensIndex !== -1) {
         const pathAfterTokens = normalizedPath.substring(
@@ -221,16 +431,15 @@ function categorizeTokensBySource(tokens, sources) {
         )
         const parts = pathAfterTokens.split('/')
 
-        // Last part is filename.json
-        const filename = parts[parts.length - 1].replace('.json', '')
+        // Last part is filename.yaml
+        const filename = parts[parts.length - 1].replace(/\.ya?ml$/, '')
         const categoryParts = parts.slice(0, -1) // Everything except the filename
         const categoryPath = categoryParts.join('/')
         const subcategory = filename
 
         if (categoryPath && subcategory) {
           try {
-            // Parse the JSON source
-            const sourceTokens = JSON.parse(source.src)
+            const sourceTokens = YAML.parse(source.src)
 
             // Recursively collect all token IDs from this source
             const collectTokenIds = (obj, prefix = '') => {
@@ -990,16 +1199,27 @@ function generateClassContent(categories, allTokens) {
               targetFieldSections.push(`  ${group.comment}`)
             }
 
-            // NOTE:
-            // `control.color.normal.{surface,content,border}` depend on semantic color tokens
-            // (e.g. `color.surface`, `color.content`, `color.border`). If we emit them as
-            // constructor-initialized `final` fields, we end up needing a `const
-            // ColorDescriptor(...)` initializer, which can't reference other (non-const)
-            // instance fields. Emit these as getters instead.
-            const shouldEmitAsGetter =
-              baseId === 'control.color.normal.surface' ||
-              baseId === 'control.color.normal.content' ||
-              baseId === 'control.color.normal.border'
+            // A recipe naming a semantic colour — `{color.surface}` for the
+            // neutral control, `{color.on-accent}` for what a filled one
+            // prints — resolves to another field on this same class. A
+            // `const ColorDescriptor(...)` in the constructor's initialiser
+            // list cannot reach an instance member, so those are emitted as
+            // getters instead. The test is what the recipe references rather
+            // than which recipe it is: a semantic role added to any variant
+            // has to land on the same side of this line.
+            const shouldEmitAsGetter = [
+              'normal',
+              'hovered',
+              'pressed',
+              'disabled',
+            ].some(state => {
+              const colorToken = group[state].color
+              if (!colorToken) return false
+              const ref = extractRefId(
+                colorToken.$originalValue ?? colorToken.$value
+              )
+              return ref !== null && !ref.startsWith('base.')
+            })
 
             if (!shouldEmitAsGetter) {
               targetFieldSections.push(`  final ColorDescriptor ${varName};`)
@@ -1621,16 +1841,32 @@ function convertColorValue(value) {
       } else if (hex.length === 6) {
         return `Color(0xFF${hex})`
       } else if (hex.length === 8) {
-        // RGBA format
-        return `Color(0x${hex})`
+        // CSS writes the alpha last (#rrggbbaa); Dart's literal puts it
+        // first (0xAARRGGBB). Passing the hex through unswapped reads the
+        // red channel as the alpha, which silently turns a 7%-black
+        // hairline into a near-opaque slab.
+        const rgb = hex.slice(0, 6)
+        const alpha = hex.slice(6, 8)
+        return `Color(0x${alpha}${rgb})`
       }
     }
     return `Color(0xFF000000) // TODO: Parse ${value}`
   }
 
   if (typeof value === 'object' && value.colorSpace) {
-    // Convert OKLCH to RGB
-    const rgb = oklchToRgb(value)
+    // Terrazzo normalises a token's colour into whichever space it was
+    // written in, so the space has to be read rather than assumed. A hex
+    // literal arrives as sRGB and its components are already the channels;
+    // running those through the OKLCH conversion reads lightness off the
+    // red channel and turns white into magenta.
+    const rgb =
+      value.colorSpace === 'srgb'
+        ? {
+            r: value.components[0],
+            g: value.components[1],
+            b: value.components[2],
+          }
+        : oklchToRgb(value)
     const alpha = Math.round((value.alpha ?? 1) * 255)
     const r = Math.round(rgb.r * 255)
     const g = Math.round(rgb.g * 255)

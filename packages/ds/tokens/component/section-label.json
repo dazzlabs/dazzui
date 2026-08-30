@@ -1,8 +1,0 @@
-{
-  "section-label": {
-    "content": {
-      "$type": "typography",
-      "$value": "{labelSmall}"
-    }
-  }
-}

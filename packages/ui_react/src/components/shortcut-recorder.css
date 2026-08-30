@@ -8,21 +8,21 @@
 }
 
 .dz-shortcut-recorder__button {
-  height: var(--shortcut-recorder-size);
+  height: var(--control-medium-size);
   min-width: var(--shortcut-recorder-width);
-  padding-inline: var(--shortcut-recorder-padding-inline);
+  padding-inline: var(--control-medium-padding-inline);
   border: var(--spacing-px) solid var(--control-color-normal-border-normal);
-  border-radius: var(--shortcut-recorder-radius);
+  border-radius: var(--radius-medium);
   background-color: var(--control-color-normal-surface-normal);
   color: var(--control-color-normal-content-normal);
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
   outline: none;
-  font-family: var(--shortcut-recorder-content-font-family);
-  font-size: var(--shortcut-recorder-content-font-size);
-  font-weight: var(--shortcut-recorder-content-font-weight);
-  line-height: var(--shortcut-recorder-content-line-height);
+  font-family: var(--label-small-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--label-small-font-weight);
+  line-height: var(--label-small-line-height);
 }
 
 /* Unbound, or waiting with nothing held: the label is a prompt, not a value. */

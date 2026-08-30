@@ -10,17 +10,17 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  width: var(--sidebar-width);
-  background-color: var(--sidebar-surface);
-  border-inline-end: var(--spacing-px) solid var(--sidebar-border);
+  width: var(--frame-sidebar-width);
+  background-color: var(--color-surface-muted);
+  border-inline-end: var(--spacing-px) solid var(--color-border);
 }
 
 .dz-sidebar__header {
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  height: var(--sidebar-header-size);
-  padding-inline: var(--sidebar-header-padding-inline);
+  height: var(--frame-titlebar-size);
+  padding-inline: var(--spacing-4);
 }
 
 /* Only the row list scrolls, so a pinned card stays put. */
@@ -29,17 +29,17 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  gap: var(--sidebar-gap);
+  gap: var(--spacing-1);
   overflow-y: auto;
-  padding-block: var(--sidebar-padding-block);
-  padding-inline: var(--sidebar-padding-inline);
+  padding-block: var(--spacing-3-5);
+  padding-inline: var(--spacing-2-5);
 }
 
 .dz-sidebar-group {
   display: flex;
   flex-direction: column;
-  gap: var(--sidebar-gap);
-  margin-top: var(--sidebar-group-gap);
+  gap: var(--spacing-1);
+  margin-top: var(--spacing-3-5);
 }
 
 /* The gap between groups does the work; the first one needs none. */
@@ -50,19 +50,19 @@
 .dz-sidebar-group__label,
 .dz-rail-group__label {
   padding-block: var(--spacing-1);
-  padding-inline: var(--sidebar-padding-inline);
+  padding-inline: var(--spacing-2-5);
 }
 
 .dz-sidebar-card {
   display: flex;
   flex-direction: column;
-  gap: var(--sidebar-card-gap);
+  gap: var(--spacing-2);
   /* Pinned to the foot of the column, whatever the list above it does. */
   margin-top: auto;
-  padding: var(--sidebar-card-padding);
-  background-color: var(--sidebar-card-surface);
-  border: var(--spacing-px) solid var(--sidebar-card-border);
-  border-radius: var(--sidebar-card-radius);
+  padding: var(--spacing-3);
+  background-color: var(--color-surface);
+  border: var(--spacing-px) solid var(--color-border);
+  border-radius: var(--radius-medium);
 }
 
 /*
@@ -74,8 +74,8 @@
   position: absolute;
   inset-block: 0;
   z-index: 10;
-  width: var(--sidebar-resizer-size);
-  inset-inline-end: calc(var(--sidebar-resizer-size) / -2);
+  width: var(--spacing-2);
+  inset-inline-end: calc(var(--spacing-2) / -2);
   cursor: col-resize;
   touch-action: none;
   outline: none;
@@ -85,7 +85,7 @@
   content: '';
   position: absolute;
   inset-block: 0;
-  inset-inline-end: calc(var(--sidebar-resizer-size) / 2);
+  inset-inline-end: calc(var(--spacing-2) / 2);
   width: var(--spacing-px);
   background-color: var(--tint-600);
   opacity: 0;

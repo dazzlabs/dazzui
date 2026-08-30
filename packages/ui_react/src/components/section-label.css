@@ -5,10 +5,10 @@
 .dz-section-label {
   display: inline-block;
   color: var(--color-content-muted);
-  font-family: var(--section-label-content-font-family);
-  font-size: var(--section-label-content-font-size);
-  font-weight: var(--section-label-content-font-weight);
-  line-height: var(--section-label-content-line-height);
+  font-family: var(--label-small-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--label-small-font-weight);
+  line-height: var(--label-small-line-height);
 }
 
 /* Set only when the caller asks for a tint, so the untinted label keeps the

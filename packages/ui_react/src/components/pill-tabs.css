@@ -4,18 +4,28 @@
  * a target at all.
  */
 .dz-pill-tabs {
+  /* A pill is a capsule whatever its size, so the bound radius is re-pointed
+     once rather than per size. */
+  --control-radius: var(--radius-full);
+
   display: flex;
   align-items: center;
-  gap: var(--pill-tabs-gap);
+  gap: var(--spacing-2);
   flex-wrap: wrap;
 }
 
 .dz-pill-tabs__tab {
   display: inline-flex;
   align-items: center;
+  height: var(--control-size);
   gap: var(--control-tiny-gap);
+  padding-inline: var(--control-padding-inline);
+  font-family: var(--control-font-family);
+  font-size: var(--control-font-size);
+  font-weight: var(--control-font-weight);
+  line-height: var(--control-line-height);
   border: 0;
-  border-radius: var(--pill-tabs-radius);
+  border-radius: var(--control-radius);
   background-color: var(--color-surface-muted);
   color: var(--color-content-muted);
   white-space: nowrap;
@@ -48,31 +58,4 @@
 .dz-pill-tabs__count {
   opacity: 0.7;
   font-variant-numeric: tabular-nums;
-}
-
-.dz-pill-tabs[data-size='small'] .dz-pill-tabs__tab {
-  height: var(--pill-tabs-small-size);
-  padding-inline: var(--pill-tabs-small-padding-inline);
-  font-family: var(--pill-tabs-small-content-font-family);
-  font-size: var(--pill-tabs-small-content-font-size);
-  font-weight: var(--pill-tabs-small-content-font-weight);
-  line-height: var(--pill-tabs-small-content-line-height);
-}
-
-.dz-pill-tabs[data-size='medium'] .dz-pill-tabs__tab {
-  height: var(--pill-tabs-medium-size);
-  padding-inline: var(--pill-tabs-medium-padding-inline);
-  font-family: var(--pill-tabs-medium-content-font-family);
-  font-size: var(--pill-tabs-medium-content-font-size);
-  font-weight: var(--pill-tabs-medium-content-font-weight);
-  line-height: var(--pill-tabs-medium-content-line-height);
-}
-
-.dz-pill-tabs[data-size='large'] .dz-pill-tabs__tab {
-  height: var(--pill-tabs-large-size);
-  padding-inline: var(--pill-tabs-large-padding-inline);
-  font-family: var(--pill-tabs-large-content-font-family);
-  font-size: var(--pill-tabs-large-content-font-size);
-  font-weight: var(--pill-tabs-large-content-font-weight);
-  line-height: var(--pill-tabs-large-content-line-height);
 }

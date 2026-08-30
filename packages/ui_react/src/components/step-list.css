@@ -3,7 +3,7 @@
 .dz-step-list {
   display: flex;
   flex-direction: column;
-  gap: var(--step-list-gap);
+  gap: var(--spacing-2);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -12,11 +12,11 @@
 .dz-step {
   display: flex;
   align-items: center;
-  gap: var(--step-list-step-gap);
-  font-family: var(--step-list-step-content-font-family);
-  font-size: var(--step-list-step-content-font-size);
-  font-weight: var(--step-list-step-content-font-weight);
-  line-height: var(--step-list-step-content-line-height);
+  gap: var(--control-medium-gap);
+  font-family: var(--label-small-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--label-small-font-weight);
+  line-height: var(--label-small-line-height);
 }
 
 .dz-step[data-status='done'] {
@@ -38,21 +38,20 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: var(--step-list-marker-size);
-  height: var(--step-list-marker-size);
+  width: var(--spacing-4);
+  height: var(--spacing-4);
   border-radius: var(--radius-full);
 }
 
 /* Done is success wherever the list is tinted: a finished step is not a
    variation on the accent, it is the one fixed meaning in the column. */
 .dz-step[data-status='done'] .dz-step__marker {
-  background-color: var(--step-list-marker-done-surface);
-  color: var(--step-list-marker-done-content);
+  background-color: var(--color-success-100);
+  color: var(--color-success-600);
 }
 
 .dz-step[data-status='idle'] .dz-step__marker {
-  border: var(--step-list-marker-thickness) solid
-    var(--step-list-marker-idle-border);
+  border: var(--spacing-0-5) solid var(--color-border-muted);
 }
 
 .dz-step__label {
@@ -63,10 +62,10 @@
   flex-shrink: 0;
   margin-inline-start: auto;
   color: var(--color-content-muted);
-  font-family: var(--step-list-step-meta-font-family);
-  font-size: var(--step-list-step-meta-font-size);
-  font-weight: var(--step-list-step-meta-font-weight);
-  line-height: var(--step-list-step-meta-line-height);
+  font-family: var(--caption-medium-font-family);
+  font-size: var(--caption-medium-font-size);
+  font-weight: var(--caption-medium-font-weight);
+  line-height: var(--caption-medium-line-height);
 }
 
 .dz-step[data-status='active'] .dz-step__meta {

@@ -1,0 +1,134 @@
+# The type faces, drawn to AppKit's practical scale: 11 secondary ·
+# 12 small · 13 body · 15 emphasis · 17 title, carried on past 17 for the
+# headline and display faces the desktop chrome does not use.
+#
+# The `label` faces set their line-height to their own size. That is what a
+# control wants — its label does not wrap, and a leading taller than the cap
+# height pushes the text off the centre of a 26px box. Every other face pairs
+# its size with the comfortable leading, because its text does wrap.
+displaySmall:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.display}"
+    fontSize: "{base.type.4xl}"
+    fontWeight: "{base.font-weight.light}"
+    lineHeight: "{base.leading.4xl}"
+displayMedium:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.display}"
+    fontSize: "{base.type.5xl}"
+    fontWeight: "{base.font-weight.light}"
+    lineHeight: "{base.leading.5xl}"
+displayLarge:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.display}"
+    fontSize: "{base.type.6xl}"
+    fontWeight: "{base.font-weight.light}"
+    lineHeight: "{base.leading.6xl}"
+headlineSmall:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.display}"
+    fontSize: "{base.type.xl}"
+    fontWeight: "{base.font-weight.semibold}"
+    lineHeight: "{base.leading.xl}"
+headlineMedium:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.display}"
+    fontSize: "{base.type.2xl}"
+    fontWeight: "{base.font-weight.semibold}"
+    lineHeight: "{base.leading.2xl}"
+headlineLarge:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.display}"
+    fontSize: "{base.type.3xl}"
+    fontWeight: "{base.font-weight.semibold}"
+    lineHeight: "{base.leading.3xl}"
+titleSmall:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.ui}"
+    fontSize: "{base.type.body}"
+    fontWeight: "{base.font-weight.semibold}"
+    lineHeight: "{base.leading.body}"
+titleMedium:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.ui}"
+    fontSize: "{base.type.emphasis}"
+    fontWeight: "{base.font-weight.semibold}"
+    lineHeight: "{base.leading.emphasis}"
+titleLarge:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.ui}"
+    fontSize: "{base.type.title}"
+    fontWeight: "{base.font-weight.semibold}"
+    lineHeight: "{base.leading.title}"
+bodySmall:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.ui}"
+    fontSize: "{base.type.small}"
+    fontWeight: "{base.font-weight.normal}"
+    lineHeight: "{base.leading.small}"
+bodyMedium:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.ui}"
+    fontSize: "{base.type.body}"
+    fontWeight: "{base.font-weight.normal}"
+    lineHeight: "{base.leading.body}"
+bodyLarge:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.ui}"
+    fontSize: "{base.type.emphasis}"
+    fontWeight: "{base.font-weight.normal}"
+    lineHeight: "{base.leading.emphasis}"
+labelSmall:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.ui}"
+    fontSize: "{base.type.caption}"
+    fontWeight: "{base.font-weight.semibold}"
+    lineHeight: "{base.type.caption}"
+labelMedium:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.ui}"
+    fontSize: "{base.type.small}"
+    fontWeight: "{base.font-weight.semibold}"
+    lineHeight: "{base.type.small}"
+labelLarge:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.ui}"
+    fontSize: "{base.type.body}"
+    fontWeight: "{base.font-weight.semibold}"
+    lineHeight: "{base.type.body}"
+captionSmall:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.ui}"
+    fontSize: "{base.type.caption}"
+    fontWeight: "{base.font-weight.normal}"
+    lineHeight: "{base.leading.caption}"
+captionMedium:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.ui}"
+    fontSize: "{base.type.small}"
+    fontWeight: "{base.font-weight.normal}"
+    lineHeight: "{base.leading.small}"
+captionLarge:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.ui}"
+    fontSize: "{base.type.body}"
+    fontWeight: "{base.font-weight.normal}"
+    lineHeight: "{base.leading.body}"

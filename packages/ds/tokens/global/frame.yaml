@@ -1,0 +1,35 @@
+# The window chrome's own metrics. The corners live here rather than on
+# `radius` because they belong to the frame the app is drawn in, not to
+# anything a component rounds: they are a step larger than any container
+# corner, and a component reaching for them would look like a window.
+frame:
+  window:
+    radius:
+      $type: dimension
+      $value: "{base.corner.2xl}"
+      $extensions:
+        mode:
+          bright: "{base.corner.xl}"
+  popover:
+    radius:
+      $type: dimension
+      $value: "{base.corner.xl}"
+      $extensions:
+        mode:
+          bright: 0.875rem
+  titlebar:
+    size:
+      $type: dimension
+      $value: 3.25rem
+  sidebar:
+    width:
+      $type: dimension
+      $value: 10.75rem
+  rail:
+    width:
+      $type: dimension
+      $value: 9.375rem
+  aside:
+    width:
+      $type: dimension
+      $value: 13.375rem

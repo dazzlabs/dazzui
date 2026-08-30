@@ -1,0 +1,11 @@
+dialog:
+  width:
+    $type: dimension
+    $value: 27.5rem
+  scrim:
+    color:
+      $type: color
+      $value: "{color.neutral.950}"
+    alpha:
+      $type: number
+      $value: 0.25

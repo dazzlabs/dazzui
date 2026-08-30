@@ -7,25 +7,25 @@
   flex-shrink: 0;
   /* 200 rather than 100: the track has to stay readable on a tinted surface,
      where a 50 fill sits directly behind it. */
-  border: var(--spinner-thickness) solid var(--tint-200);
+  border: var(--spacing-0-5) solid var(--tint-200);
   border-top-color: var(--tint-600);
   border-radius: var(--radius-full);
   animation: dz-spinner-turn 0.6s linear infinite;
 }
 
 .dz-spinner[data-size='small'] {
-  width: var(--spinner-small-size);
-  height: var(--spinner-small-size);
+  width: var(--spacing-3-5);
+  height: var(--spacing-3-5);
 }
 
 .dz-spinner[data-size='medium'] {
-  width: var(--spinner-medium-size);
-  height: var(--spinner-medium-size);
+  width: var(--spacing-4);
+  height: var(--spacing-4);
 }
 
 .dz-spinner[data-size='large'] {
-  width: var(--spinner-large-size);
-  height: var(--spinner-large-size);
+  width: var(--spacing-5);
+  height: var(--spacing-5);
 }
 
 @keyframes dz-spinner-turn {

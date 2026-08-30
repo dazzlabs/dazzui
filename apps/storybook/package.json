@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "pnpm -w run packages && storybook dev --port 6006 --no-open",
     "build": "pnpm -w run packages && storybook build --output-dir dist",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "dev:preview": "pnpm -w run packages && storybook dev --port $PORT --no-open"
   },
   "dependencies": {
     "@dazzlabs/dazzui-react": "workspace:*",

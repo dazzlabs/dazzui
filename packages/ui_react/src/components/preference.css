@@ -22,22 +22,22 @@
 }
 
 .dz-preference-section__heading {
-  margin-bottom: var(--preference-section-heading-gap);
+  margin-bottom: var(--spacing-3);
 }
 
 .dz-preference-section__rows {
   display: flex;
   flex-direction: column;
-  gap: var(--preference-section-gap);
+  gap: var(--spacing-1);
 }
 
 .dz-preference-section__footer {
-  margin-top: var(--preference-section-footer-gap);
+  margin-top: var(--spacing-2);
   color: var(--color-content-muted);
-  font-family: var(--preference-section-footer-content-font-family);
-  font-size: var(--preference-section-footer-content-font-size);
-  font-weight: var(--preference-section-footer-content-font-weight);
-  line-height: var(--preference-section-footer-content-line-height);
+  font-family: var(--caption-medium-font-family);
+  font-size: var(--caption-medium-font-size);
+  font-weight: var(--caption-medium-font-weight);
+  line-height: var(--caption-medium-line-height);
 }
 
 /*
@@ -59,7 +59,7 @@
 }
 
 .dz-preference-group__heading {
-  margin-bottom: var(--preference-group-heading-gap);
+  margin-bottom: var(--spacing-3);
 }
 
 .dz-preference-group__titles {
@@ -70,24 +70,24 @@
 
 .dz-preference-group__title {
   color: var(--color-content);
-  font-family: var(--preference-group-title-font-family);
-  font-size: var(--preference-group-title-font-size);
-  font-weight: var(--preference-group-title-font-weight);
-  line-height: var(--preference-group-title-line-height);
+  font-family: var(--label-medium-font-family);
+  font-size: var(--label-medium-font-size);
+  font-weight: var(--label-medium-font-weight);
+  line-height: var(--label-medium-line-height);
 }
 
 .dz-preference-group__description {
   color: var(--color-content-muted);
-  font-family: var(--preference-group-description-font-family);
-  font-size: var(--preference-group-description-font-size);
-  font-weight: var(--preference-group-description-font-weight);
-  line-height: var(--preference-group-description-line-height);
+  font-family: var(--caption-medium-font-family);
+  font-size: var(--caption-medium-font-size);
+  font-weight: var(--caption-medium-font-weight);
+  line-height: var(--caption-medium-line-height);
 }
 
 .dz-preference-group__sections {
   display: flex;
   flex-direction: column;
-  gap: var(--preference-group-gap);
+  gap: var(--spacing-5);
 }
 
 /*
@@ -99,8 +99,8 @@
 .dz-preference-row {
   display: flex;
   align-items: center;
-  gap: var(--preference-row-gap);
-  min-height: var(--preference-row-size);
+  gap: var(--control-medium-gap);
+  min-height: var(--control-small-size);
   width: 100%;
   border: 0;
   background: none;
@@ -110,7 +110,7 @@
 
 .dz-preference-row[data-interactive='true'] {
   cursor: pointer;
-  border-radius: var(--preference-row-radius);
+  border-radius: var(--radius-small);
   /* Pulled out and pushed back in, so the wash is wider than the text while
      the row still starts on the same left edge as the inert rows above it. */
   margin-inline: calc(var(--spacing-2) * -1);
@@ -147,10 +147,10 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--color-content);
-  font-family: var(--preference-row-title-font-family);
-  font-size: var(--preference-row-title-font-size);
-  font-weight: var(--preference-row-title-font-weight);
-  line-height: var(--preference-row-title-line-height);
+  font-family: var(--label-small-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--label-small-font-weight);
+  line-height: var(--label-small-line-height);
 }
 
 .dz-preference-row__subtitle {
@@ -158,17 +158,17 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--color-content-muted);
-  font-family: var(--preference-row-subtitle-font-family);
-  font-size: var(--preference-row-subtitle-font-size);
-  font-weight: var(--preference-row-subtitle-font-weight);
-  line-height: var(--preference-row-subtitle-line-height);
+  font-family: var(--caption-medium-font-family);
+  font-size: var(--caption-medium-font-size);
+  font-weight: var(--caption-medium-font-weight);
+  line-height: var(--caption-medium-line-height);
 }
 
 .dz-preference-row__trailing {
   display: flex;
   flex-shrink: 0;
   align-items: center;
-  gap: var(--preference-row-gap);
+  gap: var(--control-medium-gap);
   margin-inline-start: auto;
   color: var(--color-content-muted);
 }

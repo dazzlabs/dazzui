@@ -8,10 +8,10 @@
   align-items: center;
   justify-content: flex-start;
   flex-shrink: 0;
-  padding: var(--toggle-padding);
+  padding: var(--spacing-0-5);
   border: 0;
-  border-radius: var(--toggle-radius);
-  background-color: var(--color-border);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface-sunken);
   cursor: pointer;
   transition: background-color 0.15s ease-out;
 }
@@ -36,7 +36,10 @@
 .dz-toggle__thumb {
   display: block;
   border-radius: var(--radius-full);
-  background-color: var(--color-surface);
+  /* The thumb rides in the groove, so it reads off `surface-raised` rather
+     than off the paper: on a dark canvas the paper is darker than the
+     groove, and a thumb painted with it would sink into the track. */
+  background-color: var(--color-surface-raised);
 }
 
 .dz-toggle[data-size='small'] {

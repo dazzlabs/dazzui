@@ -6,8 +6,9 @@
  */
 .dz-segmented-control {
   display: inline-flex;
-  padding: var(--segmented-control-track-padding);
-  background-color: var(--segmented-control-track-surface);
+  padding: var(--spacing-0-5);
+  background-color: var(--color-surface-sunken);
+  border-radius: var(--control-radius);
 }
 
 .dz-segmented-control[data-stretch='true'] {
@@ -16,6 +17,13 @@
 }
 
 .dz-segmented-control__segment {
+  height: var(--control-size);
+  padding-inline: var(--control-padding-inline);
+  border-radius: var(--control-radius);
+  font-family: var(--control-font-family);
+  font-size: var(--control-font-size);
+  font-weight: var(--control-font-weight);
+  line-height: var(--control-line-height);
   border: 0;
   background: none;
   color: var(--color-content-muted);
@@ -47,7 +55,7 @@
 
 .dz-segmented-control[data-active-style='raised']
   .dz-segmented-control__segment[aria-checked='true'] {
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-raised);
   color: var(--color-content);
   box-shadow: var(--shadow-xs);
 }
@@ -58,46 +66,3 @@
   color: var(--control-color-filled-content-normal);
 }
 
-/* Sizes ------------------------------------------------------------------- */
-
-.dz-segmented-control[data-size='small'] {
-  border-radius: var(--segmented-control-small-radius);
-}
-
-.dz-segmented-control[data-size='small'] .dz-segmented-control__segment {
-  height: var(--segmented-control-small-size);
-  padding-inline: var(--segmented-control-small-segment-padding-inline);
-  border-radius: var(--segmented-control-small-segment-radius);
-  font-family: var(--segmented-control-small-segment-content-font-family);
-  font-size: var(--segmented-control-small-segment-content-font-size);
-  font-weight: var(--segmented-control-small-segment-content-font-weight);
-  line-height: var(--segmented-control-small-segment-content-line-height);
-}
-
-.dz-segmented-control[data-size='medium'] {
-  border-radius: var(--segmented-control-medium-radius);
-}
-
-.dz-segmented-control[data-size='medium'] .dz-segmented-control__segment {
-  height: var(--segmented-control-medium-size);
-  padding-inline: var(--segmented-control-medium-segment-padding-inline);
-  border-radius: var(--segmented-control-medium-segment-radius);
-  font-family: var(--segmented-control-medium-segment-content-font-family);
-  font-size: var(--segmented-control-medium-segment-content-font-size);
-  font-weight: var(--segmented-control-medium-segment-content-font-weight);
-  line-height: var(--segmented-control-medium-segment-content-line-height);
-}
-
-.dz-segmented-control[data-size='large'] {
-  border-radius: var(--segmented-control-large-radius);
-}
-
-.dz-segmented-control[data-size='large'] .dz-segmented-control__segment {
-  height: var(--segmented-control-large-size);
-  padding-inline: var(--segmented-control-large-segment-padding-inline);
-  border-radius: var(--segmented-control-large-segment-radius);
-  font-family: var(--segmented-control-large-segment-content-font-family);
-  font-size: var(--segmented-control-large-segment-content-font-size);
-  font-weight: var(--segmented-control-large-segment-content-font-weight);
-  line-height: var(--segmented-control-large-segment-content-line-height);
-}

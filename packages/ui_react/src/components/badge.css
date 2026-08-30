@@ -8,36 +8,42 @@
   white-space: nowrap;
 }
 
-/* Sizes ------------------------------------------------------------------- */
+/* Sizes -------------------------------------------------------------------
+ * A badge is not a control, so it reads the shared profiles directly rather
+ * than opting into the `[data-size]` bindings. It runs one profile step
+ * behind its own size name — a small badge wears the tiny control's padding —
+ * and sets its label in the caption face, since it annotates rather than
+ * invites.
+ */
 
 .dz-badge[data-size='small'] {
-  padding-block: var(--badge-small-padding-block);
-  padding-inline: var(--badge-small-padding-inline);
-  border-radius: var(--badge-small-radius);
-  font-family: var(--badge-small-content-font-family);
-  font-size: var(--badge-small-content-font-size);
-  font-weight: var(--badge-small-content-font-weight);
-  line-height: var(--badge-small-content-line-height);
+  padding-block: var(--control-tiny-padding-block);
+  padding-inline: var(--control-tiny-padding-inline);
+  border-radius: var(--radius-small);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+  font-weight: var(--caption-small-font-weight);
+  line-height: var(--caption-small-line-height);
 }
 
 .dz-badge[data-size='medium'] {
-  padding-block: var(--badge-medium-padding-block);
-  padding-inline: var(--badge-medium-padding-inline);
-  border-radius: var(--badge-medium-radius);
-  font-family: var(--badge-medium-content-font-family);
-  font-size: var(--badge-medium-content-font-size);
-  font-weight: var(--badge-medium-content-font-weight);
-  line-height: var(--badge-medium-content-line-height);
+  padding-block: var(--control-small-padding-block);
+  padding-inline: var(--control-small-padding-inline);
+  border-radius: var(--radius-medium);
+  font-family: var(--caption-medium-font-family);
+  font-size: var(--caption-medium-font-size);
+  font-weight: var(--caption-medium-font-weight);
+  line-height: var(--caption-medium-line-height);
 }
 
 .dz-badge[data-size='large'] {
-  padding-block: var(--badge-large-padding-block);
-  padding-inline: var(--badge-large-padding-inline);
-  border-radius: var(--badge-large-radius);
-  font-family: var(--badge-large-content-font-family);
-  font-size: var(--badge-large-content-font-size);
-  font-weight: var(--badge-large-content-font-weight);
-  line-height: var(--badge-large-content-line-height);
+  padding-block: var(--control-medium-padding-block);
+  padding-inline: var(--control-medium-padding-inline);
+  border-radius: var(--radius-large);
+  font-family: var(--caption-large-font-family);
+  font-size: var(--caption-large-font-size);
+  font-weight: var(--caption-large-font-weight);
+  line-height: var(--caption-large-line-height);
 }
 
 /* Variants ----------------------------------------------------------------

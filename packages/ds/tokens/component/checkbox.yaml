@@ -1,0 +1,16 @@
+checkbox:
+  thickness:
+    $type: dimension
+    $value: "{spacing.0.5}"
+  small:
+    box:
+      $type: dimension
+      $value: "{spacing.3.5}"
+  medium:
+    box:
+      $type: dimension
+      $value: "{spacing.4}"
+  large:
+    box:
+      $type: dimension
+      $value: "{spacing.5}"

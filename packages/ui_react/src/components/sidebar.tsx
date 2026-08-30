@@ -97,7 +97,7 @@ export function Sidebar({
   // number: to report as aria-valuenow, to start the keyboard from, and to
   // send a double-click home to.
   //
-  // Measure it rather than parsing `--sidebar-width`. What unit the token
+  // Measure it rather than parsing `--frame-sidebar-width`. What unit the token
   // carries is the design system's business, and reading it here means
   // agreeing with that choice forever — parsing a `10.75rem` sidebar as a
   // number yields 10.75, which is a perfectly finite way to be 11px wide.

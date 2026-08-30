@@ -6,20 +6,20 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  width: var(--rail-width);
-  gap: var(--rail-gap);
+  width: var(--frame-rail-width);
+  gap: var(--spacing-1);
   overflow-y: auto;
-  padding-block: var(--rail-padding-block);
-  padding-inline: var(--rail-padding-inline);
-  background-color: var(--rail-surface);
-  border-inline-end: var(--spacing-px) solid var(--rail-border);
+  padding-block: var(--spacing-3-5);
+  padding-inline: var(--spacing-2-5);
+  background-color: var(--color-surface);
+  border-inline-end: var(--spacing-px) solid var(--color-border);
 }
 
 .dz-rail-group {
   display: flex;
   flex-direction: column;
-  gap: var(--rail-gap);
-  margin-top: var(--rail-group-gap);
+  gap: var(--spacing-1);
+  margin-top: var(--spacing-1-5);
 }
 
 .dz-rail-group:first-child {
@@ -27,7 +27,7 @@
 }
 
 .dz-rail-group__label {
-  padding-inline: var(--rail-padding-inline);
+  padding-inline: var(--spacing-2-5);
 }
 
 /* The trailing information column. */
@@ -35,11 +35,11 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  width: var(--aside-width);
-  gap: var(--aside-gap);
+  width: var(--frame-aside-width);
+  gap: var(--spacing-5);
   overflow-y: auto;
-  padding-block: var(--aside-padding-block);
-  padding-inline: var(--aside-padding-inline);
-  background-color: var(--aside-surface);
-  border-inline-start: var(--spacing-px) solid var(--aside-border);
+  padding-block: var(--spacing-4);
+  padding-inline: var(--spacing-4);
+  background-color: var(--color-surface-muted);
+  border-inline-start: var(--spacing-px) solid var(--color-border);
 }

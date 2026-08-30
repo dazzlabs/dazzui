@@ -1,0 +1,671 @@
+color:
+  primary:
+    "50":
+      $value: "{base.color.brand.50}"
+      $extensions:
+        mode:
+          bright: "{base.color.ink.50}"
+          bright-dark: "{base.color.acid.50}"
+    "100":
+      $value: "{base.color.brand.100}"
+      $extensions:
+        mode:
+          bright: "{base.color.ink.100}"
+          bright-dark: "{base.color.acid.100}"
+    "200":
+      $value: "{base.color.brand.200}"
+      $extensions:
+        mode:
+          bright: "{base.color.ink.200}"
+          bright-dark: "{base.color.acid.200}"
+    "300":
+      $value: "{base.color.brand.300}"
+      $extensions:
+        mode:
+          bright: "{base.color.ink.300}"
+          bright-dark: "{base.color.acid.300}"
+    "400":
+      $value: "{base.color.brand.400}"
+      $extensions:
+        mode:
+          bright: "{base.color.ink.400}"
+          bright-dark: "{base.color.acid.400}"
+    "500":
+      $value: "{base.color.brand.500}"
+      $extensions:
+        mode:
+          bright: "{base.color.ink.500}"
+          bright-dark: "{base.color.acid.500}"
+    "600":
+      $value: "{base.color.brand.600}"
+      $extensions:
+        mode:
+          bright: "{base.color.ink.600}"
+          bright-dark: "{base.color.acid.600}"
+    "700":
+      $value: "{base.color.brand.700}"
+      $extensions:
+        mode:
+          bright: "{base.color.ink.700}"
+          bright-dark: "{base.color.acid.700}"
+    "800":
+      $value: "{base.color.brand.800}"
+      $extensions:
+        mode:
+          bright: "{base.color.ink.800}"
+          bright-dark: "{base.color.acid.800}"
+    "900":
+      $value: "{base.color.brand.900}"
+      $extensions:
+        mode:
+          bright: "{base.color.ink.900}"
+          bright-dark: "{base.color.acid.900}"
+    "950":
+      $value: "{base.color.brand.950}"
+      $extensions:
+        mode:
+          bright: "{base.color.ink.950}"
+          bright-dark: "{base.color.acid.950}"
+  neutral:
+    "50":
+      $value: "{base.color.neutral.50}"
+    "100":
+      $value: "{base.color.neutral.100}"
+    "200":
+      $value: "{base.color.neutral.200}"
+    "300":
+      $value: "{base.color.neutral.300}"
+    "400":
+      $value: "{base.color.neutral.400}"
+    "500":
+      $value: "{base.color.neutral.500}"
+    "600":
+      $value: "{base.color.neutral.600}"
+    "700":
+      $value: "{base.color.neutral.700}"
+    "800":
+      $value: "{base.color.neutral.800}"
+    "900":
+      $value: "{base.color.neutral.900}"
+    "950":
+      $value: "{base.color.neutral.950}"
+  info:
+    "50":
+      $value: "{base.color.sky.50}"
+    "100":
+      $value: "{base.color.sky.100}"
+    "200":
+      $value: "{base.color.sky.200}"
+    "300":
+      $value: "{base.color.sky.300}"
+    "400":
+      $value: "{base.color.sky.400}"
+    "500":
+      $value: "{base.color.sky.500}"
+    "600":
+      $value: "{base.color.sky.600}"
+    "700":
+      $value: "{base.color.sky.700}"
+    "800":
+      $value: "{base.color.sky.800}"
+    "900":
+      $value: "{base.color.sky.900}"
+    "950":
+      $value: "{base.color.sky.950}"
+  success:
+    "50":
+      $value: "{base.color.green.50}"
+    "100":
+      $value: "{base.color.green.100}"
+    "200":
+      $value: "{base.color.green.200}"
+    "300":
+      $value: "{base.color.green.300}"
+    "400":
+      $value: "{base.color.green.400}"
+    "500":
+      $value: "{base.color.green.500}"
+    "600":
+      $value: "{base.color.green.600}"
+    "700":
+      $value: "{base.color.green.700}"
+    "800":
+      $value: "{base.color.green.800}"
+    "900":
+      $value: "{base.color.green.900}"
+    "950":
+      $value: "{base.color.green.950}"
+  warning:
+    "50":
+      $value: "{base.color.amber.50}"
+    "100":
+      $value: "{base.color.amber.100}"
+    "200":
+      $value: "{base.color.amber.200}"
+    "300":
+      $value: "{base.color.amber.300}"
+    "400":
+      $value: "{base.color.amber.400}"
+    "500":
+      $value: "{base.color.amber.500}"
+    "600":
+      $value: "{base.color.amber.600}"
+    "700":
+      $value: "{base.color.amber.700}"
+    "800":
+      $value: "{base.color.amber.800}"
+    "900":
+      $value: "{base.color.amber.900}"
+    "950":
+      $value: "{base.color.amber.950}"
+  danger:
+    "50":
+      $value: "{base.color.red.50}"
+    "100":
+      $value: "{base.color.red.100}"
+    "200":
+      $value: "{base.color.red.200}"
+    "300":
+      $value: "{base.color.red.300}"
+    "400":
+      $value: "{base.color.red.400}"
+    "500":
+      $value: "{base.color.red.500}"
+    "600":
+      $value: "{base.color.red.600}"
+    "700":
+      $value: "{base.color.red.700}"
+    "800":
+      $value: "{base.color.red.800}"
+    "900":
+      $value: "{base.color.red.900}"
+    "950":
+      $value: "{base.color.red.950}"
+control:
+  color:
+    normal:
+      surface:
+        normal:
+          color:
+            $type: color
+            $value: "{color.surface}"
+        hovered:
+          color:
+            $type: color
+            $value: "{color.surface-muted}"
+        pressed:
+          color:
+            $type: color
+            $value: "{color.surface}"
+          alpha:
+            $type: number
+            $value: 0.8
+        disabled:
+          color:
+            $type: color
+            $value: "{color.surface}"
+          alpha:
+            $type: number
+            $value: 0.5
+      content:
+        normal:
+          color:
+            $type: color
+            $value: "{color.content}"
+        hovered:
+          color:
+            $type: color
+            $value: "{color.content}"
+        pressed:
+          color:
+            $type: color
+            $value: "{color.content}"
+          alpha:
+            $type: number
+            $value: 0.8
+        disabled:
+          color:
+            $type: color
+            $value: "{color.content}"
+          alpha:
+            $type: number
+            $value: 0.5
+      border:
+        normal:
+          color:
+            $type: color
+            $value: "{color.border}"
+        hovered:
+          color:
+            $type: color
+            $value: "{color.border}"
+        pressed:
+          color:
+            $type: color
+            $value: "{color.border}"
+          alpha:
+            $type: number
+            $value: 0.8
+        disabled:
+          color:
+            $type: color
+            $value: "{color.border}"
+          alpha:
+            $type: number
+            $value: 0.5
+    filled:
+      surface:
+        normal:
+          $type: number
+          shade:
+            $value: 600
+            $extensions:
+              mode:
+                dark: 500
+          alpha:
+            $value: 1
+        hovered:
+          $type: number
+          shade:
+            $value: 700
+            $extensions:
+              mode:
+                dark: 600
+          alpha:
+            $value: 1
+        pressed:
+          $type: number
+          shade:
+            $value: 700
+            $extensions:
+              mode:
+                dark: 600
+          alpha:
+            $value: 0.8
+        disabled:
+          $type: number
+          shade:
+            $value: 600
+            $extensions:
+              mode:
+                dark: 500
+          alpha:
+            $value: 0.5
+      content:
+        normal:
+          color:
+            $type: color
+            $value: "{color.on-accent}"
+        hovered:
+          color:
+            $type: color
+            $value: "{color.on-accent}"
+        pressed:
+          color:
+            $type: color
+            $value: "{color.on-accent}"
+        disabled:
+          color:
+            $type: color
+            $value: "{color.on-accent}"
+      border:
+        normal:
+          $type: number
+          shade:
+            $value: 600
+            $extensions:
+              mode:
+                dark: 500
+          alpha:
+            $value: 0
+        hovered:
+          $type: number
+          shade:
+            $value: 700
+            $extensions:
+              mode:
+                dark: 600
+          alpha:
+            $value: 0
+        pressed:
+          $type: number
+          shade:
+            $value: 700
+            $extensions:
+              mode:
+                dark: 600
+          alpha:
+            $value: 0
+        disabled:
+          $type: number
+          shade:
+            $value: 600
+            $extensions:
+              mode:
+                dark: 500
+          alpha:
+            $value: 0
+    tinted:
+      surface:
+        normal:
+          $type: number
+          shade:
+            $value: 50
+            $extensions:
+              mode:
+                dark: 950
+          alpha:
+            $value: 1
+        hovered:
+          $type: number
+          shade:
+            $value: 100
+            $extensions:
+              mode:
+                dark: 900
+          alpha:
+            $value: 1
+        pressed:
+          $type: number
+          shade:
+            $value: 100
+            $extensions:
+              mode:
+                dark: 900
+          alpha:
+            $value: 0.8
+        disabled:
+          $type: number
+          shade:
+            $value: 50
+            $extensions:
+              mode:
+                dark: 950
+          alpha:
+            $value: 0.5
+      content:
+        normal:
+          $type: number
+          shade:
+            $value: 600
+            $extensions:
+              mode:
+                dark: 300
+          alpha:
+            $value: 1
+        hovered:
+          $type: number
+          shade:
+            $value: 700
+            $extensions:
+              mode:
+                dark: 200
+          alpha:
+            $value: 1
+        pressed:
+          $type: number
+          shade:
+            $value: 700
+            $extensions:
+              mode:
+                dark: 200
+          alpha:
+            $value: 0.8
+        disabled:
+          $type: number
+          shade:
+            $value: 600
+            $extensions:
+              mode:
+                dark: 300
+          alpha:
+            $value: 0.5
+      border:
+        normal:
+          $type: number
+          shade:
+            $value: 600
+            $extensions:
+              mode:
+                dark: 300
+          alpha:
+            $value: 0
+        hovered:
+          $type: number
+          shade:
+            $value: 700
+            $extensions:
+              mode:
+                dark: 200
+          alpha:
+            $value: 0
+        pressed:
+          $type: number
+          shade:
+            $value: 700
+            $extensions:
+              mode:
+                dark: 200
+          alpha:
+            $value: 0
+        disabled:
+          $type: number
+          shade:
+            $value: 600
+            $extensions:
+              mode:
+                dark: 300
+          alpha:
+            $value: 0
+    outlined:
+      surface:
+        normal:
+          color:
+            $type: color
+            $value: "{base.color.white}"
+          alpha:
+            $type: number
+            $value: 0
+        hovered:
+          $type: number
+          shade:
+            $value: 100
+            $extensions:
+              mode:
+                dark: 900
+          alpha:
+            $value: 1
+        pressed:
+          $type: number
+          shade:
+            $value: 100
+            $extensions:
+              mode:
+                dark: 900
+          alpha:
+            $value: 0.8
+        disabled:
+          $type: number
+          shade:
+            $value: 50
+            $extensions:
+              mode:
+                dark: 950
+          alpha:
+            $value: 0.5
+      content:
+        normal:
+          $type: number
+          shade:
+            $value: 600
+            $extensions:
+              mode:
+                dark: 300
+          alpha:
+            $value: 1
+        hovered:
+          $type: number
+          shade:
+            $value: 700
+            $extensions:
+              mode:
+                dark: 200
+          alpha:
+            $value: 1
+        pressed:
+          $type: number
+          shade:
+            $value: 700
+            $extensions:
+              mode:
+                dark: 200
+          alpha:
+            $value: 0.8
+        disabled:
+          $type: number
+          shade:
+            $value: 600
+            $extensions:
+              mode:
+                dark: 300
+          alpha:
+            $value: 0.5
+      border:
+        normal:
+          $type: number
+          shade:
+            $value: 600
+            $extensions:
+              mode:
+                dark: 400
+          alpha:
+            $value: 1
+        hovered:
+          $type: number
+          shade:
+            $value: 700
+            $extensions:
+              mode:
+                dark: 300
+          alpha:
+            $value: 1
+        pressed:
+          $type: number
+          shade:
+            $value: 700
+            $extensions:
+              mode:
+                dark: 300
+          alpha:
+            $value: 0.8
+        disabled:
+          $type: number
+          shade:
+            $value: 600
+            $extensions:
+              mode:
+                dark: 400
+          alpha:
+            $value: 0.5
+    plain:
+      surface:
+        normal:
+          color:
+            $type: color
+            $value: "{base.color.white}"
+          alpha:
+            $type: number
+            $value: 0
+        hovered:
+          $type: number
+          shade:
+            $value: 100
+            $extensions:
+              mode:
+                dark: 900
+          alpha:
+            $value: 1
+        pressed:
+          $type: number
+          shade:
+            $value: 100
+            $extensions:
+              mode:
+                dark: 900
+          alpha:
+            $value: 0.8
+        disabled:
+          $type: number
+          shade:
+            $value: 50
+            $extensions:
+              mode:
+                dark: 950
+          alpha:
+            $value: 0.5
+      content:
+        normal:
+          $type: number
+          shade:
+            $value: 600
+            $extensions:
+              mode:
+                dark: 300
+          alpha:
+            $value: 1
+        hovered:
+          $type: number
+          shade:
+            $value: 700
+            $extensions:
+              mode:
+                dark: 200
+          alpha:
+            $value: 1
+        pressed:
+          $type: number
+          shade:
+            $value: 700
+            $extensions:
+              mode:
+                dark: 200
+          alpha:
+            $value: 0.8
+        disabled:
+          $type: number
+          shade:
+            $value: 600
+            $extensions:
+              mode:
+                dark: 300
+          alpha:
+            $value: 0.5
+      border:
+        normal:
+          color:
+            $type: color
+            $value: "{base.color.white}"
+          alpha:
+            $type: number
+            $value: 0
+        hovered:
+          color:
+            $type: color
+            $value: "{base.color.white}"
+          alpha:
+            $type: number
+            $value: 0
+        pressed:
+          color:
+            $type: color
+            $value: "{base.color.white}"
+          alpha:
+            $type: number
+            $value: 0
+        disabled:
+          color:
+            $type: color
+            $value: "{base.color.white}"
+          alpha:
+            $type: number
+            $value: 0

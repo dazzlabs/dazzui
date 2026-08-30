@@ -1,0 +1,39 @@
+# The corner scale, drawn from AppKit rather than from Tailwind's radii:
+# `small` is a small control, `medium` a regular one, `large` a container,
+# `big` a popover. Window and sheet corners are larger still and live on
+# `frame`, since they belong to the chrome rather than to anything a
+# component draws.
+#
+# Bright makes its controls full pills, and that is exactly why `medium` and
+# `large` are separate axes rather than one shared corner: a pill is right
+# for a box whose height sets the curve, and wrong for a container that grows
+# with its content — a pill textarea reads as a lozenge. So the two control
+# steps go round in Bright while the container steps stay finite.
+radius:
+  $type: dimension
+  none:
+    $value: 0px
+  tiny:
+    $value: "{base.corner.xs}"
+    $extensions:
+      mode:
+        bright: 0.4375rem
+  small:
+    $value: "{base.corner.sm}"
+    $extensions:
+      mode:
+        bright: 9999px
+  medium:
+    $value: "{base.corner.md}"
+    $extensions:
+      mode:
+        bright: 9999px
+  large:
+    $value: "{base.corner.lg}"
+  big:
+    $value: "{base.corner.xl}"
+    $extensions:
+      mode:
+        bright: 0.875rem
+  full:
+    $value: 9999px

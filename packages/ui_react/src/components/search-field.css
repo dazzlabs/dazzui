@@ -66,35 +66,17 @@
   outline-offset: var(--focus-offset);
 }
 
-.dz-search-field[data-size='small'] {
-  height: var(--search-field-small-size);
-  gap: var(--search-field-small-gap);
-  padding-inline: var(--search-field-small-padding-inline);
-  border-radius: var(--search-field-small-radius);
-  font-family: var(--search-field-small-content-font-family);
-  font-size: var(--search-field-small-content-font-size);
-  font-weight: var(--search-field-small-content-font-weight);
-  line-height: var(--search-field-small-content-line-height);
-}
+/* Sizes -------------------------------------------------------------------
+ * Geometry and type come off the shared size profile that `[data-size]`
+ * binds. */
 
-.dz-search-field[data-size='medium'] {
-  height: var(--search-field-medium-size);
-  gap: var(--search-field-medium-gap);
-  padding-inline: var(--search-field-medium-padding-inline);
-  border-radius: var(--search-field-medium-radius);
-  font-family: var(--search-field-medium-content-font-family);
-  font-size: var(--search-field-medium-content-font-size);
-  font-weight: var(--search-field-medium-content-font-weight);
-  line-height: var(--search-field-medium-content-line-height);
-}
-
-.dz-search-field[data-size='large'] {
-  height: var(--search-field-large-size);
-  gap: var(--search-field-large-gap);
-  padding-inline: var(--search-field-large-padding-inline);
-  border-radius: var(--search-field-large-radius);
-  font-family: var(--search-field-large-content-font-family);
-  font-size: var(--search-field-large-content-font-size);
-  font-weight: var(--search-field-large-content-font-weight);
-  line-height: var(--search-field-large-content-line-height);
+.dz-search-field {
+  height: var(--control-size);
+  gap: var(--control-gap);
+  padding-inline: var(--control-padding-inline);
+  border-radius: var(--control-radius);
+  font-family: var(--control-font-family);
+  font-size: var(--control-font-size);
+  font-weight: var(--control-font-weight);
+  line-height: var(--control-line-height);
 }

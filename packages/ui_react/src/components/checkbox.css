@@ -1,7 +1,7 @@
 /*
  * A box and a label on one row. The row's height is the hit target — the
  * shared control height — while the box is its own, much smaller square, which
- * is why `checkbox.<size>.box` exists alongside `checkbox.<size>.size`.
+ * is why `checkbox.<size>.box` exists alongside the shared size profile.
  */
 .dz-checkbox,
 .dz-radio {
@@ -55,47 +55,35 @@
   color: var(--color-content-muted);
 }
 
-.dz-checkbox[data-size='small'] {
-  min-height: var(--checkbox-small-size);
-  gap: var(--checkbox-small-gap);
-  font-family: var(--checkbox-small-content-font-family);
-  font-size: var(--checkbox-small-content-font-size);
-  font-weight: var(--checkbox-small-content-font-weight);
-  line-height: var(--checkbox-small-content-line-height);
+/* Sizes -------------------------------------------------------------------
+ * The row's geometry and type come off the shared size profile that
+ * `[data-size]` binds. The box keeps its own per-size square — that is the
+ * point of `checkbox.<size>.box`. */
+
+.dz-checkbox {
+  min-height: var(--control-size);
+  gap: var(--control-gap);
+  font-family: var(--control-font-family);
+  font-size: var(--control-font-size);
+  font-weight: var(--control-font-weight);
+  line-height: var(--control-line-height);
+}
+
+.dz-checkbox .dz-checkbox__box {
+  border-radius: var(--control-radius);
 }
 
 .dz-checkbox[data-size='small'] .dz-checkbox__box {
   width: var(--checkbox-small-box);
   height: var(--checkbox-small-box);
-  border-radius: var(--checkbox-small-radius);
-}
-
-.dz-checkbox[data-size='medium'] {
-  min-height: var(--checkbox-medium-size);
-  gap: var(--checkbox-medium-gap);
-  font-family: var(--checkbox-medium-content-font-family);
-  font-size: var(--checkbox-medium-content-font-size);
-  font-weight: var(--checkbox-medium-content-font-weight);
-  line-height: var(--checkbox-medium-content-line-height);
 }
 
 .dz-checkbox[data-size='medium'] .dz-checkbox__box {
   width: var(--checkbox-medium-box);
   height: var(--checkbox-medium-box);
-  border-radius: var(--checkbox-medium-radius);
-}
-
-.dz-checkbox[data-size='large'] {
-  min-height: var(--checkbox-large-size);
-  gap: var(--checkbox-large-gap);
-  font-family: var(--checkbox-large-content-font-family);
-  font-size: var(--checkbox-large-content-font-size);
-  font-weight: var(--checkbox-large-content-font-weight);
-  line-height: var(--checkbox-large-content-line-height);
 }
 
 .dz-checkbox[data-size='large'] .dz-checkbox__box {
   width: var(--checkbox-large-box);
   height: var(--checkbox-large-box);
-  border-radius: var(--checkbox-large-radius);
 }

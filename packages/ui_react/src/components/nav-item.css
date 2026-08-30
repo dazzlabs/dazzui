@@ -11,6 +11,14 @@
   display: flex;
   align-items: center;
   width: 100%;
+  gap: var(--control-gap);
+  padding-block: var(--control-padding-block);
+  padding-inline: var(--control-padding-inline);
+  border-radius: var(--control-radius);
+  font-family: var(--control-font-family);
+  font-size: var(--control-font-size);
+  font-weight: var(--control-font-weight);
+  line-height: var(--control-line-height);
   border: 0;
   background: none;
   color: var(--color-content);
@@ -56,28 +64,19 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: var(--nav-item-icon-size);
+  width: var(--spacing-4);
   height: var(--nav-item-content-line-height, 1em);
 }
 
+/* A nav row is tighter than a form control: the small row pulls the inline
+   padding in half a step, and the medium row keeps the small profile's gap
+   and corner while sitting on a slightly taller block pad. */
 .dz-nav-item[data-size='small'] {
-  gap: var(--nav-item-small-gap);
-  padding-block: var(--nav-item-small-padding-block);
-  padding-inline: var(--nav-item-small-padding-inline);
-  border-radius: var(--nav-item-small-radius);
-  font-family: var(--nav-item-small-content-font-family);
-  font-size: var(--nav-item-small-content-font-size);
-  font-weight: var(--nav-item-small-content-font-weight);
-  line-height: var(--nav-item-small-content-line-height);
+  --control-padding-inline: var(--spacing-2-5);
 }
 
 .dz-nav-item[data-size='medium'] {
-  gap: var(--nav-item-medium-gap);
-  padding-block: var(--nav-item-medium-padding-block);
-  padding-inline: var(--nav-item-medium-padding-inline);
-  border-radius: var(--nav-item-medium-radius);
-  font-family: var(--nav-item-medium-content-font-family);
-  font-size: var(--nav-item-medium-content-font-size);
-  font-weight: var(--nav-item-medium-content-font-weight);
-  line-height: var(--nav-item-medium-content-line-height);
+  --control-gap: var(--control-small-gap);
+  --control-padding-block: var(--spacing-2);
+  --control-radius: var(--radius-small);
 }

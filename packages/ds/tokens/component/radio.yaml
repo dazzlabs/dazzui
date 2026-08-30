@@ -1,0 +1,25 @@
+radio:
+  thickness:
+    $type: dimension
+    $value: "{spacing.0.5}"
+  small:
+    box:
+      $type: dimension
+      $value: "{spacing.3.5}"
+    dot:
+      $type: dimension
+      $value: "{spacing.1.5}"
+  medium:
+    box:
+      $type: dimension
+      $value: "{spacing.4}"
+    dot:
+      $type: dimension
+      $value: "{spacing.2}"
+  large:
+    box:
+      $type: dimension
+      $value: "{spacing.5}"
+    dot:
+      $type: dimension
+      $value: "{spacing.2.5}"

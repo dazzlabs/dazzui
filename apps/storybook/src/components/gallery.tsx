@@ -210,7 +210,12 @@ export function TokenTable({
   nameHeader = 'Token',
 }: TokenTableProps) {
   if (tokens.length === 0) {
-    return <p className="dt-empty">No tokens defined yet.</p>
+    return (
+      <p className="dt-empty">
+        No component tokens — this component reads the shared vocabulary (the
+        control profile and the semantic globals) directly. See Tokens/Control.
+      </p>
+    )
   }
 
   return (

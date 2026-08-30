@@ -6,23 +6,23 @@
 .dz-form-field {
   display: flex;
   flex-direction: column;
-  gap: var(--form-field-gap);
+  gap: var(--spacing-1-5);
 }
 
 .dz-form-field__label {
   color: var(--color-content-muted);
-  font-family: var(--form-field-label-font-family);
-  font-size: var(--form-field-label-font-size);
-  font-weight: var(--form-field-label-font-weight);
-  line-height: var(--form-field-label-line-height);
+  font-family: var(--label-small-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--label-small-font-weight);
+  line-height: var(--label-small-line-height);
 }
 
 .dz-form-field__hint {
   color: var(--color-content-muted);
-  font-family: var(--form-field-hint-font-family);
-  font-size: var(--form-field-hint-font-size);
-  font-weight: var(--form-field-hint-font-weight);
-  line-height: var(--form-field-hint-line-height);
+  font-family: var(--caption-medium-font-family);
+  font-size: var(--caption-medium-font-size);
+  font-weight: var(--caption-medium-font-weight);
+  line-height: var(--caption-medium-line-height);
 }
 
 /* Erroring, the label and the hint join the control on the danger ramp, which

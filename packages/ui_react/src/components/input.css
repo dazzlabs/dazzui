@@ -64,8 +64,8 @@
  * box into a lozenge — and a floor rather than a height.
  */
 .dz-textarea {
-  min-height: var(--textarea-size);
-  border-radius: var(--textarea-radius);
+  min-height: var(--spacing-20);
+  border-radius: var(--radius-medium);
   resize: vertical;
 }
 
@@ -82,73 +82,38 @@
 
 .dz-select__chevron {
   position: absolute;
-  inset-inline-end: var(--input-medium-padding-inline);
+  inset-inline-end: var(--control-medium-padding-inline);
   top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
   color: var(--color-content-muted);
 }
 
-/* Sizes ------------------------------------------------------------------- */
+/* Sizes -------------------------------------------------------------------
+ * Geometry and type come off the shared size profile that `[data-size]`
+ * binds — the Select's wrapper carries the attribute, and its control inherits
+ * the bound variables from it. */
 
-.dz-input[data-size='small'],
-.dz-field-value[data-size='small'],
-.dz-select[data-size='small'] .dz-select__control,
-.dz-textarea[data-size='small'] {
-  padding-block: var(--input-small-padding-block);
-  padding-inline: var(--input-small-padding-inline);
-  border-radius: var(--input-small-radius);
-  font-family: var(--input-small-content-font-family);
-  font-size: var(--input-small-content-font-size);
-  font-weight: var(--input-small-content-font-weight);
-  line-height: var(--input-small-content-line-height);
-}
-
-.dz-input[data-size='medium'],
-.dz-field-value[data-size='medium'],
-.dz-select[data-size='medium'] .dz-select__control,
-.dz-textarea[data-size='medium'] {
-  padding-block: var(--input-medium-padding-block);
-  padding-inline: var(--input-medium-padding-inline);
-  border-radius: var(--input-medium-radius);
-  font-family: var(--input-medium-content-font-family);
-  font-size: var(--input-medium-content-font-size);
-  font-weight: var(--input-medium-content-font-weight);
-  line-height: var(--input-medium-content-line-height);
-}
-
-.dz-input[data-size='large'],
-.dz-field-value[data-size='large'],
-.dz-select[data-size='large'] .dz-select__control,
-.dz-textarea[data-size='large'] {
-  padding-block: var(--input-large-padding-block);
-  padding-inline: var(--input-large-padding-inline);
-  border-radius: var(--input-large-radius);
-  font-family: var(--input-large-content-font-family);
-  font-size: var(--input-large-content-font-size);
-  font-weight: var(--input-large-content-font-weight);
-  line-height: var(--input-large-content-line-height);
+.dz-input,
+.dz-textarea,
+.dz-field-value,
+.dz-select__control {
+  padding-block: var(--control-padding-block);
+  padding-inline: var(--control-padding-inline);
+  border-radius: var(--control-radius);
+  font-family: var(--control-font-family);
+  font-size: var(--control-font-size);
+  font-weight: var(--control-font-weight);
+  line-height: var(--control-line-height);
 }
 
 /* Single-line controls take the shared control height, so a form can mix them
    with buttons without the rows stepping. A textarea is sized by its content,
    and its radius override above already replaced the control corner. */
-.dz-input[data-size='small'],
-.dz-field-value[data-size='small'],
-.dz-select[data-size='small'] .dz-select__control {
-  height: var(--input-small-size);
-}
-
-.dz-input[data-size='medium'],
-.dz-field-value[data-size='medium'],
-.dz-select[data-size='medium'] .dz-select__control {
-  height: var(--input-medium-size);
-}
-
-.dz-input[data-size='large'],
-.dz-field-value[data-size='large'],
-.dz-select[data-size='large'] .dz-select__control {
-  height: var(--input-large-size);
+.dz-input,
+.dz-field-value,
+.dz-select__control {
+  height: var(--control-size);
 }
 
 /* The chevron needs room the text must not run into. */

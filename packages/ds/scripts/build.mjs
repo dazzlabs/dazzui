@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { execSync } from 'node:child_process'
+import YAML from 'yaml'
 
 /**
  * Downloads theme.css (with caching), extracts the @theme default block,
@@ -702,10 +703,9 @@ async function syncBasePrimitives() {
     },
   }
 
-  const filePath = path.join(process.cwd(), 'tokens', 'global', '_base.json')
+  const filePath = path.join(process.cwd(), 'tokens', 'global', '_base.yaml')
   await fs.mkdir(path.dirname(filePath), { recursive: true })
-  const json = JSON.stringify(data, null, 2) + '\n'
-  await fs.writeFile(filePath, json, 'utf8')
+  await fs.writeFile(filePath, YAML.stringify(data), 'utf8')
 }
 
 /**
@@ -717,7 +717,7 @@ async function syncBasePrimitives() {
  * plugins write to on the way here.
  *
  * The distributed files are committed, for the same reason
- * `tokens/global/_base.json` is: what a token change does to a platform is
+ * `tokens/global/_base.yaml` is: what a token change does to a platform is
  * then visible in the diff rather than only after a rebuild.
  */
 const TARGETS = [

@@ -9,21 +9,21 @@
 /* Sizes ------------------------------------------------------------------- */
 
 .dz-card[data-size='small'] {
-  padding: var(--card-small-padding);
-  gap: var(--card-small-gap);
-  border-radius: var(--card-small-radius);
+  padding: var(--spacing-3);
+  gap: var(--spacing-2);
+  border-radius: var(--radius-small);
 }
 
 .dz-card[data-size='medium'] {
-  padding: var(--card-medium-padding);
-  gap: var(--card-medium-gap);
-  border-radius: var(--card-medium-radius);
+  padding: var(--spacing-4);
+  gap: var(--spacing-3);
+  border-radius: var(--radius-medium);
 }
 
 .dz-card[data-size='large'] {
-  padding: var(--card-large-padding);
-  gap: var(--card-large-gap);
-  border-radius: var(--card-large-radius);
+  padding: var(--spacing-5);
+  gap: var(--spacing-4);
+  border-radius: var(--radius-large);
 }
 
 /* Variants ---------------------------------------------------------------- */

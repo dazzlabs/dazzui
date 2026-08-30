@@ -1,0 +1,194 @@
+# Elevation, drawn from the design's shadow set rather than from Tailwind's.
+#
+# The names stay on the size scale the rest of the system uses, but each step
+# is one of the design's roles: `2xs` is the hairline lift under a filled
+# button, `sm` a lifted chip, `md` a floating panel, `lg` a popover, and `xl`
+# a window. They are neutral and tight — AppKit surfaces separate by shadow,
+# not by a coloured glow.
+#
+# Dark carries its own set rather than reusing these at a higher alpha: a
+# shadow over a near-black canvas has to be both larger and much darker
+# before it separates anything at all.
+shadow:
+  $type: shadow
+  2xs:
+    $value:
+      offsetX: 0px
+      offsetY: 1px
+      blur: 2px
+      spread: 0px
+      color: "#0000001a"
+    $extensions:
+      mode:
+        bright:
+          offsetX: 0px
+          offsetY: 1px
+          blur: 2px
+          spread: 0px
+          color: "#111c2e1f"
+        dark:
+          offsetX: 0px
+          offsetY: 1px
+          blur: 2px
+          spread: 0px
+          color: "#00000066"
+  xs:
+    $value:
+      offsetX: 0px
+      offsetY: 1px
+      blur: 3px
+      spread: 0px
+      color: "#0000001f"
+    $extensions:
+      mode:
+        bright:
+          offsetX: 0px
+          offsetY: 1px
+          blur: 3px
+          spread: 0px
+          color: "#111c2e24"
+        dark:
+          offsetX: 0px
+          offsetY: 1px
+          blur: 3px
+          spread: 0px
+          color: "#00000073"
+  sm:
+    $value:
+      offsetX: 0px
+      offsetY: 4px
+      blur: 12px
+      spread: 0px
+      color: "#00000024"
+    $extensions:
+      mode:
+        bright:
+          offsetX: 0px
+          offsetY: 4px
+          blur: 12px
+          spread: 0px
+          color: "#111c2e24"
+        dark:
+          offsetX: 0px
+          offsetY: 4px
+          blur: 14px
+          spread: 0px
+          color: "#00000073"
+  md:
+    $value:
+      offsetX: 0px
+      offsetY: 8px
+      blur: 24px
+      spread: 0px
+      color: "#00000033"
+    $extensions:
+      mode:
+        bright:
+          offsetX: 0px
+          offsetY: 8px
+          blur: 24px
+          spread: 0px
+          color: "#111c2e2e"
+        dark:
+          offsetX: 0px
+          offsetY: 10px
+          blur: 28px
+          spread: 0px
+          color: "#0000008c"
+  lg:
+    $value:
+      offsetX: 0px
+      offsetY: 10px
+      blur: 30px
+      spread: 0px
+      color: "#00000038"
+    $extensions:
+      mode:
+        bright:
+          offsetX: 0px
+          offsetY: 10px
+          blur: 30px
+          spread: 0px
+          color: "#111c2e2e"
+        dark:
+          offsetX: 0px
+          offsetY: 14px
+          blur: 36px
+          spread: 0px
+          color: "#00000094"
+  xl:
+    $value:
+      offsetX: 0px
+      offsetY: 12px
+      blur: 32px
+      spread: 0px
+      color: "#0000003d"
+    $extensions:
+      mode:
+        bright:
+          offsetX: 0px
+          offsetY: 12px
+          blur: 32px
+          spread: 0px
+          color: "#111c2e33"
+        dark:
+          offsetX: 0px
+          offsetY: 16px
+          blur: 40px
+          spread: 0px
+          color: "#00000099"
+  2xl:
+    $value:
+      offsetX: 0px
+      offsetY: 24px
+      blur: 56px
+      spread: 0px
+      color: "#00000047"
+    $extensions:
+      mode:
+        bright:
+          offsetX: 0px
+          offsetY: 24px
+          blur: 56px
+          spread: 0px
+          color: "#111c2e3d"
+        dark:
+          offsetX: 0px
+          offsetY: 24px
+          blur: 64px
+          spread: 0px
+          color: "#000000b3"
+inset-shadow:
+  $type: shadow
+  2xs:
+    $value: "{base.shadow.2xs}"
+  xs:
+    $value: "{base.shadow.xs}"
+  sm:
+    $value: "{base.shadow.sm}"
+drop-shadow:
+  $type: shadow
+  xs:
+    $value: "{base.shadow.xs}"
+  sm:
+    $value: "{base.shadow.sm}"
+  md:
+    $value: "{base.shadow.md}"
+  lg:
+    $value: "{base.shadow.lg}"
+  xl:
+    $value: "{base.shadow.xl}"
+  2xl:
+    $value: "{base.shadow.2xl}"
+text-shadow:
+  $type: shadow
+  2xs:
+    $value: "{base.shadow.2xs}"
+  xs:
+    $value: "{base.shadow.xs}"
+  sm:
+    $value: "{base.shadow.sm}"
+  md:
+    $value: "{base.shadow.md}"
+  lg:
+    $value: "{base.shadow.lg}"

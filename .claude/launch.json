@@ -4,8 +4,13 @@
     {
       "name": "storybook",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "@dazzlabs/dazzui-storybook", "dev"],
-      "port": 6006
+      "runtimeArgs": [
+        "--filter",
+        "@dazzlabs/dazzui-storybook",
+        "dev:preview"
+      ],
+      "port": 6006,
+      "autoPort": true
     }
   ]
 }

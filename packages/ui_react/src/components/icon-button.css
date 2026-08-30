@@ -35,20 +35,9 @@
   color: var(--control-color-tinted-content-normal);
 }
 
-.dz-icon-button[data-size='small'] {
-  width: var(--icon-button-small-size);
-  height: var(--icon-button-small-size);
-  border-radius: var(--icon-button-small-radius);
-}
-
-.dz-icon-button[data-size='medium'] {
-  width: var(--icon-button-medium-size);
-  height: var(--icon-button-medium-size);
-  border-radius: var(--icon-button-medium-radius);
-}
-
-.dz-icon-button[data-size='large'] {
-  width: var(--icon-button-large-size);
-  height: var(--icon-button-large-size);
-  border-radius: var(--icon-button-large-radius);
+/* The square is the profile's control height on both axes. */
+.dz-icon-button {
+  width: var(--control-size);
+  height: var(--control-size);
+  border-radius: var(--control-radius);
 }
