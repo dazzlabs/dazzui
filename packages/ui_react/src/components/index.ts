@@ -35,24 +35,30 @@ export {
   type DividerTone,
 } from './divider'
 export { EmptyState, type EmptyStateProps } from './empty-state'
+export { FormField, type FormFieldProps } from './form-field'
+export { Icon, type IconGlyph, type IconProps } from './icon'
+export { IconButton, type IconButtonProps } from './icon-button'
 export {
-  Field,
-  type FieldProps,
-  type FieldSize,
-  type FieldState,
   FieldValue,
   type FieldValueProps,
   Input,
   type InputProps,
+  type InputSize,
+  type InputState,
   Select,
   type SelectProps,
   Textarea,
   type TextareaProps,
-} from './field'
-export { Icon, type IconGlyph, type IconProps } from './icon'
-export { IconButton, type IconButtonProps } from './icon-button'
+} from './input'
 export { Kbd, type KbdProps, type KbdSize } from './kbd'
 export { Menu, type MenuItem, type MenuProps } from './menu'
+export {
+  NavAction,
+  type NavActionProps,
+  NavItem,
+  type NavItemProps,
+  type NavItemSize,
+} from './nav-item'
 export { OptionCard, type OptionCardProps } from './option-card'
 export {
   PillTabs,
@@ -69,6 +75,7 @@ export {
   type PreferenceSectionProps,
 } from './preference'
 export { Progress, type ProgressProps, type ProgressSize } from './progress'
+export { Aside, Rail, RailGroup, type RailGroupProps } from './rail'
 export {
   Radio,
   RadioGroup,
@@ -78,6 +85,14 @@ export {
   type RadioSize,
 } from './radio'
 export { SearchField, type SearchFieldProps } from './search-field'
+export {
+  Sidebar,
+  SidebarCard,
+  type SidebarCardProps,
+  SidebarGroup,
+  type SidebarGroupProps,
+  type SidebarProps,
+} from './sidebar'
 export { SectionLabel, type SectionLabelProps } from './section-label'
 export {
   SegmentedControl,

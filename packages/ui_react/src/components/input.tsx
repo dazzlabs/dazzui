@@ -1,23 +1,23 @@
-import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import type { ComponentPropsWithoutRef } from 'react'
 
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
 
-export type FieldSize = 'small' | 'medium' | 'large'
+export type InputSize = 'small' | 'medium' | 'large'
 
-export type FieldState = 'default' | 'error'
+export type InputState = 'default' | 'error'
 
 /**
  * An erroring control is re-tinted rather than given a second palette, so its
- * border, wash, and focus ring all move together.
+ * border, wash and focus ring all move together.
  */
-function tintFor(state: FieldState, tint: Tint): Tint {
+export function tintFor(state: InputState, tint: Tint): Tint {
   return state === 'error' ? 'danger' : tint
 }
 
 type ControlBase = {
-  size?: FieldSize
-  state?: FieldState
+  size?: InputSize
+  state?: InputState
   tint?: Tint
   /** Set the mono face — for a key, an ID, or a URL. */
   mono?: boolean
@@ -115,7 +115,11 @@ export function Select({
 export interface FieldValueProps
   extends ComponentPropsWithoutRef<'div'>, Pick<ControlBase, 'size' | 'mono'> {}
 
-/** A value in the shape of an input, for a row that reports rather than edits. */
+/**
+ * A value in the shape of an input, for a row that reports rather than edits.
+ * Not a disabled input: nothing here was ever editable, so nothing is greyed
+ * out to say it stopped being.
+ */
 export function FieldValue({
   size = 'medium',
   mono = false,
@@ -129,40 +133,5 @@ export function FieldValue({
       className={cx('dz-field-value', className)}
       {...props}
     />
-  )
-}
-
-export interface FieldProps extends Omit<
-  ComponentPropsWithoutRef<'div'>,
-  'title'
-> {
-  label: ReactNode
-  /** Help text under the control; carries the error tone when erroring. */
-  hint?: ReactNode
-  state?: FieldState
-  tint?: Tint
-}
-
-/** Label, control, hint — the shape of a form row. */
-export function Field({
-  label,
-  hint,
-  state = 'default',
-  tint = 'primary',
-  className,
-  children,
-  ...props
-}: FieldProps) {
-  return (
-    <div
-      data-invalid={state === 'error'}
-      data-tint={tintFor(state, tint)}
-      className={cx('dz-field', className)}
-      {...props}
-    >
-      <span className="dz-field__label">{label}</span>
-      {children}
-      {hint ? <span className="dz-field__hint">{hint}</span> : null}
-    </div>
   )
 }

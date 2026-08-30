@@ -1,4 +1,4 @@
-import { Badge, Spinner, Toast, ToastViewport } from '@dazzlabs/dazzui-react'
+import { Button, Spinner, Toast, ToastViewport } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { Page, Section, Stack, TokenTable } from '../components/gallery'
@@ -34,9 +34,9 @@ export const Overview: Story = {
             tint="warning"
             icon="!"
             action={
-              <Badge variant="outlined" tint="warning">
+              <Button size="small" tint="warning" variant="plain">
                 Undo
-              </Badge>
+              </Button>
             }
           >
             Switched to the backup provider

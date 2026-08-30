@@ -1,0 +1,33 @@
+/*
+ * Label, control, hint. The wrapper draws no box of its own — the control it
+ * holds does that — so it owns only the space between the three and the type
+ * of the two it prints itself.
+ */
+.dz-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--form-field-gap);
+}
+
+.dz-form-field__label {
+  color: var(--color-content-muted);
+  font-family: var(--form-field-label-font-family);
+  font-size: var(--form-field-label-font-size);
+  font-weight: var(--form-field-label-font-weight);
+  line-height: var(--form-field-label-line-height);
+}
+
+.dz-form-field__hint {
+  color: var(--color-content-muted);
+  font-family: var(--form-field-hint-font-family);
+  font-size: var(--form-field-hint-font-size);
+  font-weight: var(--form-field-hint-font-weight);
+  line-height: var(--form-field-hint-line-height);
+}
+
+/* Erroring, the label and the hint join the control on the danger ramp, which
+   the wrapper is re-tinted to rather than given its own error colours. */
+.dz-form-field[data-invalid='true'] .dz-form-field__label,
+.dz-form-field[data-invalid='true'] .dz-form-field__hint {
+  color: var(--tint-600);
+}

@@ -1,0 +1,16 @@
+{
+  "form-field": {
+    "gap": {
+      "$type": "dimension",
+      "$value": "{spacing.1.5}"
+    },
+    "label": {
+      "$type": "typography",
+      "$value": "{labelSmall}"
+    },
+    "hint": {
+      "$type": "typography",
+      "$value": "{captionMedium}"
+    }
+  }
+}

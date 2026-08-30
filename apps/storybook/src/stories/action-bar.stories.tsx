@@ -1,4 +1,4 @@
-import { ActionBar, Badge } from '@dazzlabs/dazzui-react'
+import { ActionBar, Button } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { Page, Section, Stack } from '../components/gallery'
@@ -23,22 +23,18 @@ export const Overview: Story = {
       >
         <Stack>
           <ActionBar>
-            <Badge variant="filled">Save</Badge>
-            <Badge variant="outlined" tint="neutral">
-              Cancel
-            </Badge>
+            <Button variant="filled">Save</Button>
+            <Button>Cancel</Button>
           </ActionBar>
           <ActionBar align="end">
-            <Badge variant="outlined" tint="neutral">
-              Cancel
-            </Badge>
-            <Badge variant="filled">Save</Badge>
+            <Button>Cancel</Button>
+            <Button variant="filled">Save</Button>
           </ActionBar>
           <ActionBar align="between">
-            <Badge variant="outlined" tint="danger">
+            <Button tint="danger" variant="outlined">
               Delete
-            </Badge>
-            <Badge variant="filled">Save</Badge>
+            </Button>
+            <Button variant="filled">Save</Button>
           </ActionBar>
         </Stack>
       </Section>

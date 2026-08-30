@@ -10,6 +10,10 @@ const preview: Preview = {
     controls: { disable: true },
     options: {
       storySort: {
+        // Anything the order below does not name falls back to alphabetical,
+        // which is what sorts the Components group: there is one page per
+        // component, so the group is an index you look a name up in.
+        method: 'alphabetical',
         // Tokens before Components, because the components are drawn from
         // them; and within Tokens, the semantic roles a reader actually uses
         // before the primitives those roles alias.
@@ -25,32 +29,6 @@ const preview: Preview = {
             'Primitives',
           ],
           'Components',
-          [
-            'Button',
-            'IconButton',
-            'Selection',
-            'Field',
-            'Pickers',
-            'ActionBar',
-            'AlertBanner',
-            'Badge',
-            'Card',
-            'Dialog',
-            'Divider',
-            'EmptyState',
-            'Icon',
-            'Kbd',
-            'Menu',
-            'OptionCard',
-            'Preference',
-            'Progress',
-            'SectionLabel',
-            'ShortcutRecorder',
-            'Spinner',
-            'StepList',
-            'Table',
-            'Toast',
-          ],
         ],
       },
     },

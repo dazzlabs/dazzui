@@ -1,0 +1,58 @@
+{
+  "nav-item": {
+    "small": {
+      "padding": {
+        "block": {
+          "$type": "dimension",
+          "$value": "{spacing.1.5}"
+        },
+        "inline": {
+          "$type": "dimension",
+          "$value": "{spacing.2.5}"
+        }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{control.small.gap}"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.small}"
+      },
+      "content": {
+        "$type": "typography",
+        "$value": "{labelSmall}"
+      }
+    },
+    "medium": {
+      "padding": {
+        "block": {
+          "$type": "dimension",
+          "$value": "{spacing.2}"
+        },
+        "inline": {
+          "$type": "dimension",
+          "$value": "{spacing.3}"
+        }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{control.small.gap}"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.small}"
+      },
+      "content": {
+        "$type": "typography",
+        "$value": "{labelSmall}"
+      }
+    },
+    "icon": {
+      "size": {
+        "$type": "dimension",
+        "$value": "{spacing.4}"
+      }
+    }
+  }
+}

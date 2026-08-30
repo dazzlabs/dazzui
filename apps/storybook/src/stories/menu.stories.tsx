@@ -1,4 +1,4 @@
-import { Badge, Kbd, Menu } from '@dazzlabs/dazzui-react'
+import { Button, Kbd, Menu } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 
@@ -21,11 +21,15 @@ type Story = StoryObj<typeof meta>
 
 function Trigger({ open, onClick }: { open: boolean; onClick: () => void }) {
   return (
-    <span onClick={onClick} style={{ cursor: 'pointer' }}>
-      <Badge variant={open ? 'filled' : 'outlined'} tint="neutral">
-        Options
-      </Badge>
-    </span>
+    <Button
+      aria-expanded={open}
+      aria-haspopup="menu"
+      tint="neutral"
+      variant={open ? 'filled' : 'normal'}
+      onClick={onClick}
+    >
+      Options
+    </Button>
   )
 }
 

@@ -1,0 +1,108 @@
+/*
+ * The left workspace column.
+ *
+ * Its width is a token rather than a layout choice because the columns of a
+ * desktop shell have to agree with each other: the header strip is exactly the
+ * titlebar's height, or the separator under the two steps where they meet.
+ */
+.dz-sidebar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: var(--sidebar-width);
+  background-color: var(--sidebar-surface);
+  border-inline-end: var(--spacing-px) solid var(--sidebar-border);
+}
+
+.dz-sidebar__header {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: var(--sidebar-header-size);
+  padding-inline: var(--sidebar-header-padding-inline);
+}
+
+/* Only the row list scrolls, so a pinned card stays put. */
+.dz-sidebar__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: var(--sidebar-gap);
+  overflow-y: auto;
+  padding-block: var(--sidebar-padding-block);
+  padding-inline: var(--sidebar-padding-inline);
+}
+
+.dz-sidebar-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sidebar-gap);
+  margin-top: var(--sidebar-group-gap);
+}
+
+/* The gap between groups does the work; the first one needs none. */
+.dz-sidebar-group:first-child {
+  margin-top: 0;
+}
+
+.dz-sidebar-group__label,
+.dz-rail-group__label {
+  padding-block: var(--spacing-1);
+  padding-inline: var(--sidebar-padding-inline);
+}
+
+.dz-sidebar-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sidebar-card-gap);
+  /* Pinned to the foot of the column, whatever the list above it does. */
+  margin-top: auto;
+  padding: var(--sidebar-card-padding);
+  background-color: var(--sidebar-card-surface);
+  border: var(--spacing-px) solid var(--sidebar-card-border);
+  border-radius: var(--sidebar-card-radius);
+}
+
+/*
+ * The grab area straddles the separator and reaches a few pixels into the pane
+ * beside it, because a one-pixel target is not a target. Nothing is drawn
+ * there — the separator itself is what lights up.
+ */
+.dz-sidebar__resizer {
+  position: absolute;
+  inset-block: 0;
+  z-index: 10;
+  width: var(--sidebar-resizer-size);
+  inset-inline-end: calc(var(--sidebar-resizer-size) / -2);
+  cursor: col-resize;
+  touch-action: none;
+  outline: none;
+}
+
+.dz-sidebar__resizer::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: calc(var(--sidebar-resizer-size) / 2);
+  width: var(--spacing-px);
+  background-color: var(--tint-600);
+  opacity: 0;
+  transition: opacity 0.12s ease-out;
+}
+
+.dz-sidebar__resizer:hover::after,
+.dz-sidebar__resizer:focus-visible::after {
+  opacity: 0.6;
+}
+
+.dz-sidebar__resizer[data-dragging='true']::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dz-sidebar__resizer::after {
+    transition: none;
+  }
+}

@@ -1,8 +1,13 @@
 /*
- * The text controls share one box. The error state is not a second palette
- * bolted on: the control is simply re-tinted to `danger`, so the border, the
- * wash, and the focus ring all move together and there is one rule for each
- * rather than one per state per tone.
+ * The text controls share one box, and share it deliberately: a Select is an
+ * Input with a chevron, and a FieldValue is one that was never editable, so
+ * the three drifting apart would be the bug rather than the feature. They read
+ * `input.*` — the archetype's namespace — and only Textarea overrides, because
+ * only Textarea is shaped differently.
+ *
+ * The error state is not a second palette bolted on: the control is re-tinted
+ * to `danger`, so the border, the wash and the focus ring all move together
+ * and there is one rule for each rather than one per state per tone.
  */
 .dz-input,
 .dz-textarea,
@@ -56,11 +61,11 @@
 /*
  * A textarea grows, so it takes the container corner rather than the control
  * corner — a theme that makes controls pills would otherwise turn a multi-line
- * box into a lozenge.
+ * box into a lozenge — and a floor rather than a height.
  */
 .dz-textarea {
-  min-height: var(--field-textarea-size);
-  border-radius: var(--field-textarea-radius);
+  min-height: var(--textarea-size);
+  border-radius: var(--textarea-radius);
   resize: vertical;
 }
 
@@ -77,7 +82,7 @@
 
 .dz-select__chevron {
   position: absolute;
-  inset-inline-end: var(--control-medium-padding-inline);
+  inset-inline-end: var(--input-medium-padding-inline);
   top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
@@ -90,91 +95,63 @@
 .dz-field-value[data-size='small'],
 .dz-select[data-size='small'] .dz-select__control,
 .dz-textarea[data-size='small'] {
-  padding-block: var(--field-small-padding-block);
-  padding-inline: var(--field-small-padding-inline);
-  border-radius: var(--field-small-radius);
-  font-family: var(--field-small-content-font-family);
-  font-size: var(--field-small-content-font-size);
-  font-weight: var(--field-small-content-font-weight);
-  line-height: var(--field-small-content-line-height);
+  padding-block: var(--input-small-padding-block);
+  padding-inline: var(--input-small-padding-inline);
+  border-radius: var(--input-small-radius);
+  font-family: var(--input-small-content-font-family);
+  font-size: var(--input-small-content-font-size);
+  font-weight: var(--input-small-content-font-weight);
+  line-height: var(--input-small-content-line-height);
 }
 
 .dz-input[data-size='medium'],
 .dz-field-value[data-size='medium'],
 .dz-select[data-size='medium'] .dz-select__control,
 .dz-textarea[data-size='medium'] {
-  padding-block: var(--field-medium-padding-block);
-  padding-inline: var(--field-medium-padding-inline);
-  border-radius: var(--field-medium-radius);
-  font-family: var(--field-medium-content-font-family);
-  font-size: var(--field-medium-content-font-size);
-  font-weight: var(--field-medium-content-font-weight);
-  line-height: var(--field-medium-content-line-height);
+  padding-block: var(--input-medium-padding-block);
+  padding-inline: var(--input-medium-padding-inline);
+  border-radius: var(--input-medium-radius);
+  font-family: var(--input-medium-content-font-family);
+  font-size: var(--input-medium-content-font-size);
+  font-weight: var(--input-medium-content-font-weight);
+  line-height: var(--input-medium-content-line-height);
 }
 
 .dz-input[data-size='large'],
 .dz-field-value[data-size='large'],
 .dz-select[data-size='large'] .dz-select__control,
 .dz-textarea[data-size='large'] {
-  padding-block: var(--field-large-padding-block);
-  padding-inline: var(--field-large-padding-inline);
-  border-radius: var(--field-large-radius);
-  font-family: var(--field-large-content-font-family);
-  font-size: var(--field-large-content-font-size);
-  font-weight: var(--field-large-content-font-weight);
-  line-height: var(--field-large-content-line-height);
+  padding-block: var(--input-large-padding-block);
+  padding-inline: var(--input-large-padding-inline);
+  border-radius: var(--input-large-radius);
+  font-family: var(--input-large-content-font-family);
+  font-size: var(--input-large-content-font-size);
+  font-weight: var(--input-large-content-font-weight);
+  line-height: var(--input-large-content-line-height);
 }
 
 /* Single-line controls take the shared control height, so a form can mix them
-   with buttons without the rows stepping. A textarea is sized by its content. */
+   with buttons without the rows stepping. A textarea is sized by its content,
+   and its radius override above already replaced the control corner. */
 .dz-input[data-size='small'],
 .dz-field-value[data-size='small'],
 .dz-select[data-size='small'] .dz-select__control {
-  height: var(--field-small-size);
+  height: var(--input-small-size);
 }
 
 .dz-input[data-size='medium'],
 .dz-field-value[data-size='medium'],
 .dz-select[data-size='medium'] .dz-select__control {
-  height: var(--field-medium-size);
+  height: var(--input-medium-size);
 }
 
 .dz-input[data-size='large'],
 .dz-field-value[data-size='large'],
 .dz-select[data-size='large'] .dz-select__control {
-  height: var(--field-large-size);
+  height: var(--input-large-size);
 }
 
 /* The chevron needs room the text must not run into. */
 .dz-select .dz-select__control {
   padding-inline-end: var(--spacing-7);
-}
-
-/* Label + control + hint -------------------------------------------------- */
-
-.dz-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--field-gap);
-}
-
-.dz-field__label {
-  color: var(--color-content-muted);
-  font-family: var(--field-label-font-family);
-  font-size: var(--field-label-font-size);
-  font-weight: var(--field-label-font-weight);
-  line-height: var(--field-label-line-height);
-}
-
-.dz-field[data-invalid='true'] .dz-field__label,
-.dz-field[data-invalid='true'] .dz-field__hint {
-  color: var(--tint-600);
-}
-
-.dz-field__hint {
-  color: var(--color-content-muted);
-  font-family: var(--field-hint-font-family);
-  font-size: var(--field-hint-font-size);
-  font-weight: var(--field-hint-font-weight);
-  line-height: var(--field-hint-line-height);
 }

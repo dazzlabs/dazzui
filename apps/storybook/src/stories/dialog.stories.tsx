@@ -1,6 +1,7 @@
 import {
   ActionBar,
   Badge,
+  Button,
   Dialog,
   DialogBody,
   DialogFooter,
@@ -56,10 +57,8 @@ function ExportSheet() {
       <DialogFooter>
         <Badge tint="neutral">About 3.6 MB</Badge>
         <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
-          <Badge variant="outlined" tint="neutral">
-            Cancel
-          </Badge>
-          <Badge variant="filled">Export</Badge>
+          <Button>Cancel</Button>
+          <Button variant="filled">Export</Button>
         </ActionBar>
       </DialogFooter>
     </Dialog>
@@ -74,7 +73,7 @@ export const Overview: Story = {
     >
       <Section
         title="A sheet"
-        description="Shown without its scrim so the page stays readable. The buttons here are stand-ins — Button lands with the interactive wave."
+        description="Shown without its scrim so the page stays readable. The footer keeps its buttons on one rhythm with an ActionBar, and the size on the left rides opposite them."
       >
         <ExportSheet />
       </Section>
@@ -90,12 +89,10 @@ export const Overview: Story = {
           />
           <DialogFooter>
             <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
-              <Badge variant="outlined" tint="neutral">
-                Cancel
-              </Badge>
-              <Badge variant="filled" tint="danger">
+              <Button>Cancel</Button>
+              <Button tint="danger" variant="filled">
                 Delete
-              </Badge>
+              </Button>
             </ActionBar>
           </DialogFooter>
         </Dialog>

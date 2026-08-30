@@ -1,27 +1,5 @@
 {
-  "field": {
-    "gap": {
-      "$type": "dimension",
-      "$value": "{spacing.1.5}"
-    },
-    "label": {
-      "$type": "typography",
-      "$value": "{labelSmall}"
-    },
-    "hint": {
-      "$type": "typography",
-      "$value": "{captionMedium}"
-    },
-    "textarea": {
-      "radius": {
-        "$type": "dimension",
-        "$value": "{radius.medium}"
-      },
-      "size": {
-        "$type": "dimension",
-        "$value": "{spacing.20}"
-      }
-    },
+  "input": {
     "small": {
       "size": {
         "$type": "dimension",

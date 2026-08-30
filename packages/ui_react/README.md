@@ -16,11 +16,11 @@ import '@dazzlabs/dazzui-react/components.css'
 ```
 
 ```tsx
-import { Button, Field, Input } from '@dazzlabs/dazzui-react'
+import { Button, FormField, Input } from '@dazzlabs/dazzui-react'
 
-<Field label="Endpoint">
+<FormField label="Endpoint">
   <Input mono defaultValue="https://api.example.com" />
-</Field>
+</FormField>
 <Button variant="filled">Save</Button>
 ```
 

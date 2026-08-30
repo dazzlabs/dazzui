@@ -2,7 +2,7 @@ import { type ReactNode, useEffect, useRef } from 'react'
 
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
-import type { FieldSize } from './field'
+import type { InputSize } from './input'
 
 export interface SearchFieldProps {
   value: string
@@ -10,7 +10,7 @@ export interface SearchFieldProps {
   placeholder?: string
   /** Trailing hint shown while the field is empty — usually a `Kbd`. */
   hint?: ReactNode
-  size?: FieldSize
+  size?: InputSize
   tint?: Tint
   /** Focus on mount, for a field opened by a shortcut. */
   autoFocus?: boolean

@@ -1,0 +1,83 @@
+/*
+ * One row of a navigation column, in a sidebar or a rail.
+ *
+ * The hover wash comes off the tinted ramp rather than the neutral one, which
+ * is the opposite of what a menu item or a table row wants. The difference is
+ * what the *selected* state is: a nav row is selected with the filled recipe,
+ * so a tinted hover at shade 100 previews it and still sits far below it. A
+ * table row selects at shade 50, which a tinted hover would outweigh.
+ */
+.dz-nav-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: 0;
+  background: none;
+  color: var(--color-content);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 0.12s ease-out,
+    color 0.12s ease-out;
+}
+
+.dz-nav-item:hover:not(:disabled):not([aria-current]) {
+  background-color: var(--control-color-plain-surface-hovered);
+}
+
+.dz-nav-item[aria-current] {
+  background-color: var(--control-color-filled-surface-normal);
+  color: var(--control-color-filled-content-normal);
+}
+
+.dz-nav-item:disabled {
+  cursor: not-allowed;
+  color: var(--control-color-normal-content-disabled);
+}
+
+.dz-nav-item:focus-visible {
+  outline: var(--focus-width) solid var(--tint-600);
+  outline-offset: var(--focus-offset);
+}
+
+/* An action adds rather than selects, so it is printed in the ramp instead of
+   filled with it, and never takes the current-page state. */
+.dz-nav-action {
+  color: var(--control-color-plain-content-normal);
+  margin-top: auto;
+}
+
+/*
+ * The glyph is taller than the label, so it is boxed to the row's line height
+ * and allowed to overflow rather than stretching the row.
+ */
+.dz-nav-item__icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--nav-item-icon-size);
+  height: var(--nav-item-content-line-height, 1em);
+}
+
+.dz-nav-item[data-size='small'] {
+  gap: var(--nav-item-small-gap);
+  padding-block: var(--nav-item-small-padding-block);
+  padding-inline: var(--nav-item-small-padding-inline);
+  border-radius: var(--nav-item-small-radius);
+  font-family: var(--nav-item-small-content-font-family);
+  font-size: var(--nav-item-small-content-font-size);
+  font-weight: var(--nav-item-small-content-font-weight);
+  line-height: var(--nav-item-small-content-line-height);
+}
+
+.dz-nav-item[data-size='medium'] {
+  gap: var(--nav-item-medium-gap);
+  padding-block: var(--nav-item-medium-padding-block);
+  padding-inline: var(--nav-item-medium-padding-inline);
+  border-radius: var(--nav-item-medium-radius);
+  font-family: var(--nav-item-medium-content-font-family);
+  font-size: var(--nav-item-medium-content-font-size);
+  font-weight: var(--nav-item-medium-content-font-weight);
+  line-height: var(--nav-item-medium-content-line-height);
+}

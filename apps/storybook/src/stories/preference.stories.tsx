@@ -1,5 +1,6 @@
 import {
   Badge,
+  Button,
   Divider,
   PreferenceGroup,
   PreferenceRow,
@@ -79,11 +80,7 @@ export const Overview: Story = {
           <PreferenceGroup
             title="Translation"
             description="How segments are sent, and what comes back."
-            action={
-              <Badge variant="outlined" tint="neutral">
-                Reset
-              </Badge>
-            }
+            action={<Button size="small">Reset</Button>}
           >
             <PreferenceSection label="Providers">
               <PreferenceRow title="Primary" subtitle="DeepL">

@@ -1,0 +1,45 @@
+/*
+ * The second column: the groups, books or pages inside whatever the sidebar
+ * selected. Lighter than the sidebar, because it sits closer to the content.
+ */
+.dz-rail {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: var(--rail-width);
+  gap: var(--rail-gap);
+  overflow-y: auto;
+  padding-block: var(--rail-padding-block);
+  padding-inline: var(--rail-padding-inline);
+  background-color: var(--rail-surface);
+  border-inline-end: var(--spacing-px) solid var(--rail-border);
+}
+
+.dz-rail-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rail-gap);
+  margin-top: var(--rail-group-gap);
+}
+
+.dz-rail-group:first-child {
+  margin-top: 0;
+}
+
+.dz-rail-group__label {
+  padding-inline: var(--rail-padding-inline);
+}
+
+/* The trailing information column. */
+.dz-aside {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: var(--aside-width);
+  gap: var(--aside-gap);
+  overflow-y: auto;
+  padding-block: var(--aside-padding-block);
+  padding-inline: var(--aside-padding-inline);
+  background-color: var(--aside-surface);
+  border-inline-start: var(--spacing-px) solid var(--aside-border);
+}

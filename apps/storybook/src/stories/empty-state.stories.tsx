@@ -1,4 +1,4 @@
-import { Badge, Card, EmptyState } from '@dazzlabs/dazzui-react'
+import { Button, Card, EmptyState } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { Page, Section, TokenTable } from '../components/gallery'
@@ -31,7 +31,7 @@ export const Overview: Story = {
         <Card variant="sunken">
           <EmptyState
             title="No glossary terms match this filter"
-            action={<Badge variant="outlined">Clear filter</Badge>}
+            action={<Button>Clear filter</Button>}
           />
         </Card>
       </Section>
