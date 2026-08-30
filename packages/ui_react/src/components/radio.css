@@ -19,17 +19,21 @@
 }
 
 /* Sizes -------------------------------------------------------------------
- * The row's geometry and type come off the shared size profile that
- * `[data-size]` binds. The ring and its dot keep their own per-size
- * dimensions — that is the point of `radio.<size>.box` and `radio.<size>.dot`. */
+ * The row sits at the ring's own height (see checkbox.css on why there is no
+ * min-height) and carries the same quiet/label weight pair. The ring and its
+ * dot keep their per-size dimensions — that is the point of
+ * `radio.<size>.box` and `radio.<size>.dot`. */
 
 .dz-radio {
-  min-height: var(--control-size);
-  gap: var(--control-gap);
-  font-family: var(--control-font-family);
-  font-size: var(--control-font-size);
-  font-weight: var(--control-font-weight);
-  line-height: var(--control-line-height);
+  gap: var(--spacing-2-5);
+  font-family: var(--label-quiet-font-family);
+  font-size: var(--label-quiet-font-size);
+  font-weight: var(--label-quiet-font-weight);
+  line-height: var(--label-quiet-line-height);
+}
+
+.dz-radio[aria-checked='true'] {
+  font-weight: var(--label-medium-font-weight);
 }
 
 .dz-radio[data-size='small'] .dz-radio__box {
@@ -65,6 +69,5 @@
 .dz-radio-group {
   display: flex;
   flex-direction: column;
-  /* The group carries no size axis, so it takes the medium profile's gap. */
-  gap: var(--control-medium-gap);
+  gap: var(--spacing-2-5);
 }

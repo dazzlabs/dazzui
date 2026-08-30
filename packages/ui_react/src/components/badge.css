@@ -1,3 +1,8 @@
+/*
+ * A tag: the display cut at label weight in a tight chip-cornered capsule.
+ * Its label has to read as an annotation, not as body copy, which is why the
+ * face and weight never soften whatever the size.
+ */
 .dz-badge {
   display: inline-flex;
   align-items: center;
@@ -6,51 +11,42 @@
      per side and fall off the heights the other variants share. */
   border: var(--spacing-px) solid transparent;
   white-space: nowrap;
+  font-family: var(--label-strong-font-family);
+  font-weight: var(--label-medium-font-weight);
+  line-height: 1.4;
 }
 
 /* Sizes -------------------------------------------------------------------
- * A badge is not a control, so it reads the shared profiles directly rather
- * than opting into the `[data-size]` bindings. It runs one profile step
- * behind its own size name — a small badge wears the tiny control's padding —
- * and sets its label in the caption face, since it annotates rather than
- * invites.
+ * Two capsule densities on the chip corner; the type moves one step at the
+ * top. A badge is an annotation — it never reaches control height.
  */
 
 .dz-badge[data-size='small'] {
-  padding-block: var(--control-tiny-padding-block);
-  padding-inline: var(--control-tiny-padding-inline);
-  border-radius: var(--radius-small);
-  font-family: var(--caption-small-font-family);
-  font-size: var(--caption-small-font-size);
-  font-weight: var(--caption-small-font-weight);
-  line-height: var(--caption-small-line-height);
+  padding-block: var(--spacing-0-5);
+  padding-inline: var(--spacing-1-5);
+  border-radius: var(--radius-tiny);
+  font-size: var(--label-small-font-size);
 }
 
 .dz-badge[data-size='medium'] {
-  padding-block: var(--control-small-padding-block);
-  padding-inline: var(--control-small-padding-inline);
-  border-radius: var(--radius-medium);
-  font-family: var(--caption-medium-font-family);
-  font-size: var(--caption-medium-font-size);
-  font-weight: var(--caption-medium-font-weight);
-  line-height: var(--caption-medium-line-height);
+  padding-block: var(--spacing-0-5);
+  padding-inline: var(--spacing-2);
+  border-radius: var(--radius-tiny);
+  font-size: var(--label-small-font-size);
 }
 
 .dz-badge[data-size='large'] {
-  padding-block: var(--control-medium-padding-block);
-  padding-inline: var(--control-medium-padding-inline);
-  border-radius: var(--radius-large);
-  font-family: var(--caption-large-font-family);
-  font-size: var(--caption-large-font-size);
-  font-weight: var(--caption-large-font-weight);
-  line-height: var(--caption-large-line-height);
+  padding-block: var(--spacing-1);
+  padding-inline: var(--spacing-2);
+  border-radius: var(--radius-tiny);
+  font-size: var(--label-medium-font-size);
 }
 
 /* Variants ----------------------------------------------------------------
- * The three recipes a badge can wear, read at their resting state only. A
- * badge is not interactive, so it deliberately skips the shared `data-control`
- * state machine: `:hover` would fire on it just the same, and a label that
- * changes colour under the pointer reads as something you can press.
+ * The recipes a badge can wear, read at their resting state only. A badge is
+ * not interactive, so it deliberately skips the shared `data-control` state
+ * machine: `:hover` would fire on it just the same, and a label that changes
+ * colour under the pointer reads as something you can press.
  */
 
 .dz-badge[data-variant='filled'] {
@@ -66,4 +62,10 @@
 .dz-badge[data-variant='outlined'] {
   border-color: var(--control-color-outlined-border-normal);
   color: var(--control-color-outlined-content-normal);
+}
+
+/* The badge that sits on a grey card: paper fill, quiet ink. */
+.dz-badge[data-variant='raised'] {
+  background-color: var(--color-surface);
+  color: var(--color-content-muted);
 }

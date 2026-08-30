@@ -1,0 +1,10 @@
+# The one transition the system uses: color crossfades on interactive
+# surfaces. 150ms on the standard ease curve — long enough to read as a fade,
+# short enough that a fast pointer never waits on it.
+motion:
+  duration:
+    $type: duration
+    $value: 150ms
+  easing:
+    $type: cubicBezier
+    $value: [0.4, 0, 0.2, 1]

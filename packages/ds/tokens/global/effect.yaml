@@ -158,37 +158,3 @@ shadow:
           blur: 64px
           spread: 0px
           color: "#000000b3"
-inset-shadow:
-  $type: shadow
-  2xs:
-    $value: "{base.shadow.2xs}"
-  xs:
-    $value: "{base.shadow.xs}"
-  sm:
-    $value: "{base.shadow.sm}"
-drop-shadow:
-  $type: shadow
-  xs:
-    $value: "{base.shadow.xs}"
-  sm:
-    $value: "{base.shadow.sm}"
-  md:
-    $value: "{base.shadow.md}"
-  lg:
-    $value: "{base.shadow.lg}"
-  xl:
-    $value: "{base.shadow.xl}"
-  2xl:
-    $value: "{base.shadow.2xl}"
-text-shadow:
-  $type: shadow
-  2xs:
-    $value: "{base.shadow.2xs}"
-  xs:
-    $value: "{base.shadow.xs}"
-  sm:
-    $value: "{base.shadow.sm}"
-  md:
-    $value: "{base.shadow.md}"
-  lg:
-    $value: "{base.shadow.lg}"

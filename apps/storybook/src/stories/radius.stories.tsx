@@ -25,7 +25,7 @@ export const Scale: Story = {
               <div
                 style={{
                   width: '100%',
-                  height: 'var(--base-spacing-16)',
+                  height: 'var(--spacing-16)',
                   borderRadius: `var(${token.property})`,
                   background: 'var(--color-primary-500)',
                 }}

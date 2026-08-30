@@ -33,3 +33,8 @@ frame:
     width:
       $type: dimension
       $value: 13.375rem
+  # The 3px rhythm between navigation rows — tighter than any grid step,
+  # because a nav column is one object, not a list of controls.
+  nav-gap:
+    $type: dimension
+    $value: 0.1875rem

@@ -7,11 +7,13 @@
   position: absolute;
   top: 100%;
   z-index: 20;
+  min-width: var(--menu-min-width);
   margin-top: var(--spacing-1);
   padding: var(--spacing-1);
+  overflow: hidden;
   background-color: var(--color-surface);
-  border: var(--spacing-px) solid var(--color-border);
-  border-radius: var(--radius-medium);
+  border: var(--stroke-hairline) solid var(--color-border-strong);
+  border-radius: var(--radius-large);
   box-shadow: var(--shadow-lg);
 }
 
@@ -24,41 +26,41 @@
 }
 
 /*
- * A menu item is always small-profile shaped — it does not carry `data-size`,
- * so it reads the small profile's steps explicitly rather than the bindings.
+ * A menu row: 12px quiet-weight label on a 26px row — `menu.item-padding`
+ * carries the odd 7px that squares that. The item's corner is the panel's
+ * minus its padding, so the hover wash stays concentric with the panel edge.
  */
 .dz-menu__item {
   display: flex;
   align-items: center;
-  gap: var(--control-small-gap);
+  gap: var(--spacing-2);
   width: 100%;
-  padding-block: var(--control-small-padding-block);
+  padding-block: var(--menu-item-padding);
   padding-inline: var(--spacing-2);
   border: 0;
-  border-radius: var(--radius-small);
+  border-radius: calc(var(--radius-large) - var(--spacing-1));
   background: none;
   color: var(--color-content);
   text-align: left;
   white-space: nowrap;
   cursor: pointer;
-  font-family: var(--label-small-font-family);
-  font-size: var(--label-small-font-size);
-  font-weight: var(--label-small-font-weight);
-  line-height: var(--label-small-line-height);
+  font-family: var(--label-quiet-font-family);
+  font-size: var(--label-quiet-font-size);
+  font-weight: var(--label-quiet-font-weight);
+  line-height: 1;
+  transition: background-color var(--motion-duration) var(--motion-easing);
 }
 
 /*
  * The `normal` recipe, not `plain`. Both have no resting fill, but `plain` is
  * the quiet *accent* control — its wash comes off the tinted ramp, which on a
  * row would land heavier than a tinted selection sitting one step lower. A
- * row's wash is neutral; only what it selects is tinted.
+ * row's wash is neutral, and it holds while pressed: a menu item has no
+ * pressed look of its own.
  */
-.dz-menu__item:hover {
+.dz-menu__item:hover:not(:disabled),
+.dz-menu__item:active:not(:disabled) {
   background-color: var(--control-color-normal-surface-hovered);
-}
-
-.dz-menu__item:active {
-  background-color: var(--control-color-normal-surface-pressed);
 }
 
 .dz-menu__item:disabled {
@@ -66,13 +68,9 @@
   cursor: not-allowed;
 }
 
-.dz-menu__item:disabled:hover {
-  background-color: transparent;
-}
-
 .dz-menu__item:focus-visible {
-  outline: var(--focus-width) solid var(--tint-600);
-  outline-offset: calc(var(--focus-offset) * -1);
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
 }
 
 /*
@@ -84,6 +82,8 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  width: var(--spacing-3);
+  font-size: var(--label-small-font-size);
 }
 
 .dz-menu__check[data-checked='false'] {
@@ -101,8 +101,14 @@
   flex: 1;
 }
 
+/* The shortcut is a faint hint in the display cut — never a boxed key cap;
+   a cap in a 26px row would be furniture. */
 .dz-menu__shortcut {
   flex-shrink: 0;
   margin-inline-start: auto;
-  color: var(--color-content-muted);
+  color: var(--color-content-faint);
+  font-family: var(--label-strong-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--label-small-font-weight);
+  line-height: 1;
 }

@@ -11,6 +11,18 @@
       ],
       "port": 6006,
       "autoPort": true
+    },
+    {
+      "name": "ui-flutter-example",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8321",
+        "-d",
+        "packages/ui_flutter/example/build/web"
+      ],
+      "port": 8321
     }
   ]
 }

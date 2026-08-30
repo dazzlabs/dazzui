@@ -1,0 +1,43 @@
+/*
+ * The ground rules every component stands on. Scoped to `ff-` classes so the
+ * package stays embeddable — nothing here reaches a host page's own markup.
+ */
+
+/*
+ * Every control declares its height alongside a border, which only adds up
+ * under border-box. A host page without a reset would otherwise render every
+ * 28px control at 30px.
+ */
+[class^='ff-'],
+[class*=' ff-'],
+[class^='ff-'] *,
+[class*=' ff-'] *,
+[class^='ff-'] *::before,
+[class*=' ff-'] *::after {
+  box-sizing: border-box;
+}
+
+/*
+ * A separator is one *device* pixel. At 1x that is the 1px the token holds;
+ * on Retina a 1px CSS line is twice the weight of the real thing, so the
+ * variable halves. Components draw separators with `--stroke-hairline` to
+ * pick this up; drawn control outlines use `--stroke-control` and stay put.
+ */
+@media (min-resolution: 2dppx) {
+  :root {
+    --stroke-hairline: 0.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [class^='ff-'],
+  [class*=' ff-'],
+  [class^='ff-'] *,
+  [class*=' ff-'] *,
+  [class^='ff-'] *::before,
+  [class*=' ff-'] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,29 +1,37 @@
 /*
- * A box and a label on one row. The row's height is the hit target — the
- * shared control height — while the box is its own, much smaller square, which
- * is why `checkbox.<size>.box` exists alongside the shared size profile.
+ * A box and a label on one row. The box defines the row — there is no
+ * min-height, so a stacked checklist sits at the density the boxes set — and
+ * the label carries the selection signal twice over: it rests quiet
+ * (`labelQuiet`, one ink step back) and takes the full ink and label weight
+ * only when its box is checked. A checked row you cannot pick out of the
+ * list by its label alone is not signalling.
  */
 .dz-checkbox,
 .dz-radio {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   padding: 0;
   border: 0;
   background: none;
   text-align: left;
   cursor: pointer;
+  color: var(--color-content-muted);
+}
+
+.dz-checkbox[aria-checked='true'],
+.dz-radio[aria-checked='true'] {
   color: var(--color-content);
 }
 
 .dz-checkbox:disabled,
 .dz-radio:disabled {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: 0.6;
 }
 
 .dz-checkbox:focus-visible,
 .dz-radio:focus-visible {
-  outline: var(--focus-width) solid var(--tint-600);
+  outline: var(--focus-width) solid var(--focus-ring);
   outline-offset: var(--focus-offset);
 }
 
@@ -44,6 +52,12 @@
   color: var(--control-color-filled-content-normal);
 }
 
+/* The glyph sits a step under the label so it clears the box's corners. */
+.dz-checkbox__box {
+  font-size: var(--label-small-font-size);
+  line-height: 1;
+}
+
 .dz-checkbox__label,
 .dz-radio__label {
   min-width: 0;
@@ -52,25 +66,30 @@
 /* A trailing note rides on the label rather than the row, so it wraps with it
    instead of being pushed to the far edge like a control would be. */
 .dz-checkbox__note {
-  color: var(--color-content-muted);
+  color: var(--color-content-faint);
 }
 
 /* Sizes -------------------------------------------------------------------
- * The row's geometry and type come off the shared size profile that
- * `[data-size]` binds. The box keeps its own per-size square — that is the
- * point of `checkbox.<size>.box`. */
+ * Only the gap comes off the size profile; type is the quiet/label pair and
+ * the box keeps its own per-size square — that is the point of
+ * `checkbox.<size>.box`. The box corner is the component's own token: any
+ * shared step doubles as a pill under Bright, and a checkbox that goes round
+ * is a radio. */
 
 .dz-checkbox {
-  min-height: var(--control-size);
-  gap: var(--control-gap);
-  font-family: var(--control-font-family);
-  font-size: var(--control-font-size);
-  font-weight: var(--control-font-weight);
-  line-height: var(--control-line-height);
+  gap: var(--spacing-2-5);
+  font-family: var(--label-quiet-font-family);
+  font-size: var(--label-quiet-font-size);
+  font-weight: var(--label-quiet-font-weight);
+  line-height: var(--label-quiet-line-height);
+}
+
+.dz-checkbox[aria-checked='true'] {
+  font-weight: var(--label-medium-font-weight);
 }
 
 .dz-checkbox .dz-checkbox__box {
-  border-radius: var(--control-radius);
+  border-radius: var(--checkbox-radius);
 }
 
 .dz-checkbox[data-size='small'] .dz-checkbox__box {

@@ -13,12 +13,15 @@ export interface ProgressProps extends Omit<
   value?: number
   size?: ProgressSize
   tint?: Tint
+  /** Paint the fill with the theme's two-stop accent ramp instead of a flat tint. */
+  gradient?: boolean
 }
 
 export function Progress({
   value,
   size = 'small',
   tint = 'primary',
+  gradient = false,
   className,
   ...props
 }: ProgressProps) {
@@ -32,6 +35,7 @@ export function Progress({
       aria-valuemax={indeterminate ? undefined : 100}
       aria-valuenow={indeterminate ? undefined : clamped}
       data-indeterminate={indeterminate}
+      data-gradient={gradient || undefined}
       data-size={size}
       data-tint={tint}
       className={cx('dz-progress', className)}

@@ -8,6 +8,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  flex: 1;
   gap: var(--spacing-3);
   padding-block: var(--spacing-14);
   padding-inline: var(--spacing-8);
@@ -15,11 +16,11 @@
 }
 
 .dz-empty-state__title {
-  color: var(--color-content-muted);
-  font-family: var(--body-small-font-family);
-  font-size: var(--body-small-font-size);
-  font-weight: var(--body-small-font-weight);
-  line-height: var(--body-small-line-height);
+  color: var(--color-content-subtle);
+  font-family: var(--body-medium-font-family);
+  font-size: var(--body-medium-font-size);
+  font-weight: var(--body-medium-font-weight);
+  line-height: var(--body-medium-line-height);
 }
 
 /* A row of controls, so it takes the control gap rather than the block gap. */

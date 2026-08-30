@@ -15,9 +15,9 @@
   color: var(--control-content);
   border: var(--spacing-px) solid var(--control-border);
   transition:
-    background-color 0.12s ease-out,
-    border-color 0.12s ease-out,
-    color 0.12s ease-out;
+    background-color var(--motion-duration) var(--motion-easing),
+    border-color var(--motion-duration) var(--motion-easing),
+    color var(--motion-duration) var(--motion-easing);
 }
 
 .dz-button:disabled,
@@ -26,7 +26,7 @@
 }
 
 .dz-button:focus-visible {
-  outline: var(--focus-width) solid var(--tint-600);
+  outline: var(--focus-width) solid var(--focus-ring);
   outline-offset: var(--focus-offset);
 }
 
@@ -61,7 +61,23 @@
   line-height: var(--control-line-height);
 }
 
-/* A trailing shortcut is a hint, not part of the label. */
+/* The one action a view points at carries the extra weight and the hairline
+   lift — flat like every AppKit button, but separable from a tinted surface
+   by that one pixel of shadow. Both go when it is disabled and flattens. */
+.dz-button[data-variant='filled'] {
+  font-weight: var(--label-strong-font-weight);
+  box-shadow: var(--shadow-2xs);
+}
+
+.dz-button[data-variant='filled']:disabled,
+.dz-button[data-variant='filled'][aria-disabled='true'] {
+  font-weight: var(--control-font-weight);
+  box-shadow: none;
+}
+
+/* A trailing shortcut is a hint, not part of the label — it takes the
+   display cut and steps back. */
 .dz-button__shortcut {
+  font-family: var(--label-strong-font-family);
   opacity: 0.7;
 }

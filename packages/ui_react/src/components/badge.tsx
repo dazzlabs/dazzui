@@ -6,7 +6,7 @@ import type { Tint } from '../lib/tint'
 export type BadgeSize = 'small' | 'medium' | 'large'
 
 /** The `control.color.*` recipes that read as a label rather than a control. */
-export type BadgeVariant = 'filled' | 'tinted' | 'outlined'
+export type BadgeVariant = 'filled' | 'tinted' | 'outlined' | 'raised'
 
 export interface BadgeProps extends ComponentPropsWithoutRef<'span'> {
   size?: BadgeSize

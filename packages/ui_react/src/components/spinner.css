@@ -1,16 +1,25 @@
 /*
- * A ring with one segment picked out: the track sits low on the ramp, the head
- * high, and the whole thing turns.
+ * A ring with one segment picked out: the track is the tint at quarter
+ * strength, the head the tint itself, and the whole thing turns once a
+ * second — fast enough to read as work, slow enough not to read as alarm.
  */
 .dz-spinner {
   display: inline-block;
   flex-shrink: 0;
-  /* 200 rather than 100: the track has to stay readable on a tinted surface,
-     where a 50 fill sits directly behind it. */
-  border: var(--spacing-0-5) solid var(--tint-200);
+  /* A wash rather than a ramp step, so the track sits as correctly over a
+     tinted chip or a dark canvas as over the paper. */
+  border: var(--spacing-0-5) solid
+    color-mix(in srgb, var(--tint-600) 25%, transparent);
   border-top-color: var(--tint-600);
   border-radius: var(--radius-full);
-  animation: dz-spinner-turn 0.6s linear infinite;
+  animation: dz-spinner-turn 1s linear infinite;
+}
+
+/* On a filled control the ring goes white — a tinted spinner on its own
+   tint's fill is invisible. */
+.dz-spinner[data-on-accent='true'] {
+  border-color: color-mix(in srgb, var(--color-on-accent) 35%, transparent);
+  border-top-color: var(--color-on-accent);
 }
 
 .dz-spinner[data-size='small'] {
@@ -35,9 +44,12 @@
 }
 
 /* Slowed rather than stopped: a still spinner reads as a frozen app, which is
-   the opposite of what it is there to say. */
+   the opposite of what it is there to say. `!important` because the base
+   layer's reduced-motion clamp is also important, and this sheet loads after
+   it — the exception has to outrank the rule it excepts itself from. */
 @media (prefers-reduced-motion: reduce) {
   .dz-spinner {
-    animation-duration: 2.4s;
+    animation-duration: 2.4s !important;
+    animation-iteration-count: infinite !important;
   }
 }

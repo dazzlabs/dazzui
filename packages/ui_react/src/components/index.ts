@@ -50,7 +50,7 @@ export {
   Textarea,
   type TextareaProps,
 } from './input'
-export { Kbd, type KbdProps, type KbdSize } from './kbd'
+export { Kbd, type KbdProps, type KbdSize, type KbdVariant } from './kbd'
 export { Menu, type MenuItem, type MenuProps } from './menu'
 export {
   NavAction,
@@ -60,12 +60,7 @@ export {
   type NavItemSize,
 } from './nav-item'
 export { OptionCard, type OptionCardProps } from './option-card'
-export {
-  PillTabs,
-  type PillTabItem,
-  type PillTabsProps,
-  type PillTabsSize,
-} from './pill-tabs'
+export { PillTabs, type PillTabItem, type PillTabsProps } from './pill-tabs'
 export {
   PreferenceGroup,
   type PreferenceGroupProps,

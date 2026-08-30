@@ -11,38 +11,44 @@
   max-width: 100%;
   max-height: 100%;
   background-color: var(--color-surface);
-  border: var(--spacing-px) solid var(--color-border);
-  border-radius: var(--radius-big);
-  box-shadow: var(--shadow-xl);
+  border: var(--stroke-hairline) solid var(--color-border-strong);
+  /* The window corner and the popover shadow: a dialog is a window that
+     floats, not a panel that hovers at the window's own elevation. */
+  border-radius: var(--frame-window-radius);
+  box-shadow: var(--shadow-lg);
 }
 
 .dz-dialog[data-tone='danger'] {
-  border-color: var(--color-danger-300);
+  border-color: color-mix(in srgb, var(--color-danger-600) 34%, transparent);
 }
 
 .dz-dialog__header {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   flex-shrink: 0;
   gap: var(--spacing-1);
+  /* Floored at 44px so a subtitle-less header still balances the footer. */
+  min-height: var(--spacing-11);
   padding-block: var(--spacing-3);
   padding-inline: var(--spacing-5);
-  border-bottom: var(--spacing-px) solid var(--color-border);
+  border-bottom: var(--stroke-hairline) solid var(--color-border);
 }
 
 .dz-dialog__title {
-  font-family: var(--title-small-font-family);
+  font-family: var(--label-strong-font-family);
   font-size: var(--title-small-font-size);
-  font-weight: var(--title-small-font-weight);
-  line-height: var(--title-small-line-height);
+  font-weight: var(--label-strong-font-weight);
+  line-height: 1;
+  letter-spacing: -0.01em;
 }
 
 .dz-dialog__subtitle {
-  color: var(--color-content-muted);
-  font-family: var(--caption-medium-font-family);
-  font-size: var(--caption-medium-font-size);
-  font-weight: var(--caption-medium-font-weight);
-  line-height: var(--caption-medium-line-height);
+  color: var(--color-content-subtle);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+  font-weight: var(--caption-small-font-weight);
+  line-height: var(--caption-small-line-height);
 }
 
 /* The only part that scrolls, so it is the only part that may shrink. */
@@ -64,7 +70,7 @@
   padding-block: var(--spacing-3);
   padding-inline: var(--spacing-5);
   background-color: var(--color-surface-muted);
-  border-top: var(--spacing-px) solid var(--color-border);
+  border-top: var(--stroke-hairline) solid var(--color-border);
 }
 
 /*

@@ -3,7 +3,7 @@
   flex-direction: column;
   /* Transparent rather than absent, so `outlined` and `tinted` do not gain a
      pixel per side and sit a hair larger than the filled variants. */
-  border: var(--spacing-px) solid transparent;
+  border: var(--stroke-hairline) solid transparent;
 }
 
 /* Sizes ------------------------------------------------------------------- */
@@ -11,17 +11,20 @@
 .dz-card[data-size='small'] {
   padding: var(--spacing-3);
   gap: var(--spacing-2);
-  border-radius: var(--radius-small);
-}
-
-.dz-card[data-size='medium'] {
-  padding: var(--spacing-4);
-  gap: var(--spacing-3);
   border-radius: var(--radius-medium);
 }
 
+.dz-card[data-size='medium'] {
+  /* The card padding is asymmetric — a hair more inline than block — which
+     keeps a one-line row inside it optically centred. */
+  padding-block: var(--spacing-3);
+  padding-inline: var(--spacing-3-5);
+  gap: var(--spacing-3);
+  border-radius: var(--radius-large);
+}
+
 .dz-card[data-size='large'] {
-  padding: var(--spacing-5);
+  padding: var(--spacing-4);
   gap: var(--spacing-4);
   border-radius: var(--radius-large);
 }
@@ -33,9 +36,11 @@
   border-color: var(--color-border);
 }
 
-/* Recessed panel: the fill alone separates it, so no border. */
+/* The workaday card: one step off the paper, with the hairline — the
+   surface most content sits on. */
 .dz-card[data-variant='sunken'] {
   background-color: var(--color-surface-muted);
+  border-color: var(--color-border);
 }
 
 .dz-card[data-variant='outlined'] {
@@ -43,6 +48,6 @@
 }
 
 .dz-card[data-variant='tinted'] {
-  background-color: var(--tint-50);
-  border-color: var(--tint-200);
+  background-color: var(--control-color-tinted-surface-normal);
+  border-color: color-mix(in srgb, var(--tint-600) 20%, transparent);
 }

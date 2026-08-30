@@ -1,7 +1,13 @@
 checkbox:
   thickness:
     $type: dimension
-    $value: "{spacing.0.5}"
+    $value: "{stroke.control}"
+  # The box's own corner: 5px on a 16px box. The chip corner (7px) would eat
+  # half the box, and any shared step doubles as a pill under Bright — a
+  # checkbox that goes round is a radio.
+  radius:
+    $type: dimension
+    $value: 0.3125rem
   small:
     box:
       $type: dimension

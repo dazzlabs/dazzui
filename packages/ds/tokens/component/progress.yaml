@@ -1,0 +1,23 @@
+progress:
+  # The document-progress fill is a two-stop ramp of the accent, and the
+  # stops are the theme's to pick: Studio runs violet into a lighter violet,
+  # Bright runs ink into acid, and Bright Dark holds solid acid (two equal
+  # stops keep the token a gradient, since the bar paints a
+  # background-image).
+  gradient:
+    from:
+      $type: color
+      $value: "#6b4dff"
+      $extensions:
+        mode:
+          dark: "#7c5cff"
+          bright: "#111c2e"
+          bright-dark: "#d6ff3f"
+    to:
+      $type: color
+      $value: "#a08cff"
+      $extensions:
+        mode:
+          dark: "#b9a8ff"
+          bright: "#d6ff3f"
+          bright-dark: "#d6ff3f"

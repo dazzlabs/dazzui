@@ -3,12 +3,26 @@
  * `raised` lifts a lighter capsule off the track, which is what a desktop
  * segmented control does; `filled` paints it with the tint, which is louder
  * and worth keeping for a choice that has to shout.
+ *
+ * The nesting is derived, not restated: the track takes the control corner,
+ * the capsule sits `--segmented-control-inset` inside it, and its corner is
+ * the track's minus the inset — the only relationship that keeps the two
+ * curves concentric. The segment's height is likewise the control height
+ * minus the inset on both sides, so a segmented control lines up with the
+ * buttons beside it.
  */
 .dz-segmented-control {
   display: inline-flex;
-  padding: var(--spacing-0-5);
-  background-color: var(--color-surface-sunken);
+  padding: var(--segmented-control-inset);
+  background-color: var(--color-surface-inset);
   border-radius: var(--control-radius);
+}
+
+/* The medium track takes the regular control corner — one step above the
+   button beside it, because the track is a container for capsules rather
+   than a control face itself. */
+.dz-segmented-control[data-size='medium'] {
+  --control-radius: var(--radius-medium);
 }
 
 .dz-segmented-control[data-stretch='true'] {
@@ -17,22 +31,22 @@
 }
 
 .dz-segmented-control__segment {
-  height: var(--control-size);
-  padding-inline: var(--control-padding-inline);
-  border-radius: var(--control-radius);
-  font-family: var(--control-font-family);
+  height: calc(var(--control-size) - 2 * var(--segmented-control-inset));
+  padding-inline: var(--spacing-3);
+  border-radius: calc(var(--control-radius) - var(--segmented-control-inset));
+  font-family: var(--label-quiet-font-family);
   font-size: var(--control-font-size);
-  font-weight: var(--control-font-weight);
-  line-height: var(--control-line-height);
+  font-weight: var(--label-quiet-font-weight);
+  line-height: 1;
   border: 0;
   background: none;
-  color: var(--color-content-muted);
+  color: var(--color-content-secondary);
   white-space: nowrap;
   text-align: center;
   cursor: pointer;
   transition:
-    background-color 0.12s ease-out,
-    color 0.12s ease-out;
+    background-color var(--motion-duration) var(--motion-easing),
+    color var(--motion-duration) var(--motion-easing);
 }
 
 .dz-segmented-control[data-stretch='true'] .dz-segmented-control__segment {
@@ -49,15 +63,21 @@
 }
 
 .dz-segmented-control__segment:focus-visible {
-  outline: var(--focus-width) solid var(--tint-600);
-  outline-offset: calc(var(--focus-offset) * -1);
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* Both active styles lift with the hairline shadow, and the label takes the
+   full label weight — selection is a weight shift as much as a fill. */
+.dz-segmented-control .dz-segmented-control__segment[aria-checked='true'] {
+  font-weight: var(--label-medium-font-weight);
+  box-shadow: var(--shadow-2xs);
 }
 
 .dz-segmented-control[data-active-style='raised']
   .dz-segmented-control__segment[aria-checked='true'] {
   background-color: var(--color-surface-raised);
   color: var(--color-content);
-  box-shadow: var(--shadow-xs);
 }
 
 .dz-segmented-control[data-active-style='filled']
@@ -65,4 +85,3 @@
   background-color: var(--control-color-filled-surface-normal);
   color: var(--control-color-filled-content-normal);
 }
-

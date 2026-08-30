@@ -71,21 +71,24 @@ pnpm format            # oxfmt over the workspace
 
 ## Token pipeline
 
-1. `packages/ds/tokens/global/_base.yaml` holds the primitive layer and is
-   **generated** — `pnpm --filter @dazzlabs/dazzui-ds sync` downloads
-   Tailwind's `theme.css` and rewrites it. Never hand-edit that file.
-2. `tz build` reads the files listed in `terrazzo.config.mjs` and stages
+1. `tz build` reads the files listed in `terrazzo.config.mjs` and stages
    `packages/ds/dist/`:
    - `style.css` — CSS custom properties (the contract consumers use)
    - `control.css` — the ramp bindings and the resolved interactive color
      recipes, from `plugins/control.mjs`
    - `flutter/colors.dart` + `flutter/theme_variables.dart` — the Dart token
      sources, from `plugins/flutter.mjs`
-3. `distribute()` in `scripts/build.mjs` then copies each platform's files out
+2. `distribute()` in `scripts/build.mjs` then copies each platform's files out
    of that staging directory into the platform package itself — the two
    stylesheets into `packages/ui_react/src/generated/`, the two Dart files
    into `packages/ui_flutter/lib/src/generated/`. The `TARGETS` list is where
    a new platform package is added.
+
+There is no generation step before the build: every token source, `_base.yaml`
+included, is hand-authored. (The Tailwind sync that used to write `_base.yaml`
+is gone — the design is drawn to BeyondTranslate, so there is no upstream to
+track, and what Tailwind contributed is frozen in `_base.yaml` at the values
+it had.)
 
 A new token file is only built once it is added to `terrazzo.config.mjs`.
 `dist/` is gitignored and is staging only — the distributed copies are what a
@@ -115,23 +118,24 @@ Never hand-edit `src/generated/`. A value a component needs belongs in
 
 Three layers, each referencing the one above it:
 
-- **Base primitives** (`base.*`) — two files at one layer. `_base.yaml` is the
-  generated Tailwind-derived half; `_design.yaml` is the hand-authored half
-  and holds what Tailwind does not supply: the `base.color.brand` ramp, and
-  the AppKit metrics the design is drawn to (`base.corner`, `base.type`,
-  `base.leading`, `base.control-height`, `base.font`). The namespaces sit
-  beside Tailwind's rather than replacing them, so a token that aliases the
-  wrong scale cannot look right by accident. Components must never reference
-  either file directly.
+- **Base primitives** (`tokens/global/_base.yaml`) — the one place in the
+  graph a raw value exists, all of it hand-authored: eight colour ramps (the
+  three brand ladders plus the five semantic hues frozen from Tailwind), the
+  font weights, and the AppKit metrics the design is drawn to (`base.corner`,
+  `base.type`, `base.leading`, `base.control-height`, `base.font`). One scale
+  per axis — there is no second radius or type scale to alias by accident.
+  Components must never reference `base.*` directly. The underscore marks the
+  layer, not a generator: nothing writes this file but a person.
 - **Semantic globals** (`color`, `radius`, `spacing`, `typography`, `effect`,
   and the `control.*` size profiles) — named roles that alias primitives, so a
-  theme can re-map a whole ramp by changing one reference.
-- **Theme** (`tokens/theme/default/colors.yaml`) — the colour roles a theme
-  re-points: the surface, content and border families. Both light and dark
-  live in this one file, and that is forced rather than chosen: Terrazzo
-  merges token files by replacing a whole token, so a second file adding a
-  mode to `color.surface` replaces the first outright, and a file carrying
-  only `$extensions` is dropped with no error.
+  theme can re-map a whole ramp by changing one reference. (`spacing` is the
+  one exception that holds values directly: its semantic names *are* the grid
+  steps, and a base twin under the same names would only be duplication.)
+- Themes are **not** a layer or a directory — they are the modes carried
+  inline on whichever token varies, and that is forced rather than chosen:
+  Terrazzo merges token files by replacing a whole token, so a per-theme file
+  adding a mode to `color.surface` would replace the base declaration
+  outright, and a file carrying only `$extensions` is dropped with no error.
 - **Component tokens** (`tokens/component/*.yaml`) — only for values that are
   genuinely the component's own: a part no shared role covers (`checkbox.box`,
   `toggle.thumb`, `dialog.width`) or a `color`+`alpha` wash (`dialog.scrim`).
@@ -139,6 +143,29 @@ Three layers, each referencing the one above it:
   `{radius.medium}`, `{labelSmall}`) must not exist — the component's CSS
   reads the shared variable directly, so most components have no token file
   at all.
+
+The colour system reads in washes and grades:
+
+- **Washes are alphas of the tint, not opaque ramp steps.** A tinted chip is
+  the tint at 12%, a plain hover the tint at 8%, a banner's border the tint
+  at 25% — so one wash sits correctly on paper, on a card, and on a dark
+  canvas without per-theme values.
+- **Accent text is a grade darker than accent fill**: content recipes read
+  700 where surfaces fill 600, deepening to 800 on hover (300/200 on a dark
+  canvas). A label set in the fill colour is the tell of a port.
+- **Disabled flattens to the groove** — `surface-sunken` fill,
+  `content-faint` text, no border — one dead look for every variant, never a
+  translucent ghost of the live one.
+- **Selection shifts weight as well as colour.** Rows rest at `labelQuiet`
+  (500) and the selected entry takes the label weight (600); a pill tab's
+  active label and an option card's title go to `labelStrong` (700, display
+  cut). `stroke.control` (1.5px) draws control outlines; `stroke.hairline`
+  draws separators and halves on Retina (see `ui_react`'s
+  `src/styles/base.css`, which also carries the box-sizing and
+  reduced-motion ground rules).
+- **The focus ring is the system accent, always**: `--focus-ring` on
+  `:root` — 3px of primary at a per-theme alpha, offset 0, hugging the
+  control the way macOS draws it. It never follows `data-tint`.
 
 Three things that surprise people:
 
@@ -273,14 +300,3 @@ so adding a theme reaches Dart without the plugin being touched.
   trailers of any kind.
 - Match the existing style: a short imperative subject, then a paragraph
   saying what changed and why.
-
-## Known token issues
-
-Worth knowing before "fixing" what looks like a Storybook bug:
-
-- `tokens/global/effect.yaml` points `inset-shadow`, `drop-shadow`, and
-  `text-shadow` at `{base.shadow.*}`, so the `base.inset-shadow`,
-  `base.drop-shadow`, and `base.text-shadow` primitives are unused, and inset
-  shadows lose their `inset` keyword.
-- Shadow values carry a spread (a fourth length), which `text-shadow` and
-  `filter: drop-shadow()` do not accept — those previews render with no shadow.

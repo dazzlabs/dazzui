@@ -86,111 +86,113 @@
   --tint-950: var(--color-danger-950);
 }
 
+:root {
+  --focus-ring: color-mix(in srgb, var(--color-primary-600) 45%, transparent);
+}
+
+[data-theme='studio-dark'],
+[data-theme='bright-dark'] {
+  --focus-ring: color-mix(in srgb, var(--color-primary-600) 50%, transparent);
+}
+
+[data-theme='bright-dark'] {
+  --focus-ring: color-mix(in srgb, var(--color-primary-600) 55%, transparent);
+}
+
 [data-tint] {
   --control-color-filled-border-disabled: transparent;
   --control-color-filled-border-hovered: transparent;
   --control-color-filled-border-normal: transparent;
   --control-color-filled-border-pressed: transparent;
-  --control-color-filled-content-disabled: var(--control-color-filled-content-disabled-color);
-  --control-color-filled-content-hovered: var(--control-color-filled-content-hovered-color);
-  --control-color-filled-content-normal: var(--control-color-filled-content-normal-color);
-  --control-color-filled-content-pressed: var(--control-color-filled-content-pressed-color);
-  --control-color-filled-surface-disabled: color-mix(in srgb, var(--tint-600) 50%, transparent);
+  --control-color-filled-content-disabled: var(--color-content-faint);
+  --control-color-filled-content-hovered: var(--color-on-accent);
+  --control-color-filled-content-normal: var(--color-on-accent);
+  --control-color-filled-content-pressed: color-mix(in srgb, var(--color-on-accent) 90%, transparent);
+  --control-color-filled-surface-disabled: var(--color-surface-sunken);
   --control-color-filled-surface-hovered: var(--tint-700);
   --control-color-filled-surface-normal: var(--tint-600);
-  --control-color-filled-surface-pressed: color-mix(in srgb, var(--tint-700) 80%, transparent);
-  --control-color-normal-border-disabled: color-mix(in srgb, var(--control-color-normal-border-disabled-color) 50%, transparent);
-  --control-color-normal-border-hovered: var(--control-color-normal-border-hovered-color);
-  --control-color-normal-border-normal: var(--control-color-normal-border-normal-color);
-  --control-color-normal-border-pressed: color-mix(in srgb, var(--control-color-normal-border-pressed-color) 80%, transparent);
-  --control-color-normal-content-disabled: color-mix(in srgb, var(--control-color-normal-content-disabled-color) 50%, transparent);
-  --control-color-normal-content-hovered: var(--control-color-normal-content-hovered-color);
-  --control-color-normal-content-normal: var(--control-color-normal-content-normal-color);
-  --control-color-normal-content-pressed: color-mix(in srgb, var(--control-color-normal-content-pressed-color) 80%, transparent);
-  --control-color-normal-surface-disabled: color-mix(in srgb, var(--control-color-normal-surface-disabled-color) 50%, transparent);
-  --control-color-normal-surface-hovered: var(--control-color-normal-surface-hovered-color);
-  --control-color-normal-surface-normal: var(--control-color-normal-surface-normal-color);
-  --control-color-normal-surface-pressed: color-mix(in srgb, var(--control-color-normal-surface-pressed-color) 80%, transparent);
-  --control-color-outlined-border-disabled: color-mix(in srgb, var(--tint-600) 50%, transparent);
+  --control-color-filled-surface-pressed: color-mix(in srgb, var(--tint-700) 90%, transparent);
+  --control-color-normal-border-disabled: transparent;
+  --control-color-normal-border-hovered: var(--color-border-strong);
+  --control-color-normal-border-normal: var(--color-border-strong);
+  --control-color-normal-border-pressed: color-mix(in srgb, var(--color-border-strong) 90%, transparent);
+  --control-color-normal-content-disabled: var(--color-content-faint);
+  --control-color-normal-content-hovered: var(--color-content);
+  --control-color-normal-content-normal: var(--color-content);
+  --control-color-normal-content-pressed: color-mix(in srgb, var(--color-content) 90%, transparent);
+  --control-color-normal-surface-disabled: var(--color-surface-sunken);
+  --control-color-normal-surface-hovered: var(--color-surface-subtle);
+  --control-color-normal-surface-normal: var(--color-surface);
+  --control-color-normal-surface-pressed: color-mix(in srgb, var(--color-surface-subtle) 90%, transparent);
+  --control-color-outlined-border-disabled: transparent;
   --control-color-outlined-border-hovered: var(--tint-700);
   --control-color-outlined-border-normal: var(--tint-600);
-  --control-color-outlined-border-pressed: color-mix(in srgb, var(--tint-700) 80%, transparent);
-  --control-color-outlined-content-disabled: color-mix(in srgb, var(--tint-600) 50%, transparent);
-  --control-color-outlined-content-hovered: var(--tint-700);
-  --control-color-outlined-content-normal: var(--tint-600);
-  --control-color-outlined-content-pressed: color-mix(in srgb, var(--tint-700) 80%, transparent);
-  --control-color-outlined-surface-disabled: color-mix(in srgb, var(--tint-50) 50%, transparent);
-  --control-color-outlined-surface-hovered: var(--tint-100);
+  --control-color-outlined-border-pressed: color-mix(in srgb, var(--tint-700) 90%, transparent);
+  --control-color-outlined-content-disabled: var(--color-content-faint);
+  --control-color-outlined-content-hovered: var(--tint-800);
+  --control-color-outlined-content-normal: var(--tint-700);
+  --control-color-outlined-content-pressed: color-mix(in srgb, var(--tint-800) 90%, transparent);
+  --control-color-outlined-surface-disabled: var(--color-surface-sunken);
+  --control-color-outlined-surface-hovered: color-mix(in srgb, var(--tint-600) 8%, transparent);
   --control-color-outlined-surface-normal: transparent;
-  --control-color-outlined-surface-pressed: color-mix(in srgb, var(--tint-100) 80%, transparent);
+  --control-color-outlined-surface-pressed: color-mix(in srgb, var(--tint-600) 12%, transparent);
   --control-color-plain-border-disabled: transparent;
   --control-color-plain-border-hovered: transparent;
   --control-color-plain-border-normal: transparent;
   --control-color-plain-border-pressed: transparent;
-  --control-color-plain-content-disabled: color-mix(in srgb, var(--tint-600) 50%, transparent);
-  --control-color-plain-content-hovered: var(--tint-700);
-  --control-color-plain-content-normal: var(--tint-600);
-  --control-color-plain-content-pressed: color-mix(in srgb, var(--tint-700) 80%, transparent);
-  --control-color-plain-surface-disabled: color-mix(in srgb, var(--tint-50) 50%, transparent);
-  --control-color-plain-surface-hovered: var(--tint-100);
+  --control-color-plain-content-disabled: var(--color-content-faint);
+  --control-color-plain-content-hovered: var(--tint-800);
+  --control-color-plain-content-normal: var(--tint-700);
+  --control-color-plain-content-pressed: color-mix(in srgb, var(--tint-800) 90%, transparent);
+  --control-color-plain-surface-disabled: transparent;
+  --control-color-plain-surface-hovered: color-mix(in srgb, var(--tint-600) 8%, transparent);
   --control-color-plain-surface-normal: transparent;
-  --control-color-plain-surface-pressed: color-mix(in srgb, var(--tint-100) 80%, transparent);
+  --control-color-plain-surface-pressed: color-mix(in srgb, var(--tint-600) 12%, transparent);
+  --control-color-recessed-border-disabled: transparent;
+  --control-color-recessed-border-hovered: transparent;
+  --control-color-recessed-border-normal: transparent;
+  --control-color-recessed-border-pressed: transparent;
+  --control-color-recessed-content-disabled: var(--color-content-faint);
+  --control-color-recessed-content-hovered: var(--color-content);
+  --control-color-recessed-content-normal: var(--color-content);
+  --control-color-recessed-content-pressed: color-mix(in srgb, var(--color-content) 90%, transparent);
+  --control-color-recessed-surface-disabled: var(--color-surface-sunken);
+  --control-color-recessed-surface-hovered: var(--color-surface-sunken);
+  --control-color-recessed-surface-normal: var(--color-surface-inset);
+  --control-color-recessed-surface-pressed: color-mix(in srgb, var(--color-surface-sunken) 90%, transparent);
   --control-color-tinted-border-disabled: transparent;
   --control-color-tinted-border-hovered: transparent;
   --control-color-tinted-border-normal: transparent;
   --control-color-tinted-border-pressed: transparent;
-  --control-color-tinted-content-disabled: color-mix(in srgb, var(--tint-600) 50%, transparent);
-  --control-color-tinted-content-hovered: var(--tint-700);
-  --control-color-tinted-content-normal: var(--tint-600);
-  --control-color-tinted-content-pressed: color-mix(in srgb, var(--tint-700) 80%, transparent);
-  --control-color-tinted-surface-disabled: color-mix(in srgb, var(--tint-50) 50%, transparent);
-  --control-color-tinted-surface-hovered: var(--tint-100);
-  --control-color-tinted-surface-normal: var(--tint-50);
-  --control-color-tinted-surface-pressed: color-mix(in srgb, var(--tint-100) 80%, transparent);
+  --control-color-tinted-content-disabled: var(--color-content-faint);
+  --control-color-tinted-content-hovered: var(--tint-800);
+  --control-color-tinted-content-normal: var(--tint-700);
+  --control-color-tinted-content-pressed: color-mix(in srgb, var(--tint-800) 90%, transparent);
+  --control-color-tinted-surface-disabled: var(--color-surface-sunken);
+  --control-color-tinted-surface-hovered: color-mix(in srgb, var(--tint-600) 20%, transparent);
+  --control-color-tinted-surface-normal: color-mix(in srgb, var(--tint-600) 12%, transparent);
+  --control-color-tinted-surface-pressed: color-mix(in srgb, var(--tint-600) 24%, transparent);
 }
 
 [data-theme='studio-dark'] [data-tint],
 [data-theme='studio-dark'][data-tint],
 [data-theme='bright-dark'] [data-tint],
 [data-theme='bright-dark'][data-tint] {
-  --control-color-filled-border-disabled: transparent;
-  --control-color-filled-border-hovered: transparent;
-  --control-color-filled-border-normal: transparent;
-  --control-color-filled-border-pressed: transparent;
-  --control-color-filled-surface-disabled: color-mix(in srgb, var(--tint-500) 50%, transparent);
   --control-color-filled-surface-hovered: var(--tint-600);
   --control-color-filled-surface-normal: var(--tint-500);
-  --control-color-filled-surface-pressed: color-mix(in srgb, var(--tint-600) 80%, transparent);
-  --control-color-outlined-border-disabled: color-mix(in srgb, var(--tint-400) 50%, transparent);
+  --control-color-filled-surface-pressed: color-mix(in srgb, var(--tint-600) 90%, transparent);
   --control-color-outlined-border-hovered: var(--tint-300);
   --control-color-outlined-border-normal: var(--tint-400);
-  --control-color-outlined-border-pressed: color-mix(in srgb, var(--tint-300) 80%, transparent);
-  --control-color-outlined-content-disabled: color-mix(in srgb, var(--tint-300) 50%, transparent);
+  --control-color-outlined-border-pressed: color-mix(in srgb, var(--tint-300) 90%, transparent);
   --control-color-outlined-content-hovered: var(--tint-200);
   --control-color-outlined-content-normal: var(--tint-300);
-  --control-color-outlined-content-pressed: color-mix(in srgb, var(--tint-200) 80%, transparent);
-  --control-color-outlined-surface-disabled: color-mix(in srgb, var(--tint-950) 50%, transparent);
-  --control-color-outlined-surface-hovered: var(--tint-900);
-  --control-color-outlined-surface-pressed: color-mix(in srgb, var(--tint-900) 80%, transparent);
-  --control-color-plain-content-disabled: color-mix(in srgb, var(--tint-300) 50%, transparent);
+  --control-color-outlined-content-pressed: color-mix(in srgb, var(--tint-200) 90%, transparent);
   --control-color-plain-content-hovered: var(--tint-200);
   --control-color-plain-content-normal: var(--tint-300);
-  --control-color-plain-content-pressed: color-mix(in srgb, var(--tint-200) 80%, transparent);
-  --control-color-plain-surface-disabled: color-mix(in srgb, var(--tint-950) 50%, transparent);
-  --control-color-plain-surface-hovered: var(--tint-900);
-  --control-color-plain-surface-pressed: color-mix(in srgb, var(--tint-900) 80%, transparent);
-  --control-color-tinted-border-disabled: transparent;
-  --control-color-tinted-border-hovered: transparent;
-  --control-color-tinted-border-normal: transparent;
-  --control-color-tinted-border-pressed: transparent;
-  --control-color-tinted-content-disabled: color-mix(in srgb, var(--tint-300) 50%, transparent);
+  --control-color-plain-content-pressed: color-mix(in srgb, var(--tint-200) 90%, transparent);
   --control-color-tinted-content-hovered: var(--tint-200);
   --control-color-tinted-content-normal: var(--tint-300);
-  --control-color-tinted-content-pressed: color-mix(in srgb, var(--tint-200) 80%, transparent);
-  --control-color-tinted-surface-disabled: color-mix(in srgb, var(--tint-950) 50%, transparent);
-  --control-color-tinted-surface-hovered: var(--tint-900);
-  --control-color-tinted-surface-normal: var(--tint-950);
-  --control-color-tinted-surface-pressed: color-mix(in srgb, var(--tint-900) 80%, transparent);
+  --control-color-tinted-content-pressed: color-mix(in srgb, var(--tint-200) 90%, transparent);
 }
 
 [data-size='tiny'] {
@@ -241,18 +243,6 @@
   --control-line-height: var(--control-large-content-line-height);
 }
 
-[data-size='big'] {
-  --control-size: var(--control-big-size);
-  --control-gap: var(--control-big-gap);
-  --control-padding-block: var(--control-big-padding-block);
-  --control-padding-inline: var(--control-big-padding-inline);
-  --control-radius: var(--control-big-radius);
-  --control-font-family: var(--control-big-content-font-family);
-  --control-font-size: var(--control-big-content-font-size);
-  --control-font-weight: var(--control-big-content-font-weight);
-  --control-line-height: var(--control-big-content-line-height);
-}
-
 [data-control][data-variant='normal'] {
   --control-surface: var(--control-color-normal-surface-normal);
   --control-content: var(--control-color-normal-content-normal);
@@ -276,6 +266,31 @@
   --control-surface: var(--control-color-normal-surface-disabled);
   --control-content: var(--control-color-normal-content-disabled);
   --control-border: var(--control-color-normal-border-disabled);
+}
+
+[data-control][data-variant='recessed'] {
+  --control-surface: var(--control-color-recessed-surface-normal);
+  --control-content: var(--control-color-recessed-content-normal);
+  --control-border: var(--control-color-recessed-border-normal);
+}
+
+[data-control][data-variant='recessed']:hover:not(:disabled):not([aria-disabled="true"]) {
+  --control-surface: var(--control-color-recessed-surface-hovered);
+  --control-content: var(--control-color-recessed-content-hovered);
+  --control-border: var(--control-color-recessed-border-hovered);
+}
+
+[data-control][data-variant='recessed']:active:not(:disabled):not([aria-disabled="true"]) {
+  --control-surface: var(--control-color-recessed-surface-pressed);
+  --control-content: var(--control-color-recessed-content-pressed);
+  --control-border: var(--control-color-recessed-border-pressed);
+}
+
+[data-control][data-variant='recessed']:disabled,
+[data-control][data-variant='recessed'][aria-disabled="true"] {
+  --control-surface: var(--control-color-recessed-surface-disabled);
+  --control-content: var(--control-color-recessed-content-disabled);
+  --control-border: var(--control-color-recessed-border-disabled);
 }
 
 [data-control][data-variant='filled'] {

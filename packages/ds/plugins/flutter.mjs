@@ -39,17 +39,15 @@ export default function flutterPlugin(options) {
 }
 
 /**
- * Generate colors.dart file from tokens/global/_base.yaml (base.color.*)
+ * Generate colors.dart file from the base.color.* primitives
  */
 function generateColorsFile(tokens, sources) {
   const colorTokens = []
 
-  // Every `base.color.<name>.<shade>` in the graph becomes a swatch, from
-  // whichever file declares it. The primitive layer is two files — the
-  // generated `_base.yaml` and the hand-authored `_design.yaml` that adds
-  // the brand ramp — and a semantic token aliasing a ramp is emitted as
-  // `Colors.<ramp>[<shade>]!`, so a ramp this misses is a dangling
-  // reference in the generated Dart rather than a missing convenience.
+  // Every `base.color.<name>.<shade>` in the graph becomes a swatch. A
+  // semantic token aliasing a ramp is emitted as `Colors.<ramp>[<shade>]!`,
+  // so a ramp this misses is a dangling reference in the generated Dart
+  // rather than a missing convenience.
   for (const source of sources || []) {
     try {
       const sourceTokens = YAML.parse(source.src)
@@ -364,6 +362,26 @@ function generateThemeInstances(tokens, modeSelectors) {
     }
 
     for (const baseId of [...descriptorBases].sort()) {
+      // A descriptor whose any state aliases a semantic colour is emitted as
+      // a getter on the class (see the constructor/getter split above), so
+      // there is no constructor parameter to override — and none is needed:
+      // the getter reads the role fields this instance already re-points.
+      // What cannot follow is a per-theme *shade* on such a recipe; the
+      // getter's shades are fixed, which is the platform's known limit.
+      const isGetter = ['normal', 'hovered', 'pressed', 'disabled'].some(
+        state => {
+          const colorToken = tokens[`${baseId}.${state}.color`]
+          if (!colorToken) return false
+          const raw =
+            colorToken.aliasOf ?? colorToken.originalValue?.$value ?? ''
+          return (
+            typeof raw === 'string' &&
+            !raw.replace(/[{}]/g, '').startsWith('base.')
+          )
+        }
+      )
+      if (isGetter) continue
+
       const params = []
       for (const state of ['normal', 'hovered', 'pressed', 'disabled']) {
         const shade = tokens[`${baseId}.${state}.shade`]

@@ -1,39 +1,45 @@
 /*
  * The text controls share one box, and share it deliberately: a Select is an
  * Input with a chevron, and a FieldValue is one that was never editable, so
- * the three drifting apart would be the bug rather than the feature. They read
- * `input.*` — the archetype's namespace — and only Textarea overrides, because
- * only Textarea is shaped differently.
+ * the three drifting apart would be the bug rather than the feature.
+ *
+ * The box is a recessed card — one step below the paper — that lifts to the
+ * paper on focus behind an accent border and a soft accent wash. That
+ * card→paper transition is the focus signal; a field that stays white can
+ * only signal with its ring.
  *
  * The error state is not a second palette bolted on: the control is re-tinted
- * to `danger`, so the border, the wash and the focus ring all move together
- * and there is one rule for each rather than one per state per tone.
+ * to `danger`, so the border, the wash, the value's ink and the focus wash
+ * all move together and there is one rule for each rather than one per state
+ * per tone.
  */
 .dz-input,
 .dz-textarea,
 .dz-field-value,
 .dz-select__control {
   width: 100%;
-  border: var(--spacing-px) solid var(--color-border);
-  background-color: var(--color-surface);
+  border: var(--stroke-hairline) solid var(--color-border-strong);
+  background-color: var(--color-surface-muted);
   color: var(--color-content);
   outline: none;
   transition:
-    border-color 0.12s ease-out,
-    background-color 0.12s ease-out;
+    border-color var(--motion-duration) var(--motion-easing),
+    background-color var(--motion-duration) var(--motion-easing),
+    box-shadow var(--motion-duration) var(--motion-easing);
 }
 
 .dz-input::placeholder,
 .dz-textarea::placeholder {
-  color: var(--color-content-muted);
+  color: var(--color-content-faint);
 }
 
-.dz-input:focus-visible,
-.dz-textarea:focus-visible,
-.dz-select__control:focus-visible {
+.dz-input:focus,
+.dz-textarea:focus,
+.dz-select__control:focus {
   border-color: var(--tint-600);
-  outline: var(--focus-width) solid var(--tint-200);
-  outline-offset: 0;
+  background-color: var(--color-surface);
+  box-shadow: 0 0 0 var(--focus-width)
+    color-mix(in srgb, var(--tint-600) 14%, transparent);
 }
 
 .dz-input[aria-invalid='true'],
@@ -41,6 +47,7 @@
 .dz-select__control[aria-invalid='true'] {
   border-color: var(--tint-600);
   background-color: var(--tint-50);
+  color: var(--tint-800);
 }
 
 .dz-input:disabled,
@@ -55,17 +62,20 @@
 .dz-input[data-mono='true'],
 .dz-textarea[data-mono='true'],
 .dz-field-value[data-mono='true'] {
-  font-family: var(--base-font-mono);
+  font-family: var(--base-font-code);
 }
 
 /*
  * A textarea grows, so it takes the container corner rather than the control
- * corner — a theme that makes controls pills would otherwise turn a multi-line
- * box into a lozenge — and a floor rather than a height.
+ * corner — a theme that makes controls pills would otherwise turn a
+ * multi-line box into a lozenge — a floor rather than a height, and real
+ * leading: its text wraps, and the control line-height would set it solid.
  */
 .dz-textarea {
   min-height: var(--spacing-20);
-  border-radius: var(--radius-medium);
+  padding-block: var(--spacing-2-5);
+  border-radius: var(--radius-large);
+  line-height: 1.6;
   resize: vertical;
 }
 
@@ -82,34 +92,36 @@
 
 .dz-select__chevron {
   position: absolute;
-  inset-inline-end: var(--control-medium-padding-inline);
+  inset-inline-end: var(--spacing-2-5);
   top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
-  color: var(--color-content-muted);
+  color: var(--color-content-subtle);
 }
 
 /* Sizes -------------------------------------------------------------------
- * Geometry and type come off the shared size profile that `[data-size]`
- * binds — the Select's wrapper carries the attribute, and its control inherits
- * the bound variables from it. */
-
+ * Geometry comes off the shared size profile that `[data-size]` binds — the
+ * Select's wrapper carries the attribute, and its control inherits the bound
+ * variables from it. Two deliberate overrides: entered text is body-weight,
+ * not label-weight — a search query typed in semibold reads as shouting —
+ * and the box takes the regular control corner, one step above the buttons'.
+ */
 .dz-input,
 .dz-textarea,
 .dz-field-value,
 .dz-select__control {
   padding-block: var(--control-padding-block);
-  padding-inline: var(--control-padding-inline);
-  border-radius: var(--control-radius);
+  padding-inline: var(--spacing-3);
+  border-radius: var(--radius-medium);
   font-family: var(--control-font-family);
   font-size: var(--control-font-size);
-  font-weight: var(--control-font-weight);
+  font-weight: var(--body-small-font-weight);
   line-height: var(--control-line-height);
 }
 
 /* Single-line controls take the shared control height, so a form can mix them
    with buttons without the rows stepping. A textarea is sized by its content,
-   and its radius override above already replaced the control corner. */
+   and its overrides above already replaced the corner and the leading. */
 .dz-input,
 .dz-field-value,
 .dz-select__control {

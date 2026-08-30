@@ -8,8 +8,8 @@
 # own stylesheet — the profile is the default, not a cage.
 #
 # The heights are the macOS-to-Fluent control range the design draws to:
-# 24 · 26 · 28 · 32, with `big` carried past it for a prominent call to
-# action. They come off `base.control-height` rather than off spacing,
+# 24 · 26 · 28 · 32. They come off `base.control-height` rather than off
+# spacing,
 # because 26px is not on the 4px grid and the set only stays in proportion
 # when it is read as one scale.
 control:
@@ -93,23 +93,3 @@ control:
     content:
       $type: typography
       $value: "{labelMedium}"
-  big:
-    gap:
-      $type: dimension
-      $value: "{spacing.2.5}"
-    padding:
-      block:
-        $type: dimension
-        $value: "{spacing.2}"
-      inline:
-        $type: dimension
-        $value: "{spacing.5}"
-    size:
-      $type: dimension
-      $value: "{base.control-height.big}"
-    radius:
-      $type: dimension
-      $value: "{radius.medium}"
-    content:
-      $type: typography
-      $value: "{labelLarge}"

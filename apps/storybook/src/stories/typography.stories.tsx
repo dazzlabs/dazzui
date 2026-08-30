@@ -16,7 +16,7 @@ const meta: Meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-const ROLES = ['display', 'headline', 'title', 'body', 'label', 'caption']
+const ROLES = ['headline', 'title', 'body', 'label', 'caption']
 const SIZES = ['large', 'medium', 'small']
 
 const SAMPLE = TYPE_SAMPLE

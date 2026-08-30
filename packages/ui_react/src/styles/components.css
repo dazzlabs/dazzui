@@ -22,6 +22,7 @@
  * component's stylesheet only ships once it is listed below.
  */
 
+@import './base.css';
 @import '../generated/control.css';
 
 @import '../components/action-bar.css';

@@ -12,13 +12,13 @@ toggle:
   medium:
     width:
       $type: dimension
-      $value: "{spacing.9}"
+      $value: 2rem
     height:
       $type: dimension
-      $value: "{spacing.5}"
+      $value: 1.125rem
     thumb:
       $type: dimension
-      $value: "{spacing.4}"
+      $value: 0.875rem
   large:
     width:
       $type: dimension

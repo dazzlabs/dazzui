@@ -1,5 +1,10 @@
 /* An ordered list, because the steps are one: the markers carry the status, so
-   the browser's numbering is dropped rather than the semantics. */
+   the browser's numbering is dropped rather than the semantics.
+
+   The hierarchy runs label-over-meta: a 12px step name with an 11px trailing
+   detail, and only the active row takes the label weight — done and idle
+   rows rest at the quiet weight so the column reads as one live step among
+   finished and pending ones. */
 .dz-step-list {
   display: flex;
   flex-direction: column;
@@ -12,11 +17,11 @@
 .dz-step {
   display: flex;
   align-items: center;
-  gap: var(--control-medium-gap);
-  font-family: var(--label-small-font-family);
-  font-size: var(--label-small-font-size);
-  font-weight: var(--label-small-font-weight);
-  line-height: var(--label-small-line-height);
+  gap: var(--spacing-2-5);
+  font-family: var(--label-quiet-font-family);
+  font-size: var(--label-quiet-font-size);
+  font-weight: var(--label-quiet-font-weight);
+  line-height: var(--label-quiet-line-height);
 }
 
 .dz-step[data-status='done'] {
@@ -25,12 +30,14 @@
 
 .dz-step[data-status='active'] {
   color: var(--color-content);
+  font-weight: var(--label-medium-font-weight);
 }
 
-/* A step not started yet still has to be readable — it is the list's plan. */
+/* Not started yet: the whole row recedes, marker and meta included — the
+   plan is visible, the past and present are what read. */
 .dz-step[data-status='idle'] {
-  color: var(--color-content-muted);
-  opacity: 0.7;
+  color: var(--color-content-subtle);
+  opacity: 0.8;
 }
 
 .dz-step__marker {
@@ -41,33 +48,40 @@
   width: var(--spacing-4);
   height: var(--spacing-4);
   border-radius: var(--radius-full);
+  font-size: var(--label-small-font-size);
+  line-height: 1;
 }
 
 /* Done is success wherever the list is tinted: a finished step is not a
-   variation on the accent, it is the one fixed meaning in the column. */
+   variation on the accent, it is the one fixed meaning in the column. The
+   fill is a wash of the hue rather than an opaque chip, so it sits as
+   correctly on a card or a dark canvas as on the paper. */
 .dz-step[data-status='done'] .dz-step__marker {
-  background-color: var(--color-success-100);
+  background-color: color-mix(in srgb, var(--color-success-600) 14%, transparent);
   color: var(--color-success-600);
 }
 
 .dz-step[data-status='idle'] .dz-step__marker {
-  border: var(--spacing-0-5) solid var(--color-border-muted);
+  border: var(--stroke-control) solid var(--color-border-muted);
 }
 
 .dz-step__label {
   min-width: 0;
 }
 
+/* The trailing detail runs a step under the label and two ink steps back;
+   only the active row's meta takes the accent — in its text grade, not the
+   fill. */
 .dz-step__meta {
   flex-shrink: 0;
   margin-inline-start: auto;
-  color: var(--color-content-muted);
-  font-family: var(--caption-medium-font-family);
-  font-size: var(--caption-medium-font-size);
-  font-weight: var(--caption-medium-font-weight);
-  line-height: var(--caption-medium-line-height);
+  color: var(--color-content-faint);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--caption-small-font-weight);
+  line-height: 1;
 }
 
 .dz-step[data-status='active'] .dz-step__meta {
-  color: var(--tint-600);
+  color: var(--control-color-plain-content-normal);
 }

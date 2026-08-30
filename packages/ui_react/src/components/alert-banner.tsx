@@ -23,7 +23,7 @@ export interface AlertBannerProps extends Omit<
 
 export function AlertBanner({
   size = 'medium',
-  tint = 'info',
+  tint = 'neutral',
   icon,
   title,
   action,
@@ -35,6 +35,7 @@ export function AlertBanner({
     <div
       data-size={size}
       data-tint={tint}
+      data-has-description={title && children ? true : undefined}
       className={cx('dz-alert-banner', className)}
       {...props}
     >

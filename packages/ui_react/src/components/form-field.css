@@ -10,7 +10,7 @@
 }
 
 .dz-form-field__label {
-  color: var(--color-content-muted);
+  color: var(--color-content-subtle);
   font-family: var(--label-small-font-family);
   font-size: var(--label-small-font-size);
   font-weight: var(--label-small-font-weight);
@@ -18,16 +18,16 @@
 }
 
 .dz-form-field__hint {
-  color: var(--color-content-muted);
-  font-family: var(--caption-medium-font-family);
-  font-size: var(--caption-medium-font-size);
-  font-weight: var(--caption-medium-font-weight);
-  line-height: var(--caption-medium-line-height);
+  color: var(--color-content-subtle);
+  font-family: var(--label-quiet-font-family);
+  font-size: var(--label-quiet-font-size);
+  font-weight: var(--label-quiet-font-weight);
+  line-height: 1.6;
 }
 
 /* Erroring, the label and the hint join the control on the danger ramp, which
    the wrapper is re-tinted to rather than given its own error colours. */
 .dz-form-field[data-invalid='true'] .dz-form-field__label,
 .dz-form-field[data-invalid='true'] .dz-form-field__hint {
-  color: var(--tint-600);
+  color: var(--tint-700);
 }

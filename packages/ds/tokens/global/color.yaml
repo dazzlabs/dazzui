@@ -1,3 +1,18 @@
+# The colour vocabulary, whole: the ramps a tint binds, the roles a theme
+# re-points, and the interactive recipes. Themes are not files — they are the
+# modes carried inline on whichever token varies, because Terrazzo merges
+# token files by replacing a whole token: a second file re-declaring
+# `color.surface` to add a mode replaces the first outright, and a file
+# carrying only `$extensions` is dropped without an error. The four themes:
+#
+#   default      Studio Light — white cards on a lilac-grey canvas
+#   dark         Studio Dark  — the same skeleton over a near-black canvas
+#   bright       Bright Light — warm paper, ink navy, acid green marker
+#   bright-dark  Bright Dark  — the same pair with the roles swapped
+#
+# The modes compose rather than repeat: `bright` is selected by both Bright
+# themes and `dark` by both dark ones (order in terrazzo.config.mjs decides
+# ties), so `bright-dark` carries only what is true of that corner alone.
 color:
   primary:
     "50":
@@ -121,10 +136,16 @@ color:
       $value: "{base.color.green.200}"
     "300":
       $value: "{base.color.green.300}"
+      $extensions:
+        mode:
+          dark: "#7fd7a8"
     "400":
       $value: "{base.color.green.400}"
     "500":
       $value: "{base.color.green.500}"
+      $extensions:
+        mode:
+          dark: "#34d399"
     "600":
       $value: "{base.color.green.600}"
     "700":
@@ -144,10 +165,16 @@ color:
       $value: "{base.color.amber.200}"
     "300":
       $value: "{base.color.amber.300}"
+      $extensions:
+        mode:
+          dark: "#ffcf9c"
     "400":
       $value: "{base.color.amber.400}"
     "500":
       $value: "{base.color.amber.500}"
+      $extensions:
+        mode:
+          dark: "#ffb86b"
     "600":
       $value: "{base.color.amber.600}"
     "700":
@@ -167,10 +194,16 @@ color:
       $value: "{base.color.red.200}"
     "300":
       $value: "{base.color.red.300}"
+      $extensions:
+        mode:
+          dark: "#ff8f8f"
     "400":
       $value: "{base.color.red.400}"
     "500":
       $value: "{base.color.red.500}"
+      $extensions:
+        mode:
+          dark: "#ff6b6b"
     "600":
       $value: "{base.color.red.600}"
     "700":
@@ -181,8 +214,195 @@ color:
       $value: "{base.color.red.900}"
     "950":
       $value: "{base.color.red.950}"
+  # The plate the whole app sits on, behind any window or panel.
+  canvas:
+    $type: color
+    $value: "#eeecf6"
+    $extensions:
+      mode:
+        dark: "#0a0b10"
+        bright: "#e6eade"
+        bright-dark: "#0a111a"
+  # The paper: windows, popovers, the raised panel inside a tray.
+  surface:
+    $type: color
+    $value: "#ffffff"
+    $extensions:
+      mode:
+        dark: "#0d0f14"
+        bright: "#fbfaf7"
+        bright-dark: "#0c141e"
+  # One step back from the paper: cards, sidebars, toolbars, table headers,
+  # and the wash a neutral control takes under the pointer.
+  surface-muted:
+    $type: color
+    $value: "#f7f7fa"
+    $extensions:
+      mode:
+        dark: "#12141a"
+        bright: "#f6f5f1"
+        bright-dark: "#141d29"
+  # One step into the paper: the groove a progress bar, a segmented control
+  # or a toggle is cut into. Distinct from `surface-muted` because a track
+  # that matches the card it sits on stops reading as a track.
+  surface-sunken:
+    $type: color
+    $value: "#e3e3ec"
+    $extensions:
+      mode:
+        dark: "#262a34"
+        bright: "#e5e3db"
+        bright-dark: "#1c2734"
+  # The quietest wash there is: what a menu item, a toolbar glyph or a table
+  # row takes under the pointer. One step shy of `surface-muted`, because a
+  # hover that lands exactly on the header/card fill stops reading as a
+  # hover.
+  surface-subtle:
+    $type: color
+    $value: "#f5f5f9"
+    $extensions:
+      mode:
+        dark: "#151821"
+        bright: "#f6f5f1"
+        bright-dark: "#101923"
+  # One step further in than `surface-muted` but shallower than the groove:
+  # the well a segmented control's track or a resting pill-tab is cut into.
+  # Without it those fills borrow a neighbour — the groove reads a full step
+  # too dark, or the pill stops separating from the card it sits on.
+  surface-inset:
+    $type: color
+    $value: "#f0f0f5"
+    $extensions:
+      mode:
+        dark: "#1b1e26"
+        bright: "#f0efe9"
+        bright-dark: "#16202c"
+  # The lifted thumb inside a groove — the selected segment, a toggle knob.
+  # Always lighter than the track it rides in, which on a dark canvas means
+  # stepping up rather than down.
+  surface-raised:
+    $type: color
+    $value: "#ffffff"
+    $extensions:
+      mode:
+        dark: "#3a3f4d"
+        bright: "#ffffff"
+        bright-dark: "#2a3644"
+  # The ink ramp, cut to three steps. The design carries eight; the extra
+  # five are all one-off scene labels, and a shared vocabulary that offers
+  # eight near-identical greys only invites each component to pick a
+  # different one.
+  #
+  # Bright derives its two quieter steps as alphas of the ink rather than as
+  # separate greys, which is what lets the same pair sit over warm paper and
+  # over navy without a value per surface.
+  content:
+    $type: color
+    $value: "#12142a"
+    $extensions:
+      mode:
+        dark: "#f2f3fa"
+        bright: "#111c2e"
+        bright-dark: "#f2f4ef"
+  # Between full ink and the muted step: idle navigation rows and the
+  # unselected half of a segmented control — text that must stay clearly
+  # legible while conceding the room to whatever is selected.
+  content-secondary:
+    $type: color
+    $value: "#3c405c"
+    $extensions:
+      mode:
+        dark: "#c3c8dc"
+        bright: "#111c2ec7"
+        bright-dark: "#f2f4efc7"
+  content-muted:
+    $type: color
+    $value: "#565b78"
+    $extensions:
+      mode:
+        dark: "#9aa1bb"
+        bright: "#111c2ea8"
+        bright-dark: "#f2f4efa8"
+  # The labelling step: section labels, field captions, hints, empty-state
+  # lines. Quieter than `content-muted` — a caption printed in the muted step
+  # competes with the value it captions.
+  content-subtle:
+    $type: color
+    $value: "#8c92aa"
+    $extensions:
+      mode:
+        dark: "#8b93b0"
+        bright: "#111c2e73"
+        bright-dark: "#f2f4ef73"
+  content-faint:
+    $type: color
+    $value: "#a2a7bd"
+    $extensions:
+      mode:
+        dark: "#6a7090"
+        bright: "#111c2e61"
+        bright-dark: "#f2f4ef61"
+  # Separators are an alpha of the ink, not a grey, so one hairline reads the
+  # same over a card, a sidebar and a popover without a value per surface.
+  border:
+    $type: color
+    $value: "#14162a12"
+    $extensions:
+      mode:
+        dark: "#ffffff0f"
+        bright: "#111c2e14"
+        bright-dark: "#f2f4ef14"
+  # The heavier hairline a floating surface is edged with — dialog, menu,
+  # toast. A popover cut with the inline separator weight stops separating
+  # from what it floats over.
+  border-strong:
+    $type: color
+    $value: "#14162a1a"
+    $extensions:
+      mode:
+        dark: "#ffffff1a"
+        bright: "#111c2e1f"
+        bright-dark: "#f2f4ef24"
+  # The drawn outline of an unselected checkbox, radio or step marker, and
+  # the rule under a divider. Heavier than a hairline on purpose: this one is
+  # a control's edge rather than a separation between regions.
+  border-muted:
+    $type: color
+    $value: "#cfd2de"
+    $extensions:
+      mode:
+        dark: "#363c4d"
+        bright: "#111c2e40"
+        bright-dark: "#35414f"
+  # What is printed on a filled accent control. White on the Studio violet;
+  # in Bright the primary action is ink navy printed with acid green, and
+  # Bright Dark is that exact pair inverted. This is a role rather than a
+  # constant precisely because those two disagree — a filled button that
+  # hardcoded white would be illegible on Bright Dark's acid fill.
+  on-accent:
+    $type: color
+    $value: "#ffffff"
+    $extensions:
+      mode:
+        bright: "#d6ff3f"
+        bright-dark: "#111c2e"
 control:
   color:
+    # The interactive recipes. Three reading rules:
+    #
+    # 1. Washes are alphas of the tint, not opaque ramp steps — a `tinted`
+    #    chip is the tint at 12%, a `plain` hover the tint at 8% — so the
+    #    same wash sits correctly on paper, on a card, and on a dark canvas
+    #    without per-theme steps.
+    # 2. Accent *text* is a grade darker than accent *fill*: content reads
+    #    700 where surface fills 600, and deepens to 800 on hover. On a dark
+    #    canvas those grades come off the light end instead (300/200).
+    # 3. Disabled flattens to the groove: `surface-sunken` fill,
+    #    `content-faint` text, no border — one dead look shared by every
+    #    variant, rather than a translucent ghost of the live one.
+    #
+    # `recessed` is the workhorse neutral: the grey chip a toolbar button or
+    # default action is, one step deeper than the paper it sits on.
     normal:
       surface:
         normal:
@@ -192,21 +412,18 @@ control:
         hovered:
           color:
             $type: color
-            $value: "{color.surface-muted}"
+            $value: "{color.surface-subtle}"
         pressed:
           color:
             $type: color
-            $value: "{color.surface}"
+            $value: "{color.surface-subtle}"
           alpha:
             $type: number
-            $value: 0.8
+            $value: 0.9
         disabled:
           color:
             $type: color
-            $value: "{color.surface}"
-          alpha:
-            $type: number
-            $value: 0.5
+            $value: "{color.surface-sunken}"
       content:
         normal:
           color:
@@ -222,37 +439,104 @@ control:
             $value: "{color.content}"
           alpha:
             $type: number
-            $value: 0.8
+            $value: 0.9
         disabled:
+          color:
+            $type: color
+            $value: "{color.content-faint}"
+      border:
+        normal:
+          color:
+            $type: color
+            $value: "{color.border-strong}"
+        hovered:
+          color:
+            $type: color
+            $value: "{color.border-strong}"
+        pressed:
+          color:
+            $type: color
+            $value: "{color.border-strong}"
+          alpha:
+            $type: number
+            $value: 0.9
+        disabled:
+          color:
+            $type: color
+            $value: "{base.color.white}"
+          alpha:
+            $type: number
+            $value: 0
+    recessed:
+      surface:
+        normal:
+          color:
+            $type: color
+            $value: "{color.surface-inset}"
+        hovered:
+          color:
+            $type: color
+            $value: "{color.surface-sunken}"
+        pressed:
+          color:
+            $type: color
+            $value: "{color.surface-sunken}"
+          alpha:
+            $type: number
+            $value: 0.9
+        disabled:
+          color:
+            $type: color
+            $value: "{color.surface-sunken}"
+      content:
+        normal:
+          color:
+            $type: color
+            $value: "{color.content}"
+        hovered:
+          color:
+            $type: color
+            $value: "{color.content}"
+        pressed:
           color:
             $type: color
             $value: "{color.content}"
           alpha:
             $type: number
-            $value: 0.5
+            $value: 0.9
+        disabled:
+          color:
+            $type: color
+            $value: "{color.content-faint}"
       border:
         normal:
           color:
             $type: color
-            $value: "{color.border}"
+            $value: "{base.color.white}"
+          alpha:
+            $type: number
+            $value: 0
         hovered:
           color:
             $type: color
-            $value: "{color.border}"
+            $value: "{base.color.white}"
+          alpha:
+            $type: number
+            $value: 0
         pressed:
           color:
             $type: color
-            $value: "{color.border}"
+            $value: "{base.color.white}"
           alpha:
             $type: number
-            $value: 0.8
+            $value: 0
         disabled:
           color:
             $type: color
-            $value: "{color.border}"
+            $value: "{base.color.white}"
           alpha:
             $type: number
-            $value: 0.5
+            $value: 0
     filled:
       surface:
         normal:
@@ -281,16 +565,11 @@ control:
               mode:
                 dark: 600
           alpha:
-            $value: 0.8
+            $value: 0.9
         disabled:
-          $type: number
-          shade:
-            $value: 600
-            $extensions:
-              mode:
-                dark: 500
-          alpha:
-            $value: 0.5
+          color:
+            $type: color
+            $value: "{color.surface-sunken}"
       content:
         normal:
           color:
@@ -304,90 +583,71 @@ control:
           color:
             $type: color
             $value: "{color.on-accent}"
+          alpha:
+            $type: number
+            $value: 0.9
         disabled:
           color:
             $type: color
-            $value: "{color.on-accent}"
+            $value: "{color.content-faint}"
       border:
         normal:
-          $type: number
-          shade:
-            $value: 600
-            $extensions:
-              mode:
-                dark: 500
+          color:
+            $type: color
+            $value: "{base.color.white}"
           alpha:
+            $type: number
             $value: 0
         hovered:
-          $type: number
-          shade:
-            $value: 700
-            $extensions:
-              mode:
-                dark: 600
+          color:
+            $type: color
+            $value: "{base.color.white}"
           alpha:
+            $type: number
             $value: 0
         pressed:
-          $type: number
-          shade:
-            $value: 700
-            $extensions:
-              mode:
-                dark: 600
+          color:
+            $type: color
+            $value: "{base.color.white}"
           alpha:
+            $type: number
             $value: 0
         disabled:
-          $type: number
-          shade:
-            $value: 600
-            $extensions:
-              mode:
-                dark: 500
+          color:
+            $type: color
+            $value: "{base.color.white}"
           alpha:
+            $type: number
             $value: 0
     tinted:
       surface:
         normal:
           $type: number
           shade:
-            $value: 50
-            $extensions:
-              mode:
-                dark: 950
+            $value: 600
           alpha:
-            $value: 1
+            $value: 0.12
         hovered:
           $type: number
           shade:
-            $value: 100
-            $extensions:
-              mode:
-                dark: 900
+            $value: 600
           alpha:
-            $value: 1
+            $value: 0.2
         pressed:
           $type: number
           shade:
-            $value: 100
-            $extensions:
-              mode:
-                dark: 900
+            $value: 600
           alpha:
-            $value: 0.8
+            $value: 0.24
         disabled:
-          $type: number
-          shade:
-            $value: 50
-            $extensions:
-              mode:
-                dark: 950
-          alpha:
-            $value: 0.5
+          color:
+            $type: color
+            $value: "{color.surface-sunken}"
       content:
         normal:
           $type: number
           shade:
-            $value: 600
+            $value: 700
             $extensions:
               mode:
                 dark: 300
@@ -396,7 +656,7 @@ control:
         hovered:
           $type: number
           shade:
-            $value: 700
+            $value: 800
             $extensions:
               mode:
                 dark: 200
@@ -405,57 +665,44 @@ control:
         pressed:
           $type: number
           shade:
-            $value: 700
+            $value: 800
             $extensions:
               mode:
                 dark: 200
           alpha:
-            $value: 0.8
+            $value: 0.9
         disabled:
-          $type: number
-          shade:
-            $value: 600
-            $extensions:
-              mode:
-                dark: 300
-          alpha:
-            $value: 0.5
+          color:
+            $type: color
+            $value: "{color.content-faint}"
       border:
         normal:
-          $type: number
-          shade:
-            $value: 600
-            $extensions:
-              mode:
-                dark: 300
+          color:
+            $type: color
+            $value: "{base.color.white}"
           alpha:
+            $type: number
             $value: 0
         hovered:
-          $type: number
-          shade:
-            $value: 700
-            $extensions:
-              mode:
-                dark: 200
+          color:
+            $type: color
+            $value: "{base.color.white}"
           alpha:
+            $type: number
             $value: 0
         pressed:
-          $type: number
-          shade:
-            $value: 700
-            $extensions:
-              mode:
-                dark: 200
+          color:
+            $type: color
+            $value: "{base.color.white}"
           alpha:
+            $type: number
             $value: 0
         disabled:
-          $type: number
-          shade:
-            $value: 600
-            $extensions:
-              mode:
-                dark: 300
+          color:
+            $type: color
+            $value: "{base.color.white}"
           alpha:
+            $type: number
             $value: 0
     outlined:
       surface:
@@ -469,35 +716,24 @@ control:
         hovered:
           $type: number
           shade:
-            $value: 100
-            $extensions:
-              mode:
-                dark: 900
+            $value: 600
           alpha:
-            $value: 1
+            $value: 0.08
         pressed:
           $type: number
           shade:
-            $value: 100
-            $extensions:
-              mode:
-                dark: 900
+            $value: 600
           alpha:
-            $value: 0.8
+            $value: 0.12
         disabled:
-          $type: number
-          shade:
-            $value: 50
-            $extensions:
-              mode:
-                dark: 950
-          alpha:
-            $value: 0.5
+          color:
+            $type: color
+            $value: "{color.surface-sunken}"
       content:
         normal:
           $type: number
           shade:
-            $value: 600
+            $value: 700
             $extensions:
               mode:
                 dark: 300
@@ -506,7 +742,7 @@ control:
         hovered:
           $type: number
           shade:
-            $value: 700
+            $value: 800
             $extensions:
               mode:
                 dark: 200
@@ -515,21 +751,16 @@ control:
         pressed:
           $type: number
           shade:
-            $value: 700
+            $value: 800
             $extensions:
               mode:
                 dark: 200
           alpha:
-            $value: 0.8
+            $value: 0.9
         disabled:
-          $type: number
-          shade:
-            $value: 600
-            $extensions:
-              mode:
-                dark: 300
-          alpha:
-            $value: 0.5
+          color:
+            $type: color
+            $value: "{color.content-faint}"
       border:
         normal:
           $type: number
@@ -557,16 +788,14 @@ control:
               mode:
                 dark: 300
           alpha:
-            $value: 0.8
+            $value: 0.9
         disabled:
-          $type: number
-          shade:
-            $value: 600
-            $extensions:
-              mode:
-                dark: 400
+          color:
+            $type: color
+            $value: "{base.color.white}"
           alpha:
-            $value: 0.5
+            $type: number
+            $value: 0
     plain:
       surface:
         normal:
@@ -579,35 +808,27 @@ control:
         hovered:
           $type: number
           shade:
-            $value: 100
-            $extensions:
-              mode:
-                dark: 900
+            $value: 600
           alpha:
-            $value: 1
+            $value: 0.08
         pressed:
           $type: number
           shade:
-            $value: 100
-            $extensions:
-              mode:
-                dark: 900
+            $value: 600
           alpha:
-            $value: 0.8
+            $value: 0.12
         disabled:
-          $type: number
-          shade:
-            $value: 50
-            $extensions:
-              mode:
-                dark: 950
+          color:
+            $type: color
+            $value: "{base.color.white}"
           alpha:
-            $value: 0.5
+            $type: number
+            $value: 0
       content:
         normal:
           $type: number
           shade:
-            $value: 600
+            $value: 700
             $extensions:
               mode:
                 dark: 300
@@ -616,7 +837,7 @@ control:
         hovered:
           $type: number
           shade:
-            $value: 700
+            $value: 800
             $extensions:
               mode:
                 dark: 200
@@ -625,21 +846,16 @@ control:
         pressed:
           $type: number
           shade:
-            $value: 700
+            $value: 800
             $extensions:
               mode:
                 dark: 200
           alpha:
-            $value: 0.8
+            $value: 0.9
         disabled:
-          $type: number
-          shade:
-            $value: 600
-            $extensions:
-              mode:
-                dark: 300
-          alpha:
-            $value: 0.5
+          color:
+            $type: color
+            $value: "{color.content-faint}"
       border:
         normal:
           color:

@@ -1,47 +1,49 @@
 /*
  * Free-standing filter pills. Unlike a segmented control there is no track:
  * each pill stands on the page, so an unselected one needs its own fill to be
- * a target at all.
+ * a target at all — the inset step, one deeper than the cards around it, with
+ * the groove as its hover.
+ *
+ * One size, drawn tight: 24px tall on 11px type. The active pill jumps two
+ * weight steps (600 → 700) as well as filling, because at this size the fill
+ * alone can vanish under a thumb.
  */
 .dz-pill-tabs {
-  /* A pill is a capsule whatever its size, so the bound radius is re-pointed
-     once rather than per size. */
-  --control-radius: var(--radius-full);
-
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
-  flex-wrap: wrap;
 }
 
 .dz-pill-tabs__tab {
   display: inline-flex;
   align-items: center;
-  height: var(--control-size);
+  height: var(--control-tiny-size);
   gap: var(--control-tiny-gap);
-  padding-inline: var(--control-padding-inline);
-  font-family: var(--control-font-family);
-  font-size: var(--control-font-size);
-  font-weight: var(--control-font-weight);
-  line-height: var(--control-line-height);
+  padding-inline: var(--spacing-3);
+  font-family: var(--label-small-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--label-small-font-weight);
+  line-height: 1;
   border: 0;
-  border-radius: var(--control-radius);
-  background-color: var(--color-surface-muted);
-  color: var(--color-content-muted);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface-inset);
+  color: var(--color-content-secondary);
   white-space: nowrap;
   cursor: pointer;
   transition:
-    background-color 0.12s ease-out,
-    color 0.12s ease-out;
+    background-color var(--motion-duration) var(--motion-easing),
+    color var(--motion-duration) var(--motion-easing);
 }
 
 .dz-pill-tabs__tab:hover:not(:disabled):not([aria-selected='true']) {
+  background-color: var(--color-surface-sunken);
   color: var(--color-content);
 }
 
 .dz-pill-tabs__tab[aria-selected='true'] {
   background-color: var(--control-color-filled-surface-normal);
   color: var(--control-color-filled-content-normal);
+  font-weight: var(--label-strong-font-weight);
 }
 
 .dz-pill-tabs__tab:disabled {
@@ -50,12 +52,12 @@
 }
 
 .dz-pill-tabs__tab:focus-visible {
-  outline: var(--focus-width) solid var(--tint-600);
+  outline: var(--focus-width) solid var(--focus-ring);
   outline-offset: var(--focus-offset);
 }
 
-/* The count rides inside the pill, dimmed against the label it follows. */
+/* The count runs on in the label's own ink — "收藏 64" reads as one label,
+   not a label wearing a badge. */
 .dz-pill-tabs__count {
-  opacity: 0.7;
   font-variant-numeric: tabular-nums;
 }

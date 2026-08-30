@@ -33,11 +33,11 @@
 
 .dz-preference-section__footer {
   margin-top: var(--spacing-2);
-  color: var(--color-content-muted);
-  font-family: var(--caption-medium-font-family);
-  font-size: var(--caption-medium-font-size);
-  font-weight: var(--caption-medium-font-weight);
-  line-height: var(--caption-medium-line-height);
+  color: var(--color-content-subtle);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+  font-weight: var(--caption-small-font-weight);
+  line-height: 1.7;
 }
 
 /*
@@ -68,26 +68,28 @@
   gap: var(--spacing-1-5);
 }
 
+/* The group outranks its sections typographically: the display cut at the
+   strong weight, where a section heading is a SectionLabel. */
 .dz-preference-group__title {
   color: var(--color-content);
-  font-family: var(--label-medium-font-family);
-  font-size: var(--label-medium-font-size);
-  font-weight: var(--label-medium-font-weight);
-  line-height: var(--label-medium-line-height);
+  font-family: var(--label-strong-font-family);
+  font-size: var(--label-strong-font-size);
+  font-weight: var(--label-strong-font-weight);
+  line-height: var(--label-strong-line-height);
 }
 
 .dz-preference-group__description {
-  color: var(--color-content-muted);
-  font-family: var(--caption-medium-font-family);
-  font-size: var(--caption-medium-font-size);
-  font-weight: var(--caption-medium-font-weight);
-  line-height: var(--caption-medium-line-height);
+  color: var(--color-content-subtle);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+  font-weight: var(--caption-small-font-weight);
+  line-height: 1.7;
 }
 
 .dz-preference-group__sections {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-5);
+  gap: calc(var(--spacing-4) + var(--spacing-0-5));
 }
 
 /*
@@ -99,8 +101,8 @@
 .dz-preference-row {
   display: flex;
   align-items: center;
-  gap: var(--control-medium-gap);
-  min-height: var(--control-small-size);
+  gap: var(--spacing-2-5);
+  min-height: var(--control-medium-size);
   width: 100%;
   border: 0;
   background: none;
@@ -118,20 +120,27 @@
   padding-inline: var(--spacing-2);
 }
 
+/* The wash previews selection — the accent at 8% — because an interactive
+   row here opens something; a neutral wash is for rows that merely light. */
+.dz-preference-row[data-interactive='true'] {
+  transition: background-color var(--motion-duration) var(--motion-easing);
+}
+
 .dz-preference-row[data-interactive='true']:hover {
-  background-color: var(--control-color-normal-surface-hovered);
+  background-color: var(--control-color-plain-surface-hovered);
 }
 
 .dz-preference-row:focus-visible {
-  outline: var(--focus-width) solid var(--tint-600);
+  outline: var(--focus-width) solid var(--focus-ring);
   outline-offset: var(--focus-offset);
 }
 
+/* Uncoloured on purpose: a Badge or a Toggle in these slots keeps its own
+   ink rather than inheriting a wash through `currentColor`. */
 .dz-preference-row__icon {
   display: flex;
   flex-shrink: 0;
   align-items: center;
-  color: var(--color-content-muted);
 }
 
 .dz-preference-row__text {
@@ -147,28 +156,27 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--color-content);
-  font-family: var(--label-small-font-family);
-  font-size: var(--label-small-font-size);
-  font-weight: var(--label-small-font-weight);
-  line-height: var(--label-small-line-height);
+  font-family: var(--label-medium-font-family);
+  font-size: var(--label-medium-font-size);
+  font-weight: var(--label-medium-font-weight);
+  line-height: var(--label-medium-line-height);
 }
 
 .dz-preference-row__subtitle {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--color-content-muted);
-  font-family: var(--caption-medium-font-family);
-  font-size: var(--caption-medium-font-size);
-  font-weight: var(--caption-medium-font-weight);
-  line-height: var(--caption-medium-line-height);
+  color: var(--color-content-subtle);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+  font-weight: var(--caption-small-font-weight);
+  line-height: var(--caption-small-line-height);
 }
 
 .dz-preference-row__trailing {
   display: flex;
   flex-shrink: 0;
   align-items: center;
-  gap: var(--control-medium-gap);
+  gap: var(--spacing-2-5);
   margin-inline-start: auto;
-  color: var(--color-content-muted);
 }

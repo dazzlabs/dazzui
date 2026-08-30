@@ -1,8 +1,25 @@
+/*
+ * A rule cut into the surface, not a capsule: the corner is a soft square,
+ * and the fill's leading edge is a hard clip against it — a pill's rounded
+ * head would read as a thumb.
+ */
 .dz-progress {
   width: 100%;
   overflow: hidden;
   background-color: var(--color-surface-sunken);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-none);
+}
+
+.dz-progress[data-size='small'] {
+  border-radius: calc(var(--spacing-1) / 2);
+}
+
+.dz-progress[data-size='medium'] {
+  border-radius: calc(var(--spacing-1-5) / 2);
+}
+
+.dz-progress[data-size='large'] {
+  border-radius: calc(var(--spacing-2) / 2);
 }
 
 .dz-progress[data-size='small'] {
@@ -20,8 +37,16 @@
 .dz-progress__fill {
   height: 100%;
   background-color: var(--tint-600);
-  border-radius: inherit;
-  transition: width 0.3s ease-out;
+  transition: width 0.3s ease;
+}
+
+/* The document-progress fill: the theme's two-stop accent ramp. */
+.dz-progress[data-gradient='true'] .dz-progress__fill {
+  background-image: linear-gradient(
+    90deg,
+    var(--progress-gradient-from),
+    var(--progress-gradient-to)
+  );
 }
 
 /* An indeterminate bar has no width to animate, so it sweeps instead. */

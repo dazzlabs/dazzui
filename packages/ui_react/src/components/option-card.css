@@ -2,37 +2,50 @@
  * A selectable card — the shape a small set of mutually exclusive choices
  * takes when each needs a line of explanation and a radio row would not
  * carry it.
+ *
+ * The type runs title-over-description in the strong/caption pair: a 12px
+ * display-face title at 700 over an 11px caption. The card is one of the two
+ * places the hierarchy is carried by *both* size and weight, because the two
+ * lines sit closer than anywhere else in the system.
  */
 .dz-option-card {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: var(--spacing-1);
-  padding-block: var(--spacing-3);
+  gap: var(--spacing-1-5);
+  padding-block: var(--spacing-3-5);
   padding-inline: var(--spacing-3);
-  border: var(--spacing-px) solid var(--color-border);
-  border-radius: var(--radius-medium);
-  background-color: var(--color-surface);
+  border: var(--stroke-hairline) solid var(--color-border);
+  border-radius: var(--radius-large);
+  background-color: var(--color-surface-muted);
   text-align: left;
   cursor: pointer;
+  transition:
+    background-color var(--motion-duration) var(--motion-easing),
+    border-color var(--motion-duration) var(--motion-easing);
 }
 
-.dz-option-card:hover {
-  background-color: var(--control-color-normal-surface-hovered);
+.dz-option-card:hover:not(:disabled):not([aria-checked='true']) {
+  background-color: var(--color-surface-subtle);
 }
 
 /*
- * Selected is the tinted recipe, with the outlined recipe's border on top: the
- * fill says which one is chosen and the border makes it survive being read at
- * a glance next to its neighbours.
+ * Selected is the tinted wash with the accent drawn around it at the control
+ * stroke — the border *thickens* as well as colours, which is what makes the
+ * chosen card survive a glance across its neighbours.
  */
 .dz-option-card[aria-checked='true'] {
+  border-width: var(--stroke-control);
   background-color: var(--control-color-tinted-surface-normal);
   border-color: var(--control-color-outlined-border-normal);
 }
 
+.dz-option-card[aria-checked='true'] .dz-option-card__description {
+  color: var(--color-content-muted);
+}
+
 .dz-option-card:focus-visible {
-  outline: var(--focus-width) solid var(--tint-600);
+  outline: var(--focus-width) solid var(--focus-ring);
   outline-offset: var(--focus-offset);
 }
 
@@ -44,16 +57,17 @@
 
 .dz-option-card__title {
   color: var(--color-content);
-  font-family: var(--label-small-font-family);
-  font-size: var(--label-small-font-size);
-  font-weight: var(--label-small-font-weight);
-  line-height: var(--label-small-line-height);
+  font-family: var(--label-strong-font-family);
+  font-size: var(--label-strong-font-size);
+  font-weight: var(--label-strong-font-weight);
+  line-height: var(--label-strong-line-height);
 }
 
 .dz-option-card__description {
-  color: var(--color-content-muted);
-  font-family: var(--caption-medium-font-family);
-  font-size: var(--caption-medium-font-size);
-  font-weight: var(--caption-medium-font-weight);
-  line-height: var(--caption-medium-line-height);
+  color: var(--color-content-subtle);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--caption-small-font-weight);
+  line-height: 1.5;
+  transition: color var(--motion-duration) var(--motion-easing);
 }

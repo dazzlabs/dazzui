@@ -1,0 +1,12 @@
+# Line weights. `hairline` is a separator — one *device* pixel, which is why
+# the React package halves the emitted variable under `min-resolution: 2dppx`
+# (see src/styles/base.css there). `control` is the drawn edge of an
+# unselected checkbox, radio, idle step marker or selected option card: at
+# 1.5px it sits between a hairline and a 2px slab, which is exactly the
+# weight AppKit draws those outlines at.
+stroke:
+  $type: dimension
+  hairline:
+    $value: 1px
+  control:
+    $value: 0.09375rem

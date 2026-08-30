@@ -43,24 +43,46 @@ const modeSelectors = [
 export default defineConfig({
   tokens: [
     './tokens/global/_base.yaml',
-    './tokens/global/_design.yaml',
     './tokens/global/color.yaml',
     './tokens/global/control.yaml',
     './tokens/global/effect.yaml',
     './tokens/global/focus.yaml',
     './tokens/global/frame.yaml',
+    './tokens/global/motion.yaml',
     './tokens/global/radius.yaml',
     './tokens/global/spacing.yaml',
+    './tokens/global/stroke.yaml',
     './tokens/global/typography.yaml',
     './tokens/component/checkbox.yaml',
     './tokens/component/dialog.yaml',
+    './tokens/component/menu.yaml',
+    './tokens/component/progress.yaml',
     './tokens/component/radio.yaml',
+    './tokens/component/segmented-control.yaml',
     './tokens/component/shortcut-recorder.yaml',
+    './tokens/component/toast.yaml',
     './tokens/component/toggle.yaml',
-    './tokens/theme/default/colors.yaml',
   ],
   plugins: [
-    css({ filename: 'style.css', modeSelectors }),
+    css({
+      filename: 'style.css',
+      modeSelectors,
+      /**
+       * Everything under `control.color` belongs to the control plugin: the
+       * shade and alpha leaves are build-time inputs it resolves, and even
+       * the literal-colour leaves are re-emitted by it beside the resolved
+       * recipes. Letting the CSS plugin emit them too put ninety-odd inert
+       * numbers into every page.
+       */
+      exclude: ['control.color.**'],
+      /**
+       * Emit hex-6/hex-8 instead of `color(srgb 0.9647058823529412 …)`.
+       * The Flutter plugin already collapses every ramp — the oklch ones
+       * included — to 8-digit hex `Color`s, so hex precision is the floor
+       * the design already ships at; this keeps the CSS at the same one.
+       */
+      legacyHex: true,
+    }),
     controlPlugin({ modeSelectors }),
     flutterPlugin({ modeSelectors }),
   ],

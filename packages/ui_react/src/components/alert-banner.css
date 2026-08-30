@@ -1,15 +1,23 @@
 /*
  * A tinted notice. It always wears the `tinted` treatment — a banner that
  * needed a fill this loud would be a dialog, not a banner — so `tint` is the
- * only color axis.
+ * only color axis. Fill and border are washes of the tint (the recipe's 12%
+ * and a 25% hairline), so the banner sits as correctly on a card as on the
+ * paper.
  */
 .dz-alert-banner {
   display: flex;
-  /* Not centered: once a description wraps, the icon belongs beside the first
-     line of the title rather than halfway down the block. */
+  align-items: center;
+  gap: var(--spacing-2-5);
+  border: var(--stroke-hairline) solid
+    color-mix(in srgb, var(--tint-600) 25%, transparent);
+  background-color: var(--control-color-tinted-surface-normal);
+}
+
+/* Once a description wraps, the icon belongs beside the first line rather
+   than halfway down the block. */
+.dz-alert-banner[data-has-description='true'] {
   align-items: flex-start;
-  border: var(--spacing-px) solid var(--tint-200);
-  background-color: var(--tint-50);
 }
 
 .dz-alert-banner__icon {
@@ -27,12 +35,21 @@
   min-width: 0;
 }
 
+/* The text grades of the tint, not its fill: a notice is read, not pressed. */
 .dz-alert-banner__title {
-  color: var(--tint-700);
+  color: var(--control-color-tinted-content-hovered);
+  font-family: var(--label-medium-font-family);
+  font-size: var(--label-medium-font-size);
+  font-weight: var(--label-medium-font-weight);
+  line-height: 1.4;
 }
 
 .dz-alert-banner__description {
-  color: var(--tint-600);
+  color: var(--control-color-tinted-content-normal);
+  font-family: var(--label-quiet-font-family);
+  font-size: var(--label-quiet-font-size);
+  font-weight: var(--caption-small-font-weight);
+  line-height: 1.5;
 }
 
 .dz-alert-banner__action {
@@ -41,69 +58,25 @@
 }
 
 /* Sizes -------------------------------------------------------------------
- * A banner is not a control, so it reads the shared profile steps directly
- * rather than opting into the `[data-size]` bindings.
+ * One shape, three densities: the type never changes, only the box around
+ * it. A banner that grew its type would be competing with the content it
+ * interrupts.
  */
 
 .dz-alert-banner[data-size='small'] {
-  padding-block: var(--control-small-padding-block);
-  padding-inline: var(--control-small-padding-inline);
-  border-radius: var(--radius-small);
-  gap: var(--control-small-gap);
-}
-
-.dz-alert-banner[data-size='small'] .dz-alert-banner__title {
-  font-family: var(--title-small-font-family);
-  font-size: var(--title-small-font-size);
-  font-weight: var(--title-small-font-weight);
-  line-height: var(--title-small-line-height);
-}
-
-.dz-alert-banner[data-size='small'] .dz-alert-banner__description {
-  font-family: var(--body-small-font-family);
-  font-size: var(--body-small-font-size);
-  font-weight: var(--body-small-font-weight);
-  line-height: var(--body-small-line-height);
+  padding-block: var(--spacing-2);
+  padding-inline: var(--spacing-3);
+  border-radius: var(--radius-medium);
 }
 
 .dz-alert-banner[data-size='medium'] {
-  padding-block: var(--control-medium-padding-block);
-  padding-inline: var(--control-medium-padding-inline);
-  border-radius: var(--radius-medium);
-  gap: var(--control-medium-gap);
-}
-
-.dz-alert-banner[data-size='medium'] .dz-alert-banner__title {
-  font-family: var(--title-medium-font-family);
-  font-size: var(--title-medium-font-size);
-  font-weight: var(--title-medium-font-weight);
-  line-height: var(--title-medium-line-height);
-}
-
-.dz-alert-banner[data-size='medium'] .dz-alert-banner__description {
-  font-family: var(--body-medium-font-family);
-  font-size: var(--body-medium-font-size);
-  font-weight: var(--body-medium-font-weight);
-  line-height: var(--body-medium-line-height);
+  padding-block: var(--spacing-3);
+  padding-inline: var(--spacing-3-5);
+  border-radius: var(--radius-large);
 }
 
 .dz-alert-banner[data-size='large'] {
-  padding-block: var(--control-large-padding-block);
-  padding-inline: var(--control-large-padding-inline);
+  padding-block: var(--spacing-4);
+  padding-inline: var(--spacing-4);
   border-radius: var(--radius-large);
-  gap: var(--control-large-gap);
-}
-
-.dz-alert-banner[data-size='large'] .dz-alert-banner__title {
-  font-family: var(--title-large-font-family);
-  font-size: var(--title-large-font-size);
-  font-weight: var(--title-large-font-weight);
-  line-height: var(--title-large-line-height);
-}
-
-.dz-alert-banner[data-size='large'] .dz-alert-banner__description {
-  font-family: var(--body-large-font-family);
-  font-size: var(--body-large-font-size);
-  font-weight: var(--body-large-font-weight);
-  line-height: var(--body-large-line-height);
 }

@@ -1,0 +1,13 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    - directives_ordering
+
+formatter:
+  trailing_commas: preserve
+analyzer:
+  exclude:
+    - build/**
+    - web/**
+    - macos/**

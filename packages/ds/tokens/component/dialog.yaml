@@ -2,10 +2,13 @@ dialog:
   width:
     $type: dimension
     $value: 27.5rem
+  # The scrim is the ink at quarter strength — a wash of the theme's own
+  # foreground, so a dark theme dims with its pale ink rather than with more
+  # black on black.
   scrim:
     color:
       $type: color
-      $value: "{color.neutral.950}"
+      $value: "{color.content}"
     alpha:
       $type: number
       $value: 0.25

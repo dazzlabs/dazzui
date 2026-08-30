@@ -1,18 +1,25 @@
 /*
  * The micro-heading that organises a pane. One size, sentence case, no added
- * tracking: tone is the only axis worth varying.
+ * tracking: tone is the only axis worth varying — the labelling ink by
+ * default, one step fainter for a nav group's heading, and a tint's *text*
+ * grade when the label carries a status, because a label is read, not
+ * pressed.
  */
 .dz-section-label {
   display: inline-block;
-  color: var(--color-content-muted);
+  color: var(--color-content-subtle);
   font-family: var(--label-small-font-family);
   font-size: var(--label-small-font-size);
   font-weight: var(--label-small-font-weight);
   line-height: var(--label-small-line-height);
 }
 
+.dz-section-label[data-tone='faint'] {
+  color: var(--color-content-faint);
+}
+
 /* Set only when the caller asks for a tint, so the untinted label keeps the
-   muted content color rather than resolving against a ramp it never chose. */
+   labelling ink rather than resolving against a ramp it never chose. */
 .dz-section-label[data-tint] {
-  color: var(--tint-600);
+  color: var(--control-color-plain-content-normal);
 }

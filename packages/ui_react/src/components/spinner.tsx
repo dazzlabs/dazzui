@@ -11,6 +11,8 @@ export interface SpinnerProps extends Omit<
 > {
   size?: SpinnerSize
   tint?: Tint
+  /** White ring for a spinner sitting on a filled control's own tint. */
+  onAccent?: boolean
   /** Announced to assistive tech; pass your own copy to localise it. */
   label?: string
 }
@@ -18,6 +20,7 @@ export interface SpinnerProps extends Omit<
 export function Spinner({
   size = 'medium',
   tint = 'primary',
+  onAccent = false,
   label = 'Loading',
   className,
   ...props
@@ -28,6 +31,7 @@ export function Spinner({
       aria-label={label}
       data-size={size}
       data-tint={tint}
+      data-on-accent={onAccent || undefined}
       className={cx('dz-spinner', className)}
       {...props}
     />

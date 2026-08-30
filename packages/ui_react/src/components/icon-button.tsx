@@ -20,7 +20,7 @@ export interface IconButtonProps extends Omit<
 
 export function IconButton({
   label,
-  size = 'medium',
+  size = 'tiny',
   variant = 'plain',
   // Neutral by default: a toolbar of these should read as chrome, not as a row
   // of accented actions. Pass a tint where one button genuinely leads.
@@ -36,7 +36,7 @@ export function IconButton({
       type={type}
       aria-label={label}
       title={label}
-      aria-pressed={active}
+      aria-pressed={active || undefined}
       data-control=""
       data-size={size}
       data-tint={tint}

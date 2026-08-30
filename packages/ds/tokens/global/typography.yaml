@@ -1,32 +1,11 @@
 # The type faces, drawn to AppKit's practical scale: 11 secondary ·
 # 12 small · 13 body · 15 emphasis · 17 title, carried on past 17 for the
-# headline and display faces the desktop chrome does not use.
+# headline faces the desktop chrome does not use.
 #
 # The `label` faces set their line-height to their own size. That is what a
 # control wants — its label does not wrap, and a leading taller than the cap
 # height pushes the text off the centre of a 26px box. Every other face pairs
 # its size with the comfortable leading, because its text does wrap.
-displaySmall:
-  $type: typography
-  $value:
-    fontFamily: "{base.font.display}"
-    fontSize: "{base.type.4xl}"
-    fontWeight: "{base.font-weight.light}"
-    lineHeight: "{base.leading.4xl}"
-displayMedium:
-  $type: typography
-  $value:
-    fontFamily: "{base.font.display}"
-    fontSize: "{base.type.5xl}"
-    fontWeight: "{base.font-weight.light}"
-    lineHeight: "{base.leading.5xl}"
-displayLarge:
-  $type: typography
-  $value:
-    fontFamily: "{base.font.display}"
-    fontSize: "{base.type.6xl}"
-    fontWeight: "{base.font-weight.light}"
-    lineHeight: "{base.leading.6xl}"
 headlineSmall:
   $type: typography
   $value:
@@ -90,6 +69,25 @@ bodyLarge:
     fontSize: "{base.type.emphasis}"
     fontWeight: "{base.font-weight.normal}"
     lineHeight: "{base.leading.emphasis}"
+# The two weight-shift faces. A selection row rests at `labelQuiet` (500)
+# and its selected entry takes the ordinary label weight (600); a pill tab's
+# active label and an option card's title go one further to `labelStrong`
+# (700, in the display cut). The shift itself is the signal — a row where
+# both states share a weight is silent.
+labelQuiet:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.ui}"
+    fontSize: "{base.type.small}"
+    fontWeight: "{base.font-weight.medium}"
+    lineHeight: "{base.type.small}"
+labelStrong:
+  $type: typography
+  $value:
+    fontFamily: "{base.font.display}"
+    fontSize: "{base.type.small}"
+    fontWeight: "{base.font-weight.bold}"
+    lineHeight: "{base.type.small}"
 labelSmall:
   $type: typography
   $value:

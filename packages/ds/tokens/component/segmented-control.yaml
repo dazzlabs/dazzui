@@ -1,0 +1,8 @@
+segmented-control:
+  # The inset between track and capsule. 3px is off the 4px grid on purpose —
+  # at 2px the capsule sits flush, at 4px the track goes fat; and the
+  # capsule's own corner is derived from it (track corner minus inset), which
+  # is the geometry that makes the nesting read.
+  inset:
+    $type: dimension
+    $value: 0.1875rem

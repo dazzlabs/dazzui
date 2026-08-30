@@ -1,0 +1,5 @@
+toast:
+  # The cap a one-line receipt truncates at rather than spanning the window.
+  max-width:
+    $type: dimension
+    $value: 26.25rem

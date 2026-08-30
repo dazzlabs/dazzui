@@ -12,7 +12,7 @@
   display: flex;
   padding-inline: var(--spacing-5);
   background-color: var(--color-surface-muted);
-  border-bottom: var(--spacing-px) solid var(--color-border);
+  border-bottom: var(--stroke-hairline) solid var(--color-border);
 }
 
 .dz-table__row {
@@ -20,16 +20,13 @@
   align-items: center;
   padding-block: var(--spacing-3);
   padding-inline: var(--spacing-5);
-  border-bottom: var(--spacing-px) solid var(--color-border);
+  border-bottom: var(--stroke-hairline) solid var(--color-border);
   text-align: left;
-  font-family: var(--body-small-font-family);
-  font-size: var(--body-small-font-size);
-  font-weight: var(--body-small-font-weight);
-  line-height: var(--body-small-line-height);
-}
-
-.dz-table__row:last-child {
-  border-bottom: 0;
+  font-family: var(--body-medium-font-family);
+  font-size: var(--body-medium-font-size);
+  font-weight: var(--body-medium-font-weight);
+  line-height: var(--body-medium-line-height);
+  transition: background-color var(--motion-duration) var(--motion-easing);
 }
 
 .dz-table__row[data-interactive='true'] {
@@ -48,8 +45,8 @@
 }
 
 .dz-table__row:focus-visible {
-  outline: var(--focus-width) solid var(--tint-600);
-  outline-offset: calc(var(--focus-offset) * -1);
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
 }
 
 .dz-table__cell {
@@ -63,7 +60,7 @@
 
 .dz-table__cell[data-head='true'] {
   padding-block: var(--spacing-2);
-  color: var(--color-content-muted);
+  color: var(--color-content-faint);
   font-family: var(--label-small-font-family);
   font-size: var(--label-small-font-size);
   font-weight: var(--label-small-font-weight);

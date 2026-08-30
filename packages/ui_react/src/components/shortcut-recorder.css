@@ -1,6 +1,11 @@
 /*
  * Drawn as a field, not a key cap: a Kbd says "this is what the key is", a
- * field says "you can change this".
+ * field says "you can change this". Like every field it is a recessed card
+ * that lifts to the paper while recording, behind the accent wash.
+ *
+ * The chord itself prints in the display cut at the strong weight — the
+ * recorded keys are the value the control exists to show — while the empty
+ * prompt rests faint at the quiet weight.
  */
 .dz-shortcut-recorder {
   position: relative;
@@ -10,24 +15,30 @@
 .dz-shortcut-recorder__button {
   height: var(--control-medium-size);
   min-width: var(--shortcut-recorder-width);
-  padding-inline: var(--control-medium-padding-inline);
-  border: var(--spacing-px) solid var(--control-color-normal-border-normal);
+  padding-inline: var(--spacing-3);
+  border: var(--stroke-hairline) solid var(--color-border-strong);
   border-radius: var(--radius-medium);
-  background-color: var(--control-color-normal-surface-normal);
-  color: var(--control-color-normal-content-normal);
+  background-color: var(--color-surface-muted);
+  color: var(--color-content);
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
   outline: none;
-  font-family: var(--label-small-font-family);
-  font-size: var(--label-small-font-size);
-  font-weight: var(--label-small-font-weight);
-  line-height: var(--label-small-line-height);
+  font-family: var(--label-strong-font-family);
+  font-size: var(--label-strong-font-size);
+  font-weight: var(--label-strong-font-weight);
+  line-height: var(--label-strong-line-height);
+  transition:
+    border-color var(--motion-duration) var(--motion-easing),
+    background-color var(--motion-duration) var(--motion-easing),
+    box-shadow var(--motion-duration) var(--motion-easing);
 }
 
 /* Unbound, or waiting with nothing held: the label is a prompt, not a value. */
 .dz-shortcut-recorder__button[data-glyphs='false'] {
-  color: var(--color-content-muted);
+  color: var(--color-content-faint);
+  font-family: var(--label-quiet-font-family);
+  font-weight: var(--label-quiet-font-weight);
 }
 
 /* Room for the clear button, mirrored on the left so the keys stay centred
@@ -38,27 +49,34 @@
 
 .dz-shortcut-recorder__button[data-recording='true'] {
   border-color: var(--tint-600);
-  outline: var(--focus-width) solid var(--tint-200);
+  background-color: var(--color-surface);
+  box-shadow: 0 0 0 var(--focus-width)
+    color-mix(in srgb, var(--tint-600) 14%, transparent);
 }
 
-/* A press the recorder could not take flashes the border rather than beeping. */
-.dz-shortcut-recorder__button[data-rejected='true'],
+/* A press the recorder could not take flashes a danger ring rather than
+   beeping — the resting fill stays, because the flash is about the press,
+   not the stored value. A *stored* conflict repaints the whole chip. */
+.dz-shortcut-recorder__button[data-rejected='true'] {
+  border-color: var(--color-danger-600);
+  box-shadow: 0 0 0 var(--focus-width) var(--color-danger-50);
+}
+
 .dz-shortcut-recorder__button[data-state='error'] {
-  border-color: var(--color-danger-500);
+  border-color: var(--color-danger-600);
   background-color: var(--color-danger-50);
-  color: var(--color-danger-700);
+  color: var(--color-danger-800);
 }
 
 .dz-shortcut-recorder__button:focus-visible {
-  outline: var(--focus-width) solid var(--tint-600);
+  outline: var(--focus-width) solid var(--focus-ring);
   outline-offset: var(--focus-offset);
 }
 
 .dz-shortcut-recorder__button:disabled {
   cursor: not-allowed;
-  border-color: var(--control-color-normal-border-disabled);
-  background-color: var(--control-color-normal-surface-disabled);
-  color: var(--control-color-normal-content-disabled);
+  color: var(--color-content-faint);
+  opacity: 0.6;
 }
 
 .dz-shortcut-recorder__clear {
@@ -71,15 +89,18 @@
   padding: 0;
   border: 0;
   background: none;
-  color: var(--color-content-muted);
+  color: var(--color-content-faint);
   cursor: pointer;
+  font-size: var(--label-medium-font-size);
+  line-height: 1;
+  transition: color var(--motion-duration) var(--motion-easing);
 }
 
 .dz-shortcut-recorder__clear:hover {
-  color: var(--color-content);
+  color: var(--color-content-subtle);
 }
 
 .dz-shortcut-recorder__clear:focus-visible {
-  outline: var(--focus-width) solid var(--tint-600);
+  outline: var(--focus-width) solid var(--focus-ring);
   outline-offset: var(--focus-offset);
 }

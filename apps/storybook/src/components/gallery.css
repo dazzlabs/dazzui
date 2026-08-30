@@ -16,7 +16,7 @@
 .dt-page__description,
 .dt-section__description {
   margin: var(--spacing-2) 0 0;
-  max-width: var(--base-container-3xl);
+  max-width: 48rem;
   color: var(--color-content-muted);
   font-size: var(--body-small-font-size);
   line-height: var(--body-small-line-height);
@@ -61,7 +61,7 @@
 
 .dt-specimen {
   display: grid;
-  grid-template-columns: var(--base-spacing-24) 1fr;
+  grid-template-columns: 6rem 1fr;
   align-items: center;
   gap: var(--spacing-4);
 }
@@ -74,14 +74,14 @@
 }
 
 .dt-name {
-  font-family: var(--base-font-mono);
+  font-family: var(--base-font-code);
   font-size: var(--caption-medium-font-size);
   line-height: var(--caption-medium-line-height);
 }
 
 .dt-value {
   color: var(--color-content-muted);
-  font-family: var(--base-font-mono);
+  font-family: var(--base-font-code);
   font-size: var(--caption-small-font-size);
   line-height: var(--caption-small-line-height);
   overflow-wrap: anywhere;
@@ -97,19 +97,19 @@
 }
 
 .dt-swatch__preview {
-  height: var(--base-spacing-14);
+  height: var(--spacing-14);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-medium);
 }
 
 .dt-swatch--compact .dt-swatch__preview {
-  height: var(--base-spacing-10);
+  height: var(--spacing-10);
   border-radius: var(--radius-small);
 }
 
 .dt-ramp {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--base-spacing-16), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(var(--spacing-16), 1fr));
   gap: var(--spacing-2);
 }
 
@@ -137,7 +137,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: var(--base-spacing-20);
+  min-height: var(--spacing-20);
   padding: var(--spacing-4);
   border-radius: var(--radius-small);
   background: var(--color-surface-muted);
@@ -147,13 +147,13 @@
 
 .dt-bar {
   display: grid;
-  grid-template-columns: var(--base-spacing-24) auto 1fr;
+  grid-template-columns: 6rem auto 1fr;
   align-items: center;
   gap: var(--spacing-4);
 }
 
 .dt-bar__fill {
-  height: var(--base-spacing-3);
+  height: var(--spacing-3);
   border-radius: var(--radius-full);
   background: var(--color-primary-500);
 }
@@ -174,7 +174,7 @@
   font-size: var(--label-small-font-size);
   font-weight: var(--label-small-font-weight);
   text-transform: uppercase;
-  letter-spacing: var(--base-tracking-wide);
+  letter-spacing: 0.025em;
   white-space: nowrap;
 }
 

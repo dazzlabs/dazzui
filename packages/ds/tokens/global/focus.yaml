@@ -1,7 +1,24 @@
+# The keyboard focus ring, drawn the way macOS draws it: a soft, wide accent
+# halo hugging the control with no gap — not the crisp offset outline the web
+# defaults to. `ring` is a recipe (a shade off the tinted ramp plus an
+# alpha), resolved by plugins/control.mjs onto `[data-tint]` as
+# `--focus-ring`, with a primary-tinted default on `:root` for anything that
+# carries no tint of its own.
 focus:
   width:
     $type: dimension
-    $value: "{spacing.0.5}"
+    $value: 3px
   offset:
     $type: dimension
-    $value: "{spacing.px}"
+    $value: 0px
+  ring:
+    shade:
+      $type: number
+      $value: 600
+    alpha:
+      $type: number
+      $value: 0.45
+      $extensions:
+        mode:
+          dark: 0.5
+          bright-dark: 0.55

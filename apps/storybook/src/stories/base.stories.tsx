@@ -1,25 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import {
-  Bar,
   Grid,
   Page,
   Ramp,
   Section,
   Stack,
   Swatch,
-  Tile,
   TokenTable,
   TYPE_SAMPLE,
   useResolvedValue,
 } from '../components/gallery'
-import {
-  byPrefix,
-  compareKeys,
-  groupScales,
-  isColorShade,
-  type Token,
-} from '../lib/tokens'
+import { byPrefix, groupScales, isColorShade, type Token } from '../lib/tokens'
 
 const meta: Meta = {
   title: 'Tokens/Primitives',
@@ -34,32 +26,12 @@ function labelOf(prefix: string) {
 
 const colorRamps = groupScales('base-color-', isColorShade)
 const standaloneColors = byPrefix('base-color-', { leafOnly: true })
-const spacing = byPrefix('base-spacing-', { sorted: true })
-const containers = byPrefix('base-container-', { sorted: true })
+const corners = byPrefix('base-corner-', { sorted: true })
+const typeSteps = byPrefix('base-type-', { sorted: true })
+const leading = byPrefix('base-leading-', { sorted: true })
+const controlHeights = byPrefix('base-control-height-', { sorted: true })
 const families = byPrefix('base-font-', { leafOnly: true, sorted: true })
 const weights = byPrefix('base-font-weight-', { sorted: true })
-const leading = byPrefix('base-leading-', { sorted: true })
-const tracking = byPrefix('base-tracking-', { sorted: true })
-const blur = byPrefix('base-blur-', { sorted: true })
-const shadows = byPrefix('base-shadow-', { sorted: true })
-
-/** `base-text-lg-size` and `base-text-lg-line-height` belong to one step. */
-const textSteps = byPrefix('base-text-')
-  .filter(token => token.name.endsWith('-size'))
-  .map(token => token.name.slice('base-text-'.length, -'-size'.length))
-  .sort(compareKeys)
-
-function TextStep({ step }: { step: string }) {
-  const size = useResolvedValue(`--base-text-${step}-size`)
-  const lineHeight = useResolvedValue(`--base-text-${step}-line-height`)
-  return (
-    <tr>
-      <td className="dt-name">{step}</td>
-      <td className="dt-value">{size}</td>
-      <td className="dt-value">{lineHeight}</td>
-    </tr>
-  )
-}
 
 function FamilySample({ token }: { token: Token }) {
   const resolved = useResolvedValue(token.property)
@@ -101,7 +73,7 @@ export const Colors: Story = {
   render: () => (
     <Page
       title="Primitive colors"
-      description="The full primitive palette, generated from Tailwind's theme. Semantic ramps alias these; components never reference them directly."
+      description="The whole primitive palette, hand-authored: the three brand ramps the design specifies, and the five semantic hues frozen from Tailwind at the values it shipped. Semantic ramps alias these; components never reference them directly."
     >
       <Section title="Standalone">
         <Grid min="18rem">
@@ -119,22 +91,29 @@ export const Colors: Story = {
   ),
 }
 
-export const Spacing: Story = {
+export const Metrics: Story = {
   render: () => (
     <Page
-      title="Primitive spacing"
-      description="The full spacing scale, derived from a single base step."
+      title="Primitive metrics"
+      description="The AppKit scales the design is drawn to: corners, the type scale with its paired leading, and the control heights. `radius`, the typography faces, and the control profiles alias these."
     >
-      <Section title="Scale">
-        <Stack>
-          {spacing.map(token => (
-            <Bar
-              key={token.name}
-              token={token}
-              label={token.name.slice('base-spacing-'.length)}
-            />
-          ))}
-        </Stack>
+      <Section title="Corners">
+        <TokenTable tokens={corners} labelOf={labelOf('base-corner-')} />
+      </Section>
+
+      <Section title="Type scale">
+        <TokenTable tokens={typeSteps} labelOf={labelOf('base-type-')} />
+      </Section>
+
+      <Section title="Leading">
+        <TokenTable tokens={leading} labelOf={labelOf('base-leading-')} />
+      </Section>
+
+      <Section title="Control heights">
+        <TokenTable
+          tokens={controlHeights}
+          labelOf={labelOf('base-control-height-')}
+        />
       </Section>
     </Page>
   ),
@@ -144,7 +123,7 @@ export const Typography: Story = {
   render: () => (
     <Page
       title="Primitive typography"
-      description="Families, sizes, weights, and spacing primitives that the composed type styles are assembled from."
+      description="The typeface stacks and weights the composed type styles are assembled from."
     >
       <Section title="Families">
         <Stack>
@@ -154,83 +133,12 @@ export const Typography: Story = {
         </Stack>
       </Section>
 
-      <Section title="Sizes">
-        <div className="dt-table__scroll">
-          <table className="dt-table">
-            <thead>
-              <tr>
-                <th>Step</th>
-                <th>Size</th>
-                <th>Line height</th>
-              </tr>
-            </thead>
-            <tbody>
-              {textSteps.map(step => (
-                <TextStep key={step} step={step} />
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Section>
-
       <Section title="Weights">
         <Stack>
           {weights.map(token => (
             <WeightSample key={token.name} token={token} />
           ))}
         </Stack>
-      </Section>
-
-      <Section title="Leading">
-        <TokenTable tokens={leading} labelOf={labelOf('base-leading-')} />
-      </Section>
-
-      <Section title="Tracking">
-        <TokenTable tokens={tracking} labelOf={labelOf('base-tracking-')} />
-      </Section>
-    </Page>
-  ),
-}
-
-export const Sizing: Story = {
-  render: () => (
-    <Page
-      title="Primitive sizing"
-      description="Container max-widths for laying out reading columns and panels."
-    >
-      <Section title="Containers">
-        <TokenTable tokens={containers} labelOf={labelOf('base-container-')} />
-      </Section>
-    </Page>
-  ),
-}
-
-export const Effects: Story = {
-  render: () => (
-    <Page
-      title="Primitive effects"
-      description="Primitive shadows and blurs. The semantic effect tokens alias these."
-    >
-      <Section title="Shadows">
-        <Grid min="14rem">
-          {shadows.map(token => (
-            <Tile key={token.name} token={token}>
-              <div
-                style={{
-                  width: '100%',
-                  height: 'var(--base-spacing-14)',
-                  borderRadius: 'var(--radius-medium)',
-                  background: 'var(--color-surface)',
-                  boxShadow: `var(${token.property})`,
-                }}
-              />
-            </Tile>
-          ))}
-        </Grid>
-      </Section>
-
-      <Section title="Blur">
-        <TokenTable tokens={blur} labelOf={labelOf('base-blur-')} />
       </Section>
     </Page>
   ),

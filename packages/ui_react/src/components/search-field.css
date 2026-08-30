@@ -6,24 +6,29 @@
 .dz-search-field {
   display: flex;
   align-items: center;
-  border: var(--spacing-px) solid var(--color-border);
-  background-color: var(--color-surface);
+  border: var(--stroke-hairline) solid var(--color-border-strong);
+  background-color: var(--color-surface-muted);
   color: var(--color-content);
   transition:
-    border-color 0.12s ease-out,
-    background-color 0.12s ease-out;
+    border-color var(--motion-duration) var(--motion-easing),
+    background-color var(--motion-duration) var(--motion-easing),
+    box-shadow var(--motion-duration) var(--motion-easing);
 }
 
+/* Focus lifts the card to the paper behind a soft accent wash — the same
+   move every text control makes (see input.css). */
 .dz-search-field:focus-within {
   border-color: var(--tint-600);
-  outline: var(--focus-width) solid var(--tint-200);
+  background-color: var(--color-surface);
+  box-shadow: 0 0 0 var(--focus-width)
+    color-mix(in srgb, var(--tint-600) 14%, transparent);
 }
 
 .dz-search-field__glyph {
   display: flex;
   flex-shrink: 0;
   align-items: center;
-  color: var(--color-content-muted);
+  color: var(--color-content-faint);
 }
 
 .dz-search-field__input {
@@ -37,7 +42,7 @@
 }
 
 .dz-search-field__input::placeholder {
-  color: var(--color-content-muted);
+  color: var(--color-content-faint);
 }
 
 /* The browser's own clear button would sit beside ours. */
@@ -52,9 +57,10 @@
   padding: 0;
   border: 0;
   background: none;
-  color: var(--color-content-muted);
+  color: var(--color-content-faint);
   cursor: pointer;
   font: inherit;
+  transition: color var(--motion-duration) var(--motion-easing);
 }
 
 .dz-search-field__clear:hover {
@@ -62,7 +68,7 @@
 }
 
 .dz-search-field__clear:focus-visible {
-  outline: var(--focus-width) solid var(--tint-600);
+  outline: var(--focus-width) solid var(--focus-ring);
   outline-offset: var(--focus-offset);
 }
 
@@ -73,10 +79,11 @@
 .dz-search-field {
   height: var(--control-size);
   gap: var(--control-gap);
-  padding-inline: var(--control-padding-inline);
-  border-radius: var(--control-radius);
+  padding-inline: var(--spacing-3);
+  border-radius: var(--radius-medium);
   font-family: var(--control-font-family);
   font-size: var(--control-font-size);
-  font-weight: var(--control-font-weight);
+  /* Typed queries are body weight — a search that types in semibold shouts. */
+  font-weight: var(--body-small-font-weight);
   line-height: var(--control-line-height);
 }
