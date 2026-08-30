@@ -1,4 +1,4 @@
-import { ActionBar, Badge, Icon, type IconGlyph } from '@dazzlabs/dazzui'
+import { ActionBar, Badge, Icon, type IconGlyph } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { Page, Section, Specimen, Stack } from '../components/gallery'

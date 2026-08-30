@@ -1,4 +1,4 @@
-import { Badge, Card, EmptyState } from '@dazzlabs/dazzui'
+import { Badge, Card, EmptyState } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { Page, Section, TokenTable } from '../components/gallery'

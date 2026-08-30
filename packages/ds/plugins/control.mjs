@@ -48,7 +48,7 @@ const WASH = /^(?!control\.color\.)(.+)\.(alpha|color)$/
 
 class ControlPlugin {
   get name() {
-    return '@dazzlabs/dazzui-plugin-control'
+    return '@dazzlabs/dazzui-ds-plugin-control'
   }
 
   async build({ tokens, outputFile }) {

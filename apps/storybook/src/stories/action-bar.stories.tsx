@@ -1,4 +1,4 @@
-import { ActionBar, Badge } from '@dazzlabs/dazzui'
+import { ActionBar, Badge } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { Page, Section, Stack } from '../components/gallery'

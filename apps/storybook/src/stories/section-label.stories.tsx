@@ -1,4 +1,4 @@
-import { SectionLabel, TINTS } from '@dazzlabs/dazzui'
+import { SectionLabel, TINTS } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import {

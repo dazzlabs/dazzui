@@ -1,4 +1,10 @@
-import { Field, FieldValue, Input, Select, Textarea } from '@dazzlabs/dazzui'
+import {
+  Field,
+  FieldValue,
+  Input,
+  Select,
+  Textarea,
+} from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { Page, Section, Stack, TokenTable } from '../components/gallery'

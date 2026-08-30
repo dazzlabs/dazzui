@@ -4,9 +4,10 @@
   "private": true,
   "description": "DazzUI design system monorepo",
   "scripts": {
-    "build": "pnpm run tokens && pnpm run storybook:build",
-    "tokens": "pnpm --filter @dazzlabs/dazzui tokens",
-    "components": "pnpm --filter @dazzlabs/dazzui lib",
+    "build": "pnpm run packages && pnpm run storybook:build",
+    "packages": "pnpm run tokens && pnpm run components",
+    "tokens": "pnpm --filter @dazzlabs/dazzui-ds build",
+    "components": "pnpm --filter @dazzlabs/dazzui-react build",
     "typecheck": "pnpm -r typecheck",
     "storybook": "pnpm --filter @dazzlabs/dazzui-storybook dev",
     "storybook:build": "pnpm --filter @dazzlabs/dazzui-storybook build",

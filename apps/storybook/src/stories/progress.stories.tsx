@@ -1,4 +1,4 @@
-import { Progress, TINTS } from '@dazzlabs/dazzui'
+import { Progress, TINTS } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import {

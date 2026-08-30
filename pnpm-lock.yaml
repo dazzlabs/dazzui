@@ -17,9 +17,9 @@ importers:
 
   apps/storybook:
     dependencies:
-      '@dazzlabs/dazzui':
+      '@dazzlabs/dazzui-react':
         specifier: workspace:*
-        version: link:../../packages/ui
+        version: link:../../packages/ui_react
       react:
         specifier: ^19.2.7
         version: 19.2.8
@@ -52,7 +52,7 @@ importers:
         specifier: ^8.1.5
         version: 8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(yaml@2.8.1)
 
-  packages/ui:
+  packages/ds:
     devDependencies:
       '@terrazzo/cli':
         specifier: ^0.10.3
@@ -60,6 +60,9 @@ importers:
       '@terrazzo/plugin-css':
         specifier: ^0.10.4
         version: 0.10.4(@terrazzo/cli@0.10.3(hono@4.10.6))
+
+  packages/ui_react:
+    devDependencies:
       '@types/node':
         specifier: ^24.13.3
         version: 24.13.3

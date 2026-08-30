@@ -1,4 +1,9 @@
-import { ActionBar, Icon, IconButton, type IconGlyph } from '@dazzlabs/dazzui'
+import {
+  ActionBar,
+  Icon,
+  IconButton,
+  type IconGlyph,
+} from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 

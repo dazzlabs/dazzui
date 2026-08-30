@@ -1,4 +1,4 @@
-import { Kbd } from '@dazzlabs/dazzui'
+import { Kbd } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import {

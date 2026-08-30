@@ -1,4 +1,4 @@
-import tokensCss from '@dazzlabs/dazzui/style.css?raw'
+import tokensCss from '@dazzlabs/dazzui-react/style.css?raw'
 
 export type Token = {
   /** Custom property name without the leading dashes, e.g. `color-primary-500`. */
@@ -21,7 +21,7 @@ function parse(css: string): Token[] {
   const block = ROOT_BLOCK.exec(css)?.[1]
   if (!block) {
     throw new Error(
-      'Could not find the ":root" block in @dazzlabs/dazzui/style.css. ' +
+      'Could not find the ":root" block in @dazzlabs/dazzui-react/style.css. ' +
         'Run `pnpm tokens` to rebuild the tokens.'
     )
   }
@@ -37,7 +37,7 @@ function parse(css: string): Token[] {
   return parsed
 }
 
-/** Every token declared by `@dazzlabs/dazzui`, in source order. */
+/** Every token the design system declares, in source order. */
 export const tokens = parse(tokensCss)
 
 const tokensByName = new Map(tokens.map(token => [token.name, token]))

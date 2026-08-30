@@ -1,4 +1,9 @@
-import { Kbd, PillTabs, SearchField, SegmentedControl } from '@dazzlabs/dazzui'
+import {
+  Kbd,
+  PillTabs,
+  SearchField,
+  SegmentedControl,
+} from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 
@@ -114,6 +119,14 @@ export const Overview: Story = {
         <TokenTable
           tokens={componentTokens('pill-tabs')}
           labelOf={token => token.name.slice('pill-tabs-'.length)}
+          nameHeader="Part"
+        />
+      </Section>
+
+      <Section title="SearchField tokens">
+        <TokenTable
+          tokens={componentTokens('search-field')}
+          labelOf={token => token.name.slice('search-field-'.length)}
           nameHeader="Part"
         />
       </Section>

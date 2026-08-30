@@ -6,13 +6,23 @@ Guidance for coding agents working in this repository.
 
 The DazzUI design system, as a pnpm workspace:
 
-- `packages/ui` (`@dazzlabs/dazzui`) — the design tokens, built with
-  [Terrazzo](https://terrazzo.app/), and the React components that consume
-  them. The tokens are the source of truth; everything else, the components
-  included, reads their build output.
+- `packages/ds` (`@dazzlabs/dazzui-ds`) — the design system: the tokens, built
+  with [Terrazzo](https://terrazzo.app/). It holds no components, it is the
+  only place a value is decided, and it is a **generator rather than a
+  dependency**: its build writes into the platform packages, which nothing
+  imports it from.
+- `packages/ui_react` (`@dazzlabs/dazzui-react`) — the React implementation.
+  `src/generated/` holds what `ds` wrote and is committed, so the package
+  builds and ships on its own. Further platform packages sit beside it as they
+  land (`ui_flutter`, `ui_swiftui`), which is why the directory carries the
+  platform in its name.
 - `apps/storybook` (`@dazzlabs/dazzui-storybook`) — a Storybook gallery that
   documents both: `Tokens/*` and `Base/*` for the token graph, `Components/*`
   for the components.
+
+The split is the point: anything a platform package needs but cannot express
+belongs in `packages/ds`, so the platforms stay implementations of one design
+rather than three designs that resemble each other.
 
 Every domain-free component from `beyondtranslate/packages/ui` has been
 migrated. What is left there is the desktop shell — WindowFrame, Sidebar,
@@ -29,11 +39,11 @@ pnpm install
 ```
 
 ```bash
-pnpm tokens            # build the token graph into packages/ui/dist/
+pnpm tokens            # build packages/ds into its dist/
 ```
 
 ```bash
-pnpm components        # build the component bundle into the same dist/
+pnpm components        # build packages/ui_react into its dist/
 ```
 
 ```bash
@@ -54,33 +64,44 @@ pnpm format            # oxfmt over the workspace
 
 ## Token pipeline
 
-1. `packages/ui/tokens/global/_base.json` holds the primitive layer and is
-   **generated** — `pnpm --filter @dazzlabs/dazzui sync` downloads
+1. `packages/ds/tokens/global/_base.json` holds the primitive layer and is
+   **generated** — `pnpm --filter @dazzlabs/dazzui-ds sync` downloads
    Tailwind's `theme.css` and rewrites it. Never hand-edit that file.
-2. `tz build` reads the files listed in `terrazzo.config.mjs` and emits
-   `packages/ui/dist/`:
+2. `tz build` reads the files listed in `terrazzo.config.mjs` and stages
+   `packages/ds/dist/`:
    - `style.css` — CSS custom properties (the contract consumers use)
-   - `flutter/*.dart` — Dart sources for the sibling `dazzui-flutter` repo
    - `control.css` — the ramp bindings and the resolved interactive color
-     recipes, from `plugins/control.mjs`; bundled into `components.css`
-3. `node scripts/build.mjs --copy` copies the Dart output into
-   `../../../dazzui-flutter`. That path assumes the sibling repo is checked out
-   next to this one; the flag is opt-in and safe to ignore otherwise.
+     recipes, from `plugins/control.mjs`
+   - `flutter/*.dart` — Dart sources, waiting on a `packages/ui_flutter` to
+     distribute them to
+3. `distribute()` in `scripts/build.mjs` then copies each platform's files out
+   of that staging directory into the platform package itself — today, the two
+   stylesheets into `packages/ui_react/src/generated/`. The `TARGETS` list is
+   where a new platform package is added.
 
 A new token file is only built once it is added to `terrazzo.config.mjs`.
-`dist/` is gitignored, so build before touching anything that reads it.
+`dist/` is gitignored and is staging only — the distributed copies are what a
+platform package reads, and they are committed.
 
 ## Component pipeline
 
-`vite build` bundles `packages/ui/src/` into the *same* `dist/`, which is why
-its config sets `emptyOutDir: false` — wiping the directory would take the
-freshly built tokens with it. It emits:
+`vite build` bundles `packages/ui_react/src/` into that package's own `dist/`:
 
 - `index.js` + `*.d.ts` — the components; React stays external
 - `components.css` — every component stylesheet, via the `styles.ts` entry
 
 `src/styles/components.css` is the registry, the way `terrazzo.config.mjs` is
-for tokens: a component's stylesheet only ships once it is imported there.
+for tokens: a component's stylesheet only ships once it is imported there. It
+also `@import`s `../generated/control.css`, so the generated recipes are
+bundled in rather than pushed onto consumers as a third stylesheet.
+
+Because `src/generated/` is committed, this package builds without `ds` having
+run — there is no dependency edge and so no build order to get wrong. The cost
+is that editing a token JSON does nothing until the generator runs, which is
+why `pnpm packages` runs both and the storybook scripts call it.
+
+Never hand-edit `src/generated/`. A value a component needs belongs in
+`packages/ds`, and anything written there is overwritten on the next build.
 
 ## Token conventions
 
@@ -167,7 +188,7 @@ Two things that surprise people:
   oxlint defaults): single quotes, no semicolons, 80 columns, 2-space indent,
   omit parens on single-argument arrows.
 - Run `pnpm format` and `pnpm lint` before committing. One oxlint warning in
-  `packages/ui` predates this setup.
+  `packages/ds` predates this setup.
 
 ## Commits
 

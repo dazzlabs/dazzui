@@ -1,4 +1,4 @@
-import { ShortcutRecorder } from '@dazzlabs/dazzui'
+import { ShortcutRecorder } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 

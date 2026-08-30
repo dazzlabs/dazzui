@@ -4,7 +4,7 @@
  */
 class FlutterPlugin {
   get name() {
-    return '@dazzlabs/dazzui-plugin-flutter'
+    return '@dazzlabs/dazzui-ds-plugin-flutter'
   }
 
   async build(context) {

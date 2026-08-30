@@ -1,4 +1,4 @@
-import { Checkbox, RadioGroup, TINTS, Toggle } from '@dazzlabs/dazzui'
+import { Checkbox, RadioGroup, TINTS, Toggle } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 
@@ -143,6 +143,14 @@ export const Overview: Story = {
         <TokenTable
           tokens={componentTokens('checkbox')}
           labelOf={token => token.name.slice('checkbox-'.length)}
+          nameHeader="Part"
+        />
+      </Section>
+
+      <Section title="Radio tokens">
+        <TokenTable
+          tokens={componentTokens('radio')}
+          labelOf={token => token.name.slice('radio-'.length)}
           nameHeader="Part"
         />
       </Section>

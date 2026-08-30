@@ -19,6 +19,13 @@ export function useResolvedValue(property: string): string {
   return value
 }
 
+/**
+ * The line every type specimen is set in. Shared so the two pages that show
+ * typefaces cannot drift apart, and deliberately says nothing about the brand:
+ * a specimen outlives whatever the system is called.
+ */
+export const TYPE_SAMPLE = 'Sharp, considered interfaces'
+
 type PageProps = {
   title: string
   description?: ReactNode

@@ -1,4 +1,4 @@
-import { Step, StepList } from '@dazzlabs/dazzui'
+import { Step, StepList } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { Page, Section, TokenTable } from '../components/gallery'

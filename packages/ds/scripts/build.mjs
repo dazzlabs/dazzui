@@ -708,44 +708,54 @@ async function syncBasePrimitives() {
   await fs.writeFile(filePath, json, 'utf8')
 }
 
-async function updateToDazzuiFlutterPackage() {
-  const sourceDir = path.join(process.cwd(), 'dist', 'flutter')
-  // From `packages/ui`, the sibling repo lives three levels up.
-  const targetDir = path.join(
-    process.cwd(),
-    '..',
-    '..',
-    '..',
-    'dazzui-flutter',
-    'packages',
-    'dazzui',
-    'lib',
-    'src',
-    'theme'
-  )
+/**
+ * Where each platform package's generated sources land.
+ *
+ * This package is a generator, not a dependency: a platform package holds the
+ * output rather than importing it, so it builds and ships without the design
+ * system being installed alongside it. `dist/` is only the staging area the
+ * plugins write to on the way here.
+ *
+ * The distributed files are committed, for the same reason
+ * `tokens/global/_base.json` is: what a token change does to a platform is
+ * then visible in the diff rather than only after a rebuild.
+ */
+const TARGETS = [
+  {
+    package: '@dazzlabs/dazzui-react',
+    dir: path.join('..', 'ui_react', 'src', 'generated'),
+    files: ['style.css', 'control.css'],
+  },
+  // The Flutter sources still land in dist/flutter and go nowhere: they are
+  // waiting on a `packages/ui_flutter` to be their target here.
+]
 
-  const sourceFiles = await fs.readdir(sourceDir)
-  for (const file of sourceFiles) {
-    const sourceFile = path.join(sourceDir, file)
-    const targetFile = path.join(targetDir, file)
-    await fs.mkdir(path.dirname(targetFile), { recursive: true })
-    await fs.copyFile(sourceFile, targetFile)
+async function distribute() {
+  for (const target of TARGETS) {
+    const targetDir = path.join(process.cwd(), target.dir)
+    await fs.mkdir(targetDir, { recursive: true })
+
+    for (const file of target.files) {
+      await fs.copyFile(
+        path.join(process.cwd(), 'dist', file),
+        path.join(targetDir, file)
+      )
+    }
+    console.log(
+      `→ ${target.files.length} files to ${target.package} (${target.dir})`
+    )
   }
 }
 
 async function main() {
   const shouldSync = process.argv.includes('--sync')
-  const shouldCopy = process.argv.includes('--copy')
 
   if (shouldSync) {
     await syncBasePrimitives()
   }
 
   execSync('tz build', { stdio: 'inherit' })
-
-  if (shouldCopy) {
-    await updateToDazzuiFlutterPackage()
-  }
+  await distribute()
 }
 
 main().catch(err => {

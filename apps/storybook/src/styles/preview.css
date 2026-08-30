@@ -1,6 +1,6 @@
 /*
  * Base styling for the gallery itself. The gallery dogfoods the tokens it
- * documents, so everything here reads from `@dazzlabs/dazzui/style.css`.
+ * documents, so everything here reads from `@dazzlabs/dazzui-react/style.css`.
  */
 
 body {

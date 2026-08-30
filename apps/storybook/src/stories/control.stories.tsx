@@ -171,3 +171,41 @@ export const Colors: Story = {
     </Page>
   ),
 }
+
+const TINTS = ['primary', 'neutral', 'info', 'success', 'warning', 'danger']
+
+export const Focus: Story = {
+  render: () => (
+    <Page
+      title="Focus ring"
+      description="The keyboard focus ring every control draws. Only its width and offset are tokens; the color is `--tint-600`, so a control's ring follows whatever ramp it is tinted with rather than being a fixed accent."
+    >
+      <Section title="On each ramp">
+        <div className="dt-row" style={{ flexWrap: 'wrap' }}>
+          {TINTS.map(tint => (
+            <div
+              key={tint}
+              data-tint={tint}
+              style={{
+                padding: 'var(--spacing-2) var(--spacing-3)',
+                borderRadius: 'var(--radius-medium)',
+                background: 'var(--color-surface-muted)',
+                outline: 'var(--focus-width) solid var(--tint-600)',
+                outlineOffset: 'var(--focus-offset)',
+              }}
+            >
+              <span className="dt-name">{tint}</span>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="Tokens">
+        <TokenTable
+          tokens={byPrefix('focus-', { sorted: true })}
+          labelOf={token => token.name.slice('focus-'.length)}
+        />
+      </Section>
+    </Page>
+  ),
+}

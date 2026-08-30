@@ -1,7 +1,7 @@
 import type { Preview } from '@storybook/react-vite'
 
-import '@dazzlabs/dazzui/style.css'
-import '@dazzlabs/dazzui/components.css'
+import '@dazzlabs/dazzui-react/style.css'
+import '@dazzlabs/dazzui-react/components.css'
 import '../src/styles/preview.css'
 
 const preview: Preview = {
@@ -10,6 +10,9 @@ const preview: Preview = {
     controls: { disable: true },
     options: {
       storySort: {
+        // Tokens before Components, because the components are drawn from
+        // them; and within Tokens, the semantic roles a reader actually uses
+        // before the primitives those roles alias.
         order: [
           'Tokens',
           [
@@ -19,7 +22,7 @@ const preview: Preview = {
             'Radius',
             'Effect',
             'Control',
-            'Component',
+            'Primitives',
           ],
           'Components',
           [
@@ -48,7 +51,6 @@ const preview: Preview = {
             'Table',
             'Toast',
           ],
-          'Base',
         ],
       },
     },

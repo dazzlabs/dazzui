@@ -3,14 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Design token gallery for DazzUI",
+  "description": "Gallery for the DazzUI design system",
   "scripts": {
-    "dev": "pnpm --filter @dazzlabs/dazzui build && storybook dev --port 6006 --no-open",
-    "build": "pnpm --filter @dazzlabs/dazzui build && storybook build --output-dir dist",
+    "dev": "pnpm -w run packages && storybook dev --port 6006 --no-open",
+    "build": "pnpm -w run packages && storybook build --output-dir dist",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@dazzlabs/dazzui": "workspace:*",
+    "@dazzlabs/dazzui-react": "workspace:*",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },

@@ -10,6 +10,7 @@ import {
   Swatch,
   Tile,
   TokenTable,
+  TYPE_SAMPLE,
   useResolvedValue,
 } from '../components/gallery'
 import {
@@ -21,7 +22,7 @@ import {
 } from '../lib/tokens'
 
 const meta: Meta = {
-  title: 'Base/Primitives',
+  title: 'Tokens/Primitives',
 }
 
 export default meta
@@ -72,7 +73,7 @@ function FamilySample({ token }: { token: Token }) {
           fontSize: 'var(--title-medium-font-size)',
         }}
       >
-        Dazz, considered interfaces
+        {TYPE_SAMPLE}
       </p>
       <div className="dt-value">{resolved}</div>
     </div>
@@ -99,7 +100,7 @@ function WeightSample({ token }: { token: Token }) {
 export const Colors: Story = {
   render: () => (
     <Page
-      title="Base colors"
+      title="Primitive colors"
       description="The full primitive palette, generated from Tailwind's theme. Semantic ramps alias these; components never reference them directly."
     >
       <Section title="Standalone">
@@ -121,7 +122,7 @@ export const Colors: Story = {
 export const Spacing: Story = {
   render: () => (
     <Page
-      title="Base spacing"
+      title="Primitive spacing"
       description="The full spacing scale, derived from a single base step."
     >
       <Section title="Scale">
@@ -142,7 +143,7 @@ export const Spacing: Story = {
 export const Typography: Story = {
   render: () => (
     <Page
-      title="Base typography"
+      title="Primitive typography"
       description="Families, sizes, weights, and spacing primitives that the composed type styles are assembled from."
     >
       <Section title="Families">
@@ -194,7 +195,7 @@ export const Typography: Story = {
 export const Sizing: Story = {
   render: () => (
     <Page
-      title="Base sizing"
+      title="Primitive sizing"
       description="Container max-widths for laying out reading columns and panels."
     >
       <Section title="Containers">
@@ -207,7 +208,7 @@ export const Sizing: Story = {
 export const Effects: Story = {
   render: () => (
     <Page
-      title="Base effects"
+      title="Primitive effects"
       description="Primitive shadows and blurs. The semantic effect tokens alias these."
     >
       <Section title="Shadows">

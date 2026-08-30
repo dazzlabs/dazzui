@@ -6,9 +6,6 @@ import dts from 'vite-plugin-dts'
 export default defineConfig({
   plugins: [dts({ include: ['src'] })],
   build: {
-    // `tz build` has already written dist/style.css and dist/flutter by the
-    // time this runs; emptying the directory would take the tokens with it.
-    emptyOutDir: false,
     lib: {
       entry: {
         index: resolve(import.meta.dirname, 'src/index.ts'),

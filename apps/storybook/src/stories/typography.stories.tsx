@@ -1,6 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
-import { Page, Section, Stack, useResolvedValue } from '../components/gallery'
+import {
+  Page,
+  Section,
+  Stack,
+  TYPE_SAMPLE,
+  useResolvedValue,
+} from '../components/gallery'
 import { getToken } from '../lib/tokens'
 
 const meta: Meta = {
@@ -13,7 +19,7 @@ type Story = StoryObj<typeof meta>
 const ROLES = ['display', 'headline', 'title', 'body', 'label', 'caption']
 const SIZES = ['large', 'medium', 'small']
 
-const SAMPLE = 'Dazz, considered interfaces'
+const SAMPLE = TYPE_SAMPLE
 
 function TypeSample({ role, size }: { role: string; size: string }) {
   const name = `${role}-${size}`
