@@ -1,16 +1,25 @@
-import { AlertBanner, Spinner, TINTS } from '@dazzlabs/dazzui-react'
+import {
+  AlertBanner,
+  Button,
+  Card,
+  Spinner,
+  TINTS,
+} from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
-import { Page, Section, Stack, TokenTable } from '../components/gallery'
-import { componentTokens } from '../lib/tokens'
+import { Page, Section, Stack } from '../components/gallery'
+import { Col } from '../components/stage'
 
 const meta: Meta<typeof AlertBanner> = {
   title: 'Components/AlertBanner',
   component: AlertBanner,
+  parameters: { layout: 'centered' },
 }
 
 export default meta
 type Story = StoryObj<typeof meta>
+
+const WIDTH = '34rem'
 
 const COPY: Record<string, { title: string; description: string }> = {
   primary: {
@@ -40,24 +49,21 @@ const COPY: Record<string, { title: string; description: string }> = {
   },
 }
 
+/** The documented page. Every story after this one is the component alone. */
 export const Overview: Story = {
+  parameters: { layout: 'fullscreen' },
   render: () => (
     <Page
       title="AlertBanner"
-      description="A tinted notice. The token graph gives it two type roles — a title and a description — so it is built for both, and drops the title when a one-line notice is all that is needed."
+      description="A tinted notice that sits in the flow of a pane, above the thing it is about. That is the line between this and a Toast: a toast reports something that already happened somewhere else, a banner qualifies what you are looking at. The token graph gives it two type roles — a title and a description — so it is built for both, and drops the title when a one-line notice is all that is needed."
     >
       <Section
         title="Tints"
-        description="A banner always wears the tinted treatment; anything louder would be a dialog, not a banner. So the ramp is the only color axis."
+        description="A banner always wears the tinted treatment; anything louder would be a dialog, not a banner. So the ramp is the only colour axis, and it is the whole message: `danger` is a failure, `warning` a caveat, `info` a fact worth knowing."
       >
         <Stack>
           {TINTS.map(tint => (
-            <AlertBanner
-              key={tint}
-              tint={tint}
-              title={COPY[tint]?.title}
-              action={<Spinner size="small" tint={tint} />}
-            >
+            <AlertBanner key={tint} tint={tint} title={COPY[tint]?.title}>
               {COPY[tint]?.description}
             </AlertBanner>
           ))}
@@ -65,17 +71,39 @@ export const Overview: Story = {
       </Section>
 
       <Section
-        title="Without a title"
-        description="The description carries it alone — bt's one-line callout."
+        title="Slots"
+        description="The leading slot takes a glyph or a spinner and holds its own column, so a run of banners keeps its titles on one edge whether or not each has one. The trailing slot is pushed to the far edge and holds the way out — keep it to one control, because a banner offering two choices is a dialog that forgot to open."
       >
         <Stack>
+          <AlertBanner
+            icon={<Spinner size="small" tint="primary" />}
+            tint="primary"
+            title="Translation memory is syncing"
+          >
+            Segments you edit now are queued and upload when it finishes.
+          </AlertBanner>
+          <AlertBanner
+            action={
+              <Button size="small" tint="danger" variant="outlined">
+                Open settings
+              </Button>
+            }
+            icon="✕"
+            tint="danger"
+            title="The provider rejected the last request"
+          >
+            Check the API key in Settings, then run the job again.
+          </AlertBanner>
           <AlertBanner tint="neutral">
             Testing the connection — 1.4s elapsed.
           </AlertBanner>
         </Stack>
       </Section>
 
-      <Section title="Sizes">
+      <Section
+        title="Sizes"
+        description="Padding, radius, gap, and both type roles step together, so the title stays a step above its description at every size."
+      >
         <Stack>
           {(['small', 'medium', 'large'] as const).map(size => (
             <AlertBanner
@@ -89,14 +117,155 @@ export const Overview: Story = {
           ))}
         </Stack>
       </Section>
-
-      <Section title="Tokens">
-        <TokenTable
-          tokens={componentTokens('alert-banner')}
-          labelOf={token => token.name.slice('alert-banner-'.length)}
-          nameHeader="Part"
-        />
-      </Section>
     </Page>
+  ),
+}
+
+export const Info: Story = {
+  render: () => (
+    <div style={{ width: WIDTH }}>
+      <AlertBanner tint="info" title={COPY.info?.title}>
+        {COPY.info?.description}
+      </AlertBanner>
+    </div>
+  ),
+}
+
+export const Success: Story = {
+  render: () => (
+    <div style={{ width: WIDTH }}>
+      <AlertBanner icon="✓" tint="success" title={COPY.success?.title}>
+        {COPY.success?.description}
+      </AlertBanner>
+    </div>
+  ),
+}
+
+export const Warning: Story = {
+  render: () => (
+    <div style={{ width: WIDTH }}>
+      <AlertBanner icon="!" tint="warning" title={COPY.warning?.title}>
+        {COPY.warning?.description}
+      </AlertBanner>
+    </div>
+  ),
+}
+
+export const Danger: Story = {
+  render: () => (
+    <div style={{ width: WIDTH }}>
+      <AlertBanner icon="✕" tint="danger" title={COPY.danger?.title}>
+        {COPY.danger?.description}
+      </AlertBanner>
+    </div>
+  ),
+}
+
+export const Tints: Story = {
+  render: () => (
+    <Col width={WIDTH}>
+      {TINTS.map(tint => (
+        <AlertBanner key={tint} tint={tint} title={COPY[tint]?.title}>
+          {COPY[tint]?.description}
+        </AlertBanner>
+      ))}
+    </Col>
+  ),
+}
+
+export const WithoutATitle: Story = {
+  render: () => (
+    <Col width={WIDTH}>
+      <AlertBanner tint="neutral">
+        Testing the connection — 1.4s elapsed.
+      </AlertBanner>
+      <AlertBanner tint="info">Changes are saved as you type.</AlertBanner>
+      <AlertBanner tint="danger">
+        No provider is configured for German.
+      </AlertBanner>
+    </Col>
+  ),
+}
+
+export const WithAnIcon: Story = {
+  render: () => (
+    <Col width={WIDTH}>
+      <AlertBanner
+        icon={<Spinner size="small" tint="primary" />}
+        tint="primary"
+        title="Translation memory is syncing"
+      >
+        Segments you edit now are queued and upload when it finishes.
+      </AlertBanner>
+      <AlertBanner icon="✓" tint="success" title="All 15 pages translated">
+        Layout and formulas were preserved.
+      </AlertBanner>
+      <AlertBanner icon="!" tint="warning">
+        Two terms in the glossary conflict.
+      </AlertBanner>
+    </Col>
+  ),
+}
+
+export const WithAnAction: Story = {
+  render: () => (
+    <Col width={WIDTH}>
+      <AlertBanner
+        action={
+          <Button size="small" tint="danger" variant="outlined">
+            Open settings
+          </Button>
+        }
+        tint="danger"
+        title="The provider rejected the last request"
+      >
+        Check the API key in Settings, then run the job again.
+      </AlertBanner>
+      <AlertBanner
+        action={
+          <Button size="small" tint="info" variant="plain">
+            Review
+          </Button>
+        }
+        tint="info"
+        title="Two glossaries apply to this document"
+      >
+        Terms defined in both resolve to whichever ranks higher.
+      </AlertBanner>
+    </Col>
+  ),
+}
+
+export const Sizes: Story = {
+  render: () => (
+    <Col width={WIDTH}>
+      {(['small', 'medium', 'large'] as const).map(size => (
+        <AlertBanner key={size} size={size} tint="info" title={`Size ${size}`}>
+          Padding, radius, gap, and both type roles step together.
+        </AlertBanner>
+      ))}
+    </Col>
+  ),
+}
+
+export const InAPane: Story = {
+  render: () => (
+    <Col width={WIDTH}>
+      <AlertBanner
+        action={
+          <Button size="small" tint="warning" variant="plain">
+            Switch
+          </Button>
+        }
+        size="small"
+        tint="warning"
+        title="Running on the backup provider"
+      >
+        Quality scores may be lower than usual.
+      </AlertBanner>
+      <Card variant="sunken">
+        <span>392 segments · 168 translated</span>
+      </Card>
+    </Col>
   ),
 }

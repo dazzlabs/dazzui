@@ -4,6 +4,7 @@ export {
   type AlertBannerProps,
   type AlertBannerSize,
 } from './alert-banner'
+export { Aside } from './aside'
 export {
   Badge,
   type BadgeProps,
@@ -70,7 +71,7 @@ export {
   type PreferenceSectionProps,
 } from './preference'
 export { Progress, type ProgressProps, type ProgressSize } from './progress'
-export { Aside, Rail, RailGroup, type RailGroupProps } from './rail'
+export { Rail, RailGroup, type RailGroupProps } from './rail'
 export {
   Radio,
   RadioGroup,

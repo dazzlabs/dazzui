@@ -29,17 +29,3 @@
 .dz-rail-group__label {
   padding-inline: var(--spacing-2-5);
 }
-
-/* The trailing information column. */
-.dz-aside {
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  width: var(--frame-aside-width);
-  gap: var(--spacing-5);
-  overflow-y: auto;
-  padding-block: var(--spacing-4);
-  padding-inline: var(--spacing-4);
-  background-color: var(--color-surface-muted);
-  border-inline-start: var(--stroke-hairline) solid var(--color-border);
-}

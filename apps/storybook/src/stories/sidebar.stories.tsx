@@ -1,6 +1,11 @@
 import {
   Badge,
+  Icon,
+  type IconGlyph,
+  NavAction,
   NavItem,
+  Progress,
+  SearchField,
   Sidebar,
   SidebarCard,
   SidebarGroup,
@@ -9,11 +14,13 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 
 import { Page, Section, TokenTable } from '../components/gallery'
+import { Frame, Pane } from '../components/stage'
 import { componentTokens } from '../lib/tokens'
 
 const meta: Meta<typeof Sidebar> = {
   title: 'Components/Sidebar',
   component: Sidebar,
+  parameters: { layout: 'centered' },
 }
 
 export default meta
@@ -21,24 +28,11 @@ type Story = StoryObj<typeof meta>
 
 const PANES = ['Documents', 'Glossaries', 'Settings']
 
-/** A pane beside the column, so the sidebar has something to be a sidebar to. */
-function Frame({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        height: '22rem',
-        overflow: 'hidden',
-        border: 'var(--spacing-px) solid var(--color-border)',
-        borderRadius: 'var(--radius-large)',
-        background: 'var(--color-surface)',
-      }}
-    >
-      {children}
-      <div style={{ flex: 1, minWidth: 0, padding: 'var(--spacing-5)' }} />
-    </div>
-  )
-}
+const Doc: IconGlyph = props => (
+  <svg viewBox="0 0 20 20" {...props}>
+    <path d="M5.5 2h5.1a2 2 0 0 1 1.4.6l3.4 3.4a2 2 0 0 1 .6 1.4v8.1A2.5 2.5 0 0 1 13.5 18h-8A2.5 2.5 0 0 1 3 15.5v-11A2.5 2.5 0 0 1 5.5 2Zm5.5 1.9V6a1 1 0 0 0 1 1h2.1L11 3.9Z" />
+  </svg>
+)
 
 function Column({ resizable }: { resizable?: boolean }) {
   const [pane, setPane] = useState('Documents')
@@ -74,7 +68,9 @@ function Column({ resizable }: { resizable?: boolean }) {
   )
 }
 
+/** The documented page. Every story after this one is the component alone. */
 export const Overview: Story = {
+  parameters: { layout: 'fullscreen' },
   render: () => (
     <Page
       title="Sidebar"
@@ -82,25 +78,27 @@ export const Overview: Story = {
     >
       <Section
         title="Groups and a card"
-        description="Rows come in groups; the gap between groups does most of the work and the label only names it. A card pinned to the foot stays put while the rows above it scroll."
+        description="Rows come in groups; the gap between groups does most of the work and the label only names it, and the first run usually goes unlabelled because the window already names it. A card pinned to the foot stays put while the rows above it scroll, which is what separates it from one more group at the bottom of the list."
       >
-        <Frame>
+        <Frame width="100%">
           <Column />
+          <Pane />
         </Frame>
       </Section>
 
       <Section
         title="Resizable"
-        description="Drag the trailing edge, or focus it with Tab and use the arrow keys — shift for a coarser step. Double-click puts it back where it started. Off by default: a sidebar with no pane to trade width with should not grow a handle that leads nowhere."
+        description="Drag the trailing edge, or focus it with Tab and use the arrow keys — shift for a coarser step. Double-click puts it back where it started. Off by default: a sidebar with no pane to trade width with should not grow a handle that leads nowhere. Drag past the floor and it collapses rather than shrinking, but only where `onCollapse` is passed — leave it out and the drag simply stops at `minWidth`."
       >
-        <Frame>
+        <Frame width="100%">
           <Column resizable />
+          <Pane />
         </Frame>
       </Section>
 
       <Section
         title="Frame metrics"
-        description="The shell's shared scale, which the columns and the window chrome both alias."
+        description="The shell's shared scale, which the columns and the window chrome both alias. The sidebar owns none of its own: a column that sized itself would agree with the titlebar only by luck."
       >
         <TokenTable
           tokens={componentTokens('frame')}
@@ -108,14 +106,153 @@ export const Overview: Story = {
           nameHeader="Part"
         />
       </Section>
-
-      <Section title="Tokens">
-        <TokenTable
-          tokens={componentTokens('sidebar')}
-          labelOf={token => token.name.slice('sidebar-'.length)}
-          nameHeader="Part"
-        />
-      </Section>
     </Page>
   ),
+}
+
+export const AColumn: Story = {
+  render: () => (
+    <Frame width="44rem">
+      <Column />
+      <Pane />
+    </Frame>
+  ),
+}
+
+export const Groups: Story = {
+  render: () => (
+    <Frame height="24rem" width="44rem">
+      <Sidebar>
+        <SidebarGroup>
+          <NavItem active icon={<Icon icon={Doc} size={14} />}>
+            Documents
+          </NavItem>
+          <NavItem icon={<Icon icon={Doc} size={14} />}>Glossaries</NavItem>
+        </SidebarGroup>
+        <SidebarGroup label="Library">
+          <NavItem>Translation memory</NavItem>
+          <NavItem>Archive</NavItem>
+        </SidebarGroup>
+        <SidebarGroup label="Shared">
+          <NavItem>Team glossary</NavItem>
+          <NavItem>Style guide</NavItem>
+        </SidebarGroup>
+      </Sidebar>
+      <Pane />
+    </Frame>
+  ),
+}
+
+export const WithAHeader: Story = {
+  render: () => {
+    const [query, setQuery] = useState('')
+    return (
+      <Frame width="44rem">
+        <Sidebar
+          header={
+            <SearchField
+              placeholder="Search"
+              size="small"
+              value={query}
+              onValueChange={setQuery}
+            />
+          }
+        >
+          <SidebarGroup>
+            <NavItem active>Documents</NavItem>
+            <NavItem>Glossaries</NavItem>
+            <NavItem>Settings</NavItem>
+          </SidebarGroup>
+        </Sidebar>
+        <Pane />
+      </Frame>
+    )
+  },
+}
+
+export const WithACard: Story = {
+  render: () => (
+    <Frame height="24rem" width="44rem">
+      <Sidebar>
+        <SidebarGroup>
+          {Array.from({ length: 10 }, (_, index) => (
+            <NavItem key={index} active={index === 0}>
+              Document {index + 1}
+            </NavItem>
+          ))}
+        </SidebarGroup>
+        <SidebarCard label="Today">
+          <span style={{ fontSize: 'var(--body-small-font-size)' }}>
+            148 of 392 segments
+          </span>
+          <Progress size="small" value={38} />
+        </SidebarCard>
+      </Sidebar>
+      <Pane />
+    </Frame>
+  ),
+}
+
+export const WithAnAction: Story = {
+  render: () => (
+    <Frame width="44rem">
+      <Sidebar>
+        <SidebarGroup>
+          <NavItem active>Documents</NavItem>
+          <NavItem>Glossaries</NavItem>
+        </SidebarGroup>
+        <SidebarGroup label="Workspaces">
+          <NavItem>Personal</NavItem>
+          <NavItem>Acme Ltd</NavItem>
+          <NavAction>＋ New workspace</NavAction>
+        </SidebarGroup>
+      </Sidebar>
+      <Pane />
+    </Frame>
+  ),
+}
+
+export const Resizable: Story = {
+  render: () => (
+    <Frame width="44rem">
+      <Column resizable />
+      <Pane />
+    </Frame>
+  ),
+}
+
+export const Collapsing: Story = {
+  render: () => {
+    const [width, setWidth] = useState(220)
+    const [collapsed, setCollapsed] = useState(false)
+
+    return (
+      <Frame width="44rem">
+        {collapsed ? null : (
+          <Sidebar
+            resizable
+            width={width}
+            onWidthChange={setWidth}
+            onCollapse={() => setCollapsed(true)}
+          >
+            <SidebarGroup>
+              <NavItem active>Documents</NavItem>
+              <NavItem>Glossaries</NavItem>
+              <NavItem>Settings</NavItem>
+            </SidebarGroup>
+          </Sidebar>
+        )}
+        <Pane>
+          {collapsed ? (
+            <NavAction
+              style={{ width: 'auto' }}
+              onClick={() => setCollapsed(false)}
+            >
+              Bring the sidebar back
+            </NavAction>
+          ) : null}
+        </Pane>
+      </Frame>
+    )
+  },
 }

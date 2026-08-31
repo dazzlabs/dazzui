@@ -24,8 +24,8 @@ The DazzUI design system, as a pnpm workspace:
   `ButtonTint.neutral`), never dazzui-flutter's `kind`/`secondary`. `example/` holds
   the playground app (`flutter run` from that directory, macOS and web).
 - `apps/storybook` (`@dazzlabs/dazzui-storybook`) — a Storybook gallery that
-  documents both: `Tokens/*` and `Base/*` for the token graph, `Components/*`
-  for the components.
+  documents both: `Tokens/*` for the token graph, `Components/*` for the
+  components.
 
 The split is the point: anything a platform package needs but cannot express
 belongs in `packages/ds`, so the platforms stay implementations of one design
@@ -269,13 +269,39 @@ so adding a theme reaches Dart without the plugin being touched.
 ## Storybook conventions
 
 - Stories live in `apps/storybook/src/stories/*.stories.tsx`, titled
-  `Tokens/<Group>`, `Components/<Name>`, or `Base/<Group>`. Sidebar order is
-  set in `.storybook/preview.ts`.
-- A component page ends with the token table it is drawn from
-  (`componentTokens('<name>')`), so the specimens and their source sit on one
-  page. For the many components that own no tokens the table renders a pointer
-  to the shared vocabulary instead — the profile itself is documented on
-  `Tokens/Control`.
+  `Tokens/<Group>` or `Components/<Name>`. Sidebar order is set by the
+  `storySort` comparator in `.storybook/preview.ts`, which sorts groups and
+  pages but returns 0 for two entries sharing a title — so the stories inside
+  one component keep the order they are written in. Adding a story means
+  putting the export where it belongs in the file.
+- **One documented page per component, and it is `Overview`.** It is the only
+  story that renders a `Page`, and it carries the whole write-up: what the
+  component is, the axes it varies along, and the token table where the
+  component owns tokens. It overrides `parameters: { layout: 'fullscreen' }`,
+  because the `Page` brings its own padding.
+- **Every other story is the component and nothing else** — no `Page`, no
+  `Section`, no `Specimen`, no prose, no headings. A gallery of variants is not
+  a place to read; it is a place to look at the thing, and a reader who wants
+  the argument opens `Overview`. Give a component as many of these as it has
+  states worth seeing on their own (`Filled`, `Disabled`, `Sizes`, `Tints`),
+  then the compositions that show where it lands (`InAForm`, `AToolbar`,
+  `InSettings`).
+- `meta.parameters.layout` is `'centered'` on component files, so a bare
+  specimen sits in the middle of the canvas rather than in its corner. A story
+  whose subject is fixed to the viewport — a scrim, a toast viewport — sets
+  `'fullscreen'` back on itself.
+- The two component directories are not interchangeable.
+  `src/components/gallery.tsx` is **documentation** presentation — `Page`,
+  `Section`, `Specimen`, `TokenTable`, the swatches and ramps — and belongs to
+  `Overview` and the `Tokens/*` pages only. `src/components/stage.tsx` is what
+  bare stories use: `Row`, `Col`, `Frame`, `Pane`, which arrange instances and
+  give a component the width or the window it needs, and draw nothing
+  themselves.
+- The token table appears **only** where the component owns tokens — the nine
+  files in `packages/ds/tokens/component/`, plus the `frame` metrics the shell
+  columns are sized by. Most components own none: they read the shared
+  vocabulary directly, which is documented on `Tokens/Control`, and a table
+  that would come back empty is not worth a section.
 - The gallery reads the **built** `dist/style.css`, not the token sources. It
   parses the `:root` block for each alias and resolves the `var()` chain via
   `getComputedStyle`, so every token shows both what it points at and what it

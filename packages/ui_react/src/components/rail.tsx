@@ -33,11 +33,3 @@ export function RailGroup({
     </div>
   )
 }
-
-/** The trailing column: secondary detail about whatever is selected. */
-export function Aside({
-  className,
-  ...props
-}: ComponentPropsWithoutRef<'aside'>) {
-  return <aside className={cx('dz-aside', className)} {...props} />
-}
