@@ -30,13 +30,21 @@
 }
 
 /*
- * Selected is the tinted wash with the accent drawn around it at the control
+ * Selected is the surface wash with the accent drawn around it at the control
  * stroke — the border *thickens* as well as colours, which is what makes the
  * chosen card survive a glance across its neighbours.
+ *
+ * The wash, not the `tinted` recipe's chip fill: a card is a surface, and the
+ * chip's 12% fills it rather than tinting it. The border is what says chosen;
+ * the fill only has to agree with it.
  */
 .dz-option-card[aria-checked='true'] {
   border-width: var(--stroke-control);
-  background-color: var(--control-color-tinted-surface-normal);
+  background-color: color-mix(
+    in srgb,
+    var(--tint-600) calc(var(--wash-surface) * 100%),
+    transparent
+  );
   border-color: var(--control-color-outlined-border-normal);
 }
 

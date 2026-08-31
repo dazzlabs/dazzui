@@ -287,6 +287,7 @@
   --dialog-scrim-alpha: 0.25;
   --dialog-scrim-color: var(--color-content);
   --dialog-width: 27.5rem;
+  --focus-glow-alpha: 0.14;
   --focus-offset: 0;
   --focus-ring-alpha: 0.45;
   --focus-ring-shade: 600;
@@ -404,6 +405,8 @@
   --toggle-small-height: var(--spacing-4);
   --toggle-small-thumb: var(--spacing-3);
   --toggle-small-width: var(--spacing-7);
+  --wash-edge: 0.2;
+  --wash-surface: 0.06;
 }
 
 @media (color-gamut: p3) {

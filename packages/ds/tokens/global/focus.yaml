@@ -11,6 +11,14 @@ focus:
   offset:
     $type: dimension
     $value: 0px
+  # The soft halo behind a focused text field, which is a different thing from
+  # `ring`: the ring is the wide halo a button draws to say it has the
+  # keyboard, this is the quiet lift a field already carrying a caret gives
+  # itself. Three controls drew it at this weight before it had a name here.
+  glow:
+    alpha:
+      $type: number
+      $value: 0.14
   ring:
     shade:
       $type: number

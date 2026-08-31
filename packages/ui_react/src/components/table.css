@@ -41,7 +41,13 @@
 
 /* Selection is the tinted recipe: the row is picked out, not pressed. */
 .dz-table__row[data-active='true'] {
-  background-color: var(--control-color-tinted-surface-normal);
+  /* The surface wash, not the `tinted` recipe's chip fill: a selected row is a
+     band the width of the table, and the chip's 12% reads as a block on it. */
+  background-color: color-mix(
+    in srgb,
+    var(--tint-600) calc(var(--wash-surface) * 100%),
+    transparent
+  );
 }
 
 .dz-table__row:focus-visible {

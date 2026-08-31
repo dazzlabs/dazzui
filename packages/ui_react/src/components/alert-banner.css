@@ -1,17 +1,28 @@
 /*
- * A tinted notice. It always wears the `tinted` treatment — a banner that
- * needed a fill this loud would be a dialog, not a banner — so `tint` is the
- * only color axis. Fill and border are washes of the tint (the recipe's 12%
- * and a 25% hairline), so the banner sits as correctly on a card as on the
- * paper.
+ * A tinted notice. It always wears a tinted treatment — a banner that needed a
+ * fill louder than this would be a dialog, not a banner — so `tint` is the
+ * only color axis. Fill and edge are washes of that tint rather than opaque
+ * steps, so the banner sits as correctly on a card as on the paper.
+ *
+ * The alphas are the shared surface wash rather than the `tinted` recipe's.
+ * That recipe fills a chip at 12%, which is right for something the size of a
+ * word and twice too heavy spread across a full width.
  */
 .dz-alert-banner {
   display: flex;
   align-items: center;
   gap: var(--spacing-2-5);
   border: var(--stroke-hairline) solid
-    color-mix(in srgb, var(--tint-600) 25%, transparent);
-  background-color: var(--control-color-tinted-surface-normal);
+    color-mix(
+      in srgb,
+      var(--tint-600) calc(var(--wash-edge) * 100%),
+      transparent
+    );
+  background-color: color-mix(
+    in srgb,
+    var(--tint-600) calc(var(--wash-surface) * 100%),
+    transparent
+  );
 }
 
 /* Once a description wraps, the icon belongs beside the first line rather

@@ -52,6 +52,7 @@ export default defineConfig({
     './tokens/global/radius.yaml',
     './tokens/global/spacing.yaml',
     './tokens/global/stroke.yaml',
+    './tokens/global/wash.yaml',
     './tokens/global/typography.yaml',
     './tokens/component/checkbox.yaml',
     './tokens/component/dialog.yaml',

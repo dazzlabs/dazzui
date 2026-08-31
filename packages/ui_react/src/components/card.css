@@ -47,7 +47,21 @@
   border-color: var(--color-border);
 }
 
+/*
+ * Tinted takes the surface wash rather than the `tinted` recipe's chip fill: a
+ * card is the largest thing a tint washes here, and the chip's 12% fills it
+ * instead of tinting it. The edge is the matching wash, so the pair moves
+ * together when either is retuned.
+ */
 .dz-card[data-variant='tinted'] {
-  background-color: var(--control-color-tinted-surface-normal);
-  border-color: color-mix(in srgb, var(--tint-600) 20%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--tint-600) calc(var(--wash-surface) * 100%),
+    transparent
+  );
+  border-color: color-mix(
+    in srgb,
+    var(--tint-600) calc(var(--wash-edge) * 100%),
+    transparent
+  );
 }
