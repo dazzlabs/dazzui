@@ -1,3 +1,4 @@
+import { DismissCircle12Filled } from '@fluentui/react-icons'
 import {
   type KeyboardEvent as ReactKeyboardEvent,
   useEffect,
@@ -253,7 +254,7 @@ export function ShortcutRecorder({
           className="dz-shortcut-recorder__clear"
           onClick={clear}
         >
-          ✕
+          <DismissCircle12Filled />
         </button>
       ) : null}
     </span>

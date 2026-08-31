@@ -1,8 +1,12 @@
 import {
+  Document20Regular as Doc,
+  MoreHorizontal20Regular as More,
+  Delete20Regular as Trash,
+} from '@fluentui/react-icons'
+import {
   Button,
   Icon,
   IconButton,
-  type IconGlyph,
   Kbd,
   Menu,
   type MenuProps,
@@ -35,24 +39,6 @@ const DENSITIES = [
   { value: 'compact', label: 'Compact' },
   { value: 'dense', label: 'Dense' },
 ]
-
-const More: IconGlyph = props => (
-  <svg viewBox="0 0 20 20" {...props}>
-    <path d="M10 4.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm0 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm0 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z" />
-  </svg>
-)
-
-const Doc: IconGlyph = props => (
-  <svg viewBox="0 0 20 20" {...props}>
-    <path d="M5.5 2h5.1a2 2 0 0 1 1.4.6l3.4 3.4a2 2 0 0 1 .6 1.4v8.1A2.5 2.5 0 0 1 13.5 18h-8A2.5 2.5 0 0 1 3 15.5v-11A2.5 2.5 0 0 1 5.5 2Zm5.5 1.9V6a1 1 0 0 0 1 1h2.1L11 3.9Z" />
-  </svg>
-)
-
-const Trash: IconGlyph = props => (
-  <svg viewBox="0 0 20 20" {...props}>
-    <path d="M8 2h4a1 1 0 0 1 1 1v1h3.5a1 1 0 1 1 0 2H3.5a1 1 0 0 1 0-2H7V3a1 1 0 0 1 1-1Zm-3 6h10l-.7 8.1A2 2 0 0 1 12.3 18H7.7a2 2 0 0 1-2-1.9L5 8Z" />
-  </svg>
-)
 
 const Trigger: MenuProps['trigger'] = ({ open, onClick }) => (
   <Button

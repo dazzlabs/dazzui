@@ -1,3 +1,4 @@
+import { Delete20Regular as Trash } from '@fluentui/react-icons'
 import {
   ActionBar,
   Badge,
@@ -5,7 +6,6 @@ import {
   EmptyState,
   Icon,
   IconButton,
-  type IconGlyph,
   SearchField,
   Table,
   TableCell,
@@ -36,12 +36,6 @@ const TERMS = [
   { term: 'provider', translation: '服务', hits: 96, scope: 'Project' },
   { term: 'placeholder', translation: '占位符', hits: 24, scope: 'Project' },
 ]
-
-const Trash: IconGlyph = props => (
-  <svg viewBox="0 0 20 20" {...props}>
-    <path d="M8 2h4a1 1 0 0 1 1 1v1h3.5a1 1 0 1 1 0 2H3.5a1 1 0 0 1 0-2H7V3a1 1 0 0 1 1-1Zm-3 6h10l-.7 8.1A2 2 0 0 1 12.3 18H7.7a2 2 0 0 1-2-1.9L5 8Z" />
-  </svg>
-)
 
 /** The documented page. Every story after this one is the component alone. */
 export const Overview: Story = {

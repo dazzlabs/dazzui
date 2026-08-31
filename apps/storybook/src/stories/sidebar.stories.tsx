@@ -1,7 +1,7 @@
+import { Document20Regular as Doc } from '@fluentui/react-icons'
 import {
   Badge,
   Icon,
-  type IconGlyph,
   NavAction,
   NavItem,
   Progress,
@@ -27,12 +27,6 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 const PANES = ['Documents', 'Glossaries', 'Settings']
-
-const Doc: IconGlyph = props => (
-  <svg viewBox="0 0 20 20" {...props}>
-    <path d="M5.5 2h5.1a2 2 0 0 1 1.4.6l3.4 3.4a2 2 0 0 1 .6 1.4v8.1A2.5 2.5 0 0 1 13.5 18h-8A2.5 2.5 0 0 1 3 15.5v-11A2.5 2.5 0 0 1 5.5 2Zm5.5 1.9V6a1 1 0 0 0 1 1h2.1L11 3.9Z" />
-  </svg>
-)
 
 function Column({ resizable }: { resizable?: boolean }) {
   const [pane, setPane] = useState('Documents')

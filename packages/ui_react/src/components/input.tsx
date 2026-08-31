@@ -1,3 +1,4 @@
+import { ChevronDown12Regular } from '@fluentui/react-icons'
 import type { ComponentPropsWithoutRef } from 'react'
 
 import { cx } from '../lib/cx'
@@ -92,22 +93,7 @@ export function Select({
         className="dz-select__control"
         {...props}
       />
-      <svg
-        aria-hidden
-        viewBox="0 0 12 12"
-        width="12"
-        height="12"
-        className="dz-select__chevron"
-      >
-        <path
-          d="M2.5 4.5 6 8l3.5-3.5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+      <ChevronDown12Regular aria-hidden className="dz-select__chevron" />
     </span>
   )
 }

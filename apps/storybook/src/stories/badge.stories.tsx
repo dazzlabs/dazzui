@@ -1,8 +1,8 @@
+import { Circle20Filled as Dot } from '@fluentui/react-icons'
 import {
   Badge,
   type BadgeVariant,
   Icon,
-  type IconGlyph,
   NavItem,
   PreferenceRow,
   PreferenceSection,
@@ -29,12 +29,6 @@ type Story = StoryObj<typeof meta>
 const VARIANTS: BadgeVariant[] = ['filled', 'tinted', 'outlined']
 
 const SIZES = ['small', 'medium', 'large'] as const
-
-const Dot: IconGlyph = props => (
-  <svg viewBox="0 0 20 20" {...props}>
-    <circle cx="10" cy="10" r="5" />
-  </svg>
-)
 
 /** The documented page. Every story after this one is the component alone. */
 export const Overview: Story = {

@@ -82,6 +82,7 @@ const preview: Preview = {
           'Effect',
           'Control',
           'Primitives',
+          'Variables',
         ]
         const rank = (list, value) => {
           const index = list.indexOf(value)

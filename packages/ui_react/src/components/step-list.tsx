@@ -1,3 +1,4 @@
+import { Checkmark12Filled } from '@fluentui/react-icons'
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 
 import { cx } from '../lib/cx'
@@ -37,7 +38,7 @@ export function Step({
         <Spinner size="medium" tint={tint} />
       ) : (
         <span aria-hidden className="dz-step__marker">
-          {status === 'done' ? '✓' : null}
+          {status === 'done' ? <Checkmark12Filled /> : null}
         </span>
       )}
       <span className="dz-step__label">{label}</span>

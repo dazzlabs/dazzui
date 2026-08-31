@@ -1,9 +1,9 @@
+import { Globe20Regular as Globe } from '@fluentui/react-icons'
 import {
   Badge,
   Button,
   Divider,
   Icon,
-  type IconGlyph,
   Input,
   PreferenceGroup,
   PreferenceRow,
@@ -29,17 +29,6 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 const WIDTH = '30rem'
-
-const Globe: IconGlyph = props => (
-  <svg viewBox="0 0 20 20" {...props}>
-    <path
-      d="M10 2.5a7.5 7.5 0 1 0 0 15 7.5 7.5 0 0 0 0-15Zm0 0c2 1.8 3.1 4.2 3.1 7.5S12 15.7 10 17.5c-2-1.8-3.1-4.2-3.1-7.5S8 4.3 10 2.5ZM2.8 7.5h14.4M2.8 12.5h14.4"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.4"
-    />
-  </svg>
-)
 
 /** The documented page. Every story after this one is the component alone. */
 export const Overview: Story = {

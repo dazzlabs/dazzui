@@ -1,3 +1,4 @@
+import { Checkmark12Filled } from '@fluentui/react-icons'
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 
 import { cx } from '../lib/cx'
@@ -44,7 +45,7 @@ export function Checkbox({
       {...props}
     >
       <span aria-hidden className="dz-checkbox__box">
-        {checked ? '✓' : null}
+        {checked ? <Checkmark12Filled /> : null}
       </span>
       <span className="dz-checkbox__label">
         {children}

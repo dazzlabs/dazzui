@@ -12,10 +12,18 @@ import './gallery.css'
  * Resolved values come from `getComputedStyle`, which only answers once the
  * token stylesheet is attached to the document. Re-read after mount so the
  * first paint is not stuck with an empty value.
+ *
+ * Deliberately without a dependency array. Half the tokens resolve to a
+ * different value under each theme, and the theme changes on an attribute of
+ * the document rather than on anything passed in here — keyed on `property`
+ * alone, every resolved value on the page went stale the moment the toolbar
+ * switched theme. Re-reading each render costs one `getComputedStyle` and
+ * settles immediately, since setting state to the value it already holds is
+ * not a re-render.
  */
 export function useResolvedValue(property: string): string {
   const [value, setValue] = useState(() => resolve(property))
-  useLayoutEffect(() => setValue(resolve(property)), [property])
+  useLayoutEffect(() => setValue(resolve(property)))
   return value
 }
 

@@ -1,11 +1,18 @@
 import {
+  Flash20Regular as Bolt,
+  Checkmark20Regular as Check,
+  Document16Regular as Doc16,
+  Document20Regular as Doc,
+  Document24Regular as Doc24,
+  Globe20Regular as Globe,
+} from '@fluentui/react-icons'
+import {
   ActionBar,
   AlertBanner,
   Badge,
   Button,
   Icon,
   IconButton,
-  type IconGlyph,
   NavItem,
   TINTS,
 } from '@dazzlabs/dazzui-react'
@@ -24,43 +31,14 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 /** Stand-ins, so the gallery does not pull in an icon set of its own. */
-const Check: IconGlyph = props => (
-  <svg viewBox="0 0 20 20" {...props}>
-    <path d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0l-3.5-3.5a1 1 0 1 1 1.4-1.4l2.8 2.8 6.8-6.8a1 1 0 0 1 1.4 0Z" />
-  </svg>
-)
-
-const Bolt: IconGlyph = props => (
-  <svg viewBox="0 0 20 20" {...props}>
-    <path d="M11.6 1.6a.6.6 0 0 1 1 .6l-1.5 5.3h4a.7.7 0 0 1 .5 1.2l-8 9.7a.6.6 0 0 1-1-.6l1.5-5.3h-4a.7.7 0 0 1-.5-1.2l8-9.7Z" />
-  </svg>
-)
-
-const Doc: IconGlyph = props => (
-  <svg viewBox="0 0 20 20" {...props}>
-    <path d="M5.5 2h5.1a2 2 0 0 1 1.4.6l3.4 3.4a2 2 0 0 1 .6 1.4v8.1A2.5 2.5 0 0 1 13.5 18h-8A2.5 2.5 0 0 1 3 15.5v-11A2.5 2.5 0 0 1 5.5 2Zm5.5 1.9V6a1 1 0 0 0 1 1h2.1L11 3.9Z" />
-  </svg>
-)
-
 /** A 24-viewBox glyph, to show that the box is scaled rather than assumed. */
-const Globe: IconGlyph = props => (
-  <svg viewBox="0 0 24 24" {...props}>
-    <path
-      d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 0c2.5 2.2 3.8 5 3.8 9s-1.3 6.8-3.8 9c-2.5-2.2-3.8-5-3.8-9s1.3-6.8 3.8-9ZM3.5 9h17M3.5 15h17"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-    />
-  </svg>
-)
-
 /** The documented page. Every story after this one is the component alone. */
 export const Overview: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => (
     <Page
       title="Icon"
-      description="Draws a glyph at a given size. The system depends on no icon set: an icon set is the one thing a product replaces wholesale, and hard-coding one would make that a fork rather than a prop. Pass any component that renders an svg."
+      description="Draws a glyph at a given size. The system draws with Fluent, which `ui_react` depends on, but `Icon` is not bound to it: the prop takes any component that renders an svg, so a product can pass its own set without forking the components that use one."
     >
       <Section
         title="Sizes"
@@ -162,8 +140,9 @@ export const SizedByAToken: Story = {
 export const AnyViewBox: Story = {
   render: () => (
     <Row>
+      <Icon icon={Doc16} size={24} />
       <Icon icon={Doc} size={24} />
-      <Icon icon={Globe} size={24} />
+      <Icon icon={Doc24} size={24} />
     </Row>
   ),
 }

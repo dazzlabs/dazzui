@@ -1,9 +1,9 @@
+import { ArrowDownload20Regular as Download } from '@fluentui/react-icons'
 import {
   ActionBar,
   Button,
   type ButtonVariant,
   Icon,
-  type IconGlyph,
   Kbd,
   Spinner,
   TINTS,
@@ -31,12 +31,6 @@ const VARIANTS: ButtonVariant[] = [
 ]
 
 const SIZES = ['small', 'medium', 'large'] as const
-
-const Download: IconGlyph = props => (
-  <svg viewBox="0 0 20 20" {...props}>
-    <path d="M10 2.5a1 1 0 0 1 1 1v7.1l2.3-2.3a1 1 0 1 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L9 10.6V3.5a1 1 0 0 1 1-1ZM3.5 15a1 1 0 0 1 1 1v.5h11V16a1 1 0 1 1 2 0v.5a1.5 1.5 0 0 1-1.5 1.5h-12A1.5 1.5 0 0 1 2.5 16.5V16a1 1 0 0 1 1-1Z" />
-  </svg>
-)
 
 /** The documented page. Every story after this one is the component alone. */
 export const Overview: Story = {

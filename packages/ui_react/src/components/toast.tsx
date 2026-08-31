@@ -1,3 +1,4 @@
+import { Dismiss12Regular } from '@fluentui/react-icons'
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 
 import { cx } from '../lib/cx'
@@ -51,7 +52,7 @@ export function Toast({
           className="dz-toast__dismiss"
           onClick={onDismiss}
         >
-          ✕
+          <Dismiss12Regular />
         </button>
       ) : null}
     </div>

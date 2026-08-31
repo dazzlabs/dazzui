@@ -1,3 +1,4 @@
+import { Checkmark12Filled } from '@fluentui/react-icons'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 
 import { cx } from '../lib/cx'
@@ -82,7 +83,7 @@ export function Menu({
                   data-checked={item.checked}
                   className="dz-menu__check"
                 >
-                  ✓
+                  <Checkmark12Filled />
                 </span>
               )}
               {item.icon ? (

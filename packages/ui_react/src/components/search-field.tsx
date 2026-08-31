@@ -1,3 +1,4 @@
+import { Dismiss12Regular, Search16Regular } from '@fluentui/react-icons'
 import { type ReactNode, useEffect, useRef } from 'react'
 
 import { cx } from '../lib/cx'
@@ -48,25 +49,7 @@ export function SearchField({
       data-tint={tint}
       className={cx('dz-search-field', className)}
     >
-      <span aria-hidden className="dz-search-field__glyph">
-        <svg viewBox="0 0 14 14" width="13" height="13">
-          <circle
-            cx="6"
-            cy="6"
-            r="4.25"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          />
-          <path
-            d="M9.2 9.2 12.5 12.5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-        </svg>
-      </span>
+      <Search16Regular aria-hidden className="dz-search-field__glyph" />
       <input
         ref={input}
         type="search"
@@ -91,7 +74,7 @@ export function SearchField({
           className="dz-search-field__clear"
           onClick={() => onValueChange('')}
         >
-          ✕
+          <Dismiss12Regular />
         </button>
       ) : (
         hint

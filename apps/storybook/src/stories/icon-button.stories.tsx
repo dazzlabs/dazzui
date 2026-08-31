@@ -1,10 +1,15 @@
 import {
+  Copy20Regular as Copy,
+  Pin20Regular as Pin,
+  Add20Regular as Plus,
+  Delete20Regular as Trash,
+} from '@fluentui/react-icons'
+import {
   ActionBar,
   type ButtonVariant,
   Divider,
   Icon,
   IconButton,
-  type IconGlyph,
   SearchField,
   TINTS,
 } from '@dazzlabs/dazzui-react'
@@ -30,30 +35,6 @@ const VARIANTS: ButtonVariant[] = [
   'tinted',
   'outlined',
 ]
-
-const Pin: IconGlyph = props => (
-  <svg viewBox="0 0 20 20" {...props}>
-    <path d="M12.3 2.2a1 1 0 0 1 1.5 0l4 4a1 1 0 0 1-.6 1.7l-2 .2-3.4 3.4.2 2.3a1 1 0 0 1-1.7.8l-2.6-2.6-4 4a.7.7 0 0 1-1-1l4-4-2.6-2.6a1 1 0 0 1 .8-1.7l2.3.2 3.4-3.4.2-2a1 1 0 0 1 .5-.3Z" />
-  </svg>
-)
-
-const Copy: IconGlyph = props => (
-  <svg viewBox="0 0 20 20" {...props}>
-    <path d="M7 2.5h6.5A2.5 2.5 0 0 1 16 5v8.5a1 1 0 1 1-2 0V5a.5.5 0 0 0-.5-.5H7a1 1 0 0 1 0-2Zm-2.5 3h6A2.5 2.5 0 0 1 13 8v7a2.5 2.5 0 0 1-2.5 2.5h-6A2.5 2.5 0 0 1 2 15V8a2.5 2.5 0 0 1 2.5-2.5Z" />
-  </svg>
-)
-
-const Trash: IconGlyph = props => (
-  <svg viewBox="0 0 20 20" {...props}>
-    <path d="M8 2h4a1 1 0 0 1 1 1v1h3.5a1 1 0 1 1 0 2H3.5a1 1 0 0 1 0-2H7V3a1 1 0 0 1 1-1Zm-3 6h10l-.7 8.1A2 2 0 0 1 12.3 18H7.7a2 2 0 0 1-2-1.9L5 8Z" />
-  </svg>
-)
-
-const Plus: IconGlyph = props => (
-  <svg viewBox="0 0 20 20" {...props}>
-    <path d="M10 3a1 1 0 0 1 1 1v5h5a1 1 0 1 1 0 2h-5v5a1 1 0 1 1-2 0v-5H4a1 1 0 1 1 0-2h5V4a1 1 0 0 1 1-1Z" />
-  </svg>
-)
 
 /** The documented page. Every story after this one is the component alone. */
 export const Overview: Story = {

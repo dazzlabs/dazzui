@@ -1,10 +1,13 @@
 import {
+  Filter20Regular as Filter,
+  ArrowSort20Regular as Sort,
+} from '@fluentui/react-icons'
+import {
   ActionBar,
   Badge,
   Button,
   Icon,
   IconButton,
-  type IconGlyph,
   SearchField,
 } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
@@ -21,18 +24,6 @@ const meta: Meta<typeof ActionBar> = {
 
 export default meta
 type Story = StoryObj<typeof meta>
-
-const Filter: IconGlyph = props => (
-  <svg viewBox="0 0 20 20" {...props}>
-    <path d="M3 5a1 1 0 0 1 1-1h12a1 1 0 0 1 .8 1.6l-4.3 5.6V16a1 1 0 0 1-1.4.9l-3-1.4a1 1 0 0 1-.6-.9v-3.4L3.2 5.6A1 1 0 0 1 3 5Z" />
-  </svg>
-)
-
-const Sort: IconGlyph = props => (
-  <svg viewBox="0 0 20 20" {...props}>
-    <path d="M6 3a1 1 0 0 1 1 1v10.6l1.3-1.3a1 1 0 1 1 1.4 1.4l-3 3a1 1 0 0 1-1.4 0l-3-3a1 1 0 1 1 1.4-1.4L5 14.6V4a1 1 0 0 1 1-1Zm8 14a1 1 0 0 1-1-1V5.4l-1.3 1.3a1 1 0 1 1-1.4-1.4l3-3a1 1 0 0 1 1.4 0l3 3a1 1 0 1 1-1.4 1.4L15 5.4V16a1 1 0 0 1-1 1Z" />
-  </svg>
-)
 
 /** The documented page. Every story after this one is the component alone. */
 export const Overview: Story = {
