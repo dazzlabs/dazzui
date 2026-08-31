@@ -18,6 +18,13 @@
   background-color: var(--color-border);
 }
 
+/*
+ * The heavier rule, for a separator that has to hold its own against a filled
+ * surface. It is `border-strong` — ink at a tenth — and deliberately not
+ * `border-muted`: that role is the drawn outline of a checkbox or a radio, an
+ * opaque grey around twice this weight, and a separator set in it stops
+ * reading as a hairline and starts reading as a border.
+ */
 .dz-divider[data-tone='muted'] {
-  background-color: var(--color-border-muted);
+  background-color: var(--color-border-strong);
 }

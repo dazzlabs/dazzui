@@ -69,20 +69,6 @@
   font-family: var(--base-font-code);
 }
 
-/*
- * A textarea grows, so it takes the container corner rather than the control
- * corner — a theme that makes controls pills would otherwise turn a
- * multi-line box into a lozenge — a floor rather than a height, and real
- * leading: its text wraps, and the control line-height would set it solid.
- */
-.dz-textarea {
-  min-height: var(--spacing-20);
-  padding-block: var(--spacing-2-5);
-  border-radius: var(--radius-large);
-  line-height: 1.6;
-  resize: vertical;
-}
-
 /* The native arrow ignores padding, so the control draws its own. */
 .dz-select {
   position: relative;
@@ -123,9 +109,29 @@
   line-height: var(--control-line-height);
 }
 
+/*
+ * A textarea grows, so it takes the container corner rather than the control
+ * corner — a theme that makes controls pills would otherwise turn a
+ * multi-line box into a lozenge — a floor rather than a height, and real
+ * leading: its text wraps, and the control line-height would set it solid.
+ *
+ * This has to sit *after* the shared geometry above, not before it. The two
+ * rules have the same specificity, so whichever comes last wins, and written
+ * the other way round every line here was silently overwritten — the box took
+ * the control corner and the text was set solid, which is exactly what the
+ * paragraph above says it must not do.
+ */
+.dz-textarea {
+  min-height: var(--spacing-20);
+  padding-block: var(--spacing-2-5);
+  border-radius: var(--radius-large);
+  line-height: 1.6;
+  resize: vertical;
+}
+
 /* Single-line controls take the shared control height, so a form can mix them
    with buttons without the rows stepping. A textarea is sized by its content,
-   and its overrides above already replaced the corner and the leading. */
+   and the block above already replaced its corner and its leading. */
 .dz-input,
 .dz-field-value,
 .dz-select__control {

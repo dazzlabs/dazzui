@@ -27,7 +27,7 @@
   border: 0;
   border-radius: var(--radius-full);
   background-color: var(--color-surface-inset);
-  color: var(--color-content-secondary);
+  color: var(--color-content-nav);
   white-space: nowrap;
   cursor: pointer;
   transition:

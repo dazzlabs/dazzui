@@ -19,7 +19,7 @@
   line-height: 1;
   border: 0;
   background: none;
-  color: var(--color-content-secondary);
+  color: var(--color-content-nav);
   text-align: left;
   cursor: pointer;
   transition:

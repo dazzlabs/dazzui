@@ -315,6 +315,19 @@ color:
         dark: "#c3c8dc"
         bright: "#111c2ec7"
         bright-dark: "#f2f4efc7"
+  # Named for where it is used rather than for a rung on the ladder, because
+  # that is what it is: the ink a navigation row is set in while it is not the
+  # current one. It sits between `content-secondary` and `content-muted` and
+  # neither substitutes — a sidebar set in the first reads heavier than the
+  # design, and in the second the rows go quiet enough to look disabled.
+  content-nav:
+    $type: color
+    $value: "#4a4f6b"
+    $extensions:
+      mode:
+        dark: "#9aa1bb"
+        bright: "#111c2eb3"
+        bright-dark: "#f2f4efb3"
   content-muted:
     $type: color
     $value: "#565b78"

@@ -224,6 +224,11 @@ so adding a theme reaches Dart without the plugin being touched.
   read directly (`--spacing-4`, `--radius-medium`, `--label-small-font-size`,
   `--control-small-padding-block`); only a value no shared role covers becomes
   a token in `tokens/component/<name>.yaml`. Never a literal in the CSS.
+- A value the design lands between two steps of a scale is composed out of
+  them rather than written down: the 18px a dialog body and a preference group
+  both pad by is `calc(var(--spacing-4) + var(--spacing-0-5))`. That keeps the
+  scale the only source of lengths, and it keeps the value honest — a step and
+  a half says what it is, where `18px` only says what it measures.
 - Sized controls read the `[data-size]` profile bindings — `--control-size`,
   `--control-gap`, `--control-padding-*`, `--control-radius`,
   `--control-font-*`, `--control-line-height` — once in their base rule
