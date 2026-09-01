@@ -28,6 +28,7 @@ public struct ThemeVariables: Sendable {
     colorBorderStrong: Color = Color(argb: 0x1A14_162A),
     colorBorderMuted: Color = Color(argb: 0xFFCF_D2DE),
     colorOnAccent: Color = Color(argb: 0xFFFF_FFFF),
+    controlPressedAlpha: CGFloat = 0.9,
     controlTinySize: CGFloat = 24.0,
     controlSmallSize: CGFloat = 26.0,
     controlMediumSize: CGFloat = 28.0,
@@ -41,6 +42,7 @@ public struct ThemeVariables: Sendable {
     shadow2xl: [TokenShadow] = [TokenShadow(x: 0.0, y: 24.0, blur: 56.0, spread: 0.0, color: Color(argb: 0x4700_0000))],
     focusWidth: CGFloat = 3.0,
     focusOffset: CGFloat = 0.0,
+    focusGlowShade: Int = 600,
     focusGlowAlpha: CGFloat = 0.14,
     focusRingShade: Int = 600,
     focusRingAlpha: CGFloat = 0.45,
@@ -107,7 +109,7 @@ public struct ThemeVariables: Sendable {
     dialogScrimAlpha: CGFloat = 0.25,
     menuMinWidth: CGFloat = 176.0,
     menuItemPadding: CGFloat = 7.0,
-    progressGradientFrom: Color = Color(argb: 0xFF6B_4DFF),
+    progressGradientFrom: Color = Colors.brand[600],
     progressGradientTo: Color = Color(argb: 0xFFA0_8CFF),
     radioSmallDot: CGFloat = 6.0,
     radioMediumDot: CGFloat = 7.0,
@@ -119,34 +121,22 @@ public struct ThemeVariables: Sendable {
     toggleMediumHeight: CGFloat = 18.0,
     toggleMediumThumb: CGFloat = 14.0,
     controlColorRecessedBorder: ColorDescriptor = ColorDescriptor(
-    normalColor: Colors.white,
-    normalOpacity: 0.0,
-    hoveredColor: Colors.white,
-    hoveredOpacity: 0.0,
-    pressedColor: Colors.white,
-    pressedOpacity: 0.0,
-    disabledColor: Colors.white,
-    disabledOpacity: 0.0
+    normalColor: Colors.transparent,
+    hoveredColor: Colors.transparent,
+    pressedColor: Colors.transparent,
+    disabledColor: Colors.transparent
   ),
     controlColorFilledBorder: ColorDescriptor = ColorDescriptor(
-    normalColor: Colors.white,
-    normalOpacity: 0.0,
-    hoveredColor: Colors.white,
-    hoveredOpacity: 0.0,
-    pressedColor: Colors.white,
-    pressedOpacity: 0.0,
-    disabledColor: Colors.white,
-    disabledOpacity: 0.0
+    normalColor: Colors.transparent,
+    hoveredColor: Colors.transparent,
+    pressedColor: Colors.transparent,
+    disabledColor: Colors.transparent
   ),
     controlColorTintedBorder: ColorDescriptor = ColorDescriptor(
-    normalColor: Colors.white,
-    normalOpacity: 0.0,
-    hoveredColor: Colors.white,
-    hoveredOpacity: 0.0,
-    pressedColor: Colors.white,
-    pressedOpacity: 0.0,
-    disabledColor: Colors.white,
-    disabledOpacity: 0.0
+    normalColor: Colors.transparent,
+    hoveredColor: Colors.transparent,
+    pressedColor: Colors.transparent,
+    disabledColor: Colors.transparent
   ),
     controlColorOutlinedBorder: ColorDescriptor = ColorDescriptor(
     normalShade: 600,
@@ -155,28 +145,21 @@ public struct ThemeVariables: Sendable {
     hoveredOpacity: 1.0,
     pressedShade: 700,
     pressedOpacity: 0.9,
-    disabledColor: Colors.white,
-    disabledOpacity: 0.0
+    disabledColor: Colors.transparent
   ),
     controlColorPlainSurface: ColorDescriptor = ColorDescriptor(
-    normalColor: Colors.white,
-    normalOpacity: 0.0,
+    normalColor: Colors.transparent,
     hoveredShade: 600,
     hoveredOpacity: 0.08,
     pressedShade: 600,
     pressedOpacity: 0.12,
-    disabledColor: Colors.white,
-    disabledOpacity: 0.0
+    disabledColor: Colors.transparent
   ),
     controlColorPlainBorder: ColorDescriptor = ColorDescriptor(
-    normalColor: Colors.white,
-    normalOpacity: 0.0,
-    hoveredColor: Colors.white,
-    hoveredOpacity: 0.0,
-    pressedColor: Colors.white,
-    pressedOpacity: 0.0,
-    disabledColor: Colors.white,
-    disabledOpacity: 0.0
+    normalColor: Colors.transparent,
+    hoveredColor: Colors.transparent,
+    pressedColor: Colors.transparent,
+    disabledColor: Colors.transparent
   )
   ) {
     self.colorPrimary = colorPrimary
@@ -202,6 +185,7 @@ public struct ThemeVariables: Sendable {
     self.colorBorderStrong = colorBorderStrong
     self.colorBorderMuted = colorBorderMuted
     self.colorOnAccent = colorOnAccent
+    self.controlPressedAlpha = controlPressedAlpha
     self.controlTinySize = controlTinySize
     self.controlSmallSize = controlSmallSize
     self.controlMediumSize = controlMediumSize
@@ -215,6 +199,7 @@ public struct ThemeVariables: Sendable {
     self.shadow2xl = shadow2xl
     self.focusWidth = focusWidth
     self.focusOffset = focusOffset
+    self.focusGlowShade = focusGlowShade
     self.focusGlowAlpha = focusGlowAlpha
     self.focusRingShade = focusRingShade
     self.focusRingAlpha = focusRingAlpha
@@ -323,6 +308,7 @@ public struct ThemeVariables: Sendable {
   public let colorBorderStrong: Color
   public let colorBorderMuted: Color
   public let colorOnAccent: Color
+  public let controlPressedAlpha: CGFloat
   public let controlTinySize: CGFloat
   public let controlSmallSize: CGFloat
   public let controlMediumSize: CGFloat
@@ -336,6 +322,7 @@ public struct ThemeVariables: Sendable {
   public let shadow2xl: [TokenShadow]
   public let focusWidth: CGFloat
   public let focusOffset: CGFloat
+  public let focusGlowShade: Int
   public let focusGlowAlpha: CGFloat
   public let focusRingShade: Int
   public let focusRingAlpha: CGFloat
@@ -474,8 +461,7 @@ public struct ThemeVariables: Sendable {
     hoveredColor: colorBorderStrong,
     pressedColor: colorBorderStrong,
     pressedOpacity: 0.9,
-    disabledColor: Colors.white,
-    disabledOpacity: 0.0
+    disabledColor: Colors.transparent
   ) }
   public var controlColorRecessedSurface: ColorDescriptor { ColorDescriptor(
     normalColor: colorSurfaceInset,
@@ -526,8 +512,7 @@ public struct ThemeVariables: Sendable {
     disabledColor: colorContentFaint
   ) }
   public var controlColorOutlinedSurface: ColorDescriptor { ColorDescriptor(
-    normalColor: Colors.white,
-    normalOpacity: 0.0,
+    normalColor: Colors.transparent,
     hoveredShade: 600,
     hoveredOpacity: 0.08,
     pressedShade: 600,
@@ -591,12 +576,11 @@ public extension ThemeVariables {
     shadow2xl: [TokenShadow(x: 0.0, y: 24.0, blur: 56.0, spread: 0.0, color: Color(argb: 0x3D11_1C2E))],
     frameWindowRadius: 16.0,
     framePopoverRadius: 14.0,
-    radiusTiny: 7.0,
     radiusSmall: 9999.0,
     radiusMedium: 9999.0,
     radiusBig: 14.0,
-    progressGradientFrom: Color(argb: 0xFF11_1C2E),
-    progressGradientTo: Color(argb: 0xFFD6_FF3F)
+    progressGradientFrom: Colors.ink[600],
+    progressGradientTo: Colors.ink[300]
   )
 
   /// The `bright-dark` counterpart of ``studioLight``.
@@ -606,6 +590,9 @@ public extension ThemeVariables {
   /// follow this instance.
   static let brightDark = ThemeVariables(
     colorPrimary: Colors.acid,
+    colorSuccess: Colors.greenDark,
+    colorWarning: Colors.amberDark,
+    colorDanger: Colors.redDark,
     colorCanvas: Color(argb: 0xFF0A_111A),
     colorSurface: Color(argb: 0xFF0C_141E),
     colorSurfaceMuted: Color(argb: 0xFF14_1D29),
@@ -633,12 +620,11 @@ public extension ThemeVariables {
     focusRingAlpha: 0.55,
     frameWindowRadius: 16.0,
     framePopoverRadius: 14.0,
-    radiusTiny: 7.0,
     radiusSmall: 9999.0,
     radiusMedium: 9999.0,
     radiusBig: 14.0,
-    progressGradientFrom: Color(argb: 0xFFD6_FF3F),
-    progressGradientTo: Color(argb: 0xFFD6_FF3F),
+    progressGradientFrom: Colors.acid[500],
+    progressGradientTo: Colors.acid[500],
     controlColorOutlinedBorder: ColorDescriptor(
       normalShade: 400,
       normalOpacity: 1.0,
@@ -646,8 +632,7 @@ public extension ThemeVariables {
       hoveredOpacity: 1.0,
       pressedShade: 300,
       pressedOpacity: 0.9,
-      disabledColor: Colors.white,
-      disabledOpacity: 0.0
+      disabledColor: Colors.transparent
     )
   )
 
@@ -657,6 +642,9 @@ public extension ThemeVariables {
   /// through to the initialiser's defaults, and the computed properties
   /// follow this instance.
   static let studioDark = ThemeVariables(
+    colorSuccess: Colors.greenDark,
+    colorWarning: Colors.amberDark,
+    colorDanger: Colors.redDark,
     colorCanvas: Color(argb: 0xFF0A_0B10),
     colorSurface: Color(argb: 0xFF0D_0F14),
     colorSurfaceMuted: Color(argb: 0xFF12_141A),
@@ -681,8 +669,8 @@ public extension ThemeVariables {
     shadowXl: [TokenShadow(x: 0.0, y: 16.0, blur: 40.0, spread: 0.0, color: Color(argb: 0x9900_0000))],
     shadow2xl: [TokenShadow(x: 0.0, y: 24.0, blur: 64.0, spread: 0.0, color: Color(argb: 0xB300_0000))],
     focusRingAlpha: 0.5,
-    progressGradientFrom: Color(argb: 0xFF7C_5CFF),
-    progressGradientTo: Color(argb: 0xFFB9_A8FF),
+    progressGradientFrom: Colors.brand[500],
+    progressGradientTo: Colors.brand[300],
     controlColorOutlinedBorder: ColorDescriptor(
       normalShade: 400,
       normalOpacity: 1.0,
@@ -690,8 +678,7 @@ public extension ThemeVariables {
       hoveredOpacity: 1.0,
       pressedShade: 300,
       pressedOpacity: 0.9,
-      disabledColor: Colors.white,
-      disabledOpacity: 0.0
+      disabledColor: Colors.transparent
     )
   )
 }

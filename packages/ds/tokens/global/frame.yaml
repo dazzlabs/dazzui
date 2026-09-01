@@ -16,7 +16,7 @@ frame:
       $value: "{base.corner.xl}"
       $extensions:
         mode:
-          bright: 0.875rem
+          bright: "{base.corner.xl-bright}"
   titlebar:
     size:
       $type: dimension

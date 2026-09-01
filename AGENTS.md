@@ -23,6 +23,15 @@ The DazzUI design system, as a pnpm workspace:
   The ds vocabulary is the API: the color axis is `tint` (`WidgetTint`,
   `ButtonTint.neutral`), never dazzui-flutter's `kind`/`secondary`. `example/` holds
   the playground app (`flutter run` from that directory, macOS and web).
+- `packages/ui_gpui` (`dazzui`) — the [GPUI] implementation, in Rust.
+  A Cargo workspace, invisible to pnpm: run `cargo test` / `cargo clippy` from
+  inside the package. Like the others, `src/generated/` holds what `ds` wrote
+  and is committed. GPUI has no cascade *and* no default arguments, so the
+  generator splits the token set in two — `ThemeSeed` is what a theme
+  re-points and a `const fn` derives the rest — which is what lets each theme
+  be a `static` a component borrows rather than a value it rebuilds.
+  `example/` holds the playground (`cargo run -p dazzui_playground`), a
+  workspace member so the two share one `target/`.
 - `packages/cli` (`@dazzlabs/dazzui-cli`) — the `dzui` command, which copies
   `ui_react` component source into a consumer's repository the way shadcn/ui
   does, and can pull upstream changes back in with a three-way merge. Its
@@ -52,7 +61,9 @@ The DazzUI design system, as a pnpm workspace:
 
 The split is the point: anything a platform package needs but cannot express
 belongs in `packages/ds`, so the platforms stay implementations of one design
-rather than three designs that resemble each other.
+rather than four designs that resemble each other.
+
+[GPUI]: https://gpui.rs
 
 Every domain-free component from `beyondtranslate/packages/ui` has been
 migrated. What is left there is the desktop shell — WindowFrame, Sidebar,
@@ -104,6 +115,20 @@ pnpm canvas:desktop    # build the canvas, then open it as a native window
 pnpm typecheck         # tsc over every workspace package
 ```
 
+The Rust package is invisible to pnpm, the way the Flutter one is. From
+`packages/ui_gpui`:
+
+```bash
+cargo test             # the token assertions, and a headless draw of every component
+```
+
+```bash
+cargo run -p dazzui_playground   # the playground, in a window
+```
+
+Add `--features runtime-shaders` on a Mac without the Metal toolchain
+installed; the package README says why.
+
 ```bash
 pnpm lint              # oxlint over the workspace
 ```
@@ -121,11 +146,23 @@ pnpm format            # oxfmt over the workspace
      recipes, from `plugins/control.mjs`
    - `flutter/colors.dart` + `flutter/theme_variables.dart` — the Dart token
      sources, from `plugins/flutter.mjs`
+   - `swiftui/Colors.swift` + `swiftui/ThemeVariables.swift` — the Swift token
+     sources, from `plugins/swiftui.mjs`
+   - `gpui/colors.rs` + `gpui/theme_variables.rs` — the Rust token sources,
+     from `plugins/gpui.mjs`
+
+   `plugins/contrast.mjs` runs alongside and emits nothing: it holds the ink
+   ladder to WCAG contrast in every theme and fails the build when a
+   re-pointed role lands below the floor. (Terrazzo's own lint rule cannot
+   do this — 0.10 lints each token file with only that file's tokens.)
 2. `distribute()` in `scripts/build.mjs` then copies each platform's files out
    of that staging directory into the platform package itself — the two
    stylesheets into `packages/ui_react/src/generated/`, the two Dart files
-   into `packages/ui_flutter/lib/src/generated/`. The `TARGETS` list is where
-   a new platform package is added.
+   into `packages/ui_flutter/lib/src/generated/`, and so on for Swift and
+   Rust. The `TARGETS` list is where a new platform package is added. The
+   Dart copies are then run through `dart format` (PATH first, fvm's stable
+   as fallback), because the committed files are formatted and a rebuild
+   must not dirty them.
 
 There is no generation step before the build: every token source, `_base.yaml`
 included, is hand-authored. (The Tailwind sync that used to write `_base.yaml`
@@ -195,13 +232,18 @@ upstream, `dzui remove` takes one out. The pieces:
 Three layers, each referencing the one above it:
 
 - **Base primitives** (`tokens/global/_base.yaml`) — the one place in the
-  graph a raw value exists, all of it hand-authored: eight colour ramps (the
-  three brand ladders plus the five semantic hues frozen from Tailwind), the
-  font weights, and the AppKit metrics the design is drawn to (`base.corner`,
-  `base.type`, `base.leading`, `base.control-height`, `base.font`). One scale
-  per axis — there is no second radius or type scale to alias by accident.
-  Components must never reference `base.*` directly. The underscore marks the
-  layer, not a generator: nothing writes this file but a person.
+  graph a raw *palette* value exists, all of it hand-authored: eleven colour
+  ramps (the three brand ladders, the five semantic hues frozen from
+  Tailwind, and the three dark companions that lift the status hues on a
+  dark canvas — whole ramps, because a platform that carries a ramp as one
+  swatch can only move a ramp whole), the font weights, and the AppKit
+  metrics the design is drawn to (`base.corner`, `base.type`,
+  `base.leading`, `base.control-height`, `base.font`). One scale per axis —
+  there is no second radius or type scale to alias by accident. Components
+  must never reference `base.*` directly. The underscore marks the layer,
+  not a generator: nothing writes this file but a person. (The semantic
+  layer holds raw values of its own kind — each theme's paper, ink and
+  shadow are decided there — but never a hue's ladder.)
 - **Semantic globals** (`color`, `radius`, `spacing`, `typography`, `effect`,
   and the `control.*` size profiles) — named roles that alias primitives, so a
   theme can re-map a whole ramp by changing one reference. (`spacing` is the
@@ -288,7 +330,10 @@ Flutter has no cascade, so `plugins/flutter.mjs` collapses each theme's mode
 chain into a whole `ThemeVariables` instance — `themeVariablesStudioDark`,
 `themeVariablesBrightLight`, `themeVariablesBrightDark` — beside the default
 `themeVariables`. It reads the themes back out of the same `modeSelectors`,
-so adding a theme reaches Dart without the plugin being touched.
+so adding a theme reaches Dart without the plugin being touched. Swift and
+Rust do the same thing in their own idiom: an initialiser with defaults and
+computed properties there, a `ThemeSeed` with `..STUDIO_LIGHT_SEED` and a
+`const fn` here.
 
 ## Component conventions
 
@@ -346,6 +391,34 @@ so adding a theme reaches Dart without the plugin being touched.
 - A `color` paired with an `alpha` anywhere else in the graph (`dialog.scrim`)
   is resolved by the same plugin onto `:root`, so no component has to apply an
   alpha in CSS.
+
+## GPUI conventions
+
+The Rust port follows the component conventions above; what is worth knowing
+is where the platform forced a different shape.
+
+- A component is a `RenderOnce` builder struct — `Button::new(id, label)` then
+  `.variant()`, `.tint()`, `.on_click()` — and reads the theme through
+  `cx.theme()`. It holds no state, so anything it has to remember between
+  frames goes in GPUI's element state through `pressable` or `latched` rather
+  than into a host's view.
+- **`pressable` is the state machine.** GPUI's own `hover()` and `active()`
+  refinements resolve a phase after a text run's colour is baked, so a recipe
+  whose content darkens under the pointer would move its surface and leave its
+  label behind. `pressable` decides the state before the subtree is built,
+  which is why every interactive component is wrapped in one.
+- Colour and geometry come off `cx.theme().vars` — never a literal. Where the
+  React stylesheet itself holds one (a spinner's 25% track, a dangerous
+  dialog's 34% edge), it is a named `const` with the same reason beside it.
+- `src/components/mod.rs` is the registry, the way `styles/components.css` is
+  on the React side: a component ships once it is listed there.
+- Tests are the substitute for a Storybook. `tests/render.rs` draws every
+  component in all four themes headlessly, measures the control heights
+  against the size profile, asserts on the recipes, and simulates the pointer
+  and the keyboard — which is the part of a screenshot that can be checked
+  without a screen. It is also what catches a wiring bug: a key listener on a
+  descendant of the focused element never fires, and only a simulated
+  backspace says so.
 
 ## Storybook conventions
 

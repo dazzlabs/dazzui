@@ -145,6 +145,57 @@ abstract final class Colors {
     },
   );
 
+  static const ColorSwatch<int> redDark = ColorSwatch<int>(
+    0xffd64040,
+    <int, Color>{
+      50: Color(0xFFFDF2F2),
+      100: Color(0xFFF9E2E2),
+      200: Color(0xFFF2C1C1),
+      300: Color(0xFFFF8F8F),
+      400: Color(0xFFE48181),
+      500: Color(0xFFFF6B6B),
+      600: Color(0xFFD64040),
+      700: Color(0xFFC4342F),
+      800: Color(0xFF7E1F1C),
+      900: Color(0xFF4B1210),
+      950: Color(0xFF310B0A),
+    },
+  );
+
+  static const ColorSwatch<int> greenDark = ColorSwatch<int>(
+    0xff1f9d5e,
+    <int, Color>{
+      50: Color(0xFFE9F5EF),
+      100: Color(0xFFD7EDE2),
+      200: Color(0xFFB2DDC7),
+      300: Color(0xFF7FD7A8),
+      400: Color(0xFF68BD93),
+      500: Color(0xFF34D399),
+      600: Color(0xFF1F9D5E),
+      700: Color(0xFF177D4A),
+      800: Color(0xFF105B37),
+      900: Color(0xFF093924),
+      950: Color(0xFF06281A),
+    },
+  );
+
+  static const ColorSwatch<int> amberDark = ColorSwatch<int>(
+    0xffe0912a,
+    <int, Color>{
+      50: Color(0xFFFDF6EA),
+      100: Color(0xFFFEF1DE),
+      200: Color(0xFFFFE6C7),
+      300: Color(0xFFFFCF9C),
+      400: Color(0xFFF0BC78),
+      500: Color(0xFFFFB86B),
+      600: Color(0xFFE0912A),
+      700: Color(0xFFB96F12),
+      800: Color(0xFF8A5210),
+      900: Color(0xFF573409),
+      950: Color(0xFF3D2506),
+    },
+  );
+
   static const ColorSwatch<int> sky = ColorSwatch<int>(
     0xff0084d1,
     <int, Color>{

@@ -13,11 +13,10 @@ radius:
   $type: dimension
   none:
     $value: 0px
+  # `tiny` carries no Bright override on purpose: the chip corner is the one
+  # control step the pill theme leaves alone.
   tiny:
     $value: "{base.corner.xs}"
-    $extensions:
-      mode:
-        bright: 0.4375rem
   small:
     $value: "{base.corner.sm}"
     $extensions:
@@ -34,6 +33,6 @@ radius:
     $value: "{base.corner.xl}"
     $extensions:
       mode:
-        bright: 0.875rem
+        bright: "{base.corner.xl-bright}"
   full:
     $value: 9999px

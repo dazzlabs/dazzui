@@ -10,12 +10,14 @@ put them to work.
 | -------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `packages/ds`        | `@dazzlabs/dazzui-ds`           | The design system itself: tokens built with [Terrazzo](https://terrazzo.app/). A generator, not a dependency.    |
 | `packages/ui_react`  | `@dazzlabs/dazzui-react`     | The React implementation. Plain CSS over the tokens — no Tailwind, no icon set.                                  |
+| `packages/ui_gpui`   | `dazzui`               | The [GPUI](https://gpui.rs) implementation, in Rust, with a playground beside it.                                |
 | `apps/storybook`     | `@dazzlabs/dazzui-storybook` | A gallery of both: every token, and every component with the tokens it is drawn from.                            |
 | `examples/coding-agent` | `@dazzlabs/dazzui-example-coding-agent` | A coding agent's desktop interface, built entirely out of the React components. |
 | `examples/canvas`    | `@dazzlabs/dazzui-example-canvas` | A design canvas, where the drawing itself is painted out of the tint recipes. |
 
 Further platform packages sit beside `ui_react` as they land — `ui_flutter`,
-`ui_swiftui` — each implementing the same tokens for its own platform. Only
+`ui_swiftui`, `ui_gpui` — each implementing the same tokens for its own
+platform. Only
 `packages/ds` decides what a value is, and it hands each platform its own
 generated sources rather than being installed alongside them: a platform
 package builds, ships and is consumed on its own.
@@ -69,6 +71,15 @@ pnpm coding-agent:desktop
 ```bash
 pnpm canvas:desktop
 ```
+
+The Rust package is invisible to pnpm, the way the Flutter one is. Its
+playground opens in a native window:
+
+```bash
+cargo run -p dazzui_playground
+```
+
+from `packages/ui_gpui`.
 
 ## Scripts
 

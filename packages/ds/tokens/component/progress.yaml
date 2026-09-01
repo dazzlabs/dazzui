@@ -7,17 +7,19 @@ progress:
   gradient:
     from:
       $type: color
-      $value: "#6b4dff"
+      $value: "{base.color.brand.600}"
       $extensions:
         mode:
-          dark: "#7c5cff"
-          bright: "#111c2e"
-          bright-dark: "#d6ff3f"
+          dark: "{base.color.brand.500}"
+          bright: "{base.color.ink.600}"
+          bright-dark: "{base.color.acid.500}"
     to:
       $type: color
+      # The one stop off any ramp: Studio's light end lands between
+      # brand.400 and brand.300, a blend the ladder has no step for.
       $value: "#a08cff"
       $extensions:
         mode:
-          dark: "#b9a8ff"
-          bright: "#d6ff3f"
-          bright-dark: "#d6ff3f"
+          dark: "{base.color.brand.300}"
+          bright: "{base.color.ink.300}"
+          bright-dark: "{base.color.acid.500}"

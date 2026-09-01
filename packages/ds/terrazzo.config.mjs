@@ -1,7 +1,9 @@
 import { defineConfig } from '@terrazzo/cli'
 import css from '@terrazzo/plugin-css'
+import contrastPlugin from './plugins/contrast.mjs'
 import controlPlugin from './plugins/control.mjs'
 import flutterPlugin from './plugins/flutter.mjs'
+import gpuiPlugin from './plugins/gpui.mjs'
 import swiftUIPlugin from './plugins/swiftui.mjs'
 
 /**
@@ -85,12 +87,21 @@ export default defineConfig({
        */
       legacyHex: true,
     }),
+    contrastPlugin({ modeSelectors }),
     controlPlugin({ modeSelectors }),
     flutterPlugin({ modeSelectors }),
     swiftUIPlugin({ modeSelectors }),
+    gpuiPlugin({ modeSelectors }),
   ],
   outDir: './dist/',
   lint: {
-    /** @see https://terrazzo.app/docs/cli/lint */
+    /**
+     * @see https://terrazzo.app/docs/cli/lint
+     *
+     * Empty on purpose: Terrazzo 0.10 lints each token file with only that
+     * file's own tokens, so a contrast rule pairing the semantic roles
+     * cannot run here. `plugins/contrast.mjs` does that job instead, on the
+     * merged graph and across every theme rather than the default alone.
+     */
   },
 })

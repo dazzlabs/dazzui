@@ -87,6 +87,7 @@ class ThemeVariables {
     ],
     this.focusWidth = 3,
     this.focusOffset = 0,
+    this.focusGlowShade = 600,
     this.focusGlowAlpha = 0.14,
     this.focusRingShade = 600,
     this.focusRingAlpha = 0.45,
@@ -132,34 +133,22 @@ class ThemeVariables {
     this.washSurface = 0.06,
     this.washEdge = 0.2,
     this.controlColorRecessedBorder = const ColorDescriptor(
-      normalColor: Colors.white,
-      normalOpacity: 0.0,
-      hoveredColor: Colors.white,
-      hoveredOpacity: 0.0,
-      pressedColor: Colors.white,
-      pressedOpacity: 0.0,
-      disabledColor: Colors.white,
-      disabledOpacity: 0.0,
+      normalColor: Colors.transparent,
+      hoveredColor: Colors.transparent,
+      pressedColor: Colors.transparent,
+      disabledColor: Colors.transparent,
     ),
     this.controlColorFilledBorder = const ColorDescriptor(
-      normalColor: Colors.white,
-      normalOpacity: 0.0,
-      hoveredColor: Colors.white,
-      hoveredOpacity: 0.0,
-      pressedColor: Colors.white,
-      pressedOpacity: 0.0,
-      disabledColor: Colors.white,
-      disabledOpacity: 0.0,
+      normalColor: Colors.transparent,
+      hoveredColor: Colors.transparent,
+      pressedColor: Colors.transparent,
+      disabledColor: Colors.transparent,
     ),
     this.controlColorTintedBorder = const ColorDescriptor(
-      normalColor: Colors.white,
-      normalOpacity: 0.0,
-      hoveredColor: Colors.white,
-      hoveredOpacity: 0.0,
-      pressedColor: Colors.white,
-      pressedOpacity: 0.0,
-      disabledColor: Colors.white,
-      disabledOpacity: 0.0,
+      normalColor: Colors.transparent,
+      hoveredColor: Colors.transparent,
+      pressedColor: Colors.transparent,
+      disabledColor: Colors.transparent,
     ),
     this.controlColorOutlinedBorder = const ColorDescriptor(
       normalShade: 600,
@@ -168,29 +157,23 @@ class ThemeVariables {
       hoveredOpacity: 1.0,
       pressedShade: 700,
       pressedOpacity: 0.9,
-      disabledColor: Colors.white,
-      disabledOpacity: 0.0,
+      disabledColor: Colors.transparent,
     ),
     this.controlColorPlainSurface = const ColorDescriptor(
-      normalColor: Colors.white,
-      normalOpacity: 0.0,
+      normalColor: Colors.transparent,
       hoveredShade: 600,
       hoveredOpacity: 0.08,
       pressedShade: 600,
       pressedOpacity: 0.12,
-      disabledColor: Colors.white,
-      disabledOpacity: 0.0,
+      disabledColor: Colors.transparent,
     ),
     this.controlColorPlainBorder = const ColorDescriptor(
-      normalColor: Colors.white,
-      normalOpacity: 0.0,
-      hoveredColor: Colors.white,
-      hoveredOpacity: 0.0,
-      pressedColor: Colors.white,
-      pressedOpacity: 0.0,
-      disabledColor: Colors.white,
-      disabledOpacity: 0.0,
+      normalColor: Colors.transparent,
+      hoveredColor: Colors.transparent,
+      pressedColor: Colors.transparent,
+      disabledColor: Colors.transparent,
     ),
+    this.controlPressedAlpha = 0.9,
     this.controlTinySize = 24,
     this.controlSmallSize = 26,
     this.controlMediumSize = 28,
@@ -254,6 +237,7 @@ class ThemeVariables {
   // Focus
   final double focusWidth;
   final double focusOffset;
+  final int focusGlowShade;
   final double focusGlowAlpha;
   final int focusRingShade;
   final double focusRingAlpha;
@@ -452,8 +436,7 @@ class ThemeVariables {
     hoveredColor: colorBorderStrong,
     pressedColor: colorBorderStrong,
     pressedOpacity: 0.9,
-    disabledColor: Colors.white,
-    disabledOpacity: 0.0,
+    disabledColor: Colors.transparent,
   );
   ColorDescriptor get controlColorRecessedSurface => ColorDescriptor(
     normalColor: colorSurfaceInset,
@@ -507,8 +490,7 @@ class ThemeVariables {
   );
   final ColorDescriptor controlColorTintedBorder;
   ColorDescriptor get controlColorOutlinedSurface => ColorDescriptor(
-    normalColor: Colors.white,
-    normalOpacity: 0.0,
+    normalColor: Colors.transparent,
     hoveredShade: 600,
     hoveredOpacity: 0.08,
     pressedShade: 600,
@@ -536,6 +518,7 @@ class ThemeVariables {
     disabledColor: colorContentFaint,
   );
   final ColorDescriptor controlColorPlainBorder;
+  final double controlPressedAlpha;
   double get controlTinyGap => spacing1;
   double get controlTinyPaddingBlock => spacing1;
   double get controlTinyPaddingInline => spacing25;
@@ -701,7 +684,6 @@ const themeVariablesBrightLight = ThemeVariables(
   ],
   frameWindowRadius: 16,
   framePopoverRadius: 14,
-  radiusTiny: 7,
   radiusSmall: 9999,
   radiusMedium: 9999,
   radiusBig: 14,
@@ -792,13 +774,15 @@ const themeVariablesBrightDark = ThemeVariables(
   focusRingAlpha: 0.55,
   frameWindowRadius: 16,
   framePopoverRadius: 14,
-  radiusTiny: 7,
   radiusSmall: 9999,
   radiusMedium: 9999,
   radiusBig: 14,
   progressGradientFrom: Color(0xFFD6FF3F),
   progressGradientTo: Color(0xFFD6FF3F),
+  colorDanger: Colors.redDark,
   colorPrimary: Colors.acid,
+  colorSuccess: Colors.greenDark,
+  colorWarning: Colors.amberDark,
   controlColorOutlinedBorder: ColorDescriptor(
     normalShade: 400,
     normalOpacity: 1.0,
@@ -806,7 +790,6 @@ const themeVariablesBrightDark = ThemeVariables(
     hoveredOpacity: 1.0,
     pressedShade: 300,
     pressedOpacity: 0.9,
-    disabledOpacity: 0.0,
   ),
 );
 
@@ -891,6 +874,9 @@ const themeVariablesStudioDark = ThemeVariables(
   focusRingAlpha: 0.5,
   progressGradientFrom: Color(0xFF7C5CFF),
   progressGradientTo: Color(0xFFB9A8FF),
+  colorDanger: Colors.redDark,
+  colorSuccess: Colors.greenDark,
+  colorWarning: Colors.amberDark,
   controlColorOutlinedBorder: ColorDescriptor(
     normalShade: 400,
     normalOpacity: 1.0,
@@ -898,6 +884,5 @@ const themeVariablesStudioDark = ThemeVariables(
     hoveredOpacity: 1.0,
     pressedShade: 300,
     pressedOpacity: 0.9,
-    disabledOpacity: 0.0,
   ),
 );

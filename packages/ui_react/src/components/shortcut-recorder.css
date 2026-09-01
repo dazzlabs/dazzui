@@ -50,12 +50,7 @@
 .dz-shortcut-recorder__button[data-recording='true'] {
   border-color: var(--tint-600);
   background-color: var(--color-surface);
-  box-shadow: 0 0 0 var(--focus-width)
-    color-mix(
-      in srgb,
-      var(--tint-600) calc(var(--focus-glow-alpha) * 100%),
-      transparent
-    );
+  box-shadow: 0 0 0 var(--focus-width) var(--focus-glow);
 }
 
 /* A press the recorder could not take flashes a danger ring rather than

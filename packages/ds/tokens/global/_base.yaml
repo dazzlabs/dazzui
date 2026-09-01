@@ -1,10 +1,13 @@
-# The primitive layer — the only place in the graph a raw value exists.
+# The primitive layer — the only place a raw *palette* value exists. (The
+# semantic layer holds raw values of its own kind: each theme's paper, ink
+# and shadow are decided there, because deciding them is that layer's job.
+# What never appears outside this file is a hue's ladder.)
 #
 # Hand-authored, all of it. The generated Tailwind import this file began as
 # is gone: the design is drawn to BeyondTranslate now, so there is no
 # upstream to track, and what Tailwind actually contributed has been frozen
-# here at the values it had — the five semantic hues below, verbatim in the
-# OKLCH they were published in. Everything else is the design's own.
+# here at the values it had — the five semantic hues below, at the 8-digit
+# hex the platforms ship. Everything else is the design's own.
 #
 # Components must never reference `base.*` directly; the semantic files
 # alias into it, and that indirection is what a theme re-points.
@@ -15,6 +18,12 @@ base:
       $value: "#ffffff"
     black:
       $value: "#000000"
+    # The absent color: what a recipe names when a part is not drawn — the
+    # border a filled button does not have. Naming it keeps the recipes free
+    # of the "white at alpha zero" spelling, which said the same thing in
+    # six lines and a lie.
+    transparent:
+      $value: "#00000000"
     # The brand violet. Every accent value the design specifies lands on a
     # step of this ramp, which is why the interactive recipes can keep
     # indexing it by shade: 600 is the resting accent, 700 the hover, 800
@@ -104,51 +113,35 @@ base:
     # unanchored steps interpolated between them. Neutral and sky remain the
     # values Tailwind shipped when the design settled; all of it is data, not
     # a dependency.
+    # Neutral and sky are written in the hex the platforms already ship:
+    # the Dart, Swift and Rust outputs collapse every color to 8-digit hex,
+    # and the CSS was leaving these two ramps in oklch — the one place the
+    # platforms could disagree by a rounding step. Hex is the precision the
+    # design ships at (see `legacyHex` in terrazzo.config.mjs), so it is
+    # what the source says too.
     neutral:
       "50":
-          $value:
-            colorSpace: oklch
-            components: [0.985, 0, 0]
+        $value: "#fafafa"
       "100":
-          $value:
-            colorSpace: oklch
-            components: [0.97, 0, 0]
+        $value: "#f5f5f5"
       "200":
-          $value:
-            colorSpace: oklch
-            components: [0.922, 0, 0]
+        $value: "#e5e5e5"
       "300":
-          $value:
-            colorSpace: oklch
-            components: [0.87, 0, 0]
+        $value: "#d4d4d4"
       "400":
-          $value:
-            colorSpace: oklch
-            components: [0.708, 0, 0]
+        $value: "#a1a1a1"
       "500":
-          $value:
-            colorSpace: oklch
-            components: [0.556, 0, 0]
+        $value: "#737373"
       "600":
-          $value:
-            colorSpace: oklch
-            components: [0.439, 0, 0]
+        $value: "#525252"
       "700":
-          $value:
-            colorSpace: oklch
-            components: [0.371, 0, 0]
+        $value: "#404040"
       "800":
-          $value:
-            colorSpace: oklch
-            components: [0.26899999999999996, 0, 0]
+        $value: "#262626"
       "900":
-          $value:
-            colorSpace: oklch
-            components: [0.205, 0, 0]
+        $value: "#171717"
       "950":
-          $value:
-            colorSpace: oklch
-            components: [0.145, 0, 0]
+        $value: "#0a0a0a"
     red:
       "50":
         $value: "#fdf2f2"
@@ -218,51 +211,106 @@ base:
         $value: "#573409"
       "950":
         $value: "#3d2506"
+    # The dark-canvas companions of the three hues above. On a near-black
+    # canvas the 300 and 500 steps brighten and saturate — a banner's text
+    # and a status dot would otherwise sink into the ground — and every
+    # other step holds the light ladder's value by alias. They are whole
+    # ramps rather than two loose overrides because a platform that carries
+    # a ramp as one swatch (Swift, Rust) can only move a ramp whole: two
+    # stray hexes on the semantic layer never reached those platforms at
+    # all.
+    red-dark:
+      "50":
+        $value: "{base.color.red.50}"
+      "100":
+        $value: "{base.color.red.100}"
+      "200":
+        $value: "{base.color.red.200}"
+      "300":
+        $value: "#ff8f8f"
+      "400":
+        $value: "{base.color.red.400}"
+      "500":
+        $value: "#ff6b6b"
+      "600":
+        $value: "{base.color.red.600}"
+      "700":
+        $value: "{base.color.red.700}"
+      "800":
+        $value: "{base.color.red.800}"
+      "900":
+        $value: "{base.color.red.900}"
+      "950":
+        $value: "{base.color.red.950}"
+    green-dark:
+      "50":
+        $value: "{base.color.green.50}"
+      "100":
+        $value: "{base.color.green.100}"
+      "200":
+        $value: "{base.color.green.200}"
+      "300":
+        $value: "#7fd7a8"
+      "400":
+        $value: "{base.color.green.400}"
+      "500":
+        $value: "#34d399"
+      "600":
+        $value: "{base.color.green.600}"
+      "700":
+        $value: "{base.color.green.700}"
+      "800":
+        $value: "{base.color.green.800}"
+      "900":
+        $value: "{base.color.green.900}"
+      "950":
+        $value: "{base.color.green.950}"
+    amber-dark:
+      "50":
+        $value: "{base.color.amber.50}"
+      "100":
+        $value: "{base.color.amber.100}"
+      "200":
+        $value: "{base.color.amber.200}"
+      "300":
+        $value: "#ffcf9c"
+      "400":
+        $value: "{base.color.amber.400}"
+      "500":
+        $value: "#ffb86b"
+      "600":
+        $value: "{base.color.amber.600}"
+      "700":
+        $value: "{base.color.amber.700}"
+      "800":
+        $value: "{base.color.amber.800}"
+      "900":
+        $value: "{base.color.amber.900}"
+      "950":
+        $value: "{base.color.amber.950}"
     sky:
       "50":
-          $value:
-            colorSpace: oklch
-            components: [0.977, 0.013, 236.62]
+        $value: "#f0f9ff"
       "100":
-          $value:
-            colorSpace: oklch
-            components: [0.951, 0.026, 236.824]
+        $value: "#dff2fe"
       "200":
-          $value:
-            colorSpace: oklch
-            components: [0.9009999999999999, 0.058, 230.902]
+        $value: "#b8e6fe"
       "300":
-          $value:
-            colorSpace: oklch
-            components: [0.828, 0.111, 230.318]
+        $value: "#74d4ff"
       "400":
-          $value:
-            colorSpace: oklch
-            components: [0.746, 0.16, 232.661]
+        $value: "#00bcff"
       "500":
-          $value:
-            colorSpace: oklch
-            components: [0.685, 0.169, 237.323]
+        $value: "#00a6f4"
       "600":
-          $value:
-            colorSpace: oklch
-            components: [0.588, 0.158, 241.966]
+        $value: "#0084d1"
       "700":
-          $value:
-            colorSpace: oklch
-            components: [0.5, 0.134, 242.749]
+        $value: "#0069a8"
       "800":
-          $value:
-            colorSpace: oklch
-            components: [0.44299999999999995, 0.11, 240.79]
+        $value: "#00598a"
       "900":
-          $value:
-            colorSpace: oklch
-            components: [0.391, 0.09, 240.876]
+        $value: "#024a70"
       "950":
-          $value:
-            colorSpace: oklch
-            components: [0.293, 0.066, 243.157]
+        $value: "#052f4a"
   font-weight:
     $type: fontWeight
     thin:
@@ -302,6 +350,12 @@ base:
       $value: 0.75rem
     xl:
       $value: 1rem
+    # 14px — the xl corner as Bright draws it. The pill theme pulls its
+    # floating surfaces one notch tighter than Studio's, and both takers
+    # (`radius.big`, `frame.popover`) point here rather than each writing
+    # the measurement down.
+    xl-bright:
+      $value: 0.875rem
     2xl:
       $value: 1.125rem
   # AppKit's practical type scale: 11 secondary · 12 small · 13 body ·

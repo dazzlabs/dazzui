@@ -25,6 +25,17 @@
   --base-color-amber-800: #8a5210;
   --base-color-amber-900: #573409;
   --base-color-amber-950: #3d2506;
+  --base-color-amber-dark-50: var(--base-color-amber-50);
+  --base-color-amber-dark-100: var(--base-color-amber-100);
+  --base-color-amber-dark-200: var(--base-color-amber-200);
+  --base-color-amber-dark-300: #ffcf9c;
+  --base-color-amber-dark-400: var(--base-color-amber-400);
+  --base-color-amber-dark-500: #ffb86b;
+  --base-color-amber-dark-600: var(--base-color-amber-600);
+  --base-color-amber-dark-700: var(--base-color-amber-700);
+  --base-color-amber-dark-800: var(--base-color-amber-800);
+  --base-color-amber-dark-900: var(--base-color-amber-900);
+  --base-color-amber-dark-950: var(--base-color-amber-950);
   --base-color-black: #000000;
   --base-color-brand-50: #f4f1fe;
   --base-color-brand-100: #e6dfff;
@@ -48,6 +59,17 @@
   --base-color-green-800: #105b37;
   --base-color-green-900: #093924;
   --base-color-green-950: #06281a;
+  --base-color-green-dark-50: var(--base-color-green-50);
+  --base-color-green-dark-100: var(--base-color-green-100);
+  --base-color-green-dark-200: var(--base-color-green-200);
+  --base-color-green-dark-300: #7fd7a8;
+  --base-color-green-dark-400: var(--base-color-green-400);
+  --base-color-green-dark-500: #34d399;
+  --base-color-green-dark-600: var(--base-color-green-600);
+  --base-color-green-dark-700: var(--base-color-green-700);
+  --base-color-green-dark-800: var(--base-color-green-800);
+  --base-color-green-dark-900: var(--base-color-green-900);
+  --base-color-green-dark-950: var(--base-color-green-950);
   --base-color-ink-50: #f6fae2;
   --base-color-ink-100: #f1f7d2;
   --base-color-ink-200: #e6f77a;
@@ -81,17 +103,29 @@
   --base-color-red-800: #7e1f1c;
   --base-color-red-900: #4b1210;
   --base-color-red-950: #310b0a;
-  --base-color-sky-50: oklch(0.9769 0.0127 235.4973);
+  --base-color-red-dark-50: var(--base-color-red-50);
+  --base-color-red-dark-100: var(--base-color-red-100);
+  --base-color-red-dark-200: var(--base-color-red-200);
+  --base-color-red-dark-300: #ff8f8f;
+  --base-color-red-dark-400: var(--base-color-red-400);
+  --base-color-red-dark-500: #ff6b6b;
+  --base-color-red-dark-600: var(--base-color-red-600);
+  --base-color-red-dark-700: var(--base-color-red-700);
+  --base-color-red-dark-800: var(--base-color-red-800);
+  --base-color-red-dark-900: var(--base-color-red-900);
+  --base-color-red-dark-950: var(--base-color-red-950);
+  --base-color-sky-50: #f0f9ff;
   --base-color-sky-100: #dff2fe;
   --base-color-sky-200: #b8e6fe;
-  --base-color-sky-300: oklch(0.8271 0.1092 229.0598);
-  --base-color-sky-400: oklch(0.7479 0.1552 233.368);
-  --base-color-sky-500: oklch(0.6913 0.1598 240.538);
-  --base-color-sky-600: oklch(0.5937 0.1504 245.3065);
-  --base-color-sky-700: oklch(0.5041 0.1285 245.611);
-  --base-color-sky-800: oklch(0.4453 0.1069 242.6035);
+  --base-color-sky-300: #74d4ff;
+  --base-color-sky-400: #00bcff;
+  --base-color-sky-500: #00a6f4;
+  --base-color-sky-600: #0084d1;
+  --base-color-sky-700: #0069a8;
+  --base-color-sky-800: #00598a;
   --base-color-sky-900: #024a70;
   --base-color-sky-950: #052f4a;
+  --base-color-transparent: #00000000;
   --base-color-white: #ffffff;
   --base-control-height-large: 2rem;
   --base-control-height-medium: 1.75rem;
@@ -102,6 +136,7 @@
   --base-corner-md: 0.625rem;
   --base-corner-sm: 0.5rem;
   --base-corner-xl: 1rem;
+  --base-corner-xl-bright: 0.875rem;
   --base-corner-xs: 0.4375rem;
   --base-font-code: ui-monospace, "SF Mono", "Menlo", monospace;
   --base-font-display: -apple-system, "SF Pro Display", system-ui, "PingFang SC", sans-serif;
@@ -267,6 +302,7 @@
   --control-medium-padding-inline: var(--spacing-4);
   --control-medium-radius: var(--radius-small);
   --control-medium-size: var(--base-control-height-medium);
+  --control-pressed-alpha: 0.9;
   --control-small-content-font-family: var(--label-medium-font-family);
   --control-small-content-font-size: var(--label-medium-font-size);
   --control-small-content-font-weight: var(--label-medium-font-weight);
@@ -289,6 +325,7 @@
   --dialog-scrim-color: var(--color-content);
   --dialog-width: 27.5rem;
   --focus-glow-alpha: 0.14;
+  --focus-glow-shade: 600;
   --focus-offset: 0;
   --focus-ring-alpha: 0.45;
   --focus-ring-shade: 600;
@@ -336,7 +373,7 @@
   --menu-min-width: 11rem;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
-  --progress-gradient-from: #6b4dff;
+  --progress-gradient-from: var(--base-color-brand-600);
   --progress-gradient-to: #a08cff;
   --radio-large-box: var(--spacing-5);
   --radio-large-dot: 0.5625rem;
@@ -410,44 +447,6 @@
   --wash-surface: 0.06;
 }
 
-@media (color-gamut: p3) {
-  :root {
-    --base-color-sky-50: oklch(0.977 0.013 236.62);
-    --base-color-sky-300: oklch(0.828 0.111 230.318);
-    --base-color-sky-400: oklch(0.746 0.16 232.661);
-    --base-color-sky-500: oklch(0.685 0.169 237.323);
-    --base-color-sky-600: oklch(0.588 0.158 241.966);
-    --base-color-sky-700: oklch(0.5 0.134 242.749);
-    --base-color-sky-800: oklch(0.443 0.11 240.79);
-    --color-info-50: var(--base-color-sky-50);
-    --color-info-300: var(--base-color-sky-300);
-    --color-info-400: var(--base-color-sky-400);
-    --color-info-500: var(--base-color-sky-500);
-    --color-info-600: var(--base-color-sky-600);
-    --color-info-700: var(--base-color-sky-700);
-    --color-info-800: var(--base-color-sky-800);
-  }
-}
-
-@media (color-gamut: rec2020) {
-  :root {
-    --base-color-sky-50: oklch(0.977 0.013 236.62);
-    --base-color-sky-300: oklch(0.828 0.111 230.318);
-    --base-color-sky-400: oklch(0.746 0.16 232.661);
-    --base-color-sky-500: oklch(0.685 0.169 237.323);
-    --base-color-sky-600: oklch(0.588 0.158 241.966);
-    --base-color-sky-700: oklch(0.5 0.134 242.749);
-    --base-color-sky-800: oklch(0.443 0.11 240.79);
-    --color-info-50: var(--base-color-sky-50);
-    --color-info-300: var(--base-color-sky-300);
-    --color-info-400: var(--base-color-sky-400);
-    --color-info-500: var(--base-color-sky-500);
-    --color-info-600: var(--base-color-sky-600);
-    --color-info-700: var(--base-color-sky-700);
-    --color-info-800: var(--base-color-sky-800);
-  }
-}
-
 [data-theme='bright-light'],
 [data-theme='bright-dark'] {
   --color-border: #111c2e14;
@@ -479,14 +478,13 @@
   --color-surface-subtle: #f6f5f1;
   --color-surface-sunken: #e5e3db;
   --dialog-scrim-color: var(--color-content);
-  --frame-popover-radius: 0.875rem;
+  --frame-popover-radius: var(--base-corner-xl-bright);
   --frame-window-radius: var(--base-corner-xl);
-  --progress-gradient-from: #111c2e;
-  --progress-gradient-to: #d6ff3f;
-  --radius-big: 0.875rem;
+  --progress-gradient-from: var(--base-color-ink-600);
+  --progress-gradient-to: var(--base-color-ink-300);
+  --radius-big: var(--base-corner-xl-bright);
   --radius-medium: 9999px;
   --radius-small: 9999px;
-  --radius-tiny: 0.4375rem;
   --shadow-2xl: 0 24px 56px 0 #111c2e3d;
   --shadow-2xs: 0 1px 2px 0 #111c2e1f;
   --shadow-lg: 0 10px 30px 0 #111c2e2e;
@@ -509,22 +507,49 @@
   --color-content-nav: #9aa1bb;
   --color-content-secondary: #c3c8dc;
   --color-content-subtle: #8b93b0;
-  --color-danger-300: #ff8f8f;
-  --color-danger-500: #ff6b6b;
-  --color-success-300: #7fd7a8;
-  --color-success-500: #34d399;
+  --color-danger-50: var(--base-color-red-dark-50);
+  --color-danger-100: var(--base-color-red-dark-100);
+  --color-danger-200: var(--base-color-red-dark-200);
+  --color-danger-300: var(--base-color-red-dark-300);
+  --color-danger-400: var(--base-color-red-dark-400);
+  --color-danger-500: var(--base-color-red-dark-500);
+  --color-danger-600: var(--base-color-red-dark-600);
+  --color-danger-700: var(--base-color-red-dark-700);
+  --color-danger-800: var(--base-color-red-dark-800);
+  --color-danger-900: var(--base-color-red-dark-900);
+  --color-danger-950: var(--base-color-red-dark-950);
+  --color-success-50: var(--base-color-green-dark-50);
+  --color-success-100: var(--base-color-green-dark-100);
+  --color-success-200: var(--base-color-green-dark-200);
+  --color-success-300: var(--base-color-green-dark-300);
+  --color-success-400: var(--base-color-green-dark-400);
+  --color-success-500: var(--base-color-green-dark-500);
+  --color-success-600: var(--base-color-green-dark-600);
+  --color-success-700: var(--base-color-green-dark-700);
+  --color-success-800: var(--base-color-green-dark-800);
+  --color-success-900: var(--base-color-green-dark-900);
+  --color-success-950: var(--base-color-green-dark-950);
   --color-surface: #0d0f14;
   --color-surface-inset: #1b1e26;
   --color-surface-muted: #12141a;
   --color-surface-raised: #3a3f4d;
   --color-surface-subtle: #151821;
   --color-surface-sunken: #262a34;
-  --color-warning-300: #ffcf9c;
-  --color-warning-500: #ffb86b;
+  --color-warning-50: var(--base-color-amber-dark-50);
+  --color-warning-100: var(--base-color-amber-dark-100);
+  --color-warning-200: var(--base-color-amber-dark-200);
+  --color-warning-300: var(--base-color-amber-dark-300);
+  --color-warning-400: var(--base-color-amber-dark-400);
+  --color-warning-500: var(--base-color-amber-dark-500);
+  --color-warning-600: var(--base-color-amber-dark-600);
+  --color-warning-700: var(--base-color-amber-dark-700);
+  --color-warning-800: var(--base-color-amber-dark-800);
+  --color-warning-900: var(--base-color-amber-dark-900);
+  --color-warning-950: var(--base-color-amber-dark-950);
   --dialog-scrim-color: var(--color-content);
   --focus-ring-alpha: 0.5;
-  --progress-gradient-from: #7c5cff;
-  --progress-gradient-to: #b9a8ff;
+  --progress-gradient-from: var(--base-color-brand-500);
+  --progress-gradient-to: var(--base-color-brand-300);
   --shadow-2xl: 0 24px 64px 0 #000000b3;
   --shadow-2xs: 0 1px 2px 0 #00000066;
   --shadow-lg: 0 14px 36px 0 #00000094;
@@ -566,8 +591,8 @@
   --color-surface-sunken: #1c2734;
   --dialog-scrim-color: var(--color-content);
   --focus-ring-alpha: 0.55;
-  --progress-gradient-from: #d6ff3f;
-  --progress-gradient-to: #d6ff3f;
+  --progress-gradient-from: var(--base-color-acid-500);
+  --progress-gradient-to: var(--base-color-acid-500);
   color-scheme: dark;
 }
 

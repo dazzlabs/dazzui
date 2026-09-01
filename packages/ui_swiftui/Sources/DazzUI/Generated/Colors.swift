@@ -41,6 +41,20 @@ public enum Colors {
     950: Color(argb: 0xFF3D_2506),
   ])
 
+  public static let amberDark = ColorSwatch([
+    50: Color(argb: 0xFFFD_F6EA),
+    100: Color(argb: 0xFFFE_F1DE),
+    200: Color(argb: 0xFFFF_E6C7),
+    300: Color(argb: 0xFFFF_CF9C),
+    400: Color(argb: 0xFFF0_BC78),
+    500: Color(argb: 0xFFFF_B86B),
+    600: Color(argb: 0xFFE0_912A),
+    700: Color(argb: 0xFFB9_6F12),
+    800: Color(argb: 0xFF8A_5210),
+    900: Color(argb: 0xFF57_3409),
+    950: Color(argb: 0xFF3D_2506),
+  ])
+
   public static let brand = ColorSwatch([
     50: Color(argb: 0xFFF4_F1FE),
     100: Color(argb: 0xFFE6_DFFF),
@@ -62,6 +76,20 @@ public enum Colors {
     300: Color(argb: 0xFF8D_CDAD),
     400: Color(argb: 0xFF68_BD93),
     500: Color(argb: 0xFF44_AD78),
+    600: Color(argb: 0xFF1F_9D5E),
+    700: Color(argb: 0xFF17_7D4A),
+    800: Color(argb: 0xFF10_5B37),
+    900: Color(argb: 0xFF09_3924),
+    950: Color(argb: 0xFF06_281A),
+  ])
+
+  public static let greenDark = ColorSwatch([
+    50: Color(argb: 0xFFE9_F5EF),
+    100: Color(argb: 0xFFD7_EDE2),
+    200: Color(argb: 0xFFB2_DDC7),
+    300: Color(argb: 0xFF7F_D7A8),
+    400: Color(argb: 0xFF68_BD93),
+    500: Color(argb: 0xFF34_D399),
     600: Color(argb: 0xFF1F_9D5E),
     700: Color(argb: 0xFF17_7D4A),
     800: Color(argb: 0xFF10_5B37),
@@ -104,6 +132,20 @@ public enum Colors {
     300: Color(argb: 0xFFEB_A1A1),
     400: Color(argb: 0xFFE4_8181),
     500: Color(argb: 0xFFDD_6060),
+    600: Color(argb: 0xFFD6_4040),
+    700: Color(argb: 0xFFC4_342F),
+    800: Color(argb: 0xFF7E_1F1C),
+    900: Color(argb: 0xFF4B_1210),
+    950: Color(argb: 0xFF31_0B0A),
+  ])
+
+  public static let redDark = ColorSwatch([
+    50: Color(argb: 0xFFFD_F2F2),
+    100: Color(argb: 0xFFF9_E2E2),
+    200: Color(argb: 0xFFF2_C1C1),
+    300: Color(argb: 0xFFFF_8F8F),
+    400: Color(argb: 0xFFE4_8181),
+    500: Color(argb: 0xFFFF_6B6B),
     600: Color(argb: 0xFFD6_4040),
     700: Color(argb: 0xFFC4_342F),
     800: Color(argb: 0xFF7E_1F1C),

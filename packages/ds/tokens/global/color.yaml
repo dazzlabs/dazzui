@@ -127,93 +127,179 @@ color:
       $value: "{base.color.sky.900}"
     "950":
       $value: "{base.color.sky.950}"
+  # The three status ramps move whole onto their dark companions — every
+  # step, not just the two the dark canvas lifts — because a platform that
+  # carries a ramp as one swatch (Swift, Rust) can only re-point a ramp it
+  # can re-point entirely. The unchanged steps cost nothing: they alias the
+  # same values either way.
   success:
     "50":
       $value: "{base.color.green.50}"
+      $extensions:
+        mode:
+          dark: "{base.color.green-dark.50}"
     "100":
       $value: "{base.color.green.100}"
+      $extensions:
+        mode:
+          dark: "{base.color.green-dark.100}"
     "200":
       $value: "{base.color.green.200}"
+      $extensions:
+        mode:
+          dark: "{base.color.green-dark.200}"
     "300":
       $value: "{base.color.green.300}"
       $extensions:
         mode:
-          dark: "#7fd7a8"
+          dark: "{base.color.green-dark.300}"
     "400":
       $value: "{base.color.green.400}"
+      $extensions:
+        mode:
+          dark: "{base.color.green-dark.400}"
     "500":
       $value: "{base.color.green.500}"
       $extensions:
         mode:
-          dark: "#34d399"
+          dark: "{base.color.green-dark.500}"
     "600":
       $value: "{base.color.green.600}"
+      $extensions:
+        mode:
+          dark: "{base.color.green-dark.600}"
     "700":
       $value: "{base.color.green.700}"
+      $extensions:
+        mode:
+          dark: "{base.color.green-dark.700}"
     "800":
       $value: "{base.color.green.800}"
+      $extensions:
+        mode:
+          dark: "{base.color.green-dark.800}"
     "900":
       $value: "{base.color.green.900}"
+      $extensions:
+        mode:
+          dark: "{base.color.green-dark.900}"
     "950":
       $value: "{base.color.green.950}"
+      $extensions:
+        mode:
+          dark: "{base.color.green-dark.950}"
   warning:
     "50":
       $value: "{base.color.amber.50}"
+      $extensions:
+        mode:
+          dark: "{base.color.amber-dark.50}"
     "100":
       $value: "{base.color.amber.100}"
+      $extensions:
+        mode:
+          dark: "{base.color.amber-dark.100}"
     "200":
       $value: "{base.color.amber.200}"
+      $extensions:
+        mode:
+          dark: "{base.color.amber-dark.200}"
     "300":
       $value: "{base.color.amber.300}"
       $extensions:
         mode:
-          dark: "#ffcf9c"
+          dark: "{base.color.amber-dark.300}"
     "400":
       $value: "{base.color.amber.400}"
+      $extensions:
+        mode:
+          dark: "{base.color.amber-dark.400}"
     "500":
       $value: "{base.color.amber.500}"
       $extensions:
         mode:
-          dark: "#ffb86b"
+          dark: "{base.color.amber-dark.500}"
     "600":
       $value: "{base.color.amber.600}"
+      $extensions:
+        mode:
+          dark: "{base.color.amber-dark.600}"
     "700":
       $value: "{base.color.amber.700}"
+      $extensions:
+        mode:
+          dark: "{base.color.amber-dark.700}"
     "800":
       $value: "{base.color.amber.800}"
+      $extensions:
+        mode:
+          dark: "{base.color.amber-dark.800}"
     "900":
       $value: "{base.color.amber.900}"
+      $extensions:
+        mode:
+          dark: "{base.color.amber-dark.900}"
     "950":
       $value: "{base.color.amber.950}"
+      $extensions:
+        mode:
+          dark: "{base.color.amber-dark.950}"
   danger:
     "50":
       $value: "{base.color.red.50}"
+      $extensions:
+        mode:
+          dark: "{base.color.red-dark.50}"
     "100":
       $value: "{base.color.red.100}"
+      $extensions:
+        mode:
+          dark: "{base.color.red-dark.100}"
     "200":
       $value: "{base.color.red.200}"
+      $extensions:
+        mode:
+          dark: "{base.color.red-dark.200}"
     "300":
       $value: "{base.color.red.300}"
       $extensions:
         mode:
-          dark: "#ff8f8f"
+          dark: "{base.color.red-dark.300}"
     "400":
       $value: "{base.color.red.400}"
+      $extensions:
+        mode:
+          dark: "{base.color.red-dark.400}"
     "500":
       $value: "{base.color.red.500}"
       $extensions:
         mode:
-          dark: "#ff6b6b"
+          dark: "{base.color.red-dark.500}"
     "600":
       $value: "{base.color.red.600}"
+      $extensions:
+        mode:
+          dark: "{base.color.red-dark.600}"
     "700":
       $value: "{base.color.red.700}"
+      $extensions:
+        mode:
+          dark: "{base.color.red-dark.700}"
     "800":
       $value: "{base.color.red.800}"
+      $extensions:
+        mode:
+          dark: "{base.color.red-dark.800}"
     "900":
       $value: "{base.color.red.900}"
+      $extensions:
+        mode:
+          dark: "{base.color.red-dark.900}"
     "950":
       $value: "{base.color.red.950}"
+      $extensions:
+        mode:
+          dark: "{base.color.red-dark.950}"
   # The plate the whole app sits on, behind any window or panel.
   canvas:
     $type: color
@@ -256,7 +342,9 @@ color:
   # The quietest wash there is: what a menu item, a toolbar glyph or a table
   # row takes under the pointer. One step shy of `surface-muted`, because a
   # hover that lands exactly on the header/card fill stops reading as a
-  # hover.
+  # hover. Bright alone collapses the two on purpose — its warm paper draws
+  # one quiet step, not two — and the roles stay separate for the themes
+  # that keep them apart.
   surface-subtle:
     $type: color
     $value: "#f5f5f9"
@@ -320,6 +408,11 @@ color:
   # current one. It sits between `content-secondary` and `content-muted` and
   # neither substitutes — a sidebar set in the first reads heavier than the
   # design, and in the second the rows go quiet enough to look disabled.
+  #
+  # Studio Dark is the deliberate exception: it writes `content-muted`'s
+  # value, one ink for both roles, because the compressed dark ladder has no
+  # step between them worth a third grey. The roles stay separate so the
+  # themes that do separate them can.
   content-nav:
     $type: color
     $value: "#4a4f6b"
@@ -432,7 +525,7 @@ control:
             $value: "{color.surface-subtle}"
           alpha:
             $type: number
-            $value: 0.9
+            $value: "{control.pressed.alpha}"
         disabled:
           color:
             $type: color
@@ -452,7 +545,7 @@ control:
             $value: "{color.content}"
           alpha:
             $type: number
-            $value: 0.9
+            $value: "{control.pressed.alpha}"
         disabled:
           color:
             $type: color
@@ -472,14 +565,11 @@ control:
             $value: "{color.border-strong}"
           alpha:
             $type: number
-            $value: 0.9
+            $value: "{control.pressed.alpha}"
         disabled:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
     recessed:
       surface:
         normal:
@@ -496,7 +586,7 @@ control:
             $value: "{color.surface-sunken}"
           alpha:
             $type: number
-            $value: 0.9
+            $value: "{control.pressed.alpha}"
         disabled:
           color:
             $type: color
@@ -516,7 +606,7 @@ control:
             $value: "{color.content}"
           alpha:
             $type: number
-            $value: 0.9
+            $value: "{control.pressed.alpha}"
         disabled:
           color:
             $type: color
@@ -525,31 +615,19 @@ control:
         normal:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
         hovered:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
         pressed:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
         disabled:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
     filled:
       surface:
         normal:
@@ -578,7 +656,7 @@ control:
               mode:
                 dark: 600
           alpha:
-            $value: 0.9
+            $value: "{control.pressed.alpha}"
         disabled:
           color:
             $type: color
@@ -598,7 +676,7 @@ control:
             $value: "{color.on-accent}"
           alpha:
             $type: number
-            $value: 0.9
+            $value: "{control.pressed.alpha}"
         disabled:
           color:
             $type: color
@@ -607,31 +685,19 @@ control:
         normal:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
         hovered:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
         pressed:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
         disabled:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
     tinted:
       surface:
         normal:
@@ -683,7 +749,7 @@ control:
               mode:
                 dark: 200
           alpha:
-            $value: 0.9
+            $value: "{control.pressed.alpha}"
         disabled:
           color:
             $type: color
@@ -692,40 +758,25 @@ control:
         normal:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
         hovered:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
         pressed:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
         disabled:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
     outlined:
       surface:
         normal:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
         hovered:
           $type: number
           shade:
@@ -769,7 +820,7 @@ control:
               mode:
                 dark: 200
           alpha:
-            $value: 0.9
+            $value: "{control.pressed.alpha}"
         disabled:
           color:
             $type: color
@@ -801,23 +852,17 @@ control:
               mode:
                 dark: 300
           alpha:
-            $value: 0.9
+            $value: "{control.pressed.alpha}"
         disabled:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
     plain:
       surface:
         normal:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
         hovered:
           $type: number
           shade:
@@ -833,10 +878,7 @@ control:
         disabled:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
       content:
         normal:
           $type: number
@@ -864,7 +906,7 @@ control:
               mode:
                 dark: 200
           alpha:
-            $value: 0.9
+            $value: "{control.pressed.alpha}"
         disabled:
           color:
             $type: color
@@ -873,28 +915,16 @@ control:
         normal:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
         hovered:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
         pressed:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"
         disabled:
           color:
             $type: color
-            $value: "{base.color.white}"
-          alpha:
-            $type: number
-            $value: 0
+            $value: "{base.color.transparent}"

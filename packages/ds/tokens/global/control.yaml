@@ -13,6 +13,14 @@
 # because 26px is not on the 4px grid and the set only stays in proportion
 # when it is read as one scale.
 control:
+  # The one press signal every variant shares: the whole control — surface,
+  # content, border alike — dims to 90% while the pointer is down. The
+  # recipes in color.yaml alias this instead of each writing 0.9, so the
+  # press weight is decided once.
+  pressed:
+    alpha:
+      $type: number
+      $value: 0.9
   tiny:
     gap:
       $type: dimension

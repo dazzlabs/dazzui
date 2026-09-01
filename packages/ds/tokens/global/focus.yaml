@@ -15,7 +15,13 @@ focus:
   # `ring`: the ring is the wide halo a button draws to say it has the
   # keyboard, this is the quiet lift a field already carrying a caret gives
   # itself. Three controls drew it at this weight before it had a name here.
+  # Like `ring` it is a recipe — a shade off the tinted ramp plus an alpha —
+  # resolved by plugins/control.mjs onto `[data-tint]` as `--focus-glow`, so
+  # the shade is written here and nowhere else.
   glow:
+    shade:
+      $type: number
+      $value: 600
     alpha:
       $type: number
       $value: 0.14

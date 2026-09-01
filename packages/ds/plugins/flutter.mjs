@@ -114,7 +114,7 @@ function generateColorsFile(tokens, sources) {
     const primaryHex =
       primaryValue.match(/0x([0-9A-F]+)/)?.[1]?.toLowerCase() || 'ff000000'
 
-    code += `  static const ColorSwatch<int> ${colorName} = ColorSwatch<int>(\n`
+    code += `  static const ColorSwatch<int> ${dartName(colorName)} = ColorSwatch<int>(\n`
     code += `    0x${primaryHex},\n`
     code += `    <int, Color>{\n`
 
@@ -169,6 +169,18 @@ function collectColorTokens(obj, prefix, result, allTokens) {
  */
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+/**
+ * A token path segment as a Dart identifier: `green-dark` -> `greenDark`.
+ * Ramp names reach the generated Dart verbatim everywhere a `Colors.` member
+ * is declared or referenced, and a hyphen is a subtraction there.
+ */
+function dartName(name) {
+  const words = name.split(/[-_\s]+/).filter(Boolean)
+  return words
+    .map((word, index) => (index === 0 ? word : capitalize(word)))
+    .join('')
 }
 
 /**
@@ -341,6 +353,15 @@ function generateThemeInstances(tokens, modeSelectors) {
         },
         tokens
       )
+      // The theme instance is a `const` expression, and a swatch index
+      // (`Colors.ink[600]!`) is not — so a color override collapses to the
+      // resolved constant, the way the default it replaces does.
+      if (value.type === 'Color' && !value.value.startsWith('Color(')) {
+        overrides.push(
+          `  ${tokenIdToVarName(id)}: ${convertColorValue(themed.$value)},`
+        )
+        continue
+      }
       overrides.push(`  ${tokenIdToVarName(id)}: ${value.value},`)
     }
 
@@ -358,7 +379,7 @@ function generateThemeInstances(tokens, modeSelectors) {
         )
         continue
       }
-      overrides.push(`  color${capitalize(group)}: Colors.${base},`)
+      overrides.push(`  color${capitalize(group)}: Colors.${dartName(base)},`)
     }
 
     for (const baseId of [...descriptorBases].sort()) {
@@ -652,7 +673,9 @@ function generateClassContent(categories, allTokens) {
           }
           const varName = `color${capitalize(colorName)}`
           fieldSections.push(`  final ColorSwatch<int> ${varName};`)
-          initializerSections.push(`    this.${varName} = Colors.${colorName},`)
+          initializerSections.push(
+            `    this.${varName} = Colors.${dartName(colorName)},`
+          )
         }
 
         fieldSections.push('')
@@ -760,7 +783,7 @@ function generateClassContent(categories, allTokens) {
 
             fieldSections.push(`  final ColorSwatch<int> ${varName};`)
             initializerSections.push(
-              `    this.${varName} = Colors.${baseColorName},`
+              `    this.${varName} = Colors.${dartName(baseColorName)},`
             )
           } else {
             // Group control color tokens by their base ID (without state and .shade/.alpha/.color suffix)
@@ -848,7 +871,7 @@ function generateClassContent(categories, allTokens) {
                   ) {
                     const baseColorName = parts[2]
                     const shade = parts[3]
-                    colorReference = `Colors.${baseColorName}[${shade}]!`
+                    colorReference = `Colors.${dartName(baseColorName)}[${shade}]!`
                   } else if (
                     parts.length === 3 &&
                     parts[0] === 'base' &&
@@ -856,7 +879,7 @@ function generateClassContent(categories, allTokens) {
                   ) {
                     // e.g. {base.color.white}
                     const baseColorName = parts[2]
-                    colorReference = `Colors.${baseColorName}`
+                    colorReference = `Colors.${dartName(baseColorName)}`
                   }
                 }
               }
@@ -1063,7 +1086,7 @@ function generateClassContent(categories, allTokens) {
           }
 
           const originalValue = token.$originalValue || token.$value
-          const value = convertTokenValue(token, allTokens)
+          let value = convertTokenValue(token, allTokens)
 
           // Check if the value contains token references
           // First check the original value for token references like {token.id}
@@ -1142,7 +1165,21 @@ function generateClassContent(categories, allTokens) {
           })()
 
           // If has token reference, use getter; otherwise use constructor parameter
-          if (hasTokenReference) {
+          let useGetter = hasTokenReference
+
+          // A color that re-points per theme must stay a stored field — a
+          // getter cannot be overridden by a theme instance — so when its
+          // default aliases the palette (a non-const expression in Dart),
+          // the default collapses to the resolved constant instead, exactly
+          // as a literal default would.
+          const themed =
+            token.mode && Object.keys(token.mode).some(mode => mode !== '.')
+          if (useGetter && themed && value.type === 'Color') {
+            value = { type: 'Color', value: convertColorValue(token.$value) }
+            useGetter = false
+          }
+
+          if (useGetter) {
             if (value.type === 'TextStyle' && value.value.includes(',')) {
               const formattedValue = value.value
                 .replace('const TextStyle(', 'TextStyle(')
@@ -1404,7 +1441,7 @@ function generateClassContent(categories, allTokens) {
         }
 
         const originalValue = token.$originalValue || token.$value
-        const value = convertTokenValue(token, allTokens)
+        let value = convertTokenValue(token, allTokens)
 
         // Check if the value contains token references
         // First check the original value for token references like {token.id}
@@ -1487,7 +1524,21 @@ function generateClassContent(categories, allTokens) {
         })()
 
         // If has token reference, use getter; otherwise use constructor parameter
-        if (hasTokenReference) {
+        let useGetter = hasTokenReference
+
+        // A color that re-points per theme must stay a stored field — a
+        // getter cannot be overridden by a theme instance — so when its
+        // default aliases the palette (a non-const expression in Dart),
+        // the default collapses to the resolved constant instead, exactly
+        // as a literal default would.
+        const themed =
+          token.mode && Object.keys(token.mode).some(mode => mode !== '.')
+        if (useGetter && themed && value.type === 'Color') {
+          value = { type: 'Color', value: convertColorValue(token.$value) }
+          useGetter = false
+        }
+
+        if (useGetter) {
           // Format TextStyle on multiple lines for better readability
           if (value.type === 'TextStyle' && value.value.includes(',')) {
             const formattedValue = value.value
@@ -1700,12 +1751,15 @@ function convertTokenValue(token, allTokens) {
               const shade = parts[3]
               return {
                 type: 'Color',
-                value: `Colors.${baseColorName}[${shade}]!`,
+                value: `Colors.${dartName(baseColorName)}[${shade}]!`,
               }
             }
             if (parts.length === 3) {
               const baseColorName = parts[2]
-              return { type: 'Color', value: `Colors.${baseColorName}` }
+              return {
+                type: 'Color',
+                value: `Colors.${dartName(baseColorName)}`,
+              }
             }
           }
 

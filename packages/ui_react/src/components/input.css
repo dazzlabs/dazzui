@@ -38,12 +38,7 @@
 .dz-select__control:focus {
   border-color: var(--tint-600);
   background-color: var(--color-surface);
-  box-shadow: 0 0 0 var(--focus-width)
-    color-mix(
-      in srgb,
-      var(--tint-600) calc(var(--focus-glow-alpha) * 100%),
-      transparent
-    );
+  box-shadow: 0 0 0 var(--focus-width) var(--focus-glow);
 }
 
 .dz-input[aria-invalid='true'],
