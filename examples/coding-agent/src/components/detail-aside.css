@@ -1,0 +1,75 @@
+/*
+ * The trailing column. It is narrow by token, so everything in it is a label
+ * over a value rather than a label beside one, and nothing here is wider than
+ * a badge.
+ */
+.ca-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.ca-panel__note {
+  color: var(--color-content-faint);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+  line-height: var(--caption-large-line-height);
+}
+
+.ca-stat {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+}
+
+.ca-stat__label {
+  color: var(--color-content-muted);
+  font-family: var(--label-quiet-font-family);
+  font-size: var(--label-quiet-font-size);
+  font-weight: var(--label-quiet-font-weight);
+}
+
+.ca-stat__value {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-content);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--base-font-code);
+  font-size: var(--caption-small-font-size);
+}
+
+.ca-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+}
+
+.ca-switch__label {
+  color: var(--color-content-secondary);
+  font-family: var(--label-quiet-font-family);
+  font-size: var(--label-quiet-font-size);
+  font-weight: var(--label-quiet-font-weight);
+}
+
+
+/* A detail column reads as a short page: a heading, a line of chips, and one
+   paragraph. Anything longer belongs in the pane, not in the aside. */
+.ca-detail__title {
+  margin: 0;
+  color: var(--color-content);
+  font-family: var(--label-strong-font-family);
+  font-size: var(--label-large-font-size);
+  font-weight: var(--label-strong-font-weight);
+  line-height: var(--label-large-line-height);
+}
+
+.ca-detail__body {
+  margin: 0;
+  color: var(--color-content-muted);
+  font-family: var(--body-small-font-family);
+  font-size: var(--body-small-font-size);
+  line-height: var(--body-small-line-height);
+}

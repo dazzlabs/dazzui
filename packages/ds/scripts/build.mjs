@@ -24,6 +24,11 @@ const TARGETS = [
     dir: path.join('..', 'ui_flutter', 'lib', 'src', 'generated'),
     files: ['flutter/colors.dart', 'flutter/theme_variables.dart'],
   },
+  {
+    package: 'DazzUI',
+    dir: path.join('..', 'ui_swiftui', 'Sources', 'DazzUI', 'Generated'),
+    files: ['swiftui/Colors.swift', 'swiftui/ThemeVariables.swift'],
+  },
 ]
 
 async function distribute() {

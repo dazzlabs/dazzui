@@ -1781,6 +1781,22 @@ function convertTokenValue(token, allTokens) {
         ),
       }
 
+    case 'duration':
+      return {
+        type: 'Duration',
+        value: `Duration(microseconds: ${Math.round(
+          convertDurationValue(token.$value) * 1000000
+        )})`,
+      }
+
+    case 'cubicBezier': {
+      const [x1, y1, x2, y2] = token.$value
+      return {
+        type: 'Cubic',
+        value: `Cubic(${x1}, ${y1}, ${x2}, ${y2})`,
+      }
+    }
+
     case 'number':
       // Check if token ID contains 'alpha' - if so, always use double
       const hasAlphaInName =
@@ -1948,6 +1964,29 @@ function srgbGamma(value) {
     return 12.92 * value
   }
   return 1.055 * Math.pow(value, 1 / 2.4) - 0.055
+}
+
+/**
+ * A duration in seconds, from a `{value, unit}` pair or a `150ms` string.
+ *
+ * Dart's `Duration` counts whole microseconds, so the caller scales this
+ * rather than handing `Duration` a fraction of a millisecond it would round
+ * away.
+ */
+function convertDurationValue(value) {
+  if (typeof value === 'number') return value / 1000
+  if (value && typeof value === 'object' && value.value !== undefined) {
+    return value.unit === 's' ? value.value : value.value / 1000
+  }
+  if (typeof value === 'string') {
+    const match = value.match(/^([\d.]+)(ms|s)$/)
+    if (match) {
+      return match[2] === 's'
+        ? parseFloat(match[1])
+        : parseFloat(match[1]) / 1000
+    }
+  }
+  return 0
 }
 
 /**

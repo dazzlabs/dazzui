@@ -1,0 +1,67 @@
+/*
+ * A tool call reads left to right as a sentence — what ran, against what, and
+ * how it went — so the target is the part allowed to truncate and everything
+ * either side of it holds its width.
+ */
+.ca-tool__name {
+  flex-shrink: 0;
+  color: var(--color-content);
+  font-family: var(--label-strong-font-family);
+  font-weight: var(--label-strong-font-weight);
+}
+
+.ca-tool__target {
+  /* The one part allowed to give: it takes the slack, and truncates into it. */
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-content-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--base-font-code);
+  font-size: var(--caption-small-font-size);
+}
+
+.ca-tool__meta {
+  flex-shrink: 0;
+  color: var(--color-content-faint);
+  font-family: var(--base-font-code);
+  font-size: var(--caption-small-font-size);
+}
+
+/* Whatever a command printed, set the way the terminal set it. */
+.ca-output {
+  margin: 0;
+  padding: var(--spacing-3);
+  overflow-x: auto;
+  color: var(--color-content-muted);
+  font-family: var(--base-font-code);
+  font-size: var(--caption-small-font-size);
+  line-height: var(--caption-large-line-height);
+}
+
+.ca-match {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  gap: var(--spacing-3);
+  padding-block: var(--spacing-2);
+  padding-inline: var(--spacing-3);
+  font-family: var(--base-font-code);
+  font-size: var(--caption-small-font-size);
+}
+
+.ca-match + .ca-match {
+  border-block-start: var(--stroke-hairline) solid var(--color-border);
+}
+
+.ca-match__where {
+  color: var(--color-content-faint);
+  white-space: nowrap;
+}
+
+.ca-match__text {
+  overflow: hidden;
+  color: var(--color-content-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

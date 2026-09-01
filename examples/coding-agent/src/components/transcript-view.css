@@ -1,0 +1,127 @@
+/*
+ * The conversation column.
+ *
+ * Everything the agent produces — its replies, its plan, its tool calls, its
+ * notices — hangs off one lane, so the mark only appears where the agent
+ * actually speaks and the rest lines up under it. That is what makes a run of
+ * eight tool calls read as one turn rather than eight.
+ */
+.ca-transcript {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: var(--spacing-4);
+  overflow-y: auto;
+  padding: var(--spacing-6);
+}
+
+.ca-lane {
+  display: grid;
+  grid-template-columns: var(--spacing-6) minmax(0, 1fr);
+  gap: var(--spacing-3);
+  align-items: start;
+}
+
+.ca-lane__mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-6);
+  height: var(--spacing-6);
+  border-radius: var(--radius-full);
+}
+
+/* The agent's mark is the tinted chip recipe, so it is the accent at a wash
+   rather than a filled dot competing with the buttons. */
+.ca-lane[data-role='agent'] .ca-lane__mark {
+  background-color: var(--control-color-tinted-surface-normal);
+  color: var(--control-color-tinted-content-normal);
+}
+
+.ca-lane[data-role='user'] .ca-lane__mark {
+  background-color: var(--color-surface-sunken);
+  color: var(--color-content-muted);
+  font-family: var(--label-strong-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--label-strong-font-weight);
+  line-height: 1;
+}
+
+/* Only a lane that actually speaks gets a mark. A tool call or a plan hangs
+   off the reply above it, so its mark column is left empty rather than drawn
+   as a chip with nothing in it — and this has to come after the two rules
+   above, which paint it and share its specificity. */
+.ca-lane .ca-lane__mark:empty {
+  background-color: transparent;
+}
+
+.ca-lane__body {
+  min-width: 0;
+}
+
+.ca-turn-text {
+  margin: 0;
+  color: var(--color-content);
+  white-space: pre-wrap;
+  font-family: var(--body-medium-font-family);
+  font-size: var(--body-medium-font-size);
+  line-height: var(--body-medium-line-height);
+}
+
+/* What the person said is boxed; what the agent said is not. One of the two
+   has to be the page's ordinary text, and it should be the longer one. */
+.ca-lane[data-role='user'] .ca-turn-text {
+  padding-block: var(--spacing-2-5);
+  padding-inline: var(--spacing-3-5);
+  background-color: var(--color-surface-muted);
+  border: var(--stroke-hairline) solid var(--color-border);
+  border-radius: var(--radius-large);
+}
+
+/* The reply is typed out, so it carries a caret while it is still arriving —
+   the one place in the window where something is still being written. */
+.ca-caret {
+  display: inline-block;
+  width: var(--spacing-0-5);
+  height: var(--body-medium-font-size);
+  margin-inline-start: var(--spacing-1);
+  translate: 0 var(--spacing-0-5);
+  background-color: var(--color-content-subtle);
+  animation: ca-blink 1s steps(2, start) infinite;
+}
+
+@keyframes ca-blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ca-caret {
+    animation: none;
+  }
+}
+
+/*
+ * What a session looks like before it is one. The suggestions are option
+ * cards rather than buttons because picking one is a choice among three, and
+ * the card is the shape this system gives that.
+ */
+.ca-empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  width: 100%;
+  /* The only child of a flex column, so this centres it in the pane. */
+  margin-block: auto;
+}
+
+.ca-empty__cards {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(calc(var(--spacing-20) * 2.4), 1fr)
+  );
+  gap: var(--spacing-3);
+}

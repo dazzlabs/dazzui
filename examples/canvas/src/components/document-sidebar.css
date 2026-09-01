@@ -1,0 +1,64 @@
+/*
+ * The document column. It is the design system's own `Sidebar` at its own
+ * token width, which is narrow on purpose — a row is one line, so what will
+ * not fit on it goes in the tooltip rather than on a second line.
+ */
+
+/* A nav action pins itself to the foot of the column by default. Here it
+   belongs under the pages it adds to, not under the layers as well. */
+.cv-sidebar .cv-sidebar__new {
+  margin-top: var(--spacing-1);
+}
+
+.cv-sidebar__empty {
+  margin: 0;
+  padding-block: var(--spacing-1);
+  padding-inline: var(--spacing-2-5);
+  color: var(--color-content-faint);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+}
+
+/* Layers ------------------------------------------------------------------
+ * The row and its two switches are siblings, laid over one another rather than
+ * nested: a nav item is a button, and a button inside a button is not a thing
+ * a browser will build.
+ */
+.cv-layer {
+  position: relative;
+}
+
+.cv-layer__switches {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: var(--spacing-1);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-px);
+  opacity: 0;
+  transition: opacity var(--motion-duration) var(--motion-easing);
+}
+
+/*
+ * They appear on hover, and stay out while the pointer is elsewhere — except
+ * on a row that is already hidden or locked, where the switch is the only
+ * thing saying so.
+ */
+.cv-layer:hover .cv-layer__switches,
+.cv-layer:focus-within .cv-layer__switches,
+.cv-layer[data-marked='true'] .cv-layer__switches {
+  opacity: 1;
+}
+
+/* The label makes room for the switches when they are showing, so a long name
+   is cut by them rather than running under them. */
+.cv-layer:hover .cv-truncate,
+.cv-layer:focus-within .cv-truncate,
+.cv-layer[data-marked='true'] .cv-truncate {
+  padding-inline-end: var(--spacing-10);
+}
+
+/* A hidden layer is still listed, and reads as switched off rather than gone. */
+.cv-layer .cv-truncate[data-dim='true'] {
+  opacity: 0.5;
+}

@@ -161,5 +161,4 @@ abstract final class Colors {
       950: Color(0xFF052F4A),
     },
   );
-
 }

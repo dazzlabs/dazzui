@@ -1,0 +1,97 @@
+/*
+ * The window is a row, not a column: the sidebar runs its whole height and the
+ * toolbar spans only the pane beside it.
+ *
+ * Nothing here draws a window. The corner, the shadow and the controls belong
+ * to the real one — `deno desktop` opens it with the titlebar hidden — and a
+ * browser tab has no chrome to imitate.
+ */
+.cv-window {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  background-color: var(--color-surface);
+}
+
+.cv-pane {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+/*
+ * Exactly the height of the sidebar's own header strip, and the same material,
+ * so the two read as one band across the top of the window with the sidebar's
+ * divider running down through it.
+ */
+.cv-toolbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: var(--spacing-1);
+  height: var(--frame-titlebar-size);
+  padding-inline: var(--spacing-3);
+  background-color: var(--color-surface-muted);
+  border-block-end: var(--stroke-hairline) solid var(--color-border);
+}
+
+/* The rule between the sidebar's switch and the history it is not part of. */
+.cv-toolbar .cv-toolbar__rule {
+  align-self: center;
+  height: var(--spacing-5);
+  margin-inline: var(--spacing-1);
+}
+
+/*
+ * With the titlebar hidden, the system's own controls float in the window's
+ * leading corner. While the sidebar is open they land in its header strip,
+ * which holds nothing else; with it closed they land here, and the toolbar has
+ * to start after them.
+ *
+ * Three 12px lights on 8px gaps, inset from the edge — a system metric with no
+ * token behind it, so it is derived from the two steps that come closest and
+ * stated once.
+ */
+[data-shell='desktop'] .cv-window[data-sidebar='false'] .cv-toolbar {
+  padding-inline-start: calc(var(--spacing-16) + var(--spacing-3));
+}
+
+/* Centred on the pane it names, not on whatever room the controls leave —
+   which is how a titlebar is drawn everywhere it is drawn at all. */
+.cv-toolbar__title {
+  position: absolute;
+  inset-inline-start: 50%;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  translate: -50% 0;
+  pointer-events: none;
+}
+
+.cv-toolbar__name {
+  color: var(--color-content);
+  font-family: var(--label-strong-font-family);
+  font-size: var(--label-medium-font-size);
+  font-weight: var(--label-strong-font-weight);
+}
+
+.cv-toolbar__gap {
+  flex: 1;
+}
+
+.cv-pane__body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* The narrow window gives up the centred title first: the sidebar already
+   names the document and the page, and the toolbar's controls do not. */
+@media (width < 64rem) {
+  .cv-toolbar__title {
+    display: none;
+  }
+}

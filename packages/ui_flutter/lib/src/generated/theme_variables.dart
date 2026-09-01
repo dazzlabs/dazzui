@@ -21,6 +21,7 @@ class ThemeVariables {
     this.colorSurfaceRaised = const Color(0xFFFFFFFF),
     this.colorContent = const Color(0xFF12142A),
     this.colorContentSecondary = const Color(0xFF3C405C),
+    this.colorContentNav = const Color(0xFF4A4F6B),
     this.colorContentMuted = const Color(0xFF565B78),
     this.colorContentSubtle = const Color(0xFF8C92AA),
     this.colorContentFaint = const Color(0xFFA2A7BD),
@@ -28,15 +29,65 @@ class ThemeVariables {
     this.colorBorderStrong = const Color(0x1A14162A),
     this.colorBorderMuted = const Color(0xFFCFD2DE),
     this.colorOnAccent = const Color(0xFFFFFFFF),
-    this.shadow2xs = const [BoxShadow(offset: Offset(0, 1), blurRadius: 2, spreadRadius: 0, color: Color(0x1A000000))],
-    this.shadowXs = const [BoxShadow(offset: Offset(0, 1), blurRadius: 3, spreadRadius: 0, color: Color(0x1F000000))],
-    this.shadowSm = const [BoxShadow(offset: Offset(0, 4), blurRadius: 12, spreadRadius: 0, color: Color(0x24000000))],
-    this.shadowMd = const [BoxShadow(offset: Offset(0, 8), blurRadius: 24, spreadRadius: 0, color: Color(0x33000000))],
-    this.shadowLg = const [BoxShadow(offset: Offset(0, 10), blurRadius: 30, spreadRadius: 0, color: Color(0x38000000))],
-    this.shadowXl = const [BoxShadow(offset: Offset(0, 12), blurRadius: 32, spreadRadius: 0, color: Color(0x3D000000))],
-    this.shadow2xl = const [BoxShadow(offset: Offset(0, 24), blurRadius: 56, spreadRadius: 0, color: Color(0x47000000))],
+    this.shadow2xs = const [
+      BoxShadow(
+        offset: Offset(0, 1),
+        blurRadius: 2,
+        spreadRadius: 0,
+        color: Color(0x1A000000),
+      ),
+    ],
+    this.shadowXs = const [
+      BoxShadow(
+        offset: Offset(0, 1),
+        blurRadius: 3,
+        spreadRadius: 0,
+        color: Color(0x1F000000),
+      ),
+    ],
+    this.shadowSm = const [
+      BoxShadow(
+        offset: Offset(0, 4),
+        blurRadius: 12,
+        spreadRadius: 0,
+        color: Color(0x24000000),
+      ),
+    ],
+    this.shadowMd = const [
+      BoxShadow(
+        offset: Offset(0, 8),
+        blurRadius: 24,
+        spreadRadius: 0,
+        color: Color(0x33000000),
+      ),
+    ],
+    this.shadowLg = const [
+      BoxShadow(
+        offset: Offset(0, 10),
+        blurRadius: 30,
+        spreadRadius: 0,
+        color: Color(0x38000000),
+      ),
+    ],
+    this.shadowXl = const [
+      BoxShadow(
+        offset: Offset(0, 12),
+        blurRadius: 32,
+        spreadRadius: 0,
+        color: Color(0x3D000000),
+      ),
+    ],
+    this.shadow2xl = const [
+      BoxShadow(
+        offset: Offset(0, 24),
+        blurRadius: 56,
+        spreadRadius: 0,
+        color: Color(0x47000000),
+      ),
+    ],
     this.focusWidth = 3,
     this.focusOffset = 0,
+    this.focusGlowAlpha = 0.14,
     this.focusRingShade = 600,
     this.focusRingAlpha = 0.45,
     this.frameWindowRadius = 18,
@@ -46,7 +97,8 @@ class ThemeVariables {
     this.frameRailWidth = 150,
     this.frameAsideWidth = 214,
     this.frameNavGap = 3,
-    this.motionEasing = const [0.4,0,0.2,1],
+    this.motionDuration = const Duration(microseconds: 150000),
+    this.motionEasing = const Cubic(0.4, 0, 0.2, 1),
     this.radiusNone = 0,
     this.radiusTiny = 7,
     this.radiusSmall = 8,
@@ -77,6 +129,8 @@ class ThemeVariables {
     this.spacing20 = 80,
     this.strokeHairline = 1,
     this.strokeControl = 1.5,
+    this.washSurface = 0.06,
+    this.washEdge = 0.2,
     this.controlColorRecessedBorder = const ColorDescriptor(
       normalColor: Colors.white,
       normalOpacity: 0.0,
@@ -177,6 +231,7 @@ class ThemeVariables {
   final Color colorSurfaceRaised;
   final Color colorContent;
   final Color colorContentSecondary;
+  final Color colorContentNav;
   final Color colorContentMuted;
   final Color colorContentSubtle;
   final Color colorContentFaint;
@@ -199,6 +254,7 @@ class ThemeVariables {
   // Focus
   final double focusWidth;
   final double focusOffset;
+  final double focusGlowAlpha;
   final int focusRingShade;
   final double focusRingAlpha;
 
@@ -212,8 +268,8 @@ class ThemeVariables {
   final double frameNavGap;
 
   // Motion
-  dynamic get motionDuration => {"value":150,"unit":"ms"};
-  final dynamic motionEasing;
+  final Duration motionDuration;
+  final Cubic motionEasing;
 
   // Radius
   final double radiusNone;
@@ -371,6 +427,10 @@ class ThemeVariables {
     height: 20 / 13,
     leadingDistribution: TextLeadingDistribution.even,
   );
+
+  // Wash
+  final double washSurface;
+  final double washEdge;
 
   // Control
   ColorDescriptor get controlColorNormalSurface => ColorDescriptor(
@@ -555,7 +615,6 @@ class ThemeVariables {
   double get toggleLargeThumb => spacing5;
 
   // #endregion
-
 }
 
 /// Global instance of ThemeVariables
@@ -576,6 +635,7 @@ const themeVariablesBrightLight = ThemeVariables(
   colorSurfaceRaised: Color(0xFFFFFFFF),
   colorContent: Color(0xFF111C2E),
   colorContentSecondary: Color(0xC7111C2E),
+  colorContentNav: Color(0xB3111C2E),
   colorContentMuted: Color(0xA8111C2E),
   colorContentSubtle: Color(0x73111C2E),
   colorContentFaint: Color(0x61111C2E),
@@ -583,13 +643,62 @@ const themeVariablesBrightLight = ThemeVariables(
   colorBorderStrong: Color(0x1F111C2E),
   colorBorderMuted: Color(0x40111C2E),
   colorOnAccent: Color(0xFFD6FF3F),
-  shadow2xs: [BoxShadow(offset: Offset(0, 1), blurRadius: 2, spreadRadius: 0, color: Color(0x1F111C2E))],
-  shadowXs: [BoxShadow(offset: Offset(0, 1), blurRadius: 3, spreadRadius: 0, color: Color(0x24111C2E))],
-  shadowSm: [BoxShadow(offset: Offset(0, 4), blurRadius: 12, spreadRadius: 0, color: Color(0x24111C2E))],
-  shadowMd: [BoxShadow(offset: Offset(0, 8), blurRadius: 24, spreadRadius: 0, color: Color(0x2E111C2E))],
-  shadowLg: [BoxShadow(offset: Offset(0, 10), blurRadius: 30, spreadRadius: 0, color: Color(0x2E111C2E))],
-  shadowXl: [BoxShadow(offset: Offset(0, 12), blurRadius: 32, spreadRadius: 0, color: Color(0x33111C2E))],
-  shadow2xl: [BoxShadow(offset: Offset(0, 24), blurRadius: 56, spreadRadius: 0, color: Color(0x3D111C2E))],
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1F111C2E),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x24111C2E),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24111C2E),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x2E111C2E),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x2E111C2E),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x33111C2E),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x3D111C2E),
+    ),
+  ],
   frameWindowRadius: 16,
   framePopoverRadius: 14,
   radiusTiny: 7,
@@ -616,6 +725,7 @@ const themeVariablesBrightDark = ThemeVariables(
   colorSurfaceRaised: Color(0xFF2A3644),
   colorContent: Color(0xFFF2F4EF),
   colorContentSecondary: Color(0xC7F2F4EF),
+  colorContentNav: Color(0xB3F2F4EF),
   colorContentMuted: Color(0xA8F2F4EF),
   colorContentSubtle: Color(0x73F2F4EF),
   colorContentFaint: Color(0x61F2F4EF),
@@ -623,13 +733,62 @@ const themeVariablesBrightDark = ThemeVariables(
   colorBorderStrong: Color(0x24F2F4EF),
   colorBorderMuted: Color(0xFF35414F),
   colorOnAccent: Color(0xFF111C2E),
-  shadow2xs: [BoxShadow(offset: Offset(0, 1), blurRadius: 2, spreadRadius: 0, color: Color(0x66000000))],
-  shadowXs: [BoxShadow(offset: Offset(0, 1), blurRadius: 3, spreadRadius: 0, color: Color(0x73000000))],
-  shadowSm: [BoxShadow(offset: Offset(0, 4), blurRadius: 14, spreadRadius: 0, color: Color(0x73000000))],
-  shadowMd: [BoxShadow(offset: Offset(0, 10), blurRadius: 28, spreadRadius: 0, color: Color(0x8C000000))],
-  shadowLg: [BoxShadow(offset: Offset(0, 14), blurRadius: 36, spreadRadius: 0, color: Color(0x94000000))],
-  shadowXl: [BoxShadow(offset: Offset(0, 16), blurRadius: 40, spreadRadius: 0, color: Color(0x99000000))],
-  shadow2xl: [BoxShadow(offset: Offset(0, 24), blurRadius: 64, spreadRadius: 0, color: Color(0xB3000000))],
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x66000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x73000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 14,
+      spreadRadius: 0,
+      color: Color(0x73000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 28,
+      spreadRadius: 0,
+      color: Color(0x8C000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 14),
+      blurRadius: 36,
+      spreadRadius: 0,
+      color: Color(0x94000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 16),
+      blurRadius: 40,
+      spreadRadius: 0,
+      color: Color(0x99000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 64,
+      spreadRadius: 0,
+      color: Color(0xB3000000),
+    ),
+  ],
   focusRingAlpha: 0.55,
   frameWindowRadius: 16,
   framePopoverRadius: 14,
@@ -666,19 +825,69 @@ const themeVariablesStudioDark = ThemeVariables(
   colorSurfaceRaised: Color(0xFF3A3F4D),
   colorContent: Color(0xFFF2F3FA),
   colorContentSecondary: Color(0xFFC3C8DC),
+  colorContentNav: Color(0xFF9AA1BB),
   colorContentMuted: Color(0xFF9AA1BB),
   colorContentSubtle: Color(0xFF8B93B0),
   colorContentFaint: Color(0xFF6A7090),
   colorBorder: Color(0x0FFFFFFF),
   colorBorderStrong: Color(0x1AFFFFFF),
   colorBorderMuted: Color(0xFF363C4D),
-  shadow2xs: [BoxShadow(offset: Offset(0, 1), blurRadius: 2, spreadRadius: 0, color: Color(0x66000000))],
-  shadowXs: [BoxShadow(offset: Offset(0, 1), blurRadius: 3, spreadRadius: 0, color: Color(0x73000000))],
-  shadowSm: [BoxShadow(offset: Offset(0, 4), blurRadius: 14, spreadRadius: 0, color: Color(0x73000000))],
-  shadowMd: [BoxShadow(offset: Offset(0, 10), blurRadius: 28, spreadRadius: 0, color: Color(0x8C000000))],
-  shadowLg: [BoxShadow(offset: Offset(0, 14), blurRadius: 36, spreadRadius: 0, color: Color(0x94000000))],
-  shadowXl: [BoxShadow(offset: Offset(0, 16), blurRadius: 40, spreadRadius: 0, color: Color(0x99000000))],
-  shadow2xl: [BoxShadow(offset: Offset(0, 24), blurRadius: 64, spreadRadius: 0, color: Color(0xB3000000))],
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x66000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x73000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 14,
+      spreadRadius: 0,
+      color: Color(0x73000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 28,
+      spreadRadius: 0,
+      color: Color(0x8C000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 14),
+      blurRadius: 36,
+      spreadRadius: 0,
+      color: Color(0x94000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 16),
+      blurRadius: 40,
+      spreadRadius: 0,
+      color: Color(0x99000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 64,
+      spreadRadius: 0,
+      color: Color(0xB3000000),
+    ),
+  ],
   focusRingAlpha: 0.5,
   progressGradientFrom: Color(0xFF7C5CFF),
   progressGradientTo: Color(0xFFB9A8FF),

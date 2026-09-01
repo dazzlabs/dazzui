@@ -1,0 +1,52 @@
+/*
+ * The strip under the canvas. It sits on the muted surface the toolbar does,
+ * so the drawing is paper between two quieter bands rather than three greys
+ * stacked down the window.
+ */
+.cv-viewbar {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: var(--spacing-1);
+  height: var(--spacing-10);
+  padding-inline: var(--spacing-3);
+  background-color: var(--color-surface-muted);
+  border-block-start: var(--stroke-hairline) solid var(--color-border);
+}
+
+.cv-viewbar .cv-viewbar__rule {
+  align-self: center;
+  height: var(--spacing-4);
+  margin-inline: var(--spacing-1);
+}
+
+/*
+ * A menu drops from its trigger, which in a strip along the foot of the window
+ * drops it off the bottom edge. It flips up here rather than in the library:
+ * one class of the app's own, one selector deeper than the component's, which
+ * is the extension point `cx()` documents.
+ */
+.cv-viewbar__menu .dz-menu__panel {
+  top: auto;
+  bottom: 100%;
+  margin-top: 0;
+  margin-bottom: var(--spacing-1);
+}
+
+/* The readout is a control, so it keeps a control's height — but it is also a
+   number that changes under the pointer, and a width that changes with it
+   would shuffle everything to its right. */
+.cv-viewbar .cv-viewbar__zoom {
+  min-width: var(--spacing-12);
+  font-family: var(--base-font-code);
+}
+
+.cv-viewbar__gap {
+  flex: 1;
+}
+
+.cv-viewbar__count {
+  color: var(--color-content-faint);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+}

@@ -2,6 +2,7 @@ import { defineConfig } from '@terrazzo/cli'
 import css from '@terrazzo/plugin-css'
 import controlPlugin from './plugins/control.mjs'
 import flutterPlugin from './plugins/flutter.mjs'
+import swiftUIPlugin from './plugins/swiftui.mjs'
 
 /**
  * The four themes, as three modes over one default.
@@ -86,6 +87,7 @@ export default defineConfig({
     }),
     controlPlugin({ modeSelectors }),
     flutterPlugin({ modeSelectors }),
+    swiftUIPlugin({ modeSelectors }),
   ],
   outDir: './dist/',
   lint: {

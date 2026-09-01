@@ -23,9 +23,32 @@ The DazzUI design system, as a pnpm workspace:
   The ds vocabulary is the API: the color axis is `tint` (`WidgetTint`,
   `ButtonTint.neutral`), never dazzui-flutter's `kind`/`secondary`. `example/` holds
   the playground app (`flutter run` from that directory, macOS and web).
+- `packages/cli` (`@dazzlabs/dazzui-cli`) — the `dzui` command, which copies
+  `ui_react` component source into a consumer's repository the way shadcn/ui
+  does, and can pull upstream changes back in with a three-way merge. Its
+  registry is derived from the `ui_react` sources by `pnpm registry` — never
+  hand-maintained — and is staging like `ds`'s dist/: gitignored, packed into
+  the published tarball by `prepack`.
 - `apps/storybook` (`@dazzlabs/dazzui-storybook`) — a Storybook gallery that
   documents both: `Tokens/*` for the token graph, `Components/*` for the
   components.
+- `examples/coding-agent` (`@dazzlabs/dazzui-example-coding-agent`) — a coding
+  agent's desktop interface, built entirely out of `ui_react`. It is where the
+  system is *used* rather than documented: a gallery shows every component on
+  its own, and only an app has to make them agree with each other. It consumes
+  the package the way any consumer would — the two published stylesheets and
+  the components — and holds no literal values of its own. It runs in a
+  browser tab and, through [Deno Desktop](https://docs.deno.com/runtime/desktop/),
+  as a native window; `deno` is a devDependency of the package, so there is
+  nothing to install for it.
+- `examples/canvas` (`@dazzlabs/dazzui-example-canvas`) — a design canvas, built
+  the same way and asking the design system a different question. The coding
+  agent is a reading app; this one has a *drawing* in the middle of it, which
+  is the one region of a window whose colours are usually the user's rather
+  than the designer's. Here they are not: a shape carries a `tint` and a
+  `variant` exactly as a `Badge` does, and the token build resolves the pair,
+  so the drawing follows the theme menu into Bright and into the dark. It runs
+  on its own port and packages into its own window.
 
 The split is the point: anything a platform package needs but cannot express
 belongs in `packages/ds`, so the platforms stay implementations of one design
@@ -54,7 +77,27 @@ pnpm components        # build packages/ui_react into its dist/
 ```
 
 ```bash
+pnpm registry          # build packages/cli's registry from ui_react's source
+```
+
+```bash
 pnpm storybook         # build both, then serve Storybook on :6006
+```
+
+```bash
+pnpm coding-agent      # build both, then serve the example on :5180
+```
+
+```bash
+pnpm coding-agent:desktop  # build the example, then open it as a native window
+```
+
+```bash
+pnpm canvas            # build both, then serve the canvas example on :5181
+```
+
+```bash
+pnpm canvas:desktop    # build the canvas, then open it as a native window
 ```
 
 ```bash
@@ -113,6 +156,39 @@ why `pnpm packages` runs both and the storybook scripts call it.
 
 Never hand-edit `src/generated/`. A value a component needs belongs in
 `packages/ds`, and anything written there is overwritten on the next build.
+
+## CLI (`dzui`)
+
+`packages/cli` distributes `ui_react` as source rather than as a dependency:
+`dzui init` sets up a consumer project, `dzui add <name>` copies a component
+in (dependency closure included), `dzui status`/`update` reconcile with
+upstream, `dzui remove` takes one out. The pieces:
+
+- **The registry is derived, not written.** `scripts/build-registry.mjs`
+  scans `ui_react/src`, parses each component's imports for its dependency
+  edges, and stages `registry/` — item metadata, file hashes, and the file
+  contents themselves. Adding a component to `ui_react` needs no CLI change.
+- **Three item kinds, three update policies.** `foundation` (the two
+  generated stylesheets plus `base.css`, joined by a CLI-authored
+  `index.css`) is vendored: overwritten on update, and repaired if
+  hand-edited — the consumer-side analogue of `src/generated/`. `lib`
+  (`cx`, `tint`) and every component are the consumer's to edit, so updates
+  three-way merge instead.
+- **Copies are rewritten once on the way out**: a `import './<name>.css'`
+  side-effect import is injected (the package bundles CSS through
+  `styles/components.css`; the copies carry their own sheet so `add` and
+  `remove` never edit consumer code), and `../lib/` imports are repointed at
+  the consumer's configured lib path.
+- **`update` is a real merge, not shadcn's look-only diff.** `add` snapshots
+  each file as written into `.dzui/base/` and hashes it into
+  `dzui.lock.json`. `update` compares local vs lock (modified?) and planned
+  vs lock (upstream changed?): clean files are overwritten, edited ones go
+  through `git merge-file` against the pristine base, conflicts are left as
+  standard markers. Both the lockfile and `.dzui/` are meant to be
+  committed in the consumer repo — without them there is no merge base.
+- The CLI is plain Node with zero dependencies, and `registry/` is the only
+  build product. `flutter` distribution is a planned second platform behind
+  the same registry model.
 
 ## Token conventions
 
@@ -316,6 +392,45 @@ so adding a theme reaches Dart without the plugin being touched.
   `componentTokens` in `src/lib/tokens.ts` before hardcoding token names.
 - Shared presentation lives in `src/components/gallery.tsx`. The gallery styles
   itself with DazzUI tokens; keep it that way.
+
+## Example conventions
+
+`examples/*` are apps, not packages: private, never published, and each one
+built and served on its own port. An example is added to `pnpm-workspace.yaml`
+by the `examples/*` glob and given a root script beside the Storybook's.
+
+The rules an example does keep are the ones that make it worth having:
+
+- **Not a literal in the stylesheets.** Every colour, radius, gap, face and
+  height is a token read from `@dazzlabs/dazzui-react/style.css`. An example
+  that reached for a hex would be proving the opposite of its point. A layout
+  value with no token behind it — a breakpoint, a preview's maximum height — is
+  derived from one (`calc(var(--spacing-20) * 3)`) or stated once as a named
+  constant with the reason beside it.
+- **Interactive colour comes off the recipes.** A part that is tinted carries
+  `data-tint` and reads `--control-color-<variant>-<part>-<state>`, exactly as a
+  component in `ui_react` does. Writing a ramp step into an example's CSS is
+  the same mistake there as it is in the library, and the theme menu is what
+  makes it visible.
+- **The same shape as the library.** A component that owns styles is a
+  `.tsx`/`.css` pair, and the sheet is only shipped once it is named in the
+  registry (`src/styles/app.css`); parts that are one shape wearing different
+  data share a sheet rather than duplicating it (`views.css` dresses both the
+  issue and pull panes). Variants are `data-*` attributes, and the app takes a
+  class prefix of its own — `ca-` for this one — so nothing collides with
+  `ff-`.
+- **Override by source order, not by force.** Where an example has to reshape a
+  library component, it does it with a class of its own at one selector deeper
+  (`.ca-composer .ca-composer__input`), which is the extension point `cx()`
+  documents. It never edits `ui_react`, and it never reaches for `!important`.
+- **Fixtures name real things.** The scripted data points at paths, registries
+  and commands this workspace actually has. Invented paths are the first thing
+  that reads as fake.
+- **An example draws no window.** The corner, the shadow and the controls
+  belong to the real one — `deno desktop` opens it with the titlebar hidden —
+  and a browser tab has no chrome to imitate. Where the two genuinely differ,
+  the server marks the document (`data-shell="desktop"`) and the stylesheet
+  reads the attribute; a second build of the app would be the wrong answer.
 
 ## Code style
 

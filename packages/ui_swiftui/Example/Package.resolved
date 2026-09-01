@@ -1,0 +1,13 @@
+{
+  "pins" : [
+    {
+      "identity" : "fluentui-system-icons",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/microsoft/fluentui-system-icons.git",
+      "state" : {
+        "revision" : "21d5d02f724be2aaf586564775fff73a18a76eb6"
+      }
+    }
+  ],
+  "version" : 2
+}

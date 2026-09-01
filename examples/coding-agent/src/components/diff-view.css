@@ -1,0 +1,51 @@
+/*
+ * The diff is set in the code face at the caption size — small enough that a
+ * 30-line hunk fits in a transcript, and monospaced so the gutter columns line
+ * up without being given widths of their own.
+ */
+.ca-diff {
+  overflow-x: auto;
+  font-family: var(--base-font-code);
+  font-size: var(--caption-small-font-size);
+  line-height: var(--caption-large-line-height);
+}
+
+.ca-diff__line {
+  display: grid;
+  grid-template-columns: var(--spacing-8) var(--spacing-8) var(--spacing-4) 1fr;
+  white-space: pre;
+}
+
+/* Line numbers are furniture: quiet, and never picked up by a selection that
+   is after the code. */
+.ca-diff__gutter {
+  padding-inline-end: var(--spacing-2);
+  color: var(--color-content-faint);
+  text-align: end;
+  user-select: none;
+}
+
+.ca-diff__sign {
+  text-align: center;
+  user-select: none;
+}
+
+.ca-diff__text {
+  padding-inline-end: var(--spacing-3);
+}
+
+/* The wash and the marker both come off the tint bound on the line, so the
+   two hues are one decision made in the token graph rather than two here. */
+.ca-diff__line[data-tone='added'],
+.ca-diff__line[data-tone='removed'] {
+  background-color: var(--control-color-tinted-surface-normal);
+}
+
+.ca-diff__line[data-tone='added'] .ca-diff__sign,
+.ca-diff__line[data-tone='removed'] .ca-diff__sign {
+  color: var(--control-color-tinted-content-normal);
+}
+
+.ca-diff__line[data-tone='removed'] .ca-diff__text {
+  color: var(--color-content-muted);
+}

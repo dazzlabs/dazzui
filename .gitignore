@@ -9,6 +9,7 @@ lerna-debug.log*
 
 node_modules
 dist
+dist-desktop
 dist-ssr
 *.local
 
@@ -25,3 +26,7 @@ dist-ssr
 
 # Storybook
 storybook.log
+
+# Swift
+.build
+.swiftpm

@@ -1,0 +1,23 @@
+.ca-permission__detail {
+  margin: 0;
+  color: var(--color-content-muted);
+  font-family: var(--body-small-font-family);
+  font-size: var(--body-small-font-size);
+  line-height: var(--body-small-line-height);
+}
+
+/* The preview is a window onto the hunk, not the hunk itself: it scrolls in
+   both directions rather than growing the sheet past the screen. */
+.ca-permission__preview {
+  /* Three of the tallest step: enough for a dozen lines, short enough that
+     the buttons never leave the screen. */
+  max-height: calc(var(--spacing-20) * 3);
+  overflow: auto;
+  padding-block: var(--spacing-2);
+  background-color: var(--color-surface-muted);
+  border: var(--stroke-hairline) solid var(--color-border);
+  /* The container corner, not the control corner. A theme is free to make
+     `radius.medium` a pill — Bright does — and a hunk drawn in a lozenge is
+     not a hunk. `radius.large` is what the cards and sheets take. */
+  border-radius: var(--radius-large);
+}
