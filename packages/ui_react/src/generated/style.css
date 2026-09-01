@@ -302,7 +302,6 @@
   --control-medium-padding-inline: var(--spacing-4);
   --control-medium-radius: var(--radius-small);
   --control-medium-size: var(--base-control-height-medium);
-  --control-pressed-alpha: 0.9;
   --control-small-content-font-family: var(--label-medium-font-family);
   --control-small-content-font-size: var(--label-medium-font-size);
   --control-small-content-font-weight: var(--label-medium-font-weight);
@@ -321,14 +320,9 @@
   --control-tiny-padding-inline: var(--spacing-2-5);
   --control-tiny-radius: var(--radius-small);
   --control-tiny-size: var(--base-control-height-tiny);
-  --dialog-scrim-alpha: 0.25;
   --dialog-scrim-color: var(--color-content);
   --dialog-width: 27.5rem;
-  --focus-glow-alpha: 0.14;
-  --focus-glow-shade: 600;
   --focus-offset: 0;
-  --focus-ring-alpha: 0.45;
-  --focus-ring-shade: 600;
   --focus-width: 3px;
   --frame-aside-width: 13.375rem;
   --frame-nav-gap: 0.1875rem;
@@ -547,7 +541,6 @@
   --color-warning-900: var(--base-color-amber-dark-900);
   --color-warning-950: var(--base-color-amber-dark-950);
   --dialog-scrim-color: var(--color-content);
-  --focus-ring-alpha: 0.5;
   --progress-gradient-from: var(--base-color-brand-500);
   --progress-gradient-to: var(--base-color-brand-300);
   --shadow-2xl: 0 24px 64px 0 #000000b3;
@@ -590,7 +583,6 @@
   --color-surface-subtle: #101923;
   --color-surface-sunken: #1c2734;
   --dialog-scrim-color: var(--color-content);
-  --focus-ring-alpha: 0.55;
   --progress-gradient-from: var(--base-color-acid-500);
   --progress-gradient-to: var(--base-color-acid-500);
   color-scheme: dark;

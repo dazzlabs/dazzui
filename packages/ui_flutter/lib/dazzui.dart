@@ -45,7 +45,6 @@ export 'src/widgets/search_field.dart';
 export 'src/widgets/section_label.dart';
 export 'src/widgets/segmented_control.dart';
 export 'src/widgets/sidebar.dart';
-export 'src/widgets/sidebar_theme.dart';
 export 'src/widgets/step_list.dart';
 export 'src/widgets/switch.dart';
 export 'src/widgets/text_field.dart';

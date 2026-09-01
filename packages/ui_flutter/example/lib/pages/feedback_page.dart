@@ -13,7 +13,38 @@ class FeedbackPage extends StatefulWidget {
 }
 
 class _FeedbackPageState extends State<FeedbackPage> {
-  bool _dialog = false;
+  Future<void> _confirm(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      builder: (context) => Dialog(
+        tone: DialogTone.danger,
+        children: [
+          const DialogHeader(
+            title: 'Discard these changes?',
+            subtitle:
+                'The three files you edited will go back to their '
+                'last saved state.',
+          ),
+          const DialogBody(children: [Text('This cannot be undone.')]),
+          DialogFooter(
+            children: [
+              const Spacer(),
+              Button(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Keep editing'),
+              ),
+              Button(
+                variant: ButtonVariant.filled,
+                tint: ButtonTint.danger,
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Discard'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,75 +172,132 @@ class _FeedbackPageState extends State<FeedbackPage> {
         ),
         Specimen(
           'Menu',
-          note: 'a row washes neutral — the accent is what selection is',
-          child: MenuPanel(
-            children: [
+          note: 'opens on the trigger; Escape or an outside press closes it',
+          child: Menu(
+            trigger: (context, state) => Button(
+              variant: state.open
+                  ? ButtonVariant.tinted
+                  : ButtonVariant.recessed,
+              onPressed: state.toggle,
+              shortcut: const Text('▾'),
+              child: const Text('Actions'),
+            ),
+            items: [
               MenuItem(
                 label: 'Rename',
                 icon: FluentIcons.rename_16_regular,
                 shortcut: '⌘R',
-                onPressed: () {},
+                onSelect: () {},
               ),
               MenuItem(
                 label: 'Duplicate',
                 icon: FluentIcons.square_multiple_16_regular,
-                onPressed: () {},
+                onSelect: () {},
               ),
               MenuItem(
                 label: 'Show hidden files',
                 checked: true,
-                onPressed: () {},
+                onSelect: () {},
               ),
               const MenuItem(
                 label: 'Delete',
                 icon: FluentIcons.delete_16_regular,
-                onPressed: null,
+                enabled: false,
               ),
             ],
           ),
         ),
         Specimen(
           'Dialog',
-          note: 'the scrim is the content colour at its own alpha',
+          note: 'the scrim covers the window, not this column',
           child: Button(
             variant: ButtonVariant.filled,
-            onPressed: () => setState(() => _dialog = true),
-            child: const Text('Show a dialog'),
+            onPressed: () => _confirm(context),
+            child: const Text('Discard changes…'),
           ),
         ),
-        if (_dialog)
-          Specimen(
-            'The sheet',
-            child: Dialog(
-              tone: DialogTone.danger,
-              children: [
-                const DialogHeader(
-                  title: 'Discard these changes?',
-                  subtitle:
-                      'The three files you edited will go back to '
-                      'their last saved state.',
-                ),
-                const DialogBody(
-                  children: [Text('This cannot be undone.')],
-                ),
-                DialogFooter(
-                  children: [
-                    const Spacer(),
-                    Button(
-                      onPressed: () => setState(() => _dialog = false),
-                      child: const Text('Keep editing'),
-                    ),
-                    Button(
-                      variant: ButtonVariant.filled,
-                      tint: ButtonTint.danger,
-                      onPressed: () => setState(() => _dialog = false),
-                      child: const Text('Discard'),
-                    ),
-                  ],
+        Specimen(
+          'Empty state',
+          child: Card(
+            variant: CardVariant.sunken,
+            child: EmptyState(
+              title: 'No components match this filter',
+              actions: [
+                Button(
+                  variant: ButtonVariant.tinted,
+                  onPressed: () {},
+                  child: const Text('Clear the filter'),
                 ),
               ],
             ),
           ),
+        ),
+        Specimen(
+          'Toasts',
+          note: 'one line, no wrapping — a second sentence is a banner',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            spacing: vars.spacing2,
+            children: [
+              Toast(
+                tint: ToastTint.success,
+                icon: FluentIcons.checkmark_circle_16_regular,
+                message: 'Tokens rebuilt — three packages refreshed.',
+                onDismiss: () {},
+              ),
+              Toast(
+                tint: ToastTint.danger,
+                icon: FluentIcons.dismiss_circle_16_regular,
+                message: 'The build failed.',
+                action: Button(
+                  size: WidgetSize.tiny,
+                  variant: ButtonVariant.plain,
+                  onPressed: () {},
+                  child: const Text('Retry'),
+                ),
+                onDismiss: () {},
+              ),
+            ],
+          ),
+        ),
+        Specimen(
+          'Menu',
+          note: 'opens on the trigger; Escape or an outside press closes it',
+          child: Menu(
+            trigger: (context, state) => Button(
+              variant: state.open
+                  ? ButtonVariant.tinted
+                  : ButtonVariant.recessed,
+              onPressed: state.toggle,
+              shortcut: const Text('▾'),
+              child: const Text('Actions'),
+            ),
+            items: [
+              MenuItem(
+                label: 'Rename',
+                icon: FluentIcons.rename_16_regular,
+                shortcut: '⌘R',
+                onSelect: () {},
+              ),
+              MenuItem(
+                label: 'Duplicate',
+                icon: FluentIcons.square_multiple_16_regular,
+                onSelect: () {},
+              ),
+              MenuItem(
+                label: 'Show hidden files',
+                checked: true,
+                onSelect: () {},
+              ),
+              const MenuItem(
+                label: 'Delete',
+                icon: FluentIcons.delete_16_regular,
+                enabled: false,
+              ),
+            ],
+          ),
+        ),
         SizedBox(height: vars.spacing8),
       ],
     );

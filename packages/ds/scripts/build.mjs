@@ -37,6 +37,26 @@ const TARGETS = [
   },
 ]
 
+/**
+ * The declarations the CSS plugin re-emits despite being excluded.
+ *
+ * `exclude` is honoured in the `:root` block but not in the theme blocks,
+ * where anything aliasing a themed token is written out again — so every
+ * excluded recipe leaf leaks back in there. Nothing reads them: the control
+ * plugin resolves each one into a finished value beside them, and a raw
+ * shade or alpha in the contract is a lever that does nothing.
+ */
+const LEAKED =
+  /^\s*--(?:control-color-[a-z0-9-]+|focus-(?:ring|glow)-(?:shade|alpha)|control-pressed-alpha|dialog-scrim-alpha):.*\n/gm
+
+/** Strip them, and rewrite the staged copy so the gallery reads what ships. */
+async function stripLeaks(source) {
+  const css = await fs.readFile(source, 'utf8')
+  const cleaned = css.replace(LEAKED, '')
+  if (cleaned !== css) await fs.writeFile(source, cleaned)
+  return cleaned
+}
+
 async function distribute() {
   for (const target of TARGETS) {
     const targetDir = path.join(process.cwd(), target.dir)
@@ -46,17 +66,8 @@ async function distribute() {
       const source = path.join(process.cwd(), 'dist', file)
       const dest = path.join(targetDir, path.basename(file))
 
-      // The CSS plugin's `exclude` is honoured in the `:root` block but not
-      // in the theme blocks, where anything aliasing a themed token is
-      // re-emitted — so the excluded `control.color` leaves leak back in
-      // there. Nothing reads them (the control plugin resolves recipes to
-      // the roles directly), so they are dropped on the way through.
       if (file === 'style.css') {
-        const css = await fs.readFile(source, 'utf8')
-        await fs.writeFile(
-          dest,
-          css.replace(/^\s*--control-color-[a-z0-9-]+:.*\n/gm, '')
-        )
+        await fs.writeFile(dest, await stripLeaks(source))
         continue
       }
 

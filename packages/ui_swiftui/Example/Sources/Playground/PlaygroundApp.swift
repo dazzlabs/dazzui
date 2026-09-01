@@ -15,9 +15,10 @@ struct PlaygroundApp: App {
   }
 }
 
-/// The build produces a plain executable rather than an app bundle, which
-/// launches without a dock presence and behind whatever window has focus.
-/// Asking for the regular activation policy is what makes it come forward.
+/// Only matters when the playground is built as a bare SwiftPM executable
+/// rather than through `Playground.xcodeproj`: an unbundled binary launches
+/// with no dock presence and behind whatever window has focus. In the app
+/// bundle this is already the policy, so both calls are no-ops.
 final class AppDelegate: NSObject, NSApplicationDelegate {
   func applicationDidFinishLaunching(_ notification: Notification) {
     NSApp.setActivationPolicy(.regular)

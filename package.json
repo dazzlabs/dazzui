@@ -8,7 +8,6 @@
     "packages": "pnpm run tokens && pnpm run components",
     "tokens": "pnpm --filter @dazzlabs/dazzui-ds build",
     "components": "pnpm --filter @dazzlabs/dazzui-react build",
-    "registry": "pnpm --filter @dazzlabs/dazzui-cli build",
     "typecheck": "pnpm -r typecheck",
     "storybook": "pnpm --filter @dazzlabs/dazzui-storybook dev",
     "storybook:build": "pnpm --filter @dazzlabs/dazzui-storybook build",

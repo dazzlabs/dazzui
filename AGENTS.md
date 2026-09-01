@@ -32,12 +32,6 @@ The DazzUI design system, as a pnpm workspace:
   be a `static` a component borrows rather than a value it rebuilds.
   `example/` holds the playground (`cargo run -p dazzui_playground`), a
   workspace member so the two share one `target/`.
-- `packages/cli` (`@dazzlabs/dazzui-cli`) — the `dzui` command, which copies
-  `ui_react` component source into a consumer's repository the way shadcn/ui
-  does, and can pull upstream changes back in with a three-way merge. Its
-  registry is derived from the `ui_react` sources by `pnpm registry` — never
-  hand-maintained — and is staging like `ds`'s dist/: gitignored, packed into
-  the published tarball by `prepack`.
 - `apps/storybook` (`@dazzlabs/dazzui-storybook`) — a Storybook gallery that
   documents both: `Tokens/*` for the token graph, `Components/*` for the
   components.
@@ -85,10 +79,6 @@ pnpm tokens            # build packages/ds into its dist/
 
 ```bash
 pnpm components        # build packages/ui_react into its dist/
-```
-
-```bash
-pnpm registry          # build packages/cli's registry from ui_react's source
 ```
 
 ```bash
@@ -193,39 +183,6 @@ why `pnpm packages` runs both and the storybook scripts call it.
 
 Never hand-edit `src/generated/`. A value a component needs belongs in
 `packages/ds`, and anything written there is overwritten on the next build.
-
-## CLI (`dzui`)
-
-`packages/cli` distributes `ui_react` as source rather than as a dependency:
-`dzui init` sets up a consumer project, `dzui add <name>` copies a component
-in (dependency closure included), `dzui status`/`update` reconcile with
-upstream, `dzui remove` takes one out. The pieces:
-
-- **The registry is derived, not written.** `scripts/build-registry.mjs`
-  scans `ui_react/src`, parses each component's imports for its dependency
-  edges, and stages `registry/` — item metadata, file hashes, and the file
-  contents themselves. Adding a component to `ui_react` needs no CLI change.
-- **Three item kinds, three update policies.** `foundation` (the two
-  generated stylesheets plus `base.css`, joined by a CLI-authored
-  `index.css`) is vendored: overwritten on update, and repaired if
-  hand-edited — the consumer-side analogue of `src/generated/`. `lib`
-  (`cx`, `tint`) and every component are the consumer's to edit, so updates
-  three-way merge instead.
-- **Copies are rewritten once on the way out**: a `import './<name>.css'`
-  side-effect import is injected (the package bundles CSS through
-  `styles/components.css`; the copies carry their own sheet so `add` and
-  `remove` never edit consumer code), and `../lib/` imports are repointed at
-  the consumer's configured lib path.
-- **`update` is a real merge, not shadcn's look-only diff.** `add` snapshots
-  each file as written into `.dzui/base/` and hashes it into
-  `dzui.lock.json`. `update` compares local vs lock (modified?) and planned
-  vs lock (upstream changed?): clean files are overwritten, edited ones go
-  through `git merge-file` against the pristine base, conflicts are left as
-  standard markers. Both the lockfile and `.dzui/` are meant to be
-  committed in the consumer repo — without them there is no merge base.
-- The CLI is plain Node with zero dependencies, and `registry/` is the only
-  build product. `flutter` distribution is a planned second platform behind
-  the same registry model.
 
 ## Token conventions
 

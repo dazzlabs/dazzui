@@ -1,494 +1,142 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' show Tooltip;
 import 'package:flutter/widgets.dart';
 
 import '../generated/theme_variables.dart';
 import '../theme/theme.dart';
-import 'icon_button.dart' as ff;
-import 'sidebar_theme.dart';
+import 'section_label.dart';
 
-/// Sidebar collapsible behavior.
-enum SidebarCollapsible {
-  /// Sidebar does not collapse.
-  none,
-
-  /// Sidebar collapses to an icon-only rail.
-  icon,
-}
-
-class SidebarProvider extends StatefulWidget {
-  const SidebarProvider({
-    super.key,
-    required this.child,
-    this.defaultOpen = true,
-    this.open,
-    this.onOpenChange,
-  });
-
-  final Widget child;
-
-  /// Uncontrolled initial open state.
-  final bool defaultOpen;
-
-  /// Controlled open state. When provided, [SidebarProvider] becomes controlled.
-  final bool? open;
-
-  /// Called when open state changes.
-  final ValueChanged<bool>? onOpenChange;
-
-  static SidebarController of(BuildContext context) {
-    final _SidebarProviderScope? scope = context
-        .dependOnInheritedWidgetOfExactType<_SidebarProviderScope>();
-    assert(
-      scope != null,
-      'SidebarProvider.of() called with no SidebarProvider.',
-    );
-    return scope!.controller;
-  }
-
-  @override
-  State<SidebarProvider> createState() => _SidebarProviderState();
-}
-
-/// The controller exposed by [SidebarProvider].
-@immutable
-class SidebarController {
-  const SidebarController({
-    required this.open,
-    required this.setOpen,
-    required this.toggle,
-  });
-
-  final bool open;
-  final ValueChanged<bool> setOpen;
-  final VoidCallback toggle;
-}
-
-class _SidebarProviderState extends State<SidebarProvider> {
-  late bool _open;
-
-  bool get _isControlled => widget.open != null;
-
-  bool get open => _isControlled ? widget.open! : _open;
-
-  @override
-  void initState() {
-    super.initState();
-    _open = widget.defaultOpen;
-  }
-
-  void _setOpen(bool value) {
-    if (_isControlled) {
-      widget.onOpenChange?.call(value);
-      return;
-    }
-    if (_open == value) return;
-    setState(() {
-      _open = value;
-    });
-    widget.onOpenChange?.call(value);
-  }
-
-  void _toggle() => _setOpen(!open);
-
-  @override
-  Widget build(BuildContext context) {
-    return _SidebarProviderScope(
-      controller: SidebarController(
-        open: open,
-        setOpen: _setOpen,
-        toggle: _toggle,
-      ),
-      child: widget.child,
-    );
-  }
-}
-
-class _SidebarProviderScope extends InheritedWidget {
-  const _SidebarProviderScope({
-    required this.controller,
-    required super.child,
-  });
-
-  final SidebarController controller;
-
-  @override
-  bool updateShouldNotify(_SidebarProviderScope oldWidget) {
-    return controller.open != oldWidget.controller.open;
-  }
-}
-
+/// The left workspace column.
+///
+/// Its width is a token rather than a layout choice because the columns of a
+/// desktop shell have to agree with each other: the header strip is exactly
+/// the titlebar's height, or the separator under the two steps where they
+/// meet.
+///
+/// The rows inside are [NavItem]s — a sidebar owns the column, not the rows.
 class Sidebar extends StatelessWidget {
   const Sidebar({
     super.key,
-    required this.child,
-    this.collapsible = SidebarCollapsible.icon,
+    this.header,
+    this.width,
+    required this.children,
   });
 
-  final Widget child;
-  final SidebarCollapsible collapsible;
+  /// Content for the strip above the row list, held at exactly the titlebar's
+  /// height so it lines up with the toolbar in the pane beside it.
+  final Widget? header;
 
-  @override
-  Widget build(BuildContext context) {
-    final SidebarThemeData theme = SidebarTheme.of(
-      context,
-    ).withDefaults(context);
+  /// An explicit width. Leave it out and the column takes the token's.
+  final double? width;
 
-    final SidebarController? controller = context
-        .dependOnInheritedWidgetOfExactType<_SidebarProviderScope>()
-        ?.controller;
-
-    final bool collapsed =
-        collapsible == SidebarCollapsible.icon && (controller?.open == false);
-
-    final double width = collapsed ? theme.collapsedWidth! : theme.width!;
-    final double borderWidth = 1.0 / MediaQuery.devicePixelRatioOf(context);
-
-    return _SidebarStateScope(
-      collapsed: collapsed,
-      theme: theme,
-      child: AnimatedContainer(
-        duration: theme.animationDuration!,
-        width: width,
-        decoration: BoxDecoration(
-          color: theme.backgroundColor,
-          border: Border(
-            right: BorderSide(
-              color: theme.borderColor!,
-              width: borderWidth,
-            ),
-          ),
-        ),
-        child: Padding(
-          padding: theme.padding!,
-          child: DefaultTextStyle(
-            style: DefaultTextStyle.of(context).style.copyWith(
-              color: theme.foregroundColor,
-            ),
-            child: IconTheme(
-              data: IconTheme.of(context).copyWith(
-                color: theme.foregroundColor,
-              ),
-              child: child,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SidebarStateScope extends InheritedWidget {
-  const _SidebarStateScope({
-    required this.collapsed,
-    required this.theme,
-    required super.child,
-  });
-
-  final bool collapsed;
-  final SidebarThemeData theme;
-
-  static _SidebarStateScope of(BuildContext context) {
-    final _SidebarStateScope? scope = context
-        .dependOnInheritedWidgetOfExactType<_SidebarStateScope>();
-    assert(scope != null, 'Sidebar widgets must be used within a Sidebar.');
-    return scope!;
-  }
-
-  @override
-  bool updateShouldNotify(_SidebarStateScope oldWidget) {
-    return collapsed != oldWidget.collapsed || theme != oldWidget.theme;
-  }
-}
-
-class SidebarHeader extends StatelessWidget {
-  const SidebarHeader({super.key, required this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final _SidebarStateScope scope = _SidebarStateScope.of(context);
-    return Container(
-      // A real header is a fixed band: it has to match the toolbar's height
-      // exactly, or the separator under the two steps where they meet.
-      height: context.vars.frameTitlebarSize,
-      alignment: AlignmentDirectional.centerStart,
-      padding: scope.theme.headerPadding!,
-      child: child,
-    );
-  }
-}
-
-class SidebarFooter extends StatelessWidget {
-  const SidebarFooter({super.key, required this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final _SidebarStateScope scope = _SidebarStateScope.of(context);
-    return Padding(
-      padding: scope.theme.footerPadding!,
-      child: child,
-    );
-  }
-}
-
-class SidebarContent extends StatelessWidget {
-  const SidebarContent({
-    super.key,
-    required this.child,
-    this.padding,
-  });
-
-  final Widget child;
-  final EdgeInsets? padding;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeVariables vars = context.vars;
-    return Expanded(
-      child: SingleChildScrollView(
-        padding:
-            padding ??
-            EdgeInsets.symmetric(
-              horizontal: vars.spacing25,
-              vertical: vars.spacing35,
-            ),
-        child: child,
-      ),
-    );
-  }
-}
-
-class SidebarGroup extends StatelessWidget {
-  const SidebarGroup({super.key, required this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: context.vars.spacing35),
-      child: child,
-    );
-  }
-}
-
-class SidebarGroupLabel extends StatelessWidget {
-  const SidebarGroupLabel({super.key, required this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final _SidebarStateScope scope = _SidebarStateScope.of(context);
-    if (scope.collapsed) return const SizedBox.shrink();
-
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: context.vars.spacing25,
-        vertical: context.vars.spacing1,
-      ),
-      child: DefaultTextStyle(
-        style: scope.theme.groupLabelStyle!,
-        child: child,
-      ),
-    );
-  }
-}
-
-class SidebarGroupContent extends StatelessWidget {
-  const SidebarGroupContent({super.key, required this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => child;
-}
-
-class SidebarMenu extends StatelessWidget {
-  const SidebarMenu({super.key, required this.children});
   final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
+    final ThemeVariables vars = Theme.of(context).vars;
+
+    return Container(
+      width: width ?? vars.frameSidebarWidth,
+      decoration: BoxDecoration(
+        color: vars.colorSurfaceMuted,
+        border: BorderDirectional(
+          end: BorderSide(
+            color: vars.colorBorder,
+            width: context.hairlineWidth,
+          ),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (header != null)
+            Container(
+              height: vars.frameTitlebarSize,
+              alignment: AlignmentDirectional.centerStart,
+              padding: EdgeInsets.symmetric(horizontal: vars.spacing4),
+              child: header!,
+            ),
+          // Only the row list scrolls, so a pinned card stays put.
+          Expanded(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
+                vertical: vars.spacing35,
+                horizontal: vars.spacing25,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                spacing: vars.frameNavGap,
+                children: children,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A labelled run of rows.
+///
+/// A sidebar breaks its rows into groups rather than stacking them; the gap
+/// between groups does most of the work and the label only names it.
+class SidebarGroup extends StatelessWidget {
+  const SidebarGroup({super.key, this.label, required this.children});
+
+  final String? label;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeVariables vars = Theme.of(context).vars;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: context.vars.frameNavGap,
-      children: children,
-    );
-  }
-}
-
-class SidebarMenuItem extends StatelessWidget {
-  const SidebarMenuItem({super.key, required this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => child;
-}
-
-class SidebarMenuButton extends StatefulWidget {
-  const SidebarMenuButton({
-    super.key,
-    required this.icon,
-    required this.label,
-    this.trailing,
-    this.selected = false,
-    this.onPressed,
-    this.tooltip,
-  });
-
-  final Widget icon;
-  final Widget label;
-  final Widget? trailing;
-  final bool selected;
-  final VoidCallback? onPressed;
-
-  /// Tooltip text shown when sidebar is collapsed (icon-only).
-  final String? tooltip;
-
-  bool get enabled => onPressed != null;
-
-  @override
-  State<SidebarMenuButton> createState() => _SidebarMenuButtonState();
-}
-
-class _SidebarMenuButtonState extends State<SidebarMenuButton> {
-  late bool _isHovered;
-  late bool _isFocused;
-  late bool _isPressed;
-
-  Set<WidgetState> get states => <WidgetState>{
-    if (_isHovered) WidgetState.hovered,
-    if (_isFocused) WidgetState.focused,
-    if (_isPressed) WidgetState.pressed,
-    if (widget.selected) WidgetState.selected,
-    if (!widget.enabled) WidgetState.disabled,
-  };
-
-  @override
-  void initState() {
-    super.initState();
-    _isHovered = false;
-    _isFocused = false;
-    _isPressed = false;
-  }
-
-  void _handleTapDown(TapDownDetails _) {
-    if (!_isPressed) setState(() => _isPressed = true);
-  }
-
-  void _handleTapUp(TapUpDetails _) {
-    if (_isPressed) setState(() => _isPressed = false);
-  }
-
-  void _handleTapCancel() {
-    if (_isPressed) setState(() => _isPressed = false);
-  }
-
-  void _onShowFocusHighlight(bool show) => setState(() => _isFocused = show);
-  void _onShowHoverHighlight(bool show) => setState(() => _isHovered = show);
-
-  @override
-  Widget build(BuildContext context) {
-    final _SidebarStateScope scope = _SidebarStateScope.of(context);
-    final SidebarThemeData theme = scope.theme;
-
-    final Color bg = theme.menuItemBackgroundColor!.resolveWith(states);
-    final Color fg = theme.menuItemForegroundColor!.resolveWith(states);
-
-    final Widget content = Container(
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: theme.menuItemBorderRadius,
-      ),
-      padding: theme.menuItemPadding,
-      child: scope.collapsed
-          ? Center(
-              child: IconTheme(
-                data: IconTheme.of(context).copyWith(
-                  size: theme.menuItemIconSize,
-                  color: fg,
-                ),
-                child: widget.icon,
-              ),
-            )
-          : Row(
-              children: [
-                IconTheme(
-                  data: IconTheme.of(context).copyWith(
-                    size: theme.menuItemIconSize,
-                    color: fg,
-                  ),
-                  child: widget.icon,
-                ),
-                SizedBox(width: theme.menuItemGap),
-                Expanded(
-                  child: DefaultTextStyle(
-                    style: DefaultTextStyle.of(context).style.copyWith(
-                      color: fg,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    child: widget.label,
-                  ),
-                ),
-                if (widget.trailing != null) ...[
-                  const SizedBox(width: 8),
-                  IconTheme(
-                    data: IconTheme.of(context).copyWith(color: fg),
-                    child: widget.trailing!,
-                  ),
-                ],
-              ],
+      mainAxisSize: MainAxisSize.min,
+      spacing: vars.frameNavGap,
+      children: [
+        if (label != null)
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: vars.spacing25,
+              vertical: vars.spacing1,
             ),
-    );
-
-    return FocusableActionDetector(
-      enabled: widget.enabled,
-      onShowFocusHighlight: _onShowFocusHighlight,
-      onShowHoverHighlight: _onShowHoverHighlight,
-      mouseCursor: widget.enabled && kIsWeb
-          ? SystemMouseCursors.click
-          : MouseCursor.defer,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTapDown: widget.enabled ? _handleTapDown : null,
-        onTapUp: widget.enabled ? _handleTapUp : null,
-        onTapCancel: widget.enabled ? _handleTapCancel : null,
-        onTap: widget.onPressed,
-        child: scope.collapsed && (widget.tooltip?.isNotEmpty ?? false)
-            ? Tooltip(message: widget.tooltip!, child: content)
-            : content,
-      ),
+            child: SectionLabel(label!, tone: SectionLabelTone.faint),
+          ),
+        ...children,
+      ],
     );
   }
 }
 
-class SidebarTrigger extends StatelessWidget {
-  const SidebarTrigger({
-    super.key,
-    this.icon,
-    this.tooltip = 'Toggle sidebar',
-  });
+/// The card pinned to the foot of a sidebar — a count, a version, a queue.
+class SidebarCard extends StatelessWidget {
+  const SidebarCard({super.key, this.label, required this.children});
 
-  final IconData? icon;
-  final String tooltip;
+  final String? label;
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
-    final SidebarController controller = SidebarProvider.of(context);
-    final ThemeData theme = Theme.of(context);
-    final IconData resolvedIcon =
-        icon ??
-        (controller.open
-            ? theme.iconLibrary.chevronLeft
-            : theme.iconLibrary.chevronRight);
+    final ThemeVariables vars = Theme.of(context).vars;
 
-    return Tooltip(
-      message: tooltip,
-      child: ff.IconButton(
-        icon: resolvedIcon,
-        variant: ff.IconButtonVariant.plain,
-        onPressed: controller.toggle,
+    return Container(
+      padding: EdgeInsets.all(vars.spacing3),
+      decoration: BoxDecoration(
+        color: vars.colorSurface,
+        border: Border.all(
+          color: vars.colorBorder,
+          width: context.hairlineWidth,
+        ),
+        borderRadius: BorderRadius.circular(vars.radiusLarge),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        spacing: vars.spacing2,
+        children: [
+          if (label != null) SectionLabel(label!),
+          ...children,
+        ],
       ),
     );
   }

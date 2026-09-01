@@ -14,7 +14,6 @@ import '../widgets/button_theme.dart';
 import '../widgets/card_theme.dart';
 import '../widgets/checkbox_theme.dart';
 import '../widgets/kbd_theme.dart';
-import '../widgets/sidebar_theme.dart';
 import 'icon_library.dart';
 
 export 'icon_library.dart';
@@ -89,7 +88,6 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
     this.cardTheme = const CardThemeData(),
     this.checkboxTheme = const CheckboxThemeData(),
     this.kbdTheme = const KbdThemeData(),
-    this.sidebarTheme = const SidebarThemeData(),
   });
 
   /// The variables of the theme.
@@ -119,9 +117,6 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
   /// The kbd theme of the design theme.
   final KbdThemeData kbdTheme;
 
-  /// The sidebar theme of the design theme.
-  final SidebarThemeData sidebarTheme;
-
   /// Creates a copy of this object but with the given fields replaced with the
   /// new values.
   @override
@@ -135,7 +130,6 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
     CardThemeData? cardTheme,
     CheckboxThemeData? checkboxTheme,
     KbdThemeData? kbdTheme,
-    SidebarThemeData? sidebarTheme,
   }) {
     return ThemeData(
       vars: vars ?? this.vars,
@@ -147,7 +141,6 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
       cardTheme: cardTheme ?? this.cardTheme,
       checkboxTheme: checkboxTheme ?? this.checkboxTheme,
       kbdTheme: kbdTheme ?? this.kbdTheme,
-      sidebarTheme: sidebarTheme ?? this.sidebarTheme,
     );
   }
 
@@ -168,7 +161,6 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
       cardTheme: t < 0.5 ? cardTheme : other.cardTheme,
       checkboxTheme: t < 0.5 ? checkboxTheme : other.checkboxTheme,
       kbdTheme: t < 0.5 ? kbdTheme : other.kbdTheme,
-      sidebarTheme: t < 0.5 ? sidebarTheme : other.sidebarTheme,
     );
   }
 
@@ -182,7 +174,6 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
     buttonTheme,
     checkboxTheme,
     kbdTheme,
-    sidebarTheme,
   );
 
   @override
@@ -202,8 +193,7 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
         other.buttonTheme == buttonTheme &&
         other.cardTheme == cardTheme &&
         other.checkboxTheme == checkboxTheme &&
-        other.kbdTheme == kbdTheme &&
-        other.sidebarTheme == sidebarTheme;
+        other.kbdTheme == kbdTheme;
   }
 
   @override
@@ -217,8 +207,7 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('buttonTheme', buttonTheme))
       ..add(DiagnosticsProperty('cardTheme', cardTheme))
       ..add(DiagnosticsProperty('checkboxTheme', checkboxTheme))
-      ..add(DiagnosticsProperty('kbdTheme', kbdTheme))
-      ..add(DiagnosticsProperty('sidebarTheme', sidebarTheme));
+      ..add(DiagnosticsProperty('kbdTheme', kbdTheme));
   }
 }
 

@@ -499,6 +499,96 @@ void main() {
     });
   });
 
+  group('Menu', () {
+    testWidgets('the panel is not in the tree until the trigger opens it, and '
+        'an outside press closes it', (tester) async {
+      await tester.pumpWidget(
+        host(
+          Menu(
+            trigger: (context, state) => Button(
+              onPressed: state.toggle,
+              child: const Text('Actions'),
+            ),
+            items: [MenuItem(label: 'Rename', onSelect: () {})],
+          ),
+        ),
+      );
+
+      expect(find.text('Rename'), findsNothing);
+
+      await tester.tap(find.text('Actions'));
+      await tester.pumpAndSettle();
+      expect(find.text('Rename'), findsOneWidget);
+
+      // The overlay fills the window, so a press away from the panel lands on
+      // the dismiss barrier.
+      await tester.tapAt(const Offset(10, 10));
+      await tester.pumpAndSettle();
+      expect(find.text('Rename'), findsNothing);
+    });
+
+    testWidgets('selecting a row closes the panel', (tester) async {
+      int selected = 0;
+      await tester.pumpWidget(
+        host(
+          Menu(
+            trigger: (context, state) => Button(
+              onPressed: state.toggle,
+              child: const Text('Actions'),
+            ),
+            items: [MenuItem(label: 'Rename', onSelect: () => selected++)],
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Actions'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Rename'));
+      await tester.pumpAndSettle();
+
+      expect(selected, 1);
+      expect(find.text('Rename'), findsNothing);
+    });
+  });
+
+  group('Dialog', () {
+    testWidgets('the scrim covers the window rather than the column that '
+        'opened it', (tester) async {
+      await tester.pumpWidget(
+        host(
+          Builder(
+            builder: (context) => Button(
+              onPressed: () => showDialog<void>(
+                context: context,
+                builder: (context) => const Dialog(
+                  children: [DialogHeader(title: 'Discard these changes?')],
+                ),
+              ),
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Discard these changes?'), findsNothing);
+
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      expect(find.text('Discard these changes?'), findsOneWidget);
+
+      // `position: fixed` means the whole window: the scrim is as wide as the
+      // app, not as wide as the button that opened it.
+      expect(
+        tester.getSize(find.byType(DialogScrim)),
+        tester.getSize(find.byType(material.MaterialApp)),
+      );
+
+      await tester.tapAt(const Offset(10, 10));
+      await tester.pumpAndSettle();
+      expect(find.text('Discard these changes?'), findsNothing);
+    });
+  });
+
   group('themes', () {
     testWidgets('a filled button follows the theme it is scoped to', (
       tester,

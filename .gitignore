@@ -30,3 +30,4 @@ storybook.log
 # Swift
 .build
 .swiftpm
+xcuserdata/

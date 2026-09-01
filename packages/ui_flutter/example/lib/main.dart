@@ -111,22 +111,12 @@ class _Toolbar extends StatelessWidget {
             child: Text('Flutter'),
           ),
           const Spacer(),
-          // The SwiftUI playground picks its theme with a SegmentedControl;
-          // until the segmented control lands here, a row of small buttons
-          // carries the same choice — the active theme tinted, the rest
-          // plain.
-          Row(
-            spacing: vars.spacing1,
-            children: [
+          SegmentedControl<PlaygroundTheme>(
+            value: theme,
+            onChanged: onThemeChanged,
+            items: [
               for (final candidate in PlaygroundTheme.values)
-                Button(
-                  size: WidgetSize.small,
-                  variant: candidate == theme
-                      ? ButtonVariant.tinted
-                      : ButtonVariant.plain,
-                  onPressed: () => onThemeChanged(candidate),
-                  child: Text(candidate.title),
-                ),
+                SegmentedItem(value: candidate, label: candidate.title),
             ],
           ),
         ],
@@ -145,37 +135,25 @@ class _Navigator extends StatelessWidget {
   Widget build(BuildContext context) {
     final vars = Theme.of(context).vars;
 
-    return SidebarProvider(
-      child: Sidebar(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Sidebar(
+      header: Text(
+        'Components',
+        style: vars.titleSmall.copyWith(color: vars.colorContent),
+      ),
+      children: [
+        SidebarGroup(
+          label: 'Library',
           children: [
-            SidebarHeader(
-              child: Text(
-                'Components',
-                style: vars.titleSmall.copyWith(
-                  color: vars.colorContentMuted,
-                ),
+            for (final item in PlaygroundPage.values)
+              NavItem(
+                label: item.title,
+                icon: item.icon,
+                current: item == page,
+                onPressed: () => onPageChanged(item),
               ),
-            ),
-            SidebarContent(
-              child: SidebarMenu(
-                children: [
-                  for (final item in PlaygroundPage.values)
-                    SidebarMenuItem(
-                      child: SidebarMenuButton(
-                        icon: Icon(item.icon),
-                        label: Text(item.title),
-                        selected: item == page,
-                        onPressed: () => onPageChanged(item),
-                      ),
-                    ),
-                ],
-              ),
-            ),
           ],
         ),
-      ),
+      ],
     );
   }
 }

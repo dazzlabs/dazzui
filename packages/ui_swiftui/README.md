@@ -62,6 +62,21 @@ the plugin being touched.
 | `.brightLight` | Warm paper, ink navy, acid-green marker, pill controls |
 | `.brightDark`  | Ink-navy canvas, with acid green as the accent itself |
 
+## Layout
+
+```
+Sources/DazzUI/
+  Views/       the components
+  Foundation/  the types they are written against
+  Theme/       the theme value and its environment key
+  Generated/   what packages/ds wrote
+```
+
+`Views/` rather than `Components/` because each platform package speaks its
+own dialect: React has `components/`, Flutter has `widgets/`, GPUI has
+`components/`, and the SwiftUI word for a piece of interface is `View`. The
+*names* inside follow React exactly; the folder follows the platform.
+
 ## Foundation
 
 The hand-written half of the vocabulary — the types the generated file is
@@ -130,8 +145,9 @@ the catalog.
 that renders the same view under all four themes at once:
 
 ```bash
-xcodebuild -scheme Playground -destination 'platform=macOS' -derivedDataPath .build/xcode build
-./.build/xcode/Build/Products/Debug/Playground
+open Example/Playground.xcodeproj
 ```
 
-Both from `Example/`. See its own README for what each page is for.
+⌘R runs it. The project builds a real `.app`, so it debugs and profiles like
+any other Mac app; its README carries the command-line equivalent and what
+each page is for.

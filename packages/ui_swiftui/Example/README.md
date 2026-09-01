@@ -3,27 +3,35 @@
 The DazzUI playground, the SwiftUI counterpart of
 `packages/ui_flutter/example`.
 
-```bash
-xcodebuild -scheme Playground -destination 'platform=macOS' -derivedDataPath .build/xcode build
-```
-
-Then launch what it built:
+Open it in Xcode and press ⌘R:
 
 ```bash
-./.build/xcode/Build/Products/Debug/Playground
+open Playground.xcodeproj
 ```
 
-Both from this directory. The derived-data path is pinned so the binary lands
-somewhere nameable — Xcode otherwise scatters it under a hashed directory in
-`~/Library/Developer/Xcode/DerivedData`.
+That is the intended way in. The project builds a real `.app` bundle, so the
+playground runs, debugs and profiles like any other Mac app.
+
+From the command line, the same scheme:
+
+```bash
+xcodebuild -project Playground.xcodeproj -scheme Playground -destination 'platform=macOS' -derivedDataPath .build/xcode build
+open .build/xcode/Build/Products/Debug/Playground.app
+```
+
+Sources are picked up from `Sources/Playground` by a synchronised folder
+reference, so a new file in that directory joins the target with no project
+edit.
 
 The app resolves `DazzUI` by path, so it always builds the working copy
 beside it rather than a published version.
 
-**`swift run` does not work here**, and the reason is the icon dependency
-rather than anything about this app: Fluent's Swift package never declares its
-asset catalog as a resource, so SwiftPM alone cannot compile it. The package
-README has the detail.
+**`swift build` and `swift run` do not work here**, and the reason is the icon
+dependency rather than anything about this app: Fluent's Swift package never
+declares its asset catalog as a resource, so SwiftPM alone leaves
+`Bundle.module` unsynthesised and fails to compile it. Xcode's build system
+processes the catalog, which is why the project exists. The package README has
+the detail.
 
 ## What is in it
 

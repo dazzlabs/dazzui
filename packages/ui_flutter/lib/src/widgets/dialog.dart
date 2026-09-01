@@ -166,6 +166,49 @@ class DialogFooter extends StatelessWidget {
   }
 }
 
+/// Puts a dialog over the window.
+///
+/// The stylesheet's scrim is `position: fixed`, which has no counterpart in
+/// Flutter's layout — a widget placed in the tree is bounded by whatever
+/// holds it. A modal has to reach the [Navigator] to cover the window, so
+/// this is what makes the scrim mean what the stylesheet says it means.
+///
+/// Returns whatever the dialog pops with.
+Future<T?> showDialog<T>({
+  required BuildContext context,
+  required WidgetBuilder builder,
+  bool dismissible = true,
+}) {
+  final ThemeData theme = Theme.of(context);
+
+  return Navigator.of(context, rootNavigator: true).push<T>(
+    RawDialogRoute<T>(
+      barrierDismissible: dismissible,
+      barrierLabel: 'Dismiss',
+      // The scrim paints itself, so the barrier stays out of the way.
+      barrierColor: const Color(0x00000000),
+      transitionDuration: theme.vars.motionDuration,
+      pageBuilder: (context, animation, secondaryAnimation) => Theme(
+        data: theme,
+        child: Builder(
+          builder: (context) => DialogScrim(
+            onDismiss: dismissible ? () => Navigator.of(context).pop() : null,
+            child: builder(context),
+          ),
+        ),
+      ),
+      transitionBuilder: (context, animation, secondary, child) =>
+          FadeTransition(
+            opacity: CurvedAnimation(
+              parent: animation,
+              curve: theme.vars.motionEasing,
+            ),
+            child: child,
+          ),
+    ),
+  );
+}
+
 /// The dim behind a modal.
 class DialogScrim extends StatelessWidget {
   const DialogScrim({super.key, this.onDismiss, required this.child});

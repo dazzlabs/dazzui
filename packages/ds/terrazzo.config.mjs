@@ -78,7 +78,22 @@ export default defineConfig({
        * recipes. Letting the CSS plugin emit them too put ninety-odd inert
        * numbers into every page.
        */
-      exclude: ['control.color.**'],
+      exclude: [
+        'control.color.**',
+        /**
+         * The same rule, for the recipes that live outside `control.color`.
+         * A shade and an alpha here are build-time inputs the control plugin
+         * resolves into `--focus-ring`, `--focus-glow`, `--dialog-scrim` and
+         * the baked press alphas. Emitting the raw inputs beside the finished
+         * values is not just eight dead lines: it publishes a lever that does
+         * nothing. A consumer setting `--focus-ring-alpha` would reasonably
+         * expect the ring to move, and it would not.
+         */
+        'focus.ring.*',
+        'focus.glow.*',
+        'control.pressed.*',
+        'dialog.scrim.alpha',
+      ],
       /**
        * Emit hex-6/hex-8 instead of `color(srgb 0.9647058823529412 …)`.
        * The Flutter plugin already collapses every ramp — the oklch ones
