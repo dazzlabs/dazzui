@@ -42,10 +42,7 @@ class Card extends StatelessWidget {
     this.variant = CardVariant.raised,
     this.tint = CardTint.primary,
     this.size = WidgetSize.medium,
-    this.padding,
-    this.margin,
     this.child,
-    this.semanticContainer = true,
   });
 
   final CardVariant variant;
@@ -54,16 +51,7 @@ class Card extends StatelessWidget {
 
   final WidgetSize size;
 
-  /// Overrides the size profile's own padding.
-  final EdgeInsetsGeometry? padding;
-
-  /// The empty space that surrounds the card.
-  final EdgeInsetsGeometry? margin;
-
   final Widget? child;
-
-  /// Whether this widget represents a single semantic container.
-  final bool semanticContainer;
 
   ColorSwatch<int> _ramp(ThemeVariables vars) {
     return switch (tint) {
@@ -93,18 +81,16 @@ class Card extends StatelessWidget {
       ),
     };
 
-    final EdgeInsetsGeometry resolvedPadding =
-        padding ??
-        switch (size) {
-          WidgetSize.small => EdgeInsets.all(vars.spacing3),
-          // The card padding is asymmetric — a hair more inline than block —
-          // which keeps a one-line row inside it optically centred.
-          WidgetSize.large => EdgeInsets.all(vars.spacing4),
-          _ => EdgeInsets.symmetric(
-            vertical: vars.spacing3,
-            horizontal: vars.spacing35,
-          ),
-        };
+    final EdgeInsetsGeometry resolvedPadding = switch (size) {
+      WidgetSize.small => EdgeInsets.all(vars.spacing3),
+      // The card padding is asymmetric — a hair more inline than block —
+      // which keeps a one-line row inside it optically centred.
+      WidgetSize.large => EdgeInsets.all(vars.spacing4),
+      _ => EdgeInsets.symmetric(
+        vertical: vars.spacing3,
+        horizontal: vars.spacing35,
+      ),
+    };
 
     final double radius = switch (size) {
       WidgetSize.small => vars.radiusMedium,
@@ -112,24 +98,18 @@ class Card extends StatelessWidget {
     };
 
     return Semantics(
-      container: semanticContainer,
-      child: Padding(
-        padding: margin ?? EdgeInsets.zero,
-        child: Container(
-          padding: resolvedPadding,
-          decoration: BoxDecoration(
-            color: surface,
-            // Transparent rather than absent, so `outlined` and `tinted` do
-            // not gain a pixel per side and sit a hair larger than the
-            // filled variants.
-            border: Border.all(color: border, width: context.hairlineWidth),
-            borderRadius: BorderRadius.circular(radius),
-          ),
-          child: Semantics(
-            explicitChildNodes: !semanticContainer,
-            child: child,
-          ),
+      container: true,
+      child: Container(
+        padding: resolvedPadding,
+        decoration: BoxDecoration(
+          color: surface,
+          // Transparent rather than absent, so `outlined` and `tinted` do
+          // not gain a pixel per side and sit a hair larger than the
+          // filled variants.
+          border: Border.all(color: border, width: context.hairlineWidth),
+          borderRadius: BorderRadius.circular(radius),
         ),
+        child: child,
       ),
     );
   }

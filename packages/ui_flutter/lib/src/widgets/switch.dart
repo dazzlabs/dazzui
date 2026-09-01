@@ -40,26 +40,6 @@ import 'switch_thumb_painter.dart';
 /// ** See code in examples/api/lib/cupertino/switch/cupertino_switch.0.dart **
 /// {@end-tool}
 ///
-/// {@tool snippet}
-///
-/// This sample shows how to use a [Switch] in a [ListTile]. The
-/// [MergeSemantics] is used to turn the entire [ListTile] into a single item
-/// for accessibility tools.
-///
-/// ```dart
-/// MergeSemantics(
-///   child: ListTile(
-///     title: const Text('Lights'),
-///     trailing: Switch(
-///       value: _lights,
-///       onChanged: (bool value) { setState(() { _lights = value; }); },
-///     ),
-///     onTap: () { setState(() { _lights = !_lights; }); },
-///   ),
-/// )
-/// ```
-/// {@end-tool}
-///
 /// See also:
 ///
 ///  * [Switch], the Material Design equivalent.
@@ -73,12 +53,6 @@ class Switch extends StatefulWidget {
     required this.value,
     required this.onChanged,
     this.size = WidgetSize.medium,
-    this.activeColor,
-    this.trackColor,
-    this.thumbColor,
-    this.focusColor,
-    this.onLabelColor,
-    this.offLabelColor,
     this.focusNode,
     this.onFocusChange,
     this.autofocus = false,
@@ -121,34 +95,6 @@ class Switch extends StatefulWidget {
   ///
   /// Defaults to [WidgetSize.medium].
   final WidgetSize size;
-
-  final Color? activeColor;
-
-  /// The color to use for the track when the switch is off.
-  ///
-  /// Defaults to [CupertinoColors.secondarySystemFill] when null.
-  final Color? trackColor;
-
-  /// The color to use for the thumb of the switch.
-  ///
-  /// Defaults to [CupertinoColors.white] when null.
-  final Color? thumbColor;
-
-  /// The color to use for the focus highlight for keyboard interactions.
-  ///
-  /// Defaults to a slightly transparent [activeColor].
-  final Color? focusColor;
-
-  /// The color to use for the accessibility label when the switch is on.
-  ///
-  /// Defaults to [CupertinoColors.white] when null.
-  final Color? onLabelColor;
-
-  /// The color to use for the accessibility label when the switch is off.
-  ///
-  /// Defaults to [Color.fromARGB(255, 179, 179, 179)]
-  /// (or [Color.fromARGB(255, 255, 255, 255)] in high contrast) when null.
-  final Color? offLabelColor;
 
   /// {@macro flutter.widgets.Focus.focusNode}
   final FocusNode? focusNode;
@@ -376,21 +322,18 @@ class _SwitchState extends State<Switch> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final Color activeColor =
-        widget.activeColor ??
-        theme.vars.colorPrimary[theme
-            .vars
-            .controlColorFilledSurface
-            .normalShade!]!;
+    final Color activeColor = theme
+        .vars
+        .colorPrimary[theme.vars.controlColorFilledSurface.normalShade!]!;
     final (Color onLabelColor, Color offLabelColor)? onOffLabelColors =
         MediaQuery.onOffSwitchLabelsOf(context)
         ? (
             CupertinoDynamicColor.resolve(
-              widget.onLabelColor ?? CupertinoColors.white,
+              CupertinoColors.white,
               context,
             ),
             CupertinoDynamicColor.resolve(
-              widget.offLabelColor ?? _kOffLabelColor,
+              _kOffLabelColor,
               context,
             ),
           )
@@ -452,7 +395,7 @@ class _SwitchState extends State<Switch> with TickerProviderStateMixin {
             trackWidth: trackWidth,
             trackHeight: trackHeight,
             activeColor: activeColor,
-            trackColor: widget.trackColor ?? theme.vars.colorSurfaceSunken,
+            trackColor: theme.vars.colorSurfaceSunken,
             // The thumb changes colour with the state: faint ink while off —
             // a grey thumb in a grey groove, deliberately low-contrast — and
             // only brightens to the raised surface once the track fills. A
@@ -460,19 +403,16 @@ class _SwitchState extends State<Switch> with TickerProviderStateMixin {
             // state. `surface-raised` rather than the paper: on a dark canvas
             // the paper is darker than the groove, and a thumb painted with
             // it would sink.
-            thumbColor:
-                widget.thumbColor ??
-                (widget.value
-                    ? theme.vars.colorSurfaceRaised
-                    : theme.vars.colorContentFaint),
+            thumbColor: (widget.value
+                ? theme.vars.colorSurfaceRaised
+                : theme.vars.colorContentFaint),
             thumbSize: thumbSize,
             // Opacity, lightness, and saturation values were approximated with
             // color pickers on the switches in the macOS settings.
             focusColor: CupertinoDynamicColor.resolve(
-              widget.focusColor ??
-                  HSLColor.fromColor(
-                    activeColor.withValues(alpha: 0.80),
-                  ).withLightness(0.69).withSaturation(0.835).toColor(),
+              HSLColor.fromColor(
+                activeColor.withValues(alpha: 0.80),
+              ).withLightness(0.69).withSaturation(0.835).toColor(),
               context,
             ),
             onChanged: widget.onChanged,

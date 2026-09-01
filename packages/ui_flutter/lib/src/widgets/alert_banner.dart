@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 
 import '../foundation/color_descriptor.dart';
-import '../foundation/widget_radius.dart';
 import '../foundation/widget_size.dart';
 import '../foundation/widget_tint.dart';
 import '../foundation/widget_variant.dart';
@@ -50,7 +49,6 @@ class AlertBanner extends StatefulWidget {
     this.color,
     this.tint = AlertBannerTint.neutral,
     this.size = WidgetSize.medium,
-    this.radius,
     this.icon,
     this.title,
     this.message,
@@ -71,9 +69,6 @@ class AlertBanner extends StatefulWidget {
   /// it. A banner that grew its type would compete with the content it
   /// interrupts.
   final WidgetSize size;
-
-  /// The radius of the alert banner's corners when it has a background color.
-  final BorderRadius? radius;
 
   /// The icon of the alert banner.
   final Widget? icon;
@@ -109,9 +104,6 @@ class _AlertBannerState extends State<AlertBanner> {
         tint: widget.tint,
         variant: AlertBannerVariant.tinted,
         size: widget.size,
-        radius: widget.radius is WidgetRadius
-            ? widget.radius as WidgetRadius
-            : WidgetRadius.medium,
         extra: {
           'seedColor': seedColor,
         }..removeWhere((key, value) => value == null),

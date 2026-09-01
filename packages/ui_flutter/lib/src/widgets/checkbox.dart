@@ -33,17 +33,14 @@ class Checkbox extends StatelessWidget {
     this.note,
     this.tint = CheckboxTint.primary,
     this.size = WidgetSize.medium,
-    this.tristate = false,
     this.focusNode,
     this.autofocus = false,
     this.semanticsLabel,
-  }) : assert(tristate || value != null);
+  });
 
-  /// Whether the checkbox is checked. Null is the mixed state, which is only
-  /// legal when [tristate] is set.
-  final bool? value;
+  final bool value;
 
-  final ValueChanged<bool?>? onChanged;
+  final ValueChanged<bool>? onChanged;
 
   /// The row's label. Without one the checkbox is the bare box.
   final Widget? label;
@@ -57,8 +54,6 @@ class Checkbox extends StatelessWidget {
 
   final WidgetSize size;
 
-  final bool tristate;
-
   final FocusNode? focusNode;
 
   final bool autofocus;
@@ -67,17 +62,7 @@ class Checkbox extends StatelessWidget {
 
   bool get _enabled => onChanged != null;
 
-  void _handleTap() {
-    if (!tristate) {
-      onChanged!(!(value ?? false));
-      return;
-    }
-    onChanged!(switch (value) {
-      false => true,
-      true => null,
-      null => false,
-    });
-  }
+  void _handleTap() => onChanged!(!value);
 
   ColorSwatch<int> _ramp(ThemeVariables vars) {
     return switch (tint) {
@@ -93,9 +78,7 @@ class Checkbox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeVariables vars = Theme.of(context).vars;
-    final bool checked = value ?? false;
-    final bool mixed = tristate && value == null;
-    final bool marked = checked || mixed;
+    final bool marked = value;
 
     final double box = switch (size.namedSize) {
       NamedSize.large => vars.checkboxLargeBox,
@@ -113,7 +96,7 @@ class Checkbox extends StatelessWidget {
       enabled: _enabled,
       onPressed: _enabled ? _handleTap : null,
       borderRadius: radius,
-      checked: mixed ? null : checked,
+      checked: value,
       isButton: false,
       focusNode: focusNode,
       autofocus: autofocus,
@@ -143,7 +126,6 @@ class Checkbox extends StatelessWidget {
               ),
               child: marked
                   ? _Mark(
-                      mixed: mixed,
                       color: vars.colorOnAccent,
                       // The glyph sits a step under the label so it clears the
                       // box's corners.
@@ -186,15 +168,13 @@ class Checkbox extends StatelessWidget {
   }
 }
 
-/// The check, or the dash that stands for a mixed selection.
+/// The check.
 class _Mark extends StatelessWidget {
   const _Mark({
-    required this.mixed,
     required this.color,
     required this.dimension,
   });
 
-  final bool mixed;
   final Color color;
   final double dimension;
 
@@ -202,15 +182,14 @@ class _Mark extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomPaint(
       size: Size.square(dimension),
-      painter: _MarkPainter(mixed: mixed, color: color),
+      painter: _MarkPainter(color: color),
     );
   }
 }
 
 class _MarkPainter extends CustomPainter {
-  const _MarkPainter({required this.mixed, required this.color});
+  const _MarkPainter({required this.color});
 
-  final bool mixed;
   final Color color;
 
   @override
@@ -223,15 +202,6 @@ class _MarkPainter extends CustomPainter {
       ..strokeJoin = StrokeJoin.round;
 
     final double w = size.width;
-    if (mixed) {
-      canvas.drawLine(
-        Offset(w * 0.22, w * 0.5),
-        Offset(w * 0.78, w * 0.5),
-        paint,
-      );
-      return;
-    }
-
     canvas.drawPath(
       Path()
         ..moveTo(w * 0.22, w * 0.52)
@@ -242,6 +212,5 @@ class _MarkPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_MarkPainter oldDelegate) =>
-      oldDelegate.mixed != mixed || oldDelegate.color != color;
+  bool shouldRepaint(_MarkPainter oldDelegate) => oldDelegate.color != color;
 }

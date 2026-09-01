@@ -21,6 +21,7 @@ class _FormsPageState extends State<FormsPage> {
   bool _telemetry = false;
   String _plan = 'team';
   bool _notify = true;
+  String _appearance = 'auto';
 
   @override
   void dispose() {
@@ -91,15 +92,13 @@ class _FormsPageState extends State<FormsPage> {
               Checkbox(
                 value: _newsletter,
                 label: const Text('Send me the monthly newsletter'),
-                onChanged: (value) =>
-                    setState(() => _newsletter = value ?? false),
+                onChanged: (value) => setState(() => _newsletter = value),
               ),
               Checkbox(
                 value: _telemetry,
                 label: const Text('Share anonymous usage data'),
                 note: const Text('Crash reports only'),
-                onChanged: (value) =>
-                    setState(() => _telemetry = value ?? false),
+                onChanged: (value) => setState(() => _telemetry = value),
               ),
               const Checkbox(
                 value: false,
@@ -141,6 +140,36 @@ class _FormsPageState extends State<FormsPage> {
               ),
               const Switch(value: false, onChanged: null),
             ],
+          ),
+        ),
+        Specimen(
+          'Option cards',
+          note: 'the border thickens as well as colours when chosen',
+          // IntrinsicHeight is what gives the pair equal height where the
+          // stylesheet uses `flex: 1` on a flex row.
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: vars.spacing3,
+              children: [
+                Expanded(
+                  child: OptionCard(
+                    title: 'Automatic',
+                    description: 'Follow the system appearance.',
+                    selected: _appearance == 'auto',
+                    onPressed: () => setState(() => _appearance = 'auto'),
+                  ),
+                ),
+                Expanded(
+                  child: OptionCard(
+                    title: 'Manual',
+                    description: 'Pick a theme and keep it.',
+                    selected: _appearance == 'manual',
+                    onPressed: () => setState(() => _appearance = 'manual'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         SizedBox(height: vars.spacing8),

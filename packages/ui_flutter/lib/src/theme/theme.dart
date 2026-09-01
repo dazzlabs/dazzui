@@ -265,9 +265,14 @@ class Theme extends InheritedTheme {
     );
   }
 
+  /// The theme the current subtree is rendered under, falling back to Studio
+  /// Light so a widget dropped into a bare app still paints correctly rather
+  /// than throwing on a missing extension.
   static ThemeData of(BuildContext context) {
     final theme = context.dependOnInheritedWidgetOfExactType<Theme>();
-    return theme?.data ?? material.Theme.of(context).extension<ThemeData>()!;
+    return theme?.data ??
+        material.Theme.of(context).extension<ThemeData>() ??
+        ThemeData.studioLight();
   }
 }
 

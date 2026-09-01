@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-import '../foundation/widget_radius.dart';
 import '../foundation/widget_size.dart';
 import '../foundation/widget_tint.dart';
 import '../foundation/widget_variant.dart';
@@ -11,14 +10,6 @@ extension WidgetPropertyX on WidgetProperty {
   /// Resolves the property for the given [tint].
   T tinted<T>(WidgetTint? tint) {
     return resolveWith({}, tint: tint);
-  }
-
-  /// Resolves the property for the given [radius].
-  T rounded<T>(BorderRadius radius) {
-    if (radius is! WidgetRadius) {
-      throw ArgumentError('radius must be a WidgetRadius');
-    }
-    return resolveWith({}, radius: radius);
   }
 
   /// Resolves the property for the given [size].
@@ -58,7 +49,6 @@ abstract class WidgetProperty<T> extends WidgetStateProperty<T> {
     WidgetTint? tint,
     WidgetVariant? variant,
     WidgetSize? size,
-    WidgetRadius? radius,
     Map<String, dynamic>? extra,
   });
 
@@ -91,24 +81,6 @@ abstract class WidgetProperty<T> extends WidgetStateProperty<T> {
       large: EdgeInsets.all((baseDimension + spacingUnit) * scale),
     );
   }
-
-  /// Creates a [SizedWidgetProperty] that resolves to a set of [BorderRadius]
-  /// based on the given [baseDimension] and [spacingUnit].
-  static RoundedWidgetProperty<BorderRadius> roundedRadius(
-    double baseDimension,
-    double spacingUnit, [
-    double scale = 1,
-  ]) {
-    return RoundedWidgetProperty<BorderRadius>(
-      none: BorderRadius.zero,
-      tiny: BorderRadius.circular((baseDimension - (spacingUnit * 2)) * scale),
-      small: BorderRadius.circular((baseDimension - spacingUnit) * scale),
-      medium: BorderRadius.circular(baseDimension * scale),
-      large: BorderRadius.circular((baseDimension + spacingUnit) * scale),
-      big: BorderRadius.circular((baseDimension + (spacingUnit * 2)) * scale),
-      full: BorderRadius.circular(9999),
-    );
-  }
 }
 
 class WidgetPropertyAll<T> implements WidgetProperty<T> {
@@ -128,7 +100,6 @@ class WidgetPropertyAll<T> implements WidgetProperty<T> {
     WidgetTint? tint,
     WidgetVariant? variant,
     WidgetSize? size,
-    WidgetRadius? radius,
     Map<String, dynamic>? extra,
     ThemeData? theme,
   }) {
@@ -185,7 +156,6 @@ class TintedWidgetProperty<T> implements WidgetProperty<T> {
     WidgetTint? tint,
     WidgetVariant? variant,
     WidgetSize? size,
-    WidgetRadius? radius,
     Map<String, dynamic>? extra,
   }) {
     if (tint == null) {
@@ -233,7 +203,6 @@ class VariantedWidgetProperty<T> implements WidgetProperty<T> {
     WidgetTint? tint,
     WidgetVariant? variant,
     WidgetSize? size,
-    WidgetRadius? radius,
     Map<String, dynamic>? extra,
     ThemeData? theme,
   }) {
@@ -282,7 +251,6 @@ class SizedWidgetProperty<T> implements WidgetProperty<T> {
     WidgetTint? tint,
     WidgetVariant? variant,
     WidgetSize? size,
-    WidgetRadius? radius,
     Map<String, dynamic>? extra,
     ThemeData? theme,
   }) {
@@ -292,62 +260,6 @@ class SizedWidgetProperty<T> implements WidgetProperty<T> {
       );
     }
     return _values[size.namedSize]!;
-  }
-}
-
-class RoundedWidgetProperty<T> implements WidgetProperty<T> {
-  const RoundedWidgetProperty({
-    required this.none,
-    required this.tiny,
-    required this.small,
-    required this.medium,
-    required this.large,
-    required this.big,
-    required this.full,
-    this.debugName,
-  });
-
-  final T none;
-  final T tiny;
-  final T small;
-  final T medium;
-  final T large;
-  final T big;
-  final T full;
-
-  final String? debugName;
-
-  Map<NamedRadius, T> get _values {
-    return {
-      NamedRadius.none: none,
-      NamedRadius.tiny: tiny,
-      NamedRadius.small: small,
-      NamedRadius.medium: medium,
-      NamedRadius.large: large,
-      NamedRadius.big: big,
-      NamedRadius.full: full,
-    };
-  }
-
-  @override
-  T resolve(Set<WidgetState> states) => resolveWith(states);
-
-  @override
-  T resolveWith(
-    Set<WidgetState> states, {
-    WidgetTint? tint,
-    WidgetVariant? variant,
-    WidgetSize? size,
-    WidgetRadius? radius,
-    Map<String, dynamic>? extra,
-    ThemeData? theme,
-  }) {
-    if (radius == null) {
-      throw ArgumentError(
-        'radius is required for ${debugName ?? T.runtimeType} property.',
-      );
-    }
-    return _values[radius.namedRadius]!;
   }
 }
 
@@ -391,7 +303,6 @@ class StatedWidgetProperty<T> implements WidgetProperty<T> {
     WidgetTint? tint,
     WidgetVariant? variant,
     WidgetSize? size,
-    WidgetRadius? radius,
     Map<String, dynamic>? extra,
     ThemeData? theme,
   }) {

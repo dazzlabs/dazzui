@@ -129,7 +129,7 @@ void main() {
         host(IconButton(icon: material.Icons.add, onPressed: () {})),
       );
 
-      final Size size = tester.getSize(find.byType(Button));
+      final Size size = tester.getSize(find.byType(IconButton));
       expect(size.width, vars.controlTinySize);
       expect(size.height, vars.controlTinySize);
     });
@@ -139,10 +139,11 @@ void main() {
         host(IconButton(icon: material.Icons.add, onPressed: () {})),
       );
 
-      final IconTheme theme = tester.widget<IconTheme>(
-        find.byType(IconTheme).last,
+      // A toolbar row has to read as chrome until it is touched.
+      expect(
+        tester.widget<Icon>(find.byType(Icon)).color,
+        vars.colorContentSubtle,
       );
-      expect(theme.data.color, vars.colorContentSubtle);
     });
 
     testWidgets('the on-state turns the glyph accent', (tester) async {
@@ -152,10 +153,11 @@ void main() {
         ),
       );
 
-      final IconTheme theme = tester.widget<IconTheme>(
-        find.byType(IconTheme).last,
+      // "This is on" is a colour statement, not a chip.
+      expect(
+        tester.widget<Icon>(find.byType(Icon)).color,
+        vars.colorPrimary[700],
       );
-      expect(theme.data.color, vars.colorPrimary[700]);
     });
   });
 
@@ -373,6 +375,127 @@ void main() {
           reason: '${step.namedSize.name} loader',
         );
       }
+    });
+  });
+
+  group('SegmentedControl', () {
+    testWidgets('the capsule is the track inset on both sides, and the two '
+        'corners are concentric', (tester) async {
+      await tester.pumpWidget(
+        host(
+          SegmentedControl<String>(
+            value: 'a',
+            onChanged: (_) {},
+            items: const [
+              SegmentedItem(value: 'a', label: 'A'),
+              SegmentedItem(value: 'b', label: 'B'),
+            ],
+          ),
+        ),
+      );
+
+      final double inset = vars.segmentedControlInset;
+      // The segment's height is the control height minus the inset on both
+      // sides, so a segmented control lines up with the buttons beside it.
+      expect(
+        tester.getSize(find.byType(SegmentedControl<String>)).height,
+        vars.controlSmallSize,
+      );
+
+      final decoration =
+          tester
+                  .widget<AnimatedContainer>(
+                    find.byType(AnimatedContainer).first,
+                  )
+                  .decoration
+              as BoxDecoration;
+      // The capsule's corner is the track's minus the inset — the only
+      // relationship that keeps the two curves concentric.
+      expect(
+        decoration.borderRadius,
+        BorderRadius.circular(vars.controlSmallRadius - inset),
+      );
+    });
+  });
+
+  group('PillTabs', () {
+    testWidgets('an unselected pill has a fill of its own', (tester) async {
+      await tester.pumpWidget(
+        host(
+          PillTabs<String>(
+            value: 'a',
+            onChanged: (_) {},
+            items: const [
+              PillTabItem(value: 'a', label: 'A'),
+              PillTabItem(value: 'b', label: 'B'),
+            ],
+          ),
+        ),
+      );
+
+      final containers = tester
+          .widgetList<AnimatedContainer>(find.byType(AnimatedContainer))
+          .toList();
+      final selected = containers.first.decoration as BoxDecoration;
+      final resting = containers.last.decoration as BoxDecoration;
+
+      expect(
+        selected.color,
+        vars.colorPrimary[vars.controlColorFilledSurface.normalShade!],
+      );
+      // There is no track, so an unselected pill needs its own fill to be a
+      // target at all — the inset step.
+      expect(resting.color, vars.colorSurfaceInset);
+    });
+  });
+
+  group('Progress', () {
+    testWidgets('every size lands on its own thickness', (tester) async {
+      for (final (WidgetSize step, double thickness) in [
+        (WidgetSize.small, vars.spacing1),
+        (WidgetSize.medium, vars.spacing15),
+        (WidgetSize.large, vars.spacing2),
+      ]) {
+        await tester.pumpWidget(host(Progress(value: 0.5, size: step)));
+        expect(
+          tester.getSize(find.byType(Progress)).height,
+          thickness,
+          reason: '${step.namedSize.name} progress',
+        );
+      }
+    });
+  });
+
+  group('OptionCard', () {
+    testWidgets('the chosen card thickens its border as well as colouring it', (
+      tester,
+    ) async {
+      Future<BoxDecoration> decorationFor({required bool selected}) async {
+        await tester.pumpWidget(
+          host(
+            OptionCard(
+              title: 'Automatic',
+              selected: selected,
+              onPressed: () {},
+            ),
+          ),
+        );
+        return tester
+                .widget<AnimatedContainer>(find.byType(AnimatedContainer))
+                .decoration
+            as BoxDecoration;
+      }
+
+      final resting = await decorationFor(selected: false);
+      final chosen = await decorationFor(selected: true);
+
+      // A device-pixel hairline at rest; the control stroke when chosen.
+      expect(resting.border!.top.width, vars.strokeHairline / 2);
+      expect(chosen.border!.top.width, vars.strokeControl);
+      expect(
+        chosen.border!.top.color,
+        vars.colorPrimary[vars.controlColorOutlinedBorder.normalShade!],
+      );
     });
   });
 

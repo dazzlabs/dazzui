@@ -16,6 +16,7 @@ class _SettingsPageState extends State<SettingsPage> {
   bool _launch = true;
   bool _updates = true;
   bool _sounds = false;
+  String _appearance = 'auto';
 
   @override
   Widget build(BuildContext context) {
@@ -34,53 +35,89 @@ class _SettingsPageState extends State<SettingsPage> {
         ConstrainedBox(
           constraints: BoxConstraints(maxWidth: vars.dialogWidth * 1.5),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
-            spacing: vars.spacing4,
+            spacing: vars.spacing6,
             children: [
-              ListSection.insetGrouped(
-                header: const Text('General'),
+              // A group is the level above a section: sections stay one size
+              // everywhere, and the title outranks them rather than being a
+              // section shrunk to fit underneath one.
+              PreferenceGroup(
+                title: 'Application',
+                description: 'Settings that apply to every window.',
                 children: [
-                  ListTile(
-                    title: const Text('Launch at login'),
-                    trailing: Switch(
-                      value: _launch,
-                      onChanged: (value) => setState(() => _launch = value),
-                    ),
+                  PreferenceSection(
+                    label: 'General',
+                    children: [
+                      PreferenceRow(
+                        title: 'Launch at login',
+                        trailing: Switch(
+                          value: _launch,
+                          onChanged: (value) => setState(() => _launch = value),
+                        ),
+                      ),
+                      PreferenceRow(
+                        title: 'Check for updates',
+                        subtitle: 'Downloads in the background.',
+                        trailing: Switch(
+                          value: _updates,
+                          onChanged: (value) =>
+                              setState(() => _updates = value),
+                        ),
+                      ),
+                      PreferenceRow(
+                        title: 'Play sounds',
+                        trailing: Switch(
+                          value: _sounds,
+                          onChanged: (value) => setState(() => _sounds = value),
+                        ),
+                      ),
+                    ],
                   ),
-                  ListTile(
-                    title: const Text('Check for updates'),
-                    subtitle: const Text(
-                      'Downloads in the background and asks before '
-                      'installing.',
-                    ),
-                    trailing: Switch(
-                      value: _updates,
-                      onChanged: (value) => setState(() => _updates = value),
-                    ),
-                  ),
-                  ListTile(
-                    title: const Text('Play sounds'),
-                    trailing: Switch(
-                      value: _sounds,
-                      onChanged: (value) => setState(() => _sounds = value),
-                    ),
+                  PreferenceSection(
+                    label: 'Appearance',
+                    footer:
+                        'Automatic follows the system between light and '
+                        'dark.',
+                    children: [
+                      PreferenceRow(
+                        title: 'Theme',
+                        trailing: SegmentedControl<String>(
+                          value: _appearance,
+                          onChanged: (value) =>
+                              setState(() => _appearance = value),
+                          items: const [
+                            SegmentedItem(value: 'auto', label: 'Auto'),
+                            SegmentedItem(value: 'light', label: 'Light'),
+                            SegmentedItem(value: 'dark', label: 'Dark'),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              ListSection.insetGrouped(
-                header: const Text('Shortcuts'),
-                footer: const Text(
-                  'Shortcuts apply while the window has focus.',
-                ),
+              // A section on its own, with no group over it.
+              PreferenceSection(
+                label: 'Shortcuts',
                 children: const [
-                  ListTile(
-                    title: Text('Toggle the palette'),
-                    trailing: Kbd('⌘K'),
+                  PreferenceRow(
+                    title: 'Toggle the palette',
+                    trailing: Kbd('⌘K', variant: KbdVariant.key),
                   ),
-                  ListTile(
-                    title: Text('Rebuild tokens'),
-                    trailing: Kbd('⇧⌘B'),
+                  PreferenceRow(
+                    title: 'Rebuild tokens',
+                    trailing: Kbd('⇧⌘B', variant: KbdVariant.key),
+                  ),
+                ],
+              ),
+              PreferenceSection(
+                label: 'Navigation',
+                children: [
+                  PreferenceRow(
+                    title: 'Open the changelog',
+                    subtitle: 'Opens in your browser.',
+                    onPressed: () {},
                   ),
                 ],
               ),

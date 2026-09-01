@@ -5,8 +5,15 @@ import '../gallery.dart';
 
 /// What the app says back: the banners that stay, in every tint, and the one
 /// that carries actions.
-class FeedbackPage extends StatelessWidget {
+class FeedbackPage extends StatefulWidget {
   const FeedbackPage({super.key});
+
+  @override
+  State<FeedbackPage> createState() => _FeedbackPageState();
+}
+
+class _FeedbackPageState extends State<FeedbackPage> {
+  bool _dialog = false;
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +94,122 @@ class FeedbackPage extends StatelessWidget {
             ),
           ),
         ),
+        Specimen(
+          'Empty state',
+          child: Card(
+            variant: CardVariant.sunken,
+            child: EmptyState(
+              title: 'No components match this filter',
+              actions: [
+                Button(
+                  variant: ButtonVariant.tinted,
+                  onPressed: () {},
+                  child: const Text('Clear the filter'),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Specimen(
+          'Toasts',
+          note: 'one line, no wrapping — a second sentence is a banner',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            spacing: vars.spacing2,
+            children: [
+              Toast(
+                tint: ToastTint.success,
+                icon: FluentIcons.checkmark_circle_16_regular,
+                message: 'Tokens rebuilt — three packages refreshed.',
+                onDismiss: () {},
+              ),
+              Toast(
+                tint: ToastTint.danger,
+                icon: FluentIcons.dismiss_circle_16_regular,
+                message: 'The build failed.',
+                action: Button(
+                  size: WidgetSize.tiny,
+                  variant: ButtonVariant.plain,
+                  onPressed: () {},
+                  child: const Text('Retry'),
+                ),
+                onDismiss: () {},
+              ),
+            ],
+          ),
+        ),
+        Specimen(
+          'Menu',
+          note: 'a row washes neutral — the accent is what selection is',
+          child: MenuPanel(
+            children: [
+              MenuItem(
+                label: 'Rename',
+                icon: FluentIcons.rename_16_regular,
+                shortcut: '⌘R',
+                onPressed: () {},
+              ),
+              MenuItem(
+                label: 'Duplicate',
+                icon: FluentIcons.square_multiple_16_regular,
+                onPressed: () {},
+              ),
+              MenuItem(
+                label: 'Show hidden files',
+                checked: true,
+                onPressed: () {},
+              ),
+              const MenuItem(
+                label: 'Delete',
+                icon: FluentIcons.delete_16_regular,
+                onPressed: null,
+              ),
+            ],
+          ),
+        ),
+        Specimen(
+          'Dialog',
+          note: 'the scrim is the content colour at its own alpha',
+          child: Button(
+            variant: ButtonVariant.filled,
+            onPressed: () => setState(() => _dialog = true),
+            child: const Text('Show a dialog'),
+          ),
+        ),
+        if (_dialog)
+          Specimen(
+            'The sheet',
+            child: Dialog(
+              tone: DialogTone.danger,
+              children: [
+                const DialogHeader(
+                  title: 'Discard these changes?',
+                  subtitle:
+                      'The three files you edited will go back to '
+                      'their last saved state.',
+                ),
+                const DialogBody(
+                  children: [Text('This cannot be undone.')],
+                ),
+                DialogFooter(
+                  children: [
+                    const Spacer(),
+                    Button(
+                      onPressed: () => setState(() => _dialog = false),
+                      child: const Text('Keep editing'),
+                    ),
+                    Button(
+                      variant: ButtonVariant.filled,
+                      tint: ButtonTint.danger,
+                      onPressed: () => setState(() => _dialog = false),
+                      child: const Text('Discard'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         SizedBox(height: vars.spacing8),
       ],
     );

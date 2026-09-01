@@ -1,35 +1,24 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 
-import '../foundation/widget_radius.dart';
 import '../foundation/widget_size.dart';
 import '../foundation/widget_tint.dart';
 import '../foundation/widget_variant.dart';
 import '../generated/theme_variables.dart';
+import '../painting/widget_property.dart';
 import '../theme/theme.dart';
-import 'button.dart';
+import 'pressable.dart';
 
-/// The tint of a icon button.
+/// The tint of an icon button.
 enum IconButtonTint with WidgetTint {
-  /// A button indicating a primary action.
   primary,
-
-  /// A button indicating a neutral action.
   neutral,
-
-  /// A button indicating an info.
   info,
-
-  /// A button indicating a success.
   success,
-
-  /// A button indicating a warning.
   warning,
-
-  /// A button indicating a danger.
   danger,
 }
 
+/// The variant of an icon button.
 enum IconButtonVariant with WidgetVariant {
   normal,
   recessed,
@@ -39,42 +28,35 @@ enum IconButtonVariant with WidgetVariant {
   plain,
 }
 
+/// A square button.
+///
+/// Colour comes from the shared control recipes, but the default posture —
+/// the plain variant on the neutral tint — carries its own quiet chrome: a
+/// subtle-ink glyph that washes grey and darkens to full ink under the
+/// pointer, and turns accent when held on. A toolbar row of these has to read
+/// as chrome until touched, and the recipes' neutral ramp is too flat a grey
+/// for that.
 class IconButton extends StatefulWidget {
   const IconButton({
     super.key,
     required this.icon,
-    this.color,
     this.tint,
     this.variant,
     this.active = false,
     this.size = WidgetSize.tiny,
-    this.radius = WidgetRadius.medium,
-    this.padding,
     this.iconSize,
-    this.expand = false,
     this.focusNode,
     this.autofocus = false,
     this.onFocusChange,
     this.onHover,
+    this.semanticsLabel,
     required this.onPressed,
   });
 
-  /// The widget below this widget in the tree.
   final IconData icon;
 
-  /// The color of the button's seed color.
-  ///
-  /// Defaults to null.
-  final Color? color;
-
-  /// The tint of the button.
-  ///
-  /// Defaults to null.
   final IconButtonTint? tint;
 
-  /// The variant of the button.
-  ///
-  /// Defaults to null.
   final IconButtonVariant? variant;
 
   /// A persistent on-state — a pin held down, a panel kept open. The glyph
@@ -82,56 +64,19 @@ class IconButton extends StatefulWidget {
   /// colour statement, not a chip.
   final bool active;
 
-  /// The size of the button.
-  ///
-  /// Defaults to [WidgetSize.medium].
-  final Size size;
+  final WidgetSize size;
 
-  /// The radius of the button.
-  ///
-  /// Defaults to [WidgetRadius.medium].
-  final BorderRadius radius;
-
-  /// The padding of the button.
-  ///
-  /// Defaults to null.
-  final EdgeInsets? padding;
-
-  /// The icon size of the button.
-  ///
-  /// Defaults to null.
+  /// The glyph is smaller than the square it sits in.
   final double? iconSize;
 
-  /// Whether the button should expand to fill its container.
-  ///
-  /// Defaults to false.
-  final bool expand;
-
-  /// {@macro flutter.widgets.Focus.focusNode}
   final FocusNode? focusNode;
-
-  /// {@macro flutter.widgets.Focus.autofocus}
   final bool autofocus;
-
-  /// Handler called when the focus changes.
-  ///
-  /// Called with true if this widget's node gains focus, and false if it loses
-  /// focus.
   final ValueChanged<bool>? onFocusChange;
-
-  /// Handler called when the hover state changes.
-  ///
-  /// Called with true if this widget's node gains hover, and false if it loses
-  /// hover.
   final ValueChanged<bool>? onHover;
+  final String? semanticsLabel;
 
-  /// The callback that is called when the button is tapped or otherwise activated.
-  ///
-  /// If this is set to null, the button will be disabled.
   final VoidCallback? onPressed;
 
-  /// Whether the button is enabled or disabled. Buttons are disabled by default. To
-  /// enable a button, set its [onPressed] property to a non-null value.
   bool get enabled => onPressed != null;
 
   @override
@@ -139,63 +84,87 @@ class IconButton extends StatefulWidget {
 }
 
 class _IconButtonState extends State<IconButton> {
-  bool _isHovered = false;
-
   @override
   Widget build(BuildContext context) {
     final ThemeVariables vars = Theme.of(context).vars;
     final IconButtonVariant variant = widget.variant ?? IconButtonVariant.plain;
     final IconButtonTint tint = widget.tint ?? IconButtonTint.neutral;
 
-    // The default posture — plain variant, neutral tint — carries its own
-    // quiet chrome: a subtle-ink glyph that darkens to full ink under the
-    // pointer, because the recipes' neutral ramp is too flat a grey for a
-    // toolbar row that has to read as chrome until touched.
+    // The default posture keeps its own quiet chrome; anything else resolves
+    // against the recipes like every other control.
     final bool quietChrome =
-        variant == IconButtonVariant.plain &&
-        tint == IconButtonTint.neutral &&
-        widget.color == null;
+        variant == IconButtonVariant.plain && tint == IconButtonTint.neutral;
 
-    Color? color = widget.color;
-    Color? surface;
-    if (widget.active) {
-      // "This is on" is a colour statement, not a chip: the glyph takes the
-      // accent's text grade and the fill goes.
-      color = vars.colorPrimary[700];
-      surface = const Color(0x00000000);
-    } else if (quietChrome && widget.onPressed != null) {
-      color = _isHovered ? vars.colorContent : vars.colorContentSubtle;
-      // A toolbar glyph washes neutral, not accent — the row has to read as
-      // chrome until it is touched.
-      surface = _isHovered ? vars.colorSurfaceSubtle : const Color(0x00000000);
-    }
+    final (double box, double radius) = switch (widget.size.namedSize) {
+      NamedSize.small => (vars.controlSmallSize, vars.controlSmallRadius),
+      NamedSize.medium => (vars.controlMediumSize, vars.controlMediumRadius),
+      NamedSize.large => (vars.controlLargeSize, vars.controlLargeRadius),
+      _ => (vars.controlTinySize, vars.controlTinyRadius),
+    };
+    final BorderRadius corner = BorderRadius.circular(radius);
 
-    return Button(
-      color: color,
-      tint: ButtonTint.values.firstWhereOrNull(
-        (e) => e.namedTint == tint.namedTint,
-      ),
-      variant: ButtonVariant.values.firstWhereOrNull(
-        (e) => e.namedVariant == variant.namedVariant,
-      ),
-      size: widget.size,
-      square: true,
-      surfaceColor: surface,
-      // A toolbar glyph is smaller than the square it sits in; without this
-      // it would inherit the ambient IconTheme, which is half again as large.
-      iconSize: widget.iconSize ?? vars.spacing35,
-      radius: widget.radius,
-      padding: widget.padding,
-      expand: widget.expand,
+    return Pressable(
+      onPressed: widget.onPressed,
+      enabled: widget.enabled,
+      borderRadius: corner,
       focusNode: widget.focusNode,
       autofocus: widget.autofocus,
       onFocusChange: widget.onFocusChange,
-      onHover: (hovered) {
-        widget.onHover?.call(hovered);
-        if (quietChrome && mounted) setState(() => _isHovered = hovered);
+      onHover: widget.onHover,
+      semanticsLabel: widget.semanticsLabel,
+      builder: (context, states) {
+        final bool hovered = states.contains(WidgetState.hovered);
+
+        Color surface;
+        Color content;
+        Color border;
+
+        if (widget.active) {
+          surface = const Color(0x00000000);
+          content = vars.colorPrimary[700]!;
+          border = const Color(0x00000000);
+        } else if (quietChrome) {
+          // A toolbar glyph washes neutral, not accent.
+          surface = hovered && widget.enabled
+              ? vars.colorSurfaceSubtle
+              : const Color(0x00000000);
+          content = widget.enabled
+              ? (hovered ? vars.colorContent : vars.colorContentSubtle)
+              : vars.controlColorNormalContent.disabledColor!;
+          border = const Color(0x00000000);
+        } else {
+          final ColorSwatch<int> ramp = vars.controlColor.tinted(tint);
+          Color resolve(WidgetProperty<Color> Function() get) =>
+              get().resolveWith(
+                states,
+                variant: variant,
+                extra: {
+                  'seedColor': ramp,
+                },
+              );
+          surface = resolve(() => vars.controlColorSurface);
+          content = resolve(() => vars.controlColorContent);
+          border = resolve(() => vars.controlColorBorder);
+        }
+
+        return AnimatedContainer(
+          duration: vars.motionDuration,
+          curve: vars.motionEasing,
+          width: box,
+          height: box,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(color: surface, borderRadius: corner),
+          foregroundDecoration: BoxDecoration(
+            border: Border.all(color: border, width: context.hairlineWidth),
+            borderRadius: corner,
+          ),
+          child: Icon(
+            widget.icon,
+            size: widget.iconSize ?? vars.spacing35,
+            color: content,
+          ),
+        );
       },
-      onPressed: widget.onPressed,
-      child: Icon(widget.icon),
     );
   }
 }

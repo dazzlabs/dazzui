@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 
-import '../foundation/widget_radius.dart';
 import '../foundation/widget_size.dart';
 import '../foundation/widget_tint.dart';
 import '../foundation/widget_variant.dart';
@@ -69,24 +68,15 @@ class Badge extends StatefulWidget {
   const Badge({
     super.key,
     required this.child,
-    this.color,
     this.variant,
     this.tint,
     this.size = WidgetSize.medium,
-    this.radius = WidgetRadius.full,
-    this.padding,
-    this.alignment = Alignment.center,
   });
 
   /// The widget below this widget in the tree.
   ///
   /// Typically a [Text] widget.
   final Widget child;
-
-  /// The color of the badge's seed color.
-  ///
-  /// Defaults to null.
-  final Color? color;
 
   /// The tint of the badge.
   ///
@@ -102,26 +92,6 @@ class Badge extends StatefulWidget {
   ///
   /// Defaults to [WidgetSize.medium].
   final Size size;
-
-  /// The radius of the badge's corners when it has a background color.
-  ///
-  /// Defaults to round corners of 8 logical pixels.
-  final BorderRadius? radius;
-
-  /// The amount of space to surround the child inside the bounds of the badge.
-  ///
-  /// Defaults to 16.0 pixels.
-  final EdgeInsetsGeometry? padding;
-
-  /// The alignment of the badge's [child].
-  ///
-  /// Typically badges are sized to be just big enough to contain the child and its
-  /// [padding]. If the badge's size is constrained to a fixed size, for example by
-  /// enclosing it with a [SizedBox], this property defines how the child is aligned
-  /// within the available space.
-  ///
-  /// Always defaults to [Alignment.center].
-  final AlignmentGeometry alignment;
 
   @override
   State<Badge> createState() => _BadgeState();
@@ -139,17 +109,14 @@ class _BadgeState extends State<Badge> with SingleTickerProviderStateMixin {
     T resolve<T>(
       WidgetProperty<T> Function(BadgeThemeData theme) getProperty,
     ) {
-      Color? seedColor =
-          widget.color ??
-          badgeTheme.color?.tinted(widget.tint ?? BadgeTint.primary);
+      Color? seedColor = badgeTheme.color?.tinted(
+        widget.tint ?? BadgeTint.primary,
+      );
       return getProperty(badgeTheme).resolveWith(
         {},
         tint: widget.tint,
         size: widget.size is WidgetSize ? widget.size as WidgetSize : null,
         variant: variant == BadgeVariant.raised ? BadgeVariant.plain : variant,
-        radius: widget.radius is WidgetRadius
-            ? widget.radius as WidgetRadius
-            : WidgetRadius.medium,
         extra: {
           'seedColor': seedColor,
         }..removeWhere((key, value) => value == null),
@@ -185,7 +152,7 @@ class _BadgeState extends State<Badge> with SingleTickerProviderStateMixin {
       child: Padding(
         padding: padding,
         child: Align(
-          alignment: widget.alignment,
+          alignment: Alignment.center,
           widthFactor: 1.0,
           heightFactor: 1.0,
           child: DefaultTextStyle(

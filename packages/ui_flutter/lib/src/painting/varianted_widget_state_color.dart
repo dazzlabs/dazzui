@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 
 import '../foundation/color_descriptor.dart';
-import '../foundation/widget_radius.dart';
 import '../foundation/widget_size.dart';
 import '../foundation/widget_tint.dart';
 import '../foundation/widget_variant.dart';
@@ -49,7 +48,6 @@ class VariantedWidgetStateColor implements WidgetProperty<Color> {
     WidgetTint? tint,
     WidgetVariant? variant,
     WidgetSize? size,
-    WidgetRadius? radius,
     Map<String, dynamic>? extra,
   }) {
     Color? seedColor;

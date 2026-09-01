@@ -6,10 +6,6 @@ import '../generated/theme_variables.dart';
 import '../theme/theme.dart';
 import 'oval_loader.dart';
 
-enum LoaderVariant {
-  oval,
-}
-
 /// The tint a [Loader] draws in.
 enum LoaderTint with WidgetTint {
   primary,
@@ -26,14 +22,11 @@ enum LoaderTint with WidgetTint {
 class Loader extends StatelessWidget {
   const Loader({
     super.key,
-    this.variant = LoaderVariant.oval,
     this.size = WidgetSize.medium,
     this.tint = LoaderTint.primary,
     this.color,
     this.onAccent = false,
   });
-
-  final LoaderVariant variant;
 
   final WidgetSize size;
 

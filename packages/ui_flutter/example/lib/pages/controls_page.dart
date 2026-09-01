@@ -135,6 +135,16 @@ class ControlsPage extends StatelessWidget {
             ],
           ),
         ),
+        Specimen(
+          'Segmented control',
+          note: 'the capsule sits inside the track, corners concentric',
+          child: _SegmentedDemo(),
+        ),
+        Specimen(
+          'Pill tabs',
+          note: 'no track — each pill stands on the page',
+          child: _PillDemo(),
+        ),
         const Specimen(
           'Keys',
           child: RowWrap(
@@ -145,7 +155,63 @@ class ControlsPage extends StatelessWidget {
             ],
           ),
         ),
+        Specimen(
+          'Section labels',
+          child: RowWrap(
+            spacing: vars.spacing4,
+            children: const [
+              SectionLabel('Components'),
+              SectionLabel('Navigation', tone: SectionLabelTone.faint),
+              SectionLabel('Failing', tint: SectionLabelTint.danger),
+            ],
+          ),
+        ),
         SizedBox(height: vars.spacing8),
+      ],
+    );
+  }
+}
+
+class _SegmentedDemo extends StatefulWidget {
+  @override
+  State<_SegmentedDemo> createState() => _SegmentedDemoState();
+}
+
+class _SegmentedDemoState extends State<_SegmentedDemo> {
+  String _mode = 'design';
+
+  @override
+  Widget build(BuildContext context) {
+    return SegmentedControl<String>(
+      value: _mode,
+      onChanged: (value) => setState(() => _mode = value),
+      items: const [
+        SegmentedItem(value: 'design', label: 'Design'),
+        SegmentedItem(value: 'code', label: 'Code'),
+        SegmentedItem(value: 'preview', label: 'Preview'),
+      ],
+    );
+  }
+}
+
+class _PillDemo extends StatefulWidget {
+  @override
+  State<_PillDemo> createState() => _PillDemoState();
+}
+
+class _PillDemoState extends State<_PillDemo> {
+  String _tab = 'all';
+
+  @override
+  Widget build(BuildContext context) {
+    return PillTabs<String>(
+      value: _tab,
+      onChanged: (value) => setState(() => _tab = value),
+      items: const [
+        PillTabItem(value: 'all', label: 'All', count: 24),
+        PillTabItem(value: 'open', label: 'Open', count: 3),
+        PillTabItem(value: 'done', label: 'Done', count: 21),
+        PillTabItem(value: 'archived', label: 'Archived', enabled: false),
       ],
     );
   }

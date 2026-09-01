@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-import '../foundation/widget_radius.dart';
 import '../foundation/widget_size.dart';
 import '../foundation/widget_tint.dart';
 import '../foundation/widget_variant.dart';
@@ -63,15 +62,9 @@ class Button extends StatefulWidget {
   const Button({
     super.key,
     required this.child,
-    this.color,
     this.tint,
     this.variant,
     this.size = WidgetSize.small,
-    this.radius = WidgetRadius.medium,
-    this.padding,
-    this.iconSize,
-    this.square = false,
-    this.surfaceColor,
     this.shortcut,
     this.expand = false,
     this.focusNode,
@@ -85,11 +78,6 @@ class Button extends StatefulWidget {
   ///
   /// Typically a [Text] widget.
   final Widget child;
-
-  /// The color of the button's seed color.
-  ///
-  /// Defaults to null.
-  final Color? color;
 
   /// The tint of the button.
   ///
@@ -105,34 +93,6 @@ class Button extends StatefulWidget {
   ///
   /// Defaults to [WidgetSize.medium].
   final Size size;
-
-  /// The radius of the button.
-  ///
-  /// Defaults to [WidgetRadius.medium].
-  final BorderRadius radius;
-
-  /// The padding of the button.
-  ///
-  /// Defaults to null.
-  final EdgeInsets? padding;
-
-  /// The icon size of the button.
-  ///
-  /// Defaults to null.
-  final double? iconSize;
-
-  /// Whether the button is a square of the profile's control height on both
-  /// axes, with no inline padding — what an [IconButton] is.
-  ///
-  /// Defaults to false.
-  final bool square;
-
-  /// Paints the box with this instead of the variant's own recipe.
-  ///
-  /// For a control whose surface is not on the tint's ramp at all — the
-  /// quiet chrome of an [IconButton], which washes neutral rather than
-  /// accent under the pointer.
-  final Color? surfaceColor;
 
   /// A trailing shortcut glyph, e.g. `⌘S`. It is a hint rather than part of
   /// the label, so it takes the display cut and steps back.
@@ -210,12 +170,9 @@ class _ButtonState extends State<Button> {
             _resolve<T>(buttonTheme, states, variant, get);
 
         final Size box = resolve<Size>((t) => t.minSize!);
-        EdgeInsets padding =
-            widget.padding ?? resolve<EdgeInsets>((t) => t.padding!);
-        if (widget.square) padding = EdgeInsets.zero;
+        EdgeInsets padding = resolve<EdgeInsets>((t) => t.padding!);
 
-        final Color surface =
-            widget.surfaceColor ?? resolve<Color>((t) => t.surfaceColor!);
+        final Color surface = resolve<Color>((t) => t.surfaceColor!);
         final Color content = resolve<Color>((t) => t.contentColor!);
         final Color border = resolve<Color>((t) => t.borderColor!);
         TextStyle labelStyle = resolve<TextStyle>((t) => t.labelStyle!);
@@ -234,9 +191,7 @@ class _ButtonState extends State<Button> {
         // nothing else. Animating the box as well would make a size change
         // slide rather than land.
         return SizedBox(
-          width: widget.square
-              ? box.width
-              : (widget.expand ? double.infinity : null),
+          width: widget.expand ? double.infinity : null,
           // The height is fixed rather than a minimum, so a taller glyph or a
           // CJK label can never push one button out of line with its
           // neighbours.
@@ -265,7 +220,7 @@ class _ButtonState extends State<Button> {
               softWrap: false,
               child: IconTheme(
                 data: IconTheme.of(context).copyWith(
-                  size: widget.iconSize ?? vars.spacing4,
+                  size: vars.spacing4,
                   color: content,
                 ),
                 child: Row(
@@ -273,7 +228,7 @@ class _ButtonState extends State<Button> {
                       ? MainAxisSize.max
                       : MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  spacing: widget.square ? 0 : _gap(vars, widget.size),
+                  spacing: _gap(vars, widget.size),
                   children: [
                     widget.child,
                     // A trailing shortcut is a hint, not part of the label — it
@@ -317,16 +272,14 @@ class _ButtonState extends State<Button> {
     ButtonVariant variant,
     WidgetProperty<T> Function(ButtonThemeData t) get,
   ) {
-    final Color? seedColor =
-        widget.color ?? theme.color?.tinted(widget.tint ?? ButtonTint.primary);
+    final Color? seedColor = theme.color?.tinted(
+      widget.tint ?? ButtonTint.primary,
+    );
     return get(theme).resolveWith(
       states,
       tint: widget.tint,
       size: widget.size is WidgetSize ? widget.size as WidgetSize : null,
       variant: variant,
-      radius: widget.radius is WidgetRadius
-          ? widget.radius as WidgetRadius
-          : WidgetRadius.medium,
       extra: {
         'seedColor': seedColor,
       }..removeWhere((key, value) => value == null),

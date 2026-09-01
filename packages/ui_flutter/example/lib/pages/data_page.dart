@@ -69,66 +69,87 @@ class _DataPageState extends State<DataPage> {
           ),
         ),
         Specimen(
-          'Rows',
-          note: 'the list tile answers the pointer; the badge only annotates',
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: vars.dialogWidth),
-            child: ListSection.insetGrouped(
-              header: const Text('Builds'),
-              footer: Text('Selected: $_selected'),
+          'Table',
+          note: 'hover is neutral so the tinted selection stays the heavier',
+          // A table brings its own rules, so it is framed rather than carded.
+          child: Container(
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: vars.colorBorder,
+                width: context.hairlineWidth,
+              ),
+              borderRadius: BorderRadius.circular(vars.radiusLarge),
+            ),
+            child: DataTable(
               children: [
-                for (final build in _builds)
-                  ListTile(
-                    title: Text(build.id),
-                    subtitle: Text(build.branch),
-                    trailing: Badge(
-                      size: WidgetSize.small,
-                      variant: BadgeVariant.tinted,
-                      tint: build.tint,
-                      child: Text(build.status),
+                const TableHead(
+                  children: [
+                    TableCell(head: true, child: Text('Build')),
+                    TableCell(head: true, child: Text('Branch')),
+                    TableCell(
+                      head: true,
+                      align: TableCellAlign.end,
+                      width: 96,
+                      child: Text('Status'),
                     ),
-                    onTap: () => setState(() => _selected = build.id),
+                  ],
+                ),
+                for (final build in _builds)
+                  TableRow(
+                    active: _selected == build.id,
+                    onPressed: () => setState(() => _selected = build.id),
+                    children: [
+                      TableCell(child: Text(build.id)),
+                      TableCell(child: Text(build.branch)),
+                      TableCell(
+                        align: TableCellAlign.end,
+                        width: 96,
+                        child: Badge(
+                          size: WidgetSize.small,
+                          variant: BadgeVariant.tinted,
+                          tint: build.tint,
+                          child: Text(build.status),
+                        ),
+                      ),
+                    ],
                   ),
               ],
             ),
           ),
         ),
         Specimen(
-          'Divided rows',
-          note: 'one hairline between neighbours, none at the edges',
-          child: Card(
-            child: SizedBox(
-              width: vars.dialogWidth / 2,
-              child: DividedColumn(
-                divider: const Divider(height: 1),
-                children: [
-                  for (final build in _builds)
-                    Padding(
-                      padding: EdgeInsets.all(vars.spacing3),
-                      child: Row(
-                        children: [
-                          Text(
-                            build.id,
-                            style: vars.labelMedium.copyWith(
-                              color: vars.colorContent,
-                            ),
-                          ),
-                          const Spacer(),
-                          Flexible(
-                            child: Text(
-                              build.branch,
-                              overflow: TextOverflow.ellipsis,
-                              style: vars.captionSmall.copyWith(
-                                color: vars.colorContentMuted,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
+          'Progress',
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: vars.dialogWidth),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: vars.spacing3,
+              children: const [
+                Progress(value: 0.35),
+                Progress(value: 0.7, size: WidgetSize.medium, gradient: true),
+                // No value at all is the indeterminate sweep.
+                Progress(size: WidgetSize.large, tint: ProgressTint.info),
+              ],
             ),
+          ),
+        ),
+        const Specimen(
+          'Steps',
+          child: StepList(
+            children: [
+              Step(status: StepStatus.done, label: 'Resolve the token graph'),
+              Step(
+                status: StepStatus.done,
+                label: 'Write the platform sources',
+              ),
+              Step(
+                status: StepStatus.active,
+                label: 'Compile dazzui',
+                meta: 'now',
+              ),
+              Step(status: StepStatus.idle, label: 'Publish the package'),
+            ],
           ),
         ),
         Specimen(

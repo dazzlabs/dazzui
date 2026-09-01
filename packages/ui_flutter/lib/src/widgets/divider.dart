@@ -14,8 +14,6 @@ const double _kDividerEndIndent = 0;
 /// In the Material Design language, this represents a divider. Dividers can be
 /// used in lists, [Drawer]s, and elsewhere to separate content.
 ///
-/// To create a divider between [ListTile] items, consider using
-/// [ListTile.divideTiles], which is optimized for this case.
 ///
 /// {@youtube 560 315 https://www.youtube.com/watch?v=_liUC641Nmk}
 ///
@@ -43,7 +41,6 @@ const double _kDividerEndIndent = 0;
 /// See also:
 ///
 ///  * [PopupMenuDivider], which is the equivalent but for popup menus.
-///  * [ListTile.divideTiles], another approach to dividing widgets in a list.
 ///  * [VerticalDivider], which is the vertical analog of this widget.
 ///  * <https://material.io/design/components/dividers.html>
 class Divider extends StatelessWidget {
