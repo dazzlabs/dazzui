@@ -248,12 +248,16 @@ class VariantedWidgetProperty<T> implements WidgetProperty<T> {
 
 class SizedWidgetProperty<T> implements WidgetProperty<T> {
   const SizedWidgetProperty({
+    this.tiny,
     required this.small,
     required this.medium,
     required this.large,
     this.debugName,
   });
 
+  /// The tiny step of the profile. A component without one falls back to
+  /// [small], the way most of the vocabulary only spans three sizes.
+  final T? tiny;
   final T small;
   final T medium;
   final T large;
@@ -262,6 +266,7 @@ class SizedWidgetProperty<T> implements WidgetProperty<T> {
 
   Map<NamedSize, T> get _values {
     return {
+      NamedSize.tiny: tiny ?? small,
       NamedSize.small: small,
       NamedSize.medium: medium,
       NamedSize.large: large,

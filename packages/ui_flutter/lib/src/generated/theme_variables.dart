@@ -293,119 +293,119 @@ class ThemeVariables {
 
   // Typography
   TextStyle get headlineSmall => TextStyle(
-    fontFamily: '-apple-system',
+    fontFamilyFallback: const ['SF Pro Display', 'PingFang SC'],
     fontSize: 20,
     fontWeight: FontWeight.w600,
     height: 26 / 20,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get headlineMedium => TextStyle(
-    fontFamily: '-apple-system',
+    fontFamilyFallback: const ['SF Pro Display', 'PingFang SC'],
     fontSize: 24,
     fontWeight: FontWeight.w600,
     height: 30 / 24,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get headlineLarge => TextStyle(
-    fontFamily: '-apple-system',
+    fontFamilyFallback: const ['SF Pro Display', 'PingFang SC'],
     fontSize: 28,
     fontWeight: FontWeight.w600,
     height: 34 / 28,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get titleSmall => TextStyle(
-    fontFamily: '-apple-system',
+    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
     fontSize: 13,
     fontWeight: FontWeight.w600,
     height: 20 / 13,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get titleMedium => TextStyle(
-    fontFamily: '-apple-system',
+    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
     fontSize: 15,
     fontWeight: FontWeight.w600,
     height: 22 / 15,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get titleLarge => TextStyle(
-    fontFamily: '-apple-system',
+    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
     fontSize: 17,
     fontWeight: FontWeight.w600,
     height: 22 / 17,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get bodySmall => TextStyle(
-    fontFamily: '-apple-system',
+    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
     fontSize: 12,
     fontWeight: FontWeight.w400,
     height: 18 / 12,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get bodyMedium => TextStyle(
-    fontFamily: '-apple-system',
+    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
     fontSize: 13,
     fontWeight: FontWeight.w400,
     height: 20 / 13,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get bodyLarge => TextStyle(
-    fontFamily: '-apple-system',
+    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
     fontSize: 15,
     fontWeight: FontWeight.w400,
     height: 22 / 15,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get labelQuiet => TextStyle(
-    fontFamily: '-apple-system',
+    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
     fontSize: 12,
     fontWeight: FontWeight.w500,
     height: 12 / 12,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get labelStrong => TextStyle(
-    fontFamily: '-apple-system',
+    fontFamilyFallback: const ['SF Pro Display', 'PingFang SC'],
     fontSize: 12,
     fontWeight: FontWeight.w700,
     height: 12 / 12,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get labelSmall => TextStyle(
-    fontFamily: '-apple-system',
+    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
     fontSize: 11,
     fontWeight: FontWeight.w600,
     height: 11 / 11,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get labelMedium => TextStyle(
-    fontFamily: '-apple-system',
+    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
     fontSize: 12,
     fontWeight: FontWeight.w600,
     height: 12 / 12,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get labelLarge => TextStyle(
-    fontFamily: '-apple-system',
+    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
     fontSize: 13,
     fontWeight: FontWeight.w600,
     height: 13 / 13,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get captionSmall => TextStyle(
-    fontFamily: '-apple-system',
+    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
     fontSize: 11,
     fontWeight: FontWeight.w400,
     height: 14 / 11,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get captionMedium => TextStyle(
-    fontFamily: '-apple-system',
+    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
     fontSize: 12,
     fontWeight: FontWeight.w400,
     height: 18 / 12,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get captionLarge => TextStyle(
-    fontFamily: '-apple-system',
+    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
     fontSize: 13,
     fontWeight: FontWeight.w400,
     height: 20 / 13,

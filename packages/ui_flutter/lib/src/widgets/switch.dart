@@ -20,6 +20,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../foundation/widget_size.dart';
 import '../theme/theme.dart';
 import 'switch_thumb_painter.dart';
 
@@ -71,6 +72,7 @@ class Switch extends StatefulWidget {
     super.key,
     required this.value,
     required this.onChanged,
+    this.size = WidgetSize.medium,
     this.activeColor,
     this.trackColor,
     this.thumbColor,
@@ -115,6 +117,11 @@ class Switch extends StatefulWidget {
   /// If null and [applyTheme] is false, defaults to [CupertinoColors.systemGreen]
   /// in accordance to native iOS behavior. Otherwise, defaults to
   /// [CupertinoThemeData.primaryColor].
+  /// The size of the switch.
+  ///
+  /// Defaults to [WidgetSize.medium].
+  final WidgetSize size;
+
   final Color? activeColor;
 
   /// The color to use for the track when the switch is off.
@@ -369,7 +376,12 @@ class _SwitchState extends State<Switch> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final Color activeColor = widget.activeColor ?? theme.vars.colorPrimary;
+    final Color activeColor =
+        widget.activeColor ??
+        theme.vars.colorPrimary[theme
+            .vars
+            .controlColorFilledSurface
+            .normalShade!]!;
     final (Color onLabelColor, Color offLabelColor)? onOffLabelColors =
         MediaQuery.onOffSwitchLabelsOf(context)
         ? (
@@ -386,13 +398,33 @@ class _SwitchState extends State<Switch> with TickerProviderStateMixin {
     if (needsPositionAnimation) {
       _resumePositionAnimation();
     }
-    final double minSize = 32;
-    final double secondaryMinSize = minSize * 0.8;
-
-    final double switchWidth = minSize * 1.6;
-    final double switchHeight = minSize;
-    final double trackWidth = secondaryMinSize * 1.6;
-    final double trackHeight = secondaryMinSize;
+    // The track and its thumb are the sizes `toggle.<size>.*` holds. The
+    // switch box is the track itself: the thumb rides on the padding the
+    // track/thumb difference leaves, the way the stylesheet lays it out with
+    // `justify-content` rather than a translate.
+    final (
+      double trackWidth,
+      double trackHeight,
+      double thumbSize,
+    ) = switch (widget.size.namedSize) {
+      NamedSize.large => (
+        theme.vars.toggleLargeWidth,
+        theme.vars.toggleLargeHeight,
+        theme.vars.toggleLargeThumb,
+      ),
+      NamedSize.medium => (
+        theme.vars.toggleMediumWidth,
+        theme.vars.toggleMediumHeight,
+        theme.vars.toggleMediumThumb,
+      ),
+      _ => (
+        theme.vars.toggleSmallWidth,
+        theme.vars.toggleSmallHeight,
+        theme.vars.toggleSmallThumb,
+      ),
+    };
+    final double switchWidth = trackWidth;
+    final double switchHeight = trackHeight;
     final double trackInnerStart = trackHeight / 2.0;
     final double trackInnerEnd = trackWidth - trackInnerStart;
     final double trackInnerLength = trackInnerEnd - trackInnerStart;
@@ -420,14 +452,20 @@ class _SwitchState extends State<Switch> with TickerProviderStateMixin {
             trackWidth: trackWidth,
             trackHeight: trackHeight,
             activeColor: activeColor,
-            trackColor: CupertinoDynamicColor.resolve(
-              widget.trackColor ?? CupertinoColors.secondarySystemFill,
-              context,
-            ),
-            thumbColor: CupertinoDynamicColor.resolve(
-              widget.thumbColor ?? CupertinoColors.white,
-              context,
-            ),
+            trackColor: widget.trackColor ?? theme.vars.colorSurfaceSunken,
+            // The thumb changes colour with the state: faint ink while off —
+            // a grey thumb in a grey groove, deliberately low-contrast — and
+            // only brightens to the raised surface once the track fills. A
+            // white thumb in the off groove reads nearly as loud as the on
+            // state. `surface-raised` rather than the paper: on a dark canvas
+            // the paper is darker than the groove, and a thumb painted with
+            // it would sink.
+            thumbColor:
+                widget.thumbColor ??
+                (widget.value
+                    ? theme.vars.colorSurfaceRaised
+                    : theme.vars.colorContentFaint),
+            thumbSize: thumbSize,
             // Opacity, lightness, and saturation values were approximated with
             // color pickers on the switches in the macOS settings.
             focusColor: CupertinoDynamicColor.resolve(
@@ -468,6 +506,7 @@ class _SwitchRenderObjectWidget extends LeafRenderObjectWidget {
     required this.switchHeight,
     required this.trackWidth,
     required this.trackHeight,
+    required this.thumbSize,
     required this.activeColor,
     required this.trackColor,
     required this.thumbColor,
@@ -484,6 +523,7 @@ class _SwitchRenderObjectWidget extends LeafRenderObjectWidget {
   final double switchHeight;
   final double trackWidth;
   final double trackHeight;
+  final double thumbSize;
   final Color activeColor;
   final Color trackColor;
   final Color thumbColor;
@@ -502,6 +542,7 @@ class _SwitchRenderObjectWidget extends LeafRenderObjectWidget {
       switchHeight: switchHeight,
       trackWidth: trackWidth,
       trackHeight: trackHeight,
+      thumbSize: thumbSize,
       activeColor: activeColor,
       trackColor: trackColor,
       thumbColor: thumbColor,
@@ -519,8 +560,13 @@ class _SwitchRenderObjectWidget extends LeafRenderObjectWidget {
     assert(renderObject._state == state);
     renderObject
       ..value = value
+      // The box constraints come off these two, so a size change has to
+      // reach them or the switch keeps whatever box it was first built with.
+      ..switchWidth = switchWidth
+      ..switchHeight = switchHeight
       ..trackWidth = trackWidth
       ..trackHeight = trackHeight
+      ..thumbSize = thumbSize
       ..activeColor = activeColor
       ..trackColor = trackColor
       ..thumbColor = thumbColor
@@ -571,6 +617,7 @@ class _RenderSwitch extends RenderConstrainedBox {
     required double switchHeight,
     required double trackWidth,
     required double trackHeight,
+    required double thumbSize,
     required Color activeColor,
     required Color trackColor,
     required Color thumbColor,
@@ -581,14 +628,17 @@ class _RenderSwitch extends RenderConstrainedBox {
     required _SwitchState state,
     required (Color onLabelColor, Color offLabelColor)? onOffLabelColors,
   }) : _value = value,
+       _switchWidth = switchWidth,
+       _switchHeight = switchHeight,
        _trackWidth = trackWidth,
        _trackHeight = trackHeight,
+       _thumbSize = thumbSize,
        _activeColor = activeColor,
        _trackColor = trackColor,
        _focusColor = focusColor,
        _thumbPainter = SwitchThumbPainter(
          color: thumbColor,
-         radius: trackHeight * 0.8 / 2,
+         radius: thumbSize / 2,
        ),
        _onChanged = onChanged,
        _textDirection = textDirection,
@@ -627,6 +677,43 @@ class _RenderSwitch extends RenderConstrainedBox {
     markNeedsPaint();
   }
 
+  /// The box the switch occupies. Writing either re-tightens the additional
+  /// constraints the render object was constructed with.
+  double get switchWidth => _switchWidth;
+  double _switchWidth;
+  set switchWidth(double value) {
+    if (value == _switchWidth) return;
+    _switchWidth = value;
+    _applyBox();
+  }
+
+  double get switchHeight => _switchHeight;
+  double _switchHeight;
+  set switchHeight(double value) {
+    if (value == _switchHeight) return;
+    _switchHeight = value;
+    _applyBox();
+  }
+
+  void _applyBox() {
+    additionalConstraints = BoxConstraints.tightFor(
+      width: _switchWidth,
+      height: _switchHeight,
+    );
+  }
+
+  double get thumbSize => _thumbSize;
+  double _thumbSize;
+  set thumbSize(double value) {
+    if (value == _thumbSize) return;
+    _thumbSize = value;
+    _thumbPainter = SwitchThumbPainter(
+      color: _thumbPainter.color,
+      radius: value / 2,
+    );
+    markNeedsPaint();
+  }
+
   double get trackHeight => _trackHeight;
   double _trackHeight;
   set trackHeight(double value) {
@@ -636,7 +723,7 @@ class _RenderSwitch extends RenderConstrainedBox {
     _trackHeight = value;
     _thumbPainter = SwitchThumbPainter(
       color: _thumbPainter.color,
-      radius: trackHeight * 0.8 / 2,
+      radius: _thumbSize / 2,
     );
     markNeedsPaint();
   }
@@ -673,7 +760,9 @@ class _RenderSwitch extends RenderConstrainedBox {
     }
     _thumbPainter = SwitchThumbPainter(
       color: value,
-      radius: trackHeight * 0.8 / 2,
+      // The knob is `toggle.<size>.thumb`, not a fraction of the track — a
+      // colour change must not resize it.
+      radius: _thumbSize / 2,
     );
     markNeedsPaint();
   }

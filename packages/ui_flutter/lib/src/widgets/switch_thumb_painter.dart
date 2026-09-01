@@ -5,20 +5,16 @@
 import 'package:flutter/cupertino.dart' show CupertinoColors;
 import 'package:flutter/painting.dart';
 
-const Color _kThumbBorderColor = Color(0x0A000000);
+/// The knob is flat.
+///
+/// An iOS switch lifts its thumb on a two-layer drop shadow and rings it in
+/// black at 4%. This design's toggle is an AppKit control a third that size —
+/// a 14px knob in an 18px groove — and the same shadow on it reads as grime
+/// rather than as lift. The stylesheet draws no shadow here at all, so nor
+/// does this.
+const Color _kThumbBorderColor = Color(0x00000000);
 
-const List<BoxShadow> _kSwitchBoxShadows = <BoxShadow>[
-  BoxShadow(
-    color: Color(0x26000000),
-    offset: Offset(0, 3),
-    blurRadius: 8.0,
-  ),
-  BoxShadow(
-    color: Color(0x0F000000),
-    offset: Offset(0, 3),
-    blurRadius: 1.0,
-  ),
-];
+const List<BoxShadow> _kSwitchBoxShadows = <BoxShadow>[];
 
 /// Paints an iOS-style slider thumb or switch thumb.
 class SwitchThumbPainter {

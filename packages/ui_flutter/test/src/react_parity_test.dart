@@ -1,0 +1,414 @@
+import 'package:dazzui/dazzui.dart';
+import 'package:flutter/material.dart' as material;
+import 'package:flutter_test/flutter_test.dart';
+
+/// The details this package is held to are the React stylesheets': the same
+/// tokens resolved the same way. These assertions are the parts of a
+/// screenshot that can be checked without a screen — the geometry a size
+/// resolves to, and the recipe a variant paints with.
+///
+/// See packages/ui_react/src/components/*.css for the rules each group
+/// mirrors.
+void main() {
+  Widget host(Widget child, {ThemeData? theme}) {
+    return material.MaterialApp(
+      home: Theme(
+        data: theme ?? ThemeData.studioLight(),
+        child: material.Material(
+          type: material.MaterialType.transparency,
+          child: Center(child: child),
+        ),
+      ),
+    );
+  }
+
+  const vars = themeVariables;
+
+  group('Button', () {
+    testWidgets('sits at the size profile height, small by default', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(Button(onPressed: () {}, child: const Text('Save'))),
+      );
+
+      final Size size = tester.getSize(find.byType(Button));
+      expect(size.height, vars.controlSmallSize);
+    });
+
+    testWidgets('every size lands on its profile height', (tester) async {
+      for (final (WidgetSize step, double height) in [
+        (WidgetSize.tiny, vars.controlTinySize),
+        (WidgetSize.small, vars.controlSmallSize),
+        (WidgetSize.medium, vars.controlMediumSize),
+        (WidgetSize.large, vars.controlLargeSize),
+      ]) {
+        await tester.pumpWidget(
+          host(Button(size: step, onPressed: () {}, child: const Text('A'))),
+        );
+        expect(
+          tester.getSize(find.byType(Button)).height,
+          height,
+          reason: '${step.namedSize.name} button',
+        );
+      }
+    });
+
+    testWidgets('recessed is the default variant, and it fills the inset', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(Button(onPressed: () {}, child: const Text('Save'))),
+      );
+
+      final decoration =
+          tester
+                  .widget<AnimatedContainer>(find.byType(AnimatedContainer))
+                  .decoration
+              as BoxDecoration;
+      expect(decoration.color, vars.colorSurfaceInset);
+    });
+
+    testWidgets('filled takes the accent fill and the hairline lift', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(
+          Button(
+            variant: ButtonVariant.filled,
+            onPressed: () {},
+            child: const Text('Save'),
+          ),
+        ),
+      );
+
+      final decoration =
+          tester
+                  .widget<AnimatedContainer>(find.byType(AnimatedContainer))
+                  .decoration
+              as BoxDecoration;
+      expect(
+        decoration.color,
+        vars.colorPrimary[vars.controlColorFilledSurface.normalShade!],
+      );
+      expect(decoration.boxShadow, isNotEmpty);
+
+      // The one action a view points at carries the extra weight.
+      final DefaultTextStyle style = tester.widget<DefaultTextStyle>(
+        find.byType(DefaultTextStyle).last,
+      );
+      expect(style.style.fontWeight, vars.labelStrong.fontWeight);
+    });
+
+    testWidgets('disabled flattens: no lift, no extra weight', (tester) async {
+      await tester.pumpWidget(
+        host(
+          const Button(
+            variant: ButtonVariant.filled,
+            onPressed: null,
+            child: Text('Save'),
+          ),
+        ),
+      );
+
+      final decoration =
+          tester
+                  .widget<AnimatedContainer>(find.byType(AnimatedContainer))
+                  .decoration
+              as BoxDecoration;
+      expect(decoration.color, vars.colorSurfaceSunken);
+      expect(decoration.boxShadow, isEmpty);
+    });
+  });
+
+  group('IconButton', () {
+    testWidgets('is a square of the profile height, tiny by default', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(IconButton(icon: material.Icons.add, onPressed: () {})),
+      );
+
+      final Size size = tester.getSize(find.byType(Button));
+      expect(size.width, vars.controlTinySize);
+      expect(size.height, vars.controlTinySize);
+    });
+
+    testWidgets('the quiet default rests in the subtle ink', (tester) async {
+      await tester.pumpWidget(
+        host(IconButton(icon: material.Icons.add, onPressed: () {})),
+      );
+
+      final IconTheme theme = tester.widget<IconTheme>(
+        find.byType(IconTheme).last,
+      );
+      expect(theme.data.color, vars.colorContentSubtle);
+    });
+
+    testWidgets('the on-state turns the glyph accent', (tester) async {
+      await tester.pumpWidget(
+        host(
+          IconButton(icon: material.Icons.add, active: true, onPressed: () {}),
+        ),
+      );
+
+      final IconTheme theme = tester.widget<IconTheme>(
+        find.byType(IconTheme).last,
+      );
+      expect(theme.data.color, vars.colorPrimary[700]);
+    });
+  });
+
+  group('Badge', () {
+    testWidgets('is an annotation: chip corner, display cut, never a control '
+        'height', (tester) async {
+      await tester.pumpWidget(host(const Badge(child: Text('Beta'))));
+
+      final Container box = tester.widget<Container>(find.byType(Container));
+      final decoration = box.decoration as BoxDecoration;
+      expect(
+        decoration.borderRadius,
+        BorderRadius.circular(vars.radiusTiny),
+      );
+      expect(
+        tester.getSize(find.byType(Badge)).height,
+        lessThan(vars.controlSmallSize),
+      );
+
+      final DefaultTextStyle style = tester.widget<DefaultTextStyle>(
+        find.byType(DefaultTextStyle).last,
+      );
+      expect(style.style.fontFamily, vars.labelStrong.fontFamily);
+      expect(style.style.fontWeight, vars.labelMedium.fontWeight);
+    });
+
+    testWidgets('raised is paper and quiet ink', (tester) async {
+      await tester.pumpWidget(
+        host(const Badge(variant: BadgeVariant.raised, child: Text('3'))),
+      );
+
+      final decoration =
+          tester.widget<Container>(find.byType(Container)).decoration
+              as BoxDecoration;
+      expect(decoration.color, vars.colorSurface);
+    });
+  });
+
+  group('Kbd', () {
+    testWidgets('hint is bare faint text', (tester) async {
+      await tester.pumpWidget(host(const Kbd('⌘K')));
+
+      expect(find.byType(Container), findsNothing);
+      expect(
+        tester.widget<Text>(find.byType(Text)).style?.color,
+        vars.colorContentFaint,
+      );
+    });
+
+    testWidgets('key alone draws the recessed cap', (tester) async {
+      await tester.pumpWidget(
+        host(const Kbd('Esc', variant: KbdVariant.key)),
+      );
+
+      final decoration =
+          tester.widget<Container>(find.byType(Container)).decoration
+              as BoxDecoration;
+      expect(decoration.color, vars.colorSurfaceInset);
+      expect(decoration.border, isNull, reason: 'a key is pressed in, not up');
+    });
+  });
+
+  group('Card', () {
+    testWidgets('raised is paper with the hairline', (tester) async {
+      await tester.pumpWidget(host(const Card(child: Text('x'))));
+
+      final decoration =
+          tester.widget<Container>(find.byType(Container)).decoration
+              as BoxDecoration;
+      expect(decoration.color, vars.colorSurface);
+      // A separator is one *device* pixel: the 1px token halves on Retina,
+      // the way base.css halves it under `min-resolution: 2dppx`. The test
+      // binding runs at a device pixel ratio above 1.
+      expect(
+        tester.view.devicePixelRatio,
+        greaterThanOrEqualTo(2),
+        reason: 'the halving only shows above 1x',
+      );
+      expect(decoration.border!.top.width, vars.strokeHairline / 2);
+    });
+
+    testWidgets('tinted takes the surface wash, not the chip fill', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(const Card(variant: CardVariant.tinted, child: Text('x'))),
+      );
+
+      final decoration =
+          tester.widget<Container>(find.byType(Container)).decoration
+              as BoxDecoration;
+      expect(decoration.color!.a, closeTo(vars.washSurface, 0.001));
+      expect(decoration.border!.top.color.a, closeTo(vars.washEdge, 0.001));
+    });
+  });
+
+  group('AlertBanner', () {
+    testWidgets('fill and edge are washes of the tint', (tester) async {
+      await tester.pumpWidget(
+        host(
+          const AlertBanner(
+            tint: AlertBannerTint.danger,
+            title: Text('The build failed'),
+          ),
+        ),
+      );
+
+      final decoration =
+          tester.widget<Container>(find.byType(Container).first).decoration
+              as BoxDecoration;
+      expect(decoration.color!.a, closeTo(vars.washSurface, 0.001));
+      expect(decoration.border!.top.color.a, closeTo(vars.washEdge, 0.001));
+    });
+  });
+
+  group('Checkbox', () {
+    testWidgets('the box defines the row — no minimum height', (tester) async {
+      await tester.pumpWidget(host(Checkbox(value: true, onChanged: (_) {})));
+
+      // A stacked checklist sits at the density the boxes set, so the row is
+      // the box rather than the (taller) control height.
+      expect(
+        tester.getSize(find.byType(Checkbox)).height,
+        vars.checkboxMediumBox,
+      );
+      expect(vars.checkboxMediumBox, lessThan(vars.controlMediumSize));
+    });
+
+    testWidgets('the label carries the selection signal twice over', (
+      tester,
+    ) async {
+      Future<TextStyle> labelStyle({required bool checked}) async {
+        await tester.pumpWidget(
+          host(
+            Checkbox(
+              value: checked,
+              label: const Text('Send me the newsletter'),
+              onChanged: (_) {},
+            ),
+          ),
+        );
+        return tester
+            .widget<DefaultTextStyle>(find.byType(DefaultTextStyle).last)
+            .style;
+      }
+
+      final TextStyle resting = await labelStyle(checked: false);
+      final TextStyle selected = await labelStyle(checked: true);
+
+      // It rests one ink step back at the quiet weight, and takes the full
+      // ink and the label weight only when its box is checked.
+      expect(resting.color, vars.colorContentMuted);
+      expect(resting.fontWeight, vars.labelQuiet.fontWeight);
+      expect(selected.color, vars.colorContent);
+      expect(selected.fontWeight, vars.labelMedium.fontWeight);
+    });
+  });
+
+  group('Radio', () {
+    testWidgets('the ring keeps its outline when selected', (tester) async {
+      await tester.pumpWidget(
+        host(Radio<int>(value: 1, groupValue: 1, onChanged: (_) {})),
+      );
+
+      final decoration =
+          tester
+                  .widget<AnimatedContainer>(find.byType(AnimatedContainer))
+                  .decoration
+              as BoxDecoration;
+      // A filled circle is a checkbox's signal, not a radio's.
+      expect(decoration.color, isNull);
+      expect(decoration.border, isNotNull);
+      expect(decoration.shape, BoxShape.circle);
+    });
+  });
+
+  group('Switch', () {
+    testWidgets('track and thumb are the toggle tokens', (tester) async {
+      await tester.pumpWidget(host(Switch(value: false, onChanged: (_) {})));
+
+      final Size size = tester.getSize(find.byType(Switch));
+      expect(size.width, vars.toggleMediumWidth);
+      expect(size.height, vars.toggleMediumHeight);
+    });
+
+    testWidgets('every size lands on its own track', (tester) async {
+      for (final (WidgetSize step, double width, double height) in [
+        (WidgetSize.small, vars.toggleSmallWidth, vars.toggleSmallHeight),
+        (WidgetSize.medium, vars.toggleMediumWidth, vars.toggleMediumHeight),
+        (WidgetSize.large, vars.toggleLargeWidth, vars.toggleLargeHeight),
+      ]) {
+        await tester.pumpWidget(
+          host(Switch(size: step, value: false, onChanged: (_) {})),
+        );
+        expect(
+          tester.getSize(find.byType(Switch)),
+          Size(width, height),
+          reason: '${step.namedSize.name} switch',
+        );
+      }
+    });
+  });
+
+  group('Loader', () {
+    testWidgets('every size lands on its spacing step', (tester) async {
+      for (final (WidgetSize step, double dimension) in [
+        (WidgetSize.small, vars.spacing35),
+        (WidgetSize.medium, vars.spacing4),
+        (WidgetSize.large, vars.spacing5),
+      ]) {
+        await tester.pumpWidget(host(Loader(size: step)));
+        expect(
+          tester.getSize(find.byType(Loader)),
+          Size.square(dimension),
+          reason: '${step.namedSize.name} loader',
+        );
+      }
+    });
+  });
+
+  group('themes', () {
+    testWidgets('a filled button follows the theme it is scoped to', (
+      tester,
+    ) async {
+      for (final (ThemeData theme, ThemeVariables themeVars) in [
+        (ThemeData.studioLight(), themeVariables),
+        (ThemeData.studioDark(), themeVariablesStudioDark),
+        (ThemeData.brightLight(), themeVariablesBrightLight),
+        (ThemeData.brightDark(), themeVariablesBrightDark),
+      ]) {
+        await tester.pumpWidget(
+          host(
+            Button(
+              variant: ButtonVariant.filled,
+              onPressed: () {},
+              child: const Text('Save'),
+            ),
+            theme: theme,
+          ),
+        );
+
+        final decoration =
+            tester
+                    .widget<AnimatedContainer>(find.byType(AnimatedContainer))
+                    .decoration
+                as BoxDecoration;
+        expect(
+          decoration.color,
+          themeVars.colorPrimary[themeVars
+              .controlColorFilledSurface
+              .normalShade!],
+        );
+      }
+    });
+  });
+}

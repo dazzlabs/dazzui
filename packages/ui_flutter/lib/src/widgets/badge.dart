@@ -35,6 +35,9 @@ enum BadgeVariant with WidgetVariant {
   tinted,
   outlined,
   plain,
+
+  /// The badge that sits on a grey card: paper fill, quiet ink.
+  raised,
 }
 
 /// A badge widget.
@@ -129,6 +132,8 @@ class _BadgeState extends State<Badge> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     final themeDefaults = _BadgeDefaults(context);
     final badgeTheme = BadgeTheme.of(context).merge(themeDefaults);
+    final ThemeVariables vars = Theme.of(context).vars;
+    final BadgeVariant variant = widget.variant ?? BadgeVariant.tinted;
 
     // Resolve the property for the given theme.
     T resolve<T>(
@@ -141,7 +146,7 @@ class _BadgeState extends State<Badge> with SingleTickerProviderStateMixin {
         {},
         tint: widget.tint,
         size: widget.size is WidgetSize ? widget.size as WidgetSize : null,
-        variant: widget.variant,
+        variant: variant == BadgeVariant.raised ? BadgeVariant.plain : variant,
         radius: widget.radius is WidgetRadius
             ? widget.radius as WidgetRadius
             : WidgetRadius.medium,
@@ -151,8 +156,6 @@ class _BadgeState extends State<Badge> with SingleTickerProviderStateMixin {
       );
     }
 
-    Size minSize = resolve<Size>((t) => t.minSize!);
-    // EdgeInsets margin = resolve<EdgeInsets>((t) => t.margin!);
     EdgeInsets padding = resolve<EdgeInsets>((t) => t.padding!);
     Color backgroundColor = resolve<Color>((t) => t.surfaceColor!);
     Color foregroundColor = resolve<Color>((t) => t.contentColor!);
@@ -160,39 +163,40 @@ class _BadgeState extends State<Badge> with SingleTickerProviderStateMixin {
     BorderRadius borderRadius = resolve<BorderRadius>((t) => t.borderRadius!);
     TextStyle labelStyle = resolve<TextStyle>((t) => t.labelStyle!);
 
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        minWidth: minSize.width,
-        minHeight: minSize.height,
+    if (variant == BadgeVariant.raised) {
+      backgroundColor = vars.colorSurface;
+      foregroundColor = vars.colorContentMuted;
+      borderColor = const Color(0x00000000);
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: borderRadius,
       ),
-      child: Container(
-        foregroundDecoration: BoxDecoration(
-          border: Border.all(
-            color: borderColor,
-            width: 1,
-          ),
-          borderRadius: borderRadius,
-        ),
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: borderRadius,
-        ),
-        child: Padding(
-          padding: padding,
-          child: Align(
-            alignment: widget.alignment,
-            widthFactor: 1.0,
-            heightFactor: 1.0,
-            child: DefaultTextStyle(
-              style: labelStyle.copyWith(
+      // The edge rides in the *foreground* decoration: a `BoxDecoration.border`
+      // insets the content box by its own width, which would make every badge
+      // a pixel taller and wider than the stylesheet's — there the border is
+      // transparent under `box-sizing: border-box` and costs nothing.
+      foregroundDecoration: BoxDecoration(
+        border: Border.all(color: borderColor, width: context.hairlineWidth),
+        borderRadius: borderRadius,
+      ),
+      child: Padding(
+        padding: padding,
+        child: Align(
+          alignment: widget.alignment,
+          widthFactor: 1.0,
+          heightFactor: 1.0,
+          child: DefaultTextStyle(
+            style: labelStyle.copyWith(
+              color: foregroundColor,
+            ),
+            child: IconTheme(
+              data: IconThemeData(
                 color: foregroundColor,
               ),
-              child: IconTheme(
-                data: IconThemeData(
-                  color: foregroundColor,
-                ),
-                child: widget.child,
-              ),
+              child: widget.child,
             ),
           ),
         ),
@@ -215,11 +219,7 @@ class _BadgeDefaults extends BadgeThemeData {
 
   @override
   WidgetProperty<Size>? get minSize {
-    return SizedWidgetProperty<Size>(
-      small: Size.square(_vars.controlTinyPaddingInline),
-      medium: Size.square(_vars.controlSmallPaddingInline),
-      large: Size.square(_vars.controlMediumPaddingInline),
-    );
+    return WidgetPropertyAll<Size>(Size.zero);
   }
 
   @override
@@ -227,20 +227,23 @@ class _BadgeDefaults extends BadgeThemeData {
     return WidgetPropertyAll<EdgeInsets>(EdgeInsets.zero);
   }
 
+  /// Two capsule densities on the chip corner; the type moves one step at
+  /// the top. A badge is an annotation — it never reaches control height, so
+  /// these are its own pads rather than the control profile's.
   @override
   WidgetProperty<EdgeInsets>? get padding {
     return SizedWidgetProperty<EdgeInsets>(
       small: EdgeInsets.symmetric(
-        horizontal: _vars.controlTinyPaddingInline,
-        vertical: _vars.controlTinyPaddingBlock,
+        horizontal: _vars.spacing15,
+        vertical: _vars.spacing05,
       ),
       medium: EdgeInsets.symmetric(
-        horizontal: _vars.controlSmallPaddingInline,
-        vertical: _vars.controlSmallPaddingBlock,
+        horizontal: _vars.spacing2,
+        vertical: _vars.spacing05,
       ),
       large: EdgeInsets.symmetric(
-        horizontal: _vars.controlMediumPaddingInline,
-        vertical: _vars.controlMediumPaddingBlock,
+        horizontal: _vars.spacing2,
+        vertical: _vars.spacing1,
       ),
     );
   }
@@ -262,19 +265,24 @@ class _BadgeDefaults extends BadgeThemeData {
 
   @override
   WidgetProperty<BorderRadius>? get borderRadius {
-    return SizedWidgetProperty<BorderRadius>(
-      small: BorderRadius.circular(_vars.radiusSmall),
-      medium: BorderRadius.circular(_vars.radiusMedium),
-      large: BorderRadius.circular(_vars.radiusLarge),
+    return WidgetPropertyAll<BorderRadius>(
+      BorderRadius.circular(_vars.radiusTiny),
     );
   }
 
+  /// The display cut at label weight: a badge's label has to read as an
+  /// annotation, not as body copy, so the face and weight never soften
+  /// whatever the size — only the step moves at the top.
   @override
   WidgetProperty<TextStyle>? get labelStyle {
+    final TextStyle face = _vars.labelStrong.copyWith(
+      fontWeight: _vars.labelMedium.fontWeight,
+      height: 1.4,
+    );
     return SizedWidgetProperty<TextStyle>(
-      small: _vars.captionSmall,
-      medium: _vars.captionMedium,
-      large: _vars.captionLarge,
+      small: face.copyWith(fontSize: _vars.labelSmall.fontSize),
+      medium: face.copyWith(fontSize: _vars.labelSmall.fontSize),
+      large: face.copyWith(fontSize: _vars.labelMedium.fontSize),
     );
   }
 }

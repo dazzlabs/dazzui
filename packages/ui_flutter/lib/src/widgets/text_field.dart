@@ -27,6 +27,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../foundation/widget_size.dart';
+import '../generated/theme_variables.dart';
 import '../theme/theme.dart';
 
 export 'package:flutter/services.dart'
@@ -36,40 +38,6 @@ export 'package:flutter/services.dart'
         TextCapitalization,
         TextInputAction,
         TextInputType;
-
-const TextStyle _kDefaultPlaceholderStyle = TextStyle(
-  fontWeight: FontWeight.w400,
-  color: CupertinoColors.placeholderText,
-);
-
-// Value inspected from Xcode 11 & iOS 13.0 Simulator.
-const BorderSide _kDefaultRoundedBorderSide = BorderSide(
-  color: CupertinoDynamicColor.withBrightness(
-    color: Color(0x33000000),
-    darkColor: Color(0x33FFFFFF),
-  ),
-  width: 0.0,
-);
-const Border _kDefaultRoundedBorder = Border(
-  top: _kDefaultRoundedBorderSide,
-  bottom: _kDefaultRoundedBorderSide,
-  left: _kDefaultRoundedBorderSide,
-  right: _kDefaultRoundedBorderSide,
-);
-
-const BoxDecoration _kDefaultRoundedBorderDecoration = BoxDecoration(
-  color: CupertinoDynamicColor.withBrightness(
-    color: CupertinoColors.white,
-    darkColor: CupertinoColors.black,
-  ),
-  border: _kDefaultRoundedBorder,
-  borderRadius: BorderRadius.all(Radius.circular(5.0)),
-);
-
-const Color _kDisabledBackground = CupertinoDynamicColor.withBrightness(
-  color: Color(0xFFFAFAFA),
-  darkColor: Color(0xFF050505),
-);
 
 // Value inspected from Xcode 12 & iOS 14.0 Simulator.
 // Note it may not be consistent with https://developer.apple.com/design/resources/.
@@ -246,13 +214,11 @@ class TextField extends StatefulWidget {
     this.controller,
     this.focusNode,
     this.undoController,
-    this.decoration = _kDefaultRoundedBorderDecoration,
-    this.padding = const EdgeInsets.all(7.0),
+    this.decoration,
+    this.size = WidgetSize.medium,
+    this.padding,
     this.placeholder,
-    this.placeholderStyle = const TextStyle(
-      fontWeight: FontWeight.w400,
-      color: CupertinoColors.placeholderText,
-    ),
+    this.placeholderStyle,
     this.prefix,
     this.prefixMode = OverlayVisibilityMode.always,
     this.suffix,
@@ -287,9 +253,9 @@ class TextField extends StatefulWidget {
     this.onTapOutside,
     this.inputFormatters,
     this.enabled = true,
-    this.cursorWidth = 2.0,
+    this.cursorWidth = 1.0,
     this.cursorHeight,
-    this.cursorRadius = const Radius.circular(2.0),
+    this.cursorRadius,
     this.cursorOpacityAnimates = true,
     this.cursorColor,
     this.selectionHeightStyle = ui.BoxHeightStyle.tight,
@@ -383,9 +349,10 @@ class TextField extends StatefulWidget {
     this.focusNode,
     this.undoController,
     this.decoration,
+    this.size = WidgetSize.medium,
     this.padding = const EdgeInsets.all(6.0),
     this.placeholder,
-    this.placeholderStyle = _kDefaultPlaceholderStyle,
+    this.placeholderStyle,
     this.prefix,
     this.prefixMode = OverlayVisibilityMode.always,
     this.suffix,
@@ -420,9 +387,9 @@ class TextField extends StatefulWidget {
     this.onTapOutside,
     this.inputFormatters,
     this.enabled = true,
-    this.cursorWidth = 2.0,
+    this.cursorWidth = 1.0,
     this.cursorHeight,
-    this.cursorRadius = const Radius.circular(2.0),
+    this.cursorRadius,
     this.cursorOpacityAnimates = true,
     this.cursorColor,
     this.selectionHeightStyle = ui.BoxHeightStyle.tight,
@@ -500,7 +467,13 @@ class TextField extends StatefulWidget {
   /// or the clear button when [clearButtonMode] is not never.
   ///
   /// Defaults to a padding of 6 pixels on all sides and can be null.
-  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? padding;
+
+  /// The size profile the box and its type come off.
+  ///
+  /// Defaults to [WidgetSize.medium], the step the stylesheet's Input
+  /// defaults to, so a field and a medium button line up in one row.
+  final WidgetSize size;
 
   /// A lighter colored placeholder hint that appears on the first line of the
   /// text field when the text entry is empty.
@@ -698,7 +671,7 @@ class TextField extends StatefulWidget {
   final double? cursorHeight;
 
   /// {@macro flutter.widgets.editableText.cursorRadius}
-  final Radius cursorRadius;
+  final Radius? cursorRadius;
 
   /// {@macro flutter.widgets.editableText.cursorOpacityAnimates}
   final bool cursorOpacityAnimates;
@@ -1398,6 +1371,7 @@ class _TextFieldState extends State<TextField>
     Widget editableText,
     TextStyle textStyle,
     TextStyle placeholderStyle,
+    EdgeInsetsGeometry padding,
   ) {
     // If there are no surrounding widgets, just return the core editable text
     // part.
@@ -1423,7 +1397,7 @@ class _TextFieldState extends State<TextField>
                 child: SizedBox(
                   width: double.infinity,
                   child: Padding(
-                    padding: widget.padding,
+                    padding: padding,
                     child: Text(
                       placeholderText,
                       // This is to make sure the text field is always tall enough
@@ -1562,8 +1536,38 @@ class _TextFieldState extends State<TextField>
           maxLengthEnforcement: _effectiveMaxLengthEnforcement,
         ),
     ];
-    final CupertinoThemeData themeData = CupertinoTheme.of(context);
     final ThemeData theme = Theme.of(context);
+    final ThemeVariables vars = theme.vars;
+    final Color accent = vars.colorPrimary[vars.focusRingShade]!;
+    final (
+      double controlHeight,
+      double padBlock,
+      TextStyle controlFace,
+    ) = switch (widget.size.namedSize) {
+      NamedSize.tiny => (
+        vars.controlTinySize,
+        vars.controlTinyPaddingBlock,
+        vars.labelSmall,
+      ),
+      NamedSize.small => (
+        vars.controlSmallSize,
+        vars.controlSmallPaddingBlock,
+        vars.labelMedium,
+      ),
+      NamedSize.large => (
+        vars.controlLargeSize,
+        vars.controlLargePaddingBlock,
+        vars.labelMedium,
+      ),
+      _ => (
+        vars.controlMediumSize,
+        vars.controlMediumPaddingBlock,
+        vars.labelMedium,
+      ),
+    };
+    final EdgeInsetsGeometry padding =
+        widget.padding ??
+        EdgeInsets.symmetric(horizontal: vars.spacing3, vertical: padBlock);
 
     final TextStyle? resolvedStyle = widget.style?.copyWith(
       color: CupertinoDynamicColor.maybeResolve(widget.style?.color, context),
@@ -1573,10 +1577,16 @@ class _TextFieldState extends State<TextField>
       ),
     );
 
-    final TextStyle textStyle = theme.vars.bodyMedium
+    // Entered text is body-weight at the control's own size and set solid: a
+    // search query typed in semibold reads as shouting, and the control's
+    // leading is what keeps one line centred in the box.
+    final TextStyle textStyle = controlFace
+        .copyWith(fontWeight: theme.vars.bodySmall.fontWeight)
         .merge(resolvedStyle)
         .copyWith(
-          color: theme.vars.colorContent,
+          color: enabled
+              ? theme.vars.colorContent
+              : theme.vars.controlColorNormalContent.disabledColor,
         );
 
     final TextStyle? resolvedPlaceholderStyle = widget.placeholderStyle
@@ -1591,9 +1601,9 @@ class _TextFieldState extends State<TextField>
           ),
         );
 
-    final TextStyle placeholderStyle = textStyle.merge(
-      resolvedPlaceholderStyle,
-    );
+    final TextStyle placeholderStyle = textStyle
+        .copyWith(color: theme.vars.colorContentFaint)
+        .merge(resolvedPlaceholderStyle);
 
     final Brightness keyboardAppearance =
         widget.keyboardAppearance ?? CupertinoTheme.brightnessOf(context);
@@ -1602,12 +1612,35 @@ class _TextFieldState extends State<TextField>
           widget.cursorColor ?? DefaultSelectionStyle.of(context).cursorColor,
           context,
         ) ??
-        themeData.primaryColor;
+        // The caret takes the accent, not the platform's system blue.
+        accent;
 
-    final Color disabledColor = CupertinoDynamicColor.resolve(
-      _kDisabledBackground,
-      context,
+    final bool focused = _effectiveFocusNode.hasFocus;
+
+    // The box is a recessed card — one step below the paper — that lifts to
+    // the paper on focus behind an accent border and a soft accent wash.
+    // That card→paper transition is the focus signal; a field that stays
+    // white can only signal with its ring.
+    final BoxDecoration designDecoration = BoxDecoration(
+      color: focused ? vars.colorSurface : vars.colorSurfaceMuted,
+      border: Border.all(
+        color: focused ? accent : vars.colorBorderStrong,
+        // One width in every state: a border that thickened on focus would
+        // shift the text it wraps by half a pixel.
+        width: context.hairlineWidth,
+      ),
+      borderRadius: BorderRadius.circular(vars.radiusMedium),
+      boxShadow: focused
+          ? [
+              BoxShadow(
+                color: accent.withValues(alpha: vars.focusGlowAlpha),
+                spreadRadius: vars.focusWidth,
+              ),
+            ]
+          : null,
     );
+
+    final Color disabledColor = vars.controlColorNormalSurface.disabledColor!;
 
     final Color? decorationColor = CupertinoDynamicColor.maybeResolve(
       widget.decoration?.color,
@@ -1635,15 +1668,20 @@ class _TextFieldState extends State<TextField>
             );
     }
 
-    // Use the default disabled color only if the box decoration was not set.
-    final BoxDecoration? effectiveDecoration = widget.decoration?.copyWith(
-      border: resolvedBorder,
-      color: enabled
-          ? decorationColor
-          : (widget.decoration == _kDefaultRoundedBorderDecoration
-                ? disabledColor
-                : widget.decoration?.color),
-    );
+    // A decoration passed in wins; otherwise the design's own box is used,
+    // and a disabled field flattens to the groove.
+    final BoxDecoration effectiveDecoration = widget.decoration == null
+        ? (enabled
+              ? designDecoration
+              : designDecoration.copyWith(
+                  color: disabledColor,
+                  border: Border.all(color: const Color(0x00000000)),
+                  boxShadow: const [],
+                ))
+        : widget.decoration!.copyWith(
+            border: resolvedBorder,
+            color: enabled ? decorationColor : disabledColor,
+          );
 
     final Color selectionColor =
         CupertinoDynamicColor.maybeResolve(
@@ -1661,7 +1699,7 @@ class _TextFieldState extends State<TextField>
         );
 
     final Widget paddedEditable = Padding(
-      padding: widget.padding,
+      padding: padding,
       child: RepaintBoundary(
         child: UnmanagedRestorationScope(
           bucket: bucket,
@@ -1788,10 +1826,10 @@ class _TextFieldState extends State<TextField>
         child: IgnorePointer(
           ignoring: !enabled,
           child: Container(
-            decoration: effectiveDecoration,
-            color: !enabled && effectiveDecoration == null
-                ? disabledColor
+            constraints: widget.maxLines == 1
+                ? BoxConstraints(minHeight: controlHeight)
                 : null,
+            decoration: effectiveDecoration,
             child: _selectionGestureDetectorBuilder.buildGestureDetector(
               behavior: HitTestBehavior.translucent,
               child: Align(
@@ -1802,6 +1840,7 @@ class _TextFieldState extends State<TextField>
                   paddedEditable,
                   textStyle,
                   placeholderStyle,
+                  padding,
                 ),
               ),
             ),

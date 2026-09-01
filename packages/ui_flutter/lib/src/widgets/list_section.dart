@@ -6,54 +6,61 @@ import '../theme/theme.dart';
 const double _kMarginTop = 22.0;
 
 // Standard header margin.
-const EdgeInsetsDirectional _kDefaultHeaderMargin = EdgeInsetsDirectional.fromSTEB(
-  20.0,
-  0.0,
-  20.0,
-  6.0,
-);
+const EdgeInsetsDirectional _kDefaultHeaderMargin =
+    EdgeInsetsDirectional.fromSTEB(
+      20.0,
+      0.0,
+      20.0,
+      6.0,
+    );
 
 // Header margin for inset grouped variant.
-const EdgeInsetsDirectional _kInsetGroupedDefaultHeaderMargin = EdgeInsetsDirectional.fromSTEB(
-  20.0,
-  16.0,
-  20.0,
-  6.0,
-);
+const EdgeInsetsDirectional _kInsetGroupedDefaultHeaderMargin =
+    EdgeInsetsDirectional.fromSTEB(
+      20.0,
+      16.0,
+      20.0,
+      6.0,
+    );
 
 // Standard footer margin.
-const EdgeInsetsDirectional _kDefaultFooterMargin = EdgeInsetsDirectional.fromSTEB(
-  20.0,
-  0.0,
-  20.0,
-  0.0,
-);
+const EdgeInsetsDirectional _kDefaultFooterMargin =
+    EdgeInsetsDirectional.fromSTEB(
+      20.0,
+      0.0,
+      20.0,
+      0.0,
+    );
 
 // Footer margin for inset grouped variant.
-const EdgeInsetsDirectional _kInsetGroupedDefaultFooterMargin = EdgeInsetsDirectional.fromSTEB(
-  20.0,
-  0.0,
-  20.0,
-  10.0,
-);
+const EdgeInsetsDirectional _kInsetGroupedDefaultFooterMargin =
+    EdgeInsetsDirectional.fromSTEB(
+      20.0,
+      0.0,
+      20.0,
+      10.0,
+    );
 
 // Margin around children in edge-to-edge variant.
 const EdgeInsets _kDefaultRowsMargin = EdgeInsets.only(bottom: 8.0);
 
 // Used for "Inset Grouped" margin.
-const EdgeInsetsDirectional _kDefaultInsetGroupedRowsMargin = EdgeInsetsDirectional.fromSTEB(
-  20.0,
-  20.0,
-  20.0,
-  10.0,
-);
+const EdgeInsetsDirectional _kDefaultInsetGroupedRowsMargin =
+    EdgeInsetsDirectional.fromSTEB(
+      20.0,
+      20.0,
+      20.0,
+      10.0,
+    );
 
 // Used for "Inset Grouped" margin with header.
 const EdgeInsetsDirectional _kDefaultInsetGroupedRowsMarginWithHeader =
     EdgeInsetsDirectional.fromSTEB(20.0, 0.0, 20.0, 10.0);
 
 // Used for "Inset Grouped" border radius.
-const BorderRadius _kDefaultInsetGroupedBorderRadius = BorderRadius.all(Radius.circular(10.0));
+const BorderRadius _kDefaultInsetGroupedBorderRadius = BorderRadius.all(
+  Radius.circular(10.0),
+);
 
 // The margin of divider used in base list section.
 const double _kBaseDividerMargin = 20.0;
@@ -179,9 +186,10 @@ class ListSection extends StatelessWidget {
     this.topMargin = _kMarginTop,
     bool hasLeading = true,
     this.separatorColor,
-  })  : type = ListSectionType.base,
-        additionalDividerMargin =
-            additionalDividerMargin ?? (hasLeading ? _kBaseAdditionalDividerMargin : 0.0);
+  }) : type = ListSectionType.base,
+       additionalDividerMargin =
+           additionalDividerMargin ??
+           (hasLeading ? _kBaseAdditionalDividerMargin : 0.0);
 
   /// Creates an inset grouped list section.
   ///
@@ -237,15 +245,17 @@ class ListSection extends StatelessWidget {
     this.topMargin,
     bool hasLeading = true,
     this.separatorColor,
-  })  : type = ListSectionType.insetGrouped,
-        additionalDividerMargin = additionalDividerMargin ??
-            (hasLeading
-                ? _kInsetAdditionalDividerMargin
-                : _kInsetAdditionalDividerMarginWithoutLeading),
-        margin = margin ??
-            (header == null
-                ? _kDefaultInsetGroupedRowsMargin
-                : _kDefaultInsetGroupedRowsMarginWithHeader);
+  }) : type = ListSectionType.insetGrouped,
+       additionalDividerMargin =
+           additionalDividerMargin ??
+           (hasLeading
+               ? _kInsetAdditionalDividerMargin
+               : _kInsetAdditionalDividerMarginWithoutLeading),
+       margin =
+           margin ??
+           (header == null
+               ? _kDefaultInsetGroupedRowsMargin
+               : _kDefaultInsetGroupedRowsMarginWithHeader);
 
   /// The type of list section, either base or inset grouped.
   ///
@@ -318,18 +328,23 @@ class ListSection extends StatelessWidget {
       (children != null && children!.isNotEmpty) || header != null,
       'ListSection must have either children or a header.',
     );
-    
+
     final ThemeData theme = Theme.of(context);
     final Color dividerColor = separatorColor ?? theme.vars.colorBorder;
     final double dividerHeight = 1.0 / MediaQuery.devicePixelRatioOf(context);
 
     // Long divider is used for wrapping the top and bottom of rows.
     // Only used in ListSectionType.base mode.
-    final Widget longDivider = Container(color: dividerColor, height: dividerHeight);
+    final Widget longDivider = Container(
+      color: dividerColor,
+      height: dividerHeight,
+    );
 
     // Short divider is used between rows.
     final Widget shortDivider = Container(
-      margin: EdgeInsetsDirectional.only(start: dividerMargin + additionalDividerMargin),
+      margin: EdgeInsetsDirectional.only(
+        start: dividerMargin + additionalDividerMargin,
+      ),
       color: dividerColor,
       height: dividerHeight,
     );
@@ -354,7 +369,9 @@ class ListSection extends StatelessWidget {
       case ListSectionType.insetGrouped:
         if (header != null) {
           headerWidget = DefaultTextStyle(
-            style: style.merge(const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+            style: style.merge(
+              const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+            ),
             child: header!,
           );
         }
@@ -391,7 +408,8 @@ class ListSection extends StatelessWidget {
       };
 
       decoratedChildrenGroup = DecoratedBox(
-        decoration: decoration ??
+        decoration:
+            decoration ??
             BoxDecoration(
               color: theme.vars.colorSurface,
               borderRadius: childrenGroupBorderRadius,
@@ -412,7 +430,9 @@ class ListSection extends StatelessWidget {
     }
 
     return DecoratedBox(
-      decoration: BoxDecoration(color: backgroundColor ?? theme.vars.colorSurfaceMuted),
+      decoration: BoxDecoration(
+        color: backgroundColor ?? theme.vars.colorSurfaceMuted,
+      ),
       child: Column(
         children: <Widget>[
           if (type == ListSectionType.base) SizedBox(height: topMargin),
@@ -442,4 +462,3 @@ class ListSection extends StatelessWidget {
     );
   }
 }
-

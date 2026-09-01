@@ -11,6 +11,7 @@ import '../painting/widget_property.dart';
 class VariantedWidgetStateColor implements WidgetProperty<Color> {
   const VariantedWidgetStateColor({
     this.normal = const ColorDescriptor(),
+    this.recessed,
     required this.filled,
     required this.tinted,
     required this.outlined,
@@ -19,6 +20,7 @@ class VariantedWidgetStateColor implements WidgetProperty<Color> {
   });
 
   final ColorDescriptor normal;
+  final ColorDescriptor? recessed;
   final ColorDescriptor filled;
   final ColorDescriptor tinted;
   final ColorDescriptor outlined;
@@ -29,6 +31,8 @@ class VariantedWidgetStateColor implements WidgetProperty<Color> {
   Map<NamedVariant?, ColorDescriptor> get _values {
     return {
       null: normal,
+      NamedVariant.normal: normal,
+      NamedVariant.recessed: recessed ?? normal,
       NamedVariant.filled: filled,
       NamedVariant.tinted: tinted,
       NamedVariant.outlined: outlined,

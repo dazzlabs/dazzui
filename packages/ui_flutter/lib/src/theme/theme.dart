@@ -21,24 +21,62 @@ export 'icon_library.dart';
 
 /// A theme data.
 class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
-  /// Creates a dark theme.
-  static ThemeData dark({
+  /// Studio Light — the baseline every other theme is written against.
+  static ThemeData studioLight({
     IconLibrary? iconLibrary,
   }) {
     return ThemeData(
+      vars: themeVariables,
+      iconLibrary: iconLibrary ?? IconLibrary.material(),
+      brightness: Brightness.light,
+    );
+  }
+
+  /// Studio Dark — the same skeleton over a near-black canvas.
+  static ThemeData studioDark({
+    IconLibrary? iconLibrary,
+  }) {
+    return ThemeData(
+      vars: themeVariablesStudioDark,
       iconLibrary: iconLibrary ?? IconLibrary.material(),
       brightness: Brightness.dark,
     );
   }
 
-  /// Creates a light theme.
-  static ThemeData light({
+  /// Bright Light — warm paper, ink navy, acid green marker.
+  static ThemeData brightLight({
     IconLibrary? iconLibrary,
   }) {
     return ThemeData(
+      vars: themeVariablesBrightLight,
+      iconLibrary: iconLibrary ?? IconLibrary.material(),
+      brightness: Brightness.light,
+    );
+  }
+
+  /// Bright Dark — the same pair with the roles swapped.
+  static ThemeData brightDark({
+    IconLibrary? iconLibrary,
+  }) {
+    return ThemeData(
+      vars: themeVariablesBrightDark,
       iconLibrary: iconLibrary ?? IconLibrary.material(),
       brightness: Brightness.dark,
     );
+  }
+
+  /// Creates a dark theme — Studio Dark under its older name.
+  static ThemeData dark({
+    IconLibrary? iconLibrary,
+  }) {
+    return studioDark(iconLibrary: iconLibrary);
+  }
+
+  /// Creates a light theme — Studio Light under its older name.
+  static ThemeData light({
+    IconLibrary? iconLibrary,
+  }) {
+    return studioLight(iconLibrary: iconLibrary);
   }
 
   const ThemeData({
@@ -100,6 +138,7 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
     SidebarThemeData? sidebarTheme,
   }) {
     return ThemeData(
+      vars: vars ?? this.vars,
       iconLibrary: iconLibrary ?? this.iconLibrary,
       brightness: brightness ?? this.brightness,
       alertBannerTheme: alertBannerTheme ?? this.alertBannerTheme,
@@ -120,6 +159,7 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
   ) {
     if (other is! ThemeData) return this;
     return ThemeData(
+      vars: t < 0.5 ? vars : other.vars,
       brightness: t < 0.5 ? brightness : other.brightness,
       iconLibrary: t < 0.5 ? iconLibrary : other.iconLibrary,
       alertBannerTheme: t < 0.5 ? alertBannerTheme : other.alertBannerTheme,
@@ -134,6 +174,7 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
 
   @override
   int get hashCode => Object.hash(
+    vars,
     iconLibrary,
     brightness,
     alertBannerTheme,
@@ -153,6 +194,7 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
       return false;
     }
     return other is ThemeData &&
+        other.vars == vars &&
         other.iconLibrary == iconLibrary &&
         other.brightness == brightness &&
         other.alertBannerTheme == alertBannerTheme &&
@@ -184,6 +226,20 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
 extension ThemeDataBuildContextProps on BuildContext {
   /// The design theme data.
   ThemeData get themeData => Theme.of(this);
+
+  /// The design theme's variables.
+  ThemeVariables get vars => Theme.of(this).vars;
+
+  /// A separator is one *device* pixel. At 1x that is the 1px the token
+  /// holds; on Retina a 1px logical line is twice the weight of the real
+  /// thing, so it halves — the same rule `ui_react`'s base.css applies with
+  /// `@media (min-resolution: 2dppx)`.
+  ///
+  /// Drawn control outlines use `stroke.control` instead and stay put.
+  double get hairlineWidth {
+    final double ratio = MediaQuery.maybeDevicePixelRatioOf(this) ?? 1.0;
+    return ratio >= 2 ? vars.strokeHairline / 2 : vars.strokeHairline;
+  }
 }
 
 /// A inherited widget that provides the design theme data.
@@ -231,6 +287,7 @@ extension ThemeVariablesX on ThemeVariables {
   WidgetProperty<Color> get controlColorSurface {
     return VariantedWidgetStateColor(
       normal: controlColorNormalSurface,
+      recessed: controlColorRecessedSurface,
       filled: controlColorFilledSurface,
       tinted: controlColorTintedSurface,
       outlined: controlColorOutlinedSurface,
@@ -241,6 +298,7 @@ extension ThemeVariablesX on ThemeVariables {
   WidgetProperty<Color> get controlColorContent {
     return VariantedWidgetStateColor(
       normal: controlColorNormalContent,
+      recessed: controlColorRecessedContent,
       filled: controlColorFilledContent,
       tinted: controlColorTintedContent,
       outlined: controlColorOutlinedContent,
@@ -251,6 +309,7 @@ extension ThemeVariablesX on ThemeVariables {
   WidgetProperty<Color> get controlColorBorder {
     return VariantedWidgetStateColor(
       normal: controlColorNormalBorder,
+      recessed: controlColorRecessedBorder,
       filled: controlColorFilledBorder,
       tinted: controlColorTintedBorder,
       outlined: controlColorOutlinedBorder,

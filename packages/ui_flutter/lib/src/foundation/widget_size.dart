@@ -2,6 +2,10 @@ import 'package:flutter/widgets.dart';
 
 /// The named size of a widget.
 enum NamedSize {
+  /// The size of the widget is tiny — the smallest control step, what an
+  /// icon button in a toolbar row is.
+  tiny,
+
   /// The size of the widget is small.
   small,
 
@@ -30,6 +34,8 @@ class WidgetSize extends Size {
   }
 
   /// The size of the widget is small.
+  static const WidgetSize tiny = WidgetSize(NamedSize.tiny);
+
   static const WidgetSize small = WidgetSize(NamedSize.small);
 
   /// The size of the widget is medium.

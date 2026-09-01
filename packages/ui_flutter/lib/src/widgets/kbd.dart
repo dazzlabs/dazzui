@@ -6,79 +6,75 @@ import '../painting/widget_property.dart';
 import '../theme/theme.dart';
 import 'kbd_theme.dart';
 
-/// Display keyboard button or keys combination
-class Kbd extends StatefulWidget {
+/// Three renderings of a key, quietest first.
+enum KbdVariant {
+  /// Bare faint text in the display cut: the `⌘F` beside an empty search
+  /// field. The default.
+  hint,
+
+  /// The same a step darker, for a hint that has to survive on a busy row.
+  strong,
+
+  /// The drawn cap: a recessed chip-cornered fill with no border — a key is
+  /// pressed *into* the surface, not raised off it.
+  key,
+}
+
+/// Displays a keyboard key or a key combination.
+class Kbd extends StatelessWidget {
   const Kbd(
     this.label, {
     super.key,
+    this.variant = KbdVariant.hint,
     this.size = WidgetSize.medium,
   });
 
   final String label;
 
+  final KbdVariant variant;
+
   final WidgetSize size;
 
-  @override
-  State<Kbd> createState() => _KbdState();
-}
-
-class _KbdState extends State<Kbd> {
   @override
   Widget build(BuildContext context) {
     final KbdThemeData kbdTheme = KbdTheme.of(context);
     final KbdThemeData defaults = _KbdDefaults(context);
+    final ThemeVariables vars = Theme.of(context).vars;
 
-    final padding = (kbdTheme.padding ?? defaults.padding)
-        ?.sized<EdgeInsetsGeometry>(widget.size);
+    final TextStyle style = (kbdTheme.labelStyle ?? defaults.labelStyle)!
+        .sized<TextStyle>(size);
 
-    // Legacy implementation, will be removed in the future
-    final ThemeData themeData = Theme.of(context);
-
-    final Color backgroundColor = themeData.vars.colorSurface;
-    final Color borderColor = themeData.vars.colorBorder;
-    final Color labelColor = themeData.vars.colorContent;
-
-    final TextStyle textStyle = (themeData.vars.labelMedium).copyWith(
-      color: labelColor,
-      fontWeight: FontWeight.w700,
-      fontFamily: 'JetBrains Mono',
-      fontFamilyFallback: ['Roboto Mono', 'monospace'],
-      fontSize: 12,
+    final Widget text = Text(
+      label,
+      style: style.copyWith(
+        color: switch (variant) {
+          KbdVariant.hint => vars.colorContentFaint,
+          KbdVariant.strong => vars.colorContentSubtle,
+          KbdVariant.key => vars.colorContent,
+        },
+        fontWeight: variant == KbdVariant.key
+            ? vars.labelStrong.fontWeight
+            : style.fontWeight,
+      ),
     );
 
-    return Container(
-      constraints: const BoxConstraints(
-        minWidth: 0,
-        minHeight: 22,
-      ),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        border: BorderDirectional(
-          start: BorderSide(
-            color: borderColor,
-            width: 1,
-          ),
-          top: BorderSide(
-            color: borderColor,
-            width: 1,
-          ),
-          end: BorderSide(
-            color: borderColor,
-            width: 1,
-          ),
-          bottom: BorderSide(
-            color: borderColor,
-            width: 3,
-          ),
+    if (variant != KbdVariant.key) return text;
+
+    // `widthFactor` keeps the cap hugging its glyph: a Container carrying an
+    // alignment expands to fill whatever bounded space it is given, so a key
+    // in a stretched Row would run the width of the row.
+    return Align(
+      widthFactor: 1,
+      heightFactor: 1,
+      child: Container(
+        height: vars.spacing5 + vars.spacing05,
+        padding: EdgeInsets.symmetric(horizontal: vars.spacing25),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: vars.colorSurfaceInset,
+          borderRadius: BorderRadius.circular(vars.radiusTiny),
         ),
-        borderRadius: const BorderRadius.all(Radius.circular(4.0)),
-      ),
-      child: Padding(
-        padding: padding ?? EdgeInsets.zero,
-        child: DefaultTextStyle(
-          style: textStyle,
-          child: Text(widget.label),
-        ),
+        child: text,
       ),
     );
   }
@@ -91,21 +87,18 @@ class _KbdDefaults extends KbdThemeData {
   late final ThemeData _theme = Theme.of(context);
   late final ThemeVariables _vars = _theme.vars;
 
+  /// The display cut at label weight, set solid — a key cap is one line and
+  /// its box sets the height.
   @override
-  SizedWidgetProperty<EdgeInsetsGeometry>? get padding {
-    return SizedWidgetProperty<EdgeInsetsGeometry>(
-      small: EdgeInsets.symmetric(
-        horizontal: _vars.spacing2,
-        vertical: _vars.spacing2,
-      ),
-      medium: EdgeInsets.symmetric(
-        horizontal: _vars.spacing2,
-        vertical: _vars.spacing2,
-      ),
-      large: EdgeInsets.symmetric(
-        horizontal: _vars.spacing2,
-        vertical: _vars.spacing2,
-      ),
+  SizedWidgetProperty<TextStyle>? get labelStyle {
+    final TextStyle face = _vars.labelStrong.copyWith(
+      fontWeight: _vars.labelMedium.fontWeight,
+      height: 1,
+    );
+    return SizedWidgetProperty<TextStyle>(
+      small: face.copyWith(fontSize: _vars.labelSmall.fontSize),
+      medium: face.copyWith(fontSize: _vars.labelSmall.fontSize),
+      large: face.copyWith(fontSize: _vars.labelMedium.fontSize),
     );
   }
 }

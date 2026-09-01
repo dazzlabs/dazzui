@@ -3,7 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('ListSection', () {
-    testWidgets('creates a base list section with children', (WidgetTester tester) async {
+    testWidgets('creates a base list section with children', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         Theme(
           data: ThemeData.light(iconLibrary: IconLibrary.material()),
@@ -25,7 +27,9 @@ void main() {
       expect(find.text('Item 3'), findsOneWidget);
     });
 
-    testWidgets('creates a base list section with header and footer', (WidgetTester tester) async {
+    testWidgets('creates a base list section with header and footer', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         Theme(
           data: ThemeData.light(iconLibrary: IconLibrary.material()),
@@ -47,7 +51,9 @@ void main() {
       expect(find.text('Item 1'), findsOneWidget);
     });
 
-    testWidgets('creates an inset grouped list section', (WidgetTester tester) async {
+    testWidgets('creates an inset grouped list section', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         Theme(
           data: ThemeData.light(iconLibrary: IconLibrary.material()),
@@ -107,4 +113,3 @@ void main() {
     });
   });
 }
-

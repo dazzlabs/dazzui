@@ -3,7 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('ListTile', () {
-    testWidgets('creates a base list tile with title', (WidgetTester tester) async {
+    testWidgets('creates a base list tile with title', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         Theme(
           data: ThemeData.light(iconLibrary: IconLibrary.material()),
@@ -19,7 +21,9 @@ void main() {
       expect(find.text('Title'), findsOneWidget);
     });
 
-    testWidgets('creates a list tile with subtitle', (WidgetTester tester) async {
+    testWidgets('creates a list tile with subtitle', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         Theme(
           data: ThemeData.light(iconLibrary: IconLibrary.material()),
@@ -37,7 +41,9 @@ void main() {
       expect(find.text('Subtitle'), findsOneWidget);
     });
 
-    testWidgets('creates a list tile with leading', (WidgetTester tester) async {
+    testWidgets('creates a list tile with leading', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         Theme(
           data: ThemeData.light(iconLibrary: IconLibrary.material()),
@@ -55,7 +61,9 @@ void main() {
       expect(find.byType(Icon), findsOneWidget);
     });
 
-    testWidgets('creates a list tile with trailing', (WidgetTester tester) async {
+    testWidgets('creates a list tile with trailing', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         Theme(
           data: ThemeData.light(iconLibrary: IconLibrary.material()),
@@ -73,7 +81,9 @@ void main() {
       expect(find.byType(Icon), findsOneWidget);
     });
 
-    testWidgets('creates a list tile with additional info', (WidgetTester tester) async {
+    testWidgets('creates a list tile with additional info', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         Theme(
           data: ThemeData.light(iconLibrary: IconLibrary.material()),
@@ -174,7 +184,9 @@ void main() {
       );
 
       // Tap down should show feedback
-      final gesture = await tester.startGesture(tester.getCenter(find.text('Title')));
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.text('Title')),
+      );
       await tester.pump();
 
       // Release should remove feedback
@@ -182,7 +194,9 @@ void main() {
       await tester.pump();
     });
 
-    testWidgets('respects custom background color', (WidgetTester tester) async {
+    testWidgets('respects custom background color', (
+      WidgetTester tester,
+    ) async {
       const customColor = Color(0xFF123456);
 
       await tester.pumpWidget(
@@ -255,7 +269,10 @@ void main() {
         find.descendant(
           of: find.byType(ListTile),
           matching: find.byWidgetPredicate(
-            (widget) => widget is SizedBox && widget.width == customSize && widget.height == customSize,
+            (widget) =>
+                widget is SizedBox &&
+                widget.width == customSize &&
+                widget.height == customSize,
           ),
         ),
       );
@@ -264,7 +281,9 @@ void main() {
       expect(sizedBox.height, customSize);
     });
 
-    testWidgets('does not respond to tap when onTap is null', (WidgetTester tester) async {
+    testWidgets('does not respond to tap when onTap is null', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         Theme(
           data: ThemeData.light(iconLibrary: IconLibrary.material()),
@@ -282,7 +301,9 @@ void main() {
       expect(find.byType(GestureDetector), findsNothing);
     });
 
-    testWidgets('creates a complete list tile with all properties', (WidgetTester tester) async {
+    testWidgets('creates a complete list tile with all properties', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         Theme(
           data: ThemeData.light(iconLibrary: IconLibrary.material()),
@@ -307,4 +328,3 @@ void main() {
     });
   });
 }
-

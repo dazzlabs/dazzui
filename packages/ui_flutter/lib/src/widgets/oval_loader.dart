@@ -7,10 +7,18 @@ class OvalLoader extends StatefulWidget {
     super.key,
     required this.size,
     required this.color,
+    this.trackAlpha = 0.25,
+    this.strokeWidth,
   });
 
   final double size;
   final Color color;
+
+  /// The track's share of the tint — a wash of the head's own colour.
+  final double trackAlpha;
+
+  /// The ring's weight. Defaults to a sixth of the box.
+  final double? strokeWidth;
 
   @override
   State<OvalLoader> createState() => _OvalLoaderState();
@@ -54,8 +62,8 @@ class _OvalLoaderState extends State<OvalLoader>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: widget.color.withValues(alpha: 0.5),
-                    width: widget.size / 6,
+                    color: widget.color.withValues(alpha: widget.trackAlpha),
+                    width: widget.strokeWidth ?? widget.size / 6,
                   ),
                 ),
               ),
@@ -68,7 +76,7 @@ class _OvalLoaderState extends State<OvalLoader>
                 size: Size.square(widget.size),
                 painter: _QuarterOvalPainter(
                   color: widget.color,
-                  strokeWidth: widget.size / 6,
+                  strokeWidth: widget.strokeWidth ?? widget.size / 6,
                 ),
               ),
             ),

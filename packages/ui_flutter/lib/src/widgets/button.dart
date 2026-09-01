@@ -9,6 +9,7 @@ import '../generated/theme_variables.dart';
 import '../painting/widget_property.dart';
 import '../theme/theme.dart';
 import '../widgets/button_theme.dart';
+import 'pressable.dart';
 
 /// The tint of a button.
 enum ButtonTint with WidgetTint {
@@ -33,6 +34,13 @@ enum ButtonTint with WidgetTint {
 
 /// The variant of a button.
 enum ButtonVariant with WidgetVariant {
+  /// The neutral control: paper fill, hairline edge.
+  normal,
+
+  /// The workhorse neutral — the grey chip a toolbar button or default
+  /// action is, one step deeper than the paper it sits on. The default.
+  recessed,
+
   /// A filled button.
   filled,
 
@@ -58,10 +66,13 @@ class Button extends StatefulWidget {
     this.color,
     this.tint,
     this.variant,
-    this.size = WidgetSize.medium,
+    this.size = WidgetSize.small,
     this.radius = WidgetRadius.medium,
     this.padding,
     this.iconSize,
+    this.square = false,
+    this.surfaceColor,
+    this.shortcut,
     this.expand = false,
     this.focusNode,
     this.autofocus = false,
@@ -110,6 +121,23 @@ class Button extends StatefulWidget {
   /// Defaults to null.
   final double? iconSize;
 
+  /// Whether the button is a square of the profile's control height on both
+  /// axes, with no inline padding — what an [IconButton] is.
+  ///
+  /// Defaults to false.
+  final bool square;
+
+  /// Paints the box with this instead of the variant's own recipe.
+  ///
+  /// For a control whose surface is not on the tint's ramp at all — the
+  /// quiet chrome of an [IconButton], which washes neutral rather than
+  /// accent under the pointer.
+  final Color? surfaceColor;
+
+  /// A trailing shortcut glyph, e.g. `⌘S`. It is a hint rather than part of
+  /// the label, so it takes the display cut and steps back.
+  final Widget? shortcut;
+
   /// Whether the button should expand to fill its container.
   ///
   /// Defaults to false.
@@ -154,158 +182,154 @@ class Button extends StatefulWidget {
   }
 }
 
-class _ButtonState extends State<Button> with SingleTickerProviderStateMixin {
-  late bool _isHovered;
-  late bool _isFocused;
-  late bool _isPressed;
-
-  Set<WidgetState> get states {
-    return <WidgetState>{
-      if (_isHovered) WidgetState.hovered,
-      if (_isFocused) WidgetState.focused,
-      if (_isPressed) WidgetState.pressed,
-      if (!widget.enabled) WidgetState.disabled,
-    };
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _isHovered = false;
-    _isFocused = false;
-    _isPressed = false;
-  }
-
-  void _handleTapDown(TapDownDetails event) {
-    if (!_isPressed) {
-      _isPressed = true;
-      setState(() {});
-    }
-  }
-
-  void _handleTapUp(TapUpDetails event) {
-    if (_isPressed) {
-      _isPressed = false;
-      setState(() {});
-    }
-  }
-
-  void _handleTapCancel() {
-    if (_isPressed) {
-      _isPressed = false;
-      setState(() {});
-    }
-  }
-
-  void _onShowFocusHighlight(bool showHighlight) {
-    setState(() {
-      _isFocused = showHighlight;
-    });
-  }
-
-  void _onShowHoverHighlight(bool showHighlight) {
-    if (widget.onHover != null) {
-      widget.onHover?.call(showHighlight);
-    }
-    setState(() {
-      _isHovered = showHighlight;
-    });
-  }
-
+class _ButtonState extends State<Button> {
   @override
   Widget build(BuildContext context) {
     final ButtonThemeData buttonTheme = ButtonTheme.of(
       context,
     ).merge(_ButtonDefaults(context));
+    final ThemeVariables vars = Theme.of(context).vars;
+    final ButtonVariant variant = widget.variant ?? ButtonVariant.recessed;
+    final BorderRadius borderRadius = _resolve<BorderRadius>(
+      buttonTheme,
+      const <WidgetState>{},
+      variant,
+      (t) => t.borderRadius!,
+    );
 
-    // Resolve the property for the given theme.
-    T resolve<T>(
-      WidgetProperty<T> Function(ButtonThemeData theme) getProperty,
-    ) {
-      Color? seedColor =
-          widget.color ??
-          buttonTheme.color?.tinted(widget.tint ?? ButtonTint.primary);
-      return getProperty(buttonTheme).resolveWith(
-        states,
-        tint: widget.tint,
-        size: widget.size is WidgetSize ? widget.size as WidgetSize : null,
-        variant: widget.variant,
-        radius: widget.radius is WidgetRadius
-            ? widget.radius as WidgetRadius
-            : WidgetRadius.medium,
-        extra: {
-          'seedColor': seedColor,
-        }..removeWhere((key, value) => value == null),
-      );
-    }
-
-    Size minSize = resolve<Size>((t) => t.minSize!);
-    // EdgeInsets margin = resolve<EdgeInsets>((t) => t.margin!);
-    EdgeInsets padding = resolve<EdgeInsets>((t) => t.padding!);
-    Color backgroundColor = resolve<Color>((t) => t.surfaceColor!);
-    Color foregroundColor = resolve<Color>((t) => t.contentColor!);
-    Color borderColor = resolve<Color>((t) => t.borderColor!);
-    BorderRadius borderRadius = resolve<BorderRadius>((t) => t.borderRadius!);
-    TextStyle labelStyle = resolve<TextStyle>((t) => t.labelStyle!);
-
-    return FocusableActionDetector(
+    return Pressable(
+      onPressed: widget.onPressed,
       enabled: widget.enabled,
+      borderRadius: borderRadius,
       focusNode: widget.focusNode,
       autofocus: widget.autofocus,
       onFocusChange: widget.onFocusChange,
-      onShowFocusHighlight: _onShowFocusHighlight,
-      onShowHoverHighlight: _onShowHoverHighlight,
-      mouseCursor: widget.enabled && kIsWeb
-          ? SystemMouseCursors.click
-          : MouseCursor.defer,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTapDown: widget.enabled ? _handleTapDown : null,
-        onTapUp: widget.enabled ? _handleTapUp : null,
-        onTapCancel: widget.enabled ? _handleTapCancel : null,
-        onTap: widget.onPressed,
-        child: Semantics(
-          button: true,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minWidth: minSize.width,
-              minHeight: minSize.height,
+      onHover: widget.onHover,
+      builder: (context, states) {
+        T resolve<T>(WidgetProperty<T> Function(ButtonThemeData t) get) =>
+            _resolve<T>(buttonTheme, states, variant, get);
+
+        final Size box = resolve<Size>((t) => t.minSize!);
+        EdgeInsets padding =
+            widget.padding ?? resolve<EdgeInsets>((t) => t.padding!);
+        if (widget.square) padding = EdgeInsets.zero;
+
+        final Color surface =
+            widget.surfaceColor ?? resolve<Color>((t) => t.surfaceColor!);
+        final Color content = resolve<Color>((t) => t.contentColor!);
+        final Color border = resolve<Color>((t) => t.borderColor!);
+        TextStyle labelStyle = resolve<TextStyle>((t) => t.labelStyle!);
+
+        // The one action a view points at carries the extra weight and the
+        // hairline lift — both go when it is disabled and flattens.
+        final bool lifted = variant == ButtonVariant.filled && widget.enabled;
+        if (lifted) {
+          labelStyle = labelStyle.copyWith(
+            fontWeight: vars.labelStrong.fontWeight,
+          );
+        }
+
+        // Geometry is instant and only the colours crossfade, the way the
+        // stylesheet transitions background-color, border-color and color and
+        // nothing else. Animating the box as well would make a size change
+        // slide rather than land.
+        return SizedBox(
+          width: widget.square
+              ? box.width
+              : (widget.expand ? double.infinity : null),
+          // The height is fixed rather than a minimum, so a taller glyph or a
+          // CJK label can never push one button out of line with its
+          // neighbours.
+          height: box.height,
+          child: AnimatedContainer(
+            duration: vars.motionDuration,
+            curve: vars.motionEasing,
+            padding: padding,
+            decoration: BoxDecoration(
+              color: surface,
+              borderRadius: borderRadius,
+              boxShadow: lifted ? vars.shadow2xs : const <BoxShadow>[],
             ),
-            child: Container(
-              width: widget.expand ? double.infinity : null,
-              foregroundDecoration: BoxDecoration(
-                border: Border.all(
-                  color: borderColor,
-                  width: 1,
+            // The hairline rides in the *foreground* decoration rather than the
+            // background one: a `BoxDecoration.border` insets the content box by
+            // its own width, which would make an outlined button a hairline
+            // narrower inside than the filled one beside it.
+            foregroundDecoration: BoxDecoration(
+              border: Border.all(color: border, width: context.hairlineWidth),
+              borderRadius: borderRadius,
+            ),
+            child: AnimatedDefaultTextStyle(
+              duration: vars.motionDuration,
+              curve: vars.motionEasing,
+              style: labelStyle.copyWith(color: content),
+              softWrap: false,
+              child: IconTheme(
+                data: IconTheme.of(context).copyWith(
+                  size: widget.iconSize ?? vars.spacing4,
+                  color: content,
                 ),
-                borderRadius: borderRadius,
-              ),
-              decoration: BoxDecoration(
-                color: backgroundColor,
-                borderRadius: borderRadius,
-              ),
-              padding: padding,
-              child: Align(
-                alignment: Alignment.center,
-                widthFactor: 1.0,
-                heightFactor: 1.0,
-                child: DefaultTextStyle(
-                  style: labelStyle.copyWith(
-                    color: foregroundColor,
-                  ),
-                  child: IconTheme(
-                    data: IconTheme.of(context).copyWith(
-                      size: widget.iconSize,
-                      color: foregroundColor,
-                    ),
-                    child: widget.child,
-                  ),
+                child: Row(
+                  mainAxisSize: widget.expand
+                      ? MainAxisSize.max
+                      : MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: widget.square ? 0 : _gap(vars, widget.size),
+                  children: [
+                    widget.child,
+                    // A trailing shortcut is a hint, not part of the label — it
+                    // takes the display cut and steps back.
+                    if (widget.shortcut != null)
+                      Opacity(
+                        opacity: 0.7,
+                        child: DefaultTextStyle.merge(
+                          style: vars.labelStrong.copyWith(
+                            fontSize: labelStyle.fontSize,
+                            fontWeight: labelStyle.fontWeight,
+                            height: 1,
+                            color: content,
+                          ),
+                          child: widget.shortcut!,
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
+    );
+  }
+
+  double _gap(ThemeVariables vars, Size size) {
+    if (size is! WidgetSize) return vars.controlSmallGap;
+    return switch (size.namedSize) {
+      NamedSize.tiny => vars.controlTinyGap,
+      NamedSize.small => vars.controlSmallGap,
+      NamedSize.medium => vars.controlMediumGap,
+      NamedSize.large => vars.controlLargeGap,
+    };
+  }
+
+  T _resolve<T>(
+    ButtonThemeData theme,
+    Set<WidgetState> states,
+    ButtonVariant variant,
+    WidgetProperty<T> Function(ButtonThemeData t) get,
+  ) {
+    final Color? seedColor =
+        widget.color ?? theme.color?.tinted(widget.tint ?? ButtonTint.primary);
+    return get(theme).resolveWith(
+      states,
+      tint: widget.tint,
+      size: widget.size is WidgetSize ? widget.size as WidgetSize : null,
+      variant: variant,
+      radius: widget.radius is WidgetRadius
+          ? widget.radius as WidgetRadius
+          : WidgetRadius.medium,
+      extra: {
+        'seedColor': seedColor,
+      }..removeWhere((key, value) => value == null),
     );
   }
 }
@@ -325,6 +349,7 @@ class _ButtonDefaults extends ButtonThemeData {
   @override
   WidgetProperty<Size>? get minSize {
     return SizedWidgetProperty<Size>(
+      tiny: Size.square(_vars.controlTinySize),
       small: Size.square(_vars.controlSmallSize),
       medium: Size.square(_vars.controlMediumSize),
       large: Size.square(_vars.controlLargeSize),
@@ -339,6 +364,10 @@ class _ButtonDefaults extends ButtonThemeData {
   @override
   WidgetProperty<EdgeInsets>? get padding {
     return SizedWidgetProperty<EdgeInsets>(
+      tiny: EdgeInsets.symmetric(
+        horizontal: _vars.controlTinyPaddingInline,
+        vertical: _vars.controlTinyPaddingBlock,
+      ),
       small: EdgeInsets.symmetric(
         horizontal: _vars.controlSmallPaddingInline,
         vertical: _vars.controlSmallPaddingBlock,
@@ -372,18 +401,23 @@ class _ButtonDefaults extends ButtonThemeData {
   @override
   WidgetProperty<BorderRadius>? get borderRadius {
     return SizedWidgetProperty<BorderRadius>(
+      tiny: BorderRadius.circular(_vars.controlTinyRadius),
       small: BorderRadius.circular(_vars.controlSmallRadius),
       medium: BorderRadius.circular(_vars.controlMediumRadius),
       large: BorderRadius.circular(_vars.controlLargeRadius),
     );
   }
 
+  /// The size profile carries the design's own control type — 11px on the
+  /// smallest step and 12px from there up — so a button that re-pointed its
+  /// type would run a step ahead of every other control on the same row.
   @override
   WidgetProperty<TextStyle>? get labelStyle {
     return SizedWidgetProperty<TextStyle>(
-      small: _vars.labelSmall,
+      tiny: _vars.labelSmall,
+      small: _vars.labelMedium,
       medium: _vars.labelMedium,
-      large: _vars.labelLarge,
+      large: _vars.labelMedium,
     );
   }
 }

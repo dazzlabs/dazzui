@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' show Tooltip;
 import 'package:flutter/widgets.dart';
 
+import '../generated/theme_variables.dart';
 import '../theme/theme.dart';
 import 'icon_button.dart' as ff;
 import 'sidebar_theme.dart';
@@ -36,9 +37,12 @@ class SidebarProvider extends StatefulWidget {
   final ValueChanged<bool>? onOpenChange;
 
   static SidebarController of(BuildContext context) {
-    final _SidebarProviderScope? scope =
-        context.dependOnInheritedWidgetOfExactType<_SidebarProviderScope>();
-    assert(scope != null, 'SidebarProvider.of() called with no SidebarProvider.');
+    final _SidebarProviderScope? scope = context
+        .dependOnInheritedWidgetOfExactType<_SidebarProviderScope>();
+    assert(
+      scope != null,
+      'SidebarProvider.of() called with no SidebarProvider.',
+    );
     return scope!.controller;
   }
 
@@ -126,7 +130,9 @@ class Sidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final SidebarThemeData theme = SidebarTheme.of(context).withDefaults(context);
+    final SidebarThemeData theme = SidebarTheme.of(
+      context,
+    ).withDefaults(context);
 
     final SidebarController? controller = context
         .dependOnInheritedWidgetOfExactType<_SidebarProviderScope>()
@@ -157,8 +163,8 @@ class Sidebar extends StatelessWidget {
           padding: theme.padding!,
           child: DefaultTextStyle(
             style: DefaultTextStyle.of(context).style.copyWith(
-                  color: theme.foregroundColor,
-                ),
+              color: theme.foregroundColor,
+            ),
             child: IconTheme(
               data: IconTheme.of(context).copyWith(
                 color: theme.foregroundColor,
@@ -183,8 +189,8 @@ class _SidebarStateScope extends InheritedWidget {
   final SidebarThemeData theme;
 
   static _SidebarStateScope of(BuildContext context) {
-    final _SidebarStateScope? scope =
-        context.dependOnInheritedWidgetOfExactType<_SidebarStateScope>();
+    final _SidebarStateScope? scope = context
+        .dependOnInheritedWidgetOfExactType<_SidebarStateScope>();
     assert(scope != null, 'Sidebar widgets must be used within a Sidebar.');
     return scope!;
   }
@@ -202,7 +208,11 @@ class SidebarHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _SidebarStateScope scope = _SidebarStateScope.of(context);
-    return Padding(
+    return Container(
+      // A real header is a fixed band: it has to match the toolbar's height
+      // exactly, or the separator under the two steps where they meet.
+      height: context.vars.frameTitlebarSize,
+      alignment: AlignmentDirectional.centerStart,
       padding: scope.theme.headerPadding!,
       child: child,
     );
@@ -235,10 +245,15 @@ class SidebarContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final EdgeInsets resolvedPadding = padding ?? EdgeInsets.zero;
+    final ThemeVariables vars = context.vars;
     return Expanded(
       child: SingleChildScrollView(
-        padding: resolvedPadding,
+        padding:
+            padding ??
+            EdgeInsets.symmetric(
+              horizontal: vars.spacing25,
+              vertical: vars.spacing35,
+            ),
         child: child,
       ),
     );
@@ -252,7 +267,7 @@ class SidebarGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(top: context.vars.spacing35),
       child: child,
     );
   }
@@ -268,7 +283,10 @@ class SidebarGroupLabel extends StatelessWidget {
     if (scope.collapsed) return const SizedBox.shrink();
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+      padding: EdgeInsets.symmetric(
+        horizontal: context.vars.spacing25,
+        vertical: context.vars.spacing1,
+      ),
       child: DefaultTextStyle(
         style: scope.theme.groupLabelStyle!,
         child: child,
@@ -293,6 +311,7 @@ class SidebarMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: context.vars.frameNavGap,
       children: children,
     );
   }
@@ -338,12 +357,12 @@ class _SidebarMenuButtonState extends State<SidebarMenuButton> {
   late bool _isPressed;
 
   Set<WidgetState> get states => <WidgetState>{
-        if (_isHovered) WidgetState.hovered,
-        if (_isFocused) WidgetState.focused,
-        if (_isPressed) WidgetState.pressed,
-        if (widget.selected) WidgetState.selected,
-        if (!widget.enabled) WidgetState.disabled,
-      };
+    if (_isHovered) WidgetState.hovered,
+    if (_isFocused) WidgetState.focused,
+    if (_isPressed) WidgetState.pressed,
+    if (widget.selected) WidgetState.selected,
+    if (!widget.enabled) WidgetState.disabled,
+  };
 
   @override
   void initState() {
@@ -405,8 +424,8 @@ class _SidebarMenuButtonState extends State<SidebarMenuButton> {
                 Expanded(
                   child: DefaultTextStyle(
                     style: DefaultTextStyle.of(context).style.copyWith(
-                          color: fg,
-                        ),
+                      color: fg,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     child: widget.label,
@@ -458,8 +477,11 @@ class SidebarTrigger extends StatelessWidget {
   Widget build(BuildContext context) {
     final SidebarController controller = SidebarProvider.of(context);
     final ThemeData theme = Theme.of(context);
-    final IconData resolvedIcon = icon ??
-        (controller.open ? theme.iconLibrary.chevronLeft : theme.iconLibrary.chevronRight);
+    final IconData resolvedIcon =
+        icon ??
+        (controller.open
+            ? theme.iconLibrary.chevronLeft
+            : theme.iconLibrary.chevronRight);
 
     return Tooltip(
       message: tooltip,
@@ -471,4 +493,3 @@ class SidebarTrigger extends StatelessWidget {
     );
   }
 }
-

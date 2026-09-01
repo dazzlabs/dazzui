@@ -2132,17 +2132,76 @@ function convertFontWeight(value) {
 }
 
 /**
+ * The CSS keywords that name the platform's own UI face rather than a family
+ * Flutter can resolve. A stack that opens with one of these is asking for the
+ * platform default, which in Flutter is `fontFamily: null`.
+ */
+const SYSTEM_UI_FACES = new Set([
+  '-apple-system',
+  'BlinkMacSystemFont',
+  'system-ui',
+  'ui-sans-serif',
+])
+
+/**
+ * The remaining CSS generics. They carry no family Flutter could load, so they
+ * are dropped from the stack entirely.
+ */
+const GENERIC_FACES = new Set([
+  'sans-serif',
+  'serif',
+  'monospace',
+  'cursive',
+  'fantasy',
+  'ui-monospace',
+  'ui-serif',
+  'ui-rounded',
+])
+
+/**
+ * Split a CSS font stack into what Flutter can actually use.
+ *
+ * Naming the first entry of the stack is wrong: it is `-apple-system`, a CSS
+ * keyword rather than a family, so every style built that way resolved to
+ * nothing and fell through to the engine default — taking the CJK face at the
+ * end of the stack with it, which is the one entry that had to survive.
+ *
+ * Returns `{ family, fallback }`, where a null family means "the platform's
+ * own UI face", which is what the keyword asked for in the first place.
+ */
+function splitFontStack(value) {
+  const stack = Array.isArray(value)
+    ? value
+    : typeof value === 'string'
+      ? [value]
+      : []
+  const concrete = stack.filter(
+    face => !SYSTEM_UI_FACES.has(face) && !GENERIC_FACES.has(face)
+  )
+
+  if (stack.length > 0 && SYSTEM_UI_FACES.has(stack[0])) {
+    return { family: null, fallback: concrete }
+  }
+  return { family: concrete[0] ?? null, fallback: concrete.slice(1) }
+}
+
+/** A face, as the raw CSS stack it is declared with. */
+function resolveFontStack(value, tokens) {
+  if (typeof value === 'string') {
+    const match = value.match(/^\{(.+)\}$/)
+    if (match && tokens && tokens[match[1]]) {
+      return tokens[match[1]].$value
+    }
+  }
+  return value
+}
+
+/**
  * Convert font family to Flutter String
  */
 function convertFontFamily(value) {
-  if (Array.isArray(value)) {
-    // Use the first font family
-    return `'${value[0]}'`
-  }
-  if (typeof value === 'string') {
-    return `'${value}'`
-  }
-  return "'sans-serif'"
+  const { family } = splitFontStack(value)
+  return family === null ? 'null' : `'${family}'`
 }
 
 /**
@@ -2234,15 +2293,21 @@ function convertTypographyValue(value, tokens) {
 
   const parts = []
 
-  // Font family
+  // Font family. A CSS stack is split rather than truncated: the first entry
+  // is usually the `-apple-system` keyword, which Flutter cannot resolve, and
+  // the CJK face at the end of the stack is the one that has to survive.
   if (value.fontFamily) {
-    const fontFamily = extractTokenReference(value.fontFamily, tokens)
-    if (fontFamily) {
-      parts.push(`fontFamily: ${fontFamily}`)
-    } else if (Array.isArray(value.fontFamily)) {
-      parts.push(`fontFamily: '${value.fontFamily[0]}'`)
-    } else if (typeof value.fontFamily === 'string') {
-      parts.push(`fontFamily: '${value.fontFamily}'`)
+    // A face is always an alias into `base.font`, so the stack is resolved
+    // back to its raw list before it is split — following the reference
+    // through the ordinary converter would collapse it to one entry again.
+    const { family, fallback } = splitFontStack(
+      resolveFontStack(value.fontFamily, tokens)
+    )
+    if (family !== null) parts.push(`fontFamily: '${family}'`)
+    if (fallback.length > 0) {
+      parts.push(
+        `fontFamilyFallback: const [${fallback.map(f => `'${f}'`).join(', ')}]`
+      )
     }
   }
 

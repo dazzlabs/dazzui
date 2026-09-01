@@ -33,6 +33,7 @@ class KbdThemeData extends ThemeExtension<KbdThemeData> with Diagnosticable {
     this.largeSize,
     this.textStyle,
     this.padding,
+    this.labelStyle,
   });
 
   /// Overrides the default value for [Kbd.textColor].
@@ -50,6 +51,9 @@ class KbdThemeData extends ThemeExtension<KbdThemeData> with Diagnosticable {
   /// Overrides the default value for [Kbd.padding].
   final SizedWidgetProperty<EdgeInsetsGeometry>? padding;
 
+  /// Overrides the key's type face.
+  final SizedWidgetProperty<TextStyle>? labelStyle;
+
   /// Creates a copy of this object but with the given fields replaced with the
   /// new values.
   @override
@@ -60,6 +64,7 @@ class KbdThemeData extends ThemeExtension<KbdThemeData> with Diagnosticable {
     double? largeSize,
     TextStyle? textStyle,
     SizedWidgetProperty<EdgeInsetsGeometry>? padding,
+    SizedWidgetProperty<TextStyle>? labelStyle,
   }) {
     return KbdThemeData(
       textColor: textColor ?? this.textColor,
@@ -67,6 +72,7 @@ class KbdThemeData extends ThemeExtension<KbdThemeData> with Diagnosticable {
       largeSize: largeSize ?? this.largeSize,
       textStyle: textStyle ?? this.textStyle,
       padding: padding ?? this.padding,
+      labelStyle: labelStyle ?? this.labelStyle,
     );
   }
 
@@ -80,6 +86,7 @@ class KbdThemeData extends ThemeExtension<KbdThemeData> with Diagnosticable {
       largeSize: lerpDouble(largeSize, other.largeSize, t),
       textStyle: TextStyle.lerp(textStyle, other.textStyle, t),
       padding: t < 0.5 ? padding : other.padding,
+      labelStyle: t < 0.5 ? labelStyle : other.labelStyle,
     );
   }
 
@@ -90,6 +97,7 @@ class KbdThemeData extends ThemeExtension<KbdThemeData> with Diagnosticable {
     largeSize,
     textStyle,
     padding,
+    labelStyle,
   );
 
   @override
@@ -105,7 +113,8 @@ class KbdThemeData extends ThemeExtension<KbdThemeData> with Diagnosticable {
         other.smallSize == smallSize &&
         other.largeSize == largeSize &&
         other.textStyle == textStyle &&
-        other.padding == padding;
+        other.padding == padding &&
+        other.labelStyle == labelStyle;
   }
 
   @override

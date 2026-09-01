@@ -12,18 +12,22 @@ const double _kMinHeight = _kLeadingSize + 2 * 8.0;
 const double _kMinHeightWithSubtitle = _kLeadingSize + 2 * 10.0;
 const double _kNotchedMinHeight = _kNotchedLeadingSize + 2 * 12.0;
 const double _kNotchedMinHeightWithoutLeading = _kNotchedLeadingSize + 2 * 10.0;
-const EdgeInsetsDirectional _kPadding = EdgeInsetsDirectional.only(start: 20.0, end: 14.0);
+const EdgeInsetsDirectional _kPadding = EdgeInsetsDirectional.only(
+  start: 20.0,
+  end: 14.0,
+);
 const EdgeInsetsDirectional _kPaddingWithSubtitle = EdgeInsetsDirectional.only(
   start: 20.0,
   end: 14.0,
 );
 const EdgeInsets _kNotchedPadding = EdgeInsets.symmetric(horizontal: 14.0);
-const EdgeInsetsDirectional _kNotchedPaddingWithoutLeading = EdgeInsetsDirectional.fromSTEB(
-  28.0,
-  10.0,
-  14.0,
-  10.0,
-);
+const EdgeInsetsDirectional _kNotchedPaddingWithoutLeading =
+    EdgeInsetsDirectional.fromSTEB(
+      28.0,
+      10.0,
+      14.0,
+      10.0,
+    );
 const double _kLeadingToTitle = 16.0;
 const double _kNotchedLeadingToTitle = 12.0;
 const double _kNotchedTitleToSubtitle = 3.0;
@@ -263,7 +267,9 @@ class _ListTileState extends State<ListTile> {
           ? textStyle
           : textStyle.copyWith(
               fontWeight: FontWeight.w600,
-              fontSize: widget.leading == null ? _kNotchedTitleWithSubtitleFontSize : null,
+              fontSize: widget.leading == null
+                  ? _kNotchedTitleWithSubtitleFontSize
+                  : null,
             ),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
@@ -273,7 +279,8 @@ class _ListTileState extends State<ListTile> {
     final EdgeInsetsGeometry padding =
         widget.padding ??
         switch (widget._type) {
-          _ListTileType.base when widget.subtitle != null => _kPaddingWithSubtitle,
+          _ListTileType.base when widget.subtitle != null =>
+            _kPaddingWithSubtitle,
           _ListTileType.notched when widget.leading != null => _kNotchedPadding,
           _ListTileType.base => _kPadding,
           _ListTileType.notched => _kNotchedPaddingWithoutLeading,
@@ -284,18 +291,23 @@ class _ListTileState extends State<ListTile> {
     // user provided or if null to the muted surface color.
     Color backgroundColor = widget.backgroundColor ?? theme.vars.colorSurface;
     if (_tapped) {
-      backgroundColor = widget.backgroundColorActivated ?? theme.vars.colorSurfaceMuted;
+      backgroundColor =
+          widget.backgroundColorActivated ?? theme.vars.colorSurfaceMuted;
     }
 
     final double minHeight = switch (widget._type) {
-      _ListTileType.base when widget.subtitle != null => _kMinHeightWithSubtitle,
+      _ListTileType.base when widget.subtitle != null =>
+        _kMinHeightWithSubtitle,
       _ListTileType.notched when widget.leading != null => _kNotchedMinHeight,
       _ListTileType.base => _kMinHeight,
       _ListTileType.notched => _kNotchedMinHeightWithoutLeading,
     };
 
     final Widget child = ConstrainedBox(
-      constraints: BoxConstraints(minWidth: double.infinity, minHeight: minHeight),
+      constraints: BoxConstraints(
+        minWidth: double.infinity,
+        minHeight: minHeight,
+      ),
       child: ColoredBox(
         color: backgroundColor,
         child: Padding(
@@ -320,7 +332,9 @@ class _ListTileState extends State<ListTile> {
                       const SizedBox(height: _kNotchedTitleToSubtitle),
                       DefaultTextStyle(
                         style: coloredStyle.copyWith(
-                          fontSize: baseType ? _kSubtitleFontSize : _kNotchedSubtitleFontSize,
+                          fontSize: baseType
+                              ? _kSubtitleFontSize
+                              : _kNotchedSubtitleFontSize,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -330,9 +344,15 @@ class _ListTileState extends State<ListTile> {
                   ],
                 ),
               ),
-              if (widget.additionalInfo case final Widget additionalInfo) ...<Widget>[
-                DefaultTextStyle(style: coloredStyle, maxLines: 1, child: additionalInfo),
-                if (widget.trailing != null) const SizedBox(width: _kAdditionalInfoToTrailing),
+              if (widget.additionalInfo
+                  case final Widget additionalInfo) ...<Widget>[
+                DefaultTextStyle(
+                  style: coloredStyle,
+                  maxLines: 1,
+                  child: additionalInfo,
+                ),
+                if (widget.trailing != null)
+                  const SizedBox(width: _kAdditionalInfoToTrailing),
               ],
               if (widget.trailing != null) widget.trailing!,
             ],

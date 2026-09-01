@@ -1,4 +1,11 @@
 enum NamedVariant {
+  /// The neutral control: paper fill, hairline edge.
+  normal,
+
+  /// The workhorse neutral — the grey chip a toolbar button or a default
+  /// action is, one step deeper than the paper it sits on.
+  recessed,
+
   /// The filled variant of a widget.
   ///
   /// A filled widget has a solid background color.

@@ -1,444 +1,209 @@
-// Copyright 2014 The Flutter Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-// ignore_for_file: require_trailing_commas
-
-import 'package:flutter/cupertino.dart' show CupertinoColors;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../foundation/widget_size.dart';
+import '../foundation/widget_tint.dart';
+import '../generated/theme_variables.dart';
 import '../theme/theme.dart';
+import 'pressable.dart';
 
-const double _kOuterRadius = 8.0;
-const double _kInnerRadius = 3.6;
+/// The tint a [Radio] marks itself with when it is selected.
+enum RadioTint with WidgetTint {
+  primary,
+  neutral,
+  info,
+  success,
+  warning,
+  danger,
+}
 
-// The relative values needed to transform a color to its equivalent focus
-// outline color.
-const double _kCupertinoFocusColorOpacity = 0.80;
-const double _kCupertinoFocusColorBrightness = 0.69;
-const double _kCupertinoFocusColorSaturation = 0.835;
-
-/// A macOS-style radio button.
+/// A ring and a label on one row.
 ///
-/// Used to select between a number of mutually exclusive values. When one radio
-/// button in a group is selected, the other radio buttons in the group are
-/// deselected. The values are of type `T`, the type parameter of the
-/// [Radio] class. Enums are commonly used for this purpose.
-///
-/// The radio button itself does not maintain any state. Instead, selecting the
-/// radio invokes the [onChanged] callback, passing [value] as a parameter. If
-/// [groupValue] and [value] match, this radio will be selected. Most widgets
-/// will respond to [onChanged] by calling [State.setState] to update the
-/// radio button's [groupValue].
-///
-/// {@tool dartpad}
-/// Here is an example of Radio widgets wrapped in CupertinoListTiles.
-///
-/// The currently selected character is passed into `groupValue`, which is
-/// maintained by the example's `State`. In this case, the first [Radio]
-/// will start off selected because `_character` is initialized to
-/// `SingingCharacter.lafayette`.
-///
-/// If the second radio button is pressed, the example's state is updated
-/// with `setState`, updating `_character` to `SingingCharacter.jefferson`.
-/// This causes the buttons to rebuild with the updated `groupValue`, and
-/// therefore the selection of the second button.
-///
-/// ** See code in examples/api/lib/cupertino/radio/cupertino_radio.0.dart **
-/// {@end-tool}
-///
-/// See also:
-///
-///  * [CupertinoSlider], for selecting a value in a range.
-///  * [CupertinoCheckbox] and [CupertinoSwitch], for toggling a particular value on or off.
-///  * [Radio], the Material Design equivalent.
-///  * <https://developer.apple.com/design/human-interface-guidelines/components/selection-and-input/toggles/>
-class Radio<T> extends StatefulWidget {
-  /// Creates a macOS-styled radio button.
-  ///
-  /// The following arguments are required:
-  ///
-  /// * [value] and [groupValue] together determine whether the radio button is
-  ///   selected.
-  /// * [onChanged] is called when the user selects this radio button.
+/// The row, the label and the disabled treatment are shared with [Checkbox].
+/// What differs is the shape: a radio is a ring that keeps its outline when
+/// selected and grows a dot inside it, where a checkbox fills solid.
+class Radio<T> extends StatelessWidget {
   const Radio({
     super.key,
     required this.value,
     required this.groupValue,
     required this.onChanged,
+    this.label,
+    this.tint = RadioTint.primary,
     this.size = WidgetSize.medium,
-    this.mouseCursor,
-    this.toggleable = false,
-    this.activeColor,
-    this.inactiveColor,
-    this.fillColor,
-    this.focusColor,
     this.focusNode,
     this.autofocus = false,
-    this.useCheckmarkStyle = false,
+    this.semanticsLabel,
   });
 
-  /// The value represented by this radio button.
-  ///
-  /// If this equals the [groupValue], then this radio button will appear
-  /// selected.
   final T value;
 
-  /// The currently selected value for a group of radio buttons.
-  ///
-  /// This radio button is considered selected if its [value] matches the
-  /// [groupValue].
   final T? groupValue;
 
-  /// Called when the user selects this [Radio] button.
-  ///
-  /// The radio button passes [value] as a parameter to this callback. It does
-  /// not actually change state until the parent widget rebuilds the radio
-  /// button with a new [groupValue].
-  ///
-  /// If null, the radio button will be displayed as disabled.
-  ///
-  /// The provided callback will not be invoked if this radio button is already
-  /// selected.
-  ///
-  /// The callback provided to [onChanged] should update the state of the parent
-  /// [StatefulWidget] using the [State.setState] method, so that the parent
-  /// gets rebuilt; for example:
-  ///
-  /// ```dart
-  /// Radio<SingingCharacter>(
-  ///   value: SingingCharacter.lafayette,
-  ///   groupValue: _character,
-  ///   onChanged: (SingingCharacter? newValue) {
-  ///     setState(() {
-  ///       _character = newValue;
-  ///     });
-  ///   },
-  /// )
-  /// ```
   final ValueChanged<T?>? onChanged;
 
-  /// The size of the radio.
-  ///
-  /// Defaults to [WidgetSize.medium].
-  final Size size;
+  /// The row's label. Without one the radio is the bare ring.
+  final Widget? label;
 
-  /// The cursor for a mouse pointer when it enters or is hovering over the
-  /// widget.
-  ///
-  /// If [mouseCursor] is a [WidgetStateMouseCursor],
-  /// [WidgetStateMouseCursor.resolve] is used for the following [WidgetState]s:
-  ///
-  ///  * [WidgetState.selected].
-  ///  * [WidgetState.hovered].
-  ///  * [WidgetState.focused].
-  ///  * [WidgetState.disabled].
-  ///
-  /// If null, then [SystemMouseCursors.basic] is used when this radio button is disabled.
-  /// When this radio button is enabled, [SystemMouseCursors.click] is used on Web, and
-  /// [SystemMouseCursors.basic] is used on other platforms.
-  ///
-  /// See also:
-  ///
-  ///  * [WidgetStateMouseCursor], a [MouseCursor] that implements
-  ///    `WidgetStateProperty` which is used in APIs that need to accept
-  ///    either a [MouseCursor] or a [WidgetStateProperty<MouseCursor>].
-  final MouseCursor? mouseCursor;
+  final RadioTint tint;
 
-  /// Set to true if this radio button is allowed to be returned to an
-  /// indeterminate state by selecting it again when selected.
-  ///
-  /// To indicate returning to an indeterminate state, [onChanged] will be
-  /// called with null.
-  ///
-  /// If true, [onChanged] can be called with [value] when selected while
-  /// [groupValue] != [value], or with null when selected again while
-  /// [groupValue] == [value].
-  ///
-  /// If false, [onChanged] will be called with [value] when it is selected
-  /// while [groupValue] != [value], and only by selecting another radio button
-  /// in the group (i.e. changing the value of [groupValue]) can this radio
-  /// button be unselected.
-  ///
-  /// The default is false.
-  ///
-  /// {@tool dartpad}
-  /// This example shows how to enable deselecting a radio button by setting the
-  /// [toggleable] attribute.
-  ///
-  /// ** See code in examples/api/lib/cupertino/radio/cupertino_radio.toggleable.0.dart **
-  /// {@end-tool}
-  final bool toggleable;
+  final WidgetSize size;
 
-  /// Controls whether the radio displays in a checkbox style or the default iOS
-  /// radio style.
-  ///
-  /// Defaults to false.
-  final bool useCheckmarkStyle;
-
-  /// The color to use when this radio button is selected.
-  ///
-  /// Defaults to [CupertinoColors.activeBlue].
-  final Color? activeColor;
-
-  /// The color to use when this radio button is not selected.
-  ///
-  /// Defaults to [CupertinoColors.white].
-  final Color? inactiveColor;
-
-  /// The color that fills the inner circle of the radio button when selected.
-  ///
-  /// Defaults to [CupertinoColors.white].
-  final Color? fillColor;
-
-  /// The color for the radio's border when it has the input focus.
-  ///
-  /// If null, then a paler form of the [activeColor] will be used.
-  final Color? focusColor;
-
-  /// {@macro flutter.widgets.Focus.focusNode}
   final FocusNode? focusNode;
 
-  /// {@macro flutter.widgets.Focus.autofocus}
   final bool autofocus;
+
+  final String? semanticsLabel;
 
   bool get _selected => value == groupValue;
 
-  @override
-  State<Radio<T>> createState() => _RadioState<T>();
-}
+  bool get _enabled => onChanged != null;
 
-class _RadioState<T> extends State<Radio<T>>
-    with TickerProviderStateMixin, ToggleableStateMixin {
-  final _RadioPainter _painter = _RadioPainter();
-
-  bool focused = false;
-
-  void _handleChanged(bool? selected) {
-    if (selected == null) {
-      widget.onChanged!(null);
-      return;
-    }
-    if (selected) {
-      widget.onChanged!(widget.value);
-    }
-  }
-
-  @override
-  void dispose() {
-    _painter.dispose();
-    super.dispose();
-  }
-
-  @override
-  ValueChanged<bool?>? get onChanged =>
-      widget.onChanged != null ? _handleChanged : null;
-
-  @override
-  bool get tristate => widget.toggleable;
-
-  @override
-  bool? get value => widget._selected;
-
-  void onFocusChange(bool value) {
-    if (focused != value) {
-      focused = value;
-    }
+  ColorSwatch<int> _ramp(ThemeVariables vars) {
+    return switch (tint) {
+      RadioTint.primary => vars.colorPrimary,
+      RadioTint.neutral => vars.colorNeutral,
+      RadioTint.info => vars.colorInfo,
+      RadioTint.success => vars.colorSuccess,
+      RadioTint.warning => vars.colorWarning,
+      RadioTint.danger => vars.colorDanger,
+    };
   }
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    final ThemeVariables vars = Theme.of(context).vars;
 
-    final Color effectiveActiveColor =
-        widget.activeColor ?? theme.vars.colorPrimary;
-    final Color effectiveInactiveColor =
-        widget.inactiveColor ?? CupertinoColors.white;
+    final (double box, double dot) = switch (size.namedSize) {
+      NamedSize.large => (vars.radioLargeBox, vars.radioLargeDot),
+      NamedSize.medium => (vars.radioMediumBox, vars.radioMediumDot),
+      _ => (vars.radioSmallBox, vars.radioSmallDot),
+    };
+    final Color mark = _ramp(
+      vars,
+    )[vars.controlColorFilledSurface.normalShade!]!;
 
-    final Color effectiveFocusOverlayColor =
-        widget.focusColor ??
-        HSLColor.fromColor(
-              effectiveActiveColor.withValues(
-                alpha: _kCupertinoFocusColorOpacity,
+    return Pressable(
+      enabled: _enabled,
+      onPressed: _enabled ? () => onChanged!(value) : null,
+      borderRadius: BorderRadius.circular(vars.radiusFull),
+      checked: _selected,
+      isButton: false,
+      focusNode: focusNode,
+      autofocus: autofocus,
+      semanticsLabel: semanticsLabel,
+      builder: (context, states) => Opacity(
+        opacity: _enabled ? 1 : 0.6,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedContainer(
+              duration: vars.motionDuration,
+              curve: vars.motionEasing,
+              width: box,
+              height: box,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                // The ring is neutral while empty and the accent once
+                // selected, and it keeps its outline either way — a filled
+                // circle is a checkbox's signal, not a radio's.
+                border: Border.all(
+                  color: _selected ? mark : vars.colorBorderMuted,
+                  width: vars.radioThickness,
+                ),
               ),
-            )
-            .withLightness(_kCupertinoFocusColorBrightness)
-            .withSaturation(_kCupertinoFocusColorSaturation)
-            .toColor();
-
-    final Color effectiveActivePressedOverlayColor = HSLColor.fromColor(
-      effectiveActiveColor,
-    ).withLightness(0.45).toColor();
-
-    final Color effectiveFillColor = widget.fillColor ?? CupertinoColors.white;
-
-    final WidgetStateProperty<MouseCursor> effectiveMouseCursor =
-        WidgetStateProperty.resolveWith<MouseCursor>((Set<WidgetState> states) {
-          return WidgetStateProperty.resolveAs<MouseCursor?>(
-                widget.mouseCursor,
-                states,
-              ) ??
-              (states.contains(WidgetState.disabled)
-                  ? SystemMouseCursors.basic
-                  : kIsWeb
-                  ? SystemMouseCursors.click
-                  : SystemMouseCursors.basic);
-        });
-
-    final bool? accessibilitySelected;
-    // Apple devices also use `selected` to annotate radio button's semantics
-    // state.
-    switch (defaultTargetPlatform) {
-      case TargetPlatform.android:
-      case TargetPlatform.fuchsia:
-      case TargetPlatform.linux:
-      case TargetPlatform.windows:
-        accessibilitySelected = null;
-      case TargetPlatform.iOS:
-      case TargetPlatform.macOS:
-        accessibilitySelected = widget._selected;
-    }
-
-    final Size size = Size.square(theme.vars.controlMediumSize);
-    final Size interactiveSize = Size.square(theme.vars.controlMediumSize);
-
-    return Semantics(
-      inMutuallyExclusiveGroup: true,
-      checked: widget._selected,
-      selected: accessibilitySelected,
-      child: buildToggleable(
-        mouseCursor: effectiveMouseCursor,
-        focusNode: widget.focusNode,
-        autofocus: widget.autofocus,
-        onFocusChange: onFocusChange,
-        size: interactiveSize,
-        painter: _painter
-          ..dimension = size.width
-          ..focusColor = effectiveFocusOverlayColor
-          ..downPosition = downPosition
-          ..isFocused = focused
-          ..activeColor = downPosition != null
-              ? effectiveActivePressedOverlayColor
-              : effectiveActiveColor
-          ..inactiveColor = effectiveInactiveColor
-          ..fillColor = effectiveFillColor
-          ..value = value
-          ..checkmarkStyle = widget.useCheckmarkStyle,
+              child: _selected
+                  ? Container(
+                      width: dot,
+                      height: dot,
+                      decoration: BoxDecoration(
+                        color: mark,
+                        shape: BoxShape.circle,
+                      ),
+                    )
+                  : null,
+            ),
+            if (label != null) ...[
+              SizedBox(width: vars.spacing25),
+              Flexible(
+                child: DefaultTextStyle(
+                  style: vars.labelQuiet.copyWith(
+                    fontWeight: _selected
+                        ? vars.labelMedium.fontWeight
+                        : vars.labelQuiet.fontWeight,
+                    color: _selected
+                        ? vars.colorContent
+                        : vars.colorContentMuted,
+                  ),
+                  child: label!,
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class _RadioPainter extends ToggleablePainter {
-  double? _dimension;
+/// One option in a [RadioGroup].
+@immutable
+class RadioItem<T> {
+  const RadioItem({
+    required this.value,
+    required this.label,
+    this.enabled = true,
+  });
 
-  set dimension(double value) {
-    if (_dimension == value) {
-      return;
-    }
-    _dimension = value;
-    notifyListeners();
-  }
+  final T value;
+  final Widget label;
+  final bool enabled;
+}
 
-  bool? get value => _value;
-  bool? _value;
-  set value(bool? value) {
-    if (_value == value) {
-      return;
-    }
-    _value = value;
-    notifyListeners();
-  }
+/// A column of radios, spaced the way the stylesheet's `.dz-radio-group` is.
+class RadioGroup<T> extends StatelessWidget {
+  const RadioGroup({
+    super.key,
+    required this.options,
+    required this.value,
+    required this.onChanged,
+    this.tint = RadioTint.primary,
+    this.size = WidgetSize.medium,
+    this.semanticsLabel,
+  });
 
-  Color get fillColor => _fillColor!;
-  Color? _fillColor;
-  set fillColor(Color value) {
-    if (value == _fillColor) {
-      return;
-    }
-    _fillColor = value;
-    notifyListeners();
-  }
-
-  bool get checkmarkStyle => _checkmarkStyle;
-  bool _checkmarkStyle = false;
-  set checkmarkStyle(bool value) {
-    if (value == _checkmarkStyle) {
-      return;
-    }
-    _checkmarkStyle = value;
-    notifyListeners();
-  }
+  final List<RadioItem<T>> options;
+  final T? value;
+  final ValueChanged<T?>? onChanged;
+  final RadioTint tint;
+  final WidgetSize size;
+  final String? semanticsLabel;
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final double scale = _dimension! / (28.0 * 0.56);
+  Widget build(BuildContext context) {
+    final ThemeVariables vars = Theme.of(context).vars;
 
-    final double outerRadius = _kOuterRadius * scale;
-    final double innerRadius = _kInnerRadius * scale;
-
-    final Offset center = (Offset.zero & size).center;
-
-    final Paint paint = Paint()
-      ..color = inactiveColor
-      ..style = PaintingStyle.fill
-      ..strokeWidth = 1;
-
-    if (checkmarkStyle) {
-      if (value ?? false) {
-        // Draw the circle
-        paint.color = activeColor;
-        paint.style = PaintingStyle.stroke;
-        canvas.drawCircle(center, outerRadius, paint);
-        paint.style = PaintingStyle.fill;
-        canvas.drawCircle(center, outerRadius, paint);
-
-        // Draw the check mark.
-        final Path path = Path();
-        final Paint checkPaint = Paint()
-          ..color = CupertinoColors.white
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1.8
-          ..strokeCap = StrokeCap.round;
-        final double width = _dimension!;
-        final Offset origin = Offset(
-          center.dx - (width / 2),
-          center.dy - (width / 2),
-        );
-        final Offset start = Offset(width * 0.28, width * 0.5);
-        final Offset mid = Offset(width * 0.43, width * 0.65);
-        final Offset end = Offset(width * 0.72, width * 0.35);
-        path.moveTo(origin.dx + start.dx, origin.dy + start.dy);
-        path.lineTo(origin.dx + mid.dx, origin.dy + mid.dy);
-        canvas.drawPath(path, checkPaint);
-        path.moveTo(origin.dx + mid.dx, origin.dy + mid.dy);
-        path.lineTo(origin.dx + end.dx, origin.dy + end.dy);
-        canvas.drawPath(path, checkPaint);
-      }
-    } else {
-      // Outer border
-      canvas.drawCircle(center, outerRadius, paint);
-
-      paint.style = PaintingStyle.stroke;
-      paint.color = value == true ? activeColor : CupertinoColors.inactiveGray;
-      canvas.drawCircle(center, outerRadius, paint);
-
-      if (value ?? false) {
-        paint.style = PaintingStyle.fill;
-        paint.color = activeColor;
-        canvas.drawCircle(center, outerRadius, paint);
-        paint.color = fillColor;
-        canvas.drawCircle(center, innerRadius, paint);
-      }
-    }
-
-    if (isFocused) {
-      paint.style = PaintingStyle.stroke;
-      paint.color = focusColor;
-      paint.strokeWidth = 3.0;
-      canvas.drawCircle(center, outerRadius + (1.5 * scale), paint);
-    }
+    return Semantics(
+      label: semanticsLabel,
+      container: semanticsLabel != null,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        spacing: vars.spacing25,
+        children: [
+          for (final RadioItem<T> option in options)
+            Radio<T>(
+              value: option.value,
+              groupValue: value,
+              tint: tint,
+              size: size,
+              label: option.label,
+              onChanged: onChanged == null || !option.enabled
+                  ? null
+                  : onChanged,
+            ),
+        ],
+      ),
+    );
   }
 }

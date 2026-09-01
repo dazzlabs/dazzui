@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+import '../foundation/color_descriptor.dart';
 import '../foundation/widget_radius.dart';
 import '../foundation/widget_size.dart';
 import '../foundation/widget_tint.dart';
@@ -47,8 +48,8 @@ class AlertBanner extends StatefulWidget {
   const AlertBanner({
     super.key,
     this.color,
-    this.tint = AlertBannerTint.primary,
-    this.variant = AlertBannerVariant.filled,
+    this.tint = AlertBannerTint.neutral,
+    this.size = WidgetSize.medium,
     this.radius,
     this.icon,
     this.title,
@@ -64,8 +65,12 @@ class AlertBanner extends StatefulWidget {
   /// The tint of the alert banner.
   final AlertBannerTint tint;
 
-  /// The variant of the alert banner.
-  final AlertBannerVariant variant;
+  /// The size of the alert banner.
+  ///
+  /// One shape, three densities: the type never changes, only the box around
+  /// it. A banner that grew its type would compete with the content it
+  /// interrupts.
+  final WidgetSize size;
 
   /// The radius of the alert banner's corners when it has a background color.
   final BorderRadius? radius;
@@ -91,6 +96,8 @@ class _AlertBannerState extends State<AlertBanner> {
   Widget build(BuildContext context) {
     final themeDefaults = _AlertBannerDefaults(context);
     final alertBannerTheme = AlertBannerTheme.of(context).merge(themeDefaults);
+    final ThemeVariables vars = Theme.of(context).vars;
+    final bool hasDescription = widget.message != null;
 
     T resolve<T>(
       WidgetProperty<T> Function(AlertBannerThemeData theme) getProperty,
@@ -100,8 +107,8 @@ class _AlertBannerState extends State<AlertBanner> {
       return getProperty(alertBannerTheme).resolveWith(
         {},
         tint: widget.tint,
-        variant: widget.variant,
-        size: WidgetSize.medium,
+        variant: AlertBannerVariant.tinted,
+        size: widget.size,
         radius: widget.radius is WidgetRadius
             ? widget.radius as WidgetRadius
             : WidgetRadius.medium,
@@ -112,59 +119,78 @@ class _AlertBannerState extends State<AlertBanner> {
     }
 
     EdgeInsets padding = resolve<EdgeInsets>((t) => t.padding!);
-    Color backgroundColor = resolve<Color>((t) => t.surfaceColor!);
-    Color foregroundColor = resolve<Color>((t) => t.contentColor!);
-    Color borderColor = resolve<Color>((t) => t.borderColor!);
     BorderRadius borderRadius = resolve<BorderRadius>((t) => t.borderRadius!);
     TextStyle titleStyle = resolve<TextStyle>((t) => t.titleStyle!);
     TextStyle descriptionStyle = resolve<TextStyle>((t) => t.descriptionStyle!);
 
+    // Fill and edge are washes of the tint rather than opaque steps, so the
+    // banner sits as correctly on a card as on the paper. The alphas are the
+    // shared surface wash rather than the `tinted` recipe's: that recipe
+    // fills a chip at 12%, which is right for something the size of a word
+    // and twice too heavy spread across a full width.
+    final ColorSwatch<int> ramp = alertBannerTheme.color!.tinted(widget.tint);
+    final Color backgroundColor = ramp[600]!.withValues(
+      alpha: vars.washSurface,
+    );
+    final Color borderColor = ramp[600]!.withValues(alpha: vars.washEdge);
+
+    // The text grades of the tint, not its fill: a notice is read, not
+    // pressed. The title takes the hovered grade, a step darker than the
+    // description's resting one.
+    final ColorDescriptor tintedContent = vars.controlColorTintedContent;
+    final Color titleColor = ramp[tintedContent.hoveredShade!]!;
+    final Color descriptionColor = ramp[tintedContent.normalShade!]!;
+
     return Container(
       width: double.infinity,
       padding: padding,
-      foregroundDecoration: BoxDecoration(
-        border: Border.all(
-          color: borderColor,
-          width: 1,
-        ),
-        borderRadius: borderRadius,
-      ),
       decoration: BoxDecoration(
         color: backgroundColor,
+        border: Border.all(color: borderColor, width: context.hairlineWidth),
         borderRadius: borderRadius,
       ),
       child: Row(
-        spacing: 8,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: vars.spacing25,
+        // Once a description wraps, the icon belongs beside the first line
+        // rather than halfway down the block.
+        crossAxisAlignment: hasDescription
+            ? CrossAxisAlignment.start
+            : CrossAxisAlignment.center,
         children: [
           if (widget.icon != null)
             IconTheme(
               data: IconThemeData(
-                color: foregroundColor,
-                size: 18,
+                color: ramp[600],
+                size: vars.spacing4,
               ),
               child: widget.icon!,
             ),
           Expanded(
             child: Column(
-              spacing: 4,
+              // The title/description pair is one block of text, so it is set
+              // tighter than the gap separating it from the icon and the
+              // action.
+              spacing: vars.spacing1,
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (widget.title != null)
                   DefaultTextStyle(
-                    style: titleStyle.copyWith(color: foregroundColor),
+                    style: titleStyle.copyWith(color: titleColor),
                     child: widget.title!,
                   ),
                 if (widget.message != null)
                   DefaultTextStyle(
-                    style: descriptionStyle.copyWith(color: foregroundColor),
+                    style: descriptionStyle.copyWith(color: descriptionColor),
                     child: widget.message!,
                   ),
                 if ((widget.actions ?? []).isNotEmpty)
                   Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Row(spacing: 8, children: widget.actions!),
+                    padding: EdgeInsets.only(top: vars.spacing1),
+                    child: Row(
+                      spacing: vars.spacing2,
+                      children: widget.actions!,
+                    ),
                   ),
               ],
             ),
@@ -205,17 +231,14 @@ class _AlertBannerDefaults extends AlertBannerThemeData {
   WidgetProperty<EdgeInsets>? get padding {
     return SizedWidgetProperty<EdgeInsets>(
       small: EdgeInsets.symmetric(
-        horizontal: _vars.controlSmallPaddingInline,
-        vertical: _vars.controlSmallPaddingBlock,
+        horizontal: _vars.spacing3,
+        vertical: _vars.spacing2,
       ),
       medium: EdgeInsets.symmetric(
-        horizontal: _vars.controlMediumPaddingInline,
-        vertical: _vars.controlMediumPaddingBlock,
+        horizontal: _vars.spacing35,
+        vertical: _vars.spacing3,
       ),
-      large: EdgeInsets.symmetric(
-        horizontal: _vars.controlLargePaddingInline,
-        vertical: _vars.controlLargePaddingBlock,
-      ),
+      large: EdgeInsets.all(_vars.spacing4),
     );
   }
 
@@ -237,27 +260,27 @@ class _AlertBannerDefaults extends AlertBannerThemeData {
   @override
   WidgetProperty<BorderRadius>? get borderRadius {
     return SizedWidgetProperty<BorderRadius>(
-      small: BorderRadius.circular(_vars.radiusSmall),
-      medium: BorderRadius.circular(_vars.radiusMedium),
+      small: BorderRadius.circular(_vars.radiusMedium),
+      medium: BorderRadius.circular(_vars.radiusLarge),
       large: BorderRadius.circular(_vars.radiusLarge),
     );
   }
 
+  /// The type never changes with the size — only the box does.
   @override
   WidgetProperty<TextStyle>? get titleStyle {
-    return SizedWidgetProperty<TextStyle>(
-      small: _vars.titleSmall,
-      medium: _vars.titleMedium,
-      large: _vars.titleLarge,
+    return WidgetPropertyAll<TextStyle>(
+      _vars.labelMedium.copyWith(height: 1.4),
     );
   }
 
   @override
   WidgetProperty<TextStyle>? get descriptionStyle {
-    return SizedWidgetProperty<TextStyle>(
-      small: _vars.bodySmall,
-      medium: _vars.bodyMedium,
-      large: _vars.bodyLarge,
+    return WidgetPropertyAll<TextStyle>(
+      _vars.labelQuiet.copyWith(
+        fontWeight: _vars.captionSmall.fontWeight,
+        height: 1.5,
+      ),
     );
   }
 }

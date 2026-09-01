@@ -6,7 +6,6 @@ import 'package:flutter/widgets.dart';
 import '../theme/theme.dart';
 
 const double _kDividerSpace = 16;
-const double _kDividerThickness = 1.0;
 const double _kDividerIndent = 0;
 const double _kDividerEndIndent = 0;
 
@@ -148,7 +147,8 @@ class Divider extends StatelessWidget {
     final ThemeData? theme = context != null ? Theme.of(context) : null;
 
     final Color? effectiveColor = color ?? theme?.vars.colorBorder;
-    final double effectiveWidth = width ?? _kDividerThickness;
+    final double effectiveWidth =
+        width ?? (context != null ? context.hairlineWidth : 1.0);
 
     // Prevent assertion since it is possible that context is null and no color
     // is specified.
@@ -166,7 +166,7 @@ class Divider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double height = this.height ?? _kDividerSpace;
-    final double thickness = this.thickness ?? _kDividerThickness;
+    final double thickness = this.thickness ?? context.hairlineWidth;
     final double indent = this.indent ?? _kDividerIndent;
     final double endIndent = this.endIndent ?? _kDividerEndIndent;
 
@@ -282,7 +282,7 @@ class VerticalDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double width = this.width ?? _kDividerSpace;
-    final double thickness = this.thickness ?? _kDividerThickness;
+    final double thickness = this.thickness ?? context.hairlineWidth;
     final double indent = this.indent ?? _kDividerIndent;
     final double endIndent = this.endIndent ?? _kDividerEndIndent;
 

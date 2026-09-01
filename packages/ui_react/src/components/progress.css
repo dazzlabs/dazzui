@@ -34,10 +34,13 @@
   height: var(--spacing-2);
 }
 
+/* The travel is twice the system's crossfade — a bar that jumped to its new
+   value would read as a redraw rather than as progress — but the curve is the
+   system's own, not the `ease` keyword it used to name. */
 .dz-progress__fill {
   height: 100%;
   background-color: var(--tint-600);
-  transition: width 0.3s ease;
+  transition: width calc(var(--motion-duration) * 2) var(--motion-easing);
 }
 
 /* The document-progress fill: the theme's two-stop accent ramp. */

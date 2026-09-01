@@ -5,6 +5,8 @@ import '../foundation/widget_radius.dart';
 import '../foundation/widget_size.dart';
 import '../foundation/widget_tint.dart';
 import '../foundation/widget_variant.dart';
+import '../generated/theme_variables.dart';
+import '../theme/theme.dart';
 import 'button.dart';
 
 /// The tint of a icon button.
@@ -29,6 +31,8 @@ enum IconButtonTint with WidgetTint {
 }
 
 enum IconButtonVariant with WidgetVariant {
+  normal,
+  recessed,
   filled,
   tinted,
   outlined,
@@ -42,7 +46,8 @@ class IconButton extends StatefulWidget {
     this.color,
     this.tint,
     this.variant,
-    this.size = WidgetSize.medium,
+    this.active = false,
+    this.size = WidgetSize.tiny,
     this.radius = WidgetRadius.medium,
     this.padding,
     this.iconSize,
@@ -71,6 +76,11 @@ class IconButton extends StatefulWidget {
   ///
   /// Defaults to null.
   final IconButtonVariant? variant;
+
+  /// A persistent on-state — a pin held down, a panel kept open. The glyph
+  /// takes the accent's text grade and the fill goes: "this is on" is a
+  /// colour statement, not a chip.
+  final bool active;
 
   /// The size of the button.
   ///
@@ -129,25 +139,61 @@ class IconButton extends StatefulWidget {
 }
 
 class _IconButtonState extends State<IconButton> {
+  bool _isHovered = false;
+
   @override
   Widget build(BuildContext context) {
+    final ThemeVariables vars = Theme.of(context).vars;
+    final IconButtonVariant variant = widget.variant ?? IconButtonVariant.plain;
+    final IconButtonTint tint = widget.tint ?? IconButtonTint.neutral;
+
+    // The default posture — plain variant, neutral tint — carries its own
+    // quiet chrome: a subtle-ink glyph that darkens to full ink under the
+    // pointer, because the recipes' neutral ramp is too flat a grey for a
+    // toolbar row that has to read as chrome until touched.
+    final bool quietChrome =
+        variant == IconButtonVariant.plain &&
+        tint == IconButtonTint.neutral &&
+        widget.color == null;
+
+    Color? color = widget.color;
+    Color? surface;
+    if (widget.active) {
+      // "This is on" is a colour statement, not a chip: the glyph takes the
+      // accent's text grade and the fill goes.
+      color = vars.colorPrimary[700];
+      surface = const Color(0x00000000);
+    } else if (quietChrome && widget.onPressed != null) {
+      color = _isHovered ? vars.colorContent : vars.colorContentSubtle;
+      // A toolbar glyph washes neutral, not accent — the row has to read as
+      // chrome until it is touched.
+      surface = _isHovered ? vars.colorSurfaceSubtle : const Color(0x00000000);
+    }
+
     return Button(
-      color: widget.color,
+      color: color,
       tint: ButtonTint.values.firstWhereOrNull(
-        (e) => e.namedTint == widget.tint?.namedTint,
+        (e) => e.namedTint == tint.namedTint,
       ),
       variant: ButtonVariant.values.firstWhereOrNull(
-        (e) => e.namedVariant == widget.variant?.namedVariant,
+        (e) => e.namedVariant == variant.namedVariant,
       ),
       size: widget.size,
+      square: true,
+      surfaceColor: surface,
+      // A toolbar glyph is smaller than the square it sits in; without this
+      // it would inherit the ambient IconTheme, which is half again as large.
+      iconSize: widget.iconSize ?? vars.spacing35,
       radius: widget.radius,
       padding: widget.padding,
-      iconSize: widget.iconSize,
       expand: widget.expand,
       focusNode: widget.focusNode,
       autofocus: widget.autofocus,
       onFocusChange: widget.onFocusChange,
-      onHover: widget.onHover,
+      onHover: (hovered) {
+        widget.onHover?.call(hovered);
+        if (quietChrome && mounted) setState(() => _isHovered = hovered);
+      },
       onPressed: widget.onPressed,
       child: Icon(widget.icon),
     );

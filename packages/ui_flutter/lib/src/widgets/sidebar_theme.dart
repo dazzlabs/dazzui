@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' show ThemeExtension;
 import 'package:flutter/widgets.dart';
 
+import '../foundation/color_descriptor.dart';
 import '../generated/theme_variables.dart';
 import '../painting/widget_property.dart';
 import '../theme/theme.dart';
@@ -174,20 +175,23 @@ class SidebarThemeData extends ThemeExtension<SidebarThemeData>
       foregroundColor: t < 0.5 ? foregroundColor : other.foregroundColor,
       borderColor: t < 0.5 ? borderColor : other.borderColor,
       accentColor: t < 0.5 ? accentColor : other.accentColor,
-      accentForegroundColor:
-          t < 0.5 ? accentForegroundColor : other.accentForegroundColor,
+      accentForegroundColor: t < 0.5
+          ? accentForegroundColor
+          : other.accentForegroundColor,
       groupLabelStyle: t < 0.5 ? groupLabelStyle : other.groupLabelStyle,
       menuItemPadding: t < 0.5 ? menuItemPadding : other.menuItemPadding,
       menuItemGap: t < 0.5 ? menuItemGap : other.menuItemGap,
       menuItemIconSize: t < 0.5 ? menuItemIconSize : other.menuItemIconSize,
-      menuItemBorderRadius:
-          t < 0.5 ? menuItemBorderRadius : other.menuItemBorderRadius,
-      menuItemBackgroundColor:
-          t < 0.5 ? menuItemBackgroundColor : other.menuItemBackgroundColor,
-      menuItemForegroundColor:
-          t < 0.5 ? menuItemForegroundColor : other.menuItemForegroundColor,
-      animationDuration:
-          t < 0.5 ? animationDuration : other.animationDuration,
+      menuItemBorderRadius: t < 0.5
+          ? menuItemBorderRadius
+          : other.menuItemBorderRadius,
+      menuItemBackgroundColor: t < 0.5
+          ? menuItemBackgroundColor
+          : other.menuItemBackgroundColor,
+      menuItemForegroundColor: t < 0.5
+          ? menuItemForegroundColor
+          : other.menuItemForegroundColor,
+      animationDuration: t < 0.5 ? animationDuration : other.animationDuration,
     );
   }
 }
@@ -200,8 +204,8 @@ class SidebarTheme extends InheritedTheme {
   final SidebarThemeData data;
 
   static SidebarThemeData of(BuildContext context) {
-    final SidebarTheme? sidebarTheme =
-        context.dependOnInheritedWidgetOfExactType<SidebarTheme>();
+    final SidebarTheme? sidebarTheme = context
+        .dependOnInheritedWidgetOfExactType<SidebarTheme>();
     return sidebarTheme?.data ?? context.themeData.sidebarTheme;
   }
 
@@ -222,22 +226,31 @@ class _SidebarDefaults extends SidebarThemeData {
   late final ThemeData _theme = Theme.of(context);
   late final ThemeVariables _vars = _theme.vars;
 
+  /// The column's width is a token rather than a layout choice because the
+  /// columns of a desktop shell have to agree with each other.
   @override
-  double? get width => 240;
+  double? get width => _vars.frameSidebarWidth;
 
   @override
-  double? get collapsedWidth => 56;
+  double? get collapsedWidth => _vars.controlLargeSize + _vars.spacing6;
 
   @override
-  EdgeInsets? get padding => EdgeInsets.all(_vars.spacing2);
+  EdgeInsets? get padding => EdgeInsets.symmetric(
+    horizontal: _vars.spacing25,
+    vertical: _vars.spacing35,
+  );
 
+  /// The header strip is exactly the titlebar's height, so the sidebar and
+  /// the toolbar beside it meet on one line.
   @override
   EdgeInsets? get headerPadding =>
-      EdgeInsets.symmetric(horizontal: _vars.spacing2, vertical: _vars.spacing2);
+      EdgeInsets.symmetric(horizontal: _vars.spacing4);
 
   @override
-  EdgeInsets? get footerPadding =>
-      EdgeInsets.symmetric(horizontal: _vars.spacing2, vertical: _vars.spacing2);
+  EdgeInsets? get footerPadding => EdgeInsets.symmetric(
+    horizontal: _vars.spacing2,
+    vertical: _vars.spacing2,
+  );
 
   @override
   Color? get backgroundColor => _vars.colorSurfaceMuted;
@@ -256,47 +269,66 @@ class _SidebarDefaults extends SidebarThemeData {
 
   @override
   TextStyle? get groupLabelStyle => _vars.labelSmall.copyWith(
-        color: _vars.colorContentMuted,
-      );
+    color: _vars.colorContentSubtle,
+  );
+
+  /// The sidebar row: 12px on 8px pads — 28px, the regular control height.
+  @override
+  EdgeInsets? get menuItemPadding => EdgeInsets.symmetric(
+    horizontal: _vars.spacing25,
+    vertical: _vars.spacing2,
+  );
 
   @override
-  EdgeInsets? get menuItemPadding =>
-      EdgeInsets.symmetric(horizontal: _vars.spacing2, vertical: _vars.spacing15);
+  double? get menuItemGap => _vars.spacing15;
 
   @override
-  double? get menuItemGap => _vars.spacing2;
-
-  @override
-  double? get menuItemIconSize => 18;
+  double? get menuItemIconSize => _vars.spacing4;
 
   @override
   BorderRadius? get menuItemBorderRadius =>
-      BorderRadius.circular(_vars.radiusMedium);
+      BorderRadius.circular(_vars.radiusSmall);
 
+  /// The idle row rests transparent, its hover is the accent at the `plain`
+  /// recipe's wash — a preview of the filled selection sitting far below
+  /// it — and the selected row takes the filled accent outright. A menu item
+  /// or a table row hovers neutral instead; the difference is what the
+  /// selected state is.
   @override
-  WidgetProperty<Color>? get menuItemBackgroundColor =>
-      StatedWidgetProperty<Color>(
-        normal: const Color(0x00000000),
-        hovered: accentColor,
-        pressed: accentColor?.withAlpha((0.85 * 255).round()),
-        selected: accentColor,
-        focused: accentColor,
-        disabled: const Color(0x00000000),
-      );
+  WidgetProperty<Color>? get menuItemBackgroundColor {
+    final ColorDescriptor plain = _vars.controlColorPlainSurface;
+    final ColorDescriptor filled = _vars.controlColorFilledSurface;
+    final Color selected = _vars.colorPrimary[filled.normalShade!]!;
+    return StatedWidgetProperty<Color>(
+      normal: const Color(0x00000000),
+      hovered: _vars.colorPrimary[plain.hoveredShade!]!.withValues(
+        alpha: plain.hoveredOpacity,
+      ),
+      pressed: _vars.colorPrimary[plain.pressedShade!]!.withValues(
+        alpha: plain.pressedOpacity,
+      ),
+      selected: selected,
+      focused: const Color(0x00000000),
+      disabled: const Color(0x00000000),
+    );
+  }
 
+  /// A column of full-ink rows would leave the selected one nothing to win
+  /// by, so the idle row rests in the navigation ink and only the selected
+  /// one takes the accent's contrasting print.
   @override
   WidgetProperty<Color>? get menuItemForegroundColor =>
       StatedWidgetProperty<Color>(
-        normal: foregroundColor!,
-        hovered: foregroundColor,
-        pressed: foregroundColor?.withAlpha((0.9 * 255).round()),
-        selected: foregroundColor,
-        focused: foregroundColor,
-        disabled: _vars.colorContentMuted,
+        normal: _vars.colorContentNav,
+        hovered: _vars.colorContent,
+        pressed: _vars.colorContent,
+        selected: _vars.colorOnAccent,
+        focused: _vars.colorContentNav,
+        disabled: _vars.controlColorNormalContent.disabledColor!,
       );
 
   @override
-  Duration? get animationDuration => const Duration(milliseconds: 180);
+  Duration? get animationDuration => _vars.motionDuration;
 }
 
 extension SidebarThemeDefaultsX on SidebarThemeData {
@@ -304,4 +336,3 @@ extension SidebarThemeDefaultsX on SidebarThemeData {
     return merge(_SidebarDefaults(context));
   }
 }
-
