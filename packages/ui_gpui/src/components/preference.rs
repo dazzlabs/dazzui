@@ -313,7 +313,7 @@ impl RenderOnce for PreferenceRow {
                         })
                 })
                 .when_some(icon, |el, icon| {
-                    // Uncoloured on purpose: a Badge or a Toggle in these
+                    // Uncoloured on purpose: a Badge or a Switch in these
                     // slots keeps its own ink rather than inheriting a wash.
                     el.child(div().flex().flex_none().items_center().child(icon))
                 })

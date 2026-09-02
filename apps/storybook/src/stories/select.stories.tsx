@@ -43,11 +43,11 @@ export const Overview: Story = {
   render: () => (
     <Page
       title="Select"
-      description="A choice out of a list too long to lay out. It stays a native `<select>`, so it gets the platform's own menu, its keyboard handling, its type-ahead, its `<optgroup>`s and its behaviour on a phone for free — only the chevron is drawn here, because the native arrow ignores padding. It reads the Input namespace rather than owning one: looking exactly like an input is the design, and a second set of numbers could only drift from it."
+      description="A choice out of a list too long to lay out. It stays a native `<select>`, so it gets the platform's own menu, its keyboard handling, its type-ahead, its `<optgroup>`s and its behaviour on a phone for free — only the chevron is drawn here, because the native arrow ignores padding. It reads the TextField namespace rather than owning one: looking exactly like an input is the design, and a second set of numbers could only drift from it."
     >
       <Section
         title="States"
-        description="The same four an Input has, drawn the same way. An erroring select is re-tinted onto the danger ramp rather than given a second palette."
+        description="The same four a TextField has, drawn the same way. An erroring select is re-tinted onto the danger ramp rather than given a second palette."
       >
         <div style={{ maxWidth: WIDTH }}>
           <Stack>

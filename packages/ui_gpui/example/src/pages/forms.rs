@@ -1,6 +1,6 @@
 use dazzui::{
-    ActiveTheme, Checkbox, FormField, Input, InputState, Kbd, OptionCard, RadioGroup, SearchField,
-    Select, Textarea, Toggle, ToggleSize,
+    ActiveTheme, Checkbox, FormField, KeyCap, OptionCard, RadioGroup, SearchField, Select, Switch,
+    SwitchSize, TextField, TextFieldState, Textarea,
 };
 use gpui::{AnyElement, Context, Entity, IntoElement, ParentElement, SharedString, Styled, div};
 
@@ -28,12 +28,12 @@ pub fn forms(
                 div().max_w(vars.dialog_width).child(
                     Col::new()
                         .gap(vars.spacing_4)
-                        .child(FormField::new("Workspace name").child(Input::new(&state.name)))
+                        .child(FormField::new("Workspace name").child(TextField::new(&state.name)))
                         .child(
                             FormField::new("Email")
                                 .hint("We could not reach this address.")
-                                .state(InputState::Error)
-                                .child(Input::new(&state.email).state(InputState::Error)),
+                                .state(TextFieldState::Error)
+                                .child(TextField::new(&state.email).state(TextFieldState::Error)),
                         )
                         .child(
                             FormField::new("Region").child(
@@ -61,7 +61,7 @@ pub fn forms(
             .child(
                 div()
                     .max_w(vars.dialog_width)
-                    .child(SearchField::new("search", &state.search).hint(Kbd::new("⌘F"))),
+                    .child(SearchField::new("search", &state.search).hint(KeyCap::new("⌘F"))),
             )
             .into_any_element(),
         Specimen::new("Checkboxes")
@@ -105,31 +105,31 @@ pub fn forms(
                     })),
             )
             .into_any_element(),
-        Specimen::new("Toggles")
+        Specimen::new("Switches")
             .child(
                 Row::new()
                     .gap(vars.spacing_4)
                     .child(
-                        Toggle::new("notify-small", state.notify)
-                            .size(ToggleSize::Small)
+                        Switch::new("notify-small", state.notify)
+                            .size(SwitchSize::Small)
                             .on_change(act_with(this, |state, checked: &bool, _, _| {
                                 state.notify = *checked;
                             })),
                     )
                     .child(
-                        Toggle::new("notify", state.notify)
+                        Switch::new("notify", state.notify)
                             .on_change(act_with(this, |state, checked: &bool, _, _| {
                                 state.notify = *checked
                             })),
                     )
                     .child(
-                        Toggle::new("notify-large", state.notify)
-                            .size(ToggleSize::Large)
+                        Switch::new("notify-large", state.notify)
+                            .size(SwitchSize::Large)
                             .on_change(act_with(this, |state, checked: &bool, _, _| {
                                 state.notify = *checked;
                             })),
                     )
-                    .child(Toggle::new("notify-off", false).disabled(true)),
+                    .child(Switch::new("notify-off", false).disabled(true)),
             )
             .into_any_element(),
         Specimen::new("Option cards")

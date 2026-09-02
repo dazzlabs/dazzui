@@ -28,7 +28,7 @@ struct FormsPage: View {
     Specimen("Fields") {
       VStack(alignment: .leading, spacing: vars.spacing4) {
         FormField(label: "Workspace name") {
-          Input(text: $name, placeholder: "Acme")
+          TextField(text: $name, placeholder: "Acme")
         }
 
         FormField(
@@ -36,7 +36,7 @@ struct FormsPage: View {
           hint: "We could not reach this address.",
           state: .error
         ) {
-          Input(text: $email, placeholder: "you@example.com", state: .error)
+          TextField(text: $email, placeholder: "you@example.com", state: .error)
         }
 
         FormField(label: "Region") {
@@ -95,12 +95,12 @@ struct FormsPage: View {
       )
     }
 
-    Specimen("Toggles") {
+    Specimen("Switches") {
       Row(spacing: vars.spacing4) {
-        Toggle(checked: notify, onCheckedChange: { notify = $0 }, size: .small)
-        Toggle(checked: notify, onCheckedChange: { notify = $0 })
-        Toggle(checked: notify, onCheckedChange: { notify = $0 }, size: .large)
-        Toggle(checked: false, enabled: false)
+        Switch(checked: notify, onCheckedChange: { notify = $0 }, size: .small)
+        Switch(checked: notify, onCheckedChange: { notify = $0 })
+        Switch(checked: notify, onCheckedChange: { notify = $0 }, size: .large)
+        Switch(checked: false, enabled: false)
       }
     }
 

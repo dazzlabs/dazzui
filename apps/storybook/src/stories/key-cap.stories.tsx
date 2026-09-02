@@ -1,6 +1,6 @@
 import {
   Button,
-  Kbd,
+  KeyCap,
   Menu,
   PreferenceRow,
   PreferenceSection,
@@ -12,9 +12,9 @@ import { useState } from 'react'
 import { Page, Section, Specimen, Stack } from '../components/gallery'
 import { Col, Row } from '../components/stage'
 
-const meta: Meta<typeof Kbd> = {
-  title: 'Components/Kbd',
-  component: Kbd,
+const meta: Meta<typeof KeyCap> = {
+  title: 'Components/KeyCap',
+  component: KeyCap,
   parameters: { layout: 'centered' },
 }
 
@@ -28,7 +28,7 @@ export const Overview: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => (
     <Page
-      title="Kbd"
+      title="KeyCap"
       description="One key cap. Unlike a badge it carries its own surface, content, and border colours in the token graph, so it takes no tint — a key looks like a key whatever is around it. A cap says what the key *is*; where the key can be changed, that is a ShortcutRecorder instead."
     >
       <Section
@@ -38,10 +38,10 @@ export const Overview: Story = {
         <Stack>
           {SIZES.map(size => (
             <Specimen key={size} label={size}>
-              <Kbd size={size}>⌘</Kbd>
-              <Kbd size={size}>⇧</Kbd>
-              <Kbd size={size}>K</Kbd>
-              <Kbd size={size}>Esc</Kbd>
+              <KeyCap size={size}>⌘</KeyCap>
+              <KeyCap size={size}>⇧</KeyCap>
+              <KeyCap size={size}>K</KeyCap>
+              <KeyCap size={size}>Esc</KeyCap>
             </Specimen>
           ))}
         </Stack>
@@ -53,9 +53,9 @@ export const Overview: Story = {
       >
         <Stack>
           <Specimen label="flush">
-            <Kbd size="small">⌘</Kbd>
-            <Kbd size="small">⇧</Kbd>
-            <Kbd size="small">K</Kbd>
+            <KeyCap size="small">⌘</KeyCap>
+            <KeyCap size="small">⇧</KeyCap>
+            <KeyCap size="small">K</KeyCap>
           </Specimen>
           <Specimen label="joined">
             <span
@@ -66,14 +66,15 @@ export const Overview: Story = {
                 color: 'var(--color-content-muted)',
               }}
             >
-              <Kbd size="small">Ctrl</Kbd>+<Kbd size="small">Shift</Kbd>+
-              <Kbd size="small">P</Kbd>
+              <KeyCap size="small">Ctrl</KeyCap>+
+              <KeyCap size="small">Shift</KeyCap>+
+              <KeyCap size="small">P</KeyCap>
             </span>
           </Specimen>
           <Specimen label="in prose">
             <span>
-              Open the command palette with <Kbd size="small">⌘</Kbd>{' '}
-              <Kbd size="small">K</Kbd>, then type a document name.
+              Open the command palette with <KeyCap size="small">⌘</KeyCap>{' '}
+              <KeyCap size="small">K</KeyCap>, then type a document name.
             </span>
           </Specimen>
         </Stack>
@@ -83,7 +84,7 @@ export const Overview: Story = {
 }
 
 export const Default: Story = {
-  render: () => <Kbd>⌘</Kbd>,
+  render: () => <KeyCap>⌘</KeyCap>,
 }
 
 export const Sizes: Story = {
@@ -91,10 +92,10 @@ export const Sizes: Story = {
     <Col>
       {SIZES.map(size => (
         <Row key={size} gap="var(--spacing-1)">
-          <Kbd size={size}>⌘</Kbd>
-          <Kbd size={size}>⇧</Kbd>
-          <Kbd size={size}>K</Kbd>
-          <Kbd size={size}>Esc</Kbd>
+          <KeyCap size={size}>⌘</KeyCap>
+          <KeyCap size={size}>⇧</KeyCap>
+          <KeyCap size={size}>K</KeyCap>
+          <KeyCap size={size}>Esc</KeyCap>
         </Row>
       ))}
     </Col>
@@ -104,9 +105,9 @@ export const Sizes: Story = {
 export const AChord: Story = {
   render: () => (
     <Row gap="var(--spacing-1)">
-      <Kbd size="small">⌘</Kbd>
-      <Kbd size="small">⇧</Kbd>
-      <Kbd size="small">K</Kbd>
+      <KeyCap size="small">⌘</KeyCap>
+      <KeyCap size="small">⇧</KeyCap>
+      <KeyCap size="small">K</KeyCap>
     </Row>
   ),
 }
@@ -121,8 +122,8 @@ export const AJoinedChord: Story = {
         color: 'var(--color-content-muted)',
       }}
     >
-      <Kbd size="small">Ctrl</Kbd>+<Kbd size="small">Shift</Kbd>+
-      <Kbd size="small">P</Kbd>
+      <KeyCap size="small">Ctrl</KeyCap>+<KeyCap size="small">Shift</KeyCap>+
+      <KeyCap size="small">P</KeyCap>
     </span>
   ),
 }
@@ -130,11 +131,11 @@ export const AJoinedChord: Story = {
 export const WordKeys: Story = {
   render: () => (
     <Row gap="var(--spacing-1)">
-      <Kbd size="small">Esc</Kbd>
-      <Kbd size="small">Tab</Kbd>
-      <Kbd size="small">Space</Kbd>
-      <Kbd size="small">↩</Kbd>
-      <Kbd size="small">⌫</Kbd>
+      <KeyCap size="small">Esc</KeyCap>
+      <KeyCap size="small">Tab</KeyCap>
+      <KeyCap size="small">Space</KeyCap>
+      <KeyCap size="small">↩</KeyCap>
+      <KeyCap size="small">⌫</KeyCap>
     </Row>
   ),
 }
@@ -143,9 +144,9 @@ export const InProse: Story = {
   render: () => (
     <div style={{ maxWidth: '26rem' }}>
       <p style={{ margin: 0 }}>
-        Open the command palette with <Kbd size="small">⌘</Kbd>{' '}
-        <Kbd size="small">K</Kbd>, then type a document name. Press{' '}
-        <Kbd size="small">Esc</Kbd> to close.
+        Open the command palette with <KeyCap size="small">⌘</KeyCap>{' '}
+        <KeyCap size="small">K</KeyCap>, then type a document name. Press{' '}
+        <KeyCap size="small">Esc</KeyCap> to close.
       </p>
     </div>
   ),
@@ -157,7 +158,7 @@ export const AsASearchHint: Story = {
     return (
       <div style={{ width: '18rem' }}>
         <SearchField
-          hint={<Kbd size="small">⌘F</Kbd>}
+          hint={<KeyCap size="small">⌘F</KeyCap>}
           placeholder="Search terms"
           value={query}
           onValueChange={setQuery}
@@ -183,9 +184,9 @@ export const InAMenu: Story = {
         </Button>
       )}
       items={[
-        { label: 'Duplicate', shortcut: <Kbd size="small">⌘D</Kbd> },
-        { label: 'Rename', shortcut: <Kbd size="small">↩</Kbd> },
-        { label: 'Export…', shortcut: <Kbd size="small">⌘E</Kbd> },
+        { label: 'Duplicate', shortcut: <KeyCap size="small">⌘D</KeyCap> },
+        { label: 'Rename', shortcut: <KeyCap size="small">↩</KeyCap> },
+        { label: 'Export…', shortcut: <KeyCap size="small">⌘E</KeyCap> },
       ]}
     />
   ),
@@ -197,8 +198,8 @@ export const InASettingsRow: Story = {
       <PreferenceSection label="Shortcuts">
         <PreferenceRow title="Command palette" subtitle="Cannot be changed">
           <span style={{ display: 'inline-flex', gap: 'var(--spacing-1)' }}>
-            <Kbd size="small">⌘</Kbd>
-            <Kbd size="small">K</Kbd>
+            <KeyCap size="small">⌘</KeyCap>
+            <KeyCap size="small">K</KeyCap>
           </span>
         </PreferenceRow>
       </PreferenceSection>

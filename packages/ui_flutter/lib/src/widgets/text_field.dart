@@ -471,7 +471,7 @@ class TextField extends StatefulWidget {
 
   /// The size profile the box and its type come off.
   ///
-  /// Defaults to [WidgetSize.medium], the step the stylesheet's Input
+  /// Defaults to [WidgetSize.medium], the step the stylesheet's TextField
   /// defaults to, so a field and a medium button line up in one row.
   final WidgetSize size;
 

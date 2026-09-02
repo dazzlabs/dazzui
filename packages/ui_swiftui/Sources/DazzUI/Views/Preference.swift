@@ -210,7 +210,7 @@ public struct PreferenceRow<Icon: View, Trailing: View>: View {
     let vars = theme.vars
 
     return HStack(spacing: vars.spacing25) {
-      // Uncoloured on purpose: a Badge or a Toggle in these slots keeps its
+      // Uncoloured on purpose: a Badge or a Switch in these slots keeps its
       // own ink rather than inheriting a wash.
       icon()
       VStack(alignment: .leading, spacing: vars.spacing1) {

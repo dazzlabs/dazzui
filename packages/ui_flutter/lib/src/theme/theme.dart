@@ -8,12 +8,12 @@ import 'package:flutter/widgets.dart';
 import '../generated/theme_variables.dart';
 import '../painting/varianted_widget_state_color.dart';
 import '../painting/widget_property.dart';
-import '../widgets/alert_banner_theme.dart';
 import '../widgets/badge_theme.dart';
 import '../widgets/button_theme.dart';
+import '../widgets/callout_theme.dart';
 import '../widgets/card_theme.dart';
 import '../widgets/checkbox_theme.dart';
-import '../widgets/kbd_theme.dart';
+import '../widgets/key_cap_theme.dart';
 import 'icon_library.dart';
 
 export 'icon_library.dart';
@@ -82,12 +82,12 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
     this.vars = themeVariables,
     required this.brightness,
     required this.iconLibrary,
-    this.alertBannerTheme = const AlertBannerThemeData(),
     this.badgeTheme = const BadgeThemeData(),
     this.buttonTheme = const ButtonThemeData(),
+    this.calloutTheme = const CalloutThemeData(),
     this.cardTheme = const CardThemeData(),
     this.checkboxTheme = const CheckboxThemeData(),
-    this.kbdTheme = const KbdThemeData(),
+    this.keyCapTheme = const KeyCapThemeData(),
   });
 
   /// The variables of the theme.
@@ -99,14 +99,14 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
   /// The icon library of the design theme.
   final IconLibrary iconLibrary;
 
-  /// The alert banner theme of the design theme.
-  final AlertBannerThemeData alertBannerTheme;
-
   /// The badge theme of the design theme.
   final BadgeThemeData badgeTheme;
 
   /// The button theme of the design theme.
   final ButtonThemeData buttonTheme;
+
+  /// The callout theme of the design theme.
+  final CalloutThemeData calloutTheme;
 
   /// The card theme of the design theme.
   final CardThemeData cardTheme;
@@ -115,7 +115,7 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
   final CheckboxThemeData checkboxTheme;
 
   /// The kbd theme of the design theme.
-  final KbdThemeData kbdTheme;
+  final KeyCapThemeData keyCapTheme;
 
   /// Creates a copy of this object but with the given fields replaced with the
   /// new values.
@@ -124,23 +124,23 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
     ThemeVariables? vars,
     Brightness? brightness,
     IconLibrary? iconLibrary,
-    AlertBannerThemeData? alertBannerTheme,
     BadgeThemeData? badgeTheme,
     ButtonThemeData? buttonTheme,
+    CalloutThemeData? calloutTheme,
     CardThemeData? cardTheme,
     CheckboxThemeData? checkboxTheme,
-    KbdThemeData? kbdTheme,
+    KeyCapThemeData? keyCapTheme,
   }) {
     return ThemeData(
       vars: vars ?? this.vars,
       iconLibrary: iconLibrary ?? this.iconLibrary,
       brightness: brightness ?? this.brightness,
-      alertBannerTheme: alertBannerTheme ?? this.alertBannerTheme,
       badgeTheme: badgeTheme ?? this.badgeTheme,
       buttonTheme: buttonTheme ?? this.buttonTheme,
+      calloutTheme: calloutTheme ?? this.calloutTheme,
       cardTheme: cardTheme ?? this.cardTheme,
       checkboxTheme: checkboxTheme ?? this.checkboxTheme,
-      kbdTheme: kbdTheme ?? this.kbdTheme,
+      keyCapTheme: keyCapTheme ?? this.keyCapTheme,
     );
   }
 
@@ -155,12 +155,12 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
       vars: t < 0.5 ? vars : other.vars,
       brightness: t < 0.5 ? brightness : other.brightness,
       iconLibrary: t < 0.5 ? iconLibrary : other.iconLibrary,
-      alertBannerTheme: t < 0.5 ? alertBannerTheme : other.alertBannerTheme,
       badgeTheme: t < 0.5 ? badgeTheme : other.badgeTheme,
       buttonTheme: t < 0.5 ? buttonTheme : other.buttonTheme,
+      calloutTheme: t < 0.5 ? calloutTheme : other.calloutTheme,
       cardTheme: t < 0.5 ? cardTheme : other.cardTheme,
       checkboxTheme: t < 0.5 ? checkboxTheme : other.checkboxTheme,
-      kbdTheme: t < 0.5 ? kbdTheme : other.kbdTheme,
+      keyCapTheme: t < 0.5 ? keyCapTheme : other.keyCapTheme,
     );
   }
 
@@ -169,11 +169,11 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
     vars,
     iconLibrary,
     brightness,
-    alertBannerTheme,
     badgeTheme,
     buttonTheme,
+    calloutTheme,
     checkboxTheme,
-    kbdTheme,
+    keyCapTheme,
   );
 
   @override
@@ -188,12 +188,12 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
         other.vars == vars &&
         other.iconLibrary == iconLibrary &&
         other.brightness == brightness &&
-        other.alertBannerTheme == alertBannerTheme &&
         other.badgeTheme == badgeTheme &&
         other.buttonTheme == buttonTheme &&
+        other.calloutTheme == calloutTheme &&
         other.cardTheme == cardTheme &&
         other.checkboxTheme == checkboxTheme &&
-        other.kbdTheme == kbdTheme;
+        other.keyCapTheme == keyCapTheme;
   }
 
   @override
@@ -202,12 +202,12 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
     properties
       ..add(DiagnosticsProperty('brightness', brightness))
       ..add(DiagnosticsProperty('iconLibrary', iconLibrary))
-      ..add(DiagnosticsProperty('alertBannerTheme', alertBannerTheme))
       ..add(DiagnosticsProperty('badgeTheme', badgeTheme))
       ..add(DiagnosticsProperty('buttonTheme', buttonTheme))
+      ..add(DiagnosticsProperty('calloutTheme', calloutTheme))
       ..add(DiagnosticsProperty('cardTheme', cardTheme))
       ..add(DiagnosticsProperty('checkboxTheme', checkboxTheme))
-      ..add(DiagnosticsProperty('kbdTheme', kbdTheme));
+      ..add(DiagnosticsProperty('keyCapTheme', keyCapTheme));
   }
 }
 

@@ -1,7 +1,7 @@
 use dazzui::prelude::*;
 use dazzui::{
-    ActiveTheme, Badge, BadgeSize, Button, ControlVariant, Divider, Kbd, Progress, ThemeName, Tint,
-    themed,
+    ActiveTheme, Badge, BadgeSize, Button, ControlVariant, Divider, KeyCap, Progress, ThemeName,
+    Tint, themed,
 };
 use gpui::{AnyElement, Context, Entity, IntoElement, ParentElement, Styled, div};
 
@@ -132,7 +132,7 @@ fn theme_card(name: ThemeName) -> impl IntoElement {
                         .size(BadgeSize::Small)
                         .tint(Tint::Danger),
                 )
-                .child(Kbd::new("⌘S")),
+                .child(KeyCap::new("⌘S")),
         )
         .child(Progress::new(60.).gradient(true))
 }

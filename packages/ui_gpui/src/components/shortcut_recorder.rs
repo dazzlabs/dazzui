@@ -7,7 +7,7 @@ use crate::assets::icons;
 use crate::components::Icon;
 use crate::prelude::*;
 use crate::{
-    InputState, SharedValueListener, Tint, ValueListener, colors, hairline, latched, pressable,
+    SharedValueListener, TextFieldState, Tint, ValueListener, colors, hairline, latched, pressable,
 };
 
 /*
@@ -101,7 +101,7 @@ pub fn format_shortcut(keystroke: &Keystroke) -> Option<SharedString> {
 /// it listens, so pressing ⌥⇧ and then wondering which key to add is not done
 /// blind.
 ///
-/// It is drawn as a field, not a key cap: a `Kbd` says "this is what the key
+/// It is drawn as a field, not a key cap: a `KeyCap` says "this is what the key
 /// is", a field says "you can change this".
 #[derive(IntoElement)]
 pub struct ShortcutRecorder {
@@ -112,7 +112,7 @@ pub struct ShortcutRecorder {
     placeholder: SharedString,
     /// Shown while the control waits for a key.
     recording_label: SharedString,
-    state: InputState,
+    state: TextFieldState,
     tint: Tint,
     disabled: bool,
     on_change: Option<ValueListener<SharedString>>,
@@ -125,7 +125,7 @@ impl ShortcutRecorder {
             value: value.into(),
             placeholder: "Record shortcut".into(),
             recording_label: "Press keys…".into(),
-            state: InputState::Default,
+            state: TextFieldState::Default,
             tint: Tint::Primary,
             disabled: false,
             on_change: None,
@@ -142,7 +142,7 @@ impl ShortcutRecorder {
         self
     }
 
-    pub fn state(mut self, state: InputState) -> Self {
+    pub fn state(mut self, state: TextFieldState) -> Self {
         self.state = state;
         self
     }
@@ -252,7 +252,7 @@ impl RenderOnce for ShortcutRecorder {
                         vars.label_quiet
                     })
                     .map(|el| {
-                        if state == InputState::Error {
+                        if state == TextFieldState::Error {
                             el.border_color(danger.shade(600))
                                 .bg(danger.shade(50))
                                 .text_color(danger.shade(800))

@@ -69,7 +69,7 @@ export const Overview: Story = {
   render: () => (
     <Page
       title="Checkbox"
-      description="A box and a label on one row. The box defines the row's height, so a stacked checklist sits at the density the boxes set — and the label carries the selection twice over, resting one ink step back and taking the full weight only when its box is checked. A checkbox states an intention a form will act on later, which is what separates it from a Toggle."
+      description="A box and a label on one row. The box defines the row's height, so a stacked checklist sits at the density the boxes set — and the label carries the selection twice over, resting one ink step back and taking the full weight only when its box is checked. A checkbox states an intention a form will act on later, which is what separates it from a Switch."
     >
       <Section
         title="A checklist"

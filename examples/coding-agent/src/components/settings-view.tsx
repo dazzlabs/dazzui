@@ -11,7 +11,7 @@ import {
   Select,
   ShortcutRecorder,
   Textarea,
-  Toggle,
+  Switch,
 } from '@dazzlabs/dazzui-react'
 
 import { FolderGlyph } from '../data/icons'
@@ -181,7 +181,7 @@ function Agent({
           subtitle="Otherwise the run stops at the first failure"
           title="Keep going after a failed command"
         >
-          <Toggle
+          <Switch
             aria-label="Keep going after a failed command"
             checked={settings.continueOnFailure}
             size="small"
@@ -219,7 +219,7 @@ function Permissions({
           subtitle="Ask before the first write of a session"
           title="Writing files"
         >
-          <Toggle
+          <Switch
             aria-label="Ask before writing files"
             checked={settings.askBeforeWrite}
             size="small"
@@ -228,7 +228,7 @@ function Permissions({
         </PreferenceRow>
 
         <PreferenceRow title="Running commands">
-          <Toggle
+          <Switch
             aria-label="Running commands"
             checked={settings.runCommands}
             size="small"
@@ -237,7 +237,7 @@ function Permissions({
         </PreferenceRow>
 
         <PreferenceRow title="Fetching the web">
-          <Toggle
+          <Switch
             aria-label="Fetching the web"
             checked={settings.fetchWeb}
             size="small"

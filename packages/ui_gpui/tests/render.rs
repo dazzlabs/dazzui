@@ -50,7 +50,7 @@ fn every_component_draws(cx: &mut TestAppContext) {
 
 /// One of everything, which is what the playground's pages add up to.
 fn gallery(_window: &mut Window, cx: &mut App) -> AnyElement {
-    let field = cx.new(|cx| TextField::new(cx, "Search").with_value("aurora"));
+    let field = cx.new(|cx| TextBuffer::new(cx, "Search").with_value("aurora"));
     let vars = cx.theme().vars;
 
     div()
@@ -90,7 +90,7 @@ fn gallery(_window: &mut Window, cx: &mut App) -> AnyElement {
                     BadgeVariant::ALL
                         .map(|variant| Badge::new(variant_name(variant)).variant(variant)),
                 )
-                .child(Kbd::new("⌘K").variant(KbdVariant::Key))
+                .child(KeyCap::new("⌘K").variant(KeyCapVariant::Key))
                 .child(SectionLabel::new("Section")),
         )
         .child(div().flex().gap(vars.spacing_2).children(
@@ -108,7 +108,7 @@ fn gallery(_window: &mut Window, cx: &mut App) -> AnyElement {
                         .option("team", "Team")
                         .disabled_option("enterprise", "Enterprise"),
                 )
-                .child(Toggle::new("toggle", true))
+                .child(Switch::new("switch", true))
                 .child(
                     SegmentedControl::new("mode", "code")
                         .item("design", "Design")
@@ -128,8 +128,8 @@ fn gallery(_window: &mut Window, cx: &mut App) -> AnyElement {
         .child(
             FormField::new("Workspace")
                 .hint("We could not reach this address.")
-                .state(InputState::Error)
-                .child(Input::new(&field).state(InputState::Error))
+                .state(TextFieldState::Error)
+                .child(TextField::new(&field).state(TextFieldState::Error))
                 .child(Textarea::new(&field))
                 .child(FieldValue::new("ff_live_51H").mono(true))
                 .child(
@@ -137,7 +137,7 @@ fn gallery(_window: &mut Window, cx: &mut App) -> AnyElement {
                         .option("us", "United States")
                         .option("eu", "Europe"),
                 )
-                .child(SearchField::new("search", &field).hint(Kbd::new("⌘F")))
+                .child(SearchField::new("search", &field).hint(KeyCap::new("⌘F")))
                 .child(ShortcutRecorder::new("shortcut", "⌥⇧2")),
         )
         .child(
@@ -180,7 +180,7 @@ fn gallery(_window: &mut Window, cx: &mut App) -> AnyElement {
                 .child(Step::new("Publish", StepStatus::Idle)),
         )
         .child(
-            AlertBanner::new()
+            Callout::new()
                 .tint(Tint::Warning)
                 .title("Ramp moves only part-way")
                 .description("color.warning cannot move whole under bright-dark.")
@@ -229,12 +229,12 @@ fn gallery(_window: &mut Window, cx: &mut App) -> AnyElement {
                         .child(
                             PreferenceRow::new("launch", "Launch at login")
                                 .subtitle("Every window")
-                                .child(Toggle::new("launch-toggle", true)),
+                                .child(Switch::new("launch-switch", true)),
                         )
                         .child(
                             PreferenceRow::new("open", "Open something")
                                 .on_open(|_, _| {})
-                                .child(Kbd::new("⌘K")),
+                                .child(KeyCap::new("⌘K")),
                         ),
                 ),
         )
@@ -394,11 +394,11 @@ fn a_control_is_the_height_its_profile_says(cx: &mut TestAppContext) {
                         })
                         .into_iter()
                         .chain([
-                            Toggle::new("small", true)
-                                .size(ToggleSize::Small)
+                            Switch::new("small", true)
+                                .size(SwitchSize::Small)
                                 .into_any_element(),
-                            Toggle::new("large", true)
-                                .size(ToggleSize::Large)
+                            Switch::new("large", true)
+                                .size(SwitchSize::Large)
                                 .into_any_element(),
                             Progress::new(50.)
                                 .size(ProgressSize::Large)
@@ -428,11 +428,11 @@ fn a_control_is_the_height_its_profile_says(cx: &mut TestAppContext) {
         );
     }
 
-    // A toggle is its own box on both axes.
-    assert_eq!(bounds[4].size.width, vars.toggle_small_width);
-    assert_eq!(bounds[4].size.height, vars.toggle_small_height);
-    assert_eq!(bounds[5].size.width, vars.toggle_large_width);
-    assert_eq!(bounds[5].size.height, vars.toggle_large_height);
+    // A switch is its own box on both axes.
+    assert_eq!(bounds[4].size.width, vars.switch_small_width);
+    assert_eq!(bounds[4].size.height, vars.switch_small_height);
+    assert_eq!(bounds[5].size.width, vars.switch_large_width);
+    assert_eq!(bounds[5].size.height, vars.switch_large_height);
 
     // A progress bar is a rule cut into the surface, not a control.
     assert_eq!(bounds[6].size.height, vars.spacing_2);
@@ -569,7 +569,7 @@ impl Render for Prober {
 #[gpui::test]
 fn a_field_takes_what_is_typed_into_it(cx: &mut TestAppContext) {
     let (typist, cx) = cx.add_window_view(|_, cx| Typist {
-        field: cx.new(|cx| TextField::new(cx, "Search")),
+        field: cx.new(|cx| TextBuffer::new(cx, "Search")),
     });
     cx.run_until_parked();
 
@@ -597,12 +597,12 @@ fn a_field_takes_what_is_typed_into_it(cx: &mut TestAppContext) {
 
 /// A view holding one field, because a field belongs to whoever owns it.
 struct Typist {
-    field: gpui::Entity<TextField>,
+    field: gpui::Entity<TextBuffer>,
 }
 
 impl Render for Typist {
     fn render(&mut self, _window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
-        div().w(px(300.)).child(Input::new(&self.field))
+        div().w(px(300.)).child(TextField::new(&self.field))
     }
 }
 

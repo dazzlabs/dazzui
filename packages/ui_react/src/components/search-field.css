@@ -16,7 +16,7 @@
 }
 
 /* Focus lifts the card to the paper behind a soft accent wash — the same
-   move every text control makes (see input.css). */
+   move every text control makes (see text-field.css). */
 .dz-search-field:focus-within {
   border-color: var(--tint-600);
   background-color: var(--color-surface);

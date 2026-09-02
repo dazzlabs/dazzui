@@ -213,7 +213,7 @@ Three layers, each referencing the one above it:
   outright, and a file carrying only `$extensions` is dropped with no error.
 - **Component tokens** (`tokens/component/*.yaml`) — only for values that are
   genuinely the component's own: a part no shared role covers (`checkbox.box`,
-  `toggle.thumb`, `dialog.width`) or a `color`+`alpha` wash (`dialog.scrim`).
+  `switch.thumb`, `dialog.width`) or a `color`+`alpha` wash (`dialog.scrim`).
   A token that would merely forward a shared role (`{control.small.size}`,
   `{radius.medium}`, `{labelSmall}`) must not exist — the component's CSS
   reads the shared variable directly, so most components have no token file
@@ -314,7 +314,7 @@ computed properties there, a `ThemeSeed` with `..STUDIO_LIGHT_SEED` and a
   model — neither keeps a per-size block at all, since the profile carries the
   design's own control type). A deviation from the profile keeps its size
   block and overrides the bound variable with another token's variable.
-  Non-controls with sizes (Badge, Kbd, Card) skip the bindings and
+  Non-controls with sizes (Badge, KeyCap, Card) skip the bindings and
   read the profile steps and typography faces directly per size block —
   `badge.css` is that model.
 - Variants are `data-*` attributes, not classes, so the CSS selector names the
@@ -343,7 +343,7 @@ computed properties there, a `ThemeSeed` with `..STUDIO_LIGHT_SEED` and a
   quiet *accent* control, so its wash comes off the tinted ramp and would sit
   heavier on a row than a `tinted` selection one step below it.
 - `tint` is a prop only where a component genuinely re-tints. Components whose
-  colors are already in the token graph (Kbd, Progress's track) read those
+  colors are already in the token graph (KeyCap, Progress's track) read those
   directly.
 - A `color` paired with an `alpha` anywhere else in the graph (`dialog.scrim`)
   is resolved by the same plugin onto `:root`, so no component has to apply an

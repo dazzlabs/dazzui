@@ -1,6 +1,6 @@
 import {
-  AlertBanner,
   Button,
+  Callout,
   EmptyState,
   Icon,
   OptionCard,
@@ -210,10 +210,10 @@ export function App() {
                       ))}
                     </div>
 
-                    <AlertBanner size="small" tint="info" title="Prototype">
+                    <Callout size="small" tint="info" title="Prototype">
                       Every message replays the same scripted run. Nothing is
                       sent anywhere, and no file is written.
-                    </AlertBanner>
+                    </Callout>
                   </div>
                 }
                 onToggle={player.toggle}

@@ -7,17 +7,17 @@ import 'package:flutter/widgets.dart';
 import '../painting/widget_property.dart';
 import '../theme/theme.dart';
 
-/// Overrides the default properties values for descendant [Kbd] widgets.
+/// Overrides the default properties values for descendant [KeyCap] widgets.
 ///
-/// Descendant widgets obtain the current [KbdThemeData] object
-/// using [KbdTheme.of]. Instances of [KbdThemeData] can
-/// be customized with [KbdThemeData.copyWith].
+/// Descendant widgets obtain the current [KeyCapThemeData] object
+/// using [KeyCapTheme.of]. Instances of [KeyCapThemeData] can
+/// be customized with [KeyCapThemeData.copyWith].
 ///
-/// Typically a [KbdThemeData] is specified as part of the
-/// overall [Theme] with [ThemeData.kbdTheme].
+/// Typically a [KeyCapThemeData] is specified as part of the
+/// overall [Theme] with [ThemeData.keyCapTheme].
 ///
-/// All [KbdThemeData] properties are `null` by default.
-/// When null, the [Kbd] will use the values from [ThemeData]
+/// All [KeyCapThemeData] properties are `null` by default.
+/// When null, the [KeyCap] will use the values from [ThemeData]
 /// if they exist, otherwise it will provide its own defaults.
 ///
 /// See also:
@@ -25,9 +25,10 @@ import '../theme/theme.dart';
 ///  * [ThemeData], which describes the overall theme information for the
 ///    application.
 @immutable
-class KbdThemeData extends ThemeExtension<KbdThemeData> with Diagnosticable {
-  /// Creates the set of color, style, and size properties used to configure [Kbd].
-  const KbdThemeData({
+class KeyCapThemeData extends ThemeExtension<KeyCapThemeData>
+    with Diagnosticable {
+  /// Creates the set of color, style, and size properties used to configure [KeyCap].
+  const KeyCapThemeData({
     this.textColor,
     this.smallSize,
     this.largeSize,
@@ -36,19 +37,19 @@ class KbdThemeData extends ThemeExtension<KbdThemeData> with Diagnosticable {
     this.labelStyle,
   });
 
-  /// Overrides the default value for [Kbd.textColor].
+  /// Overrides the default value for [KeyCap.textColor].
   final Color? textColor;
 
-  /// Overrides the default value for [Kbd.smallSize].
+  /// Overrides the default value for [KeyCap.smallSize].
   final double? smallSize;
 
-  /// Overrides the default value for [Kbd.largeSize].
+  /// Overrides the default value for [KeyCap.largeSize].
   final double? largeSize;
 
-  /// Overrides the default value for [Kbd.textStyle].
+  /// Overrides the default value for [KeyCap.textStyle].
   final TextStyle? textStyle;
 
-  /// Overrides the default value for [Kbd.padding].
+  /// Overrides the default value for [KeyCap.padding].
   final SizedWidgetProperty<EdgeInsetsGeometry>? padding;
 
   /// Overrides the key's type face.
@@ -57,7 +58,7 @@ class KbdThemeData extends ThemeExtension<KbdThemeData> with Diagnosticable {
   /// Creates a copy of this object but with the given fields replaced with the
   /// new values.
   @override
-  KbdThemeData copyWith({
+  KeyCapThemeData copyWith({
     Color? backgroundColor,
     Color? textColor,
     double? smallSize,
@@ -66,7 +67,7 @@ class KbdThemeData extends ThemeExtension<KbdThemeData> with Diagnosticable {
     SizedWidgetProperty<EdgeInsetsGeometry>? padding,
     SizedWidgetProperty<TextStyle>? labelStyle,
   }) {
-    return KbdThemeData(
+    return KeyCapThemeData(
       textColor: textColor ?? this.textColor,
       smallSize: smallSize ?? this.smallSize,
       largeSize: largeSize ?? this.largeSize,
@@ -76,11 +77,14 @@ class KbdThemeData extends ThemeExtension<KbdThemeData> with Diagnosticable {
     );
   }
 
-  /// Linearly interpolates between this [KbdThemeData] and another.
+  /// Linearly interpolates between this [KeyCapThemeData] and another.
   @override
-  KbdThemeData lerp(covariant ThemeExtension<KbdThemeData>? other, double t) {
-    if (other is! KbdThemeData) return this;
-    return KbdThemeData(
+  KeyCapThemeData lerp(
+    covariant ThemeExtension<KeyCapThemeData>? other,
+    double t,
+  ) {
+    if (other is! KeyCapThemeData) return this;
+    return KeyCapThemeData(
       textColor: Color.lerp(textColor, other.textColor, t),
       smallSize: lerpDouble(smallSize, other.smallSize, t),
       largeSize: lerpDouble(largeSize, other.largeSize, t),
@@ -108,7 +112,7 @@ class KbdThemeData extends ThemeExtension<KbdThemeData> with Diagnosticable {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    return other is KbdThemeData &&
+    return other is KeyCapThemeData &&
         other.textColor == textColor &&
         other.smallSize == smallSize &&
         other.largeSize == largeSize &&
@@ -141,39 +145,39 @@ class KbdThemeData extends ThemeExtension<KbdThemeData> with Diagnosticable {
 }
 
 /// An inherited widget that overrides the default color style, and size
-/// parameters for [Kbd]s in this widget's subtree.
+/// parameters for [KeyCap]s in this widget's subtree.
 ///
-/// Values specified here override the defaults for [Kbd] properties which
+/// Values specified here override the defaults for [KeyCap] properties which
 /// are not given an explicit non-null value.
-class KbdTheme extends InheritedTheme {
-  /// Creates a theme that overrides the default properties for [Kbd]s
+class KeyCapTheme extends InheritedTheme {
+  /// Creates a theme that overrides the default properties for [KeyCap]s
   /// in this widget's subtree.
-  const KbdTheme({super.key, required this.data, required super.child});
+  const KeyCapTheme({super.key, required this.data, required super.child});
 
-  /// Specifies the default property overrides for descendant [Kbd] widgets.
-  final KbdThemeData data;
+  /// Specifies the default property overrides for descendant [KeyCap] widgets.
+  final KeyCapThemeData data;
 
-  /// Retrieves the [KbdThemeData] from the closest ancestor [KbdTheme].
+  /// Retrieves the [KeyCapThemeData] from the closest ancestor [KeyCapTheme].
   ///
-  /// If there is no enclosing [KbdTheme] widget, then
-  /// [ThemeData.kbdTheme] is used.
+  /// If there is no enclosing [KeyCapTheme] widget, then
+  /// [ThemeData.keyCapTheme] is used.
   ///
   /// Typical usage is as follows:
   ///
   /// ```dart
-  /// KbdThemeData theme = KbdTheme.of(context);
+  /// KeyCapThemeData theme = KeyCapTheme.of(context);
   /// ```
-  static KbdThemeData of(BuildContext context) {
-    final KbdTheme? kbdTheme = context
-        .dependOnInheritedWidgetOfExactType<KbdTheme>();
-    return kbdTheme?.data ?? context.themeData.kbdTheme;
+  static KeyCapThemeData of(BuildContext context) {
+    final KeyCapTheme? keyCapTheme = context
+        .dependOnInheritedWidgetOfExactType<KeyCapTheme>();
+    return keyCapTheme?.data ?? context.themeData.keyCapTheme;
   }
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    return KbdTheme(data: data, child: child);
+    return KeyCapTheme(data: data, child: child);
   }
 
   @override
-  bool updateShouldNotify(KbdTheme oldWidget) => data != oldWidget.data;
+  bool updateShouldNotify(KeyCapTheme oldWidget) => data != oldWidget.data;
 }

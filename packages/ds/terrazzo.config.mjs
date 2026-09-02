@@ -65,7 +65,7 @@ export default defineConfig({
     './tokens/component/segmented-control.yaml',
     './tokens/component/shortcut-recorder.yaml',
     './tokens/component/toast.yaml',
-    './tokens/component/toggle.yaml',
+    './tokens/component/switch.yaml',
   ],
   plugins: [
     css({

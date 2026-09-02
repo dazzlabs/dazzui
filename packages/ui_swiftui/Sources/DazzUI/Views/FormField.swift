@@ -14,7 +14,7 @@ public struct FormField<Content: View>: View {
   public var label: String
   /// Help text under the control; carries the error tone when erroring.
   public var hint: String?
-  public var state: InputState
+  public var state: TextFieldState
   public var tint: Tint
   @ViewBuilder public var content: () -> Content
 
@@ -23,7 +23,7 @@ public struct FormField<Content: View>: View {
   public init(
     label: String,
     hint: String? = nil,
-    state: InputState = .default,
+    state: TextFieldState = .default,
     tint: Tint = .primary,
     @ViewBuilder content: @escaping () -> Content
   ) {

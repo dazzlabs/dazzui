@@ -3,15 +3,15 @@ import { type ReactNode, useEffect, useRef } from 'react'
 
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
-import type { InputSize } from './input'
+import type { TextFieldSize } from './text-field'
 
 export interface SearchFieldProps {
   value: string
   onValueChange: (value: string) => void
   placeholder?: string
-  /** Trailing hint shown while the field is empty — usually a `Kbd`. */
+  /** Trailing hint shown while the field is empty — usually a `KeyCap`. */
   hint?: ReactNode
-  size?: InputSize
+  size?: TextFieldSize
   tint?: Tint
   /** Focus on mount, for a field opened by a shortcut. */
   autoFocus?: boolean

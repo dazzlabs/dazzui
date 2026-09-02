@@ -9,7 +9,7 @@ use crate::{
 };
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub enum ToggleSize {
+pub enum SwitchSize {
     Small,
     #[default]
     Medium,
@@ -22,22 +22,22 @@ pub enum ToggleSize {
 /// Both ends are laid out with `justify-content` rather than a translate, so
 /// the thumb lands on the padding whatever the track size is.
 #[derive(IntoElement)]
-pub struct Toggle {
+pub struct Switch {
     id: ElementId,
     checked: bool,
-    size: ToggleSize,
+    size: SwitchSize,
     tint: Tint,
     disabled: bool,
     focus_handle: Option<FocusHandle>,
     on_change: Option<ValueListener<bool>>,
 }
 
-impl Toggle {
+impl Switch {
     pub fn new(id: impl Into<ElementId>, checked: bool) -> Self {
-        Toggle {
+        Switch {
             id: id.into(),
             checked,
-            size: ToggleSize::Medium,
+            size: SwitchSize::Medium,
             tint: Tint::Primary,
             disabled: false,
             focus_handle: None,
@@ -45,7 +45,7 @@ impl Toggle {
         }
     }
 
-    pub fn size(mut self, size: ToggleSize) -> Self {
+    pub fn size(mut self, size: SwitchSize) -> Self {
         self.size = size;
         self
     }
@@ -71,10 +71,10 @@ impl Toggle {
     }
 }
 
-impl RenderOnce for Toggle {
+impl RenderOnce for Switch {
     fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
-        let Toggle {
+        let Switch {
             id,
             checked,
             size,
@@ -85,20 +85,20 @@ impl RenderOnce for Toggle {
         } = self;
 
         let (width, height, thumb) = match size {
-            ToggleSize::Small => (
-                vars.toggle_small_width,
-                vars.toggle_small_height,
-                vars.toggle_small_thumb,
+            SwitchSize::Small => (
+                vars.switch_small_width,
+                vars.switch_small_height,
+                vars.switch_small_thumb,
             ),
-            ToggleSize::Medium => (
-                vars.toggle_medium_width,
-                vars.toggle_medium_height,
-                vars.toggle_medium_thumb,
+            SwitchSize::Medium => (
+                vars.switch_medium_width,
+                vars.switch_medium_height,
+                vars.switch_medium_thumb,
             ),
-            ToggleSize::Large => (
-                vars.toggle_large_width,
-                vars.toggle_large_height,
-                vars.toggle_large_thumb,
+            SwitchSize::Large => (
+                vars.switch_large_width,
+                vars.switch_large_height,
+                vars.switch_large_thumb,
             ),
         };
         let filled = vars.control_color(

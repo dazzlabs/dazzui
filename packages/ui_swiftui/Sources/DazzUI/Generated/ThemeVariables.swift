@@ -116,10 +116,10 @@ public struct ThemeVariables: Sendable {
     radioLargeDot: CGFloat = 9.0,
     segmentedControlInset: CGFloat = 3.0,
     shortcutRecorderWidth: CGFloat = 132.0,
+    switchMediumWidth: CGFloat = 32.0,
+    switchMediumHeight: CGFloat = 18.0,
+    switchMediumThumb: CGFloat = 14.0,
     toastMaxWidth: CGFloat = 420.0,
-    toggleMediumWidth: CGFloat = 32.0,
-    toggleMediumHeight: CGFloat = 18.0,
-    toggleMediumThumb: CGFloat = 14.0,
     controlColorRecessedBorder: ColorDescriptor = ColorDescriptor(
     normalColor: Colors.transparent,
     hoveredColor: Colors.transparent,
@@ -273,10 +273,10 @@ public struct ThemeVariables: Sendable {
     self.radioLargeDot = radioLargeDot
     self.segmentedControlInset = segmentedControlInset
     self.shortcutRecorderWidth = shortcutRecorderWidth
+    self.switchMediumWidth = switchMediumWidth
+    self.switchMediumHeight = switchMediumHeight
+    self.switchMediumThumb = switchMediumThumb
     self.toastMaxWidth = toastMaxWidth
-    self.toggleMediumWidth = toggleMediumWidth
-    self.toggleMediumHeight = toggleMediumHeight
-    self.toggleMediumThumb = toggleMediumThumb
     self.controlColorRecessedBorder = controlColorRecessedBorder
     self.controlColorFilledBorder = controlColorFilledBorder
     self.controlColorTintedBorder = controlColorTintedBorder
@@ -396,10 +396,10 @@ public struct ThemeVariables: Sendable {
   public let radioLargeDot: CGFloat
   public let segmentedControlInset: CGFloat
   public let shortcutRecorderWidth: CGFloat
+  public let switchMediumWidth: CGFloat
+  public let switchMediumHeight: CGFloat
+  public let switchMediumThumb: CGFloat
   public let toastMaxWidth: CGFloat
-  public let toggleMediumWidth: CGFloat
-  public let toggleMediumHeight: CGFloat
-  public let toggleMediumThumb: CGFloat
   public let controlColorRecessedBorder: ColorDescriptor
   public let controlColorFilledBorder: ColorDescriptor
   public let controlColorTintedBorder: ColorDescriptor
@@ -436,12 +436,12 @@ public struct ThemeVariables: Sendable {
   public var radioSmallBox: CGFloat { spacing35 }
   public var radioMediumBox: CGFloat { spacing4 }
   public var radioLargeBox: CGFloat { spacing5 }
-  public var toggleSmallWidth: CGFloat { spacing7 }
-  public var toggleSmallHeight: CGFloat { spacing4 }
-  public var toggleSmallThumb: CGFloat { spacing3 }
-  public var toggleLargeWidth: CGFloat { spacing11 }
-  public var toggleLargeHeight: CGFloat { spacing6 }
-  public var toggleLargeThumb: CGFloat { spacing5 }
+  public var switchSmallWidth: CGFloat { spacing7 }
+  public var switchSmallHeight: CGFloat { spacing4 }
+  public var switchSmallThumb: CGFloat { spacing3 }
+  public var switchLargeWidth: CGFloat { spacing11 }
+  public var switchLargeHeight: CGFloat { spacing6 }
+  public var switchLargeThumb: CGFloat { spacing5 }
   public var controlColorNormalSurface: ColorDescriptor { ColorDescriptor(
     normalColor: colorSurface,
     hoveredColor: colorSurfaceSubtle,

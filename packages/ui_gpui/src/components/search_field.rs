@@ -4,7 +4,7 @@ use gpui::{
 };
 
 use crate::assets::icons;
-use crate::components::{Icon, InputSize, TextField, editable};
+use crate::components::{Icon, TextBuffer, TextFieldSize, editable};
 use crate::prelude::*;
 use crate::{Tint, TypeStyle, hairline, pressable};
 
@@ -16,28 +16,28 @@ use crate::{Tint, TypeStyle, hairline, pressable};
 #[derive(IntoElement)]
 pub struct SearchField {
     id: ElementId,
-    field: Entity<TextField>,
-    size: InputSize,
+    field: Entity<TextBuffer>,
+    size: TextFieldSize,
     tint: Tint,
-    /// Trailing hint shown while the field is empty — usually a `Kbd`.
+    /// Trailing hint shown while the field is empty — usually a `KeyCap`.
     hint: Option<AnyElement>,
     /// Accessible name of the clear button.
     clear_label: SharedString,
 }
 
 impl SearchField {
-    pub fn new(id: impl Into<ElementId>, field: &Entity<TextField>) -> Self {
+    pub fn new(id: impl Into<ElementId>, field: &Entity<TextBuffer>) -> Self {
         SearchField {
             id: id.into(),
             field: field.clone(),
-            size: InputSize::Medium,
+            size: TextFieldSize::Medium,
             tint: Tint::Primary,
             hint: None,
             clear_label: "Clear search".into(),
         }
     }
 
-    pub fn size(mut self, size: InputSize) -> Self {
+    pub fn size(mut self, size: TextFieldSize) -> Self {
         self.size = size;
         self
     }

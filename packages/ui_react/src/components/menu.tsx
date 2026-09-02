@@ -7,7 +7,7 @@ import type { Tint } from '../lib/tint'
 export interface MenuItem {
   label: string
   icon?: ReactNode
-  /** Trailing hint — pass a `Kbd`, or the glyphs to set in one. */
+  /** Trailing hint — pass a `KeyCap`, or the glyphs to set in one. */
   shortcut?: ReactNode
   /**
    * Radio-style check state. Set it on every item of a group, including the

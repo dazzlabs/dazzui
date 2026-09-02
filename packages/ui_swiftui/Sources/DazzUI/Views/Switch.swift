@@ -1,9 +1,9 @@
 import SwiftUI
 
-/// A toggle carries its own three sizes: a switch is a proportion — track,
+/// A switch carries its own three sizes: it is a proportion — track,
 /// padding and thumb — rather than a control that has to line up with a
 /// button's height.
-public enum ToggleSize: String, CaseIterable, Sendable {
+public enum SwitchSize: String, CaseIterable, Sendable {
   case small
   case medium
   case large
@@ -13,13 +13,11 @@ public enum ToggleSize: String, CaseIterable, Sendable {
 /// says which.
 ///
 /// The thumb is laid out by alignment rather than by a translate, so it lands
-/// on the track's padding whatever the size is. Named `Toggle` rather than
-/// prefixed, and reached as `DazzUI.Toggle` where `SwiftUI.Toggle` is
-/// also in scope.
-public struct Toggle: View {
+/// on the track's padding whatever the size is.
+public struct Switch: View {
   public var checked: Bool
   public var onCheckedChange: ((Bool) -> Void)?
-  public var size: ToggleSize
+  public var size: SwitchSize
   /// Which colour ramp the filled track is drawn from.
   public var tint: Tint
   public var enabled: Bool
@@ -30,7 +28,7 @@ public struct Toggle: View {
   public init(
     checked: Bool,
     onCheckedChange: ((Bool) -> Void)? = nil,
-    size: ToggleSize = .medium,
+    size: SwitchSize = .medium,
     tint: Tint = .primary,
     enabled: Bool = true
   ) {
@@ -93,25 +91,25 @@ public struct Toggle: View {
 
   private var width: CGFloat {
     switch size {
-    case .small: return theme.vars.toggleSmallWidth
-    case .medium: return theme.vars.toggleMediumWidth
-    case .large: return theme.vars.toggleLargeWidth
+    case .small: return theme.vars.switchSmallWidth
+    case .medium: return theme.vars.switchMediumWidth
+    case .large: return theme.vars.switchLargeWidth
     }
   }
 
   private var height: CGFloat {
     switch size {
-    case .small: return theme.vars.toggleSmallHeight
-    case .medium: return theme.vars.toggleMediumHeight
-    case .large: return theme.vars.toggleLargeHeight
+    case .small: return theme.vars.switchSmallHeight
+    case .medium: return theme.vars.switchMediumHeight
+    case .large: return theme.vars.switchLargeHeight
     }
   }
 
   private var thumb: CGFloat {
     switch size {
-    case .small: return theme.vars.toggleSmallThumb
-    case .medium: return theme.vars.toggleMediumThumb
-    case .large: return theme.vars.toggleLargeThumb
+    case .small: return theme.vars.switchSmallThumb
+    case .medium: return theme.vars.switchMediumThumb
+    case .large: return theme.vars.switchLargeThumb
     }
   }
 

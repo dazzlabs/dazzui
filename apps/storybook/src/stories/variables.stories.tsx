@@ -1,4 +1,4 @@
-import { Kbd, SearchField } from '@dazzlabs/dazzui-react'
+import { KeyCap, SearchField } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useMemo, useState } from 'react'
 
@@ -102,7 +102,7 @@ function Variables() {
       >
         <div style={{ maxWidth: '22rem' }}>
           <SearchField
-            hint={<Kbd size="small">{tokens.length}</Kbd>}
+            hint={<KeyCap size="small">{tokens.length}</KeyCap>}
             placeholder="radius, primary-600, spacing…"
             value={query}
             onValueChange={setQuery}

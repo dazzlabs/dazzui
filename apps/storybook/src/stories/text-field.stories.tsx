@@ -2,7 +2,7 @@ import {
   ActionBar,
   Button,
   FormField,
-  Input,
+  TextField,
   TINTS,
 } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
@@ -11,9 +11,9 @@ import { useState } from 'react'
 import { Page, Section, Specimen, Stack } from '../components/gallery'
 import { Col } from '../components/stage'
 
-const meta: Meta<typeof Input> = {
-  title: 'Components/Input',
-  component: Input,
+const meta: Meta<typeof TextField> = {
+  title: 'Components/TextField',
+  component: TextField,
   parameters: { layout: 'centered' },
 }
 
@@ -29,7 +29,7 @@ export const Overview: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => (
     <Page
-      title="Input"
+      title="TextField"
       description="A single line of text. It shares its box and its height with Select, Textarea and the buttons beside it, so a form row never steps. It stays a native `<input>`, so `type` behaves the way the platform's does and validation stays where the form already is. Wrap it in a `FormField` to give it a label and a hint."
     >
       <Section
@@ -39,19 +39,19 @@ export const Overview: Story = {
         <div style={{ maxWidth: WIDTH }}>
           <Stack>
             <Specimen label="filled">
-              <Input defaultValue="Jianying Li" />
+              <TextField defaultValue="Jianying Li" />
             </Specimen>
             <Specimen label="empty">
-              <Input placeholder="Placeholder" />
+              <TextField placeholder="Placeholder" />
             </Specimen>
             <Specimen label="read-only">
-              <Input readOnly defaultValue="Read only" />
+              <TextField readOnly defaultValue="Read only" />
             </Specimen>
             <Specimen label="disabled">
-              <Input disabled defaultValue="Disabled" />
+              <TextField disabled defaultValue="Disabled" />
             </Specimen>
             <Specimen label="error">
-              <Input state="error" defaultValue="Rejected value" />
+              <TextField state="error" defaultValue="Rejected value" />
             </Specimen>
           </Stack>
         </div>
@@ -66,7 +66,7 @@ export const Overview: Story = {
             {SIZES.map(size => (
               <Specimen key={size} label={size}>
                 <ActionBar>
-                  <Input placeholder={size} size={size} />
+                  <TextField placeholder={size} size={size} />
                   <Button size={size} variant="filled">
                     Go
                   </Button>
@@ -83,8 +83,8 @@ export const Overview: Story = {
       >
         <div style={{ maxWidth: WIDTH }}>
           <Stack>
-            <Input mono defaultValue="https://api.deepl.com/v2" />
-            <Input mono defaultValue="sk-9f3c7a01b4224e8d" />
+            <TextField mono defaultValue="https://api.deepl.com/v2" />
+            <TextField mono defaultValue="sk-9f3c7a01b4224e8d" />
           </Stack>
         </div>
       </Section>
@@ -95,7 +95,7 @@ export const Overview: Story = {
 export const Default: Story = {
   render: () => (
     <div style={{ width: WIDTH }}>
-      <Input defaultValue="Jianying Li" />
+      <TextField defaultValue="Jianying Li" />
     </div>
   ),
 }
@@ -103,7 +103,7 @@ export const Default: Story = {
 export const Placeholder: Story = {
   render: () => (
     <div style={{ width: WIDTH }}>
-      <Input placeholder="Search terms" />
+      <TextField placeholder="Search terms" />
     </div>
   ),
 }
@@ -111,7 +111,7 @@ export const Placeholder: Story = {
 export const ReadOnly: Story = {
   render: () => (
     <div style={{ width: WIDTH }}>
-      <Input readOnly defaultValue="Read only" />
+      <TextField readOnly defaultValue="Read only" />
     </div>
   ),
 }
@@ -119,7 +119,7 @@ export const ReadOnly: Story = {
 export const Disabled: Story = {
   render: () => (
     <div style={{ width: WIDTH }}>
-      <Input disabled defaultValue="Disabled" />
+      <TextField disabled defaultValue="Disabled" />
     </div>
   ),
 }
@@ -128,7 +128,7 @@ export const ErrorState: Story = {
   name: 'Error',
   render: () => (
     <div style={{ width: WIDTH }}>
-      <Input state="error" defaultValue="Rejected value" />
+      <TextField state="error" defaultValue="Rejected value" />
     </div>
   ),
 }
@@ -136,11 +136,11 @@ export const ErrorState: Story = {
 export const States: Story = {
   render: () => (
     <Col width={WIDTH}>
-      <Input defaultValue="Jianying Li" />
-      <Input placeholder="Placeholder" />
-      <Input readOnly defaultValue="Read only" />
-      <Input disabled defaultValue="Disabled" />
-      <Input state="error" defaultValue="Rejected value" />
+      <TextField defaultValue="Jianying Li" />
+      <TextField placeholder="Placeholder" />
+      <TextField readOnly defaultValue="Read only" />
+      <TextField disabled defaultValue="Disabled" />
+      <TextField state="error" defaultValue="Rejected value" />
     </Col>
   ),
 }
@@ -149,7 +149,7 @@ export const Sizes: Story = {
   render: () => (
     <Col width={WIDTH}>
       {SIZES.map(size => (
-        <Input key={size} placeholder={size} size={size} />
+        <TextField key={size} placeholder={size} size={size} />
       ))}
     </Col>
   ),
@@ -160,7 +160,7 @@ export const BesideAButton: Story = {
     <Col width={WIDTH}>
       {SIZES.map(size => (
         <ActionBar key={size}>
-          <Input placeholder="Search terms" size={size} />
+          <TextField placeholder="Search terms" size={size} />
           <Button size={size} variant="filled">
             Go
           </Button>
@@ -173,9 +173,9 @@ export const BesideAButton: Story = {
 export const Mono: Story = {
   render: () => (
     <Col width={WIDTH}>
-      <Input mono defaultValue="https://api.deepl.com/v2" />
-      <Input mono defaultValue="sk-9f3c7a01b4224e8d" />
-      <Input mono placeholder="~/Library/Application Support" />
+      <TextField mono defaultValue="https://api.deepl.com/v2" />
+      <TextField mono defaultValue="sk-9f3c7a01b4224e8d" />
+      <TextField mono placeholder="~/Library/Application Support" />
     </Col>
   ),
 }
@@ -184,7 +184,7 @@ export const Tints: Story = {
   render: () => (
     <Col width={WIDTH}>
       {TINTS.map(tint => (
-        <Input key={tint} placeholder={tint} tint={tint} />
+        <TextField key={tint} placeholder={tint} tint={tint} />
       ))}
     </Col>
   ),
@@ -193,11 +193,11 @@ export const Tints: Story = {
 export const NativeTypes: Story = {
   render: () => (
     <Col width={WIDTH}>
-      <Input defaultValue="handbook.docx" />
-      <Input type="password" defaultValue="not-a-real-key" />
-      <Input type="number" defaultValue={500} />
-      <Input type="email" placeholder="you@example.com" />
-      <Input type="date" defaultValue="2026-09-14" />
+      <TextField defaultValue="handbook.docx" />
+      <TextField type="password" defaultValue="not-a-real-key" />
+      <TextField type="number" defaultValue={500} />
+      <TextField type="email" placeholder="you@example.com" />
+      <TextField type="date" defaultValue="2026-09-14" />
     </Col>
   ),
 }
@@ -216,7 +216,7 @@ export const Controlled: Story = {
             invalid ? 'A file needs a name.' : `Saved as ${name.trim()}.docx`
           }
         >
-          <Input
+          <TextField
             state={invalid ? 'error' : 'default'}
             value={name}
             onChange={event => setName(event.target.value)}

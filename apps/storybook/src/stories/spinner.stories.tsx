@@ -1,6 +1,6 @@
 import {
-  AlertBanner,
   Button,
+  Callout,
   Card,
   SectionLabel,
   Spinner,
@@ -46,7 +46,7 @@ export const Overview: Story = {
 
       <Section
         title="Tints"
-        description="Both the track and the head come off one ramp, two steps apart, so a spinner keeps its contrast on every tint without a second recipe. Match it to whatever it sits in — a spinner in a danger banner tinted primary would look like a stray part."
+        description="Both the track and the head come off one ramp, two steps apart, so a spinner keeps its contrast on every tint without a second recipe. Match it to whatever it sits in — a spinner in a danger callout tinted primary would look like a stray part."
       >
         <Stack>
           <Specimen label="all">
@@ -131,16 +131,16 @@ export const InAButton: Story = {
   ),
 }
 
-export const InABanner: Story = {
+export const InACallout: Story = {
   render: () => (
     <div style={{ width: '32rem' }}>
-      <AlertBanner
+      <Callout
         icon={<Spinner size="small" tint="primary" />}
         tint="primary"
         title="Translation memory is syncing"
       >
         Segments you edit now are queued and upload when it finishes.
-      </AlertBanner>
+      </Callout>
     </div>
   ),
 }

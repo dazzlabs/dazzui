@@ -139,7 +139,7 @@ public enum ShortcutRecorderState: String, CaseIterable, Sendable {
 /// Held modifiers show live while it listens, so pressing ⌥⇧ and then
 /// wondering which key to add is not done blind.
 ///
-/// Drawn as a field, not a key cap: a ``Kbd`` says "this is what the key is",
+/// Drawn as a field, not a key cap: a ``KeyCap`` says "this is what the key is",
 /// a field says "you can change this". Like every field it is a recessed card
 /// that lifts to the paper while recording, behind the accent wash.
 public struct ShortcutRecorder: View {

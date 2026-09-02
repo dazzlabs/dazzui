@@ -1,7 +1,7 @@
 use dazzui::assets::icons;
 use dazzui::{
-    Badge, BadgeVariant, Button, ControlSize, ControlVariant, Icon, IconButton, Kbd, KbdVariant,
-    PillTabs, SegmentedControl, Tint,
+    Badge, BadgeVariant, Button, ControlSize, ControlVariant, Icon, IconButton, KeyCap,
+    KeyCapVariant, PillTabs, SegmentedControl, Tint,
 };
 use gpui::{AnyElement, Context, Entity, IntoElement, ParentElement, SharedString};
 
@@ -132,9 +132,9 @@ pub fn controls(
         Specimen::new("Keys")
             .child(
                 Row::new()
-                    .child(Kbd::new("⌘K"))
-                    .child(Kbd::new("⇧⌘P").variant(KbdVariant::Strong))
-                    .child(Kbd::new("Esc").variant(KbdVariant::Key)),
+                    .child(KeyCap::new("⌘K"))
+                    .child(KeyCap::new("⇧⌘P").variant(KeyCapVariant::Strong))
+                    .child(KeyCap::new("Esc").variant(KeyCapVariant::Key)),
             )
             .into_any_element(),
         Specimen::new("Pill tabs")

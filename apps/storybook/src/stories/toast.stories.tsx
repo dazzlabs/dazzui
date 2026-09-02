@@ -33,7 +33,7 @@ export const Overview: Story = {
   render: () => (
     <Page
       title="Toast"
-      description="A transient receipt for something that happened out of view. One line, no wrapping — anything needing a second sentence belongs in an AlertBanner in the flow instead. Lifetime is the host's job; the system holds no queue, no timers, and no z-index of its own beyond the viewport. The contract worth keeping is: a few seconds for a plain notice, longer when it carries an action, and a failure stays until it is dismissed."
+      description="A transient receipt for something that happened out of view. One line, no wrapping — anything needing a second sentence belongs in a Callout in the flow instead. Lifetime is the host's job; the system holds no queue, no timers, and no z-index of its own beyond the viewport. The contract worth keeping is: a few seconds for a plain notice, longer when it carries an action, and a failure stays until it is dismissed."
     >
       <Section
         title="Shapes"

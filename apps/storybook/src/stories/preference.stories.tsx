@@ -4,14 +4,14 @@ import {
   Button,
   Divider,
   Icon,
-  Input,
+  TextField,
   PreferenceGroup,
   PreferenceRow,
   PreferenceSection,
   SegmentedControl,
   Select,
   ShortcutRecorder,
-  Toggle,
+  Switch,
 } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
@@ -45,13 +45,13 @@ export const Overview: Story = {
         <div style={{ maxWidth: WIDTH }}>
           <PreferenceSection label="General">
             <PreferenceRow title="Title only">
-              <Toggle aria-label="Title only" checked />
+              <Switch aria-label="Title only" checked />
             </PreferenceRow>
             <PreferenceRow
               title="With a subtitle"
               subtitle="The second line, for what three words cannot carry"
             >
-              <Toggle aria-label="With a subtitle" checked={false} />
+              <Switch aria-label="With a subtitle" checked={false} />
             </PreferenceRow>
             <PreferenceRow
               icon={<Icon icon={Globe} size={20} />}
@@ -142,13 +142,13 @@ export const RowShapes: Story = {
     <div style={{ width: WIDTH }}>
       <PreferenceSection>
         <PreferenceRow title="Title only">
-          <Toggle aria-label="Title only" checked />
+          <Switch aria-label="Title only" checked />
         </PreferenceRow>
         <PreferenceRow
           title="With a subtitle"
           subtitle="The second line, for what three words cannot carry"
         >
-          <Toggle aria-label="With a subtitle" checked={false} />
+          <Switch aria-label="With a subtitle" checked={false} />
         </PreferenceRow>
         <PreferenceRow
           icon={<Icon icon={Globe} size={20} />}
@@ -180,14 +180,14 @@ export const Controls: Story = {
             title="Launch at login"
             subtitle="Starts minimised in the menu bar"
           >
-            <Toggle
+            <Switch
               aria-label="Launch at login"
               checked={launch}
               onCheckedChange={setLaunch}
             />
           </PreferenceRow>
           <PreferenceRow title="Play a sound when a job finishes">
-            <Toggle
+            <Switch
               aria-label="Play a sound"
               checked={sounds}
               onCheckedChange={setSounds}
@@ -214,7 +214,7 @@ export const Controls: Story = {
             </Select>
           </PreferenceRow>
           <PreferenceRow title="Default target language">
-            <Input defaultValue="Chinese" size="small" />
+            <TextField defaultValue="Chinese" size="small" />
           </PreferenceRow>
         </PreferenceSection>
       </div>
@@ -246,10 +246,10 @@ export const Unlabelled: Story = {
     <div style={{ width: WIDTH }}>
       <PreferenceSection>
         <PreferenceRow title="Launch at login">
-          <Toggle aria-label="Launch at login" checked />
+          <Switch aria-label="Launch at login" checked />
         </PreferenceRow>
         <PreferenceRow title="Show in the menu bar">
-          <Toggle aria-label="Show in the menu bar" checked />
+          <Switch aria-label="Show in the menu bar" checked />
         </PreferenceRow>
       </PreferenceSection>
     </div>
@@ -307,7 +307,7 @@ export const ASettingsPage: Story = {
               title="Launch at login"
               subtitle="Starts minimised in the menu bar"
             >
-              <Toggle
+              <Switch
                 aria-label="Launch at login"
                 checked={launch}
                 onCheckedChange={setLaunch}
@@ -317,7 +317,7 @@ export const ASettingsPage: Story = {
               title="Join the beta channel"
               subtitle="Updates arrive earlier and break more often"
             >
-              <Toggle
+              <Switch
                 aria-label="Join the beta channel"
                 checked={beta}
                 onCheckedChange={setBeta}

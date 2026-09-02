@@ -3,13 +3,13 @@ import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
 
-export type AlertBannerSize = 'small' | 'medium' | 'large'
+export type CalloutSize = 'small' | 'medium' | 'large'
 
-export interface AlertBannerProps extends Omit<
+export interface CalloutProps extends Omit<
   ComponentPropsWithoutRef<'div'>,
   'title'
 > {
-  size?: AlertBannerSize
+  size?: CalloutSize
   tint?: Tint
   /** Leading node — an icon or a spinner. */
   icon?: ReactNode
@@ -21,7 +21,7 @@ export interface AlertBannerProps extends Omit<
   children?: ReactNode
 }
 
-export function AlertBanner({
+export function Callout({
   size = 'medium',
   tint = 'neutral',
   icon,
@@ -30,25 +30,23 @@ export function AlertBanner({
   className,
   children,
   ...props
-}: AlertBannerProps) {
+}: CalloutProps) {
   return (
     <div
       data-size={size}
       data-tint={tint}
       data-has-description={title && children ? true : undefined}
-      className={cx('dz-alert-banner', className)}
+      className={cx('dz-callout', className)}
       {...props}
     >
-      {icon ? <span className="dz-alert-banner__icon">{icon}</span> : null}
-      <div className="dz-alert-banner__body">
-        {title ? <span className="dz-alert-banner__title">{title}</span> : null}
+      {icon ? <span className="dz-callout__icon">{icon}</span> : null}
+      <div className="dz-callout__body">
+        {title ? <span className="dz-callout__title">{title}</span> : null}
         {children ? (
-          <span className="dz-alert-banner__description">{children}</span>
+          <span className="dz-callout__description">{children}</span>
         ) : null}
       </div>
-      {action ? (
-        <span className="dz-alert-banner__action">{action}</span>
-      ) : null}
+      {action ? <span className="dz-callout__action">{action}</span> : null}
     </div>
   )
 }

@@ -3,7 +3,7 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 
 import '../gallery.dart';
 
-/// What the app says back: the banners that stay, in every tint, and the one
+/// What the app says back: the callouts that stay, in every tint, and the one
 /// that carries actions.
 class FeedbackPage extends StatefulWidget {
   const FeedbackPage({super.key});
@@ -60,37 +60,37 @@ class _FeedbackPageState extends State<FeedbackPage> {
           'The tint carries the meaning; the shape carries how long it stays.',
         ),
         Specimen(
-          'Alert banners',
+          'Callouts',
           child: ConstrainedBox(
-            // The SwiftUI playground caps its banners at 1.5 toast widths.
+            // The SwiftUI playground caps its callouts at 1.5 toast widths.
             constraints: BoxConstraints(maxWidth: vars.toastMaxWidth * 1.5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               spacing: vars.spacing2,
               children: const [
-                AlertBanner(
-                  tint: AlertBannerTint.info,
+                Callout(
+                  tint: CalloutTint.info,
                   icon: Icon(FluentIcons.info_16_regular),
                   title: Text('A new version is available'),
                   message: Text('Restart to finish updating to 2.1.0.'),
                 ),
-                AlertBanner(
-                  tint: AlertBannerTint.success,
+                Callout(
+                  tint: CalloutTint.success,
                   icon: Icon(FluentIcons.checkmark_circle_16_regular),
                   title: Text('Tokens rebuilt'),
                   message: Text('Three platform packages were refreshed.'),
                 ),
-                AlertBanner(
-                  tint: AlertBannerTint.warning,
+                Callout(
+                  tint: CalloutTint.warning,
                   icon: Icon(FluentIcons.warning_16_regular),
                   title: Text('Ramp moves only part-way'),
                   message: Text(
                     'color.warning cannot move whole under bright-dark.',
                   ),
                 ),
-                AlertBanner(
-                  tint: AlertBannerTint.danger,
+                Callout(
+                  tint: CalloutTint.danger,
                   icon: Icon(FluentIcons.dismiss_circle_16_regular),
                   title: Text('The build failed'),
                   message: Text('dazzui: 4 errors in sidebar.dart.'),
@@ -103,8 +103,8 @@ class _FeedbackPageState extends State<FeedbackPage> {
           'With actions',
           child: ConstrainedBox(
             constraints: BoxConstraints(maxWidth: vars.toastMaxWidth * 1.5),
-            child: AlertBanner(
-              tint: AlertBannerTint.primary,
+            child: Callout(
+              tint: CalloutTint.primary,
               icon: const Icon(FluentIcons.arrow_download_16_regular),
               title: const Text('Update ready'),
               message: const Text('2.1.0 has been downloaded.'),
@@ -143,7 +143,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         ),
         Specimen(
           'Toasts',
-          note: 'one line, no wrapping — a second sentence is a banner',
+          note: 'one line, no wrapping — a second sentence is a callout',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -234,7 +234,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         ),
         Specimen(
           'Toasts',
-          note: 'one line, no wrapping — a second sentence is a banner',
+          note: 'one line, no wrapping — a second sentence is a callout',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,

@@ -25,7 +25,7 @@ theme switch carries the furniture with it too.
 | Controls | Every recipe, size and tint; icon buttons, badges, keys, tabs, segments |
 | Forms | A form rather than a shelf of specimens — the field chrome, the label and hint, the error state |
 | Data | Cards, a table with selection, progress, spinners, a step list |
-| Feedback | Banners, a dialog behind its scrim, a toast, a menu, an empty state |
+| Feedback | Callouts, a dialog behind its scrim, a toast, a menu, an empty state |
 | Settings | A preferences screen: group over section over rows |
 | Themes | **All four themes at once** |
 

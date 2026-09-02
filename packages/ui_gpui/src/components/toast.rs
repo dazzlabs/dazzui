@@ -13,7 +13,7 @@ use crate::{
 /// A transient receipt for something that happened out of view.
 ///
 /// One line, no wrapping — anything needing a second sentence belongs in an
-/// [`AlertBanner`](crate::AlertBanner) in the flow instead.
+/// [`Callout`](crate::Callout) in the flow instead.
 ///
 /// Lifetime belongs to the host — the system stays stateless — but the
 /// contract worth keeping is: a few seconds for a plain notice, longer when

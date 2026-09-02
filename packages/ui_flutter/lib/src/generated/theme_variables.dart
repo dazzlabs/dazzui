@@ -190,10 +190,10 @@ class ThemeVariables {
     this.radioLargeDot = 9,
     this.segmentedControlInset = 3,
     this.shortcutRecorderWidth = 132,
+    this.switchMediumWidth = 32,
+    this.switchMediumHeight = 18,
+    this.switchMediumThumb = 14,
     this.toastMaxWidth = 420,
-    this.toggleMediumWidth = 32,
-    this.toggleMediumHeight = 18,
-    this.toggleMediumThumb = 14,
   });
 
   // #region Global
@@ -583,19 +583,19 @@ class ThemeVariables {
   // Shortcut Recorder
   final double shortcutRecorderWidth;
 
+  // Switch
+  double get switchSmallWidth => spacing7;
+  double get switchSmallHeight => spacing4;
+  double get switchSmallThumb => spacing3;
+  final double switchMediumWidth;
+  final double switchMediumHeight;
+  final double switchMediumThumb;
+  double get switchLargeWidth => spacing11;
+  double get switchLargeHeight => spacing6;
+  double get switchLargeThumb => spacing5;
+
   // Toast
   final double toastMaxWidth;
-
-  // Toggle
-  double get toggleSmallWidth => spacing7;
-  double get toggleSmallHeight => spacing4;
-  double get toggleSmallThumb => spacing3;
-  final double toggleMediumWidth;
-  final double toggleMediumHeight;
-  final double toggleMediumThumb;
-  double get toggleLargeWidth => spacing11;
-  double get toggleLargeHeight => spacing6;
-  double get toggleLargeThumb => spacing5;
 
   // #endregion
 }

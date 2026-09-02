@@ -34,16 +34,16 @@ struct SettingsPage: View {
       PreferenceSection(label: "General") {
         PreferenceRow(
           title: "Launch at login",
-          trailing: { Toggle(checked: launch, onCheckedChange: { launch = $0 }) }
+          trailing: { Switch(checked: launch, onCheckedChange: { launch = $0 }) }
         )
         PreferenceRow(
           title: "Check for updates",
           subtitle: "Downloads in the background and asks before installing.",
-          trailing: { Toggle(checked: updates, onCheckedChange: { updates = $0 }) }
+          trailing: { Switch(checked: updates, onCheckedChange: { updates = $0 }) }
         )
         PreferenceRow(
           title: "Play sounds",
-          trailing: { Toggle(checked: sounds, onCheckedChange: { sounds = $0 }) }
+          trailing: { Switch(checked: sounds, onCheckedChange: { sounds = $0 }) }
         )
       }
 
@@ -70,8 +70,8 @@ struct SettingsPage: View {
 
     // A section on its own, with no group over it.
     PreferenceSection(label: "Shortcuts") {
-      PreferenceRow(title: "Toggle the palette", trailing: { Kbd("⌘K") })
-      PreferenceRow(title: "Rebuild tokens", trailing: { Kbd("⇧⌘B") })
+      PreferenceRow(title: "Toggle the palette", trailing: { KeyCap("⌘K") })
+      PreferenceRow(title: "Rebuild tokens", trailing: { KeyCap("⇧⌘B") })
     }
 
     Spacer(minLength: vars.spacing8)

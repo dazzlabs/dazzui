@@ -4,7 +4,7 @@ import {
   Button,
   type ButtonVariant,
   Icon,
-  Kbd,
+  KeyCap,
   Spinner,
   TINTS,
 } from '@dazzlabs/dazzui-react'
@@ -109,7 +109,8 @@ export const Overview: Story = {
             </Button>
             <Button shortcut="⌘⇧S">Translate all</Button>
             <span>
-              A Kbd is the other way to print a key: <Kbd size="small">⌘F</Kbd>
+              A KeyCap is the other way to print a key:{' '}
+              <KeyCap size="small">⌘F</KeyCap>
             </span>
           </Specimen>
           <Specimen label="busy">

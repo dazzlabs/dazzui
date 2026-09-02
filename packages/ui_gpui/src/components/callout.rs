@@ -7,10 +7,10 @@ use crate::prelude::*;
 use crate::{ControlPart, ControlState, ControlVariant, Tint, hairline};
 
 /// One shape, three densities: the type never changes, only the box around
-/// it. A banner that grew its type would be competing with the content it
+/// it. A callout that grew its type would be competing with the content it
 /// interrupts.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub enum AlertBannerSize {
+pub enum CalloutSize {
     Small,
     #[default]
     Medium,
@@ -19,13 +19,13 @@ pub enum AlertBannerSize {
 
 /// A tinted notice.
 ///
-/// It always wears a tinted treatment — a banner that needed a fill louder
-/// than this would be a dialog, not a banner — so `tint` is the only colour
+/// It always wears a tinted treatment — a callout that needed a fill louder
+/// than this would be a dialog, not a callout — so `tint` is the only colour
 /// axis. Fill and edge are washes of that tint rather than opaque steps, so
-/// the banner sits as correctly on a card as on the paper.
+/// the callout sits as correctly on a card as on the paper.
 #[derive(IntoElement)]
-pub struct AlertBanner {
-    size: AlertBannerSize,
+pub struct Callout {
+    size: CalloutSize,
     tint: Tint,
     /// Omit for a one-line notice; the description then carries it alone.
     title: Option<SharedString>,
@@ -36,10 +36,10 @@ pub struct AlertBanner {
     action: Option<AnyElement>,
 }
 
-impl AlertBanner {
+impl Callout {
     pub fn new() -> Self {
-        AlertBanner {
-            size: AlertBannerSize::Medium,
+        Callout {
+            size: CalloutSize::Medium,
             tint: Tint::Neutral,
             title: None,
             description: None,
@@ -48,7 +48,7 @@ impl AlertBanner {
         }
     }
 
-    pub fn size(mut self, size: AlertBannerSize) -> Self {
+    pub fn size(mut self, size: CalloutSize) -> Self {
         self.size = size;
         self
     }
@@ -79,20 +79,20 @@ impl AlertBanner {
     }
 }
 
-impl Default for AlertBanner {
+impl Default for Callout {
     fn default() -> Self {
-        AlertBanner::new()
+        Callout::new()
     }
 }
 
-impl RenderOnce for AlertBanner {
+impl RenderOnce for Callout {
     fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
         let has_description = self.title.is_some() && self.description.is_some();
         let (padding_block, padding_inline, radius) = match self.size {
-            AlertBannerSize::Small => (vars.spacing_2, vars.spacing_3, vars.radius_medium),
-            AlertBannerSize::Medium => (vars.spacing_3, vars.spacing_3_5, vars.radius_large),
-            AlertBannerSize::Large => (vars.spacing_4, vars.spacing_4, vars.radius_large),
+            CalloutSize::Small => (vars.spacing_2, vars.spacing_3, vars.radius_medium),
+            CalloutSize::Medium => (vars.spacing_3, vars.spacing_3_5, vars.radius_large),
+            CalloutSize::Large => (vars.spacing_4, vars.spacing_4, vars.radius_large),
         };
         // The text grades of the tint, not its fill: a notice is read, not
         // pressed.

@@ -2,7 +2,7 @@ import {
   Button,
   Icon,
   IconButton,
-  Kbd,
+  KeyCap,
   SegmentedControl,
   Select,
   Textarea,
@@ -137,14 +137,14 @@ export function Composer({
       </div>
 
       <p className="ca-composer__hint">
-        <Kbd size="small" variant="key">
+        <KeyCap size="small" variant="key">
           ⏎
-        </Kbd>
+        </KeyCap>
         to send
         <span aria-hidden>·</span>
-        <Kbd size="small" variant="key">
+        <KeyCap size="small" variant="key">
           ⇧⏎
-        </Kbd>
+        </KeyCap>
         for a new line
         <span aria-hidden>·</span>
         {mode === 'ask'

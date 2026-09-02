@@ -196,9 +196,9 @@ void main() {
     });
   });
 
-  group('Kbd', () {
+  group('KeyCap', () {
     testWidgets('hint is bare faint text', (tester) async {
-      await tester.pumpWidget(host(const Kbd('⌘K')));
+      await tester.pumpWidget(host(const KeyCap('⌘K')));
 
       expect(find.byType(Container), findsNothing);
       expect(
@@ -209,7 +209,7 @@ void main() {
 
     testWidgets('key alone draws the recessed cap', (tester) async {
       await tester.pumpWidget(
-        host(const Kbd('Esc', variant: KbdVariant.key)),
+        host(const KeyCap('Esc', variant: KeyCapVariant.key)),
       );
 
       final decoration =
@@ -254,12 +254,12 @@ void main() {
     });
   });
 
-  group('AlertBanner', () {
+  group('Callout', () {
     testWidgets('fill and edge are washes of the tint', (tester) async {
       await tester.pumpWidget(
         host(
-          const AlertBanner(
-            tint: AlertBannerTint.danger,
+          const Callout(
+            tint: CalloutTint.danger,
             title: Text('The build failed'),
           ),
         ),
@@ -335,19 +335,19 @@ void main() {
   });
 
   group('Switch', () {
-    testWidgets('track and thumb are the toggle tokens', (tester) async {
+    testWidgets('track and thumb are the switch tokens', (tester) async {
       await tester.pumpWidget(host(Switch(value: false, onChanged: (_) {})));
 
       final Size size = tester.getSize(find.byType(Switch));
-      expect(size.width, vars.toggleMediumWidth);
-      expect(size.height, vars.toggleMediumHeight);
+      expect(size.width, vars.switchMediumWidth);
+      expect(size.height, vars.switchMediumHeight);
     });
 
     testWidgets('every size lands on its own track', (tester) async {
       for (final (WidgetSize step, double width, double height) in [
-        (WidgetSize.small, vars.toggleSmallWidth, vars.toggleSmallHeight),
-        (WidgetSize.medium, vars.toggleMediumWidth, vars.toggleMediumHeight),
-        (WidgetSize.large, vars.toggleLargeWidth, vars.toggleLargeHeight),
+        (WidgetSize.small, vars.switchSmallWidth, vars.switchSmallHeight),
+        (WidgetSize.medium, vars.switchMediumWidth, vars.switchMediumHeight),
+        (WidgetSize.large, vars.switchLargeWidth, vars.switchLargeHeight),
       ]) {
         await tester.pumpWidget(
           host(Switch(size: step, value: false, onChanged: (_) {})),

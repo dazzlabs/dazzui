@@ -1,9 +1,9 @@
 import SwiftUI
 
 /// One shape, three densities. The type never changes, only the box around
-/// it — a banner that grew its type would be competing with the content it
+/// it — a callout that grew its type would be competing with the content it
 /// interrupts.
-public enum AlertBannerSize: String, CaseIterable, Sendable {
+public enum CalloutSize: String, CaseIterable, Sendable {
   case small
   case medium
   case large
@@ -11,18 +11,18 @@ public enum AlertBannerSize: String, CaseIterable, Sendable {
 
 /// A tinted notice.
 ///
-/// It always wears a tinted treatment — a banner that needed a fill louder
-/// than this would be a dialog, not a banner — so `tint` is the only colour
+/// It always wears a tinted treatment — a callout that needed a fill louder
+/// than this would be a dialog, not a callout — so `tint` is the only colour
 /// axis. Fill and edge are washes of that tint rather than opaque steps, so
-/// the banner sits as correctly on a card as on the paper.
+/// the callout sits as correctly on a card as on the paper.
 ///
 /// The alphas are the shared surface wash rather than the `tinted` recipe's.
 /// That recipe fills a chip at a chip's strength, which is right for something
-/// the size of a word and twice too heavy spread across a full width. A banner
+/// the size of a word and twice too heavy spread across a full width. A callout
 /// is read rather than pressed, so it stays out of the shared state machine
 /// and takes the resting text grades directly.
-public struct AlertBanner<Leading: View, Description: View, Trailing: View>: View {
-  public var size: AlertBannerSize
+public struct Callout<Leading: View, Description: View, Trailing: View>: View {
+  public var size: CalloutSize
   /// Which colour ramp the washes and text grades resolve against.
   public var tint: Tint
   /// Omit for a one-line notice; the description then carries it alone.
@@ -38,7 +38,7 @@ public struct AlertBanner<Leading: View, Description: View, Trailing: View>: Vie
   @Environment(\.hairline) private var hairline
 
   public init(
-    size: AlertBannerSize = .medium,
+    size: CalloutSize = .medium,
     tint: Tint = .neutral,
     title: String? = nil,
     @ViewBuilder leading: @escaping () -> Leading,
@@ -126,10 +126,10 @@ public struct AlertBanner<Leading: View, Description: View, Trailing: View>: Vie
   private let bodyLeading: CGFloat = 1.5
 }
 
-public extension AlertBanner where Leading == EmptyView, Trailing == EmptyView {
-  /// A banner with no icon and no action.
+public extension Callout where Leading == EmptyView, Trailing == EmptyView {
+  /// A callout with no icon and no action.
   init(
-    size: AlertBannerSize = .medium,
+    size: CalloutSize = .medium,
     tint: Tint = .neutral,
     title: String? = nil,
     @ViewBuilder description: @escaping () -> Description
@@ -145,12 +145,12 @@ public extension AlertBanner where Leading == EmptyView, Trailing == EmptyView {
   }
 }
 
-public extension AlertBanner
+public extension Callout
 where Leading == EmptyView, Description == Text, Trailing == EmptyView {
-  /// A banner whose description is a plain string.
+  /// A callout whose description is a plain string.
   init(
     _ description: String,
-    size: AlertBannerSize = .medium,
+    size: CalloutSize = .medium,
     tint: Tint = .neutral,
     title: String? = nil
   ) {

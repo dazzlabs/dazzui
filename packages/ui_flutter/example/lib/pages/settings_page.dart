@@ -103,11 +103,11 @@ class _SettingsPageState extends State<SettingsPage> {
                 children: const [
                   PreferenceRow(
                     title: 'Toggle the palette',
-                    trailing: Kbd('⌘K', variant: KbdVariant.key),
+                    trailing: KeyCap('⌘K', variant: KeyCapVariant.key),
                   ),
                   PreferenceRow(
                     title: 'Rebuild tokens',
-                    trailing: Kbd('⇧⌘B', variant: KbdVariant.key),
+                    trailing: KeyCap('⇧⌘B', variant: KeyCapVariant.key),
                   ),
                 ],
               ),

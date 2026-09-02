@@ -5,17 +5,17 @@ import 'package:flutter/widgets.dart';
 import '../painting/widget_property.dart';
 import '../theme/theme.dart';
 
-/// Overrides the default properties values for descendant [AlertBanner] widgets.
+/// Overrides the default properties values for descendant [Callout] widgets.
 ///
-/// Descendant widgets obtain the current [AlertBannerThemeData] object
-/// using [AlertBannerTheme.of]. Instances of [AlertBannerThemeData] can
-/// be customized with [AlertBannerThemeData.copyWith].
+/// Descendant widgets obtain the current [CalloutThemeData] object
+/// using [CalloutTheme.of]. Instances of [CalloutThemeData] can
+/// be customized with [CalloutThemeData.copyWith].
 ///
-/// Typically a [AlertBannerThemeData] is specified as part of the
-/// overall [Theme] with [ThemeData.alertBannerTheme].
+/// Typically a [CalloutThemeData] is specified as part of the
+/// overall [Theme] with [ThemeData.calloutTheme].
 ///
-/// All [AlertBannerThemeData] properties are `null` by default.
-/// When null, the [AlertBanner] will use the values from [ThemeData]
+/// All [CalloutThemeData] properties are `null` by default.
+/// When null, the [Callout] will use the values from [ThemeData]
 /// if they exist, otherwise it will provide its own defaults.
 ///
 /// See also:
@@ -23,10 +23,10 @@ import '../theme/theme.dart';
 ///  * [ThemeData], which describes the overall theme information for the
 ///    application.
 @immutable
-class AlertBannerThemeData extends ThemeExtension<AlertBannerThemeData>
+class CalloutThemeData extends ThemeExtension<CalloutThemeData>
     with Diagnosticable {
-  /// Creates the set of color, style, and size properties used to configure [AlertBanner].
-  const AlertBannerThemeData({
+  /// Creates the set of color, style, and size properties used to configure [Callout].
+  const CalloutThemeData({
     this.color,
     this.minSize,
     this.margin,
@@ -62,7 +62,7 @@ class AlertBannerThemeData extends ThemeExtension<AlertBannerThemeData>
   /// Creates a copy of this object but with the given fields replaced with the
   /// new values.
   @override
-  AlertBannerThemeData copyWith({
+  CalloutThemeData copyWith({
     WidgetProperty<ColorSwatch<int>>? color,
     WidgetProperty<Size>? minSize,
     WidgetProperty<EdgeInsets>? margin,
@@ -74,7 +74,7 @@ class AlertBannerThemeData extends ThemeExtension<AlertBannerThemeData>
     WidgetProperty<TextStyle>? titleStyle,
     WidgetProperty<TextStyle>? descriptionStyle,
   }) {
-    return AlertBannerThemeData(
+    return CalloutThemeData(
       color: color ?? this.color,
       minSize: minSize ?? this.minSize,
       margin: margin ?? this.margin,
@@ -88,8 +88,8 @@ class AlertBannerThemeData extends ThemeExtension<AlertBannerThemeData>
     );
   }
 
-  /// Merges the given [other] [AlertBannerThemeData] with this [AlertBannerThemeData].
-  AlertBannerThemeData merge(AlertBannerThemeData? other) {
+  /// Merges the given [other] [CalloutThemeData] with this [CalloutThemeData].
+  CalloutThemeData merge(CalloutThemeData? other) {
     if (other == null) {
       return this;
     }
@@ -107,14 +107,14 @@ class AlertBannerThemeData extends ThemeExtension<AlertBannerThemeData>
     );
   }
 
-  /// Linearly interpolates between this [AlertBannerThemeData] and another.
+  /// Linearly interpolates between this [CalloutThemeData] and another.
   @override
-  AlertBannerThemeData lerp(
-    covariant ThemeExtension<AlertBannerThemeData>? other,
+  CalloutThemeData lerp(
+    covariant ThemeExtension<CalloutThemeData>? other,
     double t,
   ) {
-    if (other is! AlertBannerThemeData) return this;
-    return AlertBannerThemeData(
+    if (other is! CalloutThemeData) return this;
+    return CalloutThemeData(
       color: t < 0.5 ? color : other.color,
       minSize: t < 0.5 ? minSize : other.minSize,
       margin: t < 0.5 ? margin : other.margin,
@@ -150,7 +150,7 @@ class AlertBannerThemeData extends ThemeExtension<AlertBannerThemeData>
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    return other is AlertBannerThemeData &&
+    return other is CalloutThemeData &&
         other.color == color &&
         other.minSize == minSize &&
         other.margin == margin &&
@@ -240,39 +240,39 @@ class AlertBannerThemeData extends ThemeExtension<AlertBannerThemeData>
 }
 
 /// An inherited widget that overrides the default color style, and size
-/// parameters for [AlertBanner]s in this widget's subtree.
+/// parameters for [Callout]s in this widget's subtree.
 ///
-/// Values specified here override the defaults for [AlertBanner] properties which
+/// Values specified here override the defaults for [Callout] properties which
 /// are not given an explicit non-null value.
-class AlertBannerTheme extends InheritedTheme {
-  /// Creates a theme that overrides the default properties for [AlertBanner]s
+class CalloutTheme extends InheritedTheme {
+  /// Creates a theme that overrides the default properties for [Callout]s
   /// in this widget's subtree.
-  const AlertBannerTheme({super.key, required this.data, required super.child});
+  const CalloutTheme({super.key, required this.data, required super.child});
 
-  /// Specifies the default property overrides for descendant [AlertBanner] widgets.
-  final AlertBannerThemeData data;
+  /// Specifies the default property overrides for descendant [Callout] widgets.
+  final CalloutThemeData data;
 
-  /// Retrieves the [AlertBannerThemeData] from the closest ancestor [AlertBannerTheme].
+  /// Retrieves the [CalloutThemeData] from the closest ancestor [CalloutTheme].
   ///
-  /// If there is no enclosing [AlertBannerTheme] widget, then
-  /// [ThemeData.alertBannerTheme] is used.
+  /// If there is no enclosing [CalloutTheme] widget, then
+  /// [ThemeData.calloutTheme] is used.
   ///
   /// Typical usage is as follows:
   ///
   /// ```dart
-  /// AlertBannerThemeData theme = AlertBannerTheme.of(context);
+  /// CalloutThemeData theme = CalloutTheme.of(context);
   /// ```
-  static AlertBannerThemeData of(BuildContext context) {
-    final AlertBannerTheme? alertBannerTheme = context
-        .dependOnInheritedWidgetOfExactType<AlertBannerTheme>();
-    return alertBannerTheme?.data ?? context.themeData.alertBannerTheme;
+  static CalloutThemeData of(BuildContext context) {
+    final CalloutTheme? calloutTheme = context
+        .dependOnInheritedWidgetOfExactType<CalloutTheme>();
+    return calloutTheme?.data ?? context.themeData.calloutTheme;
   }
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    return AlertBannerTheme(data: data, child: child);
+    return CalloutTheme(data: data, child: child);
   }
 
   @override
-  bool updateShouldNotify(AlertBannerTheme oldWidget) => data != oldWidget.data;
+  bool updateShouldNotify(CalloutTheme oldWidget) => data != oldWidget.data;
 }

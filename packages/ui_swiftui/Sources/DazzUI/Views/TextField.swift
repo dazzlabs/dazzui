@@ -3,7 +3,7 @@ import SwiftUI
 
 /// The text controls' own three sizes, each of which binds one of the shared
 /// `[data-size]` control profiles.
-public enum InputSize: String, CaseIterable, Sendable {
+public enum TextFieldSize: String, CaseIterable, Sendable {
   case small
   case medium
   case large
@@ -19,14 +19,14 @@ public enum InputSize: String, CaseIterable, Sendable {
 }
 
 /// Whether the control is reporting a problem.
-public enum InputState: String, CaseIterable, Sendable {
+public enum TextFieldState: String, CaseIterable, Sendable {
   case `default`
   case error
 }
 
 /// An erroring control is re-tinted rather than given a second palette, so its
 /// border, wash, ink and focus glow all move together.
-public func tintFor(_ state: InputState, _ tint: Tint) -> Tint {
+public func tintFor(_ state: TextFieldState, _ tint: Tint) -> Tint {
   state == .error ? .danger : tint
 }
 
@@ -87,7 +87,7 @@ struct FieldStyle: Equatable {
 
 extension View {
   /// The box the text controls share, and share deliberately: a Select is an
-  /// Input with a chevron and a FieldValue is one that was never editable, so
+  /// TextField with a chevron and a FieldValue is one that was never editable, so
   /// the three drifting apart would be the bug rather than the feature.
   func fieldChrome(
     _ style: FieldStyle,
@@ -111,14 +111,17 @@ extension View {
   }
 }
 
-// MARK: - Input
+// MARK: - TextField
 
 /// A single-line text control.
-public struct Input: View {
+///
+/// Named `TextField` rather than prefixed, and reached as
+/// `DazzUI.TextField` where `SwiftUI.TextField` is also in scope.
+public struct TextField: View {
   @Binding public var text: String
   public var placeholder: String
-  public var size: InputSize
-  public var state: InputState
+  public var size: TextFieldSize
+  public var state: TextFieldState
   public var tint: Tint
   /// Set the mono face — for a key, an ID, or a URL.
   public var mono: Bool
@@ -130,8 +133,8 @@ public struct Input: View {
   public init(
     text: Binding<String>,
     placeholder: String = "",
-    size: InputSize = .medium,
-    state: InputState = .default,
+    size: TextFieldSize = .medium,
+    state: TextFieldState = .default,
     tint: Tint = .primary,
     mono: Bool = false,
     enabled: Bool = true
@@ -154,7 +157,7 @@ public struct Input: View {
       if text.isEmpty {
         Text(placeholder).foregroundStyle(vars.colorContentFaint)
       }
-      TextField("", text: $text)
+      SwiftUI.TextField("", text: $text)
         .textFieldStyle(.plain)
         .focused($focused)
         .disabled(!enabled)
@@ -192,8 +195,8 @@ public struct Input: View {
 public struct Textarea: View {
   @Binding public var text: String
   public var placeholder: String
-  public var size: InputSize
-  public var state: InputState
+  public var size: TextFieldSize
+  public var state: TextFieldState
   public var tint: Tint
   /// Set the mono face — for a key, an ID, or a URL.
   public var mono: Bool
@@ -205,8 +208,8 @@ public struct Textarea: View {
   public init(
     text: Binding<String>,
     placeholder: String = "",
-    size: InputSize = .medium,
-    state: InputState = .default,
+    size: TextFieldSize = .medium,
+    state: TextFieldState = .default,
     tint: Tint = .primary,
     mono: Bool = false,
     enabled: Bool = true
@@ -229,7 +232,7 @@ public struct Textarea: View {
       if text.isEmpty {
         Text(placeholder).foregroundStyle(vars.colorContentFaint)
       }
-      TextField("", text: $text, axis: .vertical)
+      SwiftUI.TextField("", text: $text, axis: .vertical)
         .textFieldStyle(.plain)
         .focused($focused)
         .disabled(!enabled)
@@ -275,15 +278,15 @@ public struct SelectOption<Value: Hashable>: Identifiable {
   public var id: Value { value }
 }
 
-/// A dropdown in the shape of an ``Input``.
+/// A dropdown in the shape of an ``TextField``.
 ///
-/// A Select is an Input with a chevron, so it shares the box outright: the
+/// A Select is a TextField with a chevron, so it shares the box outright: the
 /// same height, the same corner, the same border recipe, the same focus lift.
 public struct Select<Value: Hashable>: View {
   public var options: [SelectOption<Value>]
   @Binding public var selection: Value
-  public var size: InputSize
-  public var state: InputState
+  public var size: TextFieldSize
+  public var state: TextFieldState
   public var tint: Tint
   public var enabled: Bool
 
@@ -293,8 +296,8 @@ public struct Select<Value: Hashable>: View {
   public init(
     options: [SelectOption<Value>],
     selection: Binding<Value>,
-    size: InputSize = .medium,
-    state: InputState = .default,
+    size: TextFieldSize = .medium,
+    state: TextFieldState = .default,
     tint: Tint = .primary,
     enabled: Bool = true
   ) {
@@ -375,7 +378,7 @@ private struct BareMenu: ViewModifier {
 /// Not a disabled input: nothing here was ever editable, so nothing is greyed
 /// out to say it stopped being.
 public struct FieldValue<Content: View>: View {
-  public var size: InputSize
+  public var size: TextFieldSize
   /// Set the mono face — for a key, an ID, or a URL.
   public var mono: Bool
   @ViewBuilder public var content: () -> Content
@@ -383,7 +386,7 @@ public struct FieldValue<Content: View>: View {
   @Environment(\.theme) private var theme
 
   public init(
-    size: InputSize = .medium,
+    size: TextFieldSize = .medium,
     mono: Bool = false,
     @ViewBuilder content: @escaping () -> Content
   ) {
@@ -412,7 +415,7 @@ public struct FieldValue<Content: View>: View {
 
 public extension FieldValue where Content == Text {
   /// A reported value that is a plain string.
-  init(_ value: String, size: InputSize = .medium, mono: Bool = false) {
+  init(_ value: String, size: TextFieldSize = .medium, mono: Bool = false) {
     self.init(size: size, mono: mono, content: { Text(value) })
   }
 }

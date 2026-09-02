@@ -3,51 +3,38 @@ import 'package:flutter/widgets.dart';
 import '../foundation/color_descriptor.dart';
 import '../foundation/widget_size.dart';
 import '../foundation/widget_tint.dart';
-import '../foundation/widget_variant.dart';
 import '../generated/theme_variables.dart';
 import '../painting/widget_property.dart';
 import '../theme/theme.dart';
-import 'alert_banner_theme.dart';
+import 'callout_theme.dart';
 
-/// The tint of an alert banner.
-enum AlertBannerTint with WidgetTint {
-  /// A primary banner.
+/// The tint of a callout.
+enum CalloutTint with WidgetTint {
+  /// A primary callout.
   primary,
 
-  /// A neutral banner.
+  /// A neutral callout.
   neutral,
 
-  /// An info banner.
+  /// An info callout.
   info,
 
-  /// A success banner.
+  /// A success callout.
   success,
 
-  /// A warning banner.
+  /// A warning callout.
   warning,
 
-  /// A danger banner.
+  /// A danger callout.
   danger,
 }
 
-/// The variant of an alert banner.
-enum AlertBannerVariant with WidgetVariant {
-  /// A filled alert banner.
-  filled,
-
-  /// A tinted alert banner.
-  tinted,
-
-  /// An outlined alert banner.
-  outlined,
-}
-
-/// A banner widget.
-class AlertBanner extends StatefulWidget {
-  const AlertBanner({
+/// A callout widget.
+class Callout extends StatefulWidget {
+  const Callout({
     super.key,
     this.color,
-    this.tint = AlertBannerTint.neutral,
+    this.tint = CalloutTint.neutral,
     this.size = WidgetSize.medium,
     this.icon,
     this.title,
@@ -55,54 +42,53 @@ class AlertBanner extends StatefulWidget {
     this.actions,
   });
 
-  /// The color of the alert banner's seed color.
+  /// The color of the callout's seed color.
   ///
   /// Defaults to null.
   final Color? color;
 
-  /// The tint of the alert banner.
-  final AlertBannerTint tint;
+  /// The tint of the callout.
+  final CalloutTint tint;
 
-  /// The size of the alert banner.
+  /// The size of the callout.
   ///
   /// One shape, three densities: the type never changes, only the box around
-  /// it. A banner that grew its type would compete with the content it
+  /// it. A callout that grew its type would compete with the content it
   /// interrupts.
   final WidgetSize size;
 
-  /// The icon of the alert banner.
+  /// The icon of the callout.
   final Widget? icon;
 
-  /// The title of the alert banner.
+  /// The title of the callout.
   final Widget? title;
 
-  /// The message of the alert banner.
+  /// The message of the callout.
   final Widget? message;
 
   /// The set of actions that are displayed for the user to select.
   final List<Widget>? actions;
 
   @override
-  State<AlertBanner> createState() => _AlertBannerState();
+  State<Callout> createState() => _CalloutState();
 }
 
-class _AlertBannerState extends State<AlertBanner> {
+class _CalloutState extends State<Callout> {
   @override
   Widget build(BuildContext context) {
-    final themeDefaults = _AlertBannerDefaults(context);
-    final alertBannerTheme = AlertBannerTheme.of(context).merge(themeDefaults);
+    final themeDefaults = _CalloutDefaults(context);
+    final calloutTheme = CalloutTheme.of(context).merge(themeDefaults);
     final ThemeVariables vars = Theme.of(context).vars;
     final bool hasDescription = widget.message != null;
 
     T resolve<T>(
-      WidgetProperty<T> Function(AlertBannerThemeData theme) getProperty,
+      WidgetProperty<T> Function(CalloutThemeData theme) getProperty,
     ) {
       Color? seedColor =
-          widget.color ?? alertBannerTheme.color?.tinted(widget.tint);
-      return getProperty(alertBannerTheme).resolveWith(
+          widget.color ?? calloutTheme.color?.tinted(widget.tint);
+      return getProperty(calloutTheme).resolveWith(
         {},
         tint: widget.tint,
-        variant: AlertBannerVariant.tinted,
         size: widget.size,
         extra: {
           'seedColor': seedColor,
@@ -116,11 +102,11 @@ class _AlertBannerState extends State<AlertBanner> {
     TextStyle descriptionStyle = resolve<TextStyle>((t) => t.descriptionStyle!);
 
     // Fill and edge are washes of the tint rather than opaque steps, so the
-    // banner sits as correctly on a card as on the paper. The alphas are the
+    // callout sits as correctly on a card as on the paper. The alphas are the
     // shared surface wash rather than the `tinted` recipe's: that recipe
     // fills a chip at 12%, which is right for something the size of a word
     // and twice too heavy spread across a full width.
-    final ColorSwatch<int> ramp = alertBannerTheme.color!.tinted(widget.tint);
+    final ColorSwatch<int> ramp = calloutTheme.color!.tinted(widget.tint);
     final Color backgroundColor = ramp[600]!.withValues(
       alpha: vars.washSurface,
     );
@@ -193,8 +179,8 @@ class _AlertBannerState extends State<AlertBanner> {
   }
 }
 
-class _AlertBannerDefaults extends AlertBannerThemeData {
-  _AlertBannerDefaults(this.context) : super();
+class _CalloutDefaults extends CalloutThemeData {
+  _CalloutDefaults(this.context) : super();
 
   final BuildContext context;
   late final ThemeData _theme = Theme.of(context);

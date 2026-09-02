@@ -199,7 +199,7 @@ class PreferenceRow extends StatelessWidget {
       final Widget row = Row(
         spacing: vars.spacing25,
         children: [
-          // Uncoloured on purpose: a Badge or a Toggle in these slots keeps
+          // Uncoloured on purpose: a Badge or a Switch in these slots keeps
           // its own ink rather than inheriting a wash.
           ?icon,
           Expanded(

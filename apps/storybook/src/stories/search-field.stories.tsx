@@ -3,7 +3,7 @@ import {
   Button,
   Card,
   EmptyState,
-  Kbd,
+  KeyCap,
   SearchField,
   Table,
   TableCell,
@@ -50,7 +50,7 @@ function Search({
   return (
     <div style={{ width: '18rem' }}>
       <SearchField
-        hint={hint ? <Kbd size="small">⌘F</Kbd> : undefined}
+        hint={hint ? <KeyCap size="small">⌘F</KeyCap> : undefined}
         placeholder="Search terms"
         size={size}
         tint={tint}
@@ -85,7 +85,7 @@ export const Overview: Story = {
 
       <Section
         title="Sizes"
-        description="The glyph and the trailing slot hold their distance from the edges at every size, so the text starts and ends on the same inset a plain Input's does."
+        description="The glyph and the trailing slot hold their distance from the edges at every size, so the text starts and ends on the same inset a plain TextField's does."
       >
         <Stack>
           {SIZES.map(size => (
@@ -185,7 +185,7 @@ export const FilteringAList: Story = {
     return (
       <Col width="32rem">
         <SearchField
-          hint={<Kbd size="small">⌘F</Kbd>}
+          hint={<KeyCap size="small">⌘F</KeyCap>}
           placeholder="Search terms"
           value={query}
           onValueChange={setQuery}

@@ -4,7 +4,7 @@ import {
   Checkbox,
   FieldValue,
   FormField,
-  Input,
+  TextField,
   SegmentedControl,
   Select,
   Textarea,
@@ -33,7 +33,7 @@ export const Overview: Story = {
   render: () => (
     <Page
       title="FormField"
-      description="The label, the hint, and whatever control sits between them. It draws no box of its own — the control it wraps does that — so it works the same over an Input, a Select or a Textarea, and over controls that are not text fields at all. It is `FormField` rather than `Field` because in this library the `*Field` suffix already belongs to controls, `SearchField` among them."
+      description="The label, the hint, and whatever control sits between them. It draws no box of its own — the control it wraps does that — so it works the same over a TextField, a Select or a Textarea, and over controls that are not text fields at all. It is `FormField` rather than `Field` because in this library the `*Field` suffix already belongs to controls, `SearchField` among them."
     >
       <Section
         title="A form"
@@ -42,7 +42,7 @@ export const Overview: Story = {
         <div style={{ maxWidth: WIDTH }}>
           <Stack>
             <FormField label="Display name" hint="Shown on shared documents.">
-              <Input defaultValue="Jianying Li" />
+              <TextField defaultValue="Jianying Li" />
             </FormField>
             <FormField label="Target language">
               <Select defaultValue="zh">
@@ -71,7 +71,7 @@ export const Overview: Story = {
             state="error"
             hint="The provider rejected this key."
           >
-            <Input mono state="error" defaultValue="sk-0000000000" />
+            <TextField mono state="error" defaultValue="sk-0000000000" />
           </FormField>
         </div>
       </Section>
@@ -83,7 +83,7 @@ export const Overview: Story = {
         <div style={{ maxWidth: WIDTH }}>
           <Stack>
             <FormField label="Disabled input">
-              <Input disabled defaultValue="Pro — renews 2026-09-14" />
+              <TextField disabled defaultValue="Pro — renews 2026-09-14" />
             </FormField>
             <FormField label="FieldValue">
               <FieldValue>Pro — renews 2026-09-14</FieldValue>
@@ -102,7 +102,7 @@ export const WithAHint: Story = {
   render: () => (
     <div style={{ width: WIDTH }}>
       <FormField label="Display name" hint="Shown on shared documents.">
-        <Input defaultValue="Jianying Li" />
+        <TextField defaultValue="Jianying Li" />
       </FormField>
     </div>
   ),
@@ -112,7 +112,7 @@ export const WithoutAHint: Story = {
   render: () => (
     <div style={{ width: WIDTH }}>
       <FormField label="Display name">
-        <Input defaultValue="Jianying Li" />
+        <TextField defaultValue="Jianying Li" />
       </FormField>
     </div>
   ),
@@ -127,14 +127,14 @@ export const ErrorState: Story = {
         state="error"
         hint="The provider rejected this key."
       >
-        <Input mono state="error" defaultValue="sk-0000000000" />
+        <TextField mono state="error" defaultValue="sk-0000000000" />
       </FormField>
       <FormField
         label="Endpoint"
         state="error"
         hint="Must start with https://."
       >
-        <Input mono state="error" defaultValue="http://localhost:8080" />
+        <TextField mono state="error" defaultValue="http://localhost:8080" />
       </FormField>
     </Col>
   ),
@@ -145,7 +145,7 @@ export const Tints: Story = {
     <Col width={WIDTH}>
       {TINTS.map(tint => (
         <FormField key={tint} label={tint} tint={tint} hint="Focus it.">
-          <Input placeholder={tint} tint={tint} />
+          <TextField placeholder={tint} tint={tint} />
         </FormField>
       ))}
     </Col>
@@ -226,7 +226,7 @@ export const AFullForm: Story = {
   render: () => (
     <Col width={WIDTH}>
       <FormField label="Name" hint="Shown in the provider list.">
-        <Input defaultValue="DeepL — work" />
+        <TextField defaultValue="DeepL — work" />
       </FormField>
       <FormField label="Endpoint">
         <Select defaultValue="pro">
@@ -239,7 +239,7 @@ export const AFullForm: Story = {
         state="error"
         hint="The provider rejected this key."
       >
-        <Input mono state="error" defaultValue="sk-0000000000" />
+        <TextField mono state="error" defaultValue="sk-0000000000" />
       </FormField>
       <FormField label="Notes">
         <Textarea placeholder="Optional" />

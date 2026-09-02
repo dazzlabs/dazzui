@@ -8,7 +8,7 @@ import {
   Progress,
   SectionLabel,
   Textarea,
-  Toggle,
+  Switch,
 } from '@dazzlabs/dazzui-react'
 import { BranchGlyph } from '../data/icons'
 import type { Issue, Project, Pull, View } from '../lib/project'
@@ -91,7 +91,7 @@ function SessionPanel({
         <SectionLabel faint>Permissions</SectionLabel>
         <div className="ca-switch">
           <span className="ca-switch__label">Run commands</span>
-          <Toggle
+          <Switch
             aria-label="Run commands"
             checked={settings.runCommands}
             size="small"
@@ -100,7 +100,7 @@ function SessionPanel({
         </div>
         <div className="ca-switch">
           <span className="ca-switch__label">Fetch the web</span>
-          <Toggle
+          <Switch
             aria-label="Fetch the web"
             checked={settings.fetchWeb}
             size="small"

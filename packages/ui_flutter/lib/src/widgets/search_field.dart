@@ -26,7 +26,7 @@ class SearchField extends StatefulWidget {
   final String? placeholder;
   final WidgetSize size;
 
-  /// The trailing hint — a `Kbd` naming the shortcut that focuses the field.
+  /// The trailing hint — a `KeyCap` naming the shortcut that focuses the field.
   final Widget? hint;
 
   final ValueChanged<String>? onChanged;

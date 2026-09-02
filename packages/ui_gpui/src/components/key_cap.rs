@@ -8,7 +8,7 @@ use crate::{colors, plus};
 /// A key hint keeps its own three sizes: it annotates a row rather than
 /// standing in one, so it never reaches control height.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub enum KbdSize {
+pub enum KeyCapSize {
     Small,
     #[default]
     Medium,
@@ -19,15 +19,19 @@ pub enum KbdSize {
 /// interface are asides. `strong` darkens it a step. `key` alone draws the
 /// recessed cap.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub enum KbdVariant {
+pub enum KeyCapVariant {
     #[default]
     Hint,
     Strong,
     Key,
 }
 
-impl KbdVariant {
-    pub const ALL: [KbdVariant; 3] = [KbdVariant::Hint, KbdVariant::Strong, KbdVariant::Key];
+impl KeyCapVariant {
+    pub const ALL: [KeyCapVariant; 3] = [
+        KeyCapVariant::Hint,
+        KeyCapVariant::Strong,
+        KeyCapVariant::Key,
+    ];
 }
 
 /// One key hint or cap. A chord is several of these, composed by the caller.
@@ -41,39 +45,39 @@ impl KbdVariant {
 /// Its colours are already in the token graph, so it takes no tint, and it is
 /// not interactive, so it stays out of the shared state machine.
 #[derive(IntoElement)]
-pub struct Kbd {
+pub struct KeyCap {
     keys: SharedString,
-    size: KbdSize,
-    variant: KbdVariant,
+    size: KeyCapSize,
+    variant: KeyCapVariant,
 }
 
-impl Kbd {
+impl KeyCap {
     pub fn new(keys: impl Into<SharedString>) -> Self {
-        Kbd {
+        KeyCap {
             keys: keys.into(),
-            size: KbdSize::Medium,
-            variant: KbdVariant::Hint,
+            size: KeyCapSize::Medium,
+            variant: KeyCapVariant::Hint,
         }
     }
 
-    pub fn size(mut self, size: KbdSize) -> Self {
+    pub fn size(mut self, size: KeyCapSize) -> Self {
         self.size = size;
         self
     }
 
-    pub fn variant(mut self, variant: KbdVariant) -> Self {
+    pub fn variant(mut self, variant: KeyCapVariant) -> Self {
         self.variant = variant;
         self
     }
 }
 
-impl RenderOnce for Kbd {
+impl RenderOnce for KeyCap {
     fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
-        let cap = self.variant == KbdVariant::Key;
+        let cap = self.variant == KeyCapVariant::Key;
 
         let font_size = match self.size {
-            KbdSize::Large => vars.label_medium.size,
+            KeyCapSize::Large => vars.label_medium.size,
             _ => vars.label_small.size,
         };
         let weight = if cap {
@@ -82,9 +86,9 @@ impl RenderOnce for Kbd {
             vars.label_medium.weight
         };
         let content = match self.variant {
-            KbdVariant::Hint => vars.color_content_faint,
-            KbdVariant::Strong => vars.color_content_subtle,
-            KbdVariant::Key => vars.color_content,
+            KeyCapVariant::Hint => vars.color_content_faint,
+            KeyCapVariant::Strong => vars.color_content_subtle,
+            KeyCapVariant::Key => vars.color_content,
         };
 
         div()

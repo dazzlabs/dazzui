@@ -100,7 +100,7 @@ Everything not listed here is a value-for-value port.
 | --- | --- |
 | A per-theme *shade* on a recipe naming a semantic role | Such a recipe is a computed property reading this instance's roles, so it has no initialiser parameter to re-point. The same limit the Flutter port carries. |
 | Hairlines | A separator is one *device* pixel: `@Environment(\.hairline)` halves on Retina, the way `base.css` does with `min-resolution: 2dppx`. Drawn control outlines read `strokeControl` and stay put. |
-| The mono face resolves rather than being named | `input.css` reaches for `--base-font-code`, whose stack leads with `ui-monospace` — on this platform a request for the system monospaced face rather than a family to look up, so a mono field takes `Font.Design.monospaced`. The same argument as `-apple-system` resolving to `.system` in `TypeStyle`. (`base.font.code` has no semantic token in front of it; a component reaching a `base.*` primitive is the graph's own rule being bent, and it is a `packages/ds` decision to unbend.) |
+| The mono face resolves rather than being named | `text-field.css` reaches for `--base-font-code`, whose stack leads with `ui-monospace` — on this platform a request for the system monospaced face rather than a family to look up, so a mono field takes `Font.Design.monospaced`. The same argument as `-apple-system` resolving to `.system` in `TypeStyle`. (`base.font.code` has no semantic token in front of it; a component reaching a `base.*` primitive is the graph's own rule being bent, and it is a `packages/ds` decision to unbend.) |
 
 ## Icons
 

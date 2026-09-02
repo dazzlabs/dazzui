@@ -2,7 +2,7 @@ import SwiftUI
 
 /// A key hint keeps its own three sizes: it annotates a row rather than
 /// standing in one, so it never reaches control height.
-public enum KbdSize: String, CaseIterable, Sendable {
+public enum KeyCapSize: String, CaseIterable, Sendable {
   case small
   case medium
   case large
@@ -11,7 +11,7 @@ public enum KbdSize: String, CaseIterable, Sendable {
 /// `hint` is bare faint text — the default, because most keys shown in an
 /// interface are asides. `strong` darkens it a step. `key` alone draws the
 /// recessed cap.
-public enum KbdVariant: String, CaseIterable, Sendable {
+public enum KeyCapVariant: String, CaseIterable, Sendable {
   case hint
   case strong
   case key
@@ -27,16 +27,16 @@ public enum KbdVariant: String, CaseIterable, Sendable {
 ///
 /// Its colours are already in the token graph, so it takes no tint, and it is
 /// not interactive, so it stays out of the shared state machine.
-public struct Kbd<Label: View>: View {
-  public var size: KbdSize
-  public var variant: KbdVariant
+public struct KeyCap<Label: View>: View {
+  public var size: KeyCapSize
+  public var variant: KeyCapVariant
   @ViewBuilder public var label: () -> Label
 
   @Environment(\.theme) private var theme
 
   public init(
-    size: KbdSize = .medium,
-    variant: KbdVariant = .hint,
+    size: KeyCapSize = .medium,
+    variant: KeyCapVariant = .hint,
     @ViewBuilder label: @escaping () -> Label
   ) {
     self.size = size
@@ -83,9 +83,9 @@ public struct Kbd<Label: View>: View {
   }
 }
 
-public extension Kbd where Label == Text {
+public extension KeyCap where Label == Text {
   /// A key whose label is a plain string — `⌘`, `F`, `Space`.
-  init(_ keys: String, size: KbdSize = .medium, variant: KbdVariant = .hint) {
+  init(_ keys: String, size: KeyCapSize = .medium, variant: KeyCapVariant = .hint) {
     self.init(size: size, variant: variant, label: { Text(keys) })
   }
 }

@@ -5,7 +5,7 @@
 #
 # The weight depends on how much of it there is. The `tinted` control recipe
 # fills a chip at 12% — right for something the size of a word — and the same
-# alpha spread across a banner or a full-width row stops reading as a wash and
+# alpha spread across a callout or a full-width row stops reading as a wash and
 # becomes a block. `surface` is that larger area; `edge` is the hairline drawn
 # around it.
 wash:

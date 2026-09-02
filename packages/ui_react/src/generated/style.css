@@ -415,6 +415,15 @@
   --spacing-px: 1px;
   --stroke-control: 0.09375rem;
   --stroke-hairline: 1px;
+  --switch-large-height: var(--spacing-6);
+  --switch-large-thumb: var(--spacing-5);
+  --switch-large-width: var(--spacing-11);
+  --switch-medium-height: 1.125rem;
+  --switch-medium-thumb: 0.875rem;
+  --switch-medium-width: 2rem;
+  --switch-small-height: var(--spacing-4);
+  --switch-small-thumb: var(--spacing-3);
+  --switch-small-width: var(--spacing-7);
   --title-large-font-family: var(--base-font-ui);
   --title-large-font-size: var(--base-type-title);
   --title-large-font-weight: var(--base-font-weight-semibold);
@@ -428,15 +437,6 @@
   --title-small-font-weight: var(--base-font-weight-semibold);
   --title-small-line-height: var(--base-leading-body);
   --toast-max-width: 26.25rem;
-  --toggle-large-height: var(--spacing-6);
-  --toggle-large-thumb: var(--spacing-5);
-  --toggle-large-width: var(--spacing-11);
-  --toggle-medium-height: 1.125rem;
-  --toggle-medium-thumb: 0.875rem;
-  --toggle-medium-width: 2rem;
-  --toggle-small-height: var(--spacing-4);
-  --toggle-small-thumb: var(--spacing-3);
-  --toggle-small-width: var(--spacing-7);
   --wash-edge: 0.2;
   --wash-surface: 0.06;
 }

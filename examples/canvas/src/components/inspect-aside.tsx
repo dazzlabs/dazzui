@@ -6,8 +6,8 @@ import {
   FormField,
   Icon,
   IconButton,
-  Input,
-  Kbd,
+  TextField,
+  KeyCap,
   SectionLabel,
   Select,
   Textarea,
@@ -135,9 +135,9 @@ export function InspectAside({
               <div key={shortcut.label} className="cv-keys__row">
                 <dt>{shortcut.label}</dt>
                 <dd>
-                  <Kbd size="small" variant="key">
+                  <KeyCap size="small" variant="key">
                     {shortcut.keys}
-                  </Kbd>
+                  </KeyCap>
                 </dd>
               </div>
             ))}
@@ -156,7 +156,7 @@ export function InspectAside({
       <Group label={one ? 'Layer' : 'Selection'}>
         {one ? (
           <>
-            <Input
+            <TextField
               aria-label="Name"
               size="small"
               value={one.name}
@@ -389,7 +389,7 @@ function NumberField({
 
   return (
     <FormField label={label}>
-      <Input
+      <TextField
         mono
         readOnly={readOnly}
         size="small"

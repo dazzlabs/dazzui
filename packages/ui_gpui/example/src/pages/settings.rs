@@ -1,6 +1,6 @@
 use dazzui::{
-    ActiveTheme, InputSize, Kbd, PreferenceGroup, PreferenceRow, PreferenceSection, Select,
-    ShortcutRecorder, Toggle,
+    ActiveTheme, KeyCap, PreferenceGroup, PreferenceRow, PreferenceSection, Select,
+    ShortcutRecorder, Switch, TextFieldSize,
 };
 use gpui::{AnyElement, Context, Entity, IntoElement, ParentElement, SharedString};
 
@@ -33,7 +33,7 @@ pub fn settings(
                     .label("General")
                     .child(
                         PreferenceRow::new("launch", "Launch at login").child(
-                            Toggle::new("launch-toggle", state.launch)
+                            Switch::new("launch-switch", state.launch)
                                 .on_change(act_with(this, |state, checked: &bool, _, _| {
                                     state.launch = *checked
                                 })),
@@ -42,7 +42,7 @@ pub fn settings(
                     .child(
                         PreferenceRow::new("updates", "Check for updates")
                             .subtitle("Downloads in the background and asks before installing.")
-                            .child(Toggle::new("updates-toggle", state.updates).on_change(
+                            .child(Switch::new("updates-switch", state.updates).on_change(
                                 act_with(this, |state, checked: &bool, _, _| {
                                     state.updates = *checked
                                 }),
@@ -50,7 +50,7 @@ pub fn settings(
                     )
                     .child(
                         PreferenceRow::new("sounds", "Play sounds").child(
-                            Toggle::new("sounds-toggle", state.sounds)
+                            Switch::new("sounds-switch", state.sounds)
                                 .on_change(act_with(this, |state, checked: &bool, _, _| {
                                     state.sounds = *checked
                                 })),
@@ -64,7 +64,7 @@ pub fn settings(
                     .child(
                         PreferenceRow::new("theme", "Theme").child(
                             Select::new("appearance", state.appearance.clone())
-                                .size(InputSize::Small)
+                                .size(TextFieldSize::Small)
                                 .option("auto", "Automatic")
                                 .option("light", "Light")
                                 .option("dark", "Dark")
@@ -86,7 +86,7 @@ pub fn settings(
                         })),
                 ),
             )
-            .child(PreferenceRow::new("rebuild", "Rebuild tokens").child(Kbd::new("⇧⌘B")))
+            .child(PreferenceRow::new("rebuild", "Rebuild tokens").child(KeyCap::new("⇧⌘B")))
             .into_any_element(),
     ]
 }

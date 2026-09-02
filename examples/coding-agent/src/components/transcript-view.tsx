@@ -1,5 +1,5 @@
 import {
-  AlertBanner,
+  Callout,
   Card,
   Icon,
   SectionLabel,
@@ -135,9 +135,9 @@ export function TranscriptView({
           case 'notice':
             return (
               <Lane key={entry.id} role="agent">
-                <AlertBanner size="small" tint={entry.tint} title={entry.title}>
+                <Callout size="small" tint={entry.tint} title={entry.title}>
                   {entry.body}
-                </AlertBanner>
+                </Callout>
               </Lane>
             )
         }

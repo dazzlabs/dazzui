@@ -4,7 +4,7 @@ use gpui::{
 };
 
 use crate::Tint;
-use crate::components::InputState;
+use crate::components::TextFieldState;
 use crate::prelude::*;
 
 /// Label, control, hint.
@@ -21,7 +21,7 @@ pub struct FormField {
     label: SharedString,
     /// Help text under the control; carries the error tone when erroring.
     hint: Option<SharedString>,
-    state: InputState,
+    state: TextFieldState,
     tint: Tint,
     children: Vec<AnyElement>,
 }
@@ -31,7 +31,7 @@ impl FormField {
         FormField {
             label: label.into(),
             hint: None,
-            state: InputState::Default,
+            state: TextFieldState::Default,
             tint: Tint::Primary,
             children: Vec::new(),
         }
@@ -42,7 +42,7 @@ impl FormField {
         self
     }
 
-    pub fn state(mut self, state: InputState) -> Self {
+    pub fn state(mut self, state: TextFieldState) -> Self {
         self.state = state;
         self
     }
@@ -65,7 +65,7 @@ impl RenderOnce for FormField {
         // Erroring, the label and the hint join the control on the danger
         // ramp: the wrapper is re-tinted rather than given error colours.
         let tint = self.state.tint(self.tint);
-        let erroring = self.state == InputState::Error;
+        let erroring = self.state == TextFieldState::Error;
         let color = if erroring {
             vars.ramp(tint).shade(700)
         } else {

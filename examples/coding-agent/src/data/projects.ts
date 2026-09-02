@@ -82,19 +82,19 @@ export const PROJECTS: Project[] = [
         ],
       },
       {
-        id: 'ui-kbd',
-        title: 'Move Kbd onto the size profile',
+        id: 'ui-key-cap',
+        title: 'Move KeyCap onto the size profile',
         when: 'Yesterday',
         seed: [
           {
-            id: 'kbd-1',
+            id: 'key-cap-1',
             kind: 'user',
-            text: 'Should Kbd read the control size profile like Button does?',
+            text: 'Should KeyCap read the control size profile like Button does?',
           },
           {
-            id: 'kbd-2',
+            id: 'key-cap-2',
             kind: 'agent',
-            text: 'No — and the convention says so outright. The profile bindings are for controls, and Kbd is an annotation: it never reaches control height. It belongs with Badge and Card, reading the profile steps and typography faces directly per size block. I left it where it was.',
+            text: 'No — and the convention says so outright. The profile bindings are for controls, and KeyCap is an annotation: it never reaches control height. It belongs with Badge and Card, reading the profile steps and typography faces directly per size block. I left it where it was.',
             shown: Number.MAX_SAFE_INTEGER,
           },
         ],

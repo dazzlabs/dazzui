@@ -1,6 +1,6 @@
 import {
   Button,
-  Kbd,
+  KeyCap,
   PreferenceRow,
   PreferenceSection,
   ShortcutRecorder,
@@ -57,7 +57,7 @@ export const Overview: Story = {
 
       <Section
         title="States"
-        description="It is drawn as a field, not a key cap: a Kbd says what the key is, a field says you can change it. The clear button appears only once there is something bound and the field is not listening. `error` is for a binding the page cannot accept — the recorder does not know what else is bound, so that comparison is the page's business."
+        description="It is drawn as a field, not a key cap: a KeyCap says what the key is, a field says you can change it. The clear button appears only once there is something bound and the field is not listening. `error` is for a binding the page cannot accept — the recorder does not know what else is bound, so that comparison is the page's business."
       >
         <Stack>
           <Specimen label="unbound">
@@ -78,8 +78,8 @@ export const Overview: Story = {
           </Specimen>
           <Specimen label="versus a cap">
             <span style={{ display: 'inline-flex', gap: 'var(--spacing-1)' }}>
-              <Kbd size="small">⌘</Kbd>
-              <Kbd size="small">K</Kbd>
+              <KeyCap size="small">⌘</KeyCap>
+              <KeyCap size="small">K</KeyCap>
             </span>
             <ShortcutRecorder value="⌘K" onValueChange={() => {}} />
           </Specimen>
@@ -158,12 +158,12 @@ export const FunctionKeys: Story = {
   ),
 }
 
-export const AgainstAKbd: Story = {
+export const AgainstAKeyCap: Story = {
   render: () => (
     <Row>
       <span style={{ display: 'inline-flex', gap: 'var(--spacing-1)' }}>
-        <Kbd size="small">⌘</Kbd>
-        <Kbd size="small">K</Kbd>
+        <KeyCap size="small">⌘</KeyCap>
+        <KeyCap size="small">K</KeyCap>
       </span>
       <ShortcutRecorder value="⌘K" onValueChange={() => {}} />
     </Row>

@@ -3,19 +3,19 @@ import type { ComponentPropsWithoutRef } from 'react'
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
 
-export type ToggleSize = 'small' | 'medium' | 'large'
+export type SwitchSize = 'small' | 'medium' | 'large'
 
-export interface ToggleProps extends Omit<
+export interface SwitchProps extends Omit<
   ComponentPropsWithoutRef<'button'>,
   'children' | 'onChange'
 > {
   checked: boolean
   onCheckedChange?: (checked: boolean) => void
-  size?: ToggleSize
+  size?: SwitchSize
   tint?: Tint
 }
 
-export function Toggle({
+export function Switch({
   checked,
   onCheckedChange,
   size = 'medium',
@@ -24,7 +24,7 @@ export function Toggle({
   onClick,
   type = 'button',
   ...props
-}: ToggleProps) {
+}: SwitchProps) {
   return (
     <button
       type={type}
@@ -32,14 +32,14 @@ export function Toggle({
       aria-checked={checked}
       data-size={size}
       data-tint={tint}
-      className={cx('dz-toggle', className)}
+      className={cx('dz-switch', className)}
       onClick={event => {
         onClick?.(event)
         if (!event.defaultPrevented) onCheckedChange?.(!checked)
       }}
       {...props}
     >
-      <span aria-hidden className="dz-toggle__thumb" />
+      <span aria-hidden className="dz-switch__thumb" />
     </button>
   )
 }

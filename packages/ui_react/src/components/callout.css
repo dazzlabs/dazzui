@@ -1,14 +1,14 @@
 /*
- * A tinted notice. It always wears a tinted treatment — a banner that needed a
- * fill louder than this would be a dialog, not a banner — so `tint` is the
+ * A tinted notice. It always wears a tinted treatment — a callout that needed a
+ * fill louder than this would be a dialog, not a callout — so `tint` is the
  * only color axis. Fill and edge are washes of that tint rather than opaque
- * steps, so the banner sits as correctly on a card as on the paper.
+ * steps, so the callout sits as correctly on a card as on the paper.
  *
  * The alphas are the shared surface wash rather than the `tinted` recipe's.
  * That recipe fills a chip at 12%, which is right for something the size of a
  * word and twice too heavy spread across a full width.
  */
-.dz-alert-banner {
+.dz-callout {
   display: flex;
   align-items: center;
   gap: var(--spacing-2-5);
@@ -27,17 +27,17 @@
 
 /* Once a description wraps, the icon belongs beside the first line rather
    than halfway down the block. */
-.dz-alert-banner[data-has-description='true'] {
+.dz-callout[data-has-description='true'] {
   align-items: flex-start;
 }
 
-.dz-alert-banner__icon {
+.dz-callout__icon {
   display: flex;
   flex-shrink: 0;
   color: var(--tint-600);
 }
 
-.dz-alert-banner__body {
+.dz-callout__body {
   display: flex;
   flex-direction: column;
   /* The title/description pair is one block of text, so it is set tighter than
@@ -47,7 +47,7 @@
 }
 
 /* The text grades of the tint, not its fill: a notice is read, not pressed. */
-.dz-alert-banner__title {
+.dz-callout__title {
   color: var(--control-color-tinted-content-hovered);
   font-family: var(--label-medium-font-family);
   font-size: var(--label-medium-font-size);
@@ -55,7 +55,7 @@
   line-height: 1.4;
 }
 
-.dz-alert-banner__description {
+.dz-callout__description {
   color: var(--control-color-tinted-content-normal);
   font-family: var(--label-quiet-font-family);
   font-size: var(--label-quiet-font-size);
@@ -63,30 +63,30 @@
   line-height: 1.5;
 }
 
-.dz-alert-banner__action {
+.dz-callout__action {
   flex-shrink: 0;
   margin-inline-start: auto;
 }
 
 /* Sizes -------------------------------------------------------------------
  * One shape, three densities: the type never changes, only the box around
- * it. A banner that grew its type would be competing with the content it
+ * it. A callout that grew its type would be competing with the content it
  * interrupts.
  */
 
-.dz-alert-banner[data-size='small'] {
+.dz-callout[data-size='small'] {
   padding-block: var(--spacing-2);
   padding-inline: var(--spacing-3);
   border-radius: var(--radius-medium);
 }
 
-.dz-alert-banner[data-size='medium'] {
+.dz-callout[data-size='medium'] {
   padding-block: var(--spacing-3);
   padding-inline: var(--spacing-3-5);
   border-radius: var(--radius-large);
 }
 
-.dz-alert-banner[data-size='large'] {
+.dz-callout[data-size='large'] {
   padding-block: var(--spacing-4);
   padding-inline: var(--spacing-4);
   border-radius: var(--radius-large);

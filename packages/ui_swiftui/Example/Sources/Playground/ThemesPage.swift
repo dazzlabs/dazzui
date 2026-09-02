@@ -79,7 +79,7 @@ private struct ThemeCard: View {
       Row {
         Badge("Passed", size: .small, variant: .tinted, tint: .success)
         Badge("Failed", size: .small, variant: .tinted, tint: .danger)
-        Kbd("⌘S")
+        KeyCap("⌘S")
       }
 
       Progress(value: 0.6, gradient: true)

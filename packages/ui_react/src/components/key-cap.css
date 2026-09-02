@@ -5,7 +5,7 @@
  * busy row. `key` alone draws the cap: a recessed chip-cornered fill with no
  * border — a key is pressed *into* the surface, not raised off it.
  */
-.dz-kbd {
+.dz-key-cap {
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
@@ -14,15 +14,15 @@
   line-height: 1;
 }
 
-.dz-kbd[data-variant='hint'] {
+.dz-key-cap[data-variant='hint'] {
   color: var(--color-content-faint);
 }
 
-.dz-kbd[data-variant='strong'] {
+.dz-key-cap[data-variant='strong'] {
   color: var(--color-content-subtle);
 }
 
-.dz-kbd[data-variant='key'] {
+.dz-key-cap[data-variant='key'] {
   justify-content: center;
   height: calc(var(--spacing-5) + var(--spacing-0-5));
   padding-inline: var(--spacing-2-5);
@@ -34,11 +34,11 @@
 
 /* Sizes ------------------------------------------------------------------- */
 
-.dz-kbd[data-size='small'],
-.dz-kbd[data-size='medium'] {
+.dz-key-cap[data-size='small'],
+.dz-key-cap[data-size='medium'] {
   font-size: var(--label-small-font-size);
 }
 
-.dz-kbd[data-size='large'] {
+.dz-key-cap[data-size='large'] {
   font-size: var(--label-medium-font-size);
 }

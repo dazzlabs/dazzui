@@ -83,7 +83,7 @@ const INDEX_EDIT: DiffLine[] = [
     tone: 'context',
     before: 129,
     after: 129,
-    text: "export { Toggle, type ToggleProps, type ToggleSize } from './toggle'",
+    text: "export { Switch, type SwitchProps, type SwitchSize } from './switch'",
   },
   {
     tone: 'added',
@@ -103,7 +103,7 @@ const STYLES_EDIT: DiffLine[] = [
     tone: 'context',
     before: 52,
     after: 52,
-    text: "@import '../components/toggle.css';",
+    text: "@import '../components/switch.css';",
   },
   {
     tone: 'added',
@@ -142,7 +142,7 @@ export const TOOLTIP_RUN: Beat[] = [
       lines: [
         "export { Table, TableCell, TableHead, TableRow } from './table'",
         "export { Toast, type ToastProps } from './toast'",
-        "export { Toggle, type ToggleProps, type ToggleSize } from './toggle'",
+        "export { Switch, type SwitchProps, type SwitchSize } from './switch'",
       ],
     },
   },
@@ -168,7 +168,7 @@ export const TOOLTIP_RUN: Beat[] = [
         {
           path: 'packages/ui_react/src/styles/components.css',
           line: 52,
-          text: "@import '../components/toggle.css';",
+          text: "@import '../components/switch.css';",
         },
       ],
     },

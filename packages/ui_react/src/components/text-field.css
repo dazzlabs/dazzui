@@ -1,6 +1,6 @@
 /*
  * The text controls share one box, and share it deliberately: a Select is an
- * Input with a chevron, and a FieldValue is one that was never editable, so
+ * TextField with a chevron, and a FieldValue is one that was never editable, so
  * the three drifting apart would be the bug rather than the feature.
  *
  * The box is a recessed card — one step below the paper — that lifts to the
@@ -13,7 +13,7 @@
  * all move together and there is one rule for each rather than one per state
  * per tone.
  */
-.dz-input,
+.dz-text-field,
 .dz-textarea,
 .dz-field-value,
 .dz-select__control {
@@ -28,12 +28,12 @@
     box-shadow var(--motion-duration) var(--motion-easing);
 }
 
-.dz-input::placeholder,
+.dz-text-field::placeholder,
 .dz-textarea::placeholder {
   color: var(--color-content-faint);
 }
 
-.dz-input:focus,
+.dz-text-field:focus,
 .dz-textarea:focus,
 .dz-select__control:focus {
   border-color: var(--tint-600);
@@ -41,7 +41,7 @@
   box-shadow: 0 0 0 var(--focus-width) var(--focus-glow);
 }
 
-.dz-input[aria-invalid='true'],
+.dz-text-field[aria-invalid='true'],
 .dz-textarea[aria-invalid='true'],
 .dz-select__control[aria-invalid='true'] {
   border-color: var(--tint-600);
@@ -49,7 +49,7 @@
   color: var(--tint-800);
 }
 
-.dz-input:disabled,
+.dz-text-field:disabled,
 .dz-textarea:disabled,
 .dz-select__control:disabled {
   cursor: not-allowed;
@@ -58,7 +58,7 @@
 }
 
 /* Set the mono face where the value is a key, an ID, or a URL. */
-.dz-input[data-mono='true'],
+.dz-text-field[data-mono='true'],
 .dz-textarea[data-mono='true'],
 .dz-field-value[data-mono='true'] {
   font-family: var(--base-font-code);
@@ -91,7 +91,7 @@
  * not label-weight — a search query typed in semibold reads as shouting —
  * and the box takes the regular control corner, one step above the buttons'.
  */
-.dz-input,
+.dz-text-field,
 .dz-textarea,
 .dz-field-value,
 .dz-select__control {
@@ -127,7 +127,7 @@
 /* Single-line controls take the shared control height, so a form can mix them
    with buttons without the rows stepping. A textarea is sized by its content,
    and the block above already replaced its corner and its leading. */
-.dz-input,
+.dz-text-field,
 .dz-field-value,
 .dz-select__control {
   height: var(--control-size);

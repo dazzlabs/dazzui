@@ -142,7 +142,7 @@ class _ThemeCard extends StatelessWidget {
                 tint: BadgeTint.danger,
                 child: Text('Failed'),
               ),
-              Kbd('⌘S'),
+              KeyCap('⌘S'),
             ],
           ),
         ],

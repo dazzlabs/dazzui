@@ -7,7 +7,7 @@ import {
   Button,
   Icon,
   IconButton,
-  Kbd,
+  KeyCap,
   Menu,
   type MenuProps,
   TINTS,
@@ -62,7 +62,7 @@ export const Overview: Story = {
     >
       <Section
         title="Items"
-        description="Hover and press come from the `plain` recipe, so the wash is the same one every quiet control uses. Shortcuts and icons are slots rather than strings, so a caller passes a Kbd, a bare glyph run, or whatever its platform prints. Give every item an icon or give none of them one: a column half-filled with icons leaves the labels on two different edges."
+        description="Hover and press come from the `plain` recipe, so the wash is the same one every quiet control uses. Shortcuts and icons are slots rather than strings, so a caller passes a KeyCap, a bare glyph run, or whatever its platform prints. Give every item an icon or give none of them one: a column half-filled with icons leaves the labels on two different edges."
       >
         <Stack>
           <Specimen label="shortcuts">
@@ -70,9 +70,15 @@ export const Overview: Story = {
               align="start"
               trigger={Trigger}
               items={[
-                { label: 'Duplicate', shortcut: <Kbd size="small">⌘D</Kbd> },
-                { label: 'Rename', shortcut: <Kbd size="small">↩</Kbd> },
-                { label: 'Export…', shortcut: <Kbd size="small">⌘E</Kbd> },
+                {
+                  label: 'Duplicate',
+                  shortcut: <KeyCap size="small">⌘D</KeyCap>,
+                },
+                { label: 'Rename', shortcut: <KeyCap size="small">↩</KeyCap> },
+                {
+                  label: 'Export…',
+                  shortcut: <KeyCap size="small">⌘E</KeyCap>,
+                },
                 { label: 'Delete', disabled: true },
               ]}
             />
@@ -160,9 +166,9 @@ export const WithShortcuts: Story = {
       align="start"
       trigger={Trigger}
       items={[
-        { label: 'Duplicate', shortcut: <Kbd size="small">⌘D</Kbd> },
-        { label: 'Rename', shortcut: <Kbd size="small">↩</Kbd> },
-        { label: 'Export…', shortcut: <Kbd size="small">⌘E</Kbd> },
+        { label: 'Duplicate', shortcut: <KeyCap size="small">⌘D</KeyCap> },
+        { label: 'Rename', shortcut: <KeyCap size="small">↩</KeyCap> },
+        { label: 'Export…', shortcut: <KeyCap size="small">⌘E</KeyCap> },
       ]}
     />
   ),
@@ -270,7 +276,7 @@ export const FromAnIconButton: Story = {
         </IconButton>
       )}
       items={[
-        { label: 'Duplicate', shortcut: <Kbd size="small">⌘D</Kbd> },
+        { label: 'Duplicate', shortcut: <KeyCap size="small">⌘D</KeyCap> },
         { label: 'Delete', icon: <Icon icon={Trash} size={14} /> },
       ]}
     />

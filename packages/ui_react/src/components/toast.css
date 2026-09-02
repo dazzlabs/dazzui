@@ -1,6 +1,6 @@
 /*
  * A transient receipt for something that happened out of view. One line, no
- * wrapping — anything needing a second sentence belongs in an AlertBanner in
+ * wrapping — anything needing a second sentence belongs in a Callout in
  * the flow instead.
  */
 .dz-toast {

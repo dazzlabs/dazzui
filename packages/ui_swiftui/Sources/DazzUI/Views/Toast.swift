@@ -10,7 +10,7 @@ public enum ToastPlacement: String, CaseIterable, Sendable {
 /// A transient receipt for something that happened out of view.
 ///
 /// One line, no wrapping — anything needing a second sentence belongs in an
-/// ``AlertBanner`` in the flow instead. Lifetime belongs to the host, so the
+/// ``Callout`` in the flow instead. Lifetime belongs to the host, so the
 /// system stays stateless, but the contract worth keeping is: a few seconds
 /// for a plain notice, longer when it carries an action, and a failure stays
 /// until it is dismissed.

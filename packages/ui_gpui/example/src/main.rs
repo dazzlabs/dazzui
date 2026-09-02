@@ -11,7 +11,7 @@ use dazzui::assets::{Assets, icons};
 use dazzui::prelude::*;
 use dazzui::{
     Badge, BadgeSize, Dialog, DialogBody, DialogFooter, DialogHeader, DialogScrim, Divider, Icon,
-    NavItem, SegmentedControl, SegmentedControlSize, Sidebar, SidebarGroup, TextField, Theme,
+    NavItem, SegmentedControl, SegmentedControlSize, Sidebar, SidebarGroup, TextBuffer, Theme,
     ThemeName, Toast, ToastViewport, themed,
 };
 use dazzui::{Button, ControlVariant, Tint};
@@ -81,10 +81,10 @@ pub struct Playground {
     pub mode: SharedString,
 
     // Forms
-    pub name: Entity<TextField>,
-    pub email: Entity<TextField>,
-    pub notes: Entity<TextField>,
-    pub search: Entity<TextField>,
+    pub name: Entity<TextBuffer>,
+    pub email: Entity<TextBuffer>,
+    pub notes: Entity<TextBuffer>,
+    pub search: Entity<TextBuffer>,
     pub region: SharedString,
     pub newsletter: bool,
     pub telemetry: bool,
@@ -105,11 +105,11 @@ pub struct Playground {
 
 impl Playground {
     fn new(cx: &mut Context<Self>) -> Self {
-        let name = cx.new(|cx| TextField::new(cx, "Acme").with_value("DazzUI"));
-        let email = cx.new(|cx| TextField::new(cx, "you@example.com"));
+        let name = cx.new(|cx| TextBuffer::new(cx, "Acme").with_value("DazzUI"));
+        let email = cx.new(|cx| TextBuffer::new(cx, "you@example.com"));
         let notes =
-            cx.new(|cx| TextField::new(cx, "Anything the team should know…").multi_line(true));
-        let search = cx.new(|cx| TextField::new(cx, "Search components"));
+            cx.new(|cx| TextBuffer::new(cx, "Anything the team should know…").multi_line(true));
+        let search = cx.new(|cx| TextBuffer::new(cx, "Search components"));
 
         // A field edits itself; the page it sits on has to hear about it to
         // redraw around it.

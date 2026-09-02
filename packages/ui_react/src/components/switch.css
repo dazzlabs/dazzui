@@ -3,7 +3,7 @@
  * says which. Both ends are laid out with `justify-content` rather than a
  * translate, so the thumb lands on the padding whatever the track size is.
  */
-.dz-toggle {
+.dz-switch {
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
@@ -16,17 +16,17 @@
   transition: background-color var(--motion-duration) var(--motion-easing);
 }
 
-.dz-toggle[aria-checked='true'] {
+.dz-switch[aria-checked='true'] {
   justify-content: flex-end;
   background-color: var(--control-color-filled-surface-normal);
 }
 
-.dz-toggle:disabled {
+.dz-switch:disabled {
   cursor: not-allowed;
   opacity: 0.6;
 }
 
-.dz-toggle:focus-visible {
+.dz-switch:focus-visible {
   outline: var(--focus-width) solid var(--focus-ring);
   outline-offset: var(--focus-offset);
 }
@@ -35,45 +35,45 @@
    thumb in a grey groove, deliberately low-contrast, "off" — and only
    brightens to the raised white once the track fills. A white thumb in the
    off groove reads nearly as loud as the on state. */
-.dz-toggle__thumb {
+.dz-switch__thumb {
   display: block;
   border-radius: var(--radius-full);
   background-color: var(--color-content-faint);
   transition: background-color var(--motion-duration) var(--motion-easing);
 }
 
-.dz-toggle[aria-checked='true'] .dz-toggle__thumb {
+.dz-switch[aria-checked='true'] .dz-switch__thumb {
   /* `surface-raised` rather than the paper: on a dark canvas the paper is
      darker than the groove, and a thumb painted with it would sink. */
   background-color: var(--color-surface-raised);
 }
 
-.dz-toggle[data-size='small'] {
+.dz-switch[data-size='small'] {
   width: var(--toggle-small-width);
   height: var(--toggle-small-height);
 }
 
-.dz-toggle[data-size='small'] .dz-toggle__thumb {
+.dz-switch[data-size='small'] .dz-switch__thumb {
   width: var(--toggle-small-thumb);
   height: var(--toggle-small-thumb);
 }
 
-.dz-toggle[data-size='medium'] {
+.dz-switch[data-size='medium'] {
   width: var(--toggle-medium-width);
   height: var(--toggle-medium-height);
 }
 
-.dz-toggle[data-size='medium'] .dz-toggle__thumb {
+.dz-switch[data-size='medium'] .dz-switch__thumb {
   width: var(--toggle-medium-thumb);
   height: var(--toggle-medium-thumb);
 }
 
-.dz-toggle[data-size='large'] {
+.dz-switch[data-size='large'] {
   width: var(--toggle-large-width);
   height: var(--toggle-large-height);
 }
 
-.dz-toggle[data-size='large'] .dz-toggle__thumb {
+.dz-switch[data-size='large'] .dz-switch__thumb {
   width: var(--toggle-large-thumb);
   height: var(--toggle-large-thumb);
 }

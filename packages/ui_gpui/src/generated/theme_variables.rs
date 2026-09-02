@@ -131,10 +131,10 @@ pub struct ThemeSeed {
     pub radio_large_dot: Pixels,
     pub segmented_control_inset: Pixels,
     pub shortcut_recorder_width: Pixels,
+    pub switch_medium_width: Pixels,
+    pub switch_medium_height: Pixels,
+    pub switch_medium_thumb: Pixels,
     pub toast_max_width: Pixels,
-    pub toggle_medium_width: Pixels,
-    pub toggle_medium_height: Pixels,
-    pub toggle_medium_thumb: Pixels,
     pub control_color_recessed_border: ColorDescriptor,
     pub control_color_filled_border: ColorDescriptor,
     pub control_color_tinted_border: ColorDescriptor,
@@ -256,10 +256,10 @@ pub const STUDIO_LIGHT_SEED: ThemeSeed = ThemeSeed {
     radio_large_dot: px(9.0),
     segmented_control_inset: px(3.0),
     shortcut_recorder_width: px(132.0),
+    switch_medium_width: px(32.0),
+    switch_medium_height: px(18.0),
+    switch_medium_thumb: px(14.0),
     toast_max_width: px(420.0),
-    toggle_medium_width: px(32.0),
-    toggle_medium_height: px(18.0),
-    toggle_medium_thumb: px(14.0),
     control_color_recessed_border: ColorDescriptor {
         normal: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
         hovered: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
@@ -412,10 +412,10 @@ pub struct ThemeVariables {
     pub radio_large_dot: Pixels,
     pub segmented_control_inset: Pixels,
     pub shortcut_recorder_width: Pixels,
+    pub switch_medium_width: Pixels,
+    pub switch_medium_height: Pixels,
+    pub switch_medium_thumb: Pixels,
     pub toast_max_width: Pixels,
-    pub toggle_medium_width: Pixels,
-    pub toggle_medium_height: Pixels,
-    pub toggle_medium_thumb: Pixels,
     pub control_color_recessed_border: ColorDescriptor,
     pub control_color_filled_border: ColorDescriptor,
     pub control_color_tinted_border: ColorDescriptor,
@@ -451,12 +451,12 @@ pub struct ThemeVariables {
     pub radio_small_box: Pixels,
     pub radio_medium_box: Pixels,
     pub radio_large_box: Pixels,
-    pub toggle_small_width: Pixels,
-    pub toggle_small_height: Pixels,
-    pub toggle_small_thumb: Pixels,
-    pub toggle_large_width: Pixels,
-    pub toggle_large_height: Pixels,
-    pub toggle_large_thumb: Pixels,
+    pub switch_small_width: Pixels,
+    pub switch_small_height: Pixels,
+    pub switch_small_thumb: Pixels,
+    pub switch_large_width: Pixels,
+    pub switch_large_height: Pixels,
+    pub switch_large_thumb: Pixels,
     pub control_color_normal_surface: ColorDescriptor,
     pub control_color_normal_content: ColorDescriptor,
     pub control_color_normal_border: ColorDescriptor,
@@ -589,10 +589,10 @@ impl ThemeVariables {
         let radio_large_dot = seed.radio_large_dot;
         let segmented_control_inset = seed.segmented_control_inset;
         let shortcut_recorder_width = seed.shortcut_recorder_width;
+        let switch_medium_width = seed.switch_medium_width;
+        let switch_medium_height = seed.switch_medium_height;
+        let switch_medium_thumb = seed.switch_medium_thumb;
         let toast_max_width = seed.toast_max_width;
-        let toggle_medium_width = seed.toggle_medium_width;
-        let toggle_medium_height = seed.toggle_medium_height;
-        let toggle_medium_thumb = seed.toggle_medium_thumb;
         let control_color_recessed_border = seed.control_color_recessed_border;
         let control_color_filled_border = seed.control_color_filled_border;
         let control_color_tinted_border = seed.control_color_tinted_border;
@@ -629,12 +629,12 @@ impl ThemeVariables {
         let radio_small_box = spacing_3_5;
         let radio_medium_box = spacing_4;
         let radio_large_box = spacing_5;
-        let toggle_small_width = spacing_7;
-        let toggle_small_height = spacing_4;
-        let toggle_small_thumb = spacing_3;
-        let toggle_large_width = spacing_11;
-        let toggle_large_height = spacing_6;
-        let toggle_large_thumb = spacing_5;
+        let switch_small_width = spacing_7;
+        let switch_small_height = spacing_4;
+        let switch_small_thumb = spacing_3;
+        let switch_large_width = spacing_11;
+        let switch_large_height = spacing_6;
+        let switch_large_thumb = spacing_5;
         let control_color_normal_surface = ColorDescriptor {
             normal: ColorRecipe { color: Some(color_surface), shade: None, alpha: None },
             hovered: ColorRecipe { color: Some(color_surface_subtle), shade: None, alpha: None },
@@ -820,10 +820,10 @@ impl ThemeVariables {
             radio_large_dot,
             segmented_control_inset,
             shortcut_recorder_width,
+            switch_medium_width,
+            switch_medium_height,
+            switch_medium_thumb,
             toast_max_width,
-            toggle_medium_width,
-            toggle_medium_height,
-            toggle_medium_thumb,
             control_color_recessed_border,
             control_color_filled_border,
             control_color_tinted_border,
@@ -859,12 +859,12 @@ impl ThemeVariables {
             radio_small_box,
             radio_medium_box,
             radio_large_box,
-            toggle_small_width,
-            toggle_small_height,
-            toggle_small_thumb,
-            toggle_large_width,
-            toggle_large_height,
-            toggle_large_thumb,
+            switch_small_width,
+            switch_small_height,
+            switch_small_thumb,
+            switch_large_width,
+            switch_large_height,
+            switch_large_thumb,
             control_color_normal_surface,
             control_color_normal_content,
             control_color_normal_border,

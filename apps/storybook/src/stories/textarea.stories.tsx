@@ -34,7 +34,7 @@ export const Overview: Story = {
     >
       <Section
         title="States"
-        description="The same set an Input has, and drawn from the same tokens. `state='error'` is the danger ramp under another name."
+        description="The same set a TextField has, and drawn from the same tokens. `state='error'` is the danger ramp under another name."
       >
         <div style={{ maxWidth: WIDTH }}>
           <Stack>

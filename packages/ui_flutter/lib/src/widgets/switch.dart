@@ -341,7 +341,7 @@ class _SwitchState extends State<Switch> with TickerProviderStateMixin {
     if (needsPositionAnimation) {
       _resumePositionAnimation();
     }
-    // The track and its thumb are the sizes `toggle.<size>.*` holds. The
+    // The track and its thumb are the sizes `switch.<size>.*` holds. The
     // switch box is the track itself: the thumb rides on the padding the
     // track/thumb difference leaves, the way the stylesheet lays it out with
     // `justify-content` rather than a translate.
@@ -351,19 +351,19 @@ class _SwitchState extends State<Switch> with TickerProviderStateMixin {
       double thumbSize,
     ) = switch (widget.size.namedSize) {
       NamedSize.large => (
-        theme.vars.toggleLargeWidth,
-        theme.vars.toggleLargeHeight,
-        theme.vars.toggleLargeThumb,
+        theme.vars.switchLargeWidth,
+        theme.vars.switchLargeHeight,
+        theme.vars.switchLargeThumb,
       ),
       NamedSize.medium => (
-        theme.vars.toggleMediumWidth,
-        theme.vars.toggleMediumHeight,
-        theme.vars.toggleMediumThumb,
+        theme.vars.switchMediumWidth,
+        theme.vars.switchMediumHeight,
+        theme.vars.switchMediumThumb,
       ),
       _ => (
-        theme.vars.toggleSmallWidth,
-        theme.vars.toggleSmallHeight,
-        theme.vars.toggleSmallThumb,
+        theme.vars.switchSmallWidth,
+        theme.vars.switchSmallHeight,
+        theme.vars.switchSmallThumb,
       ),
     };
     final double switchWidth = trackWidth;
@@ -700,7 +700,7 @@ class _RenderSwitch extends RenderConstrainedBox {
     }
     _thumbPainter = SwitchThumbPainter(
       color: value,
-      // The knob is `toggle.<size>.thumb`, not a fraction of the track — a
+      // The knob is `switch.<size>.thumb`, not a fraction of the track — a
       // colour change must not resize it.
       radius: _thumbSize / 2,
     );

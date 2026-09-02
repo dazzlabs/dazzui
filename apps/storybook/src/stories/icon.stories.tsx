@@ -8,9 +8,9 @@ import {
 } from '@fluentui/react-icons'
 import {
   ActionBar,
-  AlertBanner,
   Badge,
   Button,
+  Callout,
   Icon,
   IconButton,
   NavItem,
@@ -215,16 +215,16 @@ export const InANavRow: Story = {
   ),
 }
 
-export const InABanner: Story = {
+export const InACallout: Story = {
   render: () => (
     <div style={{ width: '32rem' }}>
-      <AlertBanner
+      <Callout
         icon={<Icon icon={Check} size={16} />}
         tint="success"
         title="All 15 pages translated"
       >
         Layout and formulas were preserved.
-      </AlertBanner>
+      </Callout>
     </div>
   ),
 }

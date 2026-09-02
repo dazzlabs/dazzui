@@ -1,8 +1,8 @@
 import {
   ActionBar,
-  AlertBanner,
   Badge,
   Button,
+  Callout,
   Checkbox,
   Dialog,
   DialogBody,
@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogScrim,
   FormField,
-  Input,
+  TextField,
   OptionCard,
   Select,
   Textarea,
@@ -178,11 +178,11 @@ export const AForm: Story = {
         subtitle="Keys are stored in the system keychain."
       />
       <DialogBody>
-        <AlertBanner size="small" tint="info">
+        <Callout size="small" tint="info">
           A free key is rate limited to 500,000 characters a month.
-        </AlertBanner>
+        </Callout>
         <FormField label="Name" hint="Shown in the provider list.">
-          <Input defaultValue="DeepL — work" />
+          <TextField defaultValue="DeepL — work" />
         </FormField>
         <FormField label="Endpoint">
           <Select defaultValue="pro">
@@ -191,7 +191,7 @@ export const AForm: Story = {
           </Select>
         </FormField>
         <FormField label="API key" hint="Never leaves this device.">
-          <Input mono placeholder="sk-…" />
+          <TextField mono placeholder="sk-…" />
         </FormField>
         <Checkbox checked>Use as the primary provider</Checkbox>
       </DialogBody>
@@ -220,7 +220,7 @@ export const AScrollingBody: Story = {
               label={`Term ${index + 1}`}
               hint="Applies to every project."
             >
-              <Input defaultValue={`translation ${index + 1}`} />
+              <TextField defaultValue={`translation ${index + 1}`} />
             </FormField>
           ))}
         </DialogBody>
@@ -275,7 +275,7 @@ export const WithoutASubtitle: Story = {
     <Dialog width="22rem">
       <DialogHeader title="Rename document" />
       <DialogBody>
-        <Input defaultValue="handbook.docx" />
+        <TextField defaultValue="handbook.docx" />
       </DialogBody>
       <DialogFooter>
         <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>

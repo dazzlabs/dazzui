@@ -212,7 +212,7 @@ base:
       "950":
         $value: "#3d2506"
     # The dark-canvas companions of the three hues above. On a near-black
-    # canvas the 300 and 500 steps brighten and saturate — a banner's text
+    # canvas the 300 and 500 steps brighten and saturate — a callout's text
     # and a status dot would otherwise sink into the ground — and every
     # other step holds the light ladder's value by alias. They are whole
     # ramps rather than two loose overrides because a platform that carries

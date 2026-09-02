@@ -4,44 +4,44 @@ import type { ComponentPropsWithoutRef } from 'react'
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
 
-export type InputSize = 'small' | 'medium' | 'large'
+export type TextFieldSize = 'small' | 'medium' | 'large'
 
-export type InputState = 'default' | 'error'
+export type TextFieldState = 'default' | 'error'
 
 /**
  * An erroring control is re-tinted rather than given a second palette, so its
  * border, wash and focus ring all move together.
  */
-export function tintFor(state: InputState, tint: Tint): Tint {
+export function tintFor(state: TextFieldState, tint: Tint): Tint {
   return state === 'error' ? 'danger' : tint
 }
 
 type ControlBase = {
-  size?: InputSize
-  state?: InputState
+  size?: TextFieldSize
+  state?: TextFieldState
   tint?: Tint
   /** Set the mono face — for a key, an ID, or a URL. */
   mono?: boolean
 }
 
-export interface InputProps
+export interface TextFieldProps
   extends Omit<ComponentPropsWithoutRef<'input'>, 'size'>, ControlBase {}
 
-export function Input({
+export function TextField({
   size = 'medium',
   state = 'default',
   tint = 'primary',
   mono = false,
   className,
   ...props
-}: InputProps) {
+}: TextFieldProps) {
   return (
     <input
       aria-invalid={state === 'error' || undefined}
       data-mono={mono}
       data-size={size}
       data-tint={tintFor(state, tint)}
-      className={cx('dz-input', className)}
+      className={cx('dz-text-field', className)}
       {...props}
     />
   )

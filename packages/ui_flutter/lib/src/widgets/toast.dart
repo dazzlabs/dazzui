@@ -18,7 +18,7 @@ enum ToastTint with WidgetTint {
 /// A transient receipt for something that happened out of view.
 ///
 /// One line, no wrapping — anything needing a second sentence belongs in an
-/// [AlertBanner] in the flow instead.
+/// [Callout] in the flow instead.
 class Toast extends StatelessWidget {
   const Toast({
     super.key,

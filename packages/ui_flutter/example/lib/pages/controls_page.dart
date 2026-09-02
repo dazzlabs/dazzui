@@ -149,9 +149,9 @@ class ControlsPage extends StatelessWidget {
           'Keys',
           child: RowWrap(
             children: [
-              Kbd('⌘K'),
-              Kbd('⇧⌘P'),
-              Kbd('Esc'),
+              KeyCap('⌘K'),
+              KeyCap('⇧⌘P'),
+              KeyCap('Esc'),
             ],
           ),
         ),

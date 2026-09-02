@@ -12,7 +12,7 @@ public struct SearchField<Hint: View>: View {
   public var value: String
   public var onValueChange: (String) -> Void
   public var placeholder: String
-  public var size: InputSize
+  public var size: TextFieldSize
   public var tint: Tint
   /// Focus on appearance, for a field opened by a shortcut.
   public var autoFocus: Bool
@@ -21,7 +21,7 @@ public struct SearchField<Hint: View>: View {
   /// Accessible name of the clear button.
   public var clearLabel: String
   public var accessibilityLabel: String?
-  /// Trailing hint shown while the field is empty — usually a ``Kbd``.
+  /// Trailing hint shown while the field is empty — usually a ``KeyCap``.
   @ViewBuilder public var hint: () -> Hint
 
   @Environment(\.theme) private var theme
@@ -32,7 +32,7 @@ public struct SearchField<Hint: View>: View {
     value: String,
     onValueChange: @escaping (String) -> Void,
     placeholder: String = "Search",
-    size: InputSize = .medium,
+    size: TextFieldSize = .medium,
     tint: Tint = .primary,
     autoFocus: Bool = false,
     onDismiss: (() -> Void)? = nil,
@@ -90,7 +90,7 @@ public struct SearchField<Hint: View>: View {
       if value.isEmpty {
         Text(placeholder).foregroundStyle(vars.colorContentFaint)
       }
-      TextField("", text: text)
+      SwiftUI.TextField("", text: text)
         .textFieldStyle(.plain)
         .lineLimit(1)
         .focused($focused)
@@ -134,7 +134,7 @@ public extension SearchField where Hint == EmptyView {
     value: String,
     onValueChange: @escaping (String) -> Void,
     placeholder: String = "Search",
-    size: InputSize = .medium,
+    size: TextFieldSize = .medium,
     tint: Tint = .primary,
     autoFocus: Bool = false,
     onDismiss: (() -> Void)? = nil,

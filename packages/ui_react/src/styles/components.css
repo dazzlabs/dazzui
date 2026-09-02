@@ -26,10 +26,10 @@
 @import '../generated/control.css';
 
 @import '../components/action-bar.css';
-@import '../components/alert-banner.css';
 @import '../components/aside.css';
 @import '../components/badge.css';
 @import '../components/button.css';
+@import '../components/callout.css';
 @import '../components/card.css';
 @import '../components/checkbox.css';
 @import '../components/dialog.css';
@@ -38,8 +38,7 @@
 @import '../components/form-field.css';
 @import '../components/icon.css';
 @import '../components/icon-button.css';
-@import '../components/input.css';
-@import '../components/kbd.css';
+@import '../components/key-cap.css';
 @import '../components/menu.css';
 @import '../components/nav-item.css';
 @import '../components/option-card.css';
@@ -56,6 +55,7 @@
 @import '../components/sidebar.css';
 @import '../components/spinner.css';
 @import '../components/step-list.css';
+@import '../components/switch.css';
 @import '../components/table.css';
+@import '../components/text-field.css';
 @import '../components/toast.css';
-@import '../components/toggle.css';

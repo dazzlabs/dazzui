@@ -2,7 +2,7 @@ import DazzUI
 import FluentIcons
 import SwiftUI
 
-/// What the app says back: banners that stay, toasts that pass, a dialog that
+/// What the app says back: callouts that stay, toasts that pass, a dialog that
 /// blocks, and the empty state that stands in for content.
 struct FeedbackPage: View {
   /// Owned by the window rather than by this page: the scrim has to cover the
@@ -20,24 +20,24 @@ struct FeedbackPage: View {
       "The tint carries the meaning; the shape carries how long it stays."
     )
 
-    Specimen("Alert banners") {
+    Specimen("Callouts") {
       VStack(alignment: .leading, spacing: vars.spacing2) {
-        AlertBanner(
+        Callout(
           "Restart to finish updating to 2.1.0.",
           tint: .info,
           title: "A new version is available"
         )
-        AlertBanner(
+        Callout(
           "Three platform packages were refreshed.",
           tint: .success,
           title: "Tokens rebuilt"
         )
-        AlertBanner(
+        Callout(
           "color.warning cannot move whole under bright-dark.",
           tint: .warning,
           title: "Ramp moves only part-way"
         )
-        AlertBanner(
+        Callout(
           "DazzUI: 4 errors in Sidebar.swift.",
           tint: .danger,
           title: "The build failed"

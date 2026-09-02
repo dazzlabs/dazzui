@@ -20,38 +20,38 @@ use crate::{
 /// so the geometry comes off the same profile a button reads — but only three
 /// of the four steps, which is the set React exposes.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub enum InputSize {
+pub enum TextFieldSize {
     Small,
     #[default]
     Medium,
     Large,
 }
 
-impl InputSize {
+impl TextFieldSize {
     pub(crate) fn control(self) -> ControlSize {
         match self {
-            InputSize::Small => ControlSize::Small,
-            InputSize::Medium => ControlSize::Medium,
-            InputSize::Large => ControlSize::Large,
+            TextFieldSize::Small => ControlSize::Small,
+            TextFieldSize::Medium => ControlSize::Medium,
+            TextFieldSize::Large => ControlSize::Large,
         }
     }
 }
 
 /// Whether the control is reporting a problem.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub enum InputState {
+pub enum TextFieldState {
     #[default]
     Default,
     Error,
 }
 
-impl InputState {
+impl TextFieldState {
     /// An erroring control is re-tinted rather than given a second palette,
     /// so its border, wash and focus ring all move together.
     pub fn tint(self, tint: Tint) -> Tint {
         match self {
-            InputState::Error => Tint::Danger,
-            InputState::Default => tint,
+            TextFieldState::Error => Tint::Danger,
+            TextFieldState::Default => tint,
         }
     }
 }
@@ -61,12 +61,12 @@ impl InputState {
 /// The web hands a component the DOM's own editing — a caret, a selection, an
 /// input method — and GPUI hands it nothing: text editing is a view's job
 /// there, so this is the piece with no counterpart in `packages/ui_react`. It
-/// owns the string, the selection and the focus; [`Input`] draws the box
+/// owns the string, the selection and the focus; [`TextField`] draws the box
 /// around it, and both a [`Textarea`] and a [`SearchField`] wear the same
 /// buffer.
 ///
 /// [`SearchField`]: crate::SearchField
-pub struct TextField {
+pub struct TextBuffer {
     focus_handle: gpui::FocusHandle,
     content: SharedString,
     placeholder: SharedString,
@@ -80,9 +80,9 @@ pub struct TextField {
     is_selecting: bool,
 }
 
-impl TextField {
+impl TextBuffer {
     pub fn new(cx: &mut Context<Self>, placeholder: impl Into<SharedString>) -> Self {
-        TextField {
+        TextBuffer {
             focus_handle: cx.focus_handle(),
             content: SharedString::default(),
             placeholder: placeholder.into(),
@@ -350,13 +350,13 @@ impl TextField {
     }
 }
 
-impl Focusable for TextField {
+impl Focusable for TextBuffer {
     fn focus_handle(&self, _: &App) -> gpui::FocusHandle {
         self.focus_handle.clone()
     }
 }
 
-impl EntityInputHandler for TextField {
+impl EntityInputHandler for TextBuffer {
     fn text_for_range(
         &mut self,
         range_utf16: Range<usize>,
@@ -477,7 +477,7 @@ impl EntityInputHandler for TextField {
 /// The text, the caret and the selection — the part of a text control GPUI
 /// has no element for.
 struct TextBody {
-    field: Entity<TextField>,
+    field: Entity<TextBuffer>,
     face: TypeStyle,
     line_height: Pixels,
     text: Hsla,
@@ -749,34 +749,34 @@ impl Element for TextBody {
 /// re-tinted to `danger`, so the border, the wash, the value's ink and the
 /// focus wash all move together.
 #[derive(IntoElement)]
-pub struct Input {
-    field: Entity<TextField>,
-    size: InputSize,
-    state: InputState,
+pub struct TextField {
+    field: Entity<TextBuffer>,
+    size: TextFieldSize,
+    state: TextFieldState,
     tint: Tint,
     /// Set the mono face — for a key, an ID, or a URL.
     mono: bool,
     disabled: bool,
 }
 
-impl Input {
-    pub fn new(field: &Entity<TextField>) -> Self {
-        Input {
+impl TextField {
+    pub fn new(field: &Entity<TextBuffer>) -> Self {
+        TextField {
             field: field.clone(),
-            size: InputSize::Medium,
-            state: InputState::Default,
+            size: TextFieldSize::Medium,
+            state: TextFieldState::Default,
             tint: Tint::Primary,
             mono: false,
             disabled: false,
         }
     }
 
-    pub fn size(mut self, size: InputSize) -> Self {
+    pub fn size(mut self, size: TextFieldSize) -> Self {
         self.size = size;
         self
     }
 
-    pub fn state(mut self, state: InputState) -> Self {
+    pub fn state(mut self, state: TextFieldState) -> Self {
         self.state = state;
         self
     }
@@ -797,7 +797,7 @@ impl Input {
     }
 }
 
-impl RenderOnce for Input {
+impl RenderOnce for TextField {
     fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         text_control(
             self.field,
@@ -821,32 +821,32 @@ impl RenderOnce for Input {
 /// and the control line-height would set it solid.
 #[derive(IntoElement)]
 pub struct Textarea {
-    field: Entity<TextField>,
-    size: InputSize,
-    state: InputState,
+    field: Entity<TextBuffer>,
+    size: TextFieldSize,
+    state: TextFieldState,
     tint: Tint,
     mono: bool,
     disabled: bool,
 }
 
 impl Textarea {
-    pub fn new(field: &Entity<TextField>) -> Self {
+    pub fn new(field: &Entity<TextBuffer>) -> Self {
         Textarea {
             field: field.clone(),
-            size: InputSize::Medium,
-            state: InputState::Default,
+            size: TextFieldSize::Medium,
+            state: TextFieldState::Default,
             tint: Tint::Primary,
             mono: false,
             disabled: false,
         }
     }
 
-    pub fn size(mut self, size: InputSize) -> Self {
+    pub fn size(mut self, size: TextFieldSize) -> Self {
         self.size = size;
         self
     }
 
-    pub fn state(mut self, state: InputState) -> Self {
+    pub fn state(mut self, state: TextFieldState) -> Self {
         self.state = state;
         self
     }
@@ -890,7 +890,7 @@ impl RenderOnce for Textarea {
 /// second implementation of it.
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn editable(
-    field: &Entity<TextField>,
+    field: &Entity<TextBuffer>,
     face: TypeStyle,
     line_height: Pixels,
     text: Hsla,
@@ -944,14 +944,14 @@ pub(crate) fn editable(
 }
 
 /// The box the three text controls share, and share deliberately: a `Select`
-/// is an `Input` with a chevron and a `FieldValue` is one that was never
+/// is a `TextField` with a chevron and a `FieldValue` is one that was never
 /// editable, so the three drifting apart would be the bug rather than the
 /// feature.
 #[allow(clippy::too_many_arguments)]
 fn text_control(
-    field: Entity<TextField>,
-    size: InputSize,
-    state: InputState,
+    field: Entity<TextBuffer>,
+    size: TextFieldSize,
+    state: TextFieldState,
     tint: Tint,
     mono: bool,
     disabled: bool,
@@ -962,7 +962,7 @@ fn text_control(
     let vars = cx.theme().vars;
     let metrics = vars.metrics(size.control());
     let tint = state.tint(tint);
-    let erroring = state == InputState::Error;
+    let erroring = state == TextFieldState::Error;
     let focused = field.read(cx).focus_handle.is_focused(window);
     let accent = vars.ramp(tint).shade(600);
 
@@ -993,7 +993,7 @@ fn text_control(
     };
     let face = if mono {
         // The mono face is the one place a component reaches a `base.*`
-        // primitive, which `input.css` does too: `base.font.code` has no
+        // primitive, which `text-field.css` does too: `base.font.code` has no
         // semantic token in front of it.
         TypeStyle {
             family: &["ui-monospace"],
@@ -1093,7 +1093,7 @@ fn text_control(
 #[derive(IntoElement)]
 pub struct FieldValue {
     value: SharedString,
-    size: InputSize,
+    size: TextFieldSize,
     mono: bool,
 }
 
@@ -1101,12 +1101,12 @@ impl FieldValue {
     pub fn new(value: impl Into<SharedString>) -> Self {
         FieldValue {
             value: value.into(),
-            size: InputSize::Medium,
+            size: TextFieldSize::Medium,
             mono: false,
         }
     }
 
-    pub fn size(mut self, size: InputSize) -> Self {
+    pub fn size(mut self, size: TextFieldSize) -> Self {
         self.size = size;
         self
     }
@@ -1157,8 +1157,8 @@ pub struct Select {
     id: ElementId,
     value: SharedString,
     options: Vec<(SharedString, SharedString)>,
-    size: InputSize,
-    state: InputState,
+    size: TextFieldSize,
+    state: TextFieldState,
     tint: Tint,
     disabled: bool,
     on_select: Option<ValueListener<SharedString>>,
@@ -1170,8 +1170,8 @@ impl Select {
             id: id.into(),
             value: value.into(),
             options: Vec::new(),
-            size: InputSize::Medium,
-            state: InputState::Default,
+            size: TextFieldSize::Medium,
+            state: TextFieldState::Default,
             tint: Tint::Primary,
             disabled: false,
             on_select: None,
@@ -1187,12 +1187,12 @@ impl Select {
         self
     }
 
-    pub fn size(mut self, size: InputSize) -> Self {
+    pub fn size(mut self, size: TextFieldSize) -> Self {
         self.size = size;
         self
     }
 
-    pub fn state(mut self, state: InputState) -> Self {
+    pub fn state(mut self, state: TextFieldState) -> Self {
         self.state = state;
         self
     }
@@ -1221,7 +1221,7 @@ impl RenderOnce for Select {
         let vars = cx.theme().vars;
         let metrics = vars.metrics(self.size.control());
         let tint = self.state.tint(self.tint);
-        let erroring = self.state == InputState::Error;
+        let erroring = self.state == TextFieldState::Error;
         let on_select: Option<SharedValueListener<SharedString>> =
             self.on_select.map(std::rc::Rc::from);
         let label = self

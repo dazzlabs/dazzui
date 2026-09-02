@@ -2,7 +2,7 @@ import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
-import { type InputState, tintFor } from './input'
+import { type TextFieldState, tintFor } from './text-field'
 
 export interface FormFieldProps extends Omit<
   ComponentPropsWithoutRef<'div'>,
@@ -11,7 +11,7 @@ export interface FormFieldProps extends Omit<
   label: ReactNode
   /** Help text under the control; carries the error tone when erroring. */
   hint?: ReactNode
-  state?: InputState
+  state?: TextFieldState
   tint?: Tint
 }
 

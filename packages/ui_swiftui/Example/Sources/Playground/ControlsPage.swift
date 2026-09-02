@@ -78,9 +78,9 @@ struct ControlsPage: View {
 
     Specimen("Keys") {
       Row {
-        Kbd("⌘K")
-        Kbd("⇧⌘P", variant: .strong)
-        Kbd("Esc", variant: .key)
+        KeyCap("⌘K")
+        KeyCap("⇧⌘P", variant: .strong)
+        KeyCap("Esc", variant: .key)
       }
     }
 
