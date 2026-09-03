@@ -2,6 +2,12 @@ import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import { execSync } from 'node:child_process'
+import { loadTokens, writeFiles } from '@terrazzo/cli'
+import { Logger, build, parse } from '@terrazzo/parser'
+import YAML from 'yaml'
+import yamlToMomoa from 'yaml-to-momoa'
+import config from '../terrazzo.config.mjs'
+import { expandRecipes } from './recipes.mjs'
 
 /**
  * Where each platform package's generated sources land.
@@ -36,6 +42,44 @@ const TARGETS = [
     files: ['gpui/colors.rs', 'gpui/theme_variables.rs'],
   },
 ]
+
+/**
+ * What `tz build` does, done here so one step can come first.
+ *
+ * The token files are read exactly as the CLI reads them and handed to the
+ * same `parse` and `build` it calls. The step in between is the recipe
+ * table: `control.color` writes only its decisions, and `expandRecipes`
+ * fills in the derived cells before the graph exists, so every plugin reads
+ * the full table and none of them carries a rule of its own. Nothing is
+ * written back — the expanded document lives only in this process.
+ *
+ * A file that is expanded is parsed from the expanded object rather than
+ * from its text, so a validation error in it is reported against Terrazzo's
+ * own print of that object: the same keys in the same order, just without
+ * the comments. Every other file keeps its YAML, and its line numbers.
+ */
+async function generate() {
+  const logger = new Logger()
+
+  const sources = await loadTokens(config.tokens, { logger })
+  if (!sources) {
+    throw new Error('Could not load the token files terrazzo.config.mjs lists.')
+  }
+  for (const source of sources) {
+    const document = YAML.parse(source.src)
+    const expanded = expandRecipes(document)
+    if (expanded !== document) source.src = expanded
+  }
+
+  const parsed = await parse(sources, { config, logger, yamlToMomoa })
+  const result = await build(parsed.tokens, {
+    sources: parsed.sources,
+    config,
+    logger,
+  })
+  writeFiles(result, { config, logger })
+  console.log(`✔  ${Object.keys(parsed.tokens).length} tokens built`)
+}
 
 /**
  * The declarations the CSS plugin re-emits despite being excluded.
@@ -105,7 +149,7 @@ function formatDart(files) {
 }
 
 async function main() {
-  execSync('tz build', { stdio: 'inherit' })
+  await generate()
   await distribute()
 
   const dartFiles = TARGETS.flatMap(target =>

@@ -16,7 +16,9 @@
   },
   "devDependencies": {
     "@terrazzo/cli": "^0.10.3",
+    "@terrazzo/parser": "^0.10.4",
     "@terrazzo/plugin-css": "^0.10.4",
-    "yaml": "^2.9.0"
+    "yaml": "^2.9.0",
+    "yaml-to-momoa": "^0.0.6"
   }
 }

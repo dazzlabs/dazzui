@@ -129,7 +129,12 @@ pnpm format            # oxfmt over the workspace
 
 ## Token pipeline
 
-1. `tz build` reads the files listed in `terrazzo.config.mjs` and stages
+1. `scripts/build.mjs` reads the files listed in `terrazzo.config.mjs` and
+   hands them to Terrazzo's own `parse` and `build` — the two calls
+   `tz build` makes — with one step of its own in between: the recipe table
+   under `control.color` writes only its decisions, and
+   `scripts/recipes.mjs` fills in the derived cells before the graph is
+   parsed (see the token conventions below). The plugins then stage
    `packages/ds/dist/`:
    - `style.css` — CSS custom properties (the contract consumers use)
    - `control.css` — the ramp bindings and the resolved interactive color
@@ -154,11 +159,13 @@ pnpm format            # oxfmt over the workspace
    as fallback), because the committed files are formatted and a rebuild
    must not dirty them.
 
-There is no generation step before the build: every token source, `_base.yaml`
-included, is hand-authored. (The Tailwind sync that used to write `_base.yaml`
-is gone — the design is drawn to BeyondTranslate, so there is no upstream to
-track, and what Tailwind contributed is frozen in `_base.yaml` at the values
-it had.)
+Nothing writes a token file: every source, `_base.yaml` included, is
+hand-authored. (The Tailwind sync that used to write `_base.yaml` is gone —
+the design is drawn to BeyondTranslate, so there is no upstream to track, and
+what Tailwind contributed is frozen in `_base.yaml` at the values it had.)
+The recipe expansion is the one transformation between a file and the graph,
+and it lives only in the build process — the expanded document is never
+written anywhere.
 
 A new token file is only built once it is added to `terrazzo.config.mjs`.
 `dist/` is gitignored and is staging only — the distributed copies are what a
@@ -242,11 +249,24 @@ The colour system reads in washes and grades:
   `:root` — 3px of primary at a per-theme alpha, offset 0, hugging the
   control the way macOS draws it. It never follows `data-tint`.
 
-Three things that surprise people:
+Four things that surprise people:
 
 - Interactive colors are stored as *recipes*, not finished colors: a `shade` to
   pick off a ramp plus an `alpha` to apply. Each platform resolves them against
   whichever ramp the control is tinted with.
+- The recipe table writes only its decisions. `control.color` is six variants
+  by three parts by four states, and most of those cells are one rule
+  applied, so a variant writes what it decides and `scripts/recipes.mjs`
+  fills in the rest before the graph is parsed: `hovered` unwritten is
+  `normal`, `pressed` unwritten is `hovered` dimmed by `$defaults.pressed`,
+  `disabled` unwritten is `$defaults.disabled` for that part, a part left
+  out entirely is `$defaults.undrawn` in every state, and a shade with no
+  alpha is opaque. The names the rules fill in with live under
+  `control.color.$defaults`, consumed by the expansion and never a token.
+  Every plugin reads the full table, so no platform generator carries a
+  rule — and a cell that is only the rule applied must not be written, since
+  writing it hides which cells are decisions. A misspelt part or state
+  fails the build rather than falling through to a default.
 - A ramp is a **role ladder, not a lightness ramp**. Read `base.color.ink`
   before assuming otherwise: its 700 is *lighter* than its 600, because
   Bright's primary action is ink navy whose hover lifts, and its 50–200 are

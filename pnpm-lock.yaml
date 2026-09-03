@@ -125,12 +125,18 @@ importers:
       '@terrazzo/cli':
         specifier: ^0.10.3
         version: 0.10.3(hono@4.10.6)
+      '@terrazzo/parser':
+        specifier: ^0.10.4
+        version: 0.10.4
       '@terrazzo/plugin-css':
         specifier: ^0.10.4
         version: 0.10.4(@terrazzo/cli@0.10.3(hono@4.10.6))
       yaml:
         specifier: ^2.9.0
         version: 2.9.0
+      yaml-to-momoa:
+        specifier: ^0.0.6
+        version: 0.0.6
 
   packages/ui_react:
     dependencies:

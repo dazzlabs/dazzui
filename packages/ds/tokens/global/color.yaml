@@ -509,125 +509,74 @@ control:
     #
     # `recessed` is the workhorse neutral: the grey chip a toolbar button or
     # default action is, one step deeper than the paper it sits on.
+    #
+    # Only the decisions are written. Before the graph is parsed,
+    # `scripts/recipes.mjs` fills in every cell a variant leaves out, by
+    # rules that never vary; what they fill in with is the data under
+    # `$defaults`, which is consumed there and never reaches the graph:
+    #
+    #   hovered   unwritten → the same as `normal`
+    #   pressed   unwritten → `hovered` with `$defaults.pressed` laid over it
+    #   disabled  unwritten → `$defaults.disabled` for that part
+    #   a part    unwritten → `$defaults.undrawn` in every state: the border
+    #                         a filled button does not have
+    #   a shade with no alpha is opaque
+    #
+    # The plugins then read the full table — six variants by three parts by
+    # four states — so a rule is decided here and applied once rather than
+    # re-derived in each platform generator. A wash that deepens on press
+    # (`tinted`, `outlined`, `plain`) is a decision of its own and is
+    # written; a cell that is only the rule applied is not.
+    $type: color
+    $defaults:
+      # The one press signal every variant shares: the whole control —
+      # surface, content, border alike — dims to `control.pressed.alpha`
+      # while the pointer is down.
+      pressed:
+        alpha:
+          $type: number
+          $value: "{control.pressed.alpha}"
+      disabled:
+        surface:
+          color:
+            $value: "{color.surface-sunken}"
+        content:
+          color:
+            $value: "{color.content-faint}"
+        border:
+          color:
+            $value: "{base.color.transparent}"
+      undrawn:
+        color:
+          $value: "{base.color.transparent}"
     normal:
       surface:
         normal:
           color:
-            $type: color
             $value: "{color.surface}"
         hovered:
           color:
-            $type: color
             $value: "{color.surface-subtle}"
-        pressed:
-          color:
-            $type: color
-            $value: "{color.surface-subtle}"
-          alpha:
-            $type: number
-            $value: "{control.pressed.alpha}"
-        disabled:
-          color:
-            $type: color
-            $value: "{color.surface-sunken}"
       content:
         normal:
           color:
-            $type: color
             $value: "{color.content}"
-        hovered:
-          color:
-            $type: color
-            $value: "{color.content}"
-        pressed:
-          color:
-            $type: color
-            $value: "{color.content}"
-          alpha:
-            $type: number
-            $value: "{control.pressed.alpha}"
-        disabled:
-          color:
-            $type: color
-            $value: "{color.content-faint}"
       border:
         normal:
           color:
-            $type: color
             $value: "{color.border-strong}"
-        hovered:
-          color:
-            $type: color
-            $value: "{color.border-strong}"
-        pressed:
-          color:
-            $type: color
-            $value: "{color.border-strong}"
-          alpha:
-            $type: number
-            $value: "{control.pressed.alpha}"
-        disabled:
-          color:
-            $type: color
-            $value: "{base.color.transparent}"
     recessed:
       surface:
         normal:
           color:
-            $type: color
             $value: "{color.surface-inset}"
         hovered:
           color:
-            $type: color
-            $value: "{color.surface-sunken}"
-        pressed:
-          color:
-            $type: color
-            $value: "{color.surface-sunken}"
-          alpha:
-            $type: number
-            $value: "{control.pressed.alpha}"
-        disabled:
-          color:
-            $type: color
             $value: "{color.surface-sunken}"
       content:
         normal:
           color:
-            $type: color
             $value: "{color.content}"
-        hovered:
-          color:
-            $type: color
-            $value: "{color.content}"
-        pressed:
-          color:
-            $type: color
-            $value: "{color.content}"
-          alpha:
-            $type: number
-            $value: "{control.pressed.alpha}"
-        disabled:
-          color:
-            $type: color
-            $value: "{color.content-faint}"
-      border:
-        normal:
-          color:
-            $type: color
-            $value: "{base.color.transparent}"
-        hovered:
-          color:
-            $type: color
-            $value: "{base.color.transparent}"
-        pressed:
-          color:
-            $type: color
-            $value: "{base.color.transparent}"
-        disabled:
-          color:
-            $type: color
-            $value: "{base.color.transparent}"
     filled:
       surface:
         normal:
@@ -637,8 +586,6 @@ control:
             $extensions:
               mode:
                 dark: 500
-          alpha:
-            $value: 1
         hovered:
           $type: number
           shade:
@@ -646,58 +593,10 @@ control:
             $extensions:
               mode:
                 dark: 600
-          alpha:
-            $value: 1
-        pressed:
-          $type: number
-          shade:
-            $value: 700
-            $extensions:
-              mode:
-                dark: 600
-          alpha:
-            $value: "{control.pressed.alpha}"
-        disabled:
-          color:
-            $type: color
-            $value: "{color.surface-sunken}"
       content:
         normal:
           color:
-            $type: color
             $value: "{color.on-accent}"
-        hovered:
-          color:
-            $type: color
-            $value: "{color.on-accent}"
-        pressed:
-          color:
-            $type: color
-            $value: "{color.on-accent}"
-          alpha:
-            $type: number
-            $value: "{control.pressed.alpha}"
-        disabled:
-          color:
-            $type: color
-            $value: "{color.content-faint}"
-      border:
-        normal:
-          color:
-            $type: color
-            $value: "{base.color.transparent}"
-        hovered:
-          color:
-            $type: color
-            $value: "{base.color.transparent}"
-        pressed:
-          color:
-            $type: color
-            $value: "{base.color.transparent}"
-        disabled:
-          color:
-            $type: color
-            $value: "{base.color.transparent}"
     tinted:
       surface:
         normal:
@@ -718,10 +617,6 @@ control:
             $value: 600
           alpha:
             $value: 0.24
-        disabled:
-          color:
-            $type: color
-            $value: "{color.surface-sunken}"
       content:
         normal:
           $type: number
@@ -730,8 +625,6 @@ control:
             $extensions:
               mode:
                 dark: 300
-          alpha:
-            $value: 1
         hovered:
           $type: number
           shade:
@@ -739,43 +632,10 @@ control:
             $extensions:
               mode:
                 dark: 200
-          alpha:
-            $value: 1
-        pressed:
-          $type: number
-          shade:
-            $value: 800
-            $extensions:
-              mode:
-                dark: 200
-          alpha:
-            $value: "{control.pressed.alpha}"
-        disabled:
-          color:
-            $type: color
-            $value: "{color.content-faint}"
-      border:
-        normal:
-          color:
-            $type: color
-            $value: "{base.color.transparent}"
-        hovered:
-          color:
-            $type: color
-            $value: "{base.color.transparent}"
-        pressed:
-          color:
-            $type: color
-            $value: "{base.color.transparent}"
-        disabled:
-          color:
-            $type: color
-            $value: "{base.color.transparent}"
     outlined:
       surface:
         normal:
           color:
-            $type: color
             $value: "{base.color.transparent}"
         hovered:
           $type: number
@@ -789,10 +649,6 @@ control:
             $value: 600
           alpha:
             $value: 0.12
-        disabled:
-          color:
-            $type: color
-            $value: "{color.surface-sunken}"
       content:
         normal:
           $type: number
@@ -801,8 +657,6 @@ control:
             $extensions:
               mode:
                 dark: 300
-          alpha:
-            $value: 1
         hovered:
           $type: number
           shade:
@@ -810,21 +664,6 @@ control:
             $extensions:
               mode:
                 dark: 200
-          alpha:
-            $value: 1
-        pressed:
-          $type: number
-          shade:
-            $value: 800
-            $extensions:
-              mode:
-                dark: 200
-          alpha:
-            $value: "{control.pressed.alpha}"
-        disabled:
-          color:
-            $type: color
-            $value: "{color.content-faint}"
       border:
         normal:
           $type: number
@@ -833,8 +672,6 @@ control:
             $extensions:
               mode:
                 dark: 400
-          alpha:
-            $value: 1
         hovered:
           $type: number
           shade:
@@ -842,26 +679,10 @@ control:
             $extensions:
               mode:
                 dark: 300
-          alpha:
-            $value: 1
-        pressed:
-          $type: number
-          shade:
-            $value: 700
-            $extensions:
-              mode:
-                dark: 300
-          alpha:
-            $value: "{control.pressed.alpha}"
-        disabled:
-          color:
-            $type: color
-            $value: "{base.color.transparent}"
     plain:
       surface:
         normal:
           color:
-            $type: color
             $value: "{base.color.transparent}"
         hovered:
           $type: number
@@ -875,9 +696,10 @@ control:
             $value: 600
           alpha:
             $value: 0.12
+        # No groove for a control that never had a surface: a dead plain
+        # button is quiet text, not a grey chip where none was.
         disabled:
           color:
-            $type: color
             $value: "{base.color.transparent}"
       content:
         normal:
@@ -887,8 +709,6 @@ control:
             $extensions:
               mode:
                 dark: 300
-          alpha:
-            $value: 1
         hovered:
           $type: number
           shade:
@@ -896,35 +716,3 @@ control:
             $extensions:
               mode:
                 dark: 200
-          alpha:
-            $value: 1
-        pressed:
-          $type: number
-          shade:
-            $value: 800
-            $extensions:
-              mode:
-                dark: 200
-          alpha:
-            $value: "{control.pressed.alpha}"
-        disabled:
-          color:
-            $type: color
-            $value: "{color.content-faint}"
-      border:
-        normal:
-          color:
-            $type: color
-            $value: "{base.color.transparent}"
-        hovered:
-          color:
-            $type: color
-            $value: "{base.color.transparent}"
-        pressed:
-          color:
-            $type: color
-            $value: "{base.color.transparent}"
-        disabled:
-          color:
-            $type: color
-            $value: "{base.color.transparent}"
