@@ -113,7 +113,14 @@ extension View {
 
 // MARK: - TextField
 
-/// A single-line text control.
+/// A text control: a line of text, or a box of it.
+///
+/// `multiline` is the axis rather than a view of its own, because the box, the
+/// states and the tinting are one design either way. What it changes: the box
+/// takes the container corner rather than the control corner — a theme that
+/// makes controls pills would otherwise turn a growing box into a lozenge —
+/// the leading opens up, because this is the one text control whose text
+/// wraps, and the height becomes a floor rather than the control height.
 ///
 /// Named `TextField` rather than prefixed, and reached as
 /// `DazzUI.TextField` where `SwiftUI.TextField` is also in scope.
@@ -126,6 +133,8 @@ public struct TextField: View {
   /// Set the mono face — for a key, an ID, or a URL.
   public var mono: Bool
   public var enabled: Bool
+  /// Draw as a box that grows rather than as a single line.
+  public var multiline: Bool
 
   @Environment(\.theme) private var theme
   @FocusState private var focused: Bool
@@ -137,7 +146,8 @@ public struct TextField: View {
     state: TextFieldState = .default,
     tint: Tint = .primary,
     mono: Bool = false,
-    enabled: Bool = true
+    enabled: Bool = true,
+    multiline: Bool = false
   ) {
     self._text = text
     self.placeholder = placeholder
@@ -146,6 +156,7 @@ public struct TextField: View {
     self.tint = tint
     self.mono = mono
     self.enabled = enabled
+    self.multiline = multiline
   }
 
   public var body: some View {
@@ -153,23 +164,40 @@ public struct TextField: View {
     let metrics = vars.metrics(size.controlSize)
     let ramp = tintFor(state, tint)
 
-    ZStack(alignment: .leading) {
+    let editor = ZStack(alignment: multiline ? .topLeading : .leading) {
       if text.isEmpty {
         Text(placeholder).foregroundStyle(vars.colorContentFaint)
       }
-      SwiftUI.TextField("", text: $text)
-        .textFieldStyle(.plain)
-        .focused($focused)
-        .disabled(!enabled)
+      SwiftUI.TextField(
+        "",
+        text: $text,
+        axis: multiline ? .vertical : .horizontal
+      )
+      .textFieldStyle(.plain)
+      .focused($focused)
+      .disabled(!enabled)
     }
     .font(FieldStyle.font(size: metrics.content.size, mono: mono, vars: vars))
-    .lineLimit(1)
-    .padding(.horizontal, vars.spacing3)
-    // Single-line controls take the shared control height, so a form can mix
-    // them with buttons without the rows stepping. It wins over the profile's
-    // block padding, which is what the stylesheet's `height` does too.
-    .frame(height: metrics.size)
-    // The box takes the regular container corner, one step above the buttons'.
+
+    return Group {
+      if multiline {
+        editor
+          .lineSpacing(metrics.content.size * (Self.proseLeading - 1))
+          .frame(maxWidth: .infinity, alignment: .topLeading)
+          .padding(.vertical, vars.spacing25)
+          .padding(.horizontal, vars.spacing3)
+          .frame(minHeight: vars.spacing20, alignment: .topLeading)
+      } else {
+        editor
+          .lineLimit(1)
+          .padding(.horizontal, vars.spacing3)
+          // Single-line controls take the shared control height, so a form can
+          // mix them with buttons without the rows stepping. It wins over the
+          // profile's block padding, which is what the stylesheet's `height`
+          // does too.
+          .frame(height: metrics.size)
+      }
+    }
     .fieldChrome(
       FieldStyle(
         vars: vars,
@@ -178,80 +206,9 @@ public struct TextField: View {
         enabled: enabled,
         focused: focused
       ),
-      cornerRadius: vars.radiusMedium,
-      vars: vars
-    )
-  }
-}
-
-// MARK: - Textarea
-
-/// A growing text control.
-///
-/// It takes the container corner rather than the control corner — a theme that
-/// makes controls pills would otherwise turn a multi-line box into a lozenge —
-/// a floor rather than a height, and real leading: its text wraps, and the
-/// control line-height would set it solid.
-public struct Textarea: View {
-  @Binding public var text: String
-  public var placeholder: String
-  public var size: TextFieldSize
-  public var state: TextFieldState
-  public var tint: Tint
-  /// Set the mono face — for a key, an ID, or a URL.
-  public var mono: Bool
-  public var enabled: Bool
-
-  @Environment(\.theme) private var theme
-  @FocusState private var focused: Bool
-
-  public init(
-    text: Binding<String>,
-    placeholder: String = "",
-    size: TextFieldSize = .medium,
-    state: TextFieldState = .default,
-    tint: Tint = .primary,
-    mono: Bool = false,
-    enabled: Bool = true
-  ) {
-    self._text = text
-    self.placeholder = placeholder
-    self.size = size
-    self.state = state
-    self.tint = tint
-    self.mono = mono
-    self.enabled = enabled
-  }
-
-  public var body: some View {
-    let vars = theme.vars
-    let metrics = vars.metrics(size.controlSize)
-    let ramp = tintFor(state, tint)
-
-    ZStack(alignment: .topLeading) {
-      if text.isEmpty {
-        Text(placeholder).foregroundStyle(vars.colorContentFaint)
-      }
-      SwiftUI.TextField("", text: $text, axis: .vertical)
-        .textFieldStyle(.plain)
-        .focused($focused)
-        .disabled(!enabled)
-    }
-    .font(FieldStyle.font(size: metrics.content.size, mono: mono, vars: vars))
-    .lineSpacing(metrics.content.size * (Self.proseLeading - 1))
-    .frame(maxWidth: .infinity, alignment: .topLeading)
-    .padding(.vertical, vars.spacing25)
-    .padding(.horizontal, vars.spacing3)
-    .frame(minHeight: vars.spacing20, alignment: .topLeading)
-    .fieldChrome(
-      FieldStyle(
-        vars: vars,
-        tint: ramp,
-        invalid: state == .error,
-        enabled: enabled,
-        focused: focused
-      ),
-      cornerRadius: vars.radiusLarge,
+      // A growing box takes the container corner; a single line takes the
+      // regular control corner, one step above the buttons'.
+      cornerRadius: multiline ? vars.radiusLarge : vars.radiusMedium,
       vars: vars
     )
   }
@@ -278,7 +235,7 @@ public struct SelectOption<Value: Hashable>: Identifiable {
   public var id: Value { value }
 }
 
-/// A dropdown in the shape of an ``TextField``.
+/// A dropdown in the shape of a ``TextField``.
 ///
 /// A Select is a TextField with a chevron, so it shares the box outright: the
 /// same height, the same corner, the same border recipe, the same focus lift.

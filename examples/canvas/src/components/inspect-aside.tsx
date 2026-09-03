@@ -10,7 +10,6 @@ import {
   KeyCap,
   SectionLabel,
   Select,
-  Textarea,
   type Tint,
   TINTS,
 } from '@dazzlabs/dazzui-react'
@@ -325,7 +324,8 @@ export function InspectAside({
               <Divider />
 
               <Group label="Text">
-                <Textarea
+                <TextField
+                  multiline
                   aria-label="Text"
                   className="cv-aside__text"
                   size="small"

@@ -51,7 +51,11 @@ struct FormsPage: View {
         }
 
         FormField(label: "Notes", hint: "Markdown is supported.") {
-          Textarea(text: $notes, placeholder: "Anything the team should know…")
+          TextField(
+            text: $notes,
+            placeholder: "Anything the team should know…",
+            multiline: true
+          )
         }
       }
       .frame(maxWidth: vars.dialogWidth)

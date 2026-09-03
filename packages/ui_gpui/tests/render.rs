@@ -130,7 +130,7 @@ fn gallery(_window: &mut Window, cx: &mut App) -> AnyElement {
                 .hint("We could not reach this address.")
                 .state(TextFieldState::Error)
                 .child(TextField::new(&field).state(TextFieldState::Error))
-                .child(Textarea::new(&field))
+                .child(TextField::new(&field).multiline(true))
                 .child(FieldValue::new("ff_live_51H").mono(true))
                 .child(
                     Select::new("region", "us")

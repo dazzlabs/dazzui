@@ -7,7 +7,6 @@ import {
   TextField,
   SegmentedControl,
   Select,
-  Textarea,
   TINTS,
 } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
@@ -33,7 +32,7 @@ export const Overview: Story = {
   render: () => (
     <Page
       title="FormField"
-      description="The label, the hint, and whatever control sits between them. It draws no box of its own — the control it wraps does that — so it works the same over a TextField, a Select or a Textarea, and over controls that are not text fields at all. It is `FormField` rather than `Field` because in this library the `*Field` suffix already belongs to controls, `SearchField` among them."
+      description="The label, the hint, and whatever control sits between them. It draws no box of its own — the control it wraps does that — so it works the same over a TextField single-line or multiline, a Select, and controls that are not text fields at all. It is `FormField` rather than `Field` because in this library the `*Field` suffix already belongs to controls, `SearchField` among them."
     >
       <Section
         title="A form"
@@ -168,14 +167,14 @@ export const OverASelect: Story = {
   ),
 }
 
-export const OverATextarea: Story = {
+export const OverAMultilineField: Story = {
   render: () => (
     <div style={{ width: WIDTH }}>
       <FormField
         label="Notes"
         hint="Sent with every request, so keep it short."
       >
-        <Textarea defaultValue="Keep product names untranslated." />
+        <TextField multiline defaultValue="Keep product names untranslated." />
       </FormField>
     </div>
   ),
@@ -242,7 +241,7 @@ export const AFullForm: Story = {
         <TextField mono state="error" defaultValue="sk-0000000000" />
       </FormField>
       <FormField label="Notes">
-        <Textarea placeholder="Optional" />
+        <TextField multiline placeholder="Optional" />
       </FormField>
       <ActionBar align="end">
         <Button>Cancel</Button>

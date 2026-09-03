@@ -62,8 +62,8 @@ impl TextFieldState {
 /// input method — and GPUI hands it nothing: text editing is a view's job
 /// there, so this is the piece with no counterpart in `packages/ui_react`. It
 /// owns the string, the selection and the focus; [`TextField`] draws the box
-/// around it, and both a [`Textarea`] and a [`SearchField`] wear the same
-/// buffer.
+/// around it — single-line or multiline — and a [`SearchField`] wears the
+/// same buffer.
 ///
 /// [`SearchField`]: crate::SearchField
 pub struct TextBuffer {
@@ -748,6 +748,13 @@ impl Element for TextBody {
 /// The error state is not a second palette bolted on: the control is
 /// re-tinted to `danger`, so the border, the wash, the value's ink and the
 /// focus wash all move together.
+///
+/// `multiline` is the axis rather than a control of its own, because the box,
+/// the states and the tinting are one design either way. What it changes: the
+/// box takes the container corner rather than the control corner — a theme
+/// that makes controls pills would otherwise turn a growing box into a
+/// lozenge — the leading opens up, because this is the one text control whose
+/// text wraps, and the height becomes a floor rather than the control height.
 #[derive(IntoElement)]
 pub struct TextField {
     field: Entity<TextBuffer>,
@@ -757,6 +764,8 @@ pub struct TextField {
     /// Set the mono face — for a key, an ID, or a URL.
     mono: bool,
     disabled: bool,
+    /// Draw as a box that grows rather than a single line.
+    multiline: bool,
 }
 
 impl TextField {
@@ -768,7 +777,13 @@ impl TextField {
             tint: Tint::Primary,
             mono: false,
             disabled: false,
+            multiline: false,
         }
+    }
+
+    pub fn multiline(mut self, multiline: bool) -> Self {
+        self.multiline = multiline;
+        self
     }
 
     pub fn size(mut self, size: TextFieldSize) -> Self {
@@ -806,77 +821,7 @@ impl RenderOnce for TextField {
             self.tint,
             self.mono,
             self.disabled,
-            false,
-            window,
-            cx,
-        )
-    }
-}
-
-/// A text control that grows.
-///
-/// It takes the container corner rather than the control corner — a theme
-/// that makes controls pills would otherwise turn a multi-line box into a
-/// lozenge — a floor rather than a height, and real leading: its text wraps,
-/// and the control line-height would set it solid.
-#[derive(IntoElement)]
-pub struct Textarea {
-    field: Entity<TextBuffer>,
-    size: TextFieldSize,
-    state: TextFieldState,
-    tint: Tint,
-    mono: bool,
-    disabled: bool,
-}
-
-impl Textarea {
-    pub fn new(field: &Entity<TextBuffer>) -> Self {
-        Textarea {
-            field: field.clone(),
-            size: TextFieldSize::Medium,
-            state: TextFieldState::Default,
-            tint: Tint::Primary,
-            mono: false,
-            disabled: false,
-        }
-    }
-
-    pub fn size(mut self, size: TextFieldSize) -> Self {
-        self.size = size;
-        self
-    }
-
-    pub fn state(mut self, state: TextFieldState) -> Self {
-        self.state = state;
-        self
-    }
-
-    pub fn tint(mut self, tint: Tint) -> Self {
-        self.tint = tint;
-        self
-    }
-
-    pub fn mono(mut self, mono: bool) -> Self {
-        self.mono = mono;
-        self
-    }
-
-    pub fn disabled(mut self, disabled: bool) -> Self {
-        self.disabled = disabled;
-        self
-    }
-}
-
-impl RenderOnce for Textarea {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
-        text_control(
-            self.field,
-            self.size,
-            self.state,
-            self.tint,
-            self.mono,
-            self.disabled,
-            true,
+            self.multiline,
             window,
             cx,
         )

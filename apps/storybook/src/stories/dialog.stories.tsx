@@ -13,7 +13,6 @@ import {
   TextField,
   OptionCard,
   Select,
-  Textarea,
 } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
@@ -255,7 +254,8 @@ export const BodyOnly: Story = {
   render: () => (
     <Dialog width="22rem">
       <DialogBody>
-        <Textarea
+        <TextField
+          multiline
           placeholder="What went wrong?"
           style={{ minHeight: '6rem' }}
         />

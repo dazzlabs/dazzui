@@ -10,7 +10,7 @@ import {
   SegmentedControl,
   Select,
   ShortcutRecorder,
-  Textarea,
+  TextField,
   Switch,
 } from '@dazzlabs/dazzui-react'
 
@@ -251,7 +251,8 @@ function Permissions({
           hint="One command per line. A prefix match is enough — “pnpm” allows every pnpm script."
           label="Commands that never ask"
         >
-          <Textarea
+          <TextField
+            multiline
             className="ca-settings__allowlist"
             disabled={!settings.runCommands}
             mono

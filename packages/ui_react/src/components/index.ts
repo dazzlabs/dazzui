@@ -111,8 +111,6 @@ export {
   type TextFieldState,
   Select,
   type SelectProps,
-  Textarea,
-  type TextareaProps,
 } from './text-field'
 export {
   Toast,

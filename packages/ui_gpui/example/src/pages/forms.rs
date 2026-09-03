@@ -1,6 +1,6 @@
 use dazzui::{
     ActiveTheme, Checkbox, FormField, KeyCap, OptionCard, RadioGroup, SearchField, Select, Switch,
-    SwitchSize, TextField, TextFieldState, Textarea,
+    SwitchSize, TextField, TextFieldState,
 };
 use gpui::{AnyElement, Context, Entity, IntoElement, ParentElement, SharedString, Styled, div};
 
@@ -52,7 +52,7 @@ pub fn forms(
                         .child(
                             FormField::new("Notes")
                                 .hint("Markdown is supported.")
-                                .child(Textarea::new(&state.notes)),
+                                .child(TextField::new(&state.notes).multiline(true)),
                         ),
                 ),
             )

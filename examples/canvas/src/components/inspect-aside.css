@@ -59,7 +59,10 @@
   line-height: var(--caption-small-line-height);
 }
 
-.cv-aside .cv-aside__text {
+/* One selector deeper than the library's own `[data-multiline]` box, so the
+   floor and the missing grip are this pane's decision rather than a tie
+   broken by stylesheet order. */
+.cv-aside .cv-aside__text[data-multiline] {
   min-height: var(--spacing-16);
   resize: none;
 }

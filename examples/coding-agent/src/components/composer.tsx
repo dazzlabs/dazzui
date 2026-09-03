@@ -5,7 +5,7 @@ import {
   KeyCap,
   SegmentedControl,
   Select,
-  Textarea,
+  TextField,
 } from '@dazzlabs/dazzui-react'
 import { type FormEvent, type KeyboardEvent, useState } from 'react'
 
@@ -68,7 +68,8 @@ export function Composer({
   return (
     <form className="ca-composer" onSubmit={submit}>
       <div data-tint="primary" className="ca-composer__box">
-        <Textarea
+        <TextField
+          multiline
           aria-label="Message"
           className="ca-composer__input"
           placeholder="Ask for a change, or describe what is wrong…"

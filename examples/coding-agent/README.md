@@ -119,7 +119,7 @@ about the other. Same for the column widths: the rail is narrow because
 shortened here rather than the column being widened.
 
 **A consumer overrides by source order, not by force.** The composer is one
-box made of a `Textarea` and a row of controls; the field gives up its own
+box made of a multiline `TextField` and a row of controls; the field gives up its own
 border to the wrapper through a rule two selectors deep. That is the extension
 point the library documents, used the way it is meant to be.
 

@@ -24,54 +24,54 @@ type ControlBase = {
   mono?: boolean
 }
 
-export interface TextFieldProps
-  extends Omit<ComponentPropsWithoutRef<'input'>, 'size'>, ControlBase {}
+/**
+ * One field, two elements. `multiline` is the axis rather than a second
+ * component, because the box, the states and the tinting are the same design
+ * either way — only the corner, the leading and how the height is arrived at
+ * differ, and those are three declarations rather than a component's worth.
+ *
+ * The prop discriminates the type as well as the element, so `rows` is
+ * available only on a multiline field and `type` only on a single-line one,
+ * exactly as the two DOM elements have it.
+ */
+export type TextFieldProps =
+  | (ControlBase & {
+      multiline?: false
+    } & Omit<ComponentPropsWithoutRef<'input'>, 'size'>)
+  | (ControlBase & {
+      multiline: true
+    } & Omit<ComponentPropsWithoutRef<'textarea'>, 'size'>)
 
 export function TextField({
   size = 'medium',
   state = 'default',
   tint = 'primary',
   mono = false,
+  multiline,
   className,
   ...props
 }: TextFieldProps) {
-  return (
-    <input
-      aria-invalid={state === 'error' || undefined}
-      data-mono={mono}
-      data-size={size}
-      data-tint={tintFor(state, tint)}
-      className={cx('dz-text-field', className)}
-      {...props}
-    />
-  )
-}
+  const shared = {
+    'aria-invalid': state === 'error' || undefined,
+    'data-mono': mono,
+    'data-size': size,
+    'data-tint': tintFor(state, tint),
+    className: cx('dz-text-field', className),
+  }
 
-export interface TextareaProps
-  extends ComponentPropsWithoutRef<'textarea'>, ControlBase {}
-
-export function Textarea({
-  size = 'medium',
-  state = 'default',
-  tint = 'primary',
-  mono = false,
-  className,
-  ...props
-}: TextareaProps) {
-  return (
+  return multiline ? (
     <textarea
-      aria-invalid={state === 'error' || undefined}
-      data-mono={mono}
-      data-size={size}
-      data-tint={tintFor(state, tint)}
-      className={cx('dz-textarea', className)}
-      {...props}
+      data-multiline
+      {...shared}
+      {...(props as ComponentPropsWithoutRef<'textarea'>)}
     />
+  ) : (
+    <input {...shared} {...(props as ComponentPropsWithoutRef<'input'>)} />
   )
 }
 
 // `size` on a native select is the number of visible rows, so the control's
-// own size axis has to displace it — same as on an input.
+// own size axis has to displace it — same as on a text field.
 export interface SelectProps
   extends Omit<ComponentPropsWithoutRef<'select'>, 'size'>, ControlBase {}
 
@@ -102,8 +102,8 @@ export interface FieldValueProps
   extends ComponentPropsWithoutRef<'div'>, Pick<ControlBase, 'size' | 'mono'> {}
 
 /**
- * A value in the shape of an input, for a row that reports rather than edits.
- * Not a disabled input: nothing here was ever editable, so nothing is greyed
+ * A value in the shape of a field, for a row that reports rather than edits.
+ * Not a disabled field: nothing here was ever editable, so nothing is greyed
  * out to say it stopped being.
  */
 export function FieldValue({

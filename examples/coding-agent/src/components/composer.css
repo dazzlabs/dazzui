@@ -34,12 +34,13 @@
 }
 
 /*
- * Two selectors deep on purpose: this has to outrank `.dz-textarea` whichever
- * order the two stylesheets happen to land in. Everything it takes away is
- * given back by the box above.
+ * One selector deeper than the library's own `[data-multiline]` box, so this
+ * outranks it on specificity rather than on which of the two stylesheets
+ * happens to land last. Everything it takes away is given back by the box
+ * above.
  */
-.ca-composer .ca-composer__input,
-.ca-composer .ca-composer__input:focus {
+.ca-composer .ca-composer__input[data-multiline],
+.ca-composer .ca-composer__input[data-multiline]:focus {
   min-height: var(--spacing-16);
   padding: var(--spacing-3);
   background-color: transparent;

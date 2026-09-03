@@ -7,8 +7,8 @@ import {
   Icon,
   Progress,
   SectionLabel,
-  Textarea,
   Switch,
+  TextField,
 } from '@dazzlabs/dazzui-react'
 import { BranchGlyph } from '../data/icons'
 import type { Issue, Project, Pull, View } from '../lib/project'
@@ -235,7 +235,8 @@ function CommitPanel({
         }
         label="Message"
       >
-        <Textarea
+        <TextField
+          multiline
           placeholder="Say what changed, and why"
           size="small"
           value={message}
