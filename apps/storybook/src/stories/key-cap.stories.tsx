@@ -172,14 +172,8 @@ export const InAMenu: Story = {
   render: () => (
     <Menu
       align="start"
-      trigger={({ open, onClick }) => (
-        <Button
-          aria-expanded={open}
-          aria-haspopup="menu"
-          tint="neutral"
-          variant={open ? 'filled' : 'normal'}
-          onClick={onClick}
-        >
+      trigger={({ open }) => (
+        <Button tint="neutral" variant={open ? 'filled' : 'normal'}>
           Options
         </Button>
       )}

@@ -16,6 +16,7 @@
      floats, not a panel that hovers at the window's own elevation. */
   border-radius: var(--frame-window-radius);
   box-shadow: var(--shadow-lg);
+  outline: 0;
 }
 
 .dz-dialog[data-tone='danger'] {
@@ -35,7 +36,11 @@
   border-bottom: var(--stroke-hairline) solid var(--color-border);
 }
 
+/* The title and the subtitle are the sheet's accessible name and description,
+   so they are elements Base UI knows about rather than plain spans — hence
+   the reset: they arrive as an `<h2>` and a `<p>`. */
 .dz-dialog__title {
+  margin: 0;
   font-family: var(--label-strong-font-family);
   font-size: var(--title-small-font-size);
   font-weight: var(--label-strong-font-weight);
@@ -44,6 +49,7 @@
 }
 
 .dz-dialog__subtitle {
+  margin: 0;
   color: var(--color-content-subtle);
   font-family: var(--caption-small-font-family);
   font-size: var(--caption-small-font-size);
@@ -79,15 +85,62 @@
 /*
  * Fixed rather than absolute: a modal covers the viewport. A scrim that has to
  * stay inside a frame instead — a sheet over one window of a desktop shell —
- * is that shell's job, and the shell components are not in the system yet.
+ * passes that window as the dialog's `container`, and the two layers below
+ * take its bounds rather than the viewport's.
+ *
+ * The scrim and the viewport are separate layers because they do separate
+ * jobs: one dims, the other centres. Stacking the sheet inside the scrim
+ * would put the dimming underneath it, and a press meant for the scrim would
+ * land on the padding around the sheet instead.
  */
-.dz-dialog-scrim {
+.dz-dialog-scrim,
+.dz-dialog-viewport {
   position: fixed;
   inset: 0;
   z-index: 10;
+}
+
+.dz-dialog-scrim {
+  background-color: var(--dialog-scrim);
+}
+
+.dz-dialog-viewport {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--spacing-6);
-  background-color: var(--dialog-scrim);
+  /* The layer is only the frame the sheet is centred in; the sheet itself
+     takes the pointer back. */
+  pointer-events: none;
+}
+
+.dz-dialog-viewport > * {
+  pointer-events: auto;
+}
+
+.dz-dialog-viewport[hidden] {
+  display: none;
+}
+
+/* The sheet arrives and leaves; the scrim only fades. Both are the system's
+   own curve, and base.css turns them off under reduced motion. */
+.dz-dialog {
+  transition:
+    opacity var(--motion-duration) var(--motion-easing),
+    transform var(--motion-duration) var(--motion-easing);
+}
+
+.dz-dialog[data-starting-style],
+.dz-dialog[data-ending-style] {
+  opacity: 0;
+  transform: scale(0.97);
+}
+
+.dz-dialog-scrim {
+  transition: opacity var(--motion-duration) var(--motion-easing);
+}
+
+.dz-dialog-scrim[data-starting-style],
+.dz-dialog-scrim[data-ending-style] {
+  opacity: 0;
 }

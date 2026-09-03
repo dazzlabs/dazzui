@@ -5,6 +5,10 @@
  * (`labelQuiet`, one ink step back) and takes the full ink and label weight
  * only when its box is checked. A checked row you cannot pick out of the
  * list by its label alone is not signalling.
+ *
+ * The states are Base UI's attributes — `data-checked`, `data-disabled` —
+ * rather than `aria-checked` and `:disabled`: the root is a focusable span
+ * over a hidden input, so the pseudo-class would never match.
  */
 .dz-checkbox,
 .dz-radio {
@@ -15,16 +19,17 @@
   background: none;
   text-align: left;
   cursor: pointer;
+  user-select: none;
   color: var(--color-content-muted);
 }
 
-.dz-checkbox[aria-checked='true'],
-.dz-radio[aria-checked='true'] {
+.dz-checkbox[data-checked],
+.dz-radio[data-checked] {
   color: var(--color-content);
 }
 
-.dz-checkbox:disabled,
-.dz-radio:disabled {
+.dz-checkbox[data-disabled],
+.dz-radio[data-disabled] {
   cursor: not-allowed;
   opacity: 0.6;
 }
@@ -46,7 +51,7 @@
   background-color: transparent;
 }
 
-.dz-checkbox[aria-checked='true'] .dz-checkbox__box {
+.dz-checkbox[data-checked] .dz-checkbox__box {
   background-color: var(--control-color-filled-surface-normal);
   border-color: var(--control-color-filled-surface-normal);
   color: var(--control-color-filled-content-normal);
@@ -56,6 +61,10 @@
 .dz-checkbox__box {
   font-size: var(--label-small-font-size);
   line-height: 1;
+}
+
+.dz-checkbox__mark {
+  display: flex;
 }
 
 .dz-checkbox__label,
@@ -84,7 +93,7 @@
   line-height: var(--label-quiet-line-height);
 }
 
-.dz-checkbox[aria-checked='true'] {
+.dz-checkbox[data-checked] {
   font-weight: var(--label-medium-font-weight);
 }
 

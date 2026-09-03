@@ -61,10 +61,14 @@ export const Overview: Story = {
               <Badge tint="success">Connected</Badge>
             </PreferenceRow>
             <PreferenceRow title="With a select">
-              <Select defaultValue="weekly" size="small">
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-              </Select>
+              <Select
+                defaultValue="weekly"
+                options={[
+                  { value: 'daily', label: 'Daily' },
+                  { value: 'weekly', label: 'Weekly' },
+                ]}
+                size="small"
+              />
             </PreferenceRow>
             <PreferenceRow
               title="Opens something"
@@ -207,11 +211,15 @@ export const Controls: Story = {
             />
           </PreferenceRow>
           <PreferenceRow title="Check for updates">
-            <Select defaultValue="weekly" size="small">
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-              <option value="never">Never</option>
-            </Select>
+            <Select
+              defaultValue="weekly"
+              options={[
+                { value: 'daily', label: 'Daily' },
+                { value: 'weekly', label: 'Weekly' },
+                { value: 'never', label: 'Never' },
+              ]}
+              size="small"
+            />
           </PreferenceRow>
           <PreferenceRow title="Default target language">
             <TextField defaultValue="Chinese" size="small" />

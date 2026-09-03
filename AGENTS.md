@@ -13,8 +13,13 @@ The DazzUI design system, as a pnpm workspace:
   imports it from.
 - `packages/ui_react` (`@dazzlabs/dazzui-react`) — the React implementation.
   `src/generated/` holds what `ds` wrote and is committed, so the package
-  builds and ships on its own. Further platform packages sit beside it as they
-  land (`ui_swiftui`), which is why the directory carries the platform in its
+  builds and ships on its own. Its behaviour comes from
+  [Base UI](https://base-ui.com) — headless primitives that own the parts a
+  design system has no opinion about, and that a hand-rolled component gets
+  wrong for years: focus traps, roving arrow keys, type-ahead, collision-aware
+  positioning, the hidden inputs a form needs. This package is what is drawn
+  on top. Further platform packages sit beside it as they land
+  (`ui_swiftui`), which is why the directory carries the platform in its
   name.
 - `packages/ui_flutter` (`dazzui`) — the Flutter implementation,
   migrated from `dazzui-flutter`. A plain Dart/Flutter package, invisible to pnpm:
@@ -175,8 +180,13 @@ platform package reads, and they are committed.
 
 `vite build` bundles `packages/ui_react/src/` into that package's own `dist/`:
 
-- `index.js` + `*.d.ts` — the components; React stays external
+- `index.js` + `*.d.ts` — the components; React and Base UI stay external
 - `components.css` — every component stylesheet, via the `styles.ts` entry
+
+Base UI is external for the reason React is, and one more: it holds the open
+popup, the toast queue and the field's wiring in React context, so a second
+copy in the bundle would be a second set of contexts and a provider a
+consumer's own components could not see.
 
 `src/styles/components.css` is the registry, the way `terrazzo.config.mjs` is
 for tokens: a component's stylesheet only ships once it is imported there. It
@@ -314,6 +324,21 @@ computed properties there, a `ThemeSeed` with `..STUDIO_LIGHT_SEED` and a
 
 ## Component conventions
 
+- **Behaviour is Base UI's, drawing is ours.** A component that has state a
+  reader can get wrong — a popup that has to close, a group the arrow keys
+  move through, a control that has to reach a form — is a thin skin over the
+  matching Base UI part rather than a re-implementation. Reach for a plain
+  element only where there is genuinely nothing to get right (Badge, Card,
+  Divider's tone). What this buys is not shorter files: it is the focus trap,
+  the type-ahead, the `aria-*` wiring and the collision handling that a
+  hand-rolled version never quite finishes.
+- **State comes off Base UI's attributes, not the DOM's pseudo-classes.**
+  A checkbox root is a focusable `span` over a hidden input, so `:checked` and
+  `:disabled` never match — the CSS reads `[data-checked]` and
+  `[data-disabled]`. A popup row reads `[data-highlighted]` rather than
+  `:hover`, which is what makes the keyboard and the pointer land on the same
+  state. `[data-*]` was already the convention for variants; this is the same
+  rule reaching the states.
 - One folder-level file pair per component: `src/components/<name>.tsx` and
   `<name>.css`, both listed in their registries (`components/index.ts`,
   `styles/components.css`).
@@ -339,6 +364,12 @@ computed properties there, a `ThemeSeed` with `..STUDIO_LIGHT_SEED` and a
   `badge.css` is that model.
 - Variants are `data-*` attributes, not classes, so the CSS selector names the
   axis (`[data-variant='tinted']`) and consumers can see the state in the DOM.
+- **The floating sheet is one drawing, in `popup.css`.** A Menu's panel, a
+  Select's list and a Tooltip all wear it, and `menu.css` and the select rules
+  in `text-field.css` add only what is genuinely theirs — which check
+  attribute reveals the tick column. Gaps between a popup and its trigger are
+  padding on the positioner rather than an offset passed in code, so the gap
+  is a token and the collision logic counts it when the panel flips.
 - CSS cannot index a ramp by a variable, so the shade/alpha recipes are
   resolved in the token build instead — `plugins/control.mjs` emits both the
   `[data-tint]` ramp bindings (`--tint-50` … `--tint-950`) and a finished color

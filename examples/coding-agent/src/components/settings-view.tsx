@@ -10,8 +10,8 @@ import {
   SegmentedControl,
   Select,
   ShortcutRecorder,
-  TextField,
   Switch,
+  TextField,
 } from '@dazzlabs/dazzui-react'
 
 import { FolderGlyph } from '../data/icons'
@@ -76,16 +76,11 @@ function General({
           <Select
             aria-label="Theme"
             className="ca-settings__select"
+            options={THEMES}
             size="small"
             value={settings.theme}
-            onChange={event => onThemeChange(event.target.value as Theme)}
-          >
-            {THEMES.map(theme => (
-              <option key={theme.value} value={theme.value}>
-                {theme.label}
-              </option>
-            ))}
-          </Select>
+            onValueChange={onThemeChange}
+          />
         </PreferenceRow>
       </PreferenceSection>
 
@@ -125,16 +120,11 @@ function Agent({
           <Select
             aria-label="Default model"
             className="ca-settings__select"
+            options={MODELS.map(model => ({ value: model, label: model }))}
             size="small"
             value={settings.model}
-            onChange={event => update({ model: event.target.value })}
-          >
-            {MODELS.map(model => (
-              <option key={model} value={model}>
-                {model}
-              </option>
-            ))}
-          </Select>
+            onValueChange={model => update({ model })}
+          />
         </PreferenceRow>
 
         <PreferenceRow
@@ -165,16 +155,14 @@ function Agent({
           <Select
             aria-label="Tools in flight"
             className="ca-settings__select"
+            options={PARALLEL.map(count => ({
+              value: String(count),
+              label: String(count),
+            }))}
             size="small"
             value={String(settings.parallel)}
-            onChange={event => update({ parallel: Number(event.target.value) })}
-          >
-            {PARALLEL.map(count => (
-              <option key={count} value={count}>
-                {count}
-              </option>
-            ))}
-          </Select>
+            onValueChange={parallel => update({ parallel: Number(parallel) })}
+          />
         </PreferenceRow>
 
         <PreferenceRow
@@ -252,10 +240,10 @@ function Permissions({
           label="Commands that never ask"
         >
           <TextField
-            multiline
             className="ca-settings__allowlist"
             disabled={!settings.runCommands}
             mono
+            multiline
             size="small"
             value={settings.allowlist}
             onChange={event => update({ allowlist: event.target.value })}

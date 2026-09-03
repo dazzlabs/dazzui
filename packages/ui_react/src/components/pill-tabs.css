@@ -7,8 +7,15 @@
  * One size, drawn tight: 24px tall on 11px type. The active pill jumps two
  * weight steps (600 → 700) as well as filling, because at this size the fill
  * alone can vanish under a thumb.
+ *
+ * The root is Base UI's `Tabs.Root`, which is where a caller's panels would
+ * hang if it rendered any; the list inside it is the row of pills.
  */
 .dz-pill-tabs {
+  display: flex;
+}
+
+.dz-pill-tabs__list {
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
@@ -35,18 +42,18 @@
     color var(--motion-duration) var(--motion-easing);
 }
 
-.dz-pill-tabs__tab:hover:not(:disabled):not([aria-selected='true']) {
+.dz-pill-tabs__tab:hover:not([data-disabled]):not([data-active]) {
   background-color: var(--color-surface-sunken);
   color: var(--color-content);
 }
 
-.dz-pill-tabs__tab[aria-selected='true'] {
+.dz-pill-tabs__tab[data-active] {
   background-color: var(--control-color-filled-surface-normal);
   color: var(--control-color-filled-content-normal);
   font-weight: var(--label-strong-font-weight);
 }
 
-.dz-pill-tabs__tab:disabled {
+.dz-pill-tabs__tab[data-disabled] {
   cursor: not-allowed;
   opacity: 0.5;
 }

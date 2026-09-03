@@ -18,12 +18,19 @@ export default defineConfig({
       cssFileName: 'components',
     },
     cssCodeSplit: false,
-    // React and the icon set stay external so the host app owns a single copy
-    // of each. Both are declared — React as a peer, the icons as a dependency
-    // — so a consumer has them either way, and bundling either here would
-    // ship a second copy to anyone already using it.
+    // React, the icon set and Base UI stay external so the host app owns a
+    // single copy of each. All three are declared — React as a peer, the
+    // other two as dependencies — so a consumer has them either way, and
+    // bundling any of them here would ship a second copy to anyone already
+    // using it. Base UI in particular holds the popup and toast state in
+    // React context, and two copies would be two contexts.
     rollupOptions: {
-      external: ['react', 'react/jsx-runtime', '@fluentui/react-icons'],
+      external: [
+        'react',
+        'react/jsx-runtime',
+        '@fluentui/react-icons',
+        /^@base-ui\//,
+      ],
     },
     sourcemap: true,
   },

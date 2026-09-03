@@ -1,4 +1,5 @@
-import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import { Tabs } from '@base-ui/react/tabs'
+import type { ReactNode } from 'react'
 
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
@@ -12,46 +13,58 @@ export interface PillTabItem<T extends string = string> {
 }
 
 export interface PillTabsProps<T extends string = string> extends Omit<
-  ComponentPropsWithoutRef<'div'>,
-  'onChange' | 'children'
+  Tabs.Root.Props,
+  | 'className'
+  | 'render'
+  | 'children'
+  | 'value'
+  | 'defaultValue'
+  | 'onValueChange'
 > {
   items: readonly PillTabItem<T>[]
-  value: T
+  value?: T
+  defaultValue?: T
   onValueChange?: (value: T) => void
   tint?: Tint
+  className?: string
 }
 
+/**
+ * The tab list alone. A caller that has panels to switch owns them: the
+ * pills say which is showing, and the content is whatever the caller renders
+ * for `value`.
+ */
 export function PillTabs<T extends string = string>({
   items,
-  value,
   onValueChange,
   tint = 'primary',
   className,
   ...props
 }: PillTabsProps<T>) {
   return (
-    <div
-      role="tablist"
+    <Tabs.Root
       data-tint={tint}
       className={cx('dz-pill-tabs', className)}
+      onValueChange={
+        onValueChange ? value => onValueChange(value as T) : undefined
+      }
       {...props}
     >
-      {items.map(item => (
-        <button
-          key={item.value}
-          type="button"
-          role="tab"
-          aria-selected={item.value === value}
-          disabled={item.disabled}
-          className="dz-pill-tabs__tab"
-          onClick={() => onValueChange?.(item.value)}
-        >
-          {item.label}
-          {item.count === undefined ? null : (
-            <span className="dz-pill-tabs__count">{item.count}</span>
-          )}
-        </button>
-      ))}
-    </div>
+      <Tabs.List className="dz-pill-tabs__list">
+        {items.map(item => (
+          <Tabs.Tab
+            key={item.value}
+            value={item.value}
+            disabled={item.disabled}
+            className="dz-pill-tabs__tab"
+          >
+            {item.label}
+            {item.count === undefined ? null : (
+              <span className="dz-pill-tabs__count">{item.count}</span>
+            )}
+          </Tabs.Tab>
+        ))}
+      </Tabs.List>
+    </Tabs.Root>
   )
 }

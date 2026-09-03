@@ -39,6 +39,11 @@
 @import '../components/icon.css';
 @import '../components/icon-button.css';
 @import '../components/key-cap.css';
+/* Out of order, and ahead of the three sheets that build on it: the floating
+   panel a Menu, a Select's list and a Tooltip all wear. */
+@import '../components/popup.css';
+/* After popup.css: the menu's panel and rows are that shared sheet, and only
+   its checked row is its own. */
 @import '../components/menu.css';
 @import '../components/nav-item.css';
 @import '../components/option-card.css';
@@ -59,3 +64,4 @@
 @import '../components/table.css';
 @import '../components/text-field.css';
 @import '../components/toast.css';
+@import '../components/tooltip.css';

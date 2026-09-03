@@ -1,9 +1,8 @@
 import {
-  Button,
   Icon,
-  Toast,
   ToastViewport,
   type Tint,
+  useToast,
 } from '@dazzlabs/dazzui-react'
 import { CheckmarkCircle20Regular } from '@fluentui/react-icons'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -34,9 +33,6 @@ import {
 import { applyTheme, type Theme } from './lib/theme'
 import { nextZoom, useViewport } from './lib/viewport'
 
-/** How long a toast stays up. Long enough to read, short enough to ignore. */
-const TOAST_MS = 4000
-
 export function App() {
   const doc = useDocument(DOCUMENT)
   const view = useViewport()
@@ -48,7 +44,7 @@ export function App() {
   const [snapping, setSnapping] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [exporting, setExporting] = useState(false)
-  const [toast, setToast] = useState('')
+  const toast = useToast()
 
   const { page, pageId, selection, selected } = doc
   const { fit, size, zoomBy, zoomTo } = view
@@ -65,12 +61,6 @@ export function App() {
     framed.current = pageId
     fit(union(page.shapes))
   }, [fit, page.shapes, pageId, size.width])
-
-  useEffect(() => {
-    if (!toast) return
-    const timer = setTimeout(() => setToast(''), TOAST_MS)
-    return () => clearTimeout(timer)
-  }, [toast])
 
   const chooseTheme = (next: Theme) => {
     applyTheme(next)
@@ -293,27 +283,16 @@ export function App() {
           onClose={() => setExporting(false)}
           onExport={summary => {
             setExporting(false)
-            setToast(summary)
+            toast.add({
+              title: `${summary} — nothing was written.`,
+              tint: 'success',
+              icon: <Icon icon={CheckmarkCircle20Regular} size={16} />,
+            })
           }}
         />
       ) : null}
 
-      <ToastViewport>
-        {toast ? (
-          <Toast
-            action={
-              <Button size="tiny" variant="plain" onClick={() => setToast('')}>
-                Fine
-              </Button>
-            }
-            icon={<Icon icon={CheckmarkCircle20Regular} size={16} />}
-            tint="success"
-            onDismiss={() => setToast('')}
-          >
-            {toast} — nothing was written.
-          </Toast>
-        ) : null}
-      </ToastViewport>
+      <ToastViewport />
     </div>
   )
 }

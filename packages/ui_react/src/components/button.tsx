@@ -1,4 +1,4 @@
-import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
@@ -19,7 +19,7 @@ export type ButtonVariant =
   | 'outlined'
   | 'plain'
 
-export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
+export interface ButtonProps extends ComponentProps<'button'> {
   size?: ButtonSize
   variant?: ButtonVariant
   tint?: Tint

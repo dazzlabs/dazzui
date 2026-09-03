@@ -37,6 +37,33 @@ const QUALITY = [
   { value: 'custom', label: 'Custom (needs a paid plan)', disabled: true },
 ]
 
+/**
+ * A radio is only ever checked by the group it sits in, so every specimen
+ * below is a group with its selection already made rather than a loose radio
+ * told to look selected.
+ */
+function Pair({
+  size,
+  tint,
+}: {
+  size?: (typeof SIZES)[number]
+  tint?: (typeof TINTS)[number]
+}) {
+  return (
+    <RadioGroup
+      aria-label="Selected and not"
+      defaultValue="on"
+      options={[
+        { value: 'on', label: 'Selected' },
+        { value: 'off', label: 'Not selected' },
+      ]}
+      size={size}
+      tint={tint}
+      style={{ flexDirection: 'row', gap: 'var(--spacing-4)' }}
+    />
+  )
+}
+
 /** The documented page. Every story after this one is the component alone. */
 export const Overview: Story = {
   parameters: { layout: 'fullscreen' },
@@ -47,12 +74,12 @@ export const Overview: Story = {
     >
       <Section
         title="A group"
-        description="`RadioGroup` takes the options and owns the selection, so a caller never wires the rows to each other. The label reports the state alongside the ring: selected takes the full ink and label weight, unselected rests one step back."
+        description="`RadioGroup` takes the options and owns the selection, so a caller never wires the rows to each other — and a radio outside a group is never checked, because the group is what holds the value. The arrow keys move between the rows and select as they go, which is what a radio group does everywhere else on the platform. The label reports the state alongside the ring: selected takes the full ink and label weight, unselected rests one step back."
       >
         <RadioGroup
           aria-label="Translation quality"
+          defaultValue="balanced"
           options={QUALITY}
-          value="balanced"
         />
       </Section>
 
@@ -63,15 +90,7 @@ export const Overview: Story = {
         <Stack>
           {SIZES.map(size => (
             <Specimen key={size} label={size}>
-              <Radio checked size={size}>
-                Selected
-              </Radio>
-              <Radio checked={false} size={size}>
-                Not selected
-              </Radio>
-              <Radio checked disabled size={size}>
-                Disabled
-              </Radio>
+              <Pair size={size} />
             </Specimen>
           ))}
         </Stack>
@@ -82,13 +101,11 @@ export const Overview: Story = {
         description="The ring keeps its outline and the dot carries the ramp, so a tinted radio still reads as a ring with something in it rather than as a filled square."
       >
         <Stack>
-          <Specimen label="selected">
-            {TINTS.map(tint => (
-              <Radio key={tint} checked tint={tint}>
-                {tint}
-              </Radio>
-            ))}
-          </Specimen>
+          {TINTS.map(tint => (
+            <Specimen key={tint} label={tint}>
+              <Pair tint={tint} />
+            </Specimen>
+          ))}
         </Stack>
       </Section>
 
@@ -100,27 +117,6 @@ export const Overview: Story = {
         />
       </Section>
     </Page>
-  ),
-}
-
-export const Selected: Story = {
-  render: () => <Radio checked>Balanced</Radio>,
-}
-
-export const Unselected: Story = {
-  render: () => <Radio checked={false}>Balanced</Radio>,
-}
-
-export const Disabled: Story = {
-  render: () => (
-    <Col gap="var(--spacing-2)">
-      <Radio checked disabled>
-        Custom
-      </Radio>
-      <Radio checked={false} disabled>
-        Custom
-      </Radio>
-    </Col>
   ),
 }
 
@@ -138,18 +134,24 @@ export const AGroup: Story = {
   },
 }
 
+export const Disabled: Story = {
+  render: () => (
+    <RadioGroup
+      aria-label="Scope"
+      defaultValue="project"
+      options={[
+        { value: 'project', label: 'This project only' },
+        { value: 'org', label: 'The whole organisation', disabled: true },
+      ]}
+    />
+  ),
+}
+
 export const Sizes: Story = {
   render: () => (
-    <Col gap="var(--spacing-2)">
+    <Col gap="var(--spacing-4)">
       {SIZES.map(size => (
-        <Row key={size}>
-          <Radio checked size={size}>
-            Selected
-          </Radio>
-          <Radio checked={false} size={size}>
-            Not selected
-          </Radio>
-        </Row>
+        <Pair key={size} size={size} />
       ))}
     </Col>
   ),
@@ -157,21 +159,10 @@ export const Sizes: Story = {
 
 export const Tints: Story = {
   render: () => (
-    <Col gap="var(--spacing-2)">
-      <Row>
-        {TINTS.map(tint => (
-          <Radio key={tint} checked tint={tint}>
-            {tint}
-          </Radio>
-        ))}
-      </Row>
-      <Row>
-        {TINTS.map(tint => (
-          <Radio key={tint} checked={false} tint={tint}>
-            {tint}
-          </Radio>
-        ))}
-      </Row>
+    <Col gap="var(--spacing-4)">
+      {TINTS.map(tint => (
+        <Pair key={tint} tint={tint} />
+      ))}
     </Col>
   ),
 }
@@ -183,18 +174,18 @@ export const AgainstACheckbox: Story = {
         <SectionLabel>Quality</SectionLabel>
         <RadioGroup
           aria-label="Quality"
+          defaultValue="fast"
           options={[
             { value: 'fast', label: 'Fast' },
             { value: 'careful', label: 'Careful' },
           ]}
-          value="fast"
         />
       </div>
       <div>
         <SectionLabel>Include</SectionLabel>
         <Col gap="var(--spacing-2)">
-          <Checkbox checked>Reviewer notes</Checkbox>
-          <Checkbox checked={false}>Embedded images</Checkbox>
+          <Checkbox defaultChecked>Reviewer notes</Checkbox>
+          <Checkbox>Embedded images</Checkbox>
         </Col>
       </div>
     </Row>

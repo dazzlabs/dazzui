@@ -18,7 +18,7 @@
  */
 .dz-text-field,
 .dz-field-value,
-.dz-select__control {
+.dz-select {
   width: 100%;
   border: var(--stroke-hairline) solid var(--color-border-strong);
   background-color: var(--color-surface-muted);
@@ -34,22 +34,25 @@
   color: var(--color-content-faint);
 }
 
+/* The select is a button, so it lifts while its list is open as well as while
+   it holds the focus — the trigger of an open popup is not idle. */
 .dz-text-field:focus,
-.dz-select__control:focus {
+.dz-select:focus-visible,
+.dz-select[data-popup-open] {
   border-color: var(--tint-600);
   background-color: var(--color-surface);
   box-shadow: 0 0 0 var(--focus-width) var(--focus-glow);
 }
 
 .dz-text-field[aria-invalid='true'],
-.dz-select__control[aria-invalid='true'] {
+.dz-select[aria-invalid='true'] {
   border-color: var(--tint-600);
   background-color: var(--tint-50);
   color: var(--tint-800);
 }
 
 .dz-text-field:disabled,
-.dz-select__control:disabled {
+.dz-select[data-disabled] {
   cursor: not-allowed;
   background-color: var(--control-color-normal-surface-disabled);
   color: var(--control-color-normal-content-disabled);
@@ -57,40 +60,60 @@
 
 /* Set the mono face where the value is a key, an ID, or a URL. */
 .dz-text-field[data-mono='true'],
-.dz-field-value[data-mono='true'] {
+.dz-field-value[data-mono='true'],
+.dz-select[data-mono='true'] {
   font-family: var(--base-font-code);
 }
 
-/* The native arrow ignores padding, so the control draws its own. */
+/* The trigger is a button laid out as a field: the value takes the room and
+   the chevron sits at the trailing edge. */
 .dz-select {
-  position: relative;
   display: inline-flex;
-  width: 100%;
+  align-items: center;
+  gap: var(--spacing-2);
+  cursor: pointer;
+  text-align: left;
 }
 
-.dz-select__control {
-  appearance: none;
+.dz-select__value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Nothing chosen yet reads as a prompt rather than as a value. */
+.dz-select__value[data-placeholder] {
+  color: var(--color-content-faint);
 }
 
 .dz-select__chevron {
-  position: absolute;
-  inset-inline-end: var(--spacing-2-5);
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
+  display: flex;
+  flex-shrink: 0;
   color: var(--color-content-subtle);
 }
 
+/* The list is the shared popup sheet (popup.css); what is the select's own is
+   the checkmark on the chosen row, and a list at least as wide as the trigger
+   it dropped from. */
+.dz-select__popup {
+  min-width: var(--anchor-width);
+}
+
+.dz-select__popup .dz-popup__item[data-selected] .dz-popup__check {
+  visibility: visible;
+}
+
 /* Sizes -------------------------------------------------------------------
- * Geometry comes off the shared size profile that `[data-size]` binds — the
- * Select's wrapper carries the attribute, and its control inherits the bound
- * variables from it. Two deliberate overrides: entered text is body-weight,
- * not label-weight — a search query typed in semibold reads as shouting —
- * and the box takes the regular control corner, one step above the buttons'.
+ * Geometry comes off the shared size profile that `[data-size]` binds. Two
+ * deliberate overrides: entered text is body-weight, not label-weight — a
+ * search query typed in semibold reads as shouting — and the box takes the
+ * regular control corner, one step above the buttons'.
  */
 .dz-text-field,
 .dz-field-value,
-.dz-select__control {
+.dz-select {
   padding-block: var(--control-padding-block);
   padding-inline: var(--spacing-3);
   border-radius: var(--radius-medium);
@@ -124,11 +147,6 @@
    then given it back. */
 .dz-text-field:not([data-multiline]),
 .dz-field-value,
-.dz-select__control {
+.dz-select {
   height: var(--control-size);
-}
-
-/* The chevron needs room the text must not run into. */
-.dz-select .dz-select__control {
-  padding-inline-end: var(--spacing-7);
 }

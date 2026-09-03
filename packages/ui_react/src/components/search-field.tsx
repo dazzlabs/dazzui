@@ -1,3 +1,4 @@
+import { Input } from '@base-ui/react/input'
 import { Dismiss12Regular, Search16Regular } from '@fluentui/react-icons'
 import { type ReactNode, useEffect, useRef } from 'react'
 
@@ -50,14 +51,14 @@ export function SearchField({
       className={cx('dz-search-field', className)}
     >
       <Search16Regular aria-hidden className="dz-search-field__glyph" />
-      <input
+      <Input
         ref={input}
         type="search"
         value={value}
         aria-label={ariaLabel ?? placeholder}
         placeholder={placeholder}
         className="dz-search-field__input"
-        onChange={event => onValueChange(event.target.value)}
+        onValueChange={onValueChange}
         onKeyDown={event => {
           if (event.key !== 'Escape') return
           event.preventDefault()

@@ -1,4 +1,6 @@
-import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import { Toggle } from '@base-ui/react/toggle'
+import { ToggleGroup } from '@base-ui/react/toggle-group'
+import type { ReactNode } from 'react'
 
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
@@ -12,8 +14,14 @@ export interface SegmentedItem<T extends string = string> {
 }
 
 export interface SegmentedControlProps<T extends string = string> extends Omit<
-  ComponentPropsWithoutRef<'div'>,
-  'onChange' | 'children'
+  ToggleGroup.Props,
+  | 'className'
+  | 'render'
+  | 'children'
+  | 'value'
+  | 'defaultValue'
+  | 'onValueChange'
+  | 'multiple'
 > {
   items: readonly SegmentedItem<T>[]
   value: T
@@ -28,8 +36,14 @@ export interface SegmentedControlProps<T extends string = string> extends Omit<
   activeStyle?: 'raised' | 'filled'
   /** Fill the available width, splitting it evenly between the segments. */
   stretch?: boolean
+  className?: string
 }
 
+/**
+ * A single-select toggle group that always has a selection: pressing the
+ * active segment again is ignored rather than clearing it, because a
+ * segmented control is a choice between its segments, not a switch.
+ */
 export function SegmentedControl<T extends string = string>({
   items,
   value,
@@ -42,8 +56,12 @@ export function SegmentedControl<T extends string = string>({
   ...props
 }: SegmentedControlProps<T>) {
   return (
-    <div
-      role="radiogroup"
+    <ToggleGroup
+      value={[value]}
+      onValueChange={next => {
+        const [selected] = next as T[]
+        if (selected !== undefined) onValueChange?.(selected)
+      }}
       data-active-style={activeStyle}
       data-size={size}
       data-stretch={stretch}
@@ -52,18 +70,15 @@ export function SegmentedControl<T extends string = string>({
       {...props}
     >
       {items.map(item => (
-        <button
+        <Toggle
           key={item.value}
-          type="button"
-          role="radio"
-          aria-checked={item.value === value}
+          value={item.value}
           disabled={item.disabled}
           className="dz-segmented-control__segment"
-          onClick={() => onValueChange?.(item.value)}
         >
           {item.label}
-        </button>
+        </Toggle>
       ))}
-    </div>
+    </ToggleGroup>
   )
 }

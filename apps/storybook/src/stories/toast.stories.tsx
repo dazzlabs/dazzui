@@ -1,90 +1,143 @@
 import {
+  ActionBar,
   Button,
   Spinner,
   TINTS,
-  Toast,
+  type Tint,
+  ToastProvider,
   ToastViewport,
+  useToast,
 } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useState } from 'react'
+import type { ReactNode } from 'react'
 
-import {
-  Page,
-  Section,
-  Specimen,
-  Stack,
-  TokenTable,
-} from '../components/gallery'
-import { Col } from '../components/stage'
+import { Page, Section, TokenTable } from '../components/gallery'
 import { componentTokens } from '../lib/tokens'
 
-const meta: Meta<typeof Toast> = {
+const meta: Meta<typeof ToastViewport> = {
   title: 'Components/Toast',
-  component: Toast,
-  parameters: { layout: 'centered' },
+  component: ToastViewport,
+  parameters: { layout: 'fullscreen' },
 }
 
 export default meta
 type Story = StoryObj<typeof meta>
 
+/**
+ * A toast has no resting state to draw: it exists because something happened,
+ * and it goes on its own. So every story is a button that makes one, and the
+ * viewport that catches it — which is also how a host uses it.
+ */
+function Stage({
+  children,
+  placement,
+}: {
+  children: ReactNode
+  placement?: 'top' | 'bottom'
+}) {
+  return (
+    <ToastProvider>
+      {children}
+      <ToastViewport placement={placement} />
+    </ToastProvider>
+  )
+}
+
+function Buttons({
+  entries,
+}: {
+  entries: { label: string; make: () => void }[]
+}) {
+  return (
+    <ActionBar>
+      {entries.map(entry => (
+        <Button key={entry.label} onClick={entry.make}>
+          {entry.label}
+        </Button>
+      ))}
+    </ActionBar>
+  )
+}
+
+function ShapeButtons() {
+  const toast = useToast()
+  return (
+    <Buttons
+      entries={[
+        {
+          label: 'Plain',
+          make: () => toast.add({ title: 'Saved to Downloads' }),
+        },
+        {
+          label: 'Success',
+          make: () =>
+            toast.add({
+              title: 'Translation copied',
+              tint: 'success',
+              icon: '✓',
+            }),
+        },
+        {
+          label: 'In flight',
+          make: () =>
+            toast.add({
+              title: 'Uploading the glossary…',
+              tint: 'primary',
+              icon: <Spinner size="small" tint="primary" />,
+              timeout: 0,
+            }),
+        },
+        {
+          label: 'With an action',
+          make: () =>
+            toast.add({
+              title: 'Switched to the backup provider',
+              tint: 'warning',
+              icon: '!',
+              action: { label: 'Undo', onClick: () => {} },
+            }),
+        },
+        {
+          label: 'Failure',
+          make: () =>
+            toast.add({
+              title: 'The connection dropped',
+              tint: 'danger',
+              icon: '✕',
+              action: { label: 'Retry', onClick: () => {} },
+            }),
+        },
+      ]}
+    />
+  )
+}
+
 /** The documented page. Every story after this one is the component alone. */
 export const Overview: Story = {
-  parameters: { layout: 'fullscreen' },
   render: () => (
     <Page
       title="Toast"
-      description="A transient receipt for something that happened out of view. One line, no wrapping — anything needing a second sentence belongs in a Callout in the flow instead. Lifetime is the host's job; the system holds no queue, no timers, and no z-index of its own beyond the viewport. The contract worth keeping is: a few seconds for a plain notice, longer when it carries an action, and a failure stays until it is dismissed."
+      description="A transient receipt for something that happened out of view. One line, no wrapping — anything needing a second sentence belongs in a Callout in the flow instead. The queue is the component: `useToast().add()` from anywhere under a ToastProvider, and the viewport draws what is in it, keeps the timers, pauses them while the pointer is over the stack, and announces the message. The contract it holds to is a few seconds for a plain notice, longer when it carries an action, and a failure that stays until it is dismissed — which is what the default timeout works out per tint, so a caller rarely sets one."
     >
       <Section
         title="Shapes"
-        description="The leading slot takes a glyph or a Spinner for work still in flight; the trailing slot takes one control — undo, retry, open. `onDismiss` renders the close button and is called when it is pressed, so removing the toast stays the host's job."
+        description="The leading slot takes a glyph or a Spinner for work still in flight; the trailing slot takes one action, and pressing it closes the toast as well as doing the thing. A `danger` toast has no timeout and interrupts the screen reader, because a failure nobody saw is a failure that did not get reported."
       >
-        <Stack>
-          <Toast>Saved to Downloads</Toast>
-          <Toast tint="success" icon="✓">
-            Translation copied
-          </Toast>
-          <Toast tint="primary" icon={<Spinner size="small" tint="primary" />}>
-            Uploading the glossary…
-          </Toast>
-          <Toast
-            tint="warning"
-            icon="!"
-            action={
-              <Button size="small" tint="warning" variant="plain">
-                Undo
-              </Button>
-            }
-          >
-            Switched to the backup provider
-          </Toast>
-          <Toast tint="danger" icon="✕" onDismiss={() => {}}>
-            The connection dropped
-          </Toast>
-        </Stack>
+        <ShapeButtons />
       </Section>
 
       <Section
         title="Tints"
         description="Neutral by default, because most toasts report that something ordinary worked. Reach for a ramp where the outcome itself is the news — a failure, a fallback, a success that was in doubt."
       >
-        <Stack>
-          {TINTS.map(tint => (
-            <Specimen key={tint} label={tint}>
-              <Toast tint={tint}>Saved to Downloads</Toast>
-            </Specimen>
-          ))}
-        </Stack>
+        <OneOfEach tints={TINTS} />
       </Section>
 
       <Section
         title="Truncation"
         description="A toast sizes to its content and stops at its max width, so the stack needs no fixed width and a long message is cut rather than pushed onto a second line. If the message cannot survive that cut, it was never a toast."
       >
-        <Toast onDismiss={() => {}}>
-          A message long enough that it runs out of room and has to be cut short
-          rather than wrap onto a second line
-        </Toast>
+        <Long />
       </Section>
 
       <Section title="Tokens">
@@ -96,148 +149,122 @@ export const Overview: Story = {
       </Section>
     </Page>
   ),
+  decorators: [
+    Story => (
+      <Stage>
+        <Story />
+      </Stage>
+    ),
+  ],
+}
+
+function OneOfEach({ tints }: { tints: readonly Tint[] }) {
+  const toast = useToast()
+  return (
+    <Buttons
+      entries={tints.map(tint => ({
+        label: tint,
+        make: () =>
+          toast.add({ title: 'Saved to Downloads', tint, timeout: 0 }),
+      }))}
+    />
+  )
 }
 
 export const Default: Story = {
-  render: () => <Toast>Saved to Downloads</Toast>,
+  render: () => (
+    <Stage>
+      <OneOfEach tints={['neutral']} />
+    </Stage>
+  ),
 }
 
 export const Tints: Story = {
   render: () => (
-    <Col>
-      {TINTS.map(tint => (
-        <Toast key={tint} tint={tint}>
-          Saved to Downloads
-        </Toast>
-      ))}
-    </Col>
+    <Stage>
+      <OneOfEach tints={TINTS} />
+    </Stage>
   ),
 }
 
-export const WithAnIcon: Story = {
+export const Shapes: Story = {
   render: () => (
-    <Col>
-      <Toast tint="success" icon="✓">
-        Translation copied
-      </Toast>
-      <Toast tint="warning" icon="!">
-        Switched to the backup provider
-      </Toast>
-      <Toast tint="danger" icon="✕">
-        The connection dropped
-      </Toast>
-      <Toast tint="primary" icon={<Spinner size="small" tint="primary" />}>
-        Uploading the glossary…
-      </Toast>
-    </Col>
+    <Stage>
+      <ShapeButtons />
+    </Stage>
   ),
 }
 
-export const WithAnAction: Story = {
-  render: () => (
-    <Col>
-      <Toast
-        tint="warning"
-        icon="!"
-        action={
-          <Button size="small" tint="warning" variant="plain">
-            Undo
-          </Button>
-        }
-      >
-        Switched to the backup provider
-      </Toast>
-      <Toast
-        tint="danger"
-        icon="✕"
-        action={
-          <Button size="small" tint="danger" variant="plain">
-            Retry
-          </Button>
-        }
-        onDismiss={() => {}}
-      >
-        The connection dropped
-      </Toast>
-    </Col>
-  ),
-}
-
-export const Dismissable: Story = {
-  render: () => {
-    const initial = [
-      { id: 1, message: 'Saved to Downloads' },
-      { id: 2, message: 'Translation copied' },
-      { id: 3, message: 'Glossary updated' },
-    ]
-    const [toasts, setToasts] = useState(initial)
-
-    return (
-      <Col>
-        {toasts.map(entry => (
-          <Toast
-            key={entry.id}
-            onDismiss={() =>
-              setToasts(rest => rest.filter(item => item.id !== entry.id))
-            }
-          >
-            {entry.message}
-          </Toast>
-        ))}
-        {toasts.length === 0 ? (
-          <Button onClick={() => setToasts(initial)}>Bring them back</Button>
-        ) : null}
-      </Col>
-    )
-  },
+function Long() {
+  const toast = useToast()
+  return (
+    <Buttons
+      entries={[
+        {
+          label: 'A long message',
+          make: () =>
+            toast.add({
+              title:
+                'A message long enough that it runs out of room and has to be cut short rather than wrap onto a second line',
+              timeout: 0,
+            }),
+        },
+        {
+          label: 'Long, with an action',
+          make: () =>
+            toast.add({
+              title:
+                'The provider rejected the last request and the job has been paused until a working key is supplied',
+              tint: 'danger',
+              icon: '✕',
+              action: { label: 'Retry', onClick: () => {} },
+            }),
+        },
+      ]}
+    />
+  )
 }
 
 export const Truncation: Story = {
   render: () => (
-    <Col>
-      <Toast onDismiss={() => {}}>
-        A message long enough that it runs out of room and has to be cut short
-        rather than wrap onto a second line
-      </Toast>
-      <Toast
-        tint="danger"
-        icon="✕"
-        action={
-          <Button size="small" tint="danger" variant="plain">
-            Retry
-          </Button>
-        }
-        onDismiss={() => {}}
-      >
-        The provider rejected the last request and the job has been paused until
-        a working key is supplied
-      </Toast>
-    </Col>
+    <Stage>
+      <Long />
+    </Stage>
   ),
 }
 
-/** The viewport is fixed to the window edge, so it gets its own story. */
-export const InAViewport: Story = {
-  parameters: { layout: 'fullscreen' },
+function Stacked() {
+  const toast = useToast()
+  return (
+    <Buttons
+      entries={[
+        {
+          label: 'Add one',
+          make: () =>
+            toast.add({
+              title: `Saved at ${new Date().toLocaleTimeString()}`,
+              timeout: 0,
+            }),
+        },
+      ]}
+    />
+  )
+}
+
+/** The stack, which is what the limit and the hover pause are for. */
+export const AStack: Story = {
   render: () => (
-    <ToastViewport>
-      <Toast tint="success" icon="✓">
-        Translation copied
-      </Toast>
-      <Toast onDismiss={() => {}}>Saved to Downloads</Toast>
-    </ToastViewport>
+    <Stage>
+      <Stacked />
+    </Stage>
   ),
 }
 
 /** Top placement, for a shell whose status area is at the head of the window. */
 export const InATopViewport: Story = {
-  parameters: { layout: 'fullscreen' },
   render: () => (
-    <ToastViewport placement="top">
-      <Toast tint="primary" icon={<Spinner size="small" tint="primary" />}>
-        Uploading the glossary…
-      </Toast>
-      <Toast onDismiss={() => {}}>Saved to Downloads</Toast>
-    </ToastViewport>
+    <Stage placement="top">
+      <Stacked />
+    </Stage>
   ),
 }

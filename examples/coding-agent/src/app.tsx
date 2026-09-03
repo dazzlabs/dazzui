@@ -1,11 +1,10 @@
 import {
-  Button,
   Callout,
   EmptyState,
   Icon,
   OptionCard,
-  Toast,
   ToastViewport,
+  useToast,
 } from '@dazzlabs/dazzui-react'
 import { useMemo, useState } from 'react'
 
@@ -58,8 +57,19 @@ export function App() {
   const [staging, setStaging] = useState<Record<string, boolean>>({})
 
   const project = PROJECTS.find(entry => entry.id === projectId) ?? PROJECTS[0]
-  const player = usePlayer(project.sessions[0].seed)
+  const toast = useToast()
   const connected = isConnected(settings, project)
+
+  /* A finished run reports into the queue, which owns how long it stays and
+     which one wins when two land together. */
+  const player = usePlayer(project.sessions[0].seed, message =>
+    toast.add({
+      title: message,
+      tint: 'success',
+      icon: <Icon icon={CheckGlyph} size={16} />,
+      action: { label: 'Review', onClick: () => openPane('changes') },
+    })
+  )
 
   const written = useMemo(() => changedFiles(player.entries), [player.entries])
   const changes = useMemo(
@@ -309,29 +319,7 @@ export function App() {
         <PermissionDialog ask={player.ask} onAnswer={player.answer} />
       ) : null}
 
-      <ToastViewport>
-        {player.toast ? (
-          <Toast
-            action={
-              <Button
-                size="tiny"
-                variant="plain"
-                onClick={() => {
-                  player.dismissToast()
-                  openPane('changes')
-                }}
-              >
-                Review
-              </Button>
-            }
-            icon={<Icon icon={CheckGlyph} size={16} />}
-            tint="success"
-            onDismiss={player.dismissToast}
-          >
-            {player.toast}
-          </Toast>
-        ) : null}
-      </ToastViewport>
+      <ToastViewport />
     </div>
   )
 }

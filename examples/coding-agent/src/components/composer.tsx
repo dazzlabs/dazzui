@@ -69,9 +69,9 @@ export function Composer({
     <form className="ca-composer" onSubmit={submit}>
       <div data-tint="primary" className="ca-composer__box">
         <TextField
-          multiline
           aria-label="Message"
           className="ca-composer__input"
+          multiline
           placeholder="Ask for a change, or describe what is wrong…"
           value={draft}
           onChange={event => onDraftChange(event.target.value)}
@@ -82,16 +82,11 @@ export function Composer({
           <Select
             aria-label="Model"
             className="ca-composer__model"
+            options={MODELS.map(name => ({ value: name, label: name }))}
             size="small"
             value={model}
-            onChange={event => onModelChange(event.target.value)}
-          >
-            {MODELS.map(name => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-          </Select>
+            onValueChange={onModelChange}
+          />
 
           <SegmentedControl
             aria-label="Mode"

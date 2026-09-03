@@ -116,11 +116,11 @@ export function WindowFrame({
               checked: entry.value === theme,
               onSelect: () => onThemeChange(entry.value),
             }))}
-            trigger={({ onClick }) => (
-              <Button size="tiny" variant="plain" onClick={onClick}>
+            trigger={
+              <Button size="tiny" variant="plain">
                 {current?.label ?? 'Theme'}
               </Button>
-            )}
+            }
           />
 
           <Button size="small" variant="filled" onClick={onExport}>

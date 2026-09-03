@@ -1,4 +1,4 @@
-import type { ComponentPropsWithoutRef } from 'react'
+import { Separator } from '@base-ui/react/separator'
 
 import { cx } from '../lib/cx'
 
@@ -7,11 +7,11 @@ export type DividerTone = 'default' | 'muted'
 export type DividerOrientation = 'horizontal' | 'vertical'
 
 export interface DividerProps extends Omit<
-  ComponentPropsWithoutRef<'div'>,
-  'children'
+  Separator.Props,
+  'className' | 'render' | 'children'
 > {
   tone?: DividerTone
-  orientation?: DividerOrientation
+  className?: string
 }
 
 export function Divider({
@@ -21,10 +21,8 @@ export function Divider({
   ...props
 }: DividerProps) {
   return (
-    <div
-      role="separator"
-      aria-orientation={orientation}
-      data-orientation={orientation}
+    <Separator
+      orientation={orientation}
       data-tone={tone}
       className={cx('dz-divider', className)}
       {...props}

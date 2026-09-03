@@ -31,8 +31,6 @@ export interface Player {
   running: boolean
   /** The permission the run is blocked on, or null. */
   ask: PendingAsk | null
-  /** Whatever the finished run wants to report; clear it once shown. */
-  toast: string | null
   /** Tools this session has been given a standing yes for. */
   trusted: string[]
   start: (prompt: string, beats: Beat[]) => void
@@ -40,7 +38,6 @@ export interface Player {
   stop: () => void
   reset: (entries?: Entry[]) => void
   toggle: (id: string) => void
-  dismissToast: () => void
 }
 
 /**
@@ -51,13 +48,25 @@ export interface Player {
  * Stop button, on a session being switched out from under it. Every await
  * checks the generation it started in, so a superseded run unwinds instead of
  * writing into the transcript that replaced it.
+ *
+ * What a finished run has to report goes out through `onFinish` rather than
+ * into state here, because a toast's lifetime belongs to the toast queue —
+ * a message the player held on to would be one the queue had already timed
+ * out and removed.
  */
-export function usePlayer(seed: Entry[] = []): Player {
+export function usePlayer(
+  seed: Entry[] = [],
+  onFinish?: (message: string) => void
+): Player {
   const [entries, setEntries] = useState<Entry[]>(seed)
   const [running, setRunning] = useState(false)
   const [ask, setAsk] = useState<PendingAsk | null>(null)
-  const [toast, setToast] = useState<string | null>(null)
   const [trusted, setTrusted] = useState<string[]>([])
+
+  /* Read through a ref so a caller's inline callback does not re-make the
+     run loop on every render. */
+  const finish = useRef(onFinish)
+  finish.current = onFinish
 
   /** Bumped by every start, stop and unmount; the run checks it after awaits. */
   const generation = useRef(0)
@@ -239,7 +248,7 @@ export function usePlayer(seed: Entry[] = []): Player {
             return 'go'
 
           case 'finish':
-            setToast(beat.toast)
+            finish.current?.(beat.toast)
             return 'stop'
         }
       }
@@ -282,7 +291,6 @@ export function usePlayer(seed: Entry[] = []): Player {
     resolveAsk.current = null
     setAsk(null)
     setRunning(false)
-    setToast(null)
     setEntries(next)
   }, [])
 
@@ -298,19 +306,15 @@ export function usePlayer(seed: Entry[] = []): Player {
     []
   )
 
-  const dismissToast = useCallback(() => setToast(null), [])
-
   return {
     entries,
     running,
     ask,
-    toast,
     trusted,
     start,
     answer,
     stop,
     reset,
     toggle,
-    dismissToast,
   }
 }

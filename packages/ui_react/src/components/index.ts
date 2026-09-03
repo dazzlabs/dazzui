@@ -18,11 +18,12 @@ export { Checkbox, type CheckboxProps, type CheckboxSize } from './checkbox'
 export {
   Dialog,
   DialogBody,
+  DialogClose,
+  type DialogCloseProps,
   DialogFooter,
   DialogHeader,
   type DialogHeaderProps,
   type DialogProps,
-  DialogScrim,
   type DialogTone,
 } from './dialog'
 export {
@@ -41,7 +42,7 @@ export {
   type KeyCapSize,
   type KeyCapVariant,
 } from './key-cap'
-export { Menu, type MenuItem, type MenuProps } from './menu'
+export { Menu, type MenuItem, type MenuProps, type MenuTrigger } from './menu'
 export {
   NavAction,
   type NavActionProps,
@@ -110,11 +111,19 @@ export {
   type TextFieldSize,
   type TextFieldState,
   Select,
+  type SelectGroup,
+  type SelectOption,
   type SelectProps,
 } from './text-field'
 export {
   Toast,
+  type ToastAction,
+  type ToastOptions,
   type ToastProps,
+  ToastProvider,
+  type ToastProviderProps,
   ToastViewport,
   type ToastViewportProps,
+  useToast,
 } from './toast'
+export { Tooltip, type TooltipProps, TooltipProvider } from './tooltip'

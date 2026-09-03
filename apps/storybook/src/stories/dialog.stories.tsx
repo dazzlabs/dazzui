@@ -6,9 +6,9 @@ import {
   Checkbox,
   Dialog,
   DialogBody,
+  DialogClose,
   DialogFooter,
   DialogHeader,
-  DialogScrim,
   FormField,
   TextField,
   OptionCard,
@@ -18,7 +18,6 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 
 import { Page, Section, Stack, TokenTable } from '../components/gallery'
-import { Col } from '../components/stage'
 import { componentTokens } from '../lib/tokens'
 
 const meta: Meta<typeof Dialog> = {
@@ -36,11 +35,16 @@ const FORMATS = [
   { id: 'md', title: 'Markdown', description: 'Plain text, images linked.' },
 ]
 
-function ExportSheet() {
+/**
+ * A sheet is a modal now, so every specimen is opened from a trigger rather
+ * than drawn flat on the canvas. `defaultOpen` is what lets a story land with
+ * its sheet already up.
+ */
+function ExportSheet(props: { defaultOpen?: boolean }) {
   const [format, setFormat] = useState('docx')
 
   return (
-    <Dialog>
+    <Dialog trigger={<Button variant="filled">Export…</Button>} {...props}>
       <DialogHeader
         title="Export translation"
         subtitle="The source layout is preserved wherever the format allows it."
@@ -61,8 +65,8 @@ function ExportSheet() {
       <DialogFooter>
         <Badge tint="neutral">About 3.6 MB</Badge>
         <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
-          <Button>Cancel</Button>
-          <Button variant="filled">Export</Button>
+          <DialogClose render={<Button>Cancel</Button>} />
+          <DialogClose render={<Button variant="filled">Export</Button>} />
         </ActionBar>
       </DialogFooter>
     </Dialog>
@@ -75,30 +79,42 @@ export const Overview: Story = {
   render: () => (
     <Page
       title="Dialog"
-      description="The sheet a modal form or a confirmation is built in. Header and footer hold their height and the body scrolls, so a sheet never grows past its scrim however much it carries. All three parts are optional and are separate components rather than props precisely so a sheet can leave one out."
+      description="The sheet a modal form or a confirmation is built in. Header and footer hold their height and the body scrolls, so a sheet never grows past its scrim however much it carries. All three parts are optional and are separate components rather than props precisely so a sheet can leave one out. The scrim, the focus trap, the scroll lock and the Escape come with it; the title and the subtitle are what a screen reader is told the sheet is."
     >
       <Section
         title="A sheet"
-        description="Shown without its scrim so the page stays readable. The footer keeps its buttons on one rhythm with an ActionBar, and the size on the left rides opposite them."
+        description="Press the trigger to open it. The footer keeps its buttons on one rhythm with an ActionBar, and the size on the left rides opposite them; wrapping a button in `DialogClose` is what makes it close the sheet."
       >
         <ExportSheet />
       </Section>
 
       <Section
         title="Tone"
-        description="`danger` is what a destructive confirmation wears. Only the border changes, because the copy and the action already carry the weight — a whole sheet in red would say the app is broken rather than that this step cannot be undone."
+        description="`danger` is what a destructive confirmation wears. Only the border changes — the copy and the action already carry the weight, and a whole sheet in red would say the app is broken rather than that this step cannot be undone — but the sheet also announces as an alert rather than as an ordinary dialog, which is the part a reader with a screen reader gets instead of the border."
       >
-        <Dialog tone="danger" width="22rem">
+        <Dialog
+          tone="danger"
+          width="22rem"
+          trigger={
+            <Button tint="danger" variant="filled">
+              Delete glossary…
+            </Button>
+          }
+        >
           <DialogHeader
             title="Delete this glossary?"
             subtitle="412 terms will be removed from every project using it."
           />
           <DialogFooter>
             <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
-              <Button>Cancel</Button>
-              <Button tint="danger" variant="filled">
-                Delete
-              </Button>
+              <DialogClose render={<Button>Cancel</Button>} />
+              <DialogClose
+                render={
+                  <Button tint="danger" variant="filled">
+                    Delete
+                  </Button>
+                }
+              />
             </ActionBar>
           </DialogFooter>
         </Dialog>
@@ -109,10 +125,10 @@ export const Overview: Story = {
         description="`dialog.width` is the default, and it is the one a sheet should keep. `width` overrides it for the two cases the token cannot cover: a confirmation that would look lost at full width, and a form with a column of its own to fit."
       >
         <Stack>
-          <Dialog width="20rem">
+          <Dialog width="20rem" trigger={<Button>Narrow</Button>}>
             <DialogHeader title="Narrow — a confirmation" />
           </Dialog>
-          <Dialog width="34rem">
+          <Dialog width="34rem" trigger={<Button>Wide</Button>}>
             <DialogHeader title="Wide — a form with two columns" />
           </Dialog>
         </Stack>
@@ -130,20 +146,22 @@ export const Overview: Story = {
 }
 
 export const ASheet: Story = {
-  render: () => <ExportSheet />,
+  parameters: { layout: 'fullscreen' },
+  render: () => <ExportSheet defaultOpen />,
 }
 
 export const AConfirmation: Story = {
+  parameters: { layout: 'fullscreen' },
   render: () => (
-    <Dialog width="22rem">
+    <Dialog defaultOpen width="22rem">
       <DialogHeader
         title="Discard this draft?"
         subtitle="The 24 segments you edited since the last save will be lost."
       />
       <DialogFooter>
         <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
-          <Button>Keep editing</Button>
-          <Button variant="filled">Discard</Button>
+          <DialogClose render={<Button>Keep editing</Button>} />
+          <DialogClose render={<Button variant="filled">Discard</Button>} />
         </ActionBar>
       </DialogFooter>
     </Dialog>
@@ -151,18 +169,23 @@ export const AConfirmation: Story = {
 }
 
 export const Danger: Story = {
+  parameters: { layout: 'fullscreen' },
   render: () => (
-    <Dialog tone="danger" width="22rem">
+    <Dialog defaultOpen tone="danger" width="22rem">
       <DialogHeader
         title="Delete this glossary?"
         subtitle="412 terms will be removed from every project using it."
       />
       <DialogFooter>
         <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
-          <Button>Cancel</Button>
-          <Button tint="danger" variant="filled">
-            Delete
-          </Button>
+          <DialogClose render={<Button>Cancel</Button>} />
+          <DialogClose
+            render={
+              <Button tint="danger" variant="filled">
+                Delete
+              </Button>
+            }
+          />
         </ActionBar>
       </DialogFooter>
     </Dialog>
@@ -170,8 +193,9 @@ export const Danger: Story = {
 }
 
 export const AForm: Story = {
+  parameters: { layout: 'fullscreen' },
   render: () => (
-    <Dialog width="26rem">
+    <Dialog defaultOpen width="26rem">
       <DialogHeader
         title="Add a provider"
         subtitle="Keys are stored in the system keychain."
@@ -184,20 +208,25 @@ export const AForm: Story = {
           <TextField defaultValue="DeepL — work" />
         </FormField>
         <FormField label="Endpoint">
-          <Select defaultValue="pro">
-            <option value="pro">api.deepl.com</option>
-            <option value="free">api-free.deepl.com</option>
-          </Select>
+          <Select
+            defaultValue="pro"
+            options={[
+              { value: 'pro', label: 'api.deepl.com' },
+              { value: 'free', label: 'api-free.deepl.com' },
+            ]}
+          />
         </FormField>
         <FormField label="API key" hint="Never leaves this device.">
           <TextField mono placeholder="sk-…" />
         </FormField>
-        <Checkbox checked>Use as the primary provider</Checkbox>
+        <Checkbox defaultChecked>Use as the primary provider</Checkbox>
       </DialogBody>
       <DialogFooter>
         <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
-          <Button>Cancel</Button>
-          <Button variant="filled">Add provider</Button>
+          <DialogClose render={<Button>Cancel</Button>} />
+          <DialogClose
+            render={<Button variant="filled">Add provider</Button>}
+          />
         </ActionBar>
       </DialogFooter>
     </Dialog>
@@ -205,54 +234,54 @@ export const AForm: Story = {
 }
 
 export const AScrollingBody: Story = {
+  parameters: { layout: 'fullscreen' },
   render: () => (
-    <div style={{ display: 'flex', height: '24rem' }}>
-      <Dialog width="26rem">
-        <DialogHeader
-          title="Review the glossary"
-          subtitle="412 terms · 24 conflicts"
-        />
-        <DialogBody>
-          {Array.from({ length: 12 }, (_, index) => (
-            <FormField
-              key={index}
-              label={`Term ${index + 1}`}
-              hint="Applies to every project."
-            >
-              <TextField defaultValue={`translation ${index + 1}`} />
-            </FormField>
-          ))}
-        </DialogBody>
-        <DialogFooter>
-          <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
-            <Button>Cancel</Button>
-            <Button variant="filled">Save all</Button>
-          </ActionBar>
-        </DialogFooter>
-      </Dialog>
-    </div>
+    <Dialog defaultOpen width="26rem">
+      <DialogHeader
+        title="Review the glossary"
+        subtitle="412 terms · 24 conflicts"
+      />
+      <DialogBody>
+        {Array.from({ length: 12 }, (_, index) => (
+          <FormField
+            key={index}
+            label={`Term ${index + 1}`}
+            hint="Applies to every project."
+          >
+            <TextField defaultValue={`translation ${index + 1}`} />
+          </FormField>
+        ))}
+      </DialogBody>
+      <DialogFooter>
+        <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
+          <DialogClose render={<Button>Cancel</Button>} />
+          <DialogClose render={<Button variant="filled">Save all</Button>} />
+        </ActionBar>
+      </DialogFooter>
+    </Dialog>
   ),
 }
 
 export const Widths: Story = {
   render: () => (
-    <Col>
-      <Dialog>
+    <ActionBar>
+      <Dialog trigger={<Button>Default</Button>}>
         <DialogHeader title="Default — the dialog.width token" />
       </Dialog>
-      <Dialog width="20rem">
+      <Dialog width="20rem" trigger={<Button>Narrow</Button>}>
         <DialogHeader title="Narrow — a confirmation" />
       </Dialog>
-      <Dialog width="34rem">
+      <Dialog width="34rem" trigger={<Button>Wide</Button>}>
         <DialogHeader title="Wide — a form with two columns" />
       </Dialog>
-    </Col>
+    </ActionBar>
   ),
 }
 
 export const BodyOnly: Story = {
+  parameters: { layout: 'fullscreen' },
   render: () => (
-    <Dialog width="22rem">
+    <Dialog defaultOpen width="22rem">
       <DialogBody>
         <TextField
           multiline
@@ -260,10 +289,14 @@ export const BodyOnly: Story = {
           style={{ minHeight: '6rem' }}
         />
         <ActionBar align="end">
-          <Button size="small">Cancel</Button>
-          <Button size="small" variant="filled">
-            Send
-          </Button>
+          <DialogClose render={<Button size="small">Cancel</Button>} />
+          <DialogClose
+            render={
+              <Button size="small" variant="filled">
+                Send
+              </Button>
+            }
+          />
         </ActionBar>
       </DialogBody>
     </Dialog>
@@ -271,28 +304,69 @@ export const BodyOnly: Story = {
 }
 
 export const WithoutASubtitle: Story = {
+  parameters: { layout: 'fullscreen' },
   render: () => (
-    <Dialog width="22rem">
+    <Dialog defaultOpen width="22rem">
       <DialogHeader title="Rename document" />
       <DialogBody>
         <TextField defaultValue="handbook.docx" />
       </DialogBody>
       <DialogFooter>
         <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
-          <Button>Cancel</Button>
-          <Button variant="filled">Rename</Button>
+          <DialogClose render={<Button>Cancel</Button>} />
+          <DialogClose render={<Button variant="filled">Rename</Button>} />
         </ActionBar>
       </DialogFooter>
     </Dialog>
   ),
 }
 
-/** The scrim covers the viewport, so it gets a story of its own. */
-export const Modal: Story = {
+/** A sheet opened from another, which is what `nested` is drawn for. */
+export const Nested: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => (
-    <DialogScrim>
-      <ExportSheet />
-    </DialogScrim>
+    <Dialog defaultOpen width="26rem">
+      <DialogHeader
+        title="Glossary settings"
+        subtitle="Applies to every project on this account."
+      />
+      <DialogBody>
+        <FormField label="Name">
+          <TextField defaultValue="Product terms" />
+        </FormField>
+      </DialogBody>
+      <DialogFooter>
+        <Dialog
+          tone="danger"
+          width="22rem"
+          trigger={
+            <Button tint="danger" variant="plain">
+              Delete…
+            </Button>
+          }
+        >
+          <DialogHeader
+            title="Delete this glossary?"
+            subtitle="412 terms will be removed from every project using it."
+          />
+          <DialogFooter>
+            <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
+              <DialogClose render={<Button>Cancel</Button>} />
+              <DialogClose
+                render={
+                  <Button tint="danger" variant="filled">
+                    Delete
+                  </Button>
+                }
+              />
+            </ActionBar>
+          </DialogFooter>
+        </Dialog>
+        <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
+          <DialogClose render={<Button>Cancel</Button>} />
+          <DialogClose render={<Button variant="filled">Save</Button>} />
+        </ActionBar>
+      </DialogFooter>
+    </Dialog>
   ),
 }

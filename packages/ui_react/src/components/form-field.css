@@ -2,6 +2,10 @@
  * Label, control, hint. The wrapper draws no box of its own — the control it
  * holds does that — so it owns only the space between the three and the type
  * of the two it prints itself.
+ *
+ * The label is a real `<label>` pointing at the control, and the hint is in
+ * the control's `aria-describedby` — Base UI's `Field` wires both, which is
+ * why the hint arrives as a `<p>` and is reset here.
  */
 .dz-form-field {
   display: flex;
@@ -10,6 +14,7 @@
 }
 
 .dz-form-field__label {
+  width: fit-content;
   color: var(--color-content-subtle);
   font-family: var(--label-small-font-family);
   font-size: var(--label-small-font-size);
@@ -18,6 +23,7 @@
 }
 
 .dz-form-field__hint {
+  margin: 0;
   color: var(--color-content-subtle);
   font-family: var(--label-quiet-font-family);
   font-size: var(--label-quiet-font-size);
@@ -27,7 +33,7 @@
 
 /* Erroring, the label and the hint join the control on the danger ramp, which
    the wrapper is re-tinted to rather than given its own error colours. */
-.dz-form-field[data-invalid='true'] .dz-form-field__label,
-.dz-form-field[data-invalid='true'] .dz-form-field__hint {
+.dz-form-field[data-invalid] .dz-form-field__label,
+.dz-form-field[data-invalid] .dz-form-field__hint {
   color: var(--tint-700);
 }

@@ -1,41 +1,44 @@
-import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import { Radio as Base } from '@base-ui/react/radio'
+import { RadioGroup as BaseGroup } from '@base-ui/react/radio-group'
+import type { ReactNode } from 'react'
 
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
 
 export type RadioSize = 'small' | 'medium' | 'large'
 
-export interface RadioProps extends ComponentPropsWithoutRef<'button'> {
-  checked: boolean
+export interface RadioProps extends Omit<
+  Base.Root.Props,
+  'className' | 'render'
+> {
   size?: RadioSize
   tint?: Tint
+  className?: string
 }
 
-/** One choice. A set of them belongs in a `RadioGroup`. */
+/**
+ * One choice. It only means something inside a `RadioGroup`, which is where
+ * the selection lives — a radio outside one is never checked.
+ */
 export function Radio({
-  checked,
   size = 'medium',
   tint = 'primary',
   className,
   children,
-  type = 'button',
   ...props
 }: RadioProps) {
   return (
-    <button
-      type={type}
-      role="radio"
-      aria-checked={checked}
+    <Base.Root
       data-size={size}
       data-tint={tint}
       className={cx('dz-radio', className)}
       {...props}
     >
       <span aria-hidden className="dz-radio__box">
-        {checked ? <span className="dz-radio__dot" /> : null}
+        <Base.Indicator className="dz-radio__dot" />
       </span>
       <span className="dz-radio__label">{children}</span>
-    </button>
+    </Base.Root>
   )
 }
 
@@ -46,19 +49,25 @@ export interface RadioGroupOption<T extends string = string> {
 }
 
 export interface RadioGroupProps<T extends string = string> extends Omit<
-  ComponentPropsWithoutRef<'div'>,
-  'onChange' | 'children'
+  BaseGroup.Props,
+  | 'className'
+  | 'render'
+  | 'children'
+  | 'value'
+  | 'defaultValue'
+  | 'onValueChange'
 > {
   options: readonly RadioGroupOption<T>[]
-  value: T
+  value?: T
+  defaultValue?: T
   onValueChange?: (value: T) => void
   size?: RadioSize
   tint?: Tint
+  className?: string
 }
 
 export function RadioGroup<T extends string = string>({
   options,
-  value,
   onValueChange,
   size = 'medium',
   tint = 'primary',
@@ -66,23 +75,24 @@ export function RadioGroup<T extends string = string>({
   ...props
 }: RadioGroupProps<T>) {
   return (
-    <div
-      role="radiogroup"
+    <BaseGroup
       className={cx('dz-radio-group', className)}
+      onValueChange={
+        onValueChange ? value => onValueChange(value as T) : undefined
+      }
       {...props}
     >
       {options.map(option => (
         <Radio
           key={option.value}
-          checked={option.value === value}
+          value={option.value}
           disabled={option.disabled}
           size={size}
           tint={tint}
-          onClick={() => onValueChange?.(option.value)}
         >
           {option.label}
         </Radio>
       ))}
-    </div>
+    </BaseGroup>
   )
 }

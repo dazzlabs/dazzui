@@ -20,19 +20,6 @@
   margin-inline: var(--spacing-1);
 }
 
-/*
- * A menu drops from its trigger, which in a strip along the foot of the window
- * drops it off the bottom edge. It flips up here rather than in the library:
- * one class of the app's own, one selector deeper than the component's, which
- * is the extension point `cx()` documents.
- */
-.cv-viewbar__menu .dz-menu__panel {
-  top: auto;
-  bottom: 100%;
-  margin-top: 0;
-  margin-bottom: var(--spacing-1);
-}
-
 /* The readout is a control, so it keeps a control's height — but it is also a
    number that changes under the pointer, and a width that changes with it
    would shuffle everything to its right. */

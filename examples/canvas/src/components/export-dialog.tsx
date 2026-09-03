@@ -6,13 +6,12 @@ import {
   DialogBody,
   DialogFooter,
   DialogHeader,
-  DialogScrim,
   FieldValue,
   FormField,
   PillTabs,
   SegmentedControl,
 } from '@dazzlabs/dazzui-react'
-import { useEffect, useState } from 'react'
+import { useRef, useState } from 'react'
 
 import type { Rect } from '../lib/geometry'
 
@@ -56,81 +55,78 @@ export function ExportDialog({
   const [format, setFormat] = useState('png')
   const [scale, setScale] = useState('2')
   const [background, setBackground] = useState(true)
-
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
-    }
-    document.addEventListener('keydown', onKeyDown)
-    return () => document.removeEventListener('keydown', onKeyDown)
-  }, [onClose])
+  const confirm = useRef<HTMLButtonElement>(null)
 
   const factor = Number(scale)
   const width = Math.round((box?.width ?? 0) * factor)
   const height = Math.round((box?.height ?? 0) * factor)
 
   return (
-    <DialogScrim>
-      <Dialog>
-        <DialogHeader
-          subtitle={
-            whole
-              ? `The whole page — ${count} ${count === 1 ? 'shape' : 'shapes'}`
-              : `${count} selected ${count === 1 ? 'shape' : 'shapes'}`
-          }
-          title="Export"
-        />
+    <Dialog
+      open
+      initialFocus={confirm}
+      onOpenChange={open => {
+        if (!open) onClose()
+      }}
+    >
+      <DialogHeader
+        subtitle={
+          whole
+            ? `The whole page — ${count} ${count === 1 ? 'shape' : 'shapes'}`
+            : `${count} selected ${count === 1 ? 'shape' : 'shapes'}`
+        }
+        title="Export"
+      />
 
-        <DialogBody className="cv-export">
-          <FormField label="Format">
-            <SegmentedControl
-              items={FORMATS}
-              stretch
-              value={format}
-              onValueChange={setFormat}
-            />
-          </FormField>
+      <DialogBody className="cv-export">
+        <FormField label="Format">
+          <SegmentedControl
+            items={FORMATS}
+            stretch
+            value={format}
+            onValueChange={setFormat}
+          />
+        </FormField>
 
-          <FormField label="Scale">
-            <PillTabs items={SCALES} value={scale} onValueChange={setScale} />
-          </FormField>
+        <FormField label="Scale">
+          <PillTabs items={SCALES} value={scale} onValueChange={setScale} />
+        </FormField>
 
-          {/* The note slot is an aside on the label — a count, a size — so
-              what happens when this is off goes in the label itself. */}
-          <Checkbox checked={background} onCheckedChange={setBackground}>
-            Include the background, or export it transparent
-          </Checkbox>
+        {/* The note slot is an aside on the label — a count, a size — so
+            what happens when this is off goes in the label itself. */}
+        <Checkbox checked={background} onCheckedChange={setBackground}>
+          Include the background, or export it transparent
+        </Checkbox>
 
-          <FormField
-            hint="Nothing is written. This is a prototype of the interface, not of the encoder."
-            label="Output"
+        <FormField
+          hint="Nothing is written. This is a prototype of the interface, not of the encoder."
+          label="Output"
+        >
+          <FieldValue mono>
+            {box ? `${width} × ${height} px` : 'Nothing to export'}
+          </FieldValue>
+        </FormField>
+      </DialogBody>
+
+      <DialogFooter>
+        <ActionBar align="end">
+          <Button variant="plain" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            ref={confirm}
+            disabled={!box}
+            variant="filled"
+            onClick={() =>
+              onExport(
+                `${count} ${count === 1 ? 'shape' : 'shapes'} at ${width} × ${height} — ${format.toUpperCase()}`
+              )
+            }
           >
-            <FieldValue mono>
-              {box ? `${width} × ${height} px` : 'Nothing to export'}
-            </FieldValue>
-          </FormField>
-        </DialogBody>
-
-        <DialogFooter>
-          <ActionBar align="end">
-            <Button variant="plain" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button
-              autoFocus
-              disabled={!box}
-              variant="filled"
-              onClick={() =>
-                onExport(
-                  `${count} ${count === 1 ? 'shape' : 'shapes'} at ${width} × ${height} — ${format.toUpperCase()}`
-                )
-              }
-            >
-              Export
-            </Button>
-          </ActionBar>
-        </DialogFooter>
-      </Dialog>
-    </DialogScrim>
+            Export
+          </Button>
+        </ActionBar>
+      </DialogFooter>
+    </Dialog>
   )
 }

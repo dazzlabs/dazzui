@@ -44,10 +44,13 @@ export const Overview: Story = {
               <TextField defaultValue="Jianying Li" />
             </FormField>
             <FormField label="Target language">
-              <Select defaultValue="zh">
-                <option value="zh">Chinese (Simplified)</option>
-                <option value="ja">Japanese</option>
-              </Select>
+              <Select
+                defaultValue="zh"
+                options={[
+                  { value: 'zh', label: 'Chinese (Simplified)' },
+                  { value: 'ja', label: 'Japanese' },
+                ]}
+              />
             </FormField>
             <FormField label="Plan">
               <FieldValue>Pro — renews 2026-09-14</FieldValue>
@@ -158,10 +161,13 @@ export const OverASelect: Story = {
         label="Glossary"
         hint="Terms here override the provider's own suggestions."
       >
-        <Select defaultValue="product">
-          <option value="product">Product terms</option>
-          <option value="legal">Legal</option>
-        </Select>
+        <Select
+          defaultValue="product"
+          options={[
+            { value: 'product', label: 'Product terms' },
+            { value: 'legal', label: 'Legal' },
+          ]}
+        />
       </FormField>
     </div>
   ),
@@ -228,10 +234,13 @@ export const AFullForm: Story = {
         <TextField defaultValue="DeepL — work" />
       </FormField>
       <FormField label="Endpoint">
-        <Select defaultValue="pro">
-          <option value="pro">api.deepl.com</option>
-          <option value="free">api-free.deepl.com</option>
-        </Select>
+        <Select
+          defaultValue="pro"
+          options={[
+            { value: 'pro', label: 'api.deepl.com' },
+            { value: 'free', label: 'api-free.deepl.com' },
+          ]}
+        />
       </FormField>
       <FormField
         label="API key"

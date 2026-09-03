@@ -1,0 +1,149 @@
+/*
+ * The floating sheet, and the rows inside it. A Menu's panel and a Select's
+ * list are one drawing wearing different data, so they share this file the
+ * way the text controls share text-field.css; each keeps a stylesheet of its
+ * own only for what is genuinely its own.
+ *
+ * Base UI does the positioning: the positioner is placed against the trigger
+ * and the popup fills it. The gap between the two is padding on the
+ * positioner rather than an offset in code — a token stays a token, and the
+ * collision logic measures the positioner, so the gap counts when the panel
+ * flips.
+ */
+.dz-popup-positioner {
+  outline: 0;
+}
+
+.dz-popup-positioner[data-side='bottom'] {
+  padding-top: var(--spacing-1);
+}
+
+.dz-popup-positioner[data-side='top'] {
+  padding-bottom: var(--spacing-1);
+}
+
+.dz-popup-positioner[data-side='left'],
+.dz-popup-positioner[data-side='inline-start'] {
+  padding-right: var(--spacing-1);
+}
+
+.dz-popup-positioner[data-side='right'],
+.dz-popup-positioner[data-side='inline-end'] {
+  padding-left: var(--spacing-1);
+}
+
+.dz-popup {
+  box-sizing: border-box;
+  min-width: var(--menu-min-width);
+  max-height: var(--available-height);
+  padding: var(--spacing-1);
+  overflow: hidden auto;
+  background-color: var(--color-surface);
+  border: var(--stroke-hairline) solid var(--color-border-strong);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-lg);
+  outline: 0;
+}
+
+/*
+ * A row: 12px quiet-weight label on a 26px row — `menu.item-padding` carries
+ * the odd 7px that squares that. The row's corner is the panel's minus its
+ * padding, so the highlight wash stays concentric with the panel edge.
+ */
+.dz-popup__item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  width: 100%;
+  padding-block: var(--menu-item-padding);
+  padding-inline: var(--spacing-2);
+  border: 0;
+  border-radius: calc(var(--radius-large) - var(--spacing-1));
+  background: none;
+  color: var(--color-content);
+  text-align: left;
+  white-space: nowrap;
+  cursor: default;
+  outline: 0;
+  user-select: none;
+  font-family: var(--label-quiet-font-family);
+  font-size: var(--label-quiet-font-size);
+  font-weight: var(--label-quiet-font-weight);
+  line-height: 1;
+  transition: background-color var(--motion-duration) var(--motion-easing);
+}
+
+/*
+ * The `normal` recipe, not `plain`. Both have no resting fill, but `plain` is
+ * the quiet *accent* control — its wash comes off the tinted ramp, which on a
+ * row would land heavier than a tinted selection sitting one step lower. A
+ * row's wash is neutral, and it is the highlight rather than `:hover`: Base UI
+ * highlights the row under the pointer and the row the arrow keys reach with
+ * the same attribute, so the keyboard sees what the mouse sees.
+ */
+.dz-popup__item[data-highlighted] {
+  background-color: var(--control-color-normal-surface-hovered);
+}
+
+.dz-popup__item[data-disabled] {
+  color: var(--control-color-normal-content-disabled);
+  cursor: not-allowed;
+}
+
+/*
+ * The checkmark column. It holds its width whether or not the row is checked,
+ * so the labels of a group stay on one left edge; menu.css and text-field.css
+ * reveal it on the attribute their rows carry.
+ */
+.dz-popup__check {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-3);
+  font-size: var(--label-small-font-size);
+  visibility: hidden;
+}
+
+.dz-popup__icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--color-content-muted);
+}
+
+.dz-popup__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The shortcut is a faint hint in the display cut — never a boxed key cap;
+   a cap in a 26px row would be furniture. */
+.dz-popup__shortcut {
+  flex-shrink: 0;
+  margin-inline-start: auto;
+  color: var(--color-content-faint);
+  font-family: var(--label-strong-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--label-small-font-weight);
+  line-height: 1;
+}
+
+/* A group heading inside the sheet: the section label's voice, on the row's
+   own inset. */
+.dz-popup__group-label {
+  padding-block: var(--spacing-1-5) var(--spacing-1);
+  padding-inline: var(--spacing-2);
+  color: var(--color-content-subtle);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+  font-weight: var(--label-small-font-weight);
+  line-height: 1;
+  user-select: none;
+}
+
+.dz-popup__group + .dz-popup__group {
+  margin-top: var(--spacing-1);
+}

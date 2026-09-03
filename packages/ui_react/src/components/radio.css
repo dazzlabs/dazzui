@@ -9,11 +9,12 @@
   border-radius: var(--radius-full);
 }
 
-.dz-radio[aria-checked='true'] .dz-radio__box {
+.dz-radio[data-checked] .dz-radio__box {
   border-color: var(--control-color-filled-surface-normal);
 }
 
 .dz-radio__dot {
+  display: block;
   border-radius: var(--radius-full);
   background-color: var(--control-color-filled-surface-normal);
 }
@@ -32,7 +33,7 @@
   line-height: var(--label-quiet-line-height);
 }
 
-.dz-radio[aria-checked='true'] {
+.dz-radio[data-checked] {
   font-weight: var(--label-medium-font-weight);
 }
 

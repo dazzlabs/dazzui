@@ -9,7 +9,6 @@ import {
   IconButton,
   KeyCap,
   Menu,
-  type MenuProps,
   TINTS,
 } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
@@ -40,14 +39,8 @@ const DENSITIES = [
   { value: 'dense', label: 'Dense' },
 ]
 
-const Trigger: MenuProps['trigger'] = ({ open, onClick }) => (
-  <Button
-    aria-expanded={open}
-    aria-haspopup="menu"
-    tint="neutral"
-    variant={open ? 'filled' : 'normal'}
-    onClick={onClick}
-  >
+const Trigger = (
+  <Button tint="neutral" variant="normal">
     Options
   </Button>
 )
@@ -58,11 +51,11 @@ export const Overview: Story = {
   render: () => (
     <Page
       title="Menu"
-      description="A popover menu. It closes on an outside pointer press and on Escape, so it stays operable from the keyboard as well as the mouse. The trigger is a render prop — the menu positions and toggles, it does not decide what opens it."
+      description="A popover menu. It is positioned against its trigger and flips when it would run off an edge, it roves the arrow keys and types ahead, and it closes on an outside press and on Escape — none of which a menu should have to be told. The trigger is whatever element you pass; the menu wires the press and the `aria-*` onto it."
     >
       <Section
         title="Items"
-        description="Hover and press come from the `plain` recipe, so the wash is the same one every quiet control uses. Shortcuts and icons are slots rather than strings, so a caller passes a KeyCap, a bare glyph run, or whatever its platform prints. Give every item an icon or give none of them one: a column half-filled with icons leaves the labels on two different edges."
+        description="The row's wash comes from the `normal` recipe, and it follows the *highlight* rather than the pointer: the row under the mouse and the row the arrow keys reached are the same state, so the keyboard sees what the mouse sees. Shortcuts and icons are slots rather than strings, so a caller passes a KeyCap, a bare glyph run, or whatever its platform prints. Give every item an icon or give none of them one: a column half-filled with icons leaves the labels on two different edges."
       >
         <Stack>
           <Specimen label="shortcuts">
@@ -99,7 +92,7 @@ export const Overview: Story = {
 
       <Section
         title="Checked"
-        description="Set `checked` on every item of a group, including the unchecked ones, so the leading column keeps its width and the labels stay on one edge. The items then announce as `menuitemradio` rather than as plain items."
+        description="Set `checked` on every item of a group, including the unchecked ones, so the leading column keeps its width and the labels stay on one edge. The items then form a radio group and announce as one."
       >
         <Stack>
           <Specimen label="radio group">
@@ -116,8 +109,8 @@ export const Overview: Story = {
       </Section>
 
       <Section
-        title="Alignment and tint"
-        description="`end` is the default, for a trigger sitting at the trailing edge of a toolbar; `start` is for one at the leading edge, where an end-aligned panel would run off the wrong side. The tint is the ramp the hover wash and the check glyph resolve against, and it defaults to neutral — a tinted wash on a row of ordinary commands reads as though every one of them were the accent."
+        title="Placement and tint"
+        description="`side` is which way it drops and `align` is which edge it lines up with; both give way to the viewport, so a menu at the foot of a window flips up on its own rather than being told to. The tint is the ramp the check glyph resolves against, and it defaults to neutral — a tinted wash on a row of ordinary commands reads as though every one of them were the accent."
       >
         <Stack>
           <Specimen label="start / end">
@@ -260,18 +253,24 @@ export const Alignment: Story = {
   ),
 }
 
+/** Dropping upwards, for a trigger sitting in a strip along the window's foot. */
+export const DroppingUp: Story = {
+  render: () => (
+    <Menu
+      align="start"
+      side="top"
+      trigger={Trigger}
+      items={[{ label: 'Zoom to fit', shortcut: '⇧1' }, { label: '100%' }]}
+    />
+  ),
+}
+
 export const FromAnIconButton: Story = {
   render: () => (
     <Menu
       align="start"
-      trigger={({ open, onClick }) => (
-        <IconButton
-          active={open}
-          aria-expanded={open}
-          aria-haspopup="menu"
-          label="More"
-          onClick={onClick}
-        >
+      trigger={({ open }) => (
+        <IconButton active={open} label="More">
           <Icon icon={More} size={16} />
         </IconButton>
       )}
@@ -287,17 +286,11 @@ export const FromAPlainButton: Story = {
   render: () => (
     <Menu
       align="start"
-      trigger={({ open, onClick }) => (
-        <Button
-          aria-expanded={open}
-          aria-haspopup="menu"
-          size="small"
-          variant="plain"
-          onClick={onClick}
-        >
+      trigger={
+        <Button size="small" variant="plain">
           Sort by ▾
         </Button>
-      )}
+      }
       items={[
         { label: 'Name', checked: true },
         { label: 'Last edited', checked: false },
@@ -315,14 +308,8 @@ export const Tints: Story = {
           key={tint}
           align="start"
           tint={tint}
-          trigger={({ open, onClick }) => (
-            <Button
-              aria-expanded={open}
-              aria-haspopup="menu"
-              tint={tint}
-              variant={open ? 'filled' : 'normal'}
-              onClick={onClick}
-            >
+          trigger={({ open }) => (
+            <Button tint={tint} variant={open ? 'filled' : 'normal'}>
               {tint}
             </Button>
           )}

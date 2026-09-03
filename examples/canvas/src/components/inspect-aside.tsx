@@ -279,18 +279,13 @@ export function InspectAside({
             {one.kind !== 'frame' && one.kind !== 'text' ? (
               <FormField label="Fill">
                 <Select
+                  options={VARIANTS}
                   size="small"
                   value={one.variant}
-                  onChange={event =>
-                    onPatch({ variant: event.target.value as ShapeVariant })
+                  onValueChange={(variant: ShapeVariant) =>
+                    onPatch({ variant })
                   }
-                >
-                  {VARIANTS.map(entry => (
-                    <option key={entry.value} value={entry.value}>
-                      {entry.label}
-                    </option>
-                  ))}
-                </Select>
+                />
               </FormField>
             ) : null}
 
@@ -325,9 +320,9 @@ export function InspectAside({
 
               <Group label="Text">
                 <TextField
-                  multiline
                   aria-label="Text"
                   className="cv-aside__text"
+                  multiline
                   size="small"
                   value={one.text}
                   onBlur={typing.end}

@@ -38,6 +38,7 @@
     "vite-plugin-dts": "^5.0.3"
   },
   "dependencies": {
+    "@base-ui/react": "1.7.0",
     "@fluentui/react-icons": "^2.0.339"
   }
 }

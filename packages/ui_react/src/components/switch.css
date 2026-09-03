@@ -2,6 +2,9 @@
  * A switch: the track carries the state, the thumb slides to the side that
  * says which. Both ends are laid out with `justify-content` rather than a
  * translate, so the thumb lands on the padding whatever the track size is.
+ *
+ * The states are Base UI's attributes rather than `aria-checked` and
+ * `:disabled` — the root is a focusable span over a hidden input.
  */
 .dz-switch {
   display: inline-flex;
@@ -16,12 +19,12 @@
   transition: background-color var(--motion-duration) var(--motion-easing);
 }
 
-.dz-switch[aria-checked='true'] {
+.dz-switch[data-checked] {
   justify-content: flex-end;
   background-color: var(--control-color-filled-surface-normal);
 }
 
-.dz-switch:disabled {
+.dz-switch[data-disabled] {
   cursor: not-allowed;
   opacity: 0.6;
 }
@@ -42,7 +45,7 @@
   transition: background-color var(--motion-duration) var(--motion-easing);
 }
 
-.dz-switch[aria-checked='true'] .dz-switch__thumb {
+.dz-switch[data-checked] .dz-switch__thumb {
   /* `surface-raised` rather than the paper: on a dark canvas the paper is
      darker than the groove, and a thumb painted with it would sink. */
   background-color: var(--color-surface-raised);

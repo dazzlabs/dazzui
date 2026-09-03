@@ -5,12 +5,44 @@ import {
   SectionLabel,
   Spinner,
   TINTS,
-  Toast,
+  ToastProvider,
+  ToastViewport,
+  useToast,
 } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { Page, Section, Specimen, Stack } from '../components/gallery'
 import { Col, Row } from '../components/stage'
+
+/**
+ * A toast is made rather than drawn — the queue owns it — so the specimen is
+ * the button that makes one, with a viewport beside it to catch it.
+ */
+function Raise() {
+  const toast = useToast()
+  return (
+    <Button
+      onClick={() =>
+        toast.add({
+          title: 'Uploading the glossary…',
+          icon: <Spinner size="small" tint="neutral" />,
+          timeout: 0,
+        })
+      }
+    >
+      Upload the glossary
+    </Button>
+  )
+}
+
+function InAToastStage() {
+  return (
+    <ToastProvider>
+      <Raise />
+      <ToastViewport />
+    </ToastProvider>
+  )
+}
 
 const meta: Meta<typeof Spinner> = {
   title: 'Components/Spinner',
@@ -69,9 +101,7 @@ export const Overview: Story = {
             </Button>
           </Specimen>
           <Specimen label="toast">
-            <Toast icon={<Spinner size="small" tint="neutral" />}>
-              Uploading the glossary…
-            </Toast>
+            <InAToastStage />
           </Specimen>
           <Specimen label="in prose">
             <span
@@ -146,11 +176,7 @@ export const InACallout: Story = {
 }
 
 export const InAToast: Story = {
-  render: () => (
-    <Toast icon={<Spinner size="small" tint="neutral" />}>
-      Uploading the glossary…
-    </Toast>
-  ),
+  render: () => <InAToastStage />,
 }
 
 export const InProse: Story = {

@@ -1,0 +1,21 @@
+/*
+ * The label a control surfaces on hover: the raised card, a hairline, and the
+ * small label face — the same numbers the GPUI port draws it with. It sits
+ * on the popup positioner, so the gap to the control comes from popup.css.
+ */
+.dz-tooltip {
+  max-width: var(--toast-max-width);
+  padding-block: calc(var(--spacing-1) + var(--spacing-0-5));
+  padding-inline: var(--spacing-2);
+  background-color: var(--color-surface-raised);
+  border: var(--stroke-hairline) solid var(--color-border);
+  border-radius: var(--radius-small);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-content);
+  font-family: var(--label-small-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--label-small-font-weight);
+  line-height: var(--label-small-line-height);
+  pointer-events: none;
+  user-select: none;
+}

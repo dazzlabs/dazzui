@@ -1,14 +1,15 @@
-import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
 import type { ButtonSize, ButtonVariant } from './button'
+import { Tooltip } from './tooltip'
 
 export interface IconButtonProps extends Omit<
-  ComponentPropsWithoutRef<'button'>,
+  ComponentProps<'button'>,
   'children'
 > {
-  /** Accessible name, also surfaced as the native tooltip. */
+  /** Accessible name, also surfaced as the tooltip. */
   label: string
   size?: ButtonSize
   variant?: ButtonVariant
@@ -18,6 +19,11 @@ export interface IconButtonProps extends Omit<
   children: ReactNode
 }
 
+/**
+ * A `Tooltip` rather than a `title`: the native one is late, unstyled and
+ * absent from every keyboard. The button itself is a plain element, which is
+ * what lets a `Menu` or a `Dialog` take it as a trigger.
+ */
 export function IconButton({
   label,
   size = 'tiny',
@@ -32,19 +38,20 @@ export function IconButton({
   ...props
 }: IconButtonProps) {
   return (
-    <button
-      type={type}
-      aria-label={label}
-      title={label}
-      aria-pressed={active || undefined}
-      data-control=""
-      data-size={size}
-      data-tint={tint}
-      data-variant={variant}
-      className={cx('dz-icon-button', className)}
-      {...props}
-    >
-      {children}
-    </button>
+    <Tooltip label={label}>
+      <button
+        type={type}
+        aria-label={label}
+        aria-pressed={active || undefined}
+        data-control=""
+        data-size={size}
+        data-tint={tint}
+        data-variant={variant}
+        className={cx('dz-icon-button', className)}
+        {...props}
+      >
+        {children}
+      </button>
+    </Tooltip>
   )
 }

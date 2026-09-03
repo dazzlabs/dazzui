@@ -5,9 +5,8 @@ import {
   DialogBody,
   DialogFooter,
   DialogHeader,
-  DialogScrim,
 } from '@dazzlabs/dazzui-react'
-import { useEffect } from 'react'
+import { useRef } from 'react'
 
 import type { Answer, PendingAsk } from '../lib/player'
 import { DiffView } from './diff-view'
@@ -30,44 +29,44 @@ export interface PermissionDialogProps {
  * worth asking here is one the reader can answer from what is on screen.
  */
 export function PermissionDialog({ ask, onAnswer }: PermissionDialogProps) {
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      // Escape is a decision, not a dismissal: closing the sheet without an
-      // answer would leave the run blocked on a question nobody can see.
-      if (event.key === 'Escape') onAnswer('deny')
-    }
-    document.addEventListener('keydown', onKeyDown)
-    return () => document.removeEventListener('keydown', onKeyDown)
-  }, [onAnswer])
+  // The safe answer takes the focus, so Return is the safe answer.
+  const safe = useRef<HTMLButtonElement>(null)
 
   return (
-    <DialogScrim>
-      <Dialog width={REVIEW_WIDTH}>
-        <DialogHeader
-          subtitle={`${ask.tool} · ${ask.target}`}
-          title={ask.question}
-        />
-        <DialogBody>
-          <p className="ca-permission__detail">{ask.detail}</p>
-          <div className="ca-permission__preview">
-            <DiffView lines={ask.lines} />
-          </div>
-        </DialogBody>
-        <DialogFooter>
-          <ActionBar align="end">
-            <Button variant="plain" onClick={() => onAnswer('deny')}>
-              Deny
-            </Button>
-            <Button onClick={() => onAnswer('always')}>
-              Allow {ask.tool} always
-            </Button>
-            {/* The safe answer takes the focus, so Return is the safe answer. */}
-            <Button autoFocus variant="filled" onClick={() => onAnswer('once')}>
-              Allow once
-            </Button>
-          </ActionBar>
-        </DialogFooter>
-      </Dialog>
-    </DialogScrim>
+    <Dialog
+      open
+      initialFocus={safe}
+      width={REVIEW_WIDTH}
+      // Escape and a press on the scrim are decisions, not dismissals:
+      // closing the sheet without an answer would leave the run blocked on a
+      // question nobody can see.
+      onOpenChange={open => {
+        if (!open) onAnswer('deny')
+      }}
+    >
+      <DialogHeader
+        subtitle={`${ask.tool} · ${ask.target}`}
+        title={ask.question}
+      />
+      <DialogBody>
+        <p className="ca-permission__detail">{ask.detail}</p>
+        <div className="ca-permission__preview">
+          <DiffView lines={ask.lines} />
+        </div>
+      </DialogBody>
+      <DialogFooter>
+        <ActionBar align="end">
+          <Button variant="plain" onClick={() => onAnswer('deny')}>
+            Deny
+          </Button>
+          <Button onClick={() => onAnswer('always')}>
+            Allow {ask.tool} always
+          </Button>
+          <Button ref={safe} variant="filled" onClick={() => onAnswer('once')}>
+            Allow once
+          </Button>
+        </ActionBar>
+      </DialogFooter>
+    </Dialog>
   )
 }

@@ -1,4 +1,4 @@
-import type { ComponentPropsWithoutRef } from 'react'
+import { Progress as Base } from '@base-ui/react/progress'
 
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
@@ -6,8 +6,8 @@ import type { Tint } from '../lib/tint'
 export type ProgressSize = 'small' | 'medium' | 'large'
 
 export interface ProgressProps extends Omit<
-  ComponentPropsWithoutRef<'div'>,
-  'children'
+  Base.Root.Props,
+  'className' | 'render' | 'children' | 'value'
 > {
   /** 0–100. Omit for an indeterminate bar. */
   value?: number
@@ -15,6 +15,7 @@ export interface ProgressProps extends Omit<
   tint?: Tint
   /** Paint the fill with the theme's two-stop accent ramp instead of a flat tint. */
   gradient?: boolean
+  className?: string
 }
 
 export function Progress({
@@ -25,26 +26,18 @@ export function Progress({
   className,
   ...props
 }: ProgressProps) {
-  const indeterminate = value === undefined
-  const clamped = indeterminate ? 0 : Math.min(100, Math.max(0, value))
+  const clamped = value === undefined ? null : Math.min(100, Math.max(0, value))
 
   return (
-    <div
-      role="progressbar"
-      aria-valuemin={indeterminate ? undefined : 0}
-      aria-valuemax={indeterminate ? undefined : 100}
-      aria-valuenow={indeterminate ? undefined : clamped}
-      data-indeterminate={indeterminate}
+    <Base.Root
+      value={clamped}
       data-gradient={gradient || undefined}
       data-size={size}
       data-tint={tint}
       className={cx('dz-progress', className)}
       {...props}
     >
-      <div
-        className="dz-progress__fill"
-        style={indeterminate ? undefined : { width: `${clamped}%` }}
-      />
-    </div>
+      <Base.Indicator className="dz-progress__fill" />
+    </Base.Root>
   )
 }

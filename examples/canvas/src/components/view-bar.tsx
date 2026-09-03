@@ -56,7 +56,7 @@ export function ViewBar({
 
       <Menu
         align="start"
-        className="cv-viewbar__menu"
+        side="top"
         items={[
           ...ZOOM_STEPS.map(step => ({
             label: `${Math.round(step * 100)}%`,
@@ -65,16 +65,11 @@ export function ViewBar({
           })),
           { label: 'Zoom to fit', shortcut: '⇧1', onSelect: onFit },
         ]}
-        trigger={({ onClick }) => (
-          <Button
-            className="cv-viewbar__zoom"
-            size="tiny"
-            variant="plain"
-            onClick={onClick}
-          >
+        trigger={
+          <Button className="cv-viewbar__zoom" size="tiny" variant="plain">
             {Math.round(zoom * 100)}%
           </Button>
-        )}
+        }
       />
 
       <IconButton
