@@ -112,9 +112,6 @@ public struct ThemeVariables: Sendable {
     menuItemPadding: CGFloat = 7.0,
     progressGradientFrom: Color = Colors.brand[600],
     progressGradientTo: Color = Color(argb: 0xFFA0_8CFF),
-    radioSmallDot: CGFloat = 6.0,
-    radioMediumDot: CGFloat = 7.0,
-    radioLargeDot: CGFloat = 9.0,
     segmentedControlInset: CGFloat = 3.0,
     shortcutRecorderWidth: CGFloat = 132.0,
     switchMediumWidth: CGFloat = 32.0,
@@ -270,9 +267,6 @@ public struct ThemeVariables: Sendable {
     self.menuItemPadding = menuItemPadding
     self.progressGradientFrom = progressGradientFrom
     self.progressGradientTo = progressGradientTo
-    self.radioSmallDot = radioSmallDot
-    self.radioMediumDot = radioMediumDot
-    self.radioLargeDot = radioLargeDot
     self.segmentedControlInset = segmentedControlInset
     self.shortcutRecorderWidth = shortcutRecorderWidth
     self.switchMediumWidth = switchMediumWidth
@@ -394,9 +388,6 @@ public struct ThemeVariables: Sendable {
   public let menuItemPadding: CGFloat
   public let progressGradientFrom: Color
   public let progressGradientTo: Color
-  public let radioSmallDot: CGFloat
-  public let radioMediumDot: CGFloat
-  public let radioLargeDot: CGFloat
   public let segmentedControlInset: CGFloat
   public let shortcutRecorderWidth: CGFloat
   public let switchMediumWidth: CGFloat
@@ -437,8 +428,11 @@ public struct ThemeVariables: Sendable {
   public var dialogScrimColor: Color { colorContent }
   public var radioThickness: CGFloat { strokeControl }
   public var radioSmallBox: CGFloat { spacing35 }
+  public var radioSmallDot: CGFloat { spacing15 }
   public var radioMediumBox: CGFloat { spacing4 }
+  public var radioMediumDot: CGFloat { spacing2 }
   public var radioLargeBox: CGFloat { spacing5 }
+  public var radioLargeDot: CGFloat { spacing25 }
   public var switchSmallWidth: CGFloat { spacing7 }
   public var switchSmallHeight: CGFloat { spacing4 }
   public var switchSmallThumb: CGFloat { spacing3 }

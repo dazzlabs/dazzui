@@ -13,17 +13,33 @@
   border-color: var(--control-color-filled-surface-normal);
 }
 
+/*
+ * The mark is a background on the indicator, not a box inside it, and the
+ * indicator fills the ring's content area exactly — so there is no free space
+ * left for a browser to round. An 8px box floating in a 13px space is snapped
+ * to device pixels on its own, while the hole in a 1.5px border is snapped
+ * from the ring's rect; at this diameter the two can part company by a device
+ * pixel, and a mark half a pixel off centre in a 16px ring is visible. Drawn
+ * this way both come out of the same rect. The other platforms keep a real
+ * box, because their renderers place one without snapping it.
+ */
 .dz-radio__dot {
   display: block;
-  border-radius: var(--radius-full);
-  background-color: var(--control-color-filled-surface-normal);
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(
+    circle at 50% 50%,
+    var(--control-color-filled-surface-normal) 0 calc(var(--radio-dot) / 2),
+    transparent calc(var(--radio-dot) / 2)
+  );
 }
 
 /* Sizes -------------------------------------------------------------------
  * The row sits at the ring's own height (see checkbox.css on why there is no
- * min-height) and carries the same quiet/label weight pair. The ring and its
- * dot keep their per-size dimensions — that is the point of
- * `radio.<size>.box` and `radio.<size>.dot`. */
+ * min-height) and carries the same quiet/label weight pair. The ring keeps
+ * its per-size diameter and binds the mark's, the way a sized control binds
+ * the profile — that is the point of `radio.<size>.box` and
+ * `radio.<size>.dot`. */
 
 .dz-radio {
   gap: var(--spacing-2-5);
@@ -40,31 +56,19 @@
 .dz-radio[data-size='small'] .dz-radio__box {
   width: var(--radio-small-box);
   height: var(--radio-small-box);
-}
-
-.dz-radio[data-size='small'] .dz-radio__dot {
-  width: var(--radio-small-dot);
-  height: var(--radio-small-dot);
+  --radio-dot: var(--radio-small-dot);
 }
 
 .dz-radio[data-size='medium'] .dz-radio__box {
   width: var(--radio-medium-box);
   height: var(--radio-medium-box);
-}
-
-.dz-radio[data-size='medium'] .dz-radio__dot {
-  width: var(--radio-medium-dot);
-  height: var(--radio-medium-dot);
+  --radio-dot: var(--radio-medium-dot);
 }
 
 .dz-radio[data-size='large'] .dz-radio__box {
   width: var(--radio-large-box);
   height: var(--radio-large-box);
-}
-
-.dz-radio[data-size='large'] .dz-radio__dot {
-  width: var(--radio-large-dot);
-  height: var(--radio-large-dot);
+  --radio-dot: var(--radio-large-dot);
 }
 
 .dz-radio-group {

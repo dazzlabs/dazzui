@@ -371,11 +371,11 @@
   --progress-gradient-from: var(--base-color-brand-600);
   --progress-gradient-to: #a08cff;
   --radio-large-box: var(--spacing-5);
-  --radio-large-dot: 0.5625rem;
+  --radio-large-dot: var(--spacing-2-5);
   --radio-medium-box: var(--spacing-4);
-  --radio-medium-dot: 0.4375rem;
+  --radio-medium-dot: var(--spacing-2);
   --radio-small-box: var(--spacing-3-5);
-  --radio-small-dot: 0.375rem;
+  --radio-small-dot: var(--spacing-1-5);
   --radio-thickness: var(--stroke-control);
   --radius-big: var(--base-corner-xl);
   --radius-full: 9999px;

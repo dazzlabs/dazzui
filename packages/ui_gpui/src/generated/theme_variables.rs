@@ -127,9 +127,6 @@ pub struct ThemeSeed {
     pub menu_item_padding: Pixels,
     pub progress_gradient_from: Hsla,
     pub progress_gradient_to: Hsla,
-    pub radio_small_dot: Pixels,
-    pub radio_medium_dot: Pixels,
-    pub radio_large_dot: Pixels,
     pub segmented_control_inset: Pixels,
     pub shortcut_recorder_width: Pixels,
     pub switch_medium_width: Pixels,
@@ -253,9 +250,6 @@ pub const STUDIO_LIGHT_SEED: ThemeSeed = ThemeSeed {
     menu_item_padding: px(7.0),
     progress_gradient_from: colors::BRAND.shade(600),
     progress_gradient_to: Hsla { h: 0.695652, s: 1.0, l: 0.77451, a: 1.0 },
-    radio_small_dot: px(6.0),
-    radio_medium_dot: px(7.0),
-    radio_large_dot: px(9.0),
     segmented_control_inset: px(3.0),
     shortcut_recorder_width: px(132.0),
     switch_medium_width: px(32.0),
@@ -410,9 +404,6 @@ pub struct ThemeVariables {
     pub menu_item_padding: Pixels,
     pub progress_gradient_from: Hsla,
     pub progress_gradient_to: Hsla,
-    pub radio_small_dot: Pixels,
-    pub radio_medium_dot: Pixels,
-    pub radio_large_dot: Pixels,
     pub segmented_control_inset: Pixels,
     pub shortcut_recorder_width: Pixels,
     pub switch_medium_width: Pixels,
@@ -452,8 +443,11 @@ pub struct ThemeVariables {
     pub dialog_scrim_color: Hsla,
     pub radio_thickness: Pixels,
     pub radio_small_box: Pixels,
+    pub radio_small_dot: Pixels,
     pub radio_medium_box: Pixels,
+    pub radio_medium_dot: Pixels,
     pub radio_large_box: Pixels,
+    pub radio_large_dot: Pixels,
     pub switch_small_width: Pixels,
     pub switch_small_height: Pixels,
     pub switch_small_thumb: Pixels,
@@ -588,9 +582,6 @@ impl ThemeVariables {
         let menu_item_padding = seed.menu_item_padding;
         let progress_gradient_from = seed.progress_gradient_from;
         let progress_gradient_to = seed.progress_gradient_to;
-        let radio_small_dot = seed.radio_small_dot;
-        let radio_medium_dot = seed.radio_medium_dot;
-        let radio_large_dot = seed.radio_large_dot;
         let segmented_control_inset = seed.segmented_control_inset;
         let shortcut_recorder_width = seed.shortcut_recorder_width;
         let switch_medium_width = seed.switch_medium_width;
@@ -631,8 +622,11 @@ impl ThemeVariables {
         let dialog_scrim_color = color_content;
         let radio_thickness = stroke_control;
         let radio_small_box = spacing_3_5;
+        let radio_small_dot = spacing_1_5;
         let radio_medium_box = spacing_4;
+        let radio_medium_dot = spacing_2;
         let radio_large_box = spacing_5;
+        let radio_large_dot = spacing_2_5;
         let switch_small_width = spacing_7;
         let switch_small_height = spacing_4;
         let switch_small_thumb = spacing_3;
@@ -820,9 +814,6 @@ impl ThemeVariables {
             menu_item_padding,
             progress_gradient_from,
             progress_gradient_to,
-            radio_small_dot,
-            radio_medium_dot,
-            radio_large_dot,
             segmented_control_inset,
             shortcut_recorder_width,
             switch_medium_width,
@@ -862,8 +853,11 @@ impl ThemeVariables {
             dialog_scrim_color,
             radio_thickness,
             radio_small_box,
+            radio_small_dot,
             radio_medium_box,
+            radio_medium_dot,
             radio_large_box,
+            radio_large_dot,
             switch_small_width,
             switch_small_height,
             switch_small_thumb,

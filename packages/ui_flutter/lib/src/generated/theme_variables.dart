@@ -186,9 +186,6 @@ class ThemeVariables {
     this.menuItemPadding = 7,
     this.progressGradientFrom = const Color(0xFF6B4DFF),
     this.progressGradientTo = const Color(0xFFA08CFF),
-    this.radioSmallDot = 6,
-    this.radioMediumDot = 7,
-    this.radioLargeDot = 9,
     this.segmentedControlInset = 3,
     this.shortcutRecorderWidth = 132,
     this.switchMediumWidth = 32,
@@ -573,11 +570,11 @@ class ThemeVariables {
   // Radio
   double get radioThickness => strokeControl;
   double get radioSmallBox => spacing35;
-  final double radioSmallDot;
+  double get radioSmallDot => spacing15;
   double get radioMediumBox => spacing4;
-  final double radioMediumDot;
+  double get radioMediumDot => spacing2;
   double get radioLargeBox => spacing5;
-  final double radioLargeDot;
+  double get radioLargeDot => spacing25;
 
   // Segmented Control
   final double segmentedControlInset;
