@@ -15,6 +15,7 @@ import {
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { Page, Section, Specimen, Stack } from '../components/gallery'
+import { label } from '../lib/label'
 import { Col, Row } from '../components/stage'
 
 const meta: Meta<typeof Badge> = {
@@ -26,7 +27,18 @@ const meta: Meta<typeof Badge> = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+/** The recipes a badge reads on any ramp; `raised` has no tint and is shown on its own. */
 const VARIANTS: BadgeVariant[] = ['filled', 'tinted', 'outlined']
+
+/* The grey card a `raised` badge is made for — off it, the paper chip is
+   invisible on paper. */
+const card = {
+  display: 'inline-flex',
+  gap: 'var(--spacing-2)',
+  padding: 'var(--spacing-3)',
+  background: 'var(--color-surface-muted)',
+  borderRadius: 'var(--radius-large)',
+}
 
 const SIZES = ['small', 'medium', 'large'] as const
 
@@ -40,18 +52,25 @@ export const Overview: Story = {
     >
       <Section
         title="Variant and tint"
-        description="Every combination the two axes allow — three of the five recipes, the ones that read as a label rather than as a control. There is no `normal` or `plain` badge, because both would be text with padding around it."
+        description="Every combination the two axes allow — three of the six recipes, the ones that read as a label rather than as a control — plus the one variant the badge owns. `raised` is paper fill and quiet ink, no ramp: the chip that sits on a grey card, where a `tinted` neutral would sink into the card and a `filled` one would shout. There is no `normal` or `plain` badge, because both would be text with padding around it."
       >
         <Stack>
           {VARIANTS.map(variant => (
             <Specimen key={variant} label={variant}>
               {TINTS.map(tint => (
                 <Badge key={tint} tint={tint} variant={variant}>
-                  {tint}
+                  {label(tint)}
                 </Badge>
               ))}
             </Specimen>
           ))}
+          <Specimen label="raised">
+            <div style={card}>
+              <Badge variant="raised">Draft</Badge>
+              <Badge variant="raised">3 items</Badge>
+              <Badge variant="raised">Synced</Badge>
+            </div>
+          </Specimen>
         </Stack>
       </Section>
 
@@ -123,6 +142,32 @@ export const Outlined: Story = {
   ),
 }
 
+export const Raised: Story = {
+  render: () => (
+    <div style={card}>
+      <Badge variant="raised">Draft</Badge>
+      <Badge variant="raised">3 items</Badge>
+    </div>
+  ),
+}
+
+/* The three recipes on the paper, then the paper chip on the card it is
+   made for — `raised` on the bare canvas would be a label with no box. */
+export const AllVariants: Story = {
+  render: () => (
+    <Row>
+      {VARIANTS.map(variant => (
+        <Badge key={variant} variant={variant}>
+          {label(variant)}
+        </Badge>
+      ))}
+      <div style={card}>
+        <Badge variant="raised">Raised</Badge>
+      </div>
+    </Row>
+  ),
+}
+
 export const States: Story = {
   render: () => (
     <Row>
@@ -145,7 +190,7 @@ export const Tints: Story = {
         <Row key={variant}>
           {TINTS.map(tint => (
             <Badge key={tint} tint={tint} variant={variant}>
-              {tint}
+              {label(tint)}
             </Badge>
           ))}
         </Row>

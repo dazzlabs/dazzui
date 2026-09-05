@@ -1,6 +1,7 @@
 import {
   Button,
   KeyCap,
+  type KeyCapVariant,
   Menu,
   PreferenceRow,
   PreferenceSection,
@@ -21,6 +22,9 @@ const meta: Meta<typeof KeyCap> = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+/** Quietest first: the order the design reaches for them. */
+const VARIANTS: KeyCapVariant[] = ['hint', 'strong', 'key']
+
 const SIZES = ['small', 'medium', 'large'] as const
 
 /** The documented page. Every story after this one is the component alone. */
@@ -29,19 +33,48 @@ export const Overview: Story = {
   render: () => (
     <Page
       title="KeyCap"
-      description="One key cap. Unlike a badge it carries its own surface, content, and border colours in the token graph, so it takes no tint — a key looks like a key whatever is around it. A cap says what the key *is*; where the key can be changed, that is a ShortcutRecorder instead."
+      description="One key, drawn three ways. It reads the theme's ink and surface roles directly and takes no tint — a key looks like a key whatever is around it. A cap says what the key *is*; where the key can be changed, that is a ShortcutRecorder instead."
     >
       <Section
+        title="Variants"
+        description="`hint` — the default — is bare faint text in the display cut: the `⌘F` beside an empty search field, the `⌥2` in a card's corner, an aside the eye may skip. `strong` is the same a step darker, for a hint that has to survive on a busy row. `key` alone draws the cap — a recessed, chip-cornered fill with no border, since a key is pressed *into* the surface rather than raised off it — and is what a settings page lists shortcuts in."
+      >
+        <Stack>
+          <Specimen label="hint">
+            <KeyCap variant="hint">⌥2</KeyCap>
+          </Specimen>
+          <Specimen label="strong">
+            <KeyCap variant="strong">⌘K</KeyCap>
+          </Specimen>
+          <Specimen label="key">
+            <KeyCap variant="key">⌘⇧T</KeyCap>
+          </Specimen>
+        </Stack>
+      </Section>
+
+      <Section
         title="Sizes"
-        description="Colours are shared across the three; only the type and the metrics step. Pick the size from what the cap sits beside — `small` next to body text, `medium` in a row of controls."
+        description="Colours are shared across the three; only the type steps, and only at the top — `small` and `medium` set the same face, `large` goes one up. Pick the size from what the key sits beside: `small` next to body text, `medium` in a row of controls."
       >
         <Stack>
           {SIZES.map(size => (
             <Specimen key={size} label={size}>
-              <KeyCap size={size}>⌘</KeyCap>
-              <KeyCap size={size}>⇧</KeyCap>
-              <KeyCap size={size}>K</KeyCap>
-              <KeyCap size={size}>Esc</KeyCap>
+              <KeyCap size={size}>⌘K</KeyCap>
+              <KeyCap size={size} variant="strong">
+                ⌘K
+              </KeyCap>
+              <KeyCap size={size} variant="key">
+                ⌘
+              </KeyCap>
+              <KeyCap size={size} variant="key">
+                ⇧
+              </KeyCap>
+              <KeyCap size={size} variant="key">
+                K
+              </KeyCap>
+              <KeyCap size={size} variant="key">
+                Esc
+              </KeyCap>
             </Specimen>
           ))}
         </Stack>
@@ -49,13 +82,19 @@ export const Overview: Story = {
 
       <Section
         title="Chords"
-        description="A chord is several caps composed by the caller, which keeps the separator the caller's decision: macOS sets its modifiers flush, a cross-platform app usually wants a `+` between them. The cap sits on the text baseline it is set in, so a sentence naming a shortcut does not gain a line of leading."
+        description="A chord is several caps composed by the caller, which keeps the separator the caller's decision: macOS sets its modifiers flush, a cross-platform app usually wants a `+` between them. A hint sets the whole chord in one cap — `⌘⇧K` is one glyph run, not three — and the cap sits on the text baseline it is set in, so a sentence naming a shortcut does not gain a line of leading."
       >
         <Stack>
           <Specimen label="flush">
-            <KeyCap size="small">⌘</KeyCap>
-            <KeyCap size="small">⇧</KeyCap>
-            <KeyCap size="small">K</KeyCap>
+            <KeyCap size="small" variant="key">
+              ⌘
+            </KeyCap>
+            <KeyCap size="small" variant="key">
+              ⇧
+            </KeyCap>
+            <KeyCap size="small" variant="key">
+              K
+            </KeyCap>
           </Specimen>
           <Specimen label="joined">
             <span
@@ -66,15 +105,26 @@ export const Overview: Story = {
                 color: 'var(--color-content-muted)',
               }}
             >
-              <KeyCap size="small">Ctrl</KeyCap>+
-              <KeyCap size="small">Shift</KeyCap>+
-              <KeyCap size="small">P</KeyCap>
+              <KeyCap size="small" variant="key">
+                Ctrl
+              </KeyCap>
+              +
+              <KeyCap size="small" variant="key">
+                Shift
+              </KeyCap>
+              +
+              <KeyCap size="small" variant="key">
+                P
+              </KeyCap>
             </span>
+          </Specimen>
+          <Specimen label="as a hint">
+            <KeyCap size="small">⌘⇧K</KeyCap>
           </Specimen>
           <Specimen label="in prose">
             <span>
-              Open the command palette with <KeyCap size="small">⌘</KeyCap>{' '}
-              <KeyCap size="small">K</KeyCap>, then type a document name.
+              Open the command palette with <KeyCap size="small">⌘K</KeyCap>,
+              then type a document name.
             </span>
           </Specimen>
         </Stack>
@@ -83,8 +133,28 @@ export const Overview: Story = {
   ),
 }
 
-export const Default: Story = {
-  render: () => <KeyCap>⌘</KeyCap>,
+export const Hint: Story = {
+  render: () => <KeyCap>⌥2</KeyCap>,
+}
+
+export const Strong: Story = {
+  render: () => <KeyCap variant="strong">⌘K</KeyCap>,
+}
+
+export const Key: Story = {
+  render: () => <KeyCap variant="key">⌘⇧T</KeyCap>,
+}
+
+export const AllVariants: Story = {
+  render: () => (
+    <Row gap="var(--spacing-5)">
+      {VARIANTS.map(variant => (
+        <KeyCap key={variant} variant={variant}>
+          ⌘K
+        </KeyCap>
+      ))}
+    </Row>
+  ),
 }
 
 export const Sizes: Story = {
@@ -92,10 +162,18 @@ export const Sizes: Story = {
     <Col>
       {SIZES.map(size => (
         <Row key={size} gap="var(--spacing-1)">
-          <KeyCap size={size}>⌘</KeyCap>
-          <KeyCap size={size}>⇧</KeyCap>
-          <KeyCap size={size}>K</KeyCap>
-          <KeyCap size={size}>Esc</KeyCap>
+          <KeyCap size={size} variant="key">
+            ⌘
+          </KeyCap>
+          <KeyCap size={size} variant="key">
+            ⇧
+          </KeyCap>
+          <KeyCap size={size} variant="key">
+            K
+          </KeyCap>
+          <KeyCap size={size} variant="key">
+            Esc
+          </KeyCap>
         </Row>
       ))}
     </Col>
@@ -105,9 +183,15 @@ export const Sizes: Story = {
 export const AChord: Story = {
   render: () => (
     <Row gap="var(--spacing-1)">
-      <KeyCap size="small">⌘</KeyCap>
-      <KeyCap size="small">⇧</KeyCap>
-      <KeyCap size="small">K</KeyCap>
+      <KeyCap size="small" variant="key">
+        ⌘
+      </KeyCap>
+      <KeyCap size="small" variant="key">
+        ⇧
+      </KeyCap>
+      <KeyCap size="small" variant="key">
+        K
+      </KeyCap>
     </Row>
   ),
 }
@@ -122,8 +206,17 @@ export const AJoinedChord: Story = {
         color: 'var(--color-content-muted)',
       }}
     >
-      <KeyCap size="small">Ctrl</KeyCap>+<KeyCap size="small">Shift</KeyCap>+
-      <KeyCap size="small">P</KeyCap>
+      <KeyCap size="small" variant="key">
+        Ctrl
+      </KeyCap>
+      +
+      <KeyCap size="small" variant="key">
+        Shift
+      </KeyCap>
+      +
+      <KeyCap size="small" variant="key">
+        P
+      </KeyCap>
     </span>
   ),
 }
@@ -131,11 +224,21 @@ export const AJoinedChord: Story = {
 export const WordKeys: Story = {
   render: () => (
     <Row gap="var(--spacing-1)">
-      <KeyCap size="small">Esc</KeyCap>
-      <KeyCap size="small">Tab</KeyCap>
-      <KeyCap size="small">Space</KeyCap>
-      <KeyCap size="small">↩</KeyCap>
-      <KeyCap size="small">⌫</KeyCap>
+      <KeyCap size="small" variant="key">
+        Esc
+      </KeyCap>
+      <KeyCap size="small" variant="key">
+        Tab
+      </KeyCap>
+      <KeyCap size="small" variant="key">
+        Space
+      </KeyCap>
+      <KeyCap size="small" variant="key">
+        ↩
+      </KeyCap>
+      <KeyCap size="small" variant="key">
+        ⌫
+      </KeyCap>
     </Row>
   ),
 }
@@ -144,9 +247,8 @@ export const InProse: Story = {
   render: () => (
     <div style={{ maxWidth: '26rem' }}>
       <p style={{ margin: 0 }}>
-        Open the command palette with <KeyCap size="small">⌘</KeyCap>{' '}
-        <KeyCap size="small">K</KeyCap>, then type a document name. Press{' '}
-        <KeyCap size="small">Esc</KeyCap> to close.
+        Open the command palette with <KeyCap size="small">⌘K</KeyCap>, then
+        type a document name. Press <KeyCap size="small">Esc</KeyCap> to close.
       </p>
     </div>
   ),
@@ -186,14 +288,19 @@ export const InAMenu: Story = {
   ),
 }
 
+/* The settings page lists a shortcut as the keys themselves, not as a hint. */
 export const InASettingsRow: Story = {
   render: () => (
     <div style={{ width: '28rem' }}>
       <PreferenceSection label="Shortcuts">
         <PreferenceRow title="Command palette" subtitle="Cannot be changed">
           <span style={{ display: 'inline-flex', gap: 'var(--spacing-1)' }}>
-            <KeyCap size="small">⌘</KeyCap>
-            <KeyCap size="small">K</KeyCap>
+            <KeyCap size="small" variant="key">
+              ⌘
+            </KeyCap>
+            <KeyCap size="small" variant="key">
+              K
+            </KeyCap>
           </span>
         </PreferenceRow>
       </PreferenceSection>

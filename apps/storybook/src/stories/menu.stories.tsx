@@ -3,14 +3,7 @@ import {
   MoreHorizontal20Regular as More,
   Delete20Regular as Trash,
 } from '@fluentui/react-icons'
-import {
-  Button,
-  Icon,
-  IconButton,
-  KeyCap,
-  Menu,
-  TINTS,
-} from '@dazzlabs/dazzui-react'
+import { Button, Icon, IconButton, KeyCap, Menu } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 
@@ -109,8 +102,8 @@ export const Overview: Story = {
       </Section>
 
       <Section
-        title="Placement and tint"
-        description="`side` is which way it drops and `align` is which edge it lines up with; both give way to the viewport, so a menu at the foot of a window flips up on its own rather than being told to. The tint is the ramp the check glyph resolves against, and it defaults to neutral — a tinted wash on a row of ordinary commands reads as though every one of them were the accent."
+        title="Placement"
+        description="`side` is which way it drops and `align` is which edge it lines up with; both give way to the viewport, so a menu at the foot of a window flips up on its own rather than being told to. A menu takes no tint: its rows wash neutral and its check glyph is set in the row's own ink, because a tinted wash on a row of ordinary commands reads as though every one of them were the accent."
       >
         <Stack>
           <Specimen label="start / end">
@@ -235,7 +228,7 @@ export const Alignment: Story = {
         justifyContent: 'space-between',
         width: '30rem',
         padding: 'var(--spacing-4)',
-        borderRadius: 'var(--radius-medium)',
+        borderRadius: 'var(--radius-large)',
         background: 'var(--color-surface-muted)',
       }}
     >
@@ -297,29 +290,5 @@ export const FromAPlainButton: Story = {
         { label: 'Size', checked: false },
       ]}
     />
-  ),
-}
-
-export const Tints: Story = {
-  render: () => (
-    <Row>
-      {TINTS.map(tint => (
-        <Menu
-          key={tint}
-          align="start"
-          tint={tint}
-          trigger={({ open }) => (
-            <Button tint={tint} variant={open ? 'filled' : 'normal'}>
-              {tint}
-            </Button>
-          )}
-          items={[
-            { label: 'Checked', checked: true },
-            { label: 'Unchecked', checked: false },
-            { label: 'Hover me' },
-          ]}
-        />
-      ))}
-    </Row>
   ),
 }

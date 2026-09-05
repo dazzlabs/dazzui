@@ -19,7 +19,7 @@ function Box({ style }: { style: CSSProperties }) {
       style={{
         width: '100%',
         height: 'var(--spacing-14)',
-        borderRadius: 'var(--radius-medium)',
+        borderRadius: 'var(--radius-large)',
         background: 'var(--color-surface)',
         ...style,
       }}

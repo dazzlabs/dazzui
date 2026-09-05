@@ -22,6 +22,11 @@ export type ButtonVariant =
 export interface ButtonProps extends ComponentProps<'button'> {
   size?: ButtonSize
   variant?: ButtonVariant
+  /**
+   * Which ramp the recipe resolves against. The neutral recipes —
+   * `recessed` and `normal` — read the theme's surface and ink roles rather
+   * than a ramp, so it does nothing to them.
+   */
   tint?: Tint
   fullWidth?: boolean
   /** Trailing hint — the key that also triggers this action. */

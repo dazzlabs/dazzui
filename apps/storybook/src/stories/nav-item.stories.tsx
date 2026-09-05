@@ -35,7 +35,9 @@ function Column({
         gap: 'var(--spacing-1)',
         width,
         padding: 'var(--spacing-2)',
-        borderRadius: 'var(--radius-medium)',
+        /* The container corner, not the control corner: Bright makes the
+           control steps pills, and a column of rows is not a control. */
+        borderRadius: 'var(--radius-large)',
         background: 'var(--color-surface-muted)',
       }}
     >

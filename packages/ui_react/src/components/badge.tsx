@@ -11,7 +11,7 @@ export type BadgeVariant = 'filled' | 'tinted' | 'outlined' | 'raised'
 export interface BadgeProps extends ComponentPropsWithoutRef<'span'> {
   size?: BadgeSize
   variant?: BadgeVariant
-  /** Which color ramp the variant resolves against. */
+  /** Which color ramp the variant resolves against; `raised` has no ramp and ignores it. */
   tint?: Tint
 }
 

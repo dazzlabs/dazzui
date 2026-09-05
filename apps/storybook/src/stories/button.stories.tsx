@@ -11,6 +11,7 @@ import {
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { Page, Section, Specimen, Stack } from '../components/gallery'
+import { label } from '../lib/label'
 import { Col, Row } from '../components/stage'
 
 const meta: Meta<typeof Button> = {
@@ -24,11 +25,20 @@ type Story = StoryObj<typeof meta>
 
 const VARIANTS: ButtonVariant[] = [
   'normal',
+  'recessed',
   'filled',
   'tinted',
   'outlined',
   'plain',
 ]
+
+/*
+ * The recipes that read a ramp. `recessed` and `normal` are the neutral
+ * controls: they read the theme's surface and ink roles, not a shade off a
+ * ramp, so `tint` does nothing to them — a neutral chip that could turn red
+ * would no longer be neutral.
+ */
+const TINTED: ButtonVariant[] = ['filled', 'tinted', 'outlined', 'plain']
 
 const SIZES = ['small', 'medium', 'large'] as const
 
@@ -38,11 +48,11 @@ export const Overview: Story = {
   render: () => (
     <Page
       title="Button"
-      description="The five control recipes, each on any ramp. Hover, press, and disabled are not written here at all — `data-control` puts the recipe's own states on the element, so a button's stylesheet is the box and nothing else."
+      description="The six control recipes, each on any ramp. Hover, press, and disabled are not written here at all — `data-control` puts the recipe's own states on the element, so a button's stylesheet is the box and nothing else."
     >
       <Section
         title="Variants"
-        description="`filled` is the one action a view points at; `normal` and `outlined` are its neighbours; `tinted` is a quiet chip; `plain` looks like text at rest but keeps the box, because its recipe washes on hover."
+        description="`normal` is the neutral control on the paper, edged by a hairline; `recessed` is the same control one step into the paper, the workaday grey chip a toolbar or a footer is full of, and the default. `filled` is the one action a view points at; `outlined` its drawn twin; `tinted` a quiet accent chip; `plain` looks like text at rest but keeps the box, because its recipe washes on hover."
       >
         <Stack>
           {VARIANTS.map(variant => (
@@ -58,14 +68,14 @@ export const Overview: Story = {
 
       <Section
         title="Tints"
-        description="Hover any of these: the hover and press states come from the same recipe, so a danger button darkens the way a primary one does. Nothing below sets a colour — each row is one variant read against six ramps."
+        description="Hover any of these: the hover and press states come from the same recipe, so a danger button darkens the way a primary one does. Nothing below sets a colour — each row is one variant read against six ramps. `recessed` and `normal` are absent on purpose: they are the neutral controls, reading the theme's surface and ink roles rather than a ramp, so `tint` leaves them untouched."
       >
         <Stack>
-          {VARIANTS.map(variant => (
+          {TINTED.map(variant => (
             <Specimen key={variant} label={variant}>
               {TINTS.map(tint => (
                 <Button key={tint} tint={tint} variant={variant}>
-                  {tint}
+                  {label(tint)}
                 </Button>
               ))}
             </Specimen>
@@ -148,6 +158,10 @@ export const Overview: Story = {
 }
 
 export const Normal: Story = {
+  render: () => <Button variant="normal">Save changes</Button>,
+}
+
+export const Recessed: Story = {
   render: () => <Button>Save changes</Button>,
 }
 
@@ -172,7 +186,7 @@ export const AllVariants: Story = {
     <Row>
       {VARIANTS.map(variant => (
         <Button key={variant} variant={variant}>
-          {variant}
+          {label(variant)}
         </Button>
       ))}
     </Row>
@@ -184,7 +198,7 @@ export const Disabled: Story = {
     <Row>
       {VARIANTS.map(variant => (
         <Button key={variant} disabled variant={variant}>
-          {variant}
+          {label(variant)}
         </Button>
       ))}
     </Row>
@@ -206,17 +220,15 @@ export const Sizes: Story = {
 export const Tints: Story = {
   render: () => (
     <Col>
-      {(['filled', 'tinted', 'outlined', 'normal', 'plain'] as const).map(
-        variant => (
-          <Row key={variant}>
-            {TINTS.map(tint => (
-              <Button key={tint} tint={tint} variant={variant}>
-                {tint}
-              </Button>
-            ))}
-          </Row>
-        )
-      )}
+      {TINTED.map(variant => (
+        <Row key={variant}>
+          {TINTS.map(tint => (
+            <Button key={tint} tint={tint} variant={variant}>
+              {label(tint)}
+            </Button>
+          ))}
+        </Row>
+      ))}
     </Col>
   ),
 }

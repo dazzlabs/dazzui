@@ -73,6 +73,20 @@ function ExportSheet(props: { defaultOpen?: boolean }) {
   )
 }
 
+/*
+ * The one sentence a confirmation carries — what happens and what it costs.
+ * It is body copy, so it goes in the body: a header that carried it as the
+ * subtitle would sit directly on the footer, and the two rules between them
+ * would read as one thick one.
+ */
+const message = {
+  margin: 0,
+  color: 'var(--color-content-secondary)',
+  fontFamily: 'var(--body-medium-font-family)',
+  fontSize: 'var(--body-medium-font-size)',
+  lineHeight: 'var(--body-medium-line-height)',
+}
+
 /** The documented page. Every story after this one is the component alone. */
 export const Overview: Story = {
   parameters: { layout: 'fullscreen' },
@@ -101,10 +115,12 @@ export const Overview: Story = {
             </Button>
           }
         >
-          <DialogHeader
-            title="Delete this glossary?"
-            subtitle="412 terms will be removed from every project using it."
-          />
+          <DialogHeader title="Delete this glossary?" />
+          <DialogBody>
+            <p style={message}>
+              412 terms will be removed from every project using it.
+            </p>
+          </DialogBody>
           <DialogFooter>
             <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
               <DialogClose render={<Button>Cancel</Button>} />
@@ -154,10 +170,12 @@ export const AConfirmation: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => (
     <Dialog defaultOpen width="22rem">
-      <DialogHeader
-        title="Discard this draft?"
-        subtitle="The 24 segments you edited since the last save will be lost."
-      />
+      <DialogHeader title="Discard this draft?" />
+      <DialogBody>
+        <p style={message}>
+          The 24 segments you edited since the last save will be lost.
+        </p>
+      </DialogBody>
       <DialogFooter>
         <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
           <DialogClose render={<Button>Keep editing</Button>} />
@@ -172,10 +190,12 @@ export const Danger: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => (
     <Dialog defaultOpen tone="danger" width="22rem">
-      <DialogHeader
-        title="Delete this glossary?"
-        subtitle="412 terms will be removed from every project using it."
-      />
+      <DialogHeader title="Delete this glossary?" />
+      <DialogBody>
+        <p style={message}>
+          412 terms will be removed from every project using it.
+        </p>
+      </DialogBody>
       <DialogFooter>
         <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
           <DialogClose render={<Button>Cancel</Button>} />
@@ -345,10 +365,12 @@ export const Nested: Story = {
             </Button>
           }
         >
-          <DialogHeader
-            title="Delete this glossary?"
-            subtitle="412 terms will be removed from every project using it."
-          />
+          <DialogHeader title="Delete this glossary?" />
+          <DialogBody>
+            <p style={message}>
+              412 terms will be removed from every project using it.
+            </p>
+          </DialogBody>
           <DialogFooter>
             <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
               <DialogClose render={<Button>Cancel</Button>} />
