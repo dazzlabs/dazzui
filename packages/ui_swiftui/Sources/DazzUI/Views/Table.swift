@@ -57,7 +57,7 @@ public struct TableHead<Content: View>: View {
       content()
     }
     .padding(.horizontal, vars.spacing5)
-    .background(vars.colorSurfaceMuted)
+    .background(vars.colorSurfaceChrome)
     .rule(vars.colorBorder, edge: .bottom, width: hairline)
   }
 }

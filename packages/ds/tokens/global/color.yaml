@@ -376,6 +376,20 @@ color:
         dark: "#3a3f4d"
         bright: "#ffffff"
         bright-dark: "#2a3644"
+  # The bars a window is built out of: a dialog's footer, a table's header,
+  # a titlebar. Studio takes the strip one step back from the paper, the
+  # same step a card takes, which is why it looks like `surface-muted` and
+  # is not: Bright inverts the pair, and its bars are pure white on the warm
+  # paper. A footer that borrowed the card fill would sit darker than the
+  # body it closes in exactly the theme where it should sit lighter.
+  surface-chrome:
+    $type: color
+    $value: "#f7f7fa"
+    $extensions:
+      mode:
+        dark: "#12141a"
+        bright: "#ffffff"
+        bright-dark: "#111a26"
   # The ink ramp, cut to three steps. The design carries eight; the extra
   # five are all one-off scene labels, and a shared vocabulary that offers
   # eight near-identical greys only invites each component to pick a

@@ -8,6 +8,7 @@ import {
   Button,
   Icon,
   IconButton,
+  KeyCap,
   SearchField,
 } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
@@ -156,6 +157,45 @@ export const AsAToolbar: Story = {
       </ActionBar>
     )
   },
+}
+
+/*
+ * The row a mini window or a popover closes with: a bar on the chrome fill,
+ * cornered like a control, holding quiet chips with the confirming action
+ * pushed to the far end. The box is the story's, not the component's — the
+ * bar owns only the rhythm — so it is drawn here the way a host would draw it.
+ */
+const row = {
+  width: '22.5rem',
+  padding: 'var(--spacing-2)',
+  background: 'var(--color-surface-chrome)',
+  borderRadius: 'var(--radius-medium)',
+}
+
+export const AnActionRow: Story = {
+  render: () => (
+    <ActionBar align="between" style={row}>
+      <ActionBar>
+        <Button>Preview</Button>
+        <Button>Copy</Button>
+      </ActionBar>
+      <Button variant="filled" shortcut="⏎">
+        Save
+      </Button>
+    </ActionBar>
+  ),
+}
+
+export const WithAKeyHint: Story = {
+  render: () => (
+    <ActionBar align="between" style={row}>
+      <ActionBar>
+        <Button>Favourite</Button>
+        <Button>Add tag</Button>
+      </ActionBar>
+      <KeyCap>⌘⇧E</KeyCap>
+    </ActionBar>
+  ),
 }
 
 export const MixedControls: Story = {

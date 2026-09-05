@@ -41,7 +41,7 @@ class TableHead extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: vars.spacing5),
       decoration: BoxDecoration(
-        color: vars.colorSurfaceMuted,
+        color: vars.colorSurfaceChrome,
         border: Border(
           bottom: BorderSide(
             color: vars.colorBorder,

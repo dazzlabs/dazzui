@@ -78,7 +78,7 @@
   gap: var(--spacing-2);
   padding-block: var(--spacing-3);
   padding-inline: var(--spacing-5);
-  background-color: var(--color-surface-muted);
+  background-color: var(--color-surface-chrome);
   border-top: var(--stroke-hairline) solid var(--color-border);
 }
 

@@ -15,7 +15,9 @@ pub enum ActionBarAlign {
 /// A row of controls kept on one rhythm.
 ///
 /// It owns no colour and no box — only the rhythm — so it takes the shared
-/// control gap rather than a token of its own.
+/// control gap rather than a token of its own: the small profile's, whatever
+/// the children's size, since the design draws every action row on that one
+/// step.
 #[derive(IntoElement)]
 pub struct ActionBar {
     align: ActionBarAlign,
@@ -55,7 +57,7 @@ impl RenderOnce for ActionBar {
         div()
             .flex()
             .items_center()
-            .gap(vars.control_medium_gap)
+            .gap(vars.control_small_gap)
             .map(|el| match self.align {
                 ActionBarAlign::Start => el,
                 ActionBarAlign::End => el.justify_end(),

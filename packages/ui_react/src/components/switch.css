@@ -36,8 +36,8 @@
 
 /* The thumb changes colour with the state: faint ink while off — a grey
    thumb in a grey groove, deliberately low-contrast, "off" — and only
-   brightens to the raised white once the track fills. A white thumb in the
-   off groove reads nearly as loud as the on state. */
+   brightens once the track fills. A white thumb in the off groove reads
+   nearly as loud as the on state. */
 .dz-switch__thumb {
   display: block;
   border-radius: var(--radius-full);
@@ -45,38 +45,41 @@
   transition: background-color var(--motion-duration) var(--motion-easing);
 }
 
+/* The on thumb is the filled track's *content*, the way a filled button's
+   label is: white on Studio's accent, acid green on Bright's ink navy, navy
+   on Bright Dark's acid. A surface role here would be a white thumb on every
+   theme, which is the tell of a port — and on a dark canvas a surface is
+   darker than the track it rides in. */
 .dz-switch[data-checked] .dz-switch__thumb {
-  /* `surface-raised` rather than the paper: on a dark canvas the paper is
-     darker than the groove, and a thumb painted with it would sink. */
-  background-color: var(--color-surface-raised);
+  background-color: var(--control-color-filled-content-normal);
 }
 
 .dz-switch[data-size='small'] {
-  width: var(--toggle-small-width);
-  height: var(--toggle-small-height);
+  width: var(--switch-small-width);
+  height: var(--switch-small-height);
 }
 
 .dz-switch[data-size='small'] .dz-switch__thumb {
-  width: var(--toggle-small-thumb);
-  height: var(--toggle-small-thumb);
+  width: var(--switch-small-thumb);
+  height: var(--switch-small-thumb);
 }
 
 .dz-switch[data-size='medium'] {
-  width: var(--toggle-medium-width);
-  height: var(--toggle-medium-height);
+  width: var(--switch-medium-width);
+  height: var(--switch-medium-height);
 }
 
 .dz-switch[data-size='medium'] .dz-switch__thumb {
-  width: var(--toggle-medium-thumb);
-  height: var(--toggle-medium-thumb);
+  width: var(--switch-medium-thumb);
+  height: var(--switch-medium-thumb);
 }
 
 .dz-switch[data-size='large'] {
-  width: var(--toggle-large-width);
-  height: var(--toggle-large-height);
+  width: var(--switch-large-width);
+  height: var(--switch-large-height);
 }
 
 .dz-switch[data-size='large'] .dz-switch__thumb {
-  width: var(--toggle-large-thumb);
-  height: var(--toggle-large-thumb);
+  width: var(--switch-large-thumb);
+  height: var(--switch-large-thumb);
 }

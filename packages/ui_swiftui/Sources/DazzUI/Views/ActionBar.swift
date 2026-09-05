@@ -11,7 +11,9 @@ public enum ActionBarAlign: String, CaseIterable, Sendable {
 /// A row of controls kept on one rhythm.
 ///
 /// It owns no colour and no box — only the rhythm — so it takes the shared
-/// control gap rather than a token of its own.
+/// control gap rather than a token of its own: the small profile's, whatever
+/// the children's size, since the design draws every action row on that one
+/// step.
 public struct ActionBar<Content: View>: View {
   public var align: ActionBarAlign
   @ViewBuilder public var content: () -> Content
@@ -27,7 +29,7 @@ public struct ActionBar<Content: View>: View {
   }
 
   public var body: some View {
-    ActionBarLayout(gap: theme.vars.controlMediumGap, align: align) {
+    ActionBarLayout(gap: theme.vars.controlSmallGap, align: align) {
       content()
     }
   }

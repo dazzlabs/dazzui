@@ -398,13 +398,13 @@ class _SwitchState extends State<Switch> with TickerProviderStateMixin {
             trackColor: theme.vars.colorSurfaceSunken,
             // The thumb changes colour with the state: faint ink while off —
             // a grey thumb in a grey groove, deliberately low-contrast — and
-            // only brightens to the raised surface once the track fills. A
-            // white thumb in the off groove reads nearly as loud as the on
-            // state. `surface-raised` rather than the paper: on a dark canvas
-            // the paper is darker than the groove, and a thumb painted with
-            // it would sink.
+            // only brightens once the track fills. The on thumb is the filled
+            // track's *content*, the way a filled button's label is: white on
+            // Studio's accent, acid green on Bright's ink navy. A surface role
+            // here would be a white thumb on every theme, and on a dark
+            // canvas a surface is darker than the track it rides in.
             thumbColor: (widget.value
-                ? theme.vars.colorSurfaceRaised
+                ? theme.vars.controlColorFilledContent.normalColor!
                 : theme.vars.colorContentFaint),
             thumbSize: thumbSize,
             // Opacity, lightness, and saturation values were approximated with

@@ -8,7 +8,9 @@ enum ActionBarAlign { start, end, between }
 /// A row of controls.
 ///
 /// It owns no colour and no box — only the rhythm — so it takes the shared
-/// control gap rather than a token of its own.
+/// control gap rather than a token of its own: the small profile's, whatever
+/// the children's size, since the design draws every action row on that one
+/// step.
 class ActionBar extends StatelessWidget {
   const ActionBar({
     super.key,
@@ -32,7 +34,7 @@ class ActionBar extends StatelessWidget {
           : MainAxisSize.max,
       spacing: align == ActionBarAlign.between
           ? 0
-          : context.vars.controlMediumGap,
+          : context.vars.controlSmallGap,
       children: children,
     );
   }

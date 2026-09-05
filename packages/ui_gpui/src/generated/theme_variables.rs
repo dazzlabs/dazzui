@@ -33,6 +33,7 @@ pub struct ThemeSeed {
     pub color_surface_subtle: Hsla,
     pub color_surface_inset: Hsla,
     pub color_surface_raised: Hsla,
+    pub color_surface_chrome: Hsla,
     pub color_content: Hsla,
     pub color_content_secondary: Hsla,
     pub color_content_nav: Hsla,
@@ -158,6 +159,7 @@ pub const STUDIO_LIGHT_SEED: ThemeSeed = ThemeSeed {
     color_surface_subtle: Hsla { h: 0.666667, s: 0.25, l: 0.968627, a: 1.0 },
     color_surface_inset: Hsla { h: 0.666667, s: 0.2, l: 0.95098, a: 1.0 },
     color_surface_raised: Hsla { h: 0.0, s: 0.0, l: 1.0, a: 1.0 },
+    color_surface_chrome: Hsla { h: 0.666667, s: 0.230769, l: 0.97451, a: 1.0 },
     color_content: Hsla { h: 0.652778, s: 0.4, l: 0.117647, a: 1.0 },
     color_content_secondary: Hsla { h: 0.645833, s: 0.210526, l: 0.298039, a: 1.0 },
     color_content_nav: Hsla { h: 0.641414, s: 0.18232, l: 0.354902, a: 1.0 },
@@ -314,6 +316,7 @@ pub struct ThemeVariables {
     pub color_surface_subtle: Hsla,
     pub color_surface_inset: Hsla,
     pub color_surface_raised: Hsla,
+    pub color_surface_chrome: Hsla,
     pub color_content: Hsla,
     pub color_content_secondary: Hsla,
     pub color_content_nav: Hsla,
@@ -491,6 +494,7 @@ impl ThemeVariables {
         let color_surface_subtle = seed.color_surface_subtle;
         let color_surface_inset = seed.color_surface_inset;
         let color_surface_raised = seed.color_surface_raised;
+        let color_surface_chrome = seed.color_surface_chrome;
         let color_content = seed.color_content;
         let color_content_secondary = seed.color_content_secondary;
         let color_content_nav = seed.color_content_nav;
@@ -722,6 +726,7 @@ impl ThemeVariables {
             color_surface_subtle,
             color_surface_inset,
             color_surface_raised,
+            color_surface_chrome,
             color_content,
             color_content_secondary,
             color_content_nav,
@@ -897,6 +902,7 @@ pub static BRIGHT_LIGHT: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     color_surface_subtle: Hsla { h: 0.133333, s: 0.217391, l: 0.954902, a: 1.0 },
     color_surface_inset: Hsla { h: 0.142857, s: 0.189189, l: 0.927451, a: 1.0 },
     color_surface_raised: Hsla { h: 0.0, s: 0.0, l: 1.0, a: 1.0 },
+    color_surface_chrome: Hsla { h: 0.0, s: 0.0, l: 1.0, a: 1.0 },
     color_content: Hsla { h: 0.603448, s: 0.460317, l: 0.123529, a: 1.0 },
     color_content_secondary: Hsla { h: 0.603448, s: 0.460317, l: 0.123529, a: 0.780392 },
     color_content_nav: Hsla { h: 0.603448, s: 0.460317, l: 0.123529, a: 0.701961 },
@@ -938,6 +944,7 @@ pub static BRIGHT_DARK: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     color_surface_subtle: Hsla { h: 0.587719, s: 0.372549, l: 0.1, a: 1.0 },
     color_surface_inset: Hsla { h: 0.590909, s: 0.333333, l: 0.129412, a: 1.0 },
     color_surface_raised: Hsla { h: 0.589744, s: 0.236364, l: 0.215686, a: 1.0 },
+    color_surface_chrome: Hsla { h: 0.595238, s: 0.381818, l: 0.107843, a: 1.0 },
     color_content: Hsla { h: 0.233333, s: 0.185185, l: 0.947059, a: 1.0 },
     color_content_secondary: Hsla { h: 0.233333, s: 0.185185, l: 0.947059, a: 0.780392 },
     color_content_nav: Hsla { h: 0.233333, s: 0.185185, l: 0.947059, a: 0.701961 },
@@ -989,6 +996,7 @@ pub static STUDIO_DARK: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     color_surface_subtle: Hsla { h: 0.625, s: 0.222222, l: 0.105882, a: 1.0 },
     color_surface_inset: Hsla { h: 0.621212, s: 0.169231, l: 0.127451, a: 1.0 },
     color_surface_raised: Hsla { h: 0.622807, s: 0.140741, l: 0.264706, a: 1.0 },
+    color_surface_chrome: Hsla { h: 0.625, s: 0.181818, l: 0.086275, a: 1.0 },
     color_content: Hsla { h: 0.645833, s: 0.444444, l: 0.964706, a: 1.0 },
     color_content_secondary: Hsla { h: 0.633333, s: 0.263158, l: 0.813725, a: 1.0 },
     color_content_nav: Hsla { h: 0.631313, s: 0.195266, l: 0.668627, a: 1.0 },

@@ -153,7 +153,7 @@ class DialogFooter extends StatelessWidget {
         horizontal: vars.spacing5,
       ),
       decoration: BoxDecoration(
-        color: vars.colorSurfaceMuted,
+        color: vars.colorSurfaceChrome,
         border: Border(
           top: BorderSide(
             color: vars.colorBorder,

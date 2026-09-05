@@ -145,7 +145,7 @@ public struct DialogBody<Content: View>: View {
   }
 }
 
-/// The chrome below the body — a row of controls on the muted surface.
+/// The chrome below the body — a row of controls on the window's bar fill.
 public struct DialogFooter<Content: View>: View {
   @ViewBuilder public var content: () -> Content
 
@@ -165,7 +165,7 @@ public struct DialogFooter<Content: View>: View {
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.vertical, vars.spacing3)
     .padding(.horizontal, vars.spacing5)
-    .background(vars.colorSurfaceMuted)
+    .background(vars.colorSurfaceChrome)
     .rule(vars.colorBorder, edge: .top, width: hairline)
   }
 }

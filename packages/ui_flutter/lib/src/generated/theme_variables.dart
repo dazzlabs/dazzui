@@ -19,6 +19,7 @@ class ThemeVariables {
     this.colorSurfaceSubtle = const Color(0xFFF5F5F9),
     this.colorSurfaceInset = const Color(0xFFF0F0F5),
     this.colorSurfaceRaised = const Color(0xFFFFFFFF),
+    this.colorSurfaceChrome = const Color(0xFFF7F7FA),
     this.colorContent = const Color(0xFF12142A),
     this.colorContentSecondary = const Color(0xFF3C405C),
     this.colorContentNav = const Color(0xFF4A4F6B),
@@ -212,6 +213,7 @@ class ThemeVariables {
   final Color colorSurfaceSubtle;
   final Color colorSurfaceInset;
   final Color colorSurfaceRaised;
+  final Color colorSurfaceChrome;
   final Color colorContent;
   final Color colorContentSecondary;
   final Color colorContentNav;
@@ -616,6 +618,7 @@ const themeVariablesBrightLight = ThemeVariables(
   colorSurfaceSubtle: Color(0xFFF6F5F1),
   colorSurfaceInset: Color(0xFFF0EFE9),
   colorSurfaceRaised: Color(0xFFFFFFFF),
+  colorSurfaceChrome: Color(0xFFFFFFFF),
   colorContent: Color(0xFF111C2E),
   colorContentSecondary: Color(0xC7111C2E),
   colorContentNav: Color(0xB3111C2E),
@@ -705,6 +708,7 @@ const themeVariablesBrightDark = ThemeVariables(
   colorSurfaceSubtle: Color(0xFF101923),
   colorSurfaceInset: Color(0xFF16202C),
   colorSurfaceRaised: Color(0xFF2A3644),
+  colorSurfaceChrome: Color(0xFF111A26),
   colorContent: Color(0xFFF2F4EF),
   colorContentSecondary: Color(0xC7F2F4EF),
   colorContentNav: Color(0xB3F2F4EF),
@@ -806,6 +810,7 @@ const themeVariablesStudioDark = ThemeVariables(
   colorSurfaceSubtle: Color(0xFF151821),
   colorSurfaceInset: Color(0xFF1B1E26),
   colorSurfaceRaised: Color(0xFF3A3F4D),
+  colorSurfaceChrome: Color(0xFF12141A),
   colorContent: Color(0xFFF2F3FA),
   colorContentSecondary: Color(0xFFC3C8DC),
   colorContentNav: Color(0xFF9AA1BB),

@@ -22,6 +22,7 @@ const PAIRS = [
   { fg: 'color.content', bg: 'color.surface', min: 4.5 },
   { fg: 'color.content', bg: 'color.canvas', min: 4.5 },
   { fg: 'color.content', bg: 'color.surface-muted', min: 4.5 },
+  { fg: 'color.content', bg: 'color.surface-chrome', min: 4.5 },
   { fg: 'color.content-secondary', bg: 'color.surface', min: 4.5 },
   { fg: 'color.content-nav', bg: 'color.surface', min: 4.5 },
   { fg: 'color.content-muted', bg: 'color.surface', min: 4.5 },

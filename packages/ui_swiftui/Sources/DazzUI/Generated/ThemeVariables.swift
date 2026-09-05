@@ -18,6 +18,7 @@ public struct ThemeVariables: Sendable {
     colorSurfaceSubtle: Color = Color(argb: 0xFFF5_F5F9),
     colorSurfaceInset: Color = Color(argb: 0xFFF0_F0F5),
     colorSurfaceRaised: Color = Color(argb: 0xFFFF_FFFF),
+    colorSurfaceChrome: Color = Color(argb: 0xFFF7_F7FA),
     colorContent: Color = Color(argb: 0xFF12_142A),
     colorContentSecondary: Color = Color(argb: 0xFF3C_405C),
     colorContentNav: Color = Color(argb: 0xFF4A_4F6B),
@@ -175,6 +176,7 @@ public struct ThemeVariables: Sendable {
     self.colorSurfaceSubtle = colorSurfaceSubtle
     self.colorSurfaceInset = colorSurfaceInset
     self.colorSurfaceRaised = colorSurfaceRaised
+    self.colorSurfaceChrome = colorSurfaceChrome
     self.colorContent = colorContent
     self.colorContentSecondary = colorContentSecondary
     self.colorContentNav = colorContentNav
@@ -298,6 +300,7 @@ public struct ThemeVariables: Sendable {
   public let colorSurfaceSubtle: Color
   public let colorSurfaceInset: Color
   public let colorSurfaceRaised: Color
+  public let colorSurfaceChrome: Color
   public let colorContent: Color
   public let colorContentSecondary: Color
   public let colorContentNav: Color
@@ -557,6 +560,7 @@ public extension ThemeVariables {
     colorSurfaceSubtle: Color(argb: 0xFFF6_F5F1),
     colorSurfaceInset: Color(argb: 0xFFF0_EFE9),
     colorSurfaceRaised: Color(argb: 0xFFFF_FFFF),
+    colorSurfaceChrome: Color(argb: 0xFFFF_FFFF),
     colorContent: Color(argb: 0xFF11_1C2E),
     colorContentSecondary: Color(argb: 0xC711_1C2E),
     colorContentNav: Color(argb: 0xB311_1C2E),
@@ -600,6 +604,7 @@ public extension ThemeVariables {
     colorSurfaceSubtle: Color(argb: 0xFF10_1923),
     colorSurfaceInset: Color(argb: 0xFF16_202C),
     colorSurfaceRaised: Color(argb: 0xFF2A_3644),
+    colorSurfaceChrome: Color(argb: 0xFF11_1A26),
     colorContent: Color(argb: 0xFFF2_F4EF),
     colorContentSecondary: Color(argb: 0xC7F2_F4EF),
     colorContentNav: Color(argb: 0xB3F2_F4EF),
@@ -652,6 +657,7 @@ public extension ThemeVariables {
     colorSurfaceSubtle: Color(argb: 0xFF15_1821),
     colorSurfaceInset: Color(argb: 0xFF1B_1E26),
     colorSurfaceRaised: Color(argb: 0xFF3A_3F4D),
+    colorSurfaceChrome: Color(argb: 0xFF12_141A),
     colorContent: Color(argb: 0xFFF2_F3FA),
     colorContentSecondary: Color(argb: 0xFFC3_C8DC),
     colorContentNav: Color(argb: 0xFF9A_A1BB),

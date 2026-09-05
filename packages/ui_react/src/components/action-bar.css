@@ -1,11 +1,14 @@
 /*
  * A row of controls. It owns no colour and no box — only the rhythm — so it
- * takes the shared control gap rather than a token of its own.
+ * takes the shared control gap rather than a token of its own. The small
+ * profile's gap, whatever the children's size: the design draws every
+ * action row on that one step, and a row of large buttons that widened its
+ * gaps to match would drift out of line with the row of chips above it.
  */
 .dz-action-bar {
   display: flex;
   align-items: center;
-  gap: var(--control-medium-gap);
+  gap: var(--control-small-gap);
 }
 
 .dz-action-bar[data-align='end'] {

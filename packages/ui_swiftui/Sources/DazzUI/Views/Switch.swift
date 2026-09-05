@@ -81,12 +81,18 @@ public struct Switch: View {
   }
 
   /// Faint ink while off — a grey thumb in a grey groove, deliberately
-  /// low-contrast, "off" — and only the raised surface once the track fills.
-  /// A white thumb in the off groove reads nearly as loud as the on state, and
-  /// `surface-raised` rather than the paper because on a dark canvas the paper
-  /// is darker than the groove and a thumb painted with it would sink.
+  /// low-contrast, "off" — and once the track fills, the filled track's
+  /// *content*, the way a filled button's label is: white on Studio's accent,
+  /// acid green on Bright's ink navy. A white thumb in the off groove reads
+  /// nearly as loud as the on state, and a surface role on the on thumb would
+  /// be white on every theme — and darker than the track on a dark canvas.
   private var thumbColor: Color {
-    checked ? theme.vars.colorSurfaceRaised : theme.vars.colorContentFaint
+    guard checked else { return theme.vars.colorContentFaint }
+    return theme.vars.resolve(
+      theme.vars.descriptor(.filled, .content),
+      tint: tint,
+      state: .normal
+    )
   }
 
   private var width: CGFloat {

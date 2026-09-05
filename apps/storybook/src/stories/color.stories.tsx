@@ -24,6 +24,7 @@ const RAMP_ORDER = [
 const ROLE_ORDER = [
   'color-surface',
   'color-surface-muted',
+  'color-surface-chrome',
   'color-content',
   'color-content-muted',
   'color-border',

@@ -233,7 +233,7 @@ impl RenderOnce for DialogFooter {
             .gap(vars.spacing_2)
             .py(vars.spacing_3)
             .px(vars.spacing_5)
-            .bg(vars.color_surface_muted)
+            .bg(vars.color_surface_chrome)
             .children(self.children)
             .child(rule(vars.color_border, Edge::Top, hairline(vars, window)))
     }
