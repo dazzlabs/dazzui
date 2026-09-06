@@ -39,6 +39,49 @@ pub enum StoryLayout {
     Fullscreen,
 }
 
+/// A story's Storybook id — `components-button--all-variants` — derived the
+/// way Storybook derives it from a title and an export name: lower-cased,
+/// with every run of anything but a letter or a digit collapsed to one dash.
+///
+/// The id is the key the React reference is written under, so it is what
+/// makes a story here and the story in `apps/storybook` the same story. A
+/// name that differs only in case or spacing (`All variants`, `All
+/// Variants`) lands on the same id; a name that differs in a word does not.
+pub fn story_id(group: &str, page: &str, story: &str) -> String {
+    format!(
+        "{}--{}",
+        sanitize(&format!("{group}/{page}")),
+        sanitize(story)
+    )
+}
+
+fn sanitize(text: &str) -> String {
+    let mut out = String::with_capacity(text.len());
+    for character in text.chars() {
+        if character.is_ascii_alphanumeric() {
+            out.push(character.to_ascii_lowercase());
+        } else if !out.ends_with('-') {
+            out.push('-');
+        }
+    }
+    out.trim_matches('-').to_string()
+}
+
+/// Every story's id, in sidebar order — what the parity test holds against
+/// the React list.
+pub fn story_ids() -> Vec<String> {
+    GROUPS
+        .iter()
+        .flat_map(|group| {
+            group.pages.iter().flat_map(move |page| {
+                page.stories
+                    .iter()
+                    .map(move |story| story_id(group.name, page.name, story.name))
+            })
+        })
+        .collect()
+}
+
 /// One story: a name in the sidebar and the element it draws.
 pub struct Story {
     pub name: &'static str,

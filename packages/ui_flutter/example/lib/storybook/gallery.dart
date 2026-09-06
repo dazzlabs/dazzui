@@ -267,7 +267,7 @@ class TokenTable extends StatelessWidget {
 
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: proseMeasure),
-      child: DataTable(
+      child: Table(
         children: [
           const TableHead(
             children: [

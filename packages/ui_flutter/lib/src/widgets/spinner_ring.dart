@@ -2,8 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
-class OvalLoader extends StatefulWidget {
-  const OvalLoader({
+class SpinnerRing extends StatefulWidget {
+  const SpinnerRing({
     super.key,
     required this.size,
     required this.color,
@@ -21,10 +21,10 @@ class OvalLoader extends StatefulWidget {
   final double? strokeWidth;
 
   @override
-  State<OvalLoader> createState() => _OvalLoaderState();
+  State<SpinnerRing> createState() => _SpinnerRingState();
 }
 
-class _OvalLoaderState extends State<OvalLoader>
+class _SpinnerRingState extends State<SpinnerRing>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _animation;

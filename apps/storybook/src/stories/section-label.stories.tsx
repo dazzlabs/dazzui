@@ -12,7 +12,7 @@ import {
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { Page, Section, Specimen, Stack } from '../components/gallery'
-import { Frame, Row } from '../components/stage'
+import { Col, Frame, Row } from '../components/stage'
 
 const meta: Meta<typeof SectionLabel> = {
   title: 'Components/SectionLabel',
@@ -72,6 +72,16 @@ export const Overview: Story = {
 
 export const Default: Story = {
   render: () => <SectionLabel>Quality signals</SectionLabel>,
+}
+
+/** The quieter tone, for a column that already has a heading above it. */
+export const Faint: Story = {
+  render: () => (
+    <Col>
+      <SectionLabel>Quality signals</SectionLabel>
+      <SectionLabel faint>Quality signals</SectionLabel>
+    </Col>
+  ),
 }
 
 export const Tints: Story = {

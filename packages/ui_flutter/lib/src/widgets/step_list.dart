@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../generated/theme_variables.dart';
 import '../theme/theme.dart';
-import 'loader.dart';
+import 'spinner.dart';
 
 /// Where a [Step] has got to.
 enum StepStatus { done, active, idle }
@@ -109,7 +109,7 @@ class _Marker extends StatelessWidget {
       return SizedBox(
         width: box,
         height: box,
-        child: const Loader(),
+        child: const Spinner(),
       );
     }
 

@@ -4,12 +4,12 @@ import '../storybook/gallery.dart';
 import '../storybook/stage.dart';
 import '../storybook/story.dart';
 
-/// `Components/Loader` — work in flight, with no end in sight.
+/// `Components/Spinner` — work in flight, with no end in sight.
 ///
 /// The React and SwiftUI packages call this `Spinner`; the Flutter one keeps
 /// the name the widget shipped under.
-class LoaderStories {
-  LoaderStories._();
+class SpinnerStories {
+  SpinnerStories._();
 
   static const List<WidgetSize> sizes = [
     WidgetSize.small,
@@ -17,23 +17,23 @@ class LoaderStories {
     WidgetSize.large,
   ];
 
-  static StoryPage get page => StoryPage('Loader', [
+  static StoryPage get page => StoryPage('Spinner', [
     Story('Overview', (context) => const _Overview(), layout: StoryLayout.page),
-    Story('Default', (context) => const Loader()),
+    Story('Default', (context) => const Spinner()),
     Story(
       'Sizes',
       (context) => const RowWrap(
         children: [
-          Loader(size: WidgetSize.small),
-          Loader(),
-          Loader(size: WidgetSize.large),
+          Spinner(size: WidgetSize.small),
+          Spinner(),
+          Spinner(size: WidgetSize.large),
         ],
       ),
     ),
     Story(
       'Tints',
       (context) => RowWrap(
-        children: [for (final tint in LoaderTint.values) Loader(tint: tint)],
+        children: [for (final tint in SpinnerTint.values) Spinner(tint: tint)],
       ),
     ),
     Story(
@@ -45,7 +45,7 @@ class LoaderStories {
           mainAxisSize: MainAxisSize.min,
           spacing: Theme.of(context).vars.spacing1,
           children: const [
-            Loader(size: WidgetSize.small, onAccent: true),
+            Spinner(size: WidgetSize.small, onAccent: true),
             Text('Translating…'),
           ],
         ),
@@ -60,7 +60,7 @@ class LoaderStories {
           mainAxisSize: MainAxisSize.min,
           spacing: Theme.of(context).vars.spacing1,
           children: const [
-            Loader(size: WidgetSize.small),
+            Spinner(size: WidgetSize.small),
             Text('Translating…'),
           ],
         ),
@@ -80,7 +80,7 @@ class _InACallout extends StatelessWidget {
       width: 420,
       child: Callout(
         tint: CalloutTint.info,
-        icon: Loader(size: WidgetSize.small, tint: LoaderTint.info),
+        icon: Spinner(size: WidgetSize.small, tint: SpinnerTint.info),
         title: Text('Rebuilding'),
         message: Text('Four platform packages are being rewritten.'),
       ),
@@ -102,7 +102,7 @@ class _InAPanel extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           spacing: vars.spacing3,
           children: const [
-            Loader(),
+            Spinner(),
             Flexible(child: Text('Resolving packages…')),
           ],
         ),
@@ -117,7 +117,7 @@ class _Overview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DocPage(
-      'Loader',
+      'Spinner',
       description:
           'The indeterminate mark. Where a `Progress` bar without a value '
           'sweeps along a track, a loader has no track at all — it is what a '
@@ -132,12 +132,12 @@ class _Overview extends StatelessWidget {
           children: [
             Specimens(
               children: [
-                for (final size in LoaderStories.sizes)
+                for (final size in SpinnerStories.sizes)
                   Specimen(
                     size.namedSize.name,
                     children: [
-                      for (final tint in LoaderTint.values)
-                        Loader(size: size, tint: tint),
+                      for (final tint in SpinnerTint.values)
+                        Spinner(size: size, tint: tint),
                     ],
                   ),
               ],
@@ -162,7 +162,7 @@ class _Overview extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     spacing: Theme.of(context).vars.spacing1,
                     children: const [
-                      Loader(size: WidgetSize.small, onAccent: true),
+                      Spinner(size: WidgetSize.small, onAccent: true),
                       Text('Translating…'),
                     ],
                   ),
@@ -174,7 +174,7 @@ class _Overview extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     spacing: Theme.of(context).vars.spacing1,
                     children: const [
-                      Loader(size: WidgetSize.small),
+                      Spinner(size: WidgetSize.small),
                       Text('Translating…'),
                     ],
                   ),

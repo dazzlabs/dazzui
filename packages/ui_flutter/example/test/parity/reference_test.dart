@@ -314,7 +314,9 @@ List<Mismatch> compare(Probe probe, Expected expected, Measured measured) {
   }
 
   // A width that depends on text is the test font's, not the design's.
-  if (probe.text.isEmpty) length('width', expected.width, measured.width);
+  if (probe.text.isEmpty && !probe.fillsTheViewport) {
+    length('width', expected.width, measured.width);
+  }
   if (!probe.heightIsContentDriven) {
     length('height', expected.height, measured.height);
   }

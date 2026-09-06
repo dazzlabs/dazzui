@@ -8,6 +8,9 @@
 mod stories;
 mod storybook;
 
+#[cfg(test)]
+mod stories_test;
+
 use std::collections::HashSet;
 
 use dazzui::prelude::*;

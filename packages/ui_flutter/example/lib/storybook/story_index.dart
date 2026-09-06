@@ -5,14 +5,12 @@ import '../stories/button_stories.dart';
 import '../stories/callout_stories.dart';
 import '../stories/card_stories.dart';
 import '../stories/checkbox_stories.dart';
-import '../stories/data_table_stories.dart';
 import '../stories/dialog_stories.dart';
 import '../stories/divider_stories.dart';
 import '../stories/empty_state_stories.dart';
 import '../stories/form_field_stories.dart';
 import '../stories/icon_button_stories.dart';
 import '../stories/key_cap_stories.dart';
-import '../stories/loader_stories.dart';
 import '../stories/menu_stories.dart';
 import '../stories/nav_item_stories.dart';
 import '../stories/option_card_stories.dart';
@@ -25,8 +23,10 @@ import '../stories/search_field_stories.dart';
 import '../stories/section_label_stories.dart';
 import '../stories/segmented_control_stories.dart';
 import '../stories/sidebar_stories.dart';
+import '../stories/spinner_stories.dart';
 import '../stories/step_list_stories.dart';
 import '../stories/switch_stories.dart';
+import '../stories/table_stories.dart';
 import '../stories/text_field_stories.dart';
 import '../stories/toast_stories.dart';
 import '../stories/tokens/color_stories.dart';
@@ -66,14 +66,14 @@ class StoryIndex {
       CalloutStories.page,
       CardStories.page,
       CheckboxStories.page,
-      DataTableStories.page,
+      TableStories.page,
       DialogStories.page,
       DividerStories.page,
       EmptyStateStories.page,
       FormFieldStories.page,
       IconButtonStories.page,
       KeyCapStories.page,
-      LoaderStories.page,
+      SpinnerStories.page,
       MenuStories.page,
       NavItemStories.page,
       OptionCardStories.page,

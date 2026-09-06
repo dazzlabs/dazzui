@@ -117,7 +117,7 @@ class BadgeStories {
       'In a table',
       (context) => const SizedBox(
         width: 380,
-        child: DataTable(
+        child: Table(
           children: [
             TableHead(
               children: [

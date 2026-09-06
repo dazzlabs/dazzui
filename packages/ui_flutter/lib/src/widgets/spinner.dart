@@ -4,10 +4,10 @@ import '../foundation/widget_size.dart';
 import '../foundation/widget_tint.dart';
 import '../generated/theme_variables.dart';
 import '../theme/theme.dart';
-import 'oval_loader.dart';
+import 'spinner_ring.dart';
 
-/// The tint a [Loader] draws in.
-enum LoaderTint with WidgetTint {
+/// The tint a [Spinner] draws in.
+enum SpinnerTint with WidgetTint {
   primary,
   neutral,
   info,
@@ -19,18 +19,18 @@ enum LoaderTint with WidgetTint {
 /// A ring with one segment picked out: the track is the tint at quarter
 /// strength, the head the tint itself, and the whole thing turns once a
 /// second — fast enough to read as work, slow enough not to read as alarm.
-class Loader extends StatelessWidget {
-  const Loader({
+class Spinner extends StatelessWidget {
+  const Spinner({
     super.key,
     this.size = WidgetSize.medium,
-    this.tint = LoaderTint.primary,
+    this.tint = SpinnerTint.primary,
     this.color,
     this.onAccent = false,
   });
 
   final WidgetSize size;
 
-  final LoaderTint tint;
+  final SpinnerTint tint;
 
   final Color? color;
 
@@ -47,12 +47,12 @@ class Loader extends StatelessWidget {
         (onAccent
             ? vars.colorOnAccent
             : switch (tint) {
-                LoaderTint.primary => vars.colorPrimary[600]!,
-                LoaderTint.neutral => vars.colorNeutral[600]!,
-                LoaderTint.info => vars.colorInfo[600]!,
-                LoaderTint.success => vars.colorSuccess[600]!,
-                LoaderTint.warning => vars.colorWarning[600]!,
-                LoaderTint.danger => vars.colorDanger[600]!,
+                SpinnerTint.primary => vars.colorPrimary[600]!,
+                SpinnerTint.neutral => vars.colorNeutral[600]!,
+                SpinnerTint.info => vars.colorInfo[600]!,
+                SpinnerTint.success => vars.colorSuccess[600]!,
+                SpinnerTint.warning => vars.colorWarning[600]!,
+                SpinnerTint.danger => vars.colorDanger[600]!,
               });
 
     final double dimension = switch (size.namedSize) {
@@ -64,7 +64,7 @@ class Loader extends StatelessWidget {
     return SizedBox(
       width: dimension,
       height: dimension,
-      child: OvalLoader(
+      child: SpinnerRing(
         size: dimension,
         color: resolvedColor,
         // A wash rather than a ramp step, so the track sits as correctly over

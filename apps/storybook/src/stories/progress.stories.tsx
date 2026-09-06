@@ -129,6 +129,16 @@ export const Indeterminate: Story = {
   ),
 }
 
+/** The document-progress fill: the theme's own two-stop accent ramp. */
+export const Gradient: Story = {
+  render: () => (
+    <Col width={WIDTH}>
+      <Progress gradient value={62} />
+      <Progress gradient />
+    </Col>
+  ),
+}
+
 export const Sizes: Story = {
   render: () => (
     <Col width={WIDTH}>

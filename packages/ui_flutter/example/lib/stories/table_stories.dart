@@ -4,14 +4,14 @@ import '../storybook/gallery.dart';
 import '../storybook/stage.dart';
 import '../storybook/story.dart';
 
-/// `Components/DataTable` — rows of one thing.
+/// `Components/Table` — rows of one thing.
 ///
-/// Named `DataTable` rather than `Table` because Flutter's own `Table` is a
+/// Named `Table` rather than `Table` because Flutter's own `Table` is a
 /// layout widget; the design's grid keeps the plain names for its parts.
-class DataTableStories {
-  DataTableStories._();
+class TableStories {
+  TableStories._();
 
-  static StoryPage get page => StoryPage('DataTable', [
+  static StoryPage get page => StoryPage('Table', [
     Story('Overview', (context) => const _Overview(), layout: StoryLayout.page),
     Story('Selectable', (context) => const _Builds(interactive: true)),
     Story('Inert', (context) => const _Builds(interactive: false)),
@@ -19,7 +19,7 @@ class DataTableStories {
       'Alignment',
       (context) => const SizedBox(
         width: 380,
-        child: DataTable(
+        child: Table(
           children: [
             TableHead(
               children: [
@@ -92,7 +92,7 @@ class _BuildsState extends State<_Builds> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 420,
-      child: DataTable(
+      child: Table(
         children: [
           const TableHead(
             children: [
@@ -145,7 +145,7 @@ class _WithControlsState extends State<_WithControls> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 380,
-      child: DataTable(
+      child: Table(
         children: [
           const TableHead(
             children: [
@@ -189,7 +189,7 @@ class _Overview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const DocPage(
-      'DataTable',
+      'Table',
       description:
           'A header row and a run of rows under it. The parts are separate '
           'widgets rather than a data source, so a cell holds whatever a cell '

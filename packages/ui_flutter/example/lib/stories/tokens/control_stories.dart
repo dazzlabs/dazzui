@@ -80,7 +80,7 @@ class _Sizing extends StatelessWidget {
           children: [
             ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: proseMeasure),
-              child: DataTable(
+              child: Table(
                 children: [
                   const TableHead(
                     children: [

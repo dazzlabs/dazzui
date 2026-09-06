@@ -10,8 +10,8 @@ enum TableCellAlign { start, end }
 /// A flex grid rather than a real table: rows are often clickable and column
 /// widths are set by the design, both of which a table layout fights. The
 /// semantics keep it announced as a table anyway.
-class DataTable extends StatelessWidget {
-  const DataTable({super.key, required this.children});
+class Table extends StatelessWidget {
+  const Table({super.key, required this.children});
 
   final List<Widget> children;
 

@@ -16,6 +16,8 @@ gpui = "0.2.2"
 # The headless half of GPUI, which is what lets the story index be walked
 # without a window: every story is laid out and painted for real.
 gpui = { version = "0.2.2", features = ["test-support"] }
+# The registry test reads the React story list, which is JSON.
+serde_json = "1"
 
 [features]
 runtime-shaders = ["dazzui/runtime-shaders", "gpui/runtime_shaders"]

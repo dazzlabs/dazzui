@@ -28,6 +28,21 @@ class Probe {
     'dz-option-card',
     'dz-toast',
     'dz-step',
+    'dz-aside',
+    'dz-dialog',
+    'dz-dialog-scrim',
+    'dz-preference-row',
+    'dz-rail',
+    'dz-sidebar',
+    'dz-sidebar-card',
+  }.contains(className);
+
+  /// An overlay whose box is the viewport's rather than its own: a scrim
+  /// dims the window it is fixed to, and what it measures says how big the
+  /// browser was.
+  bool get fillsTheViewport => const {
+    'dz-dialog-scrim',
+    'dz-toast-viewport',
   }.contains(className);
 
   bool get isField =>
@@ -150,13 +165,16 @@ Widget? build(Probe probe) {
         tint: pick(ProgressTint.values, data['tint']) ?? ProgressTint.primary,
       );
     case 'dz-spinner':
-      return Loader(
+      return Spinner(
         size: probe.size(WidgetSize.medium),
-        tint: pick(LoaderTint.values, data['tint']) ?? LoaderTint.primary,
+        tint: pick(SpinnerTint.values, data['tint']) ?? SpinnerTint.primary,
       );
     case 'dz-section-label':
       return SectionLabel(
         probe.text,
+        tone: data['tone'] == 'faint'
+            ? SectionLabelTone.faint
+            : SectionLabelTone.normal,
         tint: pick(SectionLabelTint.values, data['tint']),
       );
     case 'dz-toast':
@@ -204,6 +222,43 @@ Widget? build(Probe probe) {
         autofocus: data.containsKey('focused'),
         enabled: !probe.disabled,
         maxLines: data.containsKey('multiline') ? 3 : 1,
+      );
+    // The containers, which are here for their edges rather than their
+    // boxes: what a panel decides for itself is its ground, its outline and
+    // its corner, and what it holds came from the story.
+    case 'dz-aside':
+      return Aside(children: [label]);
+    case 'dz-rail':
+      return Rail(children: [label]);
+    case 'dz-sidebar':
+      return Sidebar(
+        children: [
+          SidebarGroup(label: 'Components', children: [label]),
+        ],
+      );
+    case 'dz-sidebar-card':
+      return SidebarCard(label: 'Queue', children: [label]);
+    case 'dz-dialog':
+      return Dialog(
+        tone: data['tone'] == 'danger' ? DialogTone.danger : DialogTone.normal,
+        children: [
+          DialogBody(children: [label]),
+        ],
+      );
+    case 'dz-dialog-scrim':
+      return DialogScrim(
+        child: Dialog(
+          children: [
+            DialogBody(children: [label]),
+          ],
+        ),
+      );
+    case 'dz-preference-row':
+      return PreferenceRow(
+        title: probe.text.isEmpty ? 'Launch at login' : probe.text,
+        // An interactive row is one that opens something, which is what
+        // gives it a corner and a wash of its own.
+        onPressed: data['interactive'] == 'true' ? noop : null,
       );
     case 'dz-divider':
       final DividerTone tone = data['tone'] == 'muted'

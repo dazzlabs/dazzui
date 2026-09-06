@@ -82,8 +82,8 @@ final class ReferenceTests: XCTestCase {
           if detail[check] == nil { detail[check] = "\(themeName): React \(want), here \(got)" }
         }
 
-        if specimen.probe.text.isEmpty, let want = expected.width,
-          abs(want - measured.width) > 0.5
+        if specimen.probe.text.isEmpty, !specimen.probe.fillsTheViewport,
+          let want = expected.width, abs(want - measured.width) > 0.5
         {
           note("width", "\(want)", "\(measured.width)")
         }
@@ -247,7 +247,18 @@ struct Probe {
   /// axis this specimen carries. Comparing one is comparing two different
   /// contents, so the height is left to the screenshot layer.
   var heightIsContentDriven: Bool {
-    ["dz-card", "dz-callout", "dz-option-card", "dz-toast", "dz-step"].contains(className)
+    [
+      "dz-card", "dz-callout", "dz-option-card", "dz-toast", "dz-step",
+      "dz-aside", "dz-dialog", "dz-dialog-scrim", "dz-preference-row", "dz-rail",
+      "dz-sidebar", "dz-sidebar-card",
+    ].contains(className)
+  }
+
+  /// An overlay whose box is the viewport's rather than its own: a scrim
+  /// dims the window it is fixed to, and what it measures says how big the
+  /// browser was.
+  var fillsTheViewport: Bool {
+    ["dz-dialog-scrim", "dz-toast-viewport"].contains(className)
   }
 
   var isField: Bool {
@@ -450,7 +461,8 @@ func build(_ probe: Probe) -> AnyView? {
         size: SpinnerSize(rawValue: data["size"] ?? "") ?? .medium,
         tint: tint ?? .primary))
   case "dz-section-label":
-    return AnyView(SectionLabel(tint: tint) { Text(text) })
+    return AnyView(
+      SectionLabel(tint: tint, faint: data["tone"] == "faint") { Text(text) })
   case "dz-toast":
     return AnyView(
       Toast(
@@ -502,6 +514,37 @@ func build(_ probe: Probe) -> AnyView? {
         onValueChange: { _ in },
         disabled: !enabled,
         tint: tint ?? .primary))
+  // The containers, which are here for their edges rather than their boxes:
+  // what a panel decides for itself is its ground, its outline and its
+  // corner, and what it holds came from the story.
+  case "dz-aside":
+    return AnyView(Aside { Text(text) })
+  case "dz-rail":
+    return AnyView(Rail { RailGroup { Text("Pages") } content: { EmptyView() } })
+  case "dz-sidebar":
+    return AnyView(
+      Sidebar(tint: tint ?? .primary) { EmptyView() } content: {
+        SidebarGroup { Text("Components") } content: { EmptyView() }
+      })
+  case "dz-sidebar-card":
+    return AnyView(SidebarCard { Text("Queue") } content: { Text(text) })
+  case "dz-dialog":
+    return AnyView(
+      Dialog(tone: DialogTone(rawValue: data["tone"] ?? "") ?? .default) {
+        DialogBody { Text(text) }
+      })
+  case "dz-dialog-scrim":
+    return AnyView(DialogScrim { Dialog { DialogBody { Text(text) } } })
+  case "dz-preference-row":
+    return AnyView(
+      PreferenceRow(
+        title: text,
+        // An interactive row is one that opens something, which is what
+        // gives it a corner and a wash of its own.
+        onOpen: data["interactive"] == "true" ? {} : nil,
+        tint: tint ?? .neutral,
+        icon: { EmptyView() },
+        trailing: { EmptyView() }))
   case "dz-divider":
     let divider = Divider(
       tone: DividerTone(rawValue: data["tone"] ?? "") ?? .default,

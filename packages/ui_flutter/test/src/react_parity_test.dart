@@ -361,16 +361,16 @@ void main() {
     });
   });
 
-  group('Loader', () {
+  group('Spinner', () {
     testWidgets('every size lands on its spacing step', (tester) async {
       for (final (WidgetSize step, double dimension) in [
         (WidgetSize.small, vars.spacing35),
         (WidgetSize.medium, vars.spacing4),
         (WidgetSize.large, vars.spacing5),
       ]) {
-        await tester.pumpWidget(host(Loader(size: step)));
+        await tester.pumpWidget(host(Spinner(size: step)));
         expect(
-          tester.getSize(find.byType(Loader)),
+          tester.getSize(find.byType(Spinner)),
           Size.square(dimension),
           reason: '${step.namedSize.name} loader',
         );

@@ -142,7 +142,7 @@ class ButtonStories {
           mainAxisSize: MainAxisSize.min,
           spacing: Theme.of(context).vars.spacing1,
           children: const [
-            Loader(size: WidgetSize.small),
+            Spinner(size: WidgetSize.small),
             Text('Translating…'),
           ],
         ),
@@ -364,7 +364,7 @@ class _Overview extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         spacing: Theme.of(context).vars.spacing1,
                         children: const [
-                          Loader(size: WidgetSize.small),
+                          Spinner(size: WidgetSize.small),
                           Text('Translating…'),
                         ],
                       ),

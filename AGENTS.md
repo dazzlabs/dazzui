@@ -245,7 +245,8 @@ name written `All variants` in Dart and `All Variants` in React be one story,
 and it is why page and story names in a port follow the React file exactly.
 
 Each playground carries a registry test (`stories_test.dart`,
-`StoriesTests.swift`) that holds its own index to the React list, both ways:
+`StoriesTests.swift`, `stories_test.rs`) that holds its own index to the
+React list, both ways:
 a React story the port does not draw fails unless it is named in
 `pending.txt`, and a story the port draws that React does not have fails
 unless it is named in `extra.txt`. Both lists are ratchets — an entry that is

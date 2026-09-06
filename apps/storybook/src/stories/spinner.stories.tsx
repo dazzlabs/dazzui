@@ -146,6 +146,24 @@ export const Tints: Story = {
   ),
 }
 
+/**
+ * On a filled control the ring goes white: a tinted spinner on its own
+ * tint's fill is invisible.
+ */
+export const OnAnAccent: Story = {
+  render: () => (
+    <Row>
+      <Card size="small" tint="primary" variant="tinted">
+        <Spinner />
+      </Card>
+      <Button variant="filled">
+        <Spinner onAccent size="small" />
+        Publishing
+      </Button>
+    </Row>
+  ),
+}
+
 export const InAButton: Story = {
   render: () => (
     <Row>

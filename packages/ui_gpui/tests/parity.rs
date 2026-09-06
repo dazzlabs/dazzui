@@ -85,8 +85,26 @@ impl Probe {
     fn height_is_content_driven(&self) -> bool {
         matches!(
             self.class.as_str(),
-            "dz-card" | "dz-callout" | "dz-option-card" | "dz-toast" | "dz-step"
+            "dz-card"
+                | "dz-callout"
+                | "dz-option-card"
+                | "dz-toast"
+                | "dz-step"
+                | "dz-aside"
+                | "dz-dialog"
+                | "dz-dialog-scrim"
+                | "dz-preference-row"
+                | "dz-rail"
+                | "dz-sidebar"
+                | "dz-sidebar-card"
         )
+    }
+
+    /// An overlay whose box is the viewport's rather than its own: a scrim
+    /// dims the window it is fixed to, and what it measures says how big
+    /// the browser was.
+    fn fills_the_viewport(&self) -> bool {
+        matches!(self.class.as_str(), "dz-dialog-scrim" | "dz-toast-viewport")
     }
 
     fn is_field(&self) -> bool {
@@ -399,7 +417,7 @@ fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
             spinner.into_any_element()
         }
         "dz-section-label" => {
-            let mut label = SectionLabel::new(text);
+            let mut label = SectionLabel::new(text).faint(probe.get("tone") == Some("faint"));
             if let Some(t) = t {
                 label = label.tint(t);
             }
@@ -522,6 +540,39 @@ fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
                 tabs = tabs.tint(t);
             }
             tabs.into_any_element()
+        }
+        // The containers, which are here for their edges rather than their
+        // boxes: what a panel decides for itself is its ground, its outline
+        // and its corner, and what it holds came from the story.
+        "dz-aside" => Aside::new().child(text).into_any_element(),
+        "dz-rail" => Rail::new()
+            .child(RailGroup::new().label("Pages").first(true))
+            .into_any_element(),
+        "dz-sidebar" => Sidebar::new(id.clone())
+            .child(SidebarGroup::new().label("Components").first(true))
+            .into_any_element(),
+        "dz-sidebar-card" => SidebarCard::new()
+            .label("Queue")
+            .child(text)
+            .into_any_element(),
+        "dz-dialog" => {
+            let mut dialog = Dialog::new().child(DialogBody::new().child(text));
+            if probe.get("tone") == Some("danger") {
+                dialog = dialog.tone(DialogTone::Danger);
+            }
+            dialog.into_any_element()
+        }
+        "dz-dialog-scrim" => DialogScrim::new()
+            .child(Dialog::new().child(DialogBody::new().child(text)))
+            .into_any_element(),
+        "dz-preference-row" => {
+            let mut row = PreferenceRow::new(id.clone(), text);
+            // An interactive row is one that opens something, which is what
+            // gives it a corner and a wash of its own.
+            if probe.get("interactive") == Some("true") {
+                row = row.on_open(|_, _| {});
+            }
+            row.into_any_element()
         }
         "dz-step" => {
             let status = match probe.get("status") {
@@ -746,7 +797,8 @@ fn every_specimen_the_port_can_build_measures_as_react_drew_it(cx: &mut TestAppC
                 );
             // A width that depends on text is the text system's, not the
             // design's.
-            let width_counts = specimen.probe.text.is_empty();
+            let width_counts =
+                specimen.probe.text.is_empty() && !specimen.probe.fills_the_viewport();
             if let Some(w) = want
                 .width
                 .filter(|w| width_counts && (w - width).abs() > 0.5)
