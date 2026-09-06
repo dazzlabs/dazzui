@@ -11,6 +11,8 @@ import {
 } from '@dazzlabs/dazzui-react'
 import { useMemo } from 'react'
 
+import { Renderings } from './renderings'
+
 import {
   checkName,
   driftingFields,
@@ -145,6 +147,13 @@ function SpecimenCard({
           {specimen.sample.story}
         </span>
       </div>
+
+      <Renderings
+        specimen={specimen}
+        platforms={platforms}
+        theme={theme}
+        react={data.renders}
+      />
 
       <div className="pv-specimen__body">
         {data.screenshots && rect && (

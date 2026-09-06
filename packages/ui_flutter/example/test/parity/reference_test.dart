@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dazzui/dazzui.dart';
+import 'package:dazzui_example/parity/reference.dart';
+import 'package:dazzui_example/parity/specimens.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter_test/flutter_test.dart';
-
-import 'specimens.dart';
 
 /// The React reference, measured against.
 ///
@@ -86,14 +86,13 @@ void main() {
           detail['${specimen.key} · builds'] = 'threw under ${entry.key}';
           continue;
         }
-        (measuredAll[specimen.key] ??= {})[entry.key] = measured.toJson(
-          decoration: !specimen.probe.decorationIsAPart,
-        );
-        for (final Mismatch mismatch in compare(
+        final Comparison comparison = compare(
           specimen.probe,
           entry.value,
           measured,
-        )) {
+        );
+        (measuredAll[specimen.key] ??= {})[entry.key] = comparison.compared;
+        for (final Mismatch mismatch in comparison.mismatches) {
           final String check = '${specimen.key} · ${mismatch.field}';
           failing.add(check);
           detail[check] ??=
@@ -295,12 +294,43 @@ String hex(Color color) {
 
 /// What React measured for one specimen in one theme, and what this port
 /// measured, compared field by field where both sides have a value.
-List<Mismatch> compare(Probe probe, Expected expected, Measured measured) {
+/// The slack a length is allowed, and what it is for.
+///
+/// Two text systems do not agree to the pixel: a badge whose line box is 1.4
+/// of an 11pt face is 21.39 in a browser and 21.4 or 21.5 elsewhere, and
+/// holding a port to that would be holding it to Chromium's rounding rather
+/// than to the design. So a length passes while it is *inside* half a pixel.
+///
+/// Half a pixel exactly does not pass, and that is the point of stating the
+/// bound this way: on a 2x display half a CSS pixel is one device pixel,
+/// which is the difference between a rule drawn at `spacing.px` and one
+/// drawn at `stroke.hairline`. That is a decision about the design, not
+/// noise from a text engine, and it has to be visible.
+const double halfAPixel = 0.5;
+
+/// What one specimen came to under one theme: the fields this side and
+/// React's could both be asked about, and the ones they disagreed on.
+///
+/// The compared values are what the viewer reads. It renders them rather
+/// than deciding anything, so a field this test skips has to be absent
+/// rather than merely ignored — otherwise the page would paint a
+/// disagreement the suite does not have.
+class Comparison {
+  Comparison(this.mismatches, this.compared);
+  final List<Mismatch> mismatches;
+  final Map<String, Object?> compared;
+}
+
+Comparison compare(Probe probe, Expected expected, Measured measured) {
   final List<Mismatch> out = [];
+  final Map<String, Object?> compared = {};
 
   void length(String field, double? want, double? got) {
     if (want == null || got == null) return;
-    if ((want - got).abs() > 0.5) out.add(Mismatch(field, '$want', '$got'));
+    compared[field] = got;
+    if ((want - got).abs() >= halfAPixel) {
+      out.add(Mismatch(field, '$want', '$got'));
+    }
   }
 
   /// A style field, compared only where the React stylesheet declares it.
@@ -310,6 +340,7 @@ List<Mismatch> compare(Probe probe, Expected expected, Measured measured) {
 
   void colour(String field, String? want, String? got) {
     if (want == null || got == null) return;
+    compared[field] = got;
     if (!sameColour(want, got)) out.add(Mismatch(field, want, got));
   }
 
@@ -335,9 +366,14 @@ List<Mismatch> compare(Probe probe, Expected expected, Measured measured) {
         colour('border-color', expected.borderColor, measured.borderColor);
       });
     }
-    styled('border-width', () {
-      length('border-width', expected.borderWidth, measured.borderWidth);
-    });
+    // A border's *width* is not something the reference can state. Chromium
+    // rounds every border to a whole CSS pixel, in both directions: the
+    // half-pixel a hairline asks for on a 2x display comes back as 1, and so
+    // does the pixel and a half a selected option card's edge is drawn at.
+    // So the browser reports the same 1px for the two strokes this system
+    // deliberately tells apart, and a port that draws them apart would be
+    // held to the rounding rather than to the design. The colour is
+    // unaffected and is still compared.
     styled('radius', () => length('radius', expected.radius, measured.radius));
   }
   styled('color', () => colour('color', expected.color, measured.color));
@@ -345,9 +381,9 @@ List<Mismatch> compare(Probe probe, Expected expected, Measured measured) {
     length('font-size', expected.fontSize, measured.fontSize);
   });
   styled('font-weight', () {
-    if (expected.fontWeight != null &&
-        measured.fontWeight != null &&
-        expected.fontWeight != measured.fontWeight) {
+    if (expected.fontWeight == null || measured.fontWeight == null) return;
+    compared['font-weight'] = measured.fontWeight;
+    if (expected.fontWeight != measured.fontWeight) {
       out.add(
         Mismatch(
           'font-weight',
@@ -357,7 +393,7 @@ List<Mismatch> compare(Probe probe, Expected expected, Measured measured) {
       );
     }
   });
-  return out;
+  return Comparison(out, compared);
 }
 
 /// Equal to the eye: the same channels, with one step of slack on alpha,
@@ -399,151 +435,4 @@ class Measured {
   final String? color;
   final double? fontSize;
   final int? fontWeight;
-
-  /// The fields by the names the drift list uses. Decoration is left out
-  /// where the React root is a row and the drawn box is a part inside it.
-  Map<String, Object?> toJson({required bool decoration}) => {
-    'width': width,
-    'height': height,
-    if (decoration) 'background': backgroundColor,
-    if (decoration) 'border-color': borderColor,
-    if (decoration) 'border-width': borderWidth,
-    if (decoration) 'radius': radius,
-    'color': color,
-    'font-size': fontSize,
-    'font-weight': fontWeight,
-  };
-}
-
-/// What React measured for a specimen in one theme. A value is null where
-/// the specimen's appearances disagreed, which means it was the story's.
-class Expected {
-  Expected({
-    required this.width,
-    required this.height,
-    required this.backgroundColor,
-    required this.borderColor,
-    required this.borderWidth,
-    required this.radius,
-    required this.color,
-    required this.fontSize,
-    required this.fontWeight,
-  });
-  final double? width;
-  final double? height;
-  final String? backgroundColor;
-  final String? borderColor;
-  final double? borderWidth;
-  final double? radius;
-  final String? color;
-  final double? fontSize;
-  final int? fontWeight;
-}
-
-class Specimen {
-  Specimen(this.key, this.probe, this.themes);
-  final String key;
-  final Probe probe;
-  final Map<String, Expected> themes;
-}
-
-/// Read every reference page and fold its probes into specimens.
-List<Specimen> loadSpecimens(String dir) {
-  // key → theme → the raw probes seen
-  final Map<String, Probe> probes = {};
-  final Map<String, Map<String, List<Map<String, Object?>>>> seen = {};
-
-  final List<File> files =
-      Directory(dir)
-          .listSync()
-          .whereType<File>()
-          .where((file) => file.path.endsWith('.json'))
-          .toList()
-        ..sort((a, b) => a.path.compareTo(b.path));
-
-  for (final File file in files) {
-    final Map<String, Object?> page =
-        jsonDecode(file.readAsStringSync()) as Map<String, Object?>;
-    final Map<String, Object?> stories =
-        page['stories'] as Map<String, Object?>;
-    for (final Object? story in stories.values) {
-      final Map<String, Object?> themes =
-          (story as Map<String, Object?>)['themes'] as Map<String, Object?>;
-      for (final MapEntry<String, Object?> theme in themes.entries) {
-        final List<Object?> list =
-            (theme.value as Map<String, Object?>)['probes'] as List<Object?>;
-        for (final Object? raw in list) {
-          final Map<String, Object?> probe = raw as Map<String, Object?>;
-          final Map<String, String> data = {
-            for (final MapEntry<String, Object?> e
-                in (probe['data'] as Map<String, Object?>).entries)
-              if (!e.key.startsWith('base-ui') && e.key != 'control')
-                e.key: e.value as String,
-          };
-          final String text = probe['text'] as String;
-          final String className = probe['class'] as String;
-          final String axes =
-              (data.entries.map((e) => '${e.key}=${e.value}').toList()..sort())
-                  .join(' ');
-          // Text is not part of the key: a badge reading Beta and one
-          // reading Failed are the same specimen, and a width that depends
-          // on the text is skipped anyway. The first text seen is what the
-          // specimen is built with.
-          final String key = '$className${axes.isEmpty ? '' : ' $axes'}';
-          probes[key] ??= Probe(className, data, text, {
-            for (final Object? field
-                in probe['declares'] as List<Object?>? ?? const [])
-              field as String,
-          });
-          ((seen[key] ??= {})[theme.key] ??= []).add(probe);
-        }
-      }
-    }
-  }
-
-  return [
-    for (final MapEntry<String, Map<String, List<Map<String, Object?>>>> entry
-        in seen.entries)
-      Specimen(entry.key, probes[entry.key]!, {
-        for (final MapEntry<String, List<Map<String, Object?>>> theme
-            in entry.value.entries)
-          theme.key: fold(theme.value),
-      }),
-  ];
-}
-
-/// The value every appearance agrees on, or null.
-Expected fold(List<Map<String, Object?>> probes) {
-  T? agreed<T>(T? Function(Map<String, Object?>) read) {
-    final T? first = read(probes.first);
-    for (final Map<String, Object?> probe in probes.skip(1)) {
-      final T? other = read(probe);
-      if (first is double && other is double) {
-        if ((first - other).abs() > 0.5) return null;
-      } else if (other != first) {
-        return null;
-      }
-    }
-    return first;
-  }
-
-  double? number(Object? value) => value is num ? value.toDouble() : null;
-  Map<String, Object?> rect(Map<String, Object?> p) =>
-      p['rect'] as Map<String, Object?>;
-  Map<String, Object?> style(Map<String, Object?> p) =>
-      p['style'] as Map<String, Object?>;
-
-  return Expected(
-    width: agreed((p) => number(rect(p)['width'])),
-    height: agreed((p) => number(rect(p)['height'])),
-    backgroundColor: agreed((p) => style(p)['backgroundColor'] as String?),
-    borderColor: agreed((p) => style(p)['borderTopColor'] as String?),
-    borderWidth: agreed((p) => number(style(p)['borderTopWidth'])),
-    radius: agreed((p) => number(style(p)['borderTopLeftRadius'])),
-    color: agreed((p) => style(p)['color'] as String?),
-    fontSize: agreed((p) => number(style(p)['fontSize'])),
-    fontWeight: agreed(
-      (p) => int.tryParse(style(p)['fontWeight'] as String? ?? ''),
-    ),
-  );
 }

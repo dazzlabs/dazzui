@@ -36,12 +36,14 @@ storybook.log
 **/parity/drift.txt
 **/parity/pending.txt
 **/parity/extra.txt
+**/parity/renders/
 **/Parity/stories.json
 **/Parity/reference/
 **/Parity/measured.json
 **/Parity/drift.txt
 **/Parity/pending.txt
 **/Parity/extra.txt
+**/Parity/renders/
 
 # Swift
 .build

@@ -22,6 +22,8 @@ final class StoriesTests: XCTestCase {
   private var parity: URL {
     URL(fileURLWithPath: #filePath)
       .deletingLastPathComponent()
+      .deletingLastPathComponent()
+      .deletingLastPathComponent()
       .appendingPathComponent("Parity")
   }
 

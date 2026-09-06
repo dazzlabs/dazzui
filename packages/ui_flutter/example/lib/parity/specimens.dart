@@ -1,6 +1,15 @@
 import 'package:dazzui/dazzui.dart';
 import 'package:flutter/material.dart' as material;
 
+/// A specimen's key as a file name — the same derivation on every platform,
+/// so the viewer can find one port's picture beside another's.
+String renderName(String key) {
+  return key
+      .toLowerCase()
+      .replaceAll(RegExp('[^a-z0-9]+'), '-')
+      .replaceAll(RegExp(r'^-+|-+$'), '');
+}
+
 /// One distinct thing React drew: a class, its axes, its text.
 class Probe {
   const Probe(this.className, this.data, this.text, this.declares);

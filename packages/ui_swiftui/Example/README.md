@@ -54,8 +54,13 @@ Sources/Playground/
 Tests/PlaygroundTests/
   StoriesTests.swift     holds the story index to the React story list
   ReferenceTests.swift   measures each component against what React drew
-  Parity/                what apps/storybook's parity extractor distributed here (not committed)
+Parity/                  what apps/storybook's parity extractor distributed,
+                         and what the suite drew (neither is committed)
 ```
+
+`Parity/` sits beside the sources rather than inside them because Xcode's
+synchronised folder takes everything under `Tests/` as a resource to copy
+into the bundle, and four themes' worth of drawings share their file names.
 
 The tests run from the same scheme:
 

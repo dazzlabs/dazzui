@@ -47,7 +47,7 @@ const PLATFORMS: { id: PlatformId; label: string; dir: string }[] = [
   {
     id: 'swiftui',
     label: 'SwiftUI',
-    dir: 'packages/ui_swiftui/Example/Tests/PlaygroundTests/Parity',
+    dir: 'packages/ui_swiftui/Example/Parity',
   },
   { id: 'gpui', label: 'GPUI', dir: 'packages/ui_gpui/tests/parity' },
 ]
@@ -69,6 +69,7 @@ interface RawProbe {
   class: string
   data: Record<string, string>
   text: string
+  composed?: boolean
   rect: Rect
   style: Record<string, number | string>
 }
@@ -188,6 +189,7 @@ export function loadParity(): ParityData {
         className: entry.probe.class,
         data: entry.probe.data,
         text: entry.probe.text,
+        composed: entry.probe.composed ?? false,
         sample: { story: entry.story, rects: entry.rects },
         expected,
       }
@@ -202,12 +204,14 @@ export function loadParity(): ParityData {
       measured: fs.existsSync(measuredFile)
         ? readJson<{ specimens: Platform['measured'] }>(measuredFile).specimens
         : null,
+      renders: fs.existsSync(path.join(dir, 'renders')),
     }
   })
 
   return {
     viewport: stories.viewport,
     screenshots: fs.existsSync(path.join(STAGING, 'screenshots')),
+    renders: fs.existsSync(path.join(STAGING, 'renders')),
     specimens,
     platforms,
   }
@@ -257,6 +261,34 @@ export function parityData(): Plugin {
       server.watcher.on('change', refresh)
       server.watcher.on('add', refresh)
       server.watcher.on('unlink', refresh)
+
+      // `/renders/<side>/<theme>/<name>.png` — one drawing of one specimen,
+      // where the side is `react` or a platform id. They are what the value
+      // table cannot reach: two of the three frameworks will not say what
+      // colour a view painted, and every one of them will draw it.
+      server.middlewares.use('/renders', (req, res, next) => {
+        const [, side, ...rest] = decodeURIComponent(req.url ?? '').split('/')
+        const root =
+          side === 'react'
+            ? path.join(STAGING, 'renders')
+            : (() => {
+                const platform = PLATFORMS.find(entry => entry.id === side)
+                return platform
+                  ? path.join(ROOT, platform.dir, 'renders')
+                  : null
+              })()
+        if (!root) {
+          next()
+          return
+        }
+        const file = path.join(root, ...rest)
+        if (!file.startsWith(root) || !fs.existsSync(file)) {
+          next()
+          return
+        }
+        res.setHeader('content-type', 'image/png')
+        fs.createReadStream(file).pipe(res)
+      })
 
       server.middlewares.use('/screenshots', (req, res, next) => {
         const file = path.join(

@@ -37,6 +37,20 @@ use gpui::{
 };
 use serde_json::Value;
 
+/// The slack a length is allowed, and what it is for.
+///
+/// Two text systems do not agree to the pixel: a badge whose line box is 1.4
+/// of an 11pt face is 21.39 in a browser and 21.4 or 21.5 elsewhere, and
+/// holding a port to that would be holding it to Chromium's rounding rather
+/// than to the design. So a length passes while it is *inside* half a pixel.
+///
+/// Half a pixel exactly does not pass, and that is the point of stating the
+/// bound this way: on a 2x display half a CSS pixel is one device pixel,
+/// which is the difference between a rule drawn at `spacing.px` and one
+/// drawn at `stroke.hairline`. That is a decision about the design, not
+/// noise from a text engine, and it has to be visible.
+const HALF_A_PIXEL: f32 = 0.5;
+
 /// One distinct thing React drew: a class and its axes, with the first text
 /// it was seen with. Text is not part of the identity — a badge reading
 /// Beta and one reading Failed are the same specimen.
@@ -782,36 +796,40 @@ fn every_specimen_the_port_can_build_measures_as_react_drew_it(cx: &mut TestAppC
             let width: f32 = bounds.size.width.into();
             let height: f32 = bounds.size.height.into();
             let colors = recipe(&specimen.probe, vars);
-            measured_all
-                .entry(specimen.key.clone())
-                .or_default()
-                .insert(
-                    name.to_string(),
-                    serde_json::json!({
-                        "width": width,
-                        "height": height,
-                        "background": colors.map(|c| hex(c.surface)),
-                        "color": colors.map(|c| hex(c.content)),
-                        "border-color": colors.map(|c| hex(c.border)),
-                    }),
-                );
+            // What this side and React's could both be asked about. The
+            // viewer reads it and renders rather than deciding, so a field
+            // this test skips has to be absent rather than merely ignored —
+            // otherwise the page would paint a disagreement the suite does
+            // not have.
+            let mut compared = serde_json::Map::new();
+
             // A width that depends on text is the text system's, not the
             // design's.
             let width_counts =
                 specimen.probe.text.is_empty() && !specimen.probe.fills_the_viewport();
-            if let Some(w) = want
-                .width
-                .filter(|w| width_counts && (w - width).abs() > 0.5)
-            {
-                note("width", format!("{w}"), format!("{width}"));
+            if let Some(w) = want.width.filter(|_| width_counts) {
+                compared.insert("width".into(), width.into());
+                if (w - width).abs() >= HALF_A_PIXEL {
+                    note("width", format!("{w}"), format!("{width}"));
+                }
             }
             if !specimen.probe.height_is_content_driven()
-                && let Some(h) = want.height.filter(|h| (h - height).abs() > 0.5)
+                && let Some(h) = want.height
             {
-                note("height", format!("{h}"), format!("{height}"));
+                compared.insert("height".into(), height.into());
+                if (h - height).abs() >= HALF_A_PIXEL {
+                    note("height", format!("{h}"), format!("{height}"));
+                }
             }
 
             if let Some(colors) = colors {
+                // A border's *width* is never compared, here or on any port:
+                // Chromium rounds every border to a whole CSS pixel in both
+                // directions, so the half-pixel a hairline asks for on a 2x
+                // display and the pixel and a half a control stroke asks for
+                // both come back as 1, and the reference cannot tell apart
+                // two strokes this system deliberately does. The colour is
+                // unaffected.
                 let pairs = [
                     ("background", &want.background, hex(colors.surface)),
                     ("color", &want.color, hex(colors.content)),
@@ -821,11 +839,20 @@ fn every_specimen_the_port_can_build_measures_as_react_drew_it(cx: &mut TestAppC
                     if !specimen.probe.declares.contains(field) {
                         continue;
                     }
-                    if let Some(expected) = expected.as_ref().filter(|e| !same_colour(e, &actual)) {
+                    let Some(expected) = expected.as_ref() else {
+                        continue;
+                    };
+                    compared.insert(field.into(), actual.clone().into());
+                    if !same_colour(expected, &actual) {
                         note(field, expected.clone(), actual);
                     }
                 }
             }
+
+            measured_all
+                .entry(specimen.key.clone())
+                .or_default()
+                .insert(name.to_string(), Value::Object(compared));
         }
     }
 

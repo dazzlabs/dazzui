@@ -77,16 +77,10 @@ const TARGETS = [
   },
   {
     package: 'Playground (swiftui)',
-    dir: path.join(
-      '..',
-      '..',
-      'packages',
-      'ui_swiftui',
-      'Example',
-      'Tests',
-      'PlaygroundTests',
-      'Parity'
-    ),
+    // Beside the sources rather than inside them: Xcode's synchronised
+    // folder takes everything under `Tests/` as a resource to copy into the
+    // bundle, and four themes' worth of drawings share their file names.
+    dir: path.join('..', '..', 'packages', 'ui_swiftui', 'Example', 'Parity'),
   },
   {
     package: 'dazzui (gpui)',
@@ -148,6 +142,29 @@ function args() {
     distribute: !argv.includes('--no-distribute'),
     distributeOnly: argv.includes('--distribute-only'),
   }
+}
+
+/**
+ * A specimen's key: the class and the axes, the way every platform spells
+ * it. Text is left out — a badge reading Beta and one reading Failed are the
+ * same specimen.
+ */
+export function specimenKey(probe) {
+  const axes = Object.keys(probe.data)
+    .sort()
+    .map(axis => `${axis}=${probe.data[axis]}`)
+  return axes.length === 0 ? probe.class : `${probe.class} ${axes.join(' ')}`
+}
+
+/**
+ * That key as a file name — the same derivation on every platform, so the
+ * viewer can find one port's picture beside another's.
+ */
+export function renderName(key) {
+  return key
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
 }
 
 /** Storybook's own id sanitiser, so a platform can derive the same key. */
@@ -366,6 +383,10 @@ function collect({ lengths, colors, raw }) {
       'popup-open',
       'composite-item-active',
       'activation-direction',
+      // This one is the extractor's own: it marks an element so a
+      // screenshot can be taken of it, and it outlives the story it was set
+      // in because a theme switch re-renders rather than remounts.
+      'parity-probe',
     ])
     const data = {}
     for (const { name, value } of el.attributes) {
@@ -382,6 +403,8 @@ function collect({ lengths, colors, raw }) {
         data[name] = value || 'true'
       }
     }
+    // Marked so a screenshot can be taken of this element and no other.
+    el.setAttribute('data-parity-probe', String(probes.length))
     const text = (el.textContent ?? '').trim().replace(/\s+/g, ' ')
     const axes = Object.keys(data)
       .sort()
@@ -389,6 +412,16 @@ function collect({ lengths, colors, raw }) {
       .join(' ')
     probes.push({
       class: names[0],
+      // Where in the page this probe sits, so a screenshot can be taken of
+      // that element and no other: two badges in one story are two elements
+      // with one class between them.
+      index: probes.length,
+      // Whether what it holds is built out of elements rather than being one
+      // run of text. A port's adapter is given a specimen's axes and its
+      // text and nothing else, so it can reproduce a badge's label exactly
+      // and a card's heading-over-paragraph not at all — and a picture of
+      // the second compares the story's content rather than the component.
+      composed: el.children.length > 0,
       declares: declaredFields(el, `${names[0]} ${axes}`),
       tag: el.tagName.toLowerCase(),
       data,
@@ -456,6 +489,9 @@ async function main() {
 
   const pages = new Map()
   const manifest = []
+  // One picture per specimen per theme, from the first story it is in view
+  // in — the rest are the same drawing in another arrangement.
+  const drawn = new Set()
   let count = 0
 
   for (const story of stories) {
@@ -532,6 +568,35 @@ async function main() {
           animations: 'disabled',
           caret: 'hide',
         })
+
+        // And one picture per specimen, of that element and nothing else.
+        //
+        // This is the half of the comparison a value table cannot reach. A
+        // port measured by its own framework can only report what that
+        // framework will tell it, and two of the three will not say what
+        // colour a view painted or what face it set a label in. The picture
+        // says all of it, and it is the same picture on every platform
+        // because every platform draws the same specimen at the same scale.
+        const renders = path.join(STAGE, 'renders', theme)
+        await fs.mkdir(renders, { recursive: true })
+        for (const probe of result.probes) {
+          const key = specimenKey(probe)
+          const file = path.join(renders, `${renderName(key)}.png`)
+          if (drawn.has(`${theme}/${key}`)) continue
+          drawn.add(`${theme}/${key}`)
+          const element = page.locator(`[data-parity-probe='${probe.index}']`)
+          try {
+            await element.screenshot({
+              path: file,
+              animations: 'disabled',
+              caret: 'hide',
+            })
+          } catch {
+            // An element clipped out of the viewport cannot be shot; the
+            // next story it appears in will be in view.
+            drawn.delete(`${theme}/${key}`)
+          }
+        }
       }
     }
 

@@ -10,6 +10,7 @@
     "components": "pnpm --filter @dazzlabs/dazzui-react build",
     "parity": "pnpm --filter @dazzlabs/dazzui-storybook parity",
     "parity:view": "pnpm --filter @dazzlabs/dazzui-parity dev",
+    "parity:flutter": "packages/ui_flutter/example/tool/render.sh",
     "typecheck": "pnpm -r typecheck",
     "storybook": "pnpm --filter @dazzlabs/dazzui-storybook dev",
     "storybook:build": "pnpm --filter @dazzlabs/dazzui-storybook build",

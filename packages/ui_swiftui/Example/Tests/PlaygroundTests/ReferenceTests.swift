@@ -28,10 +28,70 @@ import XCTest
 /// and the list is recorded by the first run that finds it missing. A
 /// checkout without the reference skips rather than fails.
 final class ReferenceTests: XCTestCase {
+  /// Where the parity data this package was given lives: beside the sources
+  /// rather than inside them, since Xcode's synchronised folder would take
+  /// everything under `Tests/` as a resource to copy into the bundle, and
+  /// four themes' worth of drawings share their file names.
   private var parity: URL {
     URL(fileURLWithPath: #filePath)
       .deletingLastPathComponent()
+      .deletingLastPathComponent()
+      .deletingLastPathComponent()
       .appendingPathComponent("Parity")
+  }
+
+  /// Where this port's renderings go: `Parity/renders/<theme>/<id>.png`,
+  /// beside the reference's own. Neither is committed.
+  private var renders: URL { parity.appendingPathComponent("renders") }
+
+  /// Draw every specimen this port can build, so the viewer can put the two
+  /// pictures side by side.
+  ///
+  /// This is the half of the comparison that values cannot reach. SwiftUI has
+  /// no way to be asked what colour a view painted or what face it set its
+  /// label in — a `View` is a value, not a tree that can be walked — so the
+  /// measured table here is a box and, for the two controls that read the
+  /// recipe table, the colours the theme resolved. Everything else a
+  /// stylesheet decides is only visible in the picture.
+  @MainActor func testEverySpecimenDraws() throws {
+    let reference = parity.appendingPathComponent("reference")
+    try XCTSkipUnless(
+      FileManager.default.fileExists(atPath: reference.path),
+      "no Parity/reference — run `pnpm parity` at the root")
+    let specimens = try loadSpecimens(reference)
+
+    try? FileManager.default.removeItem(at: renders)
+    var drawn = 0
+    for specimen in specimens {
+      guard let view = build(specimen.probe) else { continue }
+      for themeName in specimen.themes.keys.sorted() {
+        guard let theme = ThemeName(rawValue: themeName) else { continue }
+        // The box React drew it in, whatever the specimen is. A checkbox
+        // row and a nav row are as wide as the column they were laid out
+        // in, and a picture of one at its intrinsic width is a picture of a
+        // different arrangement — the point of the drawing is that the two
+        // are of the same thing.
+        let width = specimen.themes[themeName]?.width
+        let sized: AnyView =
+          width.map { AnyView(view.frame(width: $0)) } ?? AnyView(view.fixedSize())
+        let renderer = ImageRenderer(
+          content: sized.theme(theme).environment(\.displayScale, 2))
+        // The scale the reference was taken at, so the two pictures are of
+        // the same size in device pixels.
+        renderer.scale = 2
+        guard let image = renderer.cgImage else { continue }
+        let directory = renders.appendingPathComponent(themeName)
+        try FileManager.default.createDirectory(
+          at: directory, withIntermediateDirectories: true)
+        let file = directory.appendingPathComponent("\(renderName(specimen.key)).png")
+        let bitmap = NSBitmapImageRep(cgImage: image)
+        guard let png = bitmap.representation(using: .png, properties: [:]) else { continue }
+        try png.write(to: file)
+        drawn += 1
+      }
+    }
+    print("parity: drew \(drawn) renderings into Parity/renders")
+    XCTAssertGreaterThan(drawn, 0, "nothing drew")
   }
 
   func testEverySpecimenThePortCanBuildMeasuresAsReactDrewIt() throws {
@@ -68,13 +128,11 @@ final class ReferenceTests: XCTestCase {
         guard let theme = ThemeName(rawValue: themeName) else { continue }
         let measured = measure(specimen.probe, theme: theme, width: expected.width)
         let colors = recipe(specimen.probe, vars: theme.variables)
-        var row: [String: Any] = ["width": measured.width, "height": measured.height]
-        if let colors {
-          row["background"] = hex(colors.surface)
-          row["color"] = hex(colors.content)
-          row["border-color"] = hex(colors.border)
-        }
-        measuredAll[specimen.key, default: [:]][themeName] = row
+        // What this side and React's could both be asked about. The viewer
+        // reads it and renders rather than deciding, so a field this test
+        // skips has to be absent rather than merely ignored — otherwise the
+        // page would paint a disagreement the suite does not have.
+        var compared: [String: Any] = [:]
 
         func note(_ field: String, _ want: String, _ got: String) {
           let check = "\(specimen.key) · \(field)"
@@ -83,25 +141,39 @@ final class ReferenceTests: XCTestCase {
         }
 
         if specimen.probe.text.isEmpty, !specimen.probe.fillsTheViewport,
-          let want = expected.width, abs(want - measured.width) > 0.5
+          let want = expected.width
         {
-          note("width", "\(want)", "\(measured.width)")
+          compared["width"] = measured.width
+          if abs(want - measured.width) >= halfAPixel {
+            note("width", "\(want)", "\(measured.width)")
+          }
         }
-        if !specimen.probe.heightIsContentDriven, let want = expected.height,
-          abs(want - measured.height) > 0.5
-        {
-          note("height", "\(want)", "\(measured.height)")
+        if !specimen.probe.heightIsContentDriven, let want = expected.height {
+          compared["height"] = measured.height
+          if abs(want - measured.height) >= halfAPixel {
+            note("height", "\(want)", "\(measured.height)")
+          }
         }
         if let colors {
+          // A border's *width* is never compared, here or on any port:
+          // Chromium rounds every border to a whole CSS pixel in both
+          // directions, so the half-pixel a hairline asks for on a 2x display
+          // and the pixel and a half a control stroke asks for both come back
+          // as 1, and the reference cannot tell apart two strokes this system
+          // deliberately does. The colour is unaffected.
           let pairs: [(String, String?, String)] = [
             ("background", expected.background, hex(colors.surface)),
             ("color", expected.color, hex(colors.content)),
             ("border-color", expected.borderColor, hex(colors.border)),
           ]
           for (field, want, got) in pairs where specimen.probe.declares.contains(field) {
-            if let want, !sameColour(want, got) { note(field, want, got) }
+            guard let want else { continue }
+            compared[field] = got
+            if !sameColour(want, got) { note(field, want, got) }
           }
         }
+
+        measuredAll[specimen.key, default: [:]][themeName] = compared
       }
     }
 
@@ -154,7 +226,10 @@ final class ReferenceTests: XCTestCase {
 
   /// Host one specimen under a theme and read the size it asks for.
   private func measure(_ probe: Probe, theme: ThemeName, width: Double?) -> Measured {
-    let view = build(probe)!.theme(theme)
+    // The reference was measured on a 2x display, which is where a hairline
+    // is half a point rather than a whole one. A port measured at 1x would
+    // be asked a different question from the one React answered.
+    let view = build(probe)!.theme(theme).environment(\.displayScale, 2)
     // A field has no width of its own; give it the one the story did.
     let sized: AnyView =
       probe.isField
@@ -213,6 +288,34 @@ final class ReferenceTests: XCTestCase {
     if alpha(a) == 0 && alpha(b) == 0 { return true }
     return a.prefix(7) == b.prefix(7) && abs(alpha(a) - alpha(b)) <= 1
   }
+}
+
+/// The slack a length is allowed, and what it is for.
+///
+/// Two text systems do not agree to the pixel: a badge whose line box is 1.4
+/// of an 11pt face is 21.39 in a browser and 21.4 or 21.5 elsewhere, and
+/// holding a port to that would be holding it to Chromium's rounding rather
+/// than to the design. So a length passes while it is *inside* half a pixel.
+///
+/// Half a pixel exactly does not pass, and that is the point of stating the
+/// bound this way: on a 2x display half a CSS pixel is one device pixel,
+/// which is the difference between a rule drawn at `spacing.px` and one drawn
+/// at `stroke.hairline`. That is a decision about the design, not noise from
+/// a text engine, and it has to be visible.
+let halfAPixel: Double = 0.5
+
+/// A specimen's key as a file name — the same derivation on every platform,
+/// so the viewer can find one port's picture beside another's.
+func renderName(_ key: String) -> String {
+  var out = ""
+  for character in key.lowercased() {
+    if character.isLetter || character.isNumber {
+      out.append(character)
+    } else if !out.hasSuffix("-") {
+      out.append("-")
+    }
+  }
+  return out.trimmingCharacters(in: CharacterSet(charactersIn: "-"))
 }
 
 // MARK: - Specimens
