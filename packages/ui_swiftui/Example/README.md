@@ -51,6 +51,16 @@ Sources/Playground/
     Stage.swift          what a bare story arranges itself with — Row, Col, Frame, Pane
   Stories/               one file per component
     Tokens/              the token pages
+Tests/PlaygroundTests/
+  StoriesTests.swift     holds the story index to the React story list
+  ReferenceTests.swift   measures each component against what React drew
+  Parity/                what apps/storybook's parity extractor distributed here (not committed)
+```
+
+The tests run from the same scheme:
+
+```bash
+xcodebuild -project Playground.xcodeproj -scheme Playground -destination 'platform=macOS' -derivedDataPath .build/xcode test
 ```
 
 The Storybook's own conventions carry over:

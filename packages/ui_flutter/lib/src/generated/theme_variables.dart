@@ -139,18 +139,27 @@ class ThemeVariables {
       pressedColor: Colors.transparent,
       disabledColor: Colors.transparent,
     ),
+    this.controlColorFilledSurfaceNormalShade = 600,
+    this.controlColorFilledSurfaceHoveredShade = 700,
+    this.controlColorFilledSurfacePressedShade = 700,
     this.controlColorFilledBorder = const ColorDescriptor(
       normalColor: Colors.transparent,
       hoveredColor: Colors.transparent,
       pressedColor: Colors.transparent,
       disabledColor: Colors.transparent,
     ),
+    this.controlColorTintedContentNormalShade = 700,
+    this.controlColorTintedContentHoveredShade = 800,
+    this.controlColorTintedContentPressedShade = 800,
     this.controlColorTintedBorder = const ColorDescriptor(
       normalColor: Colors.transparent,
       hoveredColor: Colors.transparent,
       pressedColor: Colors.transparent,
       disabledColor: Colors.transparent,
     ),
+    this.controlColorOutlinedContentNormalShade = 700,
+    this.controlColorOutlinedContentHoveredShade = 800,
+    this.controlColorOutlinedContentPressedShade = 800,
     this.controlColorOutlinedBorder = const ColorDescriptor(
       normalShade: 600,
       normalOpacity: 1.0,
@@ -168,6 +177,9 @@ class ThemeVariables {
       pressedOpacity: 0.12,
       disabledColor: Colors.transparent,
     ),
+    this.controlColorPlainContentNormalShade = 700,
+    this.controlColorPlainContentHoveredShade = 800,
+    this.controlColorPlainContentPressedShade = 800,
     this.controlColorPlainBorder = const ColorDescriptor(
       normalColor: Colors.transparent,
       hoveredColor: Colors.transparent,
@@ -452,12 +464,21 @@ class ThemeVariables {
     disabledColor: colorContentFaint,
   );
   final ColorDescriptor controlColorRecessedBorder;
+
+  /// The ramp step `controlColorFilledSurface` picks when normal; a theme re-points it.
+  final int controlColorFilledSurfaceNormalShade;
+
+  /// The ramp step `controlColorFilledSurface` picks when hovered; a theme re-points it.
+  final int controlColorFilledSurfaceHoveredShade;
+
+  /// The ramp step `controlColorFilledSurface` picks when pressed; a theme re-points it.
+  final int controlColorFilledSurfacePressedShade;
   ColorDescriptor get controlColorFilledSurface => ColorDescriptor(
-    normalShade: 600,
+    normalShade: controlColorFilledSurfaceNormalShade,
     normalOpacity: 1.0,
-    hoveredShade: 700,
+    hoveredShade: controlColorFilledSurfaceHoveredShade,
     hoveredOpacity: 1.0,
-    pressedShade: 700,
+    pressedShade: controlColorFilledSurfacePressedShade,
     pressedOpacity: 0.9,
     disabledColor: colorSurfaceSunken,
   );
@@ -478,12 +499,21 @@ class ThemeVariables {
     pressedOpacity: 0.24,
     disabledColor: colorSurfaceSunken,
   );
+
+  /// The ramp step `controlColorTintedContent` picks when normal; a theme re-points it.
+  final int controlColorTintedContentNormalShade;
+
+  /// The ramp step `controlColorTintedContent` picks when hovered; a theme re-points it.
+  final int controlColorTintedContentHoveredShade;
+
+  /// The ramp step `controlColorTintedContent` picks when pressed; a theme re-points it.
+  final int controlColorTintedContentPressedShade;
   ColorDescriptor get controlColorTintedContent => ColorDescriptor(
-    normalShade: 700,
+    normalShade: controlColorTintedContentNormalShade,
     normalOpacity: 1.0,
-    hoveredShade: 800,
+    hoveredShade: controlColorTintedContentHoveredShade,
     hoveredOpacity: 1.0,
-    pressedShade: 800,
+    pressedShade: controlColorTintedContentPressedShade,
     pressedOpacity: 0.9,
     disabledColor: colorContentFaint,
   );
@@ -496,23 +526,41 @@ class ThemeVariables {
     pressedOpacity: 0.12,
     disabledColor: colorSurfaceSunken,
   );
+
+  /// The ramp step `controlColorOutlinedContent` picks when normal; a theme re-points it.
+  final int controlColorOutlinedContentNormalShade;
+
+  /// The ramp step `controlColorOutlinedContent` picks when hovered; a theme re-points it.
+  final int controlColorOutlinedContentHoveredShade;
+
+  /// The ramp step `controlColorOutlinedContent` picks when pressed; a theme re-points it.
+  final int controlColorOutlinedContentPressedShade;
   ColorDescriptor get controlColorOutlinedContent => ColorDescriptor(
-    normalShade: 700,
+    normalShade: controlColorOutlinedContentNormalShade,
     normalOpacity: 1.0,
-    hoveredShade: 800,
+    hoveredShade: controlColorOutlinedContentHoveredShade,
     hoveredOpacity: 1.0,
-    pressedShade: 800,
+    pressedShade: controlColorOutlinedContentPressedShade,
     pressedOpacity: 0.9,
     disabledColor: colorContentFaint,
   );
   final ColorDescriptor controlColorOutlinedBorder;
   final ColorDescriptor controlColorPlainSurface;
+
+  /// The ramp step `controlColorPlainContent` picks when normal; a theme re-points it.
+  final int controlColorPlainContentNormalShade;
+
+  /// The ramp step `controlColorPlainContent` picks when hovered; a theme re-points it.
+  final int controlColorPlainContentHoveredShade;
+
+  /// The ramp step `controlColorPlainContent` picks when pressed; a theme re-points it.
+  final int controlColorPlainContentPressedShade;
   ColorDescriptor get controlColorPlainContent => ColorDescriptor(
-    normalShade: 700,
+    normalShade: controlColorPlainContentNormalShade,
     normalOpacity: 1.0,
-    hoveredShade: 800,
+    hoveredShade: controlColorPlainContentHoveredShade,
     hoveredOpacity: 1.0,
-    pressedShade: 800,
+    pressedShade: controlColorPlainContentPressedShade,
     pressedOpacity: 0.9,
     disabledColor: colorContentFaint,
   );
@@ -784,6 +832,9 @@ const themeVariablesBrightDark = ThemeVariables(
   colorPrimary: Colors.acid,
   colorSuccess: Colors.greenDark,
   colorWarning: Colors.amberDark,
+  controlColorFilledSurfaceNormalShade: 500,
+  controlColorFilledSurfaceHoveredShade: 600,
+  controlColorFilledSurfacePressedShade: 600,
   controlColorOutlinedBorder: ColorDescriptor(
     normalShade: 400,
     normalOpacity: 1.0,
@@ -792,6 +843,15 @@ const themeVariablesBrightDark = ThemeVariables(
     pressedShade: 300,
     pressedOpacity: 0.9,
   ),
+  controlColorOutlinedContentNormalShade: 300,
+  controlColorOutlinedContentHoveredShade: 200,
+  controlColorOutlinedContentPressedShade: 200,
+  controlColorPlainContentNormalShade: 300,
+  controlColorPlainContentHoveredShade: 200,
+  controlColorPlainContentPressedShade: 200,
+  controlColorTintedContentNormalShade: 300,
+  controlColorTintedContentHoveredShade: 200,
+  controlColorTintedContentPressedShade: 200,
 );
 
 /// The `studio-dark` counterpart of [themeVariables].
@@ -879,6 +939,9 @@ const themeVariablesStudioDark = ThemeVariables(
   colorDanger: Colors.redDark,
   colorSuccess: Colors.greenDark,
   colorWarning: Colors.amberDark,
+  controlColorFilledSurfaceNormalShade: 500,
+  controlColorFilledSurfaceHoveredShade: 600,
+  controlColorFilledSurfacePressedShade: 600,
   controlColorOutlinedBorder: ColorDescriptor(
     normalShade: 400,
     normalOpacity: 1.0,
@@ -887,4 +950,13 @@ const themeVariablesStudioDark = ThemeVariables(
     pressedShade: 300,
     pressedOpacity: 0.9,
   ),
+  controlColorOutlinedContentNormalShade: 300,
+  controlColorOutlinedContentHoveredShade: 200,
+  controlColorOutlinedContentPressedShade: 200,
+  controlColorPlainContentNormalShade: 300,
+  controlColorPlainContentHoveredShade: 200,
+  controlColorPlainContentPressedShade: 200,
+  controlColorTintedContentNormalShade: 300,
+  controlColorTintedContentHoveredShade: 200,
+  controlColorTintedContentPressedShade: 200,
 );

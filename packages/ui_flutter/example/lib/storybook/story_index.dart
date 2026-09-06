@@ -105,6 +105,15 @@ class StoryIndex {
       .map((page) => page.name)
       .toList();
 
+  /// Every story's id, in sidebar order — what the parity test holds against
+  /// the React list.
+  static List<String> get ids => [
+    for (final StoryGroup group in groups)
+      for (final StoryPage page in group.pages)
+        for (final Story story in page.stories)
+          storyId(group.name, page.name, story.name),
+  ];
+
   static Story? story(StoryRef ref) {
     for (final StoryGroup group in groups) {
       for (final StoryPage page in group.pages) {

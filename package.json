@@ -8,6 +8,8 @@
     "packages": "pnpm run tokens && pnpm run components",
     "tokens": "pnpm --filter @dazzlabs/dazzui-ds build",
     "components": "pnpm --filter @dazzlabs/dazzui-react build",
+    "parity": "pnpm --filter @dazzlabs/dazzui-storybook parity",
+    "parity:view": "pnpm --filter @dazzlabs/dazzui-parity dev",
     "typecheck": "pnpm -r typecheck",
     "storybook": "pnpm --filter @dazzlabs/dazzui-storybook dev",
     "storybook:build": "pnpm --filter @dazzlabs/dazzui-storybook build",

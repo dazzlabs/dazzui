@@ -67,6 +67,16 @@ enum StoryIndex {
     groups.first { $0.name == "Components" }?.pages.map(\.name) ?? []
   }
 
+  /// Every story's id, in sidebar order — what the parity test holds against
+  /// the React list.
+  static var ids: [String] {
+    groups.flatMap { group in
+      group.pages.flatMap { page in
+        page.stories.map { storyId(group: group.name, page: page.name, story: $0.name) }
+      }
+    }
+  }
+
   static func story(_ ref: StoryRef) -> Story? {
     groups
       .flatMap(\.pages)

@@ -127,7 +127,7 @@ Everything not listed here is a value-for-value port.
 
 | What | Why |
 | --- | --- |
-| A per-theme *shade* on a recipe naming a semantic role | Such a recipe is derived from this theme's roles, so it has no seed field to re-point. The same limit the Flutter and SwiftUI ports carry. |
+| A per-theme *shade* on a recipe naming a semantic role | Such a recipe is derived from this theme's roles, so the descriptor itself is not a seed field. The shades a theme re-picks on it (`tinted` reads 700 on paper and 300 on a dark canvas) are seed fields of their own — `control_color_tinted_content_normal_shade` — which the theme re-points and the derived descriptor reads. |
 | Hover and press are read from the previous frame | GPUI resolves its own `hover()` and `active()` refinements a phase *after* a text run's colour is baked, so a recipe whose content darkens under the pointer would move its surface and leave its label behind. `pressable` decides the state before the subtree is built instead, which is what keeps every part of a recipe together. It reads the pointer against the last frame's bounds, so a control under a scrim still lights up. |
 | No colour transition | `motion.duration` and `motion.easing` reach Rust, but GPUI has no transition on a style: a colour changes on the frame the state does. `BezierCurve::ease` is there for the animations that are hand-driven. |
 | Keyboard focus is passed in | A focus handle belongs to the view that owns it, so a component draws the ring for a handle it is given (`.focus_handle(&handle)`) rather than keeping one. The two controls that must own focus — `TextBuffer` and `ShortcutRecorder` — do. |
@@ -162,6 +162,16 @@ cargo build --features runtime-shaders
 ```
 
 It changes nothing about what is drawn.
+
+`tests/parity.rs` is the one test that reads data rather than asserting
+values it knows: `tests/parity/` holds what `apps/storybook` rendered for
+every story in every theme, distributed by the parity extractor
+(`pnpm parity` at the root; nothing under that directory is committed), and
+the test builds each specimen it finds there, measures it, and lists every
+disagreement in `tests/parity/drift.txt` — recorded on the first run, and
+the worklist for bringing this port into line with React. Without the data
+the test passes with a note. Run it with `-- --nocapture` to see the value
+on each side.
 
 ## Playground
 

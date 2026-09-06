@@ -134,10 +134,34 @@ pub struct ThemeSeed {
     pub switch_medium_thumb: Pixels,
     pub toast_max_width: Pixels,
     pub control_color_recessed_border: ColorDescriptor,
+    /// The ramp step `control_color_filled_surface` picks when normal; a theme re-points it.
+    pub control_color_filled_surface_normal_shade: u16,
+    /// The ramp step `control_color_filled_surface` picks when hovered; a theme re-points it.
+    pub control_color_filled_surface_hovered_shade: u16,
+    /// The ramp step `control_color_filled_surface` picks when pressed; a theme re-points it.
+    pub control_color_filled_surface_pressed_shade: u16,
     pub control_color_filled_border: ColorDescriptor,
+    /// The ramp step `control_color_tinted_content` picks when normal; a theme re-points it.
+    pub control_color_tinted_content_normal_shade: u16,
+    /// The ramp step `control_color_tinted_content` picks when hovered; a theme re-points it.
+    pub control_color_tinted_content_hovered_shade: u16,
+    /// The ramp step `control_color_tinted_content` picks when pressed; a theme re-points it.
+    pub control_color_tinted_content_pressed_shade: u16,
     pub control_color_tinted_border: ColorDescriptor,
+    /// The ramp step `control_color_outlined_content` picks when normal; a theme re-points it.
+    pub control_color_outlined_content_normal_shade: u16,
+    /// The ramp step `control_color_outlined_content` picks when hovered; a theme re-points it.
+    pub control_color_outlined_content_hovered_shade: u16,
+    /// The ramp step `control_color_outlined_content` picks when pressed; a theme re-points it.
+    pub control_color_outlined_content_pressed_shade: u16,
     pub control_color_outlined_border: ColorDescriptor,
     pub control_color_plain_surface: ColorDescriptor,
+    /// The ramp step `control_color_plain_content` picks when normal; a theme re-points it.
+    pub control_color_plain_content_normal_shade: u16,
+    /// The ramp step `control_color_plain_content` picks when hovered; a theme re-points it.
+    pub control_color_plain_content_hovered_shade: u16,
+    /// The ramp step `control_color_plain_content` picks when pressed; a theme re-points it.
+    pub control_color_plain_content_pressed_shade: u16,
     pub control_color_plain_border: ColorDescriptor,
 }
 
@@ -262,18 +286,27 @@ pub const STUDIO_LIGHT_SEED: ThemeSeed = ThemeSeed {
         pressed: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
         disabled: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
     },
+    control_color_filled_surface_normal_shade: 600,
+    control_color_filled_surface_hovered_shade: 700,
+    control_color_filled_surface_pressed_shade: 700,
     control_color_filled_border: ColorDescriptor {
         normal: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
         hovered: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
         pressed: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
         disabled: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
     },
+    control_color_tinted_content_normal_shade: 700,
+    control_color_tinted_content_hovered_shade: 800,
+    control_color_tinted_content_pressed_shade: 800,
     control_color_tinted_border: ColorDescriptor {
         normal: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
         hovered: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
         pressed: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
         disabled: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
     },
+    control_color_outlined_content_normal_shade: 700,
+    control_color_outlined_content_hovered_shade: 800,
+    control_color_outlined_content_pressed_shade: 800,
     control_color_outlined_border: ColorDescriptor {
         normal: ColorRecipe { color: None, shade: Some(600), alpha: Some(1.0) },
         hovered: ColorRecipe { color: None, shade: Some(700), alpha: Some(1.0) },
@@ -286,6 +319,9 @@ pub const STUDIO_LIGHT_SEED: ThemeSeed = ThemeSeed {
         pressed: ColorRecipe { color: None, shade: Some(600), alpha: Some(0.12) },
         disabled: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
     },
+    control_color_plain_content_normal_shade: 700,
+    control_color_plain_content_hovered_shade: 800,
+    control_color_plain_content_pressed_shade: 800,
     control_color_plain_border: ColorDescriptor {
         normal: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
         hovered: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
@@ -411,10 +447,34 @@ pub struct ThemeVariables {
     pub switch_medium_thumb: Pixels,
     pub toast_max_width: Pixels,
     pub control_color_recessed_border: ColorDescriptor,
+    /// The ramp step `control_color_filled_surface` picks when normal; a theme re-points it.
+    pub control_color_filled_surface_normal_shade: u16,
+    /// The ramp step `control_color_filled_surface` picks when hovered; a theme re-points it.
+    pub control_color_filled_surface_hovered_shade: u16,
+    /// The ramp step `control_color_filled_surface` picks when pressed; a theme re-points it.
+    pub control_color_filled_surface_pressed_shade: u16,
     pub control_color_filled_border: ColorDescriptor,
+    /// The ramp step `control_color_tinted_content` picks when normal; a theme re-points it.
+    pub control_color_tinted_content_normal_shade: u16,
+    /// The ramp step `control_color_tinted_content` picks when hovered; a theme re-points it.
+    pub control_color_tinted_content_hovered_shade: u16,
+    /// The ramp step `control_color_tinted_content` picks when pressed; a theme re-points it.
+    pub control_color_tinted_content_pressed_shade: u16,
     pub control_color_tinted_border: ColorDescriptor,
+    /// The ramp step `control_color_outlined_content` picks when normal; a theme re-points it.
+    pub control_color_outlined_content_normal_shade: u16,
+    /// The ramp step `control_color_outlined_content` picks when hovered; a theme re-points it.
+    pub control_color_outlined_content_hovered_shade: u16,
+    /// The ramp step `control_color_outlined_content` picks when pressed; a theme re-points it.
+    pub control_color_outlined_content_pressed_shade: u16,
     pub control_color_outlined_border: ColorDescriptor,
     pub control_color_plain_surface: ColorDescriptor,
+    /// The ramp step `control_color_plain_content` picks when normal; a theme re-points it.
+    pub control_color_plain_content_normal_shade: u16,
+    /// The ramp step `control_color_plain_content` picks when hovered; a theme re-points it.
+    pub control_color_plain_content_hovered_shade: u16,
+    /// The ramp step `control_color_plain_content` picks when pressed; a theme re-points it.
+    pub control_color_plain_content_pressed_shade: u16,
     pub control_color_plain_border: ColorDescriptor,
     pub control_tiny_gap: Pixels,
     pub control_tiny_padding_block: Pixels,
@@ -589,10 +649,22 @@ impl ThemeVariables {
         let switch_medium_thumb = seed.switch_medium_thumb;
         let toast_max_width = seed.toast_max_width;
         let control_color_recessed_border = seed.control_color_recessed_border;
+        let control_color_filled_surface_normal_shade = seed.control_color_filled_surface_normal_shade;
+        let control_color_filled_surface_hovered_shade = seed.control_color_filled_surface_hovered_shade;
+        let control_color_filled_surface_pressed_shade = seed.control_color_filled_surface_pressed_shade;
         let control_color_filled_border = seed.control_color_filled_border;
+        let control_color_tinted_content_normal_shade = seed.control_color_tinted_content_normal_shade;
+        let control_color_tinted_content_hovered_shade = seed.control_color_tinted_content_hovered_shade;
+        let control_color_tinted_content_pressed_shade = seed.control_color_tinted_content_pressed_shade;
         let control_color_tinted_border = seed.control_color_tinted_border;
+        let control_color_outlined_content_normal_shade = seed.control_color_outlined_content_normal_shade;
+        let control_color_outlined_content_hovered_shade = seed.control_color_outlined_content_hovered_shade;
+        let control_color_outlined_content_pressed_shade = seed.control_color_outlined_content_pressed_shade;
         let control_color_outlined_border = seed.control_color_outlined_border;
         let control_color_plain_surface = seed.control_color_plain_surface;
+        let control_color_plain_content_normal_shade = seed.control_color_plain_content_normal_shade;
+        let control_color_plain_content_hovered_shade = seed.control_color_plain_content_hovered_shade;
+        let control_color_plain_content_pressed_shade = seed.control_color_plain_content_pressed_shade;
         let control_color_plain_border = seed.control_color_plain_border;
 
         let control_tiny_gap = spacing_1;
@@ -664,9 +736,9 @@ impl ThemeVariables {
             disabled: ColorRecipe { color: Some(color_content_faint), shade: None, alpha: None },
         };
         let control_color_filled_surface = ColorDescriptor {
-            normal: ColorRecipe { color: None, shade: Some(600), alpha: Some(1.0) },
-            hovered: ColorRecipe { color: None, shade: Some(700), alpha: Some(1.0) },
-            pressed: ColorRecipe { color: None, shade: Some(700), alpha: Some(0.9) },
+            normal: ColorRecipe { color: None, shade: Some(control_color_filled_surface_normal_shade), alpha: Some(1.0) },
+            hovered: ColorRecipe { color: None, shade: Some(control_color_filled_surface_hovered_shade), alpha: Some(1.0) },
+            pressed: ColorRecipe { color: None, shade: Some(control_color_filled_surface_pressed_shade), alpha: Some(0.9) },
             disabled: ColorRecipe { color: Some(color_surface_sunken), shade: None, alpha: None },
         };
         let control_color_filled_content = ColorDescriptor {
@@ -682,9 +754,9 @@ impl ThemeVariables {
             disabled: ColorRecipe { color: Some(color_surface_sunken), shade: None, alpha: None },
         };
         let control_color_tinted_content = ColorDescriptor {
-            normal: ColorRecipe { color: None, shade: Some(700), alpha: Some(1.0) },
-            hovered: ColorRecipe { color: None, shade: Some(800), alpha: Some(1.0) },
-            pressed: ColorRecipe { color: None, shade: Some(800), alpha: Some(0.9) },
+            normal: ColorRecipe { color: None, shade: Some(control_color_tinted_content_normal_shade), alpha: Some(1.0) },
+            hovered: ColorRecipe { color: None, shade: Some(control_color_tinted_content_hovered_shade), alpha: Some(1.0) },
+            pressed: ColorRecipe { color: None, shade: Some(control_color_tinted_content_pressed_shade), alpha: Some(0.9) },
             disabled: ColorRecipe { color: Some(color_content_faint), shade: None, alpha: None },
         };
         let control_color_outlined_surface = ColorDescriptor {
@@ -694,15 +766,15 @@ impl ThemeVariables {
             disabled: ColorRecipe { color: Some(color_surface_sunken), shade: None, alpha: None },
         };
         let control_color_outlined_content = ColorDescriptor {
-            normal: ColorRecipe { color: None, shade: Some(700), alpha: Some(1.0) },
-            hovered: ColorRecipe { color: None, shade: Some(800), alpha: Some(1.0) },
-            pressed: ColorRecipe { color: None, shade: Some(800), alpha: Some(0.9) },
+            normal: ColorRecipe { color: None, shade: Some(control_color_outlined_content_normal_shade), alpha: Some(1.0) },
+            hovered: ColorRecipe { color: None, shade: Some(control_color_outlined_content_hovered_shade), alpha: Some(1.0) },
+            pressed: ColorRecipe { color: None, shade: Some(control_color_outlined_content_pressed_shade), alpha: Some(0.9) },
             disabled: ColorRecipe { color: Some(color_content_faint), shade: None, alpha: None },
         };
         let control_color_plain_content = ColorDescriptor {
-            normal: ColorRecipe { color: None, shade: Some(700), alpha: Some(1.0) },
-            hovered: ColorRecipe { color: None, shade: Some(800), alpha: Some(1.0) },
-            pressed: ColorRecipe { color: None, shade: Some(800), alpha: Some(0.9) },
+            normal: ColorRecipe { color: None, shade: Some(control_color_plain_content_normal_shade), alpha: Some(1.0) },
+            hovered: ColorRecipe { color: None, shade: Some(control_color_plain_content_hovered_shade), alpha: Some(1.0) },
+            pressed: ColorRecipe { color: None, shade: Some(control_color_plain_content_pressed_shade), alpha: Some(0.9) },
             disabled: ColorRecipe { color: Some(color_content_faint), shade: None, alpha: None },
         };
 
@@ -821,10 +893,22 @@ impl ThemeVariables {
             switch_medium_thumb,
             toast_max_width,
             control_color_recessed_border,
+            control_color_filled_surface_normal_shade,
+            control_color_filled_surface_hovered_shade,
+            control_color_filled_surface_pressed_shade,
             control_color_filled_border,
+            control_color_tinted_content_normal_shade,
+            control_color_tinted_content_hovered_shade,
+            control_color_tinted_content_pressed_shade,
             control_color_tinted_border,
+            control_color_outlined_content_normal_shade,
+            control_color_outlined_content_hovered_shade,
+            control_color_outlined_content_pressed_shade,
             control_color_outlined_border,
             control_color_plain_surface,
+            control_color_plain_content_normal_shade,
+            control_color_plain_content_hovered_shade,
+            control_color_plain_content_pressed_shade,
             control_color_plain_border,
             control_tiny_gap,
             control_tiny_padding_block,
@@ -968,12 +1052,24 @@ pub static BRIGHT_DARK: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     color_primary: colors::ACID,
     color_success: colors::GREEN_DARK,
     color_warning: colors::AMBER_DARK,
+    control_color_filled_surface_normal_shade: 500,
+    control_color_filled_surface_hovered_shade: 600,
+    control_color_filled_surface_pressed_shade: 600,
     control_color_outlined_border: ColorDescriptor {
             normal: ColorRecipe { color: None, shade: Some(400), alpha: Some(1.0) },
             hovered: ColorRecipe { color: None, shade: Some(300), alpha: Some(1.0) },
             pressed: ColorRecipe { color: None, shade: Some(300), alpha: Some(0.9) },
             disabled: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
         },
+    control_color_outlined_content_normal_shade: 300,
+    control_color_outlined_content_hovered_shade: 200,
+    control_color_outlined_content_pressed_shade: 200,
+    control_color_plain_content_normal_shade: 300,
+    control_color_plain_content_hovered_shade: 200,
+    control_color_plain_content_pressed_shade: 200,
+    control_color_tinted_content_normal_shade: 300,
+    control_color_tinted_content_hovered_shade: 200,
+    control_color_tinted_content_pressed_shade: 200,
     ..STUDIO_LIGHT_SEED
 });
 
@@ -1013,11 +1109,23 @@ pub static STUDIO_DARK: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     color_danger: colors::RED_DARK,
     color_success: colors::GREEN_DARK,
     color_warning: colors::AMBER_DARK,
+    control_color_filled_surface_normal_shade: 500,
+    control_color_filled_surface_hovered_shade: 600,
+    control_color_filled_surface_pressed_shade: 600,
     control_color_outlined_border: ColorDescriptor {
             normal: ColorRecipe { color: None, shade: Some(400), alpha: Some(1.0) },
             hovered: ColorRecipe { color: None, shade: Some(300), alpha: Some(1.0) },
             pressed: ColorRecipe { color: None, shade: Some(300), alpha: Some(0.9) },
             disabled: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
         },
+    control_color_outlined_content_normal_shade: 300,
+    control_color_outlined_content_hovered_shade: 200,
+    control_color_outlined_content_pressed_shade: 200,
+    control_color_plain_content_normal_shade: 300,
+    control_color_plain_content_hovered_shade: 200,
+    control_color_plain_content_pressed_shade: 200,
+    control_color_tinted_content_normal_shade: 300,
+    control_color_tinted_content_hovered_shade: 200,
+    control_color_tinted_content_pressed_shade: 200,
     ..STUDIO_LIGHT_SEED
 });

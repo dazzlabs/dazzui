@@ -111,7 +111,7 @@ not a visual parity check.
 
 | What | Why |
 | --- | --- |
-| A per-theme *shade* on a recipe naming a semantic role | Such a recipe is a computed property reading this instance's roles, so it has no initialiser parameter to re-point. The same limit the Flutter port carries. |
+| A per-theme *shade* on a recipe naming a semantic role | Such a recipe is a computed property reading this instance's roles, so the descriptor itself has no initialiser parameter. The shades a theme re-picks on it (`tinted` reads 700 on paper and 300 on a dark canvas) are stored members of their own — `controlColorTintedContentNormalShade` — which the theme re-points and the computed descriptor reads. |
 | Hairlines | A separator is one *device* pixel: `@Environment(\.hairline)` halves on Retina, the way `base.css` does with `min-resolution: 2dppx`. Drawn control outlines read `strokeControl` and stay put. |
 | The mono face resolves rather than being named | `text-field.css` reaches for `--base-font-code`, whose stack leads with `ui-monospace` — on this platform a request for the system monospaced face rather than a family to look up, so a mono field takes `Font.Design.monospaced`. The same argument as `-apple-system` resolving to `.system` in `TypeStyle`. (`base.font.code` has no semantic token in front of it; a component reaching a `base.*` primitive is the graph's own rule being bent, and it is a `packages/ds` decision to unbend.) |
 

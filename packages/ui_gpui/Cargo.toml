@@ -24,6 +24,8 @@ gpui = "0.2.2"
 # The headless half of GPUI: it draws an element tree without a window, which
 # is what lets the tests lay out and paint every component.
 gpui = { version = "0.2.2", features = ["test-support"] }
+# The parity test reads the React reference, which is JSON.
+serde_json = "1"
 
 [features]
 # GPUI compiles its Metal shaders in a build script, which needs the Metal

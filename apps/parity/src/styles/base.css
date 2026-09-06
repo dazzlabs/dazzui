@@ -1,0 +1,96 @@
+/*
+ * The ground the viewer stands on. Everything reads from the token sheet:
+ * a tool that reports drift from the design system had better not drift
+ * from it itself.
+ */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--color-content);
+  background-color: var(--color-canvas);
+  font-family: var(--body-medium-font-family);
+  font-size: var(--body-medium-font-size);
+  font-weight: var(--body-medium-font-weight);
+  line-height: var(--body-medium-line-height);
+  -webkit-font-smoothing: antialiased;
+}
+
+.pv-root {
+  display: flex;
+  height: 100dvh;
+}
+
+.pv-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  background-color: var(--color-surface);
+}
+
+/* The strip over the content: what is being looked at, and under which
+   theme. It sits at the titlebar's height so the window reads as one. */
+.pv-toolbar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--spacing-3);
+  height: var(--frame-titlebar-size);
+  padding-inline: var(--spacing-4);
+  border-bottom: var(--stroke-hairline) solid var(--color-border);
+  background-color: var(--color-surface-muted);
+}
+
+.pv-toolbar__title {
+  font-family: var(--title-small-font-family);
+  font-size: var(--title-small-font-size);
+  font-weight: var(--title-small-font-weight);
+  line-height: var(--title-small-line-height);
+}
+
+.pv-toolbar__spacer {
+  flex: 1;
+}
+
+.pv-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--spacing-6);
+}
+
+.pv-content__header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-3);
+  margin-block-end: var(--spacing-4);
+}
+
+.pv-content__heading {
+  margin: 0;
+  font-family: var(--headline-small-font-family);
+  font-size: var(--headline-small-font-size);
+  font-weight: var(--headline-small-font-weight);
+  line-height: var(--headline-small-line-height);
+}
+
+.pv-content__note {
+  color: var(--color-content-muted);
+}
+
+/* A value in the design's own mono face: a length, a colour, a key. */
+.pv-mono {
+  font-family: var(--base-font-code);
+  font-size: var(--label-small-font-size);
+}
+
+.pv-truncate {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -45,6 +45,17 @@
         "packages/ui_flutter/example/build/web"
       ],
       "port": 8321
+    },
+    {
+      "name": "parity",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@dazzlabs/dazzui-parity",
+        "dev"
+      ],
+      "port": 5182,
+      "autoPort": true
     }
   ]
 }

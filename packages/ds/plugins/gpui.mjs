@@ -259,23 +259,54 @@ function buildMembers(categories, tokens) {
 
   for (const [base, recipe] of recipes) {
     const references = descriptorReferences(recipe.states)
-    const member = {
-      doc: recipe.doc,
-      name: tokenIdToVarName(base),
-      type: 'ColorDescriptor',
-      value: descriptorLiteral(recipe.states, tokens),
-      // Bound inside `resolve`, which is two levels in.
-      body: descriptorLiteral(recipe.states, tokens, '        '),
-      references,
-    }
     // A recipe naming a semantic role — `{color.surface}` for the neutral
     // control, `{color.on-accent}` for what a filled one prints — is written
     // in terms of a value a theme may move, so it is derived rather than
-    // seeded.
-    ;(references ? derived : stored).push(member)
+    // seeded. A *shade* on it that a theme re-picks (`tinted` reads 700 on
+    // paper and 300 on a dark canvas) is seeded on its own, so the theme has
+    // a field to re-point and the derived descriptor reads the step this
+    // seed carries.
+    if (!references) {
+      stored.push({
+        doc: recipe.doc,
+        name: tokenIdToVarName(base),
+        type: 'ColorDescriptor',
+        value: descriptorLiteral(recipe.states, tokens),
+        references,
+      })
+      continue
+    }
+    const shadeNames = {}
+    for (const state of STATES) {
+      const shade = recipe.states[state]?.shade
+      if (!shade || !movesPerTheme(shade)) continue
+      const name = tokenIdToVarName(`${base}.${state}.shade`)
+      shadeNames[state] = name
+      stored.push({
+        doc: `    /// The ramp step \`${tokenIdToVarName(base)}\` picks when ${state}; a theme re-points it.\n`,
+        name,
+        type: 'u16',
+        value: String(shade.$value),
+        references: [],
+      })
+    }
+    derived.push({
+      doc: recipe.doc,
+      name: tokenIdToVarName(base),
+      type: 'ColorDescriptor',
+      value: descriptorLiteral(recipe.states, tokens, '    ', shadeNames),
+      // Bound inside `resolve`, which is two levels in.
+      body: descriptorLiteral(recipe.states, tokens, '        ', shadeNames),
+      references,
+    })
   }
 
   return { stored, derived }
+}
+
+/** Does a token take a different value under any mode? */
+function movesPerTheme(token) {
+  return Object.keys(token.mode ?? {}).some(mode => mode !== '.')
 }
 
 /**
@@ -438,11 +469,21 @@ pub static STUDIO_LIGHT: ThemeVariables = ThemeVariables::resolve(STUDIO_LIGHT_S
             : token
         }
       }
-      // A derived recipe has no seed field to override, and needs none: it is
-      // written in terms of the roles this theme already re-points. What
-      // cannot follow is a per-theme *shade* on such a recipe — the one known
-      // limit, shared with Flutter and SwiftUI.
-      if (descriptorReferences(states)) continue
+      // A derived recipe has no seed field of its own: it is written in
+      // terms of the roles this theme already re-points. The shades a theme
+      // re-picks on it are seed fields, and those are what move here.
+      if (descriptorReferences(states)) {
+        for (const state of STATES) {
+          const shade = tokens[`${base}.${state}.shade`]
+          const themed = shade && valueForTheme(shade, modes)
+          if (!themed) continue
+          overrides.push({
+            name: tokenIdToVarName(`${base}.${state}.shade`),
+            value: String(themed.$value),
+          })
+        }
+        continue
+      }
       overrides.push({
         name: tokenIdToVarName(base),
         value: descriptorLiteral(states, tokens, '        '),
@@ -499,7 +540,7 @@ function valueForTheme(token, modes) {
 
 // MARK: - Color descriptors
 
-function descriptorLiteral(states, tokens, indent = '    ') {
+function descriptorLiteral(states, tokens, indent = '    ', shadeNames = {}) {
   const fields = []
 
   for (const state of STATES) {
@@ -508,7 +549,9 @@ function descriptorLiteral(states, tokens, indent = '    ') {
     const color = parts?.color
       ? `Some(${convertTokenValue(parts.color, tokens).value})`
       : 'None'
-    const shade = parts?.shade ? `Some(${parts.shade.$value})` : 'None'
+    const shade = parts?.shade
+      ? `Some(${shadeNames[state] ?? parts.shade.$value})`
+      : 'None'
     const alpha = parts?.alpha ? `Some(${float(parts.alpha.$value)})` : 'None'
 
     fields.push(

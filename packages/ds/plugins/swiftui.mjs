@@ -202,19 +202,49 @@ function buildMembers(categories, tokens) {
   }
 
   for (const [base, recipe] of recipes) {
-    const member = {
-      doc: recipe.doc,
-      name: tokenIdToVarName(base),
-      type: 'ColorDescriptor',
-      value: descriptorLiteral(recipe.states, tokens),
-    }
     // A recipe naming a semantic role — `{color.surface}` for the neutral
     // control, `{color.on-accent}` for what a filled one prints — reads a
     // property of this same value, which an initialiser default cannot do.
-    ;(descriptorReferences(recipe.states) ? computed : stored).push(member)
+    // Such a recipe is computed; but a *shade* on it that a theme re-picks
+    // (`tinted` reads 700 on paper and 300 on a dark canvas) is stored on
+    // its own, so the theme has a parameter to re-point and the computed
+    // descriptor reads the step this instance carries.
+    if (!descriptorReferences(recipe.states)) {
+      stored.push({
+        doc: recipe.doc,
+        name: tokenIdToVarName(base),
+        type: 'ColorDescriptor',
+        value: descriptorLiteral(recipe.states, tokens),
+      })
+      continue
+    }
+    const shadeNames = {}
+    for (const state of STATES) {
+      const shade = recipe.states[state]?.shade
+      if (!shade || !movesPerTheme(shade)) continue
+      const name = tokenIdToVarName(`${base}.${state}.shade`)
+      shadeNames[state] = name
+      stored.push({
+        doc: `  /// The ramp step \`${tokenIdToVarName(base)}\` picks when ${state}; a theme re-points it.\n`,
+        name,
+        type: 'Int',
+        value: String(shade.$value),
+      })
+    }
+    computed.push({
+      doc: recipe.doc,
+      name: tokenIdToVarName(base),
+      type: 'ColorDescriptor',
+      value: descriptorLiteral(recipe.states, tokens, '  ', shadeNames),
+    })
   }
 
   return { stored, computed }
+}
+
+/** Does a token take a different value under any mode? */
+function movesPerTheme(token) {
+  return Object.keys(token.mode ?? {}).some(mode => mode !== '.')
 }
 
 /**
@@ -352,10 +382,21 @@ public extension ThemeVariables {
         }
       }
       // A recipe emitted as a computed property has no initialiser parameter
-      // to override, and needs none: it reads the roles this instance already
-      // re-points. What cannot follow is a per-theme *shade* on such a
-      // recipe — the platform's one known limit, shared with Flutter.
-      if (descriptorReferences(states)) continue
+      // of its own: it reads the roles this instance already re-points. The
+      // shades a theme re-picks on it are stored members, and those are
+      // what move here.
+      if (descriptorReferences(states)) {
+        for (const state of STATES) {
+          const shade = tokens[`${base}.${state}.shade`]
+          const themed = shade && valueForTheme(shade, modes)
+          if (!themed) continue
+          overrides.push({
+            name: tokenIdToVarName(`${base}.${state}.shade`),
+            value: String(themed.$value),
+          })
+        }
+        continue
+      }
       overrides.push({
         name: tokenIdToVarName(base),
         value: descriptorLiteral(states, tokens, '    '),
@@ -417,7 +458,7 @@ function valueForTheme(token, modes) {
 
 // MARK: - Color descriptors
 
-function descriptorLiteral(states, tokens, indent = '  ') {
+function descriptorLiteral(states, tokens, indent = '  ', shadeNames = {}) {
   const params = []
 
   for (const state of STATES) {
@@ -429,7 +470,9 @@ function descriptorLiteral(states, tokens, indent = '  ') {
       params.push(`${indent}  ${state}Color: ${value.value}`)
     }
     if (parts.shade) {
-      params.push(`${indent}  ${state}Shade: ${parts.shade.$value}`)
+      params.push(
+        `${indent}  ${state}Shade: ${shadeNames[state] ?? parts.shade.$value}`
+      )
     }
     if (parts.alpha) {
       params.push(`${indent}  ${state}Opacity: ${double(parts.alpha.$value)}`)

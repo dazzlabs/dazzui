@@ -124,18 +124,27 @@ public struct ThemeVariables: Sendable {
     pressedColor: Colors.transparent,
     disabledColor: Colors.transparent
   ),
+    controlColorFilledSurfaceNormalShade: Int = 600,
+    controlColorFilledSurfaceHoveredShade: Int = 700,
+    controlColorFilledSurfacePressedShade: Int = 700,
     controlColorFilledBorder: ColorDescriptor = ColorDescriptor(
     normalColor: Colors.transparent,
     hoveredColor: Colors.transparent,
     pressedColor: Colors.transparent,
     disabledColor: Colors.transparent
   ),
+    controlColorTintedContentNormalShade: Int = 700,
+    controlColorTintedContentHoveredShade: Int = 800,
+    controlColorTintedContentPressedShade: Int = 800,
     controlColorTintedBorder: ColorDescriptor = ColorDescriptor(
     normalColor: Colors.transparent,
     hoveredColor: Colors.transparent,
     pressedColor: Colors.transparent,
     disabledColor: Colors.transparent
   ),
+    controlColorOutlinedContentNormalShade: Int = 700,
+    controlColorOutlinedContentHoveredShade: Int = 800,
+    controlColorOutlinedContentPressedShade: Int = 800,
     controlColorOutlinedBorder: ColorDescriptor = ColorDescriptor(
     normalShade: 600,
     normalOpacity: 1.0,
@@ -153,6 +162,9 @@ public struct ThemeVariables: Sendable {
     pressedOpacity: 0.12,
     disabledColor: Colors.transparent
   ),
+    controlColorPlainContentNormalShade: Int = 700,
+    controlColorPlainContentHoveredShade: Int = 800,
+    controlColorPlainContentPressedShade: Int = 800,
     controlColorPlainBorder: ColorDescriptor = ColorDescriptor(
     normalColor: Colors.transparent,
     hoveredColor: Colors.transparent,
@@ -274,10 +286,22 @@ public struct ThemeVariables: Sendable {
     self.switchMediumThumb = switchMediumThumb
     self.toastMaxWidth = toastMaxWidth
     self.controlColorRecessedBorder = controlColorRecessedBorder
+    self.controlColorFilledSurfaceNormalShade = controlColorFilledSurfaceNormalShade
+    self.controlColorFilledSurfaceHoveredShade = controlColorFilledSurfaceHoveredShade
+    self.controlColorFilledSurfacePressedShade = controlColorFilledSurfacePressedShade
     self.controlColorFilledBorder = controlColorFilledBorder
+    self.controlColorTintedContentNormalShade = controlColorTintedContentNormalShade
+    self.controlColorTintedContentHoveredShade = controlColorTintedContentHoveredShade
+    self.controlColorTintedContentPressedShade = controlColorTintedContentPressedShade
     self.controlColorTintedBorder = controlColorTintedBorder
+    self.controlColorOutlinedContentNormalShade = controlColorOutlinedContentNormalShade
+    self.controlColorOutlinedContentHoveredShade = controlColorOutlinedContentHoveredShade
+    self.controlColorOutlinedContentPressedShade = controlColorOutlinedContentPressedShade
     self.controlColorOutlinedBorder = controlColorOutlinedBorder
     self.controlColorPlainSurface = controlColorPlainSurface
+    self.controlColorPlainContentNormalShade = controlColorPlainContentNormalShade
+    self.controlColorPlainContentHoveredShade = controlColorPlainContentHoveredShade
+    self.controlColorPlainContentPressedShade = controlColorPlainContentPressedShade
     self.controlColorPlainBorder = controlColorPlainBorder
   }
 
@@ -395,10 +419,34 @@ public struct ThemeVariables: Sendable {
   public let switchMediumThumb: CGFloat
   public let toastMaxWidth: CGFloat
   public let controlColorRecessedBorder: ColorDescriptor
+  /// The ramp step `controlColorFilledSurface` picks when normal; a theme re-points it.
+  public let controlColorFilledSurfaceNormalShade: Int
+  /// The ramp step `controlColorFilledSurface` picks when hovered; a theme re-points it.
+  public let controlColorFilledSurfaceHoveredShade: Int
+  /// The ramp step `controlColorFilledSurface` picks when pressed; a theme re-points it.
+  public let controlColorFilledSurfacePressedShade: Int
   public let controlColorFilledBorder: ColorDescriptor
+  /// The ramp step `controlColorTintedContent` picks when normal; a theme re-points it.
+  public let controlColorTintedContentNormalShade: Int
+  /// The ramp step `controlColorTintedContent` picks when hovered; a theme re-points it.
+  public let controlColorTintedContentHoveredShade: Int
+  /// The ramp step `controlColorTintedContent` picks when pressed; a theme re-points it.
+  public let controlColorTintedContentPressedShade: Int
   public let controlColorTintedBorder: ColorDescriptor
+  /// The ramp step `controlColorOutlinedContent` picks when normal; a theme re-points it.
+  public let controlColorOutlinedContentNormalShade: Int
+  /// The ramp step `controlColorOutlinedContent` picks when hovered; a theme re-points it.
+  public let controlColorOutlinedContentHoveredShade: Int
+  /// The ramp step `controlColorOutlinedContent` picks when pressed; a theme re-points it.
+  public let controlColorOutlinedContentPressedShade: Int
   public let controlColorOutlinedBorder: ColorDescriptor
   public let controlColorPlainSurface: ColorDescriptor
+  /// The ramp step `controlColorPlainContent` picks when normal; a theme re-points it.
+  public let controlColorPlainContentNormalShade: Int
+  /// The ramp step `controlColorPlainContent` picks when hovered; a theme re-points it.
+  public let controlColorPlainContentHoveredShade: Int
+  /// The ramp step `controlColorPlainContent` picks when pressed; a theme re-points it.
+  public let controlColorPlainContentPressedShade: Int
   public let controlColorPlainBorder: ColorDescriptor
 
   public var controlTinyGap: CGFloat { spacing1 }
@@ -475,11 +523,11 @@ public struct ThemeVariables: Sendable {
     disabledColor: colorContentFaint
   ) }
   public var controlColorFilledSurface: ColorDescriptor { ColorDescriptor(
-    normalShade: 600,
+    normalShade: controlColorFilledSurfaceNormalShade,
     normalOpacity: 1.0,
-    hoveredShade: 700,
+    hoveredShade: controlColorFilledSurfaceHoveredShade,
     hoveredOpacity: 1.0,
-    pressedShade: 700,
+    pressedShade: controlColorFilledSurfacePressedShade,
     pressedOpacity: 0.9,
     disabledColor: colorSurfaceSunken
   ) }
@@ -500,11 +548,11 @@ public struct ThemeVariables: Sendable {
     disabledColor: colorSurfaceSunken
   ) }
   public var controlColorTintedContent: ColorDescriptor { ColorDescriptor(
-    normalShade: 700,
+    normalShade: controlColorTintedContentNormalShade,
     normalOpacity: 1.0,
-    hoveredShade: 800,
+    hoveredShade: controlColorTintedContentHoveredShade,
     hoveredOpacity: 1.0,
-    pressedShade: 800,
+    pressedShade: controlColorTintedContentPressedShade,
     pressedOpacity: 0.9,
     disabledColor: colorContentFaint
   ) }
@@ -517,20 +565,20 @@ public struct ThemeVariables: Sendable {
     disabledColor: colorSurfaceSunken
   ) }
   public var controlColorOutlinedContent: ColorDescriptor { ColorDescriptor(
-    normalShade: 700,
+    normalShade: controlColorOutlinedContentNormalShade,
     normalOpacity: 1.0,
-    hoveredShade: 800,
+    hoveredShade: controlColorOutlinedContentHoveredShade,
     hoveredOpacity: 1.0,
-    pressedShade: 800,
+    pressedShade: controlColorOutlinedContentPressedShade,
     pressedOpacity: 0.9,
     disabledColor: colorContentFaint
   ) }
   public var controlColorPlainContent: ColorDescriptor { ColorDescriptor(
-    normalShade: 700,
+    normalShade: controlColorPlainContentNormalShade,
     normalOpacity: 1.0,
-    hoveredShade: 800,
+    hoveredShade: controlColorPlainContentHoveredShade,
     hoveredOpacity: 1.0,
-    pressedShade: 800,
+    pressedShade: controlColorPlainContentPressedShade,
     pressedOpacity: 0.9,
     disabledColor: colorContentFaint
   ) }
@@ -624,6 +672,15 @@ public extension ThemeVariables {
     radiusBig: 14.0,
     progressGradientFrom: Colors.acid[500],
     progressGradientTo: Colors.acid[500],
+    controlColorFilledSurfaceNormalShade: 500,
+    controlColorFilledSurfaceHoveredShade: 600,
+    controlColorFilledSurfacePressedShade: 600,
+    controlColorTintedContentNormalShade: 300,
+    controlColorTintedContentHoveredShade: 200,
+    controlColorTintedContentPressedShade: 200,
+    controlColorOutlinedContentNormalShade: 300,
+    controlColorOutlinedContentHoveredShade: 200,
+    controlColorOutlinedContentPressedShade: 200,
     controlColorOutlinedBorder: ColorDescriptor(
       normalShade: 400,
       normalOpacity: 1.0,
@@ -632,7 +689,10 @@ public extension ThemeVariables {
       pressedShade: 300,
       pressedOpacity: 0.9,
       disabledColor: Colors.transparent
-    )
+    ),
+    controlColorPlainContentNormalShade: 300,
+    controlColorPlainContentHoveredShade: 200,
+    controlColorPlainContentPressedShade: 200
   )
 
   /// The `studio-dark` counterpart of ``studioLight``.
@@ -671,6 +731,15 @@ public extension ThemeVariables {
     focusRingAlpha: 0.5,
     progressGradientFrom: Colors.brand[500],
     progressGradientTo: Colors.brand[300],
+    controlColorFilledSurfaceNormalShade: 500,
+    controlColorFilledSurfaceHoveredShade: 600,
+    controlColorFilledSurfacePressedShade: 600,
+    controlColorTintedContentNormalShade: 300,
+    controlColorTintedContentHoveredShade: 200,
+    controlColorTintedContentPressedShade: 200,
+    controlColorOutlinedContentNormalShade: 300,
+    controlColorOutlinedContentHoveredShade: 200,
+    controlColorOutlinedContentPressedShade: 200,
     controlColorOutlinedBorder: ColorDescriptor(
       normalShade: 400,
       normalOpacity: 1.0,
@@ -679,6 +748,9 @@ public extension ThemeVariables {
       pressedShade: 300,
       pressedOpacity: 0.9,
       disabledColor: Colors.transparent
-    )
+    ),
+    controlColorPlainContentNormalShade: 300,
+    controlColorPlainContentHoveredShade: 200,
+    controlColorPlainContentPressedShade: 200
   )
 }

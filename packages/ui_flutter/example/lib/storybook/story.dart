@@ -27,6 +27,25 @@ enum StoryLayout {
   fullscreen,
 }
 
+/// A story's Storybook id — `components-button--all-variants` — derived the
+/// way Storybook derives it from a title and an export name: lower-cased, with
+/// every run of anything but a letter or a digit collapsed to one dash.
+///
+/// The id is the key the React reference is written under, so it is what
+/// makes a story here and the story in `apps/storybook` the same story. A
+/// name that differs only in case or spacing (`All variants`, `All Variants`)
+/// lands on the same id; a name that differs in a word does not.
+String storyId(String group, String page, String story) {
+  return '${_sanitize('$group/$page')}--${_sanitize(story)}';
+}
+
+String _sanitize(String text) {
+  return text
+      .toLowerCase()
+      .replaceAll(RegExp('[^a-z0-9]+'), '-')
+      .replaceAll(RegExp(r'^-+|-+$'), '');
+}
+
 /// One story: a name in the sidebar and the widget it draws.
 class Story {
   const Story(this.name, this.builder, {this.layout = StoryLayout.centered});

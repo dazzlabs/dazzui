@@ -1,0 +1,75 @@
+.pv-overview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+}
+
+.pv-overview__platforms {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-4);
+}
+
+.pv-overview__stats {
+  display: flex;
+  gap: var(--spacing-6);
+  margin-block-start: var(--spacing-3);
+}
+
+.pv-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.pv-stat__label {
+  color: var(--color-content-muted);
+  font-size: var(--label-small-font-size);
+}
+
+.pv-stat__value {
+  font-family: var(--headline-small-font-family);
+  font-size: var(--headline-small-font-size);
+  font-weight: var(--headline-small-font-weight);
+  line-height: var(--headline-small-line-height);
+}
+
+.pv-stat__value[data-tone='drift'] {
+  color: var(--control-color-tinted-content-normal);
+}
+
+.pv-stat__value[data-tone='clear'] {
+  color: var(--control-color-tinted-content-normal);
+}
+
+/* A count with a bar behind it, so a column reads at a glance. The bar is
+   the tint's wash, the same one a tinted chip sits on. */
+.pv-bar {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  min-width: calc(var(--spacing-20) * 2);
+}
+
+.pv-bar__fill {
+  position: absolute;
+  inset-block: var(--spacing-0-5);
+  inset-inline-end: 0;
+  border-radius: var(--radius-small);
+  background-color: var(--control-color-tinted-surface-normal);
+}
+
+.pv-bar__value {
+  position: relative;
+  padding-inline: var(--spacing-1-5);
+  font-family: var(--base-font-code);
+  font-size: var(--label-small-font-size);
+}
+
+.pv-overview__tables {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-4);
+  align-items: start;
+}

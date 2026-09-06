@@ -1,0 +1,30 @@
+.pv-sidebar {
+  flex: none;
+}
+
+.pv-sidebar__search {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  padding-block: var(--spacing-1);
+}
+
+/* The field takes the column's width rather than its own intrinsic one,
+   which is wider than the column and would run under the toolbar. One
+   selector deeper, which is the extension point `cx()` documents. */
+.pv-sidebar__search .dz-search-field {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+}
+
+/* The count on a component row: how many checks drift, in the row's own
+   colour at a fraction of its weight, so it turns with the selection. */
+.pv-count {
+  margin-inline-start: auto;
+  padding-inline-start: var(--spacing-1);
+  opacity: 0.65;
+  font-family: var(--base-font-code);
+  font-size: var(--label-small-font-size);
+}

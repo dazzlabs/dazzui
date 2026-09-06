@@ -385,10 +385,10 @@ function generateThemeInstances(tokens, modeSelectors) {
     for (const baseId of [...descriptorBases].sort()) {
       // A descriptor whose any state aliases a semantic colour is emitted as
       // a getter on the class (see the constructor/getter split above), so
-      // there is no constructor parameter to override — and none is needed:
-      // the getter reads the role fields this instance already re-points.
-      // What cannot follow is a per-theme *shade* on such a recipe; the
-      // getter's shades are fixed, which is the platform's known limit.
+      // there is no constructor parameter for the descriptor itself: the
+      // getter reads the role fields this instance already re-points. The
+      // shades a theme re-picks on it are fields of their own, and those are
+      // what move here.
       const isGetter = ['normal', 'hovered', 'pressed', 'disabled'].some(
         state => {
           const colorToken = tokens[`${baseId}.${state}.color`]
@@ -401,7 +401,17 @@ function generateThemeInstances(tokens, modeSelectors) {
           )
         }
       )
-      if (isGetter) continue
+      if (isGetter) {
+        for (const state of ['normal', 'hovered', 'pressed', 'disabled']) {
+          const shade = tokens[`${baseId}.${state}.shade`]
+          const themed = shade && valueForTheme(shade, modes)
+          if (!themed) continue
+          overrides.push(
+            `  ${tokenIdToVarName(`${baseId}.${state}.shade`)}: ${themed.$value},`
+          )
+        }
+        continue
+      }
 
       const params = []
       for (const state of ['normal', 'hovered', 'pressed', 'disabled']) {
@@ -820,10 +830,30 @@ function generateClassContent(categories, allTokens) {
 
                   if (!controlColorGroupsPalette.has(baseId)) {
                     controlColorGroupsPalette.set(baseId, {
-                      normal: { shade: null, alpha: null, color: null },
-                      hovered: { shade: null, alpha: null, color: null },
-                      pressed: { shade: null, alpha: null, color: null },
-                      disabled: { shade: null, alpha: null, color: null },
+                      normal: {
+                        shade: null,
+                        shadeToken: null,
+                        alpha: null,
+                        color: null,
+                      },
+                      hovered: {
+                        shade: null,
+                        shadeToken: null,
+                        alpha: null,
+                        color: null,
+                      },
+                      pressed: {
+                        shade: null,
+                        shadeToken: null,
+                        alpha: null,
+                        color: null,
+                      },
+                      disabled: {
+                        shade: null,
+                        shadeToken: null,
+                        alpha: null,
+                        color: null,
+                      },
                       comment: null,
                     })
                   }
@@ -831,6 +861,7 @@ function generateClassContent(categories, allTokens) {
                   const group = controlColorGroupsPalette.get(baseId)
                   if (token.id.endsWith('.shade')) {
                     group[state].shade = token.$value
+                    group[state].shadeToken = token
                     if (!group.comment) group.comment = generateComment(token)
                   } else if (token.id.endsWith('.alpha')) {
                     group[state].alpha = token.$value
@@ -1064,6 +1095,7 @@ function generateClassContent(categories, allTokens) {
                 if (!group.comment) group.comment = generateComment(token)
               } else if (token.id.endsWith('.shade')) {
                 group[state].shade = token.$value
+                group[state].shadeToken = token
                 if (!group.comment) group.comment = generateComment(token)
               } else if (token.id.endsWith('.alpha')) {
                 group[state].alpha = token.$value
@@ -1280,6 +1312,37 @@ function generateClassContent(categories, allTokens) {
               targetFieldSections.push(`  final ColorDescriptor ${varName};`)
             }
 
+            // A getter's shades would be fixed — but a shade a theme
+            // re-picks (`tinted` reads 700 on paper and 300 on a dark
+            // canvas) is stored as a field of its own, so the theme has a
+            // parameter to re-point and the getter reads the step this
+            // instance carries.
+            const shadeFields = {}
+            if (shouldEmitAsGetter) {
+              for (const state of [
+                'normal',
+                'hovered',
+                'pressed',
+                'disabled',
+              ]) {
+                const shadeToken = group[state].shadeToken
+                if (!shadeToken) continue
+                const moves = Object.keys(shadeToken.mode ?? {}).some(
+                  mode => mode !== '.'
+                )
+                if (!moves) continue
+                const name = tokenIdToVarName(`${baseId}.${state}.shade`)
+                shadeFields[state] = name
+                targetFieldSections.push(
+                  `  /// The ramp step \`${varName}\` picks when ${state}; a theme re-points it.`,
+                  `  final int ${name};`
+                )
+                targetInitializerSections.push(
+                  `    this.${name} = ${group[state].shade},`
+                )
+              }
+            }
+
             // Format opacity values to always show decimal point
             const formatOpacity = val => {
               const num = Number(val)
@@ -1300,7 +1363,9 @@ function generateClassContent(categories, allTokens) {
               )
             }
             if (group.normal.shade !== null) {
-              params.push(`      normalShade: ${group.normal.shade}`)
+              params.push(
+                `      normalShade: ${shadeFields.normal ?? group.normal.shade}`
+              )
             }
             if (group.normal.alpha !== null) {
               params.push(
@@ -1313,7 +1378,9 @@ function generateClassContent(categories, allTokens) {
               )
             }
             if (group.hovered.shade !== null) {
-              params.push(`      hoveredShade: ${group.hovered.shade}`)
+              params.push(
+                `      hoveredShade: ${shadeFields.hovered ?? group.hovered.shade}`
+              )
             }
             if (group.hovered.alpha !== null) {
               params.push(
@@ -1326,7 +1393,9 @@ function generateClassContent(categories, allTokens) {
               )
             }
             if (group.pressed.shade !== null) {
-              params.push(`      pressedShade: ${group.pressed.shade}`)
+              params.push(
+                `      pressedShade: ${shadeFields.pressed ?? group.pressed.shade}`
+              )
             }
             if (group.pressed.alpha !== null) {
               params.push(
@@ -1339,7 +1408,9 @@ function generateClassContent(categories, allTokens) {
               )
             }
             if (group.disabled.shade !== null) {
-              params.push(`      disabledShade: ${group.disabled.shade}`)
+              params.push(
+                `      disabledShade: ${shadeFields.disabled ?? group.disabled.shade}`
+              )
             }
             if (group.disabled.alpha !== null) {
               params.push(
@@ -1406,10 +1477,30 @@ function generateClassContent(categories, allTokens) {
 
             if (!controlColorGroups.has(baseId)) {
               controlColorGroups.set(baseId, {
-                normal: { shade: null, alpha: null, color: null },
-                hovered: { shade: null, alpha: null, color: null },
-                pressed: { shade: null, alpha: null, color: null },
-                disabled: { shade: null, alpha: null, color: null },
+                normal: {
+                  shade: null,
+                  shadeToken: null,
+                  alpha: null,
+                  color: null,
+                },
+                hovered: {
+                  shade: null,
+                  shadeToken: null,
+                  alpha: null,
+                  color: null,
+                },
+                pressed: {
+                  shade: null,
+                  shadeToken: null,
+                  alpha: null,
+                  color: null,
+                },
+                disabled: {
+                  shade: null,
+                  shadeToken: null,
+                  alpha: null,
+                  color: null,
+                },
                 comment: null,
               })
             }
@@ -1417,6 +1508,7 @@ function generateClassContent(categories, allTokens) {
             const group = controlColorGroups.get(baseId)
             if (token.id.endsWith('.shade')) {
               group[state].shade = token.$value
+              group[state].shadeToken = token
               if (!group.comment) group.comment = generateComment(token)
             } else if (token.id.endsWith('.alpha')) {
               group[state].alpha = token.$value

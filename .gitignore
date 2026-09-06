@@ -26,6 +26,22 @@ dist-ssr
 
 # Storybook
 storybook.log
+# Parity: the React reference the extractor writes, the copies it distributes
+# into the platform playgrounds, what their tests measure, and the lists the
+# tests record. All of it is regenerated — `pnpm parity`, then the suites.
+/apps/storybook/parity/
+**/parity/stories.json
+**/parity/reference/
+**/parity/measured.json
+**/parity/drift.txt
+**/parity/pending.txt
+**/parity/extra.txt
+**/Parity/stories.json
+**/Parity/reference/
+**/Parity/measured.json
+**/Parity/drift.txt
+**/Parity/pending.txt
+**/Parity/extra.txt
 
 # Swift
 .build
