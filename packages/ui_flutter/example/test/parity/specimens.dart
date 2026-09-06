@@ -3,10 +3,32 @@ import 'package:flutter/material.dart' as material;
 
 /// One distinct thing React drew: a class, its axes, its text.
 class Probe {
-  const Probe(this.className, this.data, this.text);
+  const Probe(this.className, this.data, this.text, this.declares);
   final String className;
   final Map<String, String> data;
   final String text;
+
+  /// The fields the React component's own stylesheet decides.
+  ///
+  /// A computed style always answers — a callout root reports the page's
+  /// 13px because it inherits it, having no type of its own — so holding a
+  /// port to one is holding it to a value the component never chose. Only
+  /// what the stylesheet declares is the component's own decision.
+  final Set<String> declares;
+
+  /// Components whose height is what they hold rather than what they are.
+  ///
+  /// A button is its size profile's height whatever its label; a card is as
+  /// tall as its children, and those came from the story rather than from
+  /// any axis this specimen carries. Comparing one is comparing two
+  /// different contents, so the height is left to the screenshot layer.
+  bool get heightIsContentDriven => const {
+    'dz-card',
+    'dz-callout',
+    'dz-option-card',
+    'dz-toast',
+    'dz-step',
+  }.contains(className);
 
   bool get isField =>
       className == 'dz-text-field' ||
@@ -113,9 +135,12 @@ Widget? build(Probe probe) {
         child: label,
       );
     case 'dz-callout':
+      // `has-description` means a title *and* a body: React sets it only
+      // when both are given, so a callout carrying it is two lines.
       return Callout(
         tint: pick(CalloutTint.values, data['tint']) ?? CalloutTint.neutral,
         size: probe.size(WidgetSize.medium),
+        title: data.containsKey('has-description') ? const Text('Title') : null,
         message: label,
       );
     case 'dz-progress':
@@ -148,25 +173,45 @@ Widget? build(Probe probe) {
     case 'dz-option-card':
       return OptionCard(
         title: probe.text,
-        selected: false,
+        selected: data['aria-checked'] == 'true',
+        tint:
+            pick(OptionCardTint.values, data['tint']) ?? OptionCardTint.primary,
         onPressed: probe.disabled ? null : noop,
       );
     case 'dz-search-field':
+      // A value rather than a placeholder: React's root declares the type
+      // and the ink a field's *content* is set in, and a placeholder is
+      // drawn in neither.
       return SearchField(
+        controller: TextEditingController(
+          text: probe.text.isEmpty ? 'aurora' : probe.text,
+        ),
         placeholder: 'Search',
         size: probe.size(WidgetSize.medium),
       );
     case 'dz-text-field':
       return TextField(
+        controller: TextEditingController(
+          text: probe.text.isEmpty ? 'aurora' : probe.text,
+        ),
         size: probe.size(WidgetSize.medium),
-        placeholder: probe.text.isEmpty ? 'Placeholder' : null,
+        state: data['aria-invalid'] == 'true'
+            ? TextFieldState.error
+            : TextFieldState.normal,
+        tint: pick(TextFieldTint.values, data['tint']) ?? TextFieldTint.primary,
+        // A focused specimen is a focused field: the box lifts to the paper
+        // behind an accent edge, and no other state of it says so.
+        autofocus: data.containsKey('focused'),
         enabled: !probe.disabled,
         maxLines: data.containsKey('multiline') ? 3 : 1,
       );
     case 'dz-divider':
+      final DividerTone tone = data['tone'] == 'muted'
+          ? DividerTone.muted
+          : DividerTone.normal;
       return data['orientation'] == 'vertical'
-          ? const SizedBox(height: 24, child: VerticalDivider())
-          : const Divider();
+          ? SizedBox(height: 24, child: VerticalDivider(tone: tone))
+          : Divider(tone: tone);
     case 'dz-segmented-control':
       return SegmentedControl<int>(
         items: const [

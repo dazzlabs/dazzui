@@ -87,7 +87,9 @@ final class ReferenceTests: XCTestCase {
         {
           note("width", "\(want)", "\(measured.width)")
         }
-        if let want = expected.height, abs(want - measured.height) > 0.5 {
+        if !specimen.probe.heightIsContentDriven, let want = expected.height,
+          abs(want - measured.height) > 0.5
+        {
           note("height", "\(want)", "\(measured.height)")
         }
         if let colors {
@@ -96,7 +98,7 @@ final class ReferenceTests: XCTestCase {
             ("color", expected.color, hex(colors.content)),
             ("border-color", expected.borderColor, hex(colors.border)),
           ]
-          for (field, want, got) in pairs {
+          for (field, want, got) in pairs where specimen.probe.declares.contains(field) {
             if let want, !sameColour(want, got) { note(field, want, got) }
           }
         }
@@ -158,9 +160,15 @@ final class ReferenceTests: XCTestCase {
       probe.isField
       ? AnyView(view.frame(width: width ?? 240))
       : AnyView(view.fixedSize())
-    let host = NSHostingView(rootView: sized)
-    host.layoutSubtreeIfNeeded()
-    let size = host.fittingSize
+    // `NSHostingView.fittingSize` answers in whole points, and half this
+    // system's boxes are not: a badge is 21.39 tall because its line box is
+    // 1.4 of an 11pt face. A hosting controller reports what the view
+    // actually asked for.
+    let controller = NSHostingController(rootView: sized)
+    let proposal = CGSize(
+      width: probe.isField ? (width ?? 240) : .greatestFiniteMagnitude,
+      height: .greatestFiniteMagnitude)
+    let size = controller.sizeThatFits(in: proposal)
     return Measured(width: size.width, height: size.height)
   }
 
@@ -168,6 +176,16 @@ final class ReferenceTests: XCTestCase {
   /// variant, tint and state. This is what the view reads, so it is what the
   /// browser's computed colour is held to.
   private func recipe(_ probe: Probe, vars: ThemeVariables) -> ControlColors? {
+    // The one control that deliberately leaves the recipe: an icon button's
+    // default posture — plain, neutral — is subtle ink rather than the
+    // neutral ramp, which `icon-button.css` says is too flat a grey for a
+    // toolbar that has to read as chrome. Every port draws it that way; the
+    // recipe table is simply not what it is drawn from.
+    if probe.className == "dz-icon-button", probe.data["variant"] == "plain",
+      probe.data["tint"] == "neutral"
+    {
+      return nil
+    }
     guard probe.className == "dz-button" || probe.className == "dz-icon-button",
       let variant = ControlVariant(rawValue: probe.data["variant"] ?? ""),
       let tint = Tint(rawValue: probe.data["tint"] ?? "")
@@ -207,12 +225,30 @@ struct Probe {
   let data: [String: String]
   let text: String
 
+  /// The fields the React component's own stylesheet decides.
+  ///
+  /// A computed style always answers — a callout root reports the page's
+  /// 13px because it inherits it, having no type of its own — so holding a
+  /// port to one is holding it to a value the component never chose. Only
+  /// what the stylesheet declares is the component's own decision.
+  let declares: Set<String>
+
   var key: String {
     let axes = data.keys.sorted().map { "\($0)=\(data[$0]!)" }
     return axes.isEmpty ? className : "\(className) \(axes.joined(separator: " "))"
   }
 
   var disabled: Bool { data["disabled"] != nil || data["aria-disabled"] == "true" }
+
+  /// Components whose height is what they hold rather than what they are.
+  ///
+  /// A button is its size profile's height whatever its label; a card is as
+  /// tall as its children, and those came from the story rather than from any
+  /// axis this specimen carries. Comparing one is comparing two different
+  /// contents, so the height is left to the screenshot layer.
+  var heightIsContentDriven: Bool {
+    ["dz-card", "dz-callout", "dz-option-card", "dz-toast", "dz-step"].contains(className)
+  }
 
   var isField: Bool {
     ["dz-text-field", "dz-search-field", "dz-select", "dz-shortcut-recorder"].contains(className)
@@ -259,7 +295,8 @@ func loadSpecimens(_ dir: URL) throws -> [Specimen] {
             !$0.key.hasPrefix("base-ui") && $0.key != "control"
           }
           let probe = Probe(
-            className: raw["class"] as! String, data: data, text: raw["text"] as? String ?? "")
+            className: raw["class"] as! String, data: data, text: raw["text"] as? String ?? "",
+            declares: Set(raw["declares"] as? [String] ?? []))
           let key = probe.key
           if probes[key] == nil {
             probes[key] = probe
@@ -391,10 +428,13 @@ func build(_ probe: Probe) -> AnyView? {
         tint: tint ?? .primary
       ) { Text(text) })
   case "dz-callout":
+    // `has-description` means a title *and* a body: React sets it only when
+    // both are given, so a callout carrying it is two lines.
     return AnyView(
       Callout(
         size: CalloutSize(rawValue: data["size"] ?? "") ?? .medium,
         tint: tint ?? .neutral,
+        title: probe.has("has-description") ? "Title" : nil,
         leading: { EmptyView() },
         description: { Text(text) },
         trailing: { EmptyView() }))
@@ -430,6 +470,7 @@ func build(_ probe: Probe) -> AnyView? {
   case "dz-option-card":
     return AnyView(
       OptionCard(
+        selected: data["aria-checked"] == "true",
         tint: tint ?? .primary,
         enabled: enabled,
         action: {},

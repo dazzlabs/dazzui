@@ -48,7 +48,10 @@ public struct Radio<Label: View>: View {
     Pressable(action: action, enabled: enabled, cornerRadius: vars.radiusNone) { state in
       HStack(alignment: .center, spacing: vars.spacing25) {
         box
-        label()
+        // The line box the stylesheet states. Left to itself a `Text` is as
+        // tall as its font's own leading, and a row whose box is smaller
+        // than that would be set by the face rather than by the design.
+        label().frame(height: vars.labelQuiet.lineHeight)
       }
       .font(.system(size: vars.labelQuiet.size, weight: labelWeight))
       .foregroundStyle(checked ? vars.colorContent : vars.colorContentMuted)

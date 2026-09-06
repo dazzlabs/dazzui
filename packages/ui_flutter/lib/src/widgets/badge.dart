@@ -141,16 +141,19 @@ class _BadgeState extends State<Badge> with SingleTickerProviderStateMixin {
         color: backgroundColor,
         borderRadius: borderRadius,
       ),
-      // The edge rides in the *foreground* decoration: a `BoxDecoration.border`
-      // insets the content box by its own width, which would make every badge
-      // a pixel taller and wider than the stylesheet's — there the border is
-      // transparent under `box-sizing: border-box` and costs nothing.
+      // The edge rides in the *foreground* decoration so that it paints over
+      // the fill rather than insetting the content box, and the padding
+      // carries its width instead. That is what the stylesheet does: a badge
+      // has a transparent border on every variant — so `outlined` does not
+      // gain a pixel per side and fall off the heights the others share —
+      // and with no height declared on the box, that border adds to the
+      // outer height the way any border does.
       foregroundDecoration: BoxDecoration(
-        border: Border.all(color: borderColor, width: context.hairlineWidth),
+        border: Border.all(color: borderColor, width: vars.spacingPx),
         borderRadius: borderRadius,
       ),
       child: Padding(
-        padding: padding,
+        padding: padding + EdgeInsets.all(vars.spacingPx),
         child: Align(
           alignment: Alignment.center,
           widthFactor: 1.0,

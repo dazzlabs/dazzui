@@ -95,6 +95,12 @@ public struct NavItem<Leading: View, Label: View>: View {
       .font(vars.labelQuiet.font)
       .fontWeight(role == .action ? vars.labelMedium.weight : vars.labelQuiet.weight)
       .lineLimit(1)
+      // `nav-item.css` sets `line-height: 1`, so the row's content box is
+      // one em and the padding is what makes it a control height. Left to
+      // itself a `Text` is as tall as its font's leading instead, and the
+      // row would stand three points proud of every other control beside
+      // it.
+      .frame(height: vars.labelQuiet.size)
       .foregroundStyle(foreground(state: state))
       .padding(.vertical, paddingBlock)
       .padding(.horizontal, vars.spacing25)

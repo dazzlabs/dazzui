@@ -68,6 +68,12 @@ public struct Checkbox<Label: View>: View {
             Text(" \(note)").foregroundStyle(vars.colorContentFaint)
           }
         }
+        // The line box the stylesheet states. Left to itself a `Text` is as
+        // tall as its font's own leading, and a row whose box is smaller
+        // than that would be set by the face rather than by the design —
+        // which is the opposite of what `checkbox.css` says, where the
+        // boxes set the density of a stacked checklist.
+        .frame(height: vars.labelQuiet.lineHeight)
       }
       .font(.system(size: vars.labelQuiet.size, weight: labelWeight))
       .foregroundStyle(checked ? vars.colorContent : vars.colorContentMuted)

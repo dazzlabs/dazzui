@@ -34,6 +34,12 @@ public struct SectionLabel<Label: View>: View {
     label()
       .font(vars.labelSmall.font)
       .lineSpacing(vars.labelSmall.lineSpacing)
+      // The line box the stylesheet states, rather than the one the face
+      // happens to have: a `Text` is as tall as its font's own leading,
+      // which for an 11pt face is three points more than the 11 the token
+      // asks for, and a column of labels would space itself by the face
+      // rather than by the design.
+      .frame(height: vars.labelSmall.lineHeight)
       .foregroundStyle(color)
   }
 

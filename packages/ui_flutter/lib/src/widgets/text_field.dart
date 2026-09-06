@@ -28,6 +28,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '../foundation/widget_size.dart';
+import '../foundation/widget_tint.dart';
 import '../generated/theme_variables.dart';
 import '../theme/theme.dart';
 
@@ -169,6 +170,25 @@ class _TextFieldSelectionGestureDetectorBuilder
 ///    [TextField].
 ///  * Learn how to use a [TextEditingController] in one of our [cookbook recipes](https://docs.flutter.dev/cookbook/forms/text-field-changes#2-use-a-texteditingcontroller).
 ///  * <https://developer.apple.com/design/human-interface-guidelines/ios/controls/text-fields/>
+/// Whether the field is reporting a problem.
+enum TextFieldState { normal, error }
+
+/// The ramp the field's focus and error colours are drawn from.
+enum TextFieldTint with WidgetTint {
+  primary,
+  neutral,
+  info,
+  success,
+  warning,
+  danger,
+}
+
+/// An erroring control is re-tinted rather than given a second palette, so
+/// its focus ring, its edge and its ink all move together — which is what
+/// `text-field.tsx` does when it hands `data-tint` the state's own answer.
+TextFieldTint tintForState(TextFieldState state, TextFieldTint tint) =>
+    state == TextFieldState.error ? TextFieldTint.danger : tint;
+
 class TextField extends StatefulWidget {
   /// Creates an iOS-style text field.
   ///
@@ -216,6 +236,8 @@ class TextField extends StatefulWidget {
     this.undoController,
     this.decoration,
     this.size = WidgetSize.medium,
+    this.state = TextFieldState.normal,
+    this.tint = TextFieldTint.primary,
     this.padding,
     this.placeholder,
     this.placeholderStyle,
@@ -350,6 +372,8 @@ class TextField extends StatefulWidget {
     this.undoController,
     this.decoration,
     this.size = WidgetSize.medium,
+    this.state = TextFieldState.normal,
+    this.tint = TextFieldTint.primary,
     this.padding = const EdgeInsets.all(6.0),
     this.placeholder,
     this.placeholderStyle,
@@ -467,6 +491,12 @@ class TextField extends StatefulWidget {
   /// or the clear button when [clearButtonMode] is not never.
   ///
   /// Defaults to a padding of 6 pixels on all sides and can be null.
+  /// Whether the field is reporting a problem.
+  final TextFieldState state;
+
+  /// The ramp the field's focus and error colours are drawn from.
+  final TextFieldTint tint;
+
   final EdgeInsetsGeometry? padding;
 
   /// The size profile the box and its type come off.
@@ -1538,7 +1568,22 @@ class _TextFieldState extends State<TextField>
     ];
     final ThemeData theme = Theme.of(context);
     final ThemeVariables vars = theme.vars;
-    final Color accent = vars.colorPrimary[vars.focusRingShade]!;
+    // The field's own ramp: an erroring one is the danger ladder whatever it
+    // was given, the way the React component re-tints rather than reaching
+    // for a second palette.
+    final ColorSwatch<int> ramp = switch (tintForState(
+      widget.state,
+      widget.tint,
+    ).namedTint) {
+      NamedTint.primary => vars.colorPrimary,
+      NamedTint.neutral => vars.colorNeutral,
+      NamedTint.info => vars.colorInfo,
+      NamedTint.success => vars.colorSuccess,
+      NamedTint.warning => vars.colorWarning,
+      NamedTint.danger => vars.colorDanger,
+    };
+    final Color accent = ramp[vars.focusRingShade]!;
+    final bool invalid = widget.state == TextFieldState.error;
     final (
       double controlHeight,
       double padBlock,
@@ -1565,9 +1610,15 @@ class _TextFieldState extends State<TextField>
         vars.labelMedium,
       ),
     };
+    // A multiline field pads on its own step rather than the size profile's:
+    // it is sized by its content, so the block pad is what holds the first
+    // line off the edge rather than what makes up a control height.
     final EdgeInsetsGeometry padding =
         widget.padding ??
-        EdgeInsets.symmetric(horizontal: vars.spacing3, vertical: padBlock);
+        EdgeInsets.symmetric(
+          horizontal: vars.spacing3,
+          vertical: widget.maxLines == 1 ? padBlock : vars.spacing25,
+        );
 
     final TextStyle? resolvedStyle = widget.style?.copyWith(
       color: CupertinoDynamicColor.maybeResolve(widget.style?.color, context),
@@ -1585,7 +1636,9 @@ class _TextFieldState extends State<TextField>
         .merge(resolvedStyle)
         .copyWith(
           color: enabled
-              ? theme.vars.colorContent
+              ? (widget.state == TextFieldState.error
+                    ? theme.vars.colorDanger[800]!
+                    : theme.vars.colorContent)
               : theme.vars.controlColorNormalContent.disabledColor,
         );
 
@@ -1616,20 +1669,34 @@ class _TextFieldState extends State<TextField>
         accent;
 
     final bool focused = _effectiveFocusNode.hasFocus;
+    // `text-field.css` makes multiline an axis of the same field rather than
+    // a component of its own: the box keeps its ink and its edge and takes
+    // the container corner and a floor of its own, because it grows.
+    final bool isMultiline = widget.maxLines != 1;
 
     // The box is a recessed card — one step below the paper — that lifts to
     // the paper on focus behind an accent border and a soft accent wash.
     // That card→paper transition is the focus signal; a field that stays
     // white can only signal with its ring.
     final BoxDecoration designDecoration = BoxDecoration(
-      color: focused ? vars.colorSurface : vars.colorSurfaceMuted,
+      // An erroring field is washed in its own ramp and edged in it, which
+      // is the one place the box says something before the hint under it
+      // does.
+      color: invalid
+          ? ramp[50]!
+          : (focused ? vars.colorSurface : vars.colorSurfaceMuted),
       border: Border.all(
-        color: focused ? accent : vars.colorBorderStrong,
+        color: focused || invalid ? accent : vars.colorBorderStrong,
         // One width in every state: a border that thickened on focus would
         // shift the text it wraps by half a pixel.
         width: context.hairlineWidth,
       ),
-      borderRadius: BorderRadius.circular(vars.radiusMedium),
+      // A multiline field grows, so it takes the container corner rather
+      // than the control one — a pill textarea reads as a lozenge, which is
+      // the reason `radius.medium` and `radius.large` are separate axes.
+      borderRadius: BorderRadius.circular(
+        isMultiline ? vars.radiusLarge : vars.radiusMedium,
+      ),
       boxShadow: focused
           ? [
               BoxShadow(
@@ -1673,9 +1740,16 @@ class _TextFieldState extends State<TextField>
     final BoxDecoration effectiveDecoration = widget.decoration == null
         ? (enabled
               ? designDecoration
+              // The disabled rule states a fill and an ink and nothing else,
+              // so the edge stays where the base rule put it: a field that
+              // lost its outline would read as a label rather than as a
+              // control that is merely not taking input.
               : designDecoration.copyWith(
                   color: disabledColor,
-                  border: Border.all(color: const Color(0x00000000)),
+                  border: Border.all(
+                    color: vars.colorBorderStrong,
+                    width: context.hairlineWidth,
+                  ),
                   boxShadow: const [],
                 ))
         : widget.decoration!.copyWith(
@@ -1826,9 +1900,12 @@ class _TextFieldState extends State<TextField>
         child: IgnorePointer(
           ignoring: !enabled,
           child: Container(
+            // A single-line field is a control and keeps the profile's
+            // height, so a row of them lines up with the buttons beside it.
+            // A multiline one is a container with a floor of its own.
             constraints: widget.maxLines == 1
                 ? BoxConstraints(minHeight: controlHeight)
-                : null,
+                : BoxConstraints(minHeight: vars.spacing20),
             decoration: effectiveDecoration,
             child: _selectionGestureDetectorBuilder.buildGestureDetector(
               behavior: HitTestBehavior.translucent,

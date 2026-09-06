@@ -45,6 +45,13 @@ struct Probe {
     class: String,
     data: BTreeMap<String, String>,
     text: String,
+    /// The fields the React component's own stylesheet decides.
+    ///
+    /// A computed style always answers — a callout root reports the page's
+    /// 13px because it inherits it, having no type of its own — so holding
+    /// a port to one is holding it to a value the component never chose.
+    /// Only what the stylesheet declares is the component's own decision.
+    declares: BTreeSet<String>,
 }
 
 impl Probe {
@@ -67,6 +74,19 @@ impl Probe {
 
     fn disabled(&self) -> bool {
         self.has("disabled") || self.get("aria-disabled") == Some("true")
+    }
+
+    /// Components whose height is what they hold rather than what they are.
+    ///
+    /// A button is its size profile's height whatever its label; a card is
+    /// as tall as its children, and those came from the story rather than
+    /// from any axis this specimen carries. Comparing one is comparing two
+    /// different contents, so the height is left to the screenshot layer.
+    fn height_is_content_driven(&self) -> bool {
+        matches!(
+            self.class.as_str(),
+            "dz-card" | "dz-callout" | "dz-option-card" | "dz-toast" | "dz-step"
+        )
     }
 
     fn is_field(&self) -> bool {
@@ -122,6 +142,15 @@ fn load_specimens() -> Vec<Specimen> {
                         class: raw["class"].as_str().unwrap().to_string(),
                         data,
                         text: raw["text"].as_str().unwrap_or("").to_string(),
+                        declares: raw["declares"]
+                            .as_array()
+                            .map(|list| {
+                                list.iter()
+                                    .filter_map(|field| field.as_str())
+                                    .map(str::to_string)
+                                    .collect()
+                            })
+                            .unwrap_or_default(),
                     };
                     let key = probe.key();
                     probes.entry(key.clone()).or_insert(probe);
@@ -213,13 +242,17 @@ macro_rules! sized {
 /// their own axes. A container takes its size from what it holds, so a probe
 /// of one says more about the story than about the component.
 fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
+    // An id of its own per specimen, which is load bearing: GPUI keys its
+    // element state by id, so a shared one would hand the next specimen the
+    // last one's press and hover state.
+    let id: gpui::SharedString = probe.key().into();
     let text: gpui::SharedString = probe.text.clone().into();
     let disabled = probe.disabled();
     let t = tint(probe.get("tint"));
 
     let element = match probe.class.as_str() {
         "dz-button" => {
-            let mut button = Button::new("specimen", text)
+            let mut button = Button::new(id.clone(), text)
                 .disabled(disabled)
                 .full_width(probe.get("full-width") == Some("true"));
             if let Some(v) = variant(probe.get("variant")) {
@@ -234,7 +267,7 @@ fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
             button.into_any_element()
         }
         "dz-icon-button" => {
-            let mut button = IconButton::new("specimen", "Star", Icon::new(icons::STAR_16_REGULAR))
+            let mut button = IconButton::new(id.clone(), "Star", Icon::new(icons::STAR_16_REGULAR))
                 .disabled(disabled);
             if let Some(v) = variant(probe.get("variant")) {
                 button = button.variant(v);
@@ -266,7 +299,7 @@ fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
         }
         "dz-checkbox" => {
             let mut checkbox =
-                Checkbox::new("specimen", text, probe.has("checked")).disabled(disabled);
+                Checkbox::new(id.clone(), text, probe.has("checked")).disabled(disabled);
             if let Some(s) = sized!(probe.get("size"), CheckboxSize) {
                 checkbox = checkbox.size(s);
             }
@@ -276,7 +309,7 @@ fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
             checkbox.into_any_element()
         }
         "dz-radio" => {
-            let mut radio = Radio::new("specimen", text, probe.has("checked")).disabled(disabled);
+            let mut radio = Radio::new(id.clone(), text, probe.has("checked")).disabled(disabled);
             if let Some(s) = sized!(probe.get("size"), RadioSize) {
                 radio = radio.size(s);
             }
@@ -286,7 +319,7 @@ fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
             radio.into_any_element()
         }
         "dz-switch" => {
-            let mut switch = Switch::new("specimen", probe.has("checked")).disabled(disabled);
+            let mut switch = Switch::new(id.clone(), probe.has("checked")).disabled(disabled);
             if let Some(s) = sized!(probe.get("size"), SwitchSize) {
                 switch = switch.size(s);
             }
@@ -326,7 +359,13 @@ fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
             card.into_any_element()
         }
         "dz-callout" => {
+            // `has-description` means a title *and* a body: React sets it
+            // only when both are given, so a callout carrying it is two
+            // lines.
             let mut callout = Callout::new().description(text);
+            if probe.has("has-description") {
+                callout = callout.title("Title");
+            }
             if let Some(s) = sized!(probe.get("size"), CalloutSize) {
                 callout = callout.size(s);
             }
@@ -367,14 +406,14 @@ fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
             label.into_any_element()
         }
         "dz-toast" => {
-            let mut toast = Toast::new("specimen", text);
+            let mut toast = Toast::new(id.clone(), text);
             if let Some(t) = t {
                 toast = toast.tint(t);
             }
             toast.into_any_element()
         }
         "dz-nav-item" => {
-            let mut item = NavItem::new("specimen", text).disabled(disabled);
+            let mut item = NavItem::new(id.clone(), text).disabled(disabled);
             item = match probe.get("size") {
                 Some("small") => item.size(NavItemSize::Small),
                 Some("medium") => item.size(NavItemSize::Medium),
@@ -386,7 +425,9 @@ fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
             item.into_any_element()
         }
         "dz-option-card" => {
-            let mut card = OptionCard::new("specimen", text).disabled(disabled);
+            let mut card = OptionCard::new(id.clone(), text)
+                .selected(probe.get("aria-checked") == Some("true"))
+                .disabled(disabled);
             if let Some(t) = t {
                 card = card.tint(t);
             }
@@ -411,7 +452,7 @@ fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
         }
         "dz-search-field" => {
             let field = cx.new(|cx| TextBuffer::new(cx, "Search"));
-            let mut search = SearchField::new("specimen", &field);
+            let mut search = SearchField::new(id.clone(), &field);
             if let Some(s) = sized!(probe.get("size"), TextFieldSize) {
                 search = search.size(s);
             }
@@ -421,7 +462,7 @@ fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
             search.into_any_element()
         }
         "dz-select" => {
-            let mut select = Select::new("specimen", "us")
+            let mut select = Select::new(id.clone(), "us")
                 .option("us", "United States")
                 .option("eu", "Europe");
             if let Some(s) = sized!(probe.get("size"), TextFieldSize) {
@@ -433,7 +474,7 @@ fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
             select.into_any_element()
         }
         "dz-shortcut-recorder" => {
-            let mut recorder = ShortcutRecorder::new("specimen", "⌘K").disabled(disabled);
+            let mut recorder = ShortcutRecorder::new(id.clone(), "⌘K").disabled(disabled);
             if let Some(t) = t {
                 recorder = recorder.tint(t);
             }
@@ -458,7 +499,7 @@ fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
             divider.into_any_element()
         }
         "dz-segmented-control" => {
-            let mut control = SegmentedControl::new("specimen", "design")
+            let mut control = SegmentedControl::new(id.clone(), "design")
                 .item("design", "Design")
                 .item("code", "Code")
                 .stretch(probe.get("stretch") == Some("true"));
@@ -474,7 +515,7 @@ fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
             control.into_any_element()
         }
         "dz-pill-tabs" => {
-            let mut tabs = PillTabs::new("specimen", "all")
+            let mut tabs = PillTabs::new(id.clone(), "all")
                 .item("all", "All")
                 .item("open", "Open");
             if let Some(t) = t {
@@ -566,6 +607,17 @@ fn same_colour(a: &str, b: &str) -> bool {
 /// the browser's computed colour is held to.
 fn recipe(probe: &Probe, vars: &ThemeVariables) -> Option<ControlColors> {
     if !matches!(probe.class.as_str(), "dz-button" | "dz-icon-button") {
+        return None;
+    }
+    // The one control that deliberately leaves the recipe: an icon button's
+    // default posture — plain, neutral — is subtle ink rather than the
+    // neutral ramp, which `icon-button.css` says is too flat a grey for a
+    // toolbar that has to read as chrome. Every port draws it that way; the
+    // recipe table is simply not what it is drawn from.
+    if probe.class == "dz-icon-button"
+        && probe.get("variant") == Some("plain")
+        && probe.get("tint") == Some("neutral")
+    {
         return None;
     }
     let state = if probe.disabled() {
@@ -701,7 +753,9 @@ fn every_specimen_the_port_can_build_measures_as_react_drew_it(cx: &mut TestAppC
             {
                 note("width", format!("{w}"), format!("{width}"));
             }
-            if let Some(h) = want.height.filter(|h| (h - height).abs() > 0.5) {
+            if !specimen.probe.height_is_content_driven()
+                && let Some(h) = want.height.filter(|h| (h - height).abs() > 0.5)
+            {
                 note("height", format!("{h}"), format!("{height}"));
             }
 
@@ -712,6 +766,9 @@ fn every_specimen_the_port_can_build_measures_as_react_drew_it(cx: &mut TestAppC
                     ("border-color", &want.border_color, hex(colors.border)),
                 ];
                 for (field, expected, actual) in pairs {
+                    if !specimen.probe.declares.contains(field) {
+                        continue;
+                    }
                     if let Some(expected) = expected.as_ref().filter(|e| !same_colour(e, &actual)) {
                         note(field, expected.clone(), actual);
                     }

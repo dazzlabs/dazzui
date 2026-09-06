@@ -205,6 +205,103 @@ function serve(dir) {
  */
 function collect({ lengths, colors, raw }) {
   const isRoot = name => /^ff-[a-z0-9]+(-[a-z0-9]+)*$/.test(name)
+  const STATE_ATTRIBUTES = new Set([
+    'disabled',
+    'aria-disabled',
+    'aria-checked',
+    'aria-selected',
+    'aria-expanded',
+    'aria-invalid',
+  ])
+
+  // The CSS properties behind each field a platform test compares, so the
+  // probe can say which of them the component's own stylesheet decides.
+  // The shorthands are listed beside the longhands because a shorthand
+  // holding a `var()` — `border: var(--stroke-hairline) solid …`, which is
+  // how most of this system draws an edge — cannot be read back as its
+  // longhands at all: CSSOM leaves them pending until the variable
+  // resolves, and answers a longhand query with nothing.
+  const DECLARES = {
+    background: ['background-color', 'background'],
+    'border-color': [
+      'border-top-color',
+      'border-color',
+      'border-top',
+      'border',
+    ],
+    'border-width': [
+      'border-top-width',
+      'border-width',
+      'border-top',
+      'border',
+    ],
+    radius: ['border-top-left-radius', 'border-radius'],
+    color: ['color'],
+    'font-size': ['font-size', 'font'],
+    'font-weight': ['font-weight', 'font'],
+  }
+
+  // Every style rule in the page, flattened once. A rule inside a media
+  // query counts only while that query matches, which is how the hairline's
+  // `min-resolution` block is either in force or not.
+  const rules = (window.__parityRules ??= (() => {
+    const flat = []
+    const walk = list => {
+      for (const rule of list) {
+        if (rule.media || rule.conditionText) {
+          const condition = rule.conditionText ?? rule.media?.mediaText
+          if (condition && !window.matchMedia(condition).matches) continue
+          if (rule.cssRules) walk(rule.cssRules)
+          continue
+        }
+        if (rule.selectorText && rule.style) flat.push(rule)
+      }
+    }
+    for (const sheet of document.styleSheets) {
+      try {
+        walk(sheet.cssRules)
+      } catch {
+        // A sheet from another origin cannot be read; none of ours are.
+      }
+    }
+    return flat
+  })())
+
+  /**
+   * The fields the element's own stylesheet decides, rather than inherits.
+   *
+   * A computed style always answers — a callout root reports the page's
+   * 13px because it inherits it, having no type of its own — so comparing a
+   * port's callout title against it is comparing two different things. Only
+   * a field some rule matching this element declares is the component's own
+   * decision, and only those are worth holding a port to.
+   */
+  const declaredCache = (window.__parityDeclared ??= new Map())
+  const declaredFields = (el, key) => {
+    const cached = declaredCache.get(key)
+    if (cached) return cached
+    const found = new Set()
+    const scan = style => {
+      for (const [field, properties] of Object.entries(DECLARES)) {
+        if (properties.some(property => style.getPropertyValue(property))) {
+          found.add(field)
+        }
+      }
+    }
+    scan(el.style)
+    for (const rule of rules) {
+      let matches = false
+      try {
+        matches = el.matches(rule.selectorText)
+      } catch {
+        continue
+      }
+      if (matches) scan(rule.style)
+    }
+    const fields = [...found].sort()
+    declaredCache.set(key, fields)
+    return fields
+  }
   const px = value => {
     const number = Number.parseFloat(value)
     return Number.isNaN(number) ? value : Math.round(number * 100) / 100
@@ -276,13 +373,23 @@ function collect({ lengths, colors, raw }) {
         const axis = name.slice(5)
         if (axis.startsWith('base-ui') || internal.has(axis)) continue
         data[axis] = value
-      } else if (name === 'disabled' || name === 'aria-disabled') {
+      } else if (STATE_ATTRIBUTES.has(name)) {
+        // A state a component states in ARIA rather than in a `data-`
+        // attribute is a state all the same: an option card says which of a
+        // group is chosen with `aria-checked`, and a specimen that folded
+        // the chosen one together with the rest would be two drawings under
+        // one name.
         data[name] = value || 'true'
       }
     }
     const text = (el.textContent ?? '').trim().replace(/\s+/g, ' ')
+    const axes = Object.keys(data)
+      .sort()
+      .map(axis => `${axis}=${data[axis]}`)
+      .join(' ')
     probes.push({
       class: names[0],
+      declares: declaredFields(el, `${names[0]} ${axes}`),
       tag: el.tagName.toLowerCase(),
       data,
       text: text.length > 60 ? `${text.slice(0, 57)}…` : text,
@@ -395,6 +502,18 @@ async function main() {
             )
         )
       )
+      // Hold every animation at its first frame. A spinner is the reason:
+      // its box is measured through `getBoundingClientRect`, which reports
+      // the *transformed* rect, so a ring caught mid-turn measures its
+      // rotated bounding box — 28% wider than the ring — and measures a
+      // different width on every run. Paused at zero it is its layout box
+      // again, and the screenshot is the same picture every time.
+      await page.evaluate(() => {
+        for (const animation of document.getAnimations()) {
+          animation.currentTime = 0
+          animation.pause()
+        }
+      })
 
       const result = await page.evaluate(collect, {
         lengths: LENGTHS,

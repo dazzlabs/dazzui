@@ -76,6 +76,7 @@ void main() {
         final Measured? measured = await measure(
           tester,
           widget,
+          key: '${specimen.key}/${entry.key}',
           theme: entry.key,
           // A field has no width of its own; give it the one the story did.
           width: specimen.probe.isField ? (entry.value.width ?? 240) : null,
@@ -159,11 +160,18 @@ void main() {
 Future<Measured?> measure(
   WidgetTester tester,
   Widget widget, {
+  required String key,
   required String theme,
   required double? width,
 }) async {
-  const Key key = ValueKey('specimen');
-  final Widget subject = KeyedSubtree(key: key, child: widget);
+  // A key of its own per specimen and theme, which is load bearing: the
+  // tester reuses the element tree between pumps, so a shared key would
+  // hand the next specimen the last one's `State` — and an implicitly
+  // animated decoration would still be showing the colour, corner and box
+  // of the specimen before it. Every measurement is of a subtree built
+  // from scratch.
+  final Key subtreeKey = ValueKey(key);
+  final Widget subject = KeyedSubtree(key: subtreeKey, child: widget);
 
   await tester.pumpWidget(
     material.MaterialApp(
@@ -184,30 +192,68 @@ Future<Measured?> measure(
   await tester.pump();
   if (tester.takeException() != null) return null;
 
-  final Finder root = find.byKey(key);
+  final Finder root = find.byKey(subtreeKey);
   final Size size = tester.getSize(root);
 
-  // The outermost box that draws: the first decorated box in the subtree
-  // with a fill, or failing that the first with a border. A focus ring is
-  // a transparent border around the control and sits outside it, so a
-  // border alone is only taken when nothing inside fills.
-  final List<BoxDecoration> boxes = [
-    for (final DecoratedBox box in tester.widgetList<DecoratedBox>(
-      find.descendant(of: root, matching: find.byType(DecoratedBox)),
-    ))
-      if (box.decoration is BoxDecoration) box.decoration as BoxDecoration,
-  ];
+  // The box React's probe is of: the one that fills the component's own
+  // bounds. A progress bar is the reason it has to be measured rather than
+  // taken in order — its first drawn box is the fill, which is a fraction
+  // of the track the root actually is. Among the boxes that do fill it, a
+  // fill outranks a bare border, since a focus ring is a transparent
+  // border sitting outside the control.
+  final List<BoxDecoration> filling = [];
+  final List<BoxDecoration> rest = [];
+  for (final Element element
+      in find
+          .descendant(
+            of: root,
+            matching: find.byWidgetPredicate(
+              (widget) => widget is DecoratedBox || widget is ColoredBox,
+            ),
+          )
+          .evaluate()) {
+    final Widget widget = element.widget;
+    // A flat fill is a `ColoredBox` rather than a `DecoratedBox` — a
+    // progress bar's track is one — and to the stylesheet it is the same
+    // `background-color` either way.
+    final Decoration? candidate = switch (widget) {
+      DecoratedBox(decoration: final Decoration value) => value,
+      ColoredBox(color: final Color value) => BoxDecoration(color: value),
+      _ => null,
+    };
+    if (candidate is! BoxDecoration) continue;
+    final RenderObject? render = element.renderObject;
+    final bool fills =
+        render is RenderBox &&
+        (render.size.width - size.width).abs() <= 0.5 &&
+        (render.size.height - size.height).abs() <= 0.5;
+    (fills ? filling : rest).add(candidate);
+  }
+  final List<BoxDecoration> boxes = [...filling, ...rest];
   final BoxDecoration? decoration =
       boxes.where((box) => box.color != null).firstOrNull ??
       boxes.where((box) => box.border != null).firstOrNull;
 
+  // The type the component sets its content in. A field's value is drawn by
+  // an `EditableText` rather than a `RichText`, so it has to be asked
+  // directly; everywhere else the first run that says something is the
+  // component's own label, and an empty one is the placeholder a field
+  // draws behind its value.
   TextStyle? text;
-  final Finder runs = find.descendant(
+  final Finder editables = find.descendant(
     of: root,
-    matching: find.byType(RichText),
+    matching: find.byType(EditableText),
   );
-  if (runs.evaluate().isNotEmpty) {
-    text = tester.widget<RichText>(runs.first).text.style;
+  if (editables.evaluate().isNotEmpty) {
+    text = tester.widget<EditableText>(editables.first).style;
+  } else {
+    for (final RichText run in tester.widgetList<RichText>(
+      find.descendant(of: root, matching: find.byType(RichText)),
+    )) {
+      if (run.text.toPlainText().trim().isEmpty) continue;
+      text = run.text.style;
+      break;
+    }
   }
 
   final BoxBorder? border = decoration?.border;
@@ -257,6 +303,11 @@ List<Mismatch> compare(Probe probe, Expected expected, Measured measured) {
     if ((want - got).abs() > 0.5) out.add(Mismatch(field, '$want', '$got'));
   }
 
+  /// A style field, compared only where the React stylesheet declares it.
+  void styled(String field, void Function() compare) {
+    if (probe.declares.contains(field)) compare();
+  }
+
   void colour(String field, String? want, String? got) {
     if (want == null || got == null) return;
     if (!sameColour(want, got)) out.add(Mismatch(field, want, got));
@@ -264,28 +315,46 @@ List<Mismatch> compare(Probe probe, Expected expected, Measured measured) {
 
   // A width that depends on text is the test font's, not the design's.
   if (probe.text.isEmpty) length('width', expected.width, measured.width);
-  length('height', expected.height, measured.height);
+  if (!probe.heightIsContentDriven) {
+    length('height', expected.height, measured.height);
+  }
   // A checkbox's root is the row its box sits in; the React probe carries
   // the row's (transparent) decoration where this side reads the box's.
   if (!probe.decorationIsAPart) {
-    colour('background', expected.backgroundColor, measured.backgroundColor);
-    colour('border-color', expected.borderColor, measured.borderColor);
-    length('border-width', expected.borderWidth, measured.borderWidth);
-    length('radius', expected.radius, measured.radius);
+    styled('background', () {
+      colour('background', expected.backgroundColor, measured.backgroundColor);
+    });
+    // A spinner's ring is two colours — the head on one side, the track on
+    // the other three — and the probe carries only the top. Comparing it
+    // against a port's single border colour is comparing the head with the
+    // track.
+    if (probe.className != 'dz-spinner') {
+      styled('border-color', () {
+        colour('border-color', expected.borderColor, measured.borderColor);
+      });
+    }
+    styled('border-width', () {
+      length('border-width', expected.borderWidth, measured.borderWidth);
+    });
+    styled('radius', () => length('radius', expected.radius, measured.radius));
   }
-  colour('color', expected.color, measured.color);
-  length('font-size', expected.fontSize, measured.fontSize);
-  if (expected.fontWeight != null &&
-      measured.fontWeight != null &&
-      expected.fontWeight != measured.fontWeight) {
-    out.add(
-      Mismatch(
-        'font-weight',
-        '${expected.fontWeight}',
-        '${measured.fontWeight}',
-      ),
-    );
-  }
+  styled('color', () => colour('color', expected.color, measured.color));
+  styled('font-size', () {
+    length('font-size', expected.fontSize, measured.fontSize);
+  });
+  styled('font-weight', () {
+    if (expected.fontWeight != null &&
+        measured.fontWeight != null &&
+        expected.fontWeight != measured.fontWeight) {
+      out.add(
+        Mismatch(
+          'font-weight',
+          '${expected.fontWeight}',
+          '${measured.fontWeight}',
+        ),
+      );
+    }
+  });
   return out;
 }
 
@@ -419,7 +488,11 @@ List<Specimen> loadSpecimens(String dir) {
           // on the text is skipped anyway. The first text seen is what the
           // specimen is built with.
           final String key = '$className${axes.isEmpty ? '' : ' $axes'}';
-          probes[key] ??= Probe(className, data, text);
+          probes[key] ??= Probe(className, data, text, {
+            for (final Object? field
+                in probe['declares'] as List<Object?>? ?? const [])
+              field as String,
+          });
           ((seen[key] ??= {})[theme.key] ??= []).add(probe);
         }
       }

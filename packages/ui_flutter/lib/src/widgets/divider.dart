@@ -5,7 +5,23 @@
 import 'package:flutter/widgets.dart';
 import '../theme/theme.dart';
 
-const double _kDividerSpace = 16;
+/// How heavily a separator is drawn.
+///
+/// `muted` is the heavier rule, for a separator that has to hold its own
+/// against a filled surface. It is `border-strong` — ink at a tenth — and
+/// deliberately not the outline a checkbox or a radio is drawn in: that role
+/// is an opaque grey around twice this weight, and a separator set in it
+/// stops reading as a hairline and starts reading as a border.
+enum DividerTone { normal, muted }
+
+/// A separator is the line and nothing else.
+///
+/// `divider.css` gives the rule no margin and no box beyond its own weight:
+/// the space around a separator belongs to whatever is laying it out, which
+/// is the only way one rule can sit tight between two list rows and loose
+/// between two sections. A default of its own would be a decision this
+/// component is not the one making.
+const double? _kDividerSpace = null;
 const double _kDividerIndent = 0;
 const double _kDividerEndIndent = 0;
 
@@ -55,6 +71,7 @@ class Divider extends StatelessWidget {
     this.indent,
     this.endIndent,
     this.color,
+    this.tone = DividerTone.normal,
   }) : assert(height == null || height >= 0.0),
        assert(thickness == null || thickness >= 0.0),
        assert(indent == null || indent >= 0.0),
@@ -105,6 +122,9 @@ class Divider extends StatelessWidget {
   /// {@end-tool}
   final Color? color;
 
+  /// How heavily the rule is drawn.
+  final DividerTone tone;
+
   /// Computes the [BorderSide] that represents a divider.
   ///
   /// If [color] is null, then [DividerThemeData.color] is used. If that is also
@@ -140,10 +160,16 @@ class Divider extends StatelessWidget {
     BuildContext? context, {
     Color? color,
     double? width,
+    DividerTone tone = DividerTone.normal,
   }) {
     final ThemeData? theme = context != null ? Theme.of(context) : null;
 
-    final Color? effectiveColor = color ?? theme?.vars.colorBorder;
+    final Color? effectiveColor =
+        color ??
+        switch (tone) {
+          DividerTone.normal => theme?.vars.colorBorder,
+          DividerTone.muted => theme?.vars.colorBorderStrong,
+        };
     final double effectiveWidth =
         width ?? (context != null ? context.hairlineWidth : 1.0);
 
@@ -162,8 +188,8 @@ class Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double height = this.height ?? _kDividerSpace;
     final double thickness = this.thickness ?? context.hairlineWidth;
+    final double height = this.height ?? _kDividerSpace ?? thickness;
     final double indent = this.indent ?? _kDividerIndent;
     final double endIndent = this.endIndent ?? _kDividerEndIndent;
 
@@ -173,10 +199,15 @@ class Divider extends StatelessWidget {
         child: Container(
           height: thickness,
           margin: EdgeInsetsDirectional.only(start: indent, end: endIndent),
+          // A fill rather than an edge, which is what `divider.css` draws:
+          // a rule the height of its own weight, in the border ink.
           decoration: BoxDecoration(
-            border: Border(
-              bottom: createBorderSide(context, color: color, width: thickness),
-            ),
+            color: createBorderSide(
+              context,
+              color: color,
+              width: thickness,
+              tone: tone,
+            ).color,
           ),
         ),
       ),
@@ -226,6 +257,7 @@ class VerticalDivider extends StatelessWidget {
     this.indent,
     this.endIndent,
     this.color,
+    this.tone = DividerTone.normal,
   }) : assert(width == null || width >= 0.0),
        assert(thickness == null || thickness >= 0.0),
        assert(indent == null || indent >= 0.0),
@@ -276,10 +308,13 @@ class VerticalDivider extends StatelessWidget {
   /// {@end-tool}
   final Color? color;
 
+  /// How heavily the rule is drawn.
+  final DividerTone tone;
+
   @override
   Widget build(BuildContext context) {
-    final double width = this.width ?? _kDividerSpace;
     final double thickness = this.thickness ?? context.hairlineWidth;
+    final double width = this.width ?? _kDividerSpace ?? thickness;
     final double indent = this.indent ?? _kDividerIndent;
     final double endIndent = this.endIndent ?? _kDividerEndIndent;
 
@@ -289,14 +324,14 @@ class VerticalDivider extends StatelessWidget {
         child: Container(
           width: thickness,
           margin: EdgeInsetsDirectional.only(top: indent, bottom: endIndent),
+          // A fill rather than an edge, the way the horizontal one draws.
           decoration: BoxDecoration(
-            border: Border(
-              left: Divider.createBorderSide(
-                context,
-                color: color,
-                width: thickness,
-              ),
-            ),
+            color: Divider.createBorderSide(
+              context,
+              color: color,
+              width: thickness,
+              tone: tone,
+            ).color,
           ),
         ),
       ),

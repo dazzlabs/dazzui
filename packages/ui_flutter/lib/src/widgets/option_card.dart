@@ -1,8 +1,19 @@
 import 'package:flutter/widgets.dart';
 
+import '../foundation/widget_tint.dart';
 import '../generated/theme_variables.dart';
 import '../theme/theme.dart';
 import 'pressable.dart';
+
+/// The ramp a chosen card is washed and drawn in.
+enum OptionCardTint with WidgetTint {
+  primary,
+  neutral,
+  info,
+  success,
+  warning,
+  danger,
+}
 
 /// A selectable card — the shape a small set of mutually exclusive choices
 /// takes when each needs a line of explanation and a radio row would not
@@ -19,12 +30,16 @@ class OptionCard extends StatelessWidget {
     this.description,
     required this.selected,
     required this.onPressed,
+    this.tint = OptionCardTint.primary,
     this.semanticsLabel,
   });
 
   final String title;
   final String? description;
   final bool selected;
+
+  /// The ramp the chosen state is washed and drawn in.
+  final OptionCardTint tint;
   final VoidCallback? onPressed;
   final String? semanticsLabel;
 
@@ -34,6 +49,14 @@ class OptionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeVariables vars = Theme.of(context).vars;
     final BorderRadius radius = BorderRadius.circular(vars.radiusLarge);
+    final ColorSwatch<int> ramp = switch (tint.namedTint) {
+      NamedTint.primary => vars.colorPrimary,
+      NamedTint.neutral => vars.colorNeutral,
+      NamedTint.info => vars.colorInfo,
+      NamedTint.success => vars.colorSuccess,
+      NamedTint.warning => vars.colorWarning,
+      NamedTint.danger => vars.colorDanger,
+    };
 
     return Pressable(
       onPressed: onPressed,
@@ -59,9 +82,8 @@ class OptionCard extends StatelessWidget {
           // makes the chosen card survive a glance across its neighbours. The
           // wash, not the `tinted` recipe's chip fill: a card is a surface,
           // and the chip's 12% fills it rather than tinting it.
-          surface = vars.colorPrimary[600]!.withValues(alpha: vars.washSurface);
-          border =
-              vars.colorPrimary[vars.controlColorOutlinedBorder.normalShade!]!;
+          surface = ramp[600]!.withValues(alpha: vars.washSurface);
+          border = ramp[vars.controlColorOutlinedBorder.normalShade!]!;
           borderWidth = vars.strokeControl;
           descriptionColor = vars.colorContentMuted;
         } else if (hovered) {

@@ -22,7 +22,9 @@
     color var(--motion-duration) var(--motion-easing);
 }
 
-.dz-icon-button[data-variant='plain'][data-tint='neutral'] {
+.dz-icon-button[data-variant='plain'][data-tint='neutral']:not(:disabled):not(
+    [aria-disabled='true']
+  ) {
   color: var(--color-content-subtle);
 }
 
