@@ -52,7 +52,7 @@ public struct Progress: View {
     }
     .frame(height: thickness)
     .background(vars.colorSurfaceSunken)
-    .clipShape(RoundedRectangle(cornerRadius: thickness / 2, style: .continuous))
+    .clipShape(RoundedRectangle(cornerRadius: thickness / 2, style: .circular))
     .accessibilityElement()
     .accessibilityValue(clamped.map { Text("\(Int($0))%") } ?? Text(""))
   }

@@ -100,7 +100,7 @@ public struct NavItem<Leading: View, Label: View>: View {
       .padding(.horizontal, vars.spacing25)
       .frame(maxWidth: .infinity, alignment: .leading)
       .background(background(state: state))
-      .clipShape(RoundedRectangle(cornerRadius: vars.radiusSmall, style: .continuous))
+      .clipShape(RoundedRectangle(cornerRadius: vars.radiusSmall, style: .circular))
       .animation(vars.motion, value: state.controlState)
     }
     .focused($focused)

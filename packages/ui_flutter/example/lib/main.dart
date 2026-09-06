@@ -1,14 +1,10 @@
 import 'package:dazzui/dazzui.dart';
-import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart' as material;
 
-import 'pages/controls_page.dart';
-import 'pages/data_page.dart';
-import 'pages/feedback_page.dart';
-import 'pages/forms_page.dart';
-import 'pages/settings_page.dart';
-import 'pages/themes_page.dart';
 import 'playground_theme.dart';
+import 'storybook/navigator.dart';
+import 'storybook/story.dart';
+import 'storybook/story_index.dart';
 
 void main() {
   runApp(const PlaygroundApp());
@@ -29,13 +25,13 @@ class PlaygroundApp extends StatelessWidget {
   }
 }
 
-/// The playground itself: the component gallery on the left, the selected
-/// page on the right, and the theme picker over both.
+/// The playground: the story tree on the left, one story on the canvas, and
+/// the theme picker over both.
 ///
 /// The theme is applied with the package's own [Theme] widget on one subtree
-/// rather than to the process, which is the point worth demonstrating —
-/// themes are per-subtree here, so the four can sit on screen at once (see
-/// [ThemesPage]).
+/// rather than to the process, which is the point worth demonstrating — themes
+/// are per-subtree here, so the four can sit on screen at once (see
+/// `Tokens/Themes`).
 class PlaygroundWindow extends StatefulWidget {
   const PlaygroundWindow({super.key});
 
@@ -44,12 +40,12 @@ class PlaygroundWindow extends StatefulWidget {
 }
 
 class _PlaygroundWindowState extends State<PlaygroundWindow> {
-  PlaygroundPage _page = PlaygroundPage.controls;
+  StoryRef _selection = StoryIndex.first;
   PlaygroundTheme _theme = PlaygroundTheme.studioLight;
 
   @override
   Widget build(BuildContext context) {
-    final data = _theme.data;
+    final ThemeData data = _theme.data;
 
     return Theme(
       data: data,
@@ -66,13 +62,15 @@ class _PlaygroundWindowState extends State<PlaygroundWindow> {
               const Divider(height: 1),
               Expanded(
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _Navigator(
-                      page: _page,
-                      onPageChanged: (page) => setState(() => _page = page),
+                    StoryNavigator(
+                      groups: StoryIndex.groups,
+                      selection: _selection,
+                      onSelected: (ref) => setState(() => _selection = ref),
                     ),
                     const VerticalDivider(width: 1),
-                    Expanded(child: _PageHost(page: _page)),
+                    Expanded(child: _Canvas(selection: _selection)),
                   ],
                 ),
               ),
@@ -92,7 +90,7 @@ class _Toolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vars = Theme.of(context).vars;
+    final ThemeVariables vars = Theme.of(context).vars;
 
     return Container(
       height: vars.frameTitlebarSize,
@@ -125,95 +123,99 @@ class _Toolbar extends StatelessWidget {
   }
 }
 
-class _Navigator extends StatelessWidget {
-  const _Navigator({required this.page, required this.onPageChanged});
+/// One story, presented the way its layout asks for.
+class _Canvas extends StatelessWidget {
+  const _Canvas({required this.selection});
 
-  final PlaygroundPage page;
-  final ValueChanged<PlaygroundPage> onPageChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final vars = Theme.of(context).vars;
-
-    return Sidebar(
-      header: Text(
-        'Components',
-        style: vars.titleSmall.copyWith(color: vars.colorContent),
-      ),
-      children: [
-        SidebarGroup(
-          label: 'Library',
-          children: [
-            for (final item in PlaygroundPage.values)
-              NavItem(
-                label: item.title,
-                icon: item.icon,
-                current: item == page,
-                onPressed: () => onPageChanged(item),
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _PageHost extends StatelessWidget {
-  const _PageHost({required this.page});
-
-  final PlaygroundPage page;
+  final StoryRef selection;
 
   @override
   Widget build(BuildContext context) {
-    final vars = Theme.of(context).vars;
+    final ThemeVariables vars = Theme.of(context).vars;
 
     return ColoredBox(
       color: vars.colorSurface,
-      child: Align(
-        alignment: Alignment.topLeft,
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(vars.spacing6),
-          child: switch (page) {
-            PlaygroundPage.controls => const ControlsPage(),
-            PlaygroundPage.forms => const FormsPage(),
-            PlaygroundPage.data => const DataPage(),
-            PlaygroundPage.feedback => const FeedbackPage(),
-            PlaygroundPage.settings => const SettingsPage(),
-            PlaygroundPage.themes => const ThemesPage(),
-          },
-        ),
+      child: Column(
+        children: [
+          _Breadcrumb(selection: selection),
+          const Divider(height: 1),
+          Expanded(child: StoryStage(selection: selection)),
+        ],
       ),
     );
   }
 }
 
-enum PlaygroundPage {
-  controls,
-  forms,
-  data,
-  feedback,
-  settings,
-  themes;
+/// The canvas body. It is public because the widget test drives it directly:
+/// pumping one story is what says a story draws, and walking the sidebar to
+/// reach it would only be testing the sidebar.
+class StoryStage extends StatelessWidget {
+  const StoryStage({super.key, required this.selection});
 
-  String get title {
-    return switch (this) {
-      PlaygroundPage.controls => 'Controls',
-      PlaygroundPage.forms => 'Forms',
-      PlaygroundPage.data => 'Data',
-      PlaygroundPage.feedback => 'Feedback',
-      PlaygroundPage.settings => 'Settings',
-      PlaygroundPage.themes => 'Themes',
+  final StoryRef selection;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeVariables vars = Theme.of(context).vars;
+    final Story? story = StoryIndex.story(selection);
+
+    if (story == null) {
+      return const Center(child: EmptyState(title: 'No story selected'));
+    }
+
+    return switch (story.layout) {
+      // A bare specimen sits in the middle of the canvas rather than in its
+      // corner, which is what `layout: 'centered'` buys a component file.
+      StoryLayout.centered => SingleChildScrollView(
+        padding: EdgeInsets.all(vars.spacing8),
+        child: Center(child: story.builder(context)),
+      ),
+      // The page brings its own padding, as `layout: 'fullscreen'` does on an
+      // `Overview`.
+      StoryLayout.page => SingleChildScrollView(
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: story.builder(context),
+        ),
+      ),
+      // A scrim or a stack of toasts is fixed to the canvas the way it would
+      // be to the viewport, so it takes the whole of it, unscrolled.
+      StoryLayout.fullscreen => story.builder(context),
     };
   }
+}
 
-  IconData get icon {
-    return switch (this) {
-      PlaygroundPage.controls => FluentIcons.square_multiple_16_regular,
-      PlaygroundPage.forms => FluentIcons.checkbox_checked_16_regular,
-      PlaygroundPage.data => FluentIcons.table_16_regular,
-      PlaygroundPage.feedback => FluentIcons.alert_16_regular,
-      PlaygroundPage.settings => FluentIcons.settings_16_regular,
-      PlaygroundPage.themes => FluentIcons.paint_brush_16_regular,
-    };
+/// Where the canvas is pointed, in words.
+class _Breadcrumb extends StatelessWidget {
+  const _Breadcrumb({required this.selection});
+
+  final StoryRef selection;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeVariables vars = Theme.of(context).vars;
+
+    return Container(
+      height: vars.frameTitlebarSize,
+      color: vars.colorSurfaceMuted,
+      padding: EdgeInsets.symmetric(horizontal: vars.spacing4),
+      child: Row(
+        spacing: vars.spacing2,
+        children: [
+          Text(
+            selection.page,
+            style: vars.labelMedium.copyWith(color: vars.colorContent),
+          ),
+          Text(
+            '/',
+            style: vars.captionMedium.copyWith(color: vars.colorContentFaint),
+          ),
+          Text(
+            selection.story,
+            style: vars.captionMedium.copyWith(color: vars.colorContentMuted),
+          ),
+        ],
+      ),
+    );
   }
 }

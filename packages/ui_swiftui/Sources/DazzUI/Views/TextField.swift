@@ -97,8 +97,8 @@ extension View {
     self
       .foregroundStyle(style.content)
       .background(style.surface)
-      .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-      .border(style.border, width: vars.strokeHairline, cornerRadius: cornerRadius)
+      .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .circular))
+      .modifier(FieldBorder(color: style.border, cornerRadius: cornerRadius))
       // A wash rather than the system ring: the field's focus signal is its
       // own tint, which is what makes an erroring field glow danger.
       .focusRing(
@@ -112,6 +112,16 @@ extension View {
 }
 
 // MARK: - TextField
+
+private struct FieldBorder: ViewModifier {
+  let color: Color
+  let cornerRadius: CGFloat
+  @Environment(\.hairline) private var hairline
+
+  func body(content: Content) -> some View {
+    content.border(color, width: hairline, cornerRadius: cornerRadius)
+  }
+}
 
 /// A text control: a line of text, or a box of it.
 ///
@@ -279,18 +289,16 @@ public struct Select<Value: Hashable>: View {
           .disabled(!option.enabled)
       }
     } label: {
-      HStack(spacing: vars.spacing0) {
+      HStack(spacing: vars.spacing2) {
         Text(selectedLabel)
           .lineLimit(1)
-        // Laid out rather than absolutely placed: the gap the stylesheet buys
-        // with `padding-inline-end` is what the spacer holds open here.
-        Spacer(minLength: vars.spacing25)
+          .frame(maxWidth: .infinity, alignment: .leading)
         Icon(.chevronDown12Regular, size: vars.spacing3)
           .foregroundStyle(vars.colorContentSubtle)
       }
       .font(FieldStyle.font(size: metrics.content.size, mono: false, vars: vars))
       .padding(.leading, vars.spacing3)
-      .padding(.trailing, vars.spacing25)
+      .padding(.trailing, vars.spacing3)
       .frame(height: metrics.size)
       .contentShape(Rectangle())
     }

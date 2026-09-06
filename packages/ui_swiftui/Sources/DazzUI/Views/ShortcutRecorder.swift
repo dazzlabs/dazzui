@@ -215,7 +215,7 @@ public struct ShortcutRecorder: View {
         .frame(minWidth: vars.shortcutRecorderWidth)
         .frame(height: vars.controlMediumSize)
         .background(surface)
-        .clipShape(RoundedRectangle(cornerRadius: vars.radiusMedium, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: vars.radiusMedium, style: .circular))
         .border(border, width: hairline, cornerRadius: vars.radiusMedium)
         // The glow behind the field: the accent while listening, danger for a
         // press it could not take.

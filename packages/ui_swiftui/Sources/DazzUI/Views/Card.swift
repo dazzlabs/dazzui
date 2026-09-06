@@ -51,7 +51,7 @@ public struct Card<Content: View>: View {
     .padding(.vertical, paddingBlock)
     .padding(.horizontal, paddingInline)
     .background(surface)
-    .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
+    .clipShape(RoundedRectangle(cornerRadius: radius, style: .circular))
     // Drawn on every variant rather than only where it shows, so `outlined`
     // and `tinted` do not gain a pixel per side and sit a hair larger than
     // the filled ones.

@@ -63,13 +63,16 @@ public struct Button<Label: View>: View {
       }
       .font(font(metrics: metrics, state: state))
       .lineLimit(1)
+      .frame(height: metrics.content.lineHeight)
       .foregroundStyle(colors.content)
       .padding(.vertical, metrics.paddingBlock)
-      .padding(.horizontal, metrics.paddingInline)
+      // CSS's border participates in the intrinsic width; our stroke is an
+      // overlay, so reserve its width in the content inset explicitly.
+      .padding(.horizontal, metrics.paddingInline + vars.spacingPx)
       .frame(maxWidth: fullWidth ? .infinity : nil)
       .frame(height: metrics.size)
       .background(colors.surface)
-      .clipShape(RoundedRectangle(cornerRadius: metrics.radius, style: .continuous))
+      .clipShape(RoundedRectangle(cornerRadius: metrics.radius, style: .circular))
       .border(colors.border, width: vars.spacingPx, cornerRadius: metrics.radius)
       // The one action a view points at carries the hairline lift — flat like
       // every AppKit button, but separable from a tinted surface by that one

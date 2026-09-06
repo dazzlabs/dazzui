@@ -65,7 +65,7 @@ public struct OptionCard<Title: View, Description: View>: View {
       .padding(.vertical, vars.spacing35)
       .padding(.horizontal, vars.spacing3)
       .background(surface(state: state))
-      .clipShape(RoundedRectangle(cornerRadius: vars.radiusLarge, style: .continuous))
+      .clipShape(RoundedRectangle(cornerRadius: vars.radiusLarge, style: .circular))
       // Selection *thickens* the border as well as colouring it, which is what
       // makes the chosen card survive a glance across its neighbours.
       .border(

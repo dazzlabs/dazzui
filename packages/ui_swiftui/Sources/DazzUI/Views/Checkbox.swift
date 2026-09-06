@@ -100,7 +100,7 @@ public struct Checkbox<Label: View>: View {
       .foregroundStyle(recipe(.content))
       .frame(width: boxSize, height: boxSize)
       .background(filled)
-      .clipShape(RoundedRectangle(cornerRadius: vars.checkboxRadius, style: .continuous))
+      .clipShape(RoundedRectangle(cornerRadius: vars.checkboxRadius, style: .circular))
       .border(
         checked ? filled : vars.colorBorderMuted,
         width: vars.checkboxThickness,

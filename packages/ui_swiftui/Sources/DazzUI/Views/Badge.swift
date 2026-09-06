@@ -52,11 +52,13 @@ public struct Badge<Label: View>: View {
     label()
       .font(.system(size: fontSize, weight: vars.labelMedium.weight))
       .lineLimit(1)
+      // Match the single CSS line box before adding padding and border.
+      .frame(height: fontSize * 1.4)
       .foregroundStyle(content)
-      .padding(.vertical, paddingBlock)
-      .padding(.horizontal, paddingInline)
+      .padding(.vertical, paddingBlock + vars.spacingPx)
+      .padding(.horizontal, paddingInline + vars.spacingPx)
       .background(surface)
-      .clipShape(RoundedRectangle(cornerRadius: vars.radiusTiny, style: .continuous))
+      .clipShape(RoundedRectangle(cornerRadius: vars.radiusTiny, style: .circular))
       // A border on every variant rather than only on `outlined`, so that one
       // does not gain a pixel per side and fall off the heights the others
       // share.

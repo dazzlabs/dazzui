@@ -77,7 +77,7 @@ public struct Callout<Leading: View, Description: View, Trailing: View>: View {
     .padding(.vertical, paddingBlock)
     .padding(.horizontal, paddingInline)
     .background(vars.ramp(tint)[600].opacity(vars.washSurface))
-    .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
+    .clipShape(RoundedRectangle(cornerRadius: radius, style: .circular))
     .border(
       vars.ramp(tint)[600].opacity(vars.washEdge),
       width: hairline,

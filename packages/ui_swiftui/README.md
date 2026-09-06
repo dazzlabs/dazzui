@@ -94,7 +94,20 @@ ramp the control is tinted with. A component names a state, never a shade.
 
 ## Known divergences
 
-Everything not listed here is a value-for-value port.
+Shared token values do not imply identical rendering. The current alignment
+pass uses circular corners to match CSS, includes border widths in intrinsic
+Button, Badge and Toast sizes, and gives Badge, KeyCap and a Toast's message
+explicit single-line boxes. Dialog header and Toast minimum heights include
+their padding, as they do with CSS `border-box`, and a Toast is `width:
+max-content` capped at its maximum — a `maxWidth` frame alone would take
+whatever width the viewport offered. Text controls use the same display-scaled
+hairline as separators.
+
+Remaining visual work includes multiline text metrics, independent shadow
+layers, and shared popup presentation: Select still uses the system menu,
+while Menu and Tooltip use overlays without collision avoidance. These need
+side-by-side rendering checks across all four themes; a successful build is
+not a visual parity check.
 
 | What | Why |
 | --- | --- |
@@ -114,7 +127,7 @@ checkmark would be a different mark at a different weight in the same box.
 | `checkbox.tsx`, `menu.tsx`, `step-list.tsx` | `Checkmark12Filled` |
 | `search-field.tsx`, `toast.tsx` | `Dismiss12Regular` |
 | `search-field.tsx` | `Search16Regular` |
-| `input.tsx` | `ChevronDown12Regular` |
+| `text-field.tsx` | `ChevronDown12Regular` |
 | `shortcut-recorder.tsx` | `DismissCircle12Filled` |
 
 `Icon` takes a `FluentIcon`, and the components that carry one — `IconButton`,

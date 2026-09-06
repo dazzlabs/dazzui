@@ -1,5 +1,4 @@
 import DazzUI
-import FluentIcons
 import SwiftUI
 
 @main
@@ -11,7 +10,7 @@ struct PlaygroundApp: App {
       PlaygroundWindow()
     }
     .windowToolbarStyle(.unified(showsTitle: true))
-    .defaultSize(width: 1080, height: 720)
+    .defaultSize(width: 1180, height: 780)
   }
 }
 
@@ -30,35 +29,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
   }
 }
 
-/// The playground itself: the component gallery on the left, the selected
-/// page on the right, and the theme picker over both.
+/// The playground: the story tree on the left, one story on the canvas, and
+/// the theme picker over both.
 ///
 /// The theme is applied with `.theme(_:)` on one subtree rather than to the
 /// process, which is the point worth demonstrating — themes are per-subtree
-/// here, so the four can sit on screen at once (see ``ThemesPage``).
+/// here, so the four can sit on screen at once (see `Tokens/Themes`).
 struct PlaygroundWindow: View {
-  @State private var page: Page = .controls
+  @State private var selection = StoryIndex.first
   @State private var theme: ThemeName = .studioLight
-  @State private var dialog = false
-  @State private var toast = false
 
   var body: some View {
     VStack(spacing: 0) {
       Toolbar(theme: $theme)
-      Divider()
+      DazzUI.Divider()
 
       HStack(spacing: 0) {
-        Navigator(page: $page)
-        Divider(orientation: .vertical)
-        PageHost(page: page, dialog: $dialog, toast: $toast)
+        Navigator(groups: StoryIndex.groups, selection: $selection)
+        Canvas(selection: selection)
       }
     }
-    // The overlays sit outside the scrolled column so the scrim covers the
-    // window, which is what a portal target buys the React package.
-    .overlay(FeedbackOverlays(dialog: $dialog, toast: $toast))
     .theme(theme)
     .background(ThemeBackground())
-    .frame(minWidth: 900, minHeight: 600)
+    .frame(minWidth: 960, minHeight: 640)
   }
 }
 
@@ -73,6 +66,7 @@ private struct ThemeBackground: View {
 
 private struct Toolbar: View {
   @Binding var theme: ThemeName
+
   @Environment(\.theme) private var active
 
   var body: some View {
@@ -102,88 +96,87 @@ private struct Toolbar: View {
   }
 }
 
-private struct Navigator: View {
-  @Binding var page: Page
+/// One story, presented the way its layout asks for.
+private struct Canvas: View {
+  let selection: StoryRef
+
   @Environment(\.theme) private var theme
 
   var body: some View {
     let vars = theme.vars
 
-    Sidebar {
-      SidebarGroup {
-        Text("Components")
-      } content: {
-        ForEach(Page.allCases) { item in
-          NavItem(
-            item.title,
-            icon: item.icon,
-            active: page == item,
-            action: { page = item }
-          )
-        }
-      }
+    VStack(spacing: 0) {
+      Breadcrumb(selection: selection)
+      DazzUI.Divider()
+      stage
     }
-    .frame(width: vars.frameSidebarWidth)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(vars.colorSurface)
+  }
+
+  @ViewBuilder private var stage: some View {
+    if let story = StoryIndex.story(selection) {
+      switch story.layout {
+      case .centered:
+        // A bare specimen sits in the middle of the canvas rather than in its
+        // corner, which is what `layout: 'centered'` buys a component file.
+        GeometryReader { proxy in
+          ScrollView {
+            story.content()
+              .padding(theme.vars.spacing8)
+              .frame(
+                maxWidth: .infinity,
+                minHeight: proxy.size.height,
+                alignment: .center
+              )
+          }
+        }
+      case .page:
+        // The `Page` brings its own padding, as `layout: 'fullscreen'` does
+        // on an `Overview`.
+        ScrollView {
+          story.content()
+        }
+      case .fullscreen:
+        // A scrim or a toast viewport is fixed to the canvas the way it would
+        // be to the viewport, so it takes the whole of it, unscrolled.
+        story.content()
+          .frame(maxWidth: .infinity, maxHeight: .infinity)
+      }
+    } else {
+      EmptyState("No story selected")
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
   }
 }
 
-private struct PageHost: View {
-  let page: Page
-  @Binding var dialog: Bool
-  @Binding var toast: Bool
+/// Where the canvas is pointed, in words.
+private struct Breadcrumb: View {
+  let selection: StoryRef
 
   @Environment(\.theme) private var theme
 
   var body: some View {
-    ScrollView {
-      VStack(alignment: .leading, spacing: theme.vars.spacing6) {
-        switch page {
-        case .controls: ControlsPage()
-        case .forms: FormsPage()
-        case .data: DataPage()
-        case .feedback: FeedbackPage(dialog: $dialog, toast: $toast)
-        case .settings: SettingsPage()
-        case .themes: ThemesPage()
-        }
-      }
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .padding(theme.vars.spacing6)
+    let vars = theme.vars
+
+    HStack(spacing: vars.spacing2) {
+      Text(selection.page)
+        .font(vars.labelMedium.font)
+        .foregroundStyle(vars.colorContent)
+
+      Text("/")
+        .font(vars.captionMedium.font)
+        .foregroundStyle(vars.colorContentFaint)
+
+      Text(selection.story)
+        .font(vars.captionMedium.font)
+        .foregroundStyle(vars.colorContentMuted)
+
+      Spacer()
     }
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .background(theme.vars.colorSurface)
-  }
-}
-
-enum Page: String, CaseIterable, Identifiable {
-  case controls
-  case forms
-  case data
-  case feedback
-  case settings
-  case themes
-
-  var id: String { rawValue }
-
-  var title: String {
-    switch self {
-    case .controls: return "Controls"
-    case .forms: return "Forms"
-    case .data: return "Data"
-    case .feedback: return "Feedback"
-    case .settings: return "Settings"
-    case .themes: return "Themes"
-    }
-  }
-
-  var icon: FluentIcon {
-    switch self {
-    case .controls: return .squareMultiple16Regular
-    case .forms: return .checkboxChecked16Regular
-    case .data: return .table16Regular
-    case .feedback: return .alert16Regular
-    case .settings: return .settings16Regular
-    case .themes: return .paintBrush16Regular
-    }
+    .padding(.horizontal, vars.spacing4)
+    .frame(height: vars.frameTitlebarSize)
+    .background(vars.colorSurfaceMuted)
   }
 }
 

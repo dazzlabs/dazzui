@@ -49,35 +49,42 @@ public struct IconButton<Content: View>: View {
     let vars = theme.vars
     let metrics = vars.metrics(size)
 
-    Pressable(
-      action: action,
-      enabled: enabled,
-      cornerRadius: metrics.radius,
-      help: label
-    ) { state in
-      let colors = vars.controlColors(
-        variant: variant,
-        tint: tint,
-        state: state.controlState
-      )
+    Tooltip(label, disabled: !enabled, presented: focused) {
+      Pressable(
+        action: action,
+        enabled: enabled,
+        cornerRadius: metrics.radius
+      ) { state in
+        let colors = vars.controlColors(
+          variant: variant,
+          tint: tint,
+          state: state.controlState
+        )
 
-      content()
-        .foregroundStyle(foreground(colors: colors, state: state))
-        .frame(width: metrics.size, height: metrics.size)
-        .background(background(colors: colors, state: state))
-        .clipShape(RoundedRectangle(cornerRadius: metrics.radius, style: .continuous))
-        .border(colors.border, width: vars.spacingPx, cornerRadius: metrics.radius)
-        .animation(vars.motion, value: state.controlState)
+        content()
+          .foregroundStyle(foreground(colors: colors, state: state))
+          .frame(width: metrics.size, height: metrics.size)
+          .background(background(colors: colors, state: state))
+          .clipShape(
+            RoundedRectangle(cornerRadius: metrics.radius, style: .circular)
+          )
+          .border(
+            colors.border,
+            width: vars.spacingPx,
+            cornerRadius: metrics.radius
+          )
+          .animation(vars.motion, value: state.controlState)
+      }
+      .accessibilityLabel(label)
+      .accessibilityAddTraits(active ? [.isSelected] : [])
+      .focused($focused)
+      .focusRing(
+        visible: focused && enabled,
+        color: vars.focusRing,
+        cornerRadius: metrics.radius,
+        width: vars.focusWidth
+      )
     }
-    .accessibilityLabel(label)
-    .accessibilityAddTraits(active ? [.isSelected] : [])
-    .focused($focused)
-    .focusRing(
-      visible: focused && enabled,
-      color: vars.focusRing,
-      cornerRadius: metrics.radius,
-      width: vars.focusWidth
-    )
   }
 
   /// Is this the quiet chrome posture the toolbar wants?

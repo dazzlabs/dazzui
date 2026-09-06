@@ -77,7 +77,7 @@ private struct PressableButtonStyle<Content: View>: ButtonStyle {
     content(
       PressableState(hovered: hovered, pressed: configuration.isPressed, enabled: enabled)
     )
-    .contentShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+    .contentShape(RoundedRectangle(cornerRadius: cornerRadius, style: .circular))
   }
 }
 
@@ -116,7 +116,7 @@ public extension View {
       if visible {
         // A stroke is centred on its path, so insetting by half the width
         // puts the whole ring outside the box — CSS's `outline-offset: 0`.
-        RoundedRectangle(cornerRadius: cornerRadius + width, style: .continuous)
+        RoundedRectangle(cornerRadius: cornerRadius + width, style: .circular)
           .strokeBorder(color, lineWidth: width)
           .padding(-width)
       }
@@ -126,7 +126,7 @@ public extension View {
   /// A border on every edge, following the box's corner radius.
   func border(_ color: Color, width: CGFloat, cornerRadius: CGFloat) -> some View {
     overlay(
-      RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+      RoundedRectangle(cornerRadius: cornerRadius, style: .circular)
         .strokeBorder(color, lineWidth: width)
     )
   }

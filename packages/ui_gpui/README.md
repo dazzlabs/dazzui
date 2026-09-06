@@ -165,14 +165,17 @@ It changes nothing about what is drawn.
 
 ## Playground
 
-`example/` holds the gallery app — six pages of components, and a Themes page
-that renders the same view under all four themes at once:
+`example/` holds the playground — one page per component, organised the way
+`apps/storybook` is, with a Tokens group beside it and a Themes page that
+renders the same view under all four themes at once:
 
 ```bash
 cargo run -p dazzui_playground
 ```
 
-See its own README for what each page is for.
+`cargo test -p dazzui_playground` draws every story in every theme
+headlessly, which is where a story nobody has opened lately fails. See its own
+README for the conventions the pages are written to.
 
 [GPUI]: https://gpui.rs
 [`themed`]: src/theme.rs

@@ -53,9 +53,9 @@ public struct KeyCap<Label: View>: View {
       .lineLimit(1)
       .foregroundStyle(content)
       .padding(.horizontal, variant == .key ? vars.spacing25 : 0)
-      .frame(height: variant == .key ? capHeight : nil)
+      .frame(height: variant == .key ? capHeight : fontSize)
       .background(variant == .key ? vars.colorSurfaceInset : .clear)
-      .clipShape(RoundedRectangle(cornerRadius: capRadius, style: .continuous))
+      .clipShape(RoundedRectangle(cornerRadius: capRadius, style: .circular))
   }
 
   private var fontSize: CGFloat {

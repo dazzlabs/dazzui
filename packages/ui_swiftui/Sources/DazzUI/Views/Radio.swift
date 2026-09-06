@@ -79,7 +79,7 @@ public struct Radio<Label: View>: View {
 
     return ZStack {
       if checked {
-        RoundedRectangle(cornerRadius: vars.radiusFull, style: .continuous)
+        RoundedRectangle(cornerRadius: vars.radiusFull, style: .circular)
           .fill(selected)
           .frame(width: dotSize, height: dotSize)
       }

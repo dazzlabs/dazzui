@@ -98,7 +98,7 @@ private struct PillTab<Value: Hashable>: View {
       .padding(.horizontal, vars.spacing3)
       .frame(height: vars.controlTinySize)
       .background(surface(state: state))
-      .clipShape(RoundedRectangle(cornerRadius: vars.radiusFull, style: .continuous))
+      .clipShape(RoundedRectangle(cornerRadius: vars.radiusFull, style: .circular))
       .opacity(item.disabled ? Self.disabledOpacity : 1)
       .animation(vars.motion, value: state.controlState)
     }

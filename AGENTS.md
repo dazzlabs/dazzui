@@ -474,6 +474,20 @@ is where the platform forced a different shape.
 - Shared presentation lives in `src/components/gallery.tsx`. The gallery styles
   itself with DazzUI tokens; keep it that way.
 
+**The platform playgrounds are organised the same way**, in their own dialect:
+`packages/ui_swiftui/Example`, `packages/ui_flutter/example` and
+`packages/ui_gpui/example` each carry a `Storybook/` (`storybook/`) framework —
+a `Story`, a `StoryPage`, a `StoryGroup`, a registry, the sidebar tree, and the
+same split between documentation furniture (`Gallery`) and bare-story
+arrangement (`Stage`) — and one story file per component beside it. A page
+ships once it is named in the registry. The GPUI index is a `const`, because a
+story there is a plain `fn` pointer with nothing to capture.
+
+Two of them are also where the coverage is: the Flutter example's widget test
+pumps every story in every theme, and the GPUI example's `cargo test` draws
+every story in every theme headlessly. Both are what catch a story nobody has
+opened lately — an overflow, a bad length, a lost element state.
+
 ## Example conventions
 
 `examples/*` are apps, not packages: private, never published, and each one

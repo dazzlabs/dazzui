@@ -12,6 +12,11 @@ publish = false
 dazzui = { path = ".." }
 gpui = "0.2.2"
 
+[dev-dependencies]
+# The headless half of GPUI, which is what lets the story index be walked
+# without a window: every story is laid out and painted for real.
+gpui = { version = "0.2.2", features = ["test-support"] }
+
 [features]
 runtime-shaders = ["dazzui/runtime-shaders", "gpui/runtime_shaders"]
 

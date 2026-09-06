@@ -45,7 +45,7 @@ public struct Dialog<Content: View>: View {
     }
     .frame(width: width ?? vars.dialogWidth)
     .background(vars.colorSurface)
-    .clipShape(RoundedRectangle(cornerRadius: vars.frameWindowRadius, style: .continuous))
+    .clipShape(RoundedRectangle(cornerRadius: vars.frameWindowRadius, style: .circular))
     .border(border, width: hairline, cornerRadius: vars.frameWindowRadius)
     .tokenShadow(vars.shadowLg)
     .accessibilityAddTraits(.isModal)
@@ -102,9 +102,9 @@ public struct DialogHeader<Accessory: View>: View {
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     // Floored so a subtitle-less header still balances the footer.
-    .frame(minHeight: vars.spacing11)
     .padding(.vertical, vars.spacing3)
     .padding(.horizontal, vars.spacing5)
+    .frame(minHeight: vars.spacing11)
     .rule(vars.colorBorder, edge: .bottom, width: hairline)
   }
 

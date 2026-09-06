@@ -138,7 +138,7 @@ public struct Menu<Trigger: View>: View {
     .padding(vars.spacing1)
     .frame(minWidth: vars.menuMinWidth, alignment: .leading)
     .background(vars.colorSurface)
-    .clipShape(RoundedRectangle(cornerRadius: vars.radiusLarge, style: .continuous))
+    .clipShape(RoundedRectangle(cornerRadius: vars.radiusLarge, style: .circular))
     .border(vars.colorBorderStrong, width: hairline, cornerRadius: vars.radiusLarge)
     .tokenShadow(vars.shadowLg)
     .fixedSize()
@@ -200,7 +200,7 @@ private struct MenuRow: View {
       .padding(.horizontal, vars.spacing2)
       .frame(maxWidth: .infinity, alignment: .leading)
       .background(surface(state: state))
-      .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
+      .clipShape(RoundedRectangle(cornerRadius: radius, style: .circular))
       .animation(vars.motion, value: state.controlState)
     }
     .focused($focused)

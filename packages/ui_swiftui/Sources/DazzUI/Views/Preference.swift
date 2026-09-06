@@ -187,7 +187,7 @@ public struct PreferenceRow<Icon: View, Trailing: View>: View {
         row
           .padding(.horizontal, vars.spacing2)
           .background(background(hovered: state.hovered || state.pressed))
-          .clipShape(RoundedRectangle(cornerRadius: vars.radiusSmall, style: .continuous))
+          .clipShape(RoundedRectangle(cornerRadius: vars.radiusSmall, style: .circular))
           .animation(vars.motion, value: state.controlState)
       }
       // Pulled out and pushed back in, so the wash is wider than the text

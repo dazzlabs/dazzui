@@ -58,6 +58,9 @@ public struct Toast<Leading: View, Message: View, Trailing: View>: View {
         .font(vars.labelMedium.font)
         .lineLimit(1)
         .truncationMode(.tail)
+        // Match the single CSS line box — the message sets its own 1.4
+        // leading rather than the label face's — before its padding.
+        .frame(height: vars.labelMedium.size * messageLeading)
         .foregroundStyle(vars.colorContent)
         .padding(.vertical, vars.spacing05)
       trailing()
@@ -65,17 +68,26 @@ public struct Toast<Leading: View, Message: View, Trailing: View>: View {
         ToastDismiss(label: dismissLabel, action: onDismiss)
       }
     }
-    .frame(minHeight: vars.spacing9)
-    // Sized to its content but never past the viewport, so the stack needs no
-    // magic width and a long message truncates instead of pushing wide.
-    .frame(maxWidth: vars.toastMaxWidth)
-    .padding(.vertical, vars.spacing15)
+    // CSS's border participates in the box; our stroke is an overlay, so its
+    // width is reserved in the inset instead — the same correction Button and
+    // Badge make.
+    .padding(.vertical, vars.spacing15 + hairline)
     // Asymmetric on purpose: the text gets breathing room, the dismiss button
     // sits tight in the corner it lives in.
-    .padding(.leading, vars.spacing3)
-    .padding(.trailing, vars.spacing15)
+    .padding(.leading, vars.spacing3 + hairline)
+    .padding(.trailing, vars.spacing15 + hairline)
+    // Both bounds are on the padded box, the way `box-sizing: border-box`
+    // states them: the minimum height counts the padding rather than adding
+    // to it, and the maximum width caps the whole toast rather than its text.
+    .frame(minHeight: vars.spacing9)
+    .frame(maxWidth: vars.toastMaxWidth)
+    // `width: max-content` with that cap: the toast is as wide as what it
+    // holds, so the stack needs no magic width, and only a message past the
+    // cap truncates. A `maxWidth` frame alone would take whatever width it
+    // was offered, which in a viewport is all of it.
+    .fixedSize(horizontal: true, vertical: false)
     .background(vars.colorSurface)
-    .clipShape(RoundedRectangle(cornerRadius: vars.radiusBig, style: .continuous))
+    .clipShape(RoundedRectangle(cornerRadius: vars.radiusBig, style: .circular))
     .border(vars.colorBorderStrong, width: hairline, cornerRadius: vars.radiusBig)
     .tokenShadow(vars.shadowMd)
     .opacity(landed ? 1 : 0)
@@ -95,6 +107,11 @@ public struct Toast<Leading: View, Message: View, Trailing: View>: View {
   private var entryScale: CGFloat { 0.98 }
 
   private var entryRise: CGFloat { theme.vars.spacing25 }
+
+  /// `line-height: 1.4` on the message: the one place the toast overrides the
+  /// label face's own leading, because a single line in a 36pt box has to sit
+  /// on the centre of it.
+  private var messageLeading: CGFloat { 1.4 }
 }
 
 public extension Toast where Leading == EmptyView, Trailing == EmptyView {
@@ -162,7 +179,7 @@ private struct ToastDismiss: View {
             )
             : .clear
         )
-        .clipShape(RoundedRectangle(cornerRadius: vars.radiusSmall, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: vars.radiusSmall, style: .circular))
         .animation(vars.motion, value: state.controlState)
     }
     .accessibilityLabel(label)

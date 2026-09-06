@@ -47,14 +47,14 @@ public struct Switch: View {
       enabled: enabled,
       cornerRadius: vars.radiusFull
     ) { state in
-      RoundedRectangle(cornerRadius: vars.radiusFull, style: .continuous)
+      RoundedRectangle(cornerRadius: vars.radiusFull, style: .circular)
         .fill(thumbColor)
         .frame(width: thumb, height: thumb)
         .frame(maxWidth: .infinity, alignment: checked ? .trailing : .leading)
         .padding(vars.spacing05)
         .frame(width: width, height: height)
         .background(trackColor)
-        .clipShape(RoundedRectangle(cornerRadius: vars.radiusFull, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: vars.radiusFull, style: .circular))
         .opacity(state.enabled ? 1 : Self.disabledOpacity)
         .animation(vars.motion, value: checked)
     }

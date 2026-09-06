@@ -99,7 +99,7 @@ public struct SegmentedControl<Value: Hashable>: View {
     .padding(vars.segmentedControlInset)
     .frame(maxWidth: stretch ? .infinity : nil)
     .background(vars.colorSurfaceInset)
-    .clipShape(RoundedRectangle(cornerRadius: trackRadius, style: .continuous))
+    .clipShape(RoundedRectangle(cornerRadius: trackRadius, style: .circular))
     .accessibilityElement(children: .contain)
   }
 
@@ -137,7 +137,7 @@ private struct Segment<Value: Hashable>: View {
         .frame(maxWidth: stretch ? .infinity : nil)
         .frame(height: height)
         .background(surface)
-        .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: radius, style: .circular))
         // Both active styles lift with the hairline shadow, and the label
         // takes the full label weight — selection is a weight shift as much
         // as a fill.

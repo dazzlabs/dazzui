@@ -406,7 +406,7 @@ public struct SidebarCard<Label: View, Content: View>: View {
       .frame(maxWidth: .infinity, alignment: .leading)
       .padding(vars.spacing3)
       .background(vars.colorSurface)
-      .clipShape(RoundedRectangle(cornerRadius: vars.radiusLarge, style: .continuous))
+      .clipShape(RoundedRectangle(cornerRadius: vars.radiusLarge, style: .circular))
       .border(vars.colorBorder, width: hairline, cornerRadius: vars.radiusLarge)
     }
   }
