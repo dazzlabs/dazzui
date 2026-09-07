@@ -4,6 +4,21 @@ import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
 import { SectionLabel } from './section-label'
 
+export interface PreferencesProps extends ComponentPropsWithoutRef<'div'> {}
+
+/**
+ * The settings column, and the root the rest of this file sits in.
+ *
+ * It owns the two things no group or section can: the run between groups,
+ * which is the widest step of the spacing ladder this column climbs, and the
+ * width. The column is capped rather than filling its pane — a row puts its
+ * label on one edge and its control on the other, and past `preferences.width`
+ * the two stop reading as one line.
+ */
+export function Preferences({ className, ...props }: PreferencesProps) {
+  return <div className={cx('dz-preferences', className)} {...props} />
+}
+
 export interface PreferenceSectionProps extends Omit<
   ComponentPropsWithoutRef<'div'>,
   'title'

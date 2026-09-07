@@ -219,24 +219,26 @@ fn gallery(_window: &mut Window, cx: &mut App) -> AnyElement {
         )
         .child(Aside::new().child(SectionLabel::new("Details")))
         .child(
-            PreferenceGroup::new("Application")
-                .description("Settings that apply to every window.")
-                .child(
-                    PreferenceSection::new()
-                        .label("General")
-                        .footer("Automatic follows the system.")
-                        .action(Button::new("reset", "Reset"))
-                        .child(
-                            PreferenceRow::new("launch", "Launch at login")
-                                .subtitle("Every window")
-                                .child(Switch::new("launch-switch", true)),
-                        )
-                        .child(
-                            PreferenceRow::new("open", "Open something")
-                                .on_open(|_, _| {})
-                                .child(KeyCap::new("⌘K")),
-                        ),
-                ),
+            Preferences::new().child(
+                PreferenceGroup::new("Application")
+                    .description("Settings that apply to every window.")
+                    .child(
+                        PreferenceSection::new()
+                            .label("General")
+                            .footer("Automatic follows the system.")
+                            .action(Button::new("reset", "Reset"))
+                            .child(
+                                PreferenceRow::new("launch", "Launch at login")
+                                    .subtitle("Every window")
+                                    .child(Switch::new("launch-switch", true)),
+                            )
+                            .child(
+                                PreferenceRow::new("open", "Open something")
+                                    .on_open(|_, _| {})
+                                    .child(KeyCap::new("⌘K")),
+                            ),
+                    ),
+            ),
         )
         .child(
             ActionBar::new()

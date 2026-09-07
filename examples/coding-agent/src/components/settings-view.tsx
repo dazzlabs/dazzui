@@ -6,6 +6,7 @@ import {
   Icon,
   PreferenceGroup,
   PreferenceRow,
+  Preferences,
   PreferenceSection,
   SegmentedControl,
   Select,
@@ -346,9 +347,9 @@ export interface SettingsViewProps {
  *
  * One `PreferenceGroup` per section, which is what carries the spacing: a
  * heading sits closer to its own rows than to the section above it, so it
- * always reads as belonging to what follows. The column is capped rather than
- * filling the pane — a settings row that runs the width of a window puts its
- * label and its control too far apart to be read as one line.
+ * always reads as belonging to what follows. The `Preferences` root is what
+ * caps the column rather than letting it fill the pane; the app only lends it
+ * a class, as a hook for the controls it sizes.
  */
 export function SettingsView({
   section,
@@ -370,7 +371,7 @@ export function SettingsView({
       </header>
 
       <div className="ca-view__body" data-inset="true">
-        <div className="ca-settings">
+        <Preferences className="ca-settings">
           <PreferenceGroup
             description={heading.description}
             title={heading.title}
@@ -395,7 +396,7 @@ export function SettingsView({
               <Shortcuts settings={settings} update={update} />
             ) : null}
           </PreferenceGroup>
-        </div>
+        </Preferences>
       </div>
     </div>
   )

@@ -1,6 +1,5 @@
 import {
   ActionBar,
-  Aside,
   Badge,
   Divider,
   FormField,
@@ -10,6 +9,8 @@ import {
   KeyCap,
   SectionLabel,
   Select,
+  Sidebar,
+  SidebarContent,
   type Tint,
   TINTS,
 } from '@dazzlabs/dazzui-react'
@@ -85,11 +86,11 @@ export interface InspectAsideProps {
 /**
  * The trailing column: what the selection *is*.
  *
- * It carries no navigation, which is the whole distinction the design system
- * draws between an aside and the two columns on the other edge — those say
- * where you can go, this says what you are looking at. With nothing selected
- * it describes the page instead of emptying, because a column that comes and
- * goes moves the canvas under the pointer every time you deselect.
+ * It is a `Sidebar` on the other edge, and it carries no navigation — the
+ * two columns across from it say where you can go, this says what you are
+ * looking at. With nothing selected it describes the page instead of
+ * emptying, because a column that comes and goes moves the canvas under the
+ * pointer every time you deselect.
  */
 export function InspectAside({
   page,
@@ -108,7 +109,7 @@ export function InspectAside({
 
   if (!box) {
     return (
-      <Aside className="cv-aside">
+      <Inspector>
         <Group label="Page">
           <div className="cv-rows">
             <Row label="Name" value={page.name} />
@@ -142,7 +143,7 @@ export function InspectAside({
             ))}
           </dl>
         </Group>
-      </Aside>
+      </Inspector>
     )
   }
 
@@ -151,7 +152,7 @@ export function InspectAside({
   const roundable = one && one.kind !== 'ellipse' && one.kind !== 'text'
 
   return (
-    <Aside className="cv-aside">
+    <Inspector>
       <Group label={one ? 'Layer' : 'Selection'}>
         {one ? (
           <>
@@ -337,7 +338,16 @@ export function InspectAside({
           ) : null}
         </>
       ) : null}
-    </Aside>
+    </Inspector>
+  )
+}
+
+/** The column itself: the aside's width, holding fields rather than rows. */
+function Inspector({ children }: { children: ReactNode }) {
+  return (
+    <Sidebar collapsible="none" side="right" className="cv-aside">
+      <SidebarContent className="cv-aside__body">{children}</SidebarContent>
+    </Sidebar>
   )
 }
 

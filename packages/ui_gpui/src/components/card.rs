@@ -109,10 +109,9 @@ impl RenderOnce for Card {
             CardSize::Medium => vars.spacing_3_5,
             CardSize::Large => vars.spacing_4,
         };
-        let radius = match self.size {
-            CardSize::Small => vars.radius_medium,
-            _ => vars.radius_large,
-        };
+        // The container corner at every size: a card grows with what it
+        // holds, and Bright's pill on the control steps is wrong for that.
+        let radius = vars.radius_large;
 
         let surface = match self.variant {
             CardVariant::Raised => vars.color_surface,

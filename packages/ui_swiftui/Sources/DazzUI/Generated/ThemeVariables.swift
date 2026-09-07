@@ -51,6 +51,7 @@ public struct ThemeVariables: Sendable {
     framePopoverRadius: CGFloat = 16.0,
     frameTitlebarSize: CGFloat = 52.0,
     frameSidebarWidth: CGFloat = 172.0,
+    frameSidebarIconWidth: CGFloat = 48.0,
     frameRailWidth: CGFloat = 150.0,
     frameAsideWidth: CGFloat = 214.0,
     frameNavGap: CGFloat = 3.0,
@@ -110,6 +111,7 @@ public struct ThemeVariables: Sendable {
     dialogScrimAlpha: CGFloat = 0.25,
     menuMinWidth: CGFloat = 176.0,
     menuItemPadding: CGFloat = 7.0,
+    preferencesWidth: CGFloat = 480.0,
     progressGradientFrom: Color = Colors.brand[600],
     progressGradientTo: Color = Color(argb: 0xFFA0_8CFF),
     segmentedControlInset: CGFloat = 3.0,
@@ -218,6 +220,7 @@ public struct ThemeVariables: Sendable {
     self.framePopoverRadius = framePopoverRadius
     self.frameTitlebarSize = frameTitlebarSize
     self.frameSidebarWidth = frameSidebarWidth
+    self.frameSidebarIconWidth = frameSidebarIconWidth
     self.frameRailWidth = frameRailWidth
     self.frameAsideWidth = frameAsideWidth
     self.frameNavGap = frameNavGap
@@ -277,6 +280,7 @@ public struct ThemeVariables: Sendable {
     self.dialogScrimAlpha = dialogScrimAlpha
     self.menuMinWidth = menuMinWidth
     self.menuItemPadding = menuItemPadding
+    self.preferencesWidth = preferencesWidth
     self.progressGradientFrom = progressGradientFrom
     self.progressGradientTo = progressGradientTo
     self.segmentedControlInset = segmentedControlInset
@@ -351,6 +355,7 @@ public struct ThemeVariables: Sendable {
   public let framePopoverRadius: CGFloat
   public let frameTitlebarSize: CGFloat
   public let frameSidebarWidth: CGFloat
+  public let frameSidebarIconWidth: CGFloat
   public let frameRailWidth: CGFloat
   public let frameAsideWidth: CGFloat
   public let frameNavGap: CGFloat
@@ -410,6 +415,7 @@ public struct ThemeVariables: Sendable {
   public let dialogScrimAlpha: CGFloat
   public let menuMinWidth: CGFloat
   public let menuItemPadding: CGFloat
+  public let preferencesWidth: CGFloat
   public let progressGradientFrom: Color
   public let progressGradientTo: Color
   public let segmentedControlInset: CGFloat

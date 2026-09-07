@@ -26,7 +26,6 @@
 @import '../generated/control.css';
 
 @import '../components/action-bar.css';
-@import '../components/aside.css';
 @import '../components/badge.css';
 @import '../components/button.css';
 @import '../components/callout.css';
@@ -45,12 +44,10 @@
 /* After popup.css: the menu's panel and rows are that shared sheet, and only
    its checked row is its own. */
 @import '../components/menu.css';
-@import '../components/nav-item.css';
 @import '../components/option-card.css';
 @import '../components/pill-tabs.css';
-@import '../components/preference.css';
+@import '../components/preferences.css';
 @import '../components/progress.css';
-@import '../components/rail.css';
 /* After checkbox.css: the radio shares its row, box, and disabled rules. */
 @import '../components/radio.css';
 @import '../components/search-field.css';

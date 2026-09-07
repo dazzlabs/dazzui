@@ -1,5 +1,4 @@
 import {
-  Aside,
   Badge,
   Button,
   Divider,
@@ -7,6 +6,8 @@ import {
   Icon,
   Progress,
   SectionLabel,
+  Sidebar,
+  SidebarContent,
   Switch,
   TextField,
 } from '@dazzlabs/dazzui-react'
@@ -293,6 +294,9 @@ export interface DetailAsideProps {
  * The trailing column, which is about whatever the main one is showing: the
  * run's context while a session is open, the selected issue or pull request
  * while a list is, and the commit while the working tree is.
+ *
+ * It is a `Sidebar` on the other edge — the same column at the aside's own
+ * width, holding fields rather than rows.
  */
 export function DetailAside({
   view,
@@ -312,39 +316,43 @@ export function DetailAside({
   onStartFromPull,
 }: DetailAsideProps) {
   return (
-    <Aside className="ca-aside">
-      {view.kind === 'settings' ? (
-        <SettingsPanel onReset={onReset} />
-      ) : view.kind === 'session' ? (
-        <SessionPanel
-          project={project}
-          settings={settings}
-          tokens={tokens}
-          trusted={trusted}
-          update={update}
-        />
-      ) : view.pane === 'issues' ? (
-        issue ? (
-          <IssuePanel issue={issue} onStart={onStartFromIssue} />
+    <Sidebar collapsible="none" side="right" className="ca-aside">
+      <SidebarContent className="ca-aside__body">
+        {view.kind === 'settings' ? (
+          <SettingsPanel onReset={onReset} />
+        ) : view.kind === 'session' ? (
+          <SessionPanel
+            project={project}
+            settings={settings}
+            tokens={tokens}
+            trusted={trusted}
+            update={update}
+          />
+        ) : view.pane === 'issues' ? (
+          issue ? (
+            <IssuePanel issue={issue} onStart={onStartFromIssue} />
+          ) : (
+            <Nothing>
+              Pick an issue to read it here, and to start from it.
+            </Nothing>
+          )
+        ) : view.pane === 'pulls' ? (
+          pull ? (
+            <PullPanel pull={pull} onStart={onStartFromPull} />
+          ) : (
+            <Nothing>
+              Pick a pull request to see its checks and its size.
+            </Nothing>
+          )
         ) : (
-          <Nothing>
-            Pick an issue to read it here, and to start from it.
-          </Nothing>
-        )
-      ) : view.pane === 'pulls' ? (
-        pull ? (
-          <PullPanel pull={pull} onStart={onStartFromPull} />
-        ) : (
-          <Nothing>Pick a pull request to see its checks and its size.</Nothing>
-        )
-      ) : (
-        <CommitPanel
-          message={message}
-          staged={staged}
-          onCommit={onCommit}
-          onMessageChange={onMessageChange}
-        />
-      )}
-    </Aside>
+          <CommitPanel
+            message={message}
+            staged={staged}
+            onCommit={onCommit}
+            onMessageChange={onMessageChange}
+          />
+        )}
+      </SidebarContent>
+    </Sidebar>
   )
 }

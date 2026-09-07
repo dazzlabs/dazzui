@@ -35,7 +35,7 @@ export 'src/widgets/menu.dart';
 export 'src/widgets/nav_item.dart';
 export 'src/widgets/option_card.dart';
 export 'src/widgets/pill_tabs.dart';
-export 'src/widgets/preference.dart';
+export 'src/widgets/preferences.dart';
 export 'src/widgets/pressable.dart';
 export 'src/widgets/progress.dart';
 export 'src/widgets/radio.dart';

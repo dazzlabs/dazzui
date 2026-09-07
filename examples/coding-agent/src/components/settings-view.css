@@ -1,12 +1,7 @@
 /*
- * The settings column is capped rather than filling the pane. A preference row
- * puts its label on one edge and its control on the other, and past about this
- * width the two stop reading as one line.
+ * The column's width is the `Preferences` root's own; what is dressed here is
+ * the controls inside it.
  */
-.ca-settings {
-  width: 100%;
-  max-width: calc(var(--spacing-20) * 6);
-}
 
 /* A control in a row's trailing slot sits in a shrink-to-fit box, so a select
    that would otherwise be 100% of nothing needs a width of its own. */

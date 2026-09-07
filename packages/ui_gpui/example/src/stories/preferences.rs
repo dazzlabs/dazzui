@@ -1,27 +1,27 @@
-//! `Components/Preference` — the group, the section and the row a settings
-//! screen is built out of.
+//! `Components/Preferences` — the settings column, and the group, the section
+//! and the row that run down it.
 
 use dazzui::{
     Button, ControlVariant, Icon, KeyCap, PreferenceGroup, PreferenceRow, PreferenceSection,
-    Select, Switch, Tint, assets::icons,
+    Preferences, Select, Switch, Tint, assets::icons,
 };
-use gpui::{Entity, IntoElement, ParentElement, SharedString, Styled, div, px};
+use gpui::{Entity, IntoElement, ParentElement, SharedString};
 
 use crate::storybook::gallery::{DocPage, Section};
-use crate::storybook::stage::Col;
 use crate::storybook::{Story, StoryPage};
 use crate::{Playground, act_with};
 
 pub const PAGE: StoryPage = StoryPage::new(
-    "Preference",
+    "Preferences",
     &[
         Story::page("Overview", |state, this, _| {
-            DocPage::new("Preference")
+            DocPage::new("Preferences")
                 .description(
                     "A settings screen is one decision per row, grouped under a label, with the \
-                     control pinned to the trailing edge — where the eye lands last. Three \
-                     components: a group is the level above a section, a section is a run of \
-                     rows under one heading, and a row is the decision.",
+                     control pinned to the trailing edge — where the eye lands last. A column \
+                     is the root: it caps the width and spaces the groups. Under it, a group is \
+                     the level above a section, a section is a run of rows under one heading, \
+                     and a row is the decision.",
                 )
                 .child(
                     Section::new("Rows")
@@ -62,8 +62,7 @@ pub const PAGE: StoryPage = StoryPage::new(
             controls(state, this).into_any_element()
         }),
         Story::new("Section headings", |_, _, _| {
-            div()
-                .w(px(460.))
+            Preferences::new()
                 .child(
                     PreferenceSection::new()
                         .label("Appearance")
@@ -73,8 +72,7 @@ pub const PAGE: StoryPage = StoryPage::new(
                 .into_any_element()
         }),
         Story::new("Unlabelled", |state, this, _| {
-            div()
-                .w(px(460.))
+            Preferences::new()
                 .child(
                     PreferenceSection::new()
                         .child(
@@ -100,8 +98,7 @@ pub const PAGE: StoryPage = StoryPage::new(
             grouped(state, this).into_any_element()
         }),
         Story::new("A settings page", |state, this, _| {
-            Col::new()
-                .width(px(460.))
+            Preferences::new()
                 .child(grouped(state, this))
                 .child(
                     PreferenceSection::new().label("Danger zone").child(
@@ -122,7 +119,7 @@ pub const PAGE: StoryPage = StoryPage::new(
 );
 
 fn general(state: &Playground, this: &Entity<Playground>) -> impl IntoElement {
-    div().w(px(460.)).child(
+    Preferences::new().child(
         PreferenceSection::new()
             .label("General")
             .child(
@@ -147,7 +144,7 @@ fn general(state: &Playground, this: &Entity<Playground>) -> impl IntoElement {
 }
 
 fn shapes() -> impl IntoElement {
-    div().w(px(460.)).child(
+    Preferences::new().child(
         PreferenceSection::new()
             .label("Rows")
             .child(PreferenceRow::new("title", "Title only"))
@@ -169,7 +166,7 @@ fn shapes() -> impl IntoElement {
 }
 
 fn controls(state: &Playground, this: &Entity<Playground>) -> impl IntoElement {
-    div().w(px(460.)).child(
+    Preferences::new().child(
         PreferenceSection::new()
             .label("Controls")
             .child(
@@ -198,7 +195,7 @@ fn controls(state: &Playground, this: &Entity<Playground>) -> impl IntoElement {
 }
 
 fn grouped(state: &Playground, this: &Entity<Playground>) -> impl IntoElement {
-    div().w(px(460.)).child(
+    Preferences::new().child(
         PreferenceGroup::new("Application")
             .description("Settings that apply to every window.")
             .child(general(state, this))

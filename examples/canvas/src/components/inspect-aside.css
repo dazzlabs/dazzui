@@ -1,8 +1,17 @@
 /*
- * The inspector. It is the design system's own `Aside` at its token width,
- * which is narrow — every row below is drawn for a column that will not be
- * widened, so nothing in it takes more than two fields across.
+ * The inspector. It is the design system's own `Sidebar` on the trailing edge
+ * at the aside's token width, which is narrow — every row below is drawn for
+ * a column that will not be widened, so nothing in it takes more than two
+ * fields across.
  */
+/* Fields rather than rows, so the column's own inset is a pane's, not a
+   menu's. One selector deeper than the library's, which is the extension
+   point `cx()` documents. */
+.cv-aside .cv-aside__body {
+  gap: var(--spacing-5);
+  padding: var(--spacing-4);
+}
+
 .cv-group {
   display: flex;
   flex-direction: column;

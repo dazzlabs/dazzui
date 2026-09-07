@@ -1,14 +1,10 @@
 /*
- * The tools. The column is the design system's own `Rail` at its token width,
- * so it lines up with the sidebar beside it without either being told about
- * the other.
+ * The tools. The column is the design system's own `Sidebar`, which takes
+ * the rail's width and surface from standing beside the document column.
  */
-
-/* The note sits at the foot of the column, under whatever the groups leave. */
+/* The note sits in the column's footer, under whatever the groups leave. */
 .cv-rail__hint {
   margin: 0;
-  margin-block-start: auto;
-  padding-block-start: var(--spacing-4);
   padding-inline: var(--spacing-2-5);
   color: var(--color-content-faint);
   font-family: var(--caption-small-font-family);

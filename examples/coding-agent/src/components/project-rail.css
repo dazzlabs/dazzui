@@ -8,8 +8,7 @@
   font-size: var(--caption-small-font-size);
 }
 
-/* The rail's action belongs under the sessions it adds to, not at the foot of
-   the whole column. */
+/* A breath between the sessions and the row that adds one. */
 .ca-rail .ca-rail__new {
   margin-top: var(--spacing-1);
 }

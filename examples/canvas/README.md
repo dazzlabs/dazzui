@@ -36,9 +36,9 @@ what you can do to it, then the thing itself, then what is selected.
 | Column                  | What it is                                                                                  |
 | ----------------------- | ------------------------------------------------------------------------------------------- |
 | `Sidebar` (full height) | The document: its pages, and the layers on the open one. Its header strip is where the system's own window controls land. |
-| `Rail`                  | The tools. Two that only look — Select and Hand — and five that draw.                        |
+| `Sidebar` (second)      | The tools. Two that only look — Select and Hand — and five that draw. The same column at the rail's width, and it never collapses. |
 | Canvas                  | The drawing, and under it the strip that says how it is being looked at.                     |
-| `Aside`                 | The selection: its box, how it is arranged, how it is painted, and what it says. With nothing selected it describes the page and lists the keys. |
+| `Sidebar` (right)       | The selection: its box, how it is arranged, how it is painted, and what it says. With nothing selected it describes the page and lists the keys. The same column on the other edge, holding fields rather than rows. |
 
 The canvas itself does what a canvas has to do before any of the above is worth
 looking at: draw by dragging a tool out, pick by clicking, add to a selection

@@ -1,8 +1,14 @@
 import {
-  NavItem,
   SearchField,
   Sidebar,
+  SidebarContent,
   SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from '@dazzlabs/dazzui-react'
 
 export interface ParitySidebarProps {
@@ -35,9 +41,8 @@ export function ParitySidebar({
   const rows = classNames.filter(name => needle === '' || name.includes(needle))
 
   return (
-    <Sidebar
-      className="pv-sidebar"
-      header={
+    <Sidebar className="pv-sidebar">
+      <SidebarHeader>
         <div className="pv-sidebar__search">
           <SearchField
             value={query}
@@ -47,29 +52,47 @@ export function ParitySidebar({
             aria-label="Filter components and specimens"
           />
         </div>
-      }
-    >
-      <SidebarGroup>
-        <NavItem active={selected === null} onClick={onSelectOverview}>
-          Overview
-        </NavItem>
-      </SidebarGroup>
-      <SidebarGroup label="Components">
-        {rows.map(name => {
-          const count = counts.get(name) ?? 0
-          return (
-            <NavItem
-              key={name}
-              active={selected === name}
-              onClick={() => onSelect(name)}
-              tint={count > 0 ? 'primary' : 'neutral'}
-            >
-              <span className="pv-truncate">{name.replace(/^ff-/, '')}</span>
-              {count > 0 && <span className="pv-count">{count}</span>}
-            </NavItem>
-          )
-        })}
-      </SidebarGroup>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  active={selected === null}
+                  onClick={onSelectOverview}
+                >
+                  <span>Overview</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Components</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {rows.map(name => {
+                const count = counts.get(name) ?? 0
+                return (
+                  <SidebarMenuItem key={name}>
+                    <SidebarMenuButton
+                      active={selected === name}
+                      onClick={() => onSelect(name)}
+                      tint={count > 0 ? 'primary' : 'neutral'}
+                    >
+                      <span className="pv-truncate">
+                        {name.replace(/^ff-/, '')}
+                      </span>
+                      {count > 0 && <span className="pv-count">{count}</span>}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
     </Sidebar>
   )
 }

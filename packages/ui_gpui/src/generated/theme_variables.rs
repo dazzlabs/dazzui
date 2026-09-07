@@ -66,6 +66,7 @@ pub struct ThemeSeed {
     pub frame_popover_radius: Pixels,
     pub frame_titlebar_size: Pixels,
     pub frame_sidebar_width: Pixels,
+    pub frame_sidebar_icon_width: Pixels,
     pub frame_rail_width: Pixels,
     pub frame_aside_width: Pixels,
     pub frame_nav_gap: Pixels,
@@ -125,6 +126,7 @@ pub struct ThemeSeed {
     pub dialog_scrim_alpha: f32,
     pub menu_min_width: Pixels,
     pub menu_item_padding: Pixels,
+    pub preferences_width: Pixels,
     pub progress_gradient_from: Hsla,
     pub progress_gradient_to: Hsla,
     pub segmented_control_inset: Pixels,
@@ -213,6 +215,7 @@ pub const STUDIO_LIGHT_SEED: ThemeSeed = ThemeSeed {
     frame_popover_radius: px(16.0),
     frame_titlebar_size: px(52.0),
     frame_sidebar_width: px(172.0),
+    frame_sidebar_icon_width: px(48.0),
     frame_rail_width: px(150.0),
     frame_aside_width: px(214.0),
     frame_nav_gap: px(3.0),
@@ -272,6 +275,7 @@ pub const STUDIO_LIGHT_SEED: ThemeSeed = ThemeSeed {
     dialog_scrim_alpha: 0.25,
     menu_min_width: px(176.0),
     menu_item_padding: px(7.0),
+    preferences_width: px(480.0),
     progress_gradient_from: colors::BRAND.shade(600),
     progress_gradient_to: Hsla { h: 0.695652, s: 1.0, l: 0.77451, a: 1.0 },
     segmented_control_inset: px(3.0),
@@ -379,6 +383,7 @@ pub struct ThemeVariables {
     pub frame_popover_radius: Pixels,
     pub frame_titlebar_size: Pixels,
     pub frame_sidebar_width: Pixels,
+    pub frame_sidebar_icon_width: Pixels,
     pub frame_rail_width: Pixels,
     pub frame_aside_width: Pixels,
     pub frame_nav_gap: Pixels,
@@ -438,6 +443,7 @@ pub struct ThemeVariables {
     pub dialog_scrim_alpha: f32,
     pub menu_min_width: Pixels,
     pub menu_item_padding: Pixels,
+    pub preferences_width: Pixels,
     pub progress_gradient_from: Hsla,
     pub progress_gradient_to: Hsla,
     pub segmented_control_inset: Pixels,
@@ -581,6 +587,7 @@ impl ThemeVariables {
         let frame_popover_radius = seed.frame_popover_radius;
         let frame_titlebar_size = seed.frame_titlebar_size;
         let frame_sidebar_width = seed.frame_sidebar_width;
+        let frame_sidebar_icon_width = seed.frame_sidebar_icon_width;
         let frame_rail_width = seed.frame_rail_width;
         let frame_aside_width = seed.frame_aside_width;
         let frame_nav_gap = seed.frame_nav_gap;
@@ -640,6 +647,7 @@ impl ThemeVariables {
         let dialog_scrim_alpha = seed.dialog_scrim_alpha;
         let menu_min_width = seed.menu_min_width;
         let menu_item_padding = seed.menu_item_padding;
+        let preferences_width = seed.preferences_width;
         let progress_gradient_from = seed.progress_gradient_from;
         let progress_gradient_to = seed.progress_gradient_to;
         let segmented_control_inset = seed.segmented_control_inset;
@@ -825,6 +833,7 @@ impl ThemeVariables {
             frame_popover_radius,
             frame_titlebar_size,
             frame_sidebar_width,
+            frame_sidebar_icon_width,
             frame_rail_width,
             frame_aside_width,
             frame_nav_gap,
@@ -884,6 +893,7 @@ impl ThemeVariables {
             dialog_scrim_alpha,
             menu_min_width,
             menu_item_padding,
+            preferences_width,
             progress_gradient_from,
             progress_gradient_to,
             segmented_control_inset,

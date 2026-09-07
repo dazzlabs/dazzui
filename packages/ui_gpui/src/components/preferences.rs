@@ -9,6 +9,54 @@ use crate::{
     ActionListener, ControlPart, ControlState, ControlVariant, Tint, colors, plus, pressable,
 };
 
+/// The settings column, and the root the rest of this file sits in.
+///
+/// It owns the two things no group or section can: the run between groups,
+/// which is the widest step of the spacing ladder this column climbs, and the
+/// width. The column is capped rather than filling its pane — a row puts its
+/// label on one edge and its control on the other, and past
+/// `preferences_width` the two stop reading as one line.
+#[derive(IntoElement)]
+pub struct Preferences {
+    children: Vec<AnyElement>,
+}
+
+impl Preferences {
+    pub fn new() -> Self {
+        Preferences {
+            children: Vec::new(),
+        }
+    }
+}
+
+impl Default for Preferences {
+    fn default() -> Self {
+        Preferences::new()
+    }
+}
+
+impl ParentElement for Preferences {
+    fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
+        self.children.extend(elements);
+    }
+}
+
+impl RenderOnce for Preferences {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
+        let vars = cx.theme().vars;
+
+        // Full width up to the cap, so it fills a narrow pane and stops in a
+        // wide one: `width: 100%; max-width` in the stylesheet.
+        div()
+            .flex()
+            .flex_col()
+            .gap(vars.spacing_8)
+            .w_full()
+            .max_w(vars.preferences_width)
+            .children(self.children)
+    }
+}
+
 /// A labelled run of preference rows.
 #[derive(IntoElement)]
 pub struct PreferenceSection {

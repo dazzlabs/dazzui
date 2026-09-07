@@ -384,6 +384,7 @@
   --frame-nav-gap: 0.1875rem;
   --frame-popover-radius: var(--base-corner-xl);
   --frame-rail-width: 9.375rem;
+  --frame-sidebar-icon-width: 3rem;
   --frame-sidebar-width: 10.75rem;
   --frame-titlebar-size: 3.25rem;
   --frame-window-radius: var(--base-corner-2xl);
@@ -423,6 +424,7 @@
   --menu-min-width: 11rem;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --preferences-width: 30rem;
   --progress-gradient-from: var(--base-color-brand-600);
   --progress-gradient-to: #a08cff;
   --radio-large-box: var(--spacing-5);

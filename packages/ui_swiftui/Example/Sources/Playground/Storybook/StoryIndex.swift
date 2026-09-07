@@ -37,7 +37,7 @@ enum StoryIndex {
       NavItemStories.page,
       OptionCardStories.page,
       PillTabsStories.page,
-      PreferenceStories.page,
+      PreferencesStories.page,
       ProgressStories.page,
       RadioStories.page,
       RailStories.page,

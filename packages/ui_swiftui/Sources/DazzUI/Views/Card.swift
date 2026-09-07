@@ -84,9 +84,9 @@ public struct Card<Content: View>: View {
     }
   }
 
-  private var radius: CGFloat {
-    size == .small ? theme.vars.radiusMedium : theme.vars.radiusLarge
-  }
+  /// The container corner at every size: a card grows with what it holds,
+  /// and Bright's pill on the control steps is wrong for that.
+  private var radius: CGFloat { theme.vars.radiusLarge }
 
   private var surface: Color {
     let vars = theme.vars

@@ -107,6 +107,7 @@ export default defineConfig({
     './tokens/component/checkbox.yaml',
     './tokens/component/dialog.yaml',
     './tokens/component/menu.yaml',
+    './tokens/component/preferences.yaml',
     './tokens/component/progress.yaml',
     './tokens/component/radio.yaml',
     './tokens/component/segmented-control.yaml',

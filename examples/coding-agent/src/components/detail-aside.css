@@ -3,6 +3,14 @@
  * over a value rather than a label beside one, and nothing here is wider than
  * a badge.
  */
+/* Fields rather than rows, so the column's own inset is a pane's, not a
+   menu's. One selector deeper than the library's, which is the extension
+   point `cx()` documents. */
+.ca-aside .ca-aside__body {
+  gap: var(--spacing-5);
+  padding: var(--spacing-4);
+}
+
 .ca-panel {
   display: flex;
   flex-direction: column;

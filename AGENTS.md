@@ -519,6 +519,15 @@ every dark-theme control colour on Swift and GPUI was one step off.
 - One folder-level file pair per component: `src/components/<name>.tsx` and
   `<name>.css`, both listed in their registries (`components/index.ts`,
   `styles/components.css`).
+- **A family is named after its root, and the root is a component.** `Dialog`
+  holds `DialogHeader`; `Table` holds `TableRow`; `Preferences` — the settings
+  column — holds `PreferenceGroup`, `PreferenceSection` and `PreferenceRow`.
+  The file, the stylesheet, the story page and the port's file all take the
+  root's name, so a name that names nothing (`Preference`, when only its parts
+  existed) is the tell that a root is missing rather than a family that has
+  none. What the root owns is whatever the parts cannot — the run between
+  groups, the column's width — which is usually exactly what the stories and
+  the examples were each writing for themselves.
 - Components are styled by plain CSS reading the token custom properties —
   there is no Tailwind here. A value a component needs is a shared variable
   read directly (`--spacing-4`, `--radius-medium`, `--label-small-font-size`,
@@ -636,7 +645,7 @@ is where the platform forced a different shape.
   bare stories use: `Row`, `Col`, `Frame`, `Pane`, which arrange instances and
   give a component the width or the window it needs, and draw nothing
   themselves.
-- The token table appears **only** where the component owns tokens — the nine
+- The token table appears **only** where the component owns tokens — the ten
   files in `packages/ds/tokens/component/`, plus the `frame` metrics the shell
   columns are sized by. Most components own none: they read the shared
   vocabulary directly, which is documented on `Tokens/Control`, and a table

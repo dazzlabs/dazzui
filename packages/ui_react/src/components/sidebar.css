@@ -1,108 +1,560 @@
 /*
- * The left workspace column.
- *
- * Its width is a token rather than a layout choice because the columns of a
- * desktop shell have to agree with each other: the header strip is exactly the
- * titlebar's height, or the separator under the two steps where they meet.
+ * The sidebar, and every part of it. One drawing for every column a window
+ * has: a second navigation column re-points `--sidebar-width` and stays
+ * `collapsible="none"`; the information column does the same on the other
+ * `data-side`. Their widths are frame tokens rather than layout choices,
+ * because the columns of a desktop shell have to agree with each other.
+ */
+
+/*
+ * The window. The widths are declared here rather than on `:root` so a
+ * nested sidebar can re-point one for itself and its parts alone.
+ */
+.dz-sidebar-wrapper {
+  --sidebar-width: var(--frame-sidebar-width);
+  --sidebar-width-icon: var(--frame-sidebar-icon-width);
+  display: flex;
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+}
+
+/* With an inset sidebar the window's ground is the sidebar's, and the
+   content is the sheet raised on it. */
+.dz-sidebar-wrapper:has(> .dz-sidebar[data-variant='inset']) {
+  background-color: var(--color-surface-muted);
+}
+
+/* The column ---------------------------------------------------------------
+ * A collapsible sidebar is two boxes: the root is the space it takes in the
+ * row, the container the column drawn over it. Collapsing narrows the one
+ * and moves the other, so what the column holds slides rather than reflows.
+ * A `none` sidebar needs neither, and is the column itself.
  */
 .dz-sidebar {
   position: relative;
+  flex-shrink: 0;
+  width: var(--sidebar-width);
+  transition: width var(--motion-duration) var(--motion-easing);
+}
+
+.dz-sidebar[data-collapsible='offcanvas'] {
+  width: 0;
+}
+
+.dz-sidebar[data-collapsible='icon'] {
+  width: var(--sidebar-width-icon);
+}
+
+/* The floating and inset columns are set in from the edge by a step. */
+.dz-sidebar[data-collapsible='icon'][data-variant='floating'],
+.dz-sidebar[data-collapsible='icon'][data-variant='inset'] {
+  width: calc(var(--sidebar-width-icon) + var(--spacing-4));
+}
+
+.dz-sidebar__container {
+  position: absolute;
+  inset-block: 0;
+  z-index: 10;
+  display: flex;
+  width: var(--sidebar-width);
+  transition:
+    inset-inline var(--motion-duration) var(--motion-easing),
+    width var(--motion-duration) var(--motion-easing);
+}
+
+.dz-sidebar[data-side='left'] > .dz-sidebar__container {
+  inset-inline-start: 0;
+}
+
+.dz-sidebar[data-side='right'] > .dz-sidebar__container {
+  inset-inline-end: 0;
+}
+
+.dz-sidebar[data-side='left'][data-collapsible='offcanvas']
+  > .dz-sidebar__container {
+  inset-inline-start: calc(var(--sidebar-width) * -1);
+}
+
+.dz-sidebar[data-side='right'][data-collapsible='offcanvas']
+  > .dz-sidebar__container {
+  inset-inline-end: calc(var(--sidebar-width) * -1);
+}
+
+.dz-sidebar[data-collapsible='icon'] > .dz-sidebar__container {
+  width: var(--sidebar-width-icon);
+}
+
+.dz-sidebar[data-variant='floating'] > .dz-sidebar__container,
+.dz-sidebar[data-variant='inset'] > .dz-sidebar__container {
+  padding: var(--spacing-2);
+}
+
+/* The inset, plus the floating card's own hairline on either side. */
+.dz-sidebar[data-collapsible='icon'][data-variant='floating']
+  > .dz-sidebar__container,
+.dz-sidebar[data-collapsible='icon'][data-variant='inset']
+  > .dz-sidebar__container {
+  width: calc(
+    var(--sidebar-width-icon) + var(--spacing-4) + var(--stroke-hairline) * 2
+  );
+}
+
+/* The column's material: the sidebar's surface, and a hairline on the edge
+   that faces the content. */
+.dz-sidebar[data-collapsible='none'],
+.dz-sidebar__inner {
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
-  width: var(--frame-sidebar-width);
+  width: 100%;
+  height: 100%;
   background-color: var(--color-surface-muted);
+}
+
+.dz-sidebar[data-collapsible='none'] {
+  width: var(--sidebar-width);
+}
+
+/*
+ * Which column this is comes from where it stands, not from a prop. A
+ * column that cannot collapse is the one nearer the content — the second
+ * navigation column, or the information column on the far edge — and each
+ * takes the frame's width for that place. The second column lightens a
+ * step because it sits closer to the content; the trailing one comes back
+ * to the sidebar's surface because it is an edge again, so a window reads
+ * as content between two quieter edges rather than as three greys.
+ */
+.dz-sidebar[data-side='left'][data-collapsible='none'] {
+  --sidebar-width: var(--frame-rail-width);
+  background-color: var(--color-surface);
+}
+
+.dz-sidebar[data-side='right'] {
+  --sidebar-width: var(--frame-aside-width);
+}
+
+.dz-sidebar[data-side='left'][data-collapsible='none'],
+.dz-sidebar[data-side='left'][data-variant='sidebar'] > .dz-sidebar__container {
   border-inline-end: var(--stroke-hairline) solid var(--color-border);
 }
 
-.dz-sidebar__header {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  height: var(--frame-titlebar-size);
-  padding-inline: var(--spacing-4);
+.dz-sidebar[data-side='right'][data-collapsible='none'],
+.dz-sidebar[data-side='right'][data-variant='sidebar']
+  > .dz-sidebar__container {
+  border-inline-start: var(--stroke-hairline) solid var(--color-border);
 }
 
-/* Only the row list scrolls, so a pinned card stays put. */
-.dz-sidebar__body {
+.dz-sidebar[data-variant='floating'] .dz-sidebar__inner {
+  border: var(--stroke-hairline) solid var(--color-border);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-sm);
+}
+
+/* The rail ------------------------------------------------------------------
+ * The grab strip straddles the edge, because a one-pixel target is not a
+ * target. Nothing is drawn there until it is hovered — then the edge lights.
+ * Collapsed offcanvas, it sits just outside the edge as the way back in.
+ */
+.dz-sidebar__rail {
+  position: absolute;
+  inset-block: 0;
+  z-index: 20;
+  width: var(--spacing-4);
+  padding: 0;
+  border: 0;
+  background: none;
+  outline: none;
+  transition: inset-inline var(--motion-duration) var(--motion-easing);
+}
+
+.dz-sidebar__rail::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 50%;
+  width: var(--spacing-0-5);
+  transition: background-color var(--motion-duration) var(--motion-easing);
+}
+
+.dz-sidebar__rail:hover::after {
+  background-color: var(--color-border);
+}
+
+.dz-sidebar[data-side='left'] .dz-sidebar__rail {
+  inset-inline-end: calc(var(--spacing-4) / -2);
+  cursor: w-resize;
+}
+
+.dz-sidebar[data-side='right'] .dz-sidebar__rail {
+  inset-inline-start: calc(var(--spacing-4) / -2);
+  cursor: e-resize;
+}
+
+.dz-sidebar[data-side='left'][data-state='collapsed'] .dz-sidebar__rail {
+  cursor: e-resize;
+}
+
+.dz-sidebar[data-side='right'][data-state='collapsed'] .dz-sidebar__rail {
+  cursor: w-resize;
+}
+
+.dz-sidebar[data-collapsible='offcanvas'] .dz-sidebar__rail::after {
+  inset-inline-start: 100%;
+}
+
+.dz-sidebar[data-collapsible='offcanvas'] .dz-sidebar__rail:hover {
+  background-color: var(--color-surface-muted);
+}
+
+.dz-sidebar[data-side='left'][data-collapsible='offcanvas'] .dz-sidebar__rail {
+  inset-inline-end: calc(var(--spacing-2) * -1);
+}
+
+.dz-sidebar[data-side='right'][data-collapsible='offcanvas']
+  .dz-sidebar__rail {
+  inset-inline-start: calc(var(--spacing-2) * -1);
+}
+
+/* The inset --------------------------------------------------------------- */
+
+.dz-sidebar-inset {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  background-color: var(--color-surface);
+}
+
+/* Beside an inset sidebar it is the raised sheet, set in by the same step
+   the sidebar is and sharing its edge with it. */
+.dz-sidebar[data-variant='inset'] ~ .dz-sidebar-inset {
+  margin: var(--spacing-2);
+  margin-inline-start: 0;
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-sm);
+}
+
+.dz-sidebar[data-variant='inset'][data-state='collapsed'] ~ .dz-sidebar-inset {
+  margin-inline-start: var(--spacing-2);
+}
+
+/* Header, content, footer -------------------------------------------------- */
+
+.dz-sidebar__header,
+.dz-sidebar__footer {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: var(--spacing-2);
+  padding-block: var(--spacing-2);
+  padding-inline: var(--spacing-2-5);
+}
+
+/* Exactly the titlebar's height, so it lines up with the toolbar beside it. */
+.dz-sidebar__header {
+  justify-content: center;
+  min-height: var(--frame-titlebar-size);
+}
+
+/* Only the content scrolls, so the header and the footer stay put. */
+.dz-sidebar__content {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  gap: var(--frame-nav-gap);
-  overflow-y: auto;
-  padding-block: var(--spacing-3-5);
+  padding-block: var(--spacing-2);
+  overflow: hidden auto;
+}
+
+.dz-sidebar[data-collapsible='icon'] .dz-sidebar__content {
+  overflow: hidden;
+}
+
+.dz-sidebar__input {
+  width: 100%;
+}
+
+.dz-sidebar__separator {
+  width: auto;
+  margin-inline: var(--spacing-2-5);
+}
+
+/* Groups ------------------------------------------------------------------ */
+
+.dz-sidebar__group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  padding-block: var(--spacing-1-5);
   padding-inline: var(--spacing-2-5);
 }
 
-.dz-sidebar-group {
+/* On the rows' own inset, so the label reads as the heading of the labels
+   under it rather than of the column. */
+.dz-sidebar__group-label {
   display: flex;
-  flex-direction: column;
-  gap: var(--frame-nav-gap);
-  margin-top: var(--spacing-3-5);
-}
-
-/* The gap between groups does the work; the first one needs none. */
-.dz-sidebar-group:first-child {
-  margin-top: 0;
-}
-
-.dz-sidebar-group__label,
-.dz-rail-group__label {
+  align-items: center;
+  flex-shrink: 0;
   padding-block: var(--spacing-1);
   padding-inline: var(--spacing-2-5);
 }
 
-.dz-sidebar-card {
+.dz-sidebar__group-action {
+  position: absolute;
+  inset-block-start: var(--spacing-1);
+  inset-inline-end: var(--spacing-2-5);
+}
+
+.dz-sidebar__group-content {
+  width: 100%;
+}
+
+/* With only the glyphs showing there is nothing to head and nothing to act on. */
+.dz-sidebar[data-collapsible='icon'] .dz-sidebar__group-label,
+.dz-sidebar[data-collapsible='icon'] .dz-sidebar__group-action {
+  display: none;
+}
+
+/* Menus ------------------------------------------------------------------- */
+
+.dz-sidebar__menu {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2);
-  /* Pinned to the foot of the column, whatever the list above it does. */
-  margin-top: auto;
-  padding: var(--spacing-3);
-  background-color: var(--color-surface);
-  border: var(--stroke-hairline) solid var(--color-border);
-  border-radius: var(--radius-large);
+  gap: var(--frame-nav-gap);
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dz-sidebar__menu-item {
+  position: relative;
+  list-style: none;
 }
 
 /*
- * The grab area straddles the separator and reaches a few pixels into the pane
- * beside it, because a one-pixel target is not a target. Nothing is drawn
- * there — the separator itself is what lights up.
+ * A row. Idle, it rests in the secondary ink at the quiet weight — a column
+ * of full-ink rows would leave the selected one nothing to win by — and its
+ * hover is the accent at 8%, a preview of the filled selection sitting far
+ * below it. A menu item or a table row hovers neutral instead; the
+ * difference is what the selected state is.
  */
-.dz-sidebar__resizer {
-  position: absolute;
-  inset-block: 0;
-  z-index: 10;
-  width: var(--spacing-2);
-  inset-inline-end: calc(var(--spacing-2) / -2);
-  cursor: col-resize;
-  touch-action: none;
-  outline: none;
+.dz-sidebar__menu-button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: var(--spacing-1-5);
+  border-radius: var(--radius-small);
+  font-family: var(--label-quiet-font-family);
+  font-size: var(--label-quiet-font-size);
+  font-weight: var(--label-quiet-font-weight);
+  line-height: 1;
+  border: 0;
+  background: none;
+  color: var(--color-content-nav);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--motion-duration) var(--motion-easing),
+    color var(--motion-duration) var(--motion-easing);
 }
 
-.dz-sidebar__resizer::after {
-  content: '';
+/* The last span is the label, and a label that will not fit is cut rather
+   than wrapped: a row is one line. */
+.dz-sidebar__menu-button > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dz-sidebar__menu-button:hover:not(:disabled):not([aria-current]) {
+  background-color: var(--control-color-plain-surface-hovered);
+  color: var(--color-content);
+}
+
+.dz-sidebar__menu-button[aria-current] {
+  background-color: var(--control-color-filled-surface-normal);
+  color: var(--control-color-filled-content-normal);
+}
+
+.dz-sidebar__menu-button:disabled {
+  cursor: not-allowed;
+  color: var(--control-color-normal-content-disabled);
+}
+
+.dz-sidebar__menu-button:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* Variants ---------------------------------------------------------------- */
+
+/* The raised row: a workspace switcher, an account. */
+.dz-sidebar__menu-button[data-variant='outline'] {
+  background-color: var(--color-surface);
+  box-shadow: 0 0 0 var(--stroke-hairline) var(--color-border);
+}
+
+.dz-sidebar__menu-button[data-variant='outline']:hover:not(:disabled):not(
+    [aria-current]
+  ) {
+  box-shadow: 0 0 0 var(--stroke-hairline)
+    var(--control-color-outlined-border-hovered);
+}
+
+/* The row that adds rather than selects: printed in the ramp's text grade
+   instead of filled with it, and never the current page. */
+.dz-sidebar__menu-button[data-variant='plain'] {
+  color: var(--control-color-plain-content-normal);
+  font-weight: var(--label-medium-font-weight);
+}
+
+/* Sizes ------------------------------------------------------------------- */
+
+/*
+ * The glyph is taller than the label, so it is boxed to the row's line
+ * height and allowed to overflow rather than stretching the row.
+ */
+.dz-sidebar__menu-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-4);
+  height: 1em;
+}
+
+.dz-sidebar__menu-button > .dz-icon {
+  flex-shrink: 0;
+}
+
+/* 12px on 8px pads — 28px, the regular control height. The small row is a
+   step tighter on both axes; the large one is the two-line row an account
+   or a workspace takes, at the twelfth step of the grid. */
+.dz-sidebar__menu-button[data-size='medium'] {
+  padding-block: var(--spacing-2);
+  padding-inline: var(--spacing-2-5);
+}
+
+.dz-sidebar__menu-button[data-size='small'] {
+  padding-block: var(--menu-item-padding);
+  padding-inline: var(--spacing-2-5);
+}
+
+/* The container corner rather than the control one: a two-line row is a box
+   that grows with what it holds, and Bright's pill is wrong for that. */
+.dz-sidebar__menu-button[data-size='large'] {
+  height: var(--spacing-12);
+  padding-block: var(--spacing-2);
+  padding-inline: var(--spacing-2-5);
+  border-radius: var(--radius-large);
+}
+
+/* A row with something on its trailing edge keeps the label clear of it. */
+.dz-sidebar__menu-item:has(.dz-sidebar__menu-action) > .dz-sidebar__menu-button,
+.dz-sidebar__menu-item:has(.dz-sidebar__menu-badge) > .dz-sidebar__menu-button {
+  padding-inline-end: var(--spacing-8);
+}
+
+/*
+ * Collapsed to its icons, every row is the same square — the regular control
+ * height on a side, which is what the icon width was sized around — with the
+ * glyph centred and the label cut off past it.
+ */
+.dz-sidebar[data-collapsible='icon'] .dz-sidebar__menu-button {
+  width: var(--control-medium-size);
+  height: var(--control-medium-size);
+  padding: 0 calc((var(--control-medium-size) - var(--spacing-4)) / 2);
+  overflow: hidden;
+}
+
+/* And nothing wider than that square shows past the column's edge. */
+.dz-sidebar[data-collapsible='icon'] .dz-sidebar__inner {
+  overflow: hidden;
+}
+
+/* Actions and badges ------------------------------------------------------ */
+
+/* On the row's trailing edge, centred on it whatever its size. */
+.dz-sidebar__menu-action,
+.dz-sidebar__menu-badge {
   position: absolute;
   inset-block: 0;
-  inset-inline-end: calc(var(--spacing-2) / 2);
-  width: var(--spacing-px);
-  background-color: var(--tint-600);
+  inset-inline-end: var(--spacing-1);
+  margin-block: auto;
+}
+
+.dz-sidebar__menu-action[data-show-on-hover] {
   opacity: 0;
   transition: opacity var(--motion-duration) var(--motion-easing);
 }
 
-.dz-sidebar__resizer:hover::after,
-.dz-sidebar__resizer:focus-visible::after {
-  opacity: 0.6;
-}
-
-.dz-sidebar__resizer[data-dragging='true']::after {
+.dz-sidebar__menu-item:hover .dz-sidebar__menu-action[data-show-on-hover],
+.dz-sidebar__menu-item:focus-within
+  .dz-sidebar__menu-action[data-show-on-hover],
+.dz-sidebar__menu-action[data-show-on-hover][data-popup-open] {
   opacity: 1;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .dz-sidebar__resizer::after {
-    transition: none;
-  }
+/* The count follows the row's colour, so a selected row's count turns with
+   it rather than staying grey on accent. */
+.dz-sidebar__menu-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--spacing-5);
+  min-width: var(--spacing-5);
+  padding-inline: var(--spacing-1);
+  border-radius: var(--radius-small);
+  color: var(--color-content-nav);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+  font-weight: var(--label-medium-font-weight);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  user-select: none;
+  transition: color var(--motion-duration) var(--motion-easing);
+}
+
+.dz-sidebar__menu-button:hover:not(:disabled) ~ .dz-sidebar__menu-badge {
+  color: var(--color-content);
+}
+
+.dz-sidebar__menu-button[aria-current] ~ .dz-sidebar__menu-badge {
+  color: var(--control-color-filled-content-normal);
+}
+
+/* Sub-menus --------------------------------------------------------------- */
+
+/* Set in under the parent row's glyph, and held to it by a hairline. */
+.dz-sidebar__menu-sub {
+  display: flex;
+  flex-direction: column;
+  gap: var(--frame-nav-gap);
+  min-width: 0;
+  margin: 0;
+  margin-inline: var(--spacing-3-5);
+  padding-block: var(--spacing-0-5);
+  padding-inline: var(--spacing-2-5);
+  padding-inline-end: 0;
+  border-inline-start: var(--stroke-hairline) solid var(--color-border);
+  list-style: none;
+}
+
+.dz-sidebar__menu-sub-item {
+  position: relative;
+  list-style: none;
+}
+
+/* Nothing on a row's edge, and nothing under it, once only the glyphs show. */
+.dz-sidebar[data-collapsible='icon'] .dz-sidebar__menu-action,
+.dz-sidebar[data-collapsible='icon'] .dz-sidebar__menu-badge,
+.dz-sidebar[data-collapsible='icon'] .dz-sidebar__menu-sub {
+  display: none;
 }

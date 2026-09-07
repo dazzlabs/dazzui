@@ -198,33 +198,31 @@ export function App() {
         name={doc.name}
         page={page.name}
         sidebar={
-          sidebarOpen ? (
-            <DocumentSidebar
-              page={page}
-              pageId={pageId}
-              pages={doc.pages}
-              selection={selection}
-              onAddPage={doc.addPage}
-              onOpenPage={doc.openPage}
-              onSelect={(id, additive) =>
-                doc.select(
-                  additive
-                    ? selection.includes(id)
-                      ? selection.filter(entry => entry !== id)
-                      : [...selection, id]
-                    : [id]
-                )
-              }
-              onSetHidden={(id, hidden) => doc.edit(patch([id], { hidden }))}
-              onSetLocked={(id, locked) => doc.edit(patch([id], { locked }))}
-            />
-          ) : null
+          <DocumentSidebar
+            page={page}
+            pageId={pageId}
+            pages={doc.pages}
+            selection={selection}
+            onAddPage={doc.addPage}
+            onOpenPage={doc.openPage}
+            onSelect={(id, additive) =>
+              doc.select(
+                additive
+                  ? selection.includes(id)
+                    ? selection.filter(entry => entry !== id)
+                    : [...selection, id]
+                  : [id]
+              )
+            }
+            onSetHidden={(id, hidden) => doc.edit(patch([id], { hidden }))}
+            onSetLocked={(id, locked) => doc.edit(patch([id], { locked }))}
+          />
         }
         sidebarOpen={sidebarOpen}
         theme={theme}
         onExport={() => setExporting(true)}
         onRedo={doc.redo}
-        onSidebarToggle={() => setSidebarOpen(open => !open)}
+        onSidebarOpenChange={setSidebarOpen}
         onThemeChange={chooseTheme}
         onUndo={doc.undo}
       >

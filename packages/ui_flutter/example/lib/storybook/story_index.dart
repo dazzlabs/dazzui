@@ -15,7 +15,7 @@ import '../stories/menu_stories.dart';
 import '../stories/nav_item_stories.dart';
 import '../stories/option_card_stories.dart';
 import '../stories/pill_tabs_stories.dart';
-import '../stories/preference_stories.dart';
+import '../stories/preferences_stories.dart';
 import '../stories/progress_stories.dart';
 import '../stories/radio_stories.dart';
 import '../stories/rail_stories.dart';
@@ -78,7 +78,7 @@ class StoryIndex {
       NavItemStories.page,
       OptionCardStories.page,
       PillTabsStories.page,
-      PreferenceStories.page,
+      PreferencesStories.page,
       ProgressStories.page,
       RadioStories.page,
       RailStories.page,

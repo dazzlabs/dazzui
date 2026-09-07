@@ -2,11 +2,25 @@
  * The settings column.
  *
  * The spacing is the whole design here. Rows sit close together, a heading
- * sits further from the section above it than from its own rows, and a group
- * title stands further still — so a heading always reads as belonging to what
- * follows it rather than floating between two blocks. Every level widens by
- * the same rule, which is why the three gaps are separate tokens.
+ * sits further from the section above it than from its own rows, a group
+ * title stands further still, and one group stands furthest from the next —
+ * so a heading always reads as belonging to what follows it rather than
+ * floating between two blocks. Every level widens by the same rule, which is
+ * why the four gaps are separate tokens.
  */
+
+/* The root: the column the groups run down, at the design's width, and never
+   wider than its pane. Stated this way round rather than as `100%` up to a
+   cap, because a percentage has nothing to resolve against in a container
+   that is itself sized to its content — a centred stage — and the column
+   would shrink to its rows. */
+.dz-preferences {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+  width: var(--preferences-width);
+  max-width: 100%;
+}
 
 .dz-preference-section {
   display: flex;

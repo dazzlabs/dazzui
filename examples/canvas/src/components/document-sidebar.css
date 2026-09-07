@@ -4,8 +4,7 @@
  * not fit on it goes in the tooltip rather than on a second line.
  */
 
-/* A nav action pins itself to the foot of the column by default. Here it
-   belongs under the pages it adds to, not under the layers as well. */
+/* A breath between the pages and the row that adds one. */
 .cv-sidebar .cv-sidebar__new {
   margin-top: var(--spacing-1);
 }

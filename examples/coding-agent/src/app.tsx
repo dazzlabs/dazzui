@@ -143,20 +143,18 @@ export function App() {
         branch={project.branch}
         project={project.name}
         sidebar={
-          sidebarOpen ? (
-            <ProjectSidebar
-              active={project}
-              changed={changes.length}
-              projects={PROJECTS}
-              settingsOpen={view.kind === 'settings'}
-              onOpenSettings={() => openSettings('general')}
-              onSelect={openProject}
-            />
-          ) : null
+          <ProjectSidebar
+            active={project}
+            changed={changes.length}
+            projects={PROJECTS}
+            settingsOpen={view.kind === 'settings'}
+            onOpenSettings={() => openSettings('general')}
+            onSelect={openProject}
+          />
         }
         sidebarOpen={sidebarOpen}
         theme={settings.theme}
-        onSidebarToggle={() => setSidebarOpen(open => !open)}
+        onSidebarOpenChange={setSidebarOpen}
         onThemeChange={chooseTheme}
       >
         {view.kind === 'settings' ? (

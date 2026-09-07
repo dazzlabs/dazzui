@@ -3,7 +3,10 @@ import {
   Badge,
   type BadgeVariant,
   Icon,
-  NavItem,
+  SidebarMenu,
+  SidebarMenuBadge,
+  SidebarMenuButton,
+  SidebarMenuItem,
   PreferenceRow,
   PreferenceSection,
   Table,
@@ -295,27 +298,21 @@ export const InAPreferenceRow: Story = {
 
 export const InANavRow: Story = {
   render: () => (
-    <Col gap="var(--spacing-1)" width="13rem">
-      <NavItem active>
-        Needs review
-        <Badge
-          size="small"
-          tint="neutral"
-          style={{ marginInlineStart: 'auto' }}
-        >
-          24
-        </Badge>
-      </NavItem>
-      <NavItem>
-        Done
-        <Badge
-          size="small"
-          tint="neutral"
-          style={{ marginInlineStart: 'auto' }}
-        >
-          168
-        </Badge>
-      </NavItem>
-    </Col>
+    <div style={{ width: '13rem' }}>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton active>
+            <span>Needs review</span>
+          </SidebarMenuButton>
+          <SidebarMenuBadge>24</SidebarMenuBadge>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton>
+            <span>Done</span>
+          </SidebarMenuButton>
+          <SidebarMenuBadge>168</SidebarMenuBadge>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </div>
   ),
 }

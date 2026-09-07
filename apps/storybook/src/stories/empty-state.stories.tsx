@@ -3,9 +3,14 @@ import {
   Button,
   Card,
   EmptyState,
-  NavItem,
-  Rail,
-  RailGroup,
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
   SearchField,
   Table,
   TableCell,
@@ -177,23 +182,37 @@ export const InAList: Story = {
 export const InAPane: Story = {
   render: () => (
     <Frame height="20rem" width="40rem">
-      <Rail>
-        <RailGroup>
-          <NavItem size="small">handbook.docx</NavItem>
-          <NavItem size="small">contract.pdf</NavItem>
-          <NavItem size="small">release-notes.md</NavItem>
-        </RailGroup>
-      </Rail>
-      <div
-        style={{
-          flex: 1,
-          minWidth: 0,
-          display: 'flex',
-          alignItems: 'center',
-        }}
-      >
-        <EmptyState title="Select a document to see its progress" />
-      </div>
+      <SidebarProvider>
+        <Sidebar collapsible="none">
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {['handbook.docx', 'contract.pdf', 'release-notes.md'].map(
+                    entry => (
+                      <SidebarMenuItem key={entry}>
+                        <SidebarMenuButton size="small">
+                          <span>{entry}</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    )
+                  )}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+        </Sidebar>
+        <div
+          style={{
+            flex: 1,
+            minWidth: 0,
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <EmptyState title="Select a document to see its progress" />
+        </div>
+      </SidebarProvider>
     </Frame>
   ),
 }

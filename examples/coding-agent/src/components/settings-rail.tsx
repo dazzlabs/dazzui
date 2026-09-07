@@ -1,10 +1,14 @@
 import {
   Icon,
   type IconGlyph,
-  NavAction,
-  NavItem,
-  Rail,
-  RailGroup,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from '@dazzlabs/dazzui-react'
 
 import {
@@ -40,27 +44,40 @@ export interface SettingsRailProps {
  */
 export function SettingsRail({ section, onOpen, onClose }: SettingsRailProps) {
   return (
-    <Rail className="ca-rail">
-      <RailGroup>
-        {SECTIONS.map(entry => (
-          <NavItem
-            key={entry.id}
-            active={entry.id === section}
-            icon={<Icon icon={entry.glyph} size={14} />}
-            size="small"
-            onClick={() => onOpen(entry.id)}
-          >
-            <span className="ca-truncate">{entry.label}</span>
-          </NavItem>
-        ))}
-      </RailGroup>
+    <Sidebar collapsible="none" className="ca-rail">
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {SECTIONS.map(entry => (
+                <SidebarMenuItem key={entry.id}>
+                  <SidebarMenuButton
+                    active={entry.id === section}
+                    icon={<Icon icon={entry.glyph} size={14} />}
+                    size="small"
+                    onClick={() => onOpen(entry.id)}
+                  >
+                    <span>{entry.label}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
 
       {/* One word: the rail is 150px by token, and a label that wraps turns a
           row into two. The chevron says where "back" goes. */}
-      <NavAction size="small" onClick={onClose}>
-        <Icon icon={ChevronGlyph} size={14} className="ca-rail__back" />
-        <span className="ca-truncate">Back</span>
-      </NavAction>
-    </Rail>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="small" variant="plain" onClick={onClose}>
+              <Icon icon={ChevronGlyph} size={14} className="ca-rail__back" />
+              <span>Back</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
   )
 }

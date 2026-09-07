@@ -1,0 +1,7 @@
+preferences:
+  # The settings column is capped rather than filling its pane. A row puts its
+  # label on one edge and its control on the other, and past about this width
+  # the two stop reading as one line.
+  width:
+    $type: dimension
+    $value: 30rem

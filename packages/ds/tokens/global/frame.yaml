@@ -27,6 +27,11 @@ frame:
     width:
       $type: dimension
       $value: 10.75rem
+    # The width a sidebar keeps once it has collapsed to its icons: one
+    # medium row (28px) square, plus the group's 10px inset on either side.
+    icon-width:
+      $type: dimension
+      $value: 3rem
   rail:
     width:
       $type: dimension

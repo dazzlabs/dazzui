@@ -7,6 +7,7 @@ import {
   TextField,
   PreferenceGroup,
   PreferenceRow,
+  Preferences,
   PreferenceSection,
   SegmentedControl,
   Select,
@@ -16,33 +17,31 @@ import {
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 
-import { Page, Section } from '../components/gallery'
-import { Col } from '../components/stage'
+import { Page, Section, TokenTable } from '../components/gallery'
+import { componentTokens } from '../lib/tokens'
 
-const meta: Meta<typeof PreferenceSection> = {
-  title: 'Components/Preference',
-  component: PreferenceSection,
+const meta: Meta<typeof Preferences> = {
+  title: 'Components/Preferences',
+  component: Preferences,
   parameters: { layout: 'centered' },
 }
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-const WIDTH = '30rem'
-
 /** The documented page. Every story after this one is the component alone. */
 export const Overview: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => (
     <Page
-      title="Preference"
-      description="The settings column. The spacing is the whole design: rows sit close together, a heading sits further from the section above it than from its own rows, and a group title stands further still — so a heading always reads as belonging to what follows it."
+      title="Preferences"
+      description="The settings column: a `Preferences` root, and the groups, sections and rows that run down it. The spacing is the whole design: rows sit close together, a heading sits further from the section above it than from its own rows, a group title stands further still, and one group stands furthest from the next — so a heading always reads as belonging to what follows it. The root owns the width, which is capped rather than filling the pane: a row puts its label on one edge and its control on the other, and past that width the two stop reading as one line."
     >
       <Section
         title="Rows"
         description="A subtitle is for what the title cannot say in three words; an icon is for rows that name a thing rather than a setting; `onOpen` makes the row a button and grows the hover wash that says so, while the rest stay inert. The trailing slot takes any control — everything sharing the control height lands on one edge without the row being told what it holds."
       >
-        <div style={{ maxWidth: WIDTH }}>
+        <Preferences>
           <PreferenceSection label="General">
             <PreferenceRow title="Title only">
               <Switch aria-label="Title only" checked />
@@ -76,14 +75,14 @@ export const Overview: Story = {
               onOpen={() => {}}
             />
           </PreferenceSection>
-        </div>
+        </Preferences>
       </Section>
 
       <Section
         title="Sections and groups"
         description="A section can carry a label, an action on the heading line, and a muted footer under its rows — each optional. The first run of a page usually goes without a label, because the page title has already named it. A group is a titled run of sections: sections stay one size everywhere, and the level above them is a title that outranks them rather than a section shrunk to fit underneath one, so a heading means the same thing wherever it is met."
       >
-        <div style={{ maxWidth: WIDTH }}>
+        <Preferences>
           <PreferenceGroup
             title="Translation"
             description="How segments are sent, and what comes back."
@@ -110,7 +109,15 @@ export const Overview: Story = {
               </PreferenceRow>
             </PreferenceSection>
           </PreferenceGroup>
-        </div>
+        </Preferences>
+      </Section>
+
+      <Section title="Tokens">
+        <TokenTable
+          tokens={componentTokens('preferences')}
+          labelOf={token => token.name.slice('preferences-'.length)}
+          nameHeader="Part"
+        />
       </Section>
     </Page>
   ),
@@ -118,7 +125,7 @@ export const Overview: Story = {
 
 export const ASection: Story = {
   render: () => (
-    <div style={{ width: WIDTH }}>
+    <Preferences>
       <PreferenceSection label="General">
         <PreferenceRow
           title="Launch at login"
@@ -137,13 +144,13 @@ export const ASection: Story = {
           onOpen={() => {}}
         />
       </PreferenceSection>
-    </div>
+    </Preferences>
   ),
 }
 
 export const RowShapes: Story = {
   render: () => (
-    <div style={{ width: WIDTH }}>
+    <Preferences>
       <PreferenceSection>
         <PreferenceRow title="Title only">
           <Switch aria-label="Title only" checked />
@@ -167,7 +174,7 @@ export const RowShapes: Story = {
           onOpen={() => {}}
         />
       </PreferenceSection>
-    </div>
+    </Preferences>
   ),
 }
 
@@ -178,7 +185,7 @@ export const Controls: Story = {
     const [appearance, setAppearance] = useState('system')
 
     return (
-      <div style={{ width: WIDTH }}>
+      <Preferences>
         <PreferenceSection label="General">
           <PreferenceRow
             title="Launch at login"
@@ -225,14 +232,14 @@ export const Controls: Story = {
             <TextField defaultValue="Chinese" size="small" />
           </PreferenceRow>
         </PreferenceSection>
-      </div>
+      </Preferences>
     )
   },
 }
 
 export const SectionHeadings: Story = {
   render: () => (
-    <div style={{ width: WIDTH }}>
+    <Preferences>
       <PreferenceSection
         label="Shortcuts"
         action={<Button size="small">Reset all</Button>}
@@ -245,13 +252,13 @@ export const SectionHeadings: Story = {
           <ShortcutRecorder value="" onValueChange={() => {}} />
         </PreferenceRow>
       </PreferenceSection>
-    </div>
+    </Preferences>
   ),
 }
 
 export const Unlabelled: Story = {
   render: () => (
-    <div style={{ width: WIDTH }}>
+    <Preferences>
       <PreferenceSection>
         <PreferenceRow title="Launch at login">
           <Switch aria-label="Launch at login" checked />
@@ -260,13 +267,13 @@ export const Unlabelled: Story = {
           <Switch aria-label="Show in the menu bar" checked />
         </PreferenceRow>
       </PreferenceSection>
-    </div>
+    </Preferences>
   ),
 }
 
 export const AGroup: Story = {
   render: () => (
-    <div style={{ width: WIDTH }}>
+    <Preferences>
       <PreferenceGroup
         title="Translation"
         description="How segments are sent, and what comes back."
@@ -293,7 +300,7 @@ export const AGroup: Story = {
           </PreferenceRow>
         </PreferenceSection>
       </PreferenceGroup>
-    </div>
+    </Preferences>
   ),
 }
 
@@ -305,7 +312,7 @@ export const ASettingsPage: Story = {
     const [capture, setCapture] = useState('')
 
     return (
-      <Col gap="var(--spacing-8)" width={WIDTH}>
+      <Preferences>
         <PreferenceGroup
           title="General"
           description="How the app behaves on this device."
@@ -376,7 +383,7 @@ export const ASettingsPage: Story = {
             </PreferenceRow>
           </PreferenceSection>
         </PreferenceGroup>
-      </Col>
+      </Preferences>
     )
   },
 }

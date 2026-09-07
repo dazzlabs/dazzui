@@ -26,7 +26,7 @@ pub mod menu;
 pub mod nav_item;
 pub mod option_card;
 pub mod pill_tabs;
-pub mod preference;
+pub mod preferences;
 pub mod progress;
 pub mod radio;
 pub mod rail;
@@ -79,7 +79,7 @@ pub const GROUPS: &[StoryGroup] = &[
             nav_item::PAGE,
             option_card::PAGE,
             pill_tabs::PAGE,
-            preference::PAGE,
+            preferences::PAGE,
             progress::PAGE,
             radio::PAGE,
             rail::PAGE,

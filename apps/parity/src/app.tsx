@@ -1,4 +1,8 @@
-import { PillTabs, SegmentedControl } from '@dazzlabs/dazzui-react'
+import {
+  PillTabs,
+  SegmentedControl,
+  SidebarProvider,
+} from '@dazzlabs/dazzui-react'
 import { useEffect, useMemo, useState } from 'react'
 import data from 'virtual:parity'
 
@@ -60,7 +64,7 @@ export function App() {
   }, [selection])
 
   return (
-    <div className="pv-root">
+    <SidebarProvider className="pv-root">
       <ParitySidebar
         classNames={classNames}
         counts={counts}
@@ -113,7 +117,7 @@ export function App() {
           )}
         </div>
       </div>
-    </div>
+    </SidebarProvider>
   )
 }
 

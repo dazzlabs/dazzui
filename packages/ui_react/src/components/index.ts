@@ -1,5 +1,4 @@
 export { ActionBar, type ActionBarProps } from './action-bar'
-export { Aside } from './aside'
 export {
   Badge,
   type BadgeProps,
@@ -43,13 +42,6 @@ export {
   type KeyCapVariant,
 } from './key-cap'
 export { Menu, type MenuItem, type MenuProps, type MenuTrigger } from './menu'
-export {
-  NavAction,
-  type NavActionProps,
-  NavItem,
-  type NavItemProps,
-  type NavItemSize,
-} from './nav-item'
 export { OptionCard, type OptionCardProps } from './option-card'
 export { PillTabs, type PillTabItem, type PillTabsProps } from './pill-tabs'
 export {
@@ -57,11 +49,12 @@ export {
   type PreferenceGroupProps,
   PreferenceRow,
   type PreferenceRowProps,
+  Preferences,
+  type PreferencesProps,
   PreferenceSection,
   type PreferenceSectionProps,
-} from './preference'
+} from './preferences'
 export { Progress, type ProgressProps, type ProgressSize } from './progress'
-export { Rail, RailGroup, type RailGroupProps } from './rail'
 export {
   Radio,
   RadioGroup,
@@ -73,11 +66,40 @@ export {
 export { SearchField, type SearchFieldProps } from './search-field'
 export {
   Sidebar,
-  SidebarCard,
-  type SidebarCardProps,
+  type SidebarCollapsible,
+  SidebarContent,
+  SidebarFooter,
   SidebarGroup,
-  type SidebarGroupProps,
+  SidebarGroupAction,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInput,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuAction,
+  type SidebarMenuActionProps,
+  SidebarMenuBadge,
+  SidebarMenuButton,
+  type SidebarMenuButtonProps,
+  type SidebarMenuButtonSize,
+  type SidebarMenuButtonVariant,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  type SidebarMenuSubButtonProps,
+  SidebarMenuSubItem,
   type SidebarProps,
+  SidebarProvider,
+  type SidebarProviderProps,
+  SidebarRail,
+  type SidebarRailProps,
+  SidebarSeparator,
+  type SidebarSide,
+  SidebarTrigger,
+  type SidebarTriggerProps,
+  type SidebarVariant,
+  useSidebar,
 } from './sidebar'
 export { SectionLabel, type SectionLabelProps } from './section-label'
 export {

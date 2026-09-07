@@ -30,9 +30,9 @@ outside-in: the projects, then what is inside one, then the thing itself.
 | Column                | What it is                                                                 |
 | --------------------- | -------------------------------------------------------------------------- |
 | `Sidebar` (full height) | The projects. It runs the whole height of the window, and its header strip is where the system's own controls land. |
-| `Rail`                | What is inside the open project: its issues, its pull requests, its working tree, and its sessions. In settings it takes over and lists the settings pages instead. |
+| `Sidebar` (second)    | What is inside the open project: its issues, its pull requests, its working tree, and its sessions. The same column at the rail's width, and it never collapses. In settings it takes over and lists the settings pages instead. |
 | Content               | A session's transcript and composer, one of the three project panes, or the settings. |
-| `Aside`               | Whatever the content column is showing: the run's context, the selected issue or pull request, the commit, or the note that settings are not persisted. |
+| `Sidebar` (right)     | Whatever the content column is showing: the run's context, the selected issue or pull request, the commit, or the note that settings are not persisted. The same column again, on the other edge, holding fields rather than rows. |
 
 The three project panes are where the agent meets the repository:
 

@@ -1,12 +1,17 @@
 import {
-  Aside,
   Card,
   Divider,
-  NavItem,
   SectionLabel,
   Sidebar,
-  SidebarCard,
+  SidebarContent,
+  SidebarFooter,
   SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
   TINTS,
 } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
@@ -29,7 +34,7 @@ export const Overview: Story = {
   render: () => (
     <Page
       title="SectionLabel"
-      description="The micro-heading that organises a pane. Sentence case, no uppercasing and no added tracking — one size covers sidebars, rails, and pane headings, so tone is the only axis worth varying. `SidebarGroup`, `RailGroup`, `SidebarCard` and `PreferenceSection` all render one for you; this is what those are made of."
+      description="The micro-heading that organises a pane. Sentence case, no uppercasing and no added tracking — one size covers sidebars, rails, and pane headings, so tone is the only axis worth varying. `SidebarGroupLabel` and `PreferenceSection` both render one for you; this is what those are made of."
     >
       <Section
         title="Tints"
@@ -114,33 +119,71 @@ export const InAPanel: Story = {
 export const InAColumn: Story = {
   render: () => (
     <Frame height="20rem" width="44rem">
-      <Sidebar>
-        <SidebarGroup>
-          <NavItem active>Documents</NavItem>
-          <NavItem>Glossaries</NavItem>
-        </SidebarGroup>
-        <SidebarGroup label="Library">
-          <NavItem>Translation memory</NavItem>
-          <NavItem>Archive</NavItem>
-        </SidebarGroup>
-        <SidebarCard label="Today">
-          <span style={{ fontSize: 'var(--body-small-font-size)' }}>
-            148 segments translated
-          </span>
-        </SidebarCard>
-      </Sidebar>
-      <div style={{ flex: 1, minWidth: 0 }} />
-      <Aside>
-        <div>
-          <SectionLabel>Source</SectionLabel>
-          <p style={{ margin: 'var(--spacing-2) 0 0' }}>handbook.docx</p>
-        </div>
-        <Divider />
-        <div>
-          <SectionLabel>Progress</SectionLabel>
-          <p style={{ margin: 'var(--spacing-2) 0 0' }}>168 of 392 segments</p>
-        </div>
-      </Aside>
+      <SidebarProvider>
+        <Sidebar collapsible="none">
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton active>
+                      <span>Documents</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton>
+                      <span>Glossaries</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+            <SidebarGroup>
+              <SidebarGroupLabel>Library</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton>
+                      <span>Translation memory</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton>
+                      <span>Archive</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+          <SidebarFooter>
+            <Card>
+              <SectionLabel>Today</SectionLabel>
+              <span style={{ fontSize: 'var(--body-small-font-size)' }}>
+                148 segments translated
+              </span>
+            </Card>
+          </SidebarFooter>
+        </Sidebar>
+        <div style={{ flex: 1, minWidth: 0 }} />
+        <Sidebar collapsible="none" side="right">
+          <SidebarContent
+            style={{ gap: 'var(--spacing-5)', padding: 'var(--spacing-4)' }}
+          >
+            <div>
+              <SectionLabel>Source</SectionLabel>
+              <p style={{ margin: 'var(--spacing-2) 0 0' }}>handbook.docx</p>
+            </div>
+            <Divider />
+            <div>
+              <SectionLabel>Progress</SectionLabel>
+              <p style={{ margin: 'var(--spacing-2) 0 0' }}>
+                168 of 392 segments
+              </p>
+            </div>
+          </SidebarContent>
+        </Sidebar>
+      </SidebarProvider>
     </Frame>
   ),
 }

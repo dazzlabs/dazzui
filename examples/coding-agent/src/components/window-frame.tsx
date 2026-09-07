@@ -1,4 +1,11 @@
-import { Badge, Button, Icon, IconButton, Menu } from '@dazzlabs/dazzui-react'
+import {
+  Badge,
+  Button,
+  Icon,
+  Menu,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@dazzlabs/dazzui-react'
 import type { ReactNode } from 'react'
 
 import { BranchGlyph, SidebarGlyph } from '../data/icons'
@@ -12,7 +19,7 @@ export interface WindowFrameProps {
   theme: Theme
   onThemeChange: (theme: Theme) => void
   sidebarOpen: boolean
-  onSidebarToggle: () => void
+  onSidebarOpenChange: (open: boolean) => void
   /** The full-height leading column, drawn beside the toolbar, not under it. */
   sidebar?: ReactNode
   /** The columns under the toolbar: the rail, the content, the aside. */
@@ -32,6 +39,9 @@ export interface WindowFrameProps {
  * organised around. That is what the frame tokens are drawn for: the sidebar's
  * header strip is `--frame-titlebar-size` tall, so the two line up along one
  * edge without either being told about the other.
+ *
+ * The window is the `SidebarProvider`: it holds whether the sidebar is open,
+ * and ⌘B and the toolbar's trigger both go through it.
  */
 export function WindowFrame({
   project,
@@ -41,25 +51,29 @@ export function WindowFrame({
   theme,
   onThemeChange,
   sidebarOpen,
-  onSidebarToggle,
+  onSidebarOpenChange,
   sidebar,
   children,
 }: WindowFrameProps) {
   const current = THEMES.find(entry => entry.value === theme)
 
   return (
-    <div data-sidebar={sidebarOpen} className="ca-window">
+    <SidebarProvider
+      data-sidebar={sidebarOpen}
+      className="ca-window"
+      open={sidebarOpen}
+      onOpenChange={onSidebarOpenChange}
+    >
       {sidebar}
 
       <div className="ca-pane">
         <header className="ca-toolbar">
-          <IconButton
+          <SidebarTrigger
             active={sidebarOpen}
             label={sidebarOpen ? 'Hide projects' : 'Show projects'}
-            onClick={onSidebarToggle}
           >
             <Icon icon={SidebarGlyph} size={16} />
-          </IconButton>
+          </SidebarTrigger>
 
           <div className="ca-toolbar__title">
             <span className="ca-toolbar__project">{project}</span>
@@ -100,6 +114,6 @@ export function WindowFrame({
 
         <div className="ca-pane__body">{children}</div>
       </div>
-    </div>
+    </SidebarProvider>
   )
 }

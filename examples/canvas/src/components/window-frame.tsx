@@ -5,6 +5,8 @@ import {
   Icon,
   IconButton,
   Menu,
+  SidebarProvider,
+  SidebarTrigger,
 } from '@dazzlabs/dazzui-react'
 import {
   ArrowExport20Regular,
@@ -23,7 +25,7 @@ export interface WindowFrameProps {
   theme: Theme
   onThemeChange: (theme: Theme) => void
   sidebarOpen: boolean
-  onSidebarToggle: () => void
+  onSidebarOpenChange: (open: boolean) => void
   canUndo: boolean
   canRedo: boolean
   onUndo: () => void
@@ -46,6 +48,9 @@ export interface WindowFrameProps {
  * The toolbar carries what belongs to the document rather than to the drawing:
  * the history, the theme, and the way out. Everything that acts on shapes is
  * in the two columns that flank the canvas, where the shapes are.
+ *
+ * The window is the `SidebarProvider`: it holds whether the sidebar is open,
+ * and ⌘B and the toolbar's trigger both go through it.
  */
 export function WindowFrame({
   name,
@@ -53,7 +58,7 @@ export function WindowFrame({
   theme,
   onThemeChange,
   sidebarOpen,
-  onSidebarToggle,
+  onSidebarOpenChange,
   canUndo,
   canRedo,
   onUndo,
@@ -65,18 +70,22 @@ export function WindowFrame({
   const current = THEMES.find(entry => entry.value === theme)
 
   return (
-    <div data-sidebar={sidebarOpen} className="cv-window">
+    <SidebarProvider
+      data-sidebar={sidebarOpen}
+      className="cv-window"
+      open={sidebarOpen}
+      onOpenChange={onSidebarOpenChange}
+    >
       {sidebar}
 
       <div className="cv-pane">
         <header className="cv-toolbar">
-          <IconButton
+          <SidebarTrigger
             active={sidebarOpen}
             label={sidebarOpen ? 'Hide the document' : 'Show the document'}
-            onClick={onSidebarToggle}
           >
             <Icon icon={PanelLeft20Regular} size={16} />
-          </IconButton>
+          </SidebarTrigger>
 
           <Divider orientation="vertical" className="cv-toolbar__rule" />
 
@@ -131,6 +140,6 @@ export function WindowFrame({
 
         <div className="cv-pane__body">{children}</div>
       </div>
-    </div>
+    </SidebarProvider>
   )
 }

@@ -3,8 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../host.dart' as app;
 
-/// The heading's action slot, which is the one part of this column that is a
-/// layout of its own rather than an arrangement of shared spacing.
+/// The root's cap, and the heading's action slot — the two parts of this
+/// column that are a layout of their own rather than an arrangement of shared
+/// spacing.
 void main() {
   Widget host(Widget child) {
     return app.host(
@@ -14,6 +15,31 @@ void main() {
       ),
     );
   }
+
+  group('Preferences', () {
+    testWidgets('fills a narrow pane and stops at its width in a wide one', (
+      tester,
+    ) async {
+      const Widget column = Preferences(
+        children: [
+          PreferenceSection(
+            children: [PreferenceRow(title: 'Launch at login')],
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(host(column));
+      expect(tester.getSize(find.byType(Preferences)).width, 400);
+
+      await tester.pumpWidget(
+        app.host(const Align(alignment: Alignment.topCenter, child: column)),
+      );
+      expect(
+        tester.getSize(find.byType(Preferences)).width,
+        ThemeData.studioLight().vars.preferencesWidth,
+      );
+    });
+  });
 
   group('PreferenceSection', () {
     testWidgets('takes an action without the heading sizing to it', (

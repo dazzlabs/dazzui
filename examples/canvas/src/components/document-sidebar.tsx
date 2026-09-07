@@ -1,10 +1,15 @@
 import {
   Icon,
   IconButton,
-  NavAction,
-  NavItem,
   Sidebar,
+  SidebarContent,
   SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from '@dazzlabs/dazzui-react'
 import {
   Add20Regular,
@@ -55,52 +60,72 @@ export function DocumentSidebar({
   const layers = [...page.shapes].reverse()
 
   return (
-    <Sidebar
-      className="cv-sidebar"
-      // The strip carries nothing of its own, and still has to be here: it is
-      // held at the titlebar's height, which is what keeps this column's rows
-      // level with the toolbar beside them — and with the titlebar hidden it
-      // is where the window's own controls land.
-      header={<span aria-hidden />}
-    >
-      <SidebarGroup label="Pages">
-        {pages.map(entry => (
-          <NavItem
-            key={entry.id}
-            active={entry.id === pageId}
-            icon={<Icon icon={Document20Regular} size={14} />}
-            size="small"
-            onClick={() => onOpenPage(entry.id)}
-          >
-            <span className="cv-truncate">{entry.name}</span>
-            <span className="cv-count">{entry.shapes.length}</span>
-          </NavItem>
-        ))}
+    <Sidebar className="cv-sidebar">
+      {/* The strip carries nothing of its own, and still has to be here: it
+          is held at the titlebar's height, which is what keeps this column's
+          rows level with the toolbar beside them — and with the titlebar
+          hidden it is where the window's own controls land. */}
+      <SidebarHeader>
+        <span aria-hidden />
+      </SidebarHeader>
 
-        {/* A nav action takes no icon slot — it adds rather than names a page,
-            so its glyph belongs in the label with it. */}
-        <NavAction className="cv-sidebar__new" size="small" onClick={onAddPage}>
-          <Icon icon={Add20Regular} size={14} />
-          New page
-        </NavAction>
-      </SidebarGroup>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Pages</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {pages.map(entry => (
+                <SidebarMenuItem key={entry.id}>
+                  <SidebarMenuButton
+                    active={entry.id === pageId}
+                    icon={<Icon icon={Document20Regular} size={14} />}
+                    size="small"
+                    onClick={() => onOpenPage(entry.id)}
+                  >
+                    <span className="cv-truncate">{entry.name}</span>
+                    <span className="cv-count">{entry.shapes.length}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
 
-      <SidebarGroup label="Layers">
-        {layers.map(shape => (
-          <Layer
-            key={shape.id}
-            selected={selection.includes(shape.id)}
-            shape={shape}
-            onSelect={onSelect}
-            onSetHidden={onSetHidden}
-            onSetLocked={onSetLocked}
-          />
-        ))}
+              {/* The plain row takes no icon slot — it adds rather than names
+                  a page, so its glyph belongs in the label with it. */}
+              <SidebarMenuItem className="cv-sidebar__new">
+                <SidebarMenuButton
+                  size="small"
+                  variant="plain"
+                  onClick={onAddPage}
+                >
+                  <Icon icon={Add20Regular} size={14} />
+                  <span>New page</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
 
-        {layers.length === 0 ? (
-          <p className="cv-sidebar__empty">Nothing drawn yet.</p>
-        ) : null}
-      </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Layers</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {layers.map(shape => (
+                <Layer
+                  key={shape.id}
+                  selected={selection.includes(shape.id)}
+                  shape={shape}
+                  onSelect={onSelect}
+                  onSetHidden={onSetHidden}
+                  onSetLocked={onSetLocked}
+                />
+              ))}
+            </SidebarMenu>
+
+            {layers.length === 0 ? (
+              <p className="cv-sidebar__empty">Nothing drawn yet.</p>
+            ) : null}
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
     </Sidebar>
   )
 }
@@ -117,8 +142,8 @@ interface LayerProps {
  * One layer.
  *
  * The row's two switches are siblings of the row rather than children of it: a
- * `NavItem` is a button, and a button inside a button is not a thing a browser
- * will build. They are laid over its trailing edge instead, and they appear on
+ * row is a button, and a button inside a button is not a thing a browser will
+ * build. They are laid over its trailing edge instead, and they appear on
  * hover — except where they are already doing something, since a hidden layer
  * that looks like every other row is a layer you will spend a minute looking
  * for on the canvas.
@@ -133,8 +158,8 @@ function Layer({
   const marked = shape.hidden || shape.locked
 
   return (
-    <div data-marked={marked} className="cv-layer">
-      <NavItem
+    <SidebarMenuItem data-marked={marked} className="cv-layer">
+      <SidebarMenuButton
         active={selected}
         icon={<Icon icon={toolOf(shape.kind).icon} size={14} />}
         size="small"
@@ -146,7 +171,7 @@ function Layer({
         <span className="cv-truncate" data-dim={shape.hidden}>
           {shape.name}
         </span>
-      </NavItem>
+      </SidebarMenuButton>
 
       <span className="cv-layer__switches">
         <IconButton
@@ -172,6 +197,6 @@ function Layer({
           />
         </IconButton>
       </span>
-    </div>
+    </SidebarMenuItem>
   )
 }

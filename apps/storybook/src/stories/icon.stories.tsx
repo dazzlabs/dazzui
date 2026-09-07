@@ -13,7 +13,7 @@ import {
   Callout,
   Icon,
   IconButton,
-  NavItem,
+  SidebarMenuButton,
   TINTS,
 } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
@@ -102,9 +102,9 @@ export const Overview: Story = {
           </Specimen>
           <Specimen label="nav row">
             <div style={{ width: '11rem' }}>
-              <NavItem active icon={<Icon icon={Doc} size={14} />}>
-                handbook.docx
-              </NavItem>
+              <SidebarMenuButton active icon={<Icon icon={Doc} size={14} />}>
+                <span>handbook.docx</span>
+              </SidebarMenuButton>
             </div>
           </Specimen>
         </Stack>
@@ -206,11 +206,15 @@ export const InAToolbar: Story = {
 export const InANavRow: Story = {
   render: () => (
     <Col gap="var(--spacing-1)" width="13rem">
-      <NavItem active icon={<Icon icon={Doc} size={14} />}>
-        Documents
-      </NavItem>
-      <NavItem icon={<Icon icon={Globe} size={14} />}>Glossaries</NavItem>
-      <NavItem icon={<Icon icon={Bolt} size={14} />}>Shortcuts</NavItem>
+      <SidebarMenuButton active icon={<Icon icon={Doc} size={14} />}>
+        <span>Documents</span>
+      </SidebarMenuButton>
+      <SidebarMenuButton icon={<Icon icon={Globe} size={14} />}>
+        <span>Glossaries</span>
+      </SidebarMenuButton>
+      <SidebarMenuButton icon={<Icon icon={Bolt} size={14} />}>
+        <span>Shortcuts</span>
+      </SidebarMenuButton>
     </Col>
   ),
 }
