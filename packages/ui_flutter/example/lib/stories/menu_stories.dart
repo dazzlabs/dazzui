@@ -93,7 +93,7 @@ class MenuStories {
           ),
         ],
         trigger: (context, state) => IconButton(
-          icon: FluentIcons.more_horizontal_16_regular,
+          icon: Icon(FluentIcons.more_horizontal_16_regular),
           active: state.open,
           onPressed: state.toggle,
         ),

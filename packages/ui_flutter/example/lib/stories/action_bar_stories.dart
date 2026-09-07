@@ -21,19 +21,22 @@ class ActionBarStories {
         child: ActionBar(
           children: [
             IconButton(
-              icon: FluentIcons.chevron_left_16_regular,
+              icon: Icon(FluentIcons.chevron_left_16_regular),
               onPressed: () {},
             ),
             IconButton(
-              icon: FluentIcons.chevron_right_16_regular,
+              icon: Icon(FluentIcons.chevron_right_16_regular),
               onPressed: () {},
             ),
             const ToolbarSeparator(),
             IconButton(
-              icon: FluentIcons.arrow_clockwise_16_regular,
+              icon: Icon(FluentIcons.arrow_clockwise_16_regular),
               onPressed: () {},
             ),
-            IconButton(icon: FluentIcons.share_16_regular, onPressed: () {}),
+            IconButton(
+              icon: Icon(FluentIcons.share_16_regular),
+              onPressed: () {},
+            ),
           ],
         ),
       ),
@@ -184,16 +187,16 @@ class _Overview extends StatelessWidget {
                       child: ActionBar(
                         children: [
                           IconButton(
-                            icon: FluentIcons.chevron_left_16_regular,
+                            icon: Icon(FluentIcons.chevron_left_16_regular),
                             onPressed: () {},
                           ),
                           IconButton(
-                            icon: FluentIcons.chevron_right_16_regular,
+                            icon: Icon(FluentIcons.chevron_right_16_regular),
                             onPressed: () {},
                           ),
                           const ToolbarSeparator(),
                           IconButton(
-                            icon: FluentIcons.arrow_clockwise_16_regular,
+                            icon: Icon(FluentIcons.arrow_clockwise_16_regular),
                             onPressed: () {},
                           ),
                         ],

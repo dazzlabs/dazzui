@@ -21,12 +21,12 @@ class IconButtonStories {
     Story(
       'Plain',
       (context) =>
-          IconButton(icon: FluentIcons.pin_16_regular, onPressed: () {}),
+          IconButton(icon: Icon(FluentIcons.pin_16_regular), onPressed: () {}),
     ),
     Story(
       'Filled',
       (context) => IconButton(
-        icon: FluentIcons.add_16_regular,
+        icon: Icon(FluentIcons.add_16_regular),
         variant: IconButtonVariant.filled,
         onPressed: () {},
       ),
@@ -37,7 +37,7 @@ class IconButtonStories {
         children: [
           for (final variant in IconButtonVariant.values)
             IconButton(
-              icon: FluentIcons.star_16_regular,
+              icon: Icon(FluentIcons.star_16_regular),
               variant: variant,
               onPressed: () {},
             ),
@@ -50,7 +50,7 @@ class IconButtonStories {
         children: [
           for (final variant in IconButtonVariant.values)
             IconButton(
-              icon: FluentIcons.star_16_regular,
+              icon: Icon(FluentIcons.star_16_regular),
               variant: variant,
               onPressed: null,
             ),
@@ -63,7 +63,7 @@ class IconButtonStories {
         children: [
           for (final size in sizes)
             IconButton(
-              icon: FluentIcons.star_16_regular,
+              icon: Icon(FluentIcons.star_16_regular),
               size: size,
               onPressed: () {},
             ),
@@ -76,7 +76,7 @@ class IconButtonStories {
         children: [
           for (final tint in IconButtonTint.values)
             IconButton(
-              icon: FluentIcons.star_16_regular,
+              icon: Icon(FluentIcons.star_16_regular),
               variant: IconButtonVariant.tinted,
               tint: tint,
               onPressed: () {},
@@ -91,7 +91,7 @@ class IconButtonStories {
         children: [
           for (final tint in IconButtonTint.values)
             IconButton(
-              icon: FluentIcons.pin_16_regular,
+              icon: Icon(FluentIcons.pin_16_regular),
               tint: tint,
               active: true,
               onPressed: () {},
@@ -110,10 +110,13 @@ class IconButtonStories {
               const Text('Builds'),
               const Spacer(),
               IconButton(
-                icon: FluentIcons.filter_16_regular,
+                icon: Icon(FluentIcons.filter_16_regular),
                 onPressed: () {},
               ),
-              IconButton(icon: FluentIcons.add_16_regular, onPressed: () {}),
+              IconButton(
+                icon: Icon(FluentIcons.add_16_regular),
+                onPressed: () {},
+              ),
             ],
           ),
         ),
@@ -138,11 +141,11 @@ class _PinState extends State<_Pin> {
     return RowWrap(
       children: [
         IconButton(
-          icon: FluentIcons.pin_16_regular,
+          icon: Icon(FluentIcons.pin_16_regular),
           active: _pinned,
           onPressed: () => setState(() => _pinned = !_pinned),
         ),
-        IconButton(icon: FluentIcons.pin_16_regular, onPressed: () {}),
+        IconButton(icon: Icon(FluentIcons.pin_16_regular), onPressed: () {}),
       ],
     );
   }
@@ -158,22 +161,25 @@ class _Toolbar extends StatelessWidget {
       child: ActionBar(
         children: [
           IconButton(
-            icon: FluentIcons.chevron_left_16_regular,
+            icon: Icon(FluentIcons.chevron_left_16_regular),
             onPressed: () {},
           ),
           IconButton(
-            icon: FluentIcons.chevron_right_16_regular,
+            icon: Icon(FluentIcons.chevron_right_16_regular),
             onPressed: () {},
           ),
           const ToolbarSeparator(),
           IconButton(
-            icon: FluentIcons.arrow_clockwise_16_regular,
+            icon: Icon(FluentIcons.arrow_clockwise_16_regular),
             onPressed: () {},
           ),
-          IconButton(icon: FluentIcons.share_16_regular, onPressed: () {}),
+          IconButton(
+            icon: Icon(FluentIcons.share_16_regular),
+            onPressed: () {},
+          ),
           const ToolbarSeparator(),
           IconButton(
-            icon: FluentIcons.delete_16_regular,
+            icon: Icon(FluentIcons.delete_16_regular),
             tint: IconButtonTint.danger,
             onPressed: () {},
           ),
@@ -212,7 +218,7 @@ class _Overview extends StatelessWidget {
                     children: [
                       for (final tint in IconButtonTint.values)
                         IconButton(
-                          icon: FluentIcons.star_16_regular,
+                          icon: Icon(FluentIcons.star_16_regular),
                           variant: variant,
                           tint: tint,
                           onPressed: () {},
@@ -233,7 +239,7 @@ class _Overview extends StatelessWidget {
               children: [
                 for (final size in IconButtonStories.sizes)
                   IconButton(
-                    icon: FluentIcons.star_16_regular,
+                    icon: Icon(FluentIcons.star_16_regular),
                     size: size,
                     onPressed: () {},
                   ),

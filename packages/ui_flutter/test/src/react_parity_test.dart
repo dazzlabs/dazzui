@@ -126,7 +126,9 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        host(IconButton(icon: material.Icons.add, onPressed: () {})),
+        host(
+          IconButton(icon: const Icon(material.Icons.add), onPressed: () {}),
+        ),
       );
 
       final Size size = tester.getSize(find.byType(IconButton));
@@ -136,12 +138,14 @@ void main() {
 
     testWidgets('the quiet default rests in the subtle ink', (tester) async {
       await tester.pumpWidget(
-        host(IconButton(icon: material.Icons.add, onPressed: () {})),
+        host(
+          IconButton(icon: const Icon(material.Icons.add), onPressed: () {}),
+        ),
       );
 
       // A toolbar row has to read as chrome until it is touched.
       expect(
-        tester.widget<Icon>(find.byType(Icon)).color,
+        IconTheme.of(tester.element(find.byType(Icon))).color,
         vars.colorContentSubtle,
       );
     });
@@ -149,13 +153,17 @@ void main() {
     testWidgets('the on-state turns the glyph accent', (tester) async {
       await tester.pumpWidget(
         host(
-          IconButton(icon: material.Icons.add, active: true, onPressed: () {}),
+          IconButton(
+            icon: const Icon(material.Icons.add),
+            active: true,
+            onPressed: () {},
+          ),
         ),
       );
 
       // "This is on" is a colour statement, not a chip.
       expect(
-        tester.widget<Icon>(find.byType(Icon)).color,
+        IconTheme.of(tester.element(find.byType(Icon))).color,
         vars.colorPrimary[700],
       );
     });

@@ -106,7 +106,7 @@ Widget? build(Probe probe) {
       );
     case 'dz-icon-button':
       return IconButton(
-        icon: material.Icons.add,
+        icon: Icon(material.Icons.add),
         variant: pick(IconButtonVariant.values, data['variant']),
         tint: pick(IconButtonTint.values, data['tint']),
         size: probe.size(WidgetSize.tiny),
