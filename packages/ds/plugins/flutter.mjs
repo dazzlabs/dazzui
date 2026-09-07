@@ -190,14 +190,20 @@ function generateThemeVariablesFile(tokens, sources, modeSelectors = []) {
   const className = 'ThemeVariables'
   const imports = `import 'package:flutter/widgets.dart';
 import '../foundation/color_descriptor.dart';
+import '../foundation/font_face.dart';
 import 'colors.dart';`
 
   const categorizedTokens = categorizeTokensBySource(tokens, sources)
 
-  const { fields, initializers } = generateClassContent(
-    categorizedTokens,
-    tokens
-  )
+  const generated = generateClassContent(categorizedTokens, tokens)
+  const faces = generateFontFaces(tokens)
+
+  const fields = faces.fields
+    ? `${generated.fields}\n${faces.fields}`
+    : generated.fields
+  const initializers = faces.initializers
+    ? `${generated.initializers}\n${faces.initializers}`
+    : generated.initializers
 
   return `${imports}
 
@@ -209,11 +215,110 @@ ${initializers}
   });
 
 ${fields}
-}
+${generateCopyWith(fields)}}
 
 /// Global instance of ${className}
 const ${className.charAt(0).toLowerCase() + className.slice(1)} = ${className}();
 ${generateThemeInstances(tokens, modeSelectors)}`
+}
+
+/**
+ * The field a `{base.font.ui}` reference reads — `fontUi` — or null for
+ * anything that is not one of the design's declared faces.
+ */
+function faceFieldName(value) {
+  if (typeof value !== 'string') return null
+  const match = value.match(/^\{base\.font\.([a-zA-Z0-9-]+)\}$/)
+  if (!match) return null
+  return `font${capitalize(dartName(match[1]))}`
+}
+
+/**
+ * The faces the type styles actually name, as constructor parameters and
+ * fields.
+ *
+ * Only the faces something is set in are emitted: a knob nothing reads would
+ * be a promise the class does not keep.
+ */
+function generateFontFaces(tokens) {
+  const used = new Map()
+
+  for (const token of Object.values(tokens)) {
+    if (token.$type !== 'typography') continue
+    // As authored: a resolved `$value` has already followed the reference
+    // into `base.font` and collapsed the face to its stack, which is the one
+    // thing this needs to know the name of.
+    const authored =
+      token.originalValue?.$value ?? token.$originalValue ?? token.$value
+    if (typeof authored !== 'object') continue
+    const declared = authored.fontFamily
+    const name = faceFieldName(declared)
+    if (!name || used.has(name)) continue
+    const stack = resolveFontStack(declared, tokens)
+    used.set(name, { id: declared.slice(1, -1), ...splitFontStack(stack) })
+  }
+
+  if (used.size === 0) return { fields: '', initializers: '' }
+
+  const fields = ['  // Type faces', '']
+  const initializers = []
+
+  for (const [name, face] of [...used].sort()) {
+    const args = []
+    if (face.family !== null) args.push(`family: '${face.family}'`)
+    if (face.fallback.length > 0) {
+      args.push(`fallback: [${face.fallback.map(f => `'${f}'`).join(', ')}]`)
+    }
+    fields.push(
+      `  /// The face \`${face.id}\` declares. Every type style set in it`,
+      `  /// reads this field, so a host re-points the face rather than each style.`,
+      `  final FontFace ${name};`
+    )
+    initializers.push(`    this.${name} = const FontFace(${args.join(', ')}),`)
+  }
+  fields.push('')
+
+  return { fields: fields.join('\n'), initializers: initializers.join('\n') }
+}
+
+/**
+ * `copyWith` over every stored field, read back off the class the generator
+ * just wrote.
+ *
+ * A theme is 100-odd values and a host usually wants to move one of them —
+ * a face, a surface, the accent ramp. Without this the only way to do that
+ * is to re-type the whole constructor, and every token added upstream is a
+ * parameter that silently goes missing. The derived getters need no entry:
+ * they read these fields on whatever instance they are called against.
+ */
+function generateCopyWith(fields) {
+  const declarations = [
+    ...fields.matchAll(/^ {2}final ([A-Za-z0-9_<>, ]+) ([A-Za-z0-9_]+);$/gm),
+  ].map(([, type, name]) => ({ type, name }))
+
+  if (declarations.length === 0) return ''
+
+  const params = declarations
+    .map(({ type, name }) => `    ${type}? ${name},`)
+    .join('\n')
+  const args = declarations
+    .map(({ name }) => `      ${name}: ${name} ?? this.${name},`)
+    .join('\n')
+
+  return `
+  /// This theme with the named values replaced.
+  ///
+  /// Everything derived — the type styles, the interactive recipes — reads
+  /// the fields of the instance it is called on, so re-pointing one value
+  /// moves everything drawn from it.
+  ThemeVariables copyWith({
+${params}
+  }) {
+    return ThemeVariables(
+${args}
+    );
+  }
+`
 }
 
 const PALETTE_SHADE = /^color\.([^.]+)\.(\d+)$/
@@ -2385,13 +2490,16 @@ function convertTypographyValue(value, tokens) {
 
   const parts = []
 
-  // Font family. A CSS stack is split rather than truncated: the first entry
-  // is usually the `-apple-system` keyword, which Flutter cannot resolve, and
-  // the CJK face at the end of the stack is the one that has to survive.
-  if (value.fontFamily) {
-    // A face is always an alias into `base.font`, so the stack is resolved
-    // back to its raw list before it is split — following the reference
-    // through the ordinary converter would collapse it to one entry again.
+  // Font family. A face is a field on the class rather than a literal in
+  // each style, so a host that re-points `fontUi` moves every style built
+  // from it — which is the only way a design drawn to the platform's own
+  // face can also be shipped with a font of its own. A stack that is not a
+  // `base.font` alias has no field to read and is split in place.
+  const faceRef = faceFieldName(value.fontFamily)
+  if (faceRef) {
+    parts.push(`fontFamily: ${faceRef}.family`)
+    parts.push(`fontFamilyFallback: ${faceRef}.fallback`)
+  } else if (value.fontFamily) {
     const { family, fallback } = splitFontStack(
       resolveFontStack(value.fontFamily, tokens)
     )

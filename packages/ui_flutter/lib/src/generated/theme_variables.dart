@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import '../foundation/color_descriptor.dart';
+import '../foundation/font_face.dart';
 import 'colors.dart';
 
 /// Design tokens generated from Terrazzo
@@ -204,6 +205,10 @@ class ThemeVariables {
     this.switchMediumHeight = 18,
     this.switchMediumThumb = 14,
     this.toastMaxWidth = 420,
+    this.fontDisplay = const FontFace(
+      fallback: ['SF Pro Display', 'PingFang SC'],
+    ),
+    this.fontUi = const FontFace(fallback: ['SF Pro Text', 'PingFang SC']),
   });
 
   // #region Global
@@ -304,119 +309,136 @@ class ThemeVariables {
 
   // Typography
   TextStyle get headlineSmall => TextStyle(
-    fontFamilyFallback: const ['SF Pro Display', 'PingFang SC'],
+    fontFamily: fontDisplay.family,
+    fontFamilyFallback: fontDisplay.fallback,
     fontSize: 20,
     fontWeight: FontWeight.w600,
     height: 26 / 20,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get headlineMedium => TextStyle(
-    fontFamilyFallback: const ['SF Pro Display', 'PingFang SC'],
+    fontFamily: fontDisplay.family,
+    fontFamilyFallback: fontDisplay.fallback,
     fontSize: 24,
     fontWeight: FontWeight.w600,
     height: 30 / 24,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get headlineLarge => TextStyle(
-    fontFamilyFallback: const ['SF Pro Display', 'PingFang SC'],
+    fontFamily: fontDisplay.family,
+    fontFamilyFallback: fontDisplay.fallback,
     fontSize: 28,
     fontWeight: FontWeight.w600,
     height: 34 / 28,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get titleSmall => TextStyle(
-    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
+    fontFamily: fontUi.family,
+    fontFamilyFallback: fontUi.fallback,
     fontSize: 13,
     fontWeight: FontWeight.w600,
     height: 20 / 13,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get titleMedium => TextStyle(
-    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
+    fontFamily: fontUi.family,
+    fontFamilyFallback: fontUi.fallback,
     fontSize: 15,
     fontWeight: FontWeight.w600,
     height: 22 / 15,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get titleLarge => TextStyle(
-    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
+    fontFamily: fontUi.family,
+    fontFamilyFallback: fontUi.fallback,
     fontSize: 17,
     fontWeight: FontWeight.w600,
     height: 22 / 17,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get bodySmall => TextStyle(
-    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
+    fontFamily: fontUi.family,
+    fontFamilyFallback: fontUi.fallback,
     fontSize: 12,
     fontWeight: FontWeight.w400,
     height: 18 / 12,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get bodyMedium => TextStyle(
-    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
+    fontFamily: fontUi.family,
+    fontFamilyFallback: fontUi.fallback,
     fontSize: 13,
     fontWeight: FontWeight.w400,
     height: 20 / 13,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get bodyLarge => TextStyle(
-    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
+    fontFamily: fontUi.family,
+    fontFamilyFallback: fontUi.fallback,
     fontSize: 15,
     fontWeight: FontWeight.w400,
     height: 22 / 15,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get labelQuiet => TextStyle(
-    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
+    fontFamily: fontUi.family,
+    fontFamilyFallback: fontUi.fallback,
     fontSize: 12,
     fontWeight: FontWeight.w500,
     height: 12 / 12,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get labelStrong => TextStyle(
-    fontFamilyFallback: const ['SF Pro Display', 'PingFang SC'],
+    fontFamily: fontDisplay.family,
+    fontFamilyFallback: fontDisplay.fallback,
     fontSize: 12,
     fontWeight: FontWeight.w700,
     height: 12 / 12,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get labelSmall => TextStyle(
-    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
+    fontFamily: fontUi.family,
+    fontFamilyFallback: fontUi.fallback,
     fontSize: 11,
     fontWeight: FontWeight.w600,
     height: 11 / 11,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get labelMedium => TextStyle(
-    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
+    fontFamily: fontUi.family,
+    fontFamilyFallback: fontUi.fallback,
     fontSize: 12,
     fontWeight: FontWeight.w600,
     height: 12 / 12,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get labelLarge => TextStyle(
-    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
+    fontFamily: fontUi.family,
+    fontFamilyFallback: fontUi.fallback,
     fontSize: 13,
     fontWeight: FontWeight.w600,
     height: 13 / 13,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get captionSmall => TextStyle(
-    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
+    fontFamily: fontUi.family,
+    fontFamilyFallback: fontUi.fallback,
     fontSize: 11,
     fontWeight: FontWeight.w400,
     height: 14 / 11,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get captionMedium => TextStyle(
-    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
+    fontFamily: fontUi.family,
+    fontFamilyFallback: fontUi.fallback,
     fontSize: 12,
     fontWeight: FontWeight.w400,
     height: 18 / 12,
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get captionLarge => TextStyle(
-    fontFamilyFallback: const ['SF Pro Text', 'PingFang SC'],
+    fontFamily: fontUi.family,
+    fontFamilyFallback: fontUi.fallback,
     fontSize: 13,
     fontWeight: FontWeight.w400,
     height: 20 / 13,
@@ -645,6 +667,292 @@ class ThemeVariables {
   final double toastMaxWidth;
 
   // #endregion
+
+  // Type faces
+
+  /// The face `base.font.display` declares. Every type style set in it
+  /// reads this field, so a host re-points the face rather than each style.
+  final FontFace fontDisplay;
+
+  /// The face `base.font.ui` declares. Every type style set in it
+  /// reads this field, so a host re-points the face rather than each style.
+  final FontFace fontUi;
+
+  /// This theme with the named values replaced.
+  ///
+  /// Everything derived — the type styles, the interactive recipes — reads
+  /// the fields of the instance it is called on, so re-pointing one value
+  /// moves everything drawn from it.
+  ThemeVariables copyWith({
+    ColorSwatch<int>? colorPrimary,
+    ColorSwatch<int>? colorNeutral,
+    ColorSwatch<int>? colorInfo,
+    ColorSwatch<int>? colorSuccess,
+    ColorSwatch<int>? colorWarning,
+    ColorSwatch<int>? colorDanger,
+    Color? colorCanvas,
+    Color? colorSurface,
+    Color? colorSurfaceMuted,
+    Color? colorSurfaceSunken,
+    Color? colorSurfaceSubtle,
+    Color? colorSurfaceInset,
+    Color? colorSurfaceRaised,
+    Color? colorSurfaceChrome,
+    Color? colorContent,
+    Color? colorContentSecondary,
+    Color? colorContentNav,
+    Color? colorContentMuted,
+    Color? colorContentSubtle,
+    Color? colorContentFaint,
+    Color? colorBorder,
+    Color? colorBorderStrong,
+    Color? colorBorderMuted,
+    Color? colorOnAccent,
+    List<BoxShadow>? shadow2xs,
+    List<BoxShadow>? shadowXs,
+    List<BoxShadow>? shadowSm,
+    List<BoxShadow>? shadowMd,
+    List<BoxShadow>? shadowLg,
+    List<BoxShadow>? shadowXl,
+    List<BoxShadow>? shadow2xl,
+    double? focusWidth,
+    double? focusOffset,
+    int? focusGlowShade,
+    double? focusGlowAlpha,
+    int? focusRingShade,
+    double? focusRingAlpha,
+    double? frameWindowRadius,
+    double? framePopoverRadius,
+    double? frameTitlebarSize,
+    double? frameSidebarWidth,
+    double? frameRailWidth,
+    double? frameAsideWidth,
+    double? frameNavGap,
+    Duration? motionDuration,
+    Cubic? motionEasing,
+    double? radiusNone,
+    double? radiusTiny,
+    double? radiusSmall,
+    double? radiusMedium,
+    double? radiusLarge,
+    double? radiusBig,
+    double? radiusFull,
+    double? spacingPx,
+    double? spacing0,
+    double? spacing05,
+    double? spacing1,
+    double? spacing15,
+    double? spacing2,
+    double? spacing25,
+    double? spacing3,
+    double? spacing35,
+    double? spacing4,
+    double? spacing5,
+    double? spacing6,
+    double? spacing7,
+    double? spacing8,
+    double? spacing9,
+    double? spacing10,
+    double? spacing11,
+    double? spacing12,
+    double? spacing14,
+    double? spacing16,
+    double? spacing20,
+    double? strokeHairline,
+    double? strokeControl,
+    double? washSurface,
+    double? washEdge,
+    ColorDescriptor? controlColorRecessedBorder,
+    int? controlColorFilledSurfaceNormalShade,
+    int? controlColorFilledSurfaceHoveredShade,
+    int? controlColorFilledSurfacePressedShade,
+    ColorDescriptor? controlColorFilledBorder,
+    int? controlColorTintedContentNormalShade,
+    int? controlColorTintedContentHoveredShade,
+    int? controlColorTintedContentPressedShade,
+    ColorDescriptor? controlColorTintedBorder,
+    int? controlColorOutlinedContentNormalShade,
+    int? controlColorOutlinedContentHoveredShade,
+    int? controlColorOutlinedContentPressedShade,
+    ColorDescriptor? controlColorOutlinedBorder,
+    ColorDescriptor? controlColorPlainSurface,
+    int? controlColorPlainContentNormalShade,
+    int? controlColorPlainContentHoveredShade,
+    int? controlColorPlainContentPressedShade,
+    ColorDescriptor? controlColorPlainBorder,
+    double? controlPressedAlpha,
+    double? controlTinySize,
+    double? controlSmallSize,
+    double? controlMediumSize,
+    double? controlLargeSize,
+    double? checkboxRadius,
+    double? dialogWidth,
+    double? dialogScrimAlpha,
+    double? menuMinWidth,
+    double? menuItemPadding,
+    Color? progressGradientFrom,
+    Color? progressGradientTo,
+    double? segmentedControlInset,
+    double? shortcutRecorderWidth,
+    double? switchMediumWidth,
+    double? switchMediumHeight,
+    double? switchMediumThumb,
+    double? toastMaxWidth,
+    FontFace? fontDisplay,
+    FontFace? fontUi,
+  }) {
+    return ThemeVariables(
+      colorPrimary: colorPrimary ?? this.colorPrimary,
+      colorNeutral: colorNeutral ?? this.colorNeutral,
+      colorInfo: colorInfo ?? this.colorInfo,
+      colorSuccess: colorSuccess ?? this.colorSuccess,
+      colorWarning: colorWarning ?? this.colorWarning,
+      colorDanger: colorDanger ?? this.colorDanger,
+      colorCanvas: colorCanvas ?? this.colorCanvas,
+      colorSurface: colorSurface ?? this.colorSurface,
+      colorSurfaceMuted: colorSurfaceMuted ?? this.colorSurfaceMuted,
+      colorSurfaceSunken: colorSurfaceSunken ?? this.colorSurfaceSunken,
+      colorSurfaceSubtle: colorSurfaceSubtle ?? this.colorSurfaceSubtle,
+      colorSurfaceInset: colorSurfaceInset ?? this.colorSurfaceInset,
+      colorSurfaceRaised: colorSurfaceRaised ?? this.colorSurfaceRaised,
+      colorSurfaceChrome: colorSurfaceChrome ?? this.colorSurfaceChrome,
+      colorContent: colorContent ?? this.colorContent,
+      colorContentSecondary:
+          colorContentSecondary ?? this.colorContentSecondary,
+      colorContentNav: colorContentNav ?? this.colorContentNav,
+      colorContentMuted: colorContentMuted ?? this.colorContentMuted,
+      colorContentSubtle: colorContentSubtle ?? this.colorContentSubtle,
+      colorContentFaint: colorContentFaint ?? this.colorContentFaint,
+      colorBorder: colorBorder ?? this.colorBorder,
+      colorBorderStrong: colorBorderStrong ?? this.colorBorderStrong,
+      colorBorderMuted: colorBorderMuted ?? this.colorBorderMuted,
+      colorOnAccent: colorOnAccent ?? this.colorOnAccent,
+      shadow2xs: shadow2xs ?? this.shadow2xs,
+      shadowXs: shadowXs ?? this.shadowXs,
+      shadowSm: shadowSm ?? this.shadowSm,
+      shadowMd: shadowMd ?? this.shadowMd,
+      shadowLg: shadowLg ?? this.shadowLg,
+      shadowXl: shadowXl ?? this.shadowXl,
+      shadow2xl: shadow2xl ?? this.shadow2xl,
+      focusWidth: focusWidth ?? this.focusWidth,
+      focusOffset: focusOffset ?? this.focusOffset,
+      focusGlowShade: focusGlowShade ?? this.focusGlowShade,
+      focusGlowAlpha: focusGlowAlpha ?? this.focusGlowAlpha,
+      focusRingShade: focusRingShade ?? this.focusRingShade,
+      focusRingAlpha: focusRingAlpha ?? this.focusRingAlpha,
+      frameWindowRadius: frameWindowRadius ?? this.frameWindowRadius,
+      framePopoverRadius: framePopoverRadius ?? this.framePopoverRadius,
+      frameTitlebarSize: frameTitlebarSize ?? this.frameTitlebarSize,
+      frameSidebarWidth: frameSidebarWidth ?? this.frameSidebarWidth,
+      frameRailWidth: frameRailWidth ?? this.frameRailWidth,
+      frameAsideWidth: frameAsideWidth ?? this.frameAsideWidth,
+      frameNavGap: frameNavGap ?? this.frameNavGap,
+      motionDuration: motionDuration ?? this.motionDuration,
+      motionEasing: motionEasing ?? this.motionEasing,
+      radiusNone: radiusNone ?? this.radiusNone,
+      radiusTiny: radiusTiny ?? this.radiusTiny,
+      radiusSmall: radiusSmall ?? this.radiusSmall,
+      radiusMedium: radiusMedium ?? this.radiusMedium,
+      radiusLarge: radiusLarge ?? this.radiusLarge,
+      radiusBig: radiusBig ?? this.radiusBig,
+      radiusFull: radiusFull ?? this.radiusFull,
+      spacingPx: spacingPx ?? this.spacingPx,
+      spacing0: spacing0 ?? this.spacing0,
+      spacing05: spacing05 ?? this.spacing05,
+      spacing1: spacing1 ?? this.spacing1,
+      spacing15: spacing15 ?? this.spacing15,
+      spacing2: spacing2 ?? this.spacing2,
+      spacing25: spacing25 ?? this.spacing25,
+      spacing3: spacing3 ?? this.spacing3,
+      spacing35: spacing35 ?? this.spacing35,
+      spacing4: spacing4 ?? this.spacing4,
+      spacing5: spacing5 ?? this.spacing5,
+      spacing6: spacing6 ?? this.spacing6,
+      spacing7: spacing7 ?? this.spacing7,
+      spacing8: spacing8 ?? this.spacing8,
+      spacing9: spacing9 ?? this.spacing9,
+      spacing10: spacing10 ?? this.spacing10,
+      spacing11: spacing11 ?? this.spacing11,
+      spacing12: spacing12 ?? this.spacing12,
+      spacing14: spacing14 ?? this.spacing14,
+      spacing16: spacing16 ?? this.spacing16,
+      spacing20: spacing20 ?? this.spacing20,
+      strokeHairline: strokeHairline ?? this.strokeHairline,
+      strokeControl: strokeControl ?? this.strokeControl,
+      washSurface: washSurface ?? this.washSurface,
+      washEdge: washEdge ?? this.washEdge,
+      controlColorRecessedBorder:
+          controlColorRecessedBorder ?? this.controlColorRecessedBorder,
+      controlColorFilledSurfaceNormalShade:
+          controlColorFilledSurfaceNormalShade ??
+          this.controlColorFilledSurfaceNormalShade,
+      controlColorFilledSurfaceHoveredShade:
+          controlColorFilledSurfaceHoveredShade ??
+          this.controlColorFilledSurfaceHoveredShade,
+      controlColorFilledSurfacePressedShade:
+          controlColorFilledSurfacePressedShade ??
+          this.controlColorFilledSurfacePressedShade,
+      controlColorFilledBorder:
+          controlColorFilledBorder ?? this.controlColorFilledBorder,
+      controlColorTintedContentNormalShade:
+          controlColorTintedContentNormalShade ??
+          this.controlColorTintedContentNormalShade,
+      controlColorTintedContentHoveredShade:
+          controlColorTintedContentHoveredShade ??
+          this.controlColorTintedContentHoveredShade,
+      controlColorTintedContentPressedShade:
+          controlColorTintedContentPressedShade ??
+          this.controlColorTintedContentPressedShade,
+      controlColorTintedBorder:
+          controlColorTintedBorder ?? this.controlColorTintedBorder,
+      controlColorOutlinedContentNormalShade:
+          controlColorOutlinedContentNormalShade ??
+          this.controlColorOutlinedContentNormalShade,
+      controlColorOutlinedContentHoveredShade:
+          controlColorOutlinedContentHoveredShade ??
+          this.controlColorOutlinedContentHoveredShade,
+      controlColorOutlinedContentPressedShade:
+          controlColorOutlinedContentPressedShade ??
+          this.controlColorOutlinedContentPressedShade,
+      controlColorOutlinedBorder:
+          controlColorOutlinedBorder ?? this.controlColorOutlinedBorder,
+      controlColorPlainSurface:
+          controlColorPlainSurface ?? this.controlColorPlainSurface,
+      controlColorPlainContentNormalShade:
+          controlColorPlainContentNormalShade ??
+          this.controlColorPlainContentNormalShade,
+      controlColorPlainContentHoveredShade:
+          controlColorPlainContentHoveredShade ??
+          this.controlColorPlainContentHoveredShade,
+      controlColorPlainContentPressedShade:
+          controlColorPlainContentPressedShade ??
+          this.controlColorPlainContentPressedShade,
+      controlColorPlainBorder:
+          controlColorPlainBorder ?? this.controlColorPlainBorder,
+      controlPressedAlpha: controlPressedAlpha ?? this.controlPressedAlpha,
+      controlTinySize: controlTinySize ?? this.controlTinySize,
+      controlSmallSize: controlSmallSize ?? this.controlSmallSize,
+      controlMediumSize: controlMediumSize ?? this.controlMediumSize,
+      controlLargeSize: controlLargeSize ?? this.controlLargeSize,
+      checkboxRadius: checkboxRadius ?? this.checkboxRadius,
+      dialogWidth: dialogWidth ?? this.dialogWidth,
+      dialogScrimAlpha: dialogScrimAlpha ?? this.dialogScrimAlpha,
+      menuMinWidth: menuMinWidth ?? this.menuMinWidth,
+      menuItemPadding: menuItemPadding ?? this.menuItemPadding,
+      progressGradientFrom: progressGradientFrom ?? this.progressGradientFrom,
+      progressGradientTo: progressGradientTo ?? this.progressGradientTo,
+      segmentedControlInset:
+          segmentedControlInset ?? this.segmentedControlInset,
+      shortcutRecorderWidth:
+          shortcutRecorderWidth ?? this.shortcutRecorderWidth,
+      switchMediumWidth: switchMediumWidth ?? this.switchMediumWidth,
+      switchMediumHeight: switchMediumHeight ?? this.switchMediumHeight,
+      switchMediumThumb: switchMediumThumb ?? this.switchMediumThumb,
+      toastMaxWidth: toastMaxWidth ?? this.toastMaxWidth,
+      fontDisplay: fontDisplay ?? this.fontDisplay,
+      fontUi: fontUi ?? this.fontUi,
+    );
+  }
 }
 
 /// Global instance of ThemeVariables
@@ -658,7 +966,7 @@ const themeVariables = ThemeVariables();
 const themeVariablesBrightLight = ThemeVariables(
   colorCanvas: Color(0xFFE6EADE),
   colorSurface: Color(0xFFFBFAF7),
-  colorSurfaceMuted: Color(0xFFF6F5F1),
+  colorSurfaceMuted: Color(0xFFF4F3EE),
   colorSurfaceSunken: Color(0xFFE5E3DB),
   colorSurfaceSubtle: Color(0xFFF6F5F1),
   colorSurfaceInset: Color(0xFFF0EFE9),
@@ -746,9 +1054,9 @@ const themeVariablesBrightLight = ThemeVariables(
 /// through to the default, and the derived getters follow this instance.
 /// DO NOT EDIT - This file is auto-generated
 const themeVariablesBrightDark = ThemeVariables(
-  colorCanvas: Color(0xFF0A111A),
+  colorCanvas: Color(0xFF060B12),
   colorSurface: Color(0xFF0C141E),
-  colorSurfaceMuted: Color(0xFF141D29),
+  colorSurfaceMuted: Color(0xFF0A111A),
   colorSurfaceSunken: Color(0xFF1C2734),
   colorSurfaceSubtle: Color(0xFF101923),
   colorSurfaceInset: Color(0xFF16202C),

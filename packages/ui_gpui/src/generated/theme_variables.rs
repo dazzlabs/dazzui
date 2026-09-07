@@ -975,7 +975,7 @@ pub static STUDIO_LIGHT: ThemeVariables = ThemeVariables::resolve(STUDIO_LIGHT_S
 pub static BRIGHT_LIGHT: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     color_canvas: Hsla { h: 0.222222, s: 0.222222, l: 0.894118, a: 1.0 },
     color_surface: Hsla { h: 0.125, s: 0.333333, l: 0.976471, a: 1.0 },
-    color_surface_muted: Hsla { h: 0.133333, s: 0.217391, l: 0.954902, a: 1.0 },
+    color_surface_muted: Hsla { h: 0.138889, s: 0.214286, l: 0.945098, a: 1.0 },
     color_surface_sunken: Hsla { h: 0.133333, s: 0.16129, l: 0.878431, a: 1.0 },
     color_surface_subtle: Hsla { h: 0.133333, s: 0.217391, l: 0.954902, a: 1.0 },
     color_surface_inset: Hsla { h: 0.142857, s: 0.189189, l: 0.927451, a: 1.0 },
@@ -1015,9 +1015,9 @@ pub static BRIGHT_LIGHT: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
 /// through to [`STUDIO_LIGHT_SEED`], and everything derived from them
 /// follows on its own.
 pub static BRIGHT_DARK: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
-    color_canvas: Hsla { h: 0.59375, s: 0.444444, l: 0.070588, a: 1.0 },
+    color_canvas: Hsla { h: 0.597222, s: 0.5, l: 0.047059, a: 1.0 },
     color_surface: Hsla { h: 0.592593, s: 0.428571, l: 0.082353, a: 1.0 },
-    color_surface_muted: Hsla { h: 0.595238, s: 0.344262, l: 0.119608, a: 1.0 },
+    color_surface_muted: Hsla { h: 0.59375, s: 0.444444, l: 0.070588, a: 1.0 },
     color_surface_sunken: Hsla { h: 0.590278, s: 0.3, l: 0.156863, a: 1.0 },
     color_surface_subtle: Hsla { h: 0.587719, s: 0.372549, l: 0.1, a: 1.0 },
     color_surface_inset: Hsla { h: 0.590909, s: 0.333333, l: 0.129412, a: 1.0 },

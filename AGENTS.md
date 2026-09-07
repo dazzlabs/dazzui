@@ -454,6 +454,16 @@ Rust do the same thing in their own idiom: an initialiser with defaults and
 computed properties there, a `ThemeSeed` with `..STUDIO_LIGHT_SEED` and a
 `const fn` here.
 
+The Dart class also carries a generated `copyWith` over every stored field,
+and each type *face* is one of those fields — `fontUi`, `fontDisplay`, built
+from `base.font.*` and read by every style set in them. A design drawn to the
+platform's own UI face is `fontFamily: null`, which is right on a Mac and
+nothing at all on Windows or in a `flutter test`, so a host has to be able to
+say what the kit is set in without re-typing a hundred-parameter constructor.
+The components meet it halfway: every ambient style they set is a
+`DefaultTextStyle.merge`, never a replacement, so a family set above them
+reaches a `Badge`'s label as well as a `Text`'s.
+
 A recipe that names a semantic role in any state (every variant's
 `disabled` does, through `$defaults`) is a computed member on those three
 platforms, since it reads roles of the same instance. A *shade* on it that a

@@ -300,7 +300,11 @@ color:
       $extensions:
         mode:
           dark: "{base.color.red-dark.950}"
-  # The plate the whole app sits on, behind any window or panel.
+  # The plate the whole app sits on, behind any window or panel. It is the
+  # one surface the design cannot be read off — the mockups float on a
+  # decorative gradient rather than on a desktop — so each theme carries the
+  # step below its own quietest chrome: Bright Dark continues its ladder's
+  # own rail-to-paper interval one step under the rail, which lands it here.
   canvas:
     $type: color
     $value: "#eeecf6"
@@ -308,7 +312,7 @@ color:
       mode:
         dark: "#0a0b10"
         bright: "#e6eade"
-        bright-dark: "#0a111a"
+        bright-dark: "#060b12"
   # The paper: windows, popovers, the raised panel inside a tray.
   surface:
     $type: color
@@ -320,14 +324,23 @@ color:
         bright-dark: "#0c141e"
   # One step back from the paper: cards, sidebars, toolbars, table headers,
   # and the wash a neutral control takes under the pointer.
+  #
+  # "Back" is away from the paper in every theme, and the two Bright values
+  # are the design's own nav and aside — which it draws *under* its paper in
+  # both directions, where Studio lifts its dark chrome above it. That is the
+  # Bright idiom rather than an oversight: its paper is the subject and the
+  # columns either side of it concede, so a window reads as content between
+  # two quieter edges. `surface-sunken` is unaffected and still rises on a
+  # dark canvas — a groove is cut by lightening there, which is a different
+  # question from which way the chrome leans.
   surface-muted:
     $type: color
     $value: "#f7f7fa"
     $extensions:
       mode:
         dark: "#12141a"
-        bright: "#f6f5f1"
-        bright-dark: "#141d29"
+        bright: "#f4f3ee"
+        bright-dark: "#0a111a"
   # One step into the paper: the groove a progress bar, a segmented control
   # or a switch is cut into. Distinct from `surface-muted` because a track
   # that matches the card it sits on stops reading as a track.
@@ -342,9 +355,7 @@ color:
   # The quietest wash there is: what a menu item, a toolbar glyph or a table
   # row takes under the pointer. One step shy of `surface-muted`, because a
   # hover that lands exactly on the header/card fill stops reading as a
-  # hover. Bright alone collapses the two on purpose — its warm paper draws
-  # one quiet step, not two — and the roles stay separate for the themes
-  # that keep them apart.
+  # hover.
   surface-subtle:
     $type: color
     $value: "#f5f5f9"

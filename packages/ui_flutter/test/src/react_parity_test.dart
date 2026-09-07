@@ -177,10 +177,16 @@ void main() {
         lessThan(vars.controlSmallSize),
       );
 
+      // The face is the tell of the display cut, not the family: the family
+      // the design asks for is the platform's own, which is null here and
+      // whatever the host set once the styles are merged.
       final DefaultTextStyle style = tester.widget<DefaultTextStyle>(
         find.byType(DefaultTextStyle).last,
       );
-      expect(style.style.fontFamily, vars.labelStrong.fontFamily);
+      expect(
+        style.style.fontFamilyFallback,
+        vars.labelStrong.fontFamilyFallback,
+      );
       expect(style.style.fontWeight, vars.labelMedium.fontWeight);
     });
 
