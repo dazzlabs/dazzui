@@ -78,8 +78,8 @@ index, so a renamed story cannot become an empty canvas.
 
 ## Where to start
 
-`Tokens/Themes` → **Four at once**. A theme here is a value scoped to a subtree
-with `themed(…)` rather than a process-wide mode, so the four cards on that
+`Tokens/Themes` → **All at once**. A theme here is a value scoped to a subtree
+with `themed(…)` rather than a process-wide mode, so the cards on that
 page are the same view rendered four times, each resolving against its own
 variables. `Tokens/Color` → **Palette** is the reminder that a ramp is a role
 ladder rather than a lightness ramp: Bright's ink ladder puts a lighter colour

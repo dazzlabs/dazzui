@@ -1,21 +1,16 @@
 import 'package:dazzui/dazzui.dart';
-import 'package:flutter/material.dart' as material;
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../host.dart' as app;
 
 /// The heading's action slot, which is the one part of this column that is a
 /// layout of its own rather than an arrangement of shared spacing.
 void main() {
   Widget host(Widget child) {
-    return material.MaterialApp(
-      home: Theme(
-        data: ThemeData.studioLight(),
-        child: material.Material(
-          type: material.MaterialType.transparency,
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: SizedBox(width: 400, child: child),
-          ),
-        ),
+    return app.host(
+      Align(
+        alignment: Alignment.topCenter,
+        child: SizedBox(width: 400, child: child),
       ),
     );
   }

@@ -1162,6 +1162,432 @@ const themeVariablesBrightDark = ThemeVariables(
   controlColorTintedContentPressedShade: 200,
 );
 
+/// The `frost-light` counterpart of [themeVariables].
+///
+/// Every token that moves under this theme is named here; the rest fall
+/// through to the default, and the derived getters follow this instance.
+/// DO NOT EDIT - This file is auto-generated
+const themeVariablesFrostLight = ThemeVariables(
+  colorCanvas: Color(0xFFE5EDF0),
+  colorSurface: Color(0xFFFFFFFF),
+  colorSurfaceMuted: Color(0xFFF2F6F8),
+  colorSurfaceSunken: Color(0xFFDBE6EA),
+  colorSurfaceSubtle: Color(0xFFF4F8F9),
+  colorSurfaceInset: Color(0xFFECF2F4),
+  colorSurfaceRaised: Color(0xFFFFFFFF),
+  colorSurfaceChrome: Color(0xFFF2F6F8),
+  colorContent: Color(0xFF0E1F26),
+  colorContentSecondary: Color(0xFF2F4C58),
+  colorContentNav: Color(0xFF3A5B68),
+  colorContentMuted: Color(0xFF456573),
+  colorContentSubtle: Color(0xFF7794A0),
+  colorContentFaint: Color(0xFF9AB1BA),
+  colorBorder: Color(0x140E1F26),
+  colorBorderStrong: Color(0x1F0E1F26),
+  colorBorderMuted: Color(0xFFC6D5DB),
+  colorOnAccent: Color(0xFFFFFFFF),
+  progressGradientFrom: Color(0xFF0F7A92),
+  progressGradientTo: Color(0xFF74C9DC),
+  colorPrimary: Colors.frost,
+);
+
+/// The `frost-dark` counterpart of [themeVariables].
+///
+/// Every token that moves under this theme is named here; the rest fall
+/// through to the default, and the derived getters follow this instance.
+/// DO NOT EDIT - This file is auto-generated
+const themeVariablesFrostDark = ThemeVariables(
+  colorCanvas: Color(0xFF070D11),
+  colorSurface: Color(0xFF0D151A),
+  colorSurfaceMuted: Color(0xFF111A20),
+  colorSurfaceSunken: Color(0xFF23333D),
+  colorSurfaceSubtle: Color(0xFF142027),
+  colorSurfaceInset: Color(0xFF18262E),
+  colorSurfaceRaised: Color(0xFF374B57),
+  colorSurfaceChrome: Color(0xFF111A20),
+  colorContent: Color(0xFFEAF3F7),
+  colorContentSecondary: Color(0xFFBCD0D9),
+  colorContentNav: Color(0xFF93AAB5),
+  colorContentMuted: Color(0xFF93AAB5),
+  colorContentSubtle: Color(0xFF7F99A4),
+  colorContentFaint: Color(0xFF62808D),
+  colorBorder: Color(0x0FFFFFFF),
+  colorBorderStrong: Color(0x1AFFFFFF),
+  colorBorderMuted: Color(0xFF32454F),
+  colorOnAccent: Color(0xFF04171D),
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x66000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x73000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 14,
+      spreadRadius: 0,
+      color: Color(0x73000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 28,
+      spreadRadius: 0,
+      color: Color(0x8C000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 14),
+      blurRadius: 36,
+      spreadRadius: 0,
+      color: Color(0x94000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 16),
+      blurRadius: 40,
+      spreadRadius: 0,
+      color: Color(0x99000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 64,
+      spreadRadius: 0,
+      color: Color(0xB3000000),
+    ),
+  ],
+  focusRingAlpha: 0.5,
+  progressGradientFrom: Color(0xFF1690A9),
+  progressGradientTo: Color(0xFF74C9DC),
+  colorDanger: Colors.redDark,
+  colorPrimary: Colors.frost,
+  colorSuccess: Colors.greenDark,
+  colorWarning: Colors.amberDark,
+  controlColorFilledSurfaceNormalShade: 500,
+  controlColorFilledSurfaceHoveredShade: 600,
+  controlColorFilledSurfacePressedShade: 600,
+  controlColorOutlinedBorder: ColorDescriptor(
+    normalShade: 400,
+    normalOpacity: 1.0,
+    hoveredShade: 300,
+    hoveredOpacity: 1.0,
+    pressedShade: 300,
+    pressedOpacity: 0.9,
+  ),
+  controlColorOutlinedContentNormalShade: 300,
+  controlColorOutlinedContentHoveredShade: 200,
+  controlColorOutlinedContentPressedShade: 200,
+  controlColorPlainContentNormalShade: 300,
+  controlColorPlainContentHoveredShade: 200,
+  controlColorPlainContentPressedShade: 200,
+  controlColorTintedContentNormalShade: 300,
+  controlColorTintedContentHoveredShade: 200,
+  controlColorTintedContentPressedShade: 200,
+);
+
+/// The `graphite-light` counterpart of [themeVariables].
+///
+/// Every token that moves under this theme is named here; the rest fall
+/// through to the default, and the derived getters follow this instance.
+/// DO NOT EDIT - This file is auto-generated
+const themeVariablesGraphiteLight = ThemeVariables(
+  colorCanvas: Color(0xFFE8E8EC),
+  colorSurface: Color(0xFFFFFFFF),
+  colorSurfaceMuted: Color(0xFFF6F6F8),
+  colorSurfaceSunken: Color(0xFFE2E2E7),
+  colorSurfaceSubtle: Color(0xFFF4F4F6),
+  colorSurfaceInset: Color(0xFFEFEFF2),
+  colorSurfaceRaised: Color(0xFFFFFFFF),
+  colorSurfaceChrome: Color(0xFFF6F6F8),
+  colorContent: Color(0xFF17171B),
+  colorContentSecondary: Color(0xFF3D3D45),
+  colorContentNav: Color(0xFF4C4C56),
+  colorContentMuted: Color(0xFF57575F),
+  colorContentSubtle: Color(0xFF8A8A93),
+  colorContentFaint: Color(0xFFA3A3AB),
+  colorBorder: Color(0x1217171B),
+  colorBorderStrong: Color(0x1F17171B),
+  colorBorderMuted: Color(0xFFD5D5DA),
+  colorOnAccent: Color(0xFFFAFAFA),
+  frameWindowRadius: 16,
+  framePopoverRadius: 12,
+  radiusSmall: 7,
+  radiusMedium: 8,
+  radiusLarge: 10,
+  radiusBig: 12,
+  progressGradientFrom: Color(0xFF3F3F46),
+  progressGradientTo: Color(0xFF8F8F99),
+  colorPrimary: Colors.graphite,
+);
+
+/// The `graphite-dark` counterpart of [themeVariables].
+///
+/// Every token that moves under this theme is named here; the rest fall
+/// through to the default, and the derived getters follow this instance.
+/// DO NOT EDIT - This file is auto-generated
+const themeVariablesGraphiteDark = ThemeVariables(
+  colorCanvas: Color(0xFF08080A),
+  colorSurface: Color(0xFF0F0F12),
+  colorSurfaceMuted: Color(0xFF141417),
+  colorSurfaceSunken: Color(0xFF27272C),
+  colorSurfaceSubtle: Color(0xFF17171B),
+  colorSurfaceInset: Color(0xFF1C1C21),
+  colorSurfaceRaised: Color(0xFF3B3B43),
+  colorSurfaceChrome: Color(0xFF141417),
+  colorContent: Color(0xFFF4F4F6),
+  colorContentSecondary: Color(0xFFC9C9D0),
+  colorContentNav: Color(0xFF9D9DA6),
+  colorContentMuted: Color(0xFF9D9DA6),
+  colorContentSubtle: Color(0xFF8A8A93),
+  colorContentFaint: Color(0xFF6A6A73),
+  colorBorder: Color(0x0FFFFFFF),
+  colorBorderStrong: Color(0x1AFFFFFF),
+  colorBorderMuted: Color(0xFF38383F),
+  colorOnAccent: Color(0xFF131316),
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x66000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x73000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 14,
+      spreadRadius: 0,
+      color: Color(0x73000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 28,
+      spreadRadius: 0,
+      color: Color(0x8C000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 14),
+      blurRadius: 36,
+      spreadRadius: 0,
+      color: Color(0x94000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 16),
+      blurRadius: 40,
+      spreadRadius: 0,
+      color: Color(0x99000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 64,
+      spreadRadius: 0,
+      color: Color(0xB3000000),
+    ),
+  ],
+  focusRingAlpha: 0.5,
+  frameWindowRadius: 16,
+  framePopoverRadius: 12,
+  radiusSmall: 7,
+  radiusMedium: 8,
+  radiusLarge: 10,
+  radiusBig: 12,
+  progressGradientFrom: Color(0xFFEDEDF0),
+  progressGradientTo: Color(0xFFA1A1AA),
+  colorDanger: Colors.redDark,
+  colorPrimary: Colors.graphiteDark,
+  colorSuccess: Colors.greenDark,
+  colorWarning: Colors.amberDark,
+  controlColorFilledSurfaceNormalShade: 500,
+  controlColorFilledSurfaceHoveredShade: 600,
+  controlColorFilledSurfacePressedShade: 600,
+  controlColorOutlinedBorder: ColorDescriptor(
+    normalShade: 400,
+    normalOpacity: 1.0,
+    hoveredShade: 300,
+    hoveredOpacity: 1.0,
+    pressedShade: 300,
+    pressedOpacity: 0.9,
+  ),
+  controlColorOutlinedContentNormalShade: 300,
+  controlColorOutlinedContentHoveredShade: 200,
+  controlColorOutlinedContentPressedShade: 200,
+  controlColorPlainContentNormalShade: 300,
+  controlColorPlainContentHoveredShade: 200,
+  controlColorPlainContentPressedShade: 200,
+  controlColorTintedContentNormalShade: 300,
+  controlColorTintedContentHoveredShade: 200,
+  controlColorTintedContentPressedShade: 200,
+);
+
+/// The `ember-light` counterpart of [themeVariables].
+///
+/// Every token that moves under this theme is named here; the rest fall
+/// through to the default, and the derived getters follow this instance.
+/// DO NOT EDIT - This file is auto-generated
+const themeVariablesEmberLight = ThemeVariables(
+  colorCanvas: Color(0xFFEAE2D4),
+  colorSurface: Color(0xFFFFFDF9),
+  colorSurfaceMuted: Color(0xFFF6F1E8),
+  colorSurfaceSunken: Color(0xFFE6DDCD),
+  colorSurfaceSubtle: Color(0xFFF9F4EC),
+  colorSurfaceInset: Color(0xFFF2EBDF),
+  colorSurfaceRaised: Color(0xFFFFFDF9),
+  colorSurfaceChrome: Color(0xFFF6F1E8),
+  colorContent: Color(0xFF241A11),
+  colorContentSecondary: Color(0xFF4B3A2B),
+  colorContentNav: Color(0xFF5B4839),
+  colorContentMuted: Color(0xFF6A5747),
+  colorContentSubtle: Color(0xFF96867A),
+  colorContentFaint: Color(0xFFB0A294),
+  colorBorder: Color(0x14241A11),
+  colorBorderStrong: Color(0x1F241A11),
+  colorBorderMuted: Color(0xFFDDD1C0),
+  colorOnAccent: Color(0xFFFFFAF3),
+  progressGradientFrom: Color(0xFFAD5717),
+  progressGradientTo: Color(0xFFE9A969),
+  colorPrimary: Colors.ember,
+);
+
+/// The `ember-dark` counterpart of [themeVariables].
+///
+/// Every token that moves under this theme is named here; the rest fall
+/// through to the default, and the derived getters follow this instance.
+/// DO NOT EDIT - This file is auto-generated
+const themeVariablesEmberDark = ThemeVariables(
+  colorCanvas: Color(0xFF0C0906),
+  colorSurface: Color(0xFF14100B),
+  colorSurfaceMuted: Color(0xFF191410),
+  colorSurfaceSunken: Color(0xFF2F271E),
+  colorSurfaceSubtle: Color(0xFF1D1813),
+  colorSurfaceInset: Color(0xFF231D16),
+  colorSurfaceRaised: Color(0xFF453A2D),
+  colorSurfaceChrome: Color(0xFF191410),
+  colorContent: Color(0xFFF6EFE4),
+  colorContentSecondary: Color(0xFFD5C6B4),
+  colorContentNav: Color(0xFFAB9886),
+  colorContentMuted: Color(0xFFAB9886),
+  colorContentSubtle: Color(0xFF94806D),
+  colorContentFaint: Color(0xFF71604F),
+  colorBorder: Color(0x0FFFFFFF),
+  colorBorderStrong: Color(0x1AFFFFFF),
+  colorBorderMuted: Color(0xFF443A2D),
+  colorOnAccent: Color(0xFF241206),
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x66000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x73000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 14,
+      spreadRadius: 0,
+      color: Color(0x73000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 28,
+      spreadRadius: 0,
+      color: Color(0x8C000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 14),
+      blurRadius: 36,
+      spreadRadius: 0,
+      color: Color(0x94000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 16),
+      blurRadius: 40,
+      spreadRadius: 0,
+      color: Color(0x99000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 64,
+      spreadRadius: 0,
+      color: Color(0xB3000000),
+    ),
+  ],
+  focusRingAlpha: 0.5,
+  progressGradientFrom: Color(0xFFD9832E),
+  progressGradientTo: Color(0xFFF0B877),
+  colorDanger: Colors.redDark,
+  colorPrimary: Colors.emberDark,
+  colorSuccess: Colors.greenDark,
+  colorWarning: Colors.amberDark,
+  controlColorFilledSurfaceNormalShade: 500,
+  controlColorFilledSurfaceHoveredShade: 600,
+  controlColorFilledSurfacePressedShade: 600,
+  controlColorOutlinedBorder: ColorDescriptor(
+    normalShade: 400,
+    normalOpacity: 1.0,
+    hoveredShade: 300,
+    hoveredOpacity: 1.0,
+    pressedShade: 300,
+    pressedOpacity: 0.9,
+  ),
+  controlColorOutlinedContentNormalShade: 300,
+  controlColorOutlinedContentHoveredShade: 200,
+  controlColorOutlinedContentPressedShade: 200,
+  controlColorPlainContentNormalShade: 300,
+  controlColorPlainContentHoveredShade: 200,
+  controlColorPlainContentPressedShade: 200,
+  controlColorTintedContentNormalShade: 300,
+  controlColorTintedContentHoveredShade: 200,
+  controlColorTintedContentPressedShade: 200,
+);
+
 /// The `studio-dark` counterpart of [themeVariables].
 ///
 /// Every token that moves under this theme is named here; the rest fall

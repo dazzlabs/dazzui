@@ -3,16 +3,25 @@
 # modes carried inline on whichever token varies, because Terrazzo merges
 # token files by replacing a whole token: a second file re-declaring
 # `color.surface` to add a mode replaces the first outright, and a file
-# carrying only `$extensions` is dropped without an error. The four themes:
+# carrying only `$extensions` is dropped without an error. The ten themes,
+# as five families:
 #
-#   default      Studio Light — white cards on a lilac-grey canvas
-#   dark         Studio Dark  — the same skeleton over a near-black canvas
-#   bright       Bright Light — warm paper, ink navy, acid green marker
-#   bright-dark  Bright Dark  — the same pair with the roles swapped
+#   default        Studio Light   — white cards on a lilac-grey canvas
+#   dark           Studio Dark    — the same skeleton over a near-black canvas
+#   bright         Bright Light   — warm paper, ink navy, acid green marker
+#   bright-dark    Bright Dark    — the same pair with the roles swapped
+#   frost          Frost Light    — slate-grey paper, teal accent
+#   frost-dark     Frost Dark     — that teal over a deep blue-slate canvas
+#   graphite       Graphite Light — monochrome: the accent is the ink itself
+#   graphite-dark  Graphite Dark  — the same, inverted to a near-white accent
+#   ember          Ember Light    — warm paper, copper accent
+#   ember-dark     Ember Dark     — charcoal, with that copper lifted to amber
 #
-# The modes compose rather than repeat: `bright` is selected by both Bright
-# themes and `dark` by both dark ones (order in terrazzo.config.mjs decides
-# ties), so `bright-dark` carries only what is true of that corner alone.
+# The modes compose rather than repeat: a family mode is selected by both of
+# its themes and `dark` by every dark one (order in terrazzo.config.mjs
+# decides ties), so a `<family>-dark` mode carries only what is true of that
+# corner alone — and Frost, whose teal reads correctly in both directions,
+# needs no such mode for its ramp at all.
 color:
   primary:
     "50":
@@ -21,66 +30,121 @@ color:
         mode:
           bright: "{base.color.ink.50}"
           bright-dark: "{base.color.acid.50}"
+          frost: "{base.color.frost.50}"
+          graphite: "{base.color.graphite.50}"
+          graphite-dark: "{base.color.graphite-dark.50}"
+          ember: "{base.color.ember.50}"
+          ember-dark: "{base.color.ember-dark.50}"
     "100":
       $value: "{base.color.brand.100}"
       $extensions:
         mode:
           bright: "{base.color.ink.100}"
           bright-dark: "{base.color.acid.100}"
+          frost: "{base.color.frost.100}"
+          graphite: "{base.color.graphite.100}"
+          graphite-dark: "{base.color.graphite-dark.100}"
+          ember: "{base.color.ember.100}"
+          ember-dark: "{base.color.ember-dark.100}"
     "200":
       $value: "{base.color.brand.200}"
       $extensions:
         mode:
           bright: "{base.color.ink.200}"
           bright-dark: "{base.color.acid.200}"
+          frost: "{base.color.frost.200}"
+          graphite: "{base.color.graphite.200}"
+          graphite-dark: "{base.color.graphite-dark.200}"
+          ember: "{base.color.ember.200}"
+          ember-dark: "{base.color.ember-dark.200}"
     "300":
       $value: "{base.color.brand.300}"
       $extensions:
         mode:
           bright: "{base.color.ink.300}"
           bright-dark: "{base.color.acid.300}"
+          frost: "{base.color.frost.300}"
+          graphite: "{base.color.graphite.300}"
+          graphite-dark: "{base.color.graphite-dark.300}"
+          ember: "{base.color.ember.300}"
+          ember-dark: "{base.color.ember-dark.300}"
     "400":
       $value: "{base.color.brand.400}"
       $extensions:
         mode:
           bright: "{base.color.ink.400}"
           bright-dark: "{base.color.acid.400}"
+          frost: "{base.color.frost.400}"
+          graphite: "{base.color.graphite.400}"
+          graphite-dark: "{base.color.graphite-dark.400}"
+          ember: "{base.color.ember.400}"
+          ember-dark: "{base.color.ember-dark.400}"
     "500":
       $value: "{base.color.brand.500}"
       $extensions:
         mode:
           bright: "{base.color.ink.500}"
           bright-dark: "{base.color.acid.500}"
+          frost: "{base.color.frost.500}"
+          graphite: "{base.color.graphite.500}"
+          graphite-dark: "{base.color.graphite-dark.500}"
+          ember: "{base.color.ember.500}"
+          ember-dark: "{base.color.ember-dark.500}"
     "600":
       $value: "{base.color.brand.600}"
       $extensions:
         mode:
           bright: "{base.color.ink.600}"
           bright-dark: "{base.color.acid.600}"
+          frost: "{base.color.frost.600}"
+          graphite: "{base.color.graphite.600}"
+          graphite-dark: "{base.color.graphite-dark.600}"
+          ember: "{base.color.ember.600}"
+          ember-dark: "{base.color.ember-dark.600}"
     "700":
       $value: "{base.color.brand.700}"
       $extensions:
         mode:
           bright: "{base.color.ink.700}"
           bright-dark: "{base.color.acid.700}"
+          frost: "{base.color.frost.700}"
+          graphite: "{base.color.graphite.700}"
+          graphite-dark: "{base.color.graphite-dark.700}"
+          ember: "{base.color.ember.700}"
+          ember-dark: "{base.color.ember-dark.700}"
     "800":
       $value: "{base.color.brand.800}"
       $extensions:
         mode:
           bright: "{base.color.ink.800}"
           bright-dark: "{base.color.acid.800}"
+          frost: "{base.color.frost.800}"
+          graphite: "{base.color.graphite.800}"
+          graphite-dark: "{base.color.graphite-dark.800}"
+          ember: "{base.color.ember.800}"
+          ember-dark: "{base.color.ember-dark.800}"
     "900":
       $value: "{base.color.brand.900}"
       $extensions:
         mode:
           bright: "{base.color.ink.900}"
           bright-dark: "{base.color.acid.900}"
+          frost: "{base.color.frost.900}"
+          graphite: "{base.color.graphite.900}"
+          graphite-dark: "{base.color.graphite-dark.900}"
+          ember: "{base.color.ember.900}"
+          ember-dark: "{base.color.ember-dark.900}"
     "950":
       $value: "{base.color.brand.950}"
       $extensions:
         mode:
           bright: "{base.color.ink.950}"
           bright-dark: "{base.color.acid.950}"
+          frost: "{base.color.frost.950}"
+          graphite: "{base.color.graphite.950}"
+          graphite-dark: "{base.color.graphite-dark.950}"
+          ember: "{base.color.ember.950}"
+          ember-dark: "{base.color.ember-dark.950}"
   neutral:
     "50":
       $value: "{base.color.neutral.50}"
@@ -313,6 +377,12 @@ color:
         dark: "#0a0b10"
         bright: "#e6eade"
         bright-dark: "#060b12"
+        frost: "#e5edf0"
+        frost-dark: "#070d11"
+        graphite: "#e8e8ec"
+        graphite-dark: "#08080a"
+        ember: "#eae2d4"
+        ember-dark: "#0c0906"
   # The paper: windows, popovers, the raised panel inside a tray.
   surface:
     $type: color
@@ -322,6 +392,12 @@ color:
         dark: "#0d0f14"
         bright: "#fbfaf7"
         bright-dark: "#0c141e"
+        frost: "#ffffff"
+        frost-dark: "#0d151a"
+        graphite: "#ffffff"
+        graphite-dark: "#0f0f12"
+        ember: "#fffdf9"
+        ember-dark: "#14100b"
   # One step back from the paper: cards, sidebars, toolbars, table headers,
   # and the wash a neutral control takes under the pointer.
   #
@@ -341,6 +417,12 @@ color:
         dark: "#12141a"
         bright: "#f4f3ee"
         bright-dark: "#0a111a"
+        frost: "#f2f6f8"
+        frost-dark: "#111a20"
+        graphite: "#f6f6f8"
+        graphite-dark: "#141417"
+        ember: "#f6f1e8"
+        ember-dark: "#191410"
   # One step into the paper: the groove a progress bar, a segmented control
   # or a switch is cut into. Distinct from `surface-muted` because a track
   # that matches the card it sits on stops reading as a track.
@@ -352,6 +434,12 @@ color:
         dark: "#262a34"
         bright: "#e5e3db"
         bright-dark: "#1c2734"
+        frost: "#dbe6ea"
+        frost-dark: "#23333d"
+        graphite: "#e2e2e7"
+        graphite-dark: "#27272c"
+        ember: "#e6ddcd"
+        ember-dark: "#2f271e"
   # The quietest wash there is: what a menu item, a toolbar glyph or a table
   # row takes under the pointer. One step shy of `surface-muted`, because a
   # hover that lands exactly on the header/card fill stops reading as a
@@ -364,6 +452,12 @@ color:
         dark: "#151821"
         bright: "#f6f5f1"
         bright-dark: "#101923"
+        frost: "#f4f8f9"
+        frost-dark: "#142027"
+        graphite: "#f4f4f6"
+        graphite-dark: "#17171b"
+        ember: "#f9f4ec"
+        ember-dark: "#1d1813"
   # One step further in than `surface-muted` but shallower than the groove:
   # the well a segmented control's track or a resting pill-tab is cut into.
   # Without it those fills borrow a neighbour — the groove reads a full step
@@ -376,6 +470,12 @@ color:
         dark: "#1b1e26"
         bright: "#f0efe9"
         bright-dark: "#16202c"
+        frost: "#ecf2f4"
+        frost-dark: "#18262e"
+        graphite: "#efeff2"
+        graphite-dark: "#1c1c21"
+        ember: "#f2ebdf"
+        ember-dark: "#231d16"
   # The lifted thumb inside a groove — the selected segment, a switch knob.
   # Always lighter than the track it rides in, which on a dark canvas means
   # stepping up rather than down.
@@ -387,6 +487,12 @@ color:
         dark: "#3a3f4d"
         bright: "#ffffff"
         bright-dark: "#2a3644"
+        frost: "#ffffff"
+        frost-dark: "#374b57"
+        graphite: "#ffffff"
+        graphite-dark: "#3b3b43"
+        ember: "#fffdf9"
+        ember-dark: "#453a2d"
   # The bars a window is built out of: a dialog's footer, a table's header,
   # a titlebar. Studio takes the strip one step back from the paper, the
   # same step a card takes, which is why it looks like `surface-muted` and
@@ -401,6 +507,12 @@ color:
         dark: "#12141a"
         bright: "#ffffff"
         bright-dark: "#111a26"
+        frost: "#f2f6f8"
+        frost-dark: "#111a20"
+        graphite: "#f6f6f8"
+        graphite-dark: "#141417"
+        ember: "#f6f1e8"
+        ember-dark: "#191410"
   # The ink ramp, cut to three steps. The design carries eight; the extra
   # five are all one-off scene labels, and a shared vocabulary that offers
   # eight near-identical greys only invites each component to pick a
@@ -417,6 +529,12 @@ color:
         dark: "#f2f3fa"
         bright: "#111c2e"
         bright-dark: "#f2f4ef"
+        frost: "#0e1f26"
+        frost-dark: "#eaf3f7"
+        graphite: "#17171b"
+        graphite-dark: "#f4f4f6"
+        ember: "#241a11"
+        ember-dark: "#f6efe4"
   # Between full ink and the muted step: idle navigation rows and the
   # unselected half of a segmented control — text that must stay clearly
   # legible while conceding the room to whatever is selected.
@@ -428,6 +546,12 @@ color:
         dark: "#c3c8dc"
         bright: "#111c2ec7"
         bright-dark: "#f2f4efc7"
+        frost: "#2f4c58"
+        frost-dark: "#bcd0d9"
+        graphite: "#3d3d45"
+        graphite-dark: "#c9c9d0"
+        ember: "#4b3a2b"
+        ember-dark: "#d5c6b4"
   # Named for where it is used rather than for a rung on the ladder, because
   # that is what it is: the ink a navigation row is set in while it is not the
   # current one. It sits between `content-secondary` and `content-muted` and
@@ -446,6 +570,12 @@ color:
         dark: "#9aa1bb"
         bright: "#111c2eb3"
         bright-dark: "#f2f4efb3"
+        frost: "#3a5b68"
+        frost-dark: "#93aab5"
+        graphite: "#4c4c56"
+        graphite-dark: "#9d9da6"
+        ember: "#5b4839"
+        ember-dark: "#ab9886"
   content-muted:
     $type: color
     $value: "#565b78"
@@ -454,6 +584,12 @@ color:
         dark: "#9aa1bb"
         bright: "#111c2ea8"
         bright-dark: "#f2f4efa8"
+        frost: "#456573"
+        frost-dark: "#93aab5"
+        graphite: "#57575f"
+        graphite-dark: "#9d9da6"
+        ember: "#6a5747"
+        ember-dark: "#ab9886"
   # The labelling step: section labels, field captions, hints, empty-state
   # lines. Quieter than `content-muted` — a caption printed in the muted step
   # competes with the value it captions.
@@ -465,6 +601,12 @@ color:
         dark: "#8b93b0"
         bright: "#111c2e73"
         bright-dark: "#f2f4ef73"
+        frost: "#7794a0"
+        frost-dark: "#7f99a4"
+        graphite: "#8a8a93"
+        graphite-dark: "#8a8a93"
+        ember: "#96867a"
+        ember-dark: "#94806d"
   content-faint:
     $type: color
     $value: "#a2a7bd"
@@ -473,6 +615,12 @@ color:
         dark: "#6a7090"
         bright: "#111c2e61"
         bright-dark: "#f2f4ef61"
+        frost: "#9ab1ba"
+        frost-dark: "#62808d"
+        graphite: "#a3a3ab"
+        graphite-dark: "#6a6a73"
+        ember: "#b0a294"
+        ember-dark: "#71604f"
   # Separators are an alpha of the ink, not a grey, so one hairline reads the
   # same over a card, a sidebar and a popover without a value per surface.
   border:
@@ -483,6 +631,12 @@ color:
         dark: "#ffffff0f"
         bright: "#111c2e14"
         bright-dark: "#f2f4ef14"
+        frost: "#0e1f2614"
+        frost-dark: "#ffffff0f"
+        graphite: "#17171b12"
+        graphite-dark: "#ffffff0f"
+        ember: "#241a1114"
+        ember-dark: "#ffffff0f"
   # The heavier hairline a floating surface is edged with — dialog, menu,
   # toast. A popover cut with the inline separator weight stops separating
   # from what it floats over.
@@ -494,6 +648,12 @@ color:
         dark: "#ffffff1a"
         bright: "#111c2e1f"
         bright-dark: "#f2f4ef24"
+        frost: "#0e1f261f"
+        frost-dark: "#ffffff1a"
+        graphite: "#17171b1f"
+        graphite-dark: "#ffffff1a"
+        ember: "#241a111f"
+        ember-dark: "#ffffff1a"
   # The drawn outline of an unselected checkbox, radio or step marker, and
   # the rule under a divider. Heavier than a hairline on purpose: this one is
   # a control's edge rather than a separation between regions.
@@ -505,6 +665,12 @@ color:
         dark: "#363c4d"
         bright: "#111c2e40"
         bright-dark: "#35414f"
+        frost: "#c6d5db"
+        frost-dark: "#32454f"
+        graphite: "#d5d5da"
+        graphite-dark: "#38383f"
+        ember: "#ddd1c0"
+        ember-dark: "#443a2d"
   # What is printed on a filled accent control. White on the Studio violet;
   # in Bright the primary action is ink navy printed with acid green, and
   # Bright Dark is that exact pair inverted. This is a role rather than a
@@ -517,6 +683,12 @@ color:
       mode:
         bright: "#d6ff3f"
         bright-dark: "#111c2e"
+        frost: "#ffffff"
+        frost-dark: "#04171d"
+        graphite: "#fafafa"
+        graphite-dark: "#131316"
+        ember: "#fffaf3"
+        ember-dark: "#241206"
 control:
   color:
     # The interactive recipes. Three reading rules:

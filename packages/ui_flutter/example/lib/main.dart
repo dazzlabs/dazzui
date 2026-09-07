@@ -1,6 +1,6 @@
 import 'package:dazzui/dazzui.dart';
-import 'package:flutter/material.dart' as material;
 
+import 'host.dart';
 import 'playground_theme.dart';
 import 'storybook/navigator.dart';
 import 'storybook/story.dart';
@@ -15,12 +15,9 @@ class PlaygroundApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // MaterialApp supplies the plumbing (Directionality, Overlay, text
-    // editing); everything visible is drawn by the design's own Theme below.
-    return material.MaterialApp(
+    return const Host(
       title: 'DazzUI Playground',
-      debugShowCheckedModeBanner: false,
-      home: const PlaygroundWindow(),
+      home: PlaygroundWindow(),
     );
   }
 }
@@ -30,7 +27,7 @@ class PlaygroundApp extends StatelessWidget {
 ///
 /// The theme is applied with the package's own [Theme] widget on one subtree
 /// rather than to the process, which is the point worth demonstrating — themes
-/// are per-subtree here, so the four can sit on screen at once (see
+/// are per-subtree here, so all ten can sit on screen at once (see
 /// `Tokens/Themes`).
 class PlaygroundWindow extends StatefulWidget {
   const PlaygroundWindow({super.key});
@@ -49,33 +46,30 @@ class _PlaygroundWindowState extends State<PlaygroundWindow> {
 
     return Theme(
       data: data,
-      child: material.Material(
-        type: material.MaterialType.transparency,
-        child: ColoredBox(
-          color: data.vars.colorCanvas,
-          child: Column(
-            children: [
-              _Toolbar(
-                theme: _theme,
-                onThemeChanged: (theme) => setState(() => _theme = theme),
+      child: ColoredBox(
+        color: data.vars.colorCanvas,
+        child: Column(
+          children: [
+            _Toolbar(
+              theme: _theme,
+              onThemeChanged: (theme) => setState(() => _theme = theme),
+            ),
+            const Divider(height: 1),
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  StoryNavigator(
+                    groups: StoryIndex.groups,
+                    selection: _selection,
+                    onSelected: (ref) => setState(() => _selection = ref),
+                  ),
+                  const VerticalDivider(width: 1),
+                  Expanded(child: _Canvas(selection: _selection)),
+                ],
               ),
-              const Divider(height: 1),
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    StoryNavigator(
-                      groups: StoryIndex.groups,
-                      selection: _selection,
-                      onSelected: (ref) => setState(() => _selection = ref),
-                    ),
-                    const VerticalDivider(width: 1),
-                    Expanded(child: _Canvas(selection: _selection)),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -109,12 +103,27 @@ class _Toolbar extends StatelessWidget {
             child: Text('Flutter'),
           ),
           const Spacer(),
-          SegmentedControl<PlaygroundTheme>(
-            value: theme,
-            onChanged: onThemeChanged,
+          // A family and a brightness rather than ten names: that is the
+          // shape of the graph — a family is a mode, `dark` is a mode — and
+          // ten names would not fit a titlebar in any case.
+          SegmentedControl<PlaygroundFamily>(
+            value: theme.family,
+            onChanged: (family) => onThemeChanged(
+              PlaygroundTheme.of(family, dark: theme.isDark),
+            ),
             items: [
-              for (final candidate in PlaygroundTheme.values)
+              for (final candidate in PlaygroundFamily.values)
                 SegmentedItem(value: candidate, label: candidate.title),
+            ],
+          ),
+          SegmentedControl<bool>(
+            value: theme.isDark,
+            onChanged: (dark) => onThemeChanged(
+              PlaygroundTheme.of(theme.family, dark: dark),
+            ),
+            items: const [
+              SegmentedItem(value: false, label: 'Light'),
+              SegmentedItem(value: true, label: 'Dark'),
             ],
           ),
         ],

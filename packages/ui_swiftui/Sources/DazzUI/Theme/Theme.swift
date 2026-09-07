@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The four themes, as they are named in `terrazzo.config.mjs`.
+/// The ten themes, as they are named in `terrazzo.config.mjs`.
 ///
 /// Studio Light is the default and carries no attribute in the React package
 /// at all — selecting it means removing `data-theme` rather than writing
@@ -15,6 +15,19 @@ public enum ThemeName: String, CaseIterable, Sendable {
   case brightLight = "bright-light"
   /// Ink-navy canvas, with acid green as the accent itself.
   case brightDark = "bright-dark"
+  /// Slate-grey paper with a teal accent — cool, and not violet.
+  case frostLight = "frost-light"
+  /// The same teal over a deep blue-slate canvas.
+  case frostDark = "frost-dark"
+  /// Monochrome: the accent is the ink, so only the status hues carry
+  /// colour. The one family that also tightens the corners.
+  case graphiteLight = "graphite-light"
+  /// The same, inverted — a near-white accent on near-black.
+  case graphiteDark = "graphite-dark"
+  /// Warm paper with a copper accent.
+  case emberLight = "ember-light"
+  /// A charcoal canvas with that copper lifted to an amber.
+  case emberDark = "ember-dark"
 
   public var variables: ThemeVariables {
     switch self {
@@ -22,13 +35,21 @@ public enum ThemeName: String, CaseIterable, Sendable {
     case .studioDark: return .studioDark
     case .brightLight: return .brightLight
     case .brightDark: return .brightDark
+    case .frostLight: return .frostLight
+    case .frostDark: return .frostDark
+    case .graphiteLight: return .graphiteLight
+    case .graphiteDark: return .graphiteDark
+    case .emberLight: return .emberLight
+    case .emberDark: return .emberDark
     }
   }
 
   public var colorScheme: ColorScheme {
     switch self {
-    case .studioLight, .brightLight: return .light
-    case .studioDark, .brightDark: return .dark
+    case .studioLight, .brightLight, .frostLight, .graphiteLight, .emberLight:
+      return .light
+    case .studioDark, .brightDark, .frostDark, .graphiteDark, .emberDark:
+      return .dark
     }
   }
 }

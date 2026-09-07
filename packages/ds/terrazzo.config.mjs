@@ -7,19 +7,27 @@ import gpuiPlugin from './plugins/gpui.mjs'
 import swiftUIPlugin from './plugins/swiftui.mjs'
 
 /**
- * The four themes, as three modes over one default.
+ * The ten themes, as five families over one default.
  *
  * Studio Light is the default and needs no mode: it is what `:root` holds.
- * The other three are selected by `data-theme`, and the modes compose rather
- * than repeat — `bright` is selected by both Bright themes and `dark` by both
- * dark ones, so a value shared along either axis is written once and
- * `bright-dark` carries only what is true of that corner alone.
+ * Every other theme is selected by `data-theme`, and the modes compose rather
+ * than repeat — a family mode is selected by both of its themes and `dark` by
+ * every dark one, so a value shared along either axis is written once and a
+ * `<family>-dark` mode carries only what is true of that corner alone.
  *
  * The order is load bearing. All of these are single attribute selectors, so
- * they have equal specificity and the later block wins: `bright` first for
- * the pill corners and the ink accent, then `dark` so Bright Dark takes the
- * dark surfaces and the dark recipe shades rather than Bright Light's warm
- * paper, then `bright-dark` for the acid accent that is its alone.
+ * they have equal specificity and the later block wins: the family modes
+ * first, for the corners and the accent each family re-points; then `dark`,
+ * so a dark theme takes the dark surfaces, the lifted status ramps and the
+ * dark recipe shades rather than its family's light paper; then the four
+ * dark corners, each for the accent that is its alone.
+ *
+ * Frost is the one family whose accent is written once: a teal reads
+ * correctly in both directions, so `frost` carries the whole ramp and
+ * `frost-dark` re-points only surfaces and ink, where the other three each
+ * invert or lift their ramp in the dark. Graphite is the only family that
+ * moves geometry — `graphite` carries the tighter corner ladder for both of
+ * its themes.
  *
  * The selector is an attribute rather than a media query because the theme is
  * a choice the app makes, not one the OS makes for it; a host that wants to
@@ -32,13 +40,52 @@ const modeSelectors = [
     scheme: 'light',
   },
   {
+    mode: 'frost',
+    selectors: ["[data-theme='frost-light']", "[data-theme='frost-dark']"],
+    scheme: 'light',
+  },
+  {
+    mode: 'graphite',
+    selectors: [
+      "[data-theme='graphite-light']",
+      "[data-theme='graphite-dark']",
+    ],
+    scheme: 'light',
+  },
+  {
+    mode: 'ember',
+    selectors: ["[data-theme='ember-light']", "[data-theme='ember-dark']"],
+    scheme: 'light',
+  },
+  {
     mode: 'dark',
-    selectors: ["[data-theme='studio-dark']", "[data-theme='bright-dark']"],
+    selectors: [
+      "[data-theme='studio-dark']",
+      "[data-theme='bright-dark']",
+      "[data-theme='frost-dark']",
+      "[data-theme='graphite-dark']",
+      "[data-theme='ember-dark']",
+    ],
     scheme: 'dark',
   },
   {
     mode: 'bright-dark',
     selectors: ["[data-theme='bright-dark']"],
+    scheme: 'dark',
+  },
+  {
+    mode: 'frost-dark',
+    selectors: ["[data-theme='frost-dark']"],
+    scheme: 'dark',
+  },
+  {
+    mode: 'graphite-dark',
+    selectors: ["[data-theme='graphite-dark']"],
+    scheme: 'dark',
+  },
+  {
+    mode: 'ember-dark',
+    selectors: ["[data-theme='ember-dark']"],
     scheme: 'dark',
   },
 ]

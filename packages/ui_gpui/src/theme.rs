@@ -8,7 +8,7 @@ use gpui::{
 
 use crate::generated::theme_variables::{self, ThemeVariables};
 
-/// The four themes, as they are named in `terrazzo.config.mjs`.
+/// The ten themes, as they are named in `terrazzo.config.mjs`.
 ///
 /// Studio Light is the default and carries no attribute in the React package
 /// at all — selecting it means removing `data-theme` rather than writing
@@ -25,14 +25,33 @@ pub enum ThemeName {
     BrightLight,
     /// Ink-navy canvas, with acid green as the accent itself.
     BrightDark,
+    /// Slate-grey paper with a teal accent — cool, and not violet.
+    FrostLight,
+    /// The same teal over a deep blue-slate canvas.
+    FrostDark,
+    /// Monochrome: the accent is the ink, so only status hues carry colour.
+    /// The one family that also tightens the corners.
+    GraphiteLight,
+    /// The same, inverted — a near-white accent on near-black.
+    GraphiteDark,
+    /// Warm paper with a copper accent.
+    EmberLight,
+    /// Charcoal canvas with the same copper lifted to an amber.
+    EmberDark,
 }
 
 impl ThemeName {
-    pub const ALL: [ThemeName; 4] = [
+    pub const ALL: [ThemeName; 10] = [
         ThemeName::StudioLight,
         ThemeName::StudioDark,
         ThemeName::BrightLight,
         ThemeName::BrightDark,
+        ThemeName::FrostLight,
+        ThemeName::FrostDark,
+        ThemeName::GraphiteLight,
+        ThemeName::GraphiteDark,
+        ThemeName::EmberLight,
+        ThemeName::EmberDark,
     ];
 
     /// What `data-theme` would carry on the web.
@@ -42,6 +61,12 @@ impl ThemeName {
             ThemeName::StudioDark => "studio-dark",
             ThemeName::BrightLight => "bright-light",
             ThemeName::BrightDark => "bright-dark",
+            ThemeName::FrostLight => "frost-light",
+            ThemeName::FrostDark => "frost-dark",
+            ThemeName::GraphiteLight => "graphite-light",
+            ThemeName::GraphiteDark => "graphite-dark",
+            ThemeName::EmberLight => "ember-light",
+            ThemeName::EmberDark => "ember-dark",
         }
     }
 
@@ -52,12 +77,25 @@ impl ThemeName {
             ThemeName::StudioDark => "Studio Dark",
             ThemeName::BrightLight => "Bright Light",
             ThemeName::BrightDark => "Bright Dark",
+            ThemeName::FrostLight => "Frost Light",
+            ThemeName::FrostDark => "Frost Dark",
+            ThemeName::GraphiteLight => "Graphite Light",
+            ThemeName::GraphiteDark => "Graphite Dark",
+            ThemeName::EmberLight => "Ember Light",
+            ThemeName::EmberDark => "Ember Dark",
         }
     }
 
-    /// Is this one of the two drawn on a dark canvas?
+    /// Is this one of the five drawn on a dark canvas?
     pub const fn is_dark(self) -> bool {
-        matches!(self, ThemeName::StudioDark | ThemeName::BrightDark)
+        matches!(
+            self,
+            ThemeName::StudioDark
+                | ThemeName::BrightDark
+                | ThemeName::FrostDark
+                | ThemeName::GraphiteDark
+                | ThemeName::EmberDark
+        )
     }
 
     /// The token set this theme resolved to.
@@ -67,6 +105,12 @@ impl ThemeName {
             ThemeName::StudioDark => &theme_variables::STUDIO_DARK,
             ThemeName::BrightLight => &theme_variables::BRIGHT_LIGHT,
             ThemeName::BrightDark => &theme_variables::BRIGHT_DARK,
+            ThemeName::FrostLight => &theme_variables::FROST_LIGHT,
+            ThemeName::FrostDark => &theme_variables::FROST_DARK,
+            ThemeName::GraphiteLight => &theme_variables::GRAPHITE_LIGHT,
+            ThemeName::GraphiteDark => &theme_variables::GRAPHITE_DARK,
+            ThemeName::EmberLight => &theme_variables::EMBER_LIGHT,
+            ThemeName::EmberDark => &theme_variables::EMBER_DARK,
         }
     }
 }

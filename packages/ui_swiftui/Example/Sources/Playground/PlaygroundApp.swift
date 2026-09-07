@@ -34,7 +34,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 ///
 /// The theme is applied with `.theme(_:)` on one subtree rather than to the
 /// process, which is the point worth demonstrating — themes are per-subtree
-/// here, so the four can sit on screen at once (see `Tokens/Themes`).
+/// here, so all ten can sit on screen at once (see `Tokens/Themes`).
 struct PlaygroundWindow: View {
   @State private var selection = StoryIndex.first
   @State private var theme: ThemeName = .studioLight
@@ -81,12 +81,25 @@ private struct Toolbar: View {
 
       Spacer()
 
+      // A family and a brightness rather than ten names: that is the shape
+      // of the graph — a family is a mode, `dark` is a mode — and ten names
+      // would not fit a titlebar in any case.
       SegmentedControl(
-        items: ThemeName.allCases.map {
+        items: ThemeFamily.allCases.map {
           SegmentedItem(value: $0, label: $0.title)
         },
-        value: theme,
-        onValueChange: { theme = $0 },
+        value: theme.family,
+        onValueChange: { theme = ThemeName(family: $0, dark: theme.isDark) },
+        size: .small
+      )
+
+      SegmentedControl(
+        items: [
+          SegmentedItem(value: false, label: "Light"),
+          SegmentedItem(value: true, label: "Dark"),
+        ],
+        value: theme.isDark,
+        onValueChange: { theme = ThemeName(family: theme.family, dark: $0) },
         size: .small
       )
     }
@@ -180,13 +193,48 @@ private struct Breadcrumb: View {
   }
 }
 
+/// The five families, in the order the toolbar lists them — a family is a
+/// mode in `terrazzo.config.mjs`, and the prefix of a theme's raw value.
+enum ThemeFamily: String, CaseIterable, Hashable {
+  case studio, bright, frost, graphite, ember
+
+  var title: String {
+    switch self {
+    case .studio: return "Studio"
+    case .bright: return "Bright"
+    case .frost: return "Frost"
+    case .graphite: return "Graphite"
+    case .ember: return "Ember"
+    }
+  }
+}
+
 extension ThemeName {
+  var family: ThemeFamily {
+    ThemeFamily.allCases.first { rawValue.hasPrefix($0.rawValue) } ?? .studio
+  }
+
+  var isDark: Bool { colorScheme == .dark }
+
+  /// The one theme with this family and this brightness.
+  init(family: ThemeFamily, dark: Bool) {
+    self =
+      ThemeName.allCases.first { $0.family == family && $0.isDark == dark }
+      ?? .studioLight
+  }
+
   var title: String {
     switch self {
     case .studioLight: return "Studio"
     case .studioDark: return "Studio Dark"
     case .brightLight: return "Bright"
     case .brightDark: return "Bright Dark"
+    case .frostLight: return "Frost"
+    case .frostDark: return "Frost Dark"
+    case .graphiteLight: return "Graphite"
+    case .graphiteDark: return "Graphite Dark"
+    case .emberLight: return "Ember"
+    case .emberDark: return "Ember Dark"
     }
   }
 }

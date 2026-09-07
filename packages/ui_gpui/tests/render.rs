@@ -723,7 +723,7 @@ impl Render for Chooser {
     }
 }
 
-/// Four themes on one screen, which is the claim the Themes page makes.
+/// Every theme on one screen, which is the claim the Themes page makes.
 ///
 /// A theme is a value scoped to a subtree rather than a mode the process is
 /// in, so a component resolves against whichever one wraps it — including
@@ -738,19 +738,15 @@ fn a_theme_scopes_to_its_own_subtree(cx: &mut TestAppContext) {
     });
     cx.run_until_parked();
 
-    assert_eq!(
-        *seen.borrow(),
-        vec![
-            // The window's own theme, then one card per theme, then the
-            // window's again — the stack unwinds where each card ends.
-            ThemeName::StudioDark,
-            ThemeName::StudioLight,
-            ThemeName::StudioDark,
-            ThemeName::BrightLight,
-            ThemeName::BrightDark,
-            ThemeName::StudioDark,
-        ]
-    );
+    // The window's own theme, then one card per theme, then the window's
+    // again — the stack unwinds where each card ends. Composed from `ALL`
+    // rather than written out, so a theme added to the graph is covered here
+    // the moment it reaches the enum.
+    let mut expected = vec![ThemeName::StudioDark];
+    expected.extend(ThemeName::ALL);
+    expected.push(ThemeName::StudioDark);
+
+    assert_eq!(*seen.borrow(), expected);
 }
 
 /// A view that renders a probe outside the cards and one inside each.

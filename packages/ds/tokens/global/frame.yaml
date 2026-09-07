@@ -10,6 +10,7 @@ frame:
       $extensions:
         mode:
           bright: "{base.corner.xl}"
+          graphite: "{base.corner.xl}"
   popover:
     radius:
       $type: dimension
@@ -17,6 +18,7 @@ frame:
       $extensions:
         mode:
           bright: "{base.corner.xl-bright}"
+          graphite: "{base.corner.lg}"
   titlebar:
     size:
       $type: dimension

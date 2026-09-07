@@ -2,7 +2,7 @@
 
 The DazzUI design system for [GPUI] — the platform sibling of
 `packages/ui_react`, `packages/ui_flutter` and `packages/ui_swiftui`. Same
-tokens, same four themes, same components.
+tokens, same ten themes, same components.
 
 **`packages/ui_react` is the standard.** Every name, prop and metric here is
 read off the React source; where the two disagree, the React file wins.

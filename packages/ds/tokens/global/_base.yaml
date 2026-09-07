@@ -311,6 +311,141 @@ base:
         $value: "#024a70"
       "950":
         $value: "#052f4a"
+    # Frost's accent, and the first cool ramp here that is not violet. It is
+    # an ordinary lightness ramp — 600 fills, 700 prints, 500/300 are those
+    # two roles on a dark canvas — because a teal reads correctly in both
+    # directions and needs no second ladder the way the two below do.
+    frost:
+      "50":
+        $value: "#eef8fa"
+      "100":
+        $value: "#d7eff4"
+      "200":
+        $value: "#b2e0ea"
+      "300":
+        $value: "#74c9dc"
+      "400":
+        $value: "#35abc4"
+      "500":
+        $value: "#1690a9"
+      "600":
+        $value: "#0f7a92"
+      "700":
+        $value: "#0c6277"
+      "800":
+        $value: "#0b4f61"
+      "900":
+        $value: "#0d3c4a"
+      "950":
+        $value: "#08262f"
+    # Graphite is the monochrome theme: its accent is the ink itself, so the
+    # ramp is a neutral with a trace of blue in it rather than a hue. Only
+    # the status hues stay coloured, which is the whole point of the theme —
+    # a red, a green or an amber is the only colour on the screen.
+    graphite:
+      "50":
+        $value: "#f6f6f7"
+      "100":
+        $value: "#ededef"
+      "200":
+        $value: "#e2e2e6"
+      "300":
+        $value: "#c9c9cf"
+      "400":
+        $value: "#8f8f99"
+      "500":
+        $value: "#52525b"
+      "600":
+        $value: "#3f3f46"
+      "700":
+        $value: "#2b2b31"
+      "800":
+        $value: "#1c1c21"
+      "900":
+        $value: "#131317"
+      "950":
+        $value: "#0b0b0e"
+    # And its dark companion, inverted rather than lifted: a near-white fill
+    # printed with ink. It has to be a ramp of its own, exactly as Bright
+    # carries `acid` beside `ink` — a wash is always an alpha of 600, so a
+    # dark theme needs a 600 that is light, and the one above cannot be
+    # both. Read 500/300/400 for the fill, the tinted text and the outline.
+    graphite-dark:
+      "50":
+        $value: "#1c1c20"
+      "100":
+        $value: "#26262b"
+      "200":
+        $value: "#fafafa"
+      "300":
+        $value: "#e6e6ea"
+      "400":
+        $value: "#a1a1aa"
+      "500":
+        $value: "#ededf0"
+      "600":
+        $value: "#d4d4d8"
+      "700":
+        $value: "#a1a1aa"
+      "800":
+        $value: "#71717a"
+      "900":
+        $value: "#52525b"
+      "950":
+        $value: "#3f3f46"
+    # Ember's copper, over warm paper. The one ramp here that sits near a
+    # status hue (`amber`): the two are told apart by depth rather than by
+    # hue, the accent resting three grades deeper than the warning wash.
+    ember:
+      "50":
+        $value: "#fdf4ec"
+      "100":
+        $value: "#fae4d0"
+      "200":
+        $value: "#f3c8a0"
+      "300":
+        $value: "#e9a969"
+      "400":
+        $value: "#d9863a"
+      "500":
+        $value: "#c46a1e"
+      "600":
+        $value: "#ad5717"
+      "700":
+        $value: "#8c4415"
+      "800":
+        $value: "#6d3513"
+      "900":
+        $value: "#512810"
+      "950":
+        $value: "#33190b"
+    # Ember on a dark canvas, lifted the way the three status hues are: the
+    # same copper one grade brighter, so 500 fills without going muddy and
+    # 300 prints. 600 stays a step under 500 because it is the hover *and*
+    # the wash — a wash off a brighter step would glow.
+    ember-dark:
+      "50":
+        $value: "#fdf2e4"
+      "100":
+        $value: "#fae0c4"
+      "200":
+        $value: "#f6cf9f"
+      "300":
+        $value: "#f0b877"
+      "400":
+        $value: "#e9a45c"
+      "500":
+        $value: "#d9832e"
+      "600":
+        $value: "#e0954a"
+      "700":
+        $value: "#b96a20"
+      "800":
+        $value: "#7d4718"
+      "900":
+        $value: "#4a2b11"
+      "950":
+        $value: "#2c1a0c"
   font-weight:
     $type: fontWeight
     thin:

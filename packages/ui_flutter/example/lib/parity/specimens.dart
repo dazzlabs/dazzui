@@ -1,5 +1,5 @@
 import 'package:dazzui/dazzui.dart';
-import 'package:flutter/material.dart' as material;
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 
 /// A specimen's key as a file name — the same derivation on every platform,
 /// so the viewer can find one port's picture beside another's.
@@ -106,7 +106,7 @@ Widget? build(Probe probe) {
       );
     case 'dz-icon-button':
       return IconButton(
-        icon: Icon(material.Icons.add),
+        icon: const Icon(FluentIcons.add_16_regular),
         variant: pick(IconButtonVariant.values, data['variant']),
         tint: pick(IconButtonTint.values, data['tint']),
         size: probe.size(WidgetSize.tiny),

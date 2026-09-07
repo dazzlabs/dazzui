@@ -1073,6 +1073,285 @@ pub static BRIGHT_DARK: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     ..STUDIO_LIGHT_SEED
 });
 
+/// The `frost-light` counterpart of [`STUDIO_LIGHT`].
+///
+/// Every token that moves under this theme is named here; the rest fall
+/// through to [`STUDIO_LIGHT_SEED`], and everything derived from them
+/// follows on its own.
+pub static FROST_LIGHT: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
+    color_canvas: Hsla { h: 0.545455, s: 0.268293, l: 0.919608, a: 1.0 },
+    color_surface: Hsla { h: 0.0, s: 0.0, l: 1.0, a: 1.0 },
+    color_surface_muted: Hsla { h: 0.555556, s: 0.3, l: 0.960784, a: 1.0 },
+    color_surface_sunken: Hsla { h: 0.544444, s: 0.263158, l: 0.888235, a: 1.0 },
+    color_surface_subtle: Hsla { h: 0.533333, s: 0.294118, l: 0.966667, a: 1.0 },
+    color_surface_inset: Hsla { h: 0.541667, s: 0.266667, l: 0.941176, a: 1.0 },
+    color_surface_raised: Hsla { h: 0.0, s: 0.0, l: 1.0, a: 1.0 },
+    color_surface_chrome: Hsla { h: 0.555556, s: 0.3, l: 0.960784, a: 1.0 },
+    color_content: Hsla { h: 0.548611, s: 0.461538, l: 0.101961, a: 1.0 },
+    color_content_secondary: Hsla { h: 0.54878, s: 0.303704, l: 0.264706, a: 1.0 },
+    color_content_nav: Hsla { h: 0.547101, s: 0.283951, l: 0.317647, a: 1.0 },
+    color_content_muted: Hsla { h: 0.550725, s: 0.25, l: 0.360784, a: 1.0 },
+    color_content_subtle: Hsla { h: 0.54878, s: 0.177489, l: 0.547059, a: 1.0 },
+    color_content_faint: Hsla { h: 0.546875, s: 0.188235, l: 0.666667, a: 1.0 },
+    color_border: Hsla { h: 0.548611, s: 0.461538, l: 0.101961, a: 0.078431 },
+    color_border_strong: Hsla { h: 0.548611, s: 0.461538, l: 0.101961, a: 0.121569 },
+    color_border_muted: Hsla { h: 0.547619, s: 0.225806, l: 0.817647, a: 1.0 },
+    color_on_accent: Hsla { h: 0.0, s: 0.0, l: 1.0, a: 1.0 },
+    progress_gradient_from: colors::FROST.shade(600),
+    progress_gradient_to: colors::FROST.shade(300),
+    color_primary: colors::FROST,
+    ..STUDIO_LIGHT_SEED
+});
+
+/// The `frost-dark` counterpart of [`STUDIO_LIGHT`].
+///
+/// Every token that moves under this theme is named here; the rest fall
+/// through to [`STUDIO_LIGHT_SEED`], and everything derived from them
+/// follows on its own.
+pub static FROST_DARK: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
+    color_canvas: Hsla { h: 0.566667, s: 0.416667, l: 0.047059, a: 1.0 },
+    color_surface: Hsla { h: 0.564103, s: 0.333333, l: 0.076471, a: 1.0 },
+    color_surface_muted: Hsla { h: 0.566667, s: 0.306122, l: 0.096078, a: 1.0 },
+    color_surface_sunken: Hsla { h: 0.564103, s: 0.270833, l: 0.188235, a: 1.0 },
+    color_surface_subtle: Hsla { h: 0.561404, s: 0.322034, l: 0.115686, a: 1.0 },
+    color_surface_inset: Hsla { h: 0.560606, s: 0.314286, l: 0.137255, a: 1.0 },
+    color_surface_raised: Hsla { h: 0.5625, s: 0.225352, l: 0.278431, a: 1.0 },
+    color_surface_chrome: Hsla { h: 0.566667, s: 0.306122, l: 0.096078, a: 1.0 },
+    color_content: Hsla { h: 0.551282, s: 0.448276, l: 0.943137, a: 1.0 },
+    color_content_secondary: Hsla { h: 0.551724, s: 0.27619, l: 0.794118, a: 1.0 },
+    color_content_nav: Hsla { h: 0.553922, s: 0.186813, l: 0.643137, a: 1.0 },
+    color_content_muted: Hsla { h: 0.553922, s: 0.186813, l: 0.643137, a: 1.0 },
+    color_content_subtle: Hsla { h: 0.54955, s: 0.16895, l: 0.570588, a: 1.0 },
+    color_content_faint: Hsla { h: 0.550388, s: 0.179916, l: 0.468627, a: 1.0 },
+    color_border: Hsla { h: 0.0, s: 0.0, l: 1.0, a: 0.058824 },
+    color_border_strong: Hsla { h: 0.0, s: 0.0, l: 1.0, a: 0.101961 },
+    color_border_muted: Hsla { h: 0.557471, s: 0.224806, l: 0.252941, a: 1.0 },
+    color_on_accent: Hsla { h: 0.54, s: 0.757576, l: 0.064706, a: 1.0 },
+    shadow_2xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(2.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.4 } }],
+    shadow_xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(3.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.45098 } }],
+    shadow_sm: &[TokenShadow { x: px(0.0), y: px(4.0), blur: px(14.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.45098 } }],
+    shadow_md: &[TokenShadow { x: px(0.0), y: px(10.0), blur: px(28.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.54902 } }],
+    shadow_lg: &[TokenShadow { x: px(0.0), y: px(14.0), blur: px(36.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.580392 } }],
+    shadow_xl: &[TokenShadow { x: px(0.0), y: px(16.0), blur: px(40.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.6 } }],
+    shadow_2xl: &[TokenShadow { x: px(0.0), y: px(24.0), blur: px(64.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.701961 } }],
+    focus_ring_alpha: 0.5,
+    progress_gradient_from: colors::FROST.shade(500),
+    progress_gradient_to: colors::FROST.shade(300),
+    color_danger: colors::RED_DARK,
+    color_primary: colors::FROST,
+    color_success: colors::GREEN_DARK,
+    color_warning: colors::AMBER_DARK,
+    control_color_filled_surface_normal_shade: 500,
+    control_color_filled_surface_hovered_shade: 600,
+    control_color_filled_surface_pressed_shade: 600,
+    control_color_outlined_border: ColorDescriptor {
+            normal: ColorRecipe { color: None, shade: Some(400), alpha: Some(1.0) },
+            hovered: ColorRecipe { color: None, shade: Some(300), alpha: Some(1.0) },
+            pressed: ColorRecipe { color: None, shade: Some(300), alpha: Some(0.9) },
+            disabled: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
+        },
+    control_color_outlined_content_normal_shade: 300,
+    control_color_outlined_content_hovered_shade: 200,
+    control_color_outlined_content_pressed_shade: 200,
+    control_color_plain_content_normal_shade: 300,
+    control_color_plain_content_hovered_shade: 200,
+    control_color_plain_content_pressed_shade: 200,
+    control_color_tinted_content_normal_shade: 300,
+    control_color_tinted_content_hovered_shade: 200,
+    control_color_tinted_content_pressed_shade: 200,
+    ..STUDIO_LIGHT_SEED
+});
+
+/// The `graphite-light` counterpart of [`STUDIO_LIGHT`].
+///
+/// Every token that moves under this theme is named here; the rest fall
+/// through to [`STUDIO_LIGHT_SEED`], and everything derived from them
+/// follows on its own.
+pub static GRAPHITE_LIGHT: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
+    color_canvas: Hsla { h: 0.666667, s: 0.095238, l: 0.917647, a: 1.0 },
+    color_surface: Hsla { h: 0.0, s: 0.0, l: 1.0, a: 1.0 },
+    color_surface_muted: Hsla { h: 0.666667, s: 0.125, l: 0.968627, a: 1.0 },
+    color_surface_sunken: Hsla { h: 0.666667, s: 0.09434, l: 0.896078, a: 1.0 },
+    color_surface_subtle: Hsla { h: 0.666667, s: 0.1, l: 0.960784, a: 1.0 },
+    color_surface_inset: Hsla { h: 0.666667, s: 0.103448, l: 0.943137, a: 1.0 },
+    color_surface_raised: Hsla { h: 0.0, s: 0.0, l: 1.0, a: 1.0 },
+    color_surface_chrome: Hsla { h: 0.666667, s: 0.125, l: 0.968627, a: 1.0 },
+    color_content: Hsla { h: 0.666667, s: 0.08, l: 0.098039, a: 1.0 },
+    color_content_secondary: Hsla { h: 0.666667, s: 0.061538, l: 0.254902, a: 1.0 },
+    color_content_nav: Hsla { h: 0.666667, s: 0.061728, l: 0.317647, a: 1.0 },
+    color_content_muted: Hsla { h: 0.666667, s: 0.043956, l: 0.356863, a: 1.0 },
+    color_content_subtle: Hsla { h: 0.666667, s: 0.04, l: 0.558824, a: 1.0 },
+    color_content_faint: Hsla { h: 0.666667, s: 0.045455, l: 0.654902, a: 1.0 },
+    color_border: Hsla { h: 0.666667, s: 0.08, l: 0.098039, a: 0.070588 },
+    color_border_strong: Hsla { h: 0.666667, s: 0.08, l: 0.098039, a: 0.121569 },
+    color_border_muted: Hsla { h: 0.666667, s: 0.063291, l: 0.845098, a: 1.0 },
+    color_on_accent: Hsla { h: 0.0, s: 0.0, l: 0.980392, a: 1.0 },
+    frame_window_radius: px(16.0),
+    frame_popover_radius: px(12.0),
+    radius_small: px(7.0),
+    radius_medium: px(8.0),
+    radius_large: px(10.0),
+    radius_big: px(12.0),
+    progress_gradient_from: colors::GRAPHITE.shade(600),
+    progress_gradient_to: colors::GRAPHITE.shade(400),
+    color_primary: colors::GRAPHITE,
+    ..STUDIO_LIGHT_SEED
+});
+
+/// The `graphite-dark` counterpart of [`STUDIO_LIGHT`].
+///
+/// Every token that moves under this theme is named here; the rest fall
+/// through to [`STUDIO_LIGHT_SEED`], and everything derived from them
+/// follows on its own.
+pub static GRAPHITE_DARK: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
+    color_canvas: Hsla { h: 0.666667, s: 0.111111, l: 0.035294, a: 1.0 },
+    color_surface: Hsla { h: 0.666667, s: 0.090909, l: 0.064706, a: 1.0 },
+    color_surface_muted: Hsla { h: 0.666667, s: 0.069767, l: 0.084314, a: 1.0 },
+    color_surface_sunken: Hsla { h: 0.666667, s: 0.060241, l: 0.162745, a: 1.0 },
+    color_surface_subtle: Hsla { h: 0.666667, s: 0.08, l: 0.098039, a: 1.0 },
+    color_surface_inset: Hsla { h: 0.666667, s: 0.081967, l: 0.119608, a: 1.0 },
+    color_surface_raised: Hsla { h: 0.666667, s: 0.063492, l: 0.247059, a: 1.0 },
+    color_surface_chrome: Hsla { h: 0.666667, s: 0.069767, l: 0.084314, a: 1.0 },
+    color_content: Hsla { h: 0.666667, s: 0.1, l: 0.960784, a: 1.0 },
+    color_content_secondary: Hsla { h: 0.666667, s: 0.069307, l: 0.801961, a: 1.0 },
+    color_content_nav: Hsla { h: 0.666667, s: 0.048128, l: 0.633333, a: 1.0 },
+    color_content_muted: Hsla { h: 0.666667, s: 0.048128, l: 0.633333, a: 1.0 },
+    color_content_subtle: Hsla { h: 0.666667, s: 0.04, l: 0.558824, a: 1.0 },
+    color_content_faint: Hsla { h: 0.666667, s: 0.040724, l: 0.433333, a: 1.0 },
+    color_border: Hsla { h: 0.0, s: 0.0, l: 1.0, a: 0.058824 },
+    color_border_strong: Hsla { h: 0.0, s: 0.0, l: 1.0, a: 0.101961 },
+    color_border_muted: Hsla { h: 0.666667, s: 0.058824, l: 0.233333, a: 1.0 },
+    color_on_accent: Hsla { h: 0.666667, s: 0.073171, l: 0.080392, a: 1.0 },
+    shadow_2xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(2.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.4 } }],
+    shadow_xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(3.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.45098 } }],
+    shadow_sm: &[TokenShadow { x: px(0.0), y: px(4.0), blur: px(14.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.45098 } }],
+    shadow_md: &[TokenShadow { x: px(0.0), y: px(10.0), blur: px(28.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.54902 } }],
+    shadow_lg: &[TokenShadow { x: px(0.0), y: px(14.0), blur: px(36.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.580392 } }],
+    shadow_xl: &[TokenShadow { x: px(0.0), y: px(16.0), blur: px(40.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.6 } }],
+    shadow_2xl: &[TokenShadow { x: px(0.0), y: px(24.0), blur: px(64.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.701961 } }],
+    focus_ring_alpha: 0.5,
+    frame_window_radius: px(16.0),
+    frame_popover_radius: px(12.0),
+    radius_small: px(7.0),
+    radius_medium: px(8.0),
+    radius_large: px(10.0),
+    radius_big: px(12.0),
+    progress_gradient_from: colors::GRAPHITE_DARK.shade(500),
+    progress_gradient_to: colors::GRAPHITE_DARK.shade(400),
+    color_danger: colors::RED_DARK,
+    color_primary: colors::GRAPHITE_DARK,
+    color_success: colors::GREEN_DARK,
+    color_warning: colors::AMBER_DARK,
+    control_color_filled_surface_normal_shade: 500,
+    control_color_filled_surface_hovered_shade: 600,
+    control_color_filled_surface_pressed_shade: 600,
+    control_color_outlined_border: ColorDescriptor {
+            normal: ColorRecipe { color: None, shade: Some(400), alpha: Some(1.0) },
+            hovered: ColorRecipe { color: None, shade: Some(300), alpha: Some(1.0) },
+            pressed: ColorRecipe { color: None, shade: Some(300), alpha: Some(0.9) },
+            disabled: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
+        },
+    control_color_outlined_content_normal_shade: 300,
+    control_color_outlined_content_hovered_shade: 200,
+    control_color_outlined_content_pressed_shade: 200,
+    control_color_plain_content_normal_shade: 300,
+    control_color_plain_content_hovered_shade: 200,
+    control_color_plain_content_pressed_shade: 200,
+    control_color_tinted_content_normal_shade: 300,
+    control_color_tinted_content_hovered_shade: 200,
+    control_color_tinted_content_pressed_shade: 200,
+    ..STUDIO_LIGHT_SEED
+});
+
+/// The `ember-light` counterpart of [`STUDIO_LIGHT`].
+///
+/// Every token that moves under this theme is named here; the rest fall
+/// through to [`STUDIO_LIGHT_SEED`], and everything derived from them
+/// follows on its own.
+pub static EMBER_LIGHT: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
+    color_canvas: Hsla { h: 0.106061, s: 0.34375, l: 0.87451, a: 1.0 },
+    color_surface: Hsla { h: 0.111111, s: 1.0, l: 0.988235, a: 1.0 },
+    color_surface_muted: Hsla { h: 0.107143, s: 0.4375, l: 0.937255, a: 1.0 },
+    color_surface_sunken: Hsla { h: 0.106667, s: 0.333333, l: 0.852941, a: 1.0 },
+    color_surface_subtle: Hsla { h: 0.102564, s: 0.52, l: 0.95098, a: 1.0 },
+    color_surface_inset: Hsla { h: 0.105263, s: 0.422222, l: 0.911765, a: 1.0 },
+    color_surface_raised: Hsla { h: 0.111111, s: 1.0, l: 0.988235, a: 1.0 },
+    color_surface_chrome: Hsla { h: 0.107143, s: 0.4375, l: 0.937255, a: 1.0 },
+    color_content: Hsla { h: 0.078947, s: 0.358491, l: 0.103922, a: 1.0 },
+    color_content_secondary: Hsla { h: 0.078125, s: 0.271186, l: 0.231373, a: 1.0 },
+    color_content_nav: Hsla { h: 0.073529, s: 0.22973, l: 0.290196, a: 1.0 },
+    color_content_muted: Hsla { h: 0.07619, s: 0.19774, l: 0.347059, a: 1.0 },
+    color_content_subtle: Hsla { h: 0.071429, s: 0.117647, l: 0.533333, a: 1.0 },
+    color_content_faint: Hsla { h: 0.083333, s: 0.150538, l: 0.635294, a: 1.0 },
+    color_border: Hsla { h: 0.078947, s: 0.358491, l: 0.103922, a: 0.078431 },
+    color_border_strong: Hsla { h: 0.078947, s: 0.358491, l: 0.103922, a: 0.121569 },
+    color_border_muted: Hsla { h: 0.097701, s: 0.298969, l: 0.809804, a: 1.0 },
+    color_on_accent: Hsla { h: 0.097222, s: 1.0, l: 0.976471, a: 1.0 },
+    progress_gradient_from: colors::EMBER.shade(600),
+    progress_gradient_to: colors::EMBER.shade(300),
+    color_primary: colors::EMBER,
+    ..STUDIO_LIGHT_SEED
+});
+
+/// The `ember-dark` counterpart of [`STUDIO_LIGHT`].
+///
+/// Every token that moves under this theme is named here; the rest fall
+/// through to [`STUDIO_LIGHT_SEED`], and everything derived from them
+/// follows on its own.
+pub static EMBER_DARK: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
+    color_canvas: Hsla { h: 0.083333, s: 0.333333, l: 0.035294, a: 1.0 },
+    color_surface: Hsla { h: 0.092593, s: 0.290323, l: 0.060784, a: 1.0 },
+    color_surface_muted: Hsla { h: 0.074074, s: 0.219512, l: 0.080392, a: 1.0 },
+    color_surface_sunken: Hsla { h: 0.088235, s: 0.220779, l: 0.15098, a: 1.0 },
+    color_surface_subtle: Hsla { h: 0.083333, s: 0.208333, l: 0.094118, a: 1.0 },
+    color_surface_inset: Hsla { h: 0.089744, s: 0.22807, l: 0.111765, a: 1.0 },
+    color_surface_raised: Hsla { h: 0.090278, s: 0.210526, l: 0.223529, a: 1.0 },
+    color_surface_chrome: Hsla { h: 0.074074, s: 0.219512, l: 0.080392, a: 1.0 },
+    color_content: Hsla { h: 0.101852, s: 0.5, l: 0.929412, a: 1.0 },
+    color_content_secondary: Hsla { h: 0.090909, s: 0.282051, l: 0.770588, a: 1.0 },
+    color_content_nav: Hsla { h: 0.081081, s: 0.180488, l: 0.598039, a: 1.0 },
+    color_content_muted: Hsla { h: 0.081081, s: 0.180488, l: 0.598039, a: 1.0 },
+    color_content_subtle: Hsla { h: 0.081197, s: 0.15415, l: 0.503922, a: 1.0 },
+    color_content_faint: Hsla { h: 0.083333, s: 0.177083, l: 0.376471, a: 1.0 },
+    color_border: Hsla { h: 0.0, s: 0.0, l: 1.0, a: 0.058824 },
+    color_border_strong: Hsla { h: 0.0, s: 0.0, l: 1.0, a: 0.101961 },
+    color_border_muted: Hsla { h: 0.094203, s: 0.20354, l: 0.221569, a: 1.0 },
+    color_on_accent: Hsla { h: 0.066667, s: 0.714286, l: 0.082353, a: 1.0 },
+    shadow_2xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(2.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.4 } }],
+    shadow_xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(3.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.45098 } }],
+    shadow_sm: &[TokenShadow { x: px(0.0), y: px(4.0), blur: px(14.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.45098 } }],
+    shadow_md: &[TokenShadow { x: px(0.0), y: px(10.0), blur: px(28.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.54902 } }],
+    shadow_lg: &[TokenShadow { x: px(0.0), y: px(14.0), blur: px(36.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.580392 } }],
+    shadow_xl: &[TokenShadow { x: px(0.0), y: px(16.0), blur: px(40.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.6 } }],
+    shadow_2xl: &[TokenShadow { x: px(0.0), y: px(24.0), blur: px(64.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.701961 } }],
+    focus_ring_alpha: 0.5,
+    progress_gradient_from: colors::EMBER_DARK.shade(500),
+    progress_gradient_to: colors::EMBER_DARK.shade(300),
+    color_danger: colors::RED_DARK,
+    color_primary: colors::EMBER_DARK,
+    color_success: colors::GREEN_DARK,
+    color_warning: colors::AMBER_DARK,
+    control_color_filled_surface_normal_shade: 500,
+    control_color_filled_surface_hovered_shade: 600,
+    control_color_filled_surface_pressed_shade: 600,
+    control_color_outlined_border: ColorDescriptor {
+            normal: ColorRecipe { color: None, shade: Some(400), alpha: Some(1.0) },
+            hovered: ColorRecipe { color: None, shade: Some(300), alpha: Some(1.0) },
+            pressed: ColorRecipe { color: None, shade: Some(300), alpha: Some(0.9) },
+            disabled: ColorRecipe { color: Some(colors::TRANSPARENT), shade: None, alpha: None },
+        },
+    control_color_outlined_content_normal_shade: 300,
+    control_color_outlined_content_hovered_shade: 200,
+    control_color_outlined_content_pressed_shade: 200,
+    control_color_plain_content_normal_shade: 300,
+    control_color_plain_content_hovered_shade: 200,
+    control_color_plain_content_pressed_shade: 200,
+    control_color_tinted_content_normal_shade: 300,
+    control_color_tinted_content_hovered_shade: 200,
+    control_color_tinted_content_pressed_shade: 200,
+    ..STUDIO_LIGHT_SEED
+});
+
 /// The `studio-dark` counterpart of [`STUDIO_LIGHT`].
 ///
 /// Every token that moves under this theme is named here; the rest fall

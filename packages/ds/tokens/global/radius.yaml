@@ -9,6 +9,12 @@
 # for a box whose height sets the curve, and wrong for a container that grows
 # with its content — a pill textarea reads as a lozenge. So the two control
 # steps go round in Bright while the container steps stay finite.
+#
+# Graphite goes the other way and is the reason this scale is re-pointed
+# rather than rewritten: every step moves down exactly one rung of the same
+# ladder, so the monochrome theme draws a crisper corner without inventing a
+# measurement. `tiny` is where the ladder runs out and, like Bright, it is
+# left alone — a chip at 7px is already the tightest corner the design has.
 radius:
   $type: dimension
   none:
@@ -22,17 +28,23 @@ radius:
     $extensions:
       mode:
         bright: 9999px
+        graphite: "{base.corner.xs}"
   medium:
     $value: "{base.corner.md}"
     $extensions:
       mode:
         bright: 9999px
+        graphite: "{base.corner.sm}"
   large:
     $value: "{base.corner.lg}"
+    $extensions:
+      mode:
+        graphite: "{base.corner.md}"
   big:
     $value: "{base.corner.xl}"
     $extensions:
       mode:
         bright: "{base.corner.xl-bright}"
+        graphite: "{base.corner.lg}"
   full:
     $value: 9999px

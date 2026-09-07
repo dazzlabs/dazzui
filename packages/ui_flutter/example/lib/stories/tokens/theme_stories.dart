@@ -6,40 +6,41 @@ import '../../storybook/stage.dart';
 import '../../storybook/story.dart';
 import 'color_stories.dart';
 
-/// `Tokens/Themes` — the four, and the argument for how they are carried.
+/// `Tokens/Themes` — all ten, and the argument for how they are carried.
 class ThemeStories {
   ThemeStories._();
 
   static StoryPage get page => StoryPage('Themes', [
     Story(
-      'Four at once',
-      (context) => const _FourAtOnce(),
+      'All at once',
+      (context) => const _AllAtOnce(),
       layout: StoryLayout.page,
     ),
     Story('Ramps', (context) => const _Ramps(), layout: StoryLayout.page),
   ]);
 }
 
-class _FourAtOnce extends StatelessWidget {
-  const _FourAtOnce();
+class _AllAtOnce extends StatelessWidget {
+  const _AllAtOnce();
 
   @override
   Widget build(BuildContext context) {
     return DocPage(
       'Themes',
       description:
-          'Four themes, one widget tree. A theme here is a value scoped to a '
+          'Ten themes, one widget tree. A theme here is a value scoped to a '
           'subtree with the package’s own `Theme` widget rather than a '
-          'process-wide mode, so the four cards below are the same widget '
-          'rendered four times, each resolving against its own variables.',
+          'process-wide mode, so the cards below are the same widget rendered '
+          'once per theme, each resolving against its own variables.',
       children: [
         DocSection(
-          'The four',
+          'The families',
           description:
               'Studio Light is the baseline the others are modes over: Studio '
               'Dark is the same skeleton on a near-black canvas, Bright is '
-              'warm paper with ink navy and an acid marker, and Bright Dark '
-              'takes that acid green as the accent itself.',
+              'warm paper with ink navy and an acid marker, Frost is a cool '
+              'teal, Graphite is monochrome and the only family that also '
+              'tightens the corners, and Ember is warm paper with copper.',
           children: [
             TileGrid(
               min: 300,
@@ -78,16 +79,19 @@ class _Sampler extends StatelessWidget {
       spacing: vars.spacing3,
       children: [
         Row(
+          spacing: vars.spacing2,
           children: [
-            Text(
-              name.title,
-              style: vars.labelLarge.copyWith(color: vars.colorContent),
+            Expanded(
+              child: Text(
+                name.title,
+                overflow: TextOverflow.ellipsis,
+                style: vars.labelLarge.copyWith(color: vars.colorContent),
+              ),
             ),
-            const Spacer(),
             Badge(
               size: WidgetSize.small,
               variant: BadgeVariant.tinted,
-              child: Text(name.name),
+              child: Text(name.isDark ? 'dark' : 'light'),
             ),
           ],
         ),
@@ -141,7 +145,7 @@ class _Ramps extends StatelessWidget {
     final ThemeVariables outer = Theme.of(context).vars;
 
     return DocPage(
-      'Ramps in four themes',
+      'Ramps in every theme',
       description:
           'The same six ramps, under each theme in turn. This is the page that '
           'says why a widget must never name a shade: the ladder under the '

@@ -23,7 +23,7 @@ import YAML from 'yaml'
  * and a `const fn` is how the rest follows without the generator emitting a
  * line about it.
  *
- * Everything is `const`, which is what lets the four themes be `static`s: a
+ * Everything is `const`, which is what lets every theme be a `static`: a
  * component reads `&'static ThemeVariables` and nothing is allocated or
  * recomputed per frame.
  */

@@ -26,8 +26,18 @@ The DazzUI design system, as a pnpm workspace:
   run `flutter analyze` / `flutter test` from inside the package. Like the
   React package, `lib/src/generated/` holds what `ds` wrote and is committed.
   The ds vocabulary is the API: the color axis is `tint` (`WidgetTint`,
-  `ButtonTint.neutral`), never dazzui-flutter's `kind`/`secondary`. `example/` holds
-  the playground app (`flutter run` from that directory, macOS and web).
+  `ButtonTint.neutral`), never dazzui-flutter's `kind`/`secondary`. It imports
+  **nothing from `package:flutter/material.dart`** and ships
+  `uses-material-design: false` — a design system that drew every one of its
+  own controls has no use for a second one's, and material's own vocabulary
+  (`ThemeExtension`, `Icons`, the `Material` that carried an ambient text
+  style) is small enough to replace outright: the base class is
+  `src/foundation/theme_extension.dart`, the ambient style is the package's
+  own `Theme`, and the three glyphs the kit draws itself come from
+  `fluentui_system_icons` — the same set `ui_react` takes them from. A host
+  supplies the app plumbing with `WidgetsApp`; see `example/lib/host.dart`
+  and `test/host.dart`. `example/` holds the playground app (`flutter run`
+  from that directory, macOS and web).
 - `packages/ui_gpui` (`dazzui`) — the [GPUI] implementation, in Rust.
   A Cargo workspace, invisible to pnpm: run `cargo test` / `cargo clippy` from
   inside the package. Like the others, `src/generated/` holds what `ds` wrote
@@ -414,7 +424,7 @@ Four things that surprise people:
   Bright's primary action is ink navy whose hover lifts, and its 50–200 are
   acid-tinted washes rather than pale navy. A step is only ever reached by a
   recipe, so what a step means is the role that recipe gives it. This is what
-  lets four themes this different share one recipe table untouched — and why a
+  lets ten themes this different share one recipe table untouched — and why a
   shade written into a stylesheet would be a lie rather than merely a
   duplicate.
 - A recipe can re-pick its step per theme (`shade` carries a mode), because a
@@ -425,24 +435,39 @@ Four things that surprise people:
 
 ### Themes
 
-Four, as three modes over one default, defined once in `terrazzo.config.mjs`
+Ten, as five families over one default, defined once in `terrazzo.config.mjs`
 and passed to all three plugins so the platforms cannot drift:
 
-| `data-theme`   | modes applied            |
-| -------------- | ------------------------ |
-| *(none)*       | — Studio Light, `:root`  |
-| `studio-dark`  | `dark`                   |
-| `bright-light` | `bright`                 |
-| `bright-dark`  | `bright`, `dark`, `bright-dark` |
+| `data-theme`     | modes applied                     |
+| ---------------- | --------------------------------- |
+| *(none)*         | — Studio Light, `:root`           |
+| `studio-dark`    | `dark`                            |
+| `bright-light`   | `bright`                          |
+| `bright-dark`    | `bright`, `dark`, `bright-dark`   |
+| `frost-light`    | `frost`                           |
+| `frost-dark`     | `frost`, `dark`                   |
+| `graphite-light` | `graphite`                        |
+| `graphite-dark`  | `graphite`, `dark`, `graphite-dark` |
+| `ember-light`    | `ember`                           |
+| `ember-dark`     | `ember`, `dark`, `ember-dark`     |
 
 The modes compose rather than repeat, so a value shared along the light/dark
-axis or the Studio/Bright axis is written once. The order in that config is
-load bearing: every selector is a single attribute and so has equal
-specificity, and the later block wins.
+axis or along a family is written once. A family whose accent reads correctly
+in both directions needs no dark corner at all — Frost is the one that does
+not have one, because a teal is a teal on either canvas, where Bright,
+Graphite and Ember each invert or lift their ramp and so carry a second
+ladder. The order in that config is load bearing: every selector is a single
+attribute and so has equal specificity, and the later block wins — the family
+modes first, then `dark`, then the corners.
+
+Graphite is also the only family that moves geometry: `radius.small` through
+`radius.big` and both `frame` corners step down one rung of the same ladder,
+so the monochrome theme draws a crisper corner without inventing a
+measurement.
 
 Studio Light sets **no attribute at all** — selecting it means removing
 `data-theme`, not writing `studio-light`. Writing it would leave the page
-looking right for the wrong reason, since none of the three blocks would
+looking right for the wrong reason, since none of the theme blocks would
 match. Storybook's theme toolbar does exactly this; see `.storybook/preview.ts`.
 
 Flutter has no cascade, so `plugins/flutter.mjs` collapses each theme's mode
@@ -573,7 +598,7 @@ is where the platform forced a different shape.
 - `src/components/mod.rs` is the registry, the way `styles/components.css` is
   on the React side: a component ships once it is listed there.
 - Tests are the substitute for a Storybook. `tests/render.rs` draws every
-  component in all four themes headlessly, measures the control heights
+  component in every theme headlessly, measures the control heights
   against the size profile, asserts on the recipes, and simulates the pointer
   and the keyboard — which is the part of a screenshot that can be checked
   without a screen. It is also what catches a wiring bug: a key listener on a

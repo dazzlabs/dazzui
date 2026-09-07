@@ -60,7 +60,7 @@ Parity/                  what apps/storybook's parity extractor distributed,
 
 `Parity/` sits beside the sources rather than inside them because Xcode's
 synchronised folder takes everything under `Tests/` as a resource to copy
-into the bundle, and four themes' worth of drawings share their file names.
+into the bundle, and every theme's drawings share their file names.
 
 The tests run from the same scheme:
 
@@ -103,8 +103,8 @@ reads the same tokens — so a theme switch carries the furniture with it too.
 
 ## Where to start
 
-`Tokens/Themes` → **Four at once**. A theme here is a value scoped to a subtree
-with `.theme(_:)` rather than a process-wide mode, so the four cards on that
+`Tokens/Themes` → **All at once**. A theme here is a value scoped to a subtree
+with `.theme(_:)` rather than a process-wide mode, so the cards on that
 page are the same view rendered four times, each resolving against its own
 variables. `Tokens/Color` → **Palette** is the reminder that a ramp is a role
 ladder rather than a lightness ramp: Bright's ink ladder puts a lighter colour

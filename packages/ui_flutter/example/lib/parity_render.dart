@@ -4,9 +4,9 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:dazzui/dazzui.dart';
+import 'package:dazzui_example/host.dart';
 import 'package:dazzui_example/parity/reference.dart';
 import 'package:dazzui_example/parity/specimens.dart';
-import 'package:flutter/material.dart' as material;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -31,13 +31,13 @@ import 'package:flutter/scheduler.dart';
 ///
 /// It draws, writes `$HOME/parity/renders/<theme>/<id>.png`, and quits.
 void main() {
-  final binding = material.WidgetsFlutterBinding.ensureInitialized();
+  final binding = WidgetsFlutterBinding.ensureInitialized();
   binding.addPostFrameCallback((_) async {
     final int drawn = await draw(binding);
     stdout.writeln('parity: drew $drawn renderings into test/parity/renders');
     exit(drawn > 0 ? 0 : 1);
   });
-  material.runApp(const _Host());
+  runApp(const _Host());
 }
 
 /// The window the specimens are drawn in.
@@ -45,21 +45,12 @@ void main() {
 /// It shows nothing: every drawing is made off to the side of the screen and
 /// captured through its own repaint boundary, so the window is only here to
 /// give the engine something to render into.
-class _Host extends material.StatelessWidget {
+class _Host extends StatelessWidget {
   const _Host();
 
   @override
   Widget build(BuildContext context) {
-    return material.MaterialApp(
-      debugShowCheckedModeBanner: false,
-      // The transparent `Material` is what carries a default text style, the
-      // same way the widget test's host does. Without it a `Text` falls back
-      // to the red-on-white it is drawn in when nothing has said how.
-      home: material.Material(
-        type: material.MaterialType.transparency,
-        child: _slot,
-      ),
-    );
+    return Host(title: 'DazzUI parity', home: _slot);
   }
 }
 
@@ -70,7 +61,7 @@ Widget get _slot => ValueListenableBuilder<Widget?>(
   valueListenable: _subject,
   builder: (context, subject, _) {
     if (subject == null) return const SizedBox.shrink();
-    return material.Align(
+    return Align(
       alignment: Alignment.topLeft,
       child: RepaintBoundary(key: _boundary, child: subject),
     );
@@ -146,5 +137,11 @@ ThemeData themeData(String theme) => switch (theme) {
   'studio-dark' => ThemeData.studioDark(),
   'bright-light' => ThemeData.brightLight(),
   'bright-dark' => ThemeData.brightDark(),
+  'frost-light' => ThemeData.frostLight(),
+  'frost-dark' => ThemeData.frostDark(),
+  'graphite-light' => ThemeData.graphiteLight(),
+  'graphite-dark' => ThemeData.graphiteDark(),
+  'ember-light' => ThemeData.emberLight(),
+  'ember-dark' => ThemeData.emberDark(),
   _ => ThemeData.studioLight(),
 };

@@ -1,35 +1,36 @@
 import DazzUI
 import SwiftUI
 
-/// `Tokens/Themes` — the four, and the argument for how they are carried.
+/// `Tokens/Themes` — all ten, and the argument for how they are carried.
 enum ThemeStories {
   static var page: StoryPage {
     StoryPage("Themes") {
-      Story("Four at once", layout: .page) { FourAtOnce() }
+      Story("All at once", layout: .page) { AllAtOnce() }
       Story("Ramps", layout: .page) { Ramps() }
     }
   }
 
-  private struct FourAtOnce: View {
+  private struct AllAtOnce: View {
     @Environment(\.theme) private var theme
 
     var body: some View {
       Page(
         "Themes",
         description: """
-          Four themes, one component tree. A theme here is a value scoped to a \
+          Ten themes, one component tree. A theme here is a value scoped to a \
           subtree with `.theme(_:)` rather than a process-wide mode, so the \
-          four cards below are the same view rendered four times, each \
+          cards below are the same view rendered once per theme, each \
           resolving against its own variables.
           """
       ) {
         Section(
-          "The four",
+          "The families",
           description: """
             Studio Light is the baseline the others are modes over: Studio Dark \
             is the same skeleton on a near-black canvas, Bright is warm paper \
-            with ink navy and an acid marker, and Bright Dark takes that acid \
-            green as the accent itself.
+            with ink navy and an acid marker, Frost is a cool teal, Graphite is \
+            monochrome and the only family that also tightens the corners, and \
+            Ember is warm paper with copper.
             """
         ) {
           Grid(min: 300) {
@@ -58,12 +59,17 @@ enum ThemeStories {
     var body: some View {
       let vars = theme.vars
 
-      HStack {
+      HStack(spacing: vars.spacing2) {
         Text(name.title)
           .font(vars.labelLarge.font)
           .foregroundStyle(vars.colorContent)
-        Spacer()
-        Badge(name.rawValue, size: .small, variant: .tinted)
+          .lineLimit(1)
+        Spacer(minLength: 0)
+        Badge(
+          name.colorScheme == .dark ? "dark" : "light",
+          size: .small,
+          variant: .tinted
+        )
       }
 
       Text("The quick brown fox jumps over the lazy dog.")
@@ -94,7 +100,7 @@ enum ThemeStories {
 
     var body: some View {
       Page(
-        "Ramps in four themes",
+        "Ramps in every theme",
         description: """
           The same six ramps, under each theme in turn. This is the page that \
           says why a component must never name a shade: the ladder under the \

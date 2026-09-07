@@ -695,6 +695,288 @@ public extension ThemeVariables {
     controlColorPlainContentPressedShade: 200
   )
 
+  /// The `frost-light` counterpart of ``studioLight``.
+  ///
+  /// Every token that moves under this theme is named here; the rest fall
+  /// through to the initialiser's defaults, and the computed properties
+  /// follow this instance.
+  static let frostLight = ThemeVariables(
+    colorPrimary: Colors.frost,
+    colorCanvas: Color(argb: 0xFFE5_EDF0),
+    colorSurface: Color(argb: 0xFFFF_FFFF),
+    colorSurfaceMuted: Color(argb: 0xFFF2_F6F8),
+    colorSurfaceSunken: Color(argb: 0xFFDB_E6EA),
+    colorSurfaceSubtle: Color(argb: 0xFFF4_F8F9),
+    colorSurfaceInset: Color(argb: 0xFFEC_F2F4),
+    colorSurfaceRaised: Color(argb: 0xFFFF_FFFF),
+    colorSurfaceChrome: Color(argb: 0xFFF2_F6F8),
+    colorContent: Color(argb: 0xFF0E_1F26),
+    colorContentSecondary: Color(argb: 0xFF2F_4C58),
+    colorContentNav: Color(argb: 0xFF3A_5B68),
+    colorContentMuted: Color(argb: 0xFF45_6573),
+    colorContentSubtle: Color(argb: 0xFF77_94A0),
+    colorContentFaint: Color(argb: 0xFF9A_B1BA),
+    colorBorder: Color(argb: 0x140E_1F26),
+    colorBorderStrong: Color(argb: 0x1F0E_1F26),
+    colorBorderMuted: Color(argb: 0xFFC6_D5DB),
+    colorOnAccent: Color(argb: 0xFFFF_FFFF),
+    progressGradientFrom: Colors.frost[600],
+    progressGradientTo: Colors.frost[300]
+  )
+
+  /// The `frost-dark` counterpart of ``studioLight``.
+  ///
+  /// Every token that moves under this theme is named here; the rest fall
+  /// through to the initialiser's defaults, and the computed properties
+  /// follow this instance.
+  static let frostDark = ThemeVariables(
+    colorPrimary: Colors.frost,
+    colorSuccess: Colors.greenDark,
+    colorWarning: Colors.amberDark,
+    colorDanger: Colors.redDark,
+    colorCanvas: Color(argb: 0xFF07_0D11),
+    colorSurface: Color(argb: 0xFF0D_151A),
+    colorSurfaceMuted: Color(argb: 0xFF11_1A20),
+    colorSurfaceSunken: Color(argb: 0xFF23_333D),
+    colorSurfaceSubtle: Color(argb: 0xFF14_2027),
+    colorSurfaceInset: Color(argb: 0xFF18_262E),
+    colorSurfaceRaised: Color(argb: 0xFF37_4B57),
+    colorSurfaceChrome: Color(argb: 0xFF11_1A20),
+    colorContent: Color(argb: 0xFFEA_F3F7),
+    colorContentSecondary: Color(argb: 0xFFBC_D0D9),
+    colorContentNav: Color(argb: 0xFF93_AAB5),
+    colorContentMuted: Color(argb: 0xFF93_AAB5),
+    colorContentSubtle: Color(argb: 0xFF7F_99A4),
+    colorContentFaint: Color(argb: 0xFF62_808D),
+    colorBorder: Color(argb: 0x0FFF_FFFF),
+    colorBorderStrong: Color(argb: 0x1AFF_FFFF),
+    colorBorderMuted: Color(argb: 0xFF32_454F),
+    colorOnAccent: Color(argb: 0xFF04_171D),
+    shadow2xs: [TokenShadow(x: 0.0, y: 1.0, blur: 2.0, spread: 0.0, color: Color(argb: 0x6600_0000))],
+    shadowXs: [TokenShadow(x: 0.0, y: 1.0, blur: 3.0, spread: 0.0, color: Color(argb: 0x7300_0000))],
+    shadowSm: [TokenShadow(x: 0.0, y: 4.0, blur: 14.0, spread: 0.0, color: Color(argb: 0x7300_0000))],
+    shadowMd: [TokenShadow(x: 0.0, y: 10.0, blur: 28.0, spread: 0.0, color: Color(argb: 0x8C00_0000))],
+    shadowLg: [TokenShadow(x: 0.0, y: 14.0, blur: 36.0, spread: 0.0, color: Color(argb: 0x9400_0000))],
+    shadowXl: [TokenShadow(x: 0.0, y: 16.0, blur: 40.0, spread: 0.0, color: Color(argb: 0x9900_0000))],
+    shadow2xl: [TokenShadow(x: 0.0, y: 24.0, blur: 64.0, spread: 0.0, color: Color(argb: 0xB300_0000))],
+    focusRingAlpha: 0.5,
+    progressGradientFrom: Colors.frost[500],
+    progressGradientTo: Colors.frost[300],
+    controlColorFilledSurfaceNormalShade: 500,
+    controlColorFilledSurfaceHoveredShade: 600,
+    controlColorFilledSurfacePressedShade: 600,
+    controlColorTintedContentNormalShade: 300,
+    controlColorTintedContentHoveredShade: 200,
+    controlColorTintedContentPressedShade: 200,
+    controlColorOutlinedContentNormalShade: 300,
+    controlColorOutlinedContentHoveredShade: 200,
+    controlColorOutlinedContentPressedShade: 200,
+    controlColorOutlinedBorder: ColorDescriptor(
+      normalShade: 400,
+      normalOpacity: 1.0,
+      hoveredShade: 300,
+      hoveredOpacity: 1.0,
+      pressedShade: 300,
+      pressedOpacity: 0.9,
+      disabledColor: Colors.transparent
+    ),
+    controlColorPlainContentNormalShade: 300,
+    controlColorPlainContentHoveredShade: 200,
+    controlColorPlainContentPressedShade: 200
+  )
+
+  /// The `graphite-light` counterpart of ``studioLight``.
+  ///
+  /// Every token that moves under this theme is named here; the rest fall
+  /// through to the initialiser's defaults, and the computed properties
+  /// follow this instance.
+  static let graphiteLight = ThemeVariables(
+    colorPrimary: Colors.graphite,
+    colorCanvas: Color(argb: 0xFFE8_E8EC),
+    colorSurface: Color(argb: 0xFFFF_FFFF),
+    colorSurfaceMuted: Color(argb: 0xFFF6_F6F8),
+    colorSurfaceSunken: Color(argb: 0xFFE2_E2E7),
+    colorSurfaceSubtle: Color(argb: 0xFFF4_F4F6),
+    colorSurfaceInset: Color(argb: 0xFFEF_EFF2),
+    colorSurfaceRaised: Color(argb: 0xFFFF_FFFF),
+    colorSurfaceChrome: Color(argb: 0xFFF6_F6F8),
+    colorContent: Color(argb: 0xFF17_171B),
+    colorContentSecondary: Color(argb: 0xFF3D_3D45),
+    colorContentNav: Color(argb: 0xFF4C_4C56),
+    colorContentMuted: Color(argb: 0xFF57_575F),
+    colorContentSubtle: Color(argb: 0xFF8A_8A93),
+    colorContentFaint: Color(argb: 0xFFA3_A3AB),
+    colorBorder: Color(argb: 0x1217_171B),
+    colorBorderStrong: Color(argb: 0x1F17_171B),
+    colorBorderMuted: Color(argb: 0xFFD5_D5DA),
+    colorOnAccent: Color(argb: 0xFFFA_FAFA),
+    frameWindowRadius: 16.0,
+    framePopoverRadius: 12.0,
+    radiusSmall: 7.0,
+    radiusMedium: 8.0,
+    radiusLarge: 10.0,
+    radiusBig: 12.0,
+    progressGradientFrom: Colors.graphite[600],
+    progressGradientTo: Colors.graphite[400]
+  )
+
+  /// The `graphite-dark` counterpart of ``studioLight``.
+  ///
+  /// Every token that moves under this theme is named here; the rest fall
+  /// through to the initialiser's defaults, and the computed properties
+  /// follow this instance.
+  static let graphiteDark = ThemeVariables(
+    colorPrimary: Colors.graphiteDark,
+    colorSuccess: Colors.greenDark,
+    colorWarning: Colors.amberDark,
+    colorDanger: Colors.redDark,
+    colorCanvas: Color(argb: 0xFF08_080A),
+    colorSurface: Color(argb: 0xFF0F_0F12),
+    colorSurfaceMuted: Color(argb: 0xFF14_1417),
+    colorSurfaceSunken: Color(argb: 0xFF27_272C),
+    colorSurfaceSubtle: Color(argb: 0xFF17_171B),
+    colorSurfaceInset: Color(argb: 0xFF1C_1C21),
+    colorSurfaceRaised: Color(argb: 0xFF3B_3B43),
+    colorSurfaceChrome: Color(argb: 0xFF14_1417),
+    colorContent: Color(argb: 0xFFF4_F4F6),
+    colorContentSecondary: Color(argb: 0xFFC9_C9D0),
+    colorContentNav: Color(argb: 0xFF9D_9DA6),
+    colorContentMuted: Color(argb: 0xFF9D_9DA6),
+    colorContentSubtle: Color(argb: 0xFF8A_8A93),
+    colorContentFaint: Color(argb: 0xFF6A_6A73),
+    colorBorder: Color(argb: 0x0FFF_FFFF),
+    colorBorderStrong: Color(argb: 0x1AFF_FFFF),
+    colorBorderMuted: Color(argb: 0xFF38_383F),
+    colorOnAccent: Color(argb: 0xFF13_1316),
+    shadow2xs: [TokenShadow(x: 0.0, y: 1.0, blur: 2.0, spread: 0.0, color: Color(argb: 0x6600_0000))],
+    shadowXs: [TokenShadow(x: 0.0, y: 1.0, blur: 3.0, spread: 0.0, color: Color(argb: 0x7300_0000))],
+    shadowSm: [TokenShadow(x: 0.0, y: 4.0, blur: 14.0, spread: 0.0, color: Color(argb: 0x7300_0000))],
+    shadowMd: [TokenShadow(x: 0.0, y: 10.0, blur: 28.0, spread: 0.0, color: Color(argb: 0x8C00_0000))],
+    shadowLg: [TokenShadow(x: 0.0, y: 14.0, blur: 36.0, spread: 0.0, color: Color(argb: 0x9400_0000))],
+    shadowXl: [TokenShadow(x: 0.0, y: 16.0, blur: 40.0, spread: 0.0, color: Color(argb: 0x9900_0000))],
+    shadow2xl: [TokenShadow(x: 0.0, y: 24.0, blur: 64.0, spread: 0.0, color: Color(argb: 0xB300_0000))],
+    focusRingAlpha: 0.5,
+    frameWindowRadius: 16.0,
+    framePopoverRadius: 12.0,
+    radiusSmall: 7.0,
+    radiusMedium: 8.0,
+    radiusLarge: 10.0,
+    radiusBig: 12.0,
+    progressGradientFrom: Colors.graphiteDark[500],
+    progressGradientTo: Colors.graphiteDark[400],
+    controlColorFilledSurfaceNormalShade: 500,
+    controlColorFilledSurfaceHoveredShade: 600,
+    controlColorFilledSurfacePressedShade: 600,
+    controlColorTintedContentNormalShade: 300,
+    controlColorTintedContentHoveredShade: 200,
+    controlColorTintedContentPressedShade: 200,
+    controlColorOutlinedContentNormalShade: 300,
+    controlColorOutlinedContentHoveredShade: 200,
+    controlColorOutlinedContentPressedShade: 200,
+    controlColorOutlinedBorder: ColorDescriptor(
+      normalShade: 400,
+      normalOpacity: 1.0,
+      hoveredShade: 300,
+      hoveredOpacity: 1.0,
+      pressedShade: 300,
+      pressedOpacity: 0.9,
+      disabledColor: Colors.transparent
+    ),
+    controlColorPlainContentNormalShade: 300,
+    controlColorPlainContentHoveredShade: 200,
+    controlColorPlainContentPressedShade: 200
+  )
+
+  /// The `ember-light` counterpart of ``studioLight``.
+  ///
+  /// Every token that moves under this theme is named here; the rest fall
+  /// through to the initialiser's defaults, and the computed properties
+  /// follow this instance.
+  static let emberLight = ThemeVariables(
+    colorPrimary: Colors.ember,
+    colorCanvas: Color(argb: 0xFFEA_E2D4),
+    colorSurface: Color(argb: 0xFFFF_FDF9),
+    colorSurfaceMuted: Color(argb: 0xFFF6_F1E8),
+    colorSurfaceSunken: Color(argb: 0xFFE6_DDCD),
+    colorSurfaceSubtle: Color(argb: 0xFFF9_F4EC),
+    colorSurfaceInset: Color(argb: 0xFFF2_EBDF),
+    colorSurfaceRaised: Color(argb: 0xFFFF_FDF9),
+    colorSurfaceChrome: Color(argb: 0xFFF6_F1E8),
+    colorContent: Color(argb: 0xFF24_1A11),
+    colorContentSecondary: Color(argb: 0xFF4B_3A2B),
+    colorContentNav: Color(argb: 0xFF5B_4839),
+    colorContentMuted: Color(argb: 0xFF6A_5747),
+    colorContentSubtle: Color(argb: 0xFF96_867A),
+    colorContentFaint: Color(argb: 0xFFB0_A294),
+    colorBorder: Color(argb: 0x1424_1A11),
+    colorBorderStrong: Color(argb: 0x1F24_1A11),
+    colorBorderMuted: Color(argb: 0xFFDD_D1C0),
+    colorOnAccent: Color(argb: 0xFFFF_FAF3),
+    progressGradientFrom: Colors.ember[600],
+    progressGradientTo: Colors.ember[300]
+  )
+
+  /// The `ember-dark` counterpart of ``studioLight``.
+  ///
+  /// Every token that moves under this theme is named here; the rest fall
+  /// through to the initialiser's defaults, and the computed properties
+  /// follow this instance.
+  static let emberDark = ThemeVariables(
+    colorPrimary: Colors.emberDark,
+    colorSuccess: Colors.greenDark,
+    colorWarning: Colors.amberDark,
+    colorDanger: Colors.redDark,
+    colorCanvas: Color(argb: 0xFF0C_0906),
+    colorSurface: Color(argb: 0xFF14_100B),
+    colorSurfaceMuted: Color(argb: 0xFF19_1410),
+    colorSurfaceSunken: Color(argb: 0xFF2F_271E),
+    colorSurfaceSubtle: Color(argb: 0xFF1D_1813),
+    colorSurfaceInset: Color(argb: 0xFF23_1D16),
+    colorSurfaceRaised: Color(argb: 0xFF45_3A2D),
+    colorSurfaceChrome: Color(argb: 0xFF19_1410),
+    colorContent: Color(argb: 0xFFF6_EFE4),
+    colorContentSecondary: Color(argb: 0xFFD5_C6B4),
+    colorContentNav: Color(argb: 0xFFAB_9886),
+    colorContentMuted: Color(argb: 0xFFAB_9886),
+    colorContentSubtle: Color(argb: 0xFF94_806D),
+    colorContentFaint: Color(argb: 0xFF71_604F),
+    colorBorder: Color(argb: 0x0FFF_FFFF),
+    colorBorderStrong: Color(argb: 0x1AFF_FFFF),
+    colorBorderMuted: Color(argb: 0xFF44_3A2D),
+    colorOnAccent: Color(argb: 0xFF24_1206),
+    shadow2xs: [TokenShadow(x: 0.0, y: 1.0, blur: 2.0, spread: 0.0, color: Color(argb: 0x6600_0000))],
+    shadowXs: [TokenShadow(x: 0.0, y: 1.0, blur: 3.0, spread: 0.0, color: Color(argb: 0x7300_0000))],
+    shadowSm: [TokenShadow(x: 0.0, y: 4.0, blur: 14.0, spread: 0.0, color: Color(argb: 0x7300_0000))],
+    shadowMd: [TokenShadow(x: 0.0, y: 10.0, blur: 28.0, spread: 0.0, color: Color(argb: 0x8C00_0000))],
+    shadowLg: [TokenShadow(x: 0.0, y: 14.0, blur: 36.0, spread: 0.0, color: Color(argb: 0x9400_0000))],
+    shadowXl: [TokenShadow(x: 0.0, y: 16.0, blur: 40.0, spread: 0.0, color: Color(argb: 0x9900_0000))],
+    shadow2xl: [TokenShadow(x: 0.0, y: 24.0, blur: 64.0, spread: 0.0, color: Color(argb: 0xB300_0000))],
+    focusRingAlpha: 0.5,
+    progressGradientFrom: Colors.emberDark[500],
+    progressGradientTo: Colors.emberDark[300],
+    controlColorFilledSurfaceNormalShade: 500,
+    controlColorFilledSurfaceHoveredShade: 600,
+    controlColorFilledSurfacePressedShade: 600,
+    controlColorTintedContentNormalShade: 300,
+    controlColorTintedContentHoveredShade: 200,
+    controlColorTintedContentPressedShade: 200,
+    controlColorOutlinedContentNormalShade: 300,
+    controlColorOutlinedContentHoveredShade: 200,
+    controlColorOutlinedContentPressedShade: 200,
+    controlColorOutlinedBorder: ColorDescriptor(
+      normalShade: 400,
+      normalOpacity: 1.0,
+      hoveredShade: 300,
+      hoveredOpacity: 1.0,
+      pressedShade: 300,
+      pressedOpacity: 0.9,
+      disabledColor: Colors.transparent
+    ),
+    controlColorPlainContentNormalShade: 300,
+    controlColorPlainContentHoveredShade: 200,
+    controlColorPlainContentPressedShade: 200
+  )
+
   /// The `studio-dark` counterpart of ``studioLight``.
   ///
   /// Every token that moves under this theme is named here; the rest fall

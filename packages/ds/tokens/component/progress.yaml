@@ -3,7 +3,10 @@ progress:
   # stops are the theme's to pick: Studio runs violet into a lighter violet,
   # Bright runs ink into acid, and Bright Dark holds solid acid (two equal
   # stops keep the token a gradient, since the bar paints a
-  # background-image).
+  # background-image). The three newer families each run their own fill step
+  # into a lighter one off the same ladder, and every dark theme has to name
+  # both stops itself: `dark` sets Studio's violet, so a family that did not
+  # write over it would paint a violet bar on its own accent.
   gradient:
     from:
       $type: color
@@ -13,6 +16,12 @@ progress:
           dark: "{base.color.brand.500}"
           bright: "{base.color.ink.600}"
           bright-dark: "{base.color.acid.500}"
+          frost: "{base.color.frost.600}"
+          frost-dark: "{base.color.frost.500}"
+          graphite: "{base.color.graphite.600}"
+          graphite-dark: "{base.color.graphite-dark.500}"
+          ember: "{base.color.ember.600}"
+          ember-dark: "{base.color.ember-dark.500}"
     to:
       $type: color
       # The one stop off any ramp: Studio's light end lands between
@@ -23,3 +32,9 @@ progress:
           dark: "{base.color.brand.300}"
           bright: "{base.color.ink.300}"
           bright-dark: "{base.color.acid.500}"
+          frost: "{base.color.frost.300}"
+          frost-dark: "{base.color.frost.300}"
+          graphite: "{base.color.graphite.400}"
+          graphite-dark: "{base.color.graphite-dark.400}"
+          ember: "{base.color.ember.300}"
+          ember-dark: "{base.color.ember-dark.300}"

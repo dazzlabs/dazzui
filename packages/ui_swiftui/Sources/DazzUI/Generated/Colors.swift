@@ -69,6 +69,76 @@ public enum Colors {
     950: Color(argb: 0xFF2A_1C6B),
   ])
 
+  public static let ember = ColorSwatch([
+    50: Color(argb: 0xFFFD_F4EC),
+    100: Color(argb: 0xFFFA_E4D0),
+    200: Color(argb: 0xFFF3_C8A0),
+    300: Color(argb: 0xFFE9_A969),
+    400: Color(argb: 0xFFD9_863A),
+    500: Color(argb: 0xFFC4_6A1E),
+    600: Color(argb: 0xFFAD_5717),
+    700: Color(argb: 0xFF8C_4415),
+    800: Color(argb: 0xFF6D_3513),
+    900: Color(argb: 0xFF51_2810),
+    950: Color(argb: 0xFF33_190B),
+  ])
+
+  public static let emberDark = ColorSwatch([
+    50: Color(argb: 0xFFFD_F2E4),
+    100: Color(argb: 0xFFFA_E0C4),
+    200: Color(argb: 0xFFF6_CF9F),
+    300: Color(argb: 0xFFF0_B877),
+    400: Color(argb: 0xFFE9_A45C),
+    500: Color(argb: 0xFFD9_832E),
+    600: Color(argb: 0xFFE0_954A),
+    700: Color(argb: 0xFFB9_6A20),
+    800: Color(argb: 0xFF7D_4718),
+    900: Color(argb: 0xFF4A_2B11),
+    950: Color(argb: 0xFF2C_1A0C),
+  ])
+
+  public static let frost = ColorSwatch([
+    50: Color(argb: 0xFFEE_F8FA),
+    100: Color(argb: 0xFFD7_EFF4),
+    200: Color(argb: 0xFFB2_E0EA),
+    300: Color(argb: 0xFF74_C9DC),
+    400: Color(argb: 0xFF35_ABC4),
+    500: Color(argb: 0xFF16_90A9),
+    600: Color(argb: 0xFF0F_7A92),
+    700: Color(argb: 0xFF0C_6277),
+    800: Color(argb: 0xFF0B_4F61),
+    900: Color(argb: 0xFF0D_3C4A),
+    950: Color(argb: 0xFF08_262F),
+  ])
+
+  public static let graphite = ColorSwatch([
+    50: Color(argb: 0xFFF6_F6F7),
+    100: Color(argb: 0xFFED_EDEF),
+    200: Color(argb: 0xFFE2_E2E6),
+    300: Color(argb: 0xFFC9_C9CF),
+    400: Color(argb: 0xFF8F_8F99),
+    500: Color(argb: 0xFF52_525B),
+    600: Color(argb: 0xFF3F_3F46),
+    700: Color(argb: 0xFF2B_2B31),
+    800: Color(argb: 0xFF1C_1C21),
+    900: Color(argb: 0xFF13_1317),
+    950: Color(argb: 0xFF0B_0B0E),
+  ])
+
+  public static let graphiteDark = ColorSwatch([
+    50: Color(argb: 0xFF1C_1C20),
+    100: Color(argb: 0xFF26_262B),
+    200: Color(argb: 0xFFFA_FAFA),
+    300: Color(argb: 0xFFE6_E6EA),
+    400: Color(argb: 0xFFA1_A1AA),
+    500: Color(argb: 0xFFED_EDF0),
+    600: Color(argb: 0xFFD4_D4D8),
+    700: Color(argb: 0xFFA1_A1AA),
+    800: Color(argb: 0xFF71_717A),
+    900: Color(argb: 0xFF52_525B),
+    950: Color(argb: 0xFF3F_3F46),
+  ])
+
   public static let green = ColorSwatch([
     50: Color(argb: 0xFFE9_F5EF),
     100: Color(argb: 0xFFD7_EDE2),

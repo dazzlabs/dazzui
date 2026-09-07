@@ -1,9 +1,9 @@
 import 'package:dazzui/dazzui.dart';
+import 'package:dazzui_example/host.dart';
 import 'package:dazzui_example/main.dart';
 import 'package:dazzui_example/playground_theme.dart';
 import 'package:dazzui_example/storybook/story.dart';
 import 'package:dazzui_example/storybook/story_index.dart';
-import 'package:flutter/material.dart' as material;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -80,16 +80,13 @@ class _Harness extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return material.MaterialApp(
-      debugShowCheckedModeBanner: false,
+    return Host(
+      title: 'DazzUI stories',
       home: Theme(
         data: theme.data,
-        child: material.Material(
-          type: material.MaterialType.transparency,
-          child: ColoredBox(
-            color: theme.data.vars.colorSurface,
-            child: StoryStage(selection: ref),
-          ),
+        child: ColoredBox(
+          color: theme.data.vars.colorSurface,
+          child: StoryStage(selection: ref),
         ),
       ),
     );

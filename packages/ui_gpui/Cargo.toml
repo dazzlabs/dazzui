@@ -1,6 +1,6 @@
 # The DazzUI design system for GPUI — the platform sibling of
 # `packages/ui_react`, `packages/ui_flutter` and `packages/ui_swiftui`. Same
-# tokens, same four themes, same components.
+# tokens, same ten themes, same components.
 #
 # The playground is a package of its own rather than a `[[example]]` target,
 # for the same reason the Flutter and SwiftUI examples are separate apps: the

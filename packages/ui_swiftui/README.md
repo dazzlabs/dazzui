@@ -1,7 +1,7 @@
 # DazzUI
 
 The DazzUI design system for SwiftUI — the platform sibling of
-`packages/ui_react` and `packages/ui_flutter`. Same tokens, same four themes,
+`packages/ui_react` and `packages/ui_flutter`. Same tokens, same ten themes,
 same components.
 
 **`packages/ui_react` is the standard.** Every name, prop and metric here is
@@ -106,7 +106,7 @@ hairline as separators.
 Remaining visual work includes multiline text metrics, independent shadow
 layers, and shared popup presentation: Select still uses the system menu,
 while Menu and Tooltip use overlays without collision avoidance. These need
-side-by-side rendering checks across all four themes; a successful build is
+side-by-side rendering checks across every theme; a successful build is
 not a visual parity check.
 
 | What | Why |
@@ -155,7 +155,7 @@ the catalog.
 ## Playground
 
 `Example/` holds the gallery app — six pages of components, and a Themes page
-that renders the same view under all four themes at once:
+that renders the same view under every theme at once:
 
 ```bash
 open Example/Playground.xcodeproj

@@ -226,20 +226,59 @@ impl Render for Playground {
     }
 }
 
+/// The five families, in the order the toolbar lists them. The id is the
+/// prefix of a theme's `data-theme` attribute, which is also the mode name in
+/// `terrazzo.config.mjs`.
+const FAMILIES: [(&str, &str); 5] = [
+    ("studio", "Studio"),
+    ("bright", "Bright"),
+    ("frost", "Frost"),
+    ("graphite", "Graphite"),
+    ("ember", "Ember"),
+];
+
+fn family_of(name: ThemeName) -> &'static str {
+    FAMILIES
+        .into_iter()
+        .map(|(id, _)| id)
+        .find(|id| name.attribute().starts_with(id))
+        .unwrap_or("studio")
+}
+
+/// The one theme with this family and this brightness.
+fn theme_for(family: &str, dark: bool) -> ThemeName {
+    ThemeName::ALL
+        .into_iter()
+        .find(|name| family_of(*name) == family && name.is_dark() == dark)
+        .unwrap_or(ThemeName::StudioLight)
+}
+
 impl Playground {
     fn toolbar(&self, this: &Entity<Self>) -> AnyElement {
         let vars = self.theme.variables();
-        let mut themes = SegmentedControl::new("theme", self.theme.attribute())
+        // A family and a brightness rather than ten names: that is the shape
+        // of the graph — a family is a mode, `dark` is a mode — and ten names
+        // would not fit a titlebar in any case.
+        let active = self.theme;
+        let mut families = SegmentedControl::new("theme-family", family_of(active))
             .size(SegmentedControlSize::Small)
             .on_select(act_with(this, |state, value: &SharedString, _, _| {
-                state.theme = ThemeName::ALL
-                    .into_iter()
-                    .find(|name| name.attribute() == value.as_ref())
-                    .unwrap_or(ThemeName::StudioLight);
+                state.theme = theme_for(value.as_ref(), state.theme.is_dark());
             }));
-        for name in ThemeName::ALL {
-            themes = themes.item(name.attribute(), name.label());
+        for (id, label) in FAMILIES {
+            families = families.item(id, label);
         }
+
+        let brightness = SegmentedControl::new(
+            "theme-brightness",
+            if active.is_dark() { "dark" } else { "light" },
+        )
+        .size(SegmentedControlSize::Small)
+        .item("light", "Light")
+        .item("dark", "Dark")
+        .on_select(act_with(this, |state, value: &SharedString, _, _| {
+            state.theme = theme_for(family_of(state.theme), value.as_ref() == "dark");
+        }));
 
         div()
             .flex()
@@ -257,7 +296,8 @@ impl Playground {
             )
             .child(Badge::new("GPUI").size(BadgeSize::Small))
             .child(div().flex_1())
-            .child(themes)
+            .child(families)
+            .child(brightness)
             .into_any_element()
     }
 

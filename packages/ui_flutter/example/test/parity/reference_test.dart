@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dazzui/dazzui.dart';
+import 'package:dazzui_example/host.dart';
 import 'package:dazzui_example/parity/reference.dart';
 import 'package:dazzui_example/parity/specimens.dart';
-import 'package:flutter/material.dart' as material;
 import 'package:flutter_test/flutter_test.dart';
 
 /// The React reference, measured against.
@@ -173,17 +173,14 @@ Future<Measured?> measure(
   final Widget subject = KeyedSubtree(key: subtreeKey, child: widget);
 
   await tester.pumpWidget(
-    material.MaterialApp(
-      debugShowCheckedModeBanner: false,
+    Host(
+      title: 'DazzUI parity',
       home: Theme(
         data: themeData(theme),
-        child: material.Material(
-          type: material.MaterialType.transparency,
-          child: Center(
-            child: width == null
-                ? subject
-                : SizedBox(width: width, child: subject),
-          ),
+        child: Center(
+          child: width == null
+              ? subject
+              : SizedBox(width: width, child: subject),
         ),
       ),
     ),
@@ -280,6 +277,12 @@ ThemeData themeData(String theme) => switch (theme) {
   'studio-dark' => ThemeData.studioDark(),
   'bright-light' => ThemeData.brightLight(),
   'bright-dark' => ThemeData.brightDark(),
+  'frost-light' => ThemeData.frostLight(),
+  'frost-dark' => ThemeData.frostDark(),
+  'graphite-light' => ThemeData.graphiteLight(),
+  'graphite-dark' => ThemeData.graphiteDark(),
+  'ember-light' => ThemeData.emberLight(),
+  'ember-dark' => ThemeData.emberDark(),
   _ => ThemeData.studioLight(),
 };
 

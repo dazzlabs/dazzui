@@ -31,7 +31,7 @@ final class ReferenceTests: XCTestCase {
   /// Where the parity data this package was given lives: beside the sources
   /// rather than inside them, since Xcode's synchronised folder would take
   /// everything under `Tests/` as a resource to copy into the bundle, and
-  /// four themes' worth of drawings share their file names.
+  /// every theme's drawings share their file names.
   private var parity: URL {
     URL(fileURLWithPath: #filePath)
       .deletingLastPathComponent()

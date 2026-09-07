@@ -23,7 +23,7 @@ and the theme picker sits over all of it.
 ```
 lib/
   main.dart              the window: toolbar, story tree, canvas
-  playground_theme.dart  the four themes, as the picker names them
+  playground_theme.dart  the ten themes, as the picker names them
   storybook/             the framework the stories are written against
     story.dart           Story, StoryPage, StoryGroup — the file conventions, as types
     story_index.dart     the registry: a page ships once it is named here
@@ -76,7 +76,7 @@ through the tree would only be testing the tree.
 
 ## Where to start
 
-`Tokens/Themes` → **Four at once**. A theme here is a value scoped to a subtree
+`Tokens/Themes` → **All at once**. A theme here is a value scoped to a subtree
 with the package's own `Theme` widget rather than a process-wide mode, so the
 four cards on that page are the same widget rendered four times, each resolving
 against its own variables. `Tokens/Color` → **Palette** is the reminder that a

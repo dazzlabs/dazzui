@@ -1,18 +1,25 @@
 /**
- * The four themes the token graph carries, in the order the toolbar lists
- * them. Studio Light is the default and is what `:root` holds, so it sets no
- * attribute at all — selecting it has to *remove* `data-theme` rather than
- * write `studio-light`, or the Bright and dark blocks would simply not match
- * and the page would look right for the wrong reason.
+ * The ten themes the token graph carries, in the order the toolbar lists
+ * them — the five families, light before dark. Studio Light is the default
+ * and is what `:root` holds, so it sets no attribute at all — selecting it
+ * has to *remove* `data-theme` rather than write `studio-light`, or none of
+ * the theme blocks would match and the page would look right for the wrong
+ * reason.
  *
  * Both the preview and the parity extractor read this list, which is what
- * keeps the toolbar and the reference data on the same four themes.
+ * keeps the toolbar and the reference data on the same themes.
  */
 export const THEMES = [
   { value: 'studio-light', title: 'Studio Light' },
   { value: 'studio-dark', title: 'Studio Dark' },
   { value: 'bright-light', title: 'Bright Light' },
   { value: 'bright-dark', title: 'Bright Dark' },
+  { value: 'frost-light', title: 'Frost Light' },
+  { value: 'frost-dark', title: 'Frost Dark' },
+  { value: 'graphite-light', title: 'Graphite Light' },
+  { value: 'graphite-dark', title: 'Graphite Dark' },
+  { value: 'ember-light', title: 'Ember Light' },
+  { value: 'ember-dark', title: 'Ember Dark' },
 ] as const
 
 export type ThemeValue = (typeof THEMES)[number]['value']

@@ -19,12 +19,24 @@ export type ThemeId =
   | 'studio-dark'
   | 'bright-light'
   | 'bright-dark'
+  | 'frost-light'
+  | 'frost-dark'
+  | 'graphite-light'
+  | 'graphite-dark'
+  | 'ember-light'
+  | 'ember-dark'
 
 export const THEMES: readonly { id: ThemeId; label: string }[] = [
   { id: 'studio-light', label: 'Studio Light' },
   { id: 'studio-dark', label: 'Studio Dark' },
   { id: 'bright-light', label: 'Bright Light' },
   { id: 'bright-dark', label: 'Bright Dark' },
+  { id: 'frost-light', label: 'Frost Light' },
+  { id: 'frost-dark', label: 'Frost Dark' },
+  { id: 'graphite-light', label: 'Graphite Light' },
+  { id: 'graphite-dark', label: 'Graphite Dark' },
+  { id: 'ember-light', label: 'Ember Light' },
+  { id: 'ember-dark', label: 'Ember Dark' },
 ]
 
 export type PlatformId = 'flutter' | 'swiftui' | 'gpui'

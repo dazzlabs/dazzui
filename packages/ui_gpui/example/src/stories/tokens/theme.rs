@@ -1,4 +1,4 @@
-//! `Tokens/Themes` — the four, and the argument for how they are carried.
+//! `Tokens/Themes` — all ten, and the argument for how they are carried.
 
 use dazzui::prelude::*;
 use dazzui::{
@@ -14,7 +14,7 @@ use crate::storybook::{Story, StoryPage};
 pub const PAGE: StoryPage = StoryPage::new(
     "Themes",
     &[
-        Story::page("Four at once", |_, _, cx| {
+        Story::page("All at once", |_, _, cx| {
             let vars = cx.theme().vars;
             let mut cards = div().flex().flex_wrap().gap(vars.spacing_4);
             for name in ThemeName::ALL {
@@ -23,19 +23,20 @@ pub const PAGE: StoryPage = StoryPage::new(
 
             DocPage::new("Themes")
                 .description(
-                    "Four themes, one component tree. A theme here is a value scoped to a \
-                     subtree with `themed(...)` rather than a process-wide mode, so the four \
-                     cards below are the same view rendered four times, each resolving against \
+                    "Ten themes, one component tree. A theme here is a value scoped to a \
+                     subtree with `themed(...)` rather than a process-wide mode, so the cards \
+                     below are the same view rendered once per theme, each resolving against \
                      its own variables — and each theme is a `static` a component borrows rather \
                      than a value it rebuilds.",
                 )
                 .child(
-                    Section::new("The four")
+                    Section::new("The families")
                         .description(
                             "Studio Light is the baseline the others are modes over: Studio \
                              Dark is the same skeleton on a near-black canvas, Bright is warm \
-                             paper with ink navy and an acid marker, and Bright Dark takes that \
-                             acid green as the accent itself.",
+                             paper with ink navy and an acid marker, Frost is a cool teal, \
+                             Graphite is monochrome and the only family that also tightens the \
+                             corners, and Ember is warm paper with copper.",
                         )
                         .child(cards),
                 )
@@ -43,7 +44,7 @@ pub const PAGE: StoryPage = StoryPage::new(
         }),
         Story::page("Ramps", |_, _, cx| {
             let outer = cx.theme().vars;
-            let mut page = DocPage::new("Ramps in four themes").description(
+            let mut page = DocPage::new("Ramps in every theme").description(
                 "The same six ramps, under each theme in turn. This is the page that says why a \
                  component must never name a shade: the ladder under the recipe is a different \
                  ladder in every block below, and the recipe table above them is untouched.",
