@@ -173,9 +173,9 @@ impl ShortcutRecorder {
 type Recording = (bool, Modifiers);
 
 impl RenderOnce for ShortcutRecorder {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
-        let line = hairline(vars, window);
+        let line = hairline(vars);
         let ShortcutRecorder {
             id,
             value,

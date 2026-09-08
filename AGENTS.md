@@ -53,12 +53,13 @@ The DazzUI design system, as a pnpm workspace:
 - `examples/coding-agent` (`@dazzlabs/dazzui-example-coding-agent`) — a coding
   agent's desktop interface, built entirely out of `ui_react`. It is where the
   system is *used* rather than documented: a gallery shows every component on
-  its own, and only an app has to make them agree with each other. It consumes
-  the package the way any consumer would — the two published stylesheets and
-  the components — and holds no literal values of its own. It runs in a
-  browser tab and, through [Deno Desktop](https://docs.deno.com/runtime/desktop/),
-  as a native window; `deno` is a devDependency of the package, so there is
-  nothing to install for it.
+  its own, and only an app has to make them agree with each other. It
+  consumes the package the way any consumer would — the two published
+  stylesheets and the components — and holds no literal values of its own. It
+  runs in a browser tab and, through
+  [Deno Desktop](https://docs.deno.com/runtime/desktop/), as a native window;
+  `deno` is a devDependency of the package, so there is nothing to install
+  for it.
 - `examples/canvas` (`@dazzlabs/dazzui-example-canvas`) — a design canvas, built
   the same way and asking the design system a different question. The coding
   agent is a reading app; this one has a *drawing* in the middle of it, which
@@ -310,14 +311,13 @@ list (gitignored — it is an output), and the viewer shows React's value
 beside each platform's for every specimen, with the React rendering cut
 out of the story's screenshot. Three things the reference cannot state, and so no port is held to. A
 **border's width**: Chromium rounds every border to a whole CSS pixel in
-both directions, so the half-pixel a hairline asks for on a 2x display and
-the pixel and a half a control stroke asks for both come back as 1, and two
-strokes this system deliberately tells apart are one number in the
-browser. A **length inside half a pixel**: two text systems do not agree
+both directions, so the pixel and a half a control stroke asks for comes
+back as 1, and the two strokes this system deliberately tells apart are one
+number in the browser. A **length inside half a pixel**: two text systems do not agree
 that finely, and a badge whose line box is 1.4 of an 11pt face is 21.39
 here and 21.4 there. Half a pixel *exactly* is held to, because on a 2x
-display that is a whole device pixel — the difference between `spacing.px`
-and `stroke.hairline`, which is a decision rather than noise.
+display that is a whole device pixel, and a length the design lands on a
+half step — the `0.5` of a `spacing.0-5` — is a decision rather than noise.
 
 `drift.txt` beside the data is the worklist: every check that fails today,
 as `<specimen> · <field>`, held both ways so it can only shrink. It is
@@ -392,11 +392,35 @@ The colour system reads in washes and grades:
   translucent ghost of the live one.
 - **Selection shifts weight as well as colour.** Rows rest at `labelQuiet`
   (500) and the selected entry takes the label weight (600); a pill tab's
+- **Every surface is a fill an artboard draws, and the ladder is guarded
+  at the design's own steps.** Studio's greys are 4a and 4c of the
+  BeyondTranslate design, Bright's are 4b and 4e, and the four families with
+  no artboard keep Studio's intervals. Three roles come straight off those
+  boards and are easy to conflate: `surface-column` is the nav, aside or
+  dock — a hair off the paper on 4c, *under* it on 4a and on both Bright
+  boards; `surface-muted` is the card, one step off the paper in whichever
+  direction the family leans (down in Studio, up to white in Bright); and
+  `surface-overlay` is the floating sheet — the paper in a light theme, the
+  titlebar's step in a dark one, behind a `.09` edge and a deep shadow. The
+  hover wash (`surface-subtle`, what the `normal` recipe hovers to) is an
+  alpha of the ink — 6% over paper, 7% over a dark ground — rather than an
+  opaque rung, so it moves paper, card and column by the same amount.
+  `plugins/contrast.mjs` holds the adjacent rungs to a minimum L\* step read
+  off the same boards, so a re-pointed theme cannot collapse two of them or
+  trade their places, the way Bright Light's hover once landed on its card.
   active label and an option card's title go to `labelStrong` (700, display
   cut). `stroke.control` (1.5px) draws control outlines; `stroke.hairline`
-  draws separators and halves on Retina (see `ui_react`'s
-  `src/styles/base.css`, which also carries the box-sizing and
-  reduced-motion ground rules).
+  (1px) draws separators, on every platform and at every display scale — it
+  used to halve on Retina to land on one device pixel, and against the
+  mockups the system is drawn to a halved rule read as too thin to be a
+  decision. `ui_react`'s `src/styles/base.css` carries the box-sizing and
+  reduced-motion ground rules.
+- **A separator is ink at 13% over paper, 16% over a dark ground** —
+  `color.border`, the same two numbers in every family, since the ink each
+  one substitutes already carries the difference. `border-strong` keeps its
+  rung above (17% / 20%) so a popover's edge still separates from what it
+  floats over, which lands it beside the opaque `border-muted` a checkbox or
+  a radio is outlined in rather than under it.
 - **The focus ring is the system accent, always**: `--focus-ring` on
   `:root` — 3px of primary at a per-theme alpha, offset 0, hugging the
   control the way macOS draws it. It never follows `data-tint`.
@@ -424,7 +448,7 @@ Four things that surprise people:
   Bright's primary action is ink navy whose hover lifts, and its 50–200 are
   acid-tinted washes rather than pale navy. A step is only ever reached by a
   recipe, so what a step means is the role that recipe gives it. This is what
-  lets ten themes this different share one recipe table untouched — and why a
+  lets twelve themes this different share one recipe table untouched — and why a
   shade written into a stylesheet would be a lie rather than merely a
   duplicate.
 - A recipe can re-pick its step per theme (`shade` carries a mode), because a
@@ -435,7 +459,7 @@ Four things that surprise people:
 
 ### Themes
 
-Ten, as five families over one default, defined once in `terrazzo.config.mjs`
+Twelve, as six families over one default, defined once in `terrazzo.config.mjs`
 and passed to all three plugins so the platforms cannot drift:
 
 | `data-theme`     | modes applied                     |
@@ -455,15 +479,20 @@ The modes compose rather than repeat, so a value shared along the light/dark
 axis or along a family is written once. A family whose accent reads correctly
 in both directions needs no dark corner at all — Frost is the one that does
 not have one, because a teal is a teal on either canvas, where Bright,
+| `nocturne-light` | `nocturne`                        |
+| `nocturne-dark`  | `nocturne`, `dark`, `nocturne-dark` |
 Graphite and Ember each invert or lift their ramp and so carry a second
-ladder. The order in that config is load bearing: every selector is a single
+ladder. Nocturne's blurple is written once the same way, and its dark corner
+carries only the surfaces and ink of the design system it is read off — the
+Tiller mockups' own ground, `#161826` under `#e9e9ed`. The order in that config is load bearing: every selector is a single
 attribute and so has equal specificity, and the later block wins — the family
 modes first, then `dark`, then the corners.
 
-Graphite is also the only family that moves geometry: `radius.small` through
-`radius.big` and both `frame` corners step down one rung of the same ladder,
-so the monochrome theme draws a crisper corner without inventing a
-measurement.
+Graphite and Nocturne are the two families that move geometry: `radius.small`
+through `radius.big` and both `frame` corners step down one rung of the same
+ladder. Graphite does it to draw a crisper monochrome corner; Nocturne because
+the mockups round a row at 7 and a card at 8, which is exactly where that rung
+lands.
 
 Studio Light sets **no attribute at all** — selecting it means removing
 `data-theme`, not writing `studio-light`. Writing it would leave the page
@@ -702,7 +731,7 @@ The rules an example does keep are the ones that make it worth having:
   `ff-`.
 - **Override by source order, not by force.** Where an example has to reshape a
   library component, it does it with a class of its own at one selector deeper
-  (`.ca-composer .ca-composer__input`), which is the extension point `cx()`
+  (`.wb-composer .wb-composer__input`), which is the extension point `cx()`
   documents. It never edits `ui_react`, and it never reaches for `!important`.
 - **Fixtures name real things.** The scripted data points at paths, registries
   and commands this workspace actually has. Invented paths are the first thing

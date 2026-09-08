@@ -141,8 +141,8 @@ impl RenderOnce for Menu {
             trigger,
         } = self;
 
-        latched(id.clone(), move |open, window, cx| {
-            let rule = hairline(vars, window);
+        latched(id.clone(), move |open, _window, cx| {
+            let rule = hairline(vars);
             let is_open = open.get() && !disabled;
             let trigger = trigger.map(|trigger| trigger(is_open, cx));
 
@@ -180,7 +180,7 @@ impl RenderOnce for Menu {
                             .p(vars.spacing_1)
                             .rounded(vars.radius_large)
                             .border(rule)
-                            .bg(vars.color_surface)
+                            .bg(vars.color_surface_overlay)
                             .border_color(vars.color_border_strong)
                             .token_shadow(vars.shadow_lg)
                             .occlude()

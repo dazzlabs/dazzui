@@ -22,6 +22,8 @@ progress:
           graphite-dark: "{base.color.graphite-dark.500}"
           ember: "{base.color.ember.600}"
           ember-dark: "{base.color.ember-dark.500}"
+          nocturne: "{base.color.nocturne.600}"
+          nocturne-dark: "{base.color.nocturne.500}"
     to:
       $type: color
       # The one stop off any ramp: Studio's light end lands between
@@ -38,3 +40,5 @@ progress:
           graphite-dark: "{base.color.graphite-dark.400}"
           ember: "{base.color.ember.300}"
           ember-dark: "{base.color.ember-dark.300}"
+          nocturne: "{base.color.nocturne.300}"
+          nocturne-dark: "{base.color.nocturne.300}"

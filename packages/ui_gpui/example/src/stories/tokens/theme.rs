@@ -1,4 +1,4 @@
-//! `Tokens/Themes` — all ten, and the argument for how they are carried.
+//! `Tokens/Themes` — all twelve, and the argument for how they are carried.
 
 use dazzui::prelude::*;
 use dazzui::{
@@ -23,7 +23,7 @@ pub const PAGE: StoryPage = StoryPage::new(
 
             DocPage::new("Themes")
                 .description(
-                    "Ten themes, one component tree. A theme here is a value scoped to a \
+                    "Twelve themes, one component tree. A theme here is a value scoped to a \
                      subtree with `themed(...)` rather than a process-wide mode, so the cards \
                      below are the same view rendered once per theme, each resolving against \
                      its own variables — and each theme is a `static` a component borrows rather \
@@ -36,7 +36,8 @@ pub const PAGE: StoryPage = StoryPage::new(
                              Dark is the same skeleton on a near-black canvas, Bright is warm \
                              paper with ink navy and an acid marker, Frost is a cool teal, \
                              Graphite is monochrome and the only family that also tightens the \
-                             corners, and Ember is warm paper with copper.",
+                             corners, Ember is warm paper with copper, and Nocturne is a quiet \
+                             blue-grey with a blurple accent, drawn dark-first.",
                         )
                         .child(cards),
                 )

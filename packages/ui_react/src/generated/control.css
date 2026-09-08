@@ -94,7 +94,8 @@
 [data-theme='bright-dark'],
 [data-theme='frost-dark'],
 [data-theme='graphite-dark'],
-[data-theme='ember-dark'] {
+[data-theme='ember-dark'],
+[data-theme='nocturne-dark'] {
   --focus-ring: color-mix(in srgb, var(--color-primary-600) 50%, transparent);
 }
 
@@ -187,7 +188,9 @@
 [data-theme='graphite-dark'] [data-tint],
 [data-theme='graphite-dark'][data-tint],
 [data-theme='ember-dark'] [data-tint],
-[data-theme='ember-dark'][data-tint] {
+[data-theme='ember-dark'][data-tint],
+[data-theme='nocturne-dark'] [data-tint],
+[data-theme='nocturne-dark'][data-tint] {
   --control-color-filled-surface-hovered: var(--tint-600);
   --control-color-filled-surface-normal: var(--tint-500);
   --control-color-filled-surface-pressed: color-mix(in srgb, var(--tint-600) 90%, transparent);

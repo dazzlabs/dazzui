@@ -446,6 +446,37 @@ base:
         $value: "#4a2b11"
       "950":
         $value: "#2c1a0c"
+    # Nocturne's blurple, read off the design system the Tiller mockups are
+    # drawn in: a quiet blue-grey interface whose accent is "a line and a
+    # glow rather than a flood". One ladder serves both directions, the way
+    # Frost's does — the mockup's light accent (#6f60c6) is the 700 the light
+    # recipes print text in, and its dark accent (#9184d9) is the 500 the
+    # dark recipes fill with, so each theme reaches its own accent through
+    # the recipe table untouched. The hover dims rather than lifts on the
+    # dark canvas, as Studio's and Frost's do.
+    nocturne:
+      "50":
+        $value: "#f5f4ff"
+      "100":
+        $value: "#e7e5fe"
+      "200":
+        $value: "#d2cefd"
+      "300":
+        $value: "#b5abfc"
+      "400":
+        $value: "#a094e8"
+      "500":
+        $value: "#9184d9"
+      "600":
+        $value: "#8375d1"
+      "700":
+        $value: "#6f60c6"
+      "800":
+        $value: "#5b4bb4"
+      "900":
+        $value: "#453897"
+      "950":
+        $value: "#2d2465"
   font-weight:
     $type: fontWeight
     thin:

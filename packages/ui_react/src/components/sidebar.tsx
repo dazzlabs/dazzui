@@ -362,12 +362,30 @@ export function SidebarMenuItem({
 export type SidebarMenuButtonSize = 'small' | 'medium' | 'large'
 
 /**
- * `default` selects with the filled recipe. `outline` is the raised row a
- * workspace switcher takes. `plain` is printed in the ramp rather than filled
- * with it, for the row that adds rather than selects — "New", "Add a
- * provider".
+ * The `control.color.*` recipes, named as Button and Badge name them — but a
+ * row spends them differently, because a row idles transparent rather than
+ * as a chip. What the variant decides is how the row marks itself as the
+ * **current page**, and its hover follows from that: a row that selects with
+ * a fill can afford an accent hover, since there is a long way between an 8%
+ * wash and a solid one; a row that selects with a wash cannot, and hovers
+ * neutral instead.
+ *
+ * `filled` is the destination row a window navigates by. `tinted` marks the
+ * page more quietly, for a column whose selection is one of many. `outlined`
+ * rings it instead of washing it, where the rows carry colour of their own.
+ * `recessed` selects in grey, for a list whose selection is a cursor rather
+ * than a destination — a file, a branch, a suite. `normal` is the raised row
+ * a workspace switcher or an account takes, and is never a page. `plain` is
+ * printed in the ramp rather than filled with it, for the row that adds
+ * rather than selects — "New", "Add a provider".
  */
-export type SidebarMenuButtonVariant = 'default' | 'outline' | 'plain'
+export type SidebarMenuButtonVariant =
+  | 'filled'
+  | 'tinted'
+  | 'outlined'
+  | 'recessed'
+  | 'normal'
+  | 'plain'
 
 export interface SidebarMenuButtonProps extends ComponentPropsWithoutRef<'button'> {
   /** Marks this row as the page or pane currently shown. */
@@ -392,7 +410,7 @@ export function SidebarMenuButton({
   active = false,
   icon,
   size = 'medium',
-  variant = 'default',
+  variant = 'filled',
   tint = 'primary',
   tooltip,
   render,
@@ -462,12 +480,29 @@ export function SidebarMenuAction({
   )
 }
 
+export interface SidebarMenuBadgeProps extends ComponentPropsWithoutRef<'span'> {
+  /**
+   * Which ramp the selected row's ink comes off. It is stated here as well
+   * as on the row because the count is the row's *sibling* — the ramp a
+   * `data-tint` binds reaches a row's children, not the box beside it — so
+   * a row given a tint of its own passes the same one here.
+   */
+  tint?: Tint
+}
+
 /** A count on a row's trailing edge, in the row's own colour. */
 export function SidebarMenuBadge({
+  tint = 'primary',
   className,
   ...props
-}: ComponentPropsWithoutRef<'span'>) {
-  return <span className={cx('dz-sidebar__menu-badge', className)} {...props} />
+}: SidebarMenuBadgeProps) {
+  return (
+    <span
+      data-tint={tint}
+      className={cx('dz-sidebar__menu-badge', className)}
+      {...props}
+    />
+  )
 }
 
 /** The rows under a row, set in by a hairline. */
@@ -489,7 +524,7 @@ export function SidebarMenuSubItem({
 
 export interface SidebarMenuSubButtonProps extends Omit<
   SidebarMenuButtonProps,
-  'size' | 'variant' | 'tooltip'
+  'size' | 'tooltip'
 > {
   size?: 'small' | 'medium'
 }

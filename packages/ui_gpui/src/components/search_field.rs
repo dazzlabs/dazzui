@@ -76,7 +76,7 @@ impl RenderOnce for SearchField {
             .gap(metrics.gap)
             .px(vars.spacing_3)
             .rounded(vars.radius_medium)
-            .border(hairline(vars, window))
+            .border(hairline(vars))
             .bg(if focused {
                 vars.color_surface
             } else {

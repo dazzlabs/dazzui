@@ -226,15 +226,16 @@ impl Render for Playground {
     }
 }
 
-/// The five families, in the order the toolbar lists them. The id is the
+/// The six families, in the order the toolbar lists them. The id is the
 /// prefix of a theme's `data-theme` attribute, which is also the mode name in
 /// `terrazzo.config.mjs`.
-const FAMILIES: [(&str, &str); 5] = [
+const FAMILIES: [(&str, &str); 6] = [
     ("studio", "Studio"),
     ("bright", "Bright"),
     ("frost", "Frost"),
     ("graphite", "Graphite"),
     ("ember", "Ember"),
+    ("nocturne", "Nocturne"),
 ];
 
 fn family_of(name: ThemeName) -> &'static str {

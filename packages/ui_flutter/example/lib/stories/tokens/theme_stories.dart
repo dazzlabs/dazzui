@@ -6,7 +6,7 @@ import '../../storybook/stage.dart';
 import '../../storybook/story.dart';
 import 'color_stories.dart';
 
-/// `Tokens/Themes` — all ten, and the argument for how they are carried.
+/// `Tokens/Themes` — all twelve, and the argument for how they are carried.
 class ThemeStories {
   ThemeStories._();
 
@@ -28,7 +28,7 @@ class _AllAtOnce extends StatelessWidget {
     return DocPage(
       'Themes',
       description:
-          'Ten themes, one widget tree. A theme here is a value scoped to a '
+          'Twelve themes, one widget tree. A theme here is a value scoped to a '
           'subtree with the package’s own `Theme` widget rather than a '
           'process-wide mode, so the cards below are the same widget rendered '
           'once per theme, each resolving against its own variables.',
@@ -40,7 +40,8 @@ class _AllAtOnce extends StatelessWidget {
               'Dark is the same skeleton on a near-black canvas, Bright is '
               'warm paper with ink navy and an acid marker, Frost is a cool '
               'teal, Graphite is monochrome and the only family that also '
-              'tightens the corners, and Ember is warm paper with copper.',
+              'tightens the corners, Ember is warm paper with copper, and Nocturne '
+              'is a quiet blue-grey with a blurple accent, drawn dark-first.',
           children: [
             TileGrid(
               min: 300,

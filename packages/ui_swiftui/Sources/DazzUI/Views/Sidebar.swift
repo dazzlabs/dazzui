@@ -130,7 +130,7 @@ public struct Sidebar<Header: View, Content: View>: View {
       rowList(vars: vars)
     }
     .frame(width: resolvedWidth)
-    .background(vars.colorSurfaceMuted)
+    .background(vars.colorSurfaceColumn)
     .rule(vars.colorBorder, edge: .trailing, width: hairline)
     .overlay(alignment: .trailing) {
       if resizable { resizer(vars: vars) }

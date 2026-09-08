@@ -8,7 +8,7 @@ use gpui::{
 
 use crate::generated::theme_variables::{self, ThemeVariables};
 
-/// The ten themes, as they are named in `terrazzo.config.mjs`.
+/// The twelve themes, as they are named in `terrazzo.config.mjs`.
 ///
 /// Studio Light is the default and carries no attribute in the React package
 /// at all — selecting it means removing `data-theme` rather than writing
@@ -38,10 +38,14 @@ pub enum ThemeName {
     EmberLight,
     /// Charcoal canvas with the same copper lifted to an amber.
     EmberDark,
+    /// Cool white paper, blue-grey ink and a blurple accent.
+    NocturneLight,
+    /// A blue-grey near-black, with the same blurple lifted a step.
+    NocturneDark,
 }
 
 impl ThemeName {
-    pub const ALL: [ThemeName; 10] = [
+    pub const ALL: [ThemeName; 12] = [
         ThemeName::StudioLight,
         ThemeName::StudioDark,
         ThemeName::BrightLight,
@@ -52,6 +56,8 @@ impl ThemeName {
         ThemeName::GraphiteDark,
         ThemeName::EmberLight,
         ThemeName::EmberDark,
+        ThemeName::NocturneLight,
+        ThemeName::NocturneDark,
     ];
 
     /// What `data-theme` would carry on the web.
@@ -67,6 +73,8 @@ impl ThemeName {
             ThemeName::GraphiteDark => "graphite-dark",
             ThemeName::EmberLight => "ember-light",
             ThemeName::EmberDark => "ember-dark",
+            ThemeName::NocturneLight => "nocturne-light",
+            ThemeName::NocturneDark => "nocturne-dark",
         }
     }
 
@@ -83,10 +91,12 @@ impl ThemeName {
             ThemeName::GraphiteDark => "Graphite Dark",
             ThemeName::EmberLight => "Ember Light",
             ThemeName::EmberDark => "Ember Dark",
+            ThemeName::NocturneLight => "Nocturne Light",
+            ThemeName::NocturneDark => "Nocturne Dark",
         }
     }
 
-    /// Is this one of the five drawn on a dark canvas?
+    /// Is this one of the six drawn on a dark canvas?
     pub const fn is_dark(self) -> bool {
         matches!(
             self,
@@ -95,6 +105,7 @@ impl ThemeName {
                 | ThemeName::FrostDark
                 | ThemeName::GraphiteDark
                 | ThemeName::EmberDark
+                | ThemeName::NocturneDark
         )
     }
 
@@ -111,6 +122,8 @@ impl ThemeName {
             ThemeName::GraphiteDark => &theme_variables::GRAPHITE_DARK,
             ThemeName::EmberLight => &theme_variables::EMBER_LIGHT,
             ThemeName::EmberDark => &theme_variables::EMBER_DARK,
+            ThemeName::NocturneLight => &theme_variables::NOCTURNE_LIGHT,
+            ThemeName::NocturneDark => &theme_variables::NOCTURNE_DARK,
         }
     }
 }

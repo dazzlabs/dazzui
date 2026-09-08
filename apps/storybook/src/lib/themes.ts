@@ -1,6 +1,6 @@
 /**
- * The ten themes the token graph carries, in the order the toolbar lists
- * them — the five families, light before dark. Studio Light is the default
+ * The twelve themes the token graph carries, in the order the toolbar lists
+ * them — the six families, light before dark. Studio Light is the default
  * and is what `:root` holds, so it sets no attribute at all — selecting it
  * has to *remove* `data-theme` rather than write `studio-light`, or none of
  * the theme blocks would match and the page would look right for the wrong
@@ -20,6 +20,8 @@ export const THEMES = [
   { value: 'graphite-dark', title: 'Graphite Dark' },
   { value: 'ember-light', title: 'Ember Light' },
   { value: 'ember-dark', title: 'Ember Dark' },
+  { value: 'nocturne-light', title: 'Nocturne Light' },
+  { value: 'nocturne-dark', title: 'Nocturne Dark' },
 ] as const
 
 export type ThemeValue = (typeof THEMES)[number]['value']

@@ -74,9 +74,9 @@ impl OptionCard {
 }
 
 impl RenderOnce for OptionCard {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
-        let rule = hairline(vars, window);
+        let rule = hairline(vars);
         let OptionCard {
             id,
             title,

@@ -86,7 +86,7 @@ public struct Toast<Leading: View, Message: View, Trailing: View>: View {
     // cap truncates. A `maxWidth` frame alone would take whatever width it
     // was offered, which in a viewport is all of it.
     .fixedSize(horizontal: true, vertical: false)
-    .background(vars.colorSurface)
+    .background(vars.colorSurfaceOverlay)
     .clipShape(RoundedRectangle(cornerRadius: vars.radiusBig, style: .circular))
     .border(vars.colorBorderStrong, width: hairline, cornerRadius: vars.radiusBig)
     .tokenShadow(vars.shadowMd)

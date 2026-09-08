@@ -11,6 +11,7 @@ frame:
         mode:
           bright: "{base.corner.xl}"
           graphite: "{base.corner.xl}"
+          nocturne: "{base.corner.xl}"
   popover:
     radius:
       $type: dimension
@@ -19,6 +20,7 @@ frame:
         mode:
           bright: "{base.corner.xl-bright}"
           graphite: "{base.corner.lg}"
+          nocturne: "{base.corner.lg}"
   titlebar:
     size:
       $type: dimension

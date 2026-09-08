@@ -86,7 +86,7 @@ impl Default for Callout {
 }
 
 impl RenderOnce for Callout {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
         let has_description = self.title.is_some() && self.description.is_some();
         let (padding_block, padding_inline, radius) = match self.size {
@@ -129,7 +129,7 @@ impl RenderOnce for Callout {
             // something the size of a word and twice too heavy spread across
             // a full width.
             .bg(vars.wash(self.tint, vars.wash_surface))
-            .border(hairline(vars, window))
+            .border(hairline(vars))
             .border_color(vars.wash(self.tint, vars.wash_edge))
             .when_some(self.icon, |el, icon| {
                 el.child(

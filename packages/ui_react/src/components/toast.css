@@ -17,7 +17,7 @@
      sits tight in the corner it lives in. */
   padding-inline-start: var(--spacing-3);
   padding-inline-end: var(--spacing-1-5);
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-overlay);
   border: var(--stroke-hairline) solid var(--color-border-strong);
   border-radius: var(--radius-big);
   box-shadow: var(--shadow-md);
@@ -98,7 +98,7 @@
 .dz-toast-viewport {
   position: fixed;
   inset-inline: 0;
-  z-index: 30;
+  z-index: var(--layer-toast);
   display: flex;
   align-items: center;
   gap: var(--spacing-2);

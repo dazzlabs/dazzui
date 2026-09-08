@@ -65,7 +65,7 @@ impl ParentElement for Dialog {
 }
 
 impl RenderOnce for Dialog {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
 
         div()
@@ -75,8 +75,8 @@ impl RenderOnce for Dialog {
             .w(self.width.unwrap_or(vars.dialog_width))
             .max_w_full()
             .max_h_full()
-            .bg(vars.color_surface)
-            .border(hairline(vars, window))
+            .bg(vars.color_surface_overlay)
+            .border(hairline(vars))
             .border_color(match self.tone {
                 DialogTone::Default => vars.color_border_strong,
                 DialogTone::Danger => vars.color_danger.shade(600).opacity(DANGER_EDGE),
@@ -112,7 +112,7 @@ impl DialogHeader {
 }
 
 impl RenderOnce for DialogHeader {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
 
         div()
@@ -142,11 +142,7 @@ impl RenderOnce for DialogHeader {
                         .child(subtitle),
                 )
             })
-            .child(rule(
-                vars.color_border,
-                Edge::Bottom,
-                hairline(vars, window),
-            ))
+            .child(rule(vars.color_border, Edge::Bottom, hairline(vars)))
     }
 }
 
@@ -222,7 +218,7 @@ impl ParentElement for DialogFooter {
 }
 
 impl RenderOnce for DialogFooter {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
 
         div()
@@ -235,7 +231,7 @@ impl RenderOnce for DialogFooter {
             .px(vars.spacing_5)
             .bg(vars.color_surface_chrome)
             .children(self.children)
-            .child(rule(vars.color_border, Edge::Top, hairline(vars, window)))
+            .child(rule(vars.color_border, Edge::Top, hairline(vars)))
     }
 }
 

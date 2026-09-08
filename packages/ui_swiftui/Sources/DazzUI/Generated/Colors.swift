@@ -195,6 +195,20 @@ public enum Colors {
     950: Color(argb: 0xFF0A_0A0A),
   ])
 
+  public static let nocturne = ColorSwatch([
+    50: Color(argb: 0xFFF5_F4FF),
+    100: Color(argb: 0xFFE7_E5FE),
+    200: Color(argb: 0xFFD2_CEFD),
+    300: Color(argb: 0xFFB5_ABFC),
+    400: Color(argb: 0xFFA0_94E8),
+    500: Color(argb: 0xFF91_84D9),
+    600: Color(argb: 0xFF83_75D1),
+    700: Color(argb: 0xFF6F_60C6),
+    800: Color(argb: 0xFF5B_4BB4),
+    900: Color(argb: 0xFF45_3897),
+    950: Color(argb: 0xFF2D_2465),
+  ])
+
   public static let red = ColorSwatch([
     50: Color(argb: 0xFFFD_F2F2),
     100: Color(argb: 0xFFF9_E2E2),

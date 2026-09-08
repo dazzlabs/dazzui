@@ -77,7 +77,7 @@ impl ParentElement for TableHead {
 }
 
 impl RenderOnce for TableHead {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
 
         div()
@@ -86,11 +86,7 @@ impl RenderOnce for TableHead {
             .px(vars.spacing_5)
             .bg(vars.color_surface_chrome)
             .children(self.children)
-            .child(rule(
-                vars.color_border,
-                Edge::Bottom,
-                hairline(vars, window),
-            ))
+            .child(rule(vars.color_border, Edge::Bottom, hairline(vars)))
     }
 }
 
@@ -147,9 +143,9 @@ impl ParentElement for TableRow {
 }
 
 impl RenderOnce for TableRow {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
-        let line = hairline(vars, window);
+        let line = hairline(vars);
         let TableRow {
             id,
             active,

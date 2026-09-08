@@ -36,7 +36,7 @@ impl ParentElement for Aside {
 }
 
 impl RenderOnce for Aside {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
 
         div()
@@ -49,6 +49,6 @@ impl RenderOnce for Aside {
             .p(vars.spacing_4)
             .bg(vars.color_surface_muted)
             .children(self.children)
-            .child(rule(vars.color_border, Edge::Left, hairline(vars, window)))
+            .child(rule(vars.color_border, Edge::Left, hairline(vars)))
     }
 }

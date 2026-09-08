@@ -25,6 +25,8 @@ export type ThemeId =
   | 'graphite-dark'
   | 'ember-light'
   | 'ember-dark'
+  | 'nocturne-light'
+  | 'nocturne-dark'
 
 export const THEMES: readonly { id: ThemeId; label: string }[] = [
   { id: 'studio-light', label: 'Studio Light' },
@@ -37,6 +39,8 @@ export const THEMES: readonly { id: ThemeId; label: string }[] = [
   { id: 'graphite-dark', label: 'Graphite Dark' },
   { id: 'ember-light', label: 'Ember Light' },
   { id: 'ember-dark', label: 'Ember Dark' },
+  { id: 'nocturne-light', label: 'Nocturne Light' },
+  { id: 'nocturne-dark', label: 'Nocturne Dark' },
 ]
 
 export type PlatformId = 'flutter' | 'swiftui' | 'gpui'
@@ -127,9 +131,9 @@ export function sameColour(a: string, b: string): boolean {
  *
  * Two text systems do not agree to the pixel, so a length passes while it is
  * *inside* half a pixel. Half a pixel exactly does not: on a 2x display that
- * is one device pixel, the difference between a rule drawn at `spacing.px`
- * and one drawn at `stroke.hairline` — a decision about the design rather
- * than noise from a text engine.
+ * is a whole device pixel, and a length the design lands on a half step —
+ * the `0.5` of a `spacing.0-5` — is a decision about the design rather than
+ * noise from a text engine.
  */
 export const HALF_A_PIXEL = 0.5
 

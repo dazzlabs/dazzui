@@ -137,7 +137,7 @@ public struct Menu<Trigger: View>: View {
     }
     .padding(vars.spacing1)
     .frame(minWidth: vars.menuMinWidth, alignment: .leading)
-    .background(vars.colorSurface)
+    .background(vars.colorSurfaceOverlay)
     .clipShape(RoundedRectangle(cornerRadius: vars.radiusLarge, style: .circular))
     .border(vars.colorBorderStrong, width: hairline, cornerRadius: vars.radiusLarge)
     .tokenShadow(vars.shadowLg)

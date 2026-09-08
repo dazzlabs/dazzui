@@ -154,7 +154,7 @@ impl ParentElement for Section {
 }
 
 impl RenderOnce for Section {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
 
         div()
@@ -167,7 +167,7 @@ impl RenderOnce for Section {
                     .flex_col()
                     .gap(vars.spacing_2)
                     .pb(vars.spacing_3)
-                    .border_b(hairline(vars, window))
+                    .border_b(hairline(vars))
                     .border_color(vars.color_border)
                     .child(
                         div()

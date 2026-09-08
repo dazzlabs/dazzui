@@ -22,7 +22,7 @@
 /* With an inset sidebar the window's ground is the sidebar's, and the
    content is the sheet raised on it. */
 .dz-sidebar-wrapper:has(> .dz-sidebar[data-variant='inset']) {
-  background-color: var(--color-surface-muted);
+  background-color: var(--color-surface-column);
 }
 
 /* The column ---------------------------------------------------------------
@@ -55,7 +55,7 @@
 .dz-sidebar__container {
   position: absolute;
   inset-block: 0;
-  z-index: 10;
+  z-index: var(--layer-sidebar-column);
   display: flex;
   width: var(--sidebar-width);
   transition:
@@ -108,7 +108,7 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
-  background-color: var(--color-surface-muted);
+  background-color: var(--color-surface-column);
 }
 
 .dz-sidebar[data-collapsible='none'] {
@@ -158,7 +158,7 @@
 .dz-sidebar__rail {
   position: absolute;
   inset-block: 0;
-  z-index: 20;
+  z-index: var(--layer-sidebar-rail);
   width: var(--spacing-4);
   padding: 0;
   border: 0;
@@ -361,6 +361,7 @@
   cursor: pointer;
   transition:
     background-color var(--motion-duration) var(--motion-easing),
+    box-shadow var(--motion-duration) var(--motion-easing),
     color var(--motion-duration) var(--motion-easing);
 }
 
@@ -373,46 +374,118 @@
   white-space: nowrap;
 }
 
-.dz-sidebar__menu-button:hover:not(:disabled):not([aria-current]) {
-  background-color: var(--control-color-plain-surface-hovered);
-  color: var(--color-content);
-}
-
-.dz-sidebar__menu-button[aria-current] {
-  background-color: var(--control-color-filled-surface-normal);
-  color: var(--control-color-filled-content-normal);
-}
-
-.dz-sidebar__menu-button:disabled {
-  cursor: not-allowed;
-  color: var(--control-color-normal-content-disabled);
-}
-
 .dz-sidebar__menu-button:focus-visible {
   outline: var(--focus-width) solid var(--focus-ring);
   outline-offset: var(--focus-offset);
 }
 
-/* Variants ---------------------------------------------------------------- */
+/* Variants ----------------------------------------------------------------
+ * The six recipes, spent as a row spends them. A row idles transparent in
+ * every variant but `normal`, so what the variant decides is how the row
+ * marks itself as the *current page* — and the hover follows from that. A
+ * row that selects with a fill can afford an accent hover: there is a long
+ * way between an 8% wash and a solid one. A row that selects with a wash
+ * cannot, since an accent hover would be its selected state one grade short,
+ * so it hovers in grey — which is also what the neutral variants do, having
+ * no accent to preview.
+ *
+ * That grey is `recessed`'s two steps spent one rung up: a row with no
+ * resting chip puts the shallower one under the pointer and the deeper one
+ * on the page it is on.
+ */
 
-/* The raised row: a workspace switcher, an account. */
-.dz-sidebar__menu-button[data-variant='outline'] {
-  background-color: var(--color-surface);
+/* `filled` — the destination row a window navigates by, and the default. */
+.dz-sidebar__menu-button[data-variant='filled']:hover:not(:disabled):not(
+    [aria-current]
+  ) {
+  background-color: var(--control-color-plain-surface-hovered);
+  color: var(--color-content);
+}
+
+.dz-sidebar__menu-button[data-variant='filled'][aria-current] {
+  background-color: var(--control-color-filled-surface-normal);
+  color: var(--control-color-filled-content-normal);
+}
+
+/* `tinted` — the page marked in a wash, for a column where a run of filled
+   rows would shout: sessions, saved views, a list one of whose entries
+   merely happens to be open. */
+.dz-sidebar__menu-button[data-variant='tinted'][aria-current] {
+  background-color: var(--control-color-tinted-surface-normal);
+  color: var(--control-color-tinted-content-normal);
+}
+
+/* `outlined` — ringed rather than washed, for rows that carry colour of
+   their own and would fight a wash: a diff's counts, a suite's result. */
+.dz-sidebar__menu-button[data-variant='outlined'][aria-current] {
+  box-shadow: 0 0 0 var(--stroke-hairline)
+    var(--control-color-outlined-border-normal);
+  color: var(--control-color-outlined-content-normal);
+}
+
+/* `recessed` — selection in grey, for a list whose selected entry is a
+   cursor rather than a destination: a file, a branch, a worktree. */
+.dz-sidebar__menu-button[data-variant='recessed'][aria-current] {
+  background-color: var(--control-color-recessed-surface-hovered);
+  color: var(--control-color-recessed-content-normal);
+}
+
+/* The grey hover the three of them share. */
+.dz-sidebar__menu-button[data-variant='tinted']:hover:not(:disabled):not(
+    [aria-current]
+  ),
+.dz-sidebar__menu-button[data-variant='outlined']:hover:not(:disabled):not(
+    [aria-current]
+  ),
+.dz-sidebar__menu-button[data-variant='recessed']:hover:not(:disabled):not(
+    [aria-current]
+  ) {
+  background-color: var(--control-color-recessed-surface-normal);
+  color: var(--color-content);
+}
+
+/* `normal` — the raised row: a workspace switcher, an account. It is a
+   control standing in the column rather than one of its rows, so it is the
+   one variant with a resting surface, and the one whose selected state is
+   only deeper rather than accented. */
+.dz-sidebar__menu-button[data-variant='normal'] {
+  background-color: var(--control-color-normal-surface-normal);
   box-shadow: 0 0 0 var(--stroke-hairline) var(--color-border);
 }
 
-.dz-sidebar__menu-button[data-variant='outline']:hover:not(:disabled):not(
+.dz-sidebar__menu-button[data-variant='normal']:hover:not(:disabled):not(
     [aria-current]
   ) {
   box-shadow: 0 0 0 var(--stroke-hairline)
     var(--control-color-outlined-border-hovered);
 }
 
-/* The row that adds rather than selects: printed in the ramp's text grade
-   instead of filled with it, and never the current page. */
+.dz-sidebar__menu-button[data-variant='normal'][aria-current] {
+  background-color: var(--control-color-normal-surface-hovered);
+  box-shadow: 0 0 0 var(--stroke-hairline)
+    var(--control-color-normal-border-normal);
+  color: var(--control-color-normal-content-normal);
+}
+
+/* `plain` — the row that adds rather than selects: printed in the ramp's
+   text grade instead of filled with it, and never the current page. */
 .dz-sidebar__menu-button[data-variant='plain'] {
   color: var(--control-color-plain-content-normal);
   font-weight: var(--label-medium-font-weight);
+}
+
+.dz-sidebar__menu-button[data-variant='plain']:hover:not(:disabled) {
+  background-color: var(--control-color-plain-surface-hovered);
+  color: var(--control-color-plain-content-hovered);
+}
+
+/* One dead look for all six, last so it wins over the selected states a
+   variant declares at the same weight. */
+.dz-sidebar__menu-button[data-variant]:disabled {
+  background-color: transparent;
+  box-shadow: none;
+  color: var(--control-color-normal-content-disabled);
+  cursor: not-allowed;
 }
 
 /* Sizes ------------------------------------------------------------------- */
@@ -450,7 +523,7 @@
 /* The container corner rather than the control one: a two-line row is a box
    that grows with what it holds, and Bright's pill is wrong for that. */
 .dz-sidebar__menu-button[data-size='large'] {
-  height: var(--spacing-12);
+  min-height: var(--spacing-12);
   padding-block: var(--spacing-2);
   padding-inline: var(--spacing-2-5);
   border-radius: var(--radius-large);
@@ -503,7 +576,9 @@
 }
 
 /* The count follows the row's colour, so a selected row's count turns with
-   it rather than staying grey on accent. */
+   it rather than staying grey on accent. It carries a `data-tint` of its
+   own because it is the row's sibling rather than its child, and a ramp
+   bound on the row would not reach it. */
 .dz-sidebar__menu-badge {
   display: flex;
   align-items: center;
@@ -526,8 +601,27 @@
   color: var(--color-content);
 }
 
-.dz-sidebar__menu-button[aria-current] ~ .dz-sidebar__menu-badge {
+/* Selected, it takes whatever ink the row's variant turned to. */
+.dz-sidebar__menu-button[data-variant='filled'][aria-current]
+  ~ .dz-sidebar__menu-badge {
   color: var(--control-color-filled-content-normal);
+}
+
+.dz-sidebar__menu-button[data-variant='tinted'][aria-current]
+  ~ .dz-sidebar__menu-badge {
+  color: var(--control-color-tinted-content-normal);
+}
+
+.dz-sidebar__menu-button[data-variant='outlined'][aria-current]
+  ~ .dz-sidebar__menu-badge {
+  color: var(--control-color-outlined-content-normal);
+}
+
+.dz-sidebar__menu-button[data-variant='recessed'][aria-current]
+  ~ .dz-sidebar__menu-badge,
+.dz-sidebar__menu-button[data-variant='normal'][aria-current]
+  ~ .dz-sidebar__menu-badge {
+  color: var(--color-content);
 }
 
 /* Sub-menus --------------------------------------------------------------- */

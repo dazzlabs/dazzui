@@ -44,7 +44,7 @@ public struct Dialog<Content: View>: View {
       content()
     }
     .frame(width: width ?? vars.dialogWidth)
-    .background(vars.colorSurface)
+    .background(vars.colorSurfaceOverlay)
     .clipShape(RoundedRectangle(cornerRadius: vars.frameWindowRadius, style: .circular))
     .border(border, width: hairline, cornerRadius: vars.frameWindowRadius)
     .tokenShadow(vars.shadowLg)

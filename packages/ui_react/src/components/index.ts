@@ -80,6 +80,7 @@ export {
   SidebarMenuAction,
   type SidebarMenuActionProps,
   SidebarMenuBadge,
+  type SidebarMenuBadgeProps,
   SidebarMenuButton,
   type SidebarMenuButtonProps,
   type SidebarMenuButtonSize,

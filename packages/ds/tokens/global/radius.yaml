@@ -15,6 +15,11 @@
 # ladder, so the monochrome theme draws a crisper corner without inventing a
 # measurement. `tiny` is where the ladder runs out and, like Bright, it is
 # left alone — a chip at 7px is already the tightest corner the design has.
+#
+# Nocturne takes the same step down, for a different reason: the mockups it
+# is drawn from round a row at 7 and a card at 8, which is exactly where
+# Graphite's ladder lands, so it re-points the same rungs rather than
+# carrying a third corner scale.
 radius:
   $type: dimension
   none:
@@ -29,22 +34,26 @@ radius:
       mode:
         bright: 9999px
         graphite: "{base.corner.xs}"
+        nocturne: "{base.corner.xs}"
   medium:
     $value: "{base.corner.md}"
     $extensions:
       mode:
         bright: 9999px
         graphite: "{base.corner.sm}"
+        nocturne: "{base.corner.sm}"
   large:
     $value: "{base.corner.lg}"
     $extensions:
       mode:
         graphite: "{base.corner.md}"
+        nocturne: "{base.corner.md}"
   big:
     $value: "{base.corner.xl}"
     $extensions:
       mode:
         bright: "{base.corner.xl-bright}"
         graphite: "{base.corner.lg}"
+        nocturne: "{base.corner.lg}"
   full:
     $value: 9999px

@@ -18,15 +18,27 @@
 }
 
 /*
- * A separator is one *device* pixel. At 1x that is the 1px the token holds;
- * on Retina a 1px CSS line is twice the weight of the real thing, so the
- * variable halves. Components draw separators with `--stroke-hairline` to
- * pick this up; drawn control outlines use `--stroke-control` and stay put.
+ * The stacking order, written once, because a number that only means
+ * something beside four others cannot be read where it is used. The three
+ * window layers are body portals, so the DOM says nothing about which of
+ * them is on top; only these numbers do.
+ *
+ * A popup outranks a dialog because it is opened *from* one — a Select in a
+ * form sheet is the case — and a toast outranks both, since it reports on
+ * what the sheet just did. The sidebar's two are in this list rather than
+ * private to it because `.dz-sidebar` is `position: relative` with no
+ * z-index of its own and so shares the root stacking context: its rail
+ * really would paint through a scrim if it were numbered as if it did not.
+ *
+ * These are not tokens. Stacking is a browser mechanic; the three other
+ * platforms draw in tree order and have nothing to give the number to.
  */
-@media (min-resolution: 2dppx) {
-  :root {
-    --stroke-hairline: 0.5px;
-  }
+:root {
+  --layer-sidebar-column: 1;
+  --layer-sidebar-rail: 2;
+  --layer-dialog: 10;
+  --layer-popup: 20;
+  --layer-toast: 30;
 }
 
 @media (prefers-reduced-motion: reduce) {

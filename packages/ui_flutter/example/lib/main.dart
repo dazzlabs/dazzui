@@ -27,7 +27,7 @@ class PlaygroundApp extends StatelessWidget {
 ///
 /// The theme is applied with the package's own [Theme] widget on one subtree
 /// rather than to the process, which is the point worth demonstrating — themes
-/// are per-subtree here, so all ten can sit on screen at once (see
+/// are per-subtree here, so all twelve can sit on screen at once (see
 /// `Tokens/Themes`).
 class PlaygroundWindow extends StatefulWidget {
   const PlaygroundWindow({super.key});
@@ -93,19 +93,31 @@ class _Toolbar extends StatelessWidget {
       child: Row(
         spacing: vars.spacing3,
         children: [
-          Text(
-            'DazzUI',
-            style: vars.titleSmall.copyWith(color: vars.colorContent),
+          // The title is what gives way in a narrow window: six families
+          // and a brightness are the controls, and a name that truncates
+          // costs less than a control that overflows.
+          Expanded(
+            child: Row(
+              spacing: vars.spacing3,
+              children: [
+                Flexible(
+                  child: Text(
+                    'DazzUI',
+                    overflow: TextOverflow.ellipsis,
+                    style: vars.titleSmall.copyWith(color: vars.colorContent),
+                  ),
+                ),
+                const Badge(
+                  size: WidgetSize.small,
+                  variant: BadgeVariant.tinted,
+                  child: Text('Flutter'),
+                ),
+              ],
+            ),
           ),
-          const Badge(
-            size: WidgetSize.small,
-            variant: BadgeVariant.tinted,
-            child: Text('Flutter'),
-          ),
-          const Spacer(),
-          // A family and a brightness rather than ten names: that is the
+          // A family and a brightness rather than twelve names: that is the
           // shape of the graph — a family is a mode, `dark` is a mode — and
-          // ten names would not fit a titlebar in any case.
+          // twelve names would not fit a titlebar in any case.
           SegmentedControl<PlaygroundFamily>(
             value: theme.family,
             onChanged: (family) => onThemeChanged(

@@ -9,8 +9,14 @@
  * positioner rather than an offset in code — a token stays a token, and the
  * collision logic measures the positioner, so the gap counts when the panel
  * flips.
+ *
+ * The layer is the one thing Base UI leaves to the stylesheet. A positioner
+ * is portaled to the body, so it is a sibling of the dialog's own two layers
+ * rather than a descendant, and at `auto` it would paint under a scrim —
+ * which is what a Select in a form sheet did. `base.css` holds the ladder.
  */
 .dz-popup-positioner {
+  z-index: var(--layer-popup);
   outline: 0;
 }
 
@@ -38,7 +44,7 @@
   max-height: var(--available-height);
   padding: var(--spacing-1);
   overflow: hidden auto;
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-overlay);
   border: var(--stroke-hairline) solid var(--color-border-strong);
   border-radius: var(--radius-large);
   box-shadow: var(--shadow-lg);

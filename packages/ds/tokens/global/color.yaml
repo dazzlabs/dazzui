@@ -3,8 +3,8 @@
 # modes carried inline on whichever token varies, because Terrazzo merges
 # token files by replacing a whole token: a second file re-declaring
 # `color.surface` to add a mode replaces the first outright, and a file
-# carrying only `$extensions` is dropped without an error. The ten themes,
-# as five families:
+# carrying only `$extensions` is dropped without an error. The twelve themes,
+# as six families:
 #
 #   default        Studio Light   — white cards on a lilac-grey canvas
 #   dark           Studio Dark    — the same skeleton over a near-black canvas
@@ -16,6 +16,9 @@
 #   graphite-dark  Graphite Dark  — the same, inverted to a near-white accent
 #   ember          Ember Light    — warm paper, copper accent
 #   ember-dark     Ember Dark     — charcoal, with that copper lifted to amber
+#   nocturne       Nocturne Light — cool white, blue-grey ink, a blurple accent
+#   nocturne-dark  Nocturne Dark  — the design's own ground: a blue-grey near-
+#                                   black, with the same blurple lifted a step
 #
 # The modes compose rather than repeat: a family mode is selected by both of
 # its themes and `dark` by every dark one (order in terrazzo.config.mjs
@@ -35,6 +38,7 @@ color:
           graphite-dark: "{base.color.graphite-dark.50}"
           ember: "{base.color.ember.50}"
           ember-dark: "{base.color.ember-dark.50}"
+          nocturne: "{base.color.nocturne.50}"
     "100":
       $value: "{base.color.brand.100}"
       $extensions:
@@ -46,6 +50,7 @@ color:
           graphite-dark: "{base.color.graphite-dark.100}"
           ember: "{base.color.ember.100}"
           ember-dark: "{base.color.ember-dark.100}"
+          nocturne: "{base.color.nocturne.100}"
     "200":
       $value: "{base.color.brand.200}"
       $extensions:
@@ -57,6 +62,7 @@ color:
           graphite-dark: "{base.color.graphite-dark.200}"
           ember: "{base.color.ember.200}"
           ember-dark: "{base.color.ember-dark.200}"
+          nocturne: "{base.color.nocturne.200}"
     "300":
       $value: "{base.color.brand.300}"
       $extensions:
@@ -68,6 +74,7 @@ color:
           graphite-dark: "{base.color.graphite-dark.300}"
           ember: "{base.color.ember.300}"
           ember-dark: "{base.color.ember-dark.300}"
+          nocturne: "{base.color.nocturne.300}"
     "400":
       $value: "{base.color.brand.400}"
       $extensions:
@@ -79,6 +86,7 @@ color:
           graphite-dark: "{base.color.graphite-dark.400}"
           ember: "{base.color.ember.400}"
           ember-dark: "{base.color.ember-dark.400}"
+          nocturne: "{base.color.nocturne.400}"
     "500":
       $value: "{base.color.brand.500}"
       $extensions:
@@ -90,6 +98,7 @@ color:
           graphite-dark: "{base.color.graphite-dark.500}"
           ember: "{base.color.ember.500}"
           ember-dark: "{base.color.ember-dark.500}"
+          nocturne: "{base.color.nocturne.500}"
     "600":
       $value: "{base.color.brand.600}"
       $extensions:
@@ -101,6 +110,7 @@ color:
           graphite-dark: "{base.color.graphite-dark.600}"
           ember: "{base.color.ember.600}"
           ember-dark: "{base.color.ember-dark.600}"
+          nocturne: "{base.color.nocturne.600}"
     "700":
       $value: "{base.color.brand.700}"
       $extensions:
@@ -112,6 +122,7 @@ color:
           graphite-dark: "{base.color.graphite-dark.700}"
           ember: "{base.color.ember.700}"
           ember-dark: "{base.color.ember-dark.700}"
+          nocturne: "{base.color.nocturne.700}"
     "800":
       $value: "{base.color.brand.800}"
       $extensions:
@@ -123,6 +134,7 @@ color:
           graphite-dark: "{base.color.graphite-dark.800}"
           ember: "{base.color.ember.800}"
           ember-dark: "{base.color.ember-dark.800}"
+          nocturne: "{base.color.nocturne.800}"
     "900":
       $value: "{base.color.brand.900}"
       $extensions:
@@ -134,6 +146,7 @@ color:
           graphite-dark: "{base.color.graphite-dark.900}"
           ember: "{base.color.ember.900}"
           ember-dark: "{base.color.ember-dark.900}"
+          nocturne: "{base.color.nocturne.900}"
     "950":
       $value: "{base.color.brand.950}"
       $extensions:
@@ -145,6 +158,7 @@ color:
           graphite-dark: "{base.color.graphite-dark.950}"
           ember: "{base.color.ember.950}"
           ember-dark: "{base.color.ember-dark.950}"
+          nocturne: "{base.color.nocturne.950}"
   neutral:
     "50":
       $value: "{base.color.neutral.50}"
@@ -383,6 +397,8 @@ color:
         graphite-dark: "#08080a"
         ember: "#eae2d4"
         ember-dark: "#0c0906"
+        nocturne: "#e7e7ef"
+        nocturne-dark: "#101120"
   # The paper: windows, popovers, the raised panel inside a tray.
   surface:
     $type: color
@@ -398,31 +414,35 @@ color:
         graphite-dark: "#0f0f12"
         ember: "#fffdf9"
         ember-dark: "#14100b"
-  # One step back from the paper: cards, sidebars, toolbars, table headers,
-  # and the wash a neutral control takes under the pointer.
-  #
-  # "Back" is away from the paper in every theme, and the two Bright values
-  # are the design's own nav and aside — which it draws *under* its paper in
-  # both directions, where Studio lifts its dark chrome above it. That is the
-  # Bright idiom rather than an oversight: its paper is the subject and the
-  # columns either side of it concede, so a window reads as content between
-  # two quieter edges. `surface-sunken` is unaffected and still rises on a
-  # dark canvas — a groove is cut by lightening there, which is a different
-  # question from which way the chrome leans.
+        nocturne: "#ffffff"
+        nocturne-dark: "#161826"
+  # One step off the paper: the card, the panel, the toolbar, the popup's
+  # inner row. Each value is the card the artboard draws: 4c's #f7f7fa with
+  # a .08 edge and 4a's #12141a; 4b's cards are *white* on the warm paper and
+  # 4e's are #141d29 on the columns and in the menubar popup. "Off" is away
+  # from the paper in every theme, and Bright's is up where Studio's is down —
+  # which is why this role and `surface-chrome` coincide in Bright Light: the
+  # design draws its cards and its bars in the same white. The columns a
+  # window is built out of are `surface-column`, not this. `surface-sunken`
+  # is unaffected and still rises on a dark canvas — a groove is cut by
+  # lightening there, which is a different question from which way a card
+  # leans.
   surface-muted:
     $type: color
     $value: "#f7f7fa"
     $extensions:
       mode:
         dark: "#12141a"
-        bright: "#f4f3ee"
-        bright-dark: "#0a111a"
+        bright: "#ffffff"
+        bright-dark: "#141d29"
         frost: "#f2f6f8"
         frost-dark: "#111a20"
         graphite: "#f6f6f8"
         graphite-dark: "#141417"
         ember: "#f6f1e8"
         ember-dark: "#191410"
+        nocturne: "#f6f6fa"
+        nocturne-dark: "#232532"
   # One step into the paper: the groove a progress bar, a segmented control
   # or a switch is cut into. Distinct from `surface-muted` because a track
   # that matches the card it sits on stops reading as a track.
@@ -440,24 +460,34 @@ color:
         graphite-dark: "#27272c"
         ember: "#e6ddcd"
         ember-dark: "#2f271e"
-  # The quietest wash there is: what a menu item, a toolbar glyph or a table
-  # row takes under the pointer. One step shy of `surface-muted`, because a
-  # hover that lands exactly on the header/card fill stops reading as a
-  # hover.
+        nocturne: "#e2e2ec"
+        nocturne-dark: "#2f313c"
+  # The quietest wash there is: what a menu item, a toolbar glyph, a table row
+  # or a neutral control takes under the pointer. It is an alpha of the ink
+  # rather than a rung of its own — ink at 6% over paper, white at 7% over a
+  # dark ground — for the reason every wash in this graph is: an opaque step
+  # sat between `surface` and `surface-muted` was a visible hover on paper and
+  # no hover at all inside a card or a sidebar, since it landed within a point
+  # of the fill it was meant to lift off. A wash moves whatever it lands on by
+  # the same amount. The artboards draw no hover state, so the alpha is the
+  # design's own quietest fill (the .06–.07 it rules a row with) applied as a
+  # wash, and no more.
   surface-subtle:
     $type: color
-    $value: "#f5f5f9"
+    $value: "#14162a0f"
     $extensions:
       mode:
-        dark: "#151821"
-        bright: "#f6f5f1"
-        bright-dark: "#101923"
-        frost: "#f4f8f9"
-        frost-dark: "#142027"
-        graphite: "#f4f4f6"
-        graphite-dark: "#17171b"
-        ember: "#f9f4ec"
-        ember-dark: "#1d1813"
+        dark: "#ffffff12"
+        bright: "#111c2e0f"
+        bright-dark: "#f2f4ef12"
+        frost: "#0e1f260f"
+        frost-dark: "#ffffff12"
+        graphite: "#17171b0f"
+        graphite-dark: "#ffffff12"
+        ember: "#241a110f"
+        ember-dark: "#ffffff12"
+        nocturne: "#23242e0f"
+        nocturne-dark: "#e9e9ed12"
   # One step further in than `surface-muted` but shallower than the groove:
   # the well a segmented control's track or a resting pill-tab is cut into.
   # Without it those fills borrow a neighbour — the groove reads a full step
@@ -476,6 +506,8 @@ color:
         graphite-dark: "#1c1c21"
         ember: "#f2ebdf"
         ember-dark: "#231d16"
+        nocturne: "#eeeef5"
+        nocturne-dark: "#292b31"
   # The lifted thumb inside a groove — the selected segment, a switch knob.
   # Always lighter than the track it rides in, which on a dark canvas means
   # stepping up rather than down.
@@ -493,6 +525,34 @@ color:
         graphite-dark: "#3b3b43"
         ember: "#fffdf9"
         ember-dark: "#453a2d"
+        nocturne: "#ffffff"
+        nocturne-dark: "#3f424d"
+  # The floating sheet: a menu, a select list, a dialog, a toast. On paper it
+  # is the paper — 4c and 4b float their menubar popup and their dialog in
+  # the window's own white, and the edge and the shadow do the separating.
+  # On a dark canvas the design lifts the sheet one step, to the fill its
+  # titlebar and cards take — 4a's #12141a, 4e's #111a26 — behind a .09 edge
+  # and a deep shadow, and that step is the role: a dialog the colour of the
+  # paper had nothing to say it was over it. The families with no artboard
+  # take the same step, their card fill. A tooltip is not on this rung: it
+  # stays on `surface-raised`, the brightest step, because it is a chip the
+  # size of a word rather than a sheet.
+  surface-overlay:
+    $type: color
+    $value: "#ffffff"
+    $extensions:
+      mode:
+        dark: "#12141a"
+        bright: "#fbfaf7"
+        bright-dark: "#111a26"
+        frost: "#ffffff"
+        frost-dark: "#111a20"
+        graphite: "#ffffff"
+        graphite-dark: "#141417"
+        ember: "#fffdf9"
+        ember-dark: "#191410"
+        nocturne: "#ffffff"
+        nocturne-dark: "#232532"
   # The bars a window is built out of: a dialog's footer, a table's header,
   # a titlebar. Studio takes the strip one step back from the paper, the
   # same step a card takes, which is why it looks like `surface-muted` and
@@ -513,6 +573,34 @@ color:
         graphite-dark: "#141417"
         ember: "#f6f1e8"
         ember-dark: "#191410"
+        nocturne: "#f6f6fa"
+        nocturne-dark: "#1c1e2c"
+  # The columns either side of the paper: the navigation sidebar, the aside
+  # or inspector, a dock. A column is not a card, and the design draws them
+  # apart: on 4c the nav is #fafafc beside a #ffffff paper and the cards on
+  # it are #f7f7fa, and on 4a the nav and aside recede to #0a0c11 *under* the
+  # #0d0f14 paper while the cards on them lift to #12141a. One role for both
+  # left a card in a sidebar the colour of the sidebar. Bright's columns were
+  # already the design's own nav and aside (#f4f3ee, #0a111a) and keep them;
+  # the families with no artboard take their card fill, which is what they
+  # painted before this role existed.
+  surface-column:
+    $type: color
+    $value: "#fafafc"
+    $extensions:
+      mode:
+        dark: "#0a0c11"
+        bright: "#f4f3ee"
+        bright-dark: "#0a111a"
+        frost: "#f2f6f8"
+        frost-dark: "#111a20"
+        graphite: "#f6f6f8"
+        graphite-dark: "#141417"
+        ember: "#f6f1e8"
+        ember-dark: "#191410"
+        nocturne: "#f6f6fa"
+        nocturne-dark: "#232532"
+
   # The ink ramp, cut to three steps. The design carries eight; the extra
   # five are all one-off scene labels, and a shared vocabulary that offers
   # eight near-identical greys only invites each component to pick a
@@ -535,6 +623,8 @@ color:
         graphite-dark: "#f4f4f6"
         ember: "#241a11"
         ember-dark: "#f6efe4"
+        nocturne: "#23242e"
+        nocturne-dark: "#e9e9ed"
   # Between full ink and the muted step: idle navigation rows and the
   # unselected half of a segmented control — text that must stay clearly
   # legible while conceding the room to whatever is selected.
@@ -552,6 +642,8 @@ color:
         graphite-dark: "#c9c9d0"
         ember: "#4b3a2b"
         ember-dark: "#d5c6b4"
+        nocturne: "#383a49"
+        nocturne-dark: "#cfd3e5"
   # Named for where it is used rather than for a rung on the ladder, because
   # that is what it is: the ink a navigation row is set in while it is not the
   # current one. It sits between `content-secondary` and `content-muted` and
@@ -576,6 +668,8 @@ color:
         graphite-dark: "#9d9da6"
         ember: "#5b4839"
         ember-dark: "#ab9886"
+        nocturne: "#4c4e61"
+        nocturne-dark: "#b2b6ca"
   content-muted:
     $type: color
     $value: "#565b78"
@@ -590,6 +684,8 @@ color:
         graphite-dark: "#9d9da6"
         ember: "#6a5747"
         ember-dark: "#ab9886"
+        nocturne: "#63667d"
+        nocturne-dark: "#9397ab"
   # The labelling step: section labels, field captions, hints, empty-state
   # lines. Quieter than `content-muted` — a caption printed in the muted step
   # competes with the value it captions.
@@ -607,6 +703,8 @@ color:
         graphite-dark: "#8a8a93"
         ember: "#96867a"
         ember-dark: "#94806d"
+        nocturne: "#85889e"
+        nocturne-dark: "#75798c"
   content-faint:
     $type: color
     $value: "#a2a7bd"
@@ -621,8 +719,18 @@ color:
         graphite-dark: "#6a6a73"
         ember: "#b0a294"
         ember-dark: "#71604f"
+        nocturne: "#adafc1"
+        nocturne-dark: "#595d6c"
   # Separators are an alpha of the ink, not a grey, so one hairline reads the
   # same over a card, a sidebar and a popover without a value per surface.
+  # Studio and Bright take the alpha their artboards rule with: a row or a
+  # column edge on 4c is the ink at .06–.07 and on 4b at .07–.08, and on the
+  # dark boards white at .05–.06 and the paper ink at .07–.08 — so 7% and 8%
+  # over paper, 6% and 8% over the dark ground. Nocturne's are read off its
+  # own mockups, ink at 13% over paper and 16% over the dark ground, and the
+  # three families with no artboard keep those heavier numbers, since a
+  # hairline is the one place the two designs the system is drawn to
+  # disagree, and each family follows the one it was read from.
   border:
     $type: color
     $value: "#14162a12"
@@ -631,46 +739,65 @@ color:
         dark: "#ffffff0f"
         bright: "#111c2e14"
         bright-dark: "#f2f4ef14"
-        frost: "#0e1f2614"
-        frost-dark: "#ffffff0f"
-        graphite: "#17171b12"
-        graphite-dark: "#ffffff0f"
-        ember: "#241a1114"
-        ember-dark: "#ffffff0f"
+        frost: "#0e1f2621"
+        frost-dark: "#ffffff29"
+        graphite: "#17171b21"
+        graphite-dark: "#ffffff29"
+        ember: "#241a1121"
+        ember-dark: "#ffffff29"
+        nocturne: "#23242e21"
+        nocturne-dark: "#e9e9ed29"
   # The heavier hairline a floating surface is edged with — dialog, menu,
-  # toast. A popover cut with the inline separator weight stops separating
-  # from what it floats over.
+  # toast, and the card's own edge. A popover cut with the inline separator
+  # weight stops separating from what it floats over, so this one keeps its
+  # rung above `border`: on 4a, 4c, 4b and 4e a window, a card or a dialog is
+  # edged at .08–.09 where a row is ruled at .06–.07, so Studio and Bright
+  # take 9%; Nocturne and the families read beside it keep 17% over paper and
+  # 20% over the dark ground, the same step above their heavier rule. That
+  # lands it beside the opaque `border-muted` a control is outlined in rather
+  # than under it, which is right: on a dark ground a dialog's edge and a
+  # checkbox's outline are the same weight, and what tells them apart is that
+  # only one of them is a control.
   border-strong:
     $type: color
-    $value: "#14162a1a"
+    $value: "#14162a17"
     $extensions:
       mode:
-        dark: "#ffffff1a"
-        bright: "#111c2e1f"
-        bright-dark: "#f2f4ef24"
-        frost: "#0e1f261f"
-        frost-dark: "#ffffff1a"
-        graphite: "#17171b1f"
-        graphite-dark: "#ffffff1a"
-        ember: "#241a111f"
-        ember-dark: "#ffffff1a"
+        dark: "#ffffff17"
+        bright: "#111c2e17"
+        bright-dark: "#f2f4ef17"
+        frost: "#0e1f262b"
+        frost-dark: "#ffffff33"
+        graphite: "#17171b2b"
+        graphite-dark: "#ffffff33"
+        ember: "#241a112b"
+        ember-dark: "#ffffff33"
+        nocturne: "#23242e2b"
+        nocturne-dark: "#e9e9ed33"
   # The drawn outline of an unselected checkbox, radio or step marker, and
   # the rule under a divider. Heavier than a hairline on purpose: this one is
-  # a control's edge rather than a separation between regions.
+  # a control's edge rather than a separation between regions, and the
+  # artboards draw it in the muted *ink*, not a pale grey — 4c's radios and
+  # checkboxes are 1.5px #5f6478 and 4a's #363c4d — so an unticked box reads
+  # as a control at rest rather than as a ghost of one. The three families
+  # with no artboard take their own muted ink for the same reason; Nocturne
+  # keeps the rung its mockups draw.
   border-muted:
     $type: color
-    $value: "#cfd2de"
+    $value: "#5f6478"
     $extensions:
       mode:
         dark: "#363c4d"
         bright: "#111c2e40"
         bright-dark: "#35414f"
-        frost: "#c6d5db"
+        frost: "#456573"
         frost-dark: "#32454f"
-        graphite: "#d5d5da"
+        graphite: "#57575f"
         graphite-dark: "#38383f"
-        ember: "#ddd1c0"
+        ember: "#6a5747"
         ember-dark: "#443a2d"
+        nocturne: "#d8d9e4"
+        nocturne-dark: "#3f424d"
   # What is printed on a filled accent control. White on the Studio violet;
   # in Bright the primary action is ink navy printed with acid green, and
   # Bright Dark is that exact pair inverted. This is a role rather than a
@@ -689,6 +816,8 @@ color:
         graphite-dark: "#131316"
         ember: "#fffaf3"
         ember-dark: "#241206"
+        nocturne: "#ffffff"
+        nocturne-dark: "#161826"
 control:
   color:
     # The interactive recipes. Three reading rules:

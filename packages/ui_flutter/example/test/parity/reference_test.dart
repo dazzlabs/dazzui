@@ -283,6 +283,8 @@ ThemeData themeData(String theme) => switch (theme) {
   'graphite-dark' => ThemeData.graphiteDark(),
   'ember-light' => ThemeData.emberLight(),
   'ember-dark' => ThemeData.emberDark(),
+  'nocturne-light' => ThemeData.nocturneLight(),
+  'nocturne-dark' => ThemeData.nocturneDark(),
   _ => ThemeData.studioLight(),
 };
 

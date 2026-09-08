@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The ten themes, as they are named in `terrazzo.config.mjs`.
+/// The twelve themes, as they are named in `terrazzo.config.mjs`.
 ///
 /// Studio Light is the default and carries no attribute in the React package
 /// at all — selecting it means removing `data-theme` rather than writing
@@ -28,6 +28,10 @@ public enum ThemeName: String, CaseIterable, Sendable {
   case emberLight = "ember-light"
   /// A charcoal canvas with that copper lifted to an amber.
   case emberDark = "ember-dark"
+  /// Cool white paper, blue-grey ink and a blurple accent.
+  case nocturneLight = "nocturne-light"
+  /// A blue-grey near-black, with the same blurple lifted a step.
+  case nocturneDark = "nocturne-dark"
 
   public var variables: ThemeVariables {
     switch self {
@@ -41,14 +45,18 @@ public enum ThemeName: String, CaseIterable, Sendable {
     case .graphiteDark: return .graphiteDark
     case .emberLight: return .emberLight
     case .emberDark: return .emberDark
+    case .nocturneLight: return .nocturneLight
+    case .nocturneDark: return .nocturneDark
     }
   }
 
   public var colorScheme: ColorScheme {
     switch self {
-    case .studioLight, .brightLight, .frostLight, .graphiteLight, .emberLight:
+    case .studioLight, .brightLight, .frostLight, .graphiteLight, .emberLight,
+      .nocturneLight:
       return .light
-    case .studioDark, .brightDark, .frostDark, .graphiteDark, .emberDark:
+    case .studioDark, .brightDark, .frostDark, .graphiteDark, .emberDark,
+      .nocturneDark:
       return .dark
     }
   }
@@ -89,14 +97,15 @@ public extension View {
   }
 }
 
-/// A separator is one *device* pixel.
+/// A separator is one *point*, whatever the display scale — the 1px the
+/// token holds, drawn as written.
 ///
-/// A 1pt line on a Retina display is twice the weight of the real thing, so
-/// the hairline halves — the same rule `base.css` applies with its
-/// `min-resolution: 2dppx` block. Drawn control outlines use
-/// `strokeControl` instead and stay put.
+/// It used to halve on Retina, to land on one device pixel; the Nocturne
+/// mockups the system is drawn to rule at a full 1px, and against them a
+/// halved rule read as too thin to be a decision. Drawn control outlines use
+/// `strokeControl` instead, and always did.
 public extension EnvironmentValues {
   var hairline: CGFloat {
-    1 / max(displayScale, 1)
+    theme.vars.strokeHairline
   }
 }

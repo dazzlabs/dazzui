@@ -1,6 +1,6 @@
 import 'package:dazzui/dazzui.dart';
 
-/// The five families the token graph carries, in the order the toolbar lists
+/// The six families the token graph carries, in the order the toolbar lists
 /// them.
 ///
 /// The toolbar picks a family and a brightness rather than a theme, which is
@@ -12,7 +12,8 @@ enum PlaygroundFamily {
   bright,
   frost,
   graphite,
-  ember;
+  ember,
+  nocturne;
 
   String get title {
     return switch (this) {
@@ -21,11 +22,12 @@ enum PlaygroundFamily {
       PlaygroundFamily.frost => 'Frost',
       PlaygroundFamily.graphite => 'Graphite',
       PlaygroundFamily.ember => 'Ember',
+      PlaygroundFamily.nocturne => 'Nocturne',
     };
   }
 }
 
-/// The ten themes, as the SwiftUI playground names them.
+/// The twelve themes, as the SwiftUI playground names them.
 enum PlaygroundTheme {
   studioLight(PlaygroundFamily.studio, false),
   studioDark(PlaygroundFamily.studio, true),
@@ -36,7 +38,9 @@ enum PlaygroundTheme {
   graphiteLight(PlaygroundFamily.graphite, false),
   graphiteDark(PlaygroundFamily.graphite, true),
   emberLight(PlaygroundFamily.ember, false),
-  emberDark(PlaygroundFamily.ember, true);
+  emberDark(PlaygroundFamily.ember, true),
+  nocturneLight(PlaygroundFamily.nocturne, false),
+  nocturneDark(PlaygroundFamily.nocturne, true);
 
   const PlaygroundTheme(this.family, this.isDark);
 
@@ -62,6 +66,8 @@ enum PlaygroundTheme {
       PlaygroundTheme.graphiteDark => 'Graphite Dark',
       PlaygroundTheme.emberLight => 'Ember',
       PlaygroundTheme.emberDark => 'Ember Dark',
+      PlaygroundTheme.nocturneLight => 'Nocturne',
+      PlaygroundTheme.nocturneDark => 'Nocturne Dark',
     };
   }
 
@@ -77,6 +83,8 @@ enum PlaygroundTheme {
       PlaygroundTheme.graphiteDark => ThemeData.graphiteDark(),
       PlaygroundTheme.emberLight => ThemeData.emberLight(),
       PlaygroundTheme.emberDark => ThemeData.emberDark(),
+      PlaygroundTheme.nocturneLight => ThemeData.nocturneLight(),
+      PlaygroundTheme.nocturneDark => ThemeData.nocturneDark(),
     };
   }
 }

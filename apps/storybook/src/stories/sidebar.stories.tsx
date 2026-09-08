@@ -205,7 +205,7 @@ function TheSidebar({
               icon={<Icon icon={Book} size={16} />}
               size="large"
               tooltip="Acme Ltd"
-              variant="outline"
+              variant="normal"
             >
               <span
                 style={{
@@ -228,7 +228,12 @@ function TheSidebar({
   )
 }
 
-/** The second column: what is inside whatever the sidebar selected. */
+/**
+ * The second column: what is inside whatever the sidebar selected. Its rows
+ * select in grey, because here the selection is a cursor down a list rather
+ * than the page the window is on — and two filled columns would each claim
+ * to be the one the reader is looking at.
+ */
 function TheRail() {
   const [item, setItem] = useState('handbook.docx')
   return (
@@ -243,6 +248,7 @@ function TheRail() {
                     <SidebarMenuButton
                       active={item === entry}
                       size="small"
+                      variant="recessed"
                       onClick={() => setItem(entry)}
                     >
                       <span>{entry}</span>
@@ -412,7 +418,7 @@ function SizesRow() {
           <SidebarMenuButton
             icon={<Icon icon={Book} size={16} />}
             size="large"
-            variant="outline"
+            variant="normal"
           >
             <span
               style={{
@@ -433,31 +439,48 @@ function SizesRow() {
   )
 }
 
+/** The four page-marking recipes, each shown selected over its idle twin. */
+const SELECTING = ['filled', 'tinted', 'outlined', 'recessed'] as const
+
 function VariantsColumn() {
   return (
-    <Column>
-      <SidebarMenuItem>
-        <SidebarMenuButton active>
-          <span>default, selected</span>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-      <SidebarMenuItem>
-        <SidebarMenuButton>
-          <span>default</span>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-      <SidebarMenuItem>
-        <SidebarMenuButton variant="outline">
-          <span>outline</span>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-      <SidebarMenuItem>
-        <SidebarMenuButton variant="plain">
-          <Icon icon={Plus} size={14} />
-          <span>plain</span>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-    </Column>
+    <Row>
+      {SELECTING.map(variant => (
+        <Column key={variant} width="11rem">
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              active
+              icon={<Icon icon={Doc} size={14} />}
+              variant={variant}
+            >
+              <span>{variant}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              icon={<Icon icon={Doc} size={14} />}
+              variant={variant}
+            >
+              <span>idle</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </Column>
+      ))}
+      <Column width="11rem">
+        <SidebarMenuItem>
+          <SidebarMenuButton variant="normal">
+            <Icon icon={Book} size={14} />
+            <span>normal</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton variant="plain">
+            <Icon icon={Plus} size={14} />
+            <span>plain</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </Column>
+    </Row>
   )
 }
 
@@ -527,7 +550,7 @@ export const Overview: Story = {
 
       <Section
         title="Rows"
-        description="Hover an idle row: the wash comes off the tinted ramp, which is the opposite of what a menu item or a table row gets. The difference is what selection looks like — a nav row selects with the filled recipe, so a tinted hover previews it from well below. Two sizes for a list, and a third for the two-line row an account takes. `plain` is the row that adds rather than selects, printed in the ramp instead of filled with it."
+        description="A row idles transparent, so what its variant decides is how it marks itself as the current page — and the hover follows from that. `filled` selects with the whole ramp, and can afford an accent hover: there is a long way between an 8% wash and a solid one. `tinted` and `outlined` mark the page with a wash or a ring, and so hover in grey, since an accent hover would be their selected state one grade short. `recessed` selects in grey too, for a list whose selected entry is a cursor rather than a destination. Beside those four, `normal` is the raised row a switcher or an account takes, and `plain` is the row that adds rather than selects, printed in the ramp instead of filled with it. Two sizes for a list, and a third that grows with the two or three lines a session carries."
       >
         <Stack>
           <Specimen label="states">

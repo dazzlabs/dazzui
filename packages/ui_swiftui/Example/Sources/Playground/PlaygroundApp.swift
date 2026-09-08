@@ -34,7 +34,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 ///
 /// The theme is applied with `.theme(_:)` on one subtree rather than to the
 /// process, which is the point worth demonstrating — themes are per-subtree
-/// here, so all ten can sit on screen at once (see `Tokens/Themes`).
+/// here, so all twelve can sit on screen at once (see `Tokens/Themes`).
 struct PlaygroundWindow: View {
   @State private var selection = StoryIndex.first
   @State private var theme: ThemeName = .studioLight
@@ -193,10 +193,10 @@ private struct Breadcrumb: View {
   }
 }
 
-/// The five families, in the order the toolbar lists them — a family is a
+/// The six families, in the order the toolbar lists them — a family is a
 /// mode in `terrazzo.config.mjs`, and the prefix of a theme's raw value.
 enum ThemeFamily: String, CaseIterable, Hashable {
-  case studio, bright, frost, graphite, ember
+  case studio, bright, frost, graphite, ember, nocturne
 
   var title: String {
     switch self {
@@ -205,6 +205,7 @@ enum ThemeFamily: String, CaseIterable, Hashable {
     case .frost: return "Frost"
     case .graphite: return "Graphite"
     case .ember: return "Ember"
+    case .nocturne: return "Nocturne"
     }
   }
 }
@@ -235,6 +236,8 @@ extension ThemeName {
     case .graphiteDark: return "Graphite Dark"
     case .emberLight: return "Ember"
     case .emberDark: return "Ember Dark"
+    case .nocturneLight: return "Nocturne"
+    case .nocturneDark: return "Nocturne Dark"
     }
   }
 }

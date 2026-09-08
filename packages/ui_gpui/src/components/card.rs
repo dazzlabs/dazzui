@@ -90,7 +90,7 @@ impl ParentElement for Card {
 }
 
 impl RenderOnce for Card {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
 
         let gap = match self.size {
@@ -141,7 +141,7 @@ impl RenderOnce for Card {
             // Drawn on every variant rather than only where it shows, so
             // `outlined` and `tinted` do not gain a pixel per side and sit a
             // hair larger than the filled ones.
-            .border(hairline(vars, window))
+            .border(hairline(vars))
             .bg(surface)
             .border_color(border)
             .children(self.children)

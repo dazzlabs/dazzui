@@ -23,7 +23,7 @@ and the theme picker sits over all of it.
 ```
 lib/
   main.dart              the window: toolbar, story tree, canvas
-  playground_theme.dart  the ten themes, as the picker names them
+  playground_theme.dart  the twelve themes, as the picker names them
   storybook/             the framework the stories are written against
     story.dart           Story, StoryPage, StoryGroup — the file conventions, as types
     story_index.dart     the registry: a page ships once it is named here

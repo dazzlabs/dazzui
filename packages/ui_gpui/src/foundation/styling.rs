@@ -1,4 +1,4 @@
-use gpui::{BoxShadow, Hsla, IntoElement, Pixels, Styled, Window, div};
+use gpui::{BoxShadow, Hsla, IntoElement, Pixels, Styled, div};
 
 use crate::foundation::{ControlColors, TokenShadow, TypeStyle};
 use crate::generated::theme_variables::ThemeVariables;
@@ -53,14 +53,15 @@ pub fn focus_ring(vars: &ThemeVariables, radius: Pixels) -> impl IntoElement {
         .rounded(radius + width + vars.focus_offset)
 }
 
-/// A separator is one *device* pixel.
+/// A separator is one *logical* pixel, whatever the display scale — the 1px
+/// the token holds, drawn as written.
 ///
-/// A 1px line on a Retina display is twice the weight of the real thing, so
-/// the token halves — the same rule `base.css` applies behind its
-/// `min-resolution: 2dppx` block. Drawn control outlines read
-/// `stroke_control` instead and stay put.
-pub fn hairline(vars: &ThemeVariables, window: &Window) -> Pixels {
-    vars.stroke_hairline * (1.0 / window.scale_factor().max(1.0))
+/// It used to halve on Retina, to land on one device pixel; the Nocturne
+/// mockups the system is drawn to rule at a full 1px, and against them a
+/// halved rule read as too thin to be a decision. Drawn control outlines
+/// read `stroke_control` instead, and always did.
+pub fn hairline(vars: &ThemeVariables) -> Pixels {
+    vars.stroke_hairline
 }
 
 /// A rule pinned to one edge, drawn at a hairline.

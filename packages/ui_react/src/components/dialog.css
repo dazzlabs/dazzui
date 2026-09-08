@@ -10,7 +10,7 @@
   width: var(--dialog-width);
   max-width: 100%;
   max-height: 100%;
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-overlay);
   border: var(--stroke-hairline) solid var(--color-border-strong);
   /* The window corner and the popover shadow: a dialog is a window that
      floats, not a panel that hovers at the window's own elevation. */
@@ -97,7 +97,7 @@
 .dz-dialog-viewport {
   position: fixed;
   inset: 0;
-  z-index: 10;
+  z-index: var(--layer-dialog);
 }
 
 .dz-dialog-scrim {

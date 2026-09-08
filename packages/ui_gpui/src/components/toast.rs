@@ -73,7 +73,7 @@ impl Toast {
 }
 
 impl RenderOnce for Toast {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
         let Toast {
             id,
@@ -106,8 +106,8 @@ impl RenderOnce for Toast {
             .pl(vars.spacing_3)
             .pr(vars.spacing_1_5)
             .rounded(vars.radius_big)
-            .bg(vars.color_surface)
-            .border(hairline(vars, window))
+            .bg(vars.color_surface_overlay)
+            .border(hairline(vars))
             .border_color(vars.color_border_strong)
             .token_shadow(vars.shadow_md)
             .when_some(icon, |el, icon| {

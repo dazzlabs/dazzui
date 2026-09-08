@@ -7,7 +7,7 @@ import gpuiPlugin from './plugins/gpui.mjs'
 import swiftUIPlugin from './plugins/swiftui.mjs'
 
 /**
- * The ten themes, as five families over one default.
+ * The twelve themes, as six families over one default.
  *
  * Studio Light is the default and needs no mode: it is what `:root` holds.
  * Every other theme is selected by `data-theme`, and the modes compose rather
@@ -25,9 +25,9 @@ import swiftUIPlugin from './plugins/swiftui.mjs'
  * Frost is the one family whose accent is written once: a teal reads
  * correctly in both directions, so `frost` carries the whole ramp and
  * `frost-dark` re-points only surfaces and ink, where the other three each
- * invert or lift their ramp in the dark. Graphite is the only family that
- * moves geometry — `graphite` carries the tighter corner ladder for both of
- * its themes.
+ * invert or lift their ramp in the dark; Nocturne's blurple is written once
+ * the same way. Graphite and Nocturne are the two families that move
+ * geometry — each carries the tighter corner ladder for both of its themes.
  *
  * The selector is an attribute rather than a media query because the theme is
  * a choice the app makes, not one the OS makes for it; a host that wants to
@@ -58,6 +58,14 @@ const modeSelectors = [
     scheme: 'light',
   },
   {
+    mode: 'nocturne',
+    selectors: [
+      "[data-theme='nocturne-light']",
+      "[data-theme='nocturne-dark']",
+    ],
+    scheme: 'light',
+  },
+  {
     mode: 'dark',
     selectors: [
       "[data-theme='studio-dark']",
@@ -65,6 +73,7 @@ const modeSelectors = [
       "[data-theme='frost-dark']",
       "[data-theme='graphite-dark']",
       "[data-theme='ember-dark']",
+      "[data-theme='nocturne-dark']",
     ],
     scheme: 'dark',
   },
@@ -86,6 +95,11 @@ const modeSelectors = [
   {
     mode: 'ember-dark',
     selectors: ["[data-theme='ember-dark']"],
+    scheme: 'dark',
+  },
+  {
+    mode: 'nocturne-dark',
+    selectors: ["[data-theme='nocturne-dark']"],
     scheme: 'dark',
   },
 ]

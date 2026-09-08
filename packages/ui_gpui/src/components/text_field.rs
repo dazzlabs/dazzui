@@ -991,7 +991,7 @@ fn text_control(
             }
         })
         .px(vars.spacing_3)
-        .border(crate::hairline(vars, window))
+        .border(crate::hairline(vars))
         .bg(surface)
         .border_color(border)
         .text_color(text)
@@ -1063,7 +1063,7 @@ impl FieldValue {
 }
 
 impl RenderOnce for FieldValue {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
         let metrics = vars.metrics(self.size.control());
 
@@ -1075,7 +1075,7 @@ impl RenderOnce for FieldValue {
             .px(vars.spacing_3)
             .py(metrics.padding_block)
             .rounded(vars.radius_medium)
-            .border(crate::hairline(vars, window))
+            .border(crate::hairline(vars))
             .bg(vars.color_surface_muted)
             .border_color(vars.color_border_strong)
             .text_color(vars.color_content)

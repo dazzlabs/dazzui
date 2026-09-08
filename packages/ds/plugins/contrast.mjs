@@ -1,6 +1,6 @@
 /**
- * Terrazzo plugin that holds the ink ladder to WCAG 2 contrast, in every
- * theme.
+ * Terrazzo plugin that holds the ink ladder to WCAG 2 contrast, and the
+ * surface ladder to a minimum step, in every theme.
  *
  * Terrazzo's own `a11y/min-contrast` rule cannot do this job here: 0.10
  * lints each token file with only that file's tokens, and it reads default
@@ -15,6 +15,19 @@
  * than 4.5:1 — the UI-component floor — because Studio Dark's violet fill
  * measures 4.35 under a white label; known, accepted, and guarded from
  * getting worse.
+ *
+ * The second table is about the surfaces themselves. Two fills that sit on
+ * each other — a card on the paper, a hover on the card, a table header on
+ * its body — have to differ by enough to be seen, and WCAG has no number
+ * for that: a ratio of 1.1:1 is what every one of those pairs measures. So
+ * the surface ladder is held to a CIE L* difference instead, the closest
+ * thing to a perceptual step. The floors are not an ideal: they are the
+ * steps the BeyondTranslate artboards (4a, 4c, 4b, 4e) draw between those
+ * fills, rounded down a little, so that a theme can be re-pointed without
+ * two rungs collapsing onto each other or trading places — which is what
+ * had happened to Bright Light's hover before this table existed — while a
+ * value the design itself sets a hair apart is never failed for being what
+ * the design drew.
  */
 
 /** { fg, bg, min } — token ids, and the ratio the pair must clear. */
@@ -26,6 +39,43 @@ const PAIRS = [
   { fg: 'color.content-secondary', bg: 'color.surface', min: 4.5 },
   { fg: 'color.content-nav', bg: 'color.surface', min: 4.5 },
   { fg: 'color.content-muted', bg: 'color.surface', min: 4.5 },
+]
+
+/**
+ * { a, b, light, dark } — two surface roles that sit on each other, and the
+ * least L* between them under a light and a dark theme. A translucent role
+ * (`surface-subtle`, the hover wash) is composited over the other first.
+ */
+const LADDER = [
+  { a: 'color.surface', b: 'color.surface-muted', light: 1.5, dark: 1.5 },
+  { a: 'color.surface', b: 'color.surface-column', light: 0.8, dark: 0.8 },
+  { a: 'color.surface', b: 'color.surface-chrome', light: 1.5, dark: 1.5 },
+  { a: 'color.surface', b: 'color.surface-subtle', light: 4, dark: 5 },
+  {
+    a: 'color.surface-muted',
+    b: 'color.surface-subtle',
+    light: 3.5,
+    dark: 4.5,
+  },
+  {
+    a: 'color.surface-column',
+    b: 'color.surface-subtle',
+    light: 3.5,
+    dark: 4.5,
+  },
+  {
+    a: 'color.surface-overlay',
+    b: 'color.surface-subtle',
+    light: 4,
+    dark: 4.5,
+  },
+  { a: 'color.surface', b: 'color.surface-inset', light: 3.5, dark: 5 },
+  { a: 'color.surface-muted', b: 'color.surface-inset', light: 1, dark: 1 },
+  { a: 'color.surface', b: 'color.surface-sunken', light: 7, dark: 8 },
+  { a: 'color.surface-inset', b: 'color.surface-raised', light: 4.5, dark: 9 },
+  { a: 'color.surface-sunken', b: 'color.surface-raised', light: 8, dark: 6 },
+  { a: 'color.canvas', b: 'color.surface', light: 5, dark: 1 },
+  { a: 'color.surface', b: 'color.surface-overlay', light: 0, dark: 1.5 },
 ]
 
 class ContrastPlugin {
@@ -44,6 +94,11 @@ class ContrastPlugin {
     for (const [theme, modes] of themes) {
       for (const { fg, bg, min } of PAIRS) {
         check(tokens, theme, modes, fg, bg, min, failures)
+      }
+
+      const scheme = modes.includes('dark') ? 'dark' : 'light'
+      for (const pair of LADDER) {
+        step(tokens, theme, modes, pair.a, pair.b, pair[scheme], failures)
       }
 
       // The filled control's label over the fill it is printed on. The fill
@@ -111,6 +166,31 @@ function check(tokens, theme, modes, fgId, bgId, min, failures) {
       `${fgId} on ${bgId} under "${theme}": ${ratio.toFixed(2)}, needs ${min}`
     )
   }
+}
+
+/**
+ * The L* step between two surfaces, the translucent one (if either is)
+ * composited over the other. Fails when the step is under the floor; a
+ * floor of 0 is a pair the scheme does not separate at all.
+ */
+function step(tokens, theme, modes, aId, bId, min, failures) {
+  if (min === 0) return
+  let a = toRgba(valueFor(tokens[aId], modes), aId)
+  let b = toRgba(valueFor(tokens[bId], modes), bId)
+  if (a.a < 1) [a, b] = [b, a]
+  const over = b.c.map((v, i) => v * b.a + a.c[i] * (1 - b.a))
+  const delta = Math.abs(lightness(over) - lightness(a.c))
+  if (delta < min) {
+    failures.push(
+      `${aId} vs ${bId} under "${theme}": ΔL* ${delta.toFixed(1)}, needs ${min}`
+    )
+  }
+}
+
+/** CIE L* of an opaque srgb colour. */
+function lightness(rgb) {
+  const y = luminance(rgb)
+  return y > 0.008856 ? 116 * Math.cbrt(y) - 16 : 903.3 * y
 }
 
 /** Normalized color value (hex string or srgb object) -> { c: [r,g,b], a }. */

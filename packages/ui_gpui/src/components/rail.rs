@@ -35,7 +35,7 @@ impl ParentElement for Rail {
 }
 
 impl RenderOnce for Rail {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
 
         div()
@@ -49,7 +49,7 @@ impl RenderOnce for Rail {
             .px(vars.spacing_2_5)
             .bg(vars.color_surface)
             .children(self.children)
-            .child(rule(vars.color_border, Edge::Right, hairline(vars, window)))
+            .child(rule(vars.color_border, Edge::Right, hairline(vars)))
     }
 }
 

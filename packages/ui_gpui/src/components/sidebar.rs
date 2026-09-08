@@ -83,9 +83,9 @@ impl ParentElement for Sidebar {
 }
 
 impl RenderOnce for Sidebar {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
-        let line = hairline(vars, window);
+        let line = hairline(vars);
         let Sidebar {
             id,
             header,
@@ -110,7 +110,7 @@ impl RenderOnce for Sidebar {
                 .flex_col()
                 .flex_none()
                 .w(current)
-                .bg(vars.color_surface_muted)
+                .bg(vars.color_surface_column)
                 .when(resizable, |el| {
                     el.on_drag_move::<SidebarResize>({
                         let width = width.clone();
@@ -281,7 +281,7 @@ impl ParentElement for SidebarCard {
 }
 
 impl RenderOnce for SidebarCard {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
 
         div()
@@ -292,7 +292,7 @@ impl RenderOnce for SidebarCard {
             .p(vars.spacing_3)
             .rounded(vars.radius_large)
             .bg(vars.color_surface)
-            .border(hairline(vars, window))
+            .border(hairline(vars))
             .border_color(vars.color_border)
             .when_some(self.label, |el, label| el.child(SectionLabel::new(label)))
             .children(self.children)

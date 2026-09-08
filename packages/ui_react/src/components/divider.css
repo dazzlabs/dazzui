@@ -6,12 +6,12 @@
 
 .dz-divider[data-orientation='horizontal'] {
   width: 100%;
-  height: var(--spacing-px);
+  height: var(--stroke-hairline);
 }
 
 .dz-divider[data-orientation='vertical'] {
   align-self: stretch;
-  width: var(--spacing-px);
+  width: var(--stroke-hairline);
 }
 
 .dz-divider[data-tone='default'] {
