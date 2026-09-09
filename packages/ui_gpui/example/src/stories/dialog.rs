@@ -96,6 +96,33 @@ pub const PAGE: StoryPage = StoryPage::new(
                 )
                 .into_any_element()
         }),
+        Story::fullscreen("An alert", |_, _, _| {
+            // `dismissible: false` is the React axis, and it switches off
+            // behaviour this port does not have: a GPUI dialog is drawn where
+            // it is put, with no Escape and no outside press to disable. What
+            // a reader sees is the danger sheet with no way out but an answer.
+            DialogScrim::new()
+                .child(
+                    Dialog::new()
+                        .tone(DialogTone::Danger)
+                        .width(px(352.))
+                        .child(DialogHeader::new("Delete this glossary?"))
+                        .child(DialogBody::new().child(
+                            "412 terms will be removed from every project using it. There is no \
+                             way out of this sheet but an answer.",
+                        ))
+                        .child(
+                            DialogFooter::new()
+                                .child(Button::new("keep", "Keep it"))
+                                .child(
+                                    Button::new("delete", "Delete")
+                                        .variant(ControlVariant::Filled)
+                                        .tint(Tint::Danger),
+                                ),
+                        ),
+                )
+                .into_any_element()
+        }),
         Story::new("A confirmation", |_, _, _| {
             confirmation("story").into_any_element()
         }),

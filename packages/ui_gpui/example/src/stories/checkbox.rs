@@ -1,12 +1,14 @@
 //! `Components/Checkbox` — a box, its label, and the note under it.
 
-use dazzui::{Checkbox, CheckboxSize, FormField, Tint};
+use dazzui::{Checkbox, CheckboxGroup, CheckboxSize, FormField, Tint};
 use gpui::{IntoElement, ParentElement, SharedString, Styled, div, px};
 
 use crate::act_with;
 use crate::storybook::gallery::{DocPage, Section, Specimen, Specimens, capitalize, case};
 use crate::storybook::stage::Col;
 use crate::storybook::{Story, StoryPage};
+
+const PLATFORMS: [&str; 4] = ["react", "flutter", "swiftui", "gpui"];
 
 const SIZES: [CheckboxSize; 3] = [
     CheckboxSize::Small,
@@ -116,6 +118,41 @@ pub const PAGE: StoryPage = StoryPage::new(
                 .on_change(act_with(this, |state, value: &bool, _, _| {
                     state.newsletter = *value
                 }))
+                .into_any_element()
+        }),
+        Story::new("A group", |state, this, _| {
+            // The parent is what a lone checkbox can never be: mixed. It reads
+            // the group rather than a value of its own, and pressing it sets
+            // or clears the lot.
+            let chosen = state.platforms.clone();
+            let all = PLATFORMS.len();
+            let mut group = CheckboxGroup::new().parent(
+                Checkbox::new("every", "Every platform", chosen.len() == all)
+                    .indeterminate(!chosen.is_empty() && chosen.len() < all)
+                    .note(SharedString::from(format!("{} of {all}", chosen.len())))
+                    .on_change(act_with(this, move |state, _: &bool, _, _| {
+                        state.platforms = if state.platforms.len() == all {
+                            Vec::new()
+                        } else {
+                            PLATFORMS.iter().map(|name| (*name).into()).collect()
+                        };
+                    })),
+            );
+            for name in PLATFORMS {
+                let on = chosen.iter().any(|chosen| chosen == name);
+                group = group.child(Checkbox::new(SharedString::from(name), name, on).on_change(
+                    act_with(this, move |state, _: &bool, _, _| {
+                        if on {
+                            state.platforms.retain(|chosen| chosen != name);
+                        } else {
+                            state.platforms.push(name.into());
+                        }
+                    }),
+                ));
+            }
+            gpui::div()
+                .w(gpui::px(288.))
+                .child(group)
                 .into_any_element()
         }),
         Story::new("Disabled", |_, _, _| {

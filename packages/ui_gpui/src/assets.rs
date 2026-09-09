@@ -35,7 +35,9 @@ pub mod icons {
     pub const CHECKMARK_12_FILLED: &str = "dazzui/icons/checkmark_12_filled.svg";
     pub const CHEVRON_DOWN_12_REGULAR: &str = "dazzui/icons/chevron_down_12_regular.svg";
     pub const CHEVRON_LEFT_16_REGULAR: &str = "dazzui/icons/chevron_left_16_regular.svg";
+    pub const CHEVRON_RIGHT_12_REGULAR: &str = "dazzui/icons/chevron_right_12_regular.svg";
     pub const CHEVRON_RIGHT_16_REGULAR: &str = "dazzui/icons/chevron_right_16_regular.svg";
+    pub const CHEVRON_UP_12_REGULAR: &str = "dazzui/icons/chevron_up_12_regular.svg";
     pub const DELETE_16_REGULAR: &str = "dazzui/icons/delete_16_regular.svg";
     pub const DISMISS_12_REGULAR: &str = "dazzui/icons/dismiss_12_regular.svg";
     pub const DISMISS_CIRCLE_12_FILLED: &str = "dazzui/icons/dismiss_circle_12_filled.svg";
@@ -47,6 +49,7 @@ pub mod icons {
     pub const SQUARE_MULTIPLE_16_REGULAR: &str =
         "dazzui/icons/square_multiple_16_regular.svg";
     pub const STAR_16_REGULAR: &str = "dazzui/icons/star_16_regular.svg";
+    pub const SUBTRACT_12_FILLED: &str = "dazzui/icons/subtract_12_filled.svg";
     pub const TABLE_16_REGULAR: &str = "dazzui/icons/table_16_regular.svg";
 }
 
@@ -72,6 +75,18 @@ const FILES: &[(&str, &str)] = &[
     (
         icons::CHEVRON_LEFT_16_REGULAR,
         include_str!("../assets/icons/chevron_left_16_regular.svg"),
+    ),
+    (
+        icons::CHEVRON_RIGHT_12_REGULAR,
+        include_str!("../assets/icons/chevron_right_12_regular.svg"),
+    ),
+    (
+        icons::CHEVRON_UP_12_REGULAR,
+        include_str!("../assets/icons/chevron_up_12_regular.svg"),
+    ),
+    (
+        icons::SUBTRACT_12_FILLED,
+        include_str!("../assets/icons/subtract_12_filled.svg"),
     ),
     (
         icons::CHEVRON_RIGHT_16_REGULAR,

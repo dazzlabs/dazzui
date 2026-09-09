@@ -44,6 +44,10 @@ class Probe {
     'dz-rail',
     'dz-sidebar',
     'dz-sidebar-card',
+    // A meter is its groove plus whatever head the story gave it: the axes
+    // say nothing about whether there is a label, so the two sides would be
+    // measuring different rows.
+    'dz-meter',
   }.contains(className);
 
   /// An overlay whose box is the viewport's rather than its own: a scrim
@@ -54,11 +58,18 @@ class Probe {
     'dz-toast-viewport',
   }.contains(className);
 
+  /// Components with no width of their own — they fill the column the story
+  /// put them in. They are given React's own measured width so the comparison
+  /// is about their height and their colours, which are theirs.
   bool get isField =>
       className == 'dz-text-field' ||
       className == 'dz-search-field' ||
       className == 'dz-select' ||
-      className == 'dz-form-field';
+      className == 'dz-form-field' ||
+      className == 'dz-number-field' ||
+      className == 'dz-otp-field' ||
+      className == 'dz-slider' ||
+      className == 'dz-meter';
 
   /// Where the React root is a row and the drawn box is a part inside it.
   bool get decorationIsAPart =>
@@ -226,6 +237,7 @@ Widget? build(Probe probe) {
             ? TextFieldState.error
             : TextFieldState.normal,
         tint: pick(TextFieldTint.values, data['tint']) ?? TextFieldTint.primary,
+        mono: data['mono'] == 'true',
         // A focused specimen is a focused field: the box lifts to the paper
         // behind an accent edge, and no other state of it says so.
         autofocus: data.containsKey('focused'),
@@ -240,6 +252,17 @@ Widget? build(Probe probe) {
     case 'dz-rail':
       return Rail(children: [label]);
     case 'dz-sidebar':
+      // React folded three columns into one component with axes, and this
+      // port still ships them under their old names. A column that cannot
+      // collapse is the one nearer the content — the second navigation column
+      // on the leading edge, the information column on the trailing one — and
+      // each has a width and a ground of its own. Building `Sidebar` for all
+      // three would measure the main column against the other two.
+      if (data['collapsible'] == 'none') {
+        return data['side'] == 'right'
+            ? Aside(children: [label])
+            : Rail(children: [label]);
+      }
       return Sidebar(
         children: [
           SidebarGroup(label: 'Components', children: [label]),
@@ -289,6 +312,46 @@ Widget? build(Probe probe) {
             pick(SegmentedActiveStyle.values, data['active-style']) ??
             SegmentedActiveStyle.raised,
         stretch: data['stretch'] == 'true',
+      );
+    case 'dz-avatar':
+      return Avatar(
+        name: probe.text.isEmpty ? 'Ada Lovelace' : probe.text,
+        size: probe.size(WidgetSize.medium),
+        shape: data['shape'] == 'square'
+            ? AvatarShape.square
+            : AvatarShape.circle,
+        tint: pick(AvatarTint.values, data['tint']) ?? AvatarTint.primary,
+      );
+    case 'dz-meter':
+      return Meter(
+        value: 0.62,
+        size: probe.size(WidgetSize.medium),
+        tint: pick(MeterTint.values, data['tint']) ?? MeterTint.primary,
+      );
+    case 'dz-slider':
+      return Slider(
+        values: const [40],
+        onChanged: probe.disabled ? null : (_) {},
+        size: probe.size(WidgetSize.medium),
+        tint: pick(SliderTint.values, data['tint']) ?? SliderTint.primary,
+      );
+    case 'dz-number-field':
+      return NumberField(
+        value: 12,
+        onChanged: probe.disabled ? null : (_) {},
+        size: probe.size(WidgetSize.medium),
+        state: data.containsKey('invalid')
+            ? TextFieldState.error
+            : TextFieldState.normal,
+        tint: pick(TextFieldTint.values, data['tint']) ?? TextFieldTint.primary,
+      );
+    case 'dz-otp-field':
+      return OtpField(
+        length: 6,
+        value: '',
+        onChanged: probe.disabled ? null : (_) {},
+        size: probe.size(WidgetSize.medium),
+        tint: pick(TextFieldTint.values, data['tint']) ?? TextFieldTint.primary,
       );
     case 'dz-pill-tabs':
       return PillTabs<int>(

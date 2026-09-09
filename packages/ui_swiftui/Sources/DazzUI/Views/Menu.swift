@@ -128,21 +128,89 @@ public struct Menu<Trigger: View>: View {
   }
 
   private var panel: some View {
-    let vars = theme.vars
-
-    return VStack(spacing: 0) {
+    MenuSheet {
       ForEach(items) { item in
         MenuRow(item: item, tint: tint) { open = false }
       }
     }
+  }
+}
+
+/// The floating panel a menu's rows sit in.
+///
+/// `popup.css` gives it a `min-width` and no width at all, so the panel is as
+/// wide as its widest row and never narrower than `menu.min-width` — a menu
+/// narrower than its trigger reads as broken, whatever its labels.
+///
+/// A ``ContextMenu``, a ``Menubar`` and a ``Combobox``'s list wear the same
+/// sheet, which is what keeps the four from drifting.
+struct MenuSheet<Content: View>: View {
+  var minWidth: CGFloat?
+  @ViewBuilder var content: () -> Content
+
+  @Environment(\.theme) private var theme
+  @Environment(\.hairline) private var hairline
+
+  init(minWidth: CGFloat? = nil, @ViewBuilder content: @escaping () -> Content) {
+    self.minWidth = minWidth
+    self.content = content
+  }
+
+  var body: some View {
+    let vars = theme.vars
+
+    return VStack(spacing: 0) {
+      content()
+    }
     .padding(vars.spacing1)
-    .frame(minWidth: vars.menuMinWidth, alignment: .leading)
+    .frame(minWidth: minWidth ?? vars.menuMinWidth, alignment: .leading)
     .background(vars.colorSurfaceOverlay)
     .clipShape(RoundedRectangle(cornerRadius: vars.radiusLarge, style: .circular))
     .border(vars.colorBorderStrong, width: hairline, cornerRadius: vars.radiusLarge)
     .tokenShadow(vars.shadowLg)
-    .fixedSize()
+    .fixedSize(horizontal: minWidth == nil, vertical: true)
     .accessibilityElement(children: .contain)
+  }
+}
+
+/// A group heading inside the sheet: the section label's voice, on the row's
+/// own inset. A ``Combobox``'s grouped list is what reaches for it.
+struct MenuGroupLabel: View {
+  let title: String
+
+  @Environment(\.theme) private var theme
+
+  var body: some View {
+    let vars = theme.vars
+
+    Text(title)
+      .font(.system(size: vars.captionSmall.size, weight: vars.labelSmall.weight))
+      .foregroundStyle(vars.colorContentSubtle)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .padding(.top, vars.spacing15)
+      .padding(.bottom, vars.spacing1)
+      .padding(.horizontal, vars.spacing2)
+  }
+}
+
+/// What the sheet says when a query matches nothing.
+///
+/// A line of prose in a panel of rows, so it takes the row's inset and the
+/// faint ink rather than looking like a row that cannot be picked.
+struct MenuEmpty: View {
+  let label: String
+
+  @Environment(\.theme) private var theme
+
+  var body: some View {
+    let vars = theme.vars
+
+    Text(label)
+      .font(vars.bodySmall.font)
+      .foregroundStyle(vars.colorContentFaint)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .padding(.vertical, vars.menuItemPadding)
+      .padding(.horizontal, vars.spacing2)
   }
 }
 
@@ -151,7 +219,7 @@ public struct Menu<Trigger: View>: View {
 ///
 /// The row's corner is the panel's minus its padding, so the hover wash stays
 /// concentric with the panel edge.
-private struct MenuRow: View {
+struct MenuRow: View {
   let item: MenuItem
   let tint: Tint
   let dismiss: () -> Void

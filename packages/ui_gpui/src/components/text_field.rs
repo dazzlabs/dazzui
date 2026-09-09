@@ -1,7 +1,7 @@
 use std::ops::Range;
 
 use gpui::{
-    App, Bounds, ClipboardItem, Context, Element, ElementId, ElementInputHandler, Entity,
+    App, Bounds, ClipboardItem, Context, Div, Element, ElementId, ElementInputHandler, Entity,
     EntityInputHandler, Focusable, GlobalElementId, Hsla, InspectorElementId, InteractiveElement,
     IntoElement, KeyDownEvent, LayoutId, MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent,
     ParentElement, Pixels, Point, RenderOnce, SharedString, Style, Styled, TextRun, UTF16Selection,
@@ -911,12 +911,6 @@ fn text_control(
     let focused = field.read(cx).focus_handle.is_focused(window);
     let accent = vars.ramp(tint).shade(600);
 
-    let disabled_surface = vars.control_color(
-        ControlVariant::Normal,
-        ControlPart::Surface,
-        tint,
-        ControlState::Disabled,
-    );
     let disabled_content = vars.control_color(
         ControlVariant::Normal,
         ControlPart::Content,
@@ -955,54 +949,11 @@ fn text_control(
     } else {
         vars.color_content
     };
-    let surface = if disabled {
-        disabled_surface
-    } else if erroring {
-        vars.ramp(tint).shade(50)
-    } else if focused {
-        vars.color_surface
-    } else {
-        vars.color_surface_muted
-    };
-    let border = if focused || erroring {
-        accent
-    } else {
-        vars.color_border_strong
-    };
-
-    div()
-        .w_full()
-        .flex()
-        .items_center()
+    field_box(size, state, tint, disabled, focused, wrap, cx)
         // Clicking the box's padding is clicking the field.
         .on_mouse_down(MouseButton::Left, {
             let field = field.clone();
             move |_, window, cx| field.read(cx).focus(window)
-        })
-        .map(|el| {
-            if wrap {
-                el.min_h(vars.spacing_20)
-                    .py(vars.spacing_2_5)
-                    .rounded(vars.radius_large)
-            } else {
-                el.h(metrics.size)
-                    .py(metrics.padding_block)
-                    .rounded(vars.radius_medium)
-            }
-        })
-        .px(vars.spacing_3)
-        .border(crate::hairline(vars))
-        .bg(surface)
-        .border_color(border)
-        .text_color(text)
-        // Focus lifts the card to the paper behind a soft accent wash.
-        .when(focused && !disabled, |el| {
-            el.shadow(vec![gpui::BoxShadow {
-                color: accent.opacity(vars.focus_glow_alpha),
-                offset: point(px(0.), px(0.)),
-                blur_radius: px(0.),
-                spread_radius: vars.focus_width,
-            }])
         })
         .map(|el| {
             if disabled {
@@ -1028,6 +979,101 @@ fn text_control(
             wrap,
             cx,
         ))
+}
+
+/// The box the text controls share.
+///
+/// `text-field.css` names five wearers of one box — the field, the read-only
+/// value, the select trigger, the number field's group and the combobox's —
+/// and says why: a select is a field with a chevron, so the five drifting
+/// apart would be the bug rather than the feature. This is that rule, written
+/// once so the components here cannot drift either.
+///
+/// It is a recessed card one step below the paper, lifting to the paper on
+/// focus behind an accent border and a soft accent wash. That card→paper
+/// transition is the focus signal; a field that stays white can only signal
+/// with its ring. An erroring control is re-tinted rather than given a second
+/// palette, so its border, wash and ink all move together.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn field_box(
+    size: TextFieldSize,
+    state: TextFieldState,
+    tint: Tint,
+    disabled: bool,
+    focused: bool,
+    // A control that grows — a multiline field — takes the container corner
+    // rather than the control one: a pill textarea reads as a lozenge.
+    grows: bool,
+    cx: &App,
+) -> Div {
+    let vars = cx.theme().vars;
+    let metrics = vars.metrics(size.control());
+    let tint = state.tint(tint);
+    let erroring = state == TextFieldState::Error;
+    let accent = vars.ramp(tint).shade(600);
+
+    let surface = if disabled {
+        vars.control_color(
+            ControlVariant::Normal,
+            ControlPart::Surface,
+            tint,
+            ControlState::Disabled,
+        )
+    } else if erroring {
+        vars.ramp(tint).shade(50)
+    } else if focused {
+        vars.color_surface
+    } else {
+        vars.color_surface_muted
+    };
+    let text = if disabled {
+        vars.control_color(
+            ControlVariant::Normal,
+            ControlPart::Content,
+            tint,
+            ControlState::Disabled,
+        )
+    } else if erroring {
+        vars.ramp(tint).shade(800)
+    } else {
+        vars.color_content
+    };
+
+    div()
+        .w_full()
+        .flex()
+        .items_center()
+        .map(|el| {
+            if grows {
+                el.min_h(vars.spacing_20)
+                    .py(vars.spacing_2_5)
+                    .rounded(vars.radius_large)
+            } else {
+                el.h(metrics.size)
+                    .py(metrics.padding_block)
+                    .rounded(vars.radius_medium)
+            }
+        })
+        .px(vars.spacing_3)
+        // One width in every state: a border that thickened on focus would
+        // shift the text it wraps by half a pixel.
+        .border(crate::hairline(vars))
+        .bg(surface)
+        .border_color(if focused || erroring {
+            accent
+        } else {
+            vars.color_border_strong
+        })
+        .text_color(text)
+        // Focus lifts the card to the paper behind a soft accent wash.
+        .when(focused && !disabled, |el| {
+            el.shadow(vec![gpui::BoxShadow {
+                color: accent.opacity(vars.focus_glow_alpha),
+                offset: point(px(0.), px(0.)),
+                blur_radius: px(0.),
+                spread_radius: vars.focus_width,
+            }])
+        })
 }
 
 /// A value in the shape of an input, for a row that reports rather than

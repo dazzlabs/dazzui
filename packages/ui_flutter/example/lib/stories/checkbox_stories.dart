@@ -33,6 +33,7 @@ class CheckboxStories {
       ),
     ),
     Story('Interactive', (context) => const _Live()),
+    Story('A group', (context) => const _Group()),
     Story(
       'Disabled',
       (context) => const Col(
@@ -290,6 +291,43 @@ class _Overview extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+/// The parent is what a lone checkbox can never be: mixed. It reads the group
+/// rather than a value of its own, and pressing it sets or clears the lot —
+/// twice restores what was checked before.
+class _Group extends StatefulWidget {
+  const _Group();
+
+  @override
+  State<_Group> createState() => _GroupState();
+}
+
+class _GroupState extends State<_Group> {
+  static const List<String> platforms = ['react', 'flutter', 'swiftui', 'gpui'];
+
+  Set<String> _value = {'react', 'flutter'};
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 288,
+      child: CheckboxGroup(
+        allValues: platforms,
+        value: _value,
+        onChanged: (value) => setState(() => _value = value),
+        children: [
+          Checkbox(
+            parent: true,
+            label: const Text('Every platform'),
+            note: Text('${_value.length} of ${platforms.length}'),
+          ),
+          for (final String platform in platforms)
+            Checkbox(name: platform, label: Text(platform)),
+        ],
+      ),
     );
   }
 }

@@ -11,6 +11,11 @@ class DialogStories {
   static StoryPage get page => StoryPage('Dialog', [
     Story('Overview', (context) => const _Overview(), layout: StoryLayout.page),
     Story(
+      'An alert',
+      (context) => const _Alert(),
+      layout: StoryLayout.fullscreen,
+    ),
+    Story(
       'A sheet',
       (context) => DialogScrim(
         child: Dialog(
@@ -304,6 +309,49 @@ class _Overview extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+/// The sheet with no way out but an answer.
+///
+/// `showDialog(dismissible: false)` is the axis rather than a second widget:
+/// everything a reader sees is identical — the scrim, the sheet, the three
+/// rows — and the one thing that differs is whether dismissing would itself be
+/// an answer.
+class _Alert extends StatelessWidget {
+  const _Alert();
+
+  @override
+  Widget build(BuildContext context) {
+    return DialogScrim(
+      child: Dialog(
+        tone: DialogTone.danger,
+        children: [
+          const DialogHeader(title: 'Delete this glossary?'),
+          const DialogBody(
+            children: [
+              Text(
+                '412 terms will be removed from every project using it. '
+                'Escape will not close this — the question has to be '
+                'answered.',
+              ),
+            ],
+          ),
+          DialogFooter(
+            children: [
+              const Spacer(),
+              Button(onPressed: () {}, child: const Text('Keep it')),
+              Button(
+                variant: ButtonVariant.filled,
+                tint: ButtonTint.danger,
+                onPressed: () {},
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

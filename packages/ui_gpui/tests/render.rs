@@ -264,6 +264,137 @@ fn gallery(_window: &mut Window, cx: &mut App) -> AnyElement {
             ),
         )
         .child(EmptyState::new("Nothing here").action(Button::new("clear", "Clear")))
+        .child(
+            div()
+                .flex()
+                .gap(vars.spacing_2)
+                .children(
+                    [AvatarSize::Small, AvatarSize::Medium, AvatarSize::Large]
+                        .map(|size| Avatar::new("Ada Lovelace").size(size)),
+                )
+                .child(Avatar::new("DazzUI").shape(AvatarShape::Square))
+                .child(
+                    AvatarGroup::new()
+                        .max(2)
+                        .avatar(Avatar::new("Ada Lovelace"))
+                        .avatar(Avatar::new("Grace Hopper").tint(Tint::Info))
+                        .avatar(Avatar::new("Alan Turing").tint(Tint::Success)),
+                ),
+        )
+        .child(
+            div()
+                .flex()
+                .flex_col()
+                .gap(vars.spacing_2)
+                .w(px(320.))
+                .child(Meter::new(62.).label("Storage").value_label("62%"))
+                .children(
+                    [MeterSize::Small, MeterSize::Medium, MeterSize::Large]
+                        .map(|size| Meter::new(62.).size(size).tint(Tint::Warning)),
+                )
+                .children(
+                    [SliderSize::Small, SliderSize::Medium, SliderSize::Large].map(|size| {
+                        Slider::new(SharedString::from(format!("slider-{size:?}")), 40.)
+                            .size(size)
+                            .value_label("40")
+                    }),
+                )
+                .child(Slider::range("range", vec![20., 70.]))
+                .child(Slider::new("disabled-slider", 40.).disabled(true)),
+        )
+        .child(
+            div()
+                .flex()
+                .flex_col()
+                .gap(vars.spacing_2)
+                .w(px(360.))
+                .child(
+                    Collapsible::new("collapsible", "Environment")
+                        .initially_open(true)
+                        .meta("3 items")
+                        .child("Node 24.20, pnpm 10.4"),
+                )
+                .child(
+                    Accordion::new("accordion")
+                        .divided(true)
+                        .item(
+                            AccordionItem::new("where", "Where do the values come from?")
+                                .child("Every value is a token."),
+                        )
+                        .item(
+                            AccordionItem::new("themes", "How many themes?")
+                                .child("Twelve, as six families."),
+                        ),
+                )
+                .child(
+                    CheckboxGroup::new()
+                        .parent(
+                            Checkbox::new("every", "Every platform", false)
+                                .indeterminate(true)
+                                .note("2 of 4"),
+                        )
+                        .child(Checkbox::new("react", "react", true))
+                        .child(Checkbox::new("gpui", "gpui", false)),
+                )
+                .child(
+                    Form::new()
+                        .child(
+                            Fieldset::new()
+                                .legend("Billing address")
+                                .child(FormField::new("Street").child(TextField::new(&field))),
+                        )
+                        .child(FormField::new("City").child(TextField::new(&field))),
+                )
+                .child(NumberField::new("port", &field).unit("px").bounds(8., 24.))
+                .child(OtpField::new("code", &field, 6).group_after(3))
+                .child(
+                    Combobox::new("zone", &field)
+                        .value("utc")
+                        .option(ComboboxOption::new("utc", "UTC").group("Global"))
+                        .option(ComboboxOption::new("cet", "CET").group("Europe")),
+                )
+                .child(
+                    Autocomplete::new("branch", &field)
+                        .mono(true)
+                        .item("main")
+                        .item("release/4.2"),
+                ),
+        )
+        .child(
+            div()
+                .flex()
+                .gap(vars.spacing_2)
+                .child(
+                    Popover::new("about")
+                        .title("Build 4.2.1")
+                        .description("Published 3 days ago.")
+                        .trigger(|_, _| Button::new("about-trigger", "About").into_any_element()),
+                )
+                .child(
+                    PreviewCard::new("preview")
+                        .trigger(Button::new("preview-trigger", "@ada"))
+                        .child("Ada Lovelace"),
+                )
+                .child(
+                    Menubar::new("menubar")
+                        .menu(MenubarMenu::new("File").item(MenuItem::new("New")))
+                        .menu(MenubarMenu::new("Edit").item(MenuItem::new("Undo"))),
+                )
+                .child(
+                    ContextMenu::new("context")
+                        .item(MenuItem::new("Rename"))
+                        .child(Card::new().child("Right-click")),
+                ),
+        )
+        .child(
+            div().relative().w(px(480.)).h(px(240.)).child(
+                Drawer::new()
+                    .title("Filters")
+                    .description("Narrow what the list is showing.")
+                    .footer(Button::new("apply", "Apply"))
+                    .child("Open, merged, closed."),
+            ),
+        )
         .into_any_element()
 }
 

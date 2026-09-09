@@ -111,6 +111,10 @@ impl Probe {
                 | "dz-rail"
                 | "dz-sidebar"
                 | "dz-sidebar-card"
+            // A meter is its groove plus whatever head the story gave it: the
+            // axes say nothing about whether there is a label, so the two
+            // sides would be measuring different rows.
+            | "dz-meter"
         )
     }
 
@@ -121,10 +125,20 @@ impl Probe {
         matches!(self.class.as_str(), "dz-dialog-scrim" | "dz-toast-viewport")
     }
 
+    /// Components with no width of their own — they fill the column the story
+    /// put them in. They are given React's own measured width so the
+    /// comparison is about their height and their colours, which are theirs.
     fn is_field(&self) -> bool {
         matches!(
             self.class.as_str(),
-            "dz-text-field" | "dz-search-field" | "dz-select" | "dz-shortcut-recorder"
+            "dz-text-field"
+                | "dz-search-field"
+                | "dz-select"
+                | "dz-shortcut-recorder"
+                | "dz-number-field"
+                | "dz-otp-field"
+                | "dz-slider"
+                | "dz-meter"
         )
     }
 }
@@ -420,6 +434,44 @@ fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
             }
             progress.into_any_element()
         }
+        "dz-avatar" => {
+            let name: gpui::SharedString = if text.is_empty() {
+                "Ada Lovelace".into()
+            } else {
+                text.clone()
+            };
+            let mut avatar = Avatar::new(name);
+            if let Some(s) = sized!(probe.get("size"), AvatarSize) {
+                avatar = avatar.size(s);
+            }
+            if probe.get("shape") == Some("square") {
+                avatar = avatar.shape(AvatarShape::Square);
+            }
+            if let Some(t) = t {
+                avatar = avatar.tint(t);
+            }
+            avatar.into_any_element()
+        }
+        "dz-meter" => {
+            let mut meter = Meter::new(62.);
+            if let Some(s) = sized!(probe.get("size"), MeterSize) {
+                meter = meter.size(s);
+            }
+            if let Some(t) = t {
+                meter = meter.tint(t);
+            }
+            meter.into_any_element()
+        }
+        "dz-slider" => {
+            let mut slider = Slider::new(id.clone(), 40.).disabled(probe.disabled());
+            if let Some(s) = sized!(probe.get("size"), SliderSize) {
+                slider = slider.size(s);
+            }
+            if let Some(t) = t {
+                slider = slider.tint(t);
+            }
+            slider.into_any_element()
+        }
         "dz-spinner" => {
             let mut spinner = Spinner::new();
             if let Some(s) = sized!(probe.get("size"), SpinnerSize) {
@@ -481,6 +533,37 @@ fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
                 text_field = text_field.tint(t);
             }
             text_field.into_any_element()
+        }
+        "dz-number-field" => {
+            let field = cx.new(|cx| TextBuffer::new(cx, "0").with_value("12"));
+            let mut number = NumberField::new(id.clone(), &field).disabled(disabled);
+            if let Some(s) = sized!(probe.get("size"), TextFieldSize) {
+                number = number.size(s);
+            }
+            if probe.has("invalid") {
+                number = number.state(TextFieldState::Error);
+            }
+            if let Some(t) = t {
+                number = number.tint(t);
+            }
+            number.into_any_element()
+        }
+        "dz-otp-field" => {
+            let field = cx.new(|cx| TextBuffer::new(cx, ""));
+            // Six is the React stories' own length, and the probe carries no
+            // axis for it: a code's width is the story's rather than the
+            // component's, which is why `is_field` gives it React's.
+            let mut otp = OtpField::new(id.clone(), &field, 6).disabled(disabled);
+            if let Some(s) = sized!(probe.get("size"), TextFieldSize) {
+                otp = otp.size(s);
+            }
+            if probe.has("invalid") {
+                otp = otp.state(TextFieldState::Error);
+            }
+            if let Some(t) = t {
+                otp = otp.tint(t);
+            }
+            otp.into_any_element()
         }
         "dz-search-field" => {
             let field = cx.new(|cx| TextBuffer::new(cx, "Search"));
@@ -562,6 +645,22 @@ fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
         "dz-rail" => Rail::new()
             .child(RailGroup::new().label("Pages").first(true))
             .into_any_element(),
+        // React folded three columns into one component with axes, and this
+        // port still ships them under their old names. A column that cannot
+        // collapse is the one nearer the content — the second navigation
+        // column on the leading edge, the information column on the trailing
+        // one — and each has a width and a ground of its own. Building the
+        // sidebar for all three would measure the main column against the
+        // other two.
+        "dz-sidebar" if probe.get("collapsible") == Some("none") => {
+            if probe.get("side") == Some("right") {
+                Aside::new().child(text).into_any_element()
+            } else {
+                Rail::new()
+                    .child(RailGroup::new().label("Components"))
+                    .into_any_element()
+            }
+        }
         "dz-sidebar" => Sidebar::new(id.clone())
             .child(SidebarGroup::new().label("Components").first(true))
             .into_any_element(),

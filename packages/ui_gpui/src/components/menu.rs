@@ -1,5 +1,5 @@
 use gpui::{
-    AnyElement, App, ElementId, InteractiveElement, IntoElement, ParentElement, RenderOnce,
+    AnyElement, App, Div, ElementId, InteractiveElement, IntoElement, ParentElement, RenderOnce,
     SharedString, StatefulInteractiveElement, Styled, Window, deferred, div, relative,
 };
 
@@ -10,6 +10,9 @@ use crate::{
     ActionListener, ControlPart, ControlState, ControlVariant, SharedActionListener, Tint, colors,
     hairline, latched, pressable,
 };
+
+/// What shuts the panel a row sits in.
+pub(crate) type DismissListener = std::rc::Rc<dyn Fn(&mut Window)>;
 
 /// What builds the thing that opens a menu. It is handed the open state, so
 /// a trigger can show that it is held down.
@@ -129,6 +132,26 @@ impl Menu {
     }
 }
 
+/// The floating panel a menu's rows sit in.
+///
+/// `popup.css` gives it a `min-width` and no width at all, so the panel is as
+/// wide as its widest row and never narrower than `menu.min-width` — a menu
+/// narrower than its trigger reads as broken, whatever its labels. A GPUI div
+/// is content-sized by default, so the minimum is the only thing to say.
+///
+/// A [`ContextMenu`](crate::ContextMenu) and a [`Menubar`](crate::Menubar)
+/// wear the same panel, which is what keeps the three from drifting.
+pub(crate) fn menu_panel(vars: &'static crate::ThemeVariables) -> Div {
+    div()
+        .min_w(vars.menu_min_width)
+        .p(vars.spacing_1)
+        .rounded(vars.radius_large)
+        .border(hairline(vars))
+        .border_color(vars.color_border_strong)
+        .bg(vars.color_surface_overlay)
+        .token_shadow(vars.shadow_lg)
+}
+
 impl RenderOnce for Menu {
     fn render(self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let vars = cx.theme().vars;
@@ -142,7 +165,6 @@ impl RenderOnce for Menu {
         } = self;
 
         latched(id.clone(), move |open, _window, cx| {
-            let rule = hairline(vars);
             let is_open = open.get() && !disabled;
             let trigger = trigger.map(|trigger| trigger(is_open, cx));
 
@@ -168,7 +190,7 @@ impl RenderOnce for Menu {
                 })
                 .when(is_open, |el| {
                     el.child(deferred(
-                        div()
+                        menu_panel(vars)
                             .absolute()
                             .top_full()
                             .map(|el| match align {
@@ -176,13 +198,6 @@ impl RenderOnce for Menu {
                                 MenuAlign::End => el.right_0(),
                             })
                             .mt(vars.spacing_1)
-                            .min_w(vars.menu_min_width)
-                            .p(vars.spacing_1)
-                            .rounded(vars.radius_large)
-                            .border(rule)
-                            .bg(vars.color_surface_overlay)
-                            .border_color(vars.color_border_strong)
-                            .token_shadow(vars.shadow_lg)
                             .occlude()
                             .on_mouse_down_out({
                                 let open = open.clone();
@@ -192,7 +207,17 @@ impl RenderOnce for Menu {
                                 }
                             })
                             .children(items.into_iter().enumerate().map(|(index, item)| {
-                                menu_item(index, item, open.clone(), tint, vars)
+                                let open = open.clone();
+                                menu_item(
+                                    index,
+                                    item,
+                                    std::rc::Rc::new(move |window: &mut Window| {
+                                        open.set(false);
+                                        window.refresh();
+                                    }),
+                                    tint,
+                                    vars,
+                                )
                             })),
                     ))
                 })
@@ -208,10 +233,14 @@ impl RenderOnce for Menu {
 /// tinted ramp, which on a row would land heavier than a tinted selection
 /// sitting one step lower. A row's wash is neutral, and it holds while
 /// pressed: a menu item has no pressed look of its own.
-fn menu_item(
+pub(crate) fn menu_item(
     index: usize,
     item: MenuItem,
-    open: std::rc::Rc<std::cell::Cell<bool>>,
+    // What shuts the panel this row is in. A closure rather than the open
+    // cell itself, because the three menus keep that state in three different
+    // shapes — a bool, a pointer position, an index on a bar — and the row has
+    // no business knowing which.
+    dismiss: DismissListener,
     tint: Tint,
     vars: &'static crate::ThemeVariables,
 ) -> impl IntoElement {
@@ -304,11 +333,10 @@ fn menu_item(
                     )
                 })
                 .when(!disabled, |el| {
-                    let open = open.clone();
+                    let dismiss = dismiss.clone();
                     let on_select = on_select.clone();
                     el.on_click(move |_, window, cx| {
-                        open.set(false);
-                        window.refresh();
+                        dismiss(window);
                         if let Some(listener) = on_select.as_ref() {
                             listener(window, cx);
                         }

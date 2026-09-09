@@ -354,6 +354,10 @@ struct Probe {
       "dz-card", "dz-callout", "dz-option-card", "dz-toast", "dz-step",
       "dz-aside", "dz-dialog", "dz-dialog-scrim", "dz-preference-row", "dz-rail",
       "dz-sidebar", "dz-sidebar-card",
+      // A meter is its groove plus whatever head the story gave it: the axes
+      // say nothing about whether there is a label, so the two sides would be
+      // measuring different rows.
+      "dz-meter",
     ].contains(className)
   }
 
@@ -364,8 +368,14 @@ struct Probe {
     ["dz-dialog-scrim", "dz-toast-viewport"].contains(className)
   }
 
+  /// Views with no width of their own — they fill the column the story put
+  /// them in. They are given React's own measured width so the comparison is
+  /// about their height and their colours, which are theirs.
   var isField: Bool {
-    ["dz-text-field", "dz-search-field", "dz-select", "dz-shortcut-recorder"].contains(className)
+    [
+      "dz-text-field", "dz-search-field", "dz-select", "dz-shortcut-recorder",
+      "dz-number-field", "dz-otp-field", "dz-slider", "dz-meter",
+    ].contains(className)
   }
 
   func has(_ axis: String) -> Bool { data[axis] != nil }
@@ -558,6 +568,46 @@ func build(_ probe: Probe) -> AnyView? {
         value: probe.has("indeterminate") ? nil : 0.35,
         size: ProgressSize(rawValue: data["size"] ?? "") ?? .small,
         tint: tint ?? .primary))
+  case "dz-avatar":
+    return AnyView(
+      Avatar(
+        text.isEmpty ? "Ada Lovelace" : text,
+        size: AvatarSize(rawValue: data["size"] ?? "") ?? .medium,
+        shape: AvatarShape(rawValue: data["shape"] ?? "") ?? .circle,
+        tint: tint ?? .primary))
+  case "dz-meter":
+    return AnyView(
+      Meter(
+        value: 62,
+        size: MeterSize(rawValue: data["size"] ?? "") ?? .medium,
+        tint: tint ?? .primary))
+  case "dz-slider":
+    return AnyView(
+      Slider(
+        value: .constant(40),
+        size: SliderSize(rawValue: data["size"] ?? "") ?? .medium,
+        tint: tint ?? .primary,
+        enabled: !probe.disabled))
+  case "dz-number-field":
+    return AnyView(
+      NumberField(
+        value: .constant(12),
+        size: TextFieldSize(rawValue: data["size"] ?? "") ?? .medium,
+        state: probe.has("invalid") ? .error : .default,
+        tint: tint ?? .primary,
+        enabled: !probe.disabled))
+  case "dz-otp-field":
+    // Six is the React stories' own length, and the probe carries no axis for
+    // it: a code's width is the story's rather than the view's, which is why
+    // `isField` gives it React's.
+    return AnyView(
+      OtpField(
+        value: .constant(""),
+        length: 6,
+        size: TextFieldSize(rawValue: data["size"] ?? "") ?? .medium,
+        state: probe.has("invalid") ? .error : .default,
+        tint: tint ?? .primary,
+        enabled: !probe.disabled))
   case "dz-spinner":
     return AnyView(
       Spinner(
@@ -624,6 +674,16 @@ func build(_ probe: Probe) -> AnyView? {
     return AnyView(Aside { Text(text) })
   case "dz-rail":
     return AnyView(Rail { RailGroup { Text("Pages") } content: { EmptyView() } })
+  // React folded three columns into one view with axes, and this port still
+  // ships them under their old names. A column that cannot collapse is the one
+  // nearer the content — the second navigation column on the leading edge, the
+  // information column on the trailing one — and each has a width and a ground
+  // of its own. Building the sidebar for all three would measure the main
+  // column against the other two.
+  case "dz-sidebar" where data["collapsible"] == "none":
+    return data["side"] == "right"
+      ? AnyView(Aside { Text(text) })
+      : AnyView(Rail { RailGroup { Text("Components") } content: { EmptyView() } })
   case "dz-sidebar":
     return AnyView(
       Sidebar(tint: tint ?? .primary) { EmptyView() } content: {

@@ -47,7 +47,7 @@ impl RenderOnce for Aside {
             .w(vars.frame_aside_width)
             .gap(vars.spacing_5)
             .p(vars.spacing_4)
-            .bg(vars.color_surface_muted)
+            .bg(vars.color_surface_column)
             .children(self.children)
             .child(rule(vars.color_border, Edge::Left, hairline(vars)))
     }

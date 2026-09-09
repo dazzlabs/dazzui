@@ -72,6 +72,17 @@ pub struct Playground {
     pub progress: f32,
     pub reached: usize,
     pub notified: Vec<SharedString>,
+    pub font_size: f32,
+    pub band: Vec<f32>,
+    pub port: Entity<TextBuffer>,
+    pub code: Entity<TextBuffer>,
+    pub zone_query: Entity<TextBuffer>,
+    pub zone: SharedString,
+    pub branch: Entity<TextBuffer>,
+    pub platforms: Vec<SharedString>,
+    pub sort: SharedString,
+    pub density: SharedString,
+    pub disclosed: bool,
 }
 
 impl Playground {
@@ -82,10 +93,23 @@ impl Playground {
         let notes =
             cx.new(|cx| TextBuffer::new(cx, "Anything the team should know…").multi_line(true));
         let search = cx.new(|cx| TextBuffer::new(cx, "Search components"));
+        let port = cx.new(|cx| TextBuffer::new(cx, "5173").with_value("13"));
+        let code = cx.new(|cx| TextBuffer::new(cx, ""));
+        let zone_query = cx.new(|cx| TextBuffer::new(cx, "Search time zones…"));
+        let branch = cx.new(|cx| TextBuffer::new(cx, "Branch").with_value("feat/"));
 
         // A field edits itself; the page it sits on has to hear about it to
         // redraw around it.
-        for field in [&filter, &name, &email, &notes] {
+        for field in [
+            &filter,
+            &name,
+            &email,
+            &notes,
+            &port,
+            &code,
+            &zone_query,
+            &branch,
+        ] {
             cx.observe(field, |_, _, cx| cx.notify()).detach();
         }
         // The search field is also read back by the stories that filter a
@@ -131,6 +155,17 @@ impl Playground {
             progress: 15.,
             reached: 1,
             notified: vec!["aurora".into()],
+            font_size: 13.,
+            band: vec![20., 70.],
+            port,
+            code,
+            zone_query,
+            zone: "london".into(),
+            branch,
+            platforms: vec!["react".into(), "flutter".into()],
+            sort: "name".into(),
+            density: "Compact".into(),
+            disclosed: false,
         }
     }
 

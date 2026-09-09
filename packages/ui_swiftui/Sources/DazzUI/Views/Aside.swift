@@ -28,7 +28,7 @@ public struct Aside<Content: View>: View {
       .padding(vars.spacing4)
     }
     .frame(width: vars.frameAsideWidth)
-    .background(vars.colorSurfaceMuted)
+    .background(vars.colorSurfaceColumn)
     .rule(vars.colorBorder, edge: .leading, width: hairline)
   }
 }

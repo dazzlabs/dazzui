@@ -19,6 +19,10 @@ public enum CheckboxSize: String, CaseIterable, Sendable {
 /// row you cannot pick out of the list by its label alone is not signalling.
 public struct Checkbox<Label: View>: View {
   public var checked: Bool
+  /// Neither on nor off — the state a parent arrives at when only some of its
+  /// children are checked. A lone checkbox can never reach it on its own,
+  /// which is why it is a property rather than a third value.
+  public var indeterminate: Bool
   public var onCheckedChange: ((Bool) -> Void)?
   public var size: CheckboxSize
   /// Which colour ramp the checked box fills from.
@@ -33,6 +37,7 @@ public struct Checkbox<Label: View>: View {
 
   public init(
     checked: Bool,
+    indeterminate: Bool = false,
     onCheckedChange: ((Bool) -> Void)? = nil,
     size: CheckboxSize = .medium,
     tint: Tint = .primary,
@@ -41,6 +46,7 @@ public struct Checkbox<Label: View>: View {
     @ViewBuilder label: @escaping () -> Label
   ) {
     self.checked = checked
+    self.indeterminate = indeterminate
     self.onCheckedChange = onCheckedChange
     self.size = size
     self.tint = tint
@@ -97,18 +103,21 @@ public struct Checkbox<Label: View>: View {
   /// grey ring.
   private var box: some View {
     let vars = theme.vars
-    let filled = checked ? recipe(.surface) : Color.clear
+    // Mixed fills like checked: a parent that is partly on is on. What
+    // separates the two is the glyph, not the box.
+    let marked = checked || indeterminate
+    let filled = marked ? recipe(.surface) : Color.clear
 
-    // `Checkmark12Filled`, the glyph `checkbox.tsx` names. It sits a step
-    // under the label so it clears the box's corners.
-    return Icon(.checkmark12Filled, size: vars.labelSmall.size)
-      .opacity(checked ? 1 : 0)
+    // A tick says every one; a dash says some. Both sit a step under the label
+    // so they clear the box's corners.
+    return Icon(indeterminate ? .subtract12Filled : .checkmark12Filled, size: vars.labelSmall.size)
+      .opacity(marked ? 1 : 0)
       .foregroundStyle(recipe(.content))
       .frame(width: boxSize, height: boxSize)
       .background(filled)
       .clipShape(RoundedRectangle(cornerRadius: vars.checkboxRadius, style: .circular))
       .border(
-        checked ? filled : vars.colorBorderMuted,
+        marked ? filled : vars.colorBorderMuted,
         width: vars.checkboxThickness,
         cornerRadius: vars.checkboxRadius
       )
@@ -145,6 +154,7 @@ public extension Checkbox where Label == Text {
   init(
     _ title: String,
     checked: Bool,
+    indeterminate: Bool = false,
     onCheckedChange: ((Bool) -> Void)? = nil,
     size: CheckboxSize = .medium,
     tint: Tint = .primary,
@@ -153,6 +163,7 @@ public extension Checkbox where Label == Text {
   ) {
     self.init(
       checked: checked,
+      indeterminate: indeterminate,
       onCheckedChange: onCheckedChange,
       size: size,
       tint: tint,

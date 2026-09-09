@@ -9,6 +9,7 @@ enum CheckboxStories {
       Story("Checked") { Checkbox("Send me the newsletter", checked: true) }
       Story("Unchecked") { Checkbox("Send me the newsletter", checked: false) }
       Story("Interactive") { Live() }
+      Story("A group") { Platforms() }
       Story("Disabled") {
         Col {
           Checkbox("Unavailable on this plan", checked: false, enabled: false)
@@ -51,6 +52,40 @@ enum CheckboxStories {
 
   /// The box is a focusable control over a hidden input, so the state comes
   /// off the component rather than off a pseudo-class — here, off `@State`.
+  /// The parent is what a lone checkbox can never be: mixed. It reads the
+  /// group rather than a value of its own, and pressing it sets or clears the
+  /// lot.
+  private struct Platforms: View {
+    private static let all = ["react", "flutter", "swiftui", "gpui"]
+
+    @State private var chosen: Set<String> = ["react", "flutter"]
+
+    var body: some View {
+      CheckboxGroup {
+        Checkbox(
+          "Every platform",
+          checked: chosen.count == Self.all.count,
+          indeterminate: !chosen.isEmpty && chosen.count < Self.all.count,
+          onCheckedChange: { _ in
+            chosen = chosen.count == Self.all.count ? [] : Set(Self.all)
+          },
+          note: "\(chosen.count) of \(Self.all.count)"
+        )
+      } content: {
+        ForEach(Self.all, id: \.self) { name in
+          Checkbox(
+            name,
+            checked: chosen.contains(name),
+            onCheckedChange: { on in
+              if on { chosen.insert(name) } else { chosen.remove(name) }
+            }
+          )
+        }
+      }
+      .frame(width: 288)
+    }
+  }
+
   private struct Live: View {
     @State private var checked = true
 

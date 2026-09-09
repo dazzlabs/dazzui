@@ -14,24 +14,40 @@ public struct FormField<Content: View>: View {
   public var label: String
   /// Help text under the control; carries the error tone when erroring.
   public var hint: String?
+  /// Identifies the field to the ``Form`` above it. Given one, a message the
+  /// form was handed for this name replaces the hint and marks the field
+  /// invalid — which is the whole reason a form is a view rather than a stack.
+  public var name: String?
   public var state: TextFieldState
   public var tint: Tint
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
+  @Environment(\.formErrors) private var formErrors
 
   public init(
     label: String,
     hint: String? = nil,
+    name: String? = nil,
     state: TextFieldState = .default,
     tint: Tint = .primary,
     @ViewBuilder content: @escaping () -> Content
   ) {
     self.label = label
     self.hint = hint
+    self.name = name
     self.state = state
     self.tint = tint
     self.content = content
+  }
+
+  /// The message the form is holding for this field, if any.
+  private var error: String? {
+    name.flatMap { formErrors[$0] }
+  }
+
+  private var reportedState: TextFieldState {
+    error == nil ? state : .error
   }
 
   public var body: some View {
@@ -44,7 +60,7 @@ public struct FormField<Content: View>: View {
 
       content()
 
-      if let hint {
+      if let hint = error ?? hint {
         Text(hint)
           .font(.system(size: vars.labelQuiet.size, weight: vars.labelQuiet.weight))
           // Prose leading rather than the label face's solid line: a hint is a
@@ -60,8 +76,8 @@ public struct FormField<Content: View>: View {
   /// One ink for both lines: subtle while the field is fine, and the accent's
   /// text grade off the re-tinted ramp once it is not.
   private var ink: Color {
-    guard state == .error else { return theme.vars.colorContentSubtle }
-    return theme.vars.ramp(tintFor(state, tint))[700]
+    guard reportedState == .error else { return theme.vars.colorContentSubtle }
+    return theme.vars.ramp(tintFor(reportedState, tint))[700]
   }
 
   /// `line-height: 1.6` — prose leading, stated as a multiple in the

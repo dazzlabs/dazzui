@@ -23,6 +23,28 @@ enum DialogStories {
           }
         }
       }
+      Story("An alert", layout: .fullscreen) {
+        // `dismissible: false` is the React axis, and it switches off
+        // behaviour this port does not have: a SwiftUI dialog is drawn where
+        // it is put, with no Escape and no outside press to disable. What a
+        // reader sees is the danger sheet with no way out but an answer.
+        DialogScrim {
+          Dialog(width: 352, tone: .danger) {
+            DialogHeader("Delete this glossary?")
+            DialogBody {
+              Text(
+                "412 terms will be removed from every project using it. There is no way out "
+                  + "of this sheet but an answer."
+              )
+            }
+            DialogFooter {
+              Spacer()
+              Button("Keep it") {}
+              Button("Delete", variant: .filled, tint: .danger) {}
+            }
+          }
+        }
+      }
       Story("A confirmation") {
         Dialog {
           DialogHeader("Discard these changes?")

@@ -33,6 +33,10 @@ pub struct Checkbox {
     id: ElementId,
     label: SharedString,
     checked: bool,
+    /// Neither on nor off — the state a parent arrives at when only some of
+    /// its children are checked. A lone checkbox can never reach it on its
+    /// own, which is why it is a property rather than a third value.
+    indeterminate: bool,
     size: CheckboxSize,
     tint: Tint,
     /// A de-emphasised aside on the label — a count, a size.
@@ -48,6 +52,7 @@ impl Checkbox {
             id: id.into(),
             label: label.into(),
             checked,
+            indeterminate: false,
             size: CheckboxSize::Medium,
             tint: Tint::Primary,
             note: None,
@@ -55,6 +60,11 @@ impl Checkbox {
             focus_handle: None,
             on_change: None,
         }
+    }
+
+    pub fn indeterminate(mut self, indeterminate: bool) -> Self {
+        self.indeterminate = indeterminate;
+        self
     }
 
     pub fn size(mut self, size: CheckboxSize) -> Self {
@@ -95,6 +105,7 @@ impl RenderOnce for Checkbox {
             id,
             label,
             checked,
+            indeterminate,
             size,
             tint,
             note,
@@ -121,6 +132,10 @@ impl RenderOnce for Checkbox {
             ControlState::Normal,
         );
 
+        // Mixed fills like checked: a parent that is partly on is on. What
+        // separates the two is the glyph, not the box.
+        let marked = checked || indeterminate;
+
         pressable(id.clone(), !disabled, move |state, window, _| {
             let focused = focus_handle
                 .as_ref()
@@ -133,6 +148,8 @@ impl RenderOnce for Checkbox {
                 .items_center()
                 .gap(vars.spacing_2_5)
                 .type_style(vars.label_quiet)
+                // A mixed parent does not take the label weight: it is not an
+                // answer yet.
                 .when(checked, |el| {
                     el.text_color(vars.color_content)
                         .font_weight(vars.label_medium.weight)
@@ -156,20 +173,25 @@ impl RenderOnce for Checkbox {
                         // Neutral while empty: an unchecked box is an
                         // outline, not a quiet accent.
                         .border(vars.checkbox_thickness)
-                        .border_color(if checked {
+                        .border_color(if marked {
                             filled
                         } else {
                             vars.color_border_muted
                         })
-                        .bg(if checked { filled } else { colors::TRANSPARENT })
+                        .bg(if marked { filled } else { colors::TRANSPARENT })
                         .text_color(on_filled)
-                        .when(checked, |el| {
-                            // The glyph sits a step under the label so it
-                            // clears the box's corners.
+                        .when(marked, |el| {
+                            // A tick says every one; a dash says some. The
+                            // glyph sits a step under the label so it clears
+                            // the box's corners.
                             el.child(
-                                Icon::new(icons::CHECKMARK_12_FILLED)
-                                    .size(vars.label_small.size)
-                                    .color(on_filled),
+                                Icon::new(if indeterminate {
+                                    icons::SUBTRACT_12_FILLED
+                                } else {
+                                    icons::CHECKMARK_12_FILLED
+                                })
+                                .size(vars.label_small.size)
+                                .color(on_filled),
                             )
                         }),
                 )
