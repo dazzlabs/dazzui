@@ -50,8 +50,13 @@ The DazzUI design system, as a pnpm workspace:
 - `apps/storybook` (`@dazzlabs/dazzui-storybook`) — a Storybook gallery that
   documents both: `Tokens/*` for the token graph, `Components/*` for the
   components.
-- `examples/coding-agent` (`@dazzlabs/dazzui-example-coding-agent`) — a coding
-  agent's desktop interface, built entirely out of `ui_react`. It is where the
+- `examples/workbench` (`@dazzlabs/dazzui-example-workbench`) — a Git-rooted
+  agent workbench, built entirely out of `ui_react`: several projects open as
+  titlebar tabs, a sidebar whose lower half is whatever the open page is
+  *made of*, and seven pages on ⌘1–7 — chat with a dock beside it, a
+  cross-project inbox, review, Git, tests, GitHub (issues and pull requests
+  as two faces of one page) and release — with settings as a sheet on ⌘,
+  rather than an eighth page. It is where the
   system is *used* rather than documented: a gallery shows every component on
   its own, and only an app has to make them agree with each other. It
   consumes the package the way any consumer would — the two published
@@ -61,8 +66,8 @@ The DazzUI design system, as a pnpm workspace:
   `deno` is a devDependency of the package, so there is nothing to install
   for it.
 - `examples/canvas` (`@dazzlabs/dazzui-example-canvas`) — a design canvas, built
-  the same way and asking the design system a different question. The coding
-  agent is a reading app; this one has a *drawing* in the middle of it, which
+  the same way and asking the design system a different question. The
+  workbench is a reading app; this one has a *drawing* in the middle of it, which
   is the one region of a window whose colours are usually the user's rather
   than the designer's. Here they are not: a shape carries a `tint` and a
   `variant` exactly as a `Badge` does, and the token build resolves the pair,
@@ -102,11 +107,11 @@ pnpm storybook         # build both, then serve Storybook on :6006
 ```
 
 ```bash
-pnpm coding-agent      # build both, then serve the example on :5180
+pnpm workbench         # build both, then serve the example on :5180
 ```
 
 ```bash
-pnpm coding-agent:desktop  # build the example, then open it as a native window
+pnpm workbench:desktop  # build the example, then open it as a native window
 ```
 
 ```bash
@@ -387,6 +392,22 @@ The colour system reads in washes and grades:
 - **Accent text is a grade darker than accent fill**: content recipes read
   700 where surfaces fill 600, deepening to 800 on hover (300/200 on a dark
   canvas). A label set in the fill colour is the tell of a port.
+- **Every surface is a fill an artboard draws, and the ladder is guarded
+  at the design's own steps.** Studio's greys are 4a and 4c of the
+  BeyondTranslate design, Bright's are 4b and 4e, and the four families with
+  no artboard keep Studio's intervals. Three roles come straight off those
+  boards and are easy to conflate: `surface-column` is the nav, aside or
+  dock — a hair off the paper on 4c, *under* it on 4a and on both Bright
+  boards; `surface-muted` is the card, one step off the paper in whichever
+  direction the family leans (down in Studio, up to white in Bright); and
+  `surface-overlay` is the floating sheet — the paper in a light theme, the
+  titlebar's step in a dark one, behind a `.09` edge and a deep shadow. The
+  hover wash (`surface-subtle`, what the `normal` recipe hovers to) is an
+  alpha of the ink — 6% over paper, 7% over a dark ground — rather than an
+  opaque rung, so it moves paper, card and column by the same amount.
+  `plugins/contrast.mjs` holds the adjacent rungs to a minimum L\* step read
+  off the same boards, so a re-pointed theme cannot collapse two of them or
+  trade their places, the way Bright Light's hover once landed on its card.
 - **Disabled flattens to the groove** — `surface-sunken` fill,
   `content-faint` text, no border — one dead look for every variant, never a
   translucent ghost of the live one.
@@ -474,6 +495,8 @@ and passed to all three plugins so the platforms cannot drift:
 | `graphite-dark`  | `graphite`, `dark`, `graphite-dark` |
 | `ember-light`    | `ember`                           |
 | `ember-dark`     | `ember`, `dark`, `ember-dark`     |
+| `nocturne-light` | `nocturne`                        |
+| `nocturne-dark`  | `nocturne`, `dark`, `nocturne-dark` |
 
 The modes compose rather than repeat, so a value shared along the light/dark
 axis or along a family is written once. A family whose accent reads correctly
@@ -674,9 +697,9 @@ is where the platform forced a different shape.
   bare stories use: `Row`, `Col`, `Frame`, `Pane`, which arrange instances and
   give a component the width or the window it needs, and draw nothing
   themselves.
-- The token table appears **only** where the component owns tokens — the ten
-  files in `packages/ds/tokens/component/`, plus the `frame` metrics the shell
-  columns are sized by. Most components own none: they read the shared
+- The token table appears **only** where the component owns tokens — the
+  thirteen files in `packages/ds/tokens/component/`, plus the `frame` metrics
+  the shell columns are sized by. Most components own none: they read the shared
   vocabulary directly, which is documented on `Tokens/Control`, and a table
   that would come back empty is not worth a section.
 - The gallery reads the **built** `dist/style.css`, not the token sources. It
@@ -725,17 +748,24 @@ The rules an example does keep are the ones that make it worth having:
 - **The same shape as the library.** A component that owns styles is a
   `.tsx`/`.css` pair, and the sheet is only shipped once it is named in the
   registry (`src/styles/app.css`); parts that are one shape wearing different
-  data share a sheet rather than duplicating it (`views.css` dresses both the
-  issue and pull panes). Variants are `data-*` attributes, and the app takes a
-  class prefix of its own — `ca-` for this one — so nothing collides with
-  `ff-`.
+  data share a sheet rather than duplicating it (`views.css` dresses every
+  page's head, its cards and its rows). Variants are `data-*` attributes, and
+  the app takes a class prefix of its own — `wb-` for the workbench — so
+  nothing collides with `ff-`.
 - **Override by source order, not by force.** Where an example has to reshape a
   library component, it does it with a class of its own at one selector deeper
   (`.wb-composer .wb-composer__input`), which is the extension point `cx()`
   documents. It never edits `ui_react`, and it never reaches for `!important`.
-- **Fixtures name real things.** The scripted data points at paths, registries
-  and commands this workspace actually has. Invented paths are the first thing
-  that reads as fake.
+  A second navigation column is the same move: the workbench's sidebar is
+  `Sidebar collapsible="none"` with `--sidebar-width` re-pointed on the class,
+  which is what that component is drawn for. Inside a `Dialog` it is not —
+  `Sidebar` reads the window's own context and a sheet renders in a portal
+  outside it, so the settings sheet's section list is `Button`s in a column.
+- **Fixtures are a sample world, drawn to real shapes.** The workbench's
+  projects belong to a sample organisation (`acme`) and a sample person, so
+  nothing in it reads as anyone's real repository — but the paths, registries,
+  commands and failures are the kind such a project actually has, since an
+  invented *shape* is the first thing that reads as fake.
 - **An example draws no window.** The corner, the shadow and the controls
   belong to the real one — `deno desktop` opens it with the titlebar hidden —
   and a browser tab has no chrome to imitate. Where the two genuinely differ,

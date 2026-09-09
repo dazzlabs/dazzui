@@ -13,11 +13,11 @@
       "autoPort": true
     },
     {
-      "name": "coding-agent",
+      "name": "workbench",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": [
         "--filter",
-        "@dazzlabs/dazzui-example-coding-agent",
+        "@dazzlabs/dazzui-example-workbench",
         "dev"
       ],
       "port": 5180,

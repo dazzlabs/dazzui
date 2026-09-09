@@ -234,28 +234,27 @@ function faceFieldName(value) {
 }
 
 /**
- * The faces the type styles actually name, as constructor parameters and
- * fields.
+ * Every face the design declares, as constructor parameters and fields.
  *
- * Only the faces something is set in are emitted: a knob nothing reads would
- * be a promise the class does not keep.
+ * It used to be only the faces a *type style* names, on the grounds that a
+ * knob nothing reads is a promise the class does not keep. That was true
+ * until `base.font.code` — the one face no `typography` token stands in front
+ * of, because a mono readout is a decision a component makes rather than a
+ * style the graph names. `text-field.css` reaches it as `var(--base-font-code)`
+ * and so do the meter, the slider and the OTP field; a Dart port with no
+ * `fontCode` had to reach for tabular figures instead and drew the wrong face.
+ *
+ * So the rule is the declaration rather than the reference: what a host may
+ * re-point is what the design says the system is set in.
  */
 function generateFontFaces(tokens) {
   const used = new Map()
 
-  for (const token of Object.values(tokens)) {
-    if (token.$type !== 'typography') continue
-    // As authored: a resolved `$value` has already followed the reference
-    // into `base.font` and collapsed the face to its stack, which is the one
-    // thing this needs to know the name of.
-    const authored =
-      token.originalValue?.$value ?? token.$originalValue ?? token.$value
-    if (typeof authored !== 'object') continue
-    const declared = authored.fontFamily
-    const name = faceFieldName(declared)
+  for (const [id, token] of Object.entries(tokens)) {
+    if (token.$type !== 'fontFamily') continue
+    const name = faceFieldName(`{${id}}`)
     if (!name || used.has(name)) continue
-    const stack = resolveFontStack(declared, tokens)
-    used.set(name, { id: declared.slice(1, -1), ...splitFontStack(stack) })
+    used.set(name, { id, ...splitFontStack(token.$value) })
   }
 
   if (used.size === 0) return { fields: '', initializers: '' }
@@ -270,8 +269,9 @@ function generateFontFaces(tokens) {
       args.push(`fallback: [${face.fallback.map(f => `'${f}'`).join(', ')}]`)
     }
     fields.push(
-      `  /// The face \`${face.id}\` declares. Every type style set in it`,
-      `  /// reads this field, so a host re-points the face rather than each style.`,
+      `  /// The face \`${face.id}\` declares. Everything set in it reads this`,
+      `  /// field — the type styles that name it, and the widgets that reach it`,
+      `  /// directly — so a host re-points the face rather than each of them.`,
       `  final FontFace ${name};`
     )
     initializers.push(`    this.${name} = const FontFace(${args.join(', ')}),`)

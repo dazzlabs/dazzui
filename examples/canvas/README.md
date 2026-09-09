@@ -4,7 +4,7 @@ A small design canvas, built entirely out of `@dazzlabs/dazzui-react`. It is a
 prototype of the interface, not a design tool: nothing reaches the network,
 nothing is written to disk, and reloading puts the fixture back.
 
-It exists to ask the design system a question the coding-agent example cannot.
+It exists to ask the design system a question the workbench example cannot.
 That one is a reading app — columns of rows, a transcript, a form. This one has
 a *drawing* in the middle of it, and a drawing is the hardest thing to hand a
 token graph, because it is the one region of the window whose colours are the

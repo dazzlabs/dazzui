@@ -1,5 +1,5 @@
 /**
- * The ten themes the token graph carries, as four families over one default.
+ * The twelve themes the token graph carries, as five families over one default.
  *
  * Studio Light is what `:root` holds, so selecting it *removes* `data-theme`
  * rather than writing `studio-light` — writing it would leave the page looking
@@ -16,6 +16,8 @@ export const THEMES = [
   { value: 'graphite-dark', label: 'Graphite Dark' },
   { value: 'ember-light', label: 'Ember Light' },
   { value: 'ember-dark', label: 'Ember Dark' },
+  { value: 'nocturne-light', label: 'Nocturne Light' },
+  { value: 'nocturne-dark', label: 'Nocturne Dark' },
 ] as const
 
 export type Theme = (typeof THEMES)[number]['value']

@@ -1,0 +1,113 @@
+/*
+ * The ground the prototype stands on. Everything here reads from the token
+ * sheet — the example is only worth anything if it proves the vocabulary is
+ * enough to build an app out of, so it never reaches for a value of its own.
+ */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--color-content);
+  background-color: var(--color-canvas);
+  font-family: var(--body-medium-font-family);
+  font-size: var(--body-medium-font-size);
+  font-weight: var(--body-medium-font-weight);
+  line-height: var(--body-medium-line-height);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The app fills whatever it is given — a window with its titlebar hidden, or
+   a browser tab. It draws no frame of its own either way. */
+.wb-root {
+  display: flex;
+  height: 100dvh;
+}
+
+/* One line, and the tooltip carries the rest. */
+.wb-truncate {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Text set in the code face, at the caption size: paths, branches, shas. */
+.wb-mono {
+  font-family: var(--base-font-code);
+  font-size: var(--caption-small-font-size);
+}
+
+/* The two counts a diff is summed up in, coloured off their own ramps
+   through the tinted recipe — a step written here could not be right on
+   both the paper canvas and the near-black one. */
+.wb-counts {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: var(--spacing-1-5);
+  font-family: var(--base-font-code);
+  font-size: var(--caption-small-font-size);
+  font-variant-numeric: tabular-nums;
+}
+
+.wb-count {
+  color: var(--control-color-tinted-content-normal);
+}
+
+/* The rule that fades at both ends, with a word in the middle: what a run is
+   waiting for, said once between the turns. */
+.wb-rule {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2-5);
+  color: var(--color-content-subtle);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+}
+
+.wb-rule::before,
+.wb-rule::after {
+  content: '';
+  flex: 1;
+  height: var(--stroke-hairline);
+}
+
+.wb-rule::before {
+  background: linear-gradient(90deg, transparent, var(--color-border-strong));
+}
+
+.wb-rule::after {
+  background: linear-gradient(90deg, var(--color-border-strong), transparent);
+}
+
+/* The dot that says a session is running: the accent, breathing. It is the
+   only thing in the window that moves on its own, which is what makes it
+   readable from the far corner of a tab strip. */
+.wb-pulse {
+  display: inline-block;
+  flex-shrink: 0;
+  width: var(--spacing-2);
+  height: var(--spacing-2);
+  border-radius: var(--radius-full);
+  background-color: var(--control-color-filled-surface-normal);
+  animation: wb-pulse 2s ease-in-out infinite;
+}
+
+.wb-pulse[data-size='small'] {
+  width: var(--spacing-1-5);
+  height: var(--spacing-1-5);
+}
+
+@keyframes wb-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wb-pulse {
+    animation: none;
+  }
+}

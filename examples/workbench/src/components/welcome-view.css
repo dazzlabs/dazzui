@@ -1,0 +1,99 @@
+/*
+ * The one page without a sidebar, so it is the one page that sets its own
+ * measure: a wide inset, and nothing wider than the recents grid.
+ */
+.wb-welcome {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: var(--spacing-3);
+  overflow-y: auto;
+  padding-block: var(--spacing-16);
+  padding-inline: var(--spacing-16);
+}
+
+.wb-welcome__title {
+  margin: 0;
+  color: var(--color-content);
+  font-family: var(--headline-medium-font-family);
+  font-size: var(--headline-medium-font-size);
+  font-weight: var(--headline-medium-font-weight);
+  line-height: var(--headline-medium-line-height);
+}
+
+.wb-welcome__lede {
+  max-width: calc(var(--spacing-20) * 7);
+  margin: 0;
+  color: var(--color-content-muted);
+  font-family: var(--body-large-font-family);
+  font-size: var(--body-large-font-size);
+  line-height: var(--body-large-line-height);
+}
+
+.wb-welcome__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2-5);
+  margin-block: var(--spacing-4) var(--spacing-8);
+}
+
+.wb-welcome__label {
+  margin-block-end: var(--spacing-1);
+}
+
+.wb-welcome .wb-grid {
+  /* The grid runs the width of the page: the cards share whatever it has,
+     down to the four-step floor they read well at. */
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(calc(var(--spacing-20) * 4), 1fr)
+  );
+}
+
+/* A recent project is a way in, so the whole card is the control. */
+.wb-welcome .wb-recent {
+  cursor: pointer;
+  transition: background-color var(--motion-duration) var(--motion-easing);
+}
+
+.wb-welcome .wb-recent:hover {
+  background-color: var(--control-color-plain-surface-hovered);
+}
+
+.wb-recent__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-1-5);
+  margin-block-start: var(--spacing-2);
+}
+
+.wb-recent__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1-5);
+  padding-block: var(--spacing-0-5);
+  padding-inline: var(--spacing-2);
+  background-color: var(--color-surface-inset);
+  border-radius: var(--radius-full);
+  color: var(--color-content-muted);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+}
+
+/* The tag that says a project is waiting on a person takes the warning
+   wash, the way the sidebar's group heading does. */
+.wb-recent__tag[data-tint] {
+  background-color: var(--control-color-tinted-surface-normal);
+  color: var(--control-color-tinted-content-normal);
+}
+
+.wb-welcome__keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-5);
+  margin-block-start: var(--spacing-10);
+  color: var(--color-content-subtle);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+}

@@ -111,9 +111,11 @@ public struct ThemeVariables: Sendable {
     checkboxRadius: CGFloat = 5.0,
     dialogWidth: CGFloat = 440.0,
     dialogScrimAlpha: CGFloat = 0.25,
+    drawerSize: CGFloat = 352.0,
     menuMinWidth: CGFloat = 176.0,
     menuItemPadding: CGFloat = 7.0,
     preferencesWidth: CGFloat = 480.0,
+    previewCardWidth: CGFloat = 320.0,
     progressGradientFrom: Color = Colors.brand[600],
     progressGradientTo: Color = Color(argb: 0xFFA0_8CFF),
     segmentedControlInset: CGFloat = 3.0,
@@ -282,9 +284,11 @@ public struct ThemeVariables: Sendable {
     self.checkboxRadius = checkboxRadius
     self.dialogWidth = dialogWidth
     self.dialogScrimAlpha = dialogScrimAlpha
+    self.drawerSize = drawerSize
     self.menuMinWidth = menuMinWidth
     self.menuItemPadding = menuItemPadding
     self.preferencesWidth = preferencesWidth
+    self.previewCardWidth = previewCardWidth
     self.progressGradientFrom = progressGradientFrom
     self.progressGradientTo = progressGradientTo
     self.segmentedControlInset = segmentedControlInset
@@ -419,9 +423,11 @@ public struct ThemeVariables: Sendable {
   public let checkboxRadius: CGFloat
   public let dialogWidth: CGFloat
   public let dialogScrimAlpha: CGFloat
+  public let drawerSize: CGFloat
   public let menuMinWidth: CGFloat
   public let menuItemPadding: CGFloat
   public let preferencesWidth: CGFloat
+  public let previewCardWidth: CGFloat
   public let progressGradientFrom: Color
   public let progressGradientTo: Color
   public let segmentedControlInset: CGFloat
@@ -493,6 +499,12 @@ public struct ThemeVariables: Sendable {
   public var radioMediumDot: CGFloat { spacing2 }
   public var radioLargeBox: CGFloat { spacing5 }
   public var radioLargeDot: CGFloat { spacing25 }
+  public var sliderSmallTrack: CGFloat { spacing1 }
+  public var sliderSmallThumb: CGFloat { spacing35 }
+  public var sliderMediumTrack: CGFloat { spacing15 }
+  public var sliderMediumThumb: CGFloat { spacing4 }
+  public var sliderLargeTrack: CGFloat { spacing2 }
+  public var sliderLargeThumb: CGFloat { spacing5 }
   public var switchSmallWidth: CGFloat { spacing7 }
   public var switchSmallHeight: CGFloat { spacing4 }
   public var switchSmallThumb: CGFloat { spacing3 }

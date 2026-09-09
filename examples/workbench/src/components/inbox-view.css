@@ -1,0 +1,65 @@
+/* A section of the inbox: its label, then its rows. */
+.wb-inbox__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2-5);
+}
+
+.wb-inbox__section + .wb-inbox__section {
+  margin-block-start: var(--spacing-2);
+}
+
+/* A session that is waiting: one row, the way a task reads in the queue,
+   with the reason it is here under the title and the move on the far edge. */
+.wb-view .wb-inbox__row {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.wb-inbox__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: var(--spacing-0-5);
+}
+
+.wb-inbox__why {
+  overflow: hidden;
+  color: var(--color-content-subtle);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+}
+
+.wb-inbox__why[data-tint] {
+  color: var(--control-color-tinted-content-normal);
+}
+
+.wb-inbox__actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--spacing-1);
+}
+
+.wb-inbox__where {
+  color: var(--color-content-subtle);
+}
+
+/* The worktree a waiting session holds, in the code face on the inset step,
+   the way the sidebar prints it. */
+.wb-task__where {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: var(--spacing-1);
+  padding-block: var(--spacing-0-5);
+  padding-inline: var(--spacing-1-5);
+  background-color: var(--color-surface-inset);
+  border-radius: var(--radius-tiny);
+  color: var(--color-content-muted);
+  font-size: var(--caption-small-font-size);
+}

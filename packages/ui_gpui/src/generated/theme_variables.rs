@@ -126,9 +126,11 @@ pub struct ThemeSeed {
     pub checkbox_radius: Pixels,
     pub dialog_width: Pixels,
     pub dialog_scrim_alpha: f32,
+    pub drawer_size: Pixels,
     pub menu_min_width: Pixels,
     pub menu_item_padding: Pixels,
     pub preferences_width: Pixels,
+    pub preview_card_width: Pixels,
     pub progress_gradient_from: Hsla,
     pub progress_gradient_to: Hsla,
     pub segmented_control_inset: Pixels,
@@ -277,9 +279,11 @@ pub const STUDIO_LIGHT_SEED: ThemeSeed = ThemeSeed {
     checkbox_radius: px(5.0),
     dialog_width: px(440.0),
     dialog_scrim_alpha: 0.25,
+    drawer_size: px(352.0),
     menu_min_width: px(176.0),
     menu_item_padding: px(7.0),
     preferences_width: px(480.0),
+    preview_card_width: px(320.0),
     progress_gradient_from: colors::BRAND.shade(600),
     progress_gradient_to: Hsla { h: 0.695652, s: 1.0, l: 0.77451, a: 1.0 },
     segmented_control_inset: px(3.0),
@@ -447,9 +451,11 @@ pub struct ThemeVariables {
     pub checkbox_radius: Pixels,
     pub dialog_width: Pixels,
     pub dialog_scrim_alpha: f32,
+    pub drawer_size: Pixels,
     pub menu_min_width: Pixels,
     pub menu_item_padding: Pixels,
     pub preferences_width: Pixels,
+    pub preview_card_width: Pixels,
     pub progress_gradient_from: Hsla,
     pub progress_gradient_to: Hsla,
     pub segmented_control_inset: Pixels,
@@ -520,6 +526,12 @@ pub struct ThemeVariables {
     pub radio_medium_dot: Pixels,
     pub radio_large_box: Pixels,
     pub radio_large_dot: Pixels,
+    pub slider_small_track: Pixels,
+    pub slider_small_thumb: Pixels,
+    pub slider_medium_track: Pixels,
+    pub slider_medium_thumb: Pixels,
+    pub slider_large_track: Pixels,
+    pub slider_large_thumb: Pixels,
     pub switch_small_width: Pixels,
     pub switch_small_height: Pixels,
     pub switch_small_thumb: Pixels,
@@ -653,9 +665,11 @@ impl ThemeVariables {
         let checkbox_radius = seed.checkbox_radius;
         let dialog_width = seed.dialog_width;
         let dialog_scrim_alpha = seed.dialog_scrim_alpha;
+        let drawer_size = seed.drawer_size;
         let menu_min_width = seed.menu_min_width;
         let menu_item_padding = seed.menu_item_padding;
         let preferences_width = seed.preferences_width;
+        let preview_card_width = seed.preview_card_width;
         let progress_gradient_from = seed.progress_gradient_from;
         let progress_gradient_to = seed.progress_gradient_to;
         let segmented_control_inset = seed.segmented_control_inset;
@@ -715,6 +729,12 @@ impl ThemeVariables {
         let radio_medium_dot = spacing_2;
         let radio_large_box = spacing_5;
         let radio_large_dot = spacing_2_5;
+        let slider_small_track = spacing_1;
+        let slider_small_thumb = spacing_3_5;
+        let slider_medium_track = spacing_1_5;
+        let slider_medium_thumb = spacing_4;
+        let slider_large_track = spacing_2;
+        let slider_large_thumb = spacing_5;
         let switch_small_width = spacing_7;
         let switch_small_height = spacing_4;
         let switch_small_thumb = spacing_3;
@@ -901,9 +921,11 @@ impl ThemeVariables {
             checkbox_radius,
             dialog_width,
             dialog_scrim_alpha,
+            drawer_size,
             menu_min_width,
             menu_item_padding,
             preferences_width,
+            preview_card_width,
             progress_gradient_from,
             progress_gradient_to,
             segmented_control_inset,
@@ -962,6 +984,12 @@ impl ThemeVariables {
             radio_medium_dot,
             radio_large_box,
             radio_large_dot,
+            slider_small_track,
+            slider_small_thumb,
+            slider_medium_track,
+            slider_medium_thumb,
+            slider_large_track,
+            slider_large_thumb,
             switch_small_width,
             switch_small_height,
             switch_small_thumb,

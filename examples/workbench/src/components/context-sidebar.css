@@ -1,0 +1,194 @@
+/*
+ * The context column, at the width this layout draws it: the frame's sidebar
+ * plus the largest grid step and one more, which is where a three-line
+ * session row stops truncating its worktree path.
+ *
+ * The width is declared on the provider, which is where the library reads
+ * every column's width from, so the collapsing root and the container it
+ * slides agree on it. The column keeps the library's own ground — the
+ * design's nav column, a hair off the paper — and a hairline separates it.
+ */
+.wb-window.dz-sidebar-wrapper {
+  --sidebar-width: calc(
+    var(--frame-sidebar-width) + var(--spacing-20) + var(--spacing-9)
+  );
+}
+
+.wb-sidebar .wb-sidebar__content {
+  gap: var(--spacing-1);
+}
+
+/* The sessions, grouped by state. A group is one list item holding a
+   heading and its own list, so the menu stays one menu to the arrow keys. */
+.wb-sidebar__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-0-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wb-sidebar__group + .wb-sidebar__group {
+  margin-block-start: var(--spacing-2);
+}
+
+.wb-sidebar__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--frame-nav-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The heading over a group: the label's own quiet caption, and the warning
+   ink on the one group that is a hand raised. */
+.wb-sidebar__sub {
+  padding-block: var(--spacing-1);
+  padding-inline: var(--spacing-2-5);
+  color: var(--color-content-subtle);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+}
+
+.wb-sidebar__sub[data-tint] {
+  color: var(--control-color-tinted-content-normal);
+}
+
+/* Sessions and the other three-line rows ---------------------------------
+ * The library's large row grows with what it holds, so a third line — what
+ * the agent is doing, and where — needs nothing undone here. All these parts
+ * do is lay that stack out.
+ */
+.wb-session__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: var(--spacing-0-5);
+}
+
+.wb-session__line {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+.wb-session__meta,
+.wb-session__where {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+}
+
+.wb-session__meta {
+  color: var(--color-content-subtle);
+}
+
+.wb-session__meta[data-tint] {
+  color: var(--control-color-tinted-content-normal);
+}
+
+/* The worktree is the one part set in the code face: it is a path, and a
+   path that is not obviously one reads as prose. */
+.wb-session__where {
+  align-self: flex-start;
+  padding-block: var(--spacing-0-5);
+  padding-inline: var(--spacing-1-5);
+  background-color: var(--color-surface-inset);
+  border-radius: var(--radius-tiny);
+  color: var(--color-content-muted);
+  font-family: var(--base-font-code);
+  max-width: 100%;
+}
+
+/* A selected row's second and third lines follow the row's own ink rather
+   than staying grey inside the wash. */
+.dz-sidebar__menu-button[aria-current] .wb-session__meta,
+.dz-sidebar__menu-button[aria-current] .wb-session__where {
+  color: inherit;
+  background-color: transparent;
+  opacity: 0.8;
+}
+
+/* Marks ------------------------------------------------------------------ */
+
+.wb-mark {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--color-content-faint);
+}
+
+.wb-mark[data-tint] {
+  color: var(--control-color-tinted-content-normal);
+}
+
+/* A channel's light, which is a state rather than a ramp: live is the
+   accent, moving is the warning, off is the muted border's grey. */
+.wb-channel-dot {
+  flex-shrink: 0;
+  width: var(--spacing-2);
+  height: var(--spacing-2);
+  border-radius: var(--radius-full);
+  background-color: var(--color-border-muted);
+}
+
+.wb-channel-dot[data-tone='live'] {
+  background-color: var(--color-success-600);
+}
+
+.wb-channel-dot[data-tone='moving'] {
+  background-color: var(--color-warning-600);
+}
+
+/* Notes and the foot ------------------------------------------------------ */
+
+.wb-sidebar__note {
+  display: block;
+  padding-block: var(--spacing-1);
+  padding-inline: var(--spacing-2-5);
+  color: var(--color-content-subtle);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+}
+
+/* The foot: the avatar and the name on one edge, the settings on the other,
+   on one line no taller than a row. */
+.wb-sidebar .wb-sidebar__foot {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-2-5);
+  padding: var(--spacing-2) var(--spacing-3);
+  border-block-start: var(--stroke-hairline) solid var(--color-border);
+}
+
+.wb-foot__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--spacing-7);
+  height: var(--spacing-7);
+  border-radius: var(--radius-full);
+  background-color: var(--control-color-filled-surface-normal);
+  color: var(--control-color-filled-content-normal);
+  font-family: var(--label-strong-font-family);
+  font-size: var(--caption-small-font-size);
+  font-weight: var(--label-strong-font-weight);
+  line-height: 1;
+}
+
+.wb-foot__name {
+  color: var(--color-content);
+  font-family: var(--label-medium-font-family);
+  font-size: var(--label-medium-font-size);
+  font-weight: var(--label-medium-font-weight);
+}
+
+.wb-foot__gap {
+  flex: 1;
+}

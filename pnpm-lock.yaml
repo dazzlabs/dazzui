@@ -126,11 +126,14 @@ importers:
         specifier: ^8.1.5
         version: 8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(yaml@2.9.0)
 
-  examples/coding-agent:
+  examples/workbench:
     dependencies:
       '@dazzlabs/dazzui-react':
         specifier: workspace:*
         version: link:../../packages/ui_react
+      '@fluentui/react-icons':
+        specifier: ^2.0.339
+        version: 2.0.339(react@19.2.8)
       react:
         specifier: ^19.2.7
         version: 19.2.8

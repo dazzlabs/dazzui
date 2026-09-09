@@ -1,0 +1,28 @@
+# Groove and thumb are both even on every size — 4/14, 6/16, 8/20 — for the
+# reason radio.yaml gives about its ring and dot: the thumb is centred on the
+# groove, and an odd difference between the two lands the centre on a half
+# pixel, which a 1× display resolves to one side. The thumb is more than twice
+# the groove on every step, so it reads as sitting on the track rather than
+# swelling out of it.
+slider:
+  small:
+    track:
+      $type: dimension
+      $value: "{spacing.1}"
+    thumb:
+      $type: dimension
+      $value: "{spacing.3.5}"
+  medium:
+    track:
+      $type: dimension
+      $value: "{spacing.1.5}"
+    thumb:
+      $type: dimension
+      $value: "{spacing.4}"
+  large:
+    track:
+      $type: dimension
+      $value: "{spacing.2}"
+    thumb:
+      $type: dimension
+      $value: "{spacing.5}"

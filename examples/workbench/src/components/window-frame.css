@@ -1,0 +1,104 @@
+/*
+ * The window is a column: the titlebar, then the sidebar and pane beside each
+ * other, then the status bar. The bar is the one line that is about the open
+ * session wherever the reader is — its branch, its worktree, its checks, how
+ * much context it has left and what it may do without asking — so a page
+ * about something else never hides what the agent is standing on.
+ */
+.wb-window {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  background-color: var(--color-surface);
+}
+
+.wb-titlebar {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: var(--spacing-2);
+  height: var(--frame-titlebar-size);
+  padding-inline: var(--spacing-4);
+  border-block-end: var(--stroke-hairline) solid var(--color-border);
+}
+
+/*
+ * With the titlebar hidden, the system's own controls float in the window's
+ * leading corner, and the bar has to start after them. Three 12px lights on
+ * 8px gaps, inset from the edge — a system metric with no token behind it, so
+ * it is derived from the two steps that come closest and stated once.
+ */
+[data-shell='desktop'] .wb-titlebar {
+  padding-inline-start: calc(var(--spacing-16) + var(--spacing-3));
+}
+
+.wb-titlebar__mark {
+  color: var(--control-color-plain-content-normal);
+}
+
+.wb-titlebar__product {
+  margin-inline-end: var(--spacing-2);
+  color: var(--color-content);
+  font-family: var(--label-strong-font-family);
+  font-size: var(--label-large-font-size);
+  font-weight: var(--label-strong-font-weight);
+}
+
+/* A project tab is a pill with a dot, so the gap has to hold the two apart
+   the way the pill's own gap holds a label and a count. */
+.wb-titlebar .wb-tabs .dz-pill-tabs__tab {
+  gap: var(--spacing-2);
+}
+
+.wb-titlebar__gap {
+  flex: 1;
+}
+
+/*
+ * The command palette's own control: a hint rather than a button, drawn as
+ * the outline a search field would take. It is the one place in the window
+ * that names a keystroke, which is why it carries the cap rather than a
+ * tooltip.
+ */
+.wb-palette {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  height: var(--control-small-size);
+  padding-inline: var(--spacing-3);
+  border: var(--stroke-hairline) solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+  background: none;
+  color: var(--color-content-muted);
+  cursor: pointer;
+  font-family: var(--label-small-font-family);
+  font-size: var(--label-small-font-size);
+  transition:
+    background-color var(--motion-duration) var(--motion-easing),
+    color var(--motion-duration) var(--motion-easing);
+}
+
+.wb-palette:hover {
+  background-color: var(--control-color-normal-surface-hovered);
+  color: var(--color-content);
+}
+
+.wb-palette:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.wb-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.wb-pane {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}

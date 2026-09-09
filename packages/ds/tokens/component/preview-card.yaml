@@ -1,0 +1,8 @@
+preview-card:
+  # A ceiling rather than a width. A popover is as wide as what a caller put
+  # in it; a preview card is filled from whatever it previews, so it needs a
+  # width it cannot exceed no matter what comes back — narrower than a dialog,
+  # because it is read at a glance and never scrolled.
+  width:
+    $type: dimension
+    $value: 20rem

@@ -1,0 +1,9 @@
+drawer:
+  # The panel a drawer holds is a column of rows, not a page: 22rem is the
+  # width a filter list, a detail pane or a settings run reads at without the
+  # rows growing so long that the eye loses the left edge. It is also what a
+  # top or bottom drawer is deep, so the sheet is one measurement whichever
+  # edge it comes in from.
+  size:
+    $type: dimension
+    $value: 22rem

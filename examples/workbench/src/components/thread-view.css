@@ -1,0 +1,266 @@
+/*
+ * The thread. It takes the room the dock leaves, and its column of
+ * text is capped rather than stretched: a paragraph the width of a 1440px
+ * window is a paragraph nobody finishes.
+ */
+.wb-thread {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.wb-thread__head {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: var(--spacing-2-5);
+  height: var(--spacing-12);
+  padding-inline: var(--spacing-6);
+  border-block-end: var(--stroke-hairline) solid var(--color-border);
+}
+
+.wb-thread__title {
+  margin: 0;
+  color: var(--color-content);
+  font-family: var(--title-small-font-family);
+  font-size: var(--title-small-font-size);
+  font-weight: var(--title-small-font-weight);
+  line-height: var(--title-small-line-height);
+}
+
+.wb-thread__gap {
+  flex: 1;
+}
+
+.wb-transcript {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: var(--spacing-4);
+  overflow-y: auto;
+  padding-block: var(--spacing-5);
+  padding-inline: var(--spacing-6);
+}
+
+/* A scrolling flex column shrinks its children to fit before it agrees to
+   scroll, which flattens every card in a long thread to a hairline. Nothing
+   in a transcript may give up its height: the column scrolls instead. */
+.wb-transcript > * {
+  flex-shrink: 0;
+}
+
+/*
+ * What the person said: a bubble on the trailing edge, with the corner
+ * nearest the sender pulled tight — the one asymmetry in the window, and the
+ * thing that makes a turn readable as *theirs* without a name on it.
+ */
+.wb-said {
+  align-self: flex-end;
+  max-width: 70%;
+  margin: 0;
+  padding-block: var(--spacing-2-5);
+  padding-inline: var(--spacing-4);
+  background-color: var(--control-color-tinted-surface-normal);
+  border-radius: var(--radius-big) var(--radius-big) var(--radius-tiny)
+    var(--radius-big);
+  color: var(--color-content);
+  white-space: pre-wrap;
+  font-family: var(--body-medium-font-family);
+  font-size: var(--body-medium-font-size);
+  line-height: var(--body-medium-line-height);
+}
+
+/* And what the agent said, or made. A card — a diff, a terminal, a plan —
+   runs the column's width, since code is read across; only a paragraph is
+   capped, at the measure prose is read at. */
+.wb-turn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2-5);
+  margin: 0;
+  color: var(--color-content);
+  font-family: var(--body-medium-font-family);
+  font-size: var(--body-medium-font-size);
+  line-height: var(--body-medium-line-height);
+}
+
+p.wb-turn {
+  max-width: calc(var(--spacing-20) * 9);
+}
+
+/* The reply is typed out, so it carries a caret while it is still arriving —
+   the one place in the window where something is still being written. */
+.wb-caret {
+  display: inline-block;
+  width: var(--spacing-0-5);
+  height: var(--body-medium-font-size);
+  margin-inline-start: var(--spacing-1);
+  translate: 0 var(--spacing-0-5);
+  background-color: var(--color-content-subtle);
+  animation: wb-blink 1s steps(2, start) infinite;
+}
+
+@keyframes wb-blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wb-caret {
+    animation: none;
+  }
+}
+
+/* The injected issue ------------------------------------------------------ */
+
+.wb-context {
+  gap: var(--spacing-2);
+  padding: var(--spacing-3-5) var(--spacing-4);
+  border: var(--stroke-hairline) solid var(--color-border);
+  border-radius: var(--radius-large);
+}
+
+.wb-context__head {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  color: var(--color-content-muted);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+}
+
+.wb-context__title {
+  font-family: var(--label-strong-font-family);
+  font-size: var(--label-medium-font-size);
+  font-weight: var(--label-strong-font-weight);
+}
+
+.wb-context__body {
+  margin: 0;
+  color: var(--color-content-muted);
+  font-family: var(--caption-large-font-family);
+  font-size: var(--caption-large-font-size);
+  line-height: var(--caption-large-line-height);
+}
+
+.wb-context__meta {
+  color: var(--color-content-subtle);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+}
+
+/* The plan ---------------------------------------------------------------- */
+
+.wb-plan {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--caption-large-font-family);
+  font-size: var(--caption-large-font-size);
+}
+
+.wb-plan__step {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2-5);
+  color: var(--color-content-muted);
+}
+
+/* Done is struck through and quiet; the step being worked on is the only one
+   in full ink, which is what makes a five-step plan readable at a glance. */
+.wb-plan__step[data-status='done'] {
+  text-decoration: line-through;
+  text-decoration-color: var(--color-content-faint);
+}
+
+.wb-plan__step[data-status='active'] {
+  color: var(--color-content);
+  font-family: var(--label-medium-font-family);
+  font-weight: var(--label-medium-font-weight);
+}
+
+.wb-plan__mark {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--color-content-faint);
+}
+
+.wb-plan__mark[data-tint] {
+  color: var(--control-color-tinted-content-normal);
+}
+
+.wb-plan__step[data-status='active'] .wb-plan__mark {
+  color: var(--control-color-plain-content-normal);
+}
+
+.wb-plan__meta {
+  color: var(--color-content-subtle);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+}
+
+/* The rest of the thread -------------------------------------------------- */
+
+.wb-review-note {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-4);
+  background-color: var(--color-surface-muted);
+  border-radius: var(--radius-large);
+}
+
+.wb-review-note__line {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: var(--spacing-2);
+  color: var(--color-content-secondary);
+  font-family: var(--caption-large-font-family);
+  font-size: var(--caption-large-font-size);
+}
+
+.wb-allowed {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-2);
+  color: var(--color-content-muted);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+}
+
+.wb-allowed__note {
+  margin-inline-start: auto;
+  color: var(--control-color-tinted-content-normal);
+}
+
+/*
+ * What a session looks like before it is one. The suggestions are option
+ * cards rather than buttons because picking one is a choice among three, and
+ * the card is the shape this system gives that.
+ */
+.wb-empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  width: 100%;
+  max-width: calc(var(--spacing-20) * 9);
+  /* The only child of a flex column, so this centres it in the pane. */
+  margin-block: auto;
+}
+
+.wb-empty__cards {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(calc(var(--spacing-20) * 2), 1fr)
+  );
+  gap: var(--spacing-3);
+}

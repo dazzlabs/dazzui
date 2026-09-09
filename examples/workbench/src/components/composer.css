@@ -1,0 +1,115 @@
+.wb-composer {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: var(--spacing-2);
+  padding-block: var(--spacing-3) var(--spacing-4);
+  padding-inline: var(--spacing-6);
+}
+
+/* The box is the control; the field inside it is only the text. It takes the
+   sunken step, so it reads as somewhere to put something. */
+.wb-composer__box {
+  background-color: var(--color-surface-muted);
+  border: var(--stroke-hairline) solid var(--color-border-strong);
+  border-radius: var(--radius-big);
+  transition:
+    border-color var(--motion-duration) var(--motion-easing),
+    box-shadow var(--motion-duration) var(--motion-easing);
+}
+
+.wb-composer__box:focus-within {
+  border-color: var(--tint-600);
+  box-shadow: 0 0 0 var(--focus-width) var(--focus-glow);
+}
+
+/* What the message is attached to, as a chip row over the field: it reads
+   as part of the message rather than as a control, which is what it is. */
+.wb-composer__refs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-1-5);
+  padding-block-start: var(--spacing-3);
+  padding-inline: var(--spacing-3-5);
+}
+
+.wb-composer__refs + .wb-composer__input[data-multiline] {
+  min-height: var(--spacing-11);
+  padding-block-start: var(--spacing-2);
+}
+
+/*
+ * One selector deeper than the library's own `[data-multiline]` box, so this
+ * outranks it on specificity rather than on which of the two stylesheets
+ * happens to land last. Everything it takes away is given back by the box.
+ */
+.wb-composer .wb-composer__input[data-multiline],
+.wb-composer .wb-composer__input[data-multiline]:focus {
+  min-height: var(--spacing-12);
+  padding-block: var(--spacing-3);
+  padding-inline: var(--spacing-4);
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  resize: none;
+}
+
+/*
+ * What the message goes out with, and the two controls that send it. The
+ * left half is allowed to run out of room and scroll; the buttons never
+ * wrap, because a send button on a line of its own is a send button the
+ * reader has to look for.
+ */
+.wb-composer__row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding-block-end: var(--spacing-2-5);
+  padding-inline: var(--spacing-3);
+}
+
+.wb-composer__with {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: var(--spacing-2);
+  min-width: 0;
+}
+
+/* The mode and the model are always worth the room. */
+.wb-composer__with > .dz-segmented-control,
+.wb-composer__with > .dz-button {
+  flex-shrink: 0;
+}
+
+.wb-composer__ref {
+  max-width: 100%;
+}
+
+.wb-composer__caret {
+  color: var(--color-content-subtle);
+}
+
+/* The send button is the one round control in the window: it is the thing
+   the whole box is for, and a pill among pills would disappear. */
+.wb-composer__row > .dz-icon-button:last-child {
+  border-radius: var(--radius-full);
+}
+
+.wb-composer__hint {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1-5);
+  margin: 0;
+  padding-inline: var(--spacing-2);
+  color: var(--color-content-faint);
+  white-space: nowrap;
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+}
+
+/* The mode's one-line explanation, which is the part that gives way. */
+.wb-composer__hint > .wb-truncate {
+  flex: 1;
+  color: var(--color-content-subtle);
+}

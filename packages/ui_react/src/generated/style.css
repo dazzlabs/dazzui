@@ -391,6 +391,7 @@
   --control-tiny-size: var(--base-control-height-tiny);
   --dialog-scrim-color: var(--color-content);
   --dialog-width: 27.5rem;
+  --drawer-size: 22rem;
   --focus-offset: 0;
   --focus-width: 3px;
   --frame-aside-width: 13.375rem;
@@ -438,6 +439,7 @@
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
   --preferences-width: 30rem;
+  --preview-card-width: 20rem;
   --progress-gradient-from: var(--base-color-brand-600);
   --progress-gradient-to: #a08cff;
   --radio-large-box: var(--spacing-5);
@@ -463,6 +465,12 @@
   --shadow-xl: 0 12px 32px 0 #0000003d;
   --shadow-xs: 0 1px 3px 0 #0000001f;
   --shortcut-recorder-width: 8.25rem;
+  --slider-large-thumb: var(--spacing-5);
+  --slider-large-track: var(--spacing-2);
+  --slider-medium-thumb: var(--spacing-4);
+  --slider-medium-track: var(--spacing-1-5);
+  --slider-small-thumb: var(--spacing-3-5);
+  --slider-small-track: var(--spacing-1);
   --spacing-0: 0;
   --spacing-0-5: 0.125rem;
   --spacing-1: 0.25rem;
