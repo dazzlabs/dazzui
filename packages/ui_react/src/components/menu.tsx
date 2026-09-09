@@ -1,4 +1,6 @@
+import { ContextMenu as ContextBase } from '@base-ui/react/context-menu'
 import { Menu as Base } from '@base-ui/react/menu'
+import { Menubar as BaseMenubar } from '@base-ui/react/menubar'
 import { mergeProps } from '@base-ui/react/merge-props'
 import { Checkmark12Filled } from '@fluentui/react-icons'
 import { cloneElement, type ReactElement, type ReactNode } from 'react'
@@ -25,42 +27,15 @@ export type MenuTrigger =
   | ReactElement<Record<string, unknown>>
   | ((state: { open: boolean }) => ReactElement<Record<string, unknown>>)
 
-export interface MenuProps extends Pick<
-  Base.Root.Props,
-  'open' | 'defaultOpen' | 'modal'
-> {
-  /**
-   * What opens the menu. Base UI wires it — the click, the keyboard, the
-   * `aria-*` — so a plain `Button` is enough; pass a function to change its
-   * look while the menu is open.
-   */
-  trigger: MenuTrigger
-  items: MenuItem[]
-  align?: 'start' | 'center' | 'end'
-  side?: 'top' | 'bottom' | 'left' | 'right'
-  tint?: Tint
-  onOpenChange?: (open: boolean) => void
-  /** Applied to the panel. */
-  className?: string
-}
-
 /**
- * A popover menu: Base UI positions it, traps and roves the focus, closes it
- * on an outside press and on Escape, and types ahead. The panel and its rows
- * are the shared popup sheet, so a `Select`'s list is the same drawing.
+ * The rows, and the radio group they need when any of them is checkable.
+ *
+ * It is a function rather than a component so the three menus can each put it
+ * inside their own popup: a `ContextMenu`'s parts *are* the menu's — Base UI
+ * re-exports them — so one row renderer serves all three, and a right-click
+ * menu cannot drift from the one a button opens.
  */
-export function Menu({
-  trigger,
-  items,
-  align = 'end',
-  side = 'bottom',
-  tint = 'neutral',
-  open,
-  defaultOpen,
-  modal,
-  onOpenChange,
-  className,
-}: MenuProps) {
+function menuRows(items: MenuItem[]): ReactNode {
   const checkedIndex = items.findIndex(item => item.checked)
   const hasChecks = items.some(item => item.checked !== undefined)
 
@@ -102,6 +77,54 @@ export function Menu({
     )
   })
 
+  return hasChecks ? (
+    <Base.RadioGroup
+      value={checkedIndex}
+      onValueChange={(next: number) => items[next]?.onSelect?.()}
+    >
+      {rows}
+    </Base.RadioGroup>
+  ) : (
+    rows
+  )
+}
+
+export interface MenuProps extends Pick<
+  Base.Root.Props,
+  'open' | 'defaultOpen' | 'modal'
+> {
+  /**
+   * What opens the menu. Base UI wires it — the click, the keyboard, the
+   * `aria-*` — so a plain `Button` is enough; pass a function to change its
+   * look while the menu is open.
+   */
+  trigger: MenuTrigger
+  items: MenuItem[]
+  align?: 'start' | 'center' | 'end'
+  side?: 'top' | 'bottom' | 'left' | 'right'
+  tint?: Tint
+  onOpenChange?: (open: boolean) => void
+  /** Applied to the panel. */
+  className?: string
+}
+
+/**
+ * A popover menu: Base UI positions it, traps and roves the focus, closes it
+ * on an outside press and on Escape, and types ahead. The panel and its rows
+ * are the shared popup sheet, so a `Select`'s list is the same drawing.
+ */
+export function Menu({
+  trigger,
+  items,
+  align = 'end',
+  side = 'bottom',
+  tint = 'neutral',
+  open,
+  defaultOpen,
+  modal,
+  onOpenChange,
+  className,
+}: MenuProps) {
   return (
     <Base.Root
       open={open}
@@ -129,19 +152,121 @@ export function Menu({
             data-tint={tint}
             className={cx('dz-popup', 'dz-menu', className)}
           >
-            {hasChecks ? (
-              <Base.RadioGroup
-                value={checkedIndex}
-                onValueChange={(next: number) => items[next]?.onSelect?.()}
-              >
-                {rows}
-              </Base.RadioGroup>
-            ) : (
-              rows
-            )}
+            {menuRows(items)}
           </Base.Popup>
         </Base.Positioner>
       </Base.Portal>
     </Base.Root>
+  )
+}
+
+export interface ContextMenuProps {
+  items: MenuItem[]
+  tint?: Tint
+  /**
+   * The region that opens the menu. It is rendered as given — the trigger is
+   * a listener on it, not a wrapper around it — so a row, a card or a canvas
+   * keeps its own layout.
+   */
+  children: ReactElement<Record<string, unknown>>
+  /** Applied to the panel. */
+  className?: string
+}
+
+/**
+ * The menu a right-click opens, over the thing that was clicked.
+ *
+ * It is the same menu — Base UI re-exports the popup, the positioner and
+ * every row type from `Menu`, so this shares the drawing and the row renderer
+ * rather than resembling them. What is its own is where it opens: at the
+ * pointer, not against a trigger's edge, and on a long press as well as a
+ * right-click so it is reachable on a touch screen.
+ */
+export function ContextMenu({
+  items,
+  tint = 'neutral',
+  children,
+  className,
+}: ContextMenuProps) {
+  return (
+    <ContextBase.Root>
+      <ContextBase.Trigger render={children} />
+      <ContextBase.Portal>
+        <ContextBase.Positioner className="dz-popup-positioner">
+          <ContextBase.Popup
+            data-tint={tint}
+            className={cx('dz-popup', 'dz-menu', className)}
+          >
+            {menuRows(items)}
+          </ContextBase.Popup>
+        </ContextBase.Positioner>
+      </ContextBase.Portal>
+    </ContextBase.Root>
+  )
+}
+
+export interface MenubarMenu {
+  /** The name on the bar — File, Edit, View. */
+  label: string
+  items: MenuItem[]
+  disabled?: boolean
+}
+
+export interface MenubarProps extends Pick<
+  BaseMenubar.Props,
+  'modal' | 'disabled' | 'orientation'
+> {
+  menus: MenubarMenu[]
+  tint?: Tint
+  className?: string
+}
+
+/**
+ * The application menu bar: several menus that behave as one.
+ *
+ * That is the whole reason it exists rather than a row of `Menu`s. Once one
+ * of them is open, moving the pointer along the bar opens the next without a
+ * second click, and the arrow keys walk the bar as well as the rows — which
+ * is the behaviour every desktop menu bar has and none of them documents.
+ *
+ * Each menu is a `Menu`, so the panel, the rows and the checkmarks are the
+ * same drawing as everywhere else; the bar adds only its triggers.
+ */
+export function Menubar({
+  menus,
+  tint = 'neutral',
+  modal,
+  disabled,
+  orientation,
+  className,
+}: MenubarProps) {
+  return (
+    <BaseMenubar
+      modal={modal}
+      disabled={disabled}
+      orientation={orientation}
+      /* The triggers hover on the `normal` recipe, and every
+         `--control-color-*` is declared inside `[data-tint]`. */
+      data-tint="neutral"
+      className={cx('dz-menubar', className)}
+    >
+      {menus.map(menu => (
+        <Menu
+          key={menu.label}
+          align="start"
+          items={menu.items}
+          tint={tint}
+          trigger={
+            <button
+              type="button"
+              disabled={menu.disabled}
+              className="dz-menubar__item"
+            >
+              {menu.label}
+            </button>
+          }
+        />
+      ))}
+    </BaseMenubar>
   )
 }

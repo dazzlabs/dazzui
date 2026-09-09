@@ -1,0 +1,181 @@
+/*
+ * A sheet pinned to one edge of the view. It shares the dialog's materials —
+ * the overlay surface, the ink scrim, the stacking layer — because it is the
+ * same kind of thing at the same elevation; what differs is where it is and
+ * how it arrives.
+ *
+ * It keeps a corner only on the two sides that are still inside the view. A
+ * sheet flush to an edge with all four corners rounded reads as floating just
+ * off the screen rather than as attached to it.
+ */
+.dz-drawer-scrim,
+.dz-drawer-viewport {
+  position: fixed;
+  inset: 0;
+  z-index: var(--layer-dialog);
+}
+
+.dz-drawer-scrim {
+  background-color: var(--dialog-scrim);
+  transition: opacity var(--motion-duration) var(--motion-easing);
+}
+
+.dz-drawer-scrim[data-starting-style],
+.dz-drawer-scrim[data-ending-style] {
+  opacity: 0;
+}
+
+.dz-drawer-viewport {
+  pointer-events: none;
+}
+
+.dz-drawer-viewport > * {
+  pointer-events: auto;
+}
+
+.dz-drawer-viewport[hidden] {
+  display: none;
+}
+
+.dz-drawer {
+  display: flex;
+  position: fixed;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--color-surface-overlay);
+  outline: 0;
+  transition: transform var(--motion-duration) var(--motion-easing);
+}
+
+/* Each edge: the two sides it is flush to lose their corner and gain the
+   rule that separates it from what it is over. */
+.dz-drawer[data-side='right'],
+.dz-drawer[data-side='left'] {
+  top: 0;
+  bottom: 0;
+  width: var(--drawer-size);
+  max-width: 100%;
+}
+
+.dz-drawer[data-side='right'] {
+  inset-inline-end: 0;
+  border-inline-start: var(--stroke-hairline) solid var(--color-border-strong);
+  border-start-start-radius: var(--frame-window-radius);
+  border-end-start-radius: var(--frame-window-radius);
+}
+
+.dz-drawer[data-side='left'] {
+  inset-inline-start: 0;
+  border-inline-end: var(--stroke-hairline) solid var(--color-border-strong);
+  border-start-end-radius: var(--frame-window-radius);
+  border-end-end-radius: var(--frame-window-radius);
+}
+
+.dz-drawer[data-side='top'],
+.dz-drawer[data-side='bottom'] {
+  inset-inline: 0;
+  height: var(--drawer-size);
+  max-height: 100%;
+}
+
+.dz-drawer[data-side='top'] {
+  top: 0;
+  border-bottom: var(--stroke-hairline) solid var(--color-border-strong);
+  border-end-start-radius: var(--frame-window-radius);
+  border-end-end-radius: var(--frame-window-radius);
+}
+
+.dz-drawer[data-side='bottom'] {
+  bottom: 0;
+  border-top: var(--stroke-hairline) solid var(--color-border-strong);
+  border-start-start-radius: var(--frame-window-radius);
+  border-start-end-radius: var(--frame-window-radius);
+}
+
+/* It arrives from its own edge and leaves the same way — the one transform
+   that says which edge it belongs to. Base UI drives the transform while a
+   swipe is in progress, so these two only cover the open and the close. */
+.dz-drawer[data-side='right'][data-starting-style],
+.dz-drawer[data-side='right'][data-ending-style] {
+  transform: translateX(100%);
+}
+
+.dz-drawer[data-side='left'][data-starting-style],
+.dz-drawer[data-side='left'][data-ending-style] {
+  transform: translateX(-100%);
+}
+
+.dz-drawer[data-side='top'][data-starting-style],
+.dz-drawer[data-side='top'][data-ending-style] {
+  transform: translateY(-100%);
+}
+
+.dz-drawer[data-side='bottom'][data-starting-style],
+.dz-drawer[data-side='bottom'][data-ending-style] {
+  transform: translateY(100%);
+}
+
+/* The grabber: the one mark that says this sheet can be pushed away. */
+.dz-drawer__grabber {
+  flex-shrink: 0;
+  align-self: center;
+  width: var(--spacing-9);
+  height: var(--spacing-1);
+  margin-block: var(--spacing-2);
+  border-radius: var(--radius-full);
+  background-color: var(--color-border-strong);
+}
+
+/* The three rows are the dialog's, at the dialog's own insets, so a drawer
+   and a sheet in the same app are set the same way. */
+.dz-drawer__header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: var(--spacing-1);
+  min-height: var(--spacing-11);
+  padding-block: var(--spacing-3);
+  padding-inline: var(--spacing-5);
+  border-bottom: var(--stroke-hairline) solid var(--color-border);
+}
+
+.dz-drawer__title {
+  margin: 0;
+  font-family: var(--label-strong-font-family);
+  font-size: var(--title-small-font-size);
+  font-weight: var(--label-strong-font-weight);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.dz-drawer__subtitle {
+  margin: 0;
+  color: var(--color-content-subtle);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+  font-weight: var(--caption-small-font-weight);
+  line-height: var(--caption-small-line-height);
+}
+
+.dz-drawer__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-block: calc(var(--spacing-4) + var(--spacing-0-5));
+  padding-inline: var(--spacing-5);
+}
+
+.dz-drawer__footer {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: var(--spacing-2);
+  padding-block: var(--spacing-3);
+  padding-inline: var(--spacing-5);
+  background-color: var(--color-surface-chrome);
+  border-top: var(--stroke-hairline) solid var(--color-border);
+}

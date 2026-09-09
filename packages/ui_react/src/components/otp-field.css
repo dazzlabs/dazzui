@@ -1,0 +1,66 @@
+/*
+ * A run of one-character boxes. Each cell is the text controls' box — the
+ * recessed card that lifts to paper on focus — rather than a drawing of its
+ * own, so a code sits on the same rhythm as the fields around it. What is
+ * here is only the run: the width of a cell, and the gap that says where one
+ * group of digits ends.
+ */
+.dz-otp-field {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.dz-otp-field__cell {
+  width: var(--control-size);
+  height: var(--control-size);
+  padding: 0;
+  border: var(--stroke-hairline) solid var(--color-border-strong);
+  border-radius: var(--radius-medium);
+  background-color: var(--color-surface-muted);
+  color: var(--color-content);
+  text-align: center;
+  outline: none;
+  /* The mono face and tabular figures: a code is digits being compared, and
+     a 1 narrower than a 7 makes the run look mis-typed. */
+  font-family: var(--base-font-code);
+  font-size: var(--control-font-size);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--control-line-height);
+  transition:
+    border-color var(--motion-duration) var(--motion-easing),
+    background-color var(--motion-duration) var(--motion-easing),
+    box-shadow var(--motion-duration) var(--motion-easing);
+}
+
+.dz-otp-field__cell:focus {
+  border-color: var(--tint-600);
+  background-color: var(--color-surface);
+  box-shadow: 0 0 0 var(--focus-width) var(--focus-glow);
+}
+
+/* A filled cell lifts to the paper and keeps it: the run reads as how far
+   through the code the reader is, without the caret having to be the only
+   thing that says so. */
+.dz-otp-field__cell[data-filled] {
+  background-color: var(--color-surface);
+  border-color: var(--color-border-strong);
+}
+
+.dz-otp-field__cell[data-invalid] {
+  border-color: var(--tint-600);
+  background-color: var(--tint-50);
+  color: var(--tint-800);
+}
+
+.dz-otp-field__cell[data-disabled] {
+  cursor: not-allowed;
+  background-color: var(--control-color-normal-surface-disabled);
+  color: var(--control-color-normal-content-disabled);
+}
+
+/* The break between two groups of digits: a step of air rather than a rule,
+   which is what a printed code does. */
+.dz-otp-field__cell[data-group-end] {
+  margin-inline-start: var(--spacing-3);
+}

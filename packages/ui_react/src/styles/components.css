@@ -26,26 +26,41 @@
 @import '../generated/control.css';
 
 @import '../components/action-bar.css';
+@import '../components/avatar.css';
 @import '../components/badge.css';
 @import '../components/button.css';
 @import '../components/callout.css';
 @import '../components/card.css';
 @import '../components/checkbox.css';
+/* Out of order, ahead of the accordion: the disclosure — a header row and the
+   panel it opens — is drawn once here, and an Accordion wears it. */
+@import '../components/collapsible.css';
+@import '../components/accordion.css';
 @import '../components/dialog.css';
 @import '../components/divider.css';
+/* After dialog.css: a drawer is the dialog's materials on an edge, and reads
+   the same scrim and the same window corner. */
+@import '../components/drawer.css';
 @import '../components/empty-state.css';
+@import '../components/form.css';
 @import '../components/form-field.css';
 @import '../components/icon.css';
 @import '../components/icon-button.css';
 @import '../components/key-cap.css';
-/* Out of order, and ahead of the three sheets that build on it: the floating
-   panel a Menu, a Select's list and a Tooltip all wear. */
+@import '../components/meter.css';
+@import '../components/option-card.css';
+@import '../components/otp-field.css';
+@import '../components/pill-tabs.css';
+/* Out of order, and ahead of the four sheets that build on it: the floating
+   panel a Menu, a Select's list, a Popover and a Tooltip all wear. */
 @import '../components/popup.css';
 /* After popup.css: the menu's panel and rows are that shared sheet, and only
-   its checked row is its own. */
+   its checked row and its bar are its own. */
 @import '../components/menu.css';
-@import '../components/option-card.css';
-@import '../components/pill-tabs.css';
+/* After popup.css: the same sheet holding content rather than rows. */
+@import '../components/popover.css';
+/* After popover.css: a preview card is that panel, opened by the pointer. */
+@import '../components/preview-card.css';
 @import '../components/preferences.css';
 @import '../components/progress.css';
 /* After checkbox.css: the radio shares its row, box, and disabled rules. */
@@ -55,10 +70,16 @@
 @import '../components/segmented-control.css';
 @import '../components/shortcut-recorder.css';
 @import '../components/sidebar.css';
+@import '../components/slider.css';
 @import '../components/spinner.css';
 @import '../components/step-list.css';
 @import '../components/switch.css';
 @import '../components/table.css';
 @import '../components/text-field.css';
+/* After text-field.css: both wear its box and override only the padding the
+   furniture they hold inside it takes. Equal specificity, so this is source
+   order doing the work. */
+@import '../components/number-field.css';
+@import '../components/combobox.css';
 @import '../components/toast.css';
 @import '../components/tooltip.css';

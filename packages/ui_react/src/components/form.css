@@ -1,0 +1,47 @@
+/*
+ * The run between fields, and the run between groups of them. Neither is a
+ * value a single field could hold: a `FormField` knows the gap between its
+ * own label, control and hint, and nothing about what follows it.
+ *
+ * The form resets the element rather than drawing on it. A form is not a
+ * surface — whatever it is inside is — so it has no paper, no border and no
+ * corner of its own.
+ */
+.dz-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  margin: 0;
+}
+
+/*
+ * A fieldset is the browser's one element with a border by default, and the
+ * border is not one this system would draw: a group of fields is separated by
+ * the air around it and by its legend, the way a `PreferenceSection` is.
+ */
+.dz-fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* The legend takes the section label's voice — it names a group rather than
+   labelling a control, so it is the caption face and not the field label's. */
+.dz-fieldset__legend {
+  padding: 0;
+  color: var(--color-content-subtle);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+  font-weight: var(--label-small-font-weight);
+  line-height: 1;
+}
+
+/* Groups sit further apart than the fields inside them, so the run reads as
+   groups first and fields second. */
+.dz-form > .dz-fieldset + .dz-fieldset {
+  margin-top: var(--spacing-2);
+}

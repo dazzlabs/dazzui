@@ -1,0 +1,145 @@
+/*
+ * The picture that stands for a person or a project, and the fallback under
+ * it. Not a control: it reads the `tinted` recipe's resting colours directly
+ * rather than joining the shared state machine, because nothing here responds
+ * to a pointer.
+ *
+ * The square is the container corner rather than the control corner. An
+ * avatar is a thing rather than something you press, and under Bright — where
+ * the control corner is a pill — a control-cornered square would go round and
+ * stop being the shape that says "project".
+ */
+.dz-avatar {
+  display: inline-flex;
+  position: relative;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  vertical-align: middle;
+  user-select: none;
+}
+
+.dz-avatar[data-shape='circle'] {
+  border-radius: var(--radius-full);
+}
+
+.dz-avatar[data-shape='square'] {
+  border-radius: var(--radius-medium);
+}
+
+.dz-avatar__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*
+ * What is drawn until the picture arrives, and instead of it when it never
+ * does. It fills the whole box rather than sitting behind the image, so a
+ * transparent PNG lands on the tint rather than on whatever is behind the
+ * avatar.
+ */
+.dz-avatar__fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: var(--control-color-tinted-surface-normal);
+  color: var(--control-color-tinted-content-normal);
+  /* Initials are two letters read at a glance, not a word: the display cut
+     and the label weight, and never the quiet one. */
+  font-family: var(--label-strong-font-family);
+  font-weight: var(--label-strong-font-weight);
+  line-height: 1;
+}
+
+/* Sizes -------------------------------------------------------------------
+ * Off the grid rather than off the control profile: an avatar is not a
+ * control, and its three steps are the ones a row, a header and a card
+ * actually ask for. The type moves one step of the scale per size — 11, 12,
+ * 13 — rather than tracking the box, which grows nearly twice as fast: two
+ * letters at a third of a 36px circle would fill it edge to edge. */
+
+.dz-avatar[data-size='small'] {
+  width: var(--spacing-5);
+  height: var(--spacing-5);
+  font-size: var(--caption-small-font-size);
+}
+
+.dz-avatar[data-size='medium'] {
+  width: var(--spacing-7);
+  height: var(--spacing-7);
+  font-size: var(--label-medium-font-size);
+}
+
+.dz-avatar[data-size='large'] {
+  width: var(--spacing-9);
+  height: var(--spacing-9);
+  font-size: var(--label-large-font-size);
+}
+
+/* The group --------------------------------------------------------------
+ * Overlapped by a third of the box, and cut out of its neighbour by a ring in
+ * the ground colour. The ring is a variable rather than a value so a group on
+ * a card can re-point it; `--color-surface` is the paper a group usually sits
+ * on. */
+.dz-avatar-group {
+  --avatar-ring: var(--color-surface);
+
+  display: inline-flex;
+  align-items: center;
+}
+
+/* A third of the box, on every size — a fixed overlap would swallow a small
+   avatar and barely touch a large one. */
+.dz-avatar-group[data-size='small'] > * + * {
+  margin-inline-start: calc(var(--spacing-1-5) * -1);
+}
+
+.dz-avatar-group[data-size='medium'] > * + * {
+  margin-inline-start: calc(var(--spacing-2) * -1);
+}
+
+.dz-avatar-group[data-size='large'] > * + * {
+  margin-inline-start: calc(var(--spacing-3) * -1);
+}
+
+.dz-avatar-group .dz-avatar {
+  box-shadow: 0 0 0 var(--stroke-control) var(--avatar-ring);
+}
+
+/* The overflow count wears the same ring and the same box as the avatars it
+   follows, in the neutral groove rather than a tint: it is a number, not a
+   person. */
+.dz-avatar-group__rest {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface-sunken);
+  color: var(--color-content-muted);
+  box-shadow: 0 0 0 var(--stroke-control) var(--avatar-ring);
+  font-family: var(--label-strong-font-family);
+  font-size: var(--caption-small-font-size);
+  font-weight: var(--label-strong-font-weight);
+  line-height: 1;
+}
+
+.dz-avatar-group[data-size='small'] .dz-avatar-group__rest {
+  width: var(--spacing-5);
+  height: var(--spacing-5);
+}
+
+.dz-avatar-group[data-size='medium'] .dz-avatar-group__rest {
+  width: var(--spacing-7);
+  height: var(--spacing-7);
+}
+
+.dz-avatar-group[data-size='large'] .dz-avatar-group__rest {
+  width: var(--spacing-9);
+  height: var(--spacing-9);
+  font-size: var(--label-medium-font-size);
+}

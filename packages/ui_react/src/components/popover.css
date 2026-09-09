@@ -1,0 +1,44 @@
+/*
+ * The panel is the shared floating sheet — see popup.css. What is the
+ * popover's own is that it holds prose rather than rows: a sheet built for
+ * 26px rows pads by a single step, and a paragraph in that would sit on its
+ * own edge.
+ *
+ * The width is deliberately not set. A menu has a minimum because a menu
+ * narrower than its trigger reads as broken; a popover is as wide as what is
+ * in it, up to what the collision logic leaves, and a caller who knows better
+ * passes `width`.
+ */
+.dz-popover {
+  min-width: 0;
+  max-width: var(--available-width);
+  padding: calc(var(--spacing-4) + var(--spacing-0-5));
+  overflow: visible;
+  color: var(--color-content);
+  font-family: var(--body-small-font-family);
+  font-size: var(--body-small-font-size);
+  font-weight: var(--body-small-font-weight);
+  line-height: var(--body-small-line-height);
+}
+
+.dz-popover__title {
+  margin: 0;
+  color: var(--color-content);
+  font-family: var(--label-large-font-family);
+  font-size: var(--label-large-font-size);
+  font-weight: var(--label-large-font-weight);
+  line-height: var(--label-large-line-height);
+}
+
+.dz-popover__description {
+  margin: var(--spacing-1) 0 0;
+  color: var(--color-content-secondary);
+}
+
+/* The run between the head and whatever the panel is actually for. It is a
+   margin on the first thing after the head rather than a gap on the panel,
+   so a popover that is only a form has no leading space to trim. */
+.dz-popover__title + *:not(.dz-popover__description),
+.dz-popover__description + * {
+  margin-top: var(--spacing-3);
+}

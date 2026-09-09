@@ -1,0 +1,149 @@
+/*
+ * A groove with a thumb on it. The groove is the same cut a `Progress` bar
+ * is — the sunken surface, a soft square corner — because they are the same
+ * hole in the page; what makes this one a control is the thumb, and the
+ * control layer around it that catches a press anywhere along the row.
+ *
+ * The control is taller than the track it holds: a 6px groove is not a
+ * pointer target, and Base UI hit-tests the control rather than the track.
+ * That is why the two are separate elements here rather than one.
+ */
+.dz-slider {
+  width: 100%;
+}
+
+.dz-slider__row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.dz-slider__control {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  height: var(--control-medium-size);
+  cursor: pointer;
+  touch-action: none;
+}
+
+.dz-slider[data-disabled] .dz-slider__control {
+  cursor: not-allowed;
+}
+
+.dz-slider__track {
+  position: relative;
+  width: 100%;
+  background-color: var(--color-surface-sunken);
+}
+
+/* The filled run, from the minimum to the thumb. Flat tint rather than the
+   progress gradient: a gradient reads as travel, and a slider is not going
+   anywhere on its own. */
+.dz-slider__indicator {
+  position: absolute;
+  height: 100%;
+  background-color: var(--tint-600);
+  border-radius: inherit;
+}
+
+/*
+ * The thumb is the raised control — paper, a hairline edge, and the small
+ * lift a `filled` button carries — so it reads as sitting on the groove
+ * rather than in it. It takes the accent only on the ring it grows when
+ * focused, which is the system's own focus ring rather than a colour of the
+ * thumb's.
+ */
+.dz-slider__thumb {
+  position: absolute;
+  top: 50%;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+  border: var(--stroke-hairline) solid var(--color-border-strong);
+  box-shadow: var(--shadow-xs);
+  transform: translate(-50%, -50%);
+  transition:
+    box-shadow var(--motion-duration) var(--motion-easing),
+    border-color var(--motion-duration) var(--motion-easing);
+}
+
+.dz-slider__thumb:hover,
+.dz-slider__thumb[data-dragging] {
+  border-color: var(--tint-600);
+}
+
+.dz-slider__thumb:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* Disabled flattens to the groove, like every other control: no lift, no
+   accent, one dead look. */
+.dz-slider[data-disabled] .dz-slider__indicator {
+  background-color: var(--control-color-normal-content-disabled);
+}
+
+.dz-slider[data-disabled] .dz-slider__thumb {
+  background-color: var(--control-color-normal-surface-disabled);
+  border-color: var(--color-border);
+  box-shadow: none;
+}
+
+/* The printed value is a reading rather than a label: the mono face, so the
+   row does not reflow as the digits change under the pointer. */
+.dz-slider__value {
+  flex-shrink: 0;
+  min-width: var(--spacing-10);
+  color: var(--color-content-muted);
+  text-align: end;
+  font-family: var(--base-font-code);
+  font-size: var(--label-small-font-size);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* Sizes -------------------------------------------------------------------
+ * The groove's thickness and the thumb's diameter are the component's own
+ * tokens, and both are even on every size for the reason radio.yaml gives:
+ * the thumb is centred on the groove, and an odd difference lands it half a
+ * pixel off. The row's height comes off the control profile, so a slider in
+ * a form sits on the same rhythm as the fields around it. */
+
+.dz-slider[data-size='small'] .dz-slider__control {
+  height: var(--control-small-size);
+}
+
+.dz-slider[data-size='large'] .dz-slider__control {
+  height: var(--control-large-size);
+}
+
+.dz-slider[data-size='small'] .dz-slider__track {
+  height: var(--slider-small-track);
+  border-radius: calc(var(--slider-small-track) / 2);
+}
+
+.dz-slider[data-size='medium'] .dz-slider__track {
+  height: var(--slider-medium-track);
+  border-radius: calc(var(--slider-medium-track) / 2);
+}
+
+.dz-slider[data-size='large'] .dz-slider__track {
+  height: var(--slider-large-track);
+  border-radius: calc(var(--slider-large-track) / 2);
+}
+
+.dz-slider[data-size='small'] .dz-slider__thumb {
+  width: var(--slider-small-thumb);
+  height: var(--slider-small-thumb);
+}
+
+.dz-slider[data-size='medium'] .dz-slider__thumb {
+  width: var(--slider-medium-thumb);
+  height: var(--slider-medium-thumb);
+}
+
+.dz-slider[data-size='large'] .dz-slider__thumb {
+  width: var(--slider-large-thumb);
+  height: var(--slider-large-thumb);
+}

@@ -1,0 +1,99 @@
+/*
+ * The box is the text controls' — see text-field.css, which names this
+ * group alongside `.dz-text-field` so the two cannot drift. What is the
+ * number field's own is the stepper, and the room it takes out of the
+ * trailing padding.
+ */
+.dz-number-field__group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  /* The trailing step is the stepper's own inset: it is a control rather than
+     text, so it sits closer to the edge than a value would. */
+  padding-inline: var(--spacing-3) var(--spacing-1);
+}
+
+/* The input is the box's inside rather than a box of its own — everything
+   that draws is on the group, and this only has to disappear into it. */
+.dz-number-field__input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  outline: 0;
+  font: inherit;
+  /* Figures that do not reflow the row as the stepper runs. */
+  font-variant-numeric: tabular-nums;
+}
+
+.dz-number-field__input::placeholder {
+  color: var(--color-content-faint);
+}
+
+/* The browser's own stepper, which this replaces. */
+.dz-number-field__input::-webkit-outer-spin-button,
+.dz-number-field__input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.dz-number-field__unit {
+  flex-shrink: 0;
+  color: var(--color-content-faint);
+  font-family: var(--label-quiet-font-family);
+  font-size: var(--label-small-font-size);
+  line-height: 1;
+}
+
+/*
+ * The stepper: two half-height buttons in one column, hairlined off the
+ * value. It keeps the field's own corner on its outer edge and squares its
+ * inner one, so it reads as cut out of the box rather than laid on it.
+ */
+.dz-number-field__stepper {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-self: stretch;
+  justify-content: center;
+  margin-block: var(--spacing-1);
+  border-inline-start: var(--stroke-hairline) solid var(--color-border);
+  padding-inline-start: var(--spacing-1);
+}
+
+.dz-number-field__step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-4);
+  height: var(--spacing-3);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-tiny);
+  background: none;
+  color: var(--color-content-subtle);
+  cursor: pointer;
+  font-size: var(--caption-small-font-size);
+  line-height: 1;
+  transition:
+    background-color var(--motion-duration) var(--motion-easing),
+    color var(--motion-duration) var(--motion-easing);
+}
+
+.dz-number-field__step:hover:not([data-disabled]) {
+  background-color: var(--control-color-normal-surface-hovered);
+  color: var(--color-content);
+}
+
+.dz-number-field__step[data-disabled] {
+  color: var(--control-color-normal-content-disabled);
+  cursor: not-allowed;
+}
+
+.dz-number-field__step:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: 0;
+}

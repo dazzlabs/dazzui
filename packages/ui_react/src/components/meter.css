@@ -1,0 +1,67 @@
+/*
+ * The same cut a `Progress` bar is — the sunken groove, the soft square
+ * corner, the hard-clipped fill. What is the meter's own is everything above
+ * the groove: a meter is read rather than watched, so it carries its label
+ * and its number on a line of their own, and it never moves.
+ *
+ * The fill has no transition on purpose. A progress bar interpolates because
+ * the thing behind it is running; a meter that eased into place would be
+ * animating a fact.
+ */
+.dz-meter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  width: 100%;
+}
+
+.dz-meter__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+}
+
+.dz-meter__label {
+  color: var(--color-content);
+  font-family: var(--label-quiet-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--label-medium-font-weight);
+  line-height: 1;
+}
+
+/* The number is a reading, so it takes the mono face and tabular figures —
+   a row of meters keeps its numbers on one column. */
+.dz-meter__value {
+  color: var(--color-content-muted);
+  font-family: var(--base-font-code);
+  font-size: var(--label-small-font-size);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.dz-meter__track {
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--color-surface-sunken);
+}
+
+.dz-meter__fill {
+  height: 100%;
+  background-color: var(--tint-600);
+}
+
+.dz-meter[data-size='small'] .dz-meter__track {
+  height: var(--spacing-1);
+  border-radius: calc(var(--spacing-1) / 2);
+}
+
+.dz-meter[data-size='medium'] .dz-meter__track {
+  height: var(--spacing-1-5);
+  border-radius: calc(var(--spacing-1-5) / 2);
+}
+
+.dz-meter[data-size='large'] .dz-meter__track {
+  height: var(--spacing-2);
+  border-radius: calc(var(--spacing-2) / 2);
+}

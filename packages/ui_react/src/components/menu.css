@@ -6,3 +6,50 @@
 .dz-menu .dz-popup__item[data-checked] .dz-popup__check {
   visibility: visible;
 }
+
+/*
+ * The bar --------------------------------------------------------------
+ * A row of names that open the panels above. It is chrome rather than a
+ * toolbar of controls, so the triggers have no box at rest: the name is the
+ * affordance, and the wash arrives only under the pointer or while its own
+ * menu is open. An open trigger keeps the wash — a bar where the open menu's
+ * name looked idle would leave the panel belonging to nothing.
+ */
+.dz-menubar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-0-5);
+}
+
+.dz-menubar__item {
+  display: inline-flex;
+  align-items: center;
+  height: var(--control-small-size);
+  padding-inline: var(--spacing-2);
+  border: 0;
+  border-radius: var(--radius-small);
+  background: none;
+  color: var(--color-content);
+  cursor: default;
+  user-select: none;
+  white-space: nowrap;
+  font-family: var(--control-small-content-font-family);
+  font-size: var(--control-small-content-font-size);
+  font-weight: var(--control-small-content-font-weight);
+  line-height: 1;
+  transition: background-color var(--motion-duration) var(--motion-easing);
+}
+
+.dz-menubar__item:hover:not(:disabled),
+.dz-menubar__item[data-popup-open] {
+  background-color: var(--control-color-normal-surface-hovered);
+}
+
+.dz-menubar__item:disabled {
+  color: var(--control-color-normal-content-disabled);
+}
+
+.dz-menubar__item:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}

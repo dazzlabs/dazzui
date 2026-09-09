@@ -150,6 +150,48 @@ export const Overview: Story = {
         </Stack>
       </Section>
 
+      <Section
+        title="Dismissible"
+        description="`dismissible={false}` makes it an alert dialog: Escape and a press outside stop closing it, and the only way out is a control inside. It is an axis rather than a second component because everything a reader sees is identical — the scrim, the sheet, the three rows — and Base UI's alert dialog is literally the dialog's own parts under a different root. Reach for it where dismissing would itself be an answer."
+      >
+        <Stack>
+          <Dialog width="22rem" trigger={<Button>Dismissible</Button>}>
+            <DialogHeader title="Escape closes this one" />
+            <DialogFooter>
+              <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
+                <DialogClose render={<Button>Close</Button>} />
+              </ActionBar>
+            </DialogFooter>
+          </Dialog>
+          <Dialog
+            dismissible={false}
+            tone="danger"
+            width="22rem"
+            trigger={<Button tint="danger">Answer required</Button>}
+          >
+            <DialogHeader title="Delete this glossary?" />
+            <DialogBody>
+              <p style={message}>
+                412 terms will be removed from every project using it. Escape
+                will not close this — the question has to be answered.
+              </p>
+            </DialogBody>
+            <DialogFooter>
+              <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
+                <DialogClose render={<Button>Keep it</Button>} />
+                <DialogClose
+                  render={
+                    <Button tint="danger" variant="filled">
+                      Delete
+                    </Button>
+                  }
+                />
+              </ActionBar>
+            </DialogFooter>
+          </Dialog>
+        </Stack>
+      </Section>
+
       <Section title="Tokens">
         <TokenTable
           tokens={componentTokens('dialog')}
@@ -387,6 +429,33 @@ export const Nested: Story = {
         <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
           <DialogClose render={<Button>Cancel</Button>} />
           <DialogClose render={<Button variant="filled">Save</Button>} />
+        </ActionBar>
+      </DialogFooter>
+    </Dialog>
+  ),
+}
+
+export const AnAlert: Story = {
+  parameters: { layout: 'fullscreen' },
+  render: () => (
+    <Dialog defaultOpen dismissible={false} tone="danger" width="22rem">
+      <DialogHeader title="Delete this glossary?" />
+      <DialogBody>
+        <p style={message}>
+          412 terms will be removed from every project using it. Escape will not
+          close this — the question has to be answered.
+        </p>
+      </DialogBody>
+      <DialogFooter>
+        <ActionBar align="end" style={{ marginInlineStart: 'auto' }}>
+          <DialogClose render={<Button>Keep it</Button>} />
+          <DialogClose
+            render={
+              <Button tint="danger" variant="filled">
+                Delete
+              </Button>
+            }
+          />
         </ActionBar>
       </DialogFooter>
     </Dialog>

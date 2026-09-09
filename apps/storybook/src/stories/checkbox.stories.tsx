@@ -2,6 +2,7 @@ import {
   Button,
   Card,
   Checkbox,
+  CheckboxGroup,
   Divider,
   SectionLabel,
   TINTS,
@@ -119,6 +120,15 @@ export const Overview: Story = {
             ))}
           </Specimen>
         </Stack>
+      </Section>
+
+      <Section
+        title="Groups, and the parent"
+        description="Several checkboxes that are one answer, and the parent that turns them all on or off. The parent is where a group earns its place: it reads the group rather than a value of its own, so it is checked when every child is and mixed when only some are — the state a lone checkbox can never arrive at by itself. `allValues` is what tells the group which children exist; without it the parent has nothing to count. A group nested inside another is indented to the parent's label, which is what makes the relationship visible rather than merely wired."
+      >
+        <div style={{ width: '18rem' }}>
+          <PlatformGroup />
+        </div>
       </Section>
 
       <Section title="Tokens">
@@ -251,4 +261,36 @@ export const InAForm: Story = {
       </Card>
     )
   },
+}
+
+const PLATFORMS = ['react', 'flutter', 'swiftui', 'gpui']
+
+/**
+ * The parent is what a lone checkbox can never be: `mixed`. It reads the group
+ * rather than a value of its own, and pressing it sets or clears the lot —
+ * twice restores what was checked before.
+ */
+function PlatformGroup() {
+  const [value, setValue] = useState(['react', 'flutter'])
+
+  return (
+    <CheckboxGroup allValues={PLATFORMS} value={value} onValueChange={setValue}>
+      <Checkbox parent note={`${value.length} of ${PLATFORMS.length}`}>
+        Every platform
+      </Checkbox>
+      {PLATFORMS.map(platform => (
+        <Checkbox key={platform} name={platform}>
+          {platform}
+        </Checkbox>
+      ))}
+    </CheckboxGroup>
+  )
+}
+
+export const AGroup: Story = {
+  render: () => (
+    <div style={{ width: '18rem' }}>
+      <PlatformGroup />
+    </div>
+  ),
 }

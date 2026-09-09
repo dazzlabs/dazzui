@@ -51,7 +51,10 @@
   background-color: transparent;
 }
 
-.dz-checkbox[data-checked] .dz-checkbox__box {
+/* Mixed fills like checked: a parent that is partly on is on. What separates
+   the two is the glyph, not the box. */
+.dz-checkbox[data-checked] .dz-checkbox__box,
+.dz-checkbox[data-indeterminate] .dz-checkbox__box {
   background-color: var(--control-color-filled-surface-normal);
   border-color: var(--control-color-filled-surface-normal);
   color: var(--control-color-filled-content-normal);
@@ -65,6 +68,21 @@
 
 .dz-checkbox__mark {
   display: flex;
+}
+
+/* A tick says every one; a dash says some. Both are rendered and one is
+   hidden, because the state is an attribute on the root rather than something
+   the component is told. */
+.dz-checkbox__dash {
+  display: none;
+}
+
+.dz-checkbox[data-indeterminate] .dz-checkbox__tick {
+  display: none;
+}
+
+.dz-checkbox[data-indeterminate] .dz-checkbox__dash {
+  display: block;
 }
 
 .dz-checkbox__label,
@@ -114,4 +132,32 @@
 .dz-checkbox[data-size='large'] .dz-checkbox__box {
   width: var(--checkbox-large-box);
   height: var(--checkbox-large-box);
+}
+
+/*
+ * A group of checkboxes that are one answer. The gap is tighter than a form's
+ * run between fields: these are the options of a single question, and air
+ * between them would read as separate questions.
+ */
+.dz-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2-5);
+}
+
+/*
+ * Where a group has a parent, its children are indented to where the parent's
+ * label starts — the box plus the row's gap. The indent is what says these
+ * are under it; the wiring alone is invisible.
+ *
+ * It is read off the parent's own attribute rather than off a second group
+ * nesting the children, and that is not a stylistic choice: a `CheckboxGroup`
+ * is a context provider, so a group inside a group would cut the children off
+ * from the parent that is counting them. The medium box is the measure
+ * because the parent and its children are one list, and a mixed-size list is
+ * not a case this indent has to serve.
+ */
+.dz-checkbox-group:has(> .dz-checkbox[data-parent])
+  > .dz-checkbox:not([data-parent]) {
+  padding-inline-start: calc(var(--checkbox-medium-box) + var(--spacing-2-5));
 }

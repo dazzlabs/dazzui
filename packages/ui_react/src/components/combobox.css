@@ -1,0 +1,100 @@
+/*
+ * The box is the text controls' — text-field.css names this group alongside
+ * `.dz-text-field`, so a combobox in a form is the same box as the field
+ * beside it. The list is the shared popup sheet — popup.css — so it is the
+ * same panel a `Menu` and a `Select` open.
+ *
+ * What is here is only what a query costs: the two controls at the trailing
+ * edge, the checked row, and the line the list prints when nothing matches.
+ */
+.dz-combobox__group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding-inline: var(--spacing-3) var(--spacing-1);
+}
+
+.dz-combobox__input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  outline: 0;
+  font: inherit;
+}
+
+.dz-combobox__input::placeholder {
+  color: var(--color-content-faint);
+}
+
+.dz-combobox__actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+/*
+ * The clear and the chevron. They are the field's own furniture rather than
+ * buttons on it: no box at rest, the subtle ink, and the neutral wash only
+ * under the pointer — a pair of drawn buttons inside a field would read as
+ * two more controls in the form.
+ */
+.dz-combobox__action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-5);
+  height: var(--spacing-5);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-small);
+  background: none;
+  color: var(--color-content-subtle);
+  cursor: pointer;
+  font-size: var(--label-small-font-size);
+  line-height: 1;
+  transition:
+    background-color var(--motion-duration) var(--motion-easing),
+    color var(--motion-duration) var(--motion-easing);
+}
+
+.dz-combobox__action:hover {
+  background-color: var(--control-color-normal-surface-hovered);
+  color: var(--color-content);
+}
+
+.dz-combobox__action:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: 0;
+}
+
+/* The chevron turns while the list is open, so the field says what the panel
+   below it is doing. */
+.dz-combobox__group[data-popup-open] .dz-combobox__action:last-child {
+  transform: rotate(180deg);
+}
+
+/* The list is at least as wide as the field it dropped from, the way a
+   `Select`'s is, and never taller than the room the positioner leaves. */
+.dz-combobox__popup {
+  min-width: var(--anchor-width);
+}
+
+.dz-combobox__popup .dz-popup__item[data-selected] .dz-popup__check {
+  visibility: visible;
+}
+
+/* What the sheet says when the query matches nothing. It is a line of prose
+   in a panel of rows, so it takes the row's inset and the muted ink rather
+   than looking like a row that cannot be picked. */
+.dz-popup__empty {
+  padding-block: var(--menu-item-padding);
+  padding-inline: var(--spacing-2);
+  color: var(--color-content-faint);
+  font-family: var(--body-small-font-family);
+  font-size: var(--body-small-font-size);
+  line-height: var(--body-small-line-height);
+}

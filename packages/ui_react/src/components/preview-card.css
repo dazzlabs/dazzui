@@ -1,0 +1,12 @@
+/*
+ * The same sheet a `Popover` wears — the floating panel of popup.css, padded
+ * for prose by popover.css. A preview card is a popover the pointer opens, so
+ * a second drawing of it could only drift.
+ *
+ * The one thing that is its own is a ceiling. A popover is as wide as what a
+ * caller put in it; a preview card is filled from whatever it is previewing,
+ * so it needs a width it cannot exceed no matter what comes back.
+ */
+.dz-preview-card {
+  max-width: min(var(--available-width), var(--preview-card-width));
+}

@@ -1,0 +1,132 @@
+/*
+ * The disclosure — a header row that opens a panel — and the one place it is
+ * drawn. A `Collapsible` is one of them; an `Accordion` is several that know
+ * about each other, and accordion.css adds only what that costs. So the parts
+ * are named `dz-disclosure__*` rather than after either root, the way
+ * popup.css names the sheet a Menu and a Select both wear.
+ *
+ * The row is not on the shared control state machine. `normal` is the right
+ * recipe for a row's wash, but its resting surface is opaque paper, and a
+ * header that painted itself would cut a card in half; so the wash is read on
+ * `:hover` alone and the row rests transparent — exactly what a popup row
+ * does, and for the same reason.
+ */
+.dz-disclosure__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  width: 100%;
+  padding-block: var(--spacing-2);
+  padding-inline: var(--spacing-2);
+  border: 0;
+  border-radius: var(--radius-medium);
+  background: none;
+  color: var(--color-content);
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+  font-family: var(--label-medium-font-family);
+  font-size: var(--label-medium-font-size);
+  font-weight: var(--label-medium-font-weight);
+  line-height: var(--label-medium-line-height);
+  transition: background-color var(--motion-duration) var(--motion-easing);
+}
+
+.dz-disclosure__trigger:hover:not([data-disabled]) {
+  background-color: var(--control-color-normal-surface-hovered);
+}
+
+.dz-disclosure__trigger[data-disabled] {
+  color: var(--control-color-normal-content-disabled);
+  cursor: not-allowed;
+}
+
+.dz-disclosure__trigger:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/*
+ * The chevron points along the row when shut and down the page when open —
+ * one glyph rotated rather than two swapped, so the turn is the animation.
+ * It is the only moving part: a header that also slid or faded would read as
+ * two things happening.
+ */
+.dz-disclosure__chevron {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  /* Held at a width rather than left to the glyph, so the content's indent
+     below can be composed out of the same step. */
+  width: var(--spacing-3);
+  font-size: var(--label-small-font-size);
+  color: var(--color-content-subtle);
+  transition: transform var(--motion-duration) var(--motion-easing);
+}
+
+.dz-disclosure__trigger[data-panel-open] .dz-disclosure__chevron,
+.dz-disclosure__trigger[data-open] .dz-disclosure__chevron {
+  transform: rotate(90deg);
+}
+
+.dz-disclosure__icon {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--color-content-muted);
+}
+
+.dz-disclosure__title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A trailing aside — a count, a duration — steps back the way a menu row's
+   shortcut does, and never takes the row's weight. */
+.dz-disclosure__meta {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--spacing-2);
+  color: var(--color-content-faint);
+  font-family: var(--label-quiet-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--label-quiet-font-weight);
+}
+
+/*
+ * The panel animates its own height, which is the one thing a disclosure
+ * cannot do in CSS alone: `auto` is not a length to interpolate from. Base UI
+ * measures the content and publishes it as a variable, and the two transition
+ * markers say which end of the run we are at.
+ *
+ * The overflow clip is what makes the content slide behind the row rather
+ * than squash, and it is on the panel rather than the content so the
+ * content's own padding travels with it.
+ */
+.dz-disclosure__panel {
+  height: var(--collapsible-panel-height);
+  overflow: hidden;
+  transition: height var(--motion-duration) var(--motion-easing);
+}
+
+.dz-disclosure__panel[data-starting-style],
+.dz-disclosure__panel[data-ending-style] {
+  height: 0;
+}
+
+/* The content is indented to the chevron's far edge, so the run of a nested
+   list lines up under the label rather than under the glyph. */
+.dz-disclosure__content {
+  padding-block: var(--spacing-1) var(--spacing-3);
+  padding-inline: calc(var(--spacing-2) + var(--spacing-3) + var(--spacing-2))
+    var(--spacing-2);
+  color: var(--color-content-secondary);
+  font-family: var(--body-small-font-family);
+  font-size: var(--body-small-font-size);
+  font-weight: var(--body-small-font-weight);
+  line-height: var(--body-small-line-height);
+}

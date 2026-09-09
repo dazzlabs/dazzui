@@ -15,10 +15,17 @@
  * to `danger`, so the border, the wash, the value's ink and the focus wash
  * all move together and there is one rule for each rather than one per state
  * per tone.
+ *
+ * A `NumberField`'s group and a `Combobox`'s are the fourth and fifth
+ * wearers. Both are wrappers rather than the control itself — the stepper and
+ * the chevron live inside the box beside the value — so they are named here
+ * and their own sheets add only what that furniture costs.
  */
 .dz-text-field,
 .dz-field-value,
-.dz-select {
+.dz-select,
+.dz-number-field__group,
+.dz-combobox__group {
   width: 100%;
   border: var(--stroke-hairline) solid var(--color-border-strong);
   background-color: var(--color-surface-muted);
@@ -38,21 +45,28 @@
    it holds the focus — the trigger of an open popup is not idle. */
 .dz-text-field:focus,
 .dz-select:focus-visible,
-.dz-select[data-popup-open] {
+.dz-select[data-popup-open],
+.dz-number-field__group:focus-within,
+.dz-combobox__group:focus-within,
+.dz-combobox__group[data-popup-open] {
   border-color: var(--tint-600);
   background-color: var(--color-surface);
   box-shadow: 0 0 0 var(--focus-width) var(--focus-glow);
 }
 
 .dz-text-field[aria-invalid='true'],
-.dz-select[aria-invalid='true'] {
+.dz-select[aria-invalid='true'],
+.dz-number-field[data-invalid] .dz-number-field__group,
+.dz-combobox__group:has([aria-invalid='true']) {
   border-color: var(--tint-600);
   background-color: var(--tint-50);
   color: var(--tint-800);
 }
 
 .dz-text-field:disabled,
-.dz-select[data-disabled] {
+.dz-select[data-disabled],
+.dz-number-field[data-disabled] .dz-number-field__group,
+.dz-combobox__group[data-disabled] {
   cursor: not-allowed;
   background-color: var(--control-color-normal-surface-disabled);
   color: var(--control-color-normal-content-disabled);
@@ -113,7 +127,9 @@
  */
 .dz-text-field,
 .dz-field-value,
-.dz-select {
+.dz-select,
+.dz-number-field__group,
+.dz-combobox__group {
   padding-block: var(--control-padding-block);
   padding-inline: var(--spacing-3);
   border-radius: var(--radius-medium);
@@ -147,6 +163,8 @@
    then given it back. */
 .dz-text-field:not([data-multiline]),
 .dz-field-value,
-.dz-select {
+.dz-select,
+.dz-number-field__group,
+.dz-combobox__group {
   height: var(--control-size);
 }

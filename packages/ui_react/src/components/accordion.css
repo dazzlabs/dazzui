@@ -1,0 +1,26 @@
+/*
+ * The rows and the panels are the shared disclosure drawing — see
+ * collapsible.css. Two things are the accordion's own: the run between its
+ * sections, and the variable its panels measure themselves with.
+ */
+
+/* Base UI publishes the measured height under a name of the part's own, so an
+   accordion panel reads a different variable from a collapsible's. It is the
+   same declaration otherwise, which is why it is an override here rather
+   than a second panel rule. */
+.dz-accordion .dz-disclosure__panel {
+  height: var(--accordion-panel-height);
+}
+
+.dz-accordion__header {
+  margin: 0;
+}
+
+/* Undivided, the sections sit on one run with nothing between them: the rows
+   are already separated by their own hover wash, and a rule under every one
+   would draw a table. `divided` is for the case where the sections are
+   genuinely a list — a settings column, a changelog — and the reader is
+   counting them. */
+.dz-accordion[data-divided='true'] .dz-accordion__item + .dz-accordion__item {
+  border-top: var(--stroke-hairline) solid var(--color-border);
+}
