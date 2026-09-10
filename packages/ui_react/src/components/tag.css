@@ -1,0 +1,137 @@
+/*
+ * The capsule is `badge.css`'s — box, corner, densities and type, shared
+ * there so the two can never disagree about what a chip is. What is here is
+ * everything a badge has no use for: the state machine's colour, the label's
+ * own hit target, and the dismiss button.
+ */
+
+/* A pressable tag reads `--control-*`, so hover, press and disabled arrive
+   already resolved. A static one takes the resting recipes, exactly as a
+   badge does — the rules are repeated rather than shared because the two
+   read different states of the same table, and a selector that covered both
+   would have to name the state anyway. */
+.dz-tag[data-control] {
+  background-color: var(--control-surface);
+  border-color: var(--control-border);
+  color: var(--control-content);
+  transition:
+    background-color var(--motion-duration) var(--motion-easing),
+    border-color var(--motion-duration) var(--motion-easing),
+    color var(--motion-duration) var(--motion-easing);
+}
+
+.dz-tag:not([data-control])[data-variant='filled'] {
+  background-color: var(--control-color-filled-surface-normal);
+  color: var(--control-color-filled-content-normal);
+}
+
+.dz-tag:not([data-control])[data-variant='tinted'] {
+  background-color: var(--control-color-tinted-surface-normal);
+  color: var(--control-color-tinted-content-normal);
+}
+
+.dz-tag:not([data-control])[data-variant='outlined'] {
+  border-color: var(--control-color-outlined-border-normal);
+  color: var(--control-color-outlined-content-normal);
+}
+
+.dz-tag:not([data-control])[data-variant='raised'] {
+  background-color: var(--color-surface);
+  color: var(--color-content-muted);
+}
+
+/* Selected is drawn twice over: the tinted fill the component swaps the
+   variant to, and this edge. One alone is not enough — a tinted tag that was
+   already tinted would look untouched, and an edge alone is a pixel to spot
+   in a row of forty. */
+.dz-tag[data-selected='true'] {
+  border-color: var(--control-color-outlined-border-normal);
+}
+
+.dz-tag[data-disabled='true'] {
+  cursor: not-allowed;
+}
+
+/* The label's hit target is the whole capsule minus the dismiss button: the
+   root's padding is the chip's, and this stretches into it rather than
+   insetting again. */
+.dz-tag__label {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+}
+
+.dz-tag[data-control] .dz-tag__label {
+  cursor: pointer;
+}
+
+.dz-tag[data-disabled='true'] .dz-tag__label {
+  cursor: not-allowed;
+}
+
+.dz-tag__label:focus-visible,
+.dz-tag__remove:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+  border-radius: var(--radius-tiny);
+}
+
+.dz-tag__icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-inline-end: var(--spacing-1);
+}
+
+.dz-tag__icon > svg {
+  width: var(--spacing-3);
+  height: var(--spacing-3);
+}
+
+/*
+ * The dismiss button sits inside the capsule's trailing padding rather than
+ * beside it, so a row of tags keeps one rhythm whether or not each one can be
+ * dismissed. It is faint at rest and only resolves under the pointer — an ✕
+ * at full strength on every chip turns a list of tags into a list of
+ * buttons.
+ */
+.dz-tag__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin: 0;
+  margin-inline-start: var(--spacing-1);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.6;
+  transition:
+    background-color var(--motion-duration) var(--motion-easing),
+    opacity var(--motion-duration) var(--motion-easing);
+}
+
+.dz-tag__remove > svg {
+  width: var(--spacing-3);
+  height: var(--spacing-3);
+}
+
+/* A wash of the capsule's own ink rather than a recipe: this button sits on
+   six different variants over twelve themes, and the only colour guaranteed
+   to read on all of them is the one the label is already set in. */
+.dz-tag__remove:hover:not(:disabled) {
+  background-color: color-mix(in srgb, currentcolor 16%, transparent);
+  opacity: 1;
+}
+
+.dz-tag__remove:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}

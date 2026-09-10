@@ -1,0 +1,81 @@
+/*
+ * The groove, swept.
+ *
+ * The fill is `surface-sunken` — the same dead step a disabled control
+ * flattens to, which is exactly what a skeleton is: a place where a control
+ * or a line of type will be, drawn as though it were not there yet. The
+ * sweep over it is `surface-subtle`, the ink wash the whole system already
+ * hovers with, so the highlight moves by the same amount on paper, on a card
+ * and on a dark canvas without a per-theme value.
+ */
+.dz-skeleton {
+  display: block;
+  background-color: var(--color-surface-sunken);
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-surface-subtle),
+    transparent
+  );
+  /* Twice the box, so the highlight can start off one edge and finish off the
+     other rather than fading in and out in place. */
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  border-radius: var(--radius-small);
+  /* Slower than the spinner's turn: this one is scenery behind a layout, and
+     at the spinner's pace a page of bars reads as an alarm. */
+  animation: dz-skeleton-sweep 1.6s ease-in-out infinite;
+}
+
+/*
+ * Deliberately no reduced-motion exception, where the spinner has one. A
+ * still spinner reads as a hung app because a spinner's only message is
+ * motion; a still skeleton still says everything it has to say — this is
+ * where the content goes — so the base layer's clamp is right to stop it.
+ */
+
+/* A bar on the line box of the type it stands in for: full measure, and the
+   height of a line of body copy rather than a length of its own. */
+.dz-skeleton[data-shape='text'] {
+  width: 100%;
+  height: var(--body-small-line-height);
+  border-radius: var(--radius-tiny);
+}
+
+.dz-skeleton[data-shape='circle'] {
+  /* Square from the width alone, so one prop sizes it. */
+  aspect-ratio: 1;
+  border-radius: var(--radius-full);
+}
+
+.dz-skeleton[data-shape='rect'] {
+  border-radius: var(--radius-small);
+}
+
+/* Bars ---------------------------------------------------------------------
+ * The gap is the leading between two lines of body copy rather than a step of
+ * the spacing scale, so a stack of bars occupies the same run as the
+ * paragraph it is standing in for.
+ */
+
+.dz-skeleton-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1-5);
+}
+
+/* Three fifths: short enough to read as the end of a paragraph at any
+   measure, long enough not to read as a heading. It is a proportion rather
+   than a length, so there is no step of the scale to compose it out of. */
+.dz-skeleton-text > .dz-skeleton[data-last='true'] {
+  width: 60%;
+}
+
+@keyframes dz-skeleton-sweep {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}

@@ -28,10 +28,15 @@
 @import '../components/action-bar.css';
 @import '../components/avatar.css';
 @import '../components/badge.css';
+/* After badge.css: a tag wears the badge's capsule — the same box at the
+   same three densities — and adds only the state machine, the label's hit
+   target and the dismiss button. */
+@import '../components/tag.css';
 @import '../components/button.css';
 @import '../components/callout.css';
 @import '../components/card.css';
 @import '../components/checkbox.css';
+@import '../components/code.css';
 /* Out of order, ahead of the accordion: the disclosure — a header row and the
    panel it opens — is drawn once here, and an Accordion wears it. */
 @import '../components/collapsible.css';
@@ -47,6 +52,7 @@
 @import '../components/icon.css';
 @import '../components/icon-button.css';
 @import '../components/key-cap.css';
+@import '../components/link.css';
 @import '../components/meter.css';
 @import '../components/option-card.css';
 @import '../components/otp-field.css';
@@ -70,8 +76,10 @@
 @import '../components/segmented-control.css';
 @import '../components/shortcut-recorder.css';
 @import '../components/sidebar.css';
+@import '../components/skeleton.css';
 @import '../components/slider.css';
 @import '../components/spinner.css';
+@import '../components/splitter.css';
 @import '../components/step-list.css';
 @import '../components/switch.css';
 @import '../components/table.css';
@@ -82,4 +90,9 @@
 @import '../components/number-field.css';
 @import '../components/combobox.css';
 @import '../components/toast.css';
+/* After button.css in spirit rather than in order: a toggle is that box
+   with one state a button does not have, and it reads the same profile
+   bindings. Nothing here overrides the button, so source order is free. */
+@import '../components/toggle.css';
 @import '../components/tooltip.css';
+@import '../components/tree.css';

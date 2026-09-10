@@ -1,0 +1,58 @@
+/*
+ * Colour comes off the shared state machine at `plain` — the quiet accent
+ * recipe, whose content grade deepens on hover and flattens when disabled.
+ * The surface that recipe also carries is deliberately not painted: a wash
+ * behind a run of text in a paragraph would ragged the line, and the grade
+ * change is what a link has always used to answer the pointer.
+ */
+.dz-link {
+  color: var(--control-content);
+  cursor: pointer;
+  border-radius: var(--radius-tiny);
+  text-decoration-line: underline;
+  /* One pixel at every size, offset by the smallest step so the rule clears
+     the descenders instead of striking through them. */
+  text-decoration-thickness: var(--spacing-px);
+  text-underline-offset: var(--spacing-0-5);
+  transition: color var(--motion-duration) var(--motion-easing);
+}
+
+.dz-link[data-underline='hover'] {
+  text-decoration-line: none;
+}
+
+.dz-link[data-underline='hover']:hover {
+  text-decoration-line: underline;
+}
+
+.dz-link[data-underline='none'] {
+  text-decoration-line: none;
+}
+
+/* The ring hugs the text run rather than a box, so it takes the tiny corner
+   and no offset — a link inside a paragraph has no padding to offset into. */
+.dz-link:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.dz-link[aria-disabled='true'] {
+  cursor: not-allowed;
+  text-decoration-line: none;
+  pointer-events: none;
+}
+
+/* The arrow rides with the text: inline so it wraps with the last word rather
+   than stranding itself on a line of its own, and never underlined. */
+.dz-link__external {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: var(--spacing-0-5);
+  vertical-align: text-top;
+  text-decoration-line: none;
+}
+
+.dz-link__external > svg {
+  width: var(--spacing-3);
+  height: var(--spacing-3);
+}

@@ -1,0 +1,146 @@
+/*
+ * The code face, at two scales.
+ *
+ * Both read `--base-font-code` directly, which is the one place in this
+ * package a base primitive is named — the same exception `text-field.css`
+ * takes for a `mono` field. There is no semantic role above it to alias,
+ * because the code face is not a role: it is the face, and a component that
+ * asked for it by any other name would be asking for something else.
+ */
+
+/* Inline ------------------------------------------------------------------
+ * A wash and a face rather than a box. The inset is half a step, which is
+ * what keeps the chip from pushing the line's leading around; a border here
+ * would draw a second rule through every paragraph that mentions a flag.
+ */
+.dz-code {
+  padding-block: var(--spacing-0-5);
+  padding-inline: var(--spacing-1);
+  background-color: var(--color-surface-sunken);
+  border-radius: var(--radius-tiny);
+  color: var(--color-content);
+  font-family: var(--base-font-code);
+  /* A step under the prose it sits in: a monospace face at the same nominal
+     size always reads larger, and the run would ride above the line. */
+  font-size: var(--caption-small-font-size);
+}
+
+/* Block -------------------------------------------------------------------
+ * The card's materials, not the popup's: this sits *in* the page rather than
+ * over it, so it takes the muted surface and the ordinary border rather than
+ * the overlay's edge and shadow.
+ */
+.dz-code-block {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--color-surface-muted);
+  border: var(--stroke-hairline) solid var(--color-border);
+  border-radius: var(--radius-medium);
+}
+
+/* The head is chrome and reads as chrome: the titlebar's step, a rule under
+   it, and nothing in it at body weight. */
+.dz-code-block__head {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  min-height: var(--spacing-8);
+  padding-block: var(--spacing-1);
+  padding-inline: var(--spacing-3);
+  background-color: var(--color-surface-chrome);
+  border-bottom: var(--stroke-hairline) solid var(--color-border);
+}
+
+/* Set in the code face too: the title is nearly always a path or a filename,
+   and a proportional face beside a monospace body reads as a different
+   document rather than as its label. */
+.dz-code-block__title {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-content-secondary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--base-font-code);
+  font-size: var(--caption-small-font-size);
+  line-height: var(--caption-small-line-height);
+}
+
+.dz-code-block__language {
+  flex-shrink: 0;
+  color: var(--color-content-faint);
+  font-family: var(--label-strong-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--label-medium-font-weight);
+  line-height: var(--label-small-line-height);
+  text-transform: uppercase;
+}
+
+.dz-code-block__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-0-5);
+  /* Pushed to the trailing edge, whichever of the two labels before it are
+     drawn — which is why this is a margin rather than a `space-between` on
+     the head. */
+  margin-inline-start: auto;
+}
+
+/*
+ * The scroller holds the gutter and the code as two columns of one row, so
+ * the numbers scroll vertically with the code and stay put horizontally —
+ * the gutter is sticky rather than a sibling that has to be kept in sync.
+ */
+.dz-code-block__scroll {
+  display: flex;
+  align-items: flex-start;
+  overflow: auto;
+  padding-block: var(--spacing-2-5);
+}
+
+/* Both columns set the same face, size and leading, and that is what aligns
+   them: a number and its line are two boxes agreeing on one line box, not one
+   box holding both. */
+.dz-code-block__scroll,
+.dz-code-block__pre {
+  font-family: var(--base-font-code);
+  font-size: var(--caption-small-font-size);
+  line-height: var(--body-small-line-height);
+}
+
+.dz-code-block__gutter {
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  inset-inline-start: 0;
+  flex-shrink: 0;
+  /* Right-aligned so the ones column stays a column past line 9, and wide
+     enough for four digits before it starts pushing the code across. */
+  min-width: var(--spacing-10);
+  padding-inline-end: var(--spacing-3);
+  background-color: var(--color-surface-muted);
+  color: var(--color-content-faint);
+  text-align: right;
+  /* Never part of a selection: the whole point of the split column. */
+  user-select: none;
+}
+
+.dz-code-block__pre {
+  margin: 0;
+  padding-inline: var(--spacing-3);
+  color: var(--color-content);
+}
+
+.dz-code-block__gutter + .dz-code-block__pre {
+  /* The gutter already pays the leading inset. */
+  padding-inline-start: 0;
+}
+
+/* Wrapped, the code can no longer scroll sideways, so it takes the width and
+   the gutter's stickiness stops meaning anything. */
+.dz-code-block[data-wrap='true'] .dz-code-block__pre {
+  flex: 1;
+  min-width: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

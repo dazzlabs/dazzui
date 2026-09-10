@@ -2,8 +2,15 @@
  * A tag: the display cut at label weight in a tight chip-cornered capsule.
  * Its label has to read as an annotation, not as body copy, which is why the
  * face and weight never soften whatever the size.
+ *
+ * `.dz-tag` wears the capsule with it — the same box at the same three
+ * densities — but none of the colour below: a badge is an annotation and
+ * reads its recipes at rest, where a tag is something you can press or
+ * dismiss and needs the whole state machine. So the geometry is shared here
+ * and the colour is written twice, on purpose.
  */
-.dz-badge {
+.dz-badge,
+.dz-tag {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -21,21 +28,24 @@
  * top. A badge is an annotation — it never reaches control height.
  */
 
-.dz-badge[data-size='small'] {
+.dz-badge[data-size='small'],
+.dz-tag[data-size='small'] {
   padding-block: var(--spacing-0-5);
   padding-inline: var(--spacing-1-5);
   border-radius: var(--radius-tiny);
   font-size: var(--label-small-font-size);
 }
 
-.dz-badge[data-size='medium'] {
+.dz-badge[data-size='medium'],
+.dz-tag[data-size='medium'] {
   padding-block: var(--spacing-0-5);
   padding-inline: var(--spacing-2);
   border-radius: var(--radius-tiny);
   font-size: var(--label-small-font-size);
 }
 
-.dz-badge[data-size='large'] {
+.dz-badge[data-size='large'],
+.dz-tag[data-size='large'] {
   padding-block: var(--spacing-1);
   padding-inline: var(--spacing-2);
   border-radius: var(--radius-tiny);

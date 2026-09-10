@@ -1,0 +1,121 @@
+/*
+ * The seam, and what it separates.
+ *
+ * Everything here is geometry: the splitter paints one hairline and one grip
+ * and otherwise stays out of the way, because whatever it holds has already
+ * decided what colour the page is. The panels themselves get no surface at
+ * all — a splitter that painted its regions would put a second card behind
+ * every card its host put in one.
+ */
+.dz-splitter {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.dz-splitter[data-orientation='horizontal'] {
+  flex-direction: row;
+}
+
+.dz-splitter[data-orientation='vertical'] {
+  flex-direction: column;
+}
+
+/* Both minimums are load bearing: a flex item's floor is its content, so a
+   panel holding anything unbreakable — a long path, a wide table — would
+   refuse to shrink past it and the seam would stop moving before its own
+   `minSize` did. */
+.dz-splitter__panel {
+  overflow: auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+/*
+ * The handle is a hit target with a rule inside it. It takes a whole step of
+ * the scale so a seam can be grabbed without aiming, and paints the hairline
+ * itself rather than leaving a border on the panels — a border on each side
+ * of the seam is two rules, and at these widths that reads as a gutter.
+ */
+.dz-splitter__handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 var(--spacing-2);
+  position: relative;
+  /* Never squeezed by the panels beside it, whatever they are holding. */
+  flex-shrink: 0;
+  background: none;
+  border: 0;
+  padding: 0;
+  transition: background-color var(--motion-duration) var(--motion-easing);
+}
+
+.dz-splitter[data-orientation='horizontal'] .dz-splitter__handle {
+  cursor: col-resize;
+}
+
+.dz-splitter[data-orientation='vertical'] .dz-splitter__handle {
+  cursor: row-resize;
+}
+
+/* The rule: one hairline of the same separator ink every divider in the
+   system is drawn in, centred in the target rather than at either edge. */
+.dz-splitter__grip {
+  background-color: var(--color-border);
+  transition:
+    background-color var(--motion-duration) var(--motion-easing),
+    transform var(--motion-duration) var(--motion-easing);
+}
+
+.dz-splitter[data-orientation='horizontal'] .dz-splitter__grip {
+  width: var(--stroke-hairline);
+  height: 100%;
+}
+
+.dz-splitter[data-orientation='vertical'] .dz-splitter__grip {
+  width: 100%;
+  height: var(--stroke-hairline);
+}
+
+/*
+ * Under the pointer the rule takes the accent and thickens, which is the
+ * whole affordance: a hairline that never answers is indistinguishable from
+ * a border, and a reader has no way to learn that this one can be dragged.
+ * The thickening is a scale rather than a width so nothing reflows — a seam
+ * that pushed its neighbours aside as the pointer crossed it would be a
+ * layout jump on the way to a drag.
+ */
+.dz-splitter__handle:hover .dz-splitter__grip,
+.dz-splitter__handle:active .dz-splitter__grip,
+.dz-splitter__handle:focus-visible .dz-splitter__grip {
+  background-color: var(--control-color-filled-surface-normal);
+}
+
+.dz-splitter[data-orientation='horizontal'] .dz-splitter__handle:hover
+  .dz-splitter__grip,
+.dz-splitter[data-orientation='horizontal'] .dz-splitter__handle:active
+  .dz-splitter__grip,
+.dz-splitter[data-orientation='horizontal'] .dz-splitter__handle:focus-visible
+  .dz-splitter__grip {
+  transform: scaleX(2);
+}
+
+.dz-splitter[data-orientation='vertical'] .dz-splitter__handle:hover
+  .dz-splitter__grip,
+.dz-splitter[data-orientation='vertical'] .dz-splitter__handle:active
+  .dz-splitter__grip,
+.dz-splitter[data-orientation='vertical'] .dz-splitter__handle:focus-visible
+  .dz-splitter__grip {
+  transform: scaleY(2);
+}
+
+/* The ring goes on the target, not the rule: a 3px ring around a 1px line is
+   a ring around nothing, and the thing being focused is the seam you can
+   move with the arrow keys. */
+.dz-splitter__handle:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: calc(var(--focus-offset) - var(--spacing-px));
+}

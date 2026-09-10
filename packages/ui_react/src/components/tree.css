@@ -1,0 +1,145 @@
+/*
+ * A column of rows that happen to be a hierarchy.
+ *
+ * The drawing is the sidebar's row, not the menu's: a tree lives in a column
+ * beside the document rather than in a sheet over it, so it takes the quiet
+ * nav ink and the small corner, and gets its hover from the `normal` recipe —
+ * the neutral one, whose wash is the card step. `plain` would come off the
+ * tinted ramp and sit heavier on a row than the selection one rung below it.
+ */
+.dz-tree {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dz-tree__item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  /* One step per level, plus the row's own leading inset. The indent is a
+     multiplication rather than a rule per depth, so a tree ten deep needs no
+     stylesheet change — and the twisty column is inside the indent, which is
+     what keeps the glyphs of one level in a straight line. */
+  padding-inline-start: calc(
+    var(--spacing-1) + var(--tree-depth, 0) * var(--spacing-4)
+  );
+  padding-inline-end: var(--spacing-2);
+  border-radius: var(--radius-small);
+  color: var(--color-content-nav);
+  cursor: pointer;
+  user-select: none;
+  font-family: var(--label-quiet-font-family);
+  font-weight: var(--label-quiet-font-weight);
+  transition:
+    background-color var(--motion-duration) var(--motion-easing),
+    color var(--motion-duration) var(--motion-easing);
+}
+
+.dz-tree[data-size='small'] .dz-tree__item {
+  height: var(--spacing-6);
+  font-size: var(--label-small-font-size);
+}
+
+.dz-tree[data-size='medium'] .dz-tree__item {
+  height: var(--spacing-7);
+  font-size: var(--label-quiet-font-size);
+}
+
+.dz-tree__item:hover:not([aria-disabled='true']):not([data-selected='true']) {
+  background-color: var(--control-color-normal-surface-hovered);
+  color: var(--color-content);
+}
+
+/*
+ * Selection shifts weight as well as colour, the way every selected thing in
+ * this system does: the tinted wash, and the label at the label weight rather
+ * than the quiet one. On a file tree the weight is doing most of the work —
+ * a column of forty rows is where one grade of colour is hardest to find.
+ */
+.dz-tree__item[data-selected='true'] {
+  background-color: var(--control-color-tinted-surface-normal);
+  color: var(--control-color-tinted-content-normal);
+  font-family: var(--label-medium-font-family);
+  font-weight: var(--label-medium-font-weight);
+}
+
+.dz-tree__item[aria-disabled='true'] {
+  color: var(--color-content-faint);
+  cursor: not-allowed;
+}
+
+.dz-tree__item:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  /* Inset, because rows touch: an outset ring would be drawn over by the row
+     below it, and the reader would lose half of it. */
+  outline-offset: calc(var(--focus-offset) - var(--spacing-px));
+}
+
+/*
+ * The twisty keeps its column on a leaf as well as a branch, empty. Files and
+ * folders at one level start at one x, which is what makes a deep tree
+ * scannable — a leaf that reclaimed the space would put every filename at a
+ * different indent from its siblings.
+ */
+.dz-tree__twisty {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--spacing-4);
+  height: var(--spacing-4);
+  border-radius: var(--radius-tiny);
+  color: var(--color-content-faint);
+  transition: transform var(--motion-duration) var(--motion-easing);
+}
+
+.dz-tree__twisty > svg {
+  width: var(--spacing-3);
+  height: var(--spacing-3);
+}
+
+.dz-tree__item[aria-expanded='true'] > .dz-tree__twisty {
+  transform: rotate(90deg);
+}
+
+.dz-tree__icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--color-content-subtle);
+}
+
+.dz-tree__icon > svg {
+  width: var(--spacing-4);
+  height: var(--spacing-4);
+}
+
+/* The selected row's glyph goes with its label rather than staying subtle —
+   two colours inside one selected row reads as a half-selected row. */
+.dz-tree__item[data-selected='true'] > .dz-tree__icon {
+  color: currentcolor;
+}
+
+/* The name is what gives way when the column is narrow, and it gives way at
+   its end: everything after it is a fixed-width aside. */
+.dz-tree__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dz-tree__meta {
+  flex-shrink: 0;
+  margin-inline-start: auto;
+  padding-inline-start: var(--spacing-2);
+  color: var(--color-content-faint);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+  font-weight: var(--caption-small-font-weight);
+}
+
+.dz-tree__item[data-selected='true'] > .dz-tree__meta {
+  color: currentcolor;
+}

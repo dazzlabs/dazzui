@@ -1,0 +1,129 @@
+/*
+ * The button's box, with one state the button does not have.
+ *
+ * Colour at rest, on hover, under the pointer and when disabled all come off
+ * the shared state machine, exactly as `button.css` takes them, so this file
+ * is the box and the latch.
+ */
+.dz-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+  background-color: var(--control-surface);
+  color: var(--control-content);
+  border: var(--spacing-px) solid var(--control-border);
+  height: var(--control-size);
+  gap: var(--control-gap);
+  padding-block: var(--control-padding-block);
+  padding-inline: var(--control-padding-inline);
+  border-radius: var(--control-radius);
+  font-family: var(--control-font-family);
+  font-size: var(--control-font-size);
+  font-weight: var(--control-font-weight);
+  line-height: var(--control-line-height);
+  transition:
+    background-color var(--motion-duration) var(--motion-easing),
+    border-color var(--motion-duration) var(--motion-easing),
+    color var(--motion-duration) var(--motion-easing);
+}
+
+/* A glyph label takes the type's size, so a toolbar of these lines up with
+   the buttons beside it rather than with whatever the icon set ships at. */
+.dz-toggle > svg {
+  width: var(--control-font-size);
+  height: var(--control-font-size);
+}
+
+/*
+ * A toggle whose whole label is one glyph is square at the control height, the
+ * way an `IconButton` is — the padding goes, because a glyph has no side
+ * bearings to pay for. That is what lets a latching glyph sit in a toolbar
+ * beside the buttons that do not latch without being the one cell of a
+ * different width.
+ */
+.dz-toggle:has(> svg:only-child) {
+  width: var(--control-size);
+  padding-inline: 0;
+}
+
+.dz-toggle:disabled,
+.dz-toggle[data-disabled] {
+  cursor: not-allowed;
+}
+
+.dz-toggle:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/*
+ * Down.
+ *
+ * The system's own selection rule, applied: the tinted wash for the colour,
+ * and the label a weight heavier. The weight is the half that survives on a
+ * monochrome toolbar and for a reader who cannot tell the two grades apart,
+ * which is why it is not decoration.
+ */
+.dz-toggle[data-pressed] {
+  background-color: var(--control-color-tinted-surface-normal);
+  border-color: var(--control-color-tinted-border-normal);
+  color: var(--control-color-tinted-content-normal);
+  font-weight: var(--label-strong-font-weight);
+}
+
+.dz-toggle[data-pressed]:hover:not(:disabled):not([data-disabled]) {
+  background-color: var(--control-color-tinted-surface-hovered);
+  border-color: var(--control-color-tinted-border-hovered);
+  color: var(--control-color-tinted-content-hovered);
+}
+
+.dz-toggle[data-pressed]:active:not(:disabled):not([data-disabled]) {
+  background-color: var(--control-color-tinted-surface-pressed);
+  border-color: var(--control-color-tinted-border-pressed);
+  color: var(--control-color-tinted-content-pressed);
+}
+
+/* Disabled flattens to the groove whether it is up or down: one dead look, so
+   a disabled toggle never reads as a live one that has merely lost its
+   colour. */
+.dz-toggle[data-pressed]:disabled,
+.dz-toggle[data-pressed][data-disabled] {
+  background-color: var(--control-color-tinted-surface-disabled);
+  border-color: var(--control-color-tinted-border-disabled);
+  color: var(--control-color-tinted-content-disabled);
+  font-weight: var(--control-font-weight);
+}
+
+/* Group -------------------------------------------------------------------
+ * Joined at the shared edges: the run keeps its corners only at the two ends,
+ * and the border between two members collapses to one by pulling each one
+ * back over its neighbour. `position: relative` on hover and focus is what
+ * lifts the active member's own edge above the one it is overlapping, so a
+ * focus ring is never cut in half by the button beside it.
+ */
+
+.dz-toggle-group {
+  display: inline-flex;
+  align-items: center;
+}
+
+.dz-toggle-group > .dz-toggle[data-grouped]:not(:first-child) {
+  margin-inline-start: calc(var(--spacing-px) * -1);
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+}
+
+.dz-toggle-group > .dz-toggle[data-grouped]:not(:last-child) {
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+}
+
+.dz-toggle-group > .dz-toggle:hover,
+.dz-toggle-group > .dz-toggle:focus-visible,
+.dz-toggle-group > .dz-toggle[data-pressed] {
+  position: relative;
+  z-index: 1;
+}

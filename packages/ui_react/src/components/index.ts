@@ -34,6 +34,7 @@ export {
   type CheckboxProps,
   type CheckboxSize,
 } from './checkbox'
+export { Code, CodeBlock, type CodeBlockProps, type CodeProps } from './code'
 export { Collapsible, type CollapsibleProps } from './collapsible'
 export {
   Autocomplete,
@@ -77,6 +78,7 @@ export {
   type KeyCapSize,
   type KeyCapVariant,
 } from './key-cap'
+export { Link, type LinkProps, type LinkUnderline } from './link'
 export {
   ContextMenu,
   type ContextMenuProps,
@@ -165,8 +167,22 @@ export {
   ShortcutRecorder,
   type ShortcutRecorderProps,
 } from './shortcut-recorder'
+export {
+  Skeleton,
+  type SkeletonProps,
+  type SkeletonShape,
+  SkeletonText,
+  type SkeletonTextProps,
+} from './skeleton'
 export { Slider, type SliderProps, type SliderSize } from './slider'
 export { Spinner, type SpinnerProps, type SpinnerSize } from './spinner'
+export {
+  Splitter,
+  type SplitterOrientation,
+  SplitterPanel,
+  type SplitterPanelProps,
+  type SplitterProps,
+} from './splitter'
 export { Step, StepList, type StepProps, type StepStatus } from './step-list'
 export { Switch, type SwitchProps, type SwitchSize } from './switch'
 export {
@@ -178,6 +194,7 @@ export {
   TableRow,
   type TableRowProps,
 } from './table'
+export { Tag, type TagProps, type TagSize, type TagVariant } from './tag'
 export {
   FieldValue,
   type FieldValueProps,
@@ -201,4 +218,12 @@ export {
   type ToastViewportProps,
   useToast,
 } from './toast'
+export {
+  Toggle,
+  ToggleGroup,
+  type ToggleGroupProps,
+  type ToggleItem,
+  type ToggleProps,
+} from './toggle'
 export { Tooltip, type TooltipProps, TooltipProvider } from './tooltip'
+export { Tree, type TreeNode, type TreeProps, type TreeSize } from './tree'
