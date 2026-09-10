@@ -12,6 +12,7 @@ import {
   IconButton,
   SearchField,
   TINTS,
+  Toggle,
 } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
@@ -67,24 +68,22 @@ export const Overview: Story = {
       </Section>
 
       <Section
-        title="Active"
-        description="A persistent on-state — a pin held down, a panel kept open. It is the tinted recipe whatever variant the button rests in, because “this is on” has to read the same wherever the button sits. It also sets `aria-pressed`, so the state is announced rather than only drawn."
+        title="It does not latch"
+        description="A glyph button that stays down is a `Toggle`, which is square at this same control height when its label is a lone glyph — so a latching glyph and a plain one sit in one toolbar without a seam. Keeping an on-state here as well would be a second drawing for one state, and the system draws a selection one way: a tinted wash and a heavier label."
       >
         <Stack>
-          <Specimen label="off / on">
-            <IconButton label="Off">
-              <Icon icon={Pin} size={16} />
-            </IconButton>
-            <IconButton active label="On">
-              <Icon icon={Pin} size={16} />
+          <Specimen label="IconButton — acts and returns">
+            <IconButton label="Copy">
+              <Icon icon={Copy} size={16} />
             </IconButton>
           </Specimen>
-          <Specimen label="tinted on">
-            {TINTS.map(tint => (
-              <IconButton key={tint} active label={tint} tint={tint}>
-                <Icon icon={Pin} size={16} />
-              </IconButton>
-            ))}
+          <Specimen label="Toggle — stays down">
+            <Toggle label="Pin window">
+              <Icon icon={Pin} size={16} />
+            </Toggle>
+            <Toggle defaultPressed label="Pinned">
+              <Icon icon={Pin} size={16} />
+            </Toggle>
           </Specimen>
         </Stack>
       </Section>
@@ -207,44 +206,6 @@ export const Tints: Story = {
   ),
 }
 
-export const Active: Story = {
-  render: () => {
-    const [pinned, setPinned] = useState(false)
-    const [starred, setStarred] = useState(true)
-    return (
-      <Row>
-        <IconButton
-          active={pinned}
-          label={pinned ? 'Unpin window' : 'Pin window'}
-          onClick={() => setPinned(!pinned)}
-        >
-          <Icon icon={Pin} size={16} />
-        </IconButton>
-        <IconButton
-          active={starred}
-          label={starred ? 'Unstar' : 'Star'}
-          tint="primary"
-          onClick={() => setStarred(!starred)}
-        >
-          <Icon icon={Pin} size={16} />
-        </IconButton>
-      </Row>
-    )
-  },
-}
-
-export const ActiveTints: Story = {
-  render: () => (
-    <Row>
-      {TINTS.map(tint => (
-        <IconButton key={tint} active label={tint} tint={tint}>
-          <Icon icon={Pin} size={16} />
-        </IconButton>
-      ))}
-    </Row>
-  ),
-}
-
 export const AToolbar: Story = {
   render: () => {
     const [pinned, setPinned] = useState(false)
@@ -253,13 +214,9 @@ export const AToolbar: Story = {
         <IconButton label="Copy translation">
           <Icon icon={Copy} size={16} />
         </IconButton>
-        <IconButton
-          active={pinned}
-          label="Pin window"
-          onClick={() => setPinned(!pinned)}
-        >
+        <Toggle label="Pin window" pressed={pinned} onPressedChange={setPinned}>
           <Icon icon={Pin} size={16} />
-        </IconButton>
+        </Toggle>
         <Divider orientation="vertical" />
         <IconButton label="Delete" tint="danger">
           <Icon icon={Trash} size={16} />

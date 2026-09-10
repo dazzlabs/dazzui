@@ -40,7 +40,7 @@
   transition: rotate var(--motion-duration) var(--motion-easing);
 }
 
-.wb-file__fold[data-active='true'] > .dz-icon {
+.wb-file__fold[aria-expanded='true'] > .dz-icon {
   rotate: 90deg;
 }
 

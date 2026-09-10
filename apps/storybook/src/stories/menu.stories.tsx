@@ -262,8 +262,8 @@ export const FromAnIconButton: Story = {
   render: () => (
     <Menu
       align="start"
-      trigger={({ open }) => (
-        <IconButton active={open} label="More">
+      trigger={() => (
+        <IconButton label="More">
           <Icon icon={More} size={16} />
         </IconButton>
       )}

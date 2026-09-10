@@ -14,8 +14,6 @@ export interface IconButtonProps extends Omit<
   size?: ButtonSize
   variant?: ButtonVariant
   tint?: Tint
-  /** A persistent on-state — a pin held down, a panel kept open. */
-  active?: boolean
   children: ReactNode
 }
 
@@ -23,6 +21,12 @@ export interface IconButtonProps extends Omit<
  * A `Tooltip` rather than a `title`: the native one is late, unstyled and
  * absent from every keyboard. The button itself is a plain element, which is
  * what lets a `Menu` or a `Dialog` take it as a trigger.
+ *
+ * It does not latch. A glyph button that stays down is a `Toggle`, which is
+ * square at the same control height when its label is a lone glyph — so the
+ * two sit in one toolbar without a seam. Keeping an on-state here as well
+ * would be a second drawing for one state, and the system draws a selection
+ * one way: a tinted wash and a heavier label.
  */
 export function IconButton({
   label,
@@ -31,7 +35,6 @@ export function IconButton({
   // Neutral by default: a toolbar of these should read as chrome, not as a row
   // of accented actions. Pass a tint where one button genuinely leads.
   tint = 'neutral',
-  active,
   className,
   children,
   type = 'button',
@@ -42,7 +45,6 @@ export function IconButton({
       <button
         type={type}
         aria-label={label}
-        aria-pressed={active || undefined}
         data-control=""
         data-size={size}
         data-tint={tint}

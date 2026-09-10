@@ -202,11 +202,16 @@ export function SidebarTrigger({
   onClick,
   ...props
 }: SidebarTriggerProps) {
-  const { toggleSidebar } = useSidebar()
+  const { open, toggleSidebar } = useSidebar()
 
   return (
     <IconButton
       label={label}
+      /* The trigger already knows, so no caller has to tell it. It is
+         `aria-expanded` rather than a pressed state: this button discloses the
+         column beside it, and a reader is told whether that column is showing
+         rather than whether the button is held down. */
+      aria-expanded={open}
       className={cx('dz-sidebar__trigger', className)}
       onClick={event => {
         onClick?.(event)

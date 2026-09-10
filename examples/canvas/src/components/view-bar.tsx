@@ -1,4 +1,11 @@
-import { Button, Divider, Icon, IconButton, Menu } from '@dazzlabs/dazzui-react'
+import {
+  Button,
+  Divider,
+  Icon,
+  IconButton,
+  Menu,
+  Toggle,
+} from '@dazzlabs/dazzui-react'
 import {
   GridDots20Regular,
   Ruler20Regular,
@@ -92,25 +99,29 @@ export function ViewBar({
 
       <Divider orientation="vertical" className="cv-viewbar__rule" />
 
-      <IconButton
-        active={grid}
+      {/* Both stay down, so both are toggles rather than buttons. A `Toggle`
+          whose label is a lone glyph is square at the control height, so the
+          two sit in this bar beside the buttons that do not latch without
+          being the cells of a different width. */}
+      <Toggle
         label={grid ? 'Hide the grid' : 'Show the grid'}
+        pressed={grid}
         size="small"
         variant="plain"
-        onClick={() => onGridChange(!grid)}
+        onPressedChange={onGridChange}
       >
         <Icon icon={GridDots20Regular} size={15} />
-      </IconButton>
+      </Toggle>
 
-      <IconButton
-        active={snapping}
+      <Toggle
         label={snapping ? 'Stop snapping to the grid' : 'Snap to the grid'}
+        pressed={snapping}
         size="small"
         variant="plain"
-        onClick={() => onSnappingChange(!snapping)}
+        onPressedChange={onSnappingChange}
       >
         <Icon icon={Ruler20Regular} size={15} />
-      </IconButton>
+      </Toggle>
 
       <span className="cv-viewbar__gap" />
 

@@ -49,7 +49,7 @@ enum MenuStories {
           MenuItem("Duplicate", icon: .squareMultiple16Regular) {},
           MenuItem("Delete", icon: .delete16Regular) {},
         ]) { state in
-          IconButton(label: "Actions", icon: .moreHorizontal16Regular, active: state.open) {
+          IconButton(label: "Actions", icon: .moreHorizontal16Regular) {
             state.toggle()
           }
         }
@@ -63,7 +63,7 @@ enum MenuStories {
               MenuItem("Sort by name") {},
               MenuItem("Sort by date", checked: true) {},
             ]) { state in
-              IconButton(label: "Sort", icon: .arrowSort16Regular, active: state.open) {
+              IconButton(label: "Sort", icon: .arrowSort16Regular) {
                 state.toggle()
               }
             }

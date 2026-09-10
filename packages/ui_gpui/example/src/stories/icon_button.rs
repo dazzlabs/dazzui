@@ -1,7 +1,7 @@
 //! `Components/IconButton` — the square button a toolbar is made of.
 
 use dazzui::{
-    ActionBar, ActiveTheme, Card, ControlSize, ControlVariant, Icon, IconButton, Tint,
+    ActionBar, ActiveTheme, Card, ControlSize, ControlVariant, Icon, IconButton, Tint, Toggle,
     assets::icons,
 };
 use gpui::{IntoElement, ParentElement, SharedString, Styled, div, px};
@@ -71,12 +71,14 @@ pub const PAGE: StoryPage = StoryPage::new(
                         .child(sizes),
                 )
                 .child(
-                    Section::new("Active")
+                    Section::new("It does not latch")
                         .description(
-                            "`active` is the on-state of a button that holds a decision — a \
-                             pin, a filter, a panel toggle. It takes the filled recipe, so an on \
-                             button reads the way a selected row does rather than as a pressed \
-                             one.",
+                            "A glyph button that stays down is a Toggle, which is square at \
+                             this same control height when its label is a lone glyph — so a \
+                             latching glyph and a plain one sit in one toolbar without a seam. \
+                             Keeping an on-state here as well would be a second drawing for one \
+                             state, and the system draws a selection one way: a tinted wash and \
+                             a heavier label.",
                         )
                         .child(pin(state, this)),
                 )
@@ -156,24 +158,6 @@ pub const PAGE: StoryPage = StoryPage::new(
             }
             row.into_any_element()
         }),
-        Story::new("Active", |state, this, _| {
-            pin(state, this).into_any_element()
-        }),
-        Story::new("Active tints", |_, _, _| {
-            let mut row = Row::new();
-            for tint in Tint::ALL {
-                row = row.child(
-                    IconButton::new(
-                        SharedString::from(format!("on-{}", tint.name())),
-                        capitalize(tint.name()),
-                        Icon::new(icons::PIN_16_REGULAR),
-                    )
-                    .tint(tint)
-                    .active(true),
-                );
-            }
-            row.into_any_element()
-        }),
         Story::new("A toolbar", |_, _, cx| {
             let vars = cx.theme().vars;
             div()
@@ -211,16 +195,14 @@ pub const PAGE: StoryPage = StoryPage::new(
     ],
 );
 
-/// The on-state: an icon button that holds a decision rather than firing one.
+/// An icon button beside the thing that does latch, which is a [`Toggle`].
 fn pin(state: &crate::Playground, this: &gpui::Entity<crate::Playground>) -> impl IntoElement {
     Row::new()
         .child(
-            IconButton::new("pinned", "Pin", Icon::new(icons::PIN_16_REGULAR))
-                .active(state.pinned)
-                .on_click({
-                    let toggle = act(this, |state, _, _| state.pinned = !state.pinned);
-                    move |_, window, cx| toggle(window, cx)
-                }),
+            Toggle::new("pinned", "")
+                .icon(Icon::new(icons::PIN_16_REGULAR))
+                .pressed(state.pinned)
+                .on_toggle(act(this, |state, _, _| state.pinned = !state.pinned)),
         )
         .child(IconButton::new(
             "unpinned",

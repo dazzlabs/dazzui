@@ -84,21 +84,6 @@ class IconButtonStories {
         ],
       ),
     ),
-    Story('Active', (context) => const _Pin()),
-    Story(
-      'Active tints',
-      (context) => RowWrap(
-        children: [
-          for (final tint in IconButtonTint.values)
-            IconButton(
-              icon: Icon(FluentIcons.pin_16_regular),
-              tint: tint,
-              active: true,
-              onPressed: () {},
-            ),
-        ],
-      ),
-    ),
     Story('A toolbar', (context) => const _Toolbar()),
     Story(
       'In a list header',
@@ -125,27 +110,28 @@ class IconButtonStories {
   ]);
 }
 
-/// The on-state: an icon button that holds a decision rather than firing one.
-class _Pin extends StatefulWidget {
-  const _Pin();
-
-  @override
-  State<_Pin> createState() => _PinState();
-}
-
-class _PinState extends State<_Pin> {
-  bool _pinned = true;
+/// An icon button beside the thing that does latch, which is a [Toggle].
+class _NotALatch extends StatelessWidget {
+  const _NotALatch();
 
   @override
   Widget build(BuildContext context) {
     return RowWrap(
       children: [
         IconButton(
-          icon: Icon(FluentIcons.pin_16_regular),
-          active: _pinned,
-          onPressed: () => setState(() => _pinned = !_pinned),
+          icon: Icon(FluentIcons.copy_16_regular),
+          semanticsLabel: 'Copy',
+          onPressed: () {},
         ),
-        IconButton(icon: Icon(FluentIcons.pin_16_regular), onPressed: () {}),
+        const Toggle(
+          semanticsLabel: 'Pin window',
+          child: Icon(FluentIcons.pin_16_regular),
+        ),
+        const Toggle(
+          semanticsLabel: 'Pinned',
+          initiallyPressed: true,
+          child: Icon(FluentIcons.pin_16_regular),
+        ),
       ],
     );
   }
@@ -248,13 +234,15 @@ class _Overview extends StatelessWidget {
           ],
         ),
         const DocSection(
-          'Active',
+          'It does not latch',
           description:
-              '`active` is the on-state of a button that holds a decision — a '
-              'pin, a filter, a panel toggle. It takes the filled recipe, so '
-              'an on button reads the way a selected row does rather than as a '
-              'pressed one.',
-          children: [_Pin()],
+              'A glyph button that stays down is a Toggle, which is square at '
+              'this same control height when its label is a lone glyph — so a '
+              'latching glyph and a plain one sit in one toolbar without a '
+              'seam. Keeping an on-state here as well would be a second '
+              'drawing for one state, and the system draws a selection one '
+              'way: a tinted wash and a heavier label.',
+          children: [_NotALatch()],
         ),
         const DocSection(
           'In a toolbar',

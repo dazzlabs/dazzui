@@ -29,7 +29,6 @@ pub struct IconButton {
     variant: ControlVariant,
     tint: Tint,
     /// A persistent on-state — a pin held down, a panel kept open.
-    active: bool,
     disabled: bool,
     focus_handle: Option<FocusHandle>,
     on_click: Option<ClickListener>,
@@ -47,7 +46,6 @@ impl IconButton {
             // not as a row of accented actions. Pass a tint where one button
             // genuinely leads.
             tint: Tint::Neutral,
-            active: false,
             disabled: false,
             focus_handle: None,
             on_click: None,
@@ -66,11 +64,6 @@ impl IconButton {
 
     pub fn tint(mut self, tint: Tint) -> Self {
         self.tint = tint;
-        self
-    }
-
-    pub fn active(mut self, active: bool) -> Self {
-        self.active = active;
         self
     }
 
@@ -103,7 +96,6 @@ impl RenderOnce for IconButton {
             label,
             variant,
             tint,
-            active,
             disabled,
             focus_handle,
             on_click,
@@ -119,11 +111,7 @@ impl RenderOnce for IconButton {
                 .as_ref()
                 .is_some_and(|handle| handle.is_focused(window));
 
-            let foreground: Hsla = if active {
-                // A persistent on-state is a colour statement, not a chip: the
-                // glyph takes the accent's text grade and the fill goes.
-                vars.color_primary.shade(700)
-            } else if chrome && state.enabled {
+            let foreground: Hsla = if chrome && state.enabled {
                 if state.hovered || state.pressed {
                     vars.color_content
                 } else {
@@ -133,9 +121,7 @@ impl RenderOnce for IconButton {
                 colors.content
             };
 
-            let surface: Hsla = if active {
-                colors::TRANSPARENT
-            } else if chrome && state.enabled {
+            let surface: Hsla = if chrome && state.enabled {
                 if state.hovered || state.pressed {
                     vars.color_surface_subtle
                 } else {

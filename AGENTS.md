@@ -635,6 +635,14 @@ every dark-theme control colour on Swift and GPUI was one step off.
   must stay out of it and read the `-normal` recipes directly — `:hover` would
   fire on it just the same, and a label that changes under the pointer reads as
   something you can press.
+- **One drawing for "on".** A selection is a tinted wash and a heavier label,
+  everywhere it appears — a sidebar row, a tree row, a pill tab, a `Tag`, a
+  `Toggle`. So a glyph button that stays down is a `Toggle` and not an
+  `IconButton`: that component acts and returns, and a second on-state living
+  there would be a second drawing for one state. A `Toggle` whose whole label
+  is a lone glyph is square at the control height, which is what lets the two
+  sit in one toolbar without a seam. A trigger that opens something is neither
+  — a disclosure is `aria-expanded` and a dialog trigger is the dialog.
 - Pick the recipe by what the part *is*, not by which colour looks right.
   `normal` is the neutral control — its hover wash is `surface-muted`, which is
   what a menu item, a table row, or a preference row wants. `plain` is the

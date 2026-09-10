@@ -1024,7 +1024,6 @@ export function App() {
               openSession={session.id}
               project={project}
               sessions={sessions}
-              settingsOpen={settingsOpen}
               tasks={tasks}
               view={view}
               onFace={setFace}

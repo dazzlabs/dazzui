@@ -48,19 +48,6 @@ enum IconButtonStories {
           }
         }
       }
-      Story("Active") { Pin() }
-      Story("Active tints") {
-        Row {
-          ForEach(Tint.allCases, id: \.self) { tint in
-            IconButton(
-              label: label(tint),
-              icon: .pin16Regular,
-              tint: tint,
-              active: true
-            ) {}
-          }
-        }
-      }
       Story("A toolbar") { Toolbar() }
       Story("In a list header") {
         Card {
@@ -76,17 +63,17 @@ enum IconButtonStories {
     }
   }
 
-  /// The on-state: an icon button that holds a decision rather than firing
-  /// one. It is the same recipe at rest and the filled one when it is on.
-  private struct Pin: View {
+  /// An icon button beside the thing that does latch, which is a ``Toggle``.
+  private struct NotALatch: View {
     @State private var pinned = true
 
     var body: some View {
       Row {
-        IconButton(label: "Pin", icon: .pin16Regular, active: pinned) {
+        IconButton(label: "Copy", icon: .copy16Regular) {}
+        Toggle(.pin16Regular, label: "Pin window", pressed: pinned) {
           pinned.toggle()
         }
-        IconButton(label: "Pin", icon: .pin16Regular, active: false) {}
+        Toggle(.pin16Regular, label: "Pinned", pressed: true) {}
       }
     }
   }
@@ -159,15 +146,17 @@ enum IconButtonStories {
         }
 
         Section(
-          "Active",
+          "It does not latch",
           description: """
-            `active` is the on-state of a button that holds a decision — a pin, \
-            a filter, a panel toggle. It takes the filled recipe, so an on \
-            button reads the way a selected row does rather than as a pressed \
-            one.
+            A glyph button that stays down is a Toggle, which is square at this \
+            same control height when its label is a lone glyph — so a latching \
+            glyph and a plain one sit in one toolbar without a seam. Keeping an \
+            on-state here as well would be a second drawing for one state, and \
+            the system draws a selection one way: a tinted wash and a heavier \
+            label.
             """
         ) {
-          Pin()
+          NotALatch()
         }
 
         Section(

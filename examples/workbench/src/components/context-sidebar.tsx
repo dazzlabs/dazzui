@@ -163,7 +163,6 @@ export interface ContextSidebarProps {
   issueFilter: string
   onIssueFilter: (filter: string) => void
   /** True while the settings sheet is over the window. */
-  settingsOpen: boolean
   onOpenView: (view: View) => void
   onOpenSession: (id: string) => void
   onNewSession: () => void
@@ -205,7 +204,6 @@ export function ContextSidebar({
   onFace,
   issueFilter,
   onIssueFilter,
-  settingsOpen,
   onOpenView,
   onOpenSession,
   onNewSession,
@@ -658,7 +656,6 @@ export function ContextSidebar({
         <span className="wb-truncate wb-foot__name">Mia Chen</span>
         <span className="wb-foot__gap" />
         <IconButton
-          active={settingsOpen}
           label="Settings · ⌘,"
           size="small"
           tint="neutral"

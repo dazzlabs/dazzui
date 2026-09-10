@@ -14,8 +14,6 @@ public struct IconButton<Content: View>: View {
   public var size: ControlSize
   public var variant: ControlVariant
   public var tint: Tint
-  /// A persistent on-state — a pin held down, a panel kept open.
-  public var active: Bool
   public var enabled: Bool
   public var action: () -> Void
   @ViewBuilder public var content: () -> Content
@@ -30,7 +28,6 @@ public struct IconButton<Content: View>: View {
     // Neutral by default: a toolbar of these should read as chrome, not as a
     // row of accented actions. Pass a tint where one button genuinely leads.
     tint: Tint = .neutral,
-    active: Bool = false,
     enabled: Bool = true,
     action: @escaping () -> Void,
     @ViewBuilder content: @escaping () -> Content
@@ -39,7 +36,6 @@ public struct IconButton<Content: View>: View {
     self.size = size
     self.variant = variant
     self.tint = tint
-    self.active = active
     self.enabled = enabled
     self.action = action
     self.content = content
@@ -76,7 +72,6 @@ public struct IconButton<Content: View>: View {
           .animation(vars.motion, value: state.controlState)
       }
       .accessibilityLabel(label)
-      .accessibilityAddTraits(active ? [.isSelected] : [])
       .focused($focused)
       .focusRing(
         visible: focused && enabled,
@@ -93,9 +88,6 @@ public struct IconButton<Content: View>: View {
   }
 
   private func foreground(colors: ControlColors, state: PressableState) -> Color {
-    // A persistent on-state is a colour statement, not a chip: the glyph
-    // takes the accent's text grade and the fill goes.
-    if active { return theme.vars.colorPrimary[700] }
     guard chrome, state.enabled else { return colors.content }
     return state.hovered || state.pressed
       ? theme.vars.colorContent
@@ -103,7 +95,6 @@ public struct IconButton<Content: View>: View {
   }
 
   private func background(colors: ControlColors, state: PressableState) -> Color {
-    if active { return .clear }
     guard chrome, state.enabled else { return colors.surface }
     return state.hovered || state.pressed ? theme.vars.colorSurfaceSubtle : .clear
   }
@@ -117,7 +108,6 @@ public extension IconButton where Content == Icon {
     size: ControlSize = .tiny,
     variant: ControlVariant = .plain,
     tint: Tint = .neutral,
-    active: Bool = false,
     enabled: Bool = true,
     action: @escaping () -> Void
   ) {
@@ -126,7 +116,6 @@ public extension IconButton where Content == Icon {
       size: size,
       variant: variant,
       tint: tint,
-      active: active,
       enabled: enabled,
       action: action,
       content: { Icon(icon, size: 16) }

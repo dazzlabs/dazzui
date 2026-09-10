@@ -45,17 +45,6 @@
   outline-offset: var(--focus-offset);
 }
 
-/*
- * A persistent on-state — a pin held down, a panel kept open. The glyph
- * takes the accent's text grade and the fill goes: "this is on" is a colour
- * statement, not a chip.
- */
-.dz-icon-button[aria-pressed='true'],
-.dz-icon-button[data-variant='plain'][data-tint='neutral'][aria-pressed='true'] {
-  background-color: transparent;
-  color: var(--color-primary-700);
-}
-
 /* The square is the profile's control height on both axes. */
 .dz-icon-button {
   width: var(--control-size);

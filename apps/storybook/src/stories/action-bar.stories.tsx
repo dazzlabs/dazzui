@@ -10,6 +10,7 @@ import {
   IconButton,
   KeyCap,
   SearchField,
+  Toggle,
 } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
@@ -140,16 +141,16 @@ export const Between: Story = {
 
 export const AsAToolbar: Story = {
   render: () => {
-    const [active, setActive] = useState(false)
+    const [filtering, setFiltering] = useState(false)
     return (
       <ActionBar>
-        <IconButton
-          active={active}
+        <Toggle
           label="Filter"
-          onClick={() => setActive(!active)}
+          pressed={filtering}
+          onPressedChange={setFiltering}
         >
           <Icon icon={Filter} size={16} />
-        </IconButton>
+        </Toggle>
         <IconButton label="Sort">
           <Icon icon={Sort} size={16} />
         </IconButton>

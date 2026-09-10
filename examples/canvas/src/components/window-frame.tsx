@@ -81,7 +81,6 @@ export function WindowFrame({
       <div className="cv-pane">
         <header className="cv-toolbar">
           <SidebarTrigger
-            active={sidebarOpen}
             label={sidebarOpen ? 'Hide the document' : 'Show the document'}
           >
             <Icon icon={PanelLeft20Regular} size={16} />

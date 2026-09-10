@@ -92,13 +92,12 @@ pub const PAGE: StoryPage = StoryPage::new(
             Menu::new("from-icon")
                 .item(MenuItem::new("Rename").icon(Icon::new(icons::RENAME_16_REGULAR)))
                 .item(MenuItem::new("Duplicate").icon(Icon::new(icons::SQUARE_MULTIPLE_16_REGULAR)))
-                .trigger(|open, _| {
+                .trigger(|_open, _| {
                     IconButton::new(
                         "from-icon-trigger",
                         "Actions",
                         Icon::new(icons::SETTINGS_16_REGULAR),
                     )
-                    .active(open)
                     .into_any_element()
                 })
                 .into_any_element()

@@ -221,7 +221,7 @@ export function ReviewView({
             >
               <header className="wb-file__head">
                 <IconButton
-                  active={shown}
+                  aria-expanded={shown}
                   className="wb-file__fold"
                   label={shown ? 'Collapse' : 'Expand'}
                   size="tiny"
