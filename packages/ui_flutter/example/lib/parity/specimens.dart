@@ -48,6 +48,13 @@ class Probe {
     // say nothing about whether there is a label, so the two sides would be
     // measuring different rows.
     'dz-meter',
+    // A skeleton's box is entirely the caller's — that is the component: a
+    // shape standing in for something whose size the page already knows.
+    'dz-skeleton',
+    // Both are runs of text inside a paragraph, so their line box is the
+    // paragraph's leading rather than anything either one declares.
+    'dz-code',
+    'dz-link',
   }.contains(className);
 
   /// An overlay whose box is the viewport's rather than its own: a scrim
@@ -69,7 +76,8 @@ class Probe {
       className == 'dz-number-field' ||
       className == 'dz-otp-field' ||
       className == 'dz-slider' ||
-      className == 'dz-meter';
+      className == 'dz-meter' ||
+      className == 'dz-skeleton';
 
   /// Where the React root is a row and the drawn box is a part inside it.
   bool get decorationIsAPart =>
@@ -352,6 +360,52 @@ Widget? build(Probe probe) {
         onChanged: probe.disabled ? null : (_) {},
         size: probe.size(WidgetSize.medium),
         tint: pick(TextFieldTint.values, data['tint']) ?? TextFieldTint.primary,
+      );
+    case 'dz-tag':
+      return Tag(
+        variant: pick(TagVariant.values, data['variant']) ?? TagVariant.tinted,
+        tint: pick(TagTint.values, data['tint']) ?? TagTint.primary,
+        size: probe.size(WidgetSize.medium),
+        // `data-selected` is only written where React made the tag
+        // pressable, which is the same thing that puts it on the state
+        // machine here.
+        selected: data.containsKey('selected')
+            ? data['selected'] == 'true'
+            : null,
+        onSelectedChanged: data.containsKey('selected') ? (_) {} : null,
+        onRemove: data['removable'] == 'true' ? noop : null,
+        enabled: !probe.disabled,
+        label: label,
+      );
+    case 'dz-toggle':
+      // A member of a run is drawn by its group — square corners inside the
+      // run, no edge of its own — so a lone toggle is the wrong thing to
+      // measure it against. React says which one it is.
+      if (data.containsKey('grouped')) return null;
+      return Toggle(
+        variant:
+            pick(ToggleVariant.values, data['variant']) ?? ToggleVariant.plain,
+        tint: pick(ToggleTint.values, data['tint']) ?? ToggleTint.neutral,
+        size: probe.size(WidgetSize.tiny),
+        pressed: data.containsKey('pressed'),
+        enabled: !probe.disabled,
+        child: label,
+      );
+    case 'dz-link':
+      return Link(
+        label: probe.text,
+        tint: pick(LinkTint.values, data['tint']) ?? LinkTint.primary,
+        underline:
+            pick(LinkUnderline.values, data['underline']) ??
+            LinkUnderline.hover,
+        enabled: !probe.disabled,
+        onPressed: noop,
+      );
+    case 'dz-code':
+      return Code(probe.text);
+    case 'dz-skeleton':
+      return Skeleton(
+        shape: pick(SkeletonShape.values, data['shape']) ?? SkeletonShape.text,
       );
     case 'dz-pill-tabs':
       return PillTabs<int>(

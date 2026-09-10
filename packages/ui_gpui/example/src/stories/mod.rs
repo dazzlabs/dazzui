@@ -7,6 +7,7 @@
 //! group is an index you look a name up in.
 
 pub mod tokens;
+pub mod tree;
 
 pub mod accordion;
 pub mod action_bar;
@@ -18,6 +19,8 @@ pub mod button;
 pub mod callout;
 pub mod card;
 pub mod checkbox;
+pub mod code;
+pub mod code_block;
 pub mod collapsible;
 pub mod combobox;
 pub mod context_menu;
@@ -30,6 +33,7 @@ pub mod form_field;
 pub mod icon;
 pub mod icon_button;
 pub mod key_cap;
+pub mod link;
 pub mod menu;
 pub mod menubar;
 pub mod meter;
@@ -50,13 +54,18 @@ pub mod segmented_control;
 pub mod select;
 pub mod shortcut_recorder;
 pub mod sidebar;
+pub mod skeleton;
 pub mod slider;
 pub mod spinner;
+pub mod splitter;
 pub mod step_list;
 pub mod switch;
 pub mod table;
+pub mod tag;
 pub mod text_field;
 pub mod toast;
+pub mod toggle;
+pub mod toggle_group;
 
 use crate::storybook::{StoryGroup, StoryRef};
 
@@ -86,6 +95,8 @@ pub const GROUPS: &[StoryGroup] = &[
             callout::PAGE,
             card::PAGE,
             checkbox::PAGE,
+            code::PAGE,
+            code_block::PAGE,
             collapsible::PAGE,
             combobox::PAGE,
             context_menu::PAGE,
@@ -98,6 +109,7 @@ pub const GROUPS: &[StoryGroup] = &[
             icon::PAGE,
             icon_button::PAGE,
             key_cap::PAGE,
+            link::PAGE,
             menu::PAGE,
             menubar::PAGE,
             meter::PAGE,
@@ -118,13 +130,19 @@ pub const GROUPS: &[StoryGroup] = &[
             select::PAGE,
             shortcut_recorder::PAGE,
             sidebar::PAGE,
+            skeleton::PAGE,
             slider::PAGE,
             spinner::PAGE,
+            splitter::PAGE,
             step_list::PAGE,
             switch::PAGE,
             table::PAGE,
+            tag::PAGE,
             text_field::PAGE,
             toast::PAGE,
+            toggle::PAGE,
+            toggle_group::PAGE,
+            tree::PAGE,
         ],
     ),
 ];

@@ -308,6 +308,67 @@ fn gallery(_window: &mut Window, cx: &mut App) -> AnyElement {
                 .flex_col()
                 .gap(vars.spacing_2)
                 .w(px(360.))
+                // The seven that landed with the Base UI coverage sweep. A
+                // component that is not on this page is a component no theme
+                // has ever drawn.
+                .child(
+                    div()
+                        .flex()
+                        .gap(vars.spacing_2)
+                        .child(Tag::new("tag-tinted", "bug"))
+                        .child(
+                            Tag::new("tag-selected", "blocked")
+                                .variant(TagVariant::Outlined)
+                                .selected(true),
+                        )
+                        .child(Tag::new("tag-removable", "needs design").on_remove(|_, _| {}))
+                        .child(Toggle::new("toggle-up", "Wrap"))
+                        .child(Toggle::new("toggle-down", "Wrap").pressed(true))
+                        .child(Link::new("link", "Base UI").external(true))
+                        .child(Code::new("pnpm parity")),
+                )
+                .child(
+                    ToggleGroup::new(
+                        "toggle-group",
+                        vec![
+                            ToggleItem::new("whitespace", "Whitespace"),
+                            ToggleItem::new("minimap", "Minimap"),
+                        ],
+                    )
+                    .value(vec![SharedString::from("whitespace")]),
+                )
+                .child(Skeleton::new().shape(SkeletonShape::Circle).width(px(40.)))
+                .child(SkeletonText::new().lines(2))
+                .child(
+                    CodeBlock::new("pnpm install\npnpm tokens")
+                        .title("install.sh")
+                        .language("bash")
+                        .line_numbers(true)
+                        .copyable(true),
+                )
+                .child(
+                    Tree::new(
+                        "tree",
+                        vec![
+                            TreeNode::branch(
+                                "src",
+                                "src",
+                                vec![TreeNode::leaf("badge", "badge.tsx").meta("M")],
+                            )
+                            .icon(icons::FOLDER_16_REGULAR),
+                            TreeNode::leaf("readme", "README.md").icon(icons::DOCUMENT_16_REGULAR),
+                        ],
+                    )
+                    .expanded(vec![SharedString::from("src")])
+                    .selected("badge"),
+                )
+                .child(div().h(px(120.)).child(Splitter::new(
+                    "splitter",
+                    vec![
+                        SplitterPanel::new(div().child("Files")).default_size(30.),
+                        SplitterPanel::new(div().child("Document")).default_size(70.),
+                    ],
+                )))
                 .child(
                     Collapsible::new("collapsible", "Environment")
                         .initially_open(true)

@@ -8,6 +8,8 @@ import '../stories/button_stories.dart';
 import '../stories/callout_stories.dart';
 import '../stories/card_stories.dart';
 import '../stories/checkbox_stories.dart';
+import '../stories/code_block_stories.dart';
+import '../stories/code_stories.dart';
 import '../stories/collapsible_stories.dart';
 import '../stories/combobox_stories.dart';
 import '../stories/context_menu_stories.dart';
@@ -19,6 +21,7 @@ import '../stories/form_field_stories.dart';
 import '../stories/form_stories.dart';
 import '../stories/icon_button_stories.dart';
 import '../stories/key_cap_stories.dart';
+import '../stories/link_stories.dart';
 import '../stories/menu_stories.dart';
 import '../stories/menubar_stories.dart';
 import '../stories/meter_stories.dart';
@@ -37,13 +40,18 @@ import '../stories/search_field_stories.dart';
 import '../stories/section_label_stories.dart';
 import '../stories/segmented_control_stories.dart';
 import '../stories/sidebar_stories.dart';
+import '../stories/skeleton_stories.dart';
 import '../stories/slider_stories.dart';
 import '../stories/spinner_stories.dart';
+import '../stories/splitter_stories.dart';
 import '../stories/step_list_stories.dart';
 import '../stories/switch_stories.dart';
 import '../stories/table_stories.dart';
+import '../stories/tag_stories.dart';
 import '../stories/text_field_stories.dart';
 import '../stories/toast_stories.dart';
+import '../stories/toggle_group_stories.dart';
+import '../stories/toggle_stories.dart';
 import '../stories/tokens/color_stories.dart';
 import '../stories/tokens/control_stories.dart';
 import '../stories/tokens/effect_stories.dart';
@@ -51,6 +59,7 @@ import '../stories/tokens/radius_stories.dart';
 import '../stories/tokens/spacing_stories.dart';
 import '../stories/tokens/theme_stories.dart';
 import '../stories/tokens/typography_stories.dart';
+import '../stories/tree_stories.dart';
 import 'story.dart';
 
 /// The registry, the way `styles/components.css` is for the React package and
@@ -84,6 +93,8 @@ class StoryIndex {
       CalloutStories.page,
       CardStories.page,
       CheckboxStories.page,
+      CodeStories.page,
+      CodeBlockStories.page,
       CollapsibleStories.page,
       ComboboxStories.page,
       ContextMenuStories.page,
@@ -97,6 +108,7 @@ class StoryIndex {
       IconButtonStories.page,
       KeyCapStories.page,
       SpinnerStories.page,
+      LinkStories.page,
       MenuStories.page,
       MenubarStories.page,
       MeterStories.page,
@@ -115,11 +127,17 @@ class StoryIndex {
       SectionLabelStories.page,
       SegmentedControlStories.page,
       SidebarStories.page,
+      SkeletonStories.page,
       SliderStories.page,
+      SplitterStories.page,
       StepListStories.page,
       SwitchStories.page,
+      TagStories.page,
       TextFieldStories.page,
       ToastStories.page,
+      ToggleStories.page,
+      ToggleGroupStories.page,
+      TreeStories.page,
     ]),
   ];
 

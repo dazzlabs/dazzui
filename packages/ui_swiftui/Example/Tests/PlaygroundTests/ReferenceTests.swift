@@ -358,6 +358,12 @@ struct Probe {
       // say nothing about whether there is a label, so the two sides would be
       // measuring different rows.
       "dz-meter",
+      // A skeleton's box is entirely the caller's — that is the component: a
+      // shape standing in for something whose size the page already knows.
+      "dz-skeleton",
+      // Both are runs of text inside a paragraph, so their line box is the
+      // paragraph's leading rather than anything either one declares.
+      "dz-code", "dz-link",
     ].contains(className)
   }
 
@@ -374,7 +380,7 @@ struct Probe {
   var isField: Bool {
     [
       "dz-text-field", "dz-search-field", "dz-select", "dz-shortcut-recorder",
-      "dz-number-field", "dz-otp-field", "dz-slider", "dz-meter",
+      "dz-number-field", "dz-otp-field", "dz-slider", "dz-meter", "dz-skeleton",
     ].contains(className)
   }
 
@@ -508,6 +514,47 @@ func build(_ probe: Probe) -> AnyView? {
         enabled: enabled,
         action: {}
       ) { Icon(Image(systemName: "star"), size: 16) })
+  case "dz-tag":
+    return AnyView(
+      Tag(
+        text,
+        size: BadgeSize(rawValue: data["size"] ?? "") ?? .medium,
+        variant: TagVariant(rawValue: data["variant"] ?? "") ?? .tinted,
+        tint: tint ?? .primary,
+        // `data-selected` is only written where React made the tag pressable,
+        // which is the same thing that puts it on the state machine here.
+        selected: data["selected"].map { $0 == "true" },
+        enabled: enabled,
+        onSelect: data["selected"] != nil ? { _ in } : nil,
+        onRemove: data["removable"] == "true" ? {} : nil
+      ))
+  case "dz-toggle":
+    // A member of a run is drawn by its group — square corners inside the run,
+    // no edge of its own — so a lone toggle is the wrong thing to measure it
+    // against. React says which one it is.
+    if probe.has("grouped") { return nil }
+    return AnyView(
+      Toggle(
+        text,
+        pressed: probe.has("pressed"),
+        size: ControlSize(rawValue: data["size"] ?? "") ?? .tiny,
+        variant: ControlVariant(rawValue: data["variant"] ?? "") ?? .plain,
+        tint: tint ?? .neutral,
+        enabled: enabled
+      ))
+  case "dz-link":
+    return AnyView(
+      Link(
+        text,
+        tint: tint ?? .primary,
+        underline: LinkUnderline(rawValue: data["underline"] ?? "") ?? .hover,
+        enabled: enabled
+      ))
+  case "dz-code":
+    return AnyView(Code(text))
+  case "dz-skeleton":
+    return AnyView(
+      Skeleton(shape: SkeletonShape(rawValue: data["shape"] ?? "") ?? .text))
   case "dz-badge":
     return AnyView(
       Badge(

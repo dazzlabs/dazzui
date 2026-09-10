@@ -35,6 +35,11 @@ pub mod icons {
     pub const CHECKMARK_12_FILLED: &str = "dazzui/icons/checkmark_12_filled.svg";
     pub const CHEVRON_DOWN_12_REGULAR: &str = "dazzui/icons/chevron_down_12_regular.svg";
     pub const CHEVRON_LEFT_16_REGULAR: &str = "dazzui/icons/chevron_left_16_regular.svg";
+    pub const ARROW_UP_RIGHT_12_REGULAR: &str = "dazzui/icons/arrow_up_right_12_regular.svg";
+    pub const CHECKMARK_16_REGULAR: &str = "dazzui/icons/checkmark_16_regular.svg";
+    pub const COPY_16_REGULAR: &str = "dazzui/icons/copy_16_regular.svg";
+    pub const DOCUMENT_16_REGULAR: &str = "dazzui/icons/document_16_regular.svg";
+    pub const FOLDER_16_REGULAR: &str = "dazzui/icons/folder_16_regular.svg";
     pub const CHEVRON_RIGHT_12_REGULAR: &str = "dazzui/icons/chevron_right_12_regular.svg";
     pub const CHEVRON_RIGHT_16_REGULAR: &str = "dazzui/icons/chevron_right_16_regular.svg";
     pub const CHEVRON_UP_12_REGULAR: &str = "dazzui/icons/chevron_up_12_regular.svg";
@@ -75,6 +80,26 @@ const FILES: &[(&str, &str)] = &[
     (
         icons::CHEVRON_LEFT_16_REGULAR,
         include_str!("../assets/icons/chevron_left_16_regular.svg"),
+    ),
+    (
+        icons::ARROW_UP_RIGHT_12_REGULAR,
+        include_str!("../assets/icons/arrow_up_right_12_regular.svg"),
+    ),
+    (
+        icons::CHECKMARK_16_REGULAR,
+        include_str!("../assets/icons/checkmark_16_regular.svg"),
+    ),
+    (
+        icons::COPY_16_REGULAR,
+        include_str!("../assets/icons/copy_16_regular.svg"),
+    ),
+    (
+        icons::DOCUMENT_16_REGULAR,
+        include_str!("../assets/icons/document_16_regular.svg"),
+    ),
+    (
+        icons::FOLDER_16_REGULAR,
+        include_str!("../assets/icons/folder_16_regular.svg"),
     ),
     (
         icons::CHEVRON_RIGHT_12_REGULAR,

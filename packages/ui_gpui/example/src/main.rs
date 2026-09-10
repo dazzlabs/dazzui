@@ -83,6 +83,16 @@ pub struct Playground {
     pub sort: SharedString,
     pub density: SharedString,
     pub disclosed: bool,
+    /// The tags a filter bar has selected, and the ones it still holds.
+    pub filters: Vec<SharedString>,
+    pub labels: Vec<SharedString>,
+    /// The runs a toggle group has down.
+    pub styles: Vec<SharedString>,
+    pub shown: Vec<SharedString>,
+    pub bold: bool,
+    /// The branches a tree has open, and the row it has selected.
+    pub tree_open: Vec<SharedString>,
+    pub tree_pick: SharedString,
 }
 
 impl Playground {
@@ -166,6 +176,16 @@ impl Playground {
             sort: "name".into(),
             density: "Compact".into(),
             disclosed: false,
+            filters: vec![SharedString::from("bug")],
+            labels: stories::tag::LABELS
+                .iter()
+                .map(|label| SharedString::from(*label))
+                .collect(),
+            styles: vec![SharedString::from("bold")],
+            shown: vec![SharedString::from("whitespace")],
+            bold: true,
+            tree_open: vec![SharedString::from("src"), SharedString::from("components")],
+            tree_pick: SharedString::from("tree.tsx"),
         }
     }
 

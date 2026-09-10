@@ -115,6 +115,14 @@ impl Probe {
             // axes say nothing about whether there is a label, so the two
             // sides would be measuring different rows.
             | "dz-meter"
+            // A skeleton's box is entirely the caller's — that is the
+            // component: a shape standing in for something whose size the page
+            // already knows.
+            | "dz-skeleton"
+            // Both are runs of text inside a paragraph, so their line box is
+            // the paragraph's leading rather than anything either declares.
+            | "dz-code"
+            | "dz-link"
         )
     }
 
@@ -138,6 +146,7 @@ impl Probe {
                 | "dz-number-field"
                 | "dz-otp-field"
                 | "dz-slider"
+                | "dz-skeleton"
                 | "dz-meter"
         )
     }
@@ -325,6 +334,74 @@ fn build(probe: &Probe, cx: &mut App) -> Option<AnyElement> {
                 button = button.tint(t);
             }
             button.into_any_element()
+        }
+        "dz-tag" => {
+            let mut tag = Tag::new(id.clone(), text).disabled(disabled);
+            if let Some(s) = sized!(probe.get("size"), BadgeSize) {
+                tag = tag.size(s);
+            }
+            tag = match probe.get("variant") {
+                Some("filled") => tag.variant(TagVariant::Filled),
+                Some("tinted") => tag.variant(TagVariant::Tinted),
+                Some("outlined") => tag.variant(TagVariant::Outlined),
+                Some("raised") => tag.variant(TagVariant::Raised),
+                _ => tag,
+            };
+            if let Some(t) = t {
+                tag = tag.tint(t);
+            }
+            // `data-selected` is only written where React made the tag
+            // pressable, which is the same thing that puts it on the state
+            // machine here.
+            if let Some(selected) = probe.get("selected") {
+                tag = tag.selected(selected == "true");
+            }
+            if probe.get("removable") == Some("true") {
+                tag = tag.on_remove(|_, _| {});
+            }
+            tag.into_any_element()
+        }
+        "dz-toggle" => {
+            // A member of a run is drawn by its group — square corners inside
+            // the run, no edge of its own — so a lone toggle is the wrong thing
+            // to measure it against. React says which one it is.
+            if probe.has("grouped") {
+                return None;
+            }
+            let mut toggle = Toggle::new(id.clone(), text)
+                .disabled(disabled)
+                .pressed(probe.has("pressed"));
+            if let Some(v) = variant(probe.get("variant")) {
+                toggle = toggle.variant(v);
+            }
+            if let Some(s) = control_size(probe.get("size")) {
+                toggle = toggle.size(s);
+            }
+            if let Some(t) = t {
+                toggle = toggle.tint(t);
+            }
+            toggle.into_any_element()
+        }
+        "dz-link" => {
+            let mut link = Link::new(id.clone(), text).disabled(disabled);
+            link = match probe.get("underline") {
+                Some("always") => link.underline(LinkUnderline::Always),
+                Some("none") => link.underline(LinkUnderline::None),
+                _ => link,
+            };
+            if let Some(t) = t {
+                link = link.tint(t);
+            }
+            link.into_any_element()
+        }
+        "dz-code" => Code::new(text).into_any_element(),
+        "dz-skeleton" => {
+            let shape = match probe.get("shape") {
+                Some("circle") => SkeletonShape::Circle,
+                Some("rect") => SkeletonShape::Rect,
+                _ => SkeletonShape::Text,
+            };
+            Skeleton::new().shape(shape).into_any_element()
         }
         "dz-badge" => {
             let mut badge = Badge::new(text);
