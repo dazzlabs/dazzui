@@ -1,0 +1,44 @@
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+
+namespace DazzUI;
+
+/// <summary>A non-interactive label drawn with a resting tint recipe.</summary>
+public sealed class Badge : Surface
+{
+    public Badge(string text, Theme? theme = null, WidgetTint tint = WidgetTint.Primary)
+    {
+        if (theme is not null) Theme = theme;
+        theme ??= Theme.Default;
+        Tint = tint;
+        Background = theme.Recipe(ControlVariant.Tinted, tint, "surface");
+        CornerRadius = new CornerRadius(theme.Number("radius.tiny"));
+        BorderThickness = new Thickness(theme.Number("stroke.hairline"));
+        Padding = new Thickness(theme.Number("spacing.2"), theme.Number("spacing.0.5"),
+            theme.Number("spacing.2"), theme.Number("spacing.0.5"));
+        var label = theme.Text(text, "labelSmall");
+        label.Foreground = theme.Recipe(ControlVariant.Tinted, tint, "content");
+        Content = label;
+        IsTabStop = false;
+        HorizontalAlignment = HorizontalAlignment.Left;
+    }
+    public Badge() { HorizontalAlignment = HorizontalAlignment.Left; }
+    public static readonly DependencyProperty VariantProperty = DependencyProperty.Register(nameof(Variant), typeof(BadgeVariant), typeof(Badge), new PropertyMetadata(BadgeVariant.Tinted, (sender, _) => Appearance.Refresh(sender)));
+    public BadgeVariant Variant { get => (BadgeVariant)GetValue(VariantProperty); set => SetValue(VariantProperty, value); }
+    protected override void RefreshAppearance()
+    {
+        base.RefreshAppearance();
+        var recipe = Variant == BadgeVariant.Filled ? ControlVariant.Filled : Variant == BadgeVariant.Outlined ? ControlVariant.Outlined : ControlVariant.Tinted;
+        Background = Variant == BadgeVariant.Raised ? Theme.Brush("color.surface") : Theme.Recipe(recipe, Tint, "surface");
+        Foreground = Variant == BadgeVariant.Raised ? Theme.Brush("color.content-muted") : Theme.Recipe(recipe, Tint, "content");
+        BorderBrush = Theme.Recipe(recipe, Tint, "border");
+        CornerRadius = new CornerRadius(Theme.Number("radius.tiny"));
+        BorderThickness = new Thickness(Theme.Number("stroke.hairline"));
+        var block = Theme.Number(Size == ControlSize.Large ? "spacing.1" : "spacing.0.5");
+        var inline = Theme.Number(Size is ControlSize.Small or ControlSize.Tiny ? "spacing.1.5" : "spacing.2");
+        Padding = new Thickness(inline, block, inline, block);
+        Theme.Typography(this, Size == ControlSize.Large ? "labelMedium" : "labelSmall");
+        if (Content is TextBlock text) text.Foreground = Foreground;
+    }
+}
+public enum BadgeVariant { Tinted, Filled, Outlined, Raised }

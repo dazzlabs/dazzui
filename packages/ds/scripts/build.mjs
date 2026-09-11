@@ -22,6 +22,11 @@ import { expandRecipes } from './recipes.mjs'
  */
 const TARGETS = [
   {
+    package: 'DazzUI (WinUI 3)',
+    dir: path.join('..', 'ui_winui3', 'src', 'DazzUI', 'Generated'),
+    files: ['winui3/tokens.json'],
+  },
+  {
     package: '@dazzlabs/dazzui-react',
     dir: path.join('..', 'ui_react', 'src', 'generated'),
     files: ['style.css', 'control.css'],

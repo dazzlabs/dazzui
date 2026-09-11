@@ -5,6 +5,7 @@ import controlPlugin from './plugins/control.mjs'
 import flutterPlugin from './plugins/flutter.mjs'
 import gpuiPlugin from './plugins/gpui.mjs'
 import swiftUIPlugin from './plugins/swiftui.mjs'
+import winUI3Plugin from './plugins/winui3.mjs'
 
 /**
  * The twelve themes, as six families over one default.
@@ -172,6 +173,7 @@ export default defineConfig({
     flutterPlugin({ modeSelectors }),
     swiftUIPlugin({ modeSelectors }),
     gpuiPlugin({ modeSelectors }),
+    winUI3Plugin({ modeSelectors }),
   ],
   outDir: './dist/',
   lint: {

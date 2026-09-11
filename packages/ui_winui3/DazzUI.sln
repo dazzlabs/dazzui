@@ -1,0 +1,43 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "example\Playground.csproj", "{61D5B044-031A-4F60-86F8-11B691BAD141}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DazzUI", "src\DazzUI\DazzUI.csproj", "{A8145436-CC2D-4828-9E96-D61EB9F5FB82}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|ARM64 = Debug|ARM64
+		Release|x64 = Release|x64
+		Release|ARM64 = Release|ARM64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A8145436-CC2D-4828-9E96-D61EB9F5FB82}.Debug|x64.ActiveCfg = Debug|x64
+		{A8145436-CC2D-4828-9E96-D61EB9F5FB82}.Debug|x64.Build.0 = Debug|x64
+		{A8145436-CC2D-4828-9E96-D61EB9F5FB82}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{A8145436-CC2D-4828-9E96-D61EB9F5FB82}.Debug|ARM64.Build.0 = Debug|ARM64
+		{A8145436-CC2D-4828-9E96-D61EB9F5FB82}.Release|x64.ActiveCfg = Release|x64
+		{A8145436-CC2D-4828-9E96-D61EB9F5FB82}.Release|x64.Build.0 = Release|x64
+		{A8145436-CC2D-4828-9E96-D61EB9F5FB82}.Release|ARM64.ActiveCfg = Release|ARM64
+		{A8145436-CC2D-4828-9E96-D61EB9F5FB82}.Release|ARM64.Build.0 = Release|ARM64
+		{61D5B044-031A-4F60-86F8-11B691BAD141}.Debug|x64.ActiveCfg = Debug|x64
+		{61D5B044-031A-4F60-86F8-11B691BAD141}.Debug|x64.Build.0 = Debug|x64
+		{61D5B044-031A-4F60-86F8-11B691BAD141}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{61D5B044-031A-4F60-86F8-11B691BAD141}.Debug|ARM64.Build.0 = Debug|ARM64
+		{61D5B044-031A-4F60-86F8-11B691BAD141}.Release|x64.ActiveCfg = Release|x64
+		{61D5B044-031A-4F60-86F8-11B691BAD141}.Release|x64.Build.0 = Release|x64
+		{61D5B044-031A-4F60-86F8-11B691BAD141}.Release|ARM64.ActiveCfg = Release|ARM64
+		{61D5B044-031A-4F60-86F8-11B691BAD141}.Release|ARM64.Build.0 = Release|ARM64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A8145436-CC2D-4828-9E96-D61EB9F5FB82} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+	EndGlobalSection
+EndGlobal

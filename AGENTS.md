@@ -47,6 +47,17 @@ The DazzUI design system, as a pnpm workspace:
   be a `static` a component borrows rather than a value it rebuilds.
   `example/` holds the playground (`cargo run -p dazzui_playground`), a
   workspace member so the two share one `target/`.
+- `packages/ui_winui3` (`DazzUI`) — the WinUI 3 implementation, in C#.
+  Invisible to pnpm's workspace graph; `pnpm winui3` builds and opens the
+  unpackaged, self-contained Windows playground. `pnpm winui3:test` runs
+  real-window smoke tests. `src/DazzUI/Generated/tokens.json` is emitted
+  by `ds/plugins/winui3.mjs`, distributed by the token build, embedded in the
+  library and committed. Controls delegate behavior to native WinUI and draw
+  the shared recipes through `Themes/Generic.xaml`. The playground includes
+  the native component catalog and token pages, with story names synchronized
+  by `scripts/sync-stories.mjs`. It is not yet part of the React pixel/reference
+  parity suites; its own smoke suite renders every story in all twelve themes.
+  See its README for the current scope and standalone .NET commands.
 - `apps/storybook` (`@dazzlabs/dazzui-storybook`) — a Storybook gallery that
   documents both: `Tokens/*` for the token graph, `Components/*` for the
   components.

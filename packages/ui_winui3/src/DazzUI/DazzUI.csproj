@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>DazzUI</AssemblyName>
+    <RootNamespace>DazzUI</RootNamespace>
+    <Description>DazzUI design system for WinUI 3.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Generated/tokens.json" />
+    <EmbeddedResource Include="Assets/icon-paths.json" />
+  </ItemGroup>
+</Project>

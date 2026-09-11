@@ -11,6 +11,7 @@ put them to work.
 | `packages/ds`        | `@dazzlabs/dazzui-ds`           | The design system itself: tokens built with [Terrazzo](https://terrazzo.app/). A generator, not a dependency.    |
 | `packages/ui_react`  | `@dazzlabs/dazzui-react`     | The React implementation. Plain CSS over the tokens — no Tailwind, no icon set.                                  |
 | `packages/ui_gpui`   | `dazzui`               | The [GPUI](https://gpui.rs) implementation, in Rust, with a playground beside it.                                |
+| `packages/ui_winui3` | `DazzUI` | The WinUI 3 implementation, generated themes and native Windows playground. See its [README](packages/ui_winui3/README.md). |
 | `apps/storybook`     | `@dazzlabs/dazzui-storybook` | A gallery of both: every token, and every component with the tokens it is drawn from.                            |
 | `examples/workbench` | `@dazzlabs/dazzui-example-workbench` | A Git-rooted agent workbench — project tabs, nine pages, a cross-project task queue — built entirely out of the React components. |
 | `examples/canvas`    | `@dazzlabs/dazzui-example-canvas` | A design canvas, where the drawing itself is painted out of the tint recipes. |
@@ -80,6 +81,16 @@ cargo run -p dazzui_playground
 ```
 
 from `packages/ui_gpui`.
+
+The WinUI 3 playground runs on Windows with the .NET 8 SDK or later:
+
+```powershell
+pnpm winui3
+```
+
+`pnpm winui3:build` builds it, and `pnpm winui3:test` runs the real-window
+smoke tests. It can also build without pnpm; see
+[`packages/ui_winui3`](packages/ui_winui3/README.md).
 
 ## Scripts
 
