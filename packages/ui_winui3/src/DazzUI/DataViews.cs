@@ -37,6 +37,7 @@ public sealed class Tree : Surface
     {
         View.Foreground = Theme.Brush("color.content");
         View.Background = null;
+        View.Resources["ControlCornerRadius"] = new CornerRadius(Math.Min(Theme.Number("radius.small"), Theme.Number($"control.{Theme.Key(Size)}.size") / 2));
         Theme.Typography(View, "bodySmall");
         itemFontSize = View.FontSize;
         View.Resources["TreeViewItemMinHeight"] = Theme.Number($"control.{Theme.Key(Size)}.size");

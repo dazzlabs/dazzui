@@ -72,6 +72,34 @@ public sealed class ThemeScope : Surface
 
 internal static class Skin
 {
+    private sealed class CornerState(Control control)
+    {
+        internal double Requested;
+        internal void Update()
+        {
+            var width = control.ActualWidth;
+            var height = control.ActualHeight;
+            if (width <= 0 || height <= 0) return;
+            var radius = new CornerRadius(Math.Min(Requested, Math.Min(width, height) / 2));
+            if (control.CornerRadius != radius) control.CornerRadius = radius;
+        }
+    }
+    private static readonly ConditionalWeakTable<Control, CornerState> Corners = new();
+    // WinUI stretches oversized corner radii into ellipses. Resolve the shared
+    // full-radius token against the actual box, including later resizes.
+    internal static void SetCorner(Control control, double radius)
+    {
+        if (!Corners.TryGetValue(control, out var state))
+        {
+            state = new CornerState(control);
+            Corners.Add(control, state);
+            control.SizeChanged += (_, _) => state.Update();
+        }
+        state.Requested = radius;
+        if (control.ActualWidth > 0 && control.ActualHeight > 0) state.Update();
+        else control.CornerRadius = new CornerRadius(radius);
+    }
+    internal static void RoundCorners(Control control) => SetCorner(control, control.CornerRadius.TopLeft);
     public static string SizeKey(ControlSize size) => Theme.Key(size == ControlSize.Tiny ? ControlSize.Small : size);
     public static void Control(Control control, Theme theme, ControlSize size)
     {
@@ -80,7 +108,7 @@ internal static class Skin
         control.MinWidth = 0;
         control.Padding = new Thickness(theme.Number(prefix + ".padding.inline"), 0,
             theme.Number(prefix + ".padding.inline"), 0);
-        control.CornerRadius = new CornerRadius(theme.Number(prefix + ".radius"));
+        SetCorner(control, theme.Number(prefix + ".radius"));
         theme.Typography(control, prefix + ".content");
         control.Foreground = theme.Brush("color.content");
         Focus(control, theme);
@@ -96,7 +124,7 @@ internal static class Skin
     public static void Input(Control control, Theme theme, ControlSize size, bool invalid = false)
     {
         Control(control, theme, size);
-        control.CornerRadius = new CornerRadius(theme.Number("radius.medium"));
+        SetCorner(control, theme.Number("radius.medium"));
         control.BorderThickness = new Thickness(theme.Number("stroke.hairline"));
         control.BorderBrush = invalid ? theme.Recipe(ControlVariant.Outlined, WidgetTint.Danger, "border") : theme.Brush("color.border-strong");
         control.Background = theme.Brush(control.IsEnabled ? "color.surface-muted" : "color.surface-sunken");

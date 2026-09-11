@@ -13,7 +13,7 @@ public class Card : Surface
         Background = theme.Brush("color.surface-muted");
         BorderBrush = theme.Brush("color.border");
         BorderThickness = new Thickness(theme.Number("stroke.hairline"));
-        CornerRadius = new CornerRadius(theme.Number("radius.large"));
+        Skin.SetCorner(this, theme.Number("radius.large"));
         Padding = new Thickness(theme.Number("spacing.4"));
         Content = content;
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
@@ -34,7 +34,7 @@ public class Card : Surface
         };
         BorderBrush = Variant == CardVariant.Tinted ? Theme.Alpha($"color.{Theme.Key(Tint)}.{Theme.Number("focus.ring.shade")}", Theme.Number("wash.edge")) : Theme.Brush("color.border");
         BorderThickness = new Thickness(Theme.Number("stroke.hairline"));
-        CornerRadius = new CornerRadius(Theme.Number("radius.large"));
+        Skin.SetCorner(this, Theme.Number("radius.large"));
         var block = Theme.Number(Size == ControlSize.Large ? "spacing.4" : "spacing.3");
         var inline = Theme.Number(Size == ControlSize.Large ? "spacing.4" : Size == ControlSize.Medium ? "spacing.3.5" : "spacing.3");
         Padding = new Thickness(inline, block, inline, block);

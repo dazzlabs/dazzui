@@ -12,7 +12,7 @@ public sealed class Badge : Surface
         theme ??= Theme.Default;
         Tint = tint;
         Background = theme.Recipe(ControlVariant.Tinted, tint, "surface");
-        CornerRadius = new CornerRadius(theme.Number("radius.tiny"));
+        Skin.SetCorner(this, theme.Number("radius.tiny"));
         BorderThickness = new Thickness(theme.Number("stroke.hairline"));
         Padding = new Thickness(theme.Number("spacing.2"), theme.Number("spacing.0.5"),
             theme.Number("spacing.2"), theme.Number("spacing.0.5"));
@@ -32,7 +32,7 @@ public sealed class Badge : Surface
         Background = Variant == BadgeVariant.Raised ? Theme.Brush("color.surface") : Theme.Recipe(recipe, Tint, "surface");
         Foreground = Variant == BadgeVariant.Raised ? Theme.Brush("color.content-muted") : Theme.Recipe(recipe, Tint, "content");
         BorderBrush = Theme.Recipe(recipe, Tint, "border");
-        CornerRadius = new CornerRadius(Theme.Number("radius.tiny"));
+        Skin.SetCorner(this, Theme.Number("radius.tiny"));
         BorderThickness = new Thickness(Theme.Number("stroke.hairline"));
         var block = Theme.Number(Size == ControlSize.Large ? "spacing.1" : "spacing.0.5");
         var inline = Theme.Number(Size is ControlSize.Small or ControlSize.Tiny ? "spacing.1.5" : "spacing.2");

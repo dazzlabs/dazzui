@@ -1,6 +1,34 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import winUI3Plugin from './winui3.mjs'
+import { parse } from '@terrazzo/parser'
+import config from '../terrazzo.config.mjs'
+
+test('preserves semantic radius modes through real Terrazzo alias flattening', async () => {
+  const { tokens } = await parse(
+    [
+      {
+        src: {
+          base: { $type: 'dimension', corner: { $value: '8px' } },
+          radius: {
+            $type: 'dimension',
+            small: {
+              $value: '{base.corner}',
+              $extensions: { mode: { bright: '9999px' } },
+            },
+          },
+          control: { $type: 'dimension', radius: { $value: '{radius.small}' } },
+        },
+      },
+    ],
+    { config }
+  )
+  const themes = generate(tokens, [
+    { mode: 'bright', selectors: ["[data-theme='bright-light']"] },
+  ])
+  assert.equal(themes['studio-light']['control.radius'].value, 8)
+  assert.equal(themes['bright-light']['control.radius'].value, 9999)
+})
 
 function generate(tokens, modeSelectors = []) {
   let result
@@ -26,7 +54,10 @@ test('theme aliases follow the last applicable mode, including referenced roles'
           corner: { $value: { value: 5, unit: 'px' } },
         },
       },
-      'control.small.radius': { aliasOf: 'radius.small' },
+      'control.small.radius': {
+        aliasOf: 'base.size',
+        aliasChain: ['radius.small', 'base.size'],
+      },
     },
     ['family', 'dark', 'corner'].map(mode => ({
       mode,

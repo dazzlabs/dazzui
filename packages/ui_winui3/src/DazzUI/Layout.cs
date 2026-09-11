@@ -41,7 +41,7 @@ public class Collapsible : Surface
         Expander.Foreground = Theme.Brush("color.content");
         Expander.BorderBrush = Theme.Brush("color.border");
         Expander.BorderThickness = new Thickness(Theme.Number("stroke.hairline"));
-        Expander.CornerRadius = new CornerRadius(Theme.Number("radius.medium"));
+        Skin.SetCorner(Expander, Theme.Number("radius.medium"));
     }
 }
 public sealed class AccordionItem : Collapsible { }

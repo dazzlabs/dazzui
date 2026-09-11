@@ -24,6 +24,7 @@ public class Button : Microsoft.UI.Xaml.Controls.Button
     {
         DefaultStyleKey = typeof(Button);
         Appearance.Bind(this, ApplyTheme);
+        RegisterPropertyChangedCallback(ContentProperty, (_, _) => AlignLabel());
         ApplyTheme();
     }
 
@@ -35,6 +36,17 @@ public class Button : Microsoft.UI.Xaml.Controls.Button
         // Resolve its inherited theme before the template reads state resources.
         ApplyTheme();
         base.OnApplyTemplate();
+        AlignLabel();
+    }
+
+    private void AlignLabel()
+    {
+        // Center a single-line label on the font's cap height and baseline,
+        // excluding asymmetric font leading. Keep full line spacing for prose
+        // and leave consumer-provided visual content in charge of its layout.
+        if (GetTemplateChild("Presenter") is Microsoft.UI.Xaml.Controls.ContentPresenter presenter)
+            presenter.TextLineBounds = Content is string text && !text.Contains('\n') && !text.Contains('\r')
+                ? TextLineBounds.Tight : TextLineBounds.Full;
     }
 
     private void ApplyTheme()
@@ -45,7 +57,7 @@ public class Button : Microsoft.UI.Xaml.Controls.Button
         MinWidth = 0;
         Padding = new Thickness(Theme.Number(profile + ".padding.inline"), 0,
             Theme.Number(profile + ".padding.inline"), 0);
-        CornerRadius = new CornerRadius(Theme.Number(profile + ".radius"));
+        Skin.SetCorner(this, Theme.Number(profile + ".radius"));
         BorderThickness = new Thickness(Theme.Number("stroke.control"));
         Theme.Typography(this, profile + ".content");
         foreach (var (state, suffix) in new[] { ("normal", ""), ("hovered", "PointerOver"), ("pressed", "Pressed"), ("disabled", "Disabled") })

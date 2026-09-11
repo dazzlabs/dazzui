@@ -21,7 +21,7 @@ public class Menu
         style.Setters.Add(new Setter(Control.BackgroundProperty, theme.Brush("color.surface-overlay")));
         style.Setters.Add(new Setter(Control.ForegroundProperty, theme.Brush("color.content")));
         style.Setters.Add(new Setter(Control.BorderBrushProperty, theme.Brush("color.border-strong")));
-        style.Setters.Add(new Setter(Control.CornerRadiusProperty, new CornerRadius(theme.Number("frame.popover.radius"))));
+        style.Setters.Add(new Setter(Control.CornerRadiusProperty, new CornerRadius(theme.Number("radius.large"))));
         style.Setters.Add(new Setter(FrameworkElement.MinWidthProperty, theme.Number("menu.min-width")));
         Flyout.MenuFlyoutPresenterStyle = style;
     }
@@ -30,16 +30,19 @@ public class Menu
         if (item.Separator) return new MenuFlyoutSeparator();
         if (item.Children is not null)
         {
-            var parent = new MenuFlyoutSubItem { Text = item.Label, IsEnabled = !item.Disabled };
+            var parent = new MenuFlyoutSubItem { CornerRadius = new CornerRadius(theme.Number("radius.small")), Text = item.Label, IsEnabled = !item.Disabled };
+            Skin.RoundCorners(parent);
             foreach (var child in item.Children) parent.Items.Add(BuildItem(child, theme));
             return parent;
         }
         if (item.Checked is bool check)
         {
-            var toggle = new ToggleMenuFlyoutItem { Text = item.Label, IsChecked = check, IsEnabled = !item.Disabled };
+            var toggle = new ToggleMenuFlyoutItem { CornerRadius = new CornerRadius(theme.Number("radius.small")), Text = item.Label, IsChecked = check, IsEnabled = !item.Disabled };
+            Skin.RoundCorners(toggle);
             toggle.Click += (_, _) => item.Action?.Invoke(); return toggle;
         }
-        var result = new MenuFlyoutItem { Text = item.Label, IsEnabled = !item.Disabled, KeyboardAcceleratorTextOverride = item.Shortcut ?? "", Foreground = theme.Brush("color.content") };
+        var result = new MenuFlyoutItem { CornerRadius = new CornerRadius(theme.Number("radius.small")), Text = item.Label, IsEnabled = !item.Disabled, KeyboardAcceleratorTextOverride = item.Shortcut ?? "", Foreground = theme.Brush("color.content") };
+        Skin.RoundCorners(result);
         result.Click += (_, _) => item.Action?.Invoke(); return result;
     }
 }
@@ -75,7 +78,7 @@ public class Popover
         style.Setters.Add(new Setter(Control.BackgroundProperty, theme.Brush("color.surface-overlay")));
         style.Setters.Add(new Setter(Control.ForegroundProperty, theme.Brush("color.content")));
         style.Setters.Add(new Setter(Control.BorderBrushProperty, theme.Brush("color.border-strong")));
-        style.Setters.Add(new Setter(Control.CornerRadiusProperty, new CornerRadius(theme.Number("frame.popover.radius"))));
+        style.Setters.Add(new Setter(Control.CornerRadiusProperty, new CornerRadius(theme.Number("radius.large"))));
         Flyout.FlyoutPresenterStyle = style;
         if (Content is not null) Appearance.SetTheme(Content, theme);
         Flyout.ShowAt(anchor);
@@ -99,7 +102,9 @@ public static class Tooltip
     public static void Set(DependencyObject target, string text, PlacementMode placement = PlacementMode.Top)
     {
         var theme = Appearance.GetTheme(target);
-        ToolTipService.SetToolTip(target, new ToolTip { Content = text, Placement = placement, Background = theme.Brush("color.surface-overlay"), Foreground = theme.Brush("color.content"), CornerRadius = new CornerRadius(theme.Number("frame.popover.radius")) });
+        var tooltip = new ToolTip { Content = text, Placement = placement, Background = theme.Brush("color.surface-overlay"), Foreground = theme.Brush("color.content"), CornerRadius = new CornerRadius(theme.Number("radius.small")) };
+        Skin.RoundCorners(tooltip);
+        ToolTipService.SetToolTip(target, tooltip);
     }
 }
 public class Dialog
@@ -165,7 +170,7 @@ public class Dialog
         Native.Resources["ContentDialogBorderBrush"] = theme.Brush("color.border-strong");
         Native.Resources["ContentDialogSmokeFill"] = theme.Alpha("dialog.scrim.color", theme.Number("dialog.scrim.alpha"));
         Native.Resources["ContentDialogPadding"] = new Thickness(theme.Number("spacing.6"));
-        Native.Resources["ContentDialogCornerRadius"] = new CornerRadius(theme.Number("frame.popover.radius"));
+        Native.Resources["ContentDialogCornerRadius"] = new CornerRadius(theme.Number("frame.window.radius"));
         Native.Resources["AccentButtonBackground"] = theme.Recipe(ControlVariant.Filled, Danger ? WidgetTint.Danger : WidgetTint.Primary, "surface");
         if (Content is not null) Appearance.SetTheme(Content, theme);
         return await Native.ShowAsync();

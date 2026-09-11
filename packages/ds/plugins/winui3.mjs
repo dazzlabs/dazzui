@@ -23,7 +23,10 @@ export default function winUI3Plugin({ modeSelectors = [] } = {}) {
             if (token.mode?.[mode]) picked = token.mode[mode]
           }
           const next = new Set([...seen, id])
-          if (picked.aliasOf) return resolve(picked.aliasOf, next)
+          // Terrazzo's aliasOf is the final primitive, not the authored edge.
+          // Follow the first hop so intermediate semantic roles keep their modes.
+          const alias = picked.aliasChain?.[0] ?? picked.aliasOf
+          if (alias) return resolve(alias, next)
           const expand = value => {
             if (typeof value === 'string') {
               const ref = /^\{(.+)\}$/.exec(value)

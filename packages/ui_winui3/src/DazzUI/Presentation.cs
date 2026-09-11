@@ -37,7 +37,7 @@ public sealed class Avatar : Surface
     protected override void RefreshAppearance()
     {
         Width = Height = Theme.Number($"control.{Theme.Key(Size)}.size") + Theme.Number("spacing.2");
-        CornerRadius = new CornerRadius(Theme.Number(Shape == AvatarShape.Circle ? "radius.full" : "radius.medium"));
+        Skin.SetCorner(this, Theme.Number(Shape == AvatarShape.Circle ? "radius.full" : "radius.medium"));
         Background = Theme.Recipe(ControlVariant.Tinted, Tint, "surface");
         Foreground = Theme.Recipe(ControlVariant.Tinted, Tint, "content");
         HorizontalContentAlignment = HorizontalAlignment.Center;
@@ -73,7 +73,7 @@ public sealed class KeyCap : Surface
         Background = Raised ? Theme.Brush("color.surface-inset") : null;
         Foreground = Theme.Brush(Variant == KeyCapVariant.Hint ? "color.content-faint" : Variant == KeyCapVariant.Strong ? "color.content-subtle" : "color.content");
         BorderThickness = new Thickness(0);
-        CornerRadius = new CornerRadius(Theme.Number("radius.tiny"));
+        Skin.SetCorner(this, Theme.Number("radius.tiny"));
         Theme.Typography(this, Size == ControlSize.Large ? "labelMedium" : "labelSmall");
         Height = Raised ? Theme.Number("spacing.5") + Theme.Number("spacing.0.5") : double.NaN;
         VerticalContentAlignment = VerticalAlignment.Center;
@@ -87,7 +87,7 @@ public sealed class Code : Surface
     {
         base.RefreshAppearance();
         Background = Theme.Brush("color.surface-sunken");
-        CornerRadius = new CornerRadius(Theme.Number("radius.tiny"));
+        Skin.SetCorner(this, Theme.Number("radius.tiny"));
         Padding = new Thickness(Theme.Number("spacing.1"), Theme.Number("spacing.0.5"), Theme.Number("spacing.1"), Theme.Number("spacing.0.5"));
         Theme.Typography(this, "bodySmall");
         FontFamily = new FontFamily("Cascadia Mono, Consolas"); // Windows monospace fallback.
@@ -157,7 +157,7 @@ public sealed class Callout : Surface
         foreach (var text in body.Children.OfType<TextBlock>()) text.Foreground = Foreground;
         BorderBrush = Theme.Alpha($"color.{Theme.Key(Tint)}.{Theme.Number("focus.ring.shade")}", Theme.Number("wash.edge"));
         BorderThickness = new Thickness(Theme.Number("stroke.hairline"));
-        CornerRadius = new CornerRadius(Theme.Number("radius.medium"));
+        Skin.SetCorner(this, Theme.Number(Size == ControlSize.Small ? "radius.medium" : "radius.large"));
         Padding = new Thickness(Theme.Number(Size == ControlSize.Small ? "spacing.3" : "spacing.4"));
     }
 }

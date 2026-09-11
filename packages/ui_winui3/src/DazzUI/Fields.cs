@@ -30,6 +30,7 @@ public class TextField : TextBox
         // platform font metrics rather than assuming a CSS line box or a fixed
         // Windows font height; the same padding also positions the placeholder.
         Skin.InputPadding(this, Theme, Size, AcceptsReturn);
+        if (AcceptsReturn) Skin.SetCorner(this, Theme.Number("radius.large"));
     }
 }
 public sealed class FieldValue : TextField

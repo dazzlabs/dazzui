@@ -72,6 +72,7 @@ internal static class SmokeTest
             }
 
             await BehaviorTests.RunAsync(shell, output);
+            await CornerTests.RunAsync(shell, output);
             shell.Show("studio-light", PlaygroundShell.Find("Button", "Normal"));
             await Task.Delay(50);
             var counter = Descendants(shell.CurrentSpecimen!).OfType<Button>().Single();

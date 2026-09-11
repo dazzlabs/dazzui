@@ -56,7 +56,7 @@ public sealed class RangeSlider : Surface
         groove.Background = Theme.Brush("color.surface-sunken");
         selection.Background = Theme.Recipe(ControlVariant.Filled, Tint, "surface", IsEnabled ? "normal" : "disabled");
         groove.Height = selection.Height = Theme.Number($"slider.{Skin.SizeKey(Size)}.track");
-        groove.CornerRadius = selection.CornerRadius = new CornerRadius(Theme.Number("radius.full"));
+        groove.CornerRadius = selection.CornerRadius = new CornerRadius(groove.Height / 2);
         ArrangeTrack();
     }
     private void ArrangeTrack()

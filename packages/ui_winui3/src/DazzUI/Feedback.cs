@@ -29,7 +29,7 @@ public class Progress : Surface
             };
         Indicator.Background = Theme.Brush("color.surface-sunken");
         Height = Indicator.Height = Theme.Number(Size == ControlSize.Small ? "spacing.1" : Size == ControlSize.Large ? "spacing.2" : "spacing.1.5");
-        Indicator.MinHeight = 0; Indicator.CornerRadius = new CornerRadius(Theme.Number("radius.full"));
+        Indicator.MinHeight = 0; Skin.SetCorner(Indicator, Theme.Number("radius.full"));
     }
 }
 public sealed class Meter : Progress
@@ -58,7 +58,7 @@ public class Skeleton : Surface
     protected override void RefreshAppearance()
     {
         Background = Theme.Brush("color.surface-sunken");
-        CornerRadius = new CornerRadius(Theme.Number(Shape == SkeletonShape.Circle ? "radius.full" : "radius.small"));
+        Skin.SetCorner(this, Theme.Number(Shape == SkeletonShape.Circle ? "radius.full" : Shape == SkeletonShape.Text ? "radius.tiny" : "radius.small"));
         if (double.IsNaN(Height)) Height = Theme.Number(Shape == SkeletonShape.Text ? "spacing.3" : "spacing.8");
         if (Shape == SkeletonShape.Circle && double.IsNaN(Width)) Width = Height;
     }

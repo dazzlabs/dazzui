@@ -142,7 +142,7 @@ public sealed class Switch : Toggle
         Width = Theme.Number($"switch.{Skin.SizeKey(Size)}.width");
         Height = Theme.Number($"switch.{Skin.SizeKey(Size)}.height");
         MinWidth = MinHeight = 0; Padding = new Thickness(Theme.Number("spacing.0.5"));
-        CornerRadius = new CornerRadius(Theme.Number("radius.full"));
+        Skin.SetCorner(this, Theme.Number("radius.full"));
         Background = IsChecked == true ? Theme.Recipe(ControlVariant.Filled, Tint, "surface", RecipeState) : Theme.Brush("color.surface-sunken");
         if (GetTemplateChild("Thumb") is Border thumb)
         {
@@ -191,6 +191,14 @@ public class SegmentedControl : ListBox
     {
         ItemsPanel = (ItemsPanelTemplate)Microsoft.UI.Xaml.Markup.XamlReader.Load("<ItemsPanelTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'><StackPanel Orientation='Horizontal'/></ItemsPanelTemplate>");
         Appearance.Bind(this, Apply); SelectionChanged += (_, _) => Apply();
+        RegisterPropertyChangedCallback(CornerRadiusProperty, (_, _) => { if (GetTemplateChild("LayoutRoot") is Border border) border.CornerRadius = CornerRadius; });
+    }
+    protected override void OnApplyTemplate()
+    {
+        base.OnApplyTemplate();
+        // WinUI's ListBox template omits CornerRadius on its background border.
+        if (GetTemplateChild("LayoutRoot") is Border border)
+            border.CornerRadius = CornerRadius;
     }
     protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
     {
@@ -215,7 +223,8 @@ public class SegmentedControl : ListBox
         Skin.Control(item, Theme, Size);
         var selected = item.IsSelected;
         var pill = this is PillTabs;
-        if (pill) item.CornerRadius = new CornerRadius(Theme.Number("radius.full"));
+        if (pill) Skin.SetCorner(item, Theme.Number("radius.full"));
+        else Skin.SetCorner(item, Math.Max(0, Theme.Number($"control.{Theme.Key(Size)}.radius") - Theme.Number("segmented-control.inset")));
         Theme.Typography(item, selected && pill ? "labelStrong" : selected ? "labelMedium" : "labelQuiet");
         item.Background = selected ? Filled ? Theme.Recipe(ControlVariant.Filled, Tint, "surface") : pill ? Theme.Recipe(ControlVariant.Tinted, Tint, "surface") : Theme.Brush("color.surface") : null;
         item.Foreground = selected ? Filled ? Theme.Recipe(ControlVariant.Filled, Tint, "content") : pill ? Theme.Recipe(ControlVariant.Tinted, Tint, "content") : Theme.Brush("color.content") : Theme.Brush("color.content-muted");
@@ -237,7 +246,7 @@ public sealed class OptionCard : Radio
         Background = Theme.Recipe(IsChecked == true ? ControlVariant.Tinted : ControlVariant.Normal, Tint, "surface", state);
         BorderBrush = IsChecked == true ? Theme.Recipe(ControlVariant.Outlined, Tint, "border", state) : Theme.Brush("color.border");
         BorderThickness = new Thickness(Theme.Number("stroke.control"));
-        CornerRadius = new CornerRadius(Theme.Number("radius.medium"));
+        Skin.SetCorner(this, Theme.Number("radius.large"));
         Padding = new Thickness(Theme.Number("spacing.4"));
         Content = Skin.Column(Theme, Theme.Text(Title, IsChecked == true ? "labelStrong" : "labelMedium"), Theme.Text(Description, "bodySmall"));
     }

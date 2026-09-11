@@ -38,6 +38,27 @@ internal static class BehaviorTests
         File.WriteAllText(Path.Combine(output, "progress.txt"), "Interactive controls, inherited themes and popup behavior");
         // Let initial navigation selection finish before installing fixtures.
         await Settle(shell);
+        var buttonSamples = new StackPanel { Spacing = 16, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+        foreach (var size in Enum.GetValues<UI.ControlSize>())
+        {
+            var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 16 };
+            foreach (var label in new[] { "Save changes", "BUTTON", "Ag jyp", "保存更改" })
+                row.Children.Add(new UI.Button { Content = label, Size = size });
+            buttonSamples.Children.Add(row);
+        }
+        shell.ShowFixture(buttonSamples); await Settle(shell);
+        foreach (var button in Walk(buttonSamples).OfType<UI.Button>())
+        {
+            var labelPresenter = Walk(button).OfType<ContentPresenter>().First();
+            Check(labelPresenter.TextLineBounds == TextLineBounds.Tight && labelPresenter.VerticalContentAlignment == VerticalAlignment.Center,
+                "Single-line button labels must use optically centered font bounds.");
+            Check(button.ActualHeight == button.Theme.Number($"control.{button.Size.ToString().ToLowerInvariant()}.size"), "Label alignment changed button height.");
+        }
+        await SmokeTest.SaveAsync(shell, output, "button-labels.png");
+        var changingButton = Walk(buttonSamples).OfType<UI.Button>().First();
+        changingButton.Content = "First\nSecond";
+        await Settle(shell);
+        Check(Walk(changingButton).OfType<ContentPresenter>().First().TextLineBounds == TextLineBounds.Full, "Multiline button labels lost full line spacing.");
         foreach (var size in Enum.GetValues<UI.ControlSize>())
         {
             foreach (var input in new UI.TextField[] { new(), new UI.SearchField(), new UI.FieldValue() })
