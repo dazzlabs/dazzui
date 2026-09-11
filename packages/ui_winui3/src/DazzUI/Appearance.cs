@@ -117,6 +117,16 @@ internal static class Skin
         control.Resources["TextControlPlaceholderForeground"] = theme.Brush("color.content-faint");
         control.Resources["TextControlBorderThemeThickness"] = control.BorderThickness;
         control.Resources["TextControlBorderThemeThicknessFocused"] = control.BorderThickness;
+        control.Resources["TextControlThemeMinHeight"] = theme.Number($"control.{Theme.Key(size)}.size");
+        InputPadding(control, theme, size);
+    }
+    internal static void InputPadding(Control control, Theme theme, ControlSize size, bool multiline = false)
+    {
+        var line = new TextBlock { Text = "Ag", FontFamily = control.FontFamily, FontSize = control.FontSize, FontWeight = control.FontWeight, FontStyle = control.FontStyle, FontStretch = control.FontStretch };
+        line.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
+        var block = multiline ? theme.Number("spacing.2.5")
+            : Math.Max(0, (theme.Number($"control.{Theme.Key(size)}.size") - control.BorderThickness.Top - control.BorderThickness.Bottom - line.DesiredSize.Height) / 2);
+        control.Padding = new Thickness(control.Padding.Left, block, control.Padding.Right, block);
     }
     public static StackPanel Column(Theme theme, params UIElement[] children) => Stack(theme, Orientation.Vertical, children);
     public static StackPanel Row(Theme theme, params UIElement[] children) => Stack(theme, Orientation.Horizontal, children);

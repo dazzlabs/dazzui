@@ -18,13 +18,18 @@ public class TextField : TextBox
     {
         Appearance.Bind(this, Apply);
         IsEnabledChanged += (_, _) => Apply();
+        RegisterPropertyChangedCallback(AcceptsReturnProperty, (_, _) => Apply());
     }
     protected virtual void Apply()
     {
         Skin.Input(this, Theme, Size, Invalid);
+        if (Mono) FontFamily = new FontFamily("Cascadia Mono, Consolas");
         if (!AcceptsReturn) Height = Theme.Number($"control.{Theme.Key(Size)}.size");
         else { Height = double.NaN; TextWrapping = TextWrapping.Wrap; }
-        if (Mono) FontFamily = new FontFamily("Cascadia Mono, Consolas");
+        // Native editors lay text out from the top. Derive the inset from the
+        // platform font metrics rather than assuming a CSS line box or a fixed
+        // Windows font height; the same padding also positions the placeholder.
+        Skin.InputPadding(this, Theme, Size, AcceptsReturn);
     }
 }
 public sealed class FieldValue : TextField
@@ -53,13 +58,17 @@ public sealed class SearchField : TextField
             hint = new KeyCap(Hint ?? "") { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center, IsHitTestVisible = false, Visibility = Text.Length == 0 ? Visibility.Visible : Visibility.Collapsed };
             Grid.SetRow(hint, Grid.GetRow(editor)); grid.Children.Add(hint);
         }
-        Apply();
+        ApplySearchInsets();
     }
     protected override void Apply()
     {
         base.Apply();
+        ApplySearchInsets();
+    }
+    private void ApplySearchInsets()
+    {
         var inset = Theme.Number($"control.{Theme.Key(Size)}.padding.inline");
-        Padding = new Thickness(inset + Theme.Number("spacing.6"), 0, Hint is null ? inset : inset + Theme.Number("spacing.10"), 0);
+        Padding = new Thickness(inset + Theme.Number("spacing.6"), Padding.Top, Hint is null ? inset : inset + Theme.Number("spacing.10"), Padding.Bottom);
         if (searchIcon is not null) searchIcon.Margin = new Thickness(inset, 0, 0, 0);
         if (hint is not null) { hint.Content = Hint ?? ""; hint.Margin = new Thickness(0, 0, inset, 0); }
     }
@@ -101,6 +110,7 @@ public class Select : ComboBox
 }
 public class Autocomplete : Surface
 {
+    private Style? nativeTextBoxStyle;
     public AutoSuggestBox Input { get; } = new();
     public string Text { get => Input.Text; set => Input.Text = value; }
     public string PlaceholderText { get => Input.PlaceholderText; set => Input.PlaceholderText = value; }
@@ -114,6 +124,7 @@ public class Autocomplete : Surface
     public Autocomplete()
     {
         Content = Input;
+        Input.Loaded += (_, _) => RefreshAppearance();
         Input.TextChanged += (_, args) =>
         {
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
@@ -144,7 +155,22 @@ public class Autocomplete : Surface
         }
         Input.ItemsSource = items;
     }
-    protected override void RefreshAppearance() { Skin.Input(Input, Theme, Size, Invalid); if (Mono) Input.FontFamily = new FontFamily("Cascadia Mono, Consolas"); }
+    protected override void RefreshAppearance()
+    {
+        Skin.Input(Input, Theme, Size, Invalid);
+        if (Mono) Input.FontFamily = new FontFamily("Cascadia Mono, Consolas");
+        Skin.InputPadding(Input, Theme, Size);
+        nativeTextBoxStyle ??= Input.TextBoxStyle;
+        if (nativeTextBoxStyle is not null)
+        {
+            // Keep the native query/clear buttons and suggestion behavior.
+            var style = new Style(typeof(TextBox)) { BasedOn = nativeTextBoxStyle };
+            style.Setters.Add(new Setter(Control.PaddingProperty, Input.Padding));
+            style.Setters.Add(new Setter(FrameworkElement.MinHeightProperty, Input.MinHeight));
+            style.Setters.Add(new Setter(FrameworkElement.HeightProperty, Input.MinHeight));
+            Input.TextBoxStyle = style;
+        }
+    }
 }
 public sealed class Combobox : Autocomplete
 {
@@ -171,8 +197,18 @@ public sealed class NumberField : Surface
         Content = Input;
         Input.SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline;
         Input.ValidationMode = NumberBoxValidationMode.InvalidInputOverwritten;
+        Input.Loaded += (_, _) => SizeEditor(Input);
     }
-    protected override void RefreshAppearance() { Skin.Input(Input, Theme, Size, Invalid); Input.Description = Unit; }
+    private void SizeEditor(DependencyObject root)
+    {
+        if (root is TextBox editor)
+        {
+            editor.MinHeight = editor.Height = Theme.Number($"control.{Theme.Key(Size)}.size");
+            return;
+        }
+        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++) SizeEditor(VisualTreeHelper.GetChild(root, i));
+    }
+    protected override void RefreshAppearance() { Skin.Input(Input, Theme, Size, Invalid); Input.Description = Unit; SizeEditor(Input); }
 }
 public sealed class FormField : Surface
 {

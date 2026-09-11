@@ -36,7 +36,66 @@ internal static class BehaviorTests
     public static async Task RunAsync(PlaygroundShell shell, string output)
     {
         File.WriteAllText(Path.Combine(output, "progress.txt"), "Interactive controls, inherited themes and popup behavior");
+        // Let initial navigation selection finish before installing fixtures.
+        await Settle(shell);
+        foreach (var size in Enum.GetValues<UI.ControlSize>())
+        {
+            foreach (var input in new UI.TextField[] { new(), new UI.SearchField(), new UI.FieldValue() })
+            {
+                input.Size = size; input.Width = 240; input.PlaceholderText = "Placeholder";
+                shell.ShowFixture(input); await Settle(shell);
+                Check(input.IsLoaded && ReferenceEquals(shell.CurrentSpecimen, input), "Input fixture was replaced before layout checks.");
+                foreach (var value in new[] { "", "Ag 文本" })
+                {
+                    input.Text = value; await Settle(shell);
+                    if (value.Length == 0)
+                    {
+                        var placeholder = Walk(input).OfType<TextBlock>().First(element => element.Name == "PlaceholderTextContentPresenter");
+                        var line = new TextBlock { Text = placeholder.Text, FontFamily = placeholder.FontFamily, FontSize = placeholder.FontSize, FontWeight = placeholder.FontWeight };
+                        line.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
+                        var top = placeholder.TransformToVisual(input).TransformPoint(new Windows.Foundation.Point()).Y + placeholder.Padding.Top;
+                        var bottom = input.ActualHeight - top - line.DesiredSize.Height;
+                        Check(Math.Abs(top - bottom) <= 1, $"{input.GetType().Name} {size}: unequal placeholder insets {top}/{bottom}.");
+                    }
+                    else
+                    {
+                        var editor = Walk(input).OfType<ScrollViewer>().First(element => element.Name == "ContentElement");
+                        Check(editor.Padding.Top == input.Padding.Top && editor.Padding.Bottom == input.Padding.Bottom,
+                            "The native editor did not receive the same vertical padding as the placeholder.");
+                    }
+                    await SmokeTest.SaveAsync(shell, output, $"input-{input.GetType().Name}-{size}-{value.Length}.png");
+                }
+                input.AcceptsReturn = true; await Settle(shell);
+                Check(input.Padding.Top == input.Theme.Number("spacing.2.5"), "Multiline input lost its vertical padding.");
+            }
+        }
         var checkbox = new UI.Checkbox { Content = "Keep formatting" };
+        foreach (var size in Enum.GetValues<UI.ControlSize>())
+        {
+            foreach (var input in new UI.Surface[] { new UI.Autocomplete { PlaceholderText = "Placeholder" }, new UI.Combobox { PlaceholderText = "Placeholder" }, new UI.NumberField { PlaceholderText = "Placeholder" }, new UI.OtpField(), new UI.OtpField { Masked = true } })
+            {
+                input.Size = size; input.Width = 300;
+                shell.ShowFixture(input); await Settle(shell);
+                var editors = Walk(input).OfType<Control>().Where(control => control is TextBox or PasswordBox).ToArray();
+                Check(editors.Length > 0, $"{input.GetType().Name} has no native editor.");
+                foreach (var editor in editors)
+                {
+                    Check(editor.Padding.Top > 0 && editor.Padding.Top == editor.Padding.Bottom,
+                        $"{input.GetType().Name} {size}: editor padding {editor.Padding} is not symmetric.");
+                    Check(editor.ActualHeight <= input.Theme.Number($"control.{size.ToString().ToLowerInvariant()}.size") + 1,
+                        $"{input.GetType().Name} {size}: native editor height {editor.ActualHeight} exceeds the control size.");
+                }
+                await SmokeTest.SaveAsync(shell, output, $"input-{input.GetType().Name}-{size}-{(input is UI.OtpField otpInput && otpInput.Masked ? "masked" : "normal")}.png");
+                if (input is UI.Autocomplete autocomplete) autocomplete.Text = "Ag 文本";
+                if (input is UI.NumberField number) number.Value = 42;
+                if (input is UI.OtpField code) code.Value = "123456";
+                input.Theme = new UI.Theme("studio-dark");
+                await Settle(shell);
+                Check(Walk(input).OfType<Control>().Where(control => control is TextBox or PasswordBox).All(editor => editor.Padding.Top > 0 && editor.Padding.Top == editor.Padding.Bottom),
+                    $"{input.GetType().Name}: changing theme reset the editor padding.");
+                await SmokeTest.SaveAsync(shell, output, $"input-{input.GetType().Name}-{size}-{(input is UI.OtpField maskedInput && maskedInput.Masked ? "masked" : "normal")}-filled.png");
+            }
+        }
         var radioA = new UI.Radio { Content = "Automatic", Tag = "auto", IsChecked = true };
         var radioB = new UI.Radio { Content = "Manual", Tag = "manual" };
         var group = new UI.RadioGroup(); group.Items.Add(radioA); group.Items.Add(radioB);
