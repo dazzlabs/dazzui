@@ -1,6 +1,7 @@
 import { defineConfig } from '@terrazzo/cli'
 import css from '@terrazzo/plugin-css'
 import contrastPlugin from './plugins/contrast.mjs'
+import composePlugin from './plugins/compose.mjs'
 import controlPlugin from './plugins/control.mjs'
 import flutterPlugin from './plugins/flutter.mjs'
 import gpuiPlugin from './plugins/gpui.mjs'
@@ -174,6 +175,7 @@ export default defineConfig({
     swiftUIPlugin({ modeSelectors }),
     gpuiPlugin({ modeSelectors }),
     winUI3Plugin({ modeSelectors }),
+    composePlugin({ modeSelectors }),
   ],
   outDir: './dist/',
   lint: {

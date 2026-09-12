@@ -108,6 +108,16 @@ parts.
 
 ## Commands
 
+`packages/mobile_ui_android` is an independent Android Gradle library with an
+`example` app. It uses only stock AndroidX Compose Material 3 components and
+ds colors; desktop geometry and React component parity do not apply. Its
+`DazzTheme` changes only `MaterialTheme.colorScheme`. Do not add custom
+control drawing or wrappers. `packages/ds/plugins/compose.mjs` generates its
+committed `src/main/kotlin/dev/dazzlabs/dazzui/mobile/generated/` file with all
+theme families. Run `pnpm tokens` to regenerate; never edit the output.
+From that package, run `./gradlew assembleDebug testDebugUnitTest :example:assembleDebug`
+with JDK 17 and Android SDK 36. The package is invisible to pnpm.
+
 Run these from the repository root.
 
 ```bash

@@ -27,6 +27,22 @@ const TARGETS = [
     files: ['winui3/tokens.json'],
   },
   {
+    package: 'mobile_ui_android',
+    dir: path.join(
+      '..',
+      'mobile_ui_android',
+      'src',
+      'main',
+      'kotlin',
+      'dev',
+      'dazzlabs',
+      'dazzui',
+      'mobile',
+      'generated'
+    ),
+    files: ['compose/DazzColorSchemes.kt'],
+  },
+  {
     package: '@dazzlabs/dazzui-react',
     dir: path.join('..', 'ui_react', 'src', 'generated'),
     files: ['style.css', 'control.css'],

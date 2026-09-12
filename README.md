@@ -6,6 +6,10 @@ put them to work.
 
 ## Workspace
 
+`packages/mobile_ui_android` is the Android mobile package: ds colors applied
+to official Compose Material 3 components, retaining their system typography,
+shapes and behavior. See its [setup and playground](packages/mobile_ui_android/README.md).
+
 | Path                 | Package                      | What it is                                                                                                       |
 | -------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `packages/ds`        | `@dazzlabs/dazzui-ds`           | The design system itself: tokens built with [Terrazzo](https://terrazzo.app/). A generator, not a dependency.    |
