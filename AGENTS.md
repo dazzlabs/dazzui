@@ -58,6 +58,15 @@ The DazzUI design system, as a pnpm workspace:
   by `scripts/sync-stories.mjs`. It is not yet part of the React pixel/reference
   parity suites; its own smoke suite renders every story in all twelve themes.
   See its README for the current scope and standalone .NET commands.
+- `packages/mobile_ui_ios` (`DazzMobileUI`) — native SwiftUI for
+  mobile. This package uses ds colours and entirely system components; it
+  intentionally does not port React geometry or custom control rendering.
+  `Sources/DazzMobileUI/Generated/` is committed output from ds.
+  `mobileTheme` installs the accent and palette, following the OS appearance
+  by default. Use SwiftUI controls and SF Symbols directly. Run `swift test`
+  inside the package; `Example/Playground.xcodeproj` is the runnable iOS
+  gallery. Open it, select an iPhone or iPad simulator, and run the Playground
+  scheme. Its project configuration is generated from `Example/project.yml`.
 - `apps/storybook` (`@dazzlabs/dazzui-storybook`) — a Storybook gallery that
   documents both: `Tokens/*` for the token graph, `Components/*` for the
   components.

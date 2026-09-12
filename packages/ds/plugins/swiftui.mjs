@@ -40,6 +40,51 @@ class SwiftUIPlugin {
       'swiftui/ThemeVariables.swift',
       generateThemeVariablesFile(tokens, sources, this.modeSelectors)
     )
+    // The mobile package wears system controls; only colour crosses over.
+    const mobileTokens = Object.fromEntries(
+      Object.entries(tokens).filter(([id]) =>
+        /^(base\.color\.|color\.)/.test(id)
+      )
+    )
+    mobileTokens['native.tint-shade'] = {
+      ...tokens['control.color.filled.surface.normal.shade'],
+      id: 'native.tint-shade',
+    }
+    outputFile(
+      'mobile-swiftui/Colors.swift',
+      generateColorsFile(tokens, sources)
+    )
+    outputFile(
+      'mobile-swiftui/Palette.swift',
+      generateThemeVariablesFile(mobileTokens, sources, this.modeSelectors)
+        .replaceAll('ThemeVariables', 'Palette')
+        .replace('The complete token set', 'The colour token set') +
+        '\npublic extension Palette {\n' +
+        '  /// The ds filled action colour, applied through SwiftUI tint.\n' +
+        '  var accent: Color { colorPrimary[nativeTintShade] }\n}\n'
+    )
+    const themes = ['studio-light', ...collectThemes(this.modeSelectors).keys()]
+    const families = [
+      ...new Set(themes.map(theme => theme.replace(/-(light|dark)$/, ''))),
+    ]
+    outputFile(
+      'mobile-swiftui/ThemeFamily.swift',
+      `import SwiftUI
+
+${HEADER}
+public enum ThemeFamily: String, CaseIterable, Sendable, Identifiable {
+${families.map(family => `  case ${swiftName(family)}`).join('\n')}
+
+  public var id: String { rawValue }
+
+  public func palette(for colorScheme: ColorScheme) -> Palette {
+    switch self {
+${families.map(family => `    case .${swiftName(family)}: return colorScheme == .dark ? .${swiftName(family)}Dark : .${swiftName(family)}Light`).join('\n')}
+    }
+  }
+}
+`
+    )
   }
 }
 

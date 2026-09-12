@@ -42,6 +42,21 @@ const TARGETS = [
     files: ['swiftui/Colors.swift', 'swiftui/ThemeVariables.swift'],
   },
   {
+    package: 'DazzMobileUI',
+    dir: path.join(
+      '..',
+      'mobile_ui_ios',
+      'Sources',
+      'DazzMobileUI',
+      'Generated'
+    ),
+    files: [
+      'mobile-swiftui/Colors.swift',
+      'mobile-swiftui/Palette.swift',
+      'mobile-swiftui/ThemeFamily.swift',
+    ],
+  },
+  {
     package: 'dazzui (gpui)',
     dir: path.join('..', 'ui_gpui', 'src', 'generated'),
     files: ['gpui/colors.rs', 'gpui/theme_variables.rs'],
