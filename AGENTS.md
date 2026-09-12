@@ -47,6 +47,13 @@ The DazzUI design system, as a pnpm workspace:
   be a `static` a component borrows rather than a value it rebuilds.
   `example/` holds the playground (`cargo run -p dazzui_playground`), a
   workspace member so the two share one `target/`.
+- `packages/ui_inset` (`dazzui_inset`) — the Inset implementation in Rust,
+  ported from Flutter. An independent Cargo workspace with a 54-page example;
+  `pnpm inset`, `pnpm inset:test`, and `pnpm inset:check` run it and its checks.
+  It uses the sibling `../inset` checkout and the package-pinned nightly toolchain.
+  `ds/plugins/inset.mjs` shares the Rust token compiler with GPUI and emits
+  committed native Inset sources under `src/generated/`; never edit them.
+  See its README and PORTING.md for setup and remaining behavioral parity gaps.
 - `packages/ui_winui3` (`DazzUI`) — the WinUI 3 implementation, in C#.
   Invisible to pnpm's workspace graph; `pnpm winui3` builds and opens the
   unpackaged, self-contained Windows playground. `pnpm winui3:test` runs

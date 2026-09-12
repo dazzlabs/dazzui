@@ -1,0 +1,18 @@
+[package]
+name = "dazzui_inset_playground"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+dazzui_inset = { path = ".." }
+inset = { path = "../../../../inset/crates/inset", default-features = false }
+inset-cupertino = { path = "../../../../inset/crates/inset-cupertino" }
+
+[dev-dependencies]
+inset-embedder = { path = "../../../../inset/crates/inset-embedder" }
+inset-foundation = { path = "../../../../inset/crates/inset-foundation" }
+inset-scheduler = { path = "../../../../inset/crates/inset-scheduler" }
+inset-widgets = { path = "../../../../inset/crates/inset-widgets" }
+inset-painting = { path = "../../../../inset/crates/inset-painting" }
+valo-system-fonts = "0.4.4"

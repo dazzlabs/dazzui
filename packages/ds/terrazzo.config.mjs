@@ -4,6 +4,7 @@ import contrastPlugin from './plugins/contrast.mjs'
 import composePlugin from './plugins/compose.mjs'
 import controlPlugin from './plugins/control.mjs'
 import flutterPlugin from './plugins/flutter.mjs'
+import insetPlugin from './plugins/inset.mjs'
 import gpuiPlugin from './plugins/gpui.mjs'
 import swiftUIPlugin from './plugins/swiftui.mjs'
 import winUI3Plugin from './plugins/winui3.mjs'
@@ -174,6 +175,7 @@ export default defineConfig({
     flutterPlugin({ modeSelectors }),
     swiftUIPlugin({ modeSelectors }),
     gpuiPlugin({ modeSelectors }),
+    insetPlugin({ modeSelectors }),
     winUI3Plugin({ modeSelectors }),
     composePlugin({ modeSelectors }),
   ],

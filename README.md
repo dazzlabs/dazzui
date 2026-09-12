@@ -16,6 +16,7 @@ shapes and behavior. See its [setup and playground](packages/mobile_ui_android/R
 | `packages/ui_react`  | `@dazzlabs/dazzui-react`     | The React implementation. Plain CSS over the tokens — no Tailwind, no icon set.                                  |
 | `packages/mobile_ui_ios` | `DazzMobileUI` | Native SwiftUI mobile controls with ds colours; system typography, geometry and behaviour. |
 | `packages/ui_gpui`   | `dazzui`               | The [GPUI](https://gpui.rs) implementation, in Rust, with a playground beside it.                                |
+| `packages/ui_inset` | `dazzui_inset` | Inset implementation in Rust, with generated themes and a native gallery. See its [setup and scope](packages/ui_inset/README.md). |
 | `packages/ui_winui3` | `DazzUI` | The WinUI 3 implementation, generated themes and native Windows playground. See its [README](packages/ui_winui3/README.md). |
 | `apps/storybook`     | `@dazzlabs/dazzui-storybook` | A gallery of both: every token, and every component with the tokens it is drawn from.                            |
 | `examples/workbench` | `@dazzlabs/dazzui-example-workbench` | A Git-rooted agent workbench — project tabs, nine pages, a cross-project task queue — built entirely out of the React components. |

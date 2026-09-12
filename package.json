@@ -28,7 +28,10 @@
     "lint": "oxlint ./",
     "lint:fix": "oxlint ./ --fix",
     "format": "oxfmt ./",
-    "format:check": "oxfmt --check ./"
+    "format:check": "oxfmt --check ./",
+    "inset": "cd packages/ui_inset && cargo run -p dazzui_inset_playground",
+    "inset:test": "cd packages/ui_inset && cargo test --workspace",
+    "inset:check": "cd packages/ui_inset && cargo clippy --workspace --all-targets -- -D warnings"
   },
   "devDependencies": {
     "oxfmt": "^0.16.0",
