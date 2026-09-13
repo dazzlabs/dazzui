@@ -47,6 +47,7 @@ pub struct ThemeSeed {
     pub color_border_muted: Hsla,
     pub color_on_accent: Hsla,
     pub control_pressed_alpha: f32,
+    pub control_container_radius: Pixels,
     pub control_tiny_size: Pixels,
     pub control_small_size: Pixels,
     pub control_medium_size: Pixels,
@@ -200,6 +201,7 @@ pub const STUDIO_LIGHT_SEED: ThemeSeed = ThemeSeed {
     color_border_muted: Hsla { h: 0.633333, s: 0.116279, l: 0.421569, a: 1.0 },
     color_on_accent: Hsla { h: 0.0, s: 0.0, l: 1.0, a: 1.0 },
     control_pressed_alpha: 0.9,
+    control_container_radius: px(10.0),
     control_tiny_size: px(24.0),
     control_small_size: px(26.0),
     control_medium_size: px(28.0),
@@ -372,6 +374,7 @@ pub struct ThemeVariables {
     pub color_border_muted: Hsla,
     pub color_on_accent: Hsla,
     pub control_pressed_alpha: f32,
+    pub control_container_radius: Pixels,
     pub control_tiny_size: Pixels,
     pub control_small_size: Pixels,
     pub control_medium_size: Pixels,
@@ -519,6 +522,13 @@ pub struct ThemeVariables {
     pub checkbox_medium_box: Pixels,
     pub checkbox_large_box: Pixels,
     pub dialog_scrim_color: Hsla,
+    pub preferences_row_padding: Pixels,
+    pub preferences_row_gap: Pixels,
+    pub preferences_heading_gap: Pixels,
+    pub preferences_footer_gap: Pixels,
+    pub preferences_title_gap: Pixels,
+    pub preferences_section_gap: Pixels,
+    pub preferences_group_gap: Pixels,
     pub radio_thickness: Pixels,
     pub radio_small_box: Pixels,
     pub radio_small_dot: Pixels,
@@ -586,6 +596,7 @@ impl ThemeVariables {
         let color_border_muted = seed.color_border_muted;
         let color_on_accent = seed.color_on_accent;
         let control_pressed_alpha = seed.control_pressed_alpha;
+        let control_container_radius = seed.control_container_radius;
         let control_tiny_size = seed.control_tiny_size;
         let control_small_size = seed.control_small_size;
         let control_medium_size = seed.control_medium_size;
@@ -722,6 +733,13 @@ impl ThemeVariables {
         let checkbox_medium_box = spacing_4;
         let checkbox_large_box = spacing_5;
         let dialog_scrim_color = color_content;
+        let preferences_row_padding = spacing_1_5;
+        let preferences_row_gap = spacing_1;
+        let preferences_heading_gap = spacing_2;
+        let preferences_footer_gap = spacing_1;
+        let preferences_title_gap = spacing_4;
+        let preferences_section_gap = spacing_6;
+        let preferences_group_gap = spacing_10;
         let radio_thickness = stroke_control;
         let radio_small_box = spacing_3_5;
         let radio_small_dot = spacing_1_5;
@@ -842,6 +860,7 @@ impl ThemeVariables {
             color_border_muted,
             color_on_accent,
             control_pressed_alpha,
+            control_container_radius,
             control_tiny_size,
             control_small_size,
             control_medium_size,
@@ -977,6 +996,13 @@ impl ThemeVariables {
             checkbox_medium_box,
             checkbox_large_box,
             dialog_scrim_color,
+            preferences_row_padding,
+            preferences_row_gap,
+            preferences_heading_gap,
+            preferences_footer_gap,
+            preferences_title_gap,
+            preferences_section_gap,
+            preferences_group_gap,
             radio_thickness,
             radio_small_box,
             radio_small_dot,
@@ -1041,6 +1067,7 @@ pub static BRIGHT_LIGHT: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     color_border_strong: Hsla { h: 0.603448, s: 0.460317, l: 0.123529, a: 0.090196 },
     color_border_muted: Hsla { h: 0.603448, s: 0.460317, l: 0.123529, a: 0.25098 },
     color_on_accent: Hsla { h: 0.202257, s: 1.0, l: 0.623529, a: 1.0 },
+    control_container_radius: px(14.0),
     shadow_2xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(2.0), spread: px(0.0), color: Hsla { h: 0.603448, s: 0.460317, l: 0.123529, a: 0.121569 } }],
     shadow_xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(3.0), spread: px(0.0), color: Hsla { h: 0.603448, s: 0.460317, l: 0.123529, a: 0.141176 } }],
     shadow_sm: &[TokenShadow { x: px(0.0), y: px(4.0), blur: px(12.0), spread: px(0.0), color: Hsla { h: 0.603448, s: 0.460317, l: 0.123529, a: 0.141176 } }],
@@ -1085,6 +1112,7 @@ pub static BRIGHT_DARK: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     color_border_strong: Hsla { h: 0.233333, s: 0.185185, l: 0.947059, a: 0.090196 },
     color_border_muted: Hsla { h: 0.589744, s: 0.19697, l: 0.258824, a: 1.0 },
     color_on_accent: Hsla { h: 0.603448, s: 0.460317, l: 0.123529, a: 1.0 },
+    control_container_radius: px(14.0),
     shadow_2xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(2.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.4 } }],
     shadow_xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(3.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.45098 } }],
     shadow_sm: &[TokenShadow { x: px(0.0), y: px(4.0), blur: px(14.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.45098 } }],
@@ -1244,6 +1272,7 @@ pub static GRAPHITE_LIGHT: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     color_border_strong: Hsla { h: 0.666667, s: 0.08, l: 0.098039, a: 0.168627 },
     color_border_muted: Hsla { h: 0.666667, s: 0.043956, l: 0.356863, a: 1.0 },
     color_on_accent: Hsla { h: 0.0, s: 0.0, l: 0.980392, a: 1.0 },
+    control_container_radius: px(8.0),
     frame_window_radius: px(16.0),
     frame_popover_radius: px(12.0),
     radius_small: px(7.0),
@@ -1282,6 +1311,7 @@ pub static GRAPHITE_DARK: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     color_border_strong: Hsla { h: 0.0, s: 0.0, l: 1.0, a: 0.2 },
     color_border_muted: Hsla { h: 0.666667, s: 0.058824, l: 0.233333, a: 1.0 },
     color_on_accent: Hsla { h: 0.666667, s: 0.073171, l: 0.080392, a: 1.0 },
+    control_container_radius: px(8.0),
     shadow_2xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(2.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.4 } }],
     shadow_xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(3.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.45098 } }],
     shadow_sm: &[TokenShadow { x: px(0.0), y: px(4.0), blur: px(14.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.45098 } }],
@@ -1442,6 +1472,7 @@ pub static NOCTURNE_LIGHT: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     color_border_strong: Hsla { h: 0.651515, s: 0.135802, l: 0.158824, a: 0.168627 },
     color_border_muted: Hsla { h: 0.652778, s: 0.181818, l: 0.870588, a: 1.0 },
     color_on_accent: Hsla { h: 0.0, s: 0.0, l: 1.0, a: 1.0 },
+    control_container_radius: px(8.0),
     frame_window_radius: px(16.0),
     frame_popover_radius: px(12.0),
     radius_small: px(7.0),
@@ -1480,6 +1511,7 @@ pub static NOCTURNE_DARK: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     color_border_strong: Hsla { h: 0.666667, s: 0.1, l: 0.921569, a: 0.2 },
     color_border_muted: Hsla { h: 0.630952, s: 0.1, l: 0.27451, a: 1.0 },
     color_on_accent: Hsla { h: 0.645833, s: 0.266667, l: 0.117647, a: 1.0 },
+    control_container_radius: px(8.0),
     shadow_2xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(2.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.4 } }],
     shadow_xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(3.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.45098 } }],
     shadow_sm: &[TokenShadow { x: px(0.0), y: px(4.0), blur: px(14.0), spread: px(0.0), color: Hsla { h: 0.0, s: 0.0, l: 0.0, a: 0.45098 } }],

@@ -5,3 +5,52 @@ preferences:
   width:
     $type: dimension
     $value: 30rem
+
+  # The pad a row's text wears above and below, so a row that grows a second
+  # line keeps air over its title and under its subtitle rather than closing
+  # to the run between rows. A single line is shorter than the control
+  # height with this on, and the row's minimum still centres it.
+  row-padding:
+    $type: dimension
+    $value: "{spacing.1.5}"
+
+  # The ladder the column climbs, one step per level of the tree, so a heading
+  # always reads as belonging to what follows it rather than floating between
+  # two blocks. It is read between runs of text rather than between boxes,
+  # since the row's pad lands on every run a row borders. Counted that way, a
+  # label is fourteen from its rows, two-line rows are sixteen from each
+  # other, a group's title twenty-two from its first section, sections thirty
+  # apart and groups forty-six — each wider than the one under it.
+
+  # Between two rows. A run of two-line rows has to read as one row per
+  # setting rather than one paragraph per two, and the pad each row wears is
+  # what does that; the run itself stays the tightest step.
+  row-gap:
+    $type: dimension
+    $value: "{spacing.1}"
+  # Under a section's label. The first row's pad brings it to sixteen, under
+  # what two rows keep between them.
+  heading-gap:
+    $type: dimension
+    $value: "{spacing.2}"
+  # Over a section's footer. Half the label's step, because the footer's own
+  # leading opens the other half: the two captions bracket the rows at one
+  # distance.
+  footer-gap:
+    $type: dimension
+    $value: "{spacing.1}"
+  # Under a group's title. Twice the label's step: a title that outranks the
+  # labels under it stands off from them further.
+  title-gap:
+    $type: dimension
+    $value: "{spacing.4}"
+  # Between two sections of a group: wider than the run between rows,
+  # narrower than the run between groups. A rule between two sections is
+  # drawn in the middle of this run rather than added to it.
+  section-gap:
+    $type: dimension
+    $value: "{spacing.6}"
+  # Between two groups, the widest step of the ladder.
+  group-gap:
+    $type: dimension
+    $value: "{spacing.10}"

@@ -110,7 +110,9 @@ impl RenderOnce for DisclosureHeader {
                 .gap(vars.spacing_2)
                 .w_full()
                 .p(vars.spacing_2)
-                .rounded(vars.radius_medium)
+                // A header row grows with what it holds — a badge, a wrapped
+                // title — so it takes the shared corner for a box that grows.
+                .rounded(vars.control_container_radius)
                 .type_style(vars.label_medium)
                 .text_color(content)
                 .map(|el| {

@@ -36,6 +36,9 @@
 .dz-segmented-control__segment {
   height: calc(var(--control-size) - 2 * var(--segmented-control-inset));
   padding-inline: var(--spacing-3);
+  /* The rest of the button reset: an engine leaves 1px on each block edge,
+     which an explicit height hides until the box stops being explicit. */
+  padding-block: 0;
   border-radius: calc(var(--control-radius) - var(--segmented-control-inset));
   font-family: var(--label-quiet-font-family);
   font-size: var(--control-font-size);

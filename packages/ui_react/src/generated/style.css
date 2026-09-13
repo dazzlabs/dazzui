@@ -353,6 +353,7 @@
   --color-warning-800: var(--base-color-amber-800);
   --color-warning-900: var(--base-color-amber-900);
   --color-warning-950: var(--base-color-amber-950);
+  --control-container-radius: var(--base-corner-md);
   --control-large-content-font-family: var(--label-medium-font-family);
   --control-large-content-font-size: var(--label-medium-font-size);
   --control-large-content-font-weight: var(--label-medium-font-weight);
@@ -438,6 +439,13 @@
   --menu-min-width: 11rem;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --preferences-footer-gap: var(--spacing-1);
+  --preferences-group-gap: var(--spacing-10);
+  --preferences-heading-gap: var(--spacing-2);
+  --preferences-row-gap: var(--spacing-1);
+  --preferences-row-padding: var(--spacing-1-5);
+  --preferences-section-gap: var(--spacing-6);
+  --preferences-title-gap: var(--spacing-4);
   --preferences-width: 30rem;
   --preview-card-width: 20rem;
   --progress-gradient-from: var(--base-color-brand-600);
@@ -553,6 +561,7 @@
   --color-surface-raised: #ffffff;
   --color-surface-subtle: #111c2e0f;
   --color-surface-sunken: #e5e3db;
+  --control-container-radius: var(--base-corner-xl-bright);
   --dialog-scrim-color: var(--color-content);
   --frame-popover-radius: var(--base-corner-xl-bright);
   --frame-window-radius: var(--base-corner-xl);
@@ -643,6 +652,7 @@
   --color-surface-raised: #ffffff;
   --color-surface-subtle: #17171b0f;
   --color-surface-sunken: #e2e2e7;
+  --control-container-radius: var(--base-corner-sm);
   --dialog-scrim-color: var(--color-content);
   --frame-popover-radius: var(--base-corner-lg);
   --frame-window-radius: var(--base-corner-xl);
@@ -727,6 +737,7 @@
   --color-surface-raised: #ffffff;
   --color-surface-subtle: #23242e0f;
   --color-surface-sunken: #e2e2ec;
+  --control-container-radius: var(--base-corner-sm);
   --dialog-scrim-color: var(--color-content);
   --frame-popover-radius: var(--base-corner-lg);
   --frame-window-radius: var(--base-corner-xl);

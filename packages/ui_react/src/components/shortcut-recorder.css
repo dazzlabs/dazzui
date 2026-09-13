@@ -16,6 +16,9 @@
   height: var(--control-medium-size);
   min-width: var(--shortcut-recorder-width);
   padding-inline: var(--spacing-3);
+  /* The rest of the button reset: an engine leaves 1px on each block edge,
+     which an explicit height hides until the box stops being explicit. */
+  padding-block: 0;
   border: var(--stroke-hairline) solid var(--color-border-strong);
   border-radius: var(--radius-medium);
   background-color: var(--color-surface-muted);

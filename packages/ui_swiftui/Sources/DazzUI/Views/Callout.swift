@@ -117,7 +117,9 @@ public struct Callout<Leading: View, Description: View, Trailing: View>: View {
   }
 
   private var radius: CGFloat {
-    size == .small ? theme.vars.radiusMedium : theme.vars.radiusLarge
+    // The small size is the one whose box takes the control step; it is still a
+    // box that grows, so it takes the shared corner for one.
+    size == .small ? theme.vars.controlContainerRadius : theme.vars.radiusLarge
   }
 
   /// The CSS states these leadings as ratios of the face rather than as

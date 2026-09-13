@@ -90,7 +90,13 @@ impl RenderOnce for Callout {
         let vars = cx.theme().vars;
         let has_description = self.title.is_some() && self.description.is_some();
         let (padding_block, padding_inline, radius) = match self.size {
-            CalloutSize::Small => (vars.spacing_2, vars.spacing_3, vars.radius_medium),
+            // The small size is the one whose box takes the control step; it is
+            // still a box that grows, so it takes the shared corner for one.
+            CalloutSize::Small => (
+                vars.spacing_2,
+                vars.spacing_3,
+                vars.control_container_radius,
+            ),
             CalloutSize::Medium => (vars.spacing_3, vars.spacing_3_5, vars.radius_large),
             CalloutSize::Large => (vars.spacing_4, vars.spacing_4, vars.radius_large),
         };

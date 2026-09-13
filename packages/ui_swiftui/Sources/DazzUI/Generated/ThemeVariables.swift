@@ -32,6 +32,7 @@ public struct ThemeVariables: Sendable {
     colorBorderMuted: Color = Color(argb: 0xFF5F_6478),
     colorOnAccent: Color = Color(argb: 0xFFFF_FFFF),
     controlPressedAlpha: CGFloat = 0.9,
+    controlContainerRadius: CGFloat = 10.0,
     controlTinySize: CGFloat = 24.0,
     controlSmallSize: CGFloat = 26.0,
     controlMediumSize: CGFloat = 28.0,
@@ -205,6 +206,7 @@ public struct ThemeVariables: Sendable {
     self.colorBorderMuted = colorBorderMuted
     self.colorOnAccent = colorOnAccent
     self.controlPressedAlpha = controlPressedAlpha
+    self.controlContainerRadius = controlContainerRadius
     self.controlTinySize = controlTinySize
     self.controlSmallSize = controlSmallSize
     self.controlMediumSize = controlMediumSize
@@ -344,6 +346,7 @@ public struct ThemeVariables: Sendable {
   public let colorBorderMuted: Color
   public let colorOnAccent: Color
   public let controlPressedAlpha: CGFloat
+  public let controlContainerRadius: CGFloat
   public let controlTinySize: CGFloat
   public let controlSmallSize: CGFloat
   public let controlMediumSize: CGFloat
@@ -492,6 +495,13 @@ public struct ThemeVariables: Sendable {
   public var checkboxMediumBox: CGFloat { spacing4 }
   public var checkboxLargeBox: CGFloat { spacing5 }
   public var dialogScrimColor: Color { colorContent }
+  public var preferencesRowPadding: CGFloat { spacing15 }
+  public var preferencesRowGap: CGFloat { spacing1 }
+  public var preferencesHeadingGap: CGFloat { spacing2 }
+  public var preferencesFooterGap: CGFloat { spacing1 }
+  public var preferencesTitleGap: CGFloat { spacing4 }
+  public var preferencesSectionGap: CGFloat { spacing6 }
+  public var preferencesGroupGap: CGFloat { spacing10 }
   public var radioThickness: CGFloat { strokeControl }
   public var radioSmallBox: CGFloat { spacing35 }
   public var radioSmallDot: CGFloat { spacing15 }
@@ -639,6 +649,7 @@ public extension ThemeVariables {
     colorBorderStrong: Color(argb: 0x1711_1C2E),
     colorBorderMuted: Color(argb: 0x4011_1C2E),
     colorOnAccent: Color(argb: 0xFFD6_FF3F),
+    controlContainerRadius: 14.0,
     shadow2xs: [TokenShadow(x: 0.0, y: 1.0, blur: 2.0, spread: 0.0, color: Color(argb: 0x1F11_1C2E))],
     shadowXs: [TokenShadow(x: 0.0, y: 1.0, blur: 3.0, spread: 0.0, color: Color(argb: 0x2411_1C2E))],
     shadowSm: [TokenShadow(x: 0.0, y: 4.0, blur: 12.0, spread: 0.0, color: Color(argb: 0x2411_1C2E))],
@@ -685,6 +696,7 @@ public extension ThemeVariables {
     colorBorderStrong: Color(argb: 0x17F2_F4EF),
     colorBorderMuted: Color(argb: 0xFF35_414F),
     colorOnAccent: Color(argb: 0xFF11_1C2E),
+    controlContainerRadius: 14.0,
     shadow2xs: [TokenShadow(x: 0.0, y: 1.0, blur: 2.0, spread: 0.0, color: Color(argb: 0x6600_0000))],
     shadowXs: [TokenShadow(x: 0.0, y: 1.0, blur: 3.0, spread: 0.0, color: Color(argb: 0x7300_0000))],
     shadowSm: [TokenShadow(x: 0.0, y: 4.0, blur: 14.0, spread: 0.0, color: Color(argb: 0x7300_0000))],
@@ -844,6 +856,7 @@ public extension ThemeVariables {
     colorBorderStrong: Color(argb: 0x2B17_171B),
     colorBorderMuted: Color(argb: 0xFF57_575F),
     colorOnAccent: Color(argb: 0xFFFA_FAFA),
+    controlContainerRadius: 8.0,
     frameWindowRadius: 16.0,
     framePopoverRadius: 12.0,
     radiusSmall: 7.0,
@@ -884,6 +897,7 @@ public extension ThemeVariables {
     colorBorderStrong: Color(argb: 0x33FF_FFFF),
     colorBorderMuted: Color(argb: 0xFF38_383F),
     colorOnAccent: Color(argb: 0xFF13_1316),
+    controlContainerRadius: 8.0,
     shadow2xs: [TokenShadow(x: 0.0, y: 1.0, blur: 2.0, spread: 0.0, color: Color(argb: 0x6600_0000))],
     shadowXs: [TokenShadow(x: 0.0, y: 1.0, blur: 3.0, spread: 0.0, color: Color(argb: 0x7300_0000))],
     shadowSm: [TokenShadow(x: 0.0, y: 4.0, blur: 14.0, spread: 0.0, color: Color(argb: 0x7300_0000))],
@@ -1044,6 +1058,7 @@ public extension ThemeVariables {
     colorBorderStrong: Color(argb: 0x2B23_242E),
     colorBorderMuted: Color(argb: 0xFFD8_D9E4),
     colorOnAccent: Color(argb: 0xFFFF_FFFF),
+    controlContainerRadius: 8.0,
     frameWindowRadius: 16.0,
     framePopoverRadius: 12.0,
     radiusSmall: 7.0,
@@ -1084,6 +1099,7 @@ public extension ThemeVariables {
     colorBorderStrong: Color(argb: 0x33E9_E9ED),
     colorBorderMuted: Color(argb: 0xFF3F_424D),
     colorOnAccent: Color(argb: 0xFF16_1826),
+    controlContainerRadius: 8.0,
     shadow2xs: [TokenShadow(x: 0.0, y: 1.0, blur: 2.0, spread: 0.0, color: Color(argb: 0x6600_0000))],
     shadowXs: [TokenShadow(x: 0.0, y: 1.0, blur: 3.0, spread: 0.0, color: Color(argb: 0x7300_0000))],
     shadowSm: [TokenShadow(x: 0.0, y: 4.0, blur: 14.0, spread: 0.0, color: Color(argb: 0x7300_0000))],

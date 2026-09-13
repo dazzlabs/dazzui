@@ -19,7 +19,9 @@
   padding-block: var(--spacing-2);
   padding-inline: var(--spacing-2);
   border: 0;
-  border-radius: var(--radius-medium);
+  /* A header row grows with what it holds — a badge, a wrapped title — so it
+     takes the shared corner for a box that grows rather than Bright's pill. */
+  border-radius: var(--control-container-radius);
   background: none;
   color: var(--color-content);
   text-align: left;

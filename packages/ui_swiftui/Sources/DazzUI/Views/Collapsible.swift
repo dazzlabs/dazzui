@@ -21,7 +21,11 @@ struct DisclosureHeader<Meta: View>: View {
   var body: some View {
     let vars = theme.vars
 
-    Pressable(action: toggle, enabled: enabled, cornerRadius: vars.radiusMedium) { state in
+    Pressable(
+      action: toggle,
+      enabled: enabled,
+      cornerRadius: vars.controlContainerRadius
+    ) { state in
       HStack(spacing: vars.spacing2) {
         // The chevron points along the row when shut and down the page when
         // open — one glyph rotated rather than two swapped, so the turn is the
@@ -54,14 +58,21 @@ struct DisclosureHeader<Meta: View>: View {
       // the wash is read on hover alone and the row rests transparent —
       // exactly what a menu row does.
       .background(wash(state: state))
-      .clipShape(RoundedRectangle(cornerRadius: vars.radiusMedium, style: .circular))
+      // A header row grows with what it holds — a badge, a wrapped title — so
+      // it takes the shared corner for a box that grows.
+      .clipShape(
+        RoundedRectangle(
+          cornerRadius: vars.controlContainerRadius,
+          style: .circular
+        )
+      )
       .animation(vars.motion, value: state.controlState)
     }
     .focused($focused)
     .focusRing(
       visible: focused && enabled,
       color: vars.focusRing,
-      cornerRadius: vars.radiusMedium,
+      cornerRadius: vars.controlContainerRadius,
       width: vars.focusWidth
     )
   }

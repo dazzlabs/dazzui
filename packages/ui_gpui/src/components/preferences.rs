@@ -5,9 +5,7 @@ use gpui::{
 
 use crate::components::SectionLabel;
 use crate::prelude::*;
-use crate::{
-    ActionListener, ControlPart, ControlState, ControlVariant, Tint, colors, plus, pressable,
-};
+use crate::{ActionListener, ControlPart, ControlState, ControlVariant, Tint, colors, pressable};
 
 /// The settings column, and the root the rest of this file sits in.
 ///
@@ -16,6 +14,13 @@ use crate::{
 /// width. The column is capped rather than filling its pane — a row puts its
 /// label on one edge and its control on the other, and past
 /// `preferences_width` the two stop reading as one line.
+///
+/// The ladder is decided in ds — one `preferences_*_gap` per level, and the
+/// pad a row's text wears — and nothing here restates a step. One thing the
+/// React sheet does that a flex column cannot: a rule between two children is
+/// drawn in the middle of the run rather than given the run on each side,
+/// since an element cannot be told from its siblings here. A story that draws
+/// one carries the negative margin itself.
 #[derive(IntoElement)]
 pub struct Preferences {
     children: Vec<AnyElement>,
@@ -50,7 +55,7 @@ impl RenderOnce for Preferences {
         div()
             .flex()
             .flex_col()
-            .gap(vars.spacing_8)
+            .gap(vars.preferences_group_gap)
             .w_full()
             .max_w(vars.preferences_width)
             .children(self.children)
@@ -122,7 +127,7 @@ impl RenderOnce for PreferenceSection {
                         .items_center()
                         .justify_between()
                         .gap(vars.spacing_4)
-                        .mb(vars.spacing_3)
+                        .mb(vars.preferences_heading_gap)
                         .child(
                             div().when_some(self.label, |el, label| {
                                 el.child(SectionLabel::new(label))
@@ -143,13 +148,13 @@ impl RenderOnce for PreferenceSection {
                 div()
                     .flex()
                     .flex_col()
-                    .gap(vars.spacing_1)
+                    .gap(vars.preferences_row_gap)
                     .children(self.children),
             )
             .when_some(self.footer, |el, footer| {
                 el.child(
                     div()
-                        .mt(vars.spacing_2)
+                        .mt(vars.preferences_footer_gap)
                         .type_style(vars.caption_small)
                         .line_height(relative(1.7))
                         .text_color(vars.color_content_subtle)
@@ -213,19 +218,25 @@ impl RenderOnce for PreferenceGroup {
                     .items_center()
                     .justify_between()
                     .gap(vars.spacing_4)
-                    .mb(vars.spacing_3)
+                    .mb(vars.preferences_title_gap)
                     .child(
                         div()
                             .flex()
                             .flex_col()
-                            .gap(vars.spacing_1_5)
+                            // Half a step: the title's leading and the
+                            // description's already open the pair.
+                            .gap(vars.spacing_0_5)
                             .child(
                                 // The group outranks its sections
-                                // typographically: the display cut at the
-                                // strong weight, where a section heading is a
-                                // SectionLabel.
+                                // typographically, and it has to outrank the
+                                // rows by more than a weight: a row's title is
+                                // the same 12px, so a title one grade heavier
+                                // read as one more row. `title_medium` — two
+                                // sizes up, at the label weight — is the first
+                                // face that stands over a row. A section
+                                // heading stays a SectionLabel.
                                 div()
-                                    .type_style(vars.label_strong)
+                                    .type_style(vars.title_medium)
                                     .text_color(vars.color_content)
                                     .child(self.title),
                             )
@@ -247,7 +258,7 @@ impl RenderOnce for PreferenceGroup {
                 div()
                     .flex()
                     .flex_col()
-                    .gap(plus(vars.spacing_4, vars.spacing_0_5))
+                    .gap(vars.preferences_section_gap)
                     .children(self.children),
             )
     }
@@ -351,7 +362,9 @@ impl RenderOnce for PreferenceRow {
                     // than the text while the row still starts on the same
                     // left edge as the inert rows above it.
                     el.cursor_pointer()
-                        .rounded(vars.radius_small)
+                        // The shared corner for a box that grows: the control
+                        // step everywhere, the container step in Bright.
+                        .rounded(vars.control_container_radius)
                         .mx(-vars.spacing_2)
                         .px(vars.spacing_2)
                         .bg(if state.hovered {
@@ -371,10 +384,18 @@ impl RenderOnce for PreferenceRow {
                         .flex_col()
                         .gap(vars.spacing_1)
                         .min_w_0()
-                        .py(vars.spacing_1)
+                        // The pad rides on the text, so a row that grows a
+                        // subtitle keeps air above the title and below it. A
+                        // single line padded this way is shorter than the
+                        // control height, and the row's minimum still centres
+                        // it.
+                        .py(vars.preferences_row_padding)
                         .child(
+                            // A row rests at `label_quiet`, the way a list
+                            // row does: every title at the label weight was a
+                            // column of bold with nothing left to outrank it.
                             div()
-                                .type_style(vars.label_medium)
+                                .type_style(vars.label_quiet)
                                 .text_color(vars.color_content)
                                 .child(title),
                         )

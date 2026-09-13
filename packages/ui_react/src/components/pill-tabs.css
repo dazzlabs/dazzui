@@ -27,6 +27,9 @@
   height: var(--control-tiny-size);
   gap: var(--control-tiny-gap);
   padding-inline: var(--spacing-3);
+  /* The rest of the button reset: an engine leaves 1px on each block edge,
+     which an explicit height hides until the box stops being explicit. */
+  padding-block: 0;
   font-family: var(--label-small-font-family);
   font-size: var(--label-small-font-size);
   font-weight: var(--label-small-font-weight);

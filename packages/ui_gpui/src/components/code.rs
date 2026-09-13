@@ -162,7 +162,9 @@ impl RenderOnce for CodeBlock {
             .bg(vars.color_surface_muted)
             .border(vars.stroke_hairline)
             .border_color(vars.color_border)
-            .rounded(vars.radius_medium)
+            // A panel that grows with its listing, so it takes the shared
+            // corner for a box that grows rather than Bright's control pill.
+            .rounded(vars.control_container_radius)
             .when(head, |el| {
                 el.child(
                     div()

@@ -5,8 +5,14 @@
  * sits further from the section above it than from its own rows, a group
  * title stands further still, and one group stands furthest from the next —
  * so a heading always reads as belonging to what follows it rather than
- * floating between two blocks. Every level widens by the same rule, which is
- * why the four gaps are separate tokens.
+ * floating between two blocks.
+ *
+ * The ladder is decided in `tokens/component/preferences.yaml` — one step per
+ * level, read between runs of text rather than between boxes, since a row
+ * pads its own text to fill the control height and that pad lands on every
+ * run a row borders. Nothing here restates a step: the sheet reads the six
+ * `--preferences-*-gap` variables, and the one thing it adds is where a rule
+ * lands in a run.
  */
 
 /* The root: the column the groups run down, at the design's width, and never
@@ -17,7 +23,7 @@
 .dz-preferences {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-8);
+  gap: var(--preferences-group-gap);
   width: var(--preferences-width);
   max-width: 100%;
 }
@@ -36,17 +42,17 @@
 }
 
 .dz-preference-section__heading {
-  margin-bottom: var(--spacing-3);
+  margin-bottom: var(--preferences-heading-gap);
 }
 
 .dz-preference-section__rows {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-1);
+  gap: var(--preferences-row-gap);
 }
 
 .dz-preference-section__footer {
-  margin-top: var(--spacing-2);
+  margin-top: var(--preferences-footer-gap);
   color: var(--color-content-subtle);
   font-family: var(--caption-small-font-family);
   font-size: var(--caption-small-font-size);
@@ -73,23 +79,29 @@
 }
 
 .dz-preference-group__heading {
-  margin-bottom: var(--spacing-3);
+  margin-bottom: var(--preferences-title-gap);
 }
 
+/* Half a step: the title's leading and the description's already open the
+   pair, and a wider gap would float the description between the title and
+   the rows. */
 .dz-preference-group__titles {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-1-5);
+  gap: var(--spacing-0-5);
 }
 
-/* The group outranks its sections typographically: the display cut at the
-   strong weight, where a section heading is a SectionLabel. */
+/* The group outranks its sections typographically, and it has to outrank the
+   rows by more than a weight: a row's title is the same 12px, so a title one
+   grade heavier read as one more row. `titleMedium` — two sizes up, at the
+   label weight — is the first face that stands over a row, and it is what a
+   pane's own head is set in. A section heading stays a SectionLabel. */
 .dz-preference-group__title {
   color: var(--color-content);
-  font-family: var(--label-strong-font-family);
-  font-size: var(--label-strong-font-size);
-  font-weight: var(--label-strong-font-weight);
-  line-height: var(--label-strong-line-height);
+  font-family: var(--title-medium-font-family);
+  font-size: var(--title-medium-font-size);
+  font-weight: var(--title-medium-font-weight);
+  line-height: var(--title-medium-line-height);
 }
 
 .dz-preference-group__description {
@@ -103,7 +115,24 @@
 .dz-preference-group__sections {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--spacing-4) + var(--spacing-0-5));
+  gap: var(--preferences-section-gap);
+}
+
+/*
+ * A rule between two groups sits in the middle of the run they already keep,
+ * rather than taking the run on each side of it. The negative margin is half
+ * the run, so the rule replaces nothing and moves nothing. A rule is the
+ * heaviest separator the column draws, so it belongs at the top level:
+ * sections stand apart on whitespace and a label, and a divider dropped
+ * between two of them takes the same treatment at the section's step rather
+ * than standing them further apart than two groups.
+ */
+.dz-preference-group__sections > .dz-divider {
+  margin-block: calc(var(--preferences-section-gap) / -2);
+}
+
+.dz-preferences > .dz-divider {
+  margin-block: calc(var(--preferences-group-gap) / -2);
 }
 
 /*
@@ -119,6 +148,10 @@
   min-height: var(--control-medium-size);
   width: 100%;
   border: 0;
+  /* An interactive row is a button, and the reset has to reach its own
+     padding as well: the engine's 1px on each block edge would otherwise stand
+     the rows that open something 2px taller than the inert ones beside them. */
+  padding: 0;
   background: none;
   text-align: left;
   color: inherit;
@@ -126,7 +159,10 @@
 
 .dz-preference-row[data-interactive='true'] {
   cursor: pointer;
-  border-radius: var(--radius-small);
+  /* The row's own corner is the shared one for a box that grows: the control
+     step everywhere, the container step in Bright, where the control step is a
+     pill that would stretch across the column. */
+  border-radius: var(--control-container-radius);
   /* Pulled out and pushed back in, so the wash is wider than the text while
      the row still starts on the same left edge as the inert rows above it. */
   margin-inline: calc(var(--spacing-2) * -1);
@@ -157,23 +193,34 @@
   align-items: center;
 }
 
+/*
+ * The pad rides on the text, so a row that grows a second line keeps air
+ * above the title and below the subtitle rather than closing to the step a
+ * bare row can get away with. A single line padded this way is shorter than
+ * the control height, and the row's minimum still centres it — the minimum
+ * stops standing in for the pad the moment there is more than one line.
+ */
 .dz-preference-row__text {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-1);
   min-width: 0;
-  padding-block: var(--spacing-1);
+  padding-block: var(--preferences-row-padding);
 }
 
+/* A row rests at `labelQuiet`, the way a list row does: every title at the
+   label weight was a column of bold with nothing left to outrank it. The 500
+   still separates a title from its 400 subtitle, and a control's own label
+   keeps the 600. */
 .dz-preference-row__title {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--color-content);
-  font-family: var(--label-medium-font-family);
-  font-size: var(--label-medium-font-size);
-  font-weight: var(--label-medium-font-weight);
-  line-height: var(--label-medium-line-height);
+  font-family: var(--label-quiet-font-family);
+  font-size: var(--label-quiet-font-size);
+  font-weight: var(--label-quiet-font-weight);
+  line-height: var(--label-quiet-line-height);
 }
 
 .dz-preference-row__subtitle {

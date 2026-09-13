@@ -36,7 +36,9 @@
   overflow: hidden;
   background-color: var(--color-surface-muted);
   border: var(--stroke-hairline) solid var(--color-border);
-  border-radius: var(--radius-medium);
+  /* A panel that grows with its listing, so the shared corner for a box that
+     grows — the container step where Bright's control step is a pill. */
+  border-radius: var(--control-container-radius);
 }
 
 /* The head is chrome and reads as chrome: the titlebar's step, a rule under

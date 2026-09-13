@@ -48,6 +48,7 @@ pub struct ThemeSeed {
     pub color_border_muted: Color,
     pub color_on_accent: Color,
     pub control_pressed_alpha: f64,
+    pub control_container_radius: f64,
     pub control_tiny_size: f64,
     pub control_small_size: f64,
     pub control_medium_size: f64,
@@ -201,6 +202,7 @@ pub const STUDIO_LIGHT_SEED: ThemeSeed = ThemeSeed {
     color_border_muted: Color::from_argb(255, 95, 100, 120),
     color_on_accent: Color::from_argb(255, 255, 255, 255),
     control_pressed_alpha: 0.9,
+    control_container_radius: px(10.0),
     control_tiny_size: px(24.0),
     control_small_size: px(26.0),
     control_medium_size: px(28.0),
@@ -373,6 +375,7 @@ pub struct ThemeVariables {
     pub color_border_muted: Color,
     pub color_on_accent: Color,
     pub control_pressed_alpha: f64,
+    pub control_container_radius: f64,
     pub control_tiny_size: f64,
     pub control_small_size: f64,
     pub control_medium_size: f64,
@@ -520,6 +523,13 @@ pub struct ThemeVariables {
     pub checkbox_medium_box: f64,
     pub checkbox_large_box: f64,
     pub dialog_scrim_color: Color,
+    pub preferences_row_padding: f64,
+    pub preferences_row_gap: f64,
+    pub preferences_heading_gap: f64,
+    pub preferences_footer_gap: f64,
+    pub preferences_title_gap: f64,
+    pub preferences_section_gap: f64,
+    pub preferences_group_gap: f64,
     pub radio_thickness: f64,
     pub radio_small_box: f64,
     pub radio_small_dot: f64,
@@ -587,6 +597,7 @@ impl ThemeVariables {
         let color_border_muted = seed.color_border_muted;
         let color_on_accent = seed.color_on_accent;
         let control_pressed_alpha = seed.control_pressed_alpha;
+        let control_container_radius = seed.control_container_radius;
         let control_tiny_size = seed.control_tiny_size;
         let control_small_size = seed.control_small_size;
         let control_medium_size = seed.control_medium_size;
@@ -723,6 +734,13 @@ impl ThemeVariables {
         let checkbox_medium_box = spacing_4;
         let checkbox_large_box = spacing_5;
         let dialog_scrim_color = color_content;
+        let preferences_row_padding = spacing_1_5;
+        let preferences_row_gap = spacing_1;
+        let preferences_heading_gap = spacing_2;
+        let preferences_footer_gap = spacing_1;
+        let preferences_title_gap = spacing_4;
+        let preferences_section_gap = spacing_6;
+        let preferences_group_gap = spacing_10;
         let radio_thickness = stroke_control;
         let radio_small_box = spacing_3_5;
         let radio_small_dot = spacing_1_5;
@@ -843,6 +861,7 @@ impl ThemeVariables {
             color_border_muted,
             color_on_accent,
             control_pressed_alpha,
+            control_container_radius,
             control_tiny_size,
             control_small_size,
             control_medium_size,
@@ -978,6 +997,13 @@ impl ThemeVariables {
             checkbox_medium_box,
             checkbox_large_box,
             dialog_scrim_color,
+            preferences_row_padding,
+            preferences_row_gap,
+            preferences_heading_gap,
+            preferences_footer_gap,
+            preferences_title_gap,
+            preferences_section_gap,
+            preferences_group_gap,
             radio_thickness,
             radio_small_box,
             radio_small_dot,
@@ -1042,6 +1068,7 @@ pub static BRIGHT_LIGHT: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     color_border_strong: Color::from_argb(23, 17, 28, 46),
     color_border_muted: Color::from_argb(64, 17, 28, 46),
     color_on_accent: Color::from_argb(255, 214, 255, 63),
+    control_container_radius: px(14.0),
     shadow_2xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(2.0), spread: px(0.0), color: Color::from_argb(31, 17, 28, 46) }],
     shadow_xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(3.0), spread: px(0.0), color: Color::from_argb(36, 17, 28, 46) }],
     shadow_sm: &[TokenShadow { x: px(0.0), y: px(4.0), blur: px(12.0), spread: px(0.0), color: Color::from_argb(36, 17, 28, 46) }],
@@ -1086,6 +1113,7 @@ pub static BRIGHT_DARK: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     color_border_strong: Color::from_argb(23, 242, 244, 239),
     color_border_muted: Color::from_argb(255, 53, 65, 79),
     color_on_accent: Color::from_argb(255, 17, 28, 46),
+    control_container_radius: px(14.0),
     shadow_2xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(2.0), spread: px(0.0), color: Color::from_argb(102, 0, 0, 0) }],
     shadow_xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(3.0), spread: px(0.0), color: Color::from_argb(115, 0, 0, 0) }],
     shadow_sm: &[TokenShadow { x: px(0.0), y: px(4.0), blur: px(14.0), spread: px(0.0), color: Color::from_argb(115, 0, 0, 0) }],
@@ -1245,6 +1273,7 @@ pub static GRAPHITE_LIGHT: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     color_border_strong: Color::from_argb(43, 23, 23, 27),
     color_border_muted: Color::from_argb(255, 87, 87, 95),
     color_on_accent: Color::from_argb(255, 250, 250, 250),
+    control_container_radius: px(8.0),
     frame_window_radius: px(16.0),
     frame_popover_radius: px(12.0),
     radius_small: px(7.0),
@@ -1283,6 +1312,7 @@ pub static GRAPHITE_DARK: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     color_border_strong: Color::from_argb(51, 255, 255, 255),
     color_border_muted: Color::from_argb(255, 56, 56, 63),
     color_on_accent: Color::from_argb(255, 19, 19, 22),
+    control_container_radius: px(8.0),
     shadow_2xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(2.0), spread: px(0.0), color: Color::from_argb(102, 0, 0, 0) }],
     shadow_xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(3.0), spread: px(0.0), color: Color::from_argb(115, 0, 0, 0) }],
     shadow_sm: &[TokenShadow { x: px(0.0), y: px(4.0), blur: px(14.0), spread: px(0.0), color: Color::from_argb(115, 0, 0, 0) }],
@@ -1443,6 +1473,7 @@ pub static NOCTURNE_LIGHT: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     color_border_strong: Color::from_argb(43, 35, 36, 46),
     color_border_muted: Color::from_argb(255, 216, 217, 228),
     color_on_accent: Color::from_argb(255, 255, 255, 255),
+    control_container_radius: px(8.0),
     frame_window_radius: px(16.0),
     frame_popover_radius: px(12.0),
     radius_small: px(7.0),
@@ -1481,6 +1512,7 @@ pub static NOCTURNE_DARK: ThemeVariables = ThemeVariables::resolve(ThemeSeed {
     color_border_strong: Color::from_argb(51, 233, 233, 237),
     color_border_muted: Color::from_argb(255, 63, 66, 77),
     color_on_accent: Color::from_argb(255, 22, 24, 38),
+    control_container_radius: px(8.0),
     shadow_2xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(2.0), spread: px(0.0), color: Color::from_argb(102, 0, 0, 0) }],
     shadow_xs: &[TokenShadow { x: px(0.0), y: px(1.0), blur: px(3.0), spread: px(0.0), color: Color::from_argb(115, 0, 0, 0) }],
     shadow_sm: &[TokenShadow { x: px(0.0), y: px(4.0), blur: px(14.0), spread: px(0.0), color: Color::from_argb(115, 0, 0, 0) }],

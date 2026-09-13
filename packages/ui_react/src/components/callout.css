@@ -77,7 +77,10 @@
 .dz-callout[data-size='small'] {
   padding-block: var(--spacing-2);
   padding-inline: var(--spacing-3);
-  border-radius: var(--radius-medium);
+  /* The small callout is the one whose size takes the control step; it is still
+     a box that grows, so it takes the shared corner for one — the container
+     step in Bright, where that control step would be a pill. */
+  border-radius: var(--control-container-radius);
 }
 
 .dz-callout[data-size='medium'] {

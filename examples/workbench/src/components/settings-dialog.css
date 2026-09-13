@@ -117,10 +117,9 @@
    control is on the far edge and the page is the measure. And they stand
    further apart than the library's column sets them, because each one here
    carries a sentence under its title, and two sentences need air between
-   them to read as two settings. */
+   them to read as two settings. The run between sections is the library's. */
 .wb-settings .wb-settings__prefs {
   --preferences-width: 100%;
-  gap: var(--spacing-8);
 }
 
 .wb-settings .dz-preference-section__rows {

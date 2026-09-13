@@ -25,6 +25,31 @@ control:
     alpha:
       $type: number
       $value: 0.9
+  # The corner a box that grows with its content wears — a preference row, a
+  # callout, a code block, a disclosure header. It is the regular control step,
+  # because those boxes are drawn in the control's rhythm; Bright is the
+  # exception, where that step is a pill — right for a box whose height sets its
+  # curve, and wrong here, where the curve would stretch with the content
+  # instead of staying a corner. So Bright re-picks a corner of its own: its
+  # `xl`, the one finite step that family invented, rather than the shared
+  # container step every other surface already wears — which would have drawn
+  # this row at the card's corner and left Bright looking like the rest.
+  #
+  # Stated against the corner metrics rather than as an alias of one radius
+  # step, the way the radius scale states its own steps: it is the one role
+  # whose pick is not any single step's — `medium` in three families, `xl-bright`
+  # in Bright — and an alias a theme re-picks cannot be carried by the native
+  # generators, which resolve a mode to a stored member and need it to be a
+  # value. (The CSS side could follow the alias; Dart, Swift and Rust cannot.)
+  container:
+    radius:
+      $type: dimension
+      $value: "{base.corner.md}"
+      $extensions:
+        mode:
+          bright: "{base.corner.xl-bright}"
+          graphite: "{base.corner.sm}"
+          nocturne: "{base.corner.sm}"
   tiny:
     gap:
       $value: "{spacing.1}"

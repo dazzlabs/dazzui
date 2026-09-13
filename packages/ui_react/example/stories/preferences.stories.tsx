@@ -20,6 +20,10 @@ import { useState } from 'react'
 import { Page, Section, TokenTable } from '../src/components/gallery'
 import { componentTokens } from '../src/lib/tokens'
 
+/* A field fills its container, which is right in a form and wrong on a row's
+   trailing edge: there it takes a measure of its own. */
+const FIELD = { width: 'calc(var(--spacing-20) * 2 + var(--spacing-4))' }
+
 const meta: Meta<typeof Preferences> = {
   title: 'Components/Preferences',
   component: Preferences,
@@ -96,7 +100,6 @@ export const Overview: Story = {
                 <Badge tint="neutral">Idle</Badge>
               </PreferenceRow>
             </PreferenceSection>
-            <Divider />
             <PreferenceSection
               label="Shortcuts"
               footer="A shortcut already taken by another app will not fire here."
@@ -229,7 +232,7 @@ export const Controls: Story = {
             />
           </PreferenceRow>
           <PreferenceRow title="Default target language">
-            <TextField defaultValue="Chinese" size="small" />
+            <TextField defaultValue="Chinese" size="small" style={FIELD} />
           </PreferenceRow>
         </PreferenceSection>
       </Preferences>
@@ -287,7 +290,6 @@ export const AGroup: Story = {
             <Badge tint="neutral">Idle</Badge>
           </PreferenceRow>
         </PreferenceSection>
-        <Divider />
         <PreferenceSection
           label="Shortcuts"
           footer="A shortcut already taken by another app will not fire here."
@@ -307,7 +309,11 @@ export const AGroup: Story = {
 export const ASettingsPage: Story = {
   render: () => {
     const [launch, setLaunch] = useState(true)
+    const [menuBar, setMenuBar] = useState(true)
+    const [appearance, setAppearance] = useState('system')
     const [beta, setBeta] = useState(false)
+    const [onPaste, setOnPaste] = useState(true)
+    const [sync, setSync] = useState(true)
     const [translate, setTranslate] = useState('⌥⇧2')
     const [capture, setCapture] = useState('')
 
@@ -328,6 +334,53 @@ export const ASettingsPage: Story = {
                 onCheckedChange={setLaunch}
               />
             </PreferenceRow>
+            <PreferenceRow title="Show in the menu bar">
+              <Switch
+                aria-label="Show in the menu bar"
+                checked={menuBar}
+                onCheckedChange={setMenuBar}
+              />
+            </PreferenceRow>
+            <PreferenceRow title="Appearance">
+              <SegmentedControl
+                aria-label="Appearance"
+                items={[
+                  { value: 'light', label: 'Light' },
+                  { value: 'dark', label: 'Dark' },
+                  { value: 'system', label: 'System' },
+                ]}
+                size="small"
+                value={appearance}
+                onValueChange={setAppearance}
+              />
+            </PreferenceRow>
+            <PreferenceRow title="Language">
+              <Select
+                defaultValue="system"
+                options={[
+                  { value: 'system', label: 'System' },
+                  { value: 'en', label: 'English' },
+                  { value: 'zh', label: '中文' },
+                ]}
+                size="small"
+              />
+            </PreferenceRow>
+          </PreferenceSection>
+          <PreferenceSection
+            label="Updates"
+            footer="The beta channel gets every build the day it is cut."
+          >
+            <PreferenceRow title="Check for updates">
+              <Select
+                defaultValue="weekly"
+                options={[
+                  { value: 'daily', label: 'Daily' },
+                  { value: 'weekly', label: 'Weekly' },
+                  { value: 'never', label: 'Never' },
+                ]}
+                size="small"
+              />
+            </PreferenceRow>
             <PreferenceRow
               title="Join the beta channel"
               subtitle="Updates arrive earlier and break more often"
@@ -338,14 +391,28 @@ export const ASettingsPage: Story = {
                 onCheckedChange={setBeta}
               />
             </PreferenceRow>
+          </PreferenceSection>
+          <PreferenceSection
+            label="Storage"
+            action={
+              <Button size="small" tint="neutral" variant="plain">
+                Show in Finder
+              </Button>
+            }
+          >
             <PreferenceRow
               title="Storage location"
               subtitle="~/Library/Application Support"
               onOpen={() => {}}
             />
+            <PreferenceRow title="Cache" subtitle="1.2 GB across 3 projects">
+              <Button size="small" tint="neutral">
+                Clear
+              </Button>
+            </PreferenceRow>
           </PreferenceSection>
         </PreferenceGroup>
-
+        <Divider />
         <PreferenceGroup
           title="Translation"
           description="How segments are sent, and what comes back."
@@ -366,10 +433,30 @@ export const ASettingsPage: Story = {
             >
               <Badge tint="neutral">Idle</Badge>
             </PreferenceRow>
+            <PreferenceRow title="Add a provider" onOpen={() => {}} />
           </PreferenceSection>
-          <Divider />
+          <PreferenceSection label="Behaviour">
+            <PreferenceRow title="Default target language">
+              <TextField defaultValue="Chinese" size="small" style={FIELD} />
+            </PreferenceRow>
+            <PreferenceRow
+              title="Translate on paste"
+              subtitle="Anything pasted into a segment is sent as it lands"
+            >
+              <Switch
+                aria-label="Translate on paste"
+                checked={onPaste}
+                onCheckedChange={setOnPaste}
+              />
+            </PreferenceRow>
+          </PreferenceSection>
           <PreferenceSection
             label="Shortcuts"
+            action={
+              <Button size="small" tint="neutral" variant="plain">
+                Reset all
+              </Button>
+            }
             footer="A shortcut already taken by another app will not fire here."
           >
             <PreferenceRow title="Translate selection">
@@ -380,6 +467,29 @@ export const ASettingsPage: Story = {
             </PreferenceRow>
             <PreferenceRow title="Capture and translate">
               <ShortcutRecorder value={capture} onValueChange={setCapture} />
+            </PreferenceRow>
+          </PreferenceSection>
+        </PreferenceGroup>
+        <Divider />
+        <PreferenceGroup title="Account">
+          <PreferenceSection>
+            <PreferenceRow title="Signed in as" subtitle="mara@acme.example">
+              <Button size="small" tint="neutral">
+                Sign out
+              </Button>
+            </PreferenceRow>
+            <PreferenceRow
+              title="Sync settings"
+              subtitle="Across every device signed in to this account"
+            >
+              <Switch
+                aria-label="Sync settings"
+                checked={sync}
+                onCheckedChange={setSync}
+              />
+            </PreferenceRow>
+            <PreferenceRow title="Plan" subtitle="Renews 1 October">
+              <Badge tint="primary">Pro</Badge>
             </PreferenceRow>
           </PreferenceSection>
         </PreferenceGroup>

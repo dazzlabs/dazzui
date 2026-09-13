@@ -6,7 +6,13 @@ import SwiftUI
 // sits further from the section above it than from its own rows, a group
 // title stands further still, and one group stands furthest from the next —
 // so a heading always reads as belonging to what follows it rather than
-// floating between two blocks.
+// floating between two blocks. The ladder is decided in ds — one
+// `preferences*Gap` per level, and the pad a row's text wears — and nothing
+// here restates a step. One thing the React sheet does that a `VStack`
+// cannot: a rule between two children is drawn in the middle of the run
+// rather than given the run on each side, since a view cannot be told from
+// its siblings here. A story that draws one carries the negative padding
+// itself.
 
 /// The settings column, and the root the rest of this file sits in.
 ///
@@ -27,7 +33,7 @@ public struct Preferences<Content: View>: View {
   public var body: some View {
     let vars = theme.vars
 
-    VStack(alignment: .leading, spacing: vars.spacing8) {
+    VStack(alignment: .leading, spacing: vars.preferencesGroupGap) {
       content()
     }
     // Full width up to the cap, so it fills a narrow pane and stops in a wide
@@ -72,10 +78,10 @@ public struct PreferenceSection<Content: View, Action: View>: View {
           Spacer(minLength: 0)
           HeadingAction { action() }
         }
-        .padding(.bottom, vars.spacing3)
+        .padding(.bottom, vars.preferencesHeadingGap)
       }
 
-      VStack(alignment: .leading, spacing: vars.spacing1) {
+      VStack(alignment: .leading, spacing: vars.preferencesRowGap) {
         content()
       }
 
@@ -84,7 +90,7 @@ public struct PreferenceSection<Content: View, Action: View>: View {
           .font(vars.captionSmall.font)
           .lineSpacing(vars.captionSmall.size * PreferenceLeading.note - vars.captionSmall.size)
           .foregroundStyle(vars.colorContentSubtle)
-          .padding(.top, vars.spacing2)
+          .padding(.top, vars.preferencesFooterGap)
       }
     }
   }
@@ -132,12 +138,18 @@ public struct PreferenceGroup<Content: View, Action: View>: View {
 
     VStack(alignment: .leading, spacing: 0) {
       HStack(spacing: vars.spacing4) {
-        VStack(alignment: .leading, spacing: vars.spacing15) {
-          // The group outranks its sections typographically: the display cut
-          // at the strong weight, where a section heading is a SectionLabel.
+        // Half a step: the title's leading and the description's already
+        // open the pair.
+        VStack(alignment: .leading, spacing: vars.spacing05) {
+          // The group outranks its sections typographically, and it has to
+          // outrank the rows by more than a weight: a row's title is the same
+          // 12px, so a title one grade heavier read as one more row.
+          // `titleMedium` — two sizes up, at the label weight — is the first
+          // face that stands over a row. A section heading stays a
+          // SectionLabel.
           Text(title)
-            .font(vars.labelStrong.font)
-            .lineSpacing(vars.labelStrong.lineSpacing)
+            .font(vars.titleMedium.font)
+            .lineSpacing(vars.titleMedium.lineSpacing)
             .foregroundStyle(vars.colorContent)
           if let description {
             Text(description)
@@ -151,9 +163,9 @@ public struct PreferenceGroup<Content: View, Action: View>: View {
         Spacer(minLength: 0)
         HeadingAction { action() }
       }
-      .padding(.bottom, vars.spacing3)
+      .padding(.bottom, vars.preferencesTitleGap)
 
-      VStack(alignment: .leading, spacing: vars.spacing4 + vars.spacing05) {
+      VStack(alignment: .leading, spacing: vars.preferencesSectionGap) {
         content()
       }
     }
@@ -212,11 +224,18 @@ public struct PreferenceRow<Icon: View, Trailing: View>: View {
     let vars = theme.vars
 
     if let onOpen {
-      Pressable(action: onOpen, cornerRadius: vars.radiusSmall) { state in
+      // The row's corner is the shared one for a box that grows: the control
+      // step everywhere, the container step in Bright.
+      Pressable(action: onOpen, cornerRadius: vars.controlContainerRadius) { state in
         row
           .padding(.horizontal, vars.spacing2)
           .background(background(hovered: state.hovered || state.pressed))
-          .clipShape(RoundedRectangle(cornerRadius: vars.radiusSmall, style: .circular))
+          .clipShape(
+            RoundedRectangle(
+              cornerRadius: vars.controlContainerRadius,
+              style: .circular
+            )
+          )
           .animation(vars.motion, value: state.controlState)
       }
       // Pulled out and pushed back in, so the wash is wider than the text
@@ -227,7 +246,7 @@ public struct PreferenceRow<Icon: View, Trailing: View>: View {
       .focusRing(
         visible: focused,
         color: vars.focusRing,
-        cornerRadius: vars.radiusSmall,
+        cornerRadius: vars.controlContainerRadius,
         width: vars.focusWidth
       )
     } else {
@@ -243,9 +262,12 @@ public struct PreferenceRow<Icon: View, Trailing: View>: View {
       // own ink rather than inheriting a wash.
       icon()
       VStack(alignment: .leading, spacing: vars.spacing1) {
+        // A row rests at `labelQuiet`, the way a list row does: every title at
+        // the label weight was a column of bold with nothing left to outrank
+        // it.
         Text(title)
-          .font(vars.labelMedium.font)
-          .lineSpacing(vars.labelMedium.lineSpacing)
+          .font(vars.labelQuiet.font)
+          .lineSpacing(vars.labelQuiet.lineSpacing)
           .foregroundStyle(vars.colorContent)
           .lineLimit(1)
           .truncationMode(.tail)
@@ -258,7 +280,10 @@ public struct PreferenceRow<Icon: View, Trailing: View>: View {
             .truncationMode(.tail)
         }
       }
-      .padding(.vertical, vars.spacing1)
+      // The pad rides on the text, so a row that grows a subtitle keeps air
+      // above the title and below it. A single line padded this way is shorter
+      // than the control height, and the row's minimum still centres it.
+      .padding(.vertical, vars.preferencesRowPadding)
       Spacer(minLength: 0)
       if Trailing.self != EmptyView.self || onOpen != nil {
         HStack(spacing: vars.spacing25) {

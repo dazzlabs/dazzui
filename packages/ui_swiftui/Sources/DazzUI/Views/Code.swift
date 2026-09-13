@@ -119,8 +119,19 @@ public struct CodeBlock<Actions: View>: View {
       // rather than the overlay's edge and shadow.
       vars.colorSurfaceMuted
     )
-    .clipShape(RoundedRectangle(cornerRadius: vars.radiusMedium, style: .circular))
-    .border(vars.colorBorder, width: vars.strokeHairline, cornerRadius: vars.radiusMedium)
+    // A panel that grows with its listing, so it takes the shared corner for a
+    // box that grows rather than Bright's control pill.
+    .clipShape(
+      RoundedRectangle(
+        cornerRadius: vars.controlContainerRadius,
+        style: .circular
+      )
+    )
+    .border(
+      vars.colorBorder,
+      width: vars.strokeHairline,
+      cornerRadius: vars.controlContainerRadius
+    )
   }
 
   private var head: some View {
