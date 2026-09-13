@@ -180,11 +180,14 @@ public struct ToggleItem: Identifiable, Sendable {
   public var value: String
   public var label: String
   public var enabled: Bool
+  /// Draws the member as a lone glyph, with ``label`` as its accessible name.
+  public var icon: FluentIcon?
 
-  public init(value: String, label: String, enabled: Bool = true) {
+  public init(value: String, label: String, enabled: Bool = true, icon: FluentIcon? = nil) {
     self.value = value
     self.label = label
     self.enabled = enabled
+    self.icon = icon
   }
 }
 
@@ -249,15 +252,22 @@ public struct ToggleGroup: View {
           Rectangle().fill(edge).frame(width: vars.spacingPx)
         }
         Toggle(
-          item.label,
           pressed: value.contains(item.value),
           size: size,
           variant: variant,
           tint: tint,
           enabled: enabled && item.enabled,
           grouped: true,
+          glyphOnly: item.icon != nil,
+          accessibilityName: item.icon == nil ? nil : item.label,
           action: { press(item.value) }
-        )
+        ) {
+          if let icon = item.icon {
+            Icon(icon, size: metrics.content.size)
+          } else {
+            Text(item.label)
+          }
+        }
       }
     }
     .fixedSize()

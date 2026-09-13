@@ -36,6 +36,8 @@ pub struct SegmentedControl<T> {
     pub size: ControlSize,
     pub active_style: SegmentedActiveStyle,
     pub stretch: bool,
+    /// Paints a `Filled` active segment; `Raised` keeps the neutral ink.
+    pub tint: Tint,
 }
 impl<T: fmt::Debug> fmt::Debug for SegmentedControl<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -53,6 +55,7 @@ impl<T> SegmentedControl<T> {
             size: ControlSize::Small,
             active_style: SegmentedActiveStyle::Raised,
             stretch: false,
+            tint: Tint::Primary,
         }
     }
     pub fn on_changed(mut self, callback: impl Fn(&mut App, T) + 'static) -> Self {
@@ -72,13 +75,11 @@ impl<T: Clone + PartialEq + fmt::Debug + 'static> StatelessWidget for SegmentedC
                 let selected = Some(&item.value) == self.value.as_ref();
                 let label = item.label.clone();
                 let active_style = self.active_style;
+                let tint = self.tint;
                 let mut p = Pressable::new(move |app, context, phase| {
                     let v = Theme::of(app, context);
-                    let filled = v.control_colors(
-                        ControlVariant::Filled,
-                        Tint::Primary,
-                        ControlState::Normal,
-                    );
+                    let filled =
+                        v.control_colors(ControlVariant::Filled, tint, ControlState::Normal);
                     let (surface, content) = if selected {
                         match active_style {
                             SegmentedActiveStyle::Raised => {
@@ -165,6 +166,7 @@ impl<T: Clone + PartialEq + fmt::Debug + 'static> StatelessWidget for SegmentedC
 pub struct PillTabs<T> {
     pub items: Vec<ChoiceItem<T>>,
     pub value: Option<T>,
+    pub tint: Tint,
     pub on_changed: Option<ValueChanged<T>>,
 }
 impl<T: fmt::Debug> fmt::Debug for PillTabs<T> {
@@ -179,6 +181,7 @@ impl<T> PillTabs<T> {
         Self {
             items,
             value,
+            tint: Tint::Primary,
             on_changed: None,
         }
     }
@@ -199,13 +202,11 @@ impl<T: Clone + PartialEq + fmt::Debug + 'static> StatelessWidget for PillTabs<T
                     .count
                     .map(|n| format!("{}  {n}", item.label))
                     .unwrap_or_else(|| item.label.clone());
+                let tint = self.tint;
                 let mut p = Pressable::new(move |app, context, phase| {
                     let v = Theme::of(app, context);
-                    let filled = v.control_colors(
-                        ControlVariant::Filled,
-                        Tint::Primary,
-                        ControlState::Normal,
-                    );
+                    let filled =
+                        v.control_colors(ControlVariant::Filled, tint, ControlState::Normal);
                     let mut face = v.label_small;
                     if selected {
                         face.weight = v.label_strong.weight;

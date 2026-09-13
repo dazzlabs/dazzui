@@ -3,6 +3,13 @@ export type SceneValue =
   | number
   | boolean
   | { state: string }
+  | { not: SceneValue }
+  | { and: SceneValue[] }
+  | { or: SceneValue[] }
+  | { lower: SceneValue }
+  | { text: SceneValue }
+  | { length: SceneValue }
+  | { contains: SceneValue[] }
   | { trim: SceneValue }
   | { concat: SceneValue[] }
   | { eq: SceneValue[] }

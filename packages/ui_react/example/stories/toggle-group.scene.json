@@ -1,0 +1,787 @@
+{
+  "Variants": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "ToggleGroup",
+          "props": {
+            "label": "Show (recessed)",
+            "variant": "recessed"
+          },
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "minimap",
+                "label": "Minimap"
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "blame",
+                "label": "Blame"
+              }
+            }
+          ]
+        },
+        {
+          "component": "ToggleGroup",
+          "props": {
+            "label": "Show (normal)",
+            "variant": "normal"
+          },
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "minimap",
+                "label": "Minimap"
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "blame",
+                "label": "Blame"
+              }
+            }
+          ]
+        },
+        {
+          "component": "ToggleGroup",
+          "props": {
+            "label": "Show (outlined)",
+            "variant": "outlined"
+          },
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "minimap",
+                "label": "Minimap"
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "blame",
+                "label": "Blame"
+              }
+            }
+          ]
+        },
+        {
+          "component": "ToggleGroup",
+          "props": {
+            "label": "Show (plain)",
+            "variant": "plain"
+          },
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "minimap",
+                "label": "Minimap"
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "blame",
+                "label": "Blame"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Tints": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "ToggleGroup",
+          "props": {
+            "label": "Show (primary)",
+            "tint": "primary"
+          },
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "minimap",
+                "label": "Minimap"
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "blame",
+                "label": "Blame"
+              }
+            }
+          ]
+        },
+        {
+          "component": "ToggleGroup",
+          "props": {
+            "label": "Show (neutral)",
+            "tint": "neutral"
+          },
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "minimap",
+                "label": "Minimap"
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "blame",
+                "label": "Blame"
+              }
+            }
+          ]
+        },
+        {
+          "component": "ToggleGroup",
+          "props": {
+            "label": "Show (info)",
+            "tint": "info"
+          },
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "minimap",
+                "label": "Minimap"
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "blame",
+                "label": "Blame"
+              }
+            }
+          ]
+        },
+        {
+          "component": "ToggleGroup",
+          "props": {
+            "label": "Show (success)",
+            "tint": "success"
+          },
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "minimap",
+                "label": "Minimap"
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "blame",
+                "label": "Blame"
+              }
+            }
+          ]
+        },
+        {
+          "component": "ToggleGroup",
+          "props": {
+            "label": "Show (warning)",
+            "tint": "warning"
+          },
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "minimap",
+                "label": "Minimap"
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "blame",
+                "label": "Blame"
+              }
+            }
+          ]
+        },
+        {
+          "component": "ToggleGroup",
+          "props": {
+            "label": "Show (danger)",
+            "tint": "danger"
+          },
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "minimap",
+                "label": "Minimap"
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "blame",
+                "label": "Blame"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Disabled": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "ToggleGroup",
+          "props": {
+            "label": "Show"
+          },
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "minimap",
+                "label": "Minimap"
+              }
+            },
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "blame",
+                "label": "Blame",
+                "disabled": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Glyphs": {
+    "content": {
+      "component": "ToggleGroup",
+      "props": {
+        "label": "Text style"
+      },
+      "children": [
+        {
+          "component": "ToggleItem",
+          "props": {
+            "value": "bold",
+            "label": "Bold"
+          },
+          "bind": {
+            "pressed": "bold"
+          },
+          "children": [
+            {
+              "component": "Icon",
+              "props": {
+                "name": "TextBold24Regular",
+                "fit": true
+              }
+            }
+          ]
+        },
+        {
+          "component": "ToggleItem",
+          "props": {
+            "value": "italic",
+            "label": "Italic"
+          },
+          "bind": {
+            "pressed": "italic"
+          },
+          "children": [
+            {
+              "component": "Icon",
+              "props": {
+                "name": "TextItalic24Regular",
+                "fit": true
+              }
+            }
+          ]
+        },
+        {
+          "component": "ToggleItem",
+          "props": {
+            "value": "underline",
+            "label": "Underline"
+          },
+          "bind": {
+            "pressed": "underline"
+          },
+          "children": [
+            {
+              "component": "Icon",
+              "props": {
+                "name": "TextUnderline24Regular",
+                "fit": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "bold": true,
+      "italic": false,
+      "underline": false
+    }
+  },
+  "Words": {
+    "content": {
+      "component": "ToggleGroup",
+      "props": {
+        "label": "Show"
+      },
+      "children": [
+        {
+          "component": "ToggleItem",
+          "props": {
+            "value": "whitespace",
+            "label": "Whitespace"
+          },
+          "bind": {
+            "pressed": "whitespace"
+          },
+          "children": [
+            "Whitespace"
+          ]
+        },
+        {
+          "component": "ToggleItem",
+          "props": {
+            "value": "minimap",
+            "label": "Minimap"
+          },
+          "bind": {
+            "pressed": "minimap"
+          },
+          "children": [
+            "Minimap"
+          ]
+        },
+        {
+          "component": "ToggleItem",
+          "props": {
+            "value": "blame",
+            "label": "Blame"
+          },
+          "bind": {
+            "pressed": "blame"
+          },
+          "children": [
+            "Blame"
+          ]
+        }
+      ]
+    },
+    "state": {
+      "whitespace": true,
+      "minimap": false,
+      "blame": false
+    }
+  },
+  "Single": {
+    "content": {
+      "component": "ToggleGroup",
+      "props": {
+        "label": "Panel",
+        "multiple": false
+      },
+      "bind": {
+        "value": "panel"
+      },
+      "children": [
+        {
+          "component": "ToggleItem",
+          "props": {
+            "value": "whitespace",
+            "label": "Whitespace"
+          },
+          "children": [
+            "Whitespace"
+          ]
+        },
+        {
+          "component": "ToggleItem",
+          "props": {
+            "value": "minimap",
+            "label": "Minimap"
+          },
+          "children": [
+            "Minimap"
+          ]
+        },
+        {
+          "component": "ToggleItem",
+          "props": {
+            "value": "blame",
+            "label": "Blame"
+          },
+          "children": [
+            "Blame"
+          ]
+        }
+      ]
+    },
+    "state": {
+      "panel": "minimap"
+    }
+  },
+  "Overview": {
+    "content": {
+      "component": "Page",
+      "props": {
+        "title": "ToggleGroup",
+        "description": "Several toggles that belong together, joined into one control. Joined rather than merely adjacent: the corners are rounded at the ends of the run only and the shared edges collapse to one, which is what says the group is one thing with several states rather than three buttons that happen to touch."
+      },
+      "children": [
+        {
+          "component": "Section",
+          "props": {
+            "title": "Beside a SegmentedControl",
+            "description": "This is where the two part company. A segmented control is a choice between its segments and always has exactly one; a toggle group can have several on at once, or none. Drawing a mandatory single choice with this one would let the reader clear a choice that cannot be cleared."
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "SegmentedControl — one, always"
+                  },
+                  "children": [
+                    {
+                      "component": "SegmentedControl",
+                      "props": {
+                        "label": "View",
+                        "value": "source"
+                      },
+                      "children": [
+                        {
+                          "component": "SegmentedItem",
+                          "props": {
+                            "value": "source",
+                            "label": "Source"
+                          }
+                        },
+                        {
+                          "component": "SegmentedItem",
+                          "props": {
+                            "value": "preview",
+                            "label": "Preview"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "ToggleGroup — any number, including none"
+                  },
+                  "children": [
+                    {
+                      "component": "ToggleGroup",
+                      "props": {
+                        "label": "Text style"
+                      },
+                      "children": [
+                        {
+                          "component": "ToggleItem",
+                          "props": {
+                            "value": "bold",
+                            "label": "Bold"
+                          },
+                          "bind": {
+                            "pressed": "bold"
+                          },
+                          "children": [
+                            {
+                              "component": "Icon",
+                              "props": {
+                                "name": "TextBold24Regular",
+                                "fit": true
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "component": "ToggleItem",
+                          "props": {
+                            "value": "italic",
+                            "label": "Italic"
+                          },
+                          "bind": {
+                            "pressed": "italic"
+                          },
+                          "children": [
+                            {
+                              "component": "Icon",
+                              "props": {
+                                "name": "TextItalic24Regular",
+                                "fit": true
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "component": "ToggleItem",
+                          "props": {
+                            "value": "underline",
+                            "label": "Underline"
+                          },
+                          "bind": {
+                            "pressed": "underline"
+                          },
+                          "children": [
+                            {
+                              "component": "Icon",
+                              "props": {
+                                "name": "TextUnderline24Regular",
+                                "fit": true
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "One tab stop",
+            "description": "Base UI owns the part that is easy to get wrong: the group is a single tab stop and the arrow keys move inside it, which is what keeps a toolbar of twelve toggles from being twelve stops on the way to the document."
+          },
+          "children": [
+            {
+              "component": "ToggleGroup",
+              "props": {
+                "label": "Text style"
+              },
+              "children": [
+                {
+                  "component": "ToggleItem",
+                  "props": {
+                    "value": "bold",
+                    "label": "Bold"
+                  },
+                  "bind": {
+                    "pressed": "bold-2"
+                  },
+                  "children": [
+                    {
+                      "component": "Icon",
+                      "props": {
+                        "name": "TextBold24Regular",
+                        "fit": true
+                      }
+                    }
+                  ]
+                },
+                {
+                  "component": "ToggleItem",
+                  "props": {
+                    "value": "italic",
+                    "label": "Italic"
+                  },
+                  "bind": {
+                    "pressed": "italic-2"
+                  },
+                  "children": [
+                    {
+                      "component": "Icon",
+                      "props": {
+                        "name": "TextItalic24Regular",
+                        "fit": true
+                      }
+                    }
+                  ]
+                },
+                {
+                  "component": "ToggleItem",
+                  "props": {
+                    "value": "underline",
+                    "label": "Underline"
+                  },
+                  "bind": {
+                    "pressed": "underline-2"
+                  },
+                  "children": [
+                    {
+                      "component": "Icon",
+                      "props": {
+                        "name": "TextUnderline24Regular",
+                        "fit": true
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Words",
+            "description": "Nothing about the group is glyph-only. A run of labelled toggles is what a filter bar wants, and the joined edges are what say the three answers are about one question."
+          },
+          "children": [
+            {
+              "component": "ToggleGroup",
+              "props": {
+                "label": "Show"
+              },
+              "children": [
+                {
+                  "component": "ToggleItem",
+                  "props": {
+                    "value": "whitespace",
+                    "label": "Whitespace",
+                    "pressed": true
+                  }
+                },
+                {
+                  "component": "ToggleItem",
+                  "props": {
+                    "value": "minimap",
+                    "label": "Minimap"
+                  }
+                },
+                {
+                  "component": "ToggleItem",
+                  "props": {
+                    "value": "blame",
+                    "label": "Blame"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "bold": true,
+      "italic": false,
+      "underline": false,
+      "bold-2": true,
+      "italic-2": false,
+      "underline-2": false
+    }
+  }
+}

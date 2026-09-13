@@ -1,4 +1,4 @@
-use super::{Callback, Pressable, Spinner};
+use super::{Callback, FluentGlyph, FluentIcon, Pressable, Spinner};
 use crate::{ControlState, ControlVariant, Theme, Tint};
 use inset_foundation::App;
 use inset_painting::{
@@ -6,8 +6,8 @@ use inset_painting::{
 };
 use inset_rendering::{BoxConstraints, CrossAxisAlignment, MainAxisAlignment, MainAxisSize};
 use inset_widgets::{
-    Align, BuildContext, Column, ConstrainedBox, Container, DefaultTextStyle, Expanded, IntoWidget,
-    Row, StatelessWidget, Text, WidgetRef,
+    Align, BuildContext, Column, ConstrainedBox, Container, DefaultTextStyle, Expanded, IconTheme,
+    IconThemeData, IntoWidget, Row, StatelessWidget, Text, WidgetRef,
 };
 use std::rc::Rc;
 #[derive(Debug, Clone)]
@@ -215,11 +215,39 @@ impl StatelessWidget for Step {
                 on_accent: false,
             }
             .into_widget(),
-            StepStatus::Done => Text::new("✓")
-                .style(v.label_small.text_style().color(v.color_success.shade(600)))
+            // Done keeps the success hue on any tint: a wash disc and the
+            // Fluent checkmark React draws. Idle is an outlined ring.
+            StepStatus::Done => Container::new()
+                .width(v.spacing_4)
+                .height(v.spacing_4)
+                .decoration(
+                    BoxDecoration::new()
+                        .color(v.wash(Tint::Success, 0.14))
+                        .border_radius(BorderRadiusGeometry::circular(v.radius_full)),
+                )
+                .child(
+                    Align::new().child(IconTheme::merge(
+                        None,
+                        IconThemeData::new()
+                            .size(v.spacing_3)
+                            .color(v.color_success.shade(600)),
+                        FluentIcon(FluentGlyph::Checkmark12Filled),
+                    )),
+                )
                 .into_widget(),
-            _ => Text::new("○")
-                .style(v.label_small.text_style().color(v.color_content_faint))
+            _ => Container::new()
+                .width(v.spacing_4)
+                .height(v.spacing_4)
+                .decoration(
+                    BoxDecoration::new()
+                        .border(Border::all(
+                            v.color_border_muted,
+                            v.stroke_control,
+                            BorderStyle::Solid,
+                            -1.0,
+                        ))
+                        .border_radius(BorderRadiusGeometry::circular(v.radius_full)),
+                )
                 .into_widget(),
         };
         let mut children = vec![
@@ -256,10 +284,15 @@ impl StatelessWidget for Step {
 #[derive(Debug, Clone)]
 pub struct StepList {
     pub steps: Vec<Step>,
+    /// Additional rows, for callers that key or wrap each step.
+    pub items: Vec<WidgetRef>,
 }
 impl StepList {
     pub fn new(steps: Vec<Step>) -> Self {
-        Self { steps }
+        Self {
+            steps,
+            items: vec![],
+        }
     }
 }
 impl StatelessWidget for StepList {
@@ -268,7 +301,13 @@ impl StatelessWidget for StepList {
         Column::new()
             .main_axis_size(MainAxisSize::Min)
             .spacing(v.spacing_2)
-            .children(self.steps.iter().cloned().map(IntoWidget::into_widget))
+            .children(
+                self.steps
+                    .iter()
+                    .cloned()
+                    .map(IntoWidget::into_widget)
+                    .chain(self.items.iter().cloned()),
+            )
             .into_widget()
     }
 }
@@ -278,6 +317,9 @@ pub struct OptionCard {
     pub description: String,
     pub selected: bool,
     pub tint: Tint,
+    pub enabled: bool,
+    /// A title that is more than a string — a name beside its badge.
+    pub title_child: Option<WidgetRef>,
     pub on_pressed: Option<Callback>,
 }
 impl std::fmt::Debug for OptionCard {
@@ -294,6 +336,8 @@ impl OptionCard {
             description: description.into(),
             selected: false,
             tint: Tint::Primary,
+            enabled: true,
+            title_child: None,
             on_pressed: None,
         }
     }
@@ -346,27 +390,41 @@ impl StatelessWidget for OptionCard {
                         .main_axis_size(MainAxisSize::Min)
                         .cross_axis_alignment(CrossAxisAlignment::Start)
                         .spacing(v.spacing_1_5)
-                        .children([
-                            Text::new(&w.title)
-                                .style(v.label_strong.text_style().color(if dead {
-                                    v.color_content_faint
-                                } else {
-                                    v.color_content
-                                }))
+                        .children({
+                            let ink = if dead {
+                                v.color_content_faint
+                            } else {
+                                v.color_content
+                            };
+                            let title = match w.title_child.clone() {
+                                Some(child) => DefaultTextStyle::new(
+                                    v.label_strong.text_style().color(ink),
+                                    child,
+                                )
                                 .into_widget(),
-                            Text::new(&w.description)
-                                .style(v.caption_small.text_style().color(if dead {
-                                    v.color_content_faint
-                                } else {
-                                    v.color_content_subtle
-                                }))
-                                .into_widget(),
-                        ]),
+                                None => Text::new(&w.title)
+                                    .style(v.label_strong.text_style().color(ink))
+                                    .into_widget(),
+                            };
+                            let mut children = vec![title];
+                            if !w.description.is_empty() {
+                                children.push(
+                                    Text::new(&w.description)
+                                        .style(v.caption_small.text_style().color(if dead {
+                                            v.color_content_faint
+                                        } else {
+                                            v.color_content_subtle
+                                        }))
+                                        .into_widget(),
+                                );
+                            }
+                            children
+                        }),
                 )
                 .into_widget()
         });
         p.radius = radius;
-        p.on_pressed = self.on_pressed.clone();
+        p.on_pressed = self.on_pressed.clone().filter(|_| self.enabled);
         p.into_widget()
     }
 }

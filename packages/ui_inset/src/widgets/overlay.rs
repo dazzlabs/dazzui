@@ -322,6 +322,7 @@ pub struct Dialog {
     pub child: WidgetRef,
     pub actions: Vec<WidgetRef>,
     pub dismissible: bool,
+    pub width: Option<f64>,
 }
 impl Dialog {
     pub fn new<K>(title: impl Into<String>, child: impl IntoWidget<K>) -> Self {
@@ -331,6 +332,7 @@ impl Dialog {
             child: child.into_widget(),
             actions: vec![],
             dismissible: true,
+            width: None,
         }
     }
     pub fn show(self, app: &mut App, context: BuildContext) {
@@ -372,7 +374,7 @@ impl StatelessWidget for Dialog {
         );
         panel.title = Some(self.title.clone());
         panel.description = (!self.description.is_empty()).then(|| self.description.clone());
-        panel.width = Some(v.dialog_width);
+        panel.width = Some(self.width.unwrap_or(v.dialog_width));
         panel.into_widget()
     }
 }

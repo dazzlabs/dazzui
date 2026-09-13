@@ -2092,7 +2092,11 @@
       "importPath": "./stories/form-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/form-field.stories.tsx"
+      "source": "stories/form-field.stories.tsx",
+      "scene": {
+        "file": "form-field.scene.json",
+        "key": "OverAnyControl"
+      }
     },
     {
       "id": "components-formfield--with-a-field-value",
@@ -2132,7 +2136,11 @@
       "importPath": "./stories/icon.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/icon.stories.tsx"
+      "source": "stories/icon.stories.tsx",
+      "scene": {
+        "file": "icon.scene.json",
+        "key": "Default"
+      }
     },
     {
       "id": "components-icon--sizes",
@@ -2142,7 +2150,11 @@
       "importPath": "./stories/icon.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/icon.stories.tsx"
+      "source": "stories/icon.stories.tsx",
+      "scene": {
+        "file": "icon.scene.json",
+        "key": "Sizes"
+      }
     },
     {
       "id": "components-icon--sized-by-a-token",
@@ -2152,7 +2164,11 @@
       "importPath": "./stories/icon.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/icon.stories.tsx"
+      "source": "stories/icon.stories.tsx",
+      "scene": {
+        "file": "icon.scene.json",
+        "key": "SizedByAToken"
+      }
     },
     {
       "id": "components-icon--any-view-box",
@@ -2162,7 +2178,11 @@
       "importPath": "./stories/icon.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/icon.stories.tsx"
+      "source": "stories/icon.stories.tsx",
+      "scene": {
+        "file": "icon.scene.json",
+        "key": "AnyViewBox"
+      }
     },
     {
       "id": "components-icon--inherited-colour",
@@ -2172,7 +2192,11 @@
       "importPath": "./stories/icon.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/icon.stories.tsx"
+      "source": "stories/icon.stories.tsx",
+      "scene": {
+        "file": "icon.scene.json",
+        "key": "InheritedColour"
+      }
     },
     {
       "id": "components-icon--in-a-button",
@@ -2182,7 +2206,11 @@
       "importPath": "./stories/icon.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/icon.stories.tsx"
+      "source": "stories/icon.stories.tsx",
+      "scene": {
+        "file": "icon.scene.json",
+        "key": "InAButton"
+      }
     },
     {
       "id": "components-icon--in-a-toolbar",
@@ -2212,7 +2240,11 @@
       "importPath": "./stories/icon.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/icon.stories.tsx"
+      "source": "stories/icon.stories.tsx",
+      "scene": {
+        "file": "icon.scene.json",
+        "key": "InACallout"
+      }
     },
     {
       "id": "components-iconbutton--overview",
@@ -2222,7 +2254,11 @@
       "importPath": "./stories/icon-button.stories.tsx",
       "type": "story",
       "layout": "fullscreen",
-      "source": "stories/icon-button.stories.tsx"
+      "source": "stories/icon-button.stories.tsx",
+      "scene": {
+        "file": "icon-button.scene.json",
+        "key": "Overview"
+      }
     },
     {
       "id": "components-iconbutton--plain",
@@ -2232,7 +2268,11 @@
       "importPath": "./stories/icon-button.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/icon-button.stories.tsx"
+      "source": "stories/icon-button.stories.tsx",
+      "scene": {
+        "file": "icon-button.scene.json",
+        "key": "Plain"
+      }
     },
     {
       "id": "components-iconbutton--filled",
@@ -2242,7 +2282,11 @@
       "importPath": "./stories/icon-button.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/icon-button.stories.tsx"
+      "source": "stories/icon-button.stories.tsx",
+      "scene": {
+        "file": "icon-button.scene.json",
+        "key": "Filled"
+      }
     },
     {
       "id": "components-iconbutton--variants",
@@ -2252,7 +2296,11 @@
       "importPath": "./stories/icon-button.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/icon-button.stories.tsx"
+      "source": "stories/icon-button.stories.tsx",
+      "scene": {
+        "file": "icon-button.scene.json",
+        "key": "Variants"
+      }
     },
     {
       "id": "components-iconbutton--disabled",
@@ -2262,7 +2310,11 @@
       "importPath": "./stories/icon-button.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/icon-button.stories.tsx"
+      "source": "stories/icon-button.stories.tsx",
+      "scene": {
+        "file": "icon-button.scene.json",
+        "key": "Disabled"
+      }
     },
     {
       "id": "components-iconbutton--sizes",
@@ -2272,7 +2324,11 @@
       "importPath": "./stories/icon-button.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/icon-button.stories.tsx"
+      "source": "stories/icon-button.stories.tsx",
+      "scene": {
+        "file": "icon-button.scene.json",
+        "key": "Sizes"
+      }
     },
     {
       "id": "components-iconbutton--tints",
@@ -2282,7 +2338,11 @@
       "importPath": "./stories/icon-button.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/icon-button.stories.tsx"
+      "source": "stories/icon-button.stories.tsx",
+      "scene": {
+        "file": "icon-button.scene.json",
+        "key": "Tints"
+      }
     },
     {
       "id": "components-iconbutton--a-toolbar",
@@ -2292,7 +2352,11 @@
       "importPath": "./stories/icon-button.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/icon-button.stories.tsx"
+      "source": "stories/icon-button.stories.tsx",
+      "scene": {
+        "file": "icon-button.scene.json",
+        "key": "AToolbar"
+      }
     },
     {
       "id": "components-iconbutton--in-a-list-header",
@@ -2482,7 +2546,11 @@
       "importPath": "./stories/link.stories.tsx",
       "type": "story",
       "layout": "fullscreen",
-      "source": "stories/link.stories.tsx"
+      "source": "stories/link.stories.tsx",
+      "scene": {
+        "file": "link.scene.json",
+        "key": "Overview"
+      }
     },
     {
       "id": "components-link--underlines",
@@ -2492,7 +2560,11 @@
       "importPath": "./stories/link.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/link.stories.tsx"
+      "source": "stories/link.stories.tsx",
+      "scene": {
+        "file": "link.scene.json",
+        "key": "Underlines"
+      }
     },
     {
       "id": "components-link--external",
@@ -2502,7 +2574,11 @@
       "importPath": "./stories/link.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/link.stories.tsx"
+      "source": "stories/link.stories.tsx",
+      "scene": {
+        "file": "link.scene.json",
+        "key": "External"
+      }
     },
     {
       "id": "components-link--tints",
@@ -2512,7 +2588,11 @@
       "importPath": "./stories/link.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/link.stories.tsx"
+      "source": "stories/link.stories.tsx",
+      "scene": {
+        "file": "link.scene.json",
+        "key": "Tints"
+      }
     },
     {
       "id": "components-link--disabled",
@@ -2522,7 +2602,11 @@
       "importPath": "./stories/link.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/link.stories.tsx"
+      "source": "stories/link.stories.tsx",
+      "scene": {
+        "file": "link.scene.json",
+        "key": "Disabled"
+      }
     },
     {
       "id": "components-link--in-prose",
@@ -2702,7 +2786,11 @@
       "importPath": "./stories/meter.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/meter.stories.tsx"
+      "source": "stories/meter.stories.tsx",
+      "scene": {
+        "file": "meter.scene.json",
+        "key": "Bare"
+      }
     },
     {
       "id": "components-meter--with-value",
@@ -2712,7 +2800,11 @@
       "importPath": "./stories/meter.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/meter.stories.tsx"
+      "source": "stories/meter.stories.tsx",
+      "scene": {
+        "file": "meter.scene.json",
+        "key": "WithValue"
+      }
     },
     {
       "id": "components-meter--sizes",
@@ -2722,7 +2814,11 @@
       "importPath": "./stories/meter.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/meter.stories.tsx"
+      "source": "stories/meter.stories.tsx",
+      "scene": {
+        "file": "meter.scene.json",
+        "key": "Sizes"
+      }
     },
     {
       "id": "components-meter--tints",
@@ -2732,7 +2828,11 @@
       "importPath": "./stories/meter.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/meter.stories.tsx"
+      "source": "stories/meter.stories.tsx",
+      "scene": {
+        "file": "meter.scene.json",
+        "key": "Tints"
+      }
     },
     {
       "id": "components-meter--in-a-quota-list",
@@ -2742,7 +2842,11 @@
       "importPath": "./stories/meter.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/meter.stories.tsx"
+      "source": "stories/meter.stories.tsx",
+      "scene": {
+        "file": "meter.scene.json",
+        "key": "InAQuotaList"
+      }
     },
     {
       "id": "components-numberfield--overview",
@@ -2762,7 +2866,11 @@
       "importPath": "./stories/number-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/number-field.stories.tsx"
+      "source": "stories/number-field.stories.tsx",
+      "scene": {
+        "file": "number-field.scene.json",
+        "key": "Bare"
+      }
     },
     {
       "id": "components-numberfield--with-unit",
@@ -2772,7 +2880,11 @@
       "importPath": "./stories/number-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/number-field.stories.tsx"
+      "source": "stories/number-field.stories.tsx",
+      "scene": {
+        "file": "number-field.scene.json",
+        "key": "WithUnit"
+      }
     },
     {
       "id": "components-numberfield--sizes",
@@ -2782,7 +2894,11 @@
       "importPath": "./stories/number-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/number-field.stories.tsx"
+      "source": "stories/number-field.stories.tsx",
+      "scene": {
+        "file": "number-field.scene.json",
+        "key": "Sizes"
+      }
     },
     {
       "id": "components-numberfield--states",
@@ -2792,7 +2908,11 @@
       "importPath": "./stories/number-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/number-field.stories.tsx"
+      "source": "stories/number-field.stories.tsx",
+      "scene": {
+        "file": "number-field.scene.json",
+        "key": "States"
+      }
     },
     {
       "id": "components-numberfield--in-a-form",
@@ -2802,7 +2922,11 @@
       "importPath": "./stories/number-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/number-field.stories.tsx"
+      "source": "stories/number-field.stories.tsx",
+      "scene": {
+        "file": "number-field.scene.json",
+        "key": "InAForm"
+      }
     },
     {
       "id": "components-numberfield--in-settings",
@@ -2812,7 +2936,11 @@
       "importPath": "./stories/number-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/number-field.stories.tsx"
+      "source": "stories/number-field.stories.tsx",
+      "scene": {
+        "file": "number-field.scene.json",
+        "key": "InSettings"
+      }
     },
     {
       "id": "components-optioncard--overview",
@@ -2822,7 +2950,11 @@
       "importPath": "./stories/option-card.stories.tsx",
       "type": "story",
       "layout": "fullscreen",
-      "source": "stories/option-card.stories.tsx"
+      "source": "stories/option-card.stories.tsx",
+      "scene": {
+        "file": "option-card.scene.json",
+        "key": "Overview"
+      }
     },
     {
       "id": "components-optioncard--selected",
@@ -2832,7 +2964,11 @@
       "importPath": "./stories/option-card.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/option-card.stories.tsx"
+      "source": "stories/option-card.stories.tsx",
+      "scene": {
+        "file": "option-card.scene.json",
+        "key": "Selected"
+      }
     },
     {
       "id": "components-optioncard--unselected",
@@ -2842,7 +2978,11 @@
       "importPath": "./stories/option-card.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/option-card.stories.tsx"
+      "source": "stories/option-card.stories.tsx",
+      "scene": {
+        "file": "option-card.scene.json",
+        "key": "Unselected"
+      }
     },
     {
       "id": "components-optioncard--a-group",
@@ -2852,7 +2992,11 @@
       "importPath": "./stories/option-card.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/option-card.stories.tsx"
+      "source": "stories/option-card.stories.tsx",
+      "scene": {
+        "file": "option-card.scene.json",
+        "key": "AGroup"
+      }
     },
     {
       "id": "components-optioncard--without-a-description",
@@ -2862,7 +3006,11 @@
       "importPath": "./stories/option-card.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/option-card.stories.tsx"
+      "source": "stories/option-card.stories.tsx",
+      "scene": {
+        "file": "option-card.scene.json",
+        "key": "WithoutADescription"
+      }
     },
     {
       "id": "components-optioncard--disabled",
@@ -2872,7 +3020,11 @@
       "importPath": "./stories/option-card.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/option-card.stories.tsx"
+      "source": "stories/option-card.stories.tsx",
+      "scene": {
+        "file": "option-card.scene.json",
+        "key": "Disabled"
+      }
     },
     {
       "id": "components-optioncard--tints",
@@ -2882,7 +3034,11 @@
       "importPath": "./stories/option-card.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/option-card.stories.tsx"
+      "source": "stories/option-card.stories.tsx",
+      "scene": {
+        "file": "option-card.scene.json",
+        "key": "Tints"
+      }
     },
     {
       "id": "components-optioncard--in-a-grid",
@@ -2892,7 +3048,11 @@
       "importPath": "./stories/option-card.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/option-card.stories.tsx"
+      "source": "stories/option-card.stories.tsx",
+      "scene": {
+        "file": "option-card.scene.json",
+        "key": "InAGrid"
+      }
     },
     {
       "id": "components-otpfield--overview",
@@ -2902,7 +3062,11 @@
       "importPath": "./stories/otp-field.stories.tsx",
       "type": "story",
       "layout": "fullscreen",
-      "source": "stories/otp-field.stories.tsx"
+      "source": "stories/otp-field.stories.tsx",
+      "scene": {
+        "file": "otp-field.scene.json",
+        "key": "Overview"
+      }
     },
     {
       "id": "components-otpfield--bare",
@@ -2912,7 +3076,11 @@
       "importPath": "./stories/otp-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/otp-field.stories.tsx"
+      "source": "stories/otp-field.stories.tsx",
+      "scene": {
+        "file": "otp-field.scene.json",
+        "key": "Bare"
+      }
     },
     {
       "id": "components-otpfield--filled",
@@ -2922,7 +3090,11 @@
       "importPath": "./stories/otp-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/otp-field.stories.tsx"
+      "source": "stories/otp-field.stories.tsx",
+      "scene": {
+        "file": "otp-field.scene.json",
+        "key": "Filled"
+      }
     },
     {
       "id": "components-otpfield--grouped",
@@ -2932,7 +3104,11 @@
       "importPath": "./stories/otp-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/otp-field.stories.tsx"
+      "source": "stories/otp-field.stories.tsx",
+      "scene": {
+        "file": "otp-field.scene.json",
+        "key": "Grouped"
+      }
     },
     {
       "id": "components-otpfield--sizes",
@@ -2942,7 +3118,11 @@
       "importPath": "./stories/otp-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/otp-field.stories.tsx"
+      "source": "stories/otp-field.stories.tsx",
+      "scene": {
+        "file": "otp-field.scene.json",
+        "key": "Sizes"
+      }
     },
     {
       "id": "components-otpfield--masked",
@@ -2952,7 +3132,11 @@
       "importPath": "./stories/otp-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/otp-field.stories.tsx"
+      "source": "stories/otp-field.stories.tsx",
+      "scene": {
+        "file": "otp-field.scene.json",
+        "key": "Masked"
+      }
     },
     {
       "id": "components-otpfield--disabled",
@@ -2962,7 +3146,11 @@
       "importPath": "./stories/otp-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/otp-field.stories.tsx"
+      "source": "stories/otp-field.stories.tsx",
+      "scene": {
+        "file": "otp-field.scene.json",
+        "key": "Disabled"
+      }
     },
     {
       "id": "components-otpfield--in-a-form",
@@ -2972,7 +3160,11 @@
       "importPath": "./stories/otp-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/otp-field.stories.tsx"
+      "source": "stories/otp-field.stories.tsx",
+      "scene": {
+        "file": "otp-field.scene.json",
+        "key": "InAForm"
+      }
     },
     {
       "id": "components-pilltabs--overview",
@@ -2982,7 +3174,11 @@
       "importPath": "./stories/pill-tabs.stories.tsx",
       "type": "story",
       "layout": "fullscreen",
-      "source": "stories/pill-tabs.stories.tsx"
+      "source": "stories/pill-tabs.stories.tsx",
+      "scene": {
+        "file": "pill-tabs.scene.json",
+        "key": "Overview"
+      }
     },
     {
       "id": "components-pilltabs--default",
@@ -2992,7 +3188,11 @@
       "importPath": "./stories/pill-tabs.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/pill-tabs.stories.tsx"
+      "source": "stories/pill-tabs.stories.tsx",
+      "scene": {
+        "file": "pill-tabs.scene.json",
+        "key": "Default"
+      }
     },
     {
       "id": "components-pilltabs--with-counts",
@@ -3002,7 +3202,11 @@
       "importPath": "./stories/pill-tabs.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/pill-tabs.stories.tsx"
+      "source": "stories/pill-tabs.stories.tsx",
+      "scene": {
+        "file": "pill-tabs.scene.json",
+        "key": "WithCounts"
+      }
     },
     {
       "id": "components-pilltabs--disabled",
@@ -3012,7 +3216,11 @@
       "importPath": "./stories/pill-tabs.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/pill-tabs.stories.tsx"
+      "source": "stories/pill-tabs.stories.tsx",
+      "scene": {
+        "file": "pill-tabs.scene.json",
+        "key": "Disabled"
+      }
     },
     {
       "id": "components-pilltabs--tints",
@@ -3022,7 +3230,11 @@
       "importPath": "./stories/pill-tabs.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/pill-tabs.stories.tsx"
+      "source": "stories/pill-tabs.stories.tsx",
+      "scene": {
+        "file": "pill-tabs.scene.json",
+        "key": "Tints"
+      }
     },
     {
       "id": "components-pilltabs--wrapping",
@@ -3032,7 +3244,11 @@
       "importPath": "./stories/pill-tabs.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/pill-tabs.stories.tsx"
+      "source": "stories/pill-tabs.stories.tsx",
+      "scene": {
+        "file": "pill-tabs.scene.json",
+        "key": "Wrapping"
+      }
     },
     {
       "id": "components-pilltabs--in-a-pane-header",
@@ -3042,7 +3258,11 @@
       "importPath": "./stories/pill-tabs.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/pill-tabs.stories.tsx"
+      "source": "stories/pill-tabs.stories.tsx",
+      "scene": {
+        "file": "pill-tabs.scene.json",
+        "key": "InAPaneHeader"
+      }
     },
     {
       "id": "components-popover--overview",
@@ -3388,7 +3608,11 @@
       "importPath": "./stories/radio.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/radio.stories.tsx"
+      "source": "stories/radio.stories.tsx",
+      "scene": {
+        "file": "radio.scene.json",
+        "key": "AGroup"
+      }
     },
     {
       "id": "components-radio--disabled",
@@ -3398,7 +3622,11 @@
       "importPath": "./stories/radio.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/radio.stories.tsx"
+      "source": "stories/radio.stories.tsx",
+      "scene": {
+        "file": "radio.scene.json",
+        "key": "Disabled"
+      }
     },
     {
       "id": "components-radio--sizes",
@@ -3408,7 +3636,11 @@
       "importPath": "./stories/radio.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/radio.stories.tsx"
+      "source": "stories/radio.stories.tsx",
+      "scene": {
+        "file": "radio.scene.json",
+        "key": "Sizes"
+      }
     },
     {
       "id": "components-radio--tints",
@@ -3418,7 +3650,11 @@
       "importPath": "./stories/radio.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/radio.stories.tsx"
+      "source": "stories/radio.stories.tsx",
+      "scene": {
+        "file": "radio.scene.json",
+        "key": "Tints"
+      }
     },
     {
       "id": "components-radio--against-a-checkbox",
@@ -3428,7 +3664,11 @@
       "importPath": "./stories/radio.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/radio.stories.tsx"
+      "source": "stories/radio.stories.tsx",
+      "scene": {
+        "file": "radio.scene.json",
+        "key": "AgainstACheckbox"
+      }
     },
     {
       "id": "components-radio--in-a-form",
@@ -3438,7 +3678,11 @@
       "importPath": "./stories/radio.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/radio.stories.tsx"
+      "source": "stories/radio.stories.tsx",
+      "scene": {
+        "file": "radio.scene.json",
+        "key": "InAForm"
+      }
     },
     {
       "id": "components-searchfield--overview",
@@ -3448,7 +3692,11 @@
       "importPath": "./stories/search-field.stories.tsx",
       "type": "story",
       "layout": "fullscreen",
-      "source": "stories/search-field.stories.tsx"
+      "source": "stories/search-field.stories.tsx",
+      "scene": {
+        "file": "search-field.scene.json",
+        "key": "Overview"
+      }
     },
     {
       "id": "components-searchfield--empty",
@@ -3458,7 +3706,11 @@
       "importPath": "./stories/search-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/search-field.stories.tsx"
+      "source": "stories/search-field.stories.tsx",
+      "scene": {
+        "file": "search-field.scene.json",
+        "key": "Empty"
+      }
     },
     {
       "id": "components-searchfield--with-a-query",
@@ -3468,7 +3720,11 @@
       "importPath": "./stories/search-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/search-field.stories.tsx"
+      "source": "stories/search-field.stories.tsx",
+      "scene": {
+        "file": "search-field.scene.json",
+        "key": "WithAQuery"
+      }
     },
     {
       "id": "components-searchfield--with-a-hint",
@@ -3478,7 +3734,11 @@
       "importPath": "./stories/search-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/search-field.stories.tsx"
+      "source": "stories/search-field.stories.tsx",
+      "scene": {
+        "file": "search-field.scene.json",
+        "key": "WithAHint"
+      }
     },
     {
       "id": "components-searchfield--sizes",
@@ -3488,7 +3748,11 @@
       "importPath": "./stories/search-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/search-field.stories.tsx"
+      "source": "stories/search-field.stories.tsx",
+      "scene": {
+        "file": "search-field.scene.json",
+        "key": "Sizes"
+      }
     },
     {
       "id": "components-searchfield--tints",
@@ -3498,7 +3762,11 @@
       "importPath": "./stories/search-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/search-field.stories.tsx"
+      "source": "stories/search-field.stories.tsx",
+      "scene": {
+        "file": "search-field.scene.json",
+        "key": "Tints"
+      }
     },
     {
       "id": "components-searchfield--dismissable",
@@ -3508,7 +3776,11 @@
       "importPath": "./stories/search-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/search-field.stories.tsx"
+      "source": "stories/search-field.stories.tsx",
+      "scene": {
+        "file": "search-field.scene.json",
+        "key": "Dismissable"
+      }
     },
     {
       "id": "components-searchfield--filtering-a-list",
@@ -3518,7 +3790,11 @@
       "importPath": "./stories/search-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/search-field.stories.tsx"
+      "source": "stories/search-field.stories.tsx",
+      "scene": {
+        "file": "search-field.scene.json",
+        "key": "FilteringAList"
+      }
     },
     {
       "id": "components-searchfield--in-a-pane-header",
@@ -3528,7 +3804,11 @@
       "importPath": "./stories/search-field.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/search-field.stories.tsx"
+      "source": "stories/search-field.stories.tsx",
+      "scene": {
+        "file": "search-field.scene.json",
+        "key": "InAPaneHeader"
+      }
     },
     {
       "id": "components-sectionlabel--overview",
@@ -3628,7 +3908,11 @@
       "importPath": "./stories/segmented-control.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/segmented-control.stories.tsx"
+      "source": "stories/segmented-control.stories.tsx",
+      "scene": {
+        "file": "segmented-control.scene.json",
+        "key": "Raised"
+      }
     },
     {
       "id": "components-segmentedcontrol--filled",
@@ -3638,7 +3922,11 @@
       "importPath": "./stories/segmented-control.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/segmented-control.stories.tsx"
+      "source": "stories/segmented-control.stories.tsx",
+      "scene": {
+        "file": "segmented-control.scene.json",
+        "key": "Filled"
+      }
     },
     {
       "id": "components-segmentedcontrol--sizes",
@@ -3648,7 +3936,11 @@
       "importPath": "./stories/segmented-control.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/segmented-control.stories.tsx"
+      "source": "stories/segmented-control.stories.tsx",
+      "scene": {
+        "file": "segmented-control.scene.json",
+        "key": "Sizes"
+      }
     },
     {
       "id": "components-segmentedcontrol--tints",
@@ -3658,7 +3950,11 @@
       "importPath": "./stories/segmented-control.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/segmented-control.stories.tsx"
+      "source": "stories/segmented-control.stories.tsx",
+      "scene": {
+        "file": "segmented-control.scene.json",
+        "key": "Tints"
+      }
     },
     {
       "id": "components-segmentedcontrol--filled-tints",
@@ -3668,7 +3964,11 @@
       "importPath": "./stories/segmented-control.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/segmented-control.stories.tsx"
+      "source": "stories/segmented-control.stories.tsx",
+      "scene": {
+        "file": "segmented-control.scene.json",
+        "key": "FilledTints"
+      }
     },
     {
       "id": "components-segmentedcontrol--stretch",
@@ -3678,7 +3978,11 @@
       "importPath": "./stories/segmented-control.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/segmented-control.stories.tsx"
+      "source": "stories/segmented-control.stories.tsx",
+      "scene": {
+        "file": "segmented-control.scene.json",
+        "key": "Stretch"
+      }
     },
     {
       "id": "components-segmentedcontrol--disabled",
@@ -3688,7 +3992,11 @@
       "importPath": "./stories/segmented-control.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/segmented-control.stories.tsx"
+      "source": "stories/segmented-control.stories.tsx",
+      "scene": {
+        "file": "segmented-control.scene.json",
+        "key": "Disabled"
+      }
     },
     {
       "id": "components-segmentedcontrol--two-segments",
@@ -3698,7 +4006,11 @@
       "importPath": "./stories/segmented-control.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/segmented-control.stories.tsx"
+      "source": "stories/segmented-control.stories.tsx",
+      "scene": {
+        "file": "segmented-control.scene.json",
+        "key": "TwoSegments"
+      }
     },
     {
       "id": "components-segmentedcontrol--in-a-form",
@@ -3708,7 +4020,11 @@
       "importPath": "./stories/segmented-control.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/segmented-control.stories.tsx"
+      "source": "stories/segmented-control.stories.tsx",
+      "scene": {
+        "file": "segmented-control.scene.json",
+        "key": "InAForm"
+      }
     },
     {
       "id": "components-select--overview",
@@ -4178,7 +4494,11 @@
       "importPath": "./stories/skeleton.stories.tsx",
       "type": "story",
       "layout": "fullscreen",
-      "source": "stories/skeleton.stories.tsx"
+      "source": "stories/skeleton.stories.tsx",
+      "scene": {
+        "file": "skeleton.scene.json",
+        "key": "Overview"
+      }
     },
     {
       "id": "components-skeleton--shapes",
@@ -4188,7 +4508,11 @@
       "importPath": "./stories/skeleton.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/skeleton.stories.tsx"
+      "source": "stories/skeleton.stories.tsx",
+      "scene": {
+        "file": "skeleton.scene.json",
+        "key": "Shapes"
+      }
     },
     {
       "id": "components-skeleton--text",
@@ -4198,7 +4522,11 @@
       "importPath": "./stories/skeleton.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/skeleton.stories.tsx"
+      "source": "stories/skeleton.stories.tsx",
+      "scene": {
+        "file": "skeleton.scene.json",
+        "key": "Text"
+      }
     },
     {
       "id": "components-skeleton--lines",
@@ -4208,7 +4536,11 @@
       "importPath": "./stories/skeleton.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/skeleton.stories.tsx"
+      "source": "stories/skeleton.stories.tsx",
+      "scene": {
+        "file": "skeleton.scene.json",
+        "key": "Lines"
+      }
     },
     {
       "id": "components-skeleton--a-list-row",
@@ -4218,7 +4550,11 @@
       "importPath": "./stories/skeleton.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/skeleton.stories.tsx"
+      "source": "stories/skeleton.stories.tsx",
+      "scene": {
+        "file": "skeleton.scene.json",
+        "key": "AListRow"
+      }
     },
     {
       "id": "components-skeleton--in-a-card",
@@ -4228,7 +4564,11 @@
       "importPath": "./stories/skeleton.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/skeleton.stories.tsx"
+      "source": "stories/skeleton.stories.tsx",
+      "scene": {
+        "file": "skeleton.scene.json",
+        "key": "InACard"
+      }
     },
     {
       "id": "components-slider--overview",
@@ -4248,7 +4588,11 @@
       "importPath": "./stories/slider.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/slider.stories.tsx"
+      "source": "stories/slider.stories.tsx",
+      "scene": {
+        "file": "slider.scene.json",
+        "key": "Bare"
+      }
     },
     {
       "id": "components-slider--with-value",
@@ -4258,7 +4602,11 @@
       "importPath": "./stories/slider.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/slider.stories.tsx"
+      "source": "stories/slider.stories.tsx",
+      "scene": {
+        "file": "slider.scene.json",
+        "key": "WithValue"
+      }
     },
     {
       "id": "components-slider--range",
@@ -4268,7 +4616,11 @@
       "importPath": "./stories/slider.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/slider.stories.tsx"
+      "source": "stories/slider.stories.tsx",
+      "scene": {
+        "file": "slider.scene.json",
+        "key": "Range"
+      }
     },
     {
       "id": "components-slider--sizes",
@@ -4278,7 +4630,11 @@
       "importPath": "./stories/slider.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/slider.stories.tsx"
+      "source": "stories/slider.stories.tsx",
+      "scene": {
+        "file": "slider.scene.json",
+        "key": "Sizes"
+      }
     },
     {
       "id": "components-slider--tints",
@@ -4288,7 +4644,11 @@
       "importPath": "./stories/slider.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/slider.stories.tsx"
+      "source": "stories/slider.stories.tsx",
+      "scene": {
+        "file": "slider.scene.json",
+        "key": "Tints"
+      }
     },
     {
       "id": "components-slider--disabled",
@@ -4298,7 +4658,11 @@
       "importPath": "./stories/slider.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/slider.stories.tsx"
+      "source": "stories/slider.stories.tsx",
+      "scene": {
+        "file": "slider.scene.json",
+        "key": "Disabled"
+      }
     },
     {
       "id": "components-slider--interactive",
@@ -4308,7 +4672,11 @@
       "importPath": "./stories/slider.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/slider.stories.tsx"
+      "source": "stories/slider.stories.tsx",
+      "scene": {
+        "file": "slider.scene.json",
+        "key": "Interactive"
+      }
     },
     {
       "id": "components-slider--in-settings",
@@ -4318,7 +4686,11 @@
       "importPath": "./stories/slider.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/slider.stories.tsx"
+      "source": "stories/slider.stories.tsx",
+      "scene": {
+        "file": "slider.scene.json",
+        "key": "InSettings"
+      }
     },
     {
       "id": "components-spinner--overview",
@@ -4828,7 +5200,11 @@
       "importPath": "./stories/tag.stories.tsx",
       "type": "story",
       "layout": "fullscreen",
-      "source": "stories/tag.stories.tsx"
+      "source": "stories/tag.stories.tsx",
+      "scene": {
+        "file": "tag.scene.json",
+        "key": "Overview"
+      }
     },
     {
       "id": "components-tag--selectable",
@@ -4838,7 +5214,11 @@
       "importPath": "./stories/tag.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/tag.stories.tsx"
+      "source": "stories/tag.stories.tsx",
+      "scene": {
+        "file": "tag.scene.json",
+        "key": "Selectable"
+      }
     },
     {
       "id": "components-tag--removable",
@@ -4848,7 +5228,11 @@
       "importPath": "./stories/tag.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/tag.stories.tsx"
+      "source": "stories/tag.stories.tsx",
+      "scene": {
+        "file": "tag.scene.json",
+        "key": "Removable"
+      }
     },
     {
       "id": "components-tag--sizes",
@@ -4858,7 +5242,11 @@
       "importPath": "./stories/tag.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/tag.stories.tsx"
+      "source": "stories/tag.stories.tsx",
+      "scene": {
+        "file": "tag.scene.json",
+        "key": "Sizes"
+      }
     },
     {
       "id": "components-tag--variants",
@@ -4868,7 +5256,11 @@
       "importPath": "./stories/tag.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/tag.stories.tsx"
+      "source": "stories/tag.stories.tsx",
+      "scene": {
+        "file": "tag.scene.json",
+        "key": "Variants"
+      }
     },
     {
       "id": "components-tag--tints",
@@ -4878,7 +5270,11 @@
       "importPath": "./stories/tag.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/tag.stories.tsx"
+      "source": "stories/tag.stories.tsx",
+      "scene": {
+        "file": "tag.scene.json",
+        "key": "Tints"
+      }
     },
     {
       "id": "components-tag--disabled",
@@ -4888,7 +5284,11 @@
       "importPath": "./stories/tag.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/tag.stories.tsx"
+      "source": "stories/tag.stories.tsx",
+      "scene": {
+        "file": "tag.scene.json",
+        "key": "Disabled"
+      }
     },
     {
       "id": "components-tag--a-filter-bar",
@@ -4898,7 +5298,11 @@
       "importPath": "./stories/tag.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/tag.stories.tsx"
+      "source": "stories/tag.stories.tsx",
+      "scene": {
+        "file": "tag.scene.json",
+        "key": "AFilterBar"
+      }
     },
     {
       "id": "components-textfield--overview",
@@ -5202,7 +5606,11 @@
       "importPath": "./stories/toggle.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/toggle.stories.tsx"
+      "source": "stories/toggle.stories.tsx",
+      "scene": {
+        "file": "toggle.scene.json",
+        "key": "Pressed"
+      }
     },
     {
       "id": "components-toggle--sizes",
@@ -5212,7 +5620,11 @@
       "importPath": "./stories/toggle.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/toggle.stories.tsx"
+      "source": "stories/toggle.stories.tsx",
+      "scene": {
+        "file": "toggle.scene.json",
+        "key": "Sizes"
+      }
     },
     {
       "id": "components-toggle--variants",
@@ -5222,7 +5634,11 @@
       "importPath": "./stories/toggle.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/toggle.stories.tsx"
+      "source": "stories/toggle.stories.tsx",
+      "scene": {
+        "file": "toggle.scene.json",
+        "key": "Variants"
+      }
     },
     {
       "id": "components-toggle--tints",
@@ -5232,7 +5648,11 @@
       "importPath": "./stories/toggle.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/toggle.stories.tsx"
+      "source": "stories/toggle.stories.tsx",
+      "scene": {
+        "file": "toggle.scene.json",
+        "key": "Tints"
+      }
     },
     {
       "id": "components-toggle--disabled",
@@ -5242,7 +5662,11 @@
       "importPath": "./stories/toggle.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/toggle.stories.tsx"
+      "source": "stories/toggle.stories.tsx",
+      "scene": {
+        "file": "toggle.scene.json",
+        "key": "Disabled"
+      }
     },
     {
       "id": "components-toggle--a-toolbar",
@@ -5252,7 +5676,11 @@
       "importPath": "./stories/toggle.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/toggle.stories.tsx"
+      "source": "stories/toggle.stories.tsx",
+      "scene": {
+        "file": "toggle.scene.json",
+        "key": "AToolbar"
+      }
     },
     {
       "id": "components-togglegroup--overview",
@@ -5262,7 +5690,11 @@
       "importPath": "./stories/toggle-group.stories.tsx",
       "type": "story",
       "layout": "fullscreen",
-      "source": "stories/toggle-group.stories.tsx"
+      "source": "stories/toggle-group.stories.tsx",
+      "scene": {
+        "file": "toggle-group.scene.json",
+        "key": "Overview"
+      }
     },
     {
       "id": "components-togglegroup--glyphs",
@@ -5272,7 +5704,11 @@
       "importPath": "./stories/toggle-group.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/toggle-group.stories.tsx"
+      "source": "stories/toggle-group.stories.tsx",
+      "scene": {
+        "file": "toggle-group.scene.json",
+        "key": "Glyphs"
+      }
     },
     {
       "id": "components-togglegroup--words",
@@ -5282,7 +5718,11 @@
       "importPath": "./stories/toggle-group.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/toggle-group.stories.tsx"
+      "source": "stories/toggle-group.stories.tsx",
+      "scene": {
+        "file": "toggle-group.scene.json",
+        "key": "Words"
+      }
     },
     {
       "id": "components-togglegroup--single",
@@ -5292,7 +5732,11 @@
       "importPath": "./stories/toggle-group.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/toggle-group.stories.tsx"
+      "source": "stories/toggle-group.stories.tsx",
+      "scene": {
+        "file": "toggle-group.scene.json",
+        "key": "Single"
+      }
     },
     {
       "id": "components-togglegroup--variants",
@@ -5302,7 +5746,11 @@
       "importPath": "./stories/toggle-group.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/toggle-group.stories.tsx"
+      "source": "stories/toggle-group.stories.tsx",
+      "scene": {
+        "file": "toggle-group.scene.json",
+        "key": "Variants"
+      }
     },
     {
       "id": "components-togglegroup--tints",
@@ -5312,7 +5760,11 @@
       "importPath": "./stories/toggle-group.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/toggle-group.stories.tsx"
+      "source": "stories/toggle-group.stories.tsx",
+      "scene": {
+        "file": "toggle-group.scene.json",
+        "key": "Tints"
+      }
     },
     {
       "id": "components-togglegroup--disabled",
@@ -5322,7 +5774,11 @@
       "importPath": "./stories/toggle-group.stories.tsx",
       "type": "story",
       "layout": "centered",
-      "source": "stories/toggle-group.stories.tsx"
+      "source": "stories/toggle-group.stories.tsx",
+      "scene": {
+        "file": "toggle-group.scene.json",
+        "key": "Disabled"
+      }
     },
     {
       "id": "components-tooltip--overview",

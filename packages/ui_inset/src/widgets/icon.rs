@@ -8,7 +8,11 @@ use kurbo::{BezPath, PathEl};
 #[derive(Debug, Clone, Copy)]
 pub enum FluentGlyph {
     ArrowDownload20Regular,
+    Checkmark12Filled,
     Circle20Filled,
+    Dismiss12Regular,
+    /// Path data on a square grid of the given side, as a scene supplies it.
+    Path(&'static str, f64),
 }
 impl FluentGlyph {
     fn svg(self) -> &'static str {
@@ -16,7 +20,32 @@ impl FluentGlyph {
             Self::ArrowDownload20Regular => {
                 include_str!("../../assets/icons/arrow_download_20_regular.svg")
             }
+            Self::Checkmark12Filled => include_str!("../../assets/icons/checkmark_12_filled.svg"),
+            Self::Dismiss12Regular => include_str!("../../assets/icons/dismiss_12_regular.svg"),
             Self::Circle20Filled => include_str!("../../assets/icons/circle_20_filled.svg"),
+            Self::Path(..) => unreachable!("a path glyph carries its data"),
+        }
+    }
+    /// The glyph's SVG path data.
+    fn data(self) -> &'static str {
+        match self {
+            Self::Path(data, _) => data,
+            glyph => glyph
+                .svg()
+                .split("d=\"")
+                .nth(1)
+                .unwrap()
+                .split('"')
+                .next()
+                .unwrap(),
+        }
+    }
+    /// The side of the square viewBox the glyph is drawn in.
+    fn grid(self) -> f64 {
+        match self {
+            Self::Path(_, grid) => grid,
+            Self::Checkmark12Filled | Self::Dismiss12Regular => 12.0,
+            _ => 20.0,
         }
     }
 }
@@ -32,29 +61,30 @@ impl StatelessWidget for FluentIcon {
             .map(|color| color.color())
             .unwrap_or(v.color_content);
         let size = theme.size.unwrap_or(v.spacing_5);
-        let data = self
-            .0
-            .svg()
-            .split("d=\"")
-            .nth(1)
-            .unwrap()
-            .split('"')
-            .next()
-            .unwrap();
+        let data = self.0.data();
         let path = BezPath::from_svg(data).expect("bundled Fluent SVG path");
         SizedBox::square(Some(size))
-            .child(CustomPaint::new().painter(GlyphPaint { path, color }))
+            .child(CustomPaint::new().painter(GlyphPaint {
+                path,
+                color,
+                grid: self.0.grid(),
+            }))
             .into_widget()
     }
 }
 struct GlyphPaint {
     path: BezPath,
     color: Color,
+    grid: f64,
 }
 impl CustomPainter for GlyphPaint {
     fn paint(&self, _: &mut App, canvas: &mut Canvas, size: Size) {
-        let point =
-            |p: kurbo::Point| Offset::new(p.x * size.width() / 20.0, p.y * size.height() / 20.0);
+        let point = |p: kurbo::Point| {
+            Offset::new(
+                p.x * size.width() / self.grid,
+                p.y * size.height() / self.grid,
+            )
+        };
         let mut path = PathBuilder::new();
         for element in self.path.elements() {
             match *element {

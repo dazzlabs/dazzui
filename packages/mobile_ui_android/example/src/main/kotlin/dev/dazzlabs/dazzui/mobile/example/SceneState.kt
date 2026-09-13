@@ -24,12 +24,19 @@ class SceneState(val scene: JSONObject) {
             raw.has("if") -> evaluate(raw.get(if (evaluate(raw.get("if")) as Boolean) "then" else "else"))
             raw.has("trim") -> (evaluate(raw.get("trim")) as String).trim { it.code in sceneTrimCodeUnits }
             raw.has("concat") -> raw.getJSONArray("concat").items().joinToString("") { evaluate(it) as String }
+            raw.has("not") -> !(evaluate(raw.get("not")) as Boolean)
+            raw.has("and") -> raw.getJSONArray("and").items().all { evaluate(it) as Boolean }
+            raw.has("or") -> raw.getJSONArray("or").items().any { evaluate(it) as Boolean }
+            raw.has("lower") -> (evaluate(raw.get("lower")) as String).lowercase()
+            raw.has("length") -> (evaluate(raw.get("length")) as String).codePointCount(0, (evaluate(raw.get("length")) as String).length).toDouble()
+            raw.has("contains") -> (operand("contains", 0) as String).contains(operand("contains", 1) as String)
             raw.has("eq") -> {
                 val a = operand("eq", 0); val b = operand("eq", 1)
                 if (a is Number && b is Number) a.toDouble() == b.toDouble() else a == b
             }
             raw.has("add") -> (operand("add", 0) as Number).toDouble() + (operand("add", 1) as Number).toDouble()
             raw.has("multiply") -> (operand("multiply", 0) as Number).toDouble() * (operand("multiply", 1) as Number).toDouble()
+            raw.has("text") -> sceneText(evaluate(raw.get("text")))
             raw.has("gte") -> (operand("gte", 0) as Number).toDouble() >= (operand("gte", 1) as Number).toDouble()
             else -> error("Unsupported scene expression: $raw")
         }
@@ -40,9 +47,12 @@ class SceneState(val scene: JSONObject) {
         node.optJSONObject("derive")?.entries()?.forEach { (key, value) -> put(key, evaluate(value)) }
     }
 
-    fun press(node: JSONObject) {
+    fun press(node: JSONObject) = fire(node, "press")
+
+    /** Runs a declared event's assignment; an empty action assigns nothing. */
+    fun fire(node: JSONObject, event: String) {
         if (props(node)["disabled"] == true) return
-        node.optJSONObject("on")?.optJSONObject("press")?.let { values[it.getString("set")] = it.get("value") }
+        node.optJSONObject("on")?.optJSONObject(event)?.takeIf { it.has("set") }?.let { values[it.getString("set")] = it.get("value") }
     }
 
     fun bound(node: JSONObject, axis: String, fallback: Any): Any =

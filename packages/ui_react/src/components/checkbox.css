@@ -72,8 +72,14 @@
 
 /* A tick says every one; a dash says some. Both are rendered and one is
    hidden, because the state is an attribute on the root rather than something
-   the component is told. */
-.dz-checkbox__dash {
+   the component is told.
+ *
+ * The root is named although the dash matches without it: an icon brings its
+ * own `display: inline`, in a sheet it appends to the head when it first
+ * renders — after this stylesheet, and one class deep like this one — so a
+ * bare `.dz-checkbox__dash` loses the tie and a checked box draws the tick and
+ * the dash side by side. Two classes are what it takes to outrank it. */
+.dz-checkbox .dz-checkbox__dash {
   display: none;
 }
 

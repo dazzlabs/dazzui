@@ -5,6 +5,7 @@
 //! theme switch carries the furniture with it too. It is the counterpart of
 //! `packages/ui_flutter/example` and `packages/ui_swiftui/Example`.
 
+mod generated_glyphs;
 mod generated_stories;
 mod scene;
 mod stories;
@@ -569,7 +570,7 @@ impl Playground {
 
 fn main() {
     Application::new()
-        .with_assets(dazzui::assets::Assets)
+        .with_assets(generated_glyphs::Assets)
         .run(|cx: &mut App| {
             Theme::set(ThemeName::StudioLight, cx);
 

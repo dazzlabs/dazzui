@@ -2,6 +2,7 @@
 use dazzui_inset as ui;
 use inset::*;
 use std::{collections::BTreeSet, rc::Rc};
+pub mod generated_glyphs;
 pub mod generated_stories;
 pub mod scene_state;
 pub mod stories;

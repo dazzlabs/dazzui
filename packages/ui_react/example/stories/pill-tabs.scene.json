@@ -1,0 +1,955 @@
+{
+  "Overview": {
+    "content": {
+      "component": "Page",
+      "props": {
+        "title": "PillTabs",
+        "description": "Free-standing filter pills. Unlike a segmented control there is no track holding them together, so each pill needs its own fill to be a target at all — which also means they can wrap, and a filter row usually has to. That is the reason to reach for them over a segmented control: a filter row grows with the data."
+      },
+      "children": [
+        {
+          "component": "Section",
+          "props": {
+            "title": "Filtering",
+            "description": "A count rides inside the pill, dimmed against the label it follows rather than set beside it as a badge — a badge would be a second thing to read, and the number here is an attribute of the filter rather than a state of its own. A filter with nothing behind it stays in the row rather than disappearing, so the set does not reflow every time a permission changes."
+          },
+          "children": [
+            {
+              "component": "PillTabs",
+              "props": {
+                "label": "History filter",
+                "value": "all"
+              },
+              "children": [
+                {
+                  "component": "PillTab",
+                  "props": {
+                    "value": "all",
+                    "label": "All history"
+                  }
+                },
+                {
+                  "component": "PillTab",
+                  "props": {
+                    "value": "starred",
+                    "label": "Starred",
+                    "count": 64
+                  }
+                },
+                {
+                  "component": "PillTab",
+                  "props": {
+                    "value": "edited",
+                    "label": "Edited by me",
+                    "count": 18
+                  }
+                },
+                {
+                  "component": "PillTab",
+                  "props": {
+                    "value": "shared",
+                    "label": "Shared",
+                    "disabled": true
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Tints",
+            "description": "The selected pill is the filled recipe, so the ramp is what picks it out. A filter row keeps one tint: the colour means “this one is on”, and varying it per pill would make it mean something about the pill."
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "primary"
+                  },
+                  "children": [
+                    {
+                      "component": "PillTabs",
+                      "props": {
+                        "label": "primary",
+                        "tint": "primary",
+                        "value": "open"
+                      },
+                      "children": [
+                        {
+                          "component": "PillTab",
+                          "props": {
+                            "value": "all",
+                            "label": "All"
+                          }
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {
+                            "value": "open",
+                            "label": "Open"
+                          }
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {
+                            "value": "done",
+                            "label": "Done"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "neutral"
+                  },
+                  "children": [
+                    {
+                      "component": "PillTabs",
+                      "props": {
+                        "label": "neutral",
+                        "tint": "neutral",
+                        "value": "open"
+                      },
+                      "children": [
+                        {
+                          "component": "PillTab",
+                          "props": {
+                            "value": "all",
+                            "label": "All"
+                          }
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {
+                            "value": "open",
+                            "label": "Open"
+                          }
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {
+                            "value": "done",
+                            "label": "Done"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "info"
+                  },
+                  "children": [
+                    {
+                      "component": "PillTabs",
+                      "props": {
+                        "label": "info",
+                        "tint": "info",
+                        "value": "open"
+                      },
+                      "children": [
+                        {
+                          "component": "PillTab",
+                          "props": {
+                            "value": "all",
+                            "label": "All"
+                          }
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {
+                            "value": "open",
+                            "label": "Open"
+                          }
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {
+                            "value": "done",
+                            "label": "Done"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "success"
+                  },
+                  "children": [
+                    {
+                      "component": "PillTabs",
+                      "props": {
+                        "label": "success",
+                        "tint": "success",
+                        "value": "open"
+                      },
+                      "children": [
+                        {
+                          "component": "PillTab",
+                          "props": {
+                            "value": "all",
+                            "label": "All"
+                          }
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {
+                            "value": "open",
+                            "label": "Open"
+                          }
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {
+                            "value": "done",
+                            "label": "Done"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "warning"
+                  },
+                  "children": [
+                    {
+                      "component": "PillTabs",
+                      "props": {
+                        "label": "warning",
+                        "tint": "warning",
+                        "value": "open"
+                      },
+                      "children": [
+                        {
+                          "component": "PillTab",
+                          "props": {
+                            "value": "all",
+                            "label": "All"
+                          }
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {
+                            "value": "open",
+                            "label": "Open"
+                          }
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {
+                            "value": "done",
+                            "label": "Done"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "danger"
+                  },
+                  "children": [
+                    {
+                      "component": "PillTabs",
+                      "props": {
+                        "label": "danger",
+                        "tint": "danger",
+                        "value": "open"
+                      },
+                      "children": [
+                        {
+                          "component": "PillTab",
+                          "props": {
+                            "value": "all",
+                            "label": "All"
+                          }
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {
+                            "value": "open",
+                            "label": "Open"
+                          }
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {
+                            "value": "done",
+                            "label": "Done"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Wrapping",
+            "description": "Nine of them in a narrow column. A track that had to hold this many segments would run off the pane."
+          },
+          "children": [
+            {
+              "component": "Box",
+              "props": {
+                "maxWidth": 352
+              },
+              "children": [
+                {
+                  "component": "PillTabs",
+                  "props": {
+                    "label": "Target language",
+                    "value": "zh"
+                  },
+                  "children": [
+                    {
+                      "component": "PillTab",
+                      "props": {
+                        "value": "zh",
+                        "label": "Chinese",
+                        "count": 168
+                      }
+                    },
+                    {
+                      "component": "PillTab",
+                      "props": {
+                        "value": "ja",
+                        "label": "Japanese",
+                        "count": 96
+                      }
+                    },
+                    {
+                      "component": "PillTab",
+                      "props": {
+                        "value": "de",
+                        "label": "German",
+                        "count": 64
+                      }
+                    },
+                    {
+                      "component": "PillTab",
+                      "props": {
+                        "value": "fr",
+                        "label": "French",
+                        "count": 48
+                      }
+                    },
+                    {
+                      "component": "PillTab",
+                      "props": {
+                        "value": "es",
+                        "label": "Spanish",
+                        "count": 32
+                      }
+                    },
+                    {
+                      "component": "PillTab",
+                      "props": {
+                        "value": "pt",
+                        "label": "Portuguese",
+                        "count": 24
+                      }
+                    },
+                    {
+                      "component": "PillTab",
+                      "props": {
+                        "value": "it",
+                        "label": "Italian",
+                        "count": 12
+                      }
+                    },
+                    {
+                      "component": "PillTab",
+                      "props": {
+                        "value": "ko",
+                        "label": "Korean",
+                        "count": 8
+                      }
+                    },
+                    {
+                      "component": "PillTab",
+                      "props": {
+                        "value": "nl",
+                        "label": "Dutch",
+                        "count": 4
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Default": {
+    "content": {
+      "component": "PillTabs",
+      "props": {
+        "label": "History filter"
+      },
+      "bind": {
+        "value": "filter"
+      },
+      "children": [
+        {
+          "component": "PillTab",
+          "props": {
+            "value": "all",
+            "label": "All"
+          }
+        },
+        {
+          "component": "PillTab",
+          "props": {
+            "value": "open",
+            "label": "Open"
+          }
+        },
+        {
+          "component": "PillTab",
+          "props": {
+            "value": "done",
+            "label": "Done"
+          }
+        }
+      ]
+    },
+    "state": {
+      "filter": "all"
+    }
+  },
+  "WithCounts": {
+    "content": {
+      "component": "PillTabs",
+      "props": {
+        "label": "Segment filter"
+      },
+      "bind": {
+        "value": "filter"
+      },
+      "children": [
+        {
+          "component": "PillTab",
+          "props": {
+            "value": "all",
+            "label": "All",
+            "count": 392
+          }
+        },
+        {
+          "component": "PillTab",
+          "props": {
+            "value": "needs-review",
+            "label": "Needs review",
+            "count": 24
+          }
+        },
+        {
+          "component": "PillTab",
+          "props": {
+            "value": "done",
+            "label": "Done",
+            "count": 168
+          }
+        },
+        {
+          "component": "PillTab",
+          "props": {
+            "value": "empty",
+            "label": "Untranslated",
+            "count": 0
+          }
+        }
+      ]
+    },
+    "state": {
+      "filter": "needs-review"
+    }
+  },
+  "Disabled": {
+    "content": {
+      "component": "PillTabs",
+      "props": {
+        "label": "History filter",
+        "value": "all"
+      },
+      "children": [
+        {
+          "component": "PillTab",
+          "props": {
+            "value": "all",
+            "label": "All history"
+          }
+        },
+        {
+          "component": "PillTab",
+          "props": {
+            "value": "starred",
+            "label": "Starred",
+            "count": 64
+          }
+        },
+        {
+          "component": "PillTab",
+          "props": {
+            "value": "edited",
+            "label": "Edited by me",
+            "count": 18
+          }
+        },
+        {
+          "component": "PillTab",
+          "props": {
+            "value": "shared",
+            "label": "Shared",
+            "disabled": true
+          }
+        }
+      ]
+    }
+  },
+  "Tints": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "PillTabs",
+          "props": {
+            "label": "primary",
+            "tint": "primary",
+            "value": "open"
+          },
+          "children": [
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "all",
+                "label": "All"
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "open",
+                "label": "Open"
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "done",
+                "label": "Done"
+              }
+            }
+          ]
+        },
+        {
+          "component": "PillTabs",
+          "props": {
+            "label": "neutral",
+            "tint": "neutral",
+            "value": "open"
+          },
+          "children": [
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "all",
+                "label": "All"
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "open",
+                "label": "Open"
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "done",
+                "label": "Done"
+              }
+            }
+          ]
+        },
+        {
+          "component": "PillTabs",
+          "props": {
+            "label": "info",
+            "tint": "info",
+            "value": "open"
+          },
+          "children": [
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "all",
+                "label": "All"
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "open",
+                "label": "Open"
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "done",
+                "label": "Done"
+              }
+            }
+          ]
+        },
+        {
+          "component": "PillTabs",
+          "props": {
+            "label": "success",
+            "tint": "success",
+            "value": "open"
+          },
+          "children": [
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "all",
+                "label": "All"
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "open",
+                "label": "Open"
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "done",
+                "label": "Done"
+              }
+            }
+          ]
+        },
+        {
+          "component": "PillTabs",
+          "props": {
+            "label": "warning",
+            "tint": "warning",
+            "value": "open"
+          },
+          "children": [
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "all",
+                "label": "All"
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "open",
+                "label": "Open"
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "done",
+                "label": "Done"
+              }
+            }
+          ]
+        },
+        {
+          "component": "PillTabs",
+          "props": {
+            "label": "danger",
+            "tint": "danger",
+            "value": "open"
+          },
+          "children": [
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "all",
+                "label": "All"
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "open",
+                "label": "Open"
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "done",
+                "label": "Done"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Wrapping": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 352
+      },
+      "children": [
+        {
+          "component": "PillTabs",
+          "props": {
+            "label": "Target language"
+          },
+          "bind": {
+            "value": "language"
+          },
+          "children": [
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "zh",
+                "label": "Chinese",
+                "count": 168
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "ja",
+                "label": "Japanese",
+                "count": 96
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "de",
+                "label": "German",
+                "count": 64
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "fr",
+                "label": "French",
+                "count": 48
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "es",
+                "label": "Spanish",
+                "count": 32
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "pt",
+                "label": "Portuguese",
+                "count": 24
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "it",
+                "label": "Italian",
+                "count": 12
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "ko",
+                "label": "Korean",
+                "count": 8
+              }
+            },
+            {
+              "component": "PillTab",
+              "props": {
+                "value": "nl",
+                "label": "Dutch",
+                "count": 4
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "language": "zh"
+    }
+  },
+  "InAPaneHeader": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 608
+      },
+      "children": [
+        {
+          "component": "ActionBar",
+          "props": {
+            "align": "between"
+          },
+          "children": [
+            {
+              "component": "PillTabs",
+              "props": {
+                "label": "History filter"
+              },
+              "bind": {
+                "value": "filter"
+              },
+              "children": [
+                {
+                  "component": "PillTab",
+                  "props": {
+                    "value": "all",
+                    "label": "All history"
+                  }
+                },
+                {
+                  "component": "PillTab",
+                  "props": {
+                    "value": "starred",
+                    "label": "Starred",
+                    "count": 64
+                  }
+                },
+                {
+                  "component": "PillTab",
+                  "props": {
+                    "value": "edited",
+                    "label": "Edited by me",
+                    "count": 18
+                  }
+                },
+                {
+                  "component": "PillTab",
+                  "props": {
+                    "value": "shared",
+                    "label": "Shared",
+                    "disabled": true
+                  }
+                }
+              ]
+            },
+            {
+              "component": "Box",
+              "props": {
+                "width": 192
+              },
+              "children": [
+                {
+                  "component": "SearchField",
+                  "props": {
+                    "placeholder": "Search",
+                    "size": "small"
+                  },
+                  "bind": {
+                    "value": "query"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Card",
+          "props": {
+            "variant": "sunken"
+          },
+          "children": [
+            {
+              "component": "Inline",
+              "props": {
+                "tone": "muted"
+              },
+              "children": [
+                "Showing “",
+                {
+                  "component": "Value",
+                  "value": {
+                    "state": "filter"
+                  }
+                },
+                "”",
+                {
+                  "component": "Value",
+                  "value": {
+                    "if": {
+                      "not": {
+                        "eq": [
+                          {
+                            "state": "query"
+                          },
+                          ""
+                        ]
+                      }
+                    },
+                    "then": {
+                      "concat": [
+                        " matching “",
+                        {
+                          "state": "query"
+                        },
+                        "”"
+                      ]
+                    },
+                    "else": ""
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "filter": "all",
+      "query": ""
+    }
+  }
+}

@@ -92,12 +92,12 @@ font and the control's content color. No Material component library is involved;
 - `src/foundation/`: token types, native color recipes, and control axes.
 - `src/generated/`: committed ds output; regenerate with `pnpm tokens` at repo root.
 - `src/widgets/`: library implementations, exported from the crate root.
-- `example/src/generated_stories.rs`: 140 scenes generated from the shared React example declarations. Regenerate with `pnpm playgrounds:generate`; never edit this output.
+- `example/src/generated_stories.rs`: 143 scenes generated from the shared React example declarations. Regenerate with `pnpm playgrounds:generate`; never edit this output.
 - `example/src/stories/`: legacy pages pending shared declaration support. A generated Overview replaces its matching legacy catalog entry.
 - `tests/`: actual widget mounting, pointer activation, token invariants, slider
   bounds, splitter constraints, and toast expiration.
 - `example/tests/`: mounts, lays out, pumps animation frames, and unmounts every
-  legacy gallery page and all 140 generated scenes in all twelve themes.
+  legacy gallery page and all 143 generated scenes in all twelve themes.
 
 Shared scalar state is scoped to each scene mount. The interaction suite reads generated checkpoints, clicks native selection controls, enters text through the native editing client, checks validation hints and disabled actions, and verifies that removing and remounting a scene resets its values. Controllers synchronize on assignments and are destroyed on navigation or unmount. Dialogs, timers and unsupported layout/component properties remain coverage gaps.
 

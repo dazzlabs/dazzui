@@ -174,7 +174,7 @@ test('Inset retains explicit Fluent glyph sizes and Callout slots', () => {
   }
   assert.equal(insetSupports(scene), true)
   const output = insetScene(scene)
-  assert.match(output, /FluentGlyph::Circle20Filled/)
+  assert.match(output, /glyph\("Circle20Filled"\)/)
   assert.match(output, /IconThemeData::new\(\).size\(8.0\)/)
   assert.match(output, /control.size = ui::ControlSize::Small/)
   scene.content.slots.icon.props.name = 'UnknownIcon'

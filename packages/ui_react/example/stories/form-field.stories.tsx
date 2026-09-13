@@ -3,16 +3,13 @@ import scenes from './form-field.scene.json'
 import {
   ActionBar,
   Button,
-  Checkbox,
   FieldValue,
   FormField,
   TextField,
-  SegmentedControl,
   Select,
   TINTS,
 } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '../src/lib/story'
-import { useState } from 'react'
 
 import { Page, Section, Stack } from '../src/components/gallery'
 import { Col } from '../src/components/stage'
@@ -154,30 +151,7 @@ export const OverAMultilineField: Story = {
   ),
 }
 
-export const OverAnyControl: Story = {
-  render: () => {
-    const [mode, setMode] = useState('balanced')
-    return (
-      <Col width={WIDTH}>
-        <FormField label="Quality" hint="Applies to new jobs only.">
-          <SegmentedControl
-            items={[
-              { value: 'fast', label: 'Fast' },
-              { value: 'balanced', label: 'Balanced' },
-              { value: 'careful', label: 'Careful' },
-            ]}
-            stretch
-            value={mode}
-            onValueChange={setMode}
-          />
-        </FormField>
-        <FormField label="Review">
-          <Checkbox checked>Hold jobs for review before export</Checkbox>
-        </FormField>
-      </Col>
-    )
-  },
-}
+export const OverAnyControl: Story = defineStory(scenes.OverAnyControl)
 
 export const WithAFieldValue: Story = {
   render: () => (

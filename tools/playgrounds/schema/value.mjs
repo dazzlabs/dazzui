@@ -27,6 +27,45 @@ export function valueType(value, state, depth = 0) {
       throw Error('Conditional branches must have the same type')
     return result
   }
+  if (keys.length === 1 && ['and', 'or'].includes(keys[0])) {
+    const operands = value[keys[0]]
+    if (
+      !Array.isArray(operands) ||
+      operands.length < 2 ||
+      operands.some(v => valueType(v, state, depth + 1) !== 'boolean')
+    )
+      throw Error(`${keys[0]} requires boolean operands`)
+    return 'boolean'
+  }
+  if (keys.length === 1 && keys[0] === 'text') {
+    if (valueType(value.text, state, depth + 1) !== 'number')
+      throw Error('text formats a number')
+    return 'string'
+  }
+  if (keys.length === 1 && keys[0] === 'lower') {
+    if (valueType(value.lower, state, depth + 1) !== 'string')
+      throw Error('lower requires text')
+    return 'string'
+  }
+  if (keys.length === 1 && keys[0] === 'length') {
+    if (valueType(value.length, state, depth + 1) !== 'string')
+      throw Error('length requires text')
+    return 'number'
+  }
+  if (keys.length === 1 && keys[0] === 'contains') {
+    if (
+      !Array.isArray(value.contains) ||
+      value.contains.length !== 2 ||
+      value.contains.some(v => valueType(v, state, depth + 1) !== 'string')
+    )
+      throw Error('contains requires two text operands')
+    return 'boolean'
+  }
+  if (keys.length === 1 && keys[0] === 'not') {
+    if (valueType(value.not, state, depth + 1) !== 'boolean')
+      throw Error('not requires a boolean')
+    return 'boolean'
+  }
   if (keys.length === 1 && keys[0] === 'trim') {
     if (valueType(value.trim, state, depth + 1) !== 'string')
       throw Error('trim requires text')
@@ -66,6 +105,23 @@ export function valueType(value, state, depth = 0) {
 export function evaluateValue(value, state) {
   if (typeof value !== 'object') return value
   if (Object.hasOwn(value, 'state')) return state[value.state]
+  if (Object.hasOwn(value, 'not')) return !evaluateValue(value.not, state)
+  if (Object.hasOwn(value, 'and'))
+    return value.and.every(v => evaluateValue(v, state))
+  if (Object.hasOwn(value, 'or'))
+    return value.or.some(v => evaluateValue(v, state))
+  // Unicode code-point semantics every runtime can reproduce exactly.
+  // Whole numbers print without a fraction; others in their shortest form.
+  if (Object.hasOwn(value, 'text'))
+    return String(evaluateValue(value.text, state))
+  if (Object.hasOwn(value, 'lower'))
+    return evaluateValue(value.lower, state).toLowerCase()
+  if (Object.hasOwn(value, 'length'))
+    return [...evaluateValue(value.length, state)].length
+  if (Object.hasOwn(value, 'contains'))
+    return evaluateValue(value.contains[0], state).includes(
+      evaluateValue(value.contains[1], state)
+    )
   if (Object.hasOwn(value, 'add'))
     return (
       evaluateValue(value.add[0], state) + evaluateValue(value.add[1], state)

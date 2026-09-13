@@ -1,0 +1,544 @@
+{
+  "Overview": {
+    "content": {
+      "component": "Page",
+      "props": {
+        "title": "OptionCard",
+        "description": "The shape a small set of mutually exclusive choices takes when each needs a line of explanation and a radio row would not carry it. Wrap a set in a radiogroup. The description is optional, and a set that does not need one is really a SegmentedControl."
+      },
+      "children": [
+        {
+          "component": "Section",
+          "props": {
+            "title": "Picking one",
+            "description": "Selection is the tinted recipe with the outlined recipe's border on top: the fill says which one is chosen, and the border makes it survive a glance across its neighbours. An option that cannot be picked stays in the row rather than being dropped, so the set keeps its shape and the reason can be written into the description."
+          },
+          "children": [
+            {
+              "component": "Box",
+              "props": {
+                "role": "radiogroup",
+                "display": "flex",
+                "gap": "spacing.2",
+                "wrap": true
+              },
+              "children": [
+                {
+                  "component": "OptionCard",
+                  "props": {
+                    "title": "DOCX",
+                    "description": "Keeps styles and comments.",
+                    "selected": true
+                  }
+                },
+                {
+                  "component": "OptionCard",
+                  "props": {
+                    "title": "PDF",
+                    "description": "Fixed layout, no editing."
+                  }
+                },
+                {
+                  "component": "OptionCard",
+                  "props": {
+                    "disabled": true,
+                    "title": "InDesign",
+                    "description": "Needs a paid plan."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Tints",
+            "description": "The selected treatment across every ramp. A set normally keeps one tint: the colour says “chosen”, and if it varied per card it would be saying something about the card instead."
+          },
+          "children": [
+            {
+              "component": "Box",
+              "props": {
+                "role": "radiogroup",
+                "display": "flex",
+                "gap": "spacing.2",
+                "wrap": true
+              },
+              "children": [
+                {
+                  "component": "OptionCard",
+                  "props": {
+                    "title": "primary",
+                    "selected": true,
+                    "tint": "primary"
+                  }
+                },
+                {
+                  "component": "OptionCard",
+                  "props": {
+                    "title": "neutral",
+                    "selected": true,
+                    "tint": "neutral"
+                  }
+                },
+                {
+                  "component": "OptionCard",
+                  "props": {
+                    "title": "info",
+                    "selected": true,
+                    "tint": "info"
+                  }
+                },
+                {
+                  "component": "OptionCard",
+                  "props": {
+                    "title": "success",
+                    "selected": true,
+                    "tint": "success"
+                  }
+                },
+                {
+                  "component": "OptionCard",
+                  "props": {
+                    "title": "warning",
+                    "selected": true,
+                    "tint": "warning"
+                  }
+                },
+                {
+                  "component": "OptionCard",
+                  "props": {
+                    "title": "danger",
+                    "selected": true,
+                    "tint": "danger"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Selected": {
+    "content": {
+      "component": "OptionCard",
+      "props": {
+        "title": "DOCX",
+        "description": "Keeps styles and comments.",
+        "selected": true
+      }
+    }
+  },
+  "Unselected": {
+    "content": {
+      "component": "OptionCard",
+      "props": {
+        "title": "PDF",
+        "description": "Fixed layout, no further editing."
+      }
+    }
+  },
+  "AGroup": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "role": "radiogroup",
+        "display": "flex",
+        "gap": "spacing.2",
+        "wrap": true
+      },
+      "children": [
+        {
+          "component": "OptionCard",
+          "props": {
+            "title": "DOCX",
+            "description": "Keeps styles and comments."
+          },
+          "derive": {
+            "selected": {
+              "eq": [
+                {
+                  "state": "selected"
+                },
+                "docx"
+              ]
+            }
+          },
+          "on": {
+            "press": {
+              "set": "selected",
+              "value": "docx"
+            }
+          }
+        },
+        {
+          "component": "OptionCard",
+          "props": {
+            "title": "PDF",
+            "description": "Fixed layout, no further editing."
+          },
+          "derive": {
+            "selected": {
+              "eq": [
+                {
+                  "state": "selected"
+                },
+                "pdf"
+              ]
+            }
+          },
+          "on": {
+            "press": {
+              "set": "selected",
+              "value": "pdf"
+            }
+          }
+        },
+        {
+          "component": "OptionCard",
+          "props": {
+            "title": "Markdown",
+            "description": "Plain text, images linked."
+          },
+          "derive": {
+            "selected": {
+              "eq": [
+                {
+                  "state": "selected"
+                },
+                "md"
+              ]
+            }
+          },
+          "on": {
+            "press": {
+              "set": "selected",
+              "value": "md"
+            }
+          }
+        }
+      ]
+    },
+    "state": {
+      "selected": "docx"
+    }
+  },
+  "WithoutADescription": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "role": "radiogroup",
+        "display": "flex",
+        "gap": "spacing.2",
+        "wrap": true
+      },
+      "children": [
+        {
+          "component": "OptionCard",
+          "props": {
+            "title": "Fast"
+          },
+          "derive": {
+            "selected": {
+              "eq": [
+                {
+                  "state": "quality"
+                },
+                "fast"
+              ]
+            }
+          },
+          "on": {
+            "press": {
+              "set": "quality",
+              "value": "fast"
+            }
+          }
+        },
+        {
+          "component": "OptionCard",
+          "props": {
+            "title": "Balanced"
+          },
+          "derive": {
+            "selected": {
+              "eq": [
+                {
+                  "state": "quality"
+                },
+                "balanced"
+              ]
+            }
+          },
+          "on": {
+            "press": {
+              "set": "quality",
+              "value": "balanced"
+            }
+          }
+        },
+        {
+          "component": "OptionCard",
+          "props": {
+            "title": "Careful"
+          },
+          "derive": {
+            "selected": {
+              "eq": [
+                {
+                  "state": "quality"
+                },
+                "careful"
+              ]
+            }
+          },
+          "on": {
+            "press": {
+              "set": "quality",
+              "value": "careful"
+            }
+          }
+        }
+      ]
+    },
+    "state": {
+      "quality": "balanced"
+    }
+  },
+  "Disabled": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "role": "radiogroup",
+        "display": "flex",
+        "gap": "spacing.2",
+        "wrap": true
+      },
+      "children": [
+        {
+          "component": "OptionCard",
+          "props": {
+            "title": "DOCX",
+            "description": "Keeps styles and comments.",
+            "selected": true
+          }
+        },
+        {
+          "component": "OptionCard",
+          "props": {
+            "title": "PDF",
+            "description": "Fixed layout, no editing."
+          }
+        },
+        {
+          "component": "OptionCard",
+          "props": {
+            "disabled": true,
+            "title": "InDesign",
+            "description": "Needs a paid plan."
+          }
+        }
+      ]
+    }
+  },
+  "Tints": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "role": "radiogroup",
+        "display": "flex",
+        "gap": "spacing.2",
+        "wrap": true
+      },
+      "children": [
+        {
+          "component": "OptionCard",
+          "props": {
+            "title": "primary",
+            "selected": true,
+            "tint": "primary"
+          }
+        },
+        {
+          "component": "OptionCard",
+          "props": {
+            "title": "neutral",
+            "selected": true,
+            "tint": "neutral"
+          }
+        },
+        {
+          "component": "OptionCard",
+          "props": {
+            "title": "info",
+            "selected": true,
+            "tint": "info"
+          }
+        },
+        {
+          "component": "OptionCard",
+          "props": {
+            "title": "success",
+            "selected": true,
+            "tint": "success"
+          }
+        },
+        {
+          "component": "OptionCard",
+          "props": {
+            "title": "warning",
+            "selected": true,
+            "tint": "warning"
+          }
+        },
+        {
+          "component": "OptionCard",
+          "props": {
+            "title": "danger",
+            "selected": true,
+            "tint": "danger"
+          }
+        }
+      ]
+    }
+  },
+  "InAGrid": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "role": "radiogroup",
+        "width": 704
+      },
+      "children": [
+        {
+          "component": "Grid",
+          "props": {
+            "min": 208
+          },
+          "children": [
+            {
+              "component": "OptionCard",
+              "props": {
+                "description": "20,000 characters a month, one provider."
+              },
+              "derive": {
+                "selected": {
+                  "eq": [
+                    {
+                      "state": "plan"
+                    },
+                    "free"
+                  ]
+                }
+              },
+              "on": {
+                "press": {
+                  "set": "plan",
+                  "value": "free"
+                }
+              },
+              "slots": {
+                "title": {
+                  "component": "Box",
+                  "props": {
+                    "display": "flex",
+                    "align": "center",
+                    "gap": "spacing.2"
+                  },
+                  "children": [
+                    "Free"
+                  ]
+                }
+              }
+            },
+            {
+              "component": "OptionCard",
+              "props": {
+                "description": "Unlimited characters, every provider, shared glossaries."
+              },
+              "derive": {
+                "selected": {
+                  "eq": [
+                    {
+                      "state": "plan"
+                    },
+                    "pro"
+                  ]
+                }
+              },
+              "on": {
+                "press": {
+                  "set": "plan",
+                  "value": "pro"
+                }
+              },
+              "slots": {
+                "title": {
+                  "component": "Box",
+                  "props": {
+                    "display": "flex",
+                    "align": "center",
+                    "gap": "spacing.2"
+                  },
+                  "children": [
+                    "Pro",
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "size": "small",
+                        "tint": "primary"
+                      },
+                      "children": [
+                        "Current"
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "component": "OptionCard",
+              "props": {
+                "description": "Everything in Pro, plus review workflows and seats."
+              },
+              "derive": {
+                "selected": {
+                  "eq": [
+                    {
+                      "state": "plan"
+                    },
+                    "team"
+                  ]
+                }
+              },
+              "on": {
+                "press": {
+                  "set": "plan",
+                  "value": "team"
+                }
+              },
+              "slots": {
+                "title": {
+                  "component": "Box",
+                  "props": {
+                    "display": "flex",
+                    "align": "center",
+                    "gap": "spacing.2"
+                  },
+                  "children": [
+                    "Team"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "plan": "pro"
+    }
+  }
+}

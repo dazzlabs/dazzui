@@ -45,22 +45,23 @@ fn disabled(app: &App, element: BuildContext) -> Option<bool> {
     });
     result
 }
+fn same_value(actual: &serde_json::Value, expected: &serde_json::Value) -> bool {
+    match (actual.as_f64(), expected.as_f64()) {
+        (Some(a), Some(b)) => a == b,
+        _ => actual == expected,
+    }
+}
+/// Every checkpoint starts from a fresh mount, as the React runner does.
 #[test]
-fn shared_checkpoints_drive_native_selection_and_conditional_text() {
+fn shared_checkpoints_drive_native_controls_timers_and_dialogs() {
     let scenes: serde_json::Value = serde_json::from_str(generated_stories::INTERACTIONS).unwrap();
     assert!(!scenes.as_object().unwrap().is_empty());
     for (id, checkpoints) in scenes.as_object().unwrap() {
         let cell = support::test_cell();
         let observed = Rc::new(RefCell::new(None::<SceneHandle>));
-        let observe = observed.clone();
-        let widget = generated_stories::build_observed(
-            id,
-            Some(Rc::new(move |_, state| {
-                *observe.borrow_mut() = Some(state);
-            })),
-        )
-        .unwrap();
-        let slot = cell.borrow_mut().new_entity(|_| widget);
+        let slot = cell
+            .borrow_mut()
+            .new_entity(|_| SizedBox::shrink().into_widget());
         let render_slot = slot.clone();
         support::build(
             &cell,
@@ -70,139 +71,138 @@ fn shared_checkpoints_drive_native_selection_and_conditional_text() {
             ))
             .into_widget(),
         );
-        let state = observed.borrow().as_ref().unwrap().clone();
         let mut tick = 20;
+        let mut previous: Option<SceneHandle> = None;
         for checkpoint in checkpoints.as_array().unwrap() {
-            for step in checkpoint["steps"].as_array().unwrap() {
-                assert!(
-                    step["action"] == "click" || step["action"] == "fill",
-                    "unsupported native checkpoint action"
-                );
-                let target = step["target"].as_str().unwrap();
-                let mut app = cell.borrow_mut();
-                if step["action"] == "fill" {
-                    let element = state.key(target).current_context(&mut app).expect(target);
-                    let editable = find_editable(&app, element).expect("native editable text");
-                    let value = TextEditingValue::default()
-                        .copy_with()
-                        .text(step["value"].as_str().unwrap());
-                    editable.update_editing_value(&mut app, value);
-                    tick += 20;
-                    support::pump(&mut app, Duration::from_millis(tick));
-                    continue;
-                }
-                let render = state
-                    .key(target)
-                    .current_context(&mut app)
-                    .expect(target)
-                    .find_render_object(&app)
+            // Unmount the previous scene so its state, controllers and timers go.
+            cell.borrow_mut().update(&slot, |child, cx| {
+                *child = SizedBox::shrink().into_widget();
+                cx.notify();
+            });
+            tick += 20;
+            support::pump(&mut cell.borrow_mut(), Duration::from_millis(tick));
+            if let Some(old) = previous.take() {
+                if let Some(first) = checkpoint["steps"]
+                    .as_array()
                     .unwrap()
-                    .as_box()
-                    .unwrap();
-                let size = render.size(&app);
-                let position = render.local_to_global(
-                    &app,
-                    Offset::new(size.width() / 2.0, size.height() / 2.0),
-                    None,
-                );
-                for change in [
-                    PointerChange::Add,
-                    PointerChange::Down,
-                    PointerChange::Up,
-                    PointerChange::Remove,
-                ] {
-                    tick += 20;
-                    let at = Duration::from_millis(tick);
-                    GestureBinding::instance(&mut app).handle_pointer_data_packet(
-                        &mut app,
-                        PointerDataPacket {
-                            data: vec![PointerData {
-                                change,
-                                kind: PointerDeviceKind::Mouse,
-                                physical_x: position.dx() * 2.0,
-                                physical_y: position.dy() * 2.0,
-                                time_stamp: at,
-                                buttons: if change == PointerChange::Down { 1 } else { 0 },
-                                ..Default::default()
-                            }],
-                        },
+                    .iter()
+                    .find_map(|s| s["target"].as_str())
+                {
+                    assert!(
+                        old.key(first)
+                            .current_context(&mut cell.borrow_mut())
+                            .is_none(),
+                        "{id}: unmounted"
                     );
-                    support::pump(&mut app, at);
+                }
+            }
+            let observe = observed.clone();
+            let widget = generated_stories::build_observed(
+                id,
+                Some(Rc::new(move |_, state| *observe.borrow_mut() = Some(state))),
+            )
+            .unwrap();
+            cell.borrow_mut().update(&slot, |child, cx| {
+                *child = widget;
+                cx.notify();
+            });
+            tick += 20;
+            support::pump(&mut cell.borrow_mut(), Duration::from_millis(tick));
+            let state = observed.borrow().as_ref().unwrap().clone();
+            for step in checkpoint["steps"].as_array().unwrap() {
+                let mut app = cell.borrow_mut();
+                match step["action"].as_str().unwrap() {
+                    "advance" => {
+                        tick += step["milliseconds"].as_u64().unwrap();
+                        support::pump(&mut app, Duration::from_millis(tick));
+                    }
+                    "fill" => {
+                        let target = step["target"].as_str().unwrap();
+                        let element = state.key(target).current_context(&mut app).expect(target);
+                        let editable = find_editable(&app, element).expect("native editable text");
+                        let value = TextEditingValue::default()
+                            .copy_with()
+                            .text(step["value"].as_str().unwrap());
+                        editable.update_editing_value(&mut app, value);
+                        tick += 20;
+                        support::pump(&mut app, Duration::from_millis(tick));
+                    }
+                    "click" => {
+                        let target = step["target"].as_str().unwrap();
+                        let render = state
+                            .key(target)
+                            .current_context(&mut app)
+                            .expect(target)
+                            .find_render_object(&app)
+                            .unwrap()
+                            .as_box()
+                            .unwrap();
+                        let size = render.size(&app);
+                        let position = render.local_to_global(
+                            &app,
+                            Offset::new(size.width() / 2.0, size.height() / 2.0),
+                            None,
+                        );
+                        for change in [
+                            PointerChange::Add,
+                            PointerChange::Down,
+                            PointerChange::Up,
+                            PointerChange::Remove,
+                        ] {
+                            tick += 20;
+                            let at = Duration::from_millis(tick);
+                            GestureBinding::instance(&mut app).handle_pointer_data_packet(
+                                &mut app,
+                                PointerDataPacket {
+                                    data: vec![PointerData {
+                                        change,
+                                        kind: PointerDeviceKind::Mouse,
+                                        physical_x: position.dx() * 2.0,
+                                        physical_y: position.dy() * 2.0,
+                                        time_stamp: at,
+                                        buttons: if change == PointerChange::Down { 1 } else { 0 },
+                                        ..Default::default()
+                                    }],
+                                },
+                            );
+                            support::pump(&mut app, at);
+                        }
+                    }
+                    other => panic!("unsupported native checkpoint action {other}"),
                 }
             }
             let mut app = cell.borrow_mut();
-            for (key, expected) in checkpoint["expect"].as_object().unwrap() {
+            for (key, expected) in checkpoint["expect"].as_object().into_iter().flatten() {
+                let actual = app.read(&state.values)[key].clone();
+                assert!(
+                    same_value(&actual, expected),
+                    "{id}/{}: {key} = {actual}, expected {expected}",
+                    checkpoint["id"]
+                );
+            }
+            for (key, expected) in checkpoint["expectDisabled"]
+                .as_object()
+                .into_iter()
+                .flatten()
+            {
+                let element = state.key(key).current_context(&mut app).unwrap();
                 assert_eq!(
-                    app.read(&state.values)[key],
-                    *expected,
+                    disabled(&app, element),
+                    expected.as_bool(),
+                    "{id}: disabled {key}"
+                );
+            }
+            for (key, expected) in checkpoint["expectText"].as_object().into_iter().flatten() {
+                let element = state.key(key).current_context(&mut app).unwrap();
+                assert_eq!(
+                    text(&app, element),
+                    expected.as_str().unwrap(),
                     "{id}/{}: {key}",
                     checkpoint["id"]
                 );
             }
-            if let Some(expected) = checkpoint["expectDisabled"].as_object() {
-                for (key, expected) in expected {
-                    let element = state.key(key).current_context(&mut app).unwrap();
-                    assert_eq!(
-                        disabled(&app, element),
-                        expected.as_bool(),
-                        "{id}: disabled {key}"
-                    );
-                }
-            }
-            if let Some(expected) = checkpoint["expectText"].as_object() {
-                for (key, expected) in expected {
-                    let element = state.key(key).current_context(&mut app).unwrap();
-                    assert_eq!(
-                        text(&app, element),
-                        expected.as_str().unwrap(),
-                        "{id}/{}: {key}",
-                        checkpoint["id"]
-                    );
-                }
-            }
-        }
-        let target = checkpoints
-            .as_array()
-            .unwrap()
-            .iter()
-            .flat_map(|c| c["steps"].as_array().unwrap())
-            .next()
-            .unwrap()["target"]
-            .as_str()
-            .unwrap();
-        let old_key = state.key(target);
-        cell.borrow_mut().update(&slot, |child, cx| {
-            *child = SizedBox::shrink().into_widget();
-            cx.notify();
-        });
-        tick += 20;
-        support::pump(&mut cell.borrow_mut(), Duration::from_millis(tick));
-        assert!(
-            old_key.current_context(&mut cell.borrow_mut()).is_none(),
-            "scene actually unmounted"
-        );
-        let observe = observed.clone();
-        let fresh_widget = generated_stories::build_observed(
-            id,
-            Some(Rc::new(move |_, state| {
-                *observe.borrow_mut() = Some(state);
-            })),
-        )
-        .unwrap();
-        cell.borrow_mut().update(&slot, |child, cx| {
-            *child = fresh_widget;
-            cx.notify();
-        });
-        tick += 20;
-        support::pump(&mut cell.borrow_mut(), Duration::from_millis(tick));
-        let fresh = observed.borrow().as_ref().unwrap().clone();
-        let app = cell.borrow();
-        for (key, expected) in checkpoints[0]["expect"].as_object().unwrap() {
-            assert_eq!(
-                app.read(&fresh.values)[key],
-                *expected,
-                "remount resets {id}/{key}"
-            );
+            drop(app);
+            previous = Some(state);
         }
     }
 }
@@ -263,5 +263,41 @@ fn assignment_updates_editing_controller_and_navigation_disposes_it() {
     assert!(
         !cell.borrow().contains(controller),
         "controller destroyed on unmount"
+    );
+}
+
+#[test]
+fn unmounting_a_timed_scene_stops_its_ticker() {
+    let cell = support::test_cell();
+    let observed = Rc::new(RefCell::new(None::<SceneHandle>));
+    let observe = observed.clone();
+    let widget = generated_stories::build_observed(
+        "components-progress--live",
+        Some(Rc::new(move |_, state| *observe.borrow_mut() = Some(state))),
+    )
+    .unwrap();
+    let slot = cell.borrow_mut().new_entity(|_| widget);
+    let render_slot = slot.clone();
+    support::build(
+        &cell,
+        host(Theme::new(
+            &STUDIO_LIGHT,
+            Center::new().child(Builder::new(move |app, _| app.read(&render_slot).clone())),
+        ))
+        .into_widget(),
+    );
+    let state = observed.borrow().as_ref().unwrap().clone();
+    support::pump(&mut cell.borrow_mut(), Duration::from_millis(800));
+    let running = cell.borrow().read(&state.values)["value"].as_f64().unwrap();
+    assert_eq!(running, 16.0);
+    cell.borrow_mut().update(&slot, |child, cx| {
+        *child = SizedBox::shrink().into_widget();
+        cx.notify();
+    });
+    support::pump(&mut cell.borrow_mut(), Duration::from_millis(820));
+    support::pump(&mut cell.borrow_mut(), Duration::from_millis(5000));
+    assert_eq!(
+        cell.borrow().read(&state.values)["value"].as_f64().unwrap(),
+        running
     );
 }

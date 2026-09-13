@@ -1,0 +1,817 @@
+{
+  "Raised": {
+    "content": {
+      "component": "SegmentedControl",
+      "props": {
+        "label": "Appearance",
+        "activeStyle": "raised"
+      },
+      "bind": {
+        "value": "theme"
+      },
+      "children": [
+        {
+          "component": "SegmentedItem",
+          "props": {
+            "value": "light",
+            "label": "Light"
+          }
+        },
+        {
+          "component": "SegmentedItem",
+          "props": {
+            "value": "dark",
+            "label": "Dark"
+          }
+        },
+        {
+          "component": "SegmentedItem",
+          "props": {
+            "value": "system",
+            "label": "System"
+          }
+        }
+      ]
+    },
+    "state": {
+      "theme": "system"
+    }
+  },
+  "Filled": {
+    "content": {
+      "component": "SegmentedControl",
+      "props": {
+        "label": "Appearance",
+        "activeStyle": "filled"
+      },
+      "bind": {
+        "value": "theme"
+      },
+      "children": [
+        {
+          "component": "SegmentedItem",
+          "props": {
+            "value": "light",
+            "label": "Light"
+          }
+        },
+        {
+          "component": "SegmentedItem",
+          "props": {
+            "value": "dark",
+            "label": "Dark"
+          }
+        },
+        {
+          "component": "SegmentedItem",
+          "props": {
+            "value": "system",
+            "label": "System"
+          }
+        }
+      ]
+    },
+    "state": {
+      "theme": "system"
+    }
+  },
+  "Sizes": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance (small)",
+            "size": "small",
+            "value": "system"
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "light",
+                "label": "Light"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "dark",
+                "label": "Dark"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "system",
+                "label": "System"
+              }
+            }
+          ]
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance (medium)",
+            "size": "medium",
+            "value": "system"
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "light",
+                "label": "Light"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "dark",
+                "label": "Dark"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "system",
+                "label": "System"
+              }
+            }
+          ]
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance (large)",
+            "size": "large",
+            "value": "system"
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "light",
+                "label": "Light"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "dark",
+                "label": "Dark"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "system",
+                "label": "System"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Tints": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "tint": "primary"
+          },
+          "bind": {
+            "value": "theme"
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "light",
+                "label": "Light"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "dark",
+                "label": "Dark"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "system",
+                "label": "System"
+              }
+            }
+          ]
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "tint": "neutral"
+          },
+          "bind": {
+            "value": "theme-2"
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "light",
+                "label": "Light"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "dark",
+                "label": "Dark"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "system",
+                "label": "System"
+              }
+            }
+          ]
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "tint": "info"
+          },
+          "bind": {
+            "value": "theme-3"
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "light",
+                "label": "Light"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "dark",
+                "label": "Dark"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "system",
+                "label": "System"
+              }
+            }
+          ]
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "tint": "success"
+          },
+          "bind": {
+            "value": "theme-4"
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "light",
+                "label": "Light"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "dark",
+                "label": "Dark"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "system",
+                "label": "System"
+              }
+            }
+          ]
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "tint": "warning"
+          },
+          "bind": {
+            "value": "theme-5"
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "light",
+                "label": "Light"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "dark",
+                "label": "Dark"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "system",
+                "label": "System"
+              }
+            }
+          ]
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "tint": "danger"
+          },
+          "bind": {
+            "value": "theme-6"
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "light",
+                "label": "Light"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "dark",
+                "label": "Dark"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "system",
+                "label": "System"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "theme": "system",
+      "theme-2": "system",
+      "theme-3": "system",
+      "theme-4": "system",
+      "theme-5": "system",
+      "theme-6": "system"
+    }
+  },
+  "FilledTints": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "activeStyle": "filled",
+            "tint": "primary"
+          },
+          "bind": {
+            "value": "theme"
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "light",
+                "label": "Light"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "dark",
+                "label": "Dark"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "system",
+                "label": "System"
+              }
+            }
+          ]
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "activeStyle": "filled",
+            "tint": "neutral"
+          },
+          "bind": {
+            "value": "theme-2"
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "light",
+                "label": "Light"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "dark",
+                "label": "Dark"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "system",
+                "label": "System"
+              }
+            }
+          ]
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "activeStyle": "filled",
+            "tint": "info"
+          },
+          "bind": {
+            "value": "theme-3"
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "light",
+                "label": "Light"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "dark",
+                "label": "Dark"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "system",
+                "label": "System"
+              }
+            }
+          ]
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "activeStyle": "filled",
+            "tint": "success"
+          },
+          "bind": {
+            "value": "theme-4"
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "light",
+                "label": "Light"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "dark",
+                "label": "Dark"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "system",
+                "label": "System"
+              }
+            }
+          ]
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "activeStyle": "filled",
+            "tint": "warning"
+          },
+          "bind": {
+            "value": "theme-5"
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "light",
+                "label": "Light"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "dark",
+                "label": "Dark"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "system",
+                "label": "System"
+              }
+            }
+          ]
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "activeStyle": "filled",
+            "tint": "danger"
+          },
+          "bind": {
+            "value": "theme-6"
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "light",
+                "label": "Light"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "dark",
+                "label": "Dark"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "system",
+                "label": "System"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "theme": "system",
+      "theme-2": "system",
+      "theme-3": "system",
+      "theme-4": "system",
+      "theme-5": "system",
+      "theme-6": "system"
+    }
+  },
+  "Stretch": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 384
+      },
+      "children": [
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "stretch": true
+          },
+          "bind": {
+            "value": "theme"
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "light",
+                "label": "Light"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "dark",
+                "label": "Dark"
+              }
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {
+                "value": "system",
+                "label": "System"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "theme": "system"
+    }
+  },
+  "Disabled": {
+    "content": {
+      "component": "SegmentedControl",
+      "props": {
+        "label": "Quality",
+        "value": "balanced"
+      },
+      "children": [
+        {
+          "component": "SegmentedItem",
+          "props": {
+            "value": "fast",
+            "label": "Fast"
+          }
+        },
+        {
+          "component": "SegmentedItem",
+          "props": {
+            "value": "balanced",
+            "label": "Balanced"
+          }
+        },
+        {
+          "component": "SegmentedItem",
+          "props": {
+            "value": "careful",
+            "label": "Careful",
+            "disabled": true
+          }
+        }
+      ]
+    }
+  },
+  "TwoSegments": {
+    "content": {
+      "component": "SegmentedControl",
+      "props": {
+        "label": "View"
+      },
+      "bind": {
+        "value": "view"
+      },
+      "children": [
+        {
+          "component": "SegmentedItem",
+          "props": {
+            "value": "source",
+            "label": "Source"
+          }
+        },
+        {
+          "component": "SegmentedItem",
+          "props": {
+            "value": "target",
+            "label": "Target"
+          }
+        }
+      ]
+    },
+    "state": {
+      "view": "source"
+    }
+  },
+  "InAForm": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 384,
+        "gap": "spacing.4"
+      },
+      "children": [
+        {
+          "component": "FormField",
+          "props": {
+            "label": "Quality",
+            "hint": "Applies to new jobs only."
+          },
+          "children": [
+            {
+              "component": "SegmentedControl",
+              "props": {
+                "label": "Quality",
+                "stretch": true
+              },
+              "bind": {
+                "value": "quality"
+              },
+              "children": [
+                {
+                  "component": "SegmentedItem",
+                  "props": {
+                    "value": "fast",
+                    "label": "Fast"
+                  }
+                },
+                {
+                  "component": "SegmentedItem",
+                  "props": {
+                    "value": "balanced",
+                    "label": "Balanced"
+                  }
+                },
+                {
+                  "component": "SegmentedItem",
+                  "props": {
+                    "value": "careful",
+                    "label": "Careful"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "FormField",
+          "props": {
+            "label": "Formality"
+          },
+          "children": [
+            {
+              "component": "SegmentedControl",
+              "props": {
+                "label": "Formality",
+                "stretch": true
+              },
+              "bind": {
+                "value": "formality"
+              },
+              "children": [
+                {
+                  "component": "SegmentedItem",
+                  "props": {
+                    "value": "less",
+                    "label": "Less"
+                  }
+                },
+                {
+                  "component": "SegmentedItem",
+                  "props": {
+                    "value": "default",
+                    "label": "Default"
+                  }
+                },
+                {
+                  "component": "SegmentedItem",
+                  "props": {
+                    "value": "more",
+                    "label": "More"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "quality": "balanced",
+      "formality": "default"
+    }
+  }
+}

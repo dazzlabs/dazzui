@@ -2,8 +2,8 @@ use crate::{ColorExt, ControlSize, Theme, Tint};
 use inset_animation::{Animation, AnimationBehavior, AnimationController};
 use inset_embedder::{Canvas, Color, Offset, Paint, PaintStyle, PathBuilder, Size, Stroke};
 use inset_foundation::{App, Handle};
-use inset_painting::{AlignmentGeometry, BorderRadiusGeometry, BoxDecoration};
-use inset_rendering::{CustomPainter, MainAxisSize};
+use inset_painting::{AlignmentGeometry, BorderRadiusGeometry, BoxDecoration, TextStyle};
+use inset_rendering::{CrossAxisAlignment, CustomPainter, MainAxisSize};
 use inset_scheduler::{Ticker, TickerCallback, TickerProviderObject};
 use inset_widgets::*;
 use std::{rc::Rc, time::Duration};
@@ -291,7 +291,10 @@ pub struct Meter {
     pub min: f64,
     pub max: f64,
     pub tint: Tint,
+    pub size: ControlSize,
     pub label: Option<String>,
+    /// The printed reading, set in the mono face on the label's baseline.
+    pub value_label: Option<String>,
 }
 impl Meter {
     pub fn new(value: f64, min: f64, max: f64) -> Self {
@@ -301,7 +304,9 @@ impl Meter {
             min,
             max,
             tint: Tint::Primary,
+            size: ControlSize::Medium,
             label: None,
+            value_label: None,
         }
     }
     pub fn fraction(&self) -> f64 {
@@ -311,19 +316,77 @@ impl Meter {
 impl StatelessWidget for Meter {
     fn build(&self, app: &mut App, context: BuildContext) -> WidgetRef {
         let v = Theme::of(app, context);
-        let mut progress = Progress::new(Some(self.fraction()));
-        progress.tint = self.tint;
+        let thickness = match self.size {
+            ControlSize::Tiny | ControlSize::Small => v.spacing_1,
+            ControlSize::Medium => v.spacing_1_5,
+            ControlSize::Large => v.spacing_2,
+        };
         let mut children = vec![];
-        if let Some(label) = &self.label {
+        if self.label.is_some() || self.value_label.is_some() {
+            let mut head = vec![];
+            let mut label_face = v.label_quiet;
+            label_face.size = v.label_small.size;
+            label_face.weight = v.label_medium.weight;
+            head.push(
+                Expanded::new(
+                    Text::new(self.label.clone().unwrap_or_default())
+                        .style(label_face.text_style().height(1.0).color(v.color_content)),
+                )
+                .into_widget(),
+            );
+            if let Some(value) = &self.value_label {
+                head.push(
+                    Text::new(value)
+                        .style(
+                            TextStyle::new()
+                                .font_family("monospace")
+                                .font_size(v.label_small.size)
+                                .height(1.0)
+                                .color(v.color_content_muted),
+                        )
+                        .into_widget(),
+                );
+            }
             children.push(
-                Text::new(label)
-                    .style(v.label_small.text_style())
+                Row::new()
+                    .main_axis_size(MainAxisSize::Max)
+                    .spacing(v.spacing_3)
+                    .children(head)
                     .into_widget(),
             );
         }
-        children.push(progress.into_widget());
+        // The Progress groove, with a hard-clipped fill that never eases: a
+        // meter states a fact rather than reporting on something running.
+        children.push(
+            Container::new()
+                .height(thickness)
+                .decoration(
+                    BoxDecoration::new()
+                        .color(v.color_surface_sunken)
+                        .border_radius(BorderRadiusGeometry::circular(thickness / 2.0)),
+                )
+                .child(
+                    Align::new()
+                        .alignment(inset_painting::AlignmentGeometry::CENTER_LEFT)
+                        .child(
+                            FractionallySizedBox::new()
+                                .width_factor(self.fraction())
+                                .child(
+                                    Container::new().decoration(
+                                        BoxDecoration::new()
+                                            .color(v.ramp(self.tint).shade(600))
+                                            .border_radius(BorderRadiusGeometry::circular(
+                                                thickness / 2.0,
+                                            )),
+                                    ),
+                                ),
+                        ),
+                )
+                .into_widget(),
+        );
         Column::new()
             .main_axis_size(MainAxisSize::Min)
+            .cross_axis_alignment(CrossAxisAlignment::Stretch)
             .spacing(v.spacing_2)
             .children(children)
             .into_widget()
@@ -359,16 +422,24 @@ impl StatelessWidget for Skeleton {
                     SkeletonShape::Rect => v.radius_small,
                     _ => v.radius_tiny,
                 };
-                let mut c = Container::new()
-                    .height(w.height.unwrap_or(v.body_small.line_height))
-                    .decoration(
-                        BoxDecoration::new()
-                            .color(v.color_surface_sunken)
-                            .border_radius(BorderRadiusGeometry::circular(radius)),
-                    );
-                if let Some(width) = w.width {
-                    c = c.width(width);
+                let decoration = BoxDecoration::new()
+                    .color(v.color_surface_sunken)
+                    .border_radius(BorderRadiusGeometry::circular(radius));
+                let c = match w.shape {
+                    // A bar on body copy's line box, as long as its container.
+                    SkeletonShape::Text => Container::new()
+                        .height(v.body_small.line_height)
+                        .width(w.width.unwrap_or(f64::INFINITY)),
+                    // Square from one measurement.
+                    SkeletonShape::Circle => {
+                        let side = w.width.or(w.height).unwrap_or(v.spacing_10);
+                        Container::new().width(side).height(side)
+                    }
+                    SkeletonShape::Rect => Container::new()
+                        .width(w.width.unwrap_or(f64::INFINITY))
+                        .height(w.height.unwrap_or(f64::INFINITY)),
                 }
+                .decoration(decoration);
                 Opacity::new(0.65 + 0.35 * (t * std::f64::consts::TAU).cos().abs())
                     .child(c)
                     .into_widget()
@@ -423,5 +494,44 @@ mod progress_tests {
                 assert_eq!(stops[1].offset, 1.0);
             }
         }
+    }
+}
+
+/// A paragraph's worth of text bars, the last one short.
+#[derive(Debug, Clone)]
+pub struct SkeletonText {
+    pub lines: usize,
+}
+impl Default for SkeletonText {
+    fn default() -> Self {
+        Self { lines: 3 }
+    }
+}
+/// Three fifths: the end of a paragraph at any measure, never a heading.
+const LAST_LINE: f64 = 0.6;
+impl StatelessWidget for SkeletonText {
+    fn build(&self, app: &mut App, context: BuildContext) -> WidgetRef {
+        let v = Theme::of(app, context);
+        Column::new()
+            .main_axis_size(MainAxisSize::Min)
+            .cross_axis_alignment(CrossAxisAlignment::Start)
+            // Body copy's leading, so the bars take the run the text would.
+            .spacing(v.spacing_1_5)
+            .children(
+                (0..self.lines)
+                    .map(|line| {
+                        FractionallySizedBox::new()
+                            .width_factor(if line + 1 == self.lines {
+                                LAST_LINE
+                            } else {
+                                1.0
+                            })
+                            .alignment(inset_painting::AlignmentGeometry::CENTER_LEFT)
+                            .child(Skeleton::new())
+                            .into_widget()
+                    })
+                    .collect::<Vec<_>>(),
+            )
+            .into_widget()
     }
 }

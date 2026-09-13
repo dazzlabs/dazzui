@@ -1,12 +1,7 @@
-import {
-  FormField,
-  PreferenceRow,
-  PreferenceSection,
-  Slider,
-  TINTS,
-} from '@dazzlabs/dazzui-react'
+import { defineStory } from '../src/lib/scene'
+import scenes from './slider.scene.json'
+import { Slider } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '../src/lib/story'
-import { useState } from 'react'
 
 import {
   Page,
@@ -104,96 +99,18 @@ export const Overview: Story = {
   ),
 }
 
-export const Bare: Story = {
-  render: () => (
-    <div style={{ width: '18rem' }}>
-      <Slider defaultValue={40} />
-    </div>
-  ),
-}
+export const Bare: Story = defineStory(scenes.Bare)
 
-export const WithValue: Story = {
-  render: () => (
-    <div style={{ width: '20rem' }}>
-      <Slider defaultValue={40} showValue />
-    </div>
-  ),
-}
+export const WithValue: Story = defineStory(scenes.WithValue)
 
-export const Range: Story = {
-  render: () => (
-    <div style={{ width: '20rem' }}>
-      <Slider defaultValue={[20, 70]} showValue />
-    </div>
-  ),
-}
+export const Range: Story = defineStory(scenes.Range)
 
-export const Sizes: Story = {
-  render: () => (
-    <Col width="20rem">
-      {SIZES.map(size => (
-        <Slider key={size} size={size} defaultValue={40} />
-      ))}
-    </Col>
-  ),
-}
+export const Sizes: Story = defineStory(scenes.Sizes)
 
-export const Tints: Story = {
-  render: () => (
-    <Col width="20rem">
-      {TINTS.map(tint => (
-        <Slider key={tint} tint={tint} defaultValue={60} />
-      ))}
-    </Col>
-  ),
-}
+export const Tints: Story = defineStory(scenes.Tints)
 
-export const Disabled: Story = {
-  render: () => (
-    <div style={{ width: '20rem' }}>
-      <Slider defaultValue={40} disabled showValue />
-    </div>
-  ),
-}
+export const Disabled: Story = defineStory(scenes.Disabled)
 
-export const Interactive: Story = {
-  render: () => {
-    const [size, setSize] = useState(13)
-    return (
-      <div style={{ width: '22rem' }}>
-        <FormField label="Editor font size" hint={`${size}px`}>
-          <Slider
-            min={8}
-            max={24}
-            value={size}
-            onValueChange={next => setSize(next as number)}
-            showValue
-            formatValue={values => `${values[0]}px`}
-          />
-        </FormField>
-      </div>
-    )
-  },
-}
+export const Interactive: Story = defineStory(scenes.Interactive)
 
-export const InSettings: Story = {
-  render: () => (
-    <div style={{ width: '30rem' }}>
-      <PreferenceSection label="Appearance">
-        <PreferenceRow
-          title="Editor font size"
-          subtitle="Applies to every open project"
-        >
-          <div style={{ width: '10rem' }}>
-            <Slider defaultValue={13} min={8} max={24} size="small" />
-          </div>
-        </PreferenceRow>
-        <PreferenceRow title="Sidebar width">
-          <div style={{ width: '10rem' }}>
-            <Slider defaultValue={240} min={180} max={360} size="small" />
-          </div>
-        </PreferenceRow>
-      </PreferenceSection>
-    </div>
-  ),
-}
+export const InSettings: Story = defineStory(scenes.InSettings)

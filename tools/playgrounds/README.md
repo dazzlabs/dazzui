@@ -28,7 +28,7 @@ fail generation. Native hosts keep using their existing implementations for
 stories not yet covered; those IDs remain visible in the worklist.
 
 The pipeline currently emits a data-backed Flutter adapter, typed SwiftUI scenes,
-compiled GPUI scenes with native editing buffers and dialog actions, iOS and Android system-control catalogs, 140 Inset scenes with controlled selection, text editing and derived form content, and static Button and Badge builders for WinUI 3. Completing the remaining scene and
+compiled GPUI scenes with native editing buffers and dialog actions, iOS and Android system-control catalogs, 143 Inset scenes with controlled selection, text editing and derived form content, and static Button and Badge builders for WinUI 3. Completing the remaining scene and
 adapter work is required before all native example content has a single source.
 
 All content and interactions must be shared declarations. Story-specific native

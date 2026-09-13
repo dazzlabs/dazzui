@@ -1,12 +1,7 @@
-import {
-  FormField,
-  NumberField,
-  PreferenceRow,
-  PreferenceSection,
-  TextField,
-} from '@dazzlabs/dazzui-react'
+import { defineStory } from '../src/lib/scene'
+import scenes from './number-field.scene.json'
+import { NumberField, TextField } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '../src/lib/story'
-import { useState } from 'react'
 
 import { Page, Section, Specimen, Stack } from '../src/components/gallery'
 import { Col, Row } from '../src/components/stage'
@@ -100,86 +95,14 @@ export const Overview: Story = {
   ),
 }
 
-export const Bare: Story = {
-  render: () => (
-    <div style={{ width: '10rem' }}>
-      <NumberField defaultValue={12} />
-    </div>
-  ),
-}
+export const Bare: Story = defineStory(scenes.Bare)
 
-export const WithUnit: Story = {
-  render: () => (
-    <div style={{ width: '10rem' }}>
-      <NumberField defaultValue={13} min={8} max={24} unit="px" />
-    </div>
-  ),
-}
+export const WithUnit: Story = defineStory(scenes.WithUnit)
 
-export const Sizes: Story = {
-  render: () => (
-    <Col width="10rem">
-      {SIZES.map(size => (
-        <NumberField key={size} size={size} defaultValue={12} />
-      ))}
-    </Col>
-  ),
-}
+export const Sizes: Story = defineStory(scenes.Sizes)
 
-export const States: Story = {
-  render: () => (
-    <Col width="10rem">
-      <NumberField defaultValue={12} />
-      <NumberField defaultValue={0} state="error" />
-      <NumberField defaultValue={12} disabled />
-    </Col>
-  ),
-}
+export const States: Story = defineStory(scenes.States)
 
-export const InAForm: Story = {
-  render: () => {
-    const [port, setPort] = useState<number | null>(5173)
-    return (
-      <div style={{ width: '18rem' }}>
-        <FormField
-          label="Dev server port"
-          hint={port === null ? 'Required' : 'Restart to apply'}
-          state={port === null ? 'error' : 'default'}
-        >
-          <NumberField
-            value={port}
-            onValueChange={setPort}
-            min={1024}
-            max={65535}
-            state={port === null ? 'error' : 'default'}
-          />
-        </FormField>
-      </div>
-    )
-  },
-}
+export const InAForm: Story = defineStory(scenes.InAForm)
 
-export const InSettings: Story = {
-  render: () => (
-    <div style={{ width: '30rem' }}>
-      <PreferenceSection label="Editor">
-        <PreferenceRow title="Font size" subtitle="Applies to every project">
-          <div style={{ width: '7rem' }}>
-            <NumberField
-              defaultValue={13}
-              min={8}
-              max={24}
-              size="small"
-              unit="px"
-            />
-          </div>
-        </PreferenceRow>
-        <PreferenceRow title="Tab width">
-          <div style={{ width: '7rem' }}>
-            <NumberField defaultValue={2} min={1} max={8} size="small" />
-          </div>
-        </PreferenceRow>
-      </PreferenceSection>
-    </div>
-  ),
-}
+export const InSettings: Story = defineStory(scenes.InSettings)

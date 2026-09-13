@@ -222,3 +222,36 @@ struct Pane<Content: View>: View {
     .padding(theme.vars.spacing5)
   }
 }
+
+/// Sizes its content to a fraction of the width it is offered — a length a
+/// declaration states as a percentage of its container.
+struct FractionalWidth<Content: View>: View {
+  let fraction: CGFloat
+  @ViewBuilder let content: () -> Content
+
+  init(_ fraction: CGFloat, @ViewBuilder content: @escaping () -> Content) {
+    self.fraction = fraction
+    self.content = content
+  }
+
+  var body: some View {
+    FractionLayout(fraction: fraction) { content() }
+  }
+}
+
+private struct FractionLayout: Layout {
+  let fraction: CGFloat
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    let width = proposal.width ?? 0
+    let child = subviews.first?.sizeThatFits(ProposedViewSize(width: width * fraction, height: proposal.height)) ?? .zero
+    return CGSize(width: width, height: child.height)
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    subviews.first?.place(
+      at: bounds.origin,
+      proposal: ProposedViewSize(width: bounds.width * fraction, height: bounds.height)
+    )
+  }
+}

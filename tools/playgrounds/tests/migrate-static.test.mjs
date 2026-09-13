@@ -118,10 +118,18 @@ test('static import never embeds imperative callbacks or unknown calls', () => {
   assert.throws(
     () =>
       extractStaticStories(
-        'export const A = { render: () => { const [x, set] = useState(false); return <Button/> } }',
+        'export const A = { render: () => { useEffect(() => fetch("/x")); return <Button/> } }',
         'a.tsx'
       ),
-    /manual migration/
+    /single pure JSX return/
+  )
+  assert.throws(
+    () =>
+      extractStaticStories(
+        'export const A = { render: () => <Button onClick={() => fetch("/x")}>Go</Button> }',
+        'a.tsx'
+      ),
+    /setter|handler|Unsupported static syntax/
   )
   assert.throws(
     () =>
@@ -183,5 +191,51 @@ test('host containers preserve dimensions and token references without raw CSS',
         'a.tsx'
       ),
     /Unsupported scene style/
+  )
+})
+
+test('component-local state becomes declared state, bindings, derived props and events', () => {
+  const source = `
+    function Picker({ tint }) {
+      const [theme, setTheme] = useState('system')
+      return <SegmentedControl aria-label="Appearance" tint={tint} value={theme} onValueChange={setTheme}>
+        <SegmentedItem value="light" label="Light" /><SegmentedItem value="system" label="System" />
+      </SegmentedControl>
+    }
+    export const Two = { render: () => <Col><Picker tint="danger" /><Picker /></Col> }
+    export const Flag = { render: () => {
+      const [on, setOn] = useState(false)
+      return <Row>
+        <Switch aria-label="Sync" checked={on} onCheckedChange={setOn} />
+        <Button disabled={!on} onClick={() => setOn(false)}>Reset</Button>
+        <Button onClick={() => {}}>Nothing</Button>
+        <span>{on ? 'On' : 'Off'}</span>
+      </Row>
+    } }`
+  const { scenes } = extractStaticStories(source, 'state.stories.tsx')
+  assert.deepEqual(scenes.Two.state, { theme: 'system', 'theme-2': 'system' })
+  assert.deepEqual(
+    scenes.Two.content.children.map(c => c.bind),
+    [{ value: 'theme' }, { value: 'theme-2' }]
+  )
+  assert.equal(scenes.Two.content.children[0].props.label, 'Appearance')
+  const [toggle, reset, nothing, text] = scenes.Flag.content.children
+  assert.deepEqual(toggle.bind, { checked: 'on' })
+  assert.deepEqual(reset.derive, { disabled: { not: { state: 'on' } } })
+  assert.deepEqual(reset.on, { press: { set: 'on', value: false } })
+  assert.equal(nothing.on, undefined)
+  assert.deepEqual(text.children[0].value, {
+    if: { state: 'on' },
+    // oxlint-disable-next-line unicorn/no-thenable -- scene branch data
+    then: 'On',
+    else: 'Off',
+  })
+  assert.throws(
+    () =>
+      extractStaticStories(
+        `export const A = { render: () => { const [v, setV] = useState('a'); return <SegmentedControl value="a" onValueChange={setV}><SegmentedItem value="a" label="A" /></SegmentedControl> } }`,
+        'unpaired.tsx'
+      ),
+    /must pair with a controlled value/
   )
 })

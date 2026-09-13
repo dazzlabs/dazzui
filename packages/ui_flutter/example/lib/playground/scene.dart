@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:dazzui/dazzui.dart';
-import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 
 import '../generated/expression.dart';
+import '../generated/glyphs.dart';
+import '../generated/spacing.dart';
 import '../storybook/gallery.dart' as gallery;
 import '../storybook/stage.dart';
 
@@ -89,6 +90,27 @@ class GeneratedSceneState extends State<GeneratedScene> {
   dynamic _value(dynamic expression) {
     if (expression is! Map) return expression;
     if (expression.containsKey('state')) return values[expression['state']];
+    if (expression.containsKey('not')) return _value(expression['not']) != true;
+    if (expression.containsKey('and')) {
+      return (expression['and'] as List).every((v) => _value(v) == true);
+    }
+    if (expression.containsKey('or')) {
+      return (expression['or'] as List).any((v) => _value(v) == true);
+    }
+    if (expression.containsKey('text')) {
+      final num value = _value(expression['text']);
+      return value == value.roundToDouble() ? '${value.round()}' : '$value';
+    }
+    if (expression.containsKey('lower')) {
+      return (_value(expression['lower']) as String).toLowerCase();
+    }
+    if (expression.containsKey('length')) {
+      return (_value(expression['length']) as String).runes.length;
+    }
+    if (expression.containsKey('contains')) {
+      final list = expression['contains'] as List;
+      return (_value(list[0]) as String).contains(_value(list[1]) as String);
+    }
     if (expression.containsKey('eq'))
       return _value(expression['eq'][0]) == _value(expression['eq'][1]);
     if (expression.containsKey('concat'))
@@ -133,17 +155,25 @@ class GeneratedSceneState extends State<GeneratedScene> {
         entry.key: _node(entry.value, context),
     };
     final binding = Map<String, dynamic>.from(node['bind'] ?? {});
+    // List components read their item nodes as data rather than widgets.
+    final itemList = const {
+      'SegmentedControl',
+      'RadioGroup',
+      'PillTabs',
+      'ToggleGroup',
+    }.contains(node['component']);
     final children = [
-      for (final child in node['children'] ?? [])
-        _node(
-          child,
-          context,
-          (['Box', 'Col'].contains(node['component']) &&
-                  props['display'] == null &&
-                  (props['width'] != null || fillWidth)) ||
-              (node['component'] == 'Card' && fillWidth) ||
-              node['component'] == 'Grid',
-        ),
+      if (!itemList)
+        for (final child in _shown(node['children'] ?? []))
+          _node(
+            child,
+            context,
+            (['Box', 'Col'].contains(node['component']) &&
+                    props['display'] == null &&
+                    (props['width'] != null || fillWidth)) ||
+                (node['component'] == 'Card' && fillWidth) ||
+                node['component'] == 'Grid',
+          ),
     ];
     final key = node['id'] == null ? null : ValueKey<String>(node['id']);
     switch (node['component']) {
@@ -186,13 +216,15 @@ class GeneratedSceneState extends State<GeneratedScene> {
           ),
           child: Container(
             key: key,
-            height: props['height']?.toDouble(),
+            height: _length(context, props['height']),
             width:
-                props['width']?.toDouble() ??
+                _length(context, props['width']) ??
                 (props['grow'] == true ? double.infinity : null),
             constraints: props['maxWidth'] == null
                 ? null
-                : BoxConstraints(maxWidth: props['maxWidth'].toDouble()),
+                : BoxConstraints(
+                    maxWidth: _length(context, props['maxWidth'])!,
+                  ),
             padding: props['padding'] == null
                 ? null
                 : EdgeInsets.all(
@@ -214,19 +246,19 @@ class GeneratedSceneState extends State<GeneratedScene> {
                           : vars.radiusMedium,
                     ),
             ),
-            child: props['display'] != null
+            child: props['display'] != null && props['wrap'] == true
+                ? Wrap(
+                    spacing: _spacing(context, props['gap']) ?? 0,
+                    runSpacing: _spacing(context, props['gap']) ?? 0,
+                    children: children,
+                  )
+                : props['display'] != null
                 ? Row(
                     mainAxisAlignment: props['justify'] == 'between'
                         ? MainAxisAlignment.spaceBetween
                         : MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
-                    spacing: props['gap'] == null
-                        ? 0
-                        : props['gap'] == 'spacing.1'
-                        ? vars.spacing1
-                        : props['gap'] == 'spacing.2'
-                        ? vars.spacing2
-                        : vars.spacing3,
+                    spacing: _spacing(context, props['gap']) ?? 0,
                     children: children,
                   )
                 : Column(
@@ -238,6 +270,246 @@ class GeneratedSceneState extends State<GeneratedScene> {
         );
       case 'Value':
         return Text(_value(node['value']).toString());
+      case 'RadioGroup':
+        final bound = binding['value'];
+        return RadioGroup<String>(
+          key: key,
+          semanticsLabel: props['label'],
+          options: [
+            for (final option in node['children'] ?? [])
+              RadioItem<String>(
+                value: option['props']['value'],
+                label: Text(option['props']['label']),
+                enabled: option['props']['disabled'] != true,
+              ),
+          ],
+          value: bound == null ? props['value'] : values[bound],
+          onChanged: (value) {
+            if (bound != null && value != null) _assign(bound, value);
+          },
+          size: _size(props['size'] ?? 'medium'),
+          tint: RadioTint.values.byName(props['tint'] ?? 'primary'),
+          direction: props['direction'] == 'row'
+              ? Axis.horizontal
+              : Axis.vertical,
+          spacing: _spacing(context, props['gap']),
+        );
+      case 'PillTabs':
+        final bound = binding['value'];
+        return Semantics(
+          label: props['label'],
+          child: PillTabs<String>(
+            key: key,
+            items: [
+              for (final item in node['children'] ?? [])
+                PillTabItem<String>(
+                  value: item['props']['value'],
+                  label: item['props']['label'],
+                  count: item['props']['count'],
+                  enabled: item['props']['disabled'] != true,
+                ),
+            ],
+            value: bound == null ? props['value'] : values[bound],
+            onChanged: (value) {
+              if (bound != null) _assign(bound, value);
+            },
+            tint: PillTabsTint.values.byName(props['tint'] ?? 'primary'),
+          ),
+        );
+      case 'ToggleGroup':
+        final items = [
+          for (final item in node['children'] ?? []) item as Map,
+        ];
+        bool pressed(Map item) => item['bind']?['pressed'] != null
+            ? values[item['bind']['pressed']] == true
+            : item['props']['pressed'] == true;
+        final single = props['multiple'] == false;
+        final bound = binding['value'];
+        return Semantics(
+          label: props['label'],
+          child: ToggleGroup<String>(
+            key: key,
+            items: [
+              for (final item in items)
+                ToggleItem<String>(
+                  value: item['props']['value'],
+                  label: item['children'] == null
+                      ? Text(item['props']['label'])
+                      : _node((item['children'] as List).single, context),
+                  semanticsLabel: item['props']['label'],
+                  enabled: item['props']['disabled'] != true,
+                ),
+            ],
+            value: single
+                ? [if (bound != null && values[bound] != '') values[bound]]
+                : [
+                    for (final item in items)
+                      if (pressed(item)) item['props']['value'] as String,
+                  ],
+            multiple: !single,
+            onChanged: (next) {
+              if (single) {
+                if (bound != null)
+                  _assign(bound, next.isEmpty ? '' : next.first);
+                return;
+              }
+              for (final item in items) {
+                final key = item['bind']?['pressed'];
+                if (key != null) {
+                  _assign(key, next.contains(item['props']['value']));
+                }
+              }
+            },
+            size: _size(props['size'] ?? 'small'),
+            variant: ToggleVariant.values.byName(
+              props['variant'] ?? 'recessed',
+            ),
+            tint: ToggleTint.values.byName(props['tint'] ?? 'primary'),
+          ),
+        );
+      case 'OptionCard':
+        return OptionCard(
+          key: key,
+          title: props['title'] ?? '',
+          titleContent: slots['title'],
+          description: props['description'],
+          selected: props['selected'] ?? false,
+          onPressed: props['disabled'] == true
+              ? null
+              : _action(node, 'press') ?? () {},
+          tint: OptionCardTint.values.byName(props['tint'] ?? 'primary'),
+        );
+      case 'Slider':
+        final valueKey = binding['value'];
+        final endKey = binding['end'];
+        final double first =
+            ((valueKey == null ? props['value'] : values[valueKey]) as num? ??
+                    0)
+                .toDouble();
+        final end = endKey == null ? props['end'] : values[endKey];
+        final sliderValues = [
+          first,
+          if (end != null) (end as num).toDouble(),
+        ];
+        String number(double value) =>
+            value == value.roundToDouble() ? '${value.round()}' : '$value';
+        return Slider(
+          key: key,
+          values: sliderValues,
+          min: (props['min'] as num? ?? 0).toDouble(),
+          max: (props['max'] as num? ?? 100).toDouble(),
+          step: (props['step'] as num? ?? 1).toDouble(),
+          size: _size(props['size'] ?? 'medium'),
+          tint: SliderTint.values.byName(props['tint'] ?? 'primary'),
+          semanticsLabel: props['label'],
+          // React prints the reading, a range as "a – b", a unit after one value.
+          valueLabel: props['showValue'] != true
+              ? null
+              : props['unit'] != null
+              ? '${number(first)}${props['unit']}'
+              : sliderValues.map(number).join(' – '),
+          onChanged: props['disabled'] == true
+              ? null
+              : (next) {
+                  if (valueKey != null) _assign(valueKey, next.first);
+                  if (endKey != null && next.length > 1) {
+                    _assign(endKey, next[1]);
+                  }
+                },
+        );
+      case 'NumberField':
+        final bound = binding['value'];
+        final String text = bound == null
+            ? props['value'] ?? ''
+            : values[bound];
+        return NumberField(
+          key: key,
+          value: text.isEmpty ? null : double.parse(text),
+          min: (props['min'] as num?)?.toDouble(),
+          max: (props['max'] as num?)?.toDouble(),
+          step: (props['step'] as num? ?? 1).toDouble(),
+          size: _size(props['size'] ?? 'medium'),
+          state: props['state'] == 'error'
+              ? TextFieldState.error
+              : TextFieldState.normal,
+          tint: TextFieldTint.values.byName(props['tint'] ?? 'primary'),
+          placeholder: props['placeholder'],
+          unit: props['unit'],
+          onChanged: props['disabled'] == true
+              ? null
+              : (next) {
+                  if (bound == null) return;
+                  _assign(
+                    bound,
+                    next == null
+                        ? ''
+                        : next == next.roundToDouble()
+                        ? '${next.round()}'
+                        : '$next',
+                  );
+                },
+        );
+      case 'SearchField':
+        final bound = binding['value'];
+        return SearchField(
+          key: key,
+          value: bound == null ? '' : values[bound],
+          placeholder: props['placeholder'],
+          size: _size(props['size'] ?? 'medium'),
+          tint: TextFieldTint.values.byName(props['tint'] ?? 'primary'),
+          hint: slots['hint'],
+          clearLabel: props['clearLabel'] ?? 'Clear search',
+          onChanged: (value) {
+            if (bound != null) _assign(bound, value);
+          },
+          onDismiss: _action(node, 'dismiss'),
+        );
+      case 'OtpField':
+        final bound = binding['value'];
+        return OtpField(
+          key: key,
+          length: props['length'] ?? 6,
+          value: bound == null ? props['value'] ?? '' : values[bound],
+          groupAfter: props['groupAfter'],
+          mask: props['mask'] ?? false,
+          size: _size(props['size'] ?? 'medium'),
+          state: props['state'] == 'error'
+              ? TextFieldState.error
+              : TextFieldState.normal,
+          tint: TextFieldTint.values.byName(props['tint'] ?? 'primary'),
+          onChanged: props['disabled'] == true
+              ? null
+              : (value) {
+                  if (bound != null) _assign(bound, value);
+                },
+        );
+      case 'SegmentedControl':
+        final bound = binding['value'];
+        return Semantics(
+          label: props['label'],
+          child: SegmentedControl<String>(
+            key: key,
+            items: [
+              for (final item in node['children'] ?? [])
+                SegmentedItem<String>(
+                  value: item['props']['value'],
+                  label: item['props']['label'],
+                  enabled: item['props']['disabled'] != true,
+                ),
+            ],
+            value: bound == null ? props['value'] : values[bound],
+            // An unbound control still presses; there is simply nothing to set.
+            onChanged: (value) {
+              if (bound != null) _assign(bound, value);
+            },
+            size: _size(props['size'] ?? 'medium'),
+            tint: SegmentedTint.values.byName(props['tint'] ?? 'primary'),
+            activeStyle: SegmentedActiveStyle.values.byName(
+              props['activeStyle'] ?? 'raised',
+            ),
+            stretch: props['stretch'] ?? false,
+          ),
+        );
       case 'Switch':
         return Semantics(
           label: props['label'],
@@ -311,13 +583,16 @@ class GeneratedSceneState extends State<GeneratedScene> {
           ],
         );
       case 'Inline':
+        final tone = switch (props['tone']) {
+          'muted' => Theme.of(context).vars.colorContentMuted,
+          'subtle' => Theme.of(context).vars.colorContentSubtle,
+          _ => null,
+        };
         return KeyedSubtree(
           key: key,
           child: DefaultTextStyle.merge(
             style: TextStyle(
-              color: props['tone'] == 'muted'
-                  ? Theme.of(context).vars.colorContentMuted
-                  : null,
+              color: tone,
               fontSize: props['fontSize'] == null
                   ? null
                   : props['fontSize'] == 'title.large'
@@ -330,18 +605,21 @@ class GeneratedSceneState extends State<GeneratedScene> {
                   ? Theme.of(context).vars.fontCode.fallback
                   : null,
             ),
-            child: Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: children,
+            // A glyph rides the same tone as the text beside it.
+            child: IconTheme.merge(
+              data: IconThemeData(color: tone),
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: children,
+              ),
             ),
           ),
         );
       case 'Icon':
+        final size = props['size'];
         return Icon(
-          props['name'] == 'Circle20Filled'
-              ? FluentIcons.circle_20_filled
-              : FluentIcons.arrow_download_20_regular,
-          size: (props['size'] as num?)?.toDouble(),
+          sceneGlyphs[props['name']]!,
+          size: size is num ? size.toDouble() : _spacing(context, size),
         );
       case 'StepList':
         return StepList(key: key, children: children);
@@ -432,29 +710,91 @@ class GeneratedSceneState extends State<GeneratedScene> {
         );
       case 'Row':
         return RowWrap(
-          spacing: switch (props['gap']) {
-            'spacing.1' => Theme.of(context).vars.spacing1,
-            'spacing.2' => Theme.of(context).vars.spacing2,
-            'spacing.3' => Theme.of(context).vars.spacing3,
-            'spacing.4' => Theme.of(context).vars.spacing4,
-            'spacing.5' => Theme.of(context).vars.spacing5,
-            _ => null,
-          },
+          spacing: _spacing(context, props['gap']),
           children: children,
         );
       case 'Col':
         return Col(
-          width: (props['width'] as num?)?.toDouble(),
-          spacing: switch (props['gap']) {
-            'spacing.1' => Theme.of(context).vars.spacing1,
-            'spacing.2' => Theme.of(context).vars.spacing2,
-            'spacing.3' => Theme.of(context).vars.spacing3,
-            'spacing.4' => Theme.of(context).vars.spacing4,
-            'spacing.5' => Theme.of(context).vars.spacing5,
-            _ => null,
-          },
+          width: _length(context, props['width']),
+          spacing: _spacing(context, props['gap']),
           children: children,
         );
+      case 'Tag':
+        final selectedBinding = binding['selected'];
+        final selectable =
+            selectedBinding != null || node['on']?['select'] != null;
+        final remove = _action(node, 'remove');
+        final select = _action(node, 'select');
+        return Tag(
+          key: key,
+          label: Text((node['children'] as List).whereType<String>().join()),
+          icon: node['slots']?['icon'] == null
+              ? null
+              : sceneGlyphs[node['slots']['icon']['props']['name']],
+          size: _size(props['size'] ?? 'medium'),
+          variant: TagVariant.values.byName(props['variant'] ?? 'tinted'),
+          tint: TagTint.values.byName(props['tint'] ?? 'primary'),
+          selected: selectedBinding != null
+              ? values[selectedBinding]
+              : selectable
+              ? props['selected'] ?? false
+              : null,
+          onSelectedChanged: !selectable
+              ? null
+              : (value) {
+                  if (selectedBinding != null) _assign(selectedBinding, value);
+                  select?.call();
+                },
+          onRemove: remove,
+          removeSemanticsLabel: props['removeLabel'] ?? 'Remove',
+          enabled: props['disabled'] != true,
+        );
+      case 'Link':
+        return Link(
+          key: key,
+          label: (node['children'] as List).whereType<String>().join(),
+          onPressed: _action(node, 'press') ?? () {},
+          tint: LinkTint.values.byName(props['tint'] ?? 'primary'),
+          underline: LinkUnderline.values.byName(props['underline'] ?? 'hover'),
+          external: props['external'] ?? false,
+          enabled: props['disabled'] != true,
+        );
+      case 'Meter':
+        final double value = (props['value'] as num).toDouble();
+        final double min = (props['min'] as num? ?? 0).toDouble();
+        final double max = (props['max'] as num? ?? 100).toDouble();
+        return Meter(
+          key: key,
+          value: value,
+          min: min,
+          max: max,
+          size: _size(props['size'] ?? 'medium'),
+          tint: MeterTint.values.byName(props['tint'] ?? 'primary'),
+          label: props['label'] == null ? null : Text(props['label']),
+          // React prints the reading as a whole percent of the range.
+          valueLabel: props['showValue'] == true
+              ? '${((value - min) / (max - min) * 100).round()}%'
+              : null,
+        );
+      case 'Skeleton':
+        final width = props['width'];
+        final skeleton = Skeleton(
+          key: key,
+          shape: SkeletonShape.values.byName(props['shape'] ?? 'text'),
+          width: width is String && width.endsWith('%')
+              ? null
+              : _length(context, width),
+          height: _length(context, props['height']),
+        );
+        return width is String && width.endsWith('%')
+            ? FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: double.parse(width.replaceAll('%', '')) / 100,
+                child: skeleton,
+              )
+            : skeleton;
+      case 'SkeletonText':
+        return SkeletonText(key: key, lines: props['lines'] ?? 3);
       case 'Button':
         final action = node['on']?['press'];
         return Button(
@@ -467,7 +807,9 @@ class GeneratedSceneState extends State<GeneratedScene> {
           onPressed: props['disabled'] == true
               ? null
               : () {
-                  if (action != null) _assign(action['set'], action['value']);
+                  if (action?['set'] != null) {
+                    _assign(action['set'], action['value']);
+                  }
                 },
           child: children.length == 1
               ? children.first
@@ -480,6 +822,40 @@ class GeneratedSceneState extends State<GeneratedScene> {
                   },
                   children: children,
                 ),
+        );
+      case 'IconButton':
+        final press = node['on']?['press'];
+        return IconButton(
+          key: key,
+          icon: children.single,
+          semanticsLabel: props['label'],
+          size: _size(props['size'] ?? 'tiny'),
+          variant: IconButtonVariant.values.byName(props['variant'] ?? 'plain'),
+          tint: IconButtonTint.values.byName(props['tint'] ?? 'neutral'),
+          onPressed: props['disabled'] == true
+              ? null
+              : () {
+                  if (press?['set'] != null) {
+                    _assign(press['set'], press['value']);
+                  }
+                },
+        );
+      case 'Toggle':
+        final bound = binding['pressed'];
+        return Toggle(
+          key: key,
+          semanticsLabel: props['label'],
+          pressed: bound == null ? props['pressed'] ?? false : values[bound],
+          onPressedChanged: (value) {
+            if (bound != null) _assign(bound, value);
+          },
+          enabled: props['disabled'] != true,
+          size: _size(props['size'] ?? 'tiny'),
+          variant: ToggleVariant.values.byName(props['variant'] ?? 'plain'),
+          tint: ToggleTint.values.byName(props['tint'] ?? 'neutral'),
+          child: children.length == 1
+              ? children.single
+              : Row(mainAxisSize: MainAxisSize.min, children: children),
         );
       case 'FormField':
         return FormField(
@@ -549,7 +925,39 @@ class GeneratedSceneState extends State<GeneratedScene> {
     }
   }
 
+  /// A spacing step named by the declaration, or null for the default.
+  double? _spacing(BuildContext context, String? name) =>
+      name == null ? null : sceneSpacing(Theme.of(context).vars, name);
+
+  /// A declared length: logical pixels or a spacing step.
+  double? _length(BuildContext context, dynamic value) =>
+      value is num ? value.toDouble() : _spacing(context, value);
+
+  /// Children with every `Show` resolved in place, so a hidden branch takes
+  /// no slot (and no gap) in the flex it sits in.
+  List<dynamic> _shown(List<dynamic> nodes) => [
+    for (final child in nodes)
+      if (child is Map && child['component'] == 'Show')
+        if (_value(child['value']) == true)
+          ..._shown(child['children'] ?? [])
+        else
+          ...[]
+      else
+        child,
+  ];
+
+  /// An event handler for a declared action; an empty action is live but
+  /// assigns nothing, and an undeclared event leaves the control inert.
+  VoidCallback? _action(dynamic node, String event) {
+    final action = node['on']?[event];
+    if (action == null) return null;
+    return () {
+      if (action['set'] != null) _assign(action['set'], action['value']);
+    };
+  }
+
   WidgetSize _size(String name) => switch (name) {
+    'tiny' => WidgetSize.tiny,
     'small' => WidgetSize.small,
     'medium' => WidgetSize.medium,
     'large' => WidgetSize.large,
@@ -559,8 +967,12 @@ class GeneratedSceneState extends State<GeneratedScene> {
   @override
   Widget build(BuildContext context) {
     final node = widget.scene['content'];
-    return node is Map && node['component'] == 'Dialog'
+    if (node is Map && node['component'] == 'Dialog') {
+      return const SizedBox.shrink();
+    }
+    final shown = _shown([node]);
+    return shown.isEmpty
         ? const SizedBox.shrink()
-        : _node(node, context);
+        : _node(shown.single, context);
   }
 }

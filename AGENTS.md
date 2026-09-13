@@ -645,6 +645,14 @@ every dark-theme control colour on Swift and GPUI was one step off.
   both pad by is `calc(var(--spacing-4) + var(--spacing-0-5))`. That keeps the
   scale the only source of lengths, and it keeps the value honest — a step and
   a half says what it is, where `18px` only says what it measures.
+- **A class on an icon is one class too few for `display`.** A Fluent icon
+  brings its own sheet — `display: inline`, `line-height: 0`, the RTL flip —
+  and appends it to the head as the first icon renders, which is after every
+  stylesheet linked here, so it takes a one-class tie. A rule that sets one of
+  those on the icon itself names the parent as well, the way `checkbox.css`
+  hides its dash (`.dz-checkbox .dz-checkbox__dash`); every other part puts
+  the glyph in a span of its own — `.dz-checkbox__mark`, `.dz-select__chevron`
+  — and styles that.
 - Sized controls read the `[data-size]` profile bindings — `--control-size`,
   `--control-gap`, `--control-padding-*`, `--control-radius`,
   `--control-font-*`, `--control-line-height` — once in their base rule

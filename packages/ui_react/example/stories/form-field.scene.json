@@ -113,5 +113,76 @@
       "field-0-0": "sk-0000000000",
       "field-1-0": "http://localhost:8080"
     }
+  },
+  "OverAnyControl": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 384
+      },
+      "children": [
+        {
+          "component": "FormField",
+          "props": {
+            "label": "Quality",
+            "hint": "Applies to new jobs only."
+          },
+          "children": [
+            {
+              "component": "SegmentedControl",
+              "props": {
+                "stretch": true
+              },
+              "bind": {
+                "value": "mode"
+              },
+              "children": [
+                {
+                  "component": "SegmentedItem",
+                  "props": {
+                    "value": "fast",
+                    "label": "Fast"
+                  }
+                },
+                {
+                  "component": "SegmentedItem",
+                  "props": {
+                    "value": "balanced",
+                    "label": "Balanced"
+                  }
+                },
+                {
+                  "component": "SegmentedItem",
+                  "props": {
+                    "value": "careful",
+                    "label": "Careful"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "FormField",
+          "props": {
+            "label": "Review"
+          },
+          "children": [
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": true
+              },
+              "children": [
+                "Hold jobs for review before export"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "mode": "balanced"
+    }
   }
 }

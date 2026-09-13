@@ -198,39 +198,96 @@ impl State for TextFieldState {
             .into_widget()
     }
 }
-#[derive(Debug, Clone)]
-pub struct SearchField(pub TextField);
+/// Inline search for a list or a table. A hint sits in the trailing slot while
+/// the field is empty and gives way to the clear button once there is something
+/// to clear; Escape clears first and dismisses only once nothing is left.
+#[derive(Clone)]
+pub struct SearchField {
+    pub field: TextField,
+    /// The current query, when the host holds it; it decides hint or clear.
+    pub value: Option<String>,
+    pub hint: Option<WidgetRef>,
+    pub on_dismiss: Option<super::Callback>,
+}
+impl std::fmt::Debug for SearchField {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("SearchField")
+            .field("value", &self.value)
+            .finish()
+    }
+}
 impl SearchField {
     pub fn new(controller: Handle<TextEditingController>) -> Self {
         let mut field = TextField::new()
             .controller(controller)
             .placeholder("Search");
         field.prefix = Some(Text::new("⌕").into_widget());
-        Self(field)
+        Self {
+            field,
+            value: None,
+            hint: None,
+            on_dismiss: None,
+        }
     }
     pub fn on_changed(mut self, callback: impl Fn(&mut App, String) + 'static) -> Self {
-        self.0 = self.0.on_changed(callback);
+        self.field = self.field.on_changed(callback);
         self
     }
 }
 impl StatelessWidget for SearchField {
-    fn build(&self, _: &mut App, _: BuildContext) -> WidgetRef {
-        let mut field = self.0.clone();
-        if let Some(controller) = field.controller {
-            let callback = field.on_changed.clone();
-            field.suffix = Some(
+    fn build(&self, app: &mut App, context: BuildContext) -> WidgetRef {
+        let v = Theme::of(app, context);
+        let mut field = self.field.clone();
+        field.prefix = field.prefix.map(|prefix| {
+            Padding::new(EdgeInsetsGeometry::only(v.spacing_2_5, 0.0, 0.0, 0.0))
+                .child(prefix)
+                .into_widget()
+        });
+        let empty = self.value.as_ref().is_some_and(String::is_empty);
+        let Some(controller) = field.controller else {
+            return field.into_widget();
+        };
+        let callback = field.on_changed.clone();
+        let clear = Rc::new(move |app: &mut App| {
+            controller.set_text(app, "");
+            if let Some(callback) = &callback {
+                callback(app, String::new());
+            }
+        });
+        field.suffix = if empty {
+            self.hint.clone().map(|hint| {
+                Padding::new(EdgeInsetsGeometry::only(0.0, 0.0, v.spacing_2, 0.0))
+                    .child(hint)
+                    .into_widget()
+            })
+        } else {
+            let clear = clear.clone();
+            Some(
                 super::Button::new("×")
                     .variant(crate::ControlVariant::Plain)
                     .size(ControlSize::Tiny)
-                    .on_pressed(move |app| {
-                        controller.set_text(app, "");
-                        if let Some(callback) = &callback {
-                            callback(app, String::new());
-                        }
-                    })
+                    .on_pressed(move |app| clear(app))
                     .into_widget(),
-            );
-        }
-        field.into_widget()
+            )
+        };
+        let dismiss = self.on_dismiss.clone();
+        Focus::new(field)
+            .can_request_focus(false)
+            .on_key_event(Rc::new(move |app, _, event| {
+                if matches!(event, inset_services::KeyEvent::Up(_))
+                    || event.logical_key() != inset_services::LogicalKeyboardKey::ESCAPE
+                {
+                    return KeyEventResult::Ignored;
+                }
+                if empty {
+                    if let Some(dismiss) = &dismiss {
+                        dismiss(app);
+                    }
+                } else {
+                    clear(app);
+                }
+                KeyEventResult::Handled
+            }))
+            .into_widget()
     }
 }

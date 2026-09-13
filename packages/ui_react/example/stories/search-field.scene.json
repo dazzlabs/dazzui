@@ -1,0 +1,1107 @@
+{
+  "Overview": {
+    "content": {
+      "component": "Page",
+      "props": {
+        "title": "SearchField",
+        "description": "Inline search for a list or a table. The box belongs to the wrapper rather than the input, because the glyph and the trailing slot sit inside it — which is also why the focus ring comes from `:focus-within`. It holds no results of its own, so the same component narrows a table, a rail, or a menu without knowing which."
+      },
+      "children": [
+        {
+          "component": "Section",
+          "props": {
+            "title": "The trailing slot",
+            "description": "A hint sits there while the field is empty and gives way to the clear button once there is something to clear, so the two never compete for the same corner. Type something and press Escape: it clears first, and only dismisses once the field is already empty, so a stray press never closes a search mid-way."
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "empty"
+                  },
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {
+                        "width": 288
+                      },
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms"
+                          },
+                          "bind": {
+                            "value": "query"
+                          },
+                          "slots": {
+                            "hint": {
+                              "component": "KeyCap",
+                              "props": {
+                                "size": "small"
+                              },
+                              "children": [
+                                "⌘F"
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "with a query"
+                  },
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {
+                        "width": 288
+                      },
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms"
+                          },
+                          "bind": {
+                            "value": "query-2"
+                          },
+                          "slots": {
+                            "hint": {
+                              "component": "KeyCap",
+                              "props": {
+                                "size": "small"
+                              },
+                              "children": [
+                                "⌘F"
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Sizes",
+            "description": "The glyph and the trailing slot hold their distance from the edges at every size, so the text starts and ends on the same inset a plain TextField's does."
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "small"
+                  },
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {
+                        "width": 288
+                      },
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms",
+                            "size": "small"
+                          },
+                          "bind": {
+                            "value": "query-3"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "medium"
+                  },
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {
+                        "width": 288
+                      },
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms",
+                            "size": "medium"
+                          },
+                          "bind": {
+                            "value": "query-4"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "large"
+                  },
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {
+                        "width": 288
+                      },
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms",
+                            "size": "large"
+                          },
+                          "bind": {
+                            "value": "query-5"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Tints",
+            "description": "The tint reaches the focus ring and the focused border. Focus each of these — nothing else about the field changes, because a search box is chrome and should not be carrying a colour of its own at rest."
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "primary"
+                  },
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {
+                        "width": 288
+                      },
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms",
+                            "tint": "primary"
+                          },
+                          "bind": {
+                            "value": "query-6"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "neutral"
+                  },
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {
+                        "width": 288
+                      },
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms",
+                            "tint": "neutral"
+                          },
+                          "bind": {
+                            "value": "query-7"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "info"
+                  },
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {
+                        "width": 288
+                      },
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms",
+                            "tint": "info"
+                          },
+                          "bind": {
+                            "value": "query-8"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "success"
+                  },
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {
+                        "width": 288
+                      },
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms",
+                            "tint": "success"
+                          },
+                          "bind": {
+                            "value": "query-9"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "warning"
+                  },
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {
+                        "width": 288
+                      },
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms",
+                            "tint": "warning"
+                          },
+                          "bind": {
+                            "value": "query-10"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "danger"
+                  },
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {
+                        "width": 288
+                      },
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms",
+                            "tint": "danger"
+                          },
+                          "bind": {
+                            "value": "query-11"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "query": "",
+      "query-2": "placeholder",
+      "query-3": "",
+      "query-4": "",
+      "query-5": "",
+      "query-6": "",
+      "query-7": "",
+      "query-8": "",
+      "query-9": "",
+      "query-10": "",
+      "query-11": ""
+    }
+  },
+  "Empty": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 288
+      },
+      "children": [
+        {
+          "component": "SearchField",
+          "props": {
+            "placeholder": "Search terms"
+          },
+          "bind": {
+            "value": "query"
+          }
+        }
+      ]
+    },
+    "state": {
+      "query": ""
+    }
+  },
+  "WithAQuery": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 288
+      },
+      "children": [
+        {
+          "component": "SearchField",
+          "props": {
+            "placeholder": "Search terms"
+          },
+          "bind": {
+            "value": "query"
+          }
+        }
+      ]
+    },
+    "state": {
+      "query": "placeholder"
+    }
+  },
+  "WithAHint": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 288
+      },
+      "children": [
+        {
+          "component": "SearchField",
+          "props": {
+            "placeholder": "Search terms"
+          },
+          "bind": {
+            "value": "query"
+          },
+          "slots": {
+            "hint": {
+              "component": "KeyCap",
+              "props": {
+                "size": "small"
+              },
+              "children": [
+                "⌘F"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "state": {
+      "query": ""
+    }
+  },
+  "Sizes": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "Box",
+          "props": {
+            "width": 288
+          },
+          "children": [
+            {
+              "component": "SearchField",
+              "props": {
+                "placeholder": "Search terms",
+                "size": "small"
+              },
+              "bind": {
+                "value": "query"
+              }
+            }
+          ]
+        },
+        {
+          "component": "Box",
+          "props": {
+            "width": 288
+          },
+          "children": [
+            {
+              "component": "SearchField",
+              "props": {
+                "placeholder": "Search terms",
+                "size": "medium"
+              },
+              "bind": {
+                "value": "query-2"
+              }
+            }
+          ]
+        },
+        {
+          "component": "Box",
+          "props": {
+            "width": 288
+          },
+          "children": [
+            {
+              "component": "SearchField",
+              "props": {
+                "placeholder": "Search terms",
+                "size": "large"
+              },
+              "bind": {
+                "value": "query-3"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "query": "",
+      "query-2": "",
+      "query-3": ""
+    }
+  },
+  "Tints": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "Box",
+          "props": {
+            "width": 288
+          },
+          "children": [
+            {
+              "component": "SearchField",
+              "props": {
+                "placeholder": "Search terms",
+                "tint": "primary"
+              },
+              "bind": {
+                "value": "query"
+              }
+            }
+          ]
+        },
+        {
+          "component": "Box",
+          "props": {
+            "width": 288
+          },
+          "children": [
+            {
+              "component": "SearchField",
+              "props": {
+                "placeholder": "Search terms",
+                "tint": "neutral"
+              },
+              "bind": {
+                "value": "query-2"
+              }
+            }
+          ]
+        },
+        {
+          "component": "Box",
+          "props": {
+            "width": 288
+          },
+          "children": [
+            {
+              "component": "SearchField",
+              "props": {
+                "placeholder": "Search terms",
+                "tint": "info"
+              },
+              "bind": {
+                "value": "query-3"
+              }
+            }
+          ]
+        },
+        {
+          "component": "Box",
+          "props": {
+            "width": 288
+          },
+          "children": [
+            {
+              "component": "SearchField",
+              "props": {
+                "placeholder": "Search terms",
+                "tint": "success"
+              },
+              "bind": {
+                "value": "query-4"
+              }
+            }
+          ]
+        },
+        {
+          "component": "Box",
+          "props": {
+            "width": 288
+          },
+          "children": [
+            {
+              "component": "SearchField",
+              "props": {
+                "placeholder": "Search terms",
+                "tint": "warning"
+              },
+              "bind": {
+                "value": "query-5"
+              }
+            }
+          ]
+        },
+        {
+          "component": "Box",
+          "props": {
+            "width": 288
+          },
+          "children": [
+            {
+              "component": "SearchField",
+              "props": {
+                "placeholder": "Search terms",
+                "tint": "danger"
+              },
+              "bind": {
+                "value": "query-6"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "query": "",
+      "query-2": "",
+      "query-3": "",
+      "query-4": "",
+      "query-5": "",
+      "query-6": ""
+    }
+  },
+  "InAPaneHeader": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 512
+      },
+      "children": [
+        {
+          "component": "Card",
+          "children": [
+            {
+              "component": "ActionBar",
+              "props": {
+                "align": "between"
+              },
+              "children": [
+                {
+                  "component": "Box",
+                  "props": {
+                    "grow": true,
+                    "maxWidth": 256
+                  },
+                  "children": [
+                    {
+                      "component": "SearchField",
+                      "props": {
+                        "placeholder": "Search terms"
+                      },
+                      "bind": {
+                        "value": "query"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "component": "ActionBar",
+                  "children": [
+                    {
+                      "component": "Button",
+                      "children": [
+                        "Import"
+                      ]
+                    },
+                    {
+                      "component": "Button",
+                      "props": {
+                        "variant": "filled"
+                      },
+                      "children": [
+                        "New term"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "query": ""
+    }
+  },
+  "Dismissable": {
+    "content": {
+      "component": "Box",
+      "children": [
+        {
+          "component": "Show",
+          "value": {
+            "state": "dismissed"
+          },
+          "children": [
+            {
+              "component": "ActionBar",
+              "children": [
+                {
+                  "component": "Inline",
+                  "props": {
+                    "tone": "muted"
+                  },
+                  "children": [
+                    "Dismissed."
+                  ]
+                },
+                {
+                  "component": "Button",
+                  "props": {
+                    "size": "small"
+                  },
+                  "on": {
+                    "press": {
+                      "set": "dismissed",
+                      "value": false
+                    }
+                  },
+                  "children": [
+                    "Search again"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Show",
+          "value": {
+            "not": {
+              "state": "dismissed"
+            }
+          },
+          "children": [
+            {
+              "component": "Box",
+              "props": {
+                "width": 288
+              },
+              "children": [
+                {
+                  "component": "SearchField",
+                  "props": {
+                    "placeholder": "Search terms"
+                  },
+                  "bind": {
+                    "value": "query"
+                  },
+                  "on": {
+                    "dismiss": {
+                      "set": "dismissed",
+                      "value": true
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "query": "placeholder",
+      "dismissed": false
+    }
+  },
+  "FilteringAList": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 512
+      },
+      "children": [
+        {
+          "component": "SearchField",
+          "props": {
+            "placeholder": "Search terms"
+          },
+          "bind": {
+            "value": "query"
+          },
+          "slots": {
+            "hint": {
+              "component": "KeyCap",
+              "props": {
+                "size": "small"
+              },
+              "children": [
+                "⌘F"
+              ]
+            }
+          }
+        },
+        {
+          "component": "Table",
+          "children": [
+            {
+              "component": "TableHead",
+              "children": [
+                {
+                  "component": "TableCell",
+                  "props": {
+                    "head": true
+                  },
+                  "children": [
+                    "Term"
+                  ]
+                },
+                {
+                  "component": "TableCell",
+                  "props": {
+                    "head": true
+                  },
+                  "children": [
+                    "Translation"
+                  ]
+                },
+                {
+                  "component": "TableCell",
+                  "props": {
+                    "head": true,
+                    "align": "end"
+                  },
+                  "children": [
+                    "Hits"
+                  ]
+                }
+              ]
+            },
+            {
+              "component": "Show",
+              "value": {
+                "contains": [
+                  "segment",
+                  {
+                    "lower": {
+                      "state": "query"
+                    }
+                  }
+                ]
+              },
+              "children": [
+                {
+                  "component": "TableRow",
+                  "children": [
+                    {
+                      "component": "TableCell",
+                      "children": [
+                        "segment"
+                      ]
+                    },
+                    {
+                      "component": "TableCell",
+                      "children": [
+                        "段"
+                      ]
+                    },
+                    {
+                      "component": "TableCell",
+                      "props": {
+                        "align": "end"
+                      },
+                      "children": [
+                        "412"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "component": "Show",
+              "value": {
+                "contains": [
+                  "glossary",
+                  {
+                    "lower": {
+                      "state": "query"
+                    }
+                  }
+                ]
+              },
+              "children": [
+                {
+                  "component": "TableRow",
+                  "children": [
+                    {
+                      "component": "TableCell",
+                      "children": [
+                        "glossary"
+                      ]
+                    },
+                    {
+                      "component": "TableCell",
+                      "children": [
+                        "术语库"
+                      ]
+                    },
+                    {
+                      "component": "TableCell",
+                      "props": {
+                        "align": "end"
+                      },
+                      "children": [
+                        "168"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "component": "Show",
+              "value": {
+                "contains": [
+                  "provider",
+                  {
+                    "lower": {
+                      "state": "query"
+                    }
+                  }
+                ]
+              },
+              "children": [
+                {
+                  "component": "TableRow",
+                  "children": [
+                    {
+                      "component": "TableCell",
+                      "children": [
+                        "provider"
+                      ]
+                    },
+                    {
+                      "component": "TableCell",
+                      "children": [
+                        "服务"
+                      ]
+                    },
+                    {
+                      "component": "TableCell",
+                      "props": {
+                        "align": "end"
+                      },
+                      "children": [
+                        "96"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "component": "Show",
+              "value": {
+                "contains": [
+                  "placeholder",
+                  {
+                    "lower": {
+                      "state": "query"
+                    }
+                  }
+                ]
+              },
+              "children": [
+                {
+                  "component": "TableRow",
+                  "children": [
+                    {
+                      "component": "TableCell",
+                      "children": [
+                        "placeholder"
+                      ]
+                    },
+                    {
+                      "component": "TableCell",
+                      "children": [
+                        "占位符"
+                      ]
+                    },
+                    {
+                      "component": "TableCell",
+                      "props": {
+                        "align": "end"
+                      },
+                      "children": [
+                        "24"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "component": "Show",
+              "value": {
+                "not": {
+                  "or": [
+                    {
+                      "or": [
+                        {
+                          "or": [
+                            {
+                              "contains": [
+                                "segment",
+                                {
+                                  "lower": {
+                                    "state": "query"
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "contains": [
+                                "glossary",
+                                {
+                                  "lower": {
+                                    "state": "query"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "contains": [
+                            "provider",
+                            {
+                              "lower": {
+                                "state": "query"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "contains": [
+                        "placeholder",
+                        {
+                          "lower": {
+                            "state": "query"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "children": [
+                {
+                  "component": "EmptyState",
+                  "derive": {
+                    "title": {
+                      "concat": [
+                        "No terms match “",
+                        {
+                          "state": "query"
+                        },
+                        "”"
+                      ]
+                    }
+                  },
+                  "slots": {
+                    "action": {
+                      "component": "Button",
+                      "on": {
+                        "press": {
+                          "set": "query",
+                          "value": ""
+                        }
+                      },
+                      "children": [
+                        "Clear search"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "query": ""
+    }
+  }
+}

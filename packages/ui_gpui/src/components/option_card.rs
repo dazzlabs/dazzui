@@ -1,6 +1,6 @@
 use gpui::{
-    App, ElementId, FocusHandle, InteractiveElement, IntoElement, ParentElement, RenderOnce,
-    SharedString, StatefulInteractiveElement, Styled, Window, div, relative,
+    AnyElement, App, ElementId, FocusHandle, InteractiveElement, IntoElement, ParentElement,
+    RenderOnce, SharedString, StatefulInteractiveElement, Styled, Window, div, relative,
 };
 
 use crate::prelude::*;
@@ -20,6 +20,7 @@ use crate::{
 pub struct OptionCard {
     id: ElementId,
     title: SharedString,
+    title_content: Option<AnyElement>,
     description: Option<SharedString>,
     selected: bool,
     tint: Tint,
@@ -33,6 +34,7 @@ impl OptionCard {
         OptionCard {
             id: id.into(),
             title: title.into(),
+            title_content: None,
             description: None,
             selected: false,
             tint: Tint::Primary,
@@ -40,6 +42,12 @@ impl OptionCard {
             focus_handle: None,
             on_select: None,
         }
+    }
+
+    /// A title that is more than a string — a name beside its badge.
+    pub fn title_content(mut self, content: impl IntoElement) -> Self {
+        self.title_content = Some(content.into_any_element());
+        self
     }
 
     pub fn description(mut self, description: impl Into<SharedString>) -> Self {
@@ -80,6 +88,7 @@ impl RenderOnce for OptionCard {
         let OptionCard {
             id,
             title,
+            title_content,
             description,
             selected,
             tint,
@@ -158,7 +167,10 @@ impl RenderOnce for OptionCard {
                         } else {
                             disabled_content
                         })
-                        .child(title.clone()),
+                        .map(|el| match title_content {
+                            Some(content) => el.child(content),
+                            None => el.child(title.clone()),
+                        }),
                 )
                 .when_some(description.clone(), |el, description| {
                     el.child(

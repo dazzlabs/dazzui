@@ -216,6 +216,8 @@ pub struct ToggleItem {
     pub value: SharedString,
     pub label: SharedString,
     pub disabled: bool,
+    /// Draws the member as a lone glyph; the label stays its accessible name.
+    pub icon: Option<Icon>,
 }
 
 impl ToggleItem {
@@ -224,11 +226,17 @@ impl ToggleItem {
             value: value.into(),
             label: label.into(),
             disabled: false,
+            icon: None,
         }
     }
 
     pub fn disabled(mut self, disabled: bool) -> Self {
         self.disabled = disabled;
+        self
+    }
+
+    pub fn icon(mut self, icon: Icon) -> Self {
+        self.icon = Some(icon);
         self
     }
 }
@@ -358,17 +366,14 @@ impl RenderOnce for ToggleGroup {
                         let key = item.value.clone();
 
                         let member = pressable(member_id.clone(), live, move |state, _, cx| {
+                            let glyph_only = item.icon.is_some();
+                            let body = match item.icon {
+                                Some(icon) => icon.size(metrics.content.size).into_any_element(),
+                                None => item.label.into_any_element(),
+                            };
                             toggle_body(
-                                member_id,
-                                item.label.into_any_element(),
-                                false,
-                                size,
-                                variant,
-                                tint,
-                                down,
-                                state,
-                                false,
-                                cx,
+                                member_id, body, glyph_only, size, variant, tint, down, state,
+                                false, cx,
                             )
                             .when_some(listener, |el, listener| {
                                 el.on_click(move |_, window, cx| listener(&key, window, cx))

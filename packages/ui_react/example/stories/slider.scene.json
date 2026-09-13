@@ -1,0 +1,326 @@
+{
+  "Bare": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 288
+      },
+      "children": [
+        {
+          "component": "Slider",
+          "bind": {
+            "value": "slider"
+          }
+        }
+      ]
+    },
+    "state": {
+      "slider": 40
+    }
+  },
+  "WithValue": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 320
+      },
+      "children": [
+        {
+          "component": "Slider",
+          "props": {
+            "showValue": true
+          },
+          "bind": {
+            "value": "slider"
+          }
+        }
+      ]
+    },
+    "state": {
+      "slider": 40
+    }
+  },
+  "Range": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 320
+      },
+      "children": [
+        {
+          "component": "Slider",
+          "props": {
+            "showValue": true
+          },
+          "bind": {
+            "end": "slider-end",
+            "value": "slider"
+          }
+        }
+      ]
+    },
+    "state": {
+      "slider": 20,
+      "slider-end": 70
+    }
+  },
+  "Sizes": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 320
+      },
+      "children": [
+        {
+          "component": "Slider",
+          "props": {
+            "size": "small"
+          },
+          "bind": {
+            "value": "slider"
+          }
+        },
+        {
+          "component": "Slider",
+          "props": {
+            "size": "medium"
+          },
+          "bind": {
+            "value": "slider-2"
+          }
+        },
+        {
+          "component": "Slider",
+          "props": {
+            "size": "large"
+          },
+          "bind": {
+            "value": "slider-3"
+          }
+        }
+      ]
+    },
+    "state": {
+      "slider": 40,
+      "slider-2": 40,
+      "slider-3": 40
+    }
+  },
+  "Tints": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 320
+      },
+      "children": [
+        {
+          "component": "Slider",
+          "props": {
+            "tint": "primary"
+          },
+          "bind": {
+            "value": "slider"
+          }
+        },
+        {
+          "component": "Slider",
+          "props": {
+            "tint": "neutral"
+          },
+          "bind": {
+            "value": "slider-2"
+          }
+        },
+        {
+          "component": "Slider",
+          "props": {
+            "tint": "info"
+          },
+          "bind": {
+            "value": "slider-3"
+          }
+        },
+        {
+          "component": "Slider",
+          "props": {
+            "tint": "success"
+          },
+          "bind": {
+            "value": "slider-4"
+          }
+        },
+        {
+          "component": "Slider",
+          "props": {
+            "tint": "warning"
+          },
+          "bind": {
+            "value": "slider-5"
+          }
+        },
+        {
+          "component": "Slider",
+          "props": {
+            "tint": "danger"
+          },
+          "bind": {
+            "value": "slider-6"
+          }
+        }
+      ]
+    },
+    "state": {
+      "slider": 60,
+      "slider-2": 60,
+      "slider-3": 60,
+      "slider-4": 60,
+      "slider-5": 60,
+      "slider-6": 60
+    }
+  },
+  "Disabled": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 320
+      },
+      "children": [
+        {
+          "component": "Slider",
+          "props": {
+            "disabled": true,
+            "showValue": true
+          },
+          "bind": {
+            "value": "slider"
+          }
+        }
+      ]
+    },
+    "state": {
+      "slider": 40
+    }
+  },
+  "Interactive": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 352
+      },
+      "children": [
+        {
+          "component": "FormField",
+          "props": {
+            "label": "Editor font size"
+          },
+          "derive": {
+            "hint": {
+              "concat": [
+                {
+                  "text": {
+                    "state": "size"
+                  }
+                },
+                "px"
+              ]
+            }
+          },
+          "children": [
+            {
+              "component": "Slider",
+              "props": {
+                "min": 8,
+                "max": 24,
+                "showValue": true,
+                "unit": "px"
+              },
+              "bind": {
+                "value": "size"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "size": 13
+    }
+  },
+  "InSettings": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 480
+      },
+      "children": [
+        {
+          "component": "PreferenceSection",
+          "props": {
+            "label": "Appearance"
+          },
+          "children": [
+            {
+              "component": "PreferenceRow",
+              "props": {
+                "title": "Editor font size",
+                "subtitle": "Applies to every open project"
+              },
+              "children": [
+                {
+                  "component": "Box",
+                  "props": {
+                    "width": 160
+                  },
+                  "children": [
+                    {
+                      "component": "Slider",
+                      "props": {
+                        "min": 8,
+                        "max": 24,
+                        "size": "small"
+                      },
+                      "bind": {
+                        "value": "slider"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "component": "PreferenceRow",
+              "props": {
+                "title": "Sidebar width"
+              },
+              "children": [
+                {
+                  "component": "Box",
+                  "props": {
+                    "width": 160
+                  },
+                  "children": [
+                    {
+                      "component": "Slider",
+                      "props": {
+                        "min": 180,
+                        "max": 360,
+                        "size": "small"
+                      },
+                      "bind": {
+                        "value": "slider-2"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "slider": 13,
+      "slider-2": 240
+    }
+  }
+}

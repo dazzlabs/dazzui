@@ -46,6 +46,12 @@ impl SceneHandle {
     }
 }
 pub type Observer = Rc<dyn Fn(&mut App, SceneHandle)>;
+/// A declared periodic assignment; `update` evaluates the shared expression.
+#[derive(Clone)]
+pub struct Timer {
+    pub every: u64,
+    pub update: Rc<dyn Fn(&mut App, &SceneHandle)>,
+}
 type Renderer = Rc<dyn Fn(&mut App, BuildContext, &SceneHandle) -> WidgetRef>;
 #[derive(Clone)]
 pub struct Scene {
@@ -54,6 +60,7 @@ pub struct Scene {
     initial: Values,
     observer: Option<Observer>,
     render: Renderer,
+    timers: Vec<Timer>,
 }
 impl std::fmt::Debug for Scene {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -73,7 +80,12 @@ impl Scene {
             initial,
             observer,
             render: Rc::new(render),
+            timers: vec![],
         }
+    }
+    pub fn timers(mut self, timers: Vec<Timer>) -> Self {
+        self.timers = timers;
+        self
     }
 }
 impl StatefulWidget for Scene {
@@ -85,12 +97,34 @@ impl StatefulWidget for Scene {
         SceneState {
             state: StateData::new(),
             values: None,
+            ticker: None,
         }
     }
 }
 pub struct SceneState {
     state: StateData<Scene>,
     values: Option<SceneHandle>,
+    ticker: Option<Handle<inset_scheduler::Ticker>>,
+}
+/// Fires every due timer in chronological order against current state, so one
+/// long frame gap yields the same sequence as many short ones.
+fn fire_due(app: &mut App, state: &SceneHandle, timers: &[Timer], fired: &mut [u64], elapsed: u64) {
+    loop {
+        let next = timers
+            .iter()
+            .zip(fired.iter())
+            .map(|(timer, count)| (count + 1) * timer.every)
+            .min();
+        let Some(next) = next.filter(|next| *next <= elapsed) else {
+            break;
+        };
+        for (timer, count) in timers.iter().zip(fired.iter_mut()) {
+            if (*count + 1) * timer.every == next {
+                (timer.update)(app, state);
+                *count += 1;
+            }
+        }
+    }
 }
 impl State for SceneState {
     type Widget = Scene;
@@ -108,11 +142,29 @@ impl State for SceneState {
             controllers: Default::default(),
         };
         app.get_mut(self).values = Some(values.clone());
+        let timers = self.widget(app).timers.clone();
+        if !timers.is_empty() {
+            let handle = values.clone();
+            let fired = RefCell::new(vec![0; timers.len()]);
+            let ticker = inset_scheduler::Ticker::new(
+                app,
+                inset_scheduler::FrameCallback::new(move |app, elapsed| {
+                    let elapsed = elapsed.as_millis() as u64;
+                    fire_due(app, &handle, &timers, &mut fired.borrow_mut(), elapsed);
+                }),
+            );
+            ticker.start(app);
+            app.get_mut(self).ticker = Some(ticker);
+        }
         if let Some(observer) = self.widget(app).observer.clone() {
             observer(app, values);
         }
     }
     fn dispose(self: Handle<Self>, app: &mut App) {
+        if let Some(ticker) = app.get_mut(self).ticker.take() {
+            ticker.dispose(app);
+            app.destroy(ticker);
+        }
         if let Some(values) = app.get_mut(self).values.take() {
             values.dispose(app);
         }
@@ -124,7 +176,14 @@ impl State for SceneState {
     }
 }
 pub fn set(app: &mut App, state: &SceneHandle, key: &str, value: impl Into<serde_json::Value>) {
-    let value = value.into();
+    let mut value = value.into();
+    // Whole floats compare equal to the integers declarations write.
+    if let Some(number) = value
+        .as_f64()
+        .filter(|n| value.is_f64() && n.fract() == 0.0 && n.abs() < 9e15)
+    {
+        value = serde_json::json!(number as i64);
+    }
     if let Some(controller) = state.controllers.borrow().get(key).copied() {
         let text = value.as_str().expect("text state");
         if controller.text_value(app) != text {

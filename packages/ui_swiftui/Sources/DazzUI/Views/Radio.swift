@@ -163,6 +163,10 @@ public struct RadioGroup<Value: Hashable>: View {
   public var onValueChange: ((Value) -> Void)?
   public var size: RadioSize
   public var tint: Tint
+  /// A short set of answers can sit on one line, the way a scope choice does.
+  public var axis: Axis
+  /// The run between options; the column's own step when unset.
+  public var spacing: CGFloat?
 
   @Environment(\.theme) private var theme
 
@@ -171,19 +175,28 @@ public struct RadioGroup<Value: Hashable>: View {
     value: Value,
     onValueChange: ((Value) -> Void)? = nil,
     size: RadioSize = .medium,
-    tint: Tint = .primary
+    tint: Tint = .primary,
+    axis: Axis = .vertical,
+    spacing: CGFloat? = nil
   ) {
     self.options = options
     self.value = value
     self.onValueChange = onValueChange
     self.size = size
     self.tint = tint
+    self.axis = axis
+    self.spacing = spacing
   }
 
   public var body: some View {
     let vars = theme.vars
 
-    VStack(alignment: .leading, spacing: vars.spacing25) {
+    let layout =
+      axis == .vertical
+      ? AnyLayout(VStackLayout(alignment: .leading, spacing: spacing ?? vars.spacing25))
+      : AnyLayout(HStackLayout(spacing: spacing ?? vars.spacing25))
+
+    layout {
       ForEach(options) { option in
         Radio(
           option.label,

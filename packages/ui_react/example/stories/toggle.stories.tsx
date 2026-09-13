@@ -1,14 +1,16 @@
+import { defineStory } from '../src/lib/scene'
+import scenes from './toggle.scene.json'
 import {
   TextBold24Regular,
   TextItalic24Regular,
   TextUnderline24Regular,
 } from '@fluentui/react-icons'
-import { SegmentedControl, Switch, Toggle, TINTS } from '@dazzlabs/dazzui-react'
+import { SegmentedControl, Switch, Toggle } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '../src/lib/story'
 import { useState } from 'react'
 
 import { Page, Section, Specimen, Stack } from '../src/components/gallery'
-import { Col, Row } from '../src/components/stage'
+import { Row } from '../src/components/stage'
 
 const meta: Meta<typeof Toggle> = {
   title: 'Components/Toggle',
@@ -18,16 +20,6 @@ const meta: Meta<typeof Toggle> = {
 
 export default meta
 type Story = StoryObj<typeof meta>
-
-const SIZES = ['tiny', 'small', 'medium', 'large'] as const
-const VARIANTS = [
-  'recessed',
-  'normal',
-  'filled',
-  'tinted',
-  'outlined',
-  'plain',
-] as const
 
 function Bold() {
   const [on, setOn] = useState(true)
@@ -106,81 +98,14 @@ export const Overview: Story = {
   ),
 }
 
-export const Pressed: Story = {
-  render: () => (
-    <Row>
-      <Toggle>Wrap</Toggle>
-      <Toggle defaultPressed>Wrap</Toggle>
-    </Row>
-  ),
-}
+export const Pressed: Story = defineStory(scenes.Pressed)
 
-export const Sizes: Story = {
-  render: () => (
-    <Row>
-      {SIZES.map(size => (
-        <Toggle key={size} defaultPressed size={size} variant="recessed">
-          {size}
-        </Toggle>
-      ))}
-    </Row>
-  ),
-}
+export const Sizes: Story = defineStory(scenes.Sizes)
 
-export const Variants: Story = {
-  render: () => (
-    <Col>
-      <Row>
-        {VARIANTS.map(variant => (
-          <Toggle key={variant} variant={variant}>
-            {variant}
-          </Toggle>
-        ))}
-      </Row>
-      <Row>
-        {VARIANTS.map(variant => (
-          <Toggle key={variant} defaultPressed variant={variant}>
-            {variant}
-          </Toggle>
-        ))}
-      </Row>
-    </Col>
-  ),
-}
+export const Variants: Story = defineStory(scenes.Variants)
 
-export const Tints: Story = {
-  render: () => (
-    <Row>
-      {TINTS.map(tint => (
-        <Toggle key={tint} defaultPressed tint={tint}>
-          {tint}
-        </Toggle>
-      ))}
-    </Row>
-  ),
-}
+export const Tints: Story = defineStory(scenes.Tints)
 
-export const Disabled: Story = {
-  render: () => (
-    <Row>
-      <Toggle disabled>Wrap</Toggle>
-      <Toggle disabled defaultPressed>
-        Wrap
-      </Toggle>
-    </Row>
-  ),
-}
+export const Disabled: Story = defineStory(scenes.Disabled)
 
-export const AToolbar: Story = {
-  render: () => (
-    <Row gap="var(--spacing-1)">
-      <Bold />
-      <Toggle label="Italic">
-        <TextItalic24Regular />
-      </Toggle>
-      <Toggle label="Underline">
-        <TextUnderline24Regular />
-      </Toggle>
-    </Row>
-  ),
-}
+export const AToolbar: Story = defineStory(scenes.AToolbar)

@@ -1,13 +1,7 @@
-import {
-  Card,
-  Checkbox,
-  Radio,
-  RadioGroup,
-  SectionLabel,
-  TINTS,
-} from '@dazzlabs/dazzui-react'
+import { defineStory } from '../src/lib/scene'
+import scenes from './radio.scene.json'
+import { Radio, RadioGroup, TINTS } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '../src/lib/story'
-import { useState } from 'react'
 
 import {
   Page,
@@ -16,7 +10,6 @@ import {
   Stack,
   TokenTable,
 } from '../src/components/gallery'
-import { Col, Row } from '../src/components/stage'
 import { componentTokens } from '../src/lib/tokens'
 
 const meta: Meta<typeof Radio> = {
@@ -120,95 +113,14 @@ export const Overview: Story = {
   ),
 }
 
-export const AGroup: Story = {
-  render: () => {
-    const [quality, setQuality] = useState('balanced')
-    return (
-      <RadioGroup
-        aria-label="Translation quality"
-        options={QUALITY}
-        value={quality}
-        onValueChange={setQuality}
-      />
-    )
-  },
-}
+export const AGroup: Story = defineStory(scenes.AGroup)
 
-export const Disabled: Story = {
-  render: () => (
-    <RadioGroup
-      aria-label="Scope"
-      defaultValue="project"
-      options={[
-        { value: 'project', label: 'This project only' },
-        { value: 'org', label: 'The whole organisation', disabled: true },
-      ]}
-    />
-  ),
-}
+export const Disabled: Story = defineStory(scenes.Disabled)
 
-export const Sizes: Story = {
-  render: () => (
-    <Col gap="var(--spacing-4)">
-      {SIZES.map(size => (
-        <Pair key={size} size={size} />
-      ))}
-    </Col>
-  ),
-}
+export const Sizes: Story = defineStory(scenes.Sizes)
 
-export const Tints: Story = {
-  render: () => (
-    <Col gap="var(--spacing-4)">
-      {TINTS.map(tint => (
-        <Pair key={tint} tint={tint} />
-      ))}
-    </Col>
-  ),
-}
+export const Tints: Story = defineStory(scenes.Tints)
 
-export const AgainstACheckbox: Story = {
-  render: () => (
-    <Row gap="var(--spacing-8)">
-      <div>
-        <SectionLabel>Quality</SectionLabel>
-        <RadioGroup
-          aria-label="Quality"
-          defaultValue="fast"
-          options={[
-            { value: 'fast', label: 'Fast' },
-            { value: 'careful', label: 'Careful' },
-          ]}
-        />
-      </div>
-      <div>
-        <SectionLabel>Include</SectionLabel>
-        <Col gap="var(--spacing-2)">
-          <Checkbox defaultChecked>Reviewer notes</Checkbox>
-          <Checkbox>Embedded images</Checkbox>
-        </Col>
-      </div>
-    </Row>
-  ),
-}
+export const AgainstACheckbox: Story = defineStory(scenes.AgainstACheckbox)
 
-export const InAForm: Story = {
-  render: () => {
-    const [scope, setScope] = useState('project')
-    return (
-      <Card style={{ width: '24rem' }}>
-        <SectionLabel>Apply this glossary to</SectionLabel>
-        <RadioGroup
-          aria-label="Scope"
-          options={[
-            { value: 'project', label: 'This project only' },
-            { value: 'account', label: 'Every project on this account' },
-            { value: 'org', label: 'The whole organisation', disabled: true },
-          ]}
-          value={scope}
-          onValueChange={setScope}
-        />
-      </Card>
-    )
-  },
-}
+export const InAForm: Story = defineStory(scenes.InAForm)

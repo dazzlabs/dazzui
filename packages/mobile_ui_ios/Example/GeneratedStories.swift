@@ -7,6 +7,41 @@ let text = String(value)
 return text.hasSuffix(".0") ? String(text.dropLast(2)) : text
 }
 
+/// A declared unavailable segment; the system can only express it from iOS 17.
+private struct MobileSegmentAvailability: ViewModifier {
+let disabled: Bool
+func body(content: Content) -> some View {
+if #available(iOS 17, *) { content.selectionDisabled(disabled) } else { content }
+}
+}
+
+/// Escape from a hardware keyboard; the system only reports it from iOS 17.
+private struct MobileEscape: ViewModifier {
+let action: () -> Void
+func body(content: Content) -> some View {
+if #available(iOS 17, *) { content.onKeyPress(.escape) { action(); return .handled } } else { content }
+}
+}
+
+/// A fraction of the offered width, for a length declared as a percentage.
+private struct MobileFraction<Content: View>: View {
+let fraction: CGFloat
+@ViewBuilder let content: () -> Content
+init(_ fraction: CGFloat, @ViewBuilder content: @escaping () -> Content) { self.fraction = fraction; self.content = content }
+var body: some View { MobileFractionLayout(fraction: fraction) { content() } }
+}
+private struct MobileFractionLayout: Layout {
+let fraction: CGFloat
+func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+let width = proposal.width ?? 0
+let child = subviews.first?.sizeThatFits(ProposedViewSize(width: width * fraction, height: proposal.height)) ?? .zero
+return CGSize(width: width, height: child.height)
+}
+func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+subviews.first?.place(at: bounds.origin, proposal: ProposedViewSize(width: bounds.width * fraction, height: bounds.height))
+}
+}
+
 struct MobileStory: Identifiable {
 let id: String
 let title: String
@@ -97,66 +132,180 @@ MobileStory(id: "components-emptystate--nothing-to-do", title: "Components/Empty
 MobileStory(id: "components-formfield--with-a-hint", title: "Components/FormField", name: "With A Hint", build: { AnyView(MobileScene80()) }),
 MobileStory(id: "components-formfield--without-a-hint", title: "Components/FormField", name: "Without A Hint", build: { AnyView(MobileScene81()) }),
 MobileStory(id: "components-formfield--error-state", title: "Components/FormField", name: "Error", build: { AnyView(MobileScene82()) }),
-MobileStory(id: "components-keycap--overview", title: "Components/KeyCap", name: "Overview", build: { AnyView(MobileScene83()) }),
-MobileStory(id: "components-keycap--hint", title: "Components/KeyCap", name: "Hint", build: { AnyView(MobileScene84()) }),
-MobileStory(id: "components-keycap--strong", title: "Components/KeyCap", name: "Strong", build: { AnyView(MobileScene85()) }),
-MobileStory(id: "components-keycap--key", title: "Components/KeyCap", name: "Key", build: { AnyView(MobileScene86()) }),
-MobileStory(id: "components-keycap--all-variants", title: "Components/KeyCap", name: "All Variants", build: { AnyView(MobileScene87()) }),
-MobileStory(id: "components-keycap--sizes", title: "Components/KeyCap", name: "Sizes", build: { AnyView(MobileScene88()) }),
-MobileStory(id: "components-keycap--a-chord", title: "Components/KeyCap", name: "A Chord", build: { AnyView(MobileScene89()) }),
-MobileStory(id: "components-keycap--a-joined-chord", title: "Components/KeyCap", name: "A Joined Chord", build: { AnyView(MobileScene90()) }),
-MobileStory(id: "components-keycap--word-keys", title: "Components/KeyCap", name: "Word Keys", build: { AnyView(MobileScene91()) }),
-MobileStory(id: "components-keycap--in-a-settings-row", title: "Components/KeyCap", name: "In A Settings Row", build: { AnyView(MobileScene92()) }),
-MobileStory(id: "components-progress--default", title: "Components/Progress", name: "Default", build: { AnyView(MobileScene93()) }),
-MobileStory(id: "components-progress--values", title: "Components/Progress", name: "Values", build: { AnyView(MobileScene94()) }),
-MobileStory(id: "components-progress--indeterminate", title: "Components/Progress", name: "Indeterminate", build: { AnyView(MobileScene95()) }),
-MobileStory(id: "components-progress--gradient", title: "Components/Progress", name: "Gradient", build: { AnyView(MobileScene96()) }),
-MobileStory(id: "components-progress--sizes", title: "Components/Progress", name: "Sizes", build: { AnyView(MobileScene97()) }),
-MobileStory(id: "components-progress--tints", title: "Components/Progress", name: "Tints", build: { AnyView(MobileScene98()) }),
-MobileStory(id: "components-progress--live", title: "Components/Progress", name: "Live", build: { AnyView(MobileScene99()) }),
-MobileStory(id: "components-progress--with-a-count", title: "Components/Progress", name: "With A Count", build: { AnyView(MobileScene100()) }),
-MobileStory(id: "components-progress--beside-stages", title: "Components/Progress", name: "Beside Stages", build: { AnyView(MobileScene101()) }),
-MobileStory(id: "components-sectionlabel--overview", title: "Components/SectionLabel", name: "Overview", build: { AnyView(MobileScene102()) }),
-MobileStory(id: "components-sectionlabel--default", title: "Components/SectionLabel", name: "Default", build: { AnyView(MobileScene103()) }),
-MobileStory(id: "components-sectionlabel--faint", title: "Components/SectionLabel", name: "Faint", build: { AnyView(MobileScene104()) }),
-MobileStory(id: "components-sectionlabel--tints", title: "Components/SectionLabel", name: "Tints", build: { AnyView(MobileScene105()) }),
-MobileStory(id: "components-sectionlabel--in-a-panel", title: "Components/SectionLabel", name: "In A Panel", build: { AnyView(MobileScene106()) }),
-MobileStory(id: "components-spinner--default", title: "Components/Spinner", name: "Default", build: { AnyView(MobileScene107()) }),
-MobileStory(id: "components-spinner--sizes", title: "Components/Spinner", name: "Sizes", build: { AnyView(MobileScene108()) }),
-MobileStory(id: "components-spinner--tints", title: "Components/Spinner", name: "Tints", build: { AnyView(MobileScene109()) }),
-MobileStory(id: "components-spinner--on-an-accent", title: "Components/Spinner", name: "On An Accent", build: { AnyView(MobileScene110()) }),
-MobileStory(id: "components-spinner--in-a-button", title: "Components/Spinner", name: "In A Button", build: { AnyView(MobileScene111()) }),
-MobileStory(id: "components-spinner--in-a-callout", title: "Components/Spinner", name: "In A Callout", build: { AnyView(MobileScene112()) }),
-MobileStory(id: "components-spinner--in-prose", title: "Components/Spinner", name: "In Prose", build: { AnyView(MobileScene113()) }),
-MobileStory(id: "components-steplist--overview", title: "Components/StepList", name: "Overview", build: { AnyView(MobileScene114()) }),
-MobileStory(id: "components-steplist--in-flight", title: "Components/StepList", name: "In Flight", build: { AnyView(MobileScene115()) }),
-MobileStory(id: "components-steplist--statuses", title: "Components/StepList", name: "Statuses", build: { AnyView(MobileScene116()) }),
-MobileStory(id: "components-steplist--finished", title: "Components/StepList", name: "Finished", build: { AnyView(MobileScene117()) }),
-MobileStory(id: "components-steplist--without-detail", title: "Components/StepList", name: "Without Detail", build: { AnyView(MobileScene118()) }),
-MobileStory(id: "components-steplist--timed-detail", title: "Components/StepList", name: "Timed Detail", build: { AnyView(MobileScene119()) }),
-MobileStory(id: "components-steplist--tints", title: "Components/StepList", name: "Tints", build: { AnyView(MobileScene120()) }),
-MobileStory(id: "components-steplist--advancing", title: "Components/StepList", name: "Advancing", build: { AnyView(MobileScene121()) }),
-MobileStory(id: "components-switch--on", title: "Components/Switch", name: "On", build: { AnyView(MobileScene122()) }),
-MobileStory(id: "components-switch--off", title: "Components/Switch", name: "Off", build: { AnyView(MobileScene123()) }),
-MobileStory(id: "components-switch--disabled", title: "Components/Switch", name: "Disabled", build: { AnyView(MobileScene124()) }),
-MobileStory(id: "components-switch--interactive", title: "Components/Switch", name: "Interactive", build: { AnyView(MobileScene125()) }),
-MobileStory(id: "components-switch--sizes", title: "Components/Switch", name: "Sizes", build: { AnyView(MobileScene126()) }),
-MobileStory(id: "components-switch--tints", title: "Components/Switch", name: "Tints", build: { AnyView(MobileScene127()) }),
-MobileStory(id: "components-switch--against-a-checkbox", title: "Components/Switch", name: "Against A Checkbox", build: { AnyView(MobileScene128()) }),
-MobileStory(id: "components-switch--in-settings", title: "Components/Switch", name: "In Settings", build: { AnyView(MobileScene129()) }),
-MobileStory(id: "components-table--inert", title: "Components/Table", name: "Inert", build: { AnyView(MobileScene130()) }),
-MobileStory(id: "components-table--alignment", title: "Components/Table", name: "Alignment", build: { AnyView(MobileScene131()) }),
-MobileStory(id: "components-textfield--default", title: "Components/TextField", name: "Default", build: { AnyView(MobileScene132()) }),
-MobileStory(id: "components-textfield--placeholder", title: "Components/TextField", name: "Placeholder", build: { AnyView(MobileScene133()) }),
-MobileStory(id: "components-textfield--read-only", title: "Components/TextField", name: "Read Only", build: { AnyView(MobileScene134()) }),
-MobileStory(id: "components-textfield--disabled", title: "Components/TextField", name: "Disabled", build: { AnyView(MobileScene135()) }),
-MobileStory(id: "components-textfield--error-state", title: "Components/TextField", name: "Error", build: { AnyView(MobileScene136()) }),
-MobileStory(id: "components-textfield--states", title: "Components/TextField", name: "States", build: { AnyView(MobileScene137()) }),
-MobileStory(id: "components-textfield--sizes", title: "Components/TextField", name: "Sizes", build: { AnyView(MobileScene138()) }),
-MobileStory(id: "components-textfield--beside-a-button", title: "Components/TextField", name: "Beside A Button", build: { AnyView(MobileScene139()) }),
-MobileStory(id: "components-textfield--mono", title: "Components/TextField", name: "Mono", build: { AnyView(MobileScene140()) }),
-MobileStory(id: "components-textfield--tints", title: "Components/TextField", name: "Tints", build: { AnyView(MobileScene141()) }),
-MobileStory(id: "components-textfield--controlled", title: "Components/TextField", name: "Controlled", build: { AnyView(MobileScene142()) }),
+MobileStory(id: "components-formfield--over-any-control", title: "Components/FormField", name: "Over Any Control", build: { AnyView(MobileScene83()) }),
+MobileStory(id: "components-icon--default", title: "Components/Icon", name: "Default", build: { AnyView(MobileScene84()) }),
+MobileStory(id: "components-icon--sizes", title: "Components/Icon", name: "Sizes", build: { AnyView(MobileScene85()) }),
+MobileStory(id: "components-icon--sized-by-a-token", title: "Components/Icon", name: "Sized By A Token", build: { AnyView(MobileScene86()) }),
+MobileStory(id: "components-icon--any-view-box", title: "Components/Icon", name: "Any View Box", build: { AnyView(MobileScene87()) }),
+MobileStory(id: "components-icon--inherited-colour", title: "Components/Icon", name: "Inherited Colour", build: { AnyView(MobileScene88()) }),
+MobileStory(id: "components-icon--in-a-button", title: "Components/Icon", name: "In A Button", build: { AnyView(MobileScene89()) }),
+MobileStory(id: "components-icon--in-a-callout", title: "Components/Icon", name: "In A Callout", build: { AnyView(MobileScene90()) }),
+MobileStory(id: "components-iconbutton--overview", title: "Components/IconButton", name: "Overview", build: { AnyView(MobileScene91()) }),
+MobileStory(id: "components-iconbutton--plain", title: "Components/IconButton", name: "Plain", build: { AnyView(MobileScene92()) }),
+MobileStory(id: "components-iconbutton--filled", title: "Components/IconButton", name: "Filled", build: { AnyView(MobileScene93()) }),
+MobileStory(id: "components-iconbutton--variants", title: "Components/IconButton", name: "Variants", build: { AnyView(MobileScene94()) }),
+MobileStory(id: "components-iconbutton--disabled", title: "Components/IconButton", name: "Disabled", build: { AnyView(MobileScene95()) }),
+MobileStory(id: "components-iconbutton--sizes", title: "Components/IconButton", name: "Sizes", build: { AnyView(MobileScene96()) }),
+MobileStory(id: "components-iconbutton--tints", title: "Components/IconButton", name: "Tints", build: { AnyView(MobileScene97()) }),
+MobileStory(id: "components-iconbutton--a-toolbar", title: "Components/IconButton", name: "A Toolbar", build: { AnyView(MobileScene98()) }),
+MobileStory(id: "components-keycap--overview", title: "Components/KeyCap", name: "Overview", build: { AnyView(MobileScene99()) }),
+MobileStory(id: "components-keycap--hint", title: "Components/KeyCap", name: "Hint", build: { AnyView(MobileScene100()) }),
+MobileStory(id: "components-keycap--strong", title: "Components/KeyCap", name: "Strong", build: { AnyView(MobileScene101()) }),
+MobileStory(id: "components-keycap--key", title: "Components/KeyCap", name: "Key", build: { AnyView(MobileScene102()) }),
+MobileStory(id: "components-keycap--all-variants", title: "Components/KeyCap", name: "All Variants", build: { AnyView(MobileScene103()) }),
+MobileStory(id: "components-keycap--sizes", title: "Components/KeyCap", name: "Sizes", build: { AnyView(MobileScene104()) }),
+MobileStory(id: "components-keycap--a-chord", title: "Components/KeyCap", name: "A Chord", build: { AnyView(MobileScene105()) }),
+MobileStory(id: "components-keycap--a-joined-chord", title: "Components/KeyCap", name: "A Joined Chord", build: { AnyView(MobileScene106()) }),
+MobileStory(id: "components-keycap--word-keys", title: "Components/KeyCap", name: "Word Keys", build: { AnyView(MobileScene107()) }),
+MobileStory(id: "components-keycap--in-a-settings-row", title: "Components/KeyCap", name: "In A Settings Row", build: { AnyView(MobileScene108()) }),
+MobileStory(id: "components-link--overview", title: "Components/Link", name: "Overview", build: { AnyView(MobileScene109()) }),
+MobileStory(id: "components-link--underlines", title: "Components/Link", name: "Underlines", build: { AnyView(MobileScene110()) }),
+MobileStory(id: "components-link--external", title: "Components/Link", name: "External", build: { AnyView(MobileScene111()) }),
+MobileStory(id: "components-link--tints", title: "Components/Link", name: "Tints", build: { AnyView(MobileScene112()) }),
+MobileStory(id: "components-link--disabled", title: "Components/Link", name: "Disabled", build: { AnyView(MobileScene113()) }),
+MobileStory(id: "components-meter--bare", title: "Components/Meter", name: "Bare", build: { AnyView(MobileScene114()) }),
+MobileStory(id: "components-meter--with-value", title: "Components/Meter", name: "With Value", build: { AnyView(MobileScene115()) }),
+MobileStory(id: "components-meter--sizes", title: "Components/Meter", name: "Sizes", build: { AnyView(MobileScene116()) }),
+MobileStory(id: "components-meter--tints", title: "Components/Meter", name: "Tints", build: { AnyView(MobileScene117()) }),
+MobileStory(id: "components-meter--in-a-quota-list", title: "Components/Meter", name: "In A Quota List", build: { AnyView(MobileScene118()) }),
+MobileStory(id: "components-numberfield--bare", title: "Components/NumberField", name: "Bare", build: { AnyView(MobileScene119()) }),
+MobileStory(id: "components-numberfield--with-unit", title: "Components/NumberField", name: "With Unit", build: { AnyView(MobileScene120()) }),
+MobileStory(id: "components-numberfield--sizes", title: "Components/NumberField", name: "Sizes", build: { AnyView(MobileScene121()) }),
+MobileStory(id: "components-numberfield--states", title: "Components/NumberField", name: "States", build: { AnyView(MobileScene122()) }),
+MobileStory(id: "components-numberfield--in-a-form", title: "Components/NumberField", name: "In A Form", build: { AnyView(MobileScene123()) }),
+MobileStory(id: "components-numberfield--in-settings", title: "Components/NumberField", name: "In Settings", build: { AnyView(MobileScene124()) }),
+MobileStory(id: "components-optioncard--overview", title: "Components/OptionCard", name: "Overview", build: { AnyView(MobileScene125()) }),
+MobileStory(id: "components-optioncard--selected", title: "Components/OptionCard", name: "Selected", build: { AnyView(MobileScene126()) }),
+MobileStory(id: "components-optioncard--unselected", title: "Components/OptionCard", name: "Unselected", build: { AnyView(MobileScene127()) }),
+MobileStory(id: "components-optioncard--a-group", title: "Components/OptionCard", name: "A Group", build: { AnyView(MobileScene128()) }),
+MobileStory(id: "components-optioncard--without-a-description", title: "Components/OptionCard", name: "Without A Description", build: { AnyView(MobileScene129()) }),
+MobileStory(id: "components-optioncard--disabled", title: "Components/OptionCard", name: "Disabled", build: { AnyView(MobileScene130()) }),
+MobileStory(id: "components-optioncard--tints", title: "Components/OptionCard", name: "Tints", build: { AnyView(MobileScene131()) }),
+MobileStory(id: "components-optioncard--in-a-grid", title: "Components/OptionCard", name: "In A Grid", build: { AnyView(MobileScene132()) }),
+MobileStory(id: "components-otpfield--overview", title: "Components/OtpField", name: "Overview", build: { AnyView(MobileScene133()) }),
+MobileStory(id: "components-otpfield--bare", title: "Components/OtpField", name: "Bare", build: { AnyView(MobileScene134()) }),
+MobileStory(id: "components-otpfield--filled", title: "Components/OtpField", name: "Filled", build: { AnyView(MobileScene135()) }),
+MobileStory(id: "components-otpfield--grouped", title: "Components/OtpField", name: "Grouped", build: { AnyView(MobileScene136()) }),
+MobileStory(id: "components-otpfield--sizes", title: "Components/OtpField", name: "Sizes", build: { AnyView(MobileScene137()) }),
+MobileStory(id: "components-otpfield--masked", title: "Components/OtpField", name: "Masked", build: { AnyView(MobileScene138()) }),
+MobileStory(id: "components-otpfield--disabled", title: "Components/OtpField", name: "Disabled", build: { AnyView(MobileScene139()) }),
+MobileStory(id: "components-otpfield--in-a-form", title: "Components/OtpField", name: "In A Form", build: { AnyView(MobileScene140()) }),
+MobileStory(id: "components-pilltabs--overview", title: "Components/PillTabs", name: "Overview", build: { AnyView(MobileScene141()) }),
+MobileStory(id: "components-pilltabs--default", title: "Components/PillTabs", name: "Default", build: { AnyView(MobileScene142()) }),
+MobileStory(id: "components-pilltabs--with-counts", title: "Components/PillTabs", name: "With Counts", build: { AnyView(MobileScene143()) }),
+MobileStory(id: "components-pilltabs--disabled", title: "Components/PillTabs", name: "Disabled", build: { AnyView(MobileScene144()) }),
+MobileStory(id: "components-pilltabs--tints", title: "Components/PillTabs", name: "Tints", build: { AnyView(MobileScene145()) }),
+MobileStory(id: "components-pilltabs--wrapping", title: "Components/PillTabs", name: "Wrapping", build: { AnyView(MobileScene146()) }),
+MobileStory(id: "components-pilltabs--in-a-pane-header", title: "Components/PillTabs", name: "In A Pane Header", build: { AnyView(MobileScene147()) }),
+MobileStory(id: "components-progress--default", title: "Components/Progress", name: "Default", build: { AnyView(MobileScene148()) }),
+MobileStory(id: "components-progress--values", title: "Components/Progress", name: "Values", build: { AnyView(MobileScene149()) }),
+MobileStory(id: "components-progress--indeterminate", title: "Components/Progress", name: "Indeterminate", build: { AnyView(MobileScene150()) }),
+MobileStory(id: "components-progress--gradient", title: "Components/Progress", name: "Gradient", build: { AnyView(MobileScene151()) }),
+MobileStory(id: "components-progress--sizes", title: "Components/Progress", name: "Sizes", build: { AnyView(MobileScene152()) }),
+MobileStory(id: "components-progress--tints", title: "Components/Progress", name: "Tints", build: { AnyView(MobileScene153()) }),
+MobileStory(id: "components-progress--live", title: "Components/Progress", name: "Live", build: { AnyView(MobileScene154()) }),
+MobileStory(id: "components-progress--with-a-count", title: "Components/Progress", name: "With A Count", build: { AnyView(MobileScene155()) }),
+MobileStory(id: "components-progress--beside-stages", title: "Components/Progress", name: "Beside Stages", build: { AnyView(MobileScene156()) }),
+MobileStory(id: "components-radio--a-group", title: "Components/Radio", name: "A Group", build: { AnyView(MobileScene157()) }),
+MobileStory(id: "components-radio--disabled", title: "Components/Radio", name: "Disabled", build: { AnyView(MobileScene158()) }),
+MobileStory(id: "components-radio--sizes", title: "Components/Radio", name: "Sizes", build: { AnyView(MobileScene159()) }),
+MobileStory(id: "components-radio--tints", title: "Components/Radio", name: "Tints", build: { AnyView(MobileScene160()) }),
+MobileStory(id: "components-radio--against-a-checkbox", title: "Components/Radio", name: "Against A Checkbox", build: { AnyView(MobileScene161()) }),
+MobileStory(id: "components-radio--in-a-form", title: "Components/Radio", name: "In A Form", build: { AnyView(MobileScene162()) }),
+MobileStory(id: "components-searchfield--overview", title: "Components/SearchField", name: "Overview", build: { AnyView(MobileScene163()) }),
+MobileStory(id: "components-searchfield--empty", title: "Components/SearchField", name: "Empty", build: { AnyView(MobileScene164()) }),
+MobileStory(id: "components-searchfield--with-a-query", title: "Components/SearchField", name: "With A Query", build: { AnyView(MobileScene165()) }),
+MobileStory(id: "components-searchfield--with-a-hint", title: "Components/SearchField", name: "With A Hint", build: { AnyView(MobileScene166()) }),
+MobileStory(id: "components-searchfield--sizes", title: "Components/SearchField", name: "Sizes", build: { AnyView(MobileScene167()) }),
+MobileStory(id: "components-searchfield--tints", title: "Components/SearchField", name: "Tints", build: { AnyView(MobileScene168()) }),
+MobileStory(id: "components-searchfield--dismissable", title: "Components/SearchField", name: "Dismissable", build: { AnyView(MobileScene169()) }),
+MobileStory(id: "components-searchfield--filtering-a-list", title: "Components/SearchField", name: "Filtering A List", build: { AnyView(MobileScene170()) }),
+MobileStory(id: "components-searchfield--in-a-pane-header", title: "Components/SearchField", name: "In A Pane Header", build: { AnyView(MobileScene171()) }),
+MobileStory(id: "components-sectionlabel--overview", title: "Components/SectionLabel", name: "Overview", build: { AnyView(MobileScene172()) }),
+MobileStory(id: "components-sectionlabel--default", title: "Components/SectionLabel", name: "Default", build: { AnyView(MobileScene173()) }),
+MobileStory(id: "components-sectionlabel--faint", title: "Components/SectionLabel", name: "Faint", build: { AnyView(MobileScene174()) }),
+MobileStory(id: "components-sectionlabel--tints", title: "Components/SectionLabel", name: "Tints", build: { AnyView(MobileScene175()) }),
+MobileStory(id: "components-sectionlabel--in-a-panel", title: "Components/SectionLabel", name: "In A Panel", build: { AnyView(MobileScene176()) }),
+MobileStory(id: "components-segmentedcontrol--raised", title: "Components/SegmentedControl", name: "Raised", build: { AnyView(MobileScene177()) }),
+MobileStory(id: "components-segmentedcontrol--filled", title: "Components/SegmentedControl", name: "Filled", build: { AnyView(MobileScene178()) }),
+MobileStory(id: "components-segmentedcontrol--sizes", title: "Components/SegmentedControl", name: "Sizes", build: { AnyView(MobileScene179()) }),
+MobileStory(id: "components-segmentedcontrol--tints", title: "Components/SegmentedControl", name: "Tints", build: { AnyView(MobileScene180()) }),
+MobileStory(id: "components-segmentedcontrol--filled-tints", title: "Components/SegmentedControl", name: "Filled Tints", build: { AnyView(MobileScene181()) }),
+MobileStory(id: "components-segmentedcontrol--stretch", title: "Components/SegmentedControl", name: "Stretch", build: { AnyView(MobileScene182()) }),
+MobileStory(id: "components-segmentedcontrol--disabled", title: "Components/SegmentedControl", name: "Disabled", build: { AnyView(MobileScene183()) }),
+MobileStory(id: "components-segmentedcontrol--two-segments", title: "Components/SegmentedControl", name: "Two Segments", build: { AnyView(MobileScene184()) }),
+MobileStory(id: "components-segmentedcontrol--in-a-form", title: "Components/SegmentedControl", name: "In A Form", build: { AnyView(MobileScene185()) }),
+MobileStory(id: "components-skeleton--overview", title: "Components/Skeleton", name: "Overview", build: { AnyView(MobileScene186()) }),
+MobileStory(id: "components-skeleton--shapes", title: "Components/Skeleton", name: "Shapes", build: { AnyView(MobileScene187()) }),
+MobileStory(id: "components-skeleton--text", title: "Components/Skeleton", name: "Text", build: { AnyView(MobileScene188()) }),
+MobileStory(id: "components-skeleton--lines", title: "Components/Skeleton", name: "Lines", build: { AnyView(MobileScene189()) }),
+MobileStory(id: "components-skeleton--a-list-row", title: "Components/Skeleton", name: "A List Row", build: { AnyView(MobileScene190()) }),
+MobileStory(id: "components-skeleton--in-a-card", title: "Components/Skeleton", name: "In A Card", build: { AnyView(MobileScene191()) }),
+MobileStory(id: "components-slider--bare", title: "Components/Slider", name: "Bare", build: { AnyView(MobileScene192()) }),
+MobileStory(id: "components-slider--with-value", title: "Components/Slider", name: "With Value", build: { AnyView(MobileScene193()) }),
+MobileStory(id: "components-slider--range", title: "Components/Slider", name: "Range", build: { AnyView(MobileScene194()) }),
+MobileStory(id: "components-slider--sizes", title: "Components/Slider", name: "Sizes", build: { AnyView(MobileScene195()) }),
+MobileStory(id: "components-slider--tints", title: "Components/Slider", name: "Tints", build: { AnyView(MobileScene196()) }),
+MobileStory(id: "components-slider--disabled", title: "Components/Slider", name: "Disabled", build: { AnyView(MobileScene197()) }),
+MobileStory(id: "components-slider--interactive", title: "Components/Slider", name: "Interactive", build: { AnyView(MobileScene198()) }),
+MobileStory(id: "components-slider--in-settings", title: "Components/Slider", name: "In Settings", build: { AnyView(MobileScene199()) }),
+MobileStory(id: "components-spinner--default", title: "Components/Spinner", name: "Default", build: { AnyView(MobileScene200()) }),
+MobileStory(id: "components-spinner--sizes", title: "Components/Spinner", name: "Sizes", build: { AnyView(MobileScene201()) }),
+MobileStory(id: "components-spinner--tints", title: "Components/Spinner", name: "Tints", build: { AnyView(MobileScene202()) }),
+MobileStory(id: "components-spinner--on-an-accent", title: "Components/Spinner", name: "On An Accent", build: { AnyView(MobileScene203()) }),
+MobileStory(id: "components-spinner--in-a-button", title: "Components/Spinner", name: "In A Button", build: { AnyView(MobileScene204()) }),
+MobileStory(id: "components-spinner--in-a-callout", title: "Components/Spinner", name: "In A Callout", build: { AnyView(MobileScene205()) }),
+MobileStory(id: "components-spinner--in-prose", title: "Components/Spinner", name: "In Prose", build: { AnyView(MobileScene206()) }),
+MobileStory(id: "components-steplist--overview", title: "Components/StepList", name: "Overview", build: { AnyView(MobileScene207()) }),
+MobileStory(id: "components-steplist--in-flight", title: "Components/StepList", name: "In Flight", build: { AnyView(MobileScene208()) }),
+MobileStory(id: "components-steplist--statuses", title: "Components/StepList", name: "Statuses", build: { AnyView(MobileScene209()) }),
+MobileStory(id: "components-steplist--finished", title: "Components/StepList", name: "Finished", build: { AnyView(MobileScene210()) }),
+MobileStory(id: "components-steplist--without-detail", title: "Components/StepList", name: "Without Detail", build: { AnyView(MobileScene211()) }),
+MobileStory(id: "components-steplist--timed-detail", title: "Components/StepList", name: "Timed Detail", build: { AnyView(MobileScene212()) }),
+MobileStory(id: "components-steplist--tints", title: "Components/StepList", name: "Tints", build: { AnyView(MobileScene213()) }),
+MobileStory(id: "components-steplist--advancing", title: "Components/StepList", name: "Advancing", build: { AnyView(MobileScene214()) }),
+MobileStory(id: "components-switch--on", title: "Components/Switch", name: "On", build: { AnyView(MobileScene215()) }),
+MobileStory(id: "components-switch--off", title: "Components/Switch", name: "Off", build: { AnyView(MobileScene216()) }),
+MobileStory(id: "components-switch--disabled", title: "Components/Switch", name: "Disabled", build: { AnyView(MobileScene217()) }),
+MobileStory(id: "components-switch--interactive", title: "Components/Switch", name: "Interactive", build: { AnyView(MobileScene218()) }),
+MobileStory(id: "components-switch--sizes", title: "Components/Switch", name: "Sizes", build: { AnyView(MobileScene219()) }),
+MobileStory(id: "components-switch--tints", title: "Components/Switch", name: "Tints", build: { AnyView(MobileScene220()) }),
+MobileStory(id: "components-switch--against-a-checkbox", title: "Components/Switch", name: "Against A Checkbox", build: { AnyView(MobileScene221()) }),
+MobileStory(id: "components-switch--in-settings", title: "Components/Switch", name: "In Settings", build: { AnyView(MobileScene222()) }),
+MobileStory(id: "components-table--inert", title: "Components/Table", name: "Inert", build: { AnyView(MobileScene223()) }),
+MobileStory(id: "components-table--alignment", title: "Components/Table", name: "Alignment", build: { AnyView(MobileScene224()) }),
+MobileStory(id: "components-tag--overview", title: "Components/Tag", name: "Overview", build: { AnyView(MobileScene225()) }),
+MobileStory(id: "components-tag--selectable", title: "Components/Tag", name: "Selectable", build: { AnyView(MobileScene226()) }),
+MobileStory(id: "components-tag--removable", title: "Components/Tag", name: "Removable", build: { AnyView(MobileScene227()) }),
+MobileStory(id: "components-tag--sizes", title: "Components/Tag", name: "Sizes", build: { AnyView(MobileScene228()) }),
+MobileStory(id: "components-tag--variants", title: "Components/Tag", name: "Variants", build: { AnyView(MobileScene229()) }),
+MobileStory(id: "components-tag--tints", title: "Components/Tag", name: "Tints", build: { AnyView(MobileScene230()) }),
+MobileStory(id: "components-tag--disabled", title: "Components/Tag", name: "Disabled", build: { AnyView(MobileScene231()) }),
+MobileStory(id: "components-tag--a-filter-bar", title: "Components/Tag", name: "A Filter Bar", build: { AnyView(MobileScene232()) }),
+MobileStory(id: "components-textfield--default", title: "Components/TextField", name: "Default", build: { AnyView(MobileScene233()) }),
+MobileStory(id: "components-textfield--placeholder", title: "Components/TextField", name: "Placeholder", build: { AnyView(MobileScene234()) }),
+MobileStory(id: "components-textfield--read-only", title: "Components/TextField", name: "Read Only", build: { AnyView(MobileScene235()) }),
+MobileStory(id: "components-textfield--disabled", title: "Components/TextField", name: "Disabled", build: { AnyView(MobileScene236()) }),
+MobileStory(id: "components-textfield--error-state", title: "Components/TextField", name: "Error", build: { AnyView(MobileScene237()) }),
+MobileStory(id: "components-textfield--states", title: "Components/TextField", name: "States", build: { AnyView(MobileScene238()) }),
+MobileStory(id: "components-textfield--sizes", title: "Components/TextField", name: "Sizes", build: { AnyView(MobileScene239()) }),
+MobileStory(id: "components-textfield--beside-a-button", title: "Components/TextField", name: "Beside A Button", build: { AnyView(MobileScene240()) }),
+MobileStory(id: "components-textfield--mono", title: "Components/TextField", name: "Mono", build: { AnyView(MobileScene241()) }),
+MobileStory(id: "components-textfield--tints", title: "Components/TextField", name: "Tints", build: { AnyView(MobileScene242()) }),
+MobileStory(id: "components-textfield--controlled", title: "Components/TextField", name: "Controlled", build: { AnyView(MobileScene243()) }),
+MobileStory(id: "components-toggle--pressed", title: "Components/Toggle", name: "Pressed", build: { AnyView(MobileScene244()) }),
+MobileStory(id: "components-toggle--sizes", title: "Components/Toggle", name: "Sizes", build: { AnyView(MobileScene245()) }),
+MobileStory(id: "components-toggle--variants", title: "Components/Toggle", name: "Variants", build: { AnyView(MobileScene246()) }),
+MobileStory(id: "components-toggle--tints", title: "Components/Toggle", name: "Tints", build: { AnyView(MobileScene247()) }),
+MobileStory(id: "components-toggle--disabled", title: "Components/Toggle", name: "Disabled", build: { AnyView(MobileScene248()) }),
+MobileStory(id: "components-toggle--a-toolbar", title: "Components/Toggle", name: "A Toolbar", build: { AnyView(MobileScene249()) }),
+MobileStory(id: "components-togglegroup--overview", title: "Components/ToggleGroup", name: "Overview", build: { AnyView(MobileScene250()) }),
+MobileStory(id: "components-togglegroup--glyphs", title: "Components/ToggleGroup", name: "Glyphs", build: { AnyView(MobileScene251()) }),
+MobileStory(id: "components-togglegroup--words", title: "Components/ToggleGroup", name: "Words", build: { AnyView(MobileScene252()) }),
+MobileStory(id: "components-togglegroup--single", title: "Components/ToggleGroup", name: "Single", build: { AnyView(MobileScene253()) }),
+MobileStory(id: "components-togglegroup--variants", title: "Components/ToggleGroup", name: "Variants", build: { AnyView(MobileScene254()) }),
+MobileStory(id: "components-togglegroup--tints", title: "Components/ToggleGroup", name: "Tints", build: { AnyView(MobileScene255()) }),
+MobileStory(id: "components-togglegroup--disabled", title: "Components/ToggleGroup", name: "Disabled", build: { AnyView(MobileScene256()) }),
 ]
 private struct MobileScene0: View {
 @Environment(\.mobilePalette) private var palette
@@ -404,15 +553,15 @@ node39() } }
 private func node29() -> some View { VStack(alignment: .leading) { Text("Sizes").font(.title2)
 Text("Each size borrows the padding of the control size one step below it, and sets its label in the caption face, so a badge reads as a label rather than as a control that stopped working.").foregroundStyle(.secondary)
 node30() } }
-private func node47() -> some View { Image(systemName: "circle.fill") }
+private func node47() -> some View { Image(systemName: "circle.fill").font(.system(size: 8)) }
 private func node46() -> some View { HStack {
 node47()
 Text(" Connected") }.font(.caption).foregroundStyle(palette.colorSuccess[palette.nativeTintShade]) }
-private func node49() -> some View { Image(systemName: "circle.fill") }
+private func node49() -> some View { Image(systemName: "circle.fill").font(.system(size: 8)) }
 private func node48() -> some View { HStack {
 node49()
 Text(" Degraded") }.font(.caption).foregroundStyle(palette.colorWarning[palette.nativeTintShade]) }
-private func node51() -> some View { Image(systemName: "circle.fill") }
+private func node51() -> some View { Image(systemName: "circle.fill").font(.system(size: 8)) }
 private func node50() -> some View { HStack {
 node51()
 Text(" Offline") }.font(.caption).foregroundStyle(palette.colorDanger[palette.nativeTintShade]) }
@@ -607,15 +756,15 @@ private struct MobileScene15: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
-private func node2() -> some View { Image(systemName: "circle.fill") }
+private func node2() -> some View { Image(systemName: "circle.fill").font(.system(size: 8)) }
 private func node1() -> some View { HStack {
 node2()
 Text(" Connected") }.font(.caption).foregroundStyle(palette.colorSuccess[palette.nativeTintShade]) }
-private func node4() -> some View { Image(systemName: "circle.fill") }
+private func node4() -> some View { Image(systemName: "circle.fill").font(.system(size: 8)) }
 private func node3() -> some View { HStack {
 node4()
 Text(" Degraded") }.font(.caption).foregroundStyle(palette.colorWarning[palette.nativeTintShade]) }
-private func node6() -> some View { Image(systemName: "circle.fill") }
+private func node6() -> some View { Image(systemName: "circle.fill").font(.system(size: 8)) }
 private func node5() -> some View { HStack {
 node6()
 Text(" Offline") }.font(.caption).foregroundStyle(palette.colorDanger[palette.nativeTintShade]) }
@@ -881,7 +1030,7 @@ node61() } }
 private func node51() -> some View { VStack(alignment: .leading) { Text("Sizes").font(.title2)
 Text("Button keeps no per-size block at all: the `[data-size]` profile carries the height, the padding, the radius and the type face, and the stylesheet reads them once.").foregroundStyle(.secondary)
 node52() } }
-private func node69() -> some View { Image(systemName: "arrow.down.to.line") }
+private func node69() -> some View { Image(systemName: "arrow.down.to.line").font(.system(size: 14)) }
 private func node68() -> some View { Button {  } label: { HStack {
 node69()
 Text("Export") } }.disabled(false).buttonStyle(.borderedProminent) }
@@ -1156,15 +1305,15 @@ private struct MobileScene30: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
-private func node2() -> some View { Image(systemName: "arrow.down.to.line") }
+private func node2() -> some View { Image(systemName: "arrow.down.to.line").font(.system(size: 14)) }
 private func node1() -> some View { Button {  } label: { HStack {
 node2()
 Text("Export") } }.disabled(false).buttonStyle(.borderedProminent) }
-private func node4() -> some View { Image(systemName: "arrow.down.to.line") }
+private func node4() -> some View { Image(systemName: "arrow.down.to.line").font(.system(size: 14)) }
 private func node3() -> some View { Button {  } label: { HStack {
 node4()
 Text("Download") } }.disabled(false).buttonStyle(.bordered) }
-private func node6() -> some View { Image(systemName: "arrow.down.to.line") }
+private func node6() -> some View { Image(systemName: "arrow.down.to.line").font(.system(size: 14)) }
 private func node5() -> some View { Button {  } label: { HStack {
 node6()
 Text("Save a copy") } }.disabled(false).buttonStyle(.plain) }
@@ -1700,7 +1849,7 @@ Spacer()
 node51() } }
 private func node52() -> some View { ProgressView(value: Double(43), total: 100) }
 private func node53() -> some View { HStack(spacing: 0) {
-Text("168 of 392 segments") }.foregroundStyle(.secondary) }
+Text("168 of 392 segments") }.foregroundStyle(palette.colorContentMuted) }
 private func node54() -> some View { Divider() }
 private func node56() -> some View { Button {  } label: { HStack {
 Text("Pause") } }.disabled(false).buttonStyle(.plain) }
@@ -1943,7 +2092,7 @@ Spacer()
 node4() } }
 private func node5() -> some View { ProgressView(value: Double(43), total: 100) }
 private func node6() -> some View { HStack(spacing: 0) {
-Text("168 of 392 segments") }.foregroundStyle(.secondary) }
+Text("168 of 392 segments") }.foregroundStyle(palette.colorContentMuted) }
 private func node7() -> some View { Divider() }
 private func node9() -> some View { Button {  } label: { HStack {
 Text("Pause") } }.disabled(false).buttonStyle(.plain) }
@@ -2209,7 +2358,7 @@ private func node28() -> some View { HStack(spacing: 0) {
 Text("392 segments · 15 pages") } }
 private func node29() -> some View { Divider() }
 private func node30() -> some View { HStack(spacing: 0) {
-Text("Last translated 12 minutes ago") }.foregroundStyle(.secondary) }
+Text("Last translated 12 minutes ago") }.foregroundStyle(palette.colorContentMuted) }
 private func node26() -> some View { GroupBox { VStack(alignment: .leading) {
 node27()
 node28()
@@ -2308,7 +2457,7 @@ private func node3() -> some View { HStack(spacing: 0) {
 Text("392 segments · 15 pages") } }
 private func node4() -> some View { Divider() }
 private func node5() -> some View { HStack(spacing: 0) {
-Text("Last translated 12 minutes ago") }.foregroundStyle(.secondary) }
+Text("Last translated 12 minutes ago") }.foregroundStyle(palette.colorContentMuted) }
 private func node6() -> some View { Divider() }
 private func node8() -> some View { Button {  } label: { HStack {
 Text("Open") } }.disabled(false).buttonStyle(.bordered) }
@@ -2543,6 +2692,506 @@ node3() } }
 
 private struct MobileScene83: View {
 @Environment(\.mobilePalette) private var palette
+@State private var value0 = "balanced"
+var body: some View { node0() }
+private func node2() -> some View { Picker("", selection: $value0) {
+Text("Fast").tag("fast").modifier(MobileSegmentAvailability(disabled: false))
+Text("Balanced").tag("balanced").modifier(MobileSegmentAvailability(disabled: false))
+Text("Careful").tag("careful").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented) }
+private func node1() -> some View { VStack(alignment: .leading) { Text("Quality").font(.headline)
+node2()
+Text("Applies to new jobs only.").font(.caption).foregroundStyle("default" == "error" ? palette.colorDanger[palette.nativeTintShade] : palette.colorContentMuted) } }
+private func node4() -> some View { Toggle(isOn: .constant(true)) { Text("Hold jobs for review before export") }.disabled(false) }
+private func node3() -> some View { VStack(alignment: .leading) { Text("Review").font(.headline)
+node4()
+Text("").font(.caption).foregroundStyle("default" == "error" ? palette.colorDanger[palette.nativeTintShade] : palette.colorContentMuted) } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node3() } }
+}
+
+private struct MobileScene84: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node0() -> some View { Image(systemName: "bolt") }
+}
+
+private struct MobileScene85: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { Image(systemName: "bolt").font(.system(size: 12)) }
+private func node2() -> some View { Image(systemName: "bolt").font(.system(size: 14)) }
+private func node3() -> some View { Image(systemName: "bolt").font(.system(size: 16)) }
+private func node4() -> some View { Image(systemName: "bolt").font(.system(size: 20)) }
+private func node5() -> some View { Image(systemName: "bolt").font(.system(size: 24)) }
+private func node6() -> some View { Image(systemName: "bolt").font(.system(size: 32)) }
+private func node0() -> some View { HStack {
+node1()
+node2()
+node3()
+node4()
+node5()
+node6() } }
+}
+
+private struct MobileScene86: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { Image(systemName: "bolt").font(.system(size: 16)) }
+private func node2() -> some View { Image(systemName: "bolt").font(.system(size: 24)) }
+private func node3() -> some View { Image(systemName: "bolt").font(.system(size: 32)) }
+private func node0() -> some View { HStack {
+node1()
+node2()
+node3() } }
+}
+
+private struct MobileScene87: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { Image(systemName: "doc").font(.system(size: 24)) }
+private func node2() -> some View { Image(systemName: "doc").font(.system(size: 24)) }
+private func node3() -> some View { Image(systemName: "doc").font(.system(size: 24)) }
+private func node0() -> some View { HStack {
+node1()
+node2()
+node3() } }
+}
+
+private struct MobileScene88: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node3() -> some View { Image(systemName: "checkmark").font(.system(size: 12)) }
+private func node2() -> some View { HStack {
+node3()
+Text("  ")
+Text("primary") }.font(.caption).foregroundStyle(palette.colorPrimary[palette.nativeTintShade]) }
+private func node5() -> some View { Image(systemName: "checkmark").font(.system(size: 12)) }
+private func node4() -> some View { HStack {
+node5()
+Text("  ")
+Text("neutral") }.font(.caption).foregroundStyle(palette.colorNeutral[palette.nativeTintShade]) }
+private func node7() -> some View { Image(systemName: "checkmark").font(.system(size: 12)) }
+private func node6() -> some View { HStack {
+node7()
+Text("  ")
+Text("info") }.font(.caption).foregroundStyle(palette.colorInfo[palette.nativeTintShade]) }
+private func node9() -> some View { Image(systemName: "checkmark").font(.system(size: 12)) }
+private func node8() -> some View { HStack {
+node9()
+Text("  ")
+Text("success") }.font(.caption).foregroundStyle(palette.colorSuccess[palette.nativeTintShade]) }
+private func node11() -> some View { Image(systemName: "checkmark").font(.system(size: 12)) }
+private func node10() -> some View { HStack {
+node11()
+Text("  ")
+Text("warning") }.font(.caption).foregroundStyle(palette.colorWarning[palette.nativeTintShade]) }
+private func node13() -> some View { Image(systemName: "checkmark").font(.system(size: 12)) }
+private func node12() -> some View { HStack {
+node13()
+Text("  ")
+Text("danger") }.font(.caption).foregroundStyle(palette.colorDanger[palette.nativeTintShade]) }
+private func node1() -> some View { HStack {
+node2()
+node4()
+node6()
+node8()
+node10()
+node12() } }
+private func node16() -> some View { Image(systemName: "doc").font(.system(size: 20)) }
+private func node15() -> some View { HStack(spacing: 0) {
+node16() } }
+private func node18() -> some View { Image(systemName: "doc").font(.system(size: 20)) }
+private func node17() -> some View { HStack(spacing: 0) {
+node18() }.foregroundStyle(palette.colorContentMuted) }
+private func node20() -> some View { Image(systemName: "doc").font(.system(size: 20)) }
+private func node19() -> some View { HStack(spacing: 0) {
+node20() }.foregroundStyle(palette.colorContentSubtle) }
+private func node14() -> some View { HStack {
+node15()
+node17()
+node19() } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node14() } }
+}
+
+private struct MobileScene89: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node2() -> some View { Image(systemName: "bolt").font(.system(size: 14)) }
+private func node1() -> some View { Button {  } label: { HStack {
+node2()
+Text("Translate") } }.disabled(false).buttonStyle(.borderedProminent) }
+private func node4() -> some View { Image(systemName: "doc").font(.system(size: 14)) }
+private func node3() -> some View { Button {  } label: { HStack {
+node4()
+Text("Open document") } }.disabled(false).buttonStyle(.bordered) }
+private func node0() -> some View { HStack {
+node1()
+node3() } }
+}
+
+private struct MobileScene90: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node2() -> some View { Image(systemName: "checkmark").font(.system(size: 16)) }
+private func node1() -> some View { GroupBox { VStack(alignment: .leading) {
+node2()
+Text("All 15 pages translated").font(.headline)
+Text("Layout and formulas were preserved.")
+ } }.tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene91: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = false
+@State private var value1 = true
+var body: some View { node0() }
+private func node5() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node4() -> some View { Button {  } label: { HStack {
+node5() } }.disabled(false).accessibilityLabel("Copy (plain)").buttonStyle(.borderless) }
+private func node7() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node6() -> some View { Button {  } label: { HStack {
+node7() } }.disabled(true).accessibilityLabel("Disabled (plain)").buttonStyle(.borderless) }
+private func node3() -> some View { VStack(alignment: .leading) { Text("plain").font(.caption).foregroundStyle(.secondary)
+node4()
+node6() } }
+private func node10() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node9() -> some View { Button {  } label: { HStack {
+node10() } }.disabled(false).accessibilityLabel("Copy (normal)").buttonStyle(.bordered) }
+private func node12() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node11() -> some View { Button {  } label: { HStack {
+node12() } }.disabled(true).accessibilityLabel("Disabled (normal)").buttonStyle(.bordered) }
+private func node8() -> some View { VStack(alignment: .leading) { Text("normal").font(.caption).foregroundStyle(.secondary)
+node9()
+node11() } }
+private func node15() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node14() -> some View { Button {  } label: { HStack {
+node15() } }.disabled(false).accessibilityLabel("Copy (filled)").buttonStyle(.borderedProminent) }
+private func node17() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node16() -> some View { Button {  } label: { HStack {
+node17() } }.disabled(true).accessibilityLabel("Disabled (filled)").buttonStyle(.borderedProminent) }
+private func node13() -> some View { VStack(alignment: .leading) { Text("filled").font(.caption).foregroundStyle(.secondary)
+node14()
+node16() } }
+private func node20() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node19() -> some View { Button {  } label: { HStack {
+node20() } }.disabled(false).accessibilityLabel("Copy (tinted)").buttonStyle(.bordered) }
+private func node22() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node21() -> some View { Button {  } label: { HStack {
+node22() } }.disabled(true).accessibilityLabel("Disabled (tinted)").buttonStyle(.bordered) }
+private func node18() -> some View { VStack(alignment: .leading) { Text("tinted").font(.caption).foregroundStyle(.secondary)
+node19()
+node21() } }
+private func node25() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node24() -> some View { Button {  } label: { HStack {
+node25() } }.disabled(false).accessibilityLabel("Copy (outlined)").buttonStyle(.bordered) }
+private func node27() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node26() -> some View { Button {  } label: { HStack {
+node27() } }.disabled(true).accessibilityLabel("Disabled (outlined)").buttonStyle(.bordered) }
+private func node23() -> some View { VStack(alignment: .leading) { Text("outlined").font(.caption).foregroundStyle(.secondary)
+node24()
+node26() } }
+private func node2() -> some View { VStack(alignment: .leading) {
+node3()
+node8()
+node13()
+node18()
+node23() } }
+private func node1() -> some View { VStack(alignment: .leading) { Text("Variants").font(.title2)
+Text("The same five recipes a Button wears. `plain` is the default because most icon buttons are chrome; `filled` is for the one that leads — a compose, an add.").foregroundStyle(.secondary)
+node2() } }
+private func node32() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node31() -> some View { Button {  } label: { HStack {
+node32() } }.disabled(false).accessibilityLabel("Copy").buttonStyle(.borderless) }
+private func node30() -> some View { VStack(alignment: .leading) { Text("IconButton — acts and returns").font(.caption).foregroundStyle(.secondary)
+node31() } }
+private func node35() -> some View { Image(systemName: "pin").font(.system(size: 16)) }
+private func node34() -> some View { Toggle(isOn: $value0) { HStack {
+node35() } }.toggleStyle(.button).disabled(false).accessibilityLabel("Pin window") }
+private func node37() -> some View { Image(systemName: "pin").font(.system(size: 16)) }
+private func node36() -> some View { Toggle(isOn: $value1) { HStack {
+node37() } }.toggleStyle(.button).disabled(false).accessibilityLabel("Pinned") }
+private func node33() -> some View { VStack(alignment: .leading) { Text("Toggle — stays down").font(.caption).foregroundStyle(.secondary)
+node34()
+node36() } }
+private func node29() -> some View { VStack(alignment: .leading) {
+node30()
+node33() } }
+private func node28() -> some View { VStack(alignment: .leading) { Text("It does not latch").font(.title2)
+Text("A glyph button that stays down is a `Toggle`, which is square at this same control height when its label is a lone glyph — so a latching glyph and a plain one sit in one toolbar without a seam. Keeping an on-state here as well would be a second drawing for one state, and the system draws a selection one way: a tinted wash and a heavier label.").foregroundStyle(.secondary)
+node29() } }
+private func node42() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 14)) }
+private func node41() -> some View { Button {  } label: { HStack {
+node42() } }.disabled(false).accessibilityLabel("Copy (small)").buttonStyle(.borderless) }
+private func node40() -> some View { VStack(alignment: .leading) { Text("small").font(.caption).foregroundStyle(.secondary)
+node41() } }
+private func node45() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node44() -> some View { Button {  } label: { HStack {
+node45() } }.disabled(false).accessibilityLabel("Copy (medium)").buttonStyle(.borderless) }
+private func node43() -> some View { VStack(alignment: .leading) { Text("medium").font(.caption).foregroundStyle(.secondary)
+node44() } }
+private func node48() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 20)) }
+private func node47() -> some View { Button {  } label: { HStack {
+node48() } }.disabled(false).accessibilityLabel("Copy (large)").buttonStyle(.borderless) }
+private func node46() -> some View { VStack(alignment: .leading) { Text("large").font(.caption).foregroundStyle(.secondary)
+node47() } }
+private func node39() -> some View { VStack(alignment: .leading) {
+node40()
+node43()
+node46() } }
+private func node38() -> some View { VStack(alignment: .leading) { Text("Sizes").font(.title2)
+Text("The button is square at the shared control height, so it lines up with the labelled buttons and the fields beside it. Size the glyph a couple of steps under the box — a glyph filling its button reads as a full stop.").foregroundStyle(.secondary)
+node39() } }
+private func node53() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node52() -> some View { Button {  } label: { HStack {
+node53() } }.disabled(false).accessibilityLabel("primary").buttonStyle(.borderless).tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node55() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node54() -> some View { Button {  } label: { HStack {
+node55() } }.disabled(false).accessibilityLabel("neutral").buttonStyle(.borderless).tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node57() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node56() -> some View { Button {  } label: { HStack {
+node57() } }.disabled(false).accessibilityLabel("info").buttonStyle(.borderless).tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node59() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node58() -> some View { Button {  } label: { HStack {
+node59() } }.disabled(false).accessibilityLabel("success").buttonStyle(.borderless).tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node61() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node60() -> some View { Button {  } label: { HStack {
+node61() } }.disabled(false).accessibilityLabel("warning").buttonStyle(.borderless).tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node63() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node62() -> some View { Button {  } label: { HStack {
+node63() } }.disabled(false).accessibilityLabel("danger").buttonStyle(.borderless).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node51() -> some View { VStack(alignment: .leading) { Text("plain").font(.caption).foregroundStyle(.secondary)
+node52()
+node54()
+node56()
+node58()
+node60()
+node62() } }
+private func node50() -> some View { VStack(alignment: .leading) {
+node51() } }
+private func node49() -> some View { VStack(alignment: .leading) { Text("Tints").font(.title2)
+Text("Neutral by default, which is what a toolbar wants. Tint the one that carries a consequence — the delete — and leave the rest alone, or the row goes back to saying nothing.").foregroundStyle(.secondary)
+node50() } }
+private func node0() -> some View { VStack(alignment: .leading) { Text("IconButton").font(.title2)
+Text("A square button with no label of its own, so `label` is required and doubles as the native tooltip. It reads the same control recipes as Button, plus a pressed state for a toggle that stays down. It defaults to `plain` on the neutral ramp: a toolbar of these should read as chrome, not as a row of accented actions.").foregroundStyle(.secondary)
+node1()
+node28()
+node38()
+node49() } }
+}
+
+private struct MobileScene92: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node0() -> some View { Button {  } label: { HStack {
+node1() } }.disabled(false).accessibilityLabel("Copy translation").buttonStyle(.borderless) }
+}
+
+private struct MobileScene93: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { Image(systemName: "plus").font(.system(size: 16)) }
+private func node0() -> some View { Button {  } label: { HStack {
+node1() } }.disabled(false).accessibilityLabel("New term").buttonStyle(.borderedProminent).tint(palette.colorPrimary[palette.nativeTintShade]) }
+}
+
+private struct MobileScene94: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node2() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node1() -> some View { Button {  } label: { HStack {
+node2() } }.disabled(false).accessibilityLabel("plain").buttonStyle(.borderless) }
+private func node4() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node3() -> some View { Button {  } label: { HStack {
+node4() } }.disabled(false).accessibilityLabel("normal").buttonStyle(.bordered) }
+private func node6() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node5() -> some View { Button {  } label: { HStack {
+node6() } }.disabled(false).accessibilityLabel("filled").buttonStyle(.borderedProminent) }
+private func node8() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node7() -> some View { Button {  } label: { HStack {
+node8() } }.disabled(false).accessibilityLabel("tinted").buttonStyle(.bordered) }
+private func node10() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node9() -> some View { Button {  } label: { HStack {
+node10() } }.disabled(false).accessibilityLabel("outlined").buttonStyle(.bordered) }
+private func node0() -> some View { HStack {
+node1()
+node3()
+node5()
+node7()
+node9() } }
+}
+
+private struct MobileScene95: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node2() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node1() -> some View { Button {  } label: { HStack {
+node2() } }.disabled(true).accessibilityLabel("plain").buttonStyle(.borderless) }
+private func node4() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node3() -> some View { Button {  } label: { HStack {
+node4() } }.disabled(true).accessibilityLabel("normal").buttonStyle(.bordered) }
+private func node6() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node5() -> some View { Button {  } label: { HStack {
+node6() } }.disabled(true).accessibilityLabel("filled").buttonStyle(.borderedProminent) }
+private func node8() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node7() -> some View { Button {  } label: { HStack {
+node8() } }.disabled(true).accessibilityLabel("tinted").buttonStyle(.bordered) }
+private func node10() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node9() -> some View { Button {  } label: { HStack {
+node10() } }.disabled(true).accessibilityLabel("outlined").buttonStyle(.bordered) }
+private func node0() -> some View { HStack {
+node1()
+node3()
+node5()
+node7()
+node9() } }
+}
+
+private struct MobileScene96: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node2() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 14)) }
+private func node1() -> some View { Button {  } label: { HStack {
+node2() } }.disabled(false).accessibilityLabel("Copy (small)").buttonStyle(.borderless) }
+private func node4() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node3() -> some View { Button {  } label: { HStack {
+node4() } }.disabled(false).accessibilityLabel("Copy (medium)").buttonStyle(.borderless) }
+private func node6() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 20)) }
+private func node5() -> some View { Button {  } label: { HStack {
+node6() } }.disabled(false).accessibilityLabel("Copy (large)").buttonStyle(.borderless) }
+private func node0() -> some View { HStack {
+node1()
+node3()
+node5() } }
+}
+
+private struct MobileScene97: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node3() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node2() -> some View { Button {  } label: { HStack {
+node3() } }.disabled(false).accessibilityLabel("plain primary").buttonStyle(.borderless).tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node5() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node4() -> some View { Button {  } label: { HStack {
+node5() } }.disabled(false).accessibilityLabel("plain neutral").buttonStyle(.borderless).tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node7() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node6() -> some View { Button {  } label: { HStack {
+node7() } }.disabled(false).accessibilityLabel("plain info").buttonStyle(.borderless).tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node9() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node8() -> some View { Button {  } label: { HStack {
+node9() } }.disabled(false).accessibilityLabel("plain success").buttonStyle(.borderless).tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node11() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node10() -> some View { Button {  } label: { HStack {
+node11() } }.disabled(false).accessibilityLabel("plain warning").buttonStyle(.borderless).tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node13() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node12() -> some View { Button {  } label: { HStack {
+node13() } }.disabled(false).accessibilityLabel("plain danger").buttonStyle(.borderless).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node1() -> some View { HStack {
+node2()
+node4()
+node6()
+node8()
+node10()
+node12() } }
+private func node16() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node15() -> some View { Button {  } label: { HStack {
+node16() } }.disabled(false).accessibilityLabel("tinted primary").buttonStyle(.bordered).tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node18() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node17() -> some View { Button {  } label: { HStack {
+node18() } }.disabled(false).accessibilityLabel("tinted neutral").buttonStyle(.bordered).tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node20() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node19() -> some View { Button {  } label: { HStack {
+node20() } }.disabled(false).accessibilityLabel("tinted info").buttonStyle(.bordered).tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node22() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node21() -> some View { Button {  } label: { HStack {
+node22() } }.disabled(false).accessibilityLabel("tinted success").buttonStyle(.bordered).tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node24() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node23() -> some View { Button {  } label: { HStack {
+node24() } }.disabled(false).accessibilityLabel("tinted warning").buttonStyle(.bordered).tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node26() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node25() -> some View { Button {  } label: { HStack {
+node26() } }.disabled(false).accessibilityLabel("tinted danger").buttonStyle(.bordered).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node14() -> some View { HStack {
+node15()
+node17()
+node19()
+node21()
+node23()
+node25() } }
+private func node29() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node28() -> some View { Button {  } label: { HStack {
+node29() } }.disabled(false).accessibilityLabel("filled primary").buttonStyle(.borderedProminent).tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node31() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node30() -> some View { Button {  } label: { HStack {
+node31() } }.disabled(false).accessibilityLabel("filled neutral").buttonStyle(.borderedProminent).tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node33() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node32() -> some View { Button {  } label: { HStack {
+node33() } }.disabled(false).accessibilityLabel("filled info").buttonStyle(.borderedProminent).tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node35() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node34() -> some View { Button {  } label: { HStack {
+node35() } }.disabled(false).accessibilityLabel("filled success").buttonStyle(.borderedProminent).tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node37() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node36() -> some View { Button {  } label: { HStack {
+node37() } }.disabled(false).accessibilityLabel("filled warning").buttonStyle(.borderedProminent).tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node39() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node38() -> some View { Button {  } label: { HStack {
+node39() } }.disabled(false).accessibilityLabel("filled danger").buttonStyle(.borderedProminent).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node27() -> some View { HStack {
+node28()
+node30()
+node32()
+node34()
+node36()
+node38() } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node14()
+node27() } }
+}
+
+private struct MobileScene98: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = false
+var body: some View { node0() }
+private func node2() -> some View { Image(systemName: "doc.on.doc").font(.system(size: 16)) }
+private func node1() -> some View { Button {  } label: { HStack {
+node2() } }.disabled(false).accessibilityLabel("Copy translation").buttonStyle(.borderless) }
+private func node4() -> some View { Image(systemName: "pin").font(.system(size: 16)) }
+private func node3() -> some View { Toggle(isOn: $value0) { HStack {
+node4() } }.toggleStyle(.button).disabled(false).accessibilityLabel("Pin window") }
+private func node5() -> some View { Divider() }
+private func node7() -> some View { Image(systemName: "trash").font(.system(size: 16)) }
+private func node6() -> some View { Button {  } label: { HStack {
+node7() } }.disabled(false).accessibilityLabel("Delete").buttonStyle(.borderless).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node0() -> some View { HStack { 
+node1()
+node3()
+node5()
+node6()
+ } }
+}
+
+private struct MobileScene99: View {
+@Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
 private func node4() -> some View { HStack {
@@ -2679,7 +3328,7 @@ node9()
 node32() } }
 }
 
-private struct MobileScene84: View {
+private struct MobileScene100: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -2687,7 +3336,7 @@ private func node0() -> some View { HStack {
 Text("⌥2") }.font(.system(.caption, design: .monospaced)) }
 }
 
-private struct MobileScene85: View {
+private struct MobileScene101: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -2695,7 +3344,7 @@ private func node0() -> some View { HStack {
 Text("⌘K") }.font(.system(.caption, design: .monospaced)) }
 }
 
-private struct MobileScene86: View {
+private struct MobileScene102: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -2703,7 +3352,7 @@ private func node0() -> some View { HStack {
 Text("⌘⇧T") }.font(.system(.caption, design: .monospaced)) }
 }
 
-private struct MobileScene87: View {
+private struct MobileScene103: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -2719,7 +3368,7 @@ node2()
 node3() } }
 }
 
-private struct MobileScene88: View {
+private struct MobileScene104: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -2768,7 +3417,7 @@ node6()
 node11() } }
 }
 
-private struct MobileScene89: View {
+private struct MobileScene105: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -2784,7 +3433,7 @@ node2()
 node3() } }
 }
 
-private struct MobileScene90: View {
+private struct MobileScene106: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -2802,7 +3451,7 @@ Text("+")
 node3() }.foregroundStyle(palette.colorContentMuted) }
 }
 
-private struct MobileScene91: View {
+private struct MobileScene107: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -2824,7 +3473,7 @@ node4()
 node5() } }
 }
 
-private struct MobileScene92: View {
+private struct MobileScene108: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -2844,7 +3493,935 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene93: View {
+private struct MobileScene109: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node4() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Open the changelog") } }.buttonStyle(.borderless).disabled(false) }
+private func node3() -> some View { VStack(alignment: .leading) { Text("hover").font(.caption).foregroundStyle(.secondary)
+node4() } }
+private func node6() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Open the changelog").underline() } }.buttonStyle(.borderless).disabled(false) }
+private func node5() -> some View { VStack(alignment: .leading) { Text("always").font(.caption).foregroundStyle(.secondary)
+node6() } }
+private func node8() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Open the changelog") } }.buttonStyle(.borderless).disabled(false) }
+private func node7() -> some View { VStack(alignment: .leading) { Text("none").font(.caption).foregroundStyle(.secondary)
+node8() } }
+private func node2() -> some View { VStack(alignment: .leading) {
+node3()
+node5()
+node7() } }
+private func node1() -> some View { VStack(alignment: .leading) { Text("Underline").font(.title2)
+Text("`hover` is the default, because a paragraph with a rule under every link reads as struck through. `always` is for a link that has to be findable without a pointer — a list of references, a footer. `none` is for one whose surroundings already say it is a link: a breadcrumb, a row that is entirely a target.").foregroundStyle(.secondary)
+node2() } }
+private func node12() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Release notes") } }.buttonStyle(.borderless).disabled(false) }
+private func node11() -> some View { VStack(alignment: .leading) { Text("same window").font(.caption).foregroundStyle(.secondary)
+node12() } }
+private func node14() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Base UI")
+Image(systemName: "arrow.up.right").font(.caption2) } }.buttonStyle(.borderless).disabled(false) }
+private func node13() -> some View { VStack(alignment: .leading) { Text("external").font(.caption).foregroundStyle(.secondary)
+node14() } }
+private func node10() -> some View { VStack(alignment: .leading) {
+node11()
+node13() } }
+private func node9() -> some View { VStack(alignment: .leading) { Text("External").font(.title2)
+Text("Sets the target and the rel that keeps the opener out of the new page's reach, and draws the arrow that says so before the reader commits. The arrow is inline, so it wraps with the last word rather than stranding itself on a line of its own.").foregroundStyle(.secondary)
+node10() } }
+private func node18() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Continue") } }.buttonStyle(.borderless).disabled(false).tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node17() -> some View { VStack(alignment: .leading) { Text("primary").font(.caption).foregroundStyle(.secondary)
+node18() } }
+private func node20() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Continue") } }.buttonStyle(.borderless).disabled(false).tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node19() -> some View { VStack(alignment: .leading) { Text("neutral").font(.caption).foregroundStyle(.secondary)
+node20() } }
+private func node22() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Continue") } }.buttonStyle(.borderless).disabled(false).tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node21() -> some View { VStack(alignment: .leading) { Text("info").font(.caption).foregroundStyle(.secondary)
+node22() } }
+private func node24() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Continue") } }.buttonStyle(.borderless).disabled(false).tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node23() -> some View { VStack(alignment: .leading) { Text("success").font(.caption).foregroundStyle(.secondary)
+node24() } }
+private func node26() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Continue") } }.buttonStyle(.borderless).disabled(false).tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node25() -> some View { VStack(alignment: .leading) { Text("warning").font(.caption).foregroundStyle(.secondary)
+node26() } }
+private func node28() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Continue") } }.buttonStyle(.borderless).disabled(false).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node27() -> some View { VStack(alignment: .leading) { Text("danger").font(.caption).foregroundStyle(.secondary)
+node28() } }
+private func node16() -> some View { VStack(alignment: .leading) {
+node17()
+node19()
+node21()
+node23()
+node25()
+node27() } }
+private func node15() -> some View { VStack(alignment: .leading) { Text("Tints").font(.title2)
+Text("A link is accent text, so it reads the plain recipe's content grade off whichever ramp it is tinted with. Danger is the one worth reaching for — a link that deletes something.").foregroundStyle(.secondary)
+node16() } }
+private func node0() -> some View { VStack(alignment: .leading) { Text("Link").font(.title2)
+Text("Text that goes somewhere. It is the one interactive thing in this package that is genuinely inline, which is why it exists beside Button variant='plain' rather than inside it: a button keeps its box at every variant, and a box is what a link in a sentence must not have. It takes the shared state machine for its colour — the plain recipe, a grade darker on hover — and none of its geometry.").foregroundStyle(.secondary)
+node1()
+node9()
+node15() } }
+}
+
+private struct MobileScene110: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Open the changelog") } }.buttonStyle(.borderless).disabled(false) }
+private func node2() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Open the changelog").underline() } }.buttonStyle(.borderless).disabled(false) }
+private func node3() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Open the changelog") } }.buttonStyle(.borderless).disabled(false) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node3() } }
+}
+
+private struct MobileScene111: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node0() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Base UI")
+Image(systemName: "arrow.up.right").font(.caption2) } }.buttonStyle(.borderless).disabled(false) }
+}
+
+private struct MobileScene112: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Continue") } }.buttonStyle(.borderless).disabled(false).tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node2() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Continue") } }.buttonStyle(.borderless).disabled(false).tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node3() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Continue") } }.buttonStyle(.borderless).disabled(false).tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node4() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Continue") } }.buttonStyle(.borderless).disabled(false).tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node5() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Continue") } }.buttonStyle(.borderless).disabled(false).tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node6() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Continue") } }.buttonStyle(.borderless).disabled(false).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node3()
+node4()
+node5()
+node6() } }
+}
+
+private struct MobileScene113: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node0() -> some View { Button {  } label: { HStack(spacing: 2) { Text("Not available yet") } }.buttonStyle(.borderless).disabled(true) }
+}
+
+private struct MobileScene114: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { Gauge(value: 62, in: 0...100) { EmptyView() } currentValueLabel: { EmptyView() }.gaugeStyle(.linearCapacity) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene115: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { Gauge(value: 62, in: 0...100) { Text("Storage") } currentValueLabel: { Text("62%") }.gaugeStyle(.linearCapacity) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene116: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { Gauge(value: 62, in: 0...100) { EmptyView() } currentValueLabel: { EmptyView() }.gaugeStyle(.linearCapacity) }
+private func node2() -> some View { Gauge(value: 62, in: 0...100) { EmptyView() } currentValueLabel: { EmptyView() }.gaugeStyle(.linearCapacity) }
+private func node3() -> some View { Gauge(value: 62, in: 0...100) { EmptyView() } currentValueLabel: { EmptyView() }.gaugeStyle(.linearCapacity) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node3() } }
+}
+
+private struct MobileScene117: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { Gauge(value: 62, in: 0...100) { EmptyView() } currentValueLabel: { EmptyView() }.gaugeStyle(.linearCapacity).tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node2() -> some View { Gauge(value: 62, in: 0...100) { EmptyView() } currentValueLabel: { EmptyView() }.gaugeStyle(.linearCapacity).tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node3() -> some View { Gauge(value: 62, in: 0...100) { EmptyView() } currentValueLabel: { EmptyView() }.gaugeStyle(.linearCapacity).tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node4() -> some View { Gauge(value: 62, in: 0...100) { EmptyView() } currentValueLabel: { EmptyView() }.gaugeStyle(.linearCapacity).tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node5() -> some View { Gauge(value: 62, in: 0...100) { EmptyView() } currentValueLabel: { EmptyView() }.gaugeStyle(.linearCapacity).tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node6() -> some View { Gauge(value: 62, in: 0...100) { EmptyView() } currentValueLabel: { EmptyView() }.gaugeStyle(.linearCapacity).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node3()
+node4()
+node5()
+node6() } }
+}
+
+private struct MobileScene118: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { Gauge(value: 62, in: 0...100) { Text("Storage") } currentValueLabel: { Text("62%") }.gaugeStyle(.linearCapacity) }
+private func node2() -> some View { Gauge(value: 41, in: 0...100) { Text("Bandwidth") } currentValueLabel: { Text("41%") }.gaugeStyle(.linearCapacity).tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node3() -> some View { Gauge(value: 88, in: 0...100) { Text("Build minutes") } currentValueLabel: { Text("88%") }.gaugeStyle(.linearCapacity).tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node4() -> some View { Gauge(value: 100, in: 0...100) { Text("Seats") } currentValueLabel: { Text("100%") }.gaugeStyle(.linearCapacity).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node3()
+node4() } }
+}
+
+private struct MobileScene119: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "12"
+var body: some View { node0() }
+private func node1() -> some View { HStack {
+TextField("", text: $value0).keyboardType(.numberPad).textFieldStyle(.roundedBorder)
+Stepper("", value: Binding(get: { Double(value0) ?? 0 }, set: { value0 = mobileNumberText(min(max($0, -1000000000), 1000000000)) }), in: -1000000000...1000000000, step: 1).labelsHidden()
+}.disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene120: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "13"
+var body: some View { node0() }
+private func node1() -> some View { HStack {
+TextField("", text: $value0).keyboardType(.numberPad).textFieldStyle(.roundedBorder)
+Text("px").foregroundStyle(.secondary)
+Stepper("", value: Binding(get: { Double(value0) ?? 8 }, set: { value0 = mobileNumberText(min(max($0, 8), 24)) }), in: 8...24, step: 1).labelsHidden()
+}.disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene121: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "12"
+@State private var value1 = "12"
+@State private var value2 = "12"
+var body: some View { node0() }
+private func node1() -> some View { HStack {
+TextField("", text: $value0).keyboardType(.numberPad).textFieldStyle(.roundedBorder)
+Stepper("", value: Binding(get: { Double(value0) ?? 0 }, set: { value0 = mobileNumberText(min(max($0, -1000000000), 1000000000)) }), in: -1000000000...1000000000, step: 1).labelsHidden()
+}.disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node2() -> some View { HStack {
+TextField("", text: $value1).keyboardType(.numberPad).textFieldStyle(.roundedBorder)
+Stepper("", value: Binding(get: { Double(value1) ?? 0 }, set: { value1 = mobileNumberText(min(max($0, -1000000000), 1000000000)) }), in: -1000000000...1000000000, step: 1).labelsHidden()
+}.disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node3() -> some View { HStack {
+TextField("", text: $value2).keyboardType(.numberPad).textFieldStyle(.roundedBorder)
+Stepper("", value: Binding(get: { Double(value2) ?? 0 }, set: { value2 = mobileNumberText(min(max($0, -1000000000), 1000000000)) }), in: -1000000000...1000000000, step: 1).labelsHidden()
+}.disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node3() } }
+}
+
+private struct MobileScene122: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "12"
+@State private var value1 = "0"
+@State private var value2 = "12"
+var body: some View { node0() }
+private func node1() -> some View { HStack {
+TextField("", text: $value0).keyboardType(.numberPad).textFieldStyle(.roundedBorder)
+Stepper("", value: Binding(get: { Double(value0) ?? 0 }, set: { value0 = mobileNumberText(min(max($0, -1000000000), 1000000000)) }), in: -1000000000...1000000000, step: 1).labelsHidden()
+}.disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node2() -> some View { HStack {
+TextField("", text: $value1).keyboardType(.numberPad).textFieldStyle(.roundedBorder)
+Stepper("", value: Binding(get: { Double(value1) ?? 0 }, set: { value1 = mobileNumberText(min(max($0, -1000000000), 1000000000)) }), in: -1000000000...1000000000, step: 1).labelsHidden()
+}.disabled(false).accessibilityHint("error" == "error" ? "Invalid value" : "") }
+private func node3() -> some View { HStack {
+TextField("", text: $value2).keyboardType(.numberPad).textFieldStyle(.roundedBorder)
+Stepper("", value: Binding(get: { Double(value2) ?? 0 }, set: { value2 = mobileNumberText(min(max($0, -1000000000), 1000000000)) }), in: -1000000000...1000000000, step: 1).labelsHidden()
+}.disabled(true).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node3() } }
+}
+
+private struct MobileScene123: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "5173"
+var body: some View { node0() }
+private func node2() -> some View { HStack {
+TextField("", text: $value0).keyboardType(.numberPad).textFieldStyle(.roundedBorder)
+Stepper("", value: Binding(get: { Double(value0) ?? 1024 }, set: { value0 = mobileNumberText(min(max($0, 1024), 65535)) }), in: 1024...65535, step: 1).labelsHidden()
+}.disabled(false).accessibilityHint(((value0 == "") ? "error" : "default") == "error" ? "Invalid value" : "") }
+private func node1() -> some View { VStack(alignment: .leading) { Text("Dev server port").font(.headline)
+node2()
+Text(((value0 == "") ? "Required" : "Restart to apply")).font(.caption).foregroundStyle(((value0 == "") ? "error" : "default") == "error" ? palette.colorDanger[palette.nativeTintShade] : palette.colorContentMuted) } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene124: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "13"
+@State private var value1 = "2"
+var body: some View { node0() }
+private func node4() -> some View { HStack {
+TextField("", text: $value0).keyboardType(.numberPad).textFieldStyle(.roundedBorder)
+Text("px").foregroundStyle(.secondary)
+Stepper("", value: Binding(get: { Double(value0) ?? 8 }, set: { value0 = mobileNumberText(min(max($0, 8), 24)) }), in: 8...24, step: 1).labelsHidden()
+}.disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node3() -> some View { VStack(alignment: .leading) {
+node4() } }
+private func node2() -> some View { VStack(alignment: .leading) { Text("Font size")
+Text("Applies to every project").foregroundStyle(.secondary)
+node3() } }
+private func node7() -> some View { HStack {
+TextField("", text: $value1).keyboardType(.numberPad).textFieldStyle(.roundedBorder)
+Stepper("", value: Binding(get: { Double(value1) ?? 1 }, set: { value1 = mobileNumberText(min(max($0, 1), 8)) }), in: 1...8, step: 1).labelsHidden()
+}.disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node6() -> some View { VStack(alignment: .leading) {
+node7() } }
+private func node5() -> some View { VStack(alignment: .leading) { Text("Tab width")
+
+node6() } }
+private func node1() -> some View { Section("Editor") {
+node2()
+node5() } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene125: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node3() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("DOCX").font(.headline)
+Text("Keeps styles and comments.").font(.caption).foregroundStyle(.secondary) }
+Spacer(minLength: 8)
+Image(systemName: true ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits(true ? .isSelected : []) }
+private func node4() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("PDF").font(.headline)
+Text("Fixed layout, no editing.").font(.caption).foregroundStyle(.secondary) }
+Spacer(minLength: 8)
+Image(systemName: false ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits(false ? .isSelected : []) }
+private func node5() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("InDesign").font(.headline)
+Text("Needs a paid plan.").font(.caption).foregroundStyle(.secondary) }
+Spacer(minLength: 8)
+Image(systemName: false ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(true).accessibilityAddTraits(false ? .isSelected : []) }
+private func node2() -> some View { HStack {
+node3()
+node4()
+node5() } }
+private func node1() -> some View { VStack(alignment: .leading) { Text("Picking one").font(.title2)
+Text("Selection is the tinted recipe with the outlined recipe's border on top: the fill says which one is chosen, and the border makes it survive a glance across its neighbours. An option that cannot be picked stays in the row rather than being dropped, so the set keeps its shape and the reason can be written into the description.").foregroundStyle(.secondary)
+node2() } }
+private func node8() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("primary").font(.headline)
+ }
+Spacer(minLength: 8)
+Image(systemName: true ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits(true ? .isSelected : []).tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node9() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("neutral").font(.headline)
+ }
+Spacer(minLength: 8)
+Image(systemName: true ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits(true ? .isSelected : []).tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node10() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("info").font(.headline)
+ }
+Spacer(minLength: 8)
+Image(systemName: true ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits(true ? .isSelected : []).tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node11() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("success").font(.headline)
+ }
+Spacer(minLength: 8)
+Image(systemName: true ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits(true ? .isSelected : []).tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node12() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("warning").font(.headline)
+ }
+Spacer(minLength: 8)
+Image(systemName: true ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits(true ? .isSelected : []).tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node13() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("danger").font(.headline)
+ }
+Spacer(minLength: 8)
+Image(systemName: true ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits(true ? .isSelected : []).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node7() -> some View { HStack {
+node8()
+node9()
+node10()
+node11()
+node12()
+node13() } }
+private func node6() -> some View { VStack(alignment: .leading) { Text("Tints").font(.title2)
+Text("The selected treatment across every ramp. A set normally keeps one tint: the colour says “chosen”, and if it varied per card it would be saying something about the card instead.").foregroundStyle(.secondary)
+node7() } }
+private func node0() -> some View { VStack(alignment: .leading) { Text("OptionCard").font(.title2)
+Text("The shape a small set of mutually exclusive choices takes when each needs a line of explanation and a radio row would not carry it. Wrap a set in a radiogroup. The description is optional, and a set that does not need one is really a SegmentedControl.").foregroundStyle(.secondary)
+node1()
+node6() } }
+}
+
+private struct MobileScene126: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node0() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("DOCX").font(.headline)
+Text("Keeps styles and comments.").font(.caption).foregroundStyle(.secondary) }
+Spacer(minLength: 8)
+Image(systemName: true ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits(true ? .isSelected : []) }
+}
+
+private struct MobileScene127: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node0() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("PDF").font(.headline)
+Text("Fixed layout, no further editing.").font(.caption).foregroundStyle(.secondary) }
+Spacer(minLength: 8)
+Image(systemName: false ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits(false ? .isSelected : []) }
+}
+
+private struct MobileScene128: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "docx"
+var body: some View { node0() }
+private func node1() -> some View { Button { value0 = "docx" } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("DOCX").font(.headline)
+Text("Keeps styles and comments.").font(.caption).foregroundStyle(.secondary) }
+Spacer(minLength: 8)
+Image(systemName: (value0 == "docx") ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits((value0 == "docx") ? .isSelected : []) }
+private func node2() -> some View { Button { value0 = "pdf" } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("PDF").font(.headline)
+Text("Fixed layout, no further editing.").font(.caption).foregroundStyle(.secondary) }
+Spacer(minLength: 8)
+Image(systemName: (value0 == "pdf") ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits((value0 == "pdf") ? .isSelected : []) }
+private func node3() -> some View { Button { value0 = "md" } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("Markdown").font(.headline)
+Text("Plain text, images linked.").font(.caption).foregroundStyle(.secondary) }
+Spacer(minLength: 8)
+Image(systemName: (value0 == "md") ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits((value0 == "md") ? .isSelected : []) }
+private func node0() -> some View { HStack {
+node1()
+node2()
+node3() } }
+}
+
+private struct MobileScene129: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "balanced"
+var body: some View { node0() }
+private func node1() -> some View { Button { value0 = "fast" } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("Fast").font(.headline)
+ }
+Spacer(minLength: 8)
+Image(systemName: (value0 == "fast") ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits((value0 == "fast") ? .isSelected : []) }
+private func node2() -> some View { Button { value0 = "balanced" } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("Balanced").font(.headline)
+ }
+Spacer(minLength: 8)
+Image(systemName: (value0 == "balanced") ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits((value0 == "balanced") ? .isSelected : []) }
+private func node3() -> some View { Button { value0 = "careful" } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("Careful").font(.headline)
+ }
+Spacer(minLength: 8)
+Image(systemName: (value0 == "careful") ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits((value0 == "careful") ? .isSelected : []) }
+private func node0() -> some View { HStack {
+node1()
+node2()
+node3() } }
+}
+
+private struct MobileScene130: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("DOCX").font(.headline)
+Text("Keeps styles and comments.").font(.caption).foregroundStyle(.secondary) }
+Spacer(minLength: 8)
+Image(systemName: true ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits(true ? .isSelected : []) }
+private func node2() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("PDF").font(.headline)
+Text("Fixed layout, no editing.").font(.caption).foregroundStyle(.secondary) }
+Spacer(minLength: 8)
+Image(systemName: false ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits(false ? .isSelected : []) }
+private func node3() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("InDesign").font(.headline)
+Text("Needs a paid plan.").font(.caption).foregroundStyle(.secondary) }
+Spacer(minLength: 8)
+Image(systemName: false ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(true).accessibilityAddTraits(false ? .isSelected : []) }
+private func node0() -> some View { HStack {
+node1()
+node2()
+node3() } }
+}
+
+private struct MobileScene131: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("primary").font(.headline)
+ }
+Spacer(minLength: 8)
+Image(systemName: true ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits(true ? .isSelected : []).tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node2() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("neutral").font(.headline)
+ }
+Spacer(minLength: 8)
+Image(systemName: true ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits(true ? .isSelected : []).tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node3() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("info").font(.headline)
+ }
+Spacer(minLength: 8)
+Image(systemName: true ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits(true ? .isSelected : []).tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node4() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("success").font(.headline)
+ }
+Spacer(minLength: 8)
+Image(systemName: true ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits(true ? .isSelected : []).tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node5() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("warning").font(.headline)
+ }
+Spacer(minLength: 8)
+Image(systemName: true ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits(true ? .isSelected : []).tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node6() -> some View { Button {  } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { Text("danger").font(.headline)
+ }
+Spacer(minLength: 8)
+Image(systemName: true ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits(true ? .isSelected : []).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node0() -> some View { HStack {
+node1()
+node2()
+node3()
+node4()
+node5()
+node6() } }
+}
+
+private struct MobileScene132: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "pro"
+var body: some View { node0() }
+private func node3() -> some View { HStack {
+Text("Free") } }
+private func node2() -> some View { Button { value0 = "free" } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { node3().font(.headline)
+Text("20,000 characters a month, one provider.").font(.caption).foregroundStyle(.secondary) }
+Spacer(minLength: 8)
+Image(systemName: (value0 == "free") ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits((value0 == "free") ? .isSelected : []) }
+private func node6() -> some View { HStack {
+Text("Current") }.font(.caption).foregroundStyle(palette.colorPrimary[palette.nativeTintShade]) }
+private func node5() -> some View { HStack {
+Text("Pro")
+node6() } }
+private func node4() -> some View { Button { value0 = "pro" } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { node5().font(.headline)
+Text("Unlimited characters, every provider, shared glossaries.").font(.caption).foregroundStyle(.secondary) }
+Spacer(minLength: 8)
+Image(systemName: (value0 == "pro") ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits((value0 == "pro") ? .isSelected : []) }
+private func node8() -> some View { HStack {
+Text("Team") } }
+private func node7() -> some View { Button { value0 = "team" } label: { HStack(alignment: .top) { VStack(alignment: .leading, spacing: 4) { node8().font(.headline)
+Text("Everything in Pro, plus review workflows and seats.").font(.caption).foregroundStyle(.secondary) }
+Spacer(minLength: 8)
+Image(systemName: (value0 == "team") ? "checkmark.circle.fill" : "circle") }.multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.bordered).disabled(false).accessibilityAddTraits((value0 == "team") ? .isSelected : []) }
+private func node1() -> some View { LazyVGrid(columns: [GridItem(.adaptive(minimum: 160))], alignment: .leading) {
+node2()
+node4()
+node7() } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene133: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "204"
+@State private var value1 = "204"
+@State private var value2 = "204"
+@State private var value3 = "204815"
+@State private var value4 = "204815"
+@State private var value5 = "20"
+@State private var value6 = "204815"
+var body: some View { node0() }
+private func node4() -> some View { TextField("••••••", text: Binding(get: { value0 }, set: { value0 = String($0.filter(\.isNumber).prefix(6)) })).keyboardType(.numberPad).textContentType(.oneTimeCode).font(.system(.title3, design: .monospaced)).textFieldStyle(.roundedBorder).disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node3() -> some View { VStack(alignment: .leading) { Text("small").font(.caption).foregroundStyle(.secondary)
+node4() } }
+private func node6() -> some View { TextField("••••••", text: Binding(get: { value1 }, set: { value1 = String($0.filter(\.isNumber).prefix(6)) })).keyboardType(.numberPad).textContentType(.oneTimeCode).font(.system(.title3, design: .monospaced)).textFieldStyle(.roundedBorder).disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node5() -> some View { VStack(alignment: .leading) { Text("medium").font(.caption).foregroundStyle(.secondary)
+node6() } }
+private func node8() -> some View { TextField("••••••", text: Binding(get: { value2 }, set: { value2 = String($0.filter(\.isNumber).prefix(6)) })).keyboardType(.numberPad).textContentType(.oneTimeCode).font(.system(.title3, design: .monospaced)).textFieldStyle(.roundedBorder).disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node7() -> some View { VStack(alignment: .leading) { Text("large").font(.caption).foregroundStyle(.secondary)
+node8() } }
+private func node2() -> some View { VStack(alignment: .leading) {
+node3()
+node5()
+node7() } }
+private func node1() -> some View { VStack(alignment: .leading) { Text("Sizes").font(.title2)
+Text("Each cell is the text controls' box at one character wide, so a code sits on the same rhythm as the fields around it — a code entered in a box of its own design would be the only control on the page that was. The mono face and tabular figures keep the digits on one width.").foregroundStyle(.secondary)
+node2() } }
+private func node12() -> some View { TextField("••••••", text: Binding(get: { value3 }, set: { value3 = String($0.filter(\.isNumber).prefix(6)) })).keyboardType(.numberPad).textContentType(.oneTimeCode).font(.system(.title3, design: .monospaced)).textFieldStyle(.roundedBorder).disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node11() -> some View { VStack(alignment: .leading) { Text("ungrouped").font(.caption).foregroundStyle(.secondary)
+node12() } }
+private func node14() -> some View { TextField("••••••", text: Binding(get: { value4 }, set: { value4 = String($0.filter(\.isNumber).prefix(6)) })).keyboardType(.numberPad).textContentType(.oneTimeCode).font(.system(.title3, design: .monospaced)).textFieldStyle(.roundedBorder).disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node13() -> some View { VStack(alignment: .leading) { Text("groupAfter 3").font(.caption).foregroundStyle(.secondary)
+node14() } }
+private func node10() -> some View { VStack(alignment: .leading) {
+node11()
+node13() } }
+private func node9() -> some View { VStack(alignment: .leading) { Text("Grouping").font(.title2)
+Text("`groupAfter` breaks the run where a printed code breaks — three and three is how a six-digit code is read aloud. It is a step of air rather than a rule, because a rule would read as two fields.").foregroundStyle(.secondary)
+node10() } }
+private func node18() -> some View { SecureField("••••", text: Binding(get: { value5 }, set: { value5 = String($0.filter(\.isNumber).prefix(4)) })).keyboardType(.numberPad).textContentType(.oneTimeCode).font(.system(.title3, design: .monospaced)).textFieldStyle(.roundedBorder).disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node17() -> some View { VStack(alignment: .leading) { Text("masked").font(.caption).foregroundStyle(.secondary)
+node18() } }
+private func node20() -> some View { TextField("••••••", text: Binding(get: { value6 }, set: { value6 = String($0.filter(\.isNumber).prefix(6)) })).keyboardType(.numberPad).textContentType(.oneTimeCode).font(.system(.title3, design: .monospaced)).textFieldStyle(.roundedBorder).disabled(true).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node19() -> some View { VStack(alignment: .leading) { Text("disabled").font(.caption).foregroundStyle(.secondary)
+node20() } }
+private func node16() -> some View { VStack(alignment: .leading) {
+node17()
+node19() } }
+private func node15() -> some View { VStack(alignment: .leading) { Text("Masked and disabled").font(.title2)
+Text("`mask` is for a code that is a secret rather than a one-time token — a PIN. A filled cell lifts to the paper and keeps it, so the run says how far through the code the reader is without the caret having to be the only thing that does.").foregroundStyle(.secondary)
+node16() } }
+private func node0() -> some View { VStack(alignment: .leading) { Text("OtpField").font(.title2)
+Text("The one-time code a reader is copying out of a message. It is a run of cells rather than a single field because that is what makes it fast: Base UI moves the caret between them, takes a paste of the whole code into all of them at once, hands the browser the autofill hint that pulls the code out of an SMS, and can submit the form the moment the last cell fills.").foregroundStyle(.secondary)
+node1()
+node9()
+node15() } }
+}
+
+private struct MobileScene134: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = ""
+var body: some View { node0() }
+private func node0() -> some View { TextField("••••••", text: Binding(get: { value0 }, set: { value0 = String($0.filter(\.isNumber).prefix(6)) })).keyboardType(.numberPad).textContentType(.oneTimeCode).font(.system(.title3, design: .monospaced)).textFieldStyle(.roundedBorder).disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+}
+
+private struct MobileScene135: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "204815"
+var body: some View { node0() }
+private func node0() -> some View { TextField("••••••", text: Binding(get: { value0 }, set: { value0 = String($0.filter(\.isNumber).prefix(6)) })).keyboardType(.numberPad).textContentType(.oneTimeCode).font(.system(.title3, design: .monospaced)).textFieldStyle(.roundedBorder).disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+}
+
+private struct MobileScene136: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "204815"
+var body: some View { node0() }
+private func node0() -> some View { TextField("••••••", text: Binding(get: { value0 }, set: { value0 = String($0.filter(\.isNumber).prefix(6)) })).keyboardType(.numberPad).textContentType(.oneTimeCode).font(.system(.title3, design: .monospaced)).textFieldStyle(.roundedBorder).disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+}
+
+private struct MobileScene137: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "204"
+@State private var value1 = "204"
+@State private var value2 = "204"
+var body: some View { node0() }
+private func node1() -> some View { TextField("••••••", text: Binding(get: { value0 }, set: { value0 = String($0.filter(\.isNumber).prefix(6)) })).keyboardType(.numberPad).textContentType(.oneTimeCode).font(.system(.title3, design: .monospaced)).textFieldStyle(.roundedBorder).disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node2() -> some View { TextField("••••••", text: Binding(get: { value1 }, set: { value1 = String($0.filter(\.isNumber).prefix(6)) })).keyboardType(.numberPad).textContentType(.oneTimeCode).font(.system(.title3, design: .monospaced)).textFieldStyle(.roundedBorder).disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node3() -> some View { TextField("••••••", text: Binding(get: { value2 }, set: { value2 = String($0.filter(\.isNumber).prefix(6)) })).keyboardType(.numberPad).textContentType(.oneTimeCode).font(.system(.title3, design: .monospaced)).textFieldStyle(.roundedBorder).disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node3() } }
+}
+
+private struct MobileScene138: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "2048"
+var body: some View { node0() }
+private func node0() -> some View { SecureField("••••", text: Binding(get: { value0 }, set: { value0 = String($0.filter(\.isNumber).prefix(4)) })).keyboardType(.numberPad).textContentType(.oneTimeCode).font(.system(.title3, design: .monospaced)).textFieldStyle(.roundedBorder).disabled(false).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+}
+
+private struct MobileScene139: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "204815"
+var body: some View { node0() }
+private func node0() -> some View { TextField("••••••", text: Binding(get: { value0 }, set: { value0 = String($0.filter(\.isNumber).prefix(6)) })).keyboardType(.numberPad).textContentType(.oneTimeCode).font(.system(.title3, design: .monospaced)).textFieldStyle(.roundedBorder).disabled(true).accessibilityHint("default" == "error" ? "Invalid value" : "") }
+}
+
+private struct MobileScene140: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = ""
+var body: some View { node0() }
+private func node1() -> some View { GroupBox { VStack(alignment: .leading) {
+
+
+Text("We sent a six-digit code to ada@example.com.")
+ } }.tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node3() -> some View { TextField("••••••", text: Binding(get: { value0 }, set: { value0 = String($0.filter(\.isNumber).prefix(6)) })).keyboardType(.numberPad).textContentType(.oneTimeCode).font(.system(.title3, design: .monospaced)).textFieldStyle(.roundedBorder).disabled(false).accessibilityHint((((Double(Double(value0.unicodeScalars.count)) == Double(6)) && (!(value0 == "204815"))) ? "error" : "default") == "error" ? "Invalid value" : "") }
+private func node2() -> some View { VStack(alignment: .leading) { Text("Verification code").font(.headline)
+node3()
+Text((((Double(Double(value0.unicodeScalars.count)) == Double(6)) && (!(value0 == "204815"))) ? "That code did not match" : "It expires in 10 minutes")).font(.caption).foregroundStyle((((Double(Double(value0.unicodeScalars.count)) == Double(6)) && (!(value0 == "204815"))) ? "error" : "default") == "error" ? palette.colorDanger[palette.nativeTintShade] : palette.colorContentMuted) } }
+private func node4() -> some View { Button {  } label: { HStack {
+Text("Verify") } }.disabled((!(Double(Double(value0.unicodeScalars.count)) >= Double(6)))).buttonStyle(.borderedProminent) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node4() } }
+}
+
+private struct MobileScene141: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node2() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if "all" == "all" { Button {  } label: { HStack(spacing: 4) { Text("All history") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("All history") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "all" == "starred" { Button {  } label: { HStack(spacing: 4) { Text("Starred")
+Text("64").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Starred")
+Text("64").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "all" == "edited" { Button {  } label: { HStack(spacing: 4) { Text("Edited by me")
+Text("18").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Edited by me")
+Text("18").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "all" == "shared" { Button {  } label: { HStack(spacing: 4) { Text("Shared") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Shared") } }.buttonStyle(.bordered) } }.disabled(true)
+} }.font(.caption).accessibilityLabel("History filter") }
+private func node1() -> some View { VStack(alignment: .leading) { Text("Filtering").font(.title2)
+Text("A count rides inside the pill, dimmed against the label it follows rather than set beside it as a badge — a badge would be a second thing to read, and the number here is an attribute of the filter rather than a state of its own. A filter with nothing behind it stays in the row rather than disappearing, so the set does not reflow every time a permission changes.").foregroundStyle(.secondary)
+node2() } }
+private func node6() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if "open" == "all" { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "open" { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "done" { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.bordered) } }.disabled(false)
+} }.font(.caption).accessibilityLabel("primary").tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node5() -> some View { VStack(alignment: .leading) { Text("primary").font(.caption).foregroundStyle(.secondary)
+node6() } }
+private func node8() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if "open" == "all" { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "open" { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "done" { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.bordered) } }.disabled(false)
+} }.font(.caption).accessibilityLabel("neutral").tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node7() -> some View { VStack(alignment: .leading) { Text("neutral").font(.caption).foregroundStyle(.secondary)
+node8() } }
+private func node10() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if "open" == "all" { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "open" { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "done" { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.bordered) } }.disabled(false)
+} }.font(.caption).accessibilityLabel("info").tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node9() -> some View { VStack(alignment: .leading) { Text("info").font(.caption).foregroundStyle(.secondary)
+node10() } }
+private func node12() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if "open" == "all" { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "open" { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "done" { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.bordered) } }.disabled(false)
+} }.font(.caption).accessibilityLabel("success").tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node11() -> some View { VStack(alignment: .leading) { Text("success").font(.caption).foregroundStyle(.secondary)
+node12() } }
+private func node14() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if "open" == "all" { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "open" { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "done" { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.bordered) } }.disabled(false)
+} }.font(.caption).accessibilityLabel("warning").tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node13() -> some View { VStack(alignment: .leading) { Text("warning").font(.caption).foregroundStyle(.secondary)
+node14() } }
+private func node16() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if "open" == "all" { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "open" { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "done" { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.bordered) } }.disabled(false)
+} }.font(.caption).accessibilityLabel("danger").tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node15() -> some View { VStack(alignment: .leading) { Text("danger").font(.caption).foregroundStyle(.secondary)
+node16() } }
+private func node4() -> some View { VStack(alignment: .leading) {
+node5()
+node7()
+node9()
+node11()
+node13()
+node15() } }
+private func node3() -> some View { VStack(alignment: .leading) { Text("Tints").font(.title2)
+Text("The selected pill is the filled recipe, so the ramp is what picks it out. A filter row keeps one tint: the colour means “this one is on”, and varying it per pill would make it mean something about the pill.").foregroundStyle(.secondary)
+node4() } }
+private func node19() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if "zh" == "zh" { Button {  } label: { HStack(spacing: 4) { Text("Chinese")
+Text("168").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Chinese")
+Text("168").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "zh" == "ja" { Button {  } label: { HStack(spacing: 4) { Text("Japanese")
+Text("96").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Japanese")
+Text("96").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "zh" == "de" { Button {  } label: { HStack(spacing: 4) { Text("German")
+Text("64").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("German")
+Text("64").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "zh" == "fr" { Button {  } label: { HStack(spacing: 4) { Text("French")
+Text("48").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("French")
+Text("48").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "zh" == "es" { Button {  } label: { HStack(spacing: 4) { Text("Spanish")
+Text("32").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Spanish")
+Text("32").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "zh" == "pt" { Button {  } label: { HStack(spacing: 4) { Text("Portuguese")
+Text("24").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Portuguese")
+Text("24").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "zh" == "it" { Button {  } label: { HStack(spacing: 4) { Text("Italian")
+Text("12").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Italian")
+Text("12").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "zh" == "ko" { Button {  } label: { HStack(spacing: 4) { Text("Korean")
+Text("8").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Korean")
+Text("8").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "zh" == "nl" { Button {  } label: { HStack(spacing: 4) { Text("Dutch")
+Text("4").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Dutch")
+Text("4").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+} }.font(.caption).accessibilityLabel("Target language") }
+private func node18() -> some View { VStack(alignment: .leading) {
+node19() } }
+private func node17() -> some View { VStack(alignment: .leading) { Text("Wrapping").font(.title2)
+Text("Nine of them in a narrow column. A track that had to hold this many segments would run off the pane.").foregroundStyle(.secondary)
+node18() } }
+private func node0() -> some View { VStack(alignment: .leading) { Text("PillTabs").font(.title2)
+Text("Free-standing filter pills. Unlike a segmented control there is no track holding them together, so each pill needs its own fill to be a target at all — which also means they can wrap, and a filter row usually has to. That is the reason to reach for them over a segmented control: a filter row grows with the data.").foregroundStyle(.secondary)
+node1()
+node3()
+node17() } }
+}
+
+private struct MobileScene142: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "all"
+var body: some View { node0() }
+private func node0() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if value0 == "all" { Button { value0 = "all" } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.borderedProminent) } else { Button { value0 = "all" } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if value0 == "open" { Button { value0 = "open" } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.borderedProminent) } else { Button { value0 = "open" } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if value0 == "done" { Button { value0 = "done" } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.borderedProminent) } else { Button { value0 = "done" } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.bordered) } }.disabled(false)
+} }.font(.caption).accessibilityLabel("History filter") }
+}
+
+private struct MobileScene143: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "needs-review"
+var body: some View { node0() }
+private func node0() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if value0 == "all" { Button { value0 = "all" } label: { HStack(spacing: 4) { Text("All")
+Text("392").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button { value0 = "all" } label: { HStack(spacing: 4) { Text("All")
+Text("392").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if value0 == "needs-review" { Button { value0 = "needs-review" } label: { HStack(spacing: 4) { Text("Needs review")
+Text("24").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button { value0 = "needs-review" } label: { HStack(spacing: 4) { Text("Needs review")
+Text("24").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if value0 == "done" { Button { value0 = "done" } label: { HStack(spacing: 4) { Text("Done")
+Text("168").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button { value0 = "done" } label: { HStack(spacing: 4) { Text("Done")
+Text("168").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if value0 == "empty" { Button { value0 = "empty" } label: { HStack(spacing: 4) { Text("Untranslated")
+Text("0").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button { value0 = "empty" } label: { HStack(spacing: 4) { Text("Untranslated")
+Text("0").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+} }.font(.caption).accessibilityLabel("Segment filter") }
+}
+
+private struct MobileScene144: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node0() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if "all" == "all" { Button {  } label: { HStack(spacing: 4) { Text("All history") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("All history") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "all" == "starred" { Button {  } label: { HStack(spacing: 4) { Text("Starred")
+Text("64").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Starred")
+Text("64").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "all" == "edited" { Button {  } label: { HStack(spacing: 4) { Text("Edited by me")
+Text("18").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Edited by me")
+Text("18").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "all" == "shared" { Button {  } label: { HStack(spacing: 4) { Text("Shared") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Shared") } }.buttonStyle(.bordered) } }.disabled(true)
+} }.font(.caption).accessibilityLabel("History filter") }
+}
+
+private struct MobileScene145: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if "open" == "all" { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "open" { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "done" { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.bordered) } }.disabled(false)
+} }.font(.caption).accessibilityLabel("primary").tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node2() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if "open" == "all" { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "open" { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "done" { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.bordered) } }.disabled(false)
+} }.font(.caption).accessibilityLabel("neutral").tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node3() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if "open" == "all" { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "open" { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "done" { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.bordered) } }.disabled(false)
+} }.font(.caption).accessibilityLabel("info").tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node4() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if "open" == "all" { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "open" { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "done" { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.bordered) } }.disabled(false)
+} }.font(.caption).accessibilityLabel("success").tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node5() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if "open" == "all" { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "open" { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "done" { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.bordered) } }.disabled(false)
+} }.font(.caption).accessibilityLabel("warning").tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node6() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if "open" == "all" { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("All") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "open" { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Open") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if "open" == "done" { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.borderedProminent) } else { Button {  } label: { HStack(spacing: 4) { Text("Done") } }.buttonStyle(.bordered) } }.disabled(false)
+} }.font(.caption).accessibilityLabel("danger").tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node3()
+node4()
+node5()
+node6() } }
+}
+
+private struct MobileScene146: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "zh"
+var body: some View { node0() }
+private func node1() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if value0 == "zh" { Button { value0 = "zh" } label: { HStack(spacing: 4) { Text("Chinese")
+Text("168").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button { value0 = "zh" } label: { HStack(spacing: 4) { Text("Chinese")
+Text("168").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if value0 == "ja" { Button { value0 = "ja" } label: { HStack(spacing: 4) { Text("Japanese")
+Text("96").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button { value0 = "ja" } label: { HStack(spacing: 4) { Text("Japanese")
+Text("96").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if value0 == "de" { Button { value0 = "de" } label: { HStack(spacing: 4) { Text("German")
+Text("64").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button { value0 = "de" } label: { HStack(spacing: 4) { Text("German")
+Text("64").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if value0 == "fr" { Button { value0 = "fr" } label: { HStack(spacing: 4) { Text("French")
+Text("48").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button { value0 = "fr" } label: { HStack(spacing: 4) { Text("French")
+Text("48").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if value0 == "es" { Button { value0 = "es" } label: { HStack(spacing: 4) { Text("Spanish")
+Text("32").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button { value0 = "es" } label: { HStack(spacing: 4) { Text("Spanish")
+Text("32").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if value0 == "pt" { Button { value0 = "pt" } label: { HStack(spacing: 4) { Text("Portuguese")
+Text("24").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button { value0 = "pt" } label: { HStack(spacing: 4) { Text("Portuguese")
+Text("24").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if value0 == "it" { Button { value0 = "it" } label: { HStack(spacing: 4) { Text("Italian")
+Text("12").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button { value0 = "it" } label: { HStack(spacing: 4) { Text("Italian")
+Text("12").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if value0 == "ko" { Button { value0 = "ko" } label: { HStack(spacing: 4) { Text("Korean")
+Text("8").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button { value0 = "ko" } label: { HStack(spacing: 4) { Text("Korean")
+Text("8").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if value0 == "nl" { Button { value0 = "nl" } label: { HStack(spacing: 4) { Text("Dutch")
+Text("4").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button { value0 = "nl" } label: { HStack(spacing: 4) { Text("Dutch")
+Text("4").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+} }.font(.caption).accessibilityLabel("Target language") }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene147: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "all"
+@State private var value1 = ""
+var body: some View { node0() }
+private func node2() -> some View { ScrollView(.horizontal, showsIndicators: false) { HStack {
+Group { if value0 == "all" { Button { value0 = "all" } label: { HStack(spacing: 4) { Text("All history") } }.buttonStyle(.borderedProminent) } else { Button { value0 = "all" } label: { HStack(spacing: 4) { Text("All history") } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if value0 == "starred" { Button { value0 = "starred" } label: { HStack(spacing: 4) { Text("Starred")
+Text("64").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button { value0 = "starred" } label: { HStack(spacing: 4) { Text("Starred")
+Text("64").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if value0 == "edited" { Button { value0 = "edited" } label: { HStack(spacing: 4) { Text("Edited by me")
+Text("18").foregroundStyle(.secondary) } }.buttonStyle(.borderedProminent) } else { Button { value0 = "edited" } label: { HStack(spacing: 4) { Text("Edited by me")
+Text("18").foregroundStyle(.secondary) } }.buttonStyle(.bordered) } }.disabled(false)
+Group { if value0 == "shared" { Button { value0 = "shared" } label: { HStack(spacing: 4) { Text("Shared") } }.buttonStyle(.borderedProminent) } else { Button { value0 = "shared" } label: { HStack(spacing: 4) { Text("Shared") } }.buttonStyle(.bordered) } }.disabled(true)
+} }.font(.caption).accessibilityLabel("History filter") }
+private func node4() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search", text: $value1).textFieldStyle(.plain)
+if value1.isEmpty {
+
+} else {
+Button { value1 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value1.isEmpty {  } else { value1 = "" } }) }
+private func node3() -> some View { VStack(alignment: .leading) {
+node4() } }
+private func node1() -> some View { HStack { 
+node2()
+Spacer()
+node3()
+ } }
+private func node7() -> some View { Text(value0) }
+private func node8() -> some View { Text(((!(value1 == "")) ? (" matching “" + value1 + "”") : "")) }
+private func node6() -> some View { HStack(spacing: 0) {
+Text("Showing “")
+node7()
+Text("”")
+node8() }.foregroundStyle(palette.colorContentMuted) }
+private func node5() -> some View { GroupBox { VStack(alignment: .leading) {
+node6() } } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node5() } }
+}
+
+private struct MobileScene148: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -2853,7 +4430,7 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene94: View {
+private struct MobileScene149: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -2870,7 +4447,7 @@ node4()
 node5() } }
 }
 
-private struct MobileScene95: View {
+private struct MobileScene150: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -2881,7 +4458,7 @@ node1()
 node2() } }
 }
 
-private struct MobileScene96: View {
+private struct MobileScene151: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -2892,7 +4469,7 @@ node1()
 node2() } }
 }
 
-private struct MobileScene97: View {
+private struct MobileScene152: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -2905,7 +4482,7 @@ node2()
 node3() } }
 }
 
-private struct MobileScene98: View {
+private struct MobileScene153: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -2924,7 +4501,7 @@ node5()
 node6() } }
 }
 
-private struct MobileScene99: View {
+private struct MobileScene154: View {
 @Environment(\.mobilePalette) private var palette
 @State private var value0: Double = 8
 var body: some View { node0().task {
@@ -2939,7 +4516,7 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene100: View {
+private struct MobileScene155: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -2953,7 +4530,7 @@ Spacer()
 node4() } }
 private func node5() -> some View { ProgressView(value: Double(43), total: 100) }
 private func node6() -> some View { HStack(spacing: 0) {
-Text("168 of 392 segments") }.foregroundStyle(.secondary) }
+Text("168 of 392 segments") }.foregroundStyle(palette.colorContentMuted) }
 private func node1() -> some View { GroupBox { VStack(alignment: .leading) {
 node2()
 node5()
@@ -2962,7 +4539,7 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene101: View {
+private struct MobileScene156: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -2990,7 +4567,689 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene102: View {
+private struct MobileScene157: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "balanced"
+var body: some View { node0() }
+private func node0() -> some View { Picker("Translation quality", selection: $value0) {
+Text("Fast — one pass, no review").tag("fast").modifier(MobileSegmentAvailability(disabled: false))
+Text("Balanced — a second pass on low scores").tag("balanced").modifier(MobileSegmentAvailability(disabled: false))
+Text("Careful — every segment reviewed").tag("careful").modifier(MobileSegmentAvailability(disabled: false))
+Text("Custom (needs a paid plan)").tag("custom").modifier(MobileSegmentAvailability(disabled: true))
+}.pickerStyle(.inline) }
+}
+
+private struct MobileScene158: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "project"
+var body: some View { node0() }
+private func node0() -> some View { Picker("Scope", selection: $value0) {
+Text("This project only").tag("project").modifier(MobileSegmentAvailability(disabled: false))
+Text("The whole organisation").tag("org").modifier(MobileSegmentAvailability(disabled: true))
+}.pickerStyle(.inline) }
+}
+
+private struct MobileScene159: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "on"
+@State private var value1 = "on"
+@State private var value2 = "on"
+var body: some View { node0() }
+private func node1() -> some View { Picker("Selected and not", selection: $value0) {
+Text("Selected").tag("on").modifier(MobileSegmentAvailability(disabled: false))
+Text("Not selected").tag("off").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.inline) }
+private func node2() -> some View { Picker("Selected and not", selection: $value1) {
+Text("Selected").tag("on").modifier(MobileSegmentAvailability(disabled: false))
+Text("Not selected").tag("off").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.inline) }
+private func node3() -> some View { Picker("Selected and not", selection: $value2) {
+Text("Selected").tag("on").modifier(MobileSegmentAvailability(disabled: false))
+Text("Not selected").tag("off").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.inline) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node3() } }
+}
+
+private struct MobileScene160: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "on"
+@State private var value1 = "on"
+@State private var value2 = "on"
+@State private var value3 = "on"
+@State private var value4 = "on"
+@State private var value5 = "on"
+var body: some View { node0() }
+private func node1() -> some View { Picker("Selected and not", selection: $value0) {
+Text("Selected").tag("on").modifier(MobileSegmentAvailability(disabled: false))
+Text("Not selected").tag("off").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.inline).tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node2() -> some View { Picker("Selected and not", selection: $value1) {
+Text("Selected").tag("on").modifier(MobileSegmentAvailability(disabled: false))
+Text("Not selected").tag("off").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.inline).tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node3() -> some View { Picker("Selected and not", selection: $value2) {
+Text("Selected").tag("on").modifier(MobileSegmentAvailability(disabled: false))
+Text("Not selected").tag("off").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.inline).tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node4() -> some View { Picker("Selected and not", selection: $value3) {
+Text("Selected").tag("on").modifier(MobileSegmentAvailability(disabled: false))
+Text("Not selected").tag("off").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.inline).tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node5() -> some View { Picker("Selected and not", selection: $value4) {
+Text("Selected").tag("on").modifier(MobileSegmentAvailability(disabled: false))
+Text("Not selected").tag("off").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.inline).tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node6() -> some View { Picker("Selected and not", selection: $value5) {
+Text("Selected").tag("on").modifier(MobileSegmentAvailability(disabled: false))
+Text("Not selected").tag("off").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.inline).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node3()
+node4()
+node5()
+node6() } }
+}
+
+private struct MobileScene161: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "fast"
+@State private var value1 = true
+@State private var value2 = false
+var body: some View { node0() }
+private func node2() -> some View { HStack {
+Text("Quality") }.font(.headline) }
+private func node3() -> some View { Picker("Quality", selection: $value0) {
+Text("Fast").tag("fast").modifier(MobileSegmentAvailability(disabled: false))
+Text("Careful").tag("careful").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.inline) }
+private func node1() -> some View { VStack(alignment: .leading) {
+node2()
+node3() } }
+private func node5() -> some View { HStack {
+Text("Include") }.font(.headline) }
+private func node7() -> some View { Toggle(isOn: $value1) { Text("Reviewer notes") }.disabled(false) }
+private func node8() -> some View { Toggle(isOn: $value2) { Text("Embedded images") }.disabled(false) }
+private func node6() -> some View { VStack(alignment: .leading) {
+node7()
+node8() } }
+private func node4() -> some View { VStack(alignment: .leading) {
+node5()
+node6() } }
+private func node0() -> some View { HStack {
+node1()
+node4() } }
+}
+
+private struct MobileScene162: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "project"
+var body: some View { node0() }
+private func node2() -> some View { HStack {
+Text("Apply this glossary to") }.font(.headline) }
+private func node3() -> some View { Picker("Scope", selection: $value0) {
+Text("This project only").tag("project").modifier(MobileSegmentAvailability(disabled: false))
+Text("Every project on this account").tag("account").modifier(MobileSegmentAvailability(disabled: false))
+Text("The whole organisation").tag("org").modifier(MobileSegmentAvailability(disabled: true))
+}.pickerStyle(.inline) }
+private func node1() -> some View { GroupBox { VStack(alignment: .leading) {
+node2()
+node3() } } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene163: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = ""
+@State private var value1 = "placeholder"
+@State private var value2 = ""
+@State private var value3 = ""
+@State private var value4 = ""
+@State private var value5 = ""
+@State private var value6 = ""
+@State private var value7 = ""
+@State private var value8 = ""
+@State private var value9 = ""
+@State private var value10 = ""
+var body: some View { node0() }
+private func node6() -> some View { HStack {
+Text("⌘F") }.font(.system(.caption, design: .monospaced)) }
+private func node5() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value0).textFieldStyle(.plain)
+if value0.isEmpty {
+node6()
+} else {
+Button { value0 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value0.isEmpty {  } else { value0 = "" } }) }
+private func node4() -> some View { VStack(alignment: .leading) {
+node5() } }
+private func node3() -> some View { VStack(alignment: .leading) { Text("empty").font(.caption).foregroundStyle(.secondary)
+node4() } }
+private func node10() -> some View { HStack {
+Text("⌘F") }.font(.system(.caption, design: .monospaced)) }
+private func node9() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value1).textFieldStyle(.plain)
+if value1.isEmpty {
+node10()
+} else {
+Button { value1 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value1.isEmpty {  } else { value1 = "" } }) }
+private func node8() -> some View { VStack(alignment: .leading) {
+node9() } }
+private func node7() -> some View { VStack(alignment: .leading) { Text("with a query").font(.caption).foregroundStyle(.secondary)
+node8() } }
+private func node2() -> some View { VStack(alignment: .leading) {
+node3()
+node7() } }
+private func node1() -> some View { VStack(alignment: .leading) { Text("The trailing slot").font(.title2)
+Text("A hint sits there while the field is empty and gives way to the clear button once there is something to clear, so the two never compete for the same corner. Type something and press Escape: it clears first, and only dismisses once the field is already empty, so a stray press never closes a search mid-way.").foregroundStyle(.secondary)
+node2() } }
+private func node15() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value2).textFieldStyle(.plain)
+if value2.isEmpty {
+
+} else {
+Button { value2 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value2.isEmpty {  } else { value2 = "" } }) }
+private func node14() -> some View { VStack(alignment: .leading) {
+node15() } }
+private func node13() -> some View { VStack(alignment: .leading) { Text("small").font(.caption).foregroundStyle(.secondary)
+node14() } }
+private func node18() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value3).textFieldStyle(.plain)
+if value3.isEmpty {
+
+} else {
+Button { value3 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value3.isEmpty {  } else { value3 = "" } }) }
+private func node17() -> some View { VStack(alignment: .leading) {
+node18() } }
+private func node16() -> some View { VStack(alignment: .leading) { Text("medium").font(.caption).foregroundStyle(.secondary)
+node17() } }
+private func node21() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value4).textFieldStyle(.plain)
+if value4.isEmpty {
+
+} else {
+Button { value4 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value4.isEmpty {  } else { value4 = "" } }) }
+private func node20() -> some View { VStack(alignment: .leading) {
+node21() } }
+private func node19() -> some View { VStack(alignment: .leading) { Text("large").font(.caption).foregroundStyle(.secondary)
+node20() } }
+private func node12() -> some View { VStack(alignment: .leading) {
+node13()
+node16()
+node19() } }
+private func node11() -> some View { VStack(alignment: .leading) { Text("Sizes").font(.title2)
+Text("The glyph and the trailing slot hold their distance from the edges at every size, so the text starts and ends on the same inset a plain TextField's does.").foregroundStyle(.secondary)
+node12() } }
+private func node26() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value5).textFieldStyle(.plain)
+if value5.isEmpty {
+
+} else {
+Button { value5 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value5.isEmpty {  } else { value5 = "" } }).tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node25() -> some View { VStack(alignment: .leading) {
+node26() } }
+private func node24() -> some View { VStack(alignment: .leading) { Text("primary").font(.caption).foregroundStyle(.secondary)
+node25() } }
+private func node29() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value6).textFieldStyle(.plain)
+if value6.isEmpty {
+
+} else {
+Button { value6 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value6.isEmpty {  } else { value6 = "" } }).tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node28() -> some View { VStack(alignment: .leading) {
+node29() } }
+private func node27() -> some View { VStack(alignment: .leading) { Text("neutral").font(.caption).foregroundStyle(.secondary)
+node28() } }
+private func node32() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value7).textFieldStyle(.plain)
+if value7.isEmpty {
+
+} else {
+Button { value7 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value7.isEmpty {  } else { value7 = "" } }).tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node31() -> some View { VStack(alignment: .leading) {
+node32() } }
+private func node30() -> some View { VStack(alignment: .leading) { Text("info").font(.caption).foregroundStyle(.secondary)
+node31() } }
+private func node35() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value8).textFieldStyle(.plain)
+if value8.isEmpty {
+
+} else {
+Button { value8 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value8.isEmpty {  } else { value8 = "" } }).tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node34() -> some View { VStack(alignment: .leading) {
+node35() } }
+private func node33() -> some View { VStack(alignment: .leading) { Text("success").font(.caption).foregroundStyle(.secondary)
+node34() } }
+private func node38() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value9).textFieldStyle(.plain)
+if value9.isEmpty {
+
+} else {
+Button { value9 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value9.isEmpty {  } else { value9 = "" } }).tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node37() -> some View { VStack(alignment: .leading) {
+node38() } }
+private func node36() -> some View { VStack(alignment: .leading) { Text("warning").font(.caption).foregroundStyle(.secondary)
+node37() } }
+private func node41() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value10).textFieldStyle(.plain)
+if value10.isEmpty {
+
+} else {
+Button { value10 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value10.isEmpty {  } else { value10 = "" } }).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node40() -> some View { VStack(alignment: .leading) {
+node41() } }
+private func node39() -> some View { VStack(alignment: .leading) { Text("danger").font(.caption).foregroundStyle(.secondary)
+node40() } }
+private func node23() -> some View { VStack(alignment: .leading) {
+node24()
+node27()
+node30()
+node33()
+node36()
+node39() } }
+private func node22() -> some View { VStack(alignment: .leading) { Text("Tints").font(.title2)
+Text("The tint reaches the focus ring and the focused border. Focus each of these — nothing else about the field changes, because a search box is chrome and should not be carrying a colour of its own at rest.").foregroundStyle(.secondary)
+node23() } }
+private func node0() -> some View { VStack(alignment: .leading) { Text("SearchField").font(.title2)
+Text("Inline search for a list or a table. The box belongs to the wrapper rather than the input, because the glyph and the trailing slot sit inside it — which is also why the focus ring comes from `:focus-within`. It holds no results of its own, so the same component narrows a table, a rail, or a menu without knowing which.").foregroundStyle(.secondary)
+node1()
+node11()
+node22() } }
+}
+
+private struct MobileScene164: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = ""
+var body: some View { node0() }
+private func node1() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value0).textFieldStyle(.plain)
+if value0.isEmpty {
+
+} else {
+Button { value0 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value0.isEmpty {  } else { value0 = "" } }) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene165: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "placeholder"
+var body: some View { node0() }
+private func node1() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value0).textFieldStyle(.plain)
+if value0.isEmpty {
+
+} else {
+Button { value0 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value0.isEmpty {  } else { value0 = "" } }) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene166: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = ""
+var body: some View { node0() }
+private func node2() -> some View { HStack {
+Text("⌘F") }.font(.system(.caption, design: .monospaced)) }
+private func node1() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value0).textFieldStyle(.plain)
+if value0.isEmpty {
+node2()
+} else {
+Button { value0 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value0.isEmpty {  } else { value0 = "" } }) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene167: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = ""
+@State private var value1 = ""
+@State private var value2 = ""
+var body: some View { node0() }
+private func node2() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value0).textFieldStyle(.plain)
+if value0.isEmpty {
+
+} else {
+Button { value0 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value0.isEmpty {  } else { value0 = "" } }) }
+private func node1() -> some View { VStack(alignment: .leading) {
+node2() } }
+private func node4() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value1).textFieldStyle(.plain)
+if value1.isEmpty {
+
+} else {
+Button { value1 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value1.isEmpty {  } else { value1 = "" } }) }
+private func node3() -> some View { VStack(alignment: .leading) {
+node4() } }
+private func node6() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value2).textFieldStyle(.plain)
+if value2.isEmpty {
+
+} else {
+Button { value2 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value2.isEmpty {  } else { value2 = "" } }) }
+private func node5() -> some View { VStack(alignment: .leading) {
+node6() } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node3()
+node5() } }
+}
+
+private struct MobileScene168: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = ""
+@State private var value1 = ""
+@State private var value2 = ""
+@State private var value3 = ""
+@State private var value4 = ""
+@State private var value5 = ""
+var body: some View { node0() }
+private func node2() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value0).textFieldStyle(.plain)
+if value0.isEmpty {
+
+} else {
+Button { value0 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value0.isEmpty {  } else { value0 = "" } }).tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node1() -> some View { VStack(alignment: .leading) {
+node2() } }
+private func node4() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value1).textFieldStyle(.plain)
+if value1.isEmpty {
+
+} else {
+Button { value1 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value1.isEmpty {  } else { value1 = "" } }).tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node3() -> some View { VStack(alignment: .leading) {
+node4() } }
+private func node6() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value2).textFieldStyle(.plain)
+if value2.isEmpty {
+
+} else {
+Button { value2 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value2.isEmpty {  } else { value2 = "" } }).tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node5() -> some View { VStack(alignment: .leading) {
+node6() } }
+private func node8() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value3).textFieldStyle(.plain)
+if value3.isEmpty {
+
+} else {
+Button { value3 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value3.isEmpty {  } else { value3 = "" } }).tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node7() -> some View { VStack(alignment: .leading) {
+node8() } }
+private func node10() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value4).textFieldStyle(.plain)
+if value4.isEmpty {
+
+} else {
+Button { value4 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value4.isEmpty {  } else { value4 = "" } }).tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node9() -> some View { VStack(alignment: .leading) {
+node10() } }
+private func node12() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value5).textFieldStyle(.plain)
+if value5.isEmpty {
+
+} else {
+Button { value5 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value5.isEmpty {  } else { value5 = "" } }).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node11() -> some View { VStack(alignment: .leading) {
+node12() } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node3()
+node5()
+node7()
+node9()
+node11() } }
+}
+
+private struct MobileScene169: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "placeholder"
+@State private var value1 = false
+var body: some View { node0() }
+private func node3() -> some View { HStack(spacing: 0) {
+Text("Dismissed.") }.foregroundStyle(palette.colorContentMuted) }
+private func node4() -> some View { Button { value1 = false } label: { HStack {
+Text("Search again") } }.disabled(false).buttonStyle(.bordered) }
+private func node2() -> some View { HStack { 
+node3()
+node4()
+ } }
+private func node1() -> some View { Group {
+if value1 {
+node2()
+}
+} }
+private func node7() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value0).textFieldStyle(.plain)
+if value0.isEmpty {
+
+} else {
+Button { value0 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value0.isEmpty { value1 = true } else { value0 = "" } }) }
+private func node6() -> some View { VStack(alignment: .leading) {
+node7() } }
+private func node5() -> some View { Group {
+if (!value1) {
+node6()
+}
+} }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node5() } }
+}
+
+private struct MobileScene170: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = ""
+var body: some View { node0() }
+private func node2() -> some View { HStack {
+Text("⌘F") }.font(.system(.caption, design: .monospaced)) }
+private func node1() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value0).textFieldStyle(.plain)
+if value0.isEmpty {
+node2()
+} else {
+Button { value0 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value0.isEmpty {  } else { value0 = "" } }) }
+private func node5() -> some View { HStack {
+Text("Term") }.frame(maxWidth: .infinity, alignment: .leading).fontWeight(.semibold) }
+private func node6() -> some View { HStack {
+Text("Translation") }.frame(maxWidth: .infinity, alignment: .leading).fontWeight(.semibold) }
+private func node7() -> some View { HStack {
+Text("Hits") }.frame(maxWidth: .infinity, alignment: .trailing).fontWeight(.semibold) }
+private func node10() -> some View { HStack {
+Text("segment") }.frame(maxWidth: .infinity, alignment: .leading) }
+private func node11() -> some View { HStack {
+Text("段") }.frame(maxWidth: .infinity, alignment: .leading) }
+private func node12() -> some View { HStack {
+Text("412") }.frame(maxWidth: .infinity, alignment: .trailing) }
+private func node8() -> some View { Group {
+if (value0.lowercased().isEmpty || "segment".contains(value0.lowercased())) {
+GridRow {
+node10()
+node11()
+node12() }
+}
+} }
+private func node15() -> some View { HStack {
+Text("glossary") }.frame(maxWidth: .infinity, alignment: .leading) }
+private func node16() -> some View { HStack {
+Text("术语库") }.frame(maxWidth: .infinity, alignment: .leading) }
+private func node17() -> some View { HStack {
+Text("168") }.frame(maxWidth: .infinity, alignment: .trailing) }
+private func node13() -> some View { Group {
+if (value0.lowercased().isEmpty || "glossary".contains(value0.lowercased())) {
+GridRow {
+node15()
+node16()
+node17() }
+}
+} }
+private func node20() -> some View { HStack {
+Text("provider") }.frame(maxWidth: .infinity, alignment: .leading) }
+private func node21() -> some View { HStack {
+Text("服务") }.frame(maxWidth: .infinity, alignment: .leading) }
+private func node22() -> some View { HStack {
+Text("96") }.frame(maxWidth: .infinity, alignment: .trailing) }
+private func node18() -> some View { Group {
+if (value0.lowercased().isEmpty || "provider".contains(value0.lowercased())) {
+GridRow {
+node20()
+node21()
+node22() }
+}
+} }
+private func node25() -> some View { HStack {
+Text("placeholder") }.frame(maxWidth: .infinity, alignment: .leading) }
+private func node26() -> some View { HStack {
+Text("占位符") }.frame(maxWidth: .infinity, alignment: .leading) }
+private func node27() -> some View { HStack {
+Text("24") }.frame(maxWidth: .infinity, alignment: .trailing) }
+private func node23() -> some View { Group {
+if (value0.lowercased().isEmpty || "placeholder".contains(value0.lowercased())) {
+GridRow {
+node25()
+node26()
+node27() }
+}
+} }
+private func node30() -> some View { Button { value0 = "" } label: { HStack {
+Text("Clear search") } }.disabled(false).buttonStyle(.bordered) }
+private func node29() -> some View { VStack { Text(("No terms match “" + value0 + "”")).font(.headline)
+node30() } }
+private func node28() -> some View { Group {
+if (!((((value0.lowercased().isEmpty || "segment".contains(value0.lowercased())) || (value0.lowercased().isEmpty || "glossary".contains(value0.lowercased()))) || (value0.lowercased().isEmpty || "provider".contains(value0.lowercased()))) || (value0.lowercased().isEmpty || "placeholder".contains(value0.lowercased())))) {
+node29()
+}
+} }
+private func node3() -> some View { Grid(alignment: .leading) {
+node5()
+node6()
+node7()
+node8()
+node13()
+node18()
+node23()
+node28() } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node3() } }
+}
+
+private struct MobileScene171: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = ""
+var body: some View { node0() }
+private func node4() -> some View { HStack {
+Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+TextField("Search terms", text: $value0).textFieldStyle(.plain)
+if value0.isEmpty {
+
+} else {
+Button { value0 = "" } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).foregroundStyle(.secondary).accessibilityLabel("Clear search")
+}
+}.padding(8).background(.quaternary, in: RoundedRectangle(cornerRadius: 10)).modifier(MobileEscape { if value0.isEmpty {  } else { value0 = "" } }) }
+private func node3() -> some View { VStack(alignment: .leading) {
+node4() } }
+private func node6() -> some View { Button {  } label: { HStack {
+Text("Import") } }.disabled(false).buttonStyle(.bordered) }
+private func node7() -> some View { Button {  } label: { HStack {
+Text("New term") } }.disabled(false).buttonStyle(.borderedProminent) }
+private func node5() -> some View { HStack { 
+node6()
+node7()
+ } }
+private func node2() -> some View { HStack { 
+node3()
+Spacer()
+node5()
+ } }
+private func node1() -> some View { GroupBox { VStack(alignment: .leading) {
+node2() } } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene172: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3053,7 +5312,7 @@ node1()
 node12() } }
 }
 
-private struct MobileScene103: View {
+private struct MobileScene173: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3061,7 +5320,7 @@ private func node0() -> some View { HStack {
 Text("Quality signals") }.font(.headline) }
 }
 
-private struct MobileScene104: View {
+private struct MobileScene174: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3074,7 +5333,7 @@ node1()
 node2() } }
 }
 
-private struct MobileScene105: View {
+private struct MobileScene175: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3099,7 +5358,7 @@ node5()
 node6() } }
 }
 
-private struct MobileScene106: View {
+private struct MobileScene176: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3126,14 +5385,508 @@ node1()
 node5() } }
 }
 
-private struct MobileScene107: View {
+private struct MobileScene177: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "system"
+var body: some View { node0() }
+private func node0() -> some View { Picker("Appearance", selection: $value0) {
+Text("Light").tag("light").modifier(MobileSegmentAvailability(disabled: false))
+Text("Dark").tag("dark").modifier(MobileSegmentAvailability(disabled: false))
+Text("System").tag("system").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented) }
+}
+
+private struct MobileScene178: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "system"
+var body: some View { node0() }
+private func node0() -> some View { Picker("Appearance", selection: $value0) {
+Text("Light").tag("light").modifier(MobileSegmentAvailability(disabled: false))
+Text("Dark").tag("dark").modifier(MobileSegmentAvailability(disabled: false))
+Text("System").tag("system").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented) }
+}
+
+private struct MobileScene179: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { Picker("Appearance (small)", selection: .constant("system")) {
+Text("Light").tag("light").modifier(MobileSegmentAvailability(disabled: false))
+Text("Dark").tag("dark").modifier(MobileSegmentAvailability(disabled: false))
+Text("System").tag("system").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented) }
+private func node2() -> some View { Picker("Appearance (medium)", selection: .constant("system")) {
+Text("Light").tag("light").modifier(MobileSegmentAvailability(disabled: false))
+Text("Dark").tag("dark").modifier(MobileSegmentAvailability(disabled: false))
+Text("System").tag("system").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented) }
+private func node3() -> some View { Picker("Appearance (large)", selection: .constant("system")) {
+Text("Light").tag("light").modifier(MobileSegmentAvailability(disabled: false))
+Text("Dark").tag("dark").modifier(MobileSegmentAvailability(disabled: false))
+Text("System").tag("system").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node3() } }
+}
+
+private struct MobileScene180: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "system"
+@State private var value1 = "system"
+@State private var value2 = "system"
+@State private var value3 = "system"
+@State private var value4 = "system"
+@State private var value5 = "system"
+var body: some View { node0() }
+private func node1() -> some View { Picker("Appearance", selection: $value0) {
+Text("Light").tag("light").modifier(MobileSegmentAvailability(disabled: false))
+Text("Dark").tag("dark").modifier(MobileSegmentAvailability(disabled: false))
+Text("System").tag("system").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented).tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node2() -> some View { Picker("Appearance", selection: $value1) {
+Text("Light").tag("light").modifier(MobileSegmentAvailability(disabled: false))
+Text("Dark").tag("dark").modifier(MobileSegmentAvailability(disabled: false))
+Text("System").tag("system").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented).tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node3() -> some View { Picker("Appearance", selection: $value2) {
+Text("Light").tag("light").modifier(MobileSegmentAvailability(disabled: false))
+Text("Dark").tag("dark").modifier(MobileSegmentAvailability(disabled: false))
+Text("System").tag("system").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented).tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node4() -> some View { Picker("Appearance", selection: $value3) {
+Text("Light").tag("light").modifier(MobileSegmentAvailability(disabled: false))
+Text("Dark").tag("dark").modifier(MobileSegmentAvailability(disabled: false))
+Text("System").tag("system").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented).tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node5() -> some View { Picker("Appearance", selection: $value4) {
+Text("Light").tag("light").modifier(MobileSegmentAvailability(disabled: false))
+Text("Dark").tag("dark").modifier(MobileSegmentAvailability(disabled: false))
+Text("System").tag("system").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented).tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node6() -> some View { Picker("Appearance", selection: $value5) {
+Text("Light").tag("light").modifier(MobileSegmentAvailability(disabled: false))
+Text("Dark").tag("dark").modifier(MobileSegmentAvailability(disabled: false))
+Text("System").tag("system").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node3()
+node4()
+node5()
+node6() } }
+}
+
+private struct MobileScene181: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "system"
+@State private var value1 = "system"
+@State private var value2 = "system"
+@State private var value3 = "system"
+@State private var value4 = "system"
+@State private var value5 = "system"
+var body: some View { node0() }
+private func node1() -> some View { Picker("Appearance", selection: $value0) {
+Text("Light").tag("light").modifier(MobileSegmentAvailability(disabled: false))
+Text("Dark").tag("dark").modifier(MobileSegmentAvailability(disabled: false))
+Text("System").tag("system").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented).tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node2() -> some View { Picker("Appearance", selection: $value1) {
+Text("Light").tag("light").modifier(MobileSegmentAvailability(disabled: false))
+Text("Dark").tag("dark").modifier(MobileSegmentAvailability(disabled: false))
+Text("System").tag("system").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented).tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node3() -> some View { Picker("Appearance", selection: $value2) {
+Text("Light").tag("light").modifier(MobileSegmentAvailability(disabled: false))
+Text("Dark").tag("dark").modifier(MobileSegmentAvailability(disabled: false))
+Text("System").tag("system").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented).tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node4() -> some View { Picker("Appearance", selection: $value3) {
+Text("Light").tag("light").modifier(MobileSegmentAvailability(disabled: false))
+Text("Dark").tag("dark").modifier(MobileSegmentAvailability(disabled: false))
+Text("System").tag("system").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented).tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node5() -> some View { Picker("Appearance", selection: $value4) {
+Text("Light").tag("light").modifier(MobileSegmentAvailability(disabled: false))
+Text("Dark").tag("dark").modifier(MobileSegmentAvailability(disabled: false))
+Text("System").tag("system").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented).tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node6() -> some View { Picker("Appearance", selection: $value5) {
+Text("Light").tag("light").modifier(MobileSegmentAvailability(disabled: false))
+Text("Dark").tag("dark").modifier(MobileSegmentAvailability(disabled: false))
+Text("System").tag("system").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node3()
+node4()
+node5()
+node6() } }
+}
+
+private struct MobileScene182: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "system"
+var body: some View { node0() }
+private func node1() -> some View { Picker("Appearance", selection: $value0) {
+Text("Light").tag("light").modifier(MobileSegmentAvailability(disabled: false))
+Text("Dark").tag("dark").modifier(MobileSegmentAvailability(disabled: false))
+Text("System").tag("system").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene183: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node0() -> some View { Picker("Quality", selection: .constant("balanced")) {
+Text("Fast").tag("fast").modifier(MobileSegmentAvailability(disabled: false))
+Text("Balanced").tag("balanced").modifier(MobileSegmentAvailability(disabled: false))
+Text("Careful").tag("careful").modifier(MobileSegmentAvailability(disabled: true))
+}.pickerStyle(.segmented) }
+}
+
+private struct MobileScene184: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "source"
+var body: some View { node0() }
+private func node0() -> some View { Picker("View", selection: $value0) {
+Text("Source").tag("source").modifier(MobileSegmentAvailability(disabled: false))
+Text("Target").tag("target").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented) }
+}
+
+private struct MobileScene185: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "balanced"
+@State private var value1 = "default"
+var body: some View { node0() }
+private func node2() -> some View { Picker("Quality", selection: $value0) {
+Text("Fast").tag("fast").modifier(MobileSegmentAvailability(disabled: false))
+Text("Balanced").tag("balanced").modifier(MobileSegmentAvailability(disabled: false))
+Text("Careful").tag("careful").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented) }
+private func node1() -> some View { VStack(alignment: .leading) { Text("Quality").font(.headline)
+node2()
+Text("Applies to new jobs only.").font(.caption).foregroundStyle("default" == "error" ? palette.colorDanger[palette.nativeTintShade] : palette.colorContentMuted) } }
+private func node4() -> some View { Picker("Formality", selection: $value1) {
+Text("Less").tag("less").modifier(MobileSegmentAvailability(disabled: false))
+Text("Default").tag("default").modifier(MobileSegmentAvailability(disabled: false))
+Text("More").tag("more").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented) }
+private func node3() -> some View { VStack(alignment: .leading) { Text("Formality").font(.headline)
+node4()
+Text("").font(.caption).foregroundStyle("default" == "error" ? palette.colorDanger[palette.nativeTintShade] : palette.colorContentMuted) } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node3() } }
+}
+
+private struct MobileScene186: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node4() -> some View { Capsule().fill(.quaternary).frame(width: 80, height: 16) }
+private func node3() -> some View { VStack(alignment: .leading) { Text("text").font(.caption).foregroundStyle(.secondary)
+node4() } }
+private func node6() -> some View { Circle().fill(.quaternary).frame(width: 40, height: 40) }
+private func node5() -> some View { VStack(alignment: .leading) { Text("circle").font(.caption).foregroundStyle(.secondary)
+node6() } }
+private func node8() -> some View { RoundedRectangle(cornerRadius: 6).fill(.quaternary).frame(width: 80, height: 48) }
+private func node7() -> some View { VStack(alignment: .leading) { Text("rect").font(.caption).foregroundStyle(.secondary)
+node8() } }
+private func node2() -> some View { VStack(alignment: .leading) {
+node3()
+node5()
+node7() } }
+private func node1() -> some View { VStack(alignment: .leading) { Text("Shapes").font(.title2)
+Text("`text` is a bar on the line box of the type it stands in for, so it needs no height. `circle` is an avatar or a glyph and squares itself from its width alone. `rect` is everything with a box of its own — a thumbnail, a chart, a card.").foregroundStyle(.secondary)
+node2() } }
+private func node11() -> some View { VStack(alignment: .leading, spacing: 6) {
+Capsule().fill(.quaternary).frame(height: 16).frame(maxWidth: .infinity)
+Capsule().fill(.quaternary).frame(height: 16).frame(maxWidth: .infinity)
+MobileFraction(0.6) { Capsule().fill(.quaternary).frame(height: 16).frame(maxWidth: .infinity) }
+} }
+private func node10() -> some View { VStack(alignment: .leading) {
+node11() } }
+private func node9() -> some View { VStack(alignment: .leading) { Text("Lines").font(.title2)
+Text("A paragraph's worth of bars, with the last one short. The ragged edge is most of what makes a block of bars legible as text at all — a full-width final line reads as a table.").foregroundStyle(.secondary)
+node10() } }
+private func node16() -> some View { Circle().fill(.quaternary).frame(width: 40, height: 40) }
+private func node18() -> some View { MobileFraction(0.7) { Capsule().fill(.quaternary).frame(width: nil, height: 16).frame(maxWidth: .infinity) } }
+private func node19() -> some View { MobileFraction(0.45) { Capsule().fill(.quaternary).frame(width: nil, height: 16).frame(maxWidth: .infinity) } }
+private func node17() -> some View { VStack(alignment: .leading) {
+node18()
+node19() } }
+private func node15() -> some View { HStack {
+node16()
+node17() } }
+private func node20() -> some View { VStack(alignment: .leading, spacing: 6) {
+Capsule().fill(.quaternary).frame(height: 16).frame(maxWidth: .infinity)
+MobileFraction(0.6) { Capsule().fill(.quaternary).frame(height: 16).frame(maxWidth: .infinity) }
+} }
+private func node14() -> some View { VStack(alignment: .leading) {
+node15()
+node20() } }
+private func node13() -> some View { GroupBox { VStack(alignment: .leading) {
+node14() } } }
+private func node12() -> some View { VStack(alignment: .leading) { Text("Materials").font(.title2)
+Text("The fill is surface-sunken — the same dead step a disabled control flattens to, which is exactly what a skeleton is. The sweep over it is surface-subtle, the ink wash the whole system already hovers with, so the highlight moves by the same amount on paper, on a card and on a dark canvas without a per-theme value. Unlike the spinner it takes no reduced-motion exception: a still spinner reads as a hung app, where a still skeleton still says everything it has to say.").foregroundStyle(.secondary)
+node13() } }
+private func node0() -> some View { VStack(alignment: .leading) { Text("Skeleton").font(.title2)
+Text("The shape of something that has not arrived. A Spinner says the app is busy; a skeleton says what is coming and where it will be — which is why it belongs on the first load of a view whose layout is already known, and a spinner belongs on an action whose result is not. Drawing one for content that then lands somewhere else is worse than drawing nothing.").foregroundStyle(.secondary)
+node1()
+node9()
+node12() } }
+}
+
+private struct MobileScene187: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { Circle().fill(.quaternary).frame(width: 40, height: 40) }
+private func node2() -> some View { RoundedRectangle(cornerRadius: 6).fill(.quaternary).frame(width: 80, height: 48) }
+private func node0() -> some View { HStack {
+node1()
+node2() } }
+}
+
+private struct MobileScene188: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { VStack(alignment: .leading, spacing: 6) {
+Capsule().fill(.quaternary).frame(height: 16).frame(maxWidth: .infinity)
+Capsule().fill(.quaternary).frame(height: 16).frame(maxWidth: .infinity)
+MobileFraction(0.6) { Capsule().fill(.quaternary).frame(height: 16).frame(maxWidth: .infinity) }
+} }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene189: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { VStack(alignment: .leading, spacing: 6) {
+Capsule().fill(.quaternary).frame(height: 16).frame(maxWidth: .infinity)
+Capsule().fill(.quaternary).frame(height: 16).frame(maxWidth: .infinity)
+Capsule().fill(.quaternary).frame(height: 16).frame(maxWidth: .infinity)
+Capsule().fill(.quaternary).frame(height: 16).frame(maxWidth: .infinity)
+MobileFraction(0.6) { Capsule().fill(.quaternary).frame(height: 16).frame(maxWidth: .infinity) }
+} }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene190: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node2() -> some View { Circle().fill(.quaternary).frame(width: 40, height: 40) }
+private func node4() -> some View { MobileFraction(0.7) { Capsule().fill(.quaternary).frame(width: nil, height: 16).frame(maxWidth: .infinity) } }
+private func node5() -> some View { MobileFraction(0.45) { Capsule().fill(.quaternary).frame(width: nil, height: 16).frame(maxWidth: .infinity) } }
+private func node3() -> some View { VStack(alignment: .leading) {
+node4()
+node5() } }
+private func node1() -> some View { HStack {
+node2()
+node3() } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene191: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node4() -> some View { Circle().fill(.quaternary).frame(width: 40, height: 40) }
+private func node6() -> some View { MobileFraction(0.7) { Capsule().fill(.quaternary).frame(width: nil, height: 16).frame(maxWidth: .infinity) } }
+private func node7() -> some View { MobileFraction(0.45) { Capsule().fill(.quaternary).frame(width: nil, height: 16).frame(maxWidth: .infinity) } }
+private func node5() -> some View { VStack(alignment: .leading) {
+node6()
+node7() } }
+private func node3() -> some View { HStack {
+node4()
+node5() } }
+private func node8() -> some View { VStack(alignment: .leading, spacing: 6) {
+Capsule().fill(.quaternary).frame(height: 16).frame(maxWidth: .infinity)
+MobileFraction(0.6) { Capsule().fill(.quaternary).frame(height: 16).frame(maxWidth: .infinity) }
+} }
+private func node2() -> some View { VStack(alignment: .leading) {
+node3()
+node8() } }
+private func node1() -> some View { GroupBox { VStack(alignment: .leading) {
+node2() } } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene192: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0: Double = 40
+var body: some View { node0() }
+private func node1() -> some View { HStack {
+Slider(value: $value0, in: 0...100, step: 1)
+}.disabled(false) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene193: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0: Double = 40
+var body: some View { node0() }
+private func node1() -> some View { HStack {
+Slider(value: $value0, in: 0...100, step: 1)
+Text(mobileNumberText(value0)).monospacedDigit()
+}.disabled(false) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene194: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0: Double = 20
+@State private var value1: Double = 70
+var body: some View { node0() }
+private func node1() -> some View { HStack {
+VStack {
+Slider(value: Binding(get: { value0 }, set: { value0 = min($0, value1) }), in: 0...100, step: 1)
+Slider(value: Binding(get: { value1 }, set: { value1 = max($0, value0) }), in: 0...100, step: 1)
+}
+Text(mobileNumberText(value0) + " – " + mobileNumberText(value1)).monospacedDigit()
+}.disabled(false) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene195: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0: Double = 40
+@State private var value1: Double = 40
+@State private var value2: Double = 40
+var body: some View { node0() }
+private func node1() -> some View { HStack {
+Slider(value: $value0, in: 0...100, step: 1)
+}.disabled(false) }
+private func node2() -> some View { HStack {
+Slider(value: $value1, in: 0...100, step: 1)
+}.disabled(false) }
+private func node3() -> some View { HStack {
+Slider(value: $value2, in: 0...100, step: 1)
+}.disabled(false) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node3() } }
+}
+
+private struct MobileScene196: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0: Double = 60
+@State private var value1: Double = 60
+@State private var value2: Double = 60
+@State private var value3: Double = 60
+@State private var value4: Double = 60
+@State private var value5: Double = 60
+var body: some View { node0() }
+private func node1() -> some View { HStack {
+Slider(value: $value0, in: 0...100, step: 1)
+}.disabled(false).tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node2() -> some View { HStack {
+Slider(value: $value1, in: 0...100, step: 1)
+}.disabled(false).tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node3() -> some View { HStack {
+Slider(value: $value2, in: 0...100, step: 1)
+}.disabled(false).tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node4() -> some View { HStack {
+Slider(value: $value3, in: 0...100, step: 1)
+}.disabled(false).tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node5() -> some View { HStack {
+Slider(value: $value4, in: 0...100, step: 1)
+}.disabled(false).tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node6() -> some View { HStack {
+Slider(value: $value5, in: 0...100, step: 1)
+}.disabled(false).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node3()
+node4()
+node5()
+node6() } }
+}
+
+private struct MobileScene197: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0: Double = 40
+var body: some View { node0() }
+private func node1() -> some View { HStack {
+Slider(value: $value0, in: 0...100, step: 1)
+Text(mobileNumberText(value0)).monospacedDigit()
+}.disabled(true) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene198: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0: Double = 13
+var body: some View { node0() }
+private func node2() -> some View { HStack {
+Slider(value: $value0, in: 8...24, step: 1)
+Text(mobileNumberText(value0) + "px").monospacedDigit()
+}.disabled(false) }
+private func node1() -> some View { VStack(alignment: .leading) { Text("Editor font size").font(.headline)
+node2()
+Text((mobileNumberText(Double(value0)) + "px")).font(.caption).foregroundStyle("default" == "error" ? palette.colorDanger[palette.nativeTintShade] : palette.colorContentMuted) } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene199: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0: Double = 13
+@State private var value1: Double = 240
+var body: some View { node0() }
+private func node4() -> some View { HStack {
+Slider(value: $value0, in: 8...24, step: 1)
+}.disabled(false) }
+private func node3() -> some View { VStack(alignment: .leading) {
+node4() } }
+private func node2() -> some View { VStack(alignment: .leading) { Text("Editor font size")
+Text("Applies to every open project").foregroundStyle(.secondary)
+node3() } }
+private func node7() -> some View { HStack {
+Slider(value: $value1, in: 180...360, step: 1)
+}.disabled(false) }
+private func node6() -> some View { VStack(alignment: .leading) {
+node7() } }
+private func node5() -> some View { VStack(alignment: .leading) { Text("Sidebar width")
+
+node6() } }
+private func node1() -> some View { Section("Appearance") {
+node2()
+node5() } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1() } }
+}
+
+private struct MobileScene200: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
 private func node0() -> some View { ProgressView() }
 }
 
-private struct MobileScene108: View {
+private struct MobileScene201: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3146,7 +5899,7 @@ node2()
 node3() } }
 }
 
-private struct MobileScene109: View {
+private struct MobileScene202: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3165,7 +5918,7 @@ node5()
 node6() } }
 }
 
-private struct MobileScene110: View {
+private struct MobileScene203: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3181,7 +5934,7 @@ node1()
 node3() } }
 }
 
-private struct MobileScene111: View {
+private struct MobileScene204: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3198,7 +5951,7 @@ node1()
 node3() } }
 }
 
-private struct MobileScene112: View {
+private struct MobileScene205: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3212,7 +5965,7 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene113: View {
+private struct MobileScene206: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3222,7 +5975,7 @@ node1()
 Text("Testing the connection — 1.4s elapsed") }.foregroundStyle(palette.colorContentMuted) }
 }
 
-private struct MobileScene114: View {
+private struct MobileScene207: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3415,7 +6168,7 @@ node9()
 node15() } }
 }
 
-private struct MobileScene115: View {
+private struct MobileScene208: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3449,7 +6202,7 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene116: View {
+private struct MobileScene209: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3473,7 +6226,7 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene117: View {
+private struct MobileScene210: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3507,7 +6260,7 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene118: View {
+private struct MobileScene211: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3531,7 +6284,7 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene119: View {
+private struct MobileScene212: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3555,7 +6308,7 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene120: View {
+private struct MobileScene213: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3664,7 +6417,7 @@ node17()
 node21() } }
 }
 
-private struct MobileScene121: View {
+private struct MobileScene214: View {
 @Environment(\.mobilePalette) private var palette
 @State private var value0: Double = 0
 var body: some View { node0().task {
@@ -3711,21 +6464,21 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene122: View {
+private struct MobileScene215: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
 private func node0() -> some View { Toggle(isOn: .constant(true)) { Text("On") }.disabled(false) }
 }
 
-private struct MobileScene123: View {
+private struct MobileScene216: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
 private func node0() -> some View { Toggle(isOn: .constant(false)) { Text("Off") }.disabled(false) }
 }
 
-private struct MobileScene124: View {
+private struct MobileScene217: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3736,20 +6489,20 @@ node1()
 node2() } }
 }
 
-private struct MobileScene125: View {
+private struct MobileScene218: View {
 @Environment(\.mobilePalette) private var palette
 @State private var value0 = true
 var body: some View { node0() }
 private func node1() -> some View { Toggle(isOn: $value0) { Text("Launch at login") }.disabled(false).accessibilityIdentifier("switch") }
 private func node3() -> some View { Text((value0 ? "On" : "Off")) }
 private func node2() -> some View { HStack(spacing: 0) {
-node3() }.foregroundStyle(.secondary).accessibilityElement(children: .contain).accessibilityIdentifier("status") }
+node3() }.foregroundStyle(palette.colorContentMuted).accessibilityElement(children: .contain).accessibilityIdentifier("status") }
 private func node0() -> some View { HStack {
 node1()
 node2() } }
 }
 
-private struct MobileScene126: View {
+private struct MobileScene219: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3774,7 +6527,7 @@ node4()
 node7() } }
 }
 
-private struct MobileScene127: View {
+private struct MobileScene220: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3809,20 +6562,20 @@ node1()
 node8() } }
 }
 
-private struct MobileScene128: View {
+private struct MobileScene221: View {
 @Environment(\.mobilePalette) private var palette
 @State private var value0 = true
 @State private var value1 = true
 var body: some View { node0() }
 private func node2() -> some View { Toggle(isOn: $value0) { Text("Dark mode") }.disabled(false).accessibilityIdentifier("live") }
 private func node3() -> some View { HStack(spacing: 0) {
-Text("Applied immediately") }.foregroundStyle(.secondary) }
+Text("Applied immediately") }.foregroundStyle(palette.colorContentMuted) }
 private func node1() -> some View { HStack {
 node2()
 node3() } }
 private func node5() -> some View { Toggle(isOn: $value1) { Text("Include reviewer notes") }.disabled(false).accessibilityIdentifier("pending") }
 private func node6() -> some View { HStack(spacing: 0) {
-Text("Applied when the export runs") }.foregroundStyle(.secondary) }
+Text("Applied when the export runs") }.foregroundStyle(palette.colorContentMuted) }
 private func node4() -> some View { HStack {
 node5()
 node6() } }
@@ -3831,7 +6584,7 @@ node1()
 node4() } }
 }
 
-private struct MobileScene129: View {
+private struct MobileScene222: View {
 @Environment(\.mobilePalette) private var palette
 @State private var value0 = true
 @State private var value1 = false
@@ -3863,7 +6616,7 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene130: View {
+private struct MobileScene223: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3899,7 +6652,7 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene131: View {
+private struct MobileScene224: View {
 @Environment(\.mobilePalette) private var palette
 
 var body: some View { node0() }
@@ -3959,7 +6712,344 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene132: View {
+private struct MobileScene225: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = true
+@State private var value1 = false
+@State private var value2 = false
+@State private var value3 = false
+@State private var value4 = true
+@State private var value5 = true
+@State private var value6 = true
+@State private var value7 = true
+var body: some View { node0() }
+private func node4() -> some View { HStack {
+Text("v1.7.0") }.font(.caption) }
+private func node3() -> some View { VStack(alignment: .leading) { Text("Badge").font(.caption).foregroundStyle(.secondary)
+node4() } }
+private func node6() -> some View { Text("bug").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary)).font(.caption).disabled(false) }
+private func node5() -> some View { VStack(alignment: .leading) { Text("Tag, selectable").font(.caption).foregroundStyle(.secondary)
+node6() } }
+private func node8() -> some View { HStack(spacing: 4) {
+Text("needs design").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button {  } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove")
+}.font(.caption).disabled(false) }
+private func node7() -> some View { VStack(alignment: .leading) { Text("Tag, removable").font(.caption).foregroundStyle(.secondary)
+node8() } }
+private func node2() -> some View { VStack(alignment: .leading) {
+node3()
+node5()
+node7() } }
+private func node1() -> some View { VStack(alignment: .leading) { Text("Beside a Badge").font(.title2)
+Text("They share the capsule — the same box at the same three densities, written once in badge.css — and nothing else. A tag that is neither selectable nor removable should be a Badge.").foregroundStyle(.secondary)
+node2() } }
+private func node11() -> some View { Toggle(isOn: $value0) { Text("bug") }.toggleStyle(.button).font(.caption).disabled(false) }
+private func node12() -> some View { Toggle(isOn: $value1) { Text("good first issue") }.toggleStyle(.button).font(.caption).disabled(false) }
+private func node13() -> some View { Toggle(isOn: $value2) { Text("needs design") }.toggleStyle(.button).font(.caption).disabled(false) }
+private func node14() -> some View { Toggle(isOn: $value3) { Text("blocked") }.toggleStyle(.button).font(.caption).disabled(false) }
+private func node10() -> some View { HStack {
+node11()
+node12()
+node13()
+node14() } }
+private func node9() -> some View { VStack(alignment: .leading) { Text("Selected").font(.title2)
+Text("Drawn twice over: the tinted fill the component swaps the variant to, and the tint's edge. One alone is not enough — a tinted tag that was already tinted would look untouched, and an edge alone is a pixel to spot in a row of forty.").foregroundStyle(.secondary)
+node10() } }
+private func node18() -> some View { HStack(spacing: 4) {
+Text("bug").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button { value4 = false } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove bug")
+}.font(.caption).disabled(false) }
+private func node17() -> some View { Group {
+if value4 {
+node18()
+}
+} }
+private func node20() -> some View { HStack(spacing: 4) {
+Text("good first issue").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button { value5 = false } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove good first issue")
+}.font(.caption).disabled(false) }
+private func node19() -> some View { Group {
+if value5 {
+node20()
+}
+} }
+private func node22() -> some View { HStack(spacing: 4) {
+Text("needs design").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button { value6 = false } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove needs design")
+}.font(.caption).disabled(false) }
+private func node21() -> some View { Group {
+if value6 {
+node22()
+}
+} }
+private func node24() -> some View { HStack(spacing: 4) {
+Text("blocked").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button { value7 = false } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove blocked")
+}.font(.caption).disabled(false) }
+private func node23() -> some View { Group {
+if value7 {
+node24()
+}
+} }
+private func node16() -> some View { HStack {
+node17()
+node19()
+node21()
+node23() } }
+private func node15() -> some View { VStack(alignment: .leading) { Text("Dismissing").font(.title2)
+Text("The dismiss button is its own control rather than a second job for the label: a chip that removes itself when clicked has no way to be selected, and one that does both from the same target removes things by accident. It is faint at rest and only resolves under the pointer — an ✕ at full strength on every chip turns a list of tags into a list of buttons.").foregroundStyle(.secondary)
+node16() } }
+private func node28() -> some View { Toggle(isOn: .constant(false)) { Text("label") }.toggleStyle(.button).font(.caption).disabled(false) }
+private func node27() -> some View { VStack(alignment: .leading) { Text("filled").font(.caption).foregroundStyle(.secondary)
+node28() } }
+private func node30() -> some View { Toggle(isOn: .constant(false)) { Text("label") }.toggleStyle(.button).font(.caption).disabled(false) }
+private func node29() -> some View { VStack(alignment: .leading) { Text("tinted").font(.caption).foregroundStyle(.secondary)
+node30() } }
+private func node32() -> some View { Toggle(isOn: .constant(false)) { Text("label") }.toggleStyle(.button).font(.caption).disabled(false) }
+private func node31() -> some View { VStack(alignment: .leading) { Text("outlined").font(.caption).foregroundStyle(.secondary)
+node32() } }
+private func node34() -> some View { Toggle(isOn: .constant(false)) { Text("label") }.toggleStyle(.button).font(.caption).disabled(false) }
+private func node33() -> some View { VStack(alignment: .leading) { Text("raised").font(.caption).foregroundStyle(.secondary)
+node34() } }
+private func node26() -> some View { VStack(alignment: .leading) {
+node27()
+node29()
+node31()
+node33() } }
+private func node25() -> some View { VStack(alignment: .leading) { Text("Sizes and variants").font(.title2)
+Text("Both are the Badge's, because the capsule is the Badge's. What is added is the resting, hover, pressed and disabled states the recipes already carry.").foregroundStyle(.secondary)
+node26() } }
+private func node0() -> some View { VStack(alignment: .leading) { Text("Tag").font(.title2)
+Text("A Badge you can act on. The two are one drawing and two components rather than one component with an `interactive` prop, because the difference is not cosmetic: a badge reads its recipes at rest and stays out of the shared state machine, since a label that moves under the pointer reads as something you can press. A tag is something you can press — and taking the state machine is the whole reason it exists.").foregroundStyle(.secondary)
+node1()
+node9()
+node15()
+node25() } }
+}
+
+private struct MobileScene226: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = true
+@State private var value1 = false
+@State private var value2 = false
+@State private var value3 = false
+var body: some View { node0() }
+private func node1() -> some View { Toggle(isOn: $value0) { Text("bug") }.toggleStyle(.button).font(.caption).disabled(false) }
+private func node2() -> some View { Toggle(isOn: $value1) { Text("good first issue") }.toggleStyle(.button).font(.caption).disabled(false) }
+private func node3() -> some View { Toggle(isOn: $value2) { Text("needs design") }.toggleStyle(.button).font(.caption).disabled(false) }
+private func node4() -> some View { Toggle(isOn: $value3) { Text("blocked") }.toggleStyle(.button).font(.caption).disabled(false) }
+private func node0() -> some View { HStack {
+node1()
+node2()
+node3()
+node4() } }
+}
+
+private struct MobileScene227: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = true
+@State private var value1 = true
+@State private var value2 = true
+@State private var value3 = true
+var body: some View { node0() }
+private func node2() -> some View { HStack(spacing: 4) {
+Text("bug").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button { value0 = false } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove bug")
+}.font(.caption).disabled(false) }
+private func node1() -> some View { Group {
+if value0 {
+node2()
+}
+} }
+private func node4() -> some View { HStack(spacing: 4) {
+Text("good first issue").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button { value1 = false } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove good first issue")
+}.font(.caption).disabled(false) }
+private func node3() -> some View { Group {
+if value1 {
+node4()
+}
+} }
+private func node6() -> some View { HStack(spacing: 4) {
+Text("needs design").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button { value2 = false } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove needs design")
+}.font(.caption).disabled(false) }
+private func node5() -> some View { Group {
+if value2 {
+node6()
+}
+} }
+private func node8() -> some View { HStack(spacing: 4) {
+Text("blocked").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button { value3 = false } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove blocked")
+}.font(.caption).disabled(false) }
+private func node7() -> some View { Group {
+if value3 {
+node8()
+}
+} }
+private func node0() -> some View { HStack {
+node1()
+node3()
+node5()
+node7() } }
+}
+
+private struct MobileScene228: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { HStack(spacing: 4) {
+Text("small").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button {  } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove")
+}.font(.caption).disabled(false) }
+private func node2() -> some View { HStack(spacing: 4) {
+Text("medium").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button {  } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove")
+}.font(.caption).disabled(false) }
+private func node3() -> some View { HStack(spacing: 4) {
+Text("large").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button {  } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove")
+}.font(.caption).disabled(false) }
+private func node0() -> some View { HStack {
+node1()
+node2()
+node3() } }
+}
+
+private struct MobileScene229: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { Text("filled").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary)).font(.caption).disabled(false) }
+private func node2() -> some View { Text("tinted").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary)).font(.caption).disabled(false) }
+private func node3() -> some View { Text("outlined").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary)).font(.caption).disabled(false) }
+private func node4() -> some View { Text("raised").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary)).font(.caption).disabled(false) }
+private func node0() -> some View { HStack {
+node1()
+node2()
+node3()
+node4() } }
+}
+
+private struct MobileScene230: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { HStack(spacing: 4) {
+Text("primary").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button {  } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove")
+}.font(.caption).disabled(false).tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node2() -> some View { HStack(spacing: 4) {
+Text("neutral").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button {  } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove")
+}.font(.caption).disabled(false).tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node3() -> some View { HStack(spacing: 4) {
+Text("info").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button {  } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove")
+}.font(.caption).disabled(false).tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node4() -> some View { HStack(spacing: 4) {
+Text("success").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button {  } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove")
+}.font(.caption).disabled(false).tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node5() -> some View { HStack(spacing: 4) {
+Text("warning").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button {  } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove")
+}.font(.caption).disabled(false).tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node6() -> some View { HStack(spacing: 4) {
+Text("danger").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button {  } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove")
+}.font(.caption).disabled(false).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node0() -> some View { HStack {
+node1()
+node2()
+node3()
+node4()
+node5()
+node6() } }
+}
+
+private struct MobileScene231: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { Toggle(isOn: .constant(false)) { Text("unavailable") }.toggleStyle(.button).font(.caption).disabled(true) }
+private func node2() -> some View { HStack(spacing: 4) {
+Text("pinned").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button {  } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove")
+}.font(.caption).disabled(true) }
+private func node0() -> some View { HStack {
+node1()
+node2() } }
+}
+
+private struct MobileScene232: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = true
+@State private var value1 = false
+@State private var value2 = false
+@State private var value3 = false
+@State private var value4 = true
+@State private var value5 = true
+@State private var value6 = true
+@State private var value7 = true
+var body: some View { node0() }
+private func node2() -> some View { Toggle(isOn: $value0) { Text("bug") }.toggleStyle(.button).font(.caption).disabled(false) }
+private func node3() -> some View { Toggle(isOn: $value1) { Text("good first issue") }.toggleStyle(.button).font(.caption).disabled(false) }
+private func node4() -> some View { Toggle(isOn: $value2) { Text("needs design") }.toggleStyle(.button).font(.caption).disabled(false) }
+private func node5() -> some View { Toggle(isOn: $value3) { Text("blocked") }.toggleStyle(.button).font(.caption).disabled(false) }
+private func node1() -> some View { HStack {
+node2()
+node3()
+node4()
+node5() } }
+private func node8() -> some View { HStack(spacing: 4) {
+Text("bug").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button { value4 = false } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove bug")
+}.font(.caption).disabled(false) }
+private func node7() -> some View { Group {
+if value4 {
+node8()
+}
+} }
+private func node10() -> some View { HStack(spacing: 4) {
+Text("good first issue").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button { value5 = false } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove good first issue")
+}.font(.caption).disabled(false) }
+private func node9() -> some View { Group {
+if value5 {
+node10()
+}
+} }
+private func node12() -> some View { HStack(spacing: 4) {
+Text("needs design").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button { value6 = false } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove needs design")
+}.font(.caption).disabled(false) }
+private func node11() -> some View { Group {
+if value6 {
+node12()
+}
+} }
+private func node14() -> some View { HStack(spacing: 4) {
+Text("blocked").padding(.horizontal, 8).padding(.vertical, 4).overlay(Capsule().stroke(.secondary))
+Button { value7 = false } label: { Image(systemName: "xmark.circle.fill") }.buttonStyle(.borderless).accessibilityLabel("Remove blocked")
+}.font(.caption).disabled(false) }
+private func node13() -> some View { Group {
+if value7 {
+node14()
+}
+} }
+private func node6() -> some View { HStack {
+node7()
+node9()
+node11()
+node13() } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node6() } }
+}
+
+private struct MobileScene233: View {
 @Environment(\.mobilePalette) private var palette
 @State private var value0 = "Jianying Li"
 var body: some View { node0() }
@@ -3968,7 +7058,7 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene133: View {
+private struct MobileScene234: View {
 @Environment(\.mobilePalette) private var palette
 @State private var value0 = ""
 var body: some View { node0() }
@@ -3977,7 +7067,7 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene134: View {
+private struct MobileScene235: View {
 @Environment(\.mobilePalette) private var palette
 @State private var value0 = "Read only"
 var body: some View { node0() }
@@ -3986,7 +7076,7 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene135: View {
+private struct MobileScene236: View {
 @Environment(\.mobilePalette) private var palette
 @State private var value0 = "Disabled"
 var body: some View { node0() }
@@ -3995,7 +7085,7 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene136: View {
+private struct MobileScene237: View {
 @Environment(\.mobilePalette) private var palette
 @State private var value0 = "Rejected value"
 var body: some View { node0() }
@@ -4004,7 +7094,7 @@ private func node0() -> some View { VStack(alignment: .leading) {
 node1() } }
 }
 
-private struct MobileScene137: View {
+private struct MobileScene238: View {
 @Environment(\.mobilePalette) private var palette
 @State private var value0 = "Jianying Li"
 @State private var value1 = ""
@@ -4025,7 +7115,7 @@ node4()
 node5() } }
 }
 
-private struct MobileScene138: View {
+private struct MobileScene239: View {
 @Environment(\.mobilePalette) private var palette
 @State private var value0 = ""
 @State private var value1 = ""
@@ -4040,7 +7130,7 @@ node2()
 node3() } }
 }
 
-private struct MobileScene139: View {
+private struct MobileScene240: View {
 @Environment(\.mobilePalette) private var palette
 @State private var value0 = ""
 @State private var value1 = ""
@@ -4073,7 +7163,7 @@ node4()
 node7() } }
 }
 
-private struct MobileScene140: View {
+private struct MobileScene241: View {
 @Environment(\.mobilePalette) private var palette
 @State private var value0 = "https://api.deepl.com/v2"
 @State private var value1 = "sk-9f3c7a01b4224e8d"
@@ -4088,7 +7178,7 @@ node2()
 node3() } }
 }
 
-private struct MobileScene141: View {
+private struct MobileScene242: View {
 @Environment(\.mobilePalette) private var palette
 @State private var value0 = ""
 @State private var value1 = ""
@@ -4112,7 +7202,7 @@ node5()
 node6() } }
 }
 
-private struct MobileScene142: View {
+private struct MobileScene243: View {
 @Environment(\.mobilePalette) private var palette
 @State private var value0 = "handbook"
 var body: some View { node0() }
@@ -4125,4 +7215,338 @@ Text("Export") } }.disabled((value0.trimmingCharacters(in: CharacterSet(characte
 private func node0() -> some View { VStack(alignment: .leading) {
 node1()
 node3() } }
+}
+
+private struct MobileScene244: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = false
+@State private var value1 = true
+var body: some View { node0() }
+private func node1() -> some View { Toggle(isOn: $value0) { HStack {
+Text("Wrap") } }.toggleStyle(.button).disabled(false) }
+private func node2() -> some View { Toggle(isOn: $value1) { HStack {
+Text("Wrap") } }.toggleStyle(.button).disabled(false) }
+private func node0() -> some View { HStack {
+node1()
+node2() } }
+}
+
+private struct MobileScene245: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = true
+@State private var value1 = true
+@State private var value2 = true
+@State private var value3 = true
+var body: some View { node0() }
+private func node1() -> some View { Toggle(isOn: $value0) { HStack {
+Text("tiny") } }.toggleStyle(.button).disabled(false) }
+private func node2() -> some View { Toggle(isOn: $value1) { HStack {
+Text("small") } }.toggleStyle(.button).disabled(false) }
+private func node3() -> some View { Toggle(isOn: $value2) { HStack {
+Text("medium") } }.toggleStyle(.button).disabled(false) }
+private func node4() -> some View { Toggle(isOn: $value3) { HStack {
+Text("large") } }.toggleStyle(.button).disabled(false) }
+private func node0() -> some View { HStack {
+node1()
+node2()
+node3()
+node4() } }
+}
+
+private struct MobileScene246: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = false
+@State private var value1 = false
+@State private var value2 = false
+@State private var value3 = false
+@State private var value4 = false
+@State private var value5 = false
+@State private var value6 = true
+@State private var value7 = true
+@State private var value8 = true
+@State private var value9 = true
+@State private var value10 = true
+@State private var value11 = true
+var body: some View { node0() }
+private func node2() -> some View { Toggle(isOn: $value0) { HStack {
+Text("recessed") } }.toggleStyle(.button).disabled(false) }
+private func node3() -> some View { Toggle(isOn: $value1) { HStack {
+Text("normal") } }.toggleStyle(.button).disabled(false) }
+private func node4() -> some View { Toggle(isOn: $value2) { HStack {
+Text("filled") } }.toggleStyle(.button).disabled(false) }
+private func node5() -> some View { Toggle(isOn: $value3) { HStack {
+Text("tinted") } }.toggleStyle(.button).disabled(false) }
+private func node6() -> some View { Toggle(isOn: $value4) { HStack {
+Text("outlined") } }.toggleStyle(.button).disabled(false) }
+private func node7() -> some View { Toggle(isOn: $value5) { HStack {
+Text("plain") } }.toggleStyle(.button).disabled(false) }
+private func node1() -> some View { HStack {
+node2()
+node3()
+node4()
+node5()
+node6()
+node7() } }
+private func node9() -> some View { Toggle(isOn: $value6) { HStack {
+Text("recessed") } }.toggleStyle(.button).disabled(false) }
+private func node10() -> some View { Toggle(isOn: $value7) { HStack {
+Text("normal") } }.toggleStyle(.button).disabled(false) }
+private func node11() -> some View { Toggle(isOn: $value8) { HStack {
+Text("filled") } }.toggleStyle(.button).disabled(false) }
+private func node12() -> some View { Toggle(isOn: $value9) { HStack {
+Text("tinted") } }.toggleStyle(.button).disabled(false) }
+private func node13() -> some View { Toggle(isOn: $value10) { HStack {
+Text("outlined") } }.toggleStyle(.button).disabled(false) }
+private func node14() -> some View { Toggle(isOn: $value11) { HStack {
+Text("plain") } }.toggleStyle(.button).disabled(false) }
+private func node8() -> some View { HStack {
+node9()
+node10()
+node11()
+node12()
+node13()
+node14() } }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node8() } }
+}
+
+private struct MobileScene247: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = true
+@State private var value1 = true
+@State private var value2 = true
+@State private var value3 = true
+@State private var value4 = true
+@State private var value5 = true
+var body: some View { node0() }
+private func node1() -> some View { Toggle(isOn: $value0) { HStack {
+Text("primary") } }.toggleStyle(.button).disabled(false).tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node2() -> some View { Toggle(isOn: $value1) { HStack {
+Text("neutral") } }.toggleStyle(.button).disabled(false).tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node3() -> some View { Toggle(isOn: $value2) { HStack {
+Text("info") } }.toggleStyle(.button).disabled(false).tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node4() -> some View { Toggle(isOn: $value3) { HStack {
+Text("success") } }.toggleStyle(.button).disabled(false).tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node5() -> some View { Toggle(isOn: $value4) { HStack {
+Text("warning") } }.toggleStyle(.button).disabled(false).tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node6() -> some View { Toggle(isOn: $value5) { HStack {
+Text("danger") } }.toggleStyle(.button).disabled(false).tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node0() -> some View { HStack {
+node1()
+node2()
+node3()
+node4()
+node5()
+node6() } }
+}
+
+private struct MobileScene248: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = false
+@State private var value1 = true
+var body: some View { node0() }
+private func node1() -> some View { Toggle(isOn: $value0) { HStack {
+Text("Wrap") } }.toggleStyle(.button).disabled(true) }
+private func node2() -> some View { Toggle(isOn: $value1) { HStack {
+Text("Wrap") } }.toggleStyle(.button).disabled(true) }
+private func node0() -> some View { HStack {
+node1()
+node2() } }
+}
+
+private struct MobileScene249: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = true
+@State private var value1 = false
+@State private var value2 = false
+var body: some View { node0() }
+private func node2() -> some View { Image(systemName: "bold") }
+private func node1() -> some View { Toggle(isOn: $value0) { HStack {
+node2() } }.toggleStyle(.button).disabled(false).accessibilityLabel("Bold") }
+private func node4() -> some View { Image(systemName: "italic") }
+private func node3() -> some View { Toggle(isOn: $value1) { HStack {
+node4() } }.toggleStyle(.button).disabled(false).accessibilityLabel("Italic") }
+private func node6() -> some View { Image(systemName: "underline") }
+private func node5() -> some View { Toggle(isOn: $value2) { HStack {
+node6() } }.toggleStyle(.button).disabled(false).accessibilityLabel("Underline") }
+private func node0() -> some View { HStack {
+node1()
+node3()
+node5() } }
+}
+
+private struct MobileScene250: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = true
+@State private var value1 = false
+@State private var value2 = false
+@State private var value3 = true
+@State private var value4 = false
+@State private var value5 = false
+var body: some View { node0() }
+private func node4() -> some View { Picker("View", selection: .constant("source")) {
+Text("Source").tag("source").modifier(MobileSegmentAvailability(disabled: false))
+Text("Preview").tag("preview").modifier(MobileSegmentAvailability(disabled: false))
+}.pickerStyle(.segmented) }
+private func node3() -> some View { VStack(alignment: .leading) { Text("SegmentedControl — one, always").font(.caption).foregroundStyle(.secondary)
+node4() } }
+private func node6() -> some View { ControlGroup {
+Toggle(isOn: $value0) { Image(systemName: "bold") }.toggleStyle(.button).disabled(false).accessibilityLabel("Bold")
+Toggle(isOn: $value1) { Image(systemName: "italic") }.toggleStyle(.button).disabled(false).accessibilityLabel("Italic")
+Toggle(isOn: $value2) { Image(systemName: "underline") }.toggleStyle(.button).disabled(false).accessibilityLabel("Underline")
+}.accessibilityLabel("Text style") }
+private func node5() -> some View { VStack(alignment: .leading) { Text("ToggleGroup — any number, including none").font(.caption).foregroundStyle(.secondary)
+node6() } }
+private func node2() -> some View { VStack(alignment: .leading) {
+node3()
+node5() } }
+private func node1() -> some View { VStack(alignment: .leading) { Text("Beside a SegmentedControl").font(.title2)
+Text("This is where the two part company. A segmented control is a choice between its segments and always has exactly one; a toggle group can have several on at once, or none. Drawing a mandatory single choice with this one would let the reader clear a choice that cannot be cleared.").foregroundStyle(.secondary)
+node2() } }
+private func node8() -> some View { ControlGroup {
+Toggle(isOn: $value3) { Image(systemName: "bold") }.toggleStyle(.button).disabled(false).accessibilityLabel("Bold")
+Toggle(isOn: $value4) { Image(systemName: "italic") }.toggleStyle(.button).disabled(false).accessibilityLabel("Italic")
+Toggle(isOn: $value5) { Image(systemName: "underline") }.toggleStyle(.button).disabled(false).accessibilityLabel("Underline")
+}.accessibilityLabel("Text style") }
+private func node7() -> some View { VStack(alignment: .leading) { Text("One tab stop").font(.title2)
+Text("Base UI owns the part that is easy to get wrong: the group is a single tab stop and the arrow keys move inside it, which is what keeps a toolbar of twelve toggles from being twelve stops on the way to the document.").foregroundStyle(.secondary)
+node8() } }
+private func node10() -> some View { ControlGroup {
+Toggle(isOn: .constant(true)) { Text("Whitespace") }.toggleStyle(.button).disabled(false).accessibilityLabel("Whitespace")
+Toggle(isOn: .constant(false)) { Text("Minimap") }.toggleStyle(.button).disabled(false).accessibilityLabel("Minimap")
+Toggle(isOn: .constant(false)) { Text("Blame") }.toggleStyle(.button).disabled(false).accessibilityLabel("Blame")
+}.accessibilityLabel("Show") }
+private func node9() -> some View { VStack(alignment: .leading) { Text("Words").font(.title2)
+Text("Nothing about the group is glyph-only. A run of labelled toggles is what a filter bar wants, and the joined edges are what say the three answers are about one question.").foregroundStyle(.secondary)
+node10() } }
+private func node0() -> some View { VStack(alignment: .leading) { Text("ToggleGroup").font(.title2)
+Text("Several toggles that belong together, joined into one control. Joined rather than merely adjacent: the corners are rounded at the ends of the run only and the shared edges collapse to one, which is what says the group is one thing with several states rather than three buttons that happen to touch.").foregroundStyle(.secondary)
+node1()
+node7()
+node9() } }
+}
+
+private struct MobileScene251: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = true
+@State private var value1 = false
+@State private var value2 = false
+var body: some View { node0() }
+private func node0() -> some View { ControlGroup {
+Toggle(isOn: $value0) { Image(systemName: "bold") }.toggleStyle(.button).disabled(false).accessibilityLabel("Bold")
+Toggle(isOn: $value1) { Image(systemName: "italic") }.toggleStyle(.button).disabled(false).accessibilityLabel("Italic")
+Toggle(isOn: $value2) { Image(systemName: "underline") }.toggleStyle(.button).disabled(false).accessibilityLabel("Underline")
+}.accessibilityLabel("Text style") }
+}
+
+private struct MobileScene252: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = true
+@State private var value1 = false
+@State private var value2 = false
+var body: some View { node0() }
+private func node0() -> some View { ControlGroup {
+Toggle(isOn: $value0) { Text("Whitespace") }.toggleStyle(.button).disabled(false).accessibilityLabel("Whitespace")
+Toggle(isOn: $value1) { Text("Minimap") }.toggleStyle(.button).disabled(false).accessibilityLabel("Minimap")
+Toggle(isOn: $value2) { Text("Blame") }.toggleStyle(.button).disabled(false).accessibilityLabel("Blame")
+}.accessibilityLabel("Show") }
+}
+
+private struct MobileScene253: View {
+@Environment(\.mobilePalette) private var palette
+@State private var value0 = "minimap"
+var body: some View { node0() }
+private func node0() -> some View { ControlGroup {
+Toggle(isOn: Binding(get: { value0 == "whitespace" }, set: { value0 = $0 ? "whitespace" : "" })) { Text("Whitespace") }.toggleStyle(.button).disabled(false).accessibilityLabel("Whitespace")
+Toggle(isOn: Binding(get: { value0 == "minimap" }, set: { value0 = $0 ? "minimap" : "" })) { Text("Minimap") }.toggleStyle(.button).disabled(false).accessibilityLabel("Minimap")
+Toggle(isOn: Binding(get: { value0 == "blame" }, set: { value0 = $0 ? "blame" : "" })) { Text("Blame") }.toggleStyle(.button).disabled(false).accessibilityLabel("Blame")
+}.accessibilityLabel("Panel") }
+}
+
+private struct MobileScene254: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { ControlGroup {
+Toggle(isOn: .constant(true)) { Text("Whitespace") }.toggleStyle(.button).disabled(false).accessibilityLabel("Whitespace")
+Toggle(isOn: .constant(false)) { Text("Minimap") }.toggleStyle(.button).disabled(false).accessibilityLabel("Minimap")
+Toggle(isOn: .constant(false)) { Text("Blame") }.toggleStyle(.button).disabled(false).accessibilityLabel("Blame")
+}.accessibilityLabel("Show (recessed)") }
+private func node2() -> some View { ControlGroup {
+Toggle(isOn: .constant(true)) { Text("Whitespace") }.toggleStyle(.button).disabled(false).accessibilityLabel("Whitespace")
+Toggle(isOn: .constant(false)) { Text("Minimap") }.toggleStyle(.button).disabled(false).accessibilityLabel("Minimap")
+Toggle(isOn: .constant(false)) { Text("Blame") }.toggleStyle(.button).disabled(false).accessibilityLabel("Blame")
+}.accessibilityLabel("Show (normal)") }
+private func node3() -> some View { ControlGroup {
+Toggle(isOn: .constant(true)) { Text("Whitespace") }.toggleStyle(.button).disabled(false).accessibilityLabel("Whitespace")
+Toggle(isOn: .constant(false)) { Text("Minimap") }.toggleStyle(.button).disabled(false).accessibilityLabel("Minimap")
+Toggle(isOn: .constant(false)) { Text("Blame") }.toggleStyle(.button).disabled(false).accessibilityLabel("Blame")
+}.accessibilityLabel("Show (outlined)") }
+private func node4() -> some View { ControlGroup {
+Toggle(isOn: .constant(true)) { Text("Whitespace") }.toggleStyle(.button).disabled(false).accessibilityLabel("Whitespace")
+Toggle(isOn: .constant(false)) { Text("Minimap") }.toggleStyle(.button).disabled(false).accessibilityLabel("Minimap")
+Toggle(isOn: .constant(false)) { Text("Blame") }.toggleStyle(.button).disabled(false).accessibilityLabel("Blame")
+}.accessibilityLabel("Show (plain)") }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node3()
+node4() } }
+}
+
+private struct MobileScene255: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { ControlGroup {
+Toggle(isOn: .constant(true)) { Text("Whitespace") }.toggleStyle(.button).disabled(false).accessibilityLabel("Whitespace")
+Toggle(isOn: .constant(false)) { Text("Minimap") }.toggleStyle(.button).disabled(false).accessibilityLabel("Minimap")
+Toggle(isOn: .constant(false)) { Text("Blame") }.toggleStyle(.button).disabled(false).accessibilityLabel("Blame")
+}.accessibilityLabel("Show (primary)").tint(palette.colorPrimary[palette.nativeTintShade]) }
+private func node2() -> some View { ControlGroup {
+Toggle(isOn: .constant(true)) { Text("Whitespace") }.toggleStyle(.button).disabled(false).accessibilityLabel("Whitespace")
+Toggle(isOn: .constant(false)) { Text("Minimap") }.toggleStyle(.button).disabled(false).accessibilityLabel("Minimap")
+Toggle(isOn: .constant(false)) { Text("Blame") }.toggleStyle(.button).disabled(false).accessibilityLabel("Blame")
+}.accessibilityLabel("Show (neutral)").tint(palette.colorNeutral[palette.nativeTintShade]) }
+private func node3() -> some View { ControlGroup {
+Toggle(isOn: .constant(true)) { Text("Whitespace") }.toggleStyle(.button).disabled(false).accessibilityLabel("Whitespace")
+Toggle(isOn: .constant(false)) { Text("Minimap") }.toggleStyle(.button).disabled(false).accessibilityLabel("Minimap")
+Toggle(isOn: .constant(false)) { Text("Blame") }.toggleStyle(.button).disabled(false).accessibilityLabel("Blame")
+}.accessibilityLabel("Show (info)").tint(palette.colorInfo[palette.nativeTintShade]) }
+private func node4() -> some View { ControlGroup {
+Toggle(isOn: .constant(true)) { Text("Whitespace") }.toggleStyle(.button).disabled(false).accessibilityLabel("Whitespace")
+Toggle(isOn: .constant(false)) { Text("Minimap") }.toggleStyle(.button).disabled(false).accessibilityLabel("Minimap")
+Toggle(isOn: .constant(false)) { Text("Blame") }.toggleStyle(.button).disabled(false).accessibilityLabel("Blame")
+}.accessibilityLabel("Show (success)").tint(palette.colorSuccess[palette.nativeTintShade]) }
+private func node5() -> some View { ControlGroup {
+Toggle(isOn: .constant(true)) { Text("Whitespace") }.toggleStyle(.button).disabled(false).accessibilityLabel("Whitespace")
+Toggle(isOn: .constant(false)) { Text("Minimap") }.toggleStyle(.button).disabled(false).accessibilityLabel("Minimap")
+Toggle(isOn: .constant(false)) { Text("Blame") }.toggleStyle(.button).disabled(false).accessibilityLabel("Blame")
+}.accessibilityLabel("Show (warning)").tint(palette.colorWarning[palette.nativeTintShade]) }
+private func node6() -> some View { ControlGroup {
+Toggle(isOn: .constant(true)) { Text("Whitespace") }.toggleStyle(.button).disabled(false).accessibilityLabel("Whitespace")
+Toggle(isOn: .constant(false)) { Text("Minimap") }.toggleStyle(.button).disabled(false).accessibilityLabel("Minimap")
+Toggle(isOn: .constant(false)) { Text("Blame") }.toggleStyle(.button).disabled(false).accessibilityLabel("Blame")
+}.accessibilityLabel("Show (danger)").tint(palette.colorDanger[palette.nativeTintShade]) }
+private func node0() -> some View { VStack(alignment: .leading) {
+node1()
+node2()
+node3()
+node4()
+node5()
+node6() } }
+}
+
+private struct MobileScene256: View {
+@Environment(\.mobilePalette) private var palette
+
+var body: some View { node0() }
+private func node1() -> some View { ControlGroup {
+Toggle(isOn: .constant(true)) { Text("Whitespace") }.toggleStyle(.button).disabled(false).accessibilityLabel("Whitespace")
+Toggle(isOn: .constant(false)) { Text("Minimap") }.toggleStyle(.button).disabled(false).accessibilityLabel("Minimap")
+Toggle(isOn: .constant(false)) { Text("Blame") }.toggleStyle(.button).disabled(true).accessibilityLabel("Blame")
+}.accessibilityLabel("Show") }
+private func node0() -> some View { HStack {
+node1() } }
 }

@@ -88,66 +88,180 @@ case "components/emptystate/nothing to do": return AnyView(PortableScene79())
 case "components/formfield/with a hint": return AnyView(PortableScene80())
 case "components/formfield/without a hint": return AnyView(PortableScene81())
 case "components/formfield/error": return AnyView(PortableScene82())
-case "components/keycap/overview": return AnyView(PortableScene83())
-case "components/keycap/hint": return AnyView(PortableScene84())
-case "components/keycap/strong": return AnyView(PortableScene85())
-case "components/keycap/key": return AnyView(PortableScene86())
-case "components/keycap/all variants": return AnyView(PortableScene87())
-case "components/keycap/sizes": return AnyView(PortableScene88())
-case "components/keycap/a chord": return AnyView(PortableScene89())
-case "components/keycap/a joined chord": return AnyView(PortableScene90())
-case "components/keycap/word keys": return AnyView(PortableScene91())
-case "components/keycap/in a settings row": return AnyView(PortableScene92())
-case "components/progress/default": return AnyView(PortableScene93())
-case "components/progress/values": return AnyView(PortableScene94())
-case "components/progress/indeterminate": return AnyView(PortableScene95())
-case "components/progress/gradient": return AnyView(PortableScene96())
-case "components/progress/sizes": return AnyView(PortableScene97())
-case "components/progress/tints": return AnyView(PortableScene98())
-case "components/progress/live": return AnyView(PortableScene99())
-case "components/progress/with a count": return AnyView(PortableScene100())
-case "components/progress/beside stages": return AnyView(PortableScene101())
-case "components/sectionlabel/overview": return AnyView(PortableScene102())
-case "components/sectionlabel/default": return AnyView(PortableScene103())
-case "components/sectionlabel/faint": return AnyView(PortableScene104())
-case "components/sectionlabel/tints": return AnyView(PortableScene105())
-case "components/sectionlabel/in a panel": return AnyView(PortableScene106())
-case "components/spinner/default": return AnyView(PortableScene107())
-case "components/spinner/sizes": return AnyView(PortableScene108())
-case "components/spinner/tints": return AnyView(PortableScene109())
-case "components/spinner/on an accent": return AnyView(PortableScene110())
-case "components/spinner/in a button": return AnyView(PortableScene111())
-case "components/spinner/in a callout": return AnyView(PortableScene112())
-case "components/spinner/in prose": return AnyView(PortableScene113())
-case "components/steplist/overview": return AnyView(PortableScene114())
-case "components/steplist/in flight": return AnyView(PortableScene115())
-case "components/steplist/statuses": return AnyView(PortableScene116())
-case "components/steplist/finished": return AnyView(PortableScene117())
-case "components/steplist/without detail": return AnyView(PortableScene118())
-case "components/steplist/timed detail": return AnyView(PortableScene119())
-case "components/steplist/tints": return AnyView(PortableScene120())
-case "components/steplist/advancing": return AnyView(PortableScene121())
-case "components/switch/on": return AnyView(PortableScene122())
-case "components/switch/off": return AnyView(PortableScene123())
-case "components/switch/disabled": return AnyView(PortableScene124())
-case "components/switch/interactive": return AnyView(PortableScene125())
-case "components/switch/sizes": return AnyView(PortableScene126())
-case "components/switch/tints": return AnyView(PortableScene127())
-case "components/switch/against a checkbox": return AnyView(PortableScene128())
-case "components/switch/in settings": return AnyView(PortableScene129())
-case "components/table/inert": return AnyView(PortableScene130())
-case "components/table/alignment": return AnyView(PortableScene131())
-case "components/textfield/default": return AnyView(PortableScene132())
-case "components/textfield/placeholder": return AnyView(PortableScene133())
-case "components/textfield/read only": return AnyView(PortableScene134())
-case "components/textfield/disabled": return AnyView(PortableScene135())
-case "components/textfield/error": return AnyView(PortableScene136())
-case "components/textfield/states": return AnyView(PortableScene137())
-case "components/textfield/sizes": return AnyView(PortableScene138())
-case "components/textfield/beside a button": return AnyView(PortableScene139())
-case "components/textfield/mono": return AnyView(PortableScene140())
-case "components/textfield/tints": return AnyView(PortableScene141())
-case "components/textfield/controlled": return AnyView(PortableScene142())
+case "components/formfield/over any control": return AnyView(PortableScene83())
+case "components/icon/default": return AnyView(PortableScene84())
+case "components/icon/sizes": return AnyView(PortableScene85())
+case "components/icon/sized by a token": return AnyView(PortableScene86())
+case "components/icon/any view box": return AnyView(PortableScene87())
+case "components/icon/inherited colour": return AnyView(PortableScene88())
+case "components/icon/in a button": return AnyView(PortableScene89())
+case "components/icon/in a callout": return AnyView(PortableScene90())
+case "components/iconbutton/overview": return AnyView(PortableScene91())
+case "components/iconbutton/plain": return AnyView(PortableScene92())
+case "components/iconbutton/filled": return AnyView(PortableScene93())
+case "components/iconbutton/variants": return AnyView(PortableScene94())
+case "components/iconbutton/disabled": return AnyView(PortableScene95())
+case "components/iconbutton/sizes": return AnyView(PortableScene96())
+case "components/iconbutton/tints": return AnyView(PortableScene97())
+case "components/iconbutton/a toolbar": return AnyView(PortableScene98())
+case "components/keycap/overview": return AnyView(PortableScene99())
+case "components/keycap/hint": return AnyView(PortableScene100())
+case "components/keycap/strong": return AnyView(PortableScene101())
+case "components/keycap/key": return AnyView(PortableScene102())
+case "components/keycap/all variants": return AnyView(PortableScene103())
+case "components/keycap/sizes": return AnyView(PortableScene104())
+case "components/keycap/a chord": return AnyView(PortableScene105())
+case "components/keycap/a joined chord": return AnyView(PortableScene106())
+case "components/keycap/word keys": return AnyView(PortableScene107())
+case "components/keycap/in a settings row": return AnyView(PortableScene108())
+case "components/link/overview": return AnyView(PortableScene109())
+case "components/link/underlines": return AnyView(PortableScene110())
+case "components/link/external": return AnyView(PortableScene111())
+case "components/link/tints": return AnyView(PortableScene112())
+case "components/link/disabled": return AnyView(PortableScene113())
+case "components/meter/bare": return AnyView(PortableScene114())
+case "components/meter/with value": return AnyView(PortableScene115())
+case "components/meter/sizes": return AnyView(PortableScene116())
+case "components/meter/tints": return AnyView(PortableScene117())
+case "components/meter/in a quota list": return AnyView(PortableScene118())
+case "components/numberfield/bare": return AnyView(PortableScene119())
+case "components/numberfield/with unit": return AnyView(PortableScene120())
+case "components/numberfield/sizes": return AnyView(PortableScene121())
+case "components/numberfield/states": return AnyView(PortableScene122())
+case "components/numberfield/in a form": return AnyView(PortableScene123())
+case "components/numberfield/in settings": return AnyView(PortableScene124())
+case "components/optioncard/overview": return AnyView(PortableScene125())
+case "components/optioncard/selected": return AnyView(PortableScene126())
+case "components/optioncard/unselected": return AnyView(PortableScene127())
+case "components/optioncard/a group": return AnyView(PortableScene128())
+case "components/optioncard/without a description": return AnyView(PortableScene129())
+case "components/optioncard/disabled": return AnyView(PortableScene130())
+case "components/optioncard/tints": return AnyView(PortableScene131())
+case "components/optioncard/in a grid": return AnyView(PortableScene132())
+case "components/otpfield/overview": return AnyView(PortableScene133())
+case "components/otpfield/bare": return AnyView(PortableScene134())
+case "components/otpfield/filled": return AnyView(PortableScene135())
+case "components/otpfield/grouped": return AnyView(PortableScene136())
+case "components/otpfield/sizes": return AnyView(PortableScene137())
+case "components/otpfield/masked": return AnyView(PortableScene138())
+case "components/otpfield/disabled": return AnyView(PortableScene139())
+case "components/otpfield/in a form": return AnyView(PortableScene140())
+case "components/pilltabs/overview": return AnyView(PortableScene141())
+case "components/pilltabs/default": return AnyView(PortableScene142())
+case "components/pilltabs/with counts": return AnyView(PortableScene143())
+case "components/pilltabs/disabled": return AnyView(PortableScene144())
+case "components/pilltabs/tints": return AnyView(PortableScene145())
+case "components/pilltabs/wrapping": return AnyView(PortableScene146())
+case "components/pilltabs/in a pane header": return AnyView(PortableScene147())
+case "components/progress/default": return AnyView(PortableScene148())
+case "components/progress/values": return AnyView(PortableScene149())
+case "components/progress/indeterminate": return AnyView(PortableScene150())
+case "components/progress/gradient": return AnyView(PortableScene151())
+case "components/progress/sizes": return AnyView(PortableScene152())
+case "components/progress/tints": return AnyView(PortableScene153())
+case "components/progress/live": return AnyView(PortableScene154())
+case "components/progress/with a count": return AnyView(PortableScene155())
+case "components/progress/beside stages": return AnyView(PortableScene156())
+case "components/radio/a group": return AnyView(PortableScene157())
+case "components/radio/disabled": return AnyView(PortableScene158())
+case "components/radio/sizes": return AnyView(PortableScene159())
+case "components/radio/tints": return AnyView(PortableScene160())
+case "components/radio/against a checkbox": return AnyView(PortableScene161())
+case "components/radio/in a form": return AnyView(PortableScene162())
+case "components/searchfield/overview": return AnyView(PortableScene163())
+case "components/searchfield/empty": return AnyView(PortableScene164())
+case "components/searchfield/with a query": return AnyView(PortableScene165())
+case "components/searchfield/with a hint": return AnyView(PortableScene166())
+case "components/searchfield/sizes": return AnyView(PortableScene167())
+case "components/searchfield/tints": return AnyView(PortableScene168())
+case "components/searchfield/dismissable": return AnyView(PortableScene169())
+case "components/searchfield/filtering a list": return AnyView(PortableScene170())
+case "components/searchfield/in a pane header": return AnyView(PortableScene171())
+case "components/sectionlabel/overview": return AnyView(PortableScene172())
+case "components/sectionlabel/default": return AnyView(PortableScene173())
+case "components/sectionlabel/faint": return AnyView(PortableScene174())
+case "components/sectionlabel/tints": return AnyView(PortableScene175())
+case "components/sectionlabel/in a panel": return AnyView(PortableScene176())
+case "components/segmentedcontrol/raised": return AnyView(PortableScene177())
+case "components/segmentedcontrol/filled": return AnyView(PortableScene178())
+case "components/segmentedcontrol/sizes": return AnyView(PortableScene179())
+case "components/segmentedcontrol/tints": return AnyView(PortableScene180())
+case "components/segmentedcontrol/filled tints": return AnyView(PortableScene181())
+case "components/segmentedcontrol/stretch": return AnyView(PortableScene182())
+case "components/segmentedcontrol/disabled": return AnyView(PortableScene183())
+case "components/segmentedcontrol/two segments": return AnyView(PortableScene184())
+case "components/segmentedcontrol/in a form": return AnyView(PortableScene185())
+case "components/skeleton/overview": return AnyView(PortableScene186())
+case "components/skeleton/shapes": return AnyView(PortableScene187())
+case "components/skeleton/text": return AnyView(PortableScene188())
+case "components/skeleton/lines": return AnyView(PortableScene189())
+case "components/skeleton/a list row": return AnyView(PortableScene190())
+case "components/skeleton/in a card": return AnyView(PortableScene191())
+case "components/slider/bare": return AnyView(PortableScene192())
+case "components/slider/with value": return AnyView(PortableScene193())
+case "components/slider/range": return AnyView(PortableScene194())
+case "components/slider/sizes": return AnyView(PortableScene195())
+case "components/slider/tints": return AnyView(PortableScene196())
+case "components/slider/disabled": return AnyView(PortableScene197())
+case "components/slider/interactive": return AnyView(PortableScene198())
+case "components/slider/in settings": return AnyView(PortableScene199())
+case "components/spinner/default": return AnyView(PortableScene200())
+case "components/spinner/sizes": return AnyView(PortableScene201())
+case "components/spinner/tints": return AnyView(PortableScene202())
+case "components/spinner/on an accent": return AnyView(PortableScene203())
+case "components/spinner/in a button": return AnyView(PortableScene204())
+case "components/spinner/in a callout": return AnyView(PortableScene205())
+case "components/spinner/in prose": return AnyView(PortableScene206())
+case "components/steplist/overview": return AnyView(PortableScene207())
+case "components/steplist/in flight": return AnyView(PortableScene208())
+case "components/steplist/statuses": return AnyView(PortableScene209())
+case "components/steplist/finished": return AnyView(PortableScene210())
+case "components/steplist/without detail": return AnyView(PortableScene211())
+case "components/steplist/timed detail": return AnyView(PortableScene212())
+case "components/steplist/tints": return AnyView(PortableScene213())
+case "components/steplist/advancing": return AnyView(PortableScene214())
+case "components/switch/on": return AnyView(PortableScene215())
+case "components/switch/off": return AnyView(PortableScene216())
+case "components/switch/disabled": return AnyView(PortableScene217())
+case "components/switch/interactive": return AnyView(PortableScene218())
+case "components/switch/sizes": return AnyView(PortableScene219())
+case "components/switch/tints": return AnyView(PortableScene220())
+case "components/switch/against a checkbox": return AnyView(PortableScene221())
+case "components/switch/in settings": return AnyView(PortableScene222())
+case "components/table/inert": return AnyView(PortableScene223())
+case "components/table/alignment": return AnyView(PortableScene224())
+case "components/tag/overview": return AnyView(PortableScene225())
+case "components/tag/selectable": return AnyView(PortableScene226())
+case "components/tag/removable": return AnyView(PortableScene227())
+case "components/tag/sizes": return AnyView(PortableScene228())
+case "components/tag/variants": return AnyView(PortableScene229())
+case "components/tag/tints": return AnyView(PortableScene230())
+case "components/tag/disabled": return AnyView(PortableScene231())
+case "components/tag/a filter bar": return AnyView(PortableScene232())
+case "components/textfield/default": return AnyView(PortableScene233())
+case "components/textfield/placeholder": return AnyView(PortableScene234())
+case "components/textfield/read only": return AnyView(PortableScene235())
+case "components/textfield/disabled": return AnyView(PortableScene236())
+case "components/textfield/error": return AnyView(PortableScene237())
+case "components/textfield/states": return AnyView(PortableScene238())
+case "components/textfield/sizes": return AnyView(PortableScene239())
+case "components/textfield/beside a button": return AnyView(PortableScene240())
+case "components/textfield/mono": return AnyView(PortableScene241())
+case "components/textfield/tints": return AnyView(PortableScene242())
+case "components/textfield/controlled": return AnyView(PortableScene243())
+case "components/toggle/pressed": return AnyView(PortableScene244())
+case "components/toggle/sizes": return AnyView(PortableScene245())
+case "components/toggle/variants": return AnyView(PortableScene246())
+case "components/toggle/tints": return AnyView(PortableScene247())
+case "components/toggle/disabled": return AnyView(PortableScene248())
+case "components/toggle/a toolbar": return AnyView(PortableScene249())
+case "components/togglegroup/overview": return AnyView(PortableScene250())
+case "components/togglegroup/glyphs": return AnyView(PortableScene251())
+case "components/togglegroup/words": return AnyView(PortableScene252())
+case "components/togglegroup/single": return AnyView(PortableScene253())
+case "components/togglegroup/variants": return AnyView(PortableScene254())
+case "components/togglegroup/tints": return AnyView(PortableScene255())
+case "components/togglegroup/disabled": return AnyView(PortableScene256())
     default: return nil
     }
   }
@@ -235,6 +349,22 @@ case "components/textfield/controlled": return AnyView(PortableScene142())
 ("Components", "FormField", "With A Hint", "components-formfield--with-a-hint", .centered),
 ("Components", "FormField", "Without A Hint", "components-formfield--without-a-hint", .centered),
 ("Components", "FormField", "Error", "components-formfield--error-state", .centered),
+("Components", "FormField", "Over Any Control", "components-formfield--over-any-control", .centered),
+("Components", "Icon", "Default", "components-icon--default", .centered),
+("Components", "Icon", "Sizes", "components-icon--sizes", .centered),
+("Components", "Icon", "Sized By A Token", "components-icon--sized-by-a-token", .centered),
+("Components", "Icon", "Any View Box", "components-icon--any-view-box", .centered),
+("Components", "Icon", "Inherited Colour", "components-icon--inherited-colour", .centered),
+("Components", "Icon", "In A Button", "components-icon--in-a-button", .centered),
+("Components", "Icon", "In A Callout", "components-icon--in-a-callout", .centered),
+("Components", "IconButton", "Overview", "components-iconbutton--overview", .page),
+("Components", "IconButton", "Plain", "components-iconbutton--plain", .centered),
+("Components", "IconButton", "Filled", "components-iconbutton--filled", .centered),
+("Components", "IconButton", "Variants", "components-iconbutton--variants", .centered),
+("Components", "IconButton", "Disabled", "components-iconbutton--disabled", .centered),
+("Components", "IconButton", "Sizes", "components-iconbutton--sizes", .centered),
+("Components", "IconButton", "Tints", "components-iconbutton--tints", .centered),
+("Components", "IconButton", "A Toolbar", "components-iconbutton--a-toolbar", .centered),
 ("Components", "KeyCap", "Overview", "components-keycap--overview", .page),
 ("Components", "KeyCap", "Hint", "components-keycap--hint", .centered),
 ("Components", "KeyCap", "Strong", "components-keycap--strong", .centered),
@@ -245,6 +375,45 @@ case "components/textfield/controlled": return AnyView(PortableScene142())
 ("Components", "KeyCap", "A Joined Chord", "components-keycap--a-joined-chord", .centered),
 ("Components", "KeyCap", "Word Keys", "components-keycap--word-keys", .centered),
 ("Components", "KeyCap", "In A Settings Row", "components-keycap--in-a-settings-row", .centered),
+("Components", "Link", "Overview", "components-link--overview", .page),
+("Components", "Link", "Underlines", "components-link--underlines", .centered),
+("Components", "Link", "External", "components-link--external", .centered),
+("Components", "Link", "Tints", "components-link--tints", .centered),
+("Components", "Link", "Disabled", "components-link--disabled", .centered),
+("Components", "Meter", "Bare", "components-meter--bare", .centered),
+("Components", "Meter", "With Value", "components-meter--with-value", .centered),
+("Components", "Meter", "Sizes", "components-meter--sizes", .centered),
+("Components", "Meter", "Tints", "components-meter--tints", .centered),
+("Components", "Meter", "In A Quota List", "components-meter--in-a-quota-list", .centered),
+("Components", "NumberField", "Bare", "components-numberfield--bare", .centered),
+("Components", "NumberField", "With Unit", "components-numberfield--with-unit", .centered),
+("Components", "NumberField", "Sizes", "components-numberfield--sizes", .centered),
+("Components", "NumberField", "States", "components-numberfield--states", .centered),
+("Components", "NumberField", "In A Form", "components-numberfield--in-a-form", .centered),
+("Components", "NumberField", "In Settings", "components-numberfield--in-settings", .centered),
+("Components", "OptionCard", "Overview", "components-optioncard--overview", .page),
+("Components", "OptionCard", "Selected", "components-optioncard--selected", .centered),
+("Components", "OptionCard", "Unselected", "components-optioncard--unselected", .centered),
+("Components", "OptionCard", "A Group", "components-optioncard--a-group", .centered),
+("Components", "OptionCard", "Without A Description", "components-optioncard--without-a-description", .centered),
+("Components", "OptionCard", "Disabled", "components-optioncard--disabled", .centered),
+("Components", "OptionCard", "Tints", "components-optioncard--tints", .centered),
+("Components", "OptionCard", "In A Grid", "components-optioncard--in-a-grid", .centered),
+("Components", "OtpField", "Overview", "components-otpfield--overview", .page),
+("Components", "OtpField", "Bare", "components-otpfield--bare", .centered),
+("Components", "OtpField", "Filled", "components-otpfield--filled", .centered),
+("Components", "OtpField", "Grouped", "components-otpfield--grouped", .centered),
+("Components", "OtpField", "Sizes", "components-otpfield--sizes", .centered),
+("Components", "OtpField", "Masked", "components-otpfield--masked", .centered),
+("Components", "OtpField", "Disabled", "components-otpfield--disabled", .centered),
+("Components", "OtpField", "In A Form", "components-otpfield--in-a-form", .centered),
+("Components", "PillTabs", "Overview", "components-pilltabs--overview", .page),
+("Components", "PillTabs", "Default", "components-pilltabs--default", .centered),
+("Components", "PillTabs", "With Counts", "components-pilltabs--with-counts", .centered),
+("Components", "PillTabs", "Disabled", "components-pilltabs--disabled", .centered),
+("Components", "PillTabs", "Tints", "components-pilltabs--tints", .centered),
+("Components", "PillTabs", "Wrapping", "components-pilltabs--wrapping", .centered),
+("Components", "PillTabs", "In A Pane Header", "components-pilltabs--in-a-pane-header", .centered),
 ("Components", "Progress", "Default", "components-progress--default", .centered),
 ("Components", "Progress", "Values", "components-progress--values", .centered),
 ("Components", "Progress", "Indeterminate", "components-progress--indeterminate", .centered),
@@ -254,11 +423,49 @@ case "components/textfield/controlled": return AnyView(PortableScene142())
 ("Components", "Progress", "Live", "components-progress--live", .centered),
 ("Components", "Progress", "With A Count", "components-progress--with-a-count", .centered),
 ("Components", "Progress", "Beside Stages", "components-progress--beside-stages", .centered),
+("Components", "Radio", "A Group", "components-radio--a-group", .centered),
+("Components", "Radio", "Disabled", "components-radio--disabled", .centered),
+("Components", "Radio", "Sizes", "components-radio--sizes", .centered),
+("Components", "Radio", "Tints", "components-radio--tints", .centered),
+("Components", "Radio", "Against A Checkbox", "components-radio--against-a-checkbox", .centered),
+("Components", "Radio", "In A Form", "components-radio--in-a-form", .centered),
+("Components", "SearchField", "Overview", "components-searchfield--overview", .page),
+("Components", "SearchField", "Empty", "components-searchfield--empty", .centered),
+("Components", "SearchField", "With A Query", "components-searchfield--with-a-query", .centered),
+("Components", "SearchField", "With A Hint", "components-searchfield--with-a-hint", .centered),
+("Components", "SearchField", "Sizes", "components-searchfield--sizes", .centered),
+("Components", "SearchField", "Tints", "components-searchfield--tints", .centered),
+("Components", "SearchField", "Dismissable", "components-searchfield--dismissable", .centered),
+("Components", "SearchField", "Filtering A List", "components-searchfield--filtering-a-list", .centered),
+("Components", "SearchField", "In A Pane Header", "components-searchfield--in-a-pane-header", .centered),
 ("Components", "SectionLabel", "Overview", "components-sectionlabel--overview", .page),
 ("Components", "SectionLabel", "Default", "components-sectionlabel--default", .centered),
 ("Components", "SectionLabel", "Faint", "components-sectionlabel--faint", .centered),
 ("Components", "SectionLabel", "Tints", "components-sectionlabel--tints", .centered),
 ("Components", "SectionLabel", "In A Panel", "components-sectionlabel--in-a-panel", .centered),
+("Components", "SegmentedControl", "Raised", "components-segmentedcontrol--raised", .centered),
+("Components", "SegmentedControl", "Filled", "components-segmentedcontrol--filled", .centered),
+("Components", "SegmentedControl", "Sizes", "components-segmentedcontrol--sizes", .centered),
+("Components", "SegmentedControl", "Tints", "components-segmentedcontrol--tints", .centered),
+("Components", "SegmentedControl", "Filled Tints", "components-segmentedcontrol--filled-tints", .centered),
+("Components", "SegmentedControl", "Stretch", "components-segmentedcontrol--stretch", .centered),
+("Components", "SegmentedControl", "Disabled", "components-segmentedcontrol--disabled", .centered),
+("Components", "SegmentedControl", "Two Segments", "components-segmentedcontrol--two-segments", .centered),
+("Components", "SegmentedControl", "In A Form", "components-segmentedcontrol--in-a-form", .centered),
+("Components", "Skeleton", "Overview", "components-skeleton--overview", .page),
+("Components", "Skeleton", "Shapes", "components-skeleton--shapes", .centered),
+("Components", "Skeleton", "Text", "components-skeleton--text", .centered),
+("Components", "Skeleton", "Lines", "components-skeleton--lines", .centered),
+("Components", "Skeleton", "A List Row", "components-skeleton--a-list-row", .centered),
+("Components", "Skeleton", "In A Card", "components-skeleton--in-a-card", .centered),
+("Components", "Slider", "Bare", "components-slider--bare", .centered),
+("Components", "Slider", "With Value", "components-slider--with-value", .centered),
+("Components", "Slider", "Range", "components-slider--range", .centered),
+("Components", "Slider", "Sizes", "components-slider--sizes", .centered),
+("Components", "Slider", "Tints", "components-slider--tints", .centered),
+("Components", "Slider", "Disabled", "components-slider--disabled", .centered),
+("Components", "Slider", "Interactive", "components-slider--interactive", .centered),
+("Components", "Slider", "In Settings", "components-slider--in-settings", .centered),
 ("Components", "Spinner", "Default", "components-spinner--default", .centered),
 ("Components", "Spinner", "Sizes", "components-spinner--sizes", .centered),
 ("Components", "Spinner", "Tints", "components-spinner--tints", .centered),
@@ -284,6 +491,14 @@ case "components/textfield/controlled": return AnyView(PortableScene142())
 ("Components", "Switch", "In Settings", "components-switch--in-settings", .centered),
 ("Components", "Table", "Inert", "components-table--inert", .centered),
 ("Components", "Table", "Alignment", "components-table--alignment", .centered),
+("Components", "Tag", "Overview", "components-tag--overview", .page),
+("Components", "Tag", "Selectable", "components-tag--selectable", .centered),
+("Components", "Tag", "Removable", "components-tag--removable", .centered),
+("Components", "Tag", "Sizes", "components-tag--sizes", .centered),
+("Components", "Tag", "Variants", "components-tag--variants", .centered),
+("Components", "Tag", "Tints", "components-tag--tints", .centered),
+("Components", "Tag", "Disabled", "components-tag--disabled", .centered),
+("Components", "Tag", "A Filter Bar", "components-tag--a-filter-bar", .centered),
 ("Components", "TextField", "Default", "components-textfield--default", .centered),
 ("Components", "TextField", "Placeholder", "components-textfield--placeholder", .centered),
 ("Components", "TextField", "Read Only", "components-textfield--read-only", .centered),
@@ -295,6 +510,19 @@ case "components/textfield/controlled": return AnyView(PortableScene142())
 ("Components", "TextField", "Mono", "components-textfield--mono", .centered),
 ("Components", "TextField", "Tints", "components-textfield--tints", .centered),
 ("Components", "TextField", "Controlled", "components-textfield--controlled", .centered),
+("Components", "Toggle", "Pressed", "components-toggle--pressed", .centered),
+("Components", "Toggle", "Sizes", "components-toggle--sizes", .centered),
+("Components", "Toggle", "Variants", "components-toggle--variants", .centered),
+("Components", "Toggle", "Tints", "components-toggle--tints", .centered),
+("Components", "Toggle", "Disabled", "components-toggle--disabled", .centered),
+("Components", "Toggle", "A Toolbar", "components-toggle--a-toolbar", .centered),
+("Components", "ToggleGroup", "Overview", "components-togglegroup--overview", .page),
+("Components", "ToggleGroup", "Glyphs", "components-togglegroup--glyphs", .centered),
+("Components", "ToggleGroup", "Words", "components-togglegroup--words", .centered),
+("Components", "ToggleGroup", "Single", "components-togglegroup--single", .centered),
+("Components", "ToggleGroup", "Variants", "components-togglegroup--variants", .centered),
+("Components", "ToggleGroup", "Tints", "components-togglegroup--tints", .centered),
+("Components", "ToggleGroup", "Disabled", "components-togglegroup--disabled", .centered),
   ]
   static func apply(_ groups: [StoryGroup]) -> [StoryGroup] {
     var result = groups
@@ -326,6 +554,10 @@ case "components/textfield/controlled": return AnyView(PortableScene142())
       })
     }
   }
+}
+/// A number as the shared declaration prints it: no trailing `.0`.
+private func sceneText(_ value: Double) -> String {
+  value == value.rounded() && abs(value) < 1e15 ? String(Int(value)) : String(value)
 }
 private struct PortableScene0: View {
 @Environment(\.theme) private var theme
@@ -1097,6 +1329,171 @@ FormField(label: "Endpoint", hint: "Must start with https://.", state: .error) {
 }
 private struct PortableScene83: View {
 @Environment(\.theme) private var theme
+@State private var value0 = "balanced"
+var body: some View { Col(spacing: nil, width: 384) { FormField(label: "Quality", hint: "Applies to new jobs only.", state: .default) { DazzUI.SegmentedControl(items: [SegmentedItem(value: "fast", label: "Fast", disabled: false), SegmentedItem(value: "balanced", label: "Balanced", disabled: false), SegmentedItem(value: "careful", label: "Careful", disabled: false)], value: value0, onValueChange: { value0 = $0 }, size: .medium, tint: .primary, activeStyle: .raised, stretch: true) }
+FormField(label: "Review", hint: nil, state: .default) { DazzUI.Checkbox(checked: true, onCheckedChange: nil, size: .medium, tint: .primary, enabled: true) { Text("Hold jobs for review before export") } } } }
+}
+private struct PortableScene84: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Icon(.flash20Regular) }
+}
+private struct PortableScene85: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Row(spacing: nil) { Icon(.flash20Regular, size: 12)
+Icon(.flash20Regular, size: 14)
+Icon(.flash20Regular, size: 16)
+Icon(.flash20Regular, size: 20)
+Icon(.flash20Regular, size: 24)
+Icon(.flash20Regular, size: 32) } }
+}
+private struct PortableScene86: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Row(spacing: nil) { Icon(.flash20Regular, size: theme.vars.spacing4)
+Icon(.flash20Regular, size: theme.vars.spacing6)
+Icon(.flash20Regular, size: theme.vars.spacing8) } }
+}
+private struct PortableScene87: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Row(spacing: nil) { Icon(.document16Regular, size: 24)
+Icon(.document20Regular, size: 24)
+Icon(.document24Regular, size: 24) } }
+}
+private struct PortableScene88: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Col(spacing: nil, width: nil) { Row(spacing: nil) { Badge(size: .medium, variant: .tinted, tint: .primary) { HStack(spacing: 0) { Icon(.checkmark20Regular, size: 12)
+Text("  ")
+Text("primary") } }
+Badge(size: .medium, variant: .tinted, tint: .neutral) { HStack(spacing: 0) { Icon(.checkmark20Regular, size: 12)
+Text("  ")
+Text("neutral") } }
+Badge(size: .medium, variant: .tinted, tint: .info) { HStack(spacing: 0) { Icon(.checkmark20Regular, size: 12)
+Text("  ")
+Text("info") } }
+Badge(size: .medium, variant: .tinted, tint: .success) { HStack(spacing: 0) { Icon(.checkmark20Regular, size: 12)
+Text("  ")
+Text("success") } }
+Badge(size: .medium, variant: .tinted, tint: .warning) { HStack(spacing: 0) { Icon(.checkmark20Regular, size: 12)
+Text("  ")
+Text("warning") } }
+Badge(size: .medium, variant: .tinted, tint: .danger) { HStack(spacing: 0) { Icon(.checkmark20Regular, size: 12)
+Text("  ")
+Text("danger") } } }
+Row(spacing: nil) { HStack(spacing: 0) { Icon(.document20Regular, size: 20) }
+HStack(spacing: 0) { Icon(.document20Regular, size: 20) }.foregroundStyle(theme.vars.colorContentMuted)
+HStack(spacing: 0) { Icon(.document20Regular, size: 20) }.foregroundStyle(theme.vars.colorContentSubtle) } } }
+}
+private struct PortableScene89: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Row(spacing: nil) { DazzUI.Button(size: .small, variant: .filled, tint: .primary, fullWidth: false, shortcut: nil, enabled: true, action: {  }) { Icon(.flash20Regular, size: 14)
+Text("Translate") }
+DazzUI.Button(size: .small, variant: .recessed, tint: .primary, fullWidth: false, shortcut: nil, enabled: true, action: {  }) { Icon(.document20Regular, size: 14)
+Text("Open document") } } }
+}
+private struct PortableScene90: View {
+@Environment(\.theme) private var theme
+
+var body: some View { VStack(alignment: .leading, spacing: 0) { Callout(size: .medium, tint: .success, title: "All 15 pages translated", leading: { Icon(.checkmark20Regular, size: 16) }, description: { Text("Layout and formulas were preserved.") }, trailing: { EmptyView() }) }.frame(width: 512, alignment: .leading) }
+}
+private struct PortableScene91: View {
+@Environment(\.theme) private var theme
+@State private var value0 = false
+@State private var value1 = true
+var body: some View { Page("IconButton", description: "A square button with no label of its own, so `label` is required and doubles as the native tooltip. It reads the same control recipes as Button, plus a pressed state for a toggle that stays down. It defaults to `plain` on the neutral ramp: a toolbar of these should read as chrome, not as a row of accented actions.") { Section("Variants", description: "The same five recipes a Button wears. `plain` is the default because most icon buttons are chrome; `filled` is for the one that leads — a compose, an add.") { Stack { Specimen("plain") { DazzUI.IconButton(label: "Copy (plain)", size: .tiny, variant: .plain, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "Disabled (plain)", size: .tiny, variant: .plain, tint: .neutral, enabled: false, action: {  }) { Icon(.copy20Regular, size: 16) } }
+Specimen("normal") { DazzUI.IconButton(label: "Copy (normal)", size: .tiny, variant: .normal, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "Disabled (normal)", size: .tiny, variant: .normal, tint: .neutral, enabled: false, action: {  }) { Icon(.copy20Regular, size: 16) } }
+Specimen("filled") { DazzUI.IconButton(label: "Copy (filled)", size: .tiny, variant: .filled, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "Disabled (filled)", size: .tiny, variant: .filled, tint: .neutral, enabled: false, action: {  }) { Icon(.copy20Regular, size: 16) } }
+Specimen("tinted") { DazzUI.IconButton(label: "Copy (tinted)", size: .tiny, variant: .tinted, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "Disabled (tinted)", size: .tiny, variant: .tinted, tint: .neutral, enabled: false, action: {  }) { Icon(.copy20Regular, size: 16) } }
+Specimen("outlined") { DazzUI.IconButton(label: "Copy (outlined)", size: .tiny, variant: .outlined, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "Disabled (outlined)", size: .tiny, variant: .outlined, tint: .neutral, enabled: false, action: {  }) { Icon(.copy20Regular, size: 16) } } } }
+Section("It does not latch", description: "A glyph button that stays down is a `Toggle`, which is square at this same control height when its label is a lone glyph — so a latching glyph and a plain one sit in one toolbar without a seam. Keeping an on-state here as well would be a second drawing for one state, and the system draws a selection one way: a tinted wash and a heavier label.") { Stack { Specimen("IconButton — acts and returns") { DazzUI.IconButton(label: "Copy", size: .tiny, variant: .plain, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) } }
+Specimen("Toggle — stays down") { DazzUI.Toggle(pressed: value0, size: .tiny, variant: .plain, tint: .neutral, enabled: true, glyphOnly: true, accessibilityName: "Pin window", action: { value0.toggle() }) { HStack(spacing: 0) { Icon(.pin20Regular, size: 16) } }
+DazzUI.Toggle(pressed: value1, size: .tiny, variant: .plain, tint: .neutral, enabled: true, glyphOnly: true, accessibilityName: "Pinned", action: { value1.toggle() }) { HStack(spacing: 0) { Icon(.pin20Regular, size: 16) } } } } }
+Section("Sizes", description: "The button is square at the shared control height, so it lines up with the labelled buttons and the fields beside it. Size the glyph a couple of steps under the box — a glyph filling its button reads as a full stop.") { Stack { Specimen("small") { DazzUI.IconButton(label: "Copy (small)", size: .small, variant: .plain, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 14) } }
+Specimen("medium") { DazzUI.IconButton(label: "Copy (medium)", size: .medium, variant: .plain, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) } }
+Specimen("large") { DazzUI.IconButton(label: "Copy (large)", size: .large, variant: .plain, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 20) } } } }
+Section("Tints", description: "Neutral by default, which is what a toolbar wants. Tint the one that carries a consequence — the delete — and leave the rest alone, or the row goes back to saying nothing.") { Stack { Specimen("plain") { DazzUI.IconButton(label: "primary", size: .tiny, variant: .plain, tint: .primary, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "neutral", size: .tiny, variant: .plain, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "info", size: .tiny, variant: .plain, tint: .info, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "success", size: .tiny, variant: .plain, tint: .success, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "warning", size: .tiny, variant: .plain, tint: .warning, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "danger", size: .tiny, variant: .plain, tint: .danger, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) } } } } } }
+}
+private struct PortableScene92: View {
+@Environment(\.theme) private var theme
+
+var body: some View { DazzUI.IconButton(label: "Copy translation", size: .tiny, variant: .plain, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) } }
+}
+private struct PortableScene93: View {
+@Environment(\.theme) private var theme
+
+var body: some View { DazzUI.IconButton(label: "New term", size: .tiny, variant: .filled, tint: .primary, enabled: true, action: {  }) { Icon(.add20Regular, size: 16) } }
+}
+private struct PortableScene94: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Row(spacing: nil) { DazzUI.IconButton(label: "plain", size: .tiny, variant: .plain, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "normal", size: .tiny, variant: .normal, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "filled", size: .tiny, variant: .filled, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "tinted", size: .tiny, variant: .tinted, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "outlined", size: .tiny, variant: .outlined, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) } } }
+}
+private struct PortableScene95: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Row(spacing: nil) { DazzUI.IconButton(label: "plain", size: .tiny, variant: .plain, tint: .neutral, enabled: false, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "normal", size: .tiny, variant: .normal, tint: .neutral, enabled: false, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "filled", size: .tiny, variant: .filled, tint: .neutral, enabled: false, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "tinted", size: .tiny, variant: .tinted, tint: .neutral, enabled: false, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "outlined", size: .tiny, variant: .outlined, tint: .neutral, enabled: false, action: {  }) { Icon(.copy20Regular, size: 16) } } }
+}
+private struct PortableScene96: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Row(spacing: nil) { DazzUI.IconButton(label: "Copy (small)", size: .small, variant: .plain, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 14) }
+DazzUI.IconButton(label: "Copy (medium)", size: .medium, variant: .plain, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "Copy (large)", size: .large, variant: .plain, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 20) } } }
+}
+private struct PortableScene97: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Col(spacing: nil, width: nil) { Row(spacing: nil) { DazzUI.IconButton(label: "plain primary", size: .tiny, variant: .plain, tint: .primary, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "plain neutral", size: .tiny, variant: .plain, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "plain info", size: .tiny, variant: .plain, tint: .info, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "plain success", size: .tiny, variant: .plain, tint: .success, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "plain warning", size: .tiny, variant: .plain, tint: .warning, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "plain danger", size: .tiny, variant: .plain, tint: .danger, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) } }
+Row(spacing: nil) { DazzUI.IconButton(label: "tinted primary", size: .tiny, variant: .tinted, tint: .primary, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "tinted neutral", size: .tiny, variant: .tinted, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "tinted info", size: .tiny, variant: .tinted, tint: .info, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "tinted success", size: .tiny, variant: .tinted, tint: .success, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "tinted warning", size: .tiny, variant: .tinted, tint: .warning, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "tinted danger", size: .tiny, variant: .tinted, tint: .danger, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) } }
+Row(spacing: nil) { DazzUI.IconButton(label: "filled primary", size: .tiny, variant: .filled, tint: .primary, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "filled neutral", size: .tiny, variant: .filled, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "filled info", size: .tiny, variant: .filled, tint: .info, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "filled success", size: .tiny, variant: .filled, tint: .success, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "filled warning", size: .tiny, variant: .filled, tint: .warning, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.IconButton(label: "filled danger", size: .tiny, variant: .filled, tint: .danger, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) } } } }
+}
+private struct PortableScene98: View {
+@Environment(\.theme) private var theme
+@State private var value0 = false
+var body: some View { ActionBar(align: .start) { DazzUI.IconButton(label: "Copy translation", size: .tiny, variant: .plain, tint: .neutral, enabled: true, action: {  }) { Icon(.copy20Regular, size: 16) }
+DazzUI.Toggle(pressed: value0, size: .tiny, variant: .plain, tint: .neutral, enabled: true, glyphOnly: true, accessibilityName: "Pin window", action: { value0.toggle() }) { HStack(spacing: 0) { Icon(.pin20Regular, size: 16) } }
+DazzUI.Divider(tone: .default, orientation: .vertical)
+DazzUI.IconButton(label: "Delete", size: .tiny, variant: .plain, tint: .danger, enabled: true, action: {  }) { Icon(.delete20Regular, size: 16) } }.fixedSize(horizontal: false, vertical: true) }
+}
+private struct PortableScene99: View {
+@Environment(\.theme) private var theme
 
 var body: some View { Page("KeyCap", description: "One key, drawn three ways. It reads the theme's ink and surface roles directly and takes no tint — a key looks like a key whatever is around it. A cap says what the key *is*; where the key can be changed, that is a ShortcutRecorder instead.") { Section("Variants", description: "`hint` — the default — is bare faint text in the display cut: the `⌘F` beside an empty search field, the `⌥2` in a card's corner, an aside the eye may skip. `strong` is the same a step darker, for a hint that has to survive on a busy row. `key` alone draws the cap — a recessed, chip-cornered fill with no border, since a key is pressed *into* the surface rather than raised off it — and is what a settings page lists shortcuts in.") { Stack { Specimen("hint") { KeyCap(size: .medium, variant: .hint) { Text("⌥2") } }
 Specimen("strong") { KeyCap(size: .medium, variant: .strong) { Text("⌘K") } }
@@ -1132,29 +1529,29 @@ Specimen("in prose") { HStack(spacing: 0) { Text("Open the command palette with 
 KeyCap(size: .small, variant: .hint) { Text("⌘K") }
 Text(", then type a document name.") } } } } } }
 }
-private struct PortableScene84: View {
+private struct PortableScene100: View {
 @Environment(\.theme) private var theme
 
 var body: some View { KeyCap(size: .medium, variant: .hint) { Text("⌥2") } }
 }
-private struct PortableScene85: View {
+private struct PortableScene101: View {
 @Environment(\.theme) private var theme
 
 var body: some View { KeyCap(size: .medium, variant: .strong) { Text("⌘K") } }
 }
-private struct PortableScene86: View {
+private struct PortableScene102: View {
 @Environment(\.theme) private var theme
 
 var body: some View { KeyCap(size: .medium, variant: .key) { Text("⌘⇧T") } }
 }
-private struct PortableScene87: View {
+private struct PortableScene103: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Row(spacing: theme.vars.spacing5) { KeyCap(size: .medium, variant: .hint) { Text("⌘K") }
 KeyCap(size: .medium, variant: .strong) { Text("⌘K") }
 KeyCap(size: .medium, variant: .key) { Text("⌘K") } } }
 }
-private struct PortableScene88: View {
+private struct PortableScene104: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Col(spacing: nil, width: nil) { Row(spacing: theme.vars.spacing1) { KeyCap(size: .small, variant: .key) { Text("⌘") }
@@ -1170,14 +1567,14 @@ KeyCap(size: .large, variant: .key) { Text("⇧") }
 KeyCap(size: .large, variant: .key) { Text("K") }
 KeyCap(size: .large, variant: .key) { Text("Esc") } } } }
 }
-private struct PortableScene89: View {
+private struct PortableScene105: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Row(spacing: theme.vars.spacing1) { KeyCap(size: .small, variant: .key) { Text("⌘") }
 KeyCap(size: .small, variant: .key) { Text("⇧") }
 KeyCap(size: .small, variant: .key) { Text("K") } } }
 }
-private struct PortableScene90: View {
+private struct PortableScene106: View {
 @Environment(\.theme) private var theme
 
 var body: some View { HStack(spacing: theme.vars.spacing1) { KeyCap(size: .small, variant: .key) { Text("Ctrl") }
@@ -1186,7 +1583,7 @@ KeyCap(size: .small, variant: .key) { Text("Shift") }
 Text("+")
 KeyCap(size: .small, variant: .key) { Text("P") } }.foregroundStyle(theme.vars.colorContentMuted) }
 }
-private struct PortableScene91: View {
+private struct PortableScene107: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Row(spacing: theme.vars.spacing1) { KeyCap(size: .small, variant: .key) { Text("Esc") }
@@ -1195,18 +1592,308 @@ KeyCap(size: .small, variant: .key) { Text("Space") }
 KeyCap(size: .small, variant: .key) { Text("↩") }
 KeyCap(size: .small, variant: .key) { Text("⌫") } } }
 }
-private struct PortableScene92: View {
+private struct PortableScene108: View {
 @Environment(\.theme) private var theme
 
 var body: some View { VStack(alignment: .leading, spacing: 0) { PreferenceSection(label: "Shortcuts", action: { EmptyView() }) { PreferenceRow(title: "Command palette", subtitle: "Cannot be changed", icon: { EmptyView() }) { HStack(spacing: theme.vars.spacing1) { KeyCap(size: .small, variant: .key) { Text("⌘") }
 KeyCap(size: .small, variant: .key) { Text("K") } } } } }.frame(width: 448, alignment: .leading) }
 }
-private struct PortableScene93: View {
+private struct PortableScene109: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Page("Link", description: "Text that goes somewhere. It is the one interactive thing in this package that is genuinely inline, which is why it exists beside Button variant='plain' rather than inside it: a button keeps its box at every variant, and a box is what a link in a sentence must not have. It takes the shared state machine for its colour — the plain recipe, a grade darker on hover — and none of its geometry.") { Section("Underline", description: "`hover` is the default, because a paragraph with a rule under every link reads as struck through. `always` is for a link that has to be findable without a pointer — a list of references, a footer. `none` is for one whose surroundings already say it is a link: a breadcrumb, a row that is entirely a target.") { Stack { Specimen("hover") { DazzUI.Link("Open the changelog", tint: .primary, underline: .hover, external: false, enabled: true, action: {}) }
+Specimen("always") { DazzUI.Link("Open the changelog", tint: .primary, underline: .always, external: false, enabled: true, action: {}) }
+Specimen("none") { DazzUI.Link("Open the changelog", tint: .primary, underline: .none, external: false, enabled: true, action: {}) } } }
+Section("External", description: "Sets the target and the rel that keeps the opener out of the new page's reach, and draws the arrow that says so before the reader commits. The arrow is inline, so it wraps with the last word rather than stranding itself on a line of its own.") { Stack { Specimen("same window") { DazzUI.Link("Release notes", tint: .primary, underline: .hover, external: false, enabled: true, action: {}) }
+Specimen("external") { DazzUI.Link("Base UI", tint: .primary, underline: .hover, external: true, enabled: true, action: {}) } } }
+Section("Tints", description: "A link is accent text, so it reads the plain recipe's content grade off whichever ramp it is tinted with. Danger is the one worth reaching for — a link that deletes something.") { Stack { Specimen("primary") { DazzUI.Link("Continue", tint: .primary, underline: .hover, external: false, enabled: true, action: {}) }
+Specimen("neutral") { DazzUI.Link("Continue", tint: .neutral, underline: .hover, external: false, enabled: true, action: {}) }
+Specimen("info") { DazzUI.Link("Continue", tint: .info, underline: .hover, external: false, enabled: true, action: {}) }
+Specimen("success") { DazzUI.Link("Continue", tint: .success, underline: .hover, external: false, enabled: true, action: {}) }
+Specimen("warning") { DazzUI.Link("Continue", tint: .warning, underline: .hover, external: false, enabled: true, action: {}) }
+Specimen("danger") { DazzUI.Link("Continue", tint: .danger, underline: .hover, external: false, enabled: true, action: {}) } } } } }
+}
+private struct PortableScene110: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Col(spacing: nil, width: nil) { DazzUI.Link("Open the changelog", tint: .primary, underline: .hover, external: false, enabled: true, action: {})
+DazzUI.Link("Open the changelog", tint: .primary, underline: .always, external: false, enabled: true, action: {})
+DazzUI.Link("Open the changelog", tint: .primary, underline: .none, external: false, enabled: true, action: {}) } }
+}
+private struct PortableScene111: View {
+@Environment(\.theme) private var theme
+
+var body: some View { DazzUI.Link("Base UI", tint: .primary, underline: .hover, external: true, enabled: true, action: {}) }
+}
+private struct PortableScene112: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Col(spacing: nil, width: nil) { DazzUI.Link("Continue", tint: .primary, underline: .hover, external: false, enabled: true, action: {})
+DazzUI.Link("Continue", tint: .neutral, underline: .hover, external: false, enabled: true, action: {})
+DazzUI.Link("Continue", tint: .info, underline: .hover, external: false, enabled: true, action: {})
+DazzUI.Link("Continue", tint: .success, underline: .hover, external: false, enabled: true, action: {})
+DazzUI.Link("Continue", tint: .warning, underline: .hover, external: false, enabled: true, action: {})
+DazzUI.Link("Continue", tint: .danger, underline: .hover, external: false, enabled: true, action: {}) } }
+}
+private struct PortableScene113: View {
+@Environment(\.theme) private var theme
+
+var body: some View { DazzUI.Link("Not available yet", tint: .primary, underline: .hover, external: false, enabled: false, action: {}) }
+}
+private struct PortableScene114: View {
+@Environment(\.theme) private var theme
+
+var body: some View { VStack(alignment: .leading, spacing: 0) { Meter(value: 62, minimum: 0, maximum: 100, size: .medium, tint: .primary, label: nil, valueLabel: nil) }.frame(width: 288, alignment: .leading) }
+}
+private struct PortableScene115: View {
+@Environment(\.theme) private var theme
+
+var body: some View { VStack(alignment: .leading, spacing: 0) { Meter(value: 62, minimum: 0, maximum: 100, size: .medium, tint: .primary, label: "Storage", valueLabel: "62%") }.frame(width: 320, alignment: .leading) }
+}
+private struct PortableScene116: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Col(spacing: nil, width: 320) { Meter(value: 62, minimum: 0, maximum: 100, size: .small, tint: .primary, label: nil, valueLabel: nil)
+Meter(value: 62, minimum: 0, maximum: 100, size: .medium, tint: .primary, label: nil, valueLabel: nil)
+Meter(value: 62, minimum: 0, maximum: 100, size: .large, tint: .primary, label: nil, valueLabel: nil) } }
+}
+private struct PortableScene117: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Col(spacing: nil, width: 320) { Meter(value: 62, minimum: 0, maximum: 100, size: .medium, tint: .primary, label: nil, valueLabel: nil)
+Meter(value: 62, minimum: 0, maximum: 100, size: .medium, tint: .neutral, label: nil, valueLabel: nil)
+Meter(value: 62, minimum: 0, maximum: 100, size: .medium, tint: .info, label: nil, valueLabel: nil)
+Meter(value: 62, minimum: 0, maximum: 100, size: .medium, tint: .success, label: nil, valueLabel: nil)
+Meter(value: 62, minimum: 0, maximum: 100, size: .medium, tint: .warning, label: nil, valueLabel: nil)
+Meter(value: 62, minimum: 0, maximum: 100, size: .medium, tint: .danger, label: nil, valueLabel: nil) } }
+}
+private struct PortableScene118: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Col(spacing: theme.vars.spacing4, width: 352) { Meter(value: 62, minimum: 0, maximum: 100, size: .medium, tint: .primary, label: "Storage", valueLabel: "62%")
+Meter(value: 41, minimum: 0, maximum: 100, size: .medium, tint: .info, label: "Bandwidth", valueLabel: "41%")
+Meter(value: 88, minimum: 0, maximum: 100, size: .medium, tint: .warning, label: "Build minutes", valueLabel: "88%")
+Meter(value: 100, minimum: 0, maximum: 100, size: .medium, tint: .danger, label: "Seats", valueLabel: "100%") } }
+}
+private struct PortableScene119: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "12"
+var body: some View { VStack(alignment: .leading, spacing: 0) { NumberField(value: Binding(get: { Double(value0) }, set: { value0 = $0.map(sceneText) ?? "" }), minimum: nil, maximum: nil, step: 1, placeholder: "", unit: nil, size: .medium, state: .default, tint: .primary, enabled: true) }.frame(width: 160, alignment: .leading) }
+}
+private struct PortableScene120: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "13"
+var body: some View { VStack(alignment: .leading, spacing: 0) { NumberField(value: Binding(get: { Double(value0) }, set: { value0 = $0.map(sceneText) ?? "" }), minimum: 8, maximum: 24, step: 1, placeholder: "", unit: "px", size: .medium, state: .default, tint: .primary, enabled: true) }.frame(width: 160, alignment: .leading) }
+}
+private struct PortableScene121: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "12"
+@State private var value1 = "12"
+@State private var value2 = "12"
+var body: some View { Col(spacing: nil, width: 160) { NumberField(value: Binding(get: { Double(value0) }, set: { value0 = $0.map(sceneText) ?? "" }), minimum: nil, maximum: nil, step: 1, placeholder: "", unit: nil, size: .small, state: .default, tint: .primary, enabled: true)
+NumberField(value: Binding(get: { Double(value1) }, set: { value1 = $0.map(sceneText) ?? "" }), minimum: nil, maximum: nil, step: 1, placeholder: "", unit: nil, size: .medium, state: .default, tint: .primary, enabled: true)
+NumberField(value: Binding(get: { Double(value2) }, set: { value2 = $0.map(sceneText) ?? "" }), minimum: nil, maximum: nil, step: 1, placeholder: "", unit: nil, size: .large, state: .default, tint: .primary, enabled: true) } }
+}
+private struct PortableScene122: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "12"
+@State private var value1 = "0"
+@State private var value2 = "12"
+var body: some View { Col(spacing: nil, width: 160) { NumberField(value: Binding(get: { Double(value0) }, set: { value0 = $0.map(sceneText) ?? "" }), minimum: nil, maximum: nil, step: 1, placeholder: "", unit: nil, size: .medium, state: .default, tint: .primary, enabled: true)
+NumberField(value: Binding(get: { Double(value1) }, set: { value1 = $0.map(sceneText) ?? "" }), minimum: nil, maximum: nil, step: 1, placeholder: "", unit: nil, size: .medium, state: .error, tint: .primary, enabled: true)
+NumberField(value: Binding(get: { Double(value2) }, set: { value2 = $0.map(sceneText) ?? "" }), minimum: nil, maximum: nil, step: 1, placeholder: "", unit: nil, size: .medium, state: .default, tint: .primary, enabled: false) } }
+}
+private struct PortableScene123: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "5173"
+var body: some View { VStack(alignment: .leading, spacing: 0) { FormField(label: "Dev server port", hint: ((value0 == "") ? "Required" : "Restart to apply"), state: (((value0 == "") ? "error" : "default") == "error" ? .error : .default)) { NumberField(value: Binding(get: { Double(value0) }, set: { value0 = $0.map(sceneText) ?? "" }), minimum: 1024, maximum: 65535, step: 1, placeholder: "", unit: nil, size: .medium, state: (((value0 == "") ? "error" : "default") == "error" ? .error : .default), tint: .primary, enabled: true) } }.frame(width: 288, alignment: .leading) }
+}
+private struct PortableScene124: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "13"
+@State private var value1 = "2"
+var body: some View { VStack(alignment: .leading, spacing: 0) { PreferenceSection(label: "Editor", action: { EmptyView() }) { PreferenceRow(title: "Font size", subtitle: "Applies to every project", icon: { EmptyView() }) { VStack(alignment: .leading, spacing: 0) { NumberField(value: Binding(get: { Double(value0) }, set: { value0 = $0.map(sceneText) ?? "" }), minimum: 8, maximum: 24, step: 1, placeholder: "", unit: "px", size: .small, state: .default, tint: .primary, enabled: true) }.frame(width: 112, alignment: .leading) }
+PreferenceRow(title: "Tab width", subtitle: nil, icon: { EmptyView() }) { VStack(alignment: .leading, spacing: 0) { NumberField(value: Binding(get: { Double(value1) }, set: { value1 = $0.map(sceneText) ?? "" }), minimum: 1, maximum: 8, step: 1, placeholder: "", unit: nil, size: .small, state: .default, tint: .primary, enabled: true) }.frame(width: 112, alignment: .leading) } } }.frame(width: 480, alignment: .leading) }
+}
+private struct PortableScene125: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Page("OptionCard", description: "The shape a small set of mutually exclusive choices takes when each needs a line of explanation and a radio row would not carry it. Wrap a set in a radiogroup. The description is optional, and a set that does not need one is really a SegmentedControl.") { Section("Picking one", description: "Selection is the tinted recipe with the outlined recipe's border on top: the fill says which one is chosen, and the border makes it survive a glance across its neighbours. An option that cannot be picked stays in the row rather than being dropped, so the set keeps its shape and the reason can be written into the description.") { Flow(spacing: theme.vars.spacing2) { OptionCard(selected: true, tint: .primary, enabled: true, action: {  }, title: { Text("DOCX") }, description: { Text("Keeps styles and comments.") })
+OptionCard(selected: false, tint: .primary, enabled: true, action: {  }, title: { Text("PDF") }, description: { Text("Fixed layout, no editing.") })
+OptionCard(selected: false, tint: .primary, enabled: false, action: {  }, title: { Text("InDesign") }, description: { Text("Needs a paid plan.") }) } }
+Section("Tints", description: "The selected treatment across every ramp. A set normally keeps one tint: the colour says “chosen”, and if it varied per card it would be saying something about the card instead.") { Flow(spacing: theme.vars.spacing2) { OptionCard(selected: true, tint: .primary, enabled: true, action: {  }, title: { Text("primary") }, description: { EmptyView() })
+OptionCard(selected: true, tint: .neutral, enabled: true, action: {  }, title: { Text("neutral") }, description: { EmptyView() })
+OptionCard(selected: true, tint: .info, enabled: true, action: {  }, title: { Text("info") }, description: { EmptyView() })
+OptionCard(selected: true, tint: .success, enabled: true, action: {  }, title: { Text("success") }, description: { EmptyView() })
+OptionCard(selected: true, tint: .warning, enabled: true, action: {  }, title: { Text("warning") }, description: { EmptyView() })
+OptionCard(selected: true, tint: .danger, enabled: true, action: {  }, title: { Text("danger") }, description: { EmptyView() }) } } } }
+}
+private struct PortableScene126: View {
+@Environment(\.theme) private var theme
+
+var body: some View { OptionCard(selected: true, tint: .primary, enabled: true, action: {  }, title: { Text("DOCX") }, description: { Text("Keeps styles and comments.") }) }
+}
+private struct PortableScene127: View {
+@Environment(\.theme) private var theme
+
+var body: some View { OptionCard(selected: false, tint: .primary, enabled: true, action: {  }, title: { Text("PDF") }, description: { Text("Fixed layout, no further editing.") }) }
+}
+private struct PortableScene128: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "docx"
+var body: some View { Flow(spacing: theme.vars.spacing2) { OptionCard(selected: (value0 == "docx"), tint: .primary, enabled: true, action: { value0 = "docx" }, title: { Text("DOCX") }, description: { Text("Keeps styles and comments.") })
+OptionCard(selected: (value0 == "pdf"), tint: .primary, enabled: true, action: { value0 = "pdf" }, title: { Text("PDF") }, description: { Text("Fixed layout, no further editing.") })
+OptionCard(selected: (value0 == "md"), tint: .primary, enabled: true, action: { value0 = "md" }, title: { Text("Markdown") }, description: { Text("Plain text, images linked.") }) } }
+}
+private struct PortableScene129: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "balanced"
+var body: some View { Flow(spacing: theme.vars.spacing2) { OptionCard(selected: (value0 == "fast"), tint: .primary, enabled: true, action: { value0 = "fast" }, title: { Text("Fast") }, description: { EmptyView() })
+OptionCard(selected: (value0 == "balanced"), tint: .primary, enabled: true, action: { value0 = "balanced" }, title: { Text("Balanced") }, description: { EmptyView() })
+OptionCard(selected: (value0 == "careful"), tint: .primary, enabled: true, action: { value0 = "careful" }, title: { Text("Careful") }, description: { EmptyView() }) } }
+}
+private struct PortableScene130: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Flow(spacing: theme.vars.spacing2) { OptionCard(selected: true, tint: .primary, enabled: true, action: {  }, title: { Text("DOCX") }, description: { Text("Keeps styles and comments.") })
+OptionCard(selected: false, tint: .primary, enabled: true, action: {  }, title: { Text("PDF") }, description: { Text("Fixed layout, no editing.") })
+OptionCard(selected: false, tint: .primary, enabled: false, action: {  }, title: { Text("InDesign") }, description: { Text("Needs a paid plan.") }) } }
+}
+private struct PortableScene131: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Flow(spacing: theme.vars.spacing2) { OptionCard(selected: true, tint: .primary, enabled: true, action: {  }, title: { Text("primary") }, description: { EmptyView() })
+OptionCard(selected: true, tint: .neutral, enabled: true, action: {  }, title: { Text("neutral") }, description: { EmptyView() })
+OptionCard(selected: true, tint: .info, enabled: true, action: {  }, title: { Text("info") }, description: { EmptyView() })
+OptionCard(selected: true, tint: .success, enabled: true, action: {  }, title: { Text("success") }, description: { EmptyView() })
+OptionCard(selected: true, tint: .warning, enabled: true, action: {  }, title: { Text("warning") }, description: { EmptyView() })
+OptionCard(selected: true, tint: .danger, enabled: true, action: {  }, title: { Text("danger") }, description: { EmptyView() }) } }
+}
+private struct PortableScene132: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "pro"
+var body: some View { VStack(alignment: .leading, spacing: 0) { Grid(min: 208) { OptionCard(selected: (value0 == "free"), tint: .primary, enabled: true, action: { value0 = "free" }, title: { HStack(spacing: theme.vars.spacing2) { Text("Free") } }, description: { Text("20,000 characters a month, one provider.") })
+OptionCard(selected: (value0 == "pro"), tint: .primary, enabled: true, action: { value0 = "pro" }, title: { HStack(spacing: theme.vars.spacing2) { Text("Pro")
+Badge(size: .small, variant: .tinted, tint: .primary) { HStack(spacing: 0) { Text("Current") } } } }, description: { Text("Unlimited characters, every provider, shared glossaries.") })
+OptionCard(selected: (value0 == "team"), tint: .primary, enabled: true, action: { value0 = "team" }, title: { HStack(spacing: theme.vars.spacing2) { Text("Team") } }, description: { Text("Everything in Pro, plus review workflows and seats.") }) } }.frame(width: 704, alignment: .leading) }
+}
+private struct PortableScene133: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "204"
+@State private var value1 = "204"
+@State private var value2 = "204"
+@State private var value3 = "204815"
+@State private var value4 = "204815"
+@State private var value5 = "20"
+@State private var value6 = "204815"
+var body: some View { Page("OtpField", description: "The one-time code a reader is copying out of a message. It is a run of cells rather than a single field because that is what makes it fast: Base UI moves the caret between them, takes a paste of the whole code into all of them at once, hands the browser the autofill hint that pulls the code out of an SMS, and can submit the form the moment the last cell fills.") { Section("Sizes", description: "Each cell is the text controls' box at one character wide, so a code sits on the same rhythm as the fields around it — a code entered in a box of its own design would be the only control on the page that was. The mono face and tabular figures keep the digits on one width.") { Stack { Specimen("small") { OtpField(value: $value0, length: 6, groupAfter: nil, mask: false, size: .small, state: .default, tint: .primary, enabled: true) }
+Specimen("medium") { OtpField(value: $value1, length: 6, groupAfter: nil, mask: false, size: .medium, state: .default, tint: .primary, enabled: true) }
+Specimen("large") { OtpField(value: $value2, length: 6, groupAfter: nil, mask: false, size: .large, state: .default, tint: .primary, enabled: true) } } }
+Section("Grouping", description: "`groupAfter` breaks the run where a printed code breaks — three and three is how a six-digit code is read aloud. It is a step of air rather than a rule, because a rule would read as two fields.") { Stack { Specimen("ungrouped") { OtpField(value: $value3, length: 6, groupAfter: nil, mask: false, size: .medium, state: .default, tint: .primary, enabled: true) }
+Specimen("groupAfter 3") { OtpField(value: $value4, length: 6, groupAfter: 3, mask: false, size: .medium, state: .default, tint: .primary, enabled: true) } } }
+Section("Masked and disabled", description: "`mask` is for a code that is a secret rather than a one-time token — a PIN. A filled cell lifts to the paper and keeps it, so the run says how far through the code the reader is without the caret having to be the only thing that does.") { Stack { Specimen("masked") { OtpField(value: $value5, length: 4, groupAfter: nil, mask: true, size: .medium, state: .default, tint: .primary, enabled: true) }
+Specimen("disabled") { OtpField(value: $value6, length: 6, groupAfter: nil, mask: false, size: .medium, state: .default, tint: .primary, enabled: false) } } } } }
+}
+private struct PortableScene134: View {
+@Environment(\.theme) private var theme
+@State private var value0 = ""
+var body: some View { OtpField(value: $value0, length: 6, groupAfter: nil, mask: false, size: .medium, state: .default, tint: .primary, enabled: true) }
+}
+private struct PortableScene135: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "204815"
+var body: some View { OtpField(value: $value0, length: 6, groupAfter: nil, mask: false, size: .medium, state: .default, tint: .primary, enabled: true) }
+}
+private struct PortableScene136: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "204815"
+var body: some View { OtpField(value: $value0, length: 6, groupAfter: 3, mask: false, size: .medium, state: .default, tint: .primary, enabled: true) }
+}
+private struct PortableScene137: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "204"
+@State private var value1 = "204"
+@State private var value2 = "204"
+var body: some View { Col(spacing: nil, width: nil) { OtpField(value: $value0, length: 6, groupAfter: nil, mask: false, size: .small, state: .default, tint: .primary, enabled: true)
+OtpField(value: $value1, length: 6, groupAfter: nil, mask: false, size: .medium, state: .default, tint: .primary, enabled: true)
+OtpField(value: $value2, length: 6, groupAfter: nil, mask: false, size: .large, state: .default, tint: .primary, enabled: true) } }
+}
+private struct PortableScene138: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "2048"
+var body: some View { OtpField(value: $value0, length: 4, groupAfter: nil, mask: true, size: .medium, state: .default, tint: .primary, enabled: true) }
+}
+private struct PortableScene139: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "204815"
+var body: some View { OtpField(value: $value0, length: 6, groupAfter: nil, mask: false, size: .medium, state: .default, tint: .primary, enabled: false) }
+}
+private struct PortableScene140: View {
+@Environment(\.theme) private var theme
+@State private var value0 = ""
+var body: some View { Col(spacing: theme.vars.spacing4, width: 320) { Callout(size: .medium, tint: .info, title: nil, leading: { EmptyView() }, description: { Text("We sent a six-digit code to ada@example.com.") }, trailing: { EmptyView() })
+FormField(label: "Verification code", hint: (((Double(Double(value0.unicodeScalars.count)) == Double(6)) && (!(value0 == "204815"))) ? "That code did not match" : "It expires in 10 minutes"), state: ((((Double(Double(value0.unicodeScalars.count)) == Double(6)) && (!(value0 == "204815"))) ? "error" : "default") == "error" ? .error : .default)) { OtpField(value: $value0, length: 6, groupAfter: 3, mask: false, size: .medium, state: ((((Double(Double(value0.unicodeScalars.count)) == Double(6)) && (!(value0 == "204815"))) ? "error" : "default") == "error" ? .error : .default), tint: .primary, enabled: true) }
+DazzUI.Button(size: .small, variant: .filled, tint: .primary, fullWidth: false, shortcut: nil, enabled: !((!(Double(Double(value0.unicodeScalars.count)) >= Double(6)))), action: {  }) { Text("Verify") } } }
+}
+private struct PortableScene141: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Page("PillTabs", description: "Free-standing filter pills. Unlike a segmented control there is no track holding them together, so each pill needs its own fill to be a target at all — which also means they can wrap, and a filter row usually has to. That is the reason to reach for them over a segmented control: a filter row grows with the data.") { Section("Filtering", description: "A count rides inside the pill, dimmed against the label it follows rather than set beside it as a badge — a badge would be a second thing to read, and the number here is an attribute of the filter rather than a state of its own. A filter with nothing behind it stays in the row rather than disappearing, so the set does not reflow every time a permission changes.") { PillTabs(items: [PillTabItem(value: "all", label: "All history", count: nil, disabled: false), PillTabItem(value: "starred", label: "Starred", count: 64, disabled: false), PillTabItem(value: "edited", label: "Edited by me", count: 18, disabled: false), PillTabItem(value: "shared", label: "Shared", count: nil, disabled: true)], value: "all", onValueChange: nil, tint: .primary).accessibilityLabel("History filter") }
+Section("Tints", description: "The selected pill is the filled recipe, so the ramp is what picks it out. A filter row keeps one tint: the colour means “this one is on”, and varying it per pill would make it mean something about the pill.") { Stack { Specimen("primary") { PillTabs(items: [PillTabItem(value: "all", label: "All", count: nil, disabled: false), PillTabItem(value: "open", label: "Open", count: nil, disabled: false), PillTabItem(value: "done", label: "Done", count: nil, disabled: false)], value: "open", onValueChange: nil, tint: .primary).accessibilityLabel("primary") }
+Specimen("neutral") { PillTabs(items: [PillTabItem(value: "all", label: "All", count: nil, disabled: false), PillTabItem(value: "open", label: "Open", count: nil, disabled: false), PillTabItem(value: "done", label: "Done", count: nil, disabled: false)], value: "open", onValueChange: nil, tint: .neutral).accessibilityLabel("neutral") }
+Specimen("info") { PillTabs(items: [PillTabItem(value: "all", label: "All", count: nil, disabled: false), PillTabItem(value: "open", label: "Open", count: nil, disabled: false), PillTabItem(value: "done", label: "Done", count: nil, disabled: false)], value: "open", onValueChange: nil, tint: .info).accessibilityLabel("info") }
+Specimen("success") { PillTabs(items: [PillTabItem(value: "all", label: "All", count: nil, disabled: false), PillTabItem(value: "open", label: "Open", count: nil, disabled: false), PillTabItem(value: "done", label: "Done", count: nil, disabled: false)], value: "open", onValueChange: nil, tint: .success).accessibilityLabel("success") }
+Specimen("warning") { PillTabs(items: [PillTabItem(value: "all", label: "All", count: nil, disabled: false), PillTabItem(value: "open", label: "Open", count: nil, disabled: false), PillTabItem(value: "done", label: "Done", count: nil, disabled: false)], value: "open", onValueChange: nil, tint: .warning).accessibilityLabel("warning") }
+Specimen("danger") { PillTabs(items: [PillTabItem(value: "all", label: "All", count: nil, disabled: false), PillTabItem(value: "open", label: "Open", count: nil, disabled: false), PillTabItem(value: "done", label: "Done", count: nil, disabled: false)], value: "open", onValueChange: nil, tint: .danger).accessibilityLabel("danger") } } }
+Section("Wrapping", description: "Nine of them in a narrow column. A track that had to hold this many segments would run off the pane.") { VStack(alignment: .leading, spacing: 0) { PillTabs(items: [PillTabItem(value: "zh", label: "Chinese", count: 168, disabled: false), PillTabItem(value: "ja", label: "Japanese", count: 96, disabled: false), PillTabItem(value: "de", label: "German", count: 64, disabled: false), PillTabItem(value: "fr", label: "French", count: 48, disabled: false), PillTabItem(value: "es", label: "Spanish", count: 32, disabled: false), PillTabItem(value: "pt", label: "Portuguese", count: 24, disabled: false), PillTabItem(value: "it", label: "Italian", count: 12, disabled: false), PillTabItem(value: "ko", label: "Korean", count: 8, disabled: false), PillTabItem(value: "nl", label: "Dutch", count: 4, disabled: false)], value: "zh", onValueChange: nil, tint: .primary).accessibilityLabel("Target language") }.frame(maxWidth: 352, alignment: .leading) } } }
+}
+private struct PortableScene142: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "all"
+var body: some View { PillTabs(items: [PillTabItem(value: "all", label: "All", count: nil, disabled: false), PillTabItem(value: "open", label: "Open", count: nil, disabled: false), PillTabItem(value: "done", label: "Done", count: nil, disabled: false)], value: value0, onValueChange: { value0 = $0 }, tint: .primary).accessibilityLabel("History filter") }
+}
+private struct PortableScene143: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "needs-review"
+var body: some View { PillTabs(items: [PillTabItem(value: "all", label: "All", count: 392, disabled: false), PillTabItem(value: "needs-review", label: "Needs review", count: 24, disabled: false), PillTabItem(value: "done", label: "Done", count: 168, disabled: false), PillTabItem(value: "empty", label: "Untranslated", count: 0, disabled: false)], value: value0, onValueChange: { value0 = $0 }, tint: .primary).accessibilityLabel("Segment filter") }
+}
+private struct PortableScene144: View {
+@Environment(\.theme) private var theme
+
+var body: some View { PillTabs(items: [PillTabItem(value: "all", label: "All history", count: nil, disabled: false), PillTabItem(value: "starred", label: "Starred", count: 64, disabled: false), PillTabItem(value: "edited", label: "Edited by me", count: 18, disabled: false), PillTabItem(value: "shared", label: "Shared", count: nil, disabled: true)], value: "all", onValueChange: nil, tint: .primary).accessibilityLabel("History filter") }
+}
+private struct PortableScene145: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Col(spacing: nil, width: nil) { PillTabs(items: [PillTabItem(value: "all", label: "All", count: nil, disabled: false), PillTabItem(value: "open", label: "Open", count: nil, disabled: false), PillTabItem(value: "done", label: "Done", count: nil, disabled: false)], value: "open", onValueChange: nil, tint: .primary).accessibilityLabel("primary")
+PillTabs(items: [PillTabItem(value: "all", label: "All", count: nil, disabled: false), PillTabItem(value: "open", label: "Open", count: nil, disabled: false), PillTabItem(value: "done", label: "Done", count: nil, disabled: false)], value: "open", onValueChange: nil, tint: .neutral).accessibilityLabel("neutral")
+PillTabs(items: [PillTabItem(value: "all", label: "All", count: nil, disabled: false), PillTabItem(value: "open", label: "Open", count: nil, disabled: false), PillTabItem(value: "done", label: "Done", count: nil, disabled: false)], value: "open", onValueChange: nil, tint: .info).accessibilityLabel("info")
+PillTabs(items: [PillTabItem(value: "all", label: "All", count: nil, disabled: false), PillTabItem(value: "open", label: "Open", count: nil, disabled: false), PillTabItem(value: "done", label: "Done", count: nil, disabled: false)], value: "open", onValueChange: nil, tint: .success).accessibilityLabel("success")
+PillTabs(items: [PillTabItem(value: "all", label: "All", count: nil, disabled: false), PillTabItem(value: "open", label: "Open", count: nil, disabled: false), PillTabItem(value: "done", label: "Done", count: nil, disabled: false)], value: "open", onValueChange: nil, tint: .warning).accessibilityLabel("warning")
+PillTabs(items: [PillTabItem(value: "all", label: "All", count: nil, disabled: false), PillTabItem(value: "open", label: "Open", count: nil, disabled: false), PillTabItem(value: "done", label: "Done", count: nil, disabled: false)], value: "open", onValueChange: nil, tint: .danger).accessibilityLabel("danger") } }
+}
+private struct PortableScene146: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "zh"
+var body: some View { VStack(alignment: .leading, spacing: 0) { PillTabs(items: [PillTabItem(value: "zh", label: "Chinese", count: 168, disabled: false), PillTabItem(value: "ja", label: "Japanese", count: 96, disabled: false), PillTabItem(value: "de", label: "German", count: 64, disabled: false), PillTabItem(value: "fr", label: "French", count: 48, disabled: false), PillTabItem(value: "es", label: "Spanish", count: 32, disabled: false), PillTabItem(value: "pt", label: "Portuguese", count: 24, disabled: false), PillTabItem(value: "it", label: "Italian", count: 12, disabled: false), PillTabItem(value: "ko", label: "Korean", count: 8, disabled: false), PillTabItem(value: "nl", label: "Dutch", count: 4, disabled: false)], value: value0, onValueChange: { value0 = $0 }, tint: .primary).accessibilityLabel("Target language") }.frame(width: 352, alignment: .leading) }
+}
+private struct PortableScene147: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "all"
+@State private var value1 = ""
+var body: some View { Col(spacing: nil, width: 608) { ActionBar(align: .between) { PillTabs(items: [PillTabItem(value: "all", label: "All history", count: nil, disabled: false), PillTabItem(value: "starred", label: "Starred", count: 64, disabled: false), PillTabItem(value: "edited", label: "Edited by me", count: 18, disabled: false), PillTabItem(value: "shared", label: "Shared", count: nil, disabled: true)], value: value0, onValueChange: { value0 = $0 }, tint: .primary).accessibilityLabel("History filter")
+VStack(alignment: .leading, spacing: 0) { SearchField(value: value1, onValueChange: { value1 = $0 }, placeholder: "Search", size: .small, tint: .primary, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 192, alignment: .leading) }
+Card(size: .medium, variant: .sunken, tint: .primary) { HStack(spacing: 0) { Text("Showing “")
+Text(value0)
+Text("”")
+Text(((!(value1 == "")) ? (" matching “" + value1 + "”") : "")) }.foregroundStyle(theme.vars.colorContentMuted) } } }
+}
+private struct PortableScene148: View {
 @Environment(\.theme) private var theme
 
 var body: some View { VStack(alignment: .leading, spacing: 0) { Progress(value: 43, size: .small, tint: .primary, gradient: false) }.frame(width: 416, alignment: .leading) }
 }
-private struct PortableScene94: View {
+private struct PortableScene149: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Col(spacing: nil, width: 416) { Progress(value: 0, size: .small, tint: .primary, gradient: false)
@@ -1215,26 +1902,26 @@ Progress(value: 48, size: .small, tint: .primary, gradient: false)
 Progress(value: 76, size: .small, tint: .primary, gradient: false)
 Progress(value: 100, size: .small, tint: .primary, gradient: false) } }
 }
-private struct PortableScene95: View {
+private struct PortableScene150: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Col(spacing: nil, width: 416) { Progress(value: nil, size: .small, tint: .primary, gradient: false)
 Progress(value: nil, size: .small, tint: .info, gradient: false) } }
 }
-private struct PortableScene96: View {
+private struct PortableScene151: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Col(spacing: nil, width: 416) { Progress(value: 62, size: .small, tint: .primary, gradient: true)
 Progress(value: nil, size: .small, tint: .primary, gradient: true) } }
 }
-private struct PortableScene97: View {
+private struct PortableScene152: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Col(spacing: nil, width: 416) { Progress(value: 64, size: .small, tint: .primary, gradient: false)
 Progress(value: 64, size: .medium, tint: .primary, gradient: false)
 Progress(value: 64, size: .large, tint: .primary, gradient: false) } }
 }
-private struct PortableScene98: View {
+private struct PortableScene153: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Col(spacing: nil, width: 416) { Progress(value: 64, size: .small, tint: .primary, gradient: false)
@@ -1244,7 +1931,7 @@ Progress(value: 64, size: .small, tint: .success, gradient: false)
 Progress(value: 64, size: .small, tint: .warning, gradient: false)
 Progress(value: 64, size: .small, tint: .danger, gradient: false) } }
 }
-private struct PortableScene99: View {
+private struct PortableScene154: View {
 @Environment(\.theme) private var theme
 @State private var value0: Double = 8
 var body: some View { VStack(alignment: .leading, spacing: 0) { Progress(value: value0, size: .small, tint: .primary, gradient: false).accessibilityIdentifier("progress") }.frame(width: 416, alignment: .leading).task {
@@ -1255,7 +1942,7 @@ value0 = ((Double(value0) >= Double(100)) ? 0 : (Double(value0) + Double(4)))
 }
 } }
 }
-private struct PortableScene100: View {
+private struct PortableScene155: View {
 @Environment(\.theme) private var theme
 
 var body: some View { VStack(alignment: .leading, spacing: 0) { Card(size: .medium, variant: .raised, tint: .primary) { HStack(spacing: 0) { SectionLabel(tint: nil, faint: false) { Text("handbook.docx") }
@@ -1264,7 +1951,7 @@ Badge(size: .small, variant: .tinted, tint: .primary) { HStack(spacing: 0) { Tex
 Progress(value: 43, size: .small, tint: .primary, gradient: false).frame(maxWidth: .infinity, alignment: .leading)
 HStack(spacing: 0) { Text("168 of 392 segments") }.foregroundStyle(theme.vars.colorContentMuted).frame(maxWidth: .infinity, alignment: .leading) } }.frame(width: 384, alignment: .leading) }
 }
-private struct PortableScene101: View {
+private struct PortableScene156: View {
 @Environment(\.theme) private var theme
 
 var body: some View { VStack(alignment: .leading, spacing: 0) { Card(size: .medium, variant: .raised, tint: .primary) { Progress(value: 43, size: .small, tint: .primary, gradient: false).frame(maxWidth: .infinity, alignment: .leading)
@@ -1272,7 +1959,172 @@ StepList { Step(status: .done, tint: .primary, label: { Text("Parsed the documen
 Step(status: .active, tint: .primary, label: { Text("Translating") }, meta: { if !"168 / 392".isEmpty { Text("168 / 392") } })
 Step(status: .idle, tint: .primary, label: { Text("Rebuilding the layout") }, meta: { if !"".isEmpty { Text("") } }) }.frame(maxWidth: .infinity, alignment: .leading) } }.frame(width: 384, alignment: .leading) }
 }
-private struct PortableScene102: View {
+private struct PortableScene157: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "balanced"
+var body: some View { RadioGroup(options: [RadioGroupOption(value: "fast", label: "Fast — one pass, no review", enabled: true), RadioGroupOption(value: "balanced", label: "Balanced — a second pass on low scores", enabled: true), RadioGroupOption(value: "careful", label: "Careful — every segment reviewed", enabled: true), RadioGroupOption(value: "custom", label: "Custom (needs a paid plan)", enabled: false)], value: value0, onValueChange: { value0 = $0 }, size: .medium, tint: .primary, axis: .vertical, spacing: nil).accessibilityLabel("Translation quality") }
+}
+private struct PortableScene158: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "project"
+var body: some View { RadioGroup(options: [RadioGroupOption(value: "project", label: "This project only", enabled: true), RadioGroupOption(value: "org", label: "The whole organisation", enabled: false)], value: value0, onValueChange: { value0 = $0 }, size: .medium, tint: .primary, axis: .vertical, spacing: nil).accessibilityLabel("Scope") }
+}
+private struct PortableScene159: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "on"
+@State private var value1 = "on"
+@State private var value2 = "on"
+var body: some View { Col(spacing: theme.vars.spacing4, width: nil) { RadioGroup(options: [RadioGroupOption(value: "on", label: "Selected", enabled: true), RadioGroupOption(value: "off", label: "Not selected", enabled: true)], value: value0, onValueChange: { value0 = $0 }, size: .small, tint: .primary, axis: .horizontal, spacing: theme.vars.spacing4).accessibilityLabel("Selected and not")
+RadioGroup(options: [RadioGroupOption(value: "on", label: "Selected", enabled: true), RadioGroupOption(value: "off", label: "Not selected", enabled: true)], value: value1, onValueChange: { value1 = $0 }, size: .medium, tint: .primary, axis: .horizontal, spacing: theme.vars.spacing4).accessibilityLabel("Selected and not")
+RadioGroup(options: [RadioGroupOption(value: "on", label: "Selected", enabled: true), RadioGroupOption(value: "off", label: "Not selected", enabled: true)], value: value2, onValueChange: { value2 = $0 }, size: .large, tint: .primary, axis: .horizontal, spacing: theme.vars.spacing4).accessibilityLabel("Selected and not") } }
+}
+private struct PortableScene160: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "on"
+@State private var value1 = "on"
+@State private var value2 = "on"
+@State private var value3 = "on"
+@State private var value4 = "on"
+@State private var value5 = "on"
+var body: some View { Col(spacing: theme.vars.spacing4, width: nil) { RadioGroup(options: [RadioGroupOption(value: "on", label: "Selected", enabled: true), RadioGroupOption(value: "off", label: "Not selected", enabled: true)], value: value0, onValueChange: { value0 = $0 }, size: .medium, tint: .primary, axis: .horizontal, spacing: theme.vars.spacing4).accessibilityLabel("Selected and not")
+RadioGroup(options: [RadioGroupOption(value: "on", label: "Selected", enabled: true), RadioGroupOption(value: "off", label: "Not selected", enabled: true)], value: value1, onValueChange: { value1 = $0 }, size: .medium, tint: .neutral, axis: .horizontal, spacing: theme.vars.spacing4).accessibilityLabel("Selected and not")
+RadioGroup(options: [RadioGroupOption(value: "on", label: "Selected", enabled: true), RadioGroupOption(value: "off", label: "Not selected", enabled: true)], value: value2, onValueChange: { value2 = $0 }, size: .medium, tint: .info, axis: .horizontal, spacing: theme.vars.spacing4).accessibilityLabel("Selected and not")
+RadioGroup(options: [RadioGroupOption(value: "on", label: "Selected", enabled: true), RadioGroupOption(value: "off", label: "Not selected", enabled: true)], value: value3, onValueChange: { value3 = $0 }, size: .medium, tint: .success, axis: .horizontal, spacing: theme.vars.spacing4).accessibilityLabel("Selected and not")
+RadioGroup(options: [RadioGroupOption(value: "on", label: "Selected", enabled: true), RadioGroupOption(value: "off", label: "Not selected", enabled: true)], value: value4, onValueChange: { value4 = $0 }, size: .medium, tint: .warning, axis: .horizontal, spacing: theme.vars.spacing4).accessibilityLabel("Selected and not")
+RadioGroup(options: [RadioGroupOption(value: "on", label: "Selected", enabled: true), RadioGroupOption(value: "off", label: "Not selected", enabled: true)], value: value5, onValueChange: { value5 = $0 }, size: .medium, tint: .danger, axis: .horizontal, spacing: theme.vars.spacing4).accessibilityLabel("Selected and not") } }
+}
+private struct PortableScene161: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "fast"
+@State private var value1 = true
+@State private var value2 = false
+var body: some View { Row(spacing: theme.vars.spacing8) { VStack(alignment: .leading, spacing: 0) { SectionLabel(tint: nil, faint: false) { Text("Quality") }
+RadioGroup(options: [RadioGroupOption(value: "fast", label: "Fast", enabled: true), RadioGroupOption(value: "careful", label: "Careful", enabled: true)], value: value0, onValueChange: { value0 = $0 }, size: .medium, tint: .primary, axis: .vertical, spacing: nil).accessibilityLabel("Quality") }
+VStack(alignment: .leading, spacing: 0) { SectionLabel(tint: nil, faint: false) { Text("Include") }
+Col(spacing: theme.vars.spacing2, width: nil) { DazzUI.Checkbox(checked: value1, onCheckedChange: { value1 = $0 }, size: .medium, tint: .primary, enabled: true) { Text("Reviewer notes") }
+DazzUI.Checkbox(checked: value2, onCheckedChange: { value2 = $0 }, size: .medium, tint: .primary, enabled: true) { Text("Embedded images") } } } } }
+}
+private struct PortableScene162: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "project"
+var body: some View { VStack(alignment: .leading, spacing: 0) { Card(size: .medium, variant: .raised, tint: .primary) { SectionLabel(tint: nil, faint: false) { Text("Apply this glossary to") }.frame(maxWidth: .infinity, alignment: .leading)
+RadioGroup(options: [RadioGroupOption(value: "project", label: "This project only", enabled: true), RadioGroupOption(value: "account", label: "Every project on this account", enabled: true), RadioGroupOption(value: "org", label: "The whole organisation", enabled: false)], value: value0, onValueChange: { value0 = $0 }, size: .medium, tint: .primary, axis: .vertical, spacing: nil).accessibilityLabel("Scope").frame(maxWidth: .infinity, alignment: .leading) } }.frame(width: 384, alignment: .leading) }
+}
+private struct PortableScene163: View {
+@Environment(\.theme) private var theme
+@State private var value0 = ""
+@State private var value1 = "placeholder"
+@State private var value2 = ""
+@State private var value3 = ""
+@State private var value4 = ""
+@State private var value5 = ""
+@State private var value6 = ""
+@State private var value7 = ""
+@State private var value8 = ""
+@State private var value9 = ""
+@State private var value10 = ""
+var body: some View { Page("SearchField", description: "Inline search for a list or a table. The box belongs to the wrapper rather than the input, because the glyph and the trailing slot sit inside it — which is also why the focus ring comes from `:focus-within`. It holds no results of its own, so the same component narrows a table, a rail, or a menu without knowing which.") { Section("The trailing slot", description: "A hint sits there while the field is empty and gives way to the clear button once there is something to clear, so the two never compete for the same corner. Type something and press Escape: it clears first, and only dismisses once the field is already empty, so a stray press never closes a search mid-way.") { Stack { Specimen("empty") { VStack(alignment: .leading, spacing: 0) { SearchField(value: value0, onValueChange: { value0 = $0 }, placeholder: "Search terms", size: .medium, tint: .primary, onDismiss: nil, clearLabel: "Clear search") { KeyCap(size: .small, variant: .hint) { Text("⌘F") } } }.frame(width: 288, alignment: .leading) }
+Specimen("with a query") { VStack(alignment: .leading, spacing: 0) { SearchField(value: value1, onValueChange: { value1 = $0 }, placeholder: "Search terms", size: .medium, tint: .primary, onDismiss: nil, clearLabel: "Clear search") { KeyCap(size: .small, variant: .hint) { Text("⌘F") } } }.frame(width: 288, alignment: .leading) } } }
+Section("Sizes", description: "The glyph and the trailing slot hold their distance from the edges at every size, so the text starts and ends on the same inset a plain TextField's does.") { Stack { Specimen("small") { VStack(alignment: .leading, spacing: 0) { SearchField(value: value2, onValueChange: { value2 = $0 }, placeholder: "Search terms", size: .small, tint: .primary, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading) }
+Specimen("medium") { VStack(alignment: .leading, spacing: 0) { SearchField(value: value3, onValueChange: { value3 = $0 }, placeholder: "Search terms", size: .medium, tint: .primary, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading) }
+Specimen("large") { VStack(alignment: .leading, spacing: 0) { SearchField(value: value4, onValueChange: { value4 = $0 }, placeholder: "Search terms", size: .large, tint: .primary, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading) } } }
+Section("Tints", description: "The tint reaches the focus ring and the focused border. Focus each of these — nothing else about the field changes, because a search box is chrome and should not be carrying a colour of its own at rest.") { Stack { Specimen("primary") { VStack(alignment: .leading, spacing: 0) { SearchField(value: value5, onValueChange: { value5 = $0 }, placeholder: "Search terms", size: .medium, tint: .primary, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading) }
+Specimen("neutral") { VStack(alignment: .leading, spacing: 0) { SearchField(value: value6, onValueChange: { value6 = $0 }, placeholder: "Search terms", size: .medium, tint: .neutral, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading) }
+Specimen("info") { VStack(alignment: .leading, spacing: 0) { SearchField(value: value7, onValueChange: { value7 = $0 }, placeholder: "Search terms", size: .medium, tint: .info, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading) }
+Specimen("success") { VStack(alignment: .leading, spacing: 0) { SearchField(value: value8, onValueChange: { value8 = $0 }, placeholder: "Search terms", size: .medium, tint: .success, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading) }
+Specimen("warning") { VStack(alignment: .leading, spacing: 0) { SearchField(value: value9, onValueChange: { value9 = $0 }, placeholder: "Search terms", size: .medium, tint: .warning, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading) }
+Specimen("danger") { VStack(alignment: .leading, spacing: 0) { SearchField(value: value10, onValueChange: { value10 = $0 }, placeholder: "Search terms", size: .medium, tint: .danger, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading) } } } } }
+}
+private struct PortableScene164: View {
+@Environment(\.theme) private var theme
+@State private var value0 = ""
+var body: some View { VStack(alignment: .leading, spacing: 0) { SearchField(value: value0, onValueChange: { value0 = $0 }, placeholder: "Search terms", size: .medium, tint: .primary, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading) }
+}
+private struct PortableScene165: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "placeholder"
+var body: some View { VStack(alignment: .leading, spacing: 0) { SearchField(value: value0, onValueChange: { value0 = $0 }, placeholder: "Search terms", size: .medium, tint: .primary, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading) }
+}
+private struct PortableScene166: View {
+@Environment(\.theme) private var theme
+@State private var value0 = ""
+var body: some View { VStack(alignment: .leading, spacing: 0) { SearchField(value: value0, onValueChange: { value0 = $0 }, placeholder: "Search terms", size: .medium, tint: .primary, onDismiss: nil, clearLabel: "Clear search") { KeyCap(size: .small, variant: .hint) { Text("⌘F") } } }.frame(width: 288, alignment: .leading) }
+}
+private struct PortableScene167: View {
+@Environment(\.theme) private var theme
+@State private var value0 = ""
+@State private var value1 = ""
+@State private var value2 = ""
+var body: some View { Col(spacing: nil, width: nil) { VStack(alignment: .leading, spacing: 0) { SearchField(value: value0, onValueChange: { value0 = $0 }, placeholder: "Search terms", size: .small, tint: .primary, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading)
+VStack(alignment: .leading, spacing: 0) { SearchField(value: value1, onValueChange: { value1 = $0 }, placeholder: "Search terms", size: .medium, tint: .primary, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading)
+VStack(alignment: .leading, spacing: 0) { SearchField(value: value2, onValueChange: { value2 = $0 }, placeholder: "Search terms", size: .large, tint: .primary, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading) } }
+}
+private struct PortableScene168: View {
+@Environment(\.theme) private var theme
+@State private var value0 = ""
+@State private var value1 = ""
+@State private var value2 = ""
+@State private var value3 = ""
+@State private var value4 = ""
+@State private var value5 = ""
+var body: some View { Col(spacing: nil, width: nil) { VStack(alignment: .leading, spacing: 0) { SearchField(value: value0, onValueChange: { value0 = $0 }, placeholder: "Search terms", size: .medium, tint: .primary, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading)
+VStack(alignment: .leading, spacing: 0) { SearchField(value: value1, onValueChange: { value1 = $0 }, placeholder: "Search terms", size: .medium, tint: .neutral, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading)
+VStack(alignment: .leading, spacing: 0) { SearchField(value: value2, onValueChange: { value2 = $0 }, placeholder: "Search terms", size: .medium, tint: .info, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading)
+VStack(alignment: .leading, spacing: 0) { SearchField(value: value3, onValueChange: { value3 = $0 }, placeholder: "Search terms", size: .medium, tint: .success, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading)
+VStack(alignment: .leading, spacing: 0) { SearchField(value: value4, onValueChange: { value4 = $0 }, placeholder: "Search terms", size: .medium, tint: .warning, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading)
+VStack(alignment: .leading, spacing: 0) { SearchField(value: value5, onValueChange: { value5 = $0 }, placeholder: "Search terms", size: .medium, tint: .danger, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading) } }
+}
+private struct PortableScene169: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "placeholder"
+@State private var value1 = false
+var body: some View { VStack(alignment: .leading, spacing: 0) { if value1 {
+ActionBar(align: .start) { HStack(spacing: 0) { Text("Dismissed.") }.foregroundStyle(theme.vars.colorContentMuted)
+DazzUI.Button(size: .small, variant: .recessed, tint: .primary, fullWidth: false, shortcut: nil, enabled: true, action: { value1 = false }) { Text("Search again") } }
+}
+if (!value1) {
+VStack(alignment: .leading, spacing: 0) { SearchField(value: value0, onValueChange: { value0 = $0 }, placeholder: "Search terms", size: .medium, tint: .primary, onDismiss: { value1 = true }, clearLabel: "Clear search") { EmptyView() } }.frame(width: 288, alignment: .leading)
+} } }
+}
+private struct PortableScene170: View {
+@Environment(\.theme) private var theme
+@State private var value0 = ""
+var body: some View { Col(spacing: nil, width: 512) { SearchField(value: value0, onValueChange: { value0 = $0 }, placeholder: "Search terms", size: .medium, tint: .primary, onDismiss: nil, clearLabel: "Clear search") { KeyCap(size: .small, variant: .hint) { Text("⌘F") } }
+DazzUI.Table { DazzUI.TableHead { TableCell(head: true, align: .start) { Text("Term") }
+TableCell(head: true, align: .start) { Text("Translation") }
+TableCell(head: true, align: .end) { Text("Hits") } }
+if (value0.lowercased().isEmpty || "segment".contains(value0.lowercased())) {
+DazzUI.TableRow { TableCell(head: false, align: .start) { Text("segment") }
+TableCell(head: false, align: .start) { Text("段") }
+TableCell(head: false, align: .end) { Text("412") } }
+}
+if (value0.lowercased().isEmpty || "glossary".contains(value0.lowercased())) {
+DazzUI.TableRow { TableCell(head: false, align: .start) { Text("glossary") }
+TableCell(head: false, align: .start) { Text("术语库") }
+TableCell(head: false, align: .end) { Text("168") } }
+}
+if (value0.lowercased().isEmpty || "provider".contains(value0.lowercased())) {
+DazzUI.TableRow { TableCell(head: false, align: .start) { Text("provider") }
+TableCell(head: false, align: .start) { Text("服务") }
+TableCell(head: false, align: .end) { Text("96") } }
+}
+if (value0.lowercased().isEmpty || "placeholder".contains(value0.lowercased())) {
+DazzUI.TableRow { TableCell(head: false, align: .start) { Text("placeholder") }
+TableCell(head: false, align: .start) { Text("占位符") }
+TableCell(head: false, align: .end) { Text("24") } }
+}
+if (!((((value0.lowercased().isEmpty || "segment".contains(value0.lowercased())) || (value0.lowercased().isEmpty || "glossary".contains(value0.lowercased()))) || (value0.lowercased().isEmpty || "provider".contains(value0.lowercased()))) || (value0.lowercased().isEmpty || "placeholder".contains(value0.lowercased())))) {
+EmptyState(title: ("No terms match “" + value0 + "”")) { DazzUI.Button(size: .small, variant: .recessed, tint: .primary, fullWidth: false, shortcut: nil, enabled: true, action: { value0 = "" }) { Text("Clear search") } }
+} } } }
+}
+private struct PortableScene171: View {
+@Environment(\.theme) private var theme
+@State private var value0 = ""
+var body: some View { VStack(alignment: .leading, spacing: 0) { Card(size: .medium, variant: .raised, tint: .primary) { ActionBar(align: .between) { VStack(alignment: .leading, spacing: 0) { SearchField(value: value0, onValueChange: { value0 = $0 }, placeholder: "Search terms", size: .medium, tint: .primary, onDismiss: nil, clearLabel: "Clear search") { EmptyView() } }.frame(maxWidth: 256, alignment: .leading)
+ActionBar(align: .start) { DazzUI.Button(size: .small, variant: .recessed, tint: .primary, fullWidth: false, shortcut: nil, enabled: true, action: {  }) { Text("Import") }
+DazzUI.Button(size: .small, variant: .filled, tint: .primary, fullWidth: false, shortcut: nil, enabled: true, action: {  }) { Text("New term") } } }.frame(maxWidth: .infinity, alignment: .leading) } }.frame(width: 512, alignment: .leading) }
+}
+private struct PortableScene172: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Page("SectionLabel", description: "The micro-heading that organises a pane. Sentence case, no uppercasing and no added tracking — one size covers sidebars, rails, and pane headings, so tone is the only axis worth varying. `SidebarGroupLabel` and `PreferenceSection` both render one for you; this is what those are made of.") { Section("Tints", description: "Untinted it takes the muted content colour, which is what a heading almost always wants. A tint moves it onto a ramp, for a heading that has to carry a state with it — a section reporting a failure, a group flagged for review.") { Stack { Specimen("default") { SectionLabel(tint: nil, faint: false) { Text("Quality signals") } }
@@ -1287,18 +2139,18 @@ HStack(spacing: 0) { Text("392") }.font(.system(size: theme.vars.titleLarge.size
 VStack(alignment: .leading, spacing: 0) { Card(size: .medium, variant: .tinted, tint: .warning) { SectionLabel(tint: .warning, faint: false) { Text("Low scores") }.frame(maxWidth: .infinity, alignment: .leading)
 HStack(spacing: 0) { Text("24") }.font(.system(size: theme.vars.titleLarge.size)).frame(maxWidth: .infinity, alignment: .leading) } }.frame(width: 208, alignment: .leading) } } } }
 }
-private struct PortableScene103: View {
+private struct PortableScene173: View {
 @Environment(\.theme) private var theme
 
 var body: some View { SectionLabel(tint: nil, faint: false) { Text("Quality signals") } }
 }
-private struct PortableScene104: View {
+private struct PortableScene174: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Col(spacing: nil, width: nil) { SectionLabel(tint: nil, faint: false) { Text("Quality signals") }
 SectionLabel(tint: nil, faint: true) { Text("Quality signals") } } }
 }
-private struct PortableScene105: View {
+private struct PortableScene175: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Row(spacing: nil) { SectionLabel(tint: .primary, faint: false) { Text("primary") }
@@ -1308,7 +2160,7 @@ SectionLabel(tint: .success, faint: false) { Text("success") }
 SectionLabel(tint: .warning, faint: false) { Text("warning") }
 SectionLabel(tint: .danger, faint: false) { Text("danger") } } }
 }
-private struct PortableScene106: View {
+private struct PortableScene176: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Row(spacing: nil) { VStack(alignment: .leading, spacing: 0) { Card(size: .medium, variant: .raised, tint: .primary) { SectionLabel(tint: nil, faint: false) { Text("Segments") }.frame(maxWidth: .infinity, alignment: .leading)
@@ -1316,19 +2168,188 @@ HStack(spacing: 0) { Text("392") }.font(.system(size: theme.vars.titleLarge.size
 VStack(alignment: .leading, spacing: 0) { Card(size: .medium, variant: .tinted, tint: .warning) { SectionLabel(tint: .warning, faint: false) { Text("Low scores") }.frame(maxWidth: .infinity, alignment: .leading)
 HStack(spacing: 0) { Text("24") }.font(.system(size: theme.vars.titleLarge.size)).frame(maxWidth: .infinity, alignment: .leading) } }.frame(width: 208, alignment: .leading) } }
 }
-private struct PortableScene107: View {
+private struct PortableScene177: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "system"
+var body: some View { DazzUI.SegmentedControl(items: [SegmentedItem(value: "light", label: "Light", disabled: false), SegmentedItem(value: "dark", label: "Dark", disabled: false), SegmentedItem(value: "system", label: "System", disabled: false)], value: value0, onValueChange: { value0 = $0 }, size: .medium, tint: .primary, activeStyle: .raised, stretch: false).accessibilityLabel("Appearance") }
+}
+private struct PortableScene178: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "system"
+var body: some View { DazzUI.SegmentedControl(items: [SegmentedItem(value: "light", label: "Light", disabled: false), SegmentedItem(value: "dark", label: "Dark", disabled: false), SegmentedItem(value: "system", label: "System", disabled: false)], value: value0, onValueChange: { value0 = $0 }, size: .medium, tint: .primary, activeStyle: .filled, stretch: false).accessibilityLabel("Appearance") }
+}
+private struct PortableScene179: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Col(spacing: nil, width: nil) { DazzUI.SegmentedControl(items: [SegmentedItem(value: "light", label: "Light", disabled: false), SegmentedItem(value: "dark", label: "Dark", disabled: false), SegmentedItem(value: "system", label: "System", disabled: false)], value: "system", onValueChange: { _ in }, size: .small, tint: .primary, activeStyle: .raised, stretch: false).accessibilityLabel("Appearance (small)")
+DazzUI.SegmentedControl(items: [SegmentedItem(value: "light", label: "Light", disabled: false), SegmentedItem(value: "dark", label: "Dark", disabled: false), SegmentedItem(value: "system", label: "System", disabled: false)], value: "system", onValueChange: { _ in }, size: .medium, tint: .primary, activeStyle: .raised, stretch: false).accessibilityLabel("Appearance (medium)")
+DazzUI.SegmentedControl(items: [SegmentedItem(value: "light", label: "Light", disabled: false), SegmentedItem(value: "dark", label: "Dark", disabled: false), SegmentedItem(value: "system", label: "System", disabled: false)], value: "system", onValueChange: { _ in }, size: .large, tint: .primary, activeStyle: .raised, stretch: false).accessibilityLabel("Appearance (large)") } }
+}
+private struct PortableScene180: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "system"
+@State private var value1 = "system"
+@State private var value2 = "system"
+@State private var value3 = "system"
+@State private var value4 = "system"
+@State private var value5 = "system"
+var body: some View { Col(spacing: nil, width: nil) { DazzUI.SegmentedControl(items: [SegmentedItem(value: "light", label: "Light", disabled: false), SegmentedItem(value: "dark", label: "Dark", disabled: false), SegmentedItem(value: "system", label: "System", disabled: false)], value: value0, onValueChange: { value0 = $0 }, size: .medium, tint: .primary, activeStyle: .raised, stretch: false).accessibilityLabel("Appearance")
+DazzUI.SegmentedControl(items: [SegmentedItem(value: "light", label: "Light", disabled: false), SegmentedItem(value: "dark", label: "Dark", disabled: false), SegmentedItem(value: "system", label: "System", disabled: false)], value: value1, onValueChange: { value1 = $0 }, size: .medium, tint: .neutral, activeStyle: .raised, stretch: false).accessibilityLabel("Appearance")
+DazzUI.SegmentedControl(items: [SegmentedItem(value: "light", label: "Light", disabled: false), SegmentedItem(value: "dark", label: "Dark", disabled: false), SegmentedItem(value: "system", label: "System", disabled: false)], value: value2, onValueChange: { value2 = $0 }, size: .medium, tint: .info, activeStyle: .raised, stretch: false).accessibilityLabel("Appearance")
+DazzUI.SegmentedControl(items: [SegmentedItem(value: "light", label: "Light", disabled: false), SegmentedItem(value: "dark", label: "Dark", disabled: false), SegmentedItem(value: "system", label: "System", disabled: false)], value: value3, onValueChange: { value3 = $0 }, size: .medium, tint: .success, activeStyle: .raised, stretch: false).accessibilityLabel("Appearance")
+DazzUI.SegmentedControl(items: [SegmentedItem(value: "light", label: "Light", disabled: false), SegmentedItem(value: "dark", label: "Dark", disabled: false), SegmentedItem(value: "system", label: "System", disabled: false)], value: value4, onValueChange: { value4 = $0 }, size: .medium, tint: .warning, activeStyle: .raised, stretch: false).accessibilityLabel("Appearance")
+DazzUI.SegmentedControl(items: [SegmentedItem(value: "light", label: "Light", disabled: false), SegmentedItem(value: "dark", label: "Dark", disabled: false), SegmentedItem(value: "system", label: "System", disabled: false)], value: value5, onValueChange: { value5 = $0 }, size: .medium, tint: .danger, activeStyle: .raised, stretch: false).accessibilityLabel("Appearance") } }
+}
+private struct PortableScene181: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "system"
+@State private var value1 = "system"
+@State private var value2 = "system"
+@State private var value3 = "system"
+@State private var value4 = "system"
+@State private var value5 = "system"
+var body: some View { Col(spacing: nil, width: nil) { DazzUI.SegmentedControl(items: [SegmentedItem(value: "light", label: "Light", disabled: false), SegmentedItem(value: "dark", label: "Dark", disabled: false), SegmentedItem(value: "system", label: "System", disabled: false)], value: value0, onValueChange: { value0 = $0 }, size: .medium, tint: .primary, activeStyle: .filled, stretch: false).accessibilityLabel("Appearance")
+DazzUI.SegmentedControl(items: [SegmentedItem(value: "light", label: "Light", disabled: false), SegmentedItem(value: "dark", label: "Dark", disabled: false), SegmentedItem(value: "system", label: "System", disabled: false)], value: value1, onValueChange: { value1 = $0 }, size: .medium, tint: .neutral, activeStyle: .filled, stretch: false).accessibilityLabel("Appearance")
+DazzUI.SegmentedControl(items: [SegmentedItem(value: "light", label: "Light", disabled: false), SegmentedItem(value: "dark", label: "Dark", disabled: false), SegmentedItem(value: "system", label: "System", disabled: false)], value: value2, onValueChange: { value2 = $0 }, size: .medium, tint: .info, activeStyle: .filled, stretch: false).accessibilityLabel("Appearance")
+DazzUI.SegmentedControl(items: [SegmentedItem(value: "light", label: "Light", disabled: false), SegmentedItem(value: "dark", label: "Dark", disabled: false), SegmentedItem(value: "system", label: "System", disabled: false)], value: value3, onValueChange: { value3 = $0 }, size: .medium, tint: .success, activeStyle: .filled, stretch: false).accessibilityLabel("Appearance")
+DazzUI.SegmentedControl(items: [SegmentedItem(value: "light", label: "Light", disabled: false), SegmentedItem(value: "dark", label: "Dark", disabled: false), SegmentedItem(value: "system", label: "System", disabled: false)], value: value4, onValueChange: { value4 = $0 }, size: .medium, tint: .warning, activeStyle: .filled, stretch: false).accessibilityLabel("Appearance")
+DazzUI.SegmentedControl(items: [SegmentedItem(value: "light", label: "Light", disabled: false), SegmentedItem(value: "dark", label: "Dark", disabled: false), SegmentedItem(value: "system", label: "System", disabled: false)], value: value5, onValueChange: { value5 = $0 }, size: .medium, tint: .danger, activeStyle: .filled, stretch: false).accessibilityLabel("Appearance") } }
+}
+private struct PortableScene182: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "system"
+var body: some View { Col(spacing: nil, width: 384) { DazzUI.SegmentedControl(items: [SegmentedItem(value: "light", label: "Light", disabled: false), SegmentedItem(value: "dark", label: "Dark", disabled: false), SegmentedItem(value: "system", label: "System", disabled: false)], value: value0, onValueChange: { value0 = $0 }, size: .medium, tint: .primary, activeStyle: .raised, stretch: true).accessibilityLabel("Appearance") } }
+}
+private struct PortableScene183: View {
+@Environment(\.theme) private var theme
+
+var body: some View { DazzUI.SegmentedControl(items: [SegmentedItem(value: "fast", label: "Fast", disabled: false), SegmentedItem(value: "balanced", label: "Balanced", disabled: false), SegmentedItem(value: "careful", label: "Careful", disabled: true)], value: "balanced", onValueChange: { _ in }, size: .medium, tint: .primary, activeStyle: .raised, stretch: false).accessibilityLabel("Quality") }
+}
+private struct PortableScene184: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "source"
+var body: some View { DazzUI.SegmentedControl(items: [SegmentedItem(value: "source", label: "Source", disabled: false), SegmentedItem(value: "target", label: "Target", disabled: false)], value: value0, onValueChange: { value0 = $0 }, size: .medium, tint: .primary, activeStyle: .raised, stretch: false).accessibilityLabel("View") }
+}
+private struct PortableScene185: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "balanced"
+@State private var value1 = "default"
+var body: some View { Col(spacing: theme.vars.spacing4, width: 384) { FormField(label: "Quality", hint: "Applies to new jobs only.", state: .default) { DazzUI.SegmentedControl(items: [SegmentedItem(value: "fast", label: "Fast", disabled: false), SegmentedItem(value: "balanced", label: "Balanced", disabled: false), SegmentedItem(value: "careful", label: "Careful", disabled: false)], value: value0, onValueChange: { value0 = $0 }, size: .medium, tint: .primary, activeStyle: .raised, stretch: true).accessibilityLabel("Quality") }
+FormField(label: "Formality", hint: nil, state: .default) { DazzUI.SegmentedControl(items: [SegmentedItem(value: "less", label: "Less", disabled: false), SegmentedItem(value: "default", label: "Default", disabled: false), SegmentedItem(value: "more", label: "More", disabled: false)], value: value1, onValueChange: { value1 = $0 }, size: .medium, tint: .primary, activeStyle: .raised, stretch: true).accessibilityLabel("Formality") } } }
+}
+private struct PortableScene186: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Page("Skeleton", description: "The shape of something that has not arrived. A Spinner says the app is busy; a skeleton says what is coming and where it will be — which is why it belongs on the first load of a view whose layout is already known, and a spinner belongs on an action whose result is not. Drawing one for content that then lands somewhere else is worse than drawing nothing.") { Section("Shapes", description: "`text` is a bar on the line box of the type it stands in for, so it needs no height. `circle` is an avatar or a glyph and squares itself from its width alone. `rect` is everything with a box of its own — a thumbnail, a chart, a card.") { Stack { Specimen("text") { Skeleton(shape: .text, width: theme.vars.spacing20, height: nil) }
+Specimen("circle") { Skeleton(shape: .circle, width: theme.vars.spacing10, height: nil) }
+Specimen("rect") { Skeleton(shape: .rect, width: theme.vars.spacing20, height: theme.vars.spacing12) } } }
+Section("Lines", description: "A paragraph's worth of bars, with the last one short. The ragged edge is most of what makes a block of bars legible as text at all — a full-width final line reads as a table.") { VStack(alignment: .leading, spacing: 0) { SkeletonText(lines: 3) }.frame(width: 320, alignment: .leading) }
+Section("Materials", description: "The fill is surface-sunken — the same dead step a disabled control flattens to, which is exactly what a skeleton is. The sweep over it is surface-subtle, the ink wash the whole system already hovers with, so the highlight moves by the same amount on paper, on a card and on a dark canvas without a per-theme value. Unlike the spinner it takes no reduced-motion exception: a still spinner reads as a hung app, where a still skeleton still says everything it has to say.") { Card(size: .medium, variant: .raised, tint: .primary) { Col(spacing: theme.vars.spacing3, width: nil) { Row(spacing: theme.vars.spacing3) { Skeleton(shape: .circle, width: theme.vars.spacing10, height: nil)
+Col(spacing: theme.vars.spacing2, width: theme.vars.spacing20) { FractionalWidth(0.7) { Skeleton(shape: .text, width: nil, height: nil) }
+FractionalWidth(0.45) { Skeleton(shape: .text, width: nil, height: nil) } } }
+SkeletonText(lines: 2) } } } } }
+}
+private struct PortableScene187: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Row(spacing: nil) { Skeleton(shape: .circle, width: theme.vars.spacing10, height: nil)
+Skeleton(shape: .rect, width: theme.vars.spacing20, height: theme.vars.spacing12) } }
+}
+private struct PortableScene188: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Col(spacing: nil, width: 320) { SkeletonText(lines: 3) } }
+}
+private struct PortableScene189: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Col(spacing: nil, width: 320) { SkeletonText(lines: 5) } }
+}
+private struct PortableScene190: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Col(spacing: nil, width: 320) { Row(spacing: theme.vars.spacing3) { Skeleton(shape: .circle, width: theme.vars.spacing10, height: nil)
+Col(spacing: theme.vars.spacing2, width: theme.vars.spacing20) { FractionalWidth(0.7) { Skeleton(shape: .text, width: nil, height: nil) }
+FractionalWidth(0.45) { Skeleton(shape: .text, width: nil, height: nil) } } } } }
+}
+private struct PortableScene191: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Col(spacing: nil, width: 352) { Card(size: .medium, variant: .raised, tint: .primary) { Col(spacing: theme.vars.spacing3, width: nil) { Row(spacing: theme.vars.spacing3) { Skeleton(shape: .circle, width: theme.vars.spacing10, height: nil)
+Col(spacing: theme.vars.spacing2, width: theme.vars.spacing20) { FractionalWidth(0.7) { Skeleton(shape: .text, width: nil, height: nil) }
+FractionalWidth(0.45) { Skeleton(shape: .text, width: nil, height: nil) } } }
+SkeletonText(lines: 2) } } } }
+}
+private struct PortableScene192: View {
+@Environment(\.theme) private var theme
+@State private var value0: Double = 40
+var body: some View { VStack(alignment: .leading, spacing: 0) { DazzUI.Slider(values: Binding(get: { [value0] }, set: { next in if next.count > 0 { value0 = next[0] } }), minimum: 0, maximum: 100, step: 1, size: .medium, tint: .primary, valueLabel: nil, enabled: true) }.frame(width: 288, alignment: .leading) }
+}
+private struct PortableScene193: View {
+@Environment(\.theme) private var theme
+@State private var value0: Double = 40
+var body: some View { VStack(alignment: .leading, spacing: 0) { DazzUI.Slider(values: Binding(get: { [value0] }, set: { next in if next.count > 0 { value0 = next[0] } }), minimum: 0, maximum: 100, step: 1, size: .medium, tint: .primary, valueLabel: sceneText(value0), enabled: true) }.frame(width: 320, alignment: .leading) }
+}
+private struct PortableScene194: View {
+@Environment(\.theme) private var theme
+@State private var value0: Double = 20
+@State private var value1: Double = 70
+var body: some View { VStack(alignment: .leading, spacing: 0) { DazzUI.Slider(values: Binding(get: { [value0, value1] }, set: { next in if next.count > 0 { value0 = next[0] }; if next.count > 1 { value1 = next[1] } }), minimum: 0, maximum: 100, step: 1, size: .medium, tint: .primary, valueLabel: sceneText(value0) + " – " + sceneText(value1), enabled: true) }.frame(width: 320, alignment: .leading) }
+}
+private struct PortableScene195: View {
+@Environment(\.theme) private var theme
+@State private var value0: Double = 40
+@State private var value1: Double = 40
+@State private var value2: Double = 40
+var body: some View { Col(spacing: nil, width: 320) { DazzUI.Slider(values: Binding(get: { [value0] }, set: { next in if next.count > 0 { value0 = next[0] } }), minimum: 0, maximum: 100, step: 1, size: .small, tint: .primary, valueLabel: nil, enabled: true)
+DazzUI.Slider(values: Binding(get: { [value1] }, set: { next in if next.count > 0 { value1 = next[0] } }), minimum: 0, maximum: 100, step: 1, size: .medium, tint: .primary, valueLabel: nil, enabled: true)
+DazzUI.Slider(values: Binding(get: { [value2] }, set: { next in if next.count > 0 { value2 = next[0] } }), minimum: 0, maximum: 100, step: 1, size: .large, tint: .primary, valueLabel: nil, enabled: true) } }
+}
+private struct PortableScene196: View {
+@Environment(\.theme) private var theme
+@State private var value0: Double = 60
+@State private var value1: Double = 60
+@State private var value2: Double = 60
+@State private var value3: Double = 60
+@State private var value4: Double = 60
+@State private var value5: Double = 60
+var body: some View { Col(spacing: nil, width: 320) { DazzUI.Slider(values: Binding(get: { [value0] }, set: { next in if next.count > 0 { value0 = next[0] } }), minimum: 0, maximum: 100, step: 1, size: .medium, tint: .primary, valueLabel: nil, enabled: true)
+DazzUI.Slider(values: Binding(get: { [value1] }, set: { next in if next.count > 0 { value1 = next[0] } }), minimum: 0, maximum: 100, step: 1, size: .medium, tint: .neutral, valueLabel: nil, enabled: true)
+DazzUI.Slider(values: Binding(get: { [value2] }, set: { next in if next.count > 0 { value2 = next[0] } }), minimum: 0, maximum: 100, step: 1, size: .medium, tint: .info, valueLabel: nil, enabled: true)
+DazzUI.Slider(values: Binding(get: { [value3] }, set: { next in if next.count > 0 { value3 = next[0] } }), minimum: 0, maximum: 100, step: 1, size: .medium, tint: .success, valueLabel: nil, enabled: true)
+DazzUI.Slider(values: Binding(get: { [value4] }, set: { next in if next.count > 0 { value4 = next[0] } }), minimum: 0, maximum: 100, step: 1, size: .medium, tint: .warning, valueLabel: nil, enabled: true)
+DazzUI.Slider(values: Binding(get: { [value5] }, set: { next in if next.count > 0 { value5 = next[0] } }), minimum: 0, maximum: 100, step: 1, size: .medium, tint: .danger, valueLabel: nil, enabled: true) } }
+}
+private struct PortableScene197: View {
+@Environment(\.theme) private var theme
+@State private var value0: Double = 40
+var body: some View { VStack(alignment: .leading, spacing: 0) { DazzUI.Slider(values: Binding(get: { [value0] }, set: { next in if next.count > 0 { value0 = next[0] } }), minimum: 0, maximum: 100, step: 1, size: .medium, tint: .primary, valueLabel: sceneText(value0), enabled: false) }.frame(width: 320, alignment: .leading) }
+}
+private struct PortableScene198: View {
+@Environment(\.theme) private var theme
+@State private var value0: Double = 13
+var body: some View { VStack(alignment: .leading, spacing: 0) { FormField(label: "Editor font size", hint: (sceneText(Double(value0)) + "px"), state: .default) { DazzUI.Slider(values: Binding(get: { [value0] }, set: { next in if next.count > 0 { value0 = next[0] } }), minimum: 8, maximum: 24, step: 1, size: .medium, tint: .primary, valueLabel: sceneText(value0) + "px", enabled: true) } }.frame(width: 352, alignment: .leading) }
+}
+private struct PortableScene199: View {
+@Environment(\.theme) private var theme
+@State private var value0: Double = 13
+@State private var value1: Double = 240
+var body: some View { VStack(alignment: .leading, spacing: 0) { PreferenceSection(label: "Appearance", action: { EmptyView() }) { PreferenceRow(title: "Editor font size", subtitle: "Applies to every open project", icon: { EmptyView() }) { VStack(alignment: .leading, spacing: 0) { DazzUI.Slider(values: Binding(get: { [value0] }, set: { next in if next.count > 0 { value0 = next[0] } }), minimum: 8, maximum: 24, step: 1, size: .small, tint: .primary, valueLabel: nil, enabled: true) }.frame(width: 160, alignment: .leading) }
+PreferenceRow(title: "Sidebar width", subtitle: nil, icon: { EmptyView() }) { VStack(alignment: .leading, spacing: 0) { DazzUI.Slider(values: Binding(get: { [value1] }, set: { next in if next.count > 0 { value1 = next[0] } }), minimum: 180, maximum: 360, step: 1, size: .small, tint: .primary, valueLabel: nil, enabled: true) }.frame(width: 160, alignment: .leading) } } }.frame(width: 480, alignment: .leading) }
+}
+private struct PortableScene200: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Spinner(size: .medium, tint: .primary, onAccent: false) }
 }
-private struct PortableScene108: View {
+private struct PortableScene201: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Row(spacing: nil) { Spinner(size: .small, tint: .primary, onAccent: false)
 Spinner(size: .medium, tint: .primary, onAccent: false)
 Spinner(size: .large, tint: .primary, onAccent: false) } }
 }
-private struct PortableScene109: View {
+private struct PortableScene202: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Row(spacing: nil) { Spinner(size: .medium, tint: .primary, onAccent: false)
@@ -1338,14 +2359,14 @@ Spinner(size: .medium, tint: .success, onAccent: false)
 Spinner(size: .medium, tint: .warning, onAccent: false)
 Spinner(size: .medium, tint: .danger, onAccent: false) } }
 }
-private struct PortableScene110: View {
+private struct PortableScene203: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Row(spacing: nil) { Card(size: .small, variant: .tinted, tint: .primary) { Spinner(size: .medium, tint: .primary, onAccent: false) }
 DazzUI.Button(size: .small, variant: .filled, tint: .primary, fullWidth: false, shortcut: nil, enabled: true, action: {  }) { Spinner(size: .small, tint: .primary, onAccent: true)
 Text("Publishing") } } }
 }
-private struct PortableScene111: View {
+private struct PortableScene204: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Row(spacing: nil) { DazzUI.Button(size: .small, variant: .filled, tint: .primary, fullWidth: false, shortcut: nil, enabled: false, action: {  }) { Spinner(size: .small, tint: .primary, onAccent: false)
@@ -1353,18 +2374,18 @@ Text("Translating…") }
 DazzUI.Button(size: .small, variant: .recessed, tint: .primary, fullWidth: false, shortcut: nil, enabled: false, action: {  }) { Spinner(size: .small, tint: .neutral, onAccent: false)
 Text("Checking the key…") } } }
 }
-private struct PortableScene112: View {
+private struct PortableScene205: View {
 @Environment(\.theme) private var theme
 
 var body: some View { VStack(alignment: .leading, spacing: 0) { Callout(size: .medium, tint: .primary, title: "Translation memory is syncing", leading: { Spinner(size: .small, tint: .primary, onAccent: false) }, description: { Text("Segments you edit now are queued and upload when it finishes.") }, trailing: { EmptyView() }) }.frame(width: 512, alignment: .leading) }
 }
-private struct PortableScene113: View {
+private struct PortableScene206: View {
 @Environment(\.theme) private var theme
 
 var body: some View { HStack(spacing: theme.vars.spacing2) { Spinner(size: .small, tint: .neutral, onAccent: false)
 Text("Testing the connection — 1.4s elapsed") }.foregroundStyle(theme.vars.colorContentMuted) }
 }
-private struct PortableScene114: View {
+private struct PortableScene207: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Page("StepList", description: "A pipeline, one line per stage. The marker carries the status — a check when a stage is finished, the spinner while it runs, an empty ring before it starts — so the label never has to say it twice. Each is a different marker rather than a different colour of the same one, which is what lets the column be read at a glance and still work in monochrome. The list holds no state: the host passes each stage its status.") { Section("In flight", description: "A finished step is success wherever the list is tinted: it is the one fixed meaning in the column, not a variation on the accent. The trailing detail — a count, a duration, a size — is pushed to the far edge and set back, so a column of them lines up without competing with the labels.") { VStack(alignment: .leading, spacing: 0) { StepList { Step(status: .done, tint: .primary, label: { Text("Parsed the document") }, meta: { if !"15 pages".isEmpty { Text("15 pages") } })
@@ -1394,7 +2415,7 @@ Specimen("danger") { VStack(alignment: .leading, spacing: 0) { StepList { Step(s
 Step(status: .active, tint: .danger, label: { Text("Translating") }, meta: { if !"168 / 392".isEmpty { Text("168 / 392") } })
 Step(status: .idle, tint: .danger, label: { Text("Rebuilding") }, meta: { if !"".isEmpty { Text("") } }) } }.frame(maxWidth: .infinity, alignment: .leading) } } } } }
 }
-private struct PortableScene115: View {
+private struct PortableScene208: View {
 @Environment(\.theme) private var theme
 
 var body: some View { VStack(alignment: .leading, spacing: 0) { StepList { Step(status: .done, tint: .primary, label: { Text("Parsed the document") }, meta: { if !"15 pages".isEmpty { Text("15 pages") } })
@@ -1403,14 +2424,14 @@ Step(status: .active, tint: .primary, label: { Text("Translating") }, meta: { if
 Step(status: .idle, tint: .primary, label: { Text("Applying the glossary") }, meta: { if !"".isEmpty { Text("") } })
 Step(status: .idle, tint: .primary, label: { Text("Rebuilding the layout") }, meta: { if !"".isEmpty { Text("") } }) } }.frame(width: 416, alignment: .leading) }
 }
-private struct PortableScene116: View {
+private struct PortableScene209: View {
 @Environment(\.theme) private var theme
 
 var body: some View { VStack(alignment: .leading, spacing: 0) { StepList { Step(status: .done, tint: .primary, label: { Text("Done") }, meta: { if !"".isEmpty { Text("") } })
 Step(status: .active, tint: .primary, label: { Text("Active") }, meta: { if !"".isEmpty { Text("") } })
 Step(status: .idle, tint: .primary, label: { Text("Idle") }, meta: { if !"".isEmpty { Text("") } }) } }.frame(width: 416, alignment: .leading) }
 }
-private struct PortableScene117: View {
+private struct PortableScene210: View {
 @Environment(\.theme) private var theme
 
 var body: some View { VStack(alignment: .leading, spacing: 0) { StepList { Step(status: .done, tint: .primary, label: { Text("Parsed the document") }, meta: { if !"15 pages".isEmpty { Text("15 pages") } })
@@ -1419,21 +2440,21 @@ Step(status: .done, tint: .primary, label: { Text("Translating") }, meta: { if !
 Step(status: .done, tint: .primary, label: { Text("Applying the glossary") }, meta: { if !"96 hits".isEmpty { Text("96 hits") } })
 Step(status: .done, tint: .primary, label: { Text("Rebuilding the layout") }, meta: { if !"15 pages".isEmpty { Text("15 pages") } }) } }.frame(width: 416, alignment: .leading) }
 }
-private struct PortableScene118: View {
+private struct PortableScene211: View {
 @Environment(\.theme) private var theme
 
 var body: some View { VStack(alignment: .leading, spacing: 0) { StepList { Step(status: .done, tint: .primary, label: { Text("Connected") }, meta: { if !"".isEmpty { Text("") } })
 Step(status: .active, tint: .primary, label: { Text("Processing") }, meta: { if !"".isEmpty { Text("") } })
 Step(status: .idle, tint: .primary, label: { Text("Finishing") }, meta: { if !"".isEmpty { Text("") } }) } }.frame(width: 416, alignment: .leading) }
 }
-private struct PortableScene119: View {
+private struct PortableScene212: View {
 @Environment(\.theme) private var theme
 
 var body: some View { VStack(alignment: .leading, spacing: 0) { StepList { Step(status: .done, tint: .primary, label: { Text("Connected") }, meta: { if !"0.4s".isEmpty { Text("0.4s") } })
 Step(status: .done, tint: .primary, label: { Text("Uploaded") }, meta: { if !"2.1s".isEmpty { Text("2.1s") } })
 Step(status: .active, tint: .primary, label: { Text("Processing") }, meta: { if !"12s elapsed".isEmpty { Text("12s elapsed") } }) } }.frame(width: 416, alignment: .leading) }
 }
-private struct PortableScene120: View {
+private struct PortableScene213: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Col(spacing: nil, width: 416) { StepList { Step(status: .done, tint: .primary, label: { Text("Extracted segments") }, meta: { if !"".isEmpty { Text("") } })
@@ -1455,7 +2476,7 @@ StepList { Step(status: .done, tint: .danger, label: { Text("Extracted segments"
 Step(status: .active, tint: .danger, label: { Text("Translating") }, meta: { if !"168 / 392".isEmpty { Text("168 / 392") } })
 Step(status: .idle, tint: .danger, label: { Text("Rebuilding") }, meta: { if !"".isEmpty { Text("") } }) } } }
 }
-private struct PortableScene121: View {
+private struct PortableScene214: View {
 @Environment(\.theme) private var theme
 @State private var value0: Double = 0
 var body: some View { VStack(alignment: .leading, spacing: 0) { Card(size: .medium, variant: .raised, tint: .primary) { SectionLabel(tint: nil, faint: false) { Text("handbook.docx") }.frame(maxWidth: .infinity, alignment: .leading)
@@ -1472,29 +2493,29 @@ value0 = ((Double(value0) >= Double(5)) ? 0 : (Double(value0) + Double(1)))
 }
 } }
 }
-private struct PortableScene122: View {
+private struct PortableScene215: View {
 @Environment(\.theme) private var theme
 
 var body: some View { DazzUI.Switch(checked: true, onCheckedChange: nil, size: .medium, tint: .primary, enabled: true).accessibilityLabel("On") }
 }
-private struct PortableScene123: View {
+private struct PortableScene216: View {
 @Environment(\.theme) private var theme
 
 var body: some View { DazzUI.Switch(checked: false, onCheckedChange: nil, size: .medium, tint: .primary, enabled: true).accessibilityLabel("Off") }
 }
-private struct PortableScene124: View {
+private struct PortableScene217: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Row(spacing: nil) { DazzUI.Switch(checked: true, onCheckedChange: nil, size: .medium, tint: .primary, enabled: false).accessibilityLabel("On, disabled")
 DazzUI.Switch(checked: false, onCheckedChange: nil, size: .medium, tint: .primary, enabled: false).accessibilityLabel("Off, disabled") } }
 }
-private struct PortableScene125: View {
+private struct PortableScene218: View {
 @Environment(\.theme) private var theme
 @State private var value0 = true
 var body: some View { Row(spacing: nil) { DazzUI.Switch(checked: value0, onCheckedChange: { value0 = $0 }, size: .medium, tint: .primary, enabled: true).accessibilityLabel("Launch at login").accessibilityIdentifier("switch")
 HStack(spacing: 0) { Text((value0 ? "On" : "Off")) }.foregroundStyle(theme.vars.colorContentMuted).accessibilityIdentifier("status") } }
 }
-private struct PortableScene126: View {
+private struct PortableScene219: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Col(spacing: nil, width: nil) { Row(spacing: nil) { DazzUI.Switch(checked: true, onCheckedChange: nil, size: .small, tint: .primary, enabled: true).accessibilityLabel("On (small)")
@@ -1504,7 +2525,7 @@ DazzUI.Switch(checked: false, onCheckedChange: nil, size: .medium, tint: .primar
 Row(spacing: nil) { DazzUI.Switch(checked: true, onCheckedChange: nil, size: .large, tint: .primary, enabled: true).accessibilityLabel("On (large)")
 DazzUI.Switch(checked: false, onCheckedChange: nil, size: .large, tint: .primary, enabled: true).accessibilityLabel("Off (large)") } } }
 }
-private struct PortableScene127: View {
+private struct PortableScene220: View {
 @Environment(\.theme) private var theme
 
 var body: some View { Col(spacing: nil, width: nil) { Row(spacing: nil) { DazzUI.Switch(checked: true, onCheckedChange: nil, size: .medium, tint: .primary, enabled: true).accessibilityLabel("primary")
@@ -1520,7 +2541,7 @@ DazzUI.Switch(checked: false, onCheckedChange: nil, size: .medium, tint: .succes
 DazzUI.Switch(checked: false, onCheckedChange: nil, size: .medium, tint: .warning, enabled: true).accessibilityLabel("warning")
 DazzUI.Switch(checked: false, onCheckedChange: nil, size: .medium, tint: .danger, enabled: true).accessibilityLabel("danger") } } }
 }
-private struct PortableScene128: View {
+private struct PortableScene221: View {
 @Environment(\.theme) private var theme
 @State private var value0 = true
 @State private var value1 = true
@@ -1529,7 +2550,7 @@ HStack(spacing: 0) { Text("Applied immediately") }.foregroundStyle(theme.vars.co
 Row(spacing: nil) { DazzUI.Checkbox(checked: value1, onCheckedChange: { value1 = $0 }, size: .medium, tint: .primary, enabled: true) { Text("Include reviewer notes") }.accessibilityIdentifier("pending")
 HStack(spacing: 0) { Text("Applied when the export runs") }.foregroundStyle(theme.vars.colorContentMuted) } } }
 }
-private struct PortableScene129: View {
+private struct PortableScene222: View {
 @Environment(\.theme) private var theme
 @State private var value0 = true
 @State private var value1 = false
@@ -1540,7 +2561,7 @@ PreferenceRow(title: "Play a sound when a job finishes", subtitle: nil, icon: { 
 PreferenceRow(title: "Join the beta channel", subtitle: "Updates arrive earlier and break more often", icon: { EmptyView() }) { DazzUI.Switch(checked: value2, onCheckedChange: { value2 = $0 }, size: .medium, tint: .primary, enabled: true).accessibilityLabel("Join the beta channel").accessibilityIdentifier("beta") }
 PreferenceRow(title: "Send crash reports", subtitle: "Cannot be changed on a managed device", icon: { EmptyView() }) { DazzUI.Switch(checked: value3, onCheckedChange: { value3 = $0 }, size: .medium, tint: .primary, enabled: false).accessibilityLabel("Send crash reports").accessibilityIdentifier("telemetry") } } } }
 }
-private struct PortableScene130: View {
+private struct PortableScene223: View {
 @Environment(\.theme) private var theme
 
 var body: some View { VStack(alignment: .leading, spacing: 0) { DazzUI.Table { DazzUI.TableHead { TableCell(head: true, align: .start) { Text("Stage") }
@@ -1552,7 +2573,7 @@ TableCell(head: false, align: .end) { Text("168") } }
 DazzUI.TableRow { TableCell(head: false, align: .start) { Text("Reviewed") }
 TableCell(head: false, align: .end) { Text("96") } } } }.frame(width: 608, alignment: .leading) }
 }
-private struct PortableScene131: View {
+private struct PortableScene224: View {
 @Environment(\.theme) private var theme
 
 var body: some View { VStack(alignment: .leading, spacing: 0) { DazzUI.Table { DazzUI.TableHead { TableCell(head: true, align: .start) { Text("Provider") }
@@ -1572,32 +2593,154 @@ TableCell(head: false, align: .start) { Text("localhost:8080") }
 TableCell(head: false, align: .end) { Text("0") }
 TableCell(head: false, align: .end) { Text("—") } } } }.frame(width: 608, alignment: .leading) }
 }
-private struct PortableScene132: View {
+private struct PortableScene225: View {
+@Environment(\.theme) private var theme
+@State private var value0 = true
+@State private var value1 = false
+@State private var value2 = false
+@State private var value3 = false
+@State private var value4 = true
+@State private var value5 = true
+@State private var value6 = true
+@State private var value7 = true
+var body: some View { Page("Tag", description: "A Badge you can act on. The two are one drawing and two components rather than one component with an `interactive` prop, because the difference is not cosmetic: a badge reads its recipes at rest and stays out of the shared state machine, since a label that moves under the pointer reads as something you can press. A tag is something you can press — and taking the state machine is the whole reason it exists.") { Section("Beside a Badge", description: "They share the capsule — the same box at the same three densities, written once in badge.css — and nothing else. A tag that is neither selectable nor removable should be a Badge.") { Stack { Specimen("Badge") { Badge(size: .medium, variant: .tinted, tint: .primary) { HStack(spacing: 0) { Text("v1.7.0") } } }
+Specimen("Tag, selectable") { DazzUI.Tag("bug", size: .medium, variant: .outlined, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove", onSelect: nil, onRemove: nil) }
+Specimen("Tag, removable") { DazzUI.Tag("needs design", size: .medium, variant: .tinted, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove", onSelect: nil, onRemove: {  }) } } }
+Section("Selected", description: "Drawn twice over: the tinted fill the component swaps the variant to, and the tint's edge. One alone is not enough — a tinted tag that was already tinted would look untouched, and an edge alone is a pixel to spot in a row of forty.") { Row(spacing: theme.vars.spacing1-5) { DazzUI.Tag("bug", size: .medium, variant: .outlined, tint: .primary, selected: value0, enabled: true, removeLabel: "Remove", onSelect: { selected in value0 = selected;  }, onRemove: nil)
+DazzUI.Tag("good first issue", size: .medium, variant: .outlined, tint: .primary, selected: value1, enabled: true, removeLabel: "Remove", onSelect: { selected in value1 = selected;  }, onRemove: nil)
+DazzUI.Tag("needs design", size: .medium, variant: .outlined, tint: .primary, selected: value2, enabled: true, removeLabel: "Remove", onSelect: { selected in value2 = selected;  }, onRemove: nil)
+DazzUI.Tag("blocked", size: .medium, variant: .outlined, tint: .primary, selected: value3, enabled: true, removeLabel: "Remove", onSelect: { selected in value3 = selected;  }, onRemove: nil) } }
+Section("Dismissing", description: "The dismiss button is its own control rather than a second job for the label: a chip that removes itself when clicked has no way to be selected, and one that does both from the same target removes things by accident. It is faint at rest and only resolves under the pointer — an ✕ at full strength on every chip turns a list of tags into a list of buttons.") { Row(spacing: theme.vars.spacing1-5) { if value4 {
+DazzUI.Tag("bug", size: .medium, variant: .tinted, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove bug", onSelect: nil, onRemove: { value4 = false })
+}
+if value5 {
+DazzUI.Tag("good first issue", size: .medium, variant: .tinted, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove good first issue", onSelect: nil, onRemove: { value5 = false })
+}
+if value6 {
+DazzUI.Tag("needs design", size: .medium, variant: .tinted, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove needs design", onSelect: nil, onRemove: { value6 = false })
+}
+if value7 {
+DazzUI.Tag("blocked", size: .medium, variant: .tinted, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove blocked", onSelect: nil, onRemove: { value7 = false })
+} } }
+Section("Sizes and variants", description: "Both are the Badge's, because the capsule is the Badge's. What is added is the resting, hover, pressed and disabled states the recipes already carry.") { Stack { Specimen("filled") { DazzUI.Tag("label", size: .medium, variant: .filled, tint: .primary, selected: false, enabled: true, removeLabel: "Remove", onSelect: { selected in   }, onRemove: nil) }
+Specimen("tinted") { DazzUI.Tag("label", size: .medium, variant: .tinted, tint: .primary, selected: false, enabled: true, removeLabel: "Remove", onSelect: { selected in   }, onRemove: nil) }
+Specimen("outlined") { DazzUI.Tag("label", size: .medium, variant: .outlined, tint: .primary, selected: false, enabled: true, removeLabel: "Remove", onSelect: { selected in   }, onRemove: nil) }
+Specimen("raised") { DazzUI.Tag("label", size: .medium, variant: .raised, tint: .primary, selected: false, enabled: true, removeLabel: "Remove", onSelect: { selected in   }, onRemove: nil) } } } } }
+}
+private struct PortableScene226: View {
+@Environment(\.theme) private var theme
+@State private var value0 = true
+@State private var value1 = false
+@State private var value2 = false
+@State private var value3 = false
+var body: some View { Row(spacing: theme.vars.spacing1-5) { DazzUI.Tag("bug", size: .medium, variant: .outlined, tint: .primary, selected: value0, enabled: true, removeLabel: "Remove", onSelect: { selected in value0 = selected;  }, onRemove: nil)
+DazzUI.Tag("good first issue", size: .medium, variant: .outlined, tint: .primary, selected: value1, enabled: true, removeLabel: "Remove", onSelect: { selected in value1 = selected;  }, onRemove: nil)
+DazzUI.Tag("needs design", size: .medium, variant: .outlined, tint: .primary, selected: value2, enabled: true, removeLabel: "Remove", onSelect: { selected in value2 = selected;  }, onRemove: nil)
+DazzUI.Tag("blocked", size: .medium, variant: .outlined, tint: .primary, selected: value3, enabled: true, removeLabel: "Remove", onSelect: { selected in value3 = selected;  }, onRemove: nil) } }
+}
+private struct PortableScene227: View {
+@Environment(\.theme) private var theme
+@State private var value0 = true
+@State private var value1 = true
+@State private var value2 = true
+@State private var value3 = true
+var body: some View { Row(spacing: theme.vars.spacing1-5) { if value0 {
+DazzUI.Tag("bug", size: .medium, variant: .tinted, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove bug", onSelect: nil, onRemove: { value0 = false })
+}
+if value1 {
+DazzUI.Tag("good first issue", size: .medium, variant: .tinted, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove good first issue", onSelect: nil, onRemove: { value1 = false })
+}
+if value2 {
+DazzUI.Tag("needs design", size: .medium, variant: .tinted, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove needs design", onSelect: nil, onRemove: { value2 = false })
+}
+if value3 {
+DazzUI.Tag("blocked", size: .medium, variant: .tinted, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove blocked", onSelect: nil, onRemove: { value3 = false })
+} } }
+}
+private struct PortableScene228: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Row(spacing: nil) { DazzUI.Tag("small", size: .small, variant: .tinted, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove", onSelect: nil, onRemove: {  })
+DazzUI.Tag("medium", size: .medium, variant: .tinted, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove", onSelect: nil, onRemove: {  })
+DazzUI.Tag("large", size: .large, variant: .tinted, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove", onSelect: nil, onRemove: {  }) } }
+}
+private struct PortableScene229: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Row(spacing: nil) { DazzUI.Tag("filled", size: .medium, variant: .filled, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove", onSelect: nil, onRemove: nil)
+DazzUI.Tag("tinted", size: .medium, variant: .tinted, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove", onSelect: nil, onRemove: nil)
+DazzUI.Tag("outlined", size: .medium, variant: .outlined, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove", onSelect: nil, onRemove: nil)
+DazzUI.Tag("raised", size: .medium, variant: .raised, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove", onSelect: nil, onRemove: nil) } }
+}
+private struct PortableScene230: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Row(spacing: nil) { DazzUI.Tag("primary", size: .medium, variant: .tinted, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove", onSelect: nil, onRemove: {  })
+DazzUI.Tag("neutral", size: .medium, variant: .tinted, tint: .neutral, selected: nil, enabled: true, removeLabel: "Remove", onSelect: nil, onRemove: {  })
+DazzUI.Tag("info", size: .medium, variant: .tinted, tint: .info, selected: nil, enabled: true, removeLabel: "Remove", onSelect: nil, onRemove: {  })
+DazzUI.Tag("success", size: .medium, variant: .tinted, tint: .success, selected: nil, enabled: true, removeLabel: "Remove", onSelect: nil, onRemove: {  })
+DazzUI.Tag("warning", size: .medium, variant: .tinted, tint: .warning, selected: nil, enabled: true, removeLabel: "Remove", onSelect: nil, onRemove: {  })
+DazzUI.Tag("danger", size: .medium, variant: .tinted, tint: .danger, selected: nil, enabled: true, removeLabel: "Remove", onSelect: nil, onRemove: {  }) } }
+}
+private struct PortableScene231: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Row(spacing: nil) { DazzUI.Tag("unavailable", size: .medium, variant: .tinted, tint: .primary, selected: false, enabled: false, removeLabel: "Remove", onSelect: { selected in   }, onRemove: nil)
+DazzUI.Tag("pinned", size: .medium, variant: .tinted, tint: .primary, selected: nil, enabled: false, removeLabel: "Remove", onSelect: nil, onRemove: {  }) } }
+}
+private struct PortableScene232: View {
+@Environment(\.theme) private var theme
+@State private var value0 = true
+@State private var value1 = false
+@State private var value2 = false
+@State private var value3 = false
+@State private var value4 = true
+@State private var value5 = true
+@State private var value6 = true
+@State private var value7 = true
+var body: some View { Col(spacing: nil, width: 416) { Row(spacing: theme.vars.spacing1-5) { DazzUI.Tag("bug", size: .medium, variant: .outlined, tint: .primary, selected: value0, enabled: true, removeLabel: "Remove", onSelect: { selected in value0 = selected;  }, onRemove: nil)
+DazzUI.Tag("good first issue", size: .medium, variant: .outlined, tint: .primary, selected: value1, enabled: true, removeLabel: "Remove", onSelect: { selected in value1 = selected;  }, onRemove: nil)
+DazzUI.Tag("needs design", size: .medium, variant: .outlined, tint: .primary, selected: value2, enabled: true, removeLabel: "Remove", onSelect: { selected in value2 = selected;  }, onRemove: nil)
+DazzUI.Tag("blocked", size: .medium, variant: .outlined, tint: .primary, selected: value3, enabled: true, removeLabel: "Remove", onSelect: { selected in value3 = selected;  }, onRemove: nil) }
+Row(spacing: theme.vars.spacing1-5) { if value4 {
+DazzUI.Tag("bug", size: .medium, variant: .tinted, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove bug", onSelect: nil, onRemove: { value4 = false })
+}
+if value5 {
+DazzUI.Tag("good first issue", size: .medium, variant: .tinted, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove good first issue", onSelect: nil, onRemove: { value5 = false })
+}
+if value6 {
+DazzUI.Tag("needs design", size: .medium, variant: .tinted, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove needs design", onSelect: nil, onRemove: { value6 = false })
+}
+if value7 {
+DazzUI.Tag("blocked", size: .medium, variant: .tinted, tint: .primary, selected: nil, enabled: true, removeLabel: "Remove blocked", onSelect: nil, onRemove: { value7 = false })
+} } } }
+}
+private struct PortableScene233: View {
 @Environment(\.theme) private var theme
 @State private var value0 = "Jianying Li"
 var body: some View { Col(spacing: nil, width: 352) { DazzUI.TextField(text: $value0, placeholder: "", size: .medium, state: .default, tint: .primary, mono: false, enabled: true).accessibilityIdentifier("field") } }
 }
-private struct PortableScene133: View {
+private struct PortableScene234: View {
 @Environment(\.theme) private var theme
 @State private var value0 = ""
 var body: some View { Col(spacing: nil, width: 352) { DazzUI.TextField(text: $value0, placeholder: "Search terms", size: .medium, state: .default, tint: .primary, mono: false, enabled: true).accessibilityIdentifier("field") } }
 }
-private struct PortableScene134: View {
+private struct PortableScene235: View {
 @Environment(\.theme) private var theme
 @State private var value0 = "Read only"
 var body: some View { Col(spacing: nil, width: 352) { FieldValue(size: .medium, mono: false) { Text(value0).textSelection(.enabled) }.accessibilityIdentifier("field") } }
 }
-private struct PortableScene135: View {
+private struct PortableScene236: View {
 @Environment(\.theme) private var theme
 @State private var value0 = "Disabled"
 var body: some View { Col(spacing: nil, width: 352) { DazzUI.TextField(text: $value0, placeholder: "", size: .medium, state: .default, tint: .primary, mono: false, enabled: false).accessibilityIdentifier("field") } }
 }
-private struct PortableScene136: View {
+private struct PortableScene237: View {
 @Environment(\.theme) private var theme
 @State private var value0 = "Rejected value"
 var body: some View { Col(spacing: nil, width: 352) { DazzUI.TextField(text: $value0, placeholder: "", size: .medium, state: .error, tint: .primary, mono: false, enabled: true).accessibilityIdentifier("field") } }
 }
-private struct PortableScene137: View {
+private struct PortableScene238: View {
 @Environment(\.theme) private var theme
 @State private var value0 = "Jianying Li"
 @State private var value1 = ""
@@ -1610,7 +2753,7 @@ FieldValue(size: .medium, mono: false) { Text(value2).textSelection(.enabled) }.
 DazzUI.TextField(text: $value3, placeholder: "", size: .medium, state: .default, tint: .primary, mono: false, enabled: false).accessibilityIdentifier("field-3")
 DazzUI.TextField(text: $value4, placeholder: "", size: .medium, state: .error, tint: .primary, mono: false, enabled: true).accessibilityIdentifier("field-4") } }
 }
-private struct PortableScene138: View {
+private struct PortableScene239: View {
 @Environment(\.theme) private var theme
 @State private var value0 = ""
 @State private var value1 = ""
@@ -1619,7 +2762,7 @@ var body: some View { Col(spacing: nil, width: 352) { DazzUI.TextField(text: $va
 DazzUI.TextField(text: $value1, placeholder: "medium", size: .medium, state: .default, tint: .primary, mono: false, enabled: true).accessibilityIdentifier("field-1")
 DazzUI.TextField(text: $value2, placeholder: "large", size: .large, state: .default, tint: .primary, mono: false, enabled: true).accessibilityIdentifier("field-2") } }
 }
-private struct PortableScene139: View {
+private struct PortableScene240: View {
 @Environment(\.theme) private var theme
 @State private var value0 = ""
 @State private var value1 = ""
@@ -1631,7 +2774,7 @@ DazzUI.Button(size: .medium, variant: .filled, tint: .primary, fullWidth: false,
 ActionBar(align: .start) { DazzUI.TextField(text: $value2, placeholder: "Search terms", size: .large, state: .default, tint: .primary, mono: false, enabled: true).accessibilityIdentifier("field-2-0")
 DazzUI.Button(size: .large, variant: .filled, tint: .primary, fullWidth: false, shortcut: nil, enabled: true, action: {  }) { Text("Go") } } } }
 }
-private struct PortableScene140: View {
+private struct PortableScene241: View {
 @Environment(\.theme) private var theme
 @State private var value0 = "https://api.deepl.com/v2"
 @State private var value1 = "sk-9f3c7a01b4224e8d"
@@ -1640,7 +2783,7 @@ var body: some View { Col(spacing: nil, width: 352) { DazzUI.TextField(text: $va
 DazzUI.TextField(text: $value1, placeholder: "", size: .medium, state: .default, tint: .primary, mono: true, enabled: true).accessibilityIdentifier("field-1")
 DazzUI.TextField(text: $value2, placeholder: "~/Library/Application Support", size: .medium, state: .default, tint: .primary, mono: true, enabled: true).accessibilityIdentifier("field-2") } }
 }
-private struct PortableScene141: View {
+private struct PortableScene242: View {
 @Environment(\.theme) private var theme
 @State private var value0 = ""
 @State private var value1 = ""
@@ -1655,9 +2798,140 @@ DazzUI.TextField(text: $value3, placeholder: "success", size: .medium, state: .d
 DazzUI.TextField(text: $value4, placeholder: "warning", size: .medium, state: .default, tint: .warning, mono: false, enabled: true).accessibilityIdentifier("field-4")
 DazzUI.TextField(text: $value5, placeholder: "danger", size: .medium, state: .default, tint: .danger, mono: false, enabled: true).accessibilityIdentifier("field-5") } }
 }
-private struct PortableScene142: View {
+private struct PortableScene243: View {
 @Environment(\.theme) private var theme
 @State private var value0 = "handbook"
 var body: some View { Col(spacing: nil, width: 352) { FormField(label: "File name", hint: ((value0.trimmingCharacters(in: CharacterSet(charactersIn: "\u{9}\u{a}\u{b}\u{c}\u{d}\u{20}\u{a0}\u{1680}\u{2000}\u{2001}\u{2002}\u{2003}\u{2004}\u{2005}\u{2006}\u{2007}\u{2008}\u{2009}\u{200a}\u{2028}\u{2029}\u{202f}\u{205f}\u{3000}\u{feff}")) == "") ? "A file needs a name." : ("Saved as " + value0.trimmingCharacters(in: CharacterSet(charactersIn: "\u{9}\u{a}\u{b}\u{c}\u{d}\u{20}\u{a0}\u{1680}\u{2000}\u{2001}\u{2002}\u{2003}\u{2004}\u{2005}\u{2006}\u{2007}\u{2008}\u{2009}\u{200a}\u{2028}\u{2029}\u{202f}\u{205f}\u{3000}\u{feff}")) + ".docx")), state: (((value0.trimmingCharacters(in: CharacterSet(charactersIn: "\u{9}\u{a}\u{b}\u{c}\u{d}\u{20}\u{a0}\u{1680}\u{2000}\u{2001}\u{2002}\u{2003}\u{2004}\u{2005}\u{2006}\u{2007}\u{2008}\u{2009}\u{200a}\u{2028}\u{2029}\u{202f}\u{205f}\u{3000}\u{feff}")) == "") ? "error" : "default") == "error" ? .error : .default)) { DazzUI.TextField(text: $value0, placeholder: "", size: .medium, state: (((value0.trimmingCharacters(in: CharacterSet(charactersIn: "\u{9}\u{a}\u{b}\u{c}\u{d}\u{20}\u{a0}\u{1680}\u{2000}\u{2001}\u{2002}\u{2003}\u{2004}\u{2005}\u{2006}\u{2007}\u{2008}\u{2009}\u{200a}\u{2028}\u{2029}\u{202f}\u{205f}\u{3000}\u{feff}")) == "") ? "error" : "default") == "error" ? .error : .default), tint: .primary, mono: false, enabled: true).accessibilityIdentifier("name") }.accessibilityIdentifier("field-group")
 DazzUI.Button(size: .small, variant: .filled, tint: .primary, fullWidth: false, shortcut: nil, enabled: !((value0.trimmingCharacters(in: CharacterSet(charactersIn: "\u{9}\u{a}\u{b}\u{c}\u{d}\u{20}\u{a0}\u{1680}\u{2000}\u{2001}\u{2002}\u{2003}\u{2004}\u{2005}\u{2006}\u{2007}\u{2008}\u{2009}\u{200a}\u{2028}\u{2029}\u{202f}\u{205f}\u{3000}\u{feff}")) == "")), action: {  }) { Text("Export") }.accessibilityIdentifier("export") } }
+}
+private struct PortableScene244: View {
+@Environment(\.theme) private var theme
+@State private var value0 = false
+@State private var value1 = true
+var body: some View { Row(spacing: nil) { DazzUI.Toggle(pressed: value0, size: .tiny, variant: .plain, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value0.toggle() }) { HStack(spacing: 0) { Text("Wrap") } }
+DazzUI.Toggle(pressed: value1, size: .tiny, variant: .plain, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value1.toggle() }) { HStack(spacing: 0) { Text("Wrap") } } } }
+}
+private struct PortableScene245: View {
+@Environment(\.theme) private var theme
+@State private var value0 = true
+@State private var value1 = true
+@State private var value2 = true
+@State private var value3 = true
+var body: some View { Row(spacing: nil) { DazzUI.Toggle(pressed: value0, size: .tiny, variant: .recessed, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value0.toggle() }) { HStack(spacing: 0) { Text("tiny") } }
+DazzUI.Toggle(pressed: value1, size: .small, variant: .recessed, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value1.toggle() }) { HStack(spacing: 0) { Text("small") } }
+DazzUI.Toggle(pressed: value2, size: .medium, variant: .recessed, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value2.toggle() }) { HStack(spacing: 0) { Text("medium") } }
+DazzUI.Toggle(pressed: value3, size: .large, variant: .recessed, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value3.toggle() }) { HStack(spacing: 0) { Text("large") } } } }
+}
+private struct PortableScene246: View {
+@Environment(\.theme) private var theme
+@State private var value0 = false
+@State private var value1 = false
+@State private var value2 = false
+@State private var value3 = false
+@State private var value4 = false
+@State private var value5 = false
+@State private var value6 = true
+@State private var value7 = true
+@State private var value8 = true
+@State private var value9 = true
+@State private var value10 = true
+@State private var value11 = true
+var body: some View { Col(spacing: nil, width: nil) { Row(spacing: nil) { DazzUI.Toggle(pressed: value0, size: .tiny, variant: .recessed, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value0.toggle() }) { HStack(spacing: 0) { Text("recessed") } }
+DazzUI.Toggle(pressed: value1, size: .tiny, variant: .normal, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value1.toggle() }) { HStack(spacing: 0) { Text("normal") } }
+DazzUI.Toggle(pressed: value2, size: .tiny, variant: .filled, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value2.toggle() }) { HStack(spacing: 0) { Text("filled") } }
+DazzUI.Toggle(pressed: value3, size: .tiny, variant: .tinted, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value3.toggle() }) { HStack(spacing: 0) { Text("tinted") } }
+DazzUI.Toggle(pressed: value4, size: .tiny, variant: .outlined, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value4.toggle() }) { HStack(spacing: 0) { Text("outlined") } }
+DazzUI.Toggle(pressed: value5, size: .tiny, variant: .plain, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value5.toggle() }) { HStack(spacing: 0) { Text("plain") } } }
+Row(spacing: nil) { DazzUI.Toggle(pressed: value6, size: .tiny, variant: .recessed, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value6.toggle() }) { HStack(spacing: 0) { Text("recessed") } }
+DazzUI.Toggle(pressed: value7, size: .tiny, variant: .normal, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value7.toggle() }) { HStack(spacing: 0) { Text("normal") } }
+DazzUI.Toggle(pressed: value8, size: .tiny, variant: .filled, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value8.toggle() }) { HStack(spacing: 0) { Text("filled") } }
+DazzUI.Toggle(pressed: value9, size: .tiny, variant: .tinted, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value9.toggle() }) { HStack(spacing: 0) { Text("tinted") } }
+DazzUI.Toggle(pressed: value10, size: .tiny, variant: .outlined, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value10.toggle() }) { HStack(spacing: 0) { Text("outlined") } }
+DazzUI.Toggle(pressed: value11, size: .tiny, variant: .plain, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value11.toggle() }) { HStack(spacing: 0) { Text("plain") } } } } }
+}
+private struct PortableScene247: View {
+@Environment(\.theme) private var theme
+@State private var value0 = true
+@State private var value1 = true
+@State private var value2 = true
+@State private var value3 = true
+@State private var value4 = true
+@State private var value5 = true
+var body: some View { Row(spacing: nil) { DazzUI.Toggle(pressed: value0, size: .tiny, variant: .plain, tint: .primary, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value0.toggle() }) { HStack(spacing: 0) { Text("primary") } }
+DazzUI.Toggle(pressed: value1, size: .tiny, variant: .plain, tint: .neutral, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value1.toggle() }) { HStack(spacing: 0) { Text("neutral") } }
+DazzUI.Toggle(pressed: value2, size: .tiny, variant: .plain, tint: .info, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value2.toggle() }) { HStack(spacing: 0) { Text("info") } }
+DazzUI.Toggle(pressed: value3, size: .tiny, variant: .plain, tint: .success, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value3.toggle() }) { HStack(spacing: 0) { Text("success") } }
+DazzUI.Toggle(pressed: value4, size: .tiny, variant: .plain, tint: .warning, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value4.toggle() }) { HStack(spacing: 0) { Text("warning") } }
+DazzUI.Toggle(pressed: value5, size: .tiny, variant: .plain, tint: .danger, enabled: true, glyphOnly: false, accessibilityName: nil, action: { value5.toggle() }) { HStack(spacing: 0) { Text("danger") } } } }
+}
+private struct PortableScene248: View {
+@Environment(\.theme) private var theme
+@State private var value0 = false
+@State private var value1 = true
+var body: some View { Row(spacing: nil) { DazzUI.Toggle(pressed: value0, size: .tiny, variant: .plain, tint: .neutral, enabled: false, glyphOnly: false, accessibilityName: nil, action: { value0.toggle() }) { HStack(spacing: 0) { Text("Wrap") } }
+DazzUI.Toggle(pressed: value1, size: .tiny, variant: .plain, tint: .neutral, enabled: false, glyphOnly: false, accessibilityName: nil, action: { value1.toggle() }) { HStack(spacing: 0) { Text("Wrap") } } } }
+}
+private struct PortableScene249: View {
+@Environment(\.theme) private var theme
+@State private var value0 = true
+@State private var value1 = false
+@State private var value2 = false
+var body: some View { Row(spacing: theme.vars.spacing1) { DazzUI.Toggle(pressed: value0, size: .tiny, variant: .plain, tint: .neutral, enabled: true, glyphOnly: true, accessibilityName: "Bold", action: { value0.toggle() }) { HStack(spacing: 0) { Icon(.textBold24Regular, size: theme.vars.metrics(.tiny).content.size) } }
+DazzUI.Toggle(pressed: value1, size: .tiny, variant: .plain, tint: .neutral, enabled: true, glyphOnly: true, accessibilityName: "Italic", action: { value1.toggle() }) { HStack(spacing: 0) { Icon(.textItalic24Regular, size: theme.vars.metrics(.tiny).content.size) } }
+DazzUI.Toggle(pressed: value2, size: .tiny, variant: .plain, tint: .neutral, enabled: true, glyphOnly: true, accessibilityName: "Underline", action: { value2.toggle() }) { HStack(spacing: 0) { Icon(.textUnderline24Regular, size: theme.vars.metrics(.tiny).content.size) } } } }
+}
+private struct PortableScene250: View {
+@Environment(\.theme) private var theme
+@State private var value0 = true
+@State private var value1 = false
+@State private var value2 = false
+@State private var value3 = true
+@State private var value4 = false
+@State private var value5 = false
+var body: some View { Page("ToggleGroup", description: "Several toggles that belong together, joined into one control. Joined rather than merely adjacent: the corners are rounded at the ends of the run only and the shared edges collapse to one, which is what says the group is one thing with several states rather than three buttons that happen to touch.") { Section("Beside a SegmentedControl", description: "This is where the two part company. A segmented control is a choice between its segments and always has exactly one; a toggle group can have several on at once, or none. Drawing a mandatory single choice with this one would let the reader clear a choice that cannot be cleared.") { Stack { Specimen("SegmentedControl — one, always") { DazzUI.SegmentedControl(items: [SegmentedItem(value: "source", label: "Source", disabled: false), SegmentedItem(value: "preview", label: "Preview", disabled: false)], value: "source", onValueChange: { _ in }, size: .medium, tint: .primary, activeStyle: .raised, stretch: false).accessibilityLabel("View") }
+Specimen("ToggleGroup — any number, including none") { ToggleGroup(items: [ToggleItem(value: "bold", label: "Bold", enabled: true, icon: .textBold24Regular), ToggleItem(value: "italic", label: "Italic", enabled: true, icon: .textItalic24Regular), ToggleItem(value: "underline", label: "Underline", enabled: true, icon: .textUnderline24Regular)], value: [value0 ? "bold" : nil, value1 ? "italic" : nil, value2 ? "underline" : nil].compactMap { $0 }, multiple: true, size: .small, variant: .recessed, tint: .primary, onChange: { next in value0 = next.contains("bold"); value1 = next.contains("italic"); value2 = next.contains("underline") }).accessibilityLabel("Text style") } } }
+Section("One tab stop", description: "Base UI owns the part that is easy to get wrong: the group is a single tab stop and the arrow keys move inside it, which is what keeps a toolbar of twelve toggles from being twelve stops on the way to the document.") { ToggleGroup(items: [ToggleItem(value: "bold", label: "Bold", enabled: true, icon: .textBold24Regular), ToggleItem(value: "italic", label: "Italic", enabled: true, icon: .textItalic24Regular), ToggleItem(value: "underline", label: "Underline", enabled: true, icon: .textUnderline24Regular)], value: [value3 ? "bold" : nil, value4 ? "italic" : nil, value5 ? "underline" : nil].compactMap { $0 }, multiple: true, size: .small, variant: .recessed, tint: .primary, onChange: { next in value3 = next.contains("bold"); value4 = next.contains("italic"); value5 = next.contains("underline") }).accessibilityLabel("Text style") }
+Section("Words", description: "Nothing about the group is glyph-only. A run of labelled toggles is what a filter bar wants, and the joined edges are what say the three answers are about one question.") { ToggleGroup(items: [ToggleItem(value: "whitespace", label: "Whitespace", enabled: true), ToggleItem(value: "minimap", label: "Minimap", enabled: true), ToggleItem(value: "blame", label: "Blame", enabled: true)], value: [true ? "whitespace" : nil, false ? "minimap" : nil, false ? "blame" : nil].compactMap { $0 }, multiple: true, size: .small, variant: .recessed, tint: .primary, onChange: { next in  }).accessibilityLabel("Show") } } }
+}
+private struct PortableScene251: View {
+@Environment(\.theme) private var theme
+@State private var value0 = true
+@State private var value1 = false
+@State private var value2 = false
+var body: some View { ToggleGroup(items: [ToggleItem(value: "bold", label: "Bold", enabled: true, icon: .textBold24Regular), ToggleItem(value: "italic", label: "Italic", enabled: true, icon: .textItalic24Regular), ToggleItem(value: "underline", label: "Underline", enabled: true, icon: .textUnderline24Regular)], value: [value0 ? "bold" : nil, value1 ? "italic" : nil, value2 ? "underline" : nil].compactMap { $0 }, multiple: true, size: .small, variant: .recessed, tint: .primary, onChange: { next in value0 = next.contains("bold"); value1 = next.contains("italic"); value2 = next.contains("underline") }).accessibilityLabel("Text style") }
+}
+private struct PortableScene252: View {
+@Environment(\.theme) private var theme
+@State private var value0 = true
+@State private var value1 = false
+@State private var value2 = false
+var body: some View { ToggleGroup(items: [ToggleItem(value: "whitespace", label: "Whitespace", enabled: true), ToggleItem(value: "minimap", label: "Minimap", enabled: true), ToggleItem(value: "blame", label: "Blame", enabled: true)], value: [value0 ? "whitespace" : nil, value1 ? "minimap" : nil, value2 ? "blame" : nil].compactMap { $0 }, multiple: true, size: .small, variant: .recessed, tint: .primary, onChange: { next in value0 = next.contains("whitespace"); value1 = next.contains("minimap"); value2 = next.contains("blame") }).accessibilityLabel("Show") }
+}
+private struct PortableScene253: View {
+@Environment(\.theme) private var theme
+@State private var value0 = "minimap"
+var body: some View { ToggleGroup(items: [ToggleItem(value: "whitespace", label: "Whitespace", enabled: true), ToggleItem(value: "minimap", label: "Minimap", enabled: true), ToggleItem(value: "blame", label: "Blame", enabled: true)], value: (value0.isEmpty ? [] : [value0]), multiple: false, size: .small, variant: .recessed, tint: .primary, onChange: { value0 = $0.first ?? "" }).accessibilityLabel("Panel") }
+}
+private struct PortableScene254: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Col(spacing: nil, width: nil) { ToggleGroup(items: [ToggleItem(value: "whitespace", label: "Whitespace", enabled: true), ToggleItem(value: "minimap", label: "Minimap", enabled: true), ToggleItem(value: "blame", label: "Blame", enabled: true)], value: [true ? "whitespace" : nil, false ? "minimap" : nil, false ? "blame" : nil].compactMap { $0 }, multiple: true, size: .small, variant: .recessed, tint: .primary, onChange: { next in  }).accessibilityLabel("Show (recessed)")
+ToggleGroup(items: [ToggleItem(value: "whitespace", label: "Whitespace", enabled: true), ToggleItem(value: "minimap", label: "Minimap", enabled: true), ToggleItem(value: "blame", label: "Blame", enabled: true)], value: [true ? "whitespace" : nil, false ? "minimap" : nil, false ? "blame" : nil].compactMap { $0 }, multiple: true, size: .small, variant: .normal, tint: .primary, onChange: { next in  }).accessibilityLabel("Show (normal)")
+ToggleGroup(items: [ToggleItem(value: "whitespace", label: "Whitespace", enabled: true), ToggleItem(value: "minimap", label: "Minimap", enabled: true), ToggleItem(value: "blame", label: "Blame", enabled: true)], value: [true ? "whitespace" : nil, false ? "minimap" : nil, false ? "blame" : nil].compactMap { $0 }, multiple: true, size: .small, variant: .outlined, tint: .primary, onChange: { next in  }).accessibilityLabel("Show (outlined)")
+ToggleGroup(items: [ToggleItem(value: "whitespace", label: "Whitespace", enabled: true), ToggleItem(value: "minimap", label: "Minimap", enabled: true), ToggleItem(value: "blame", label: "Blame", enabled: true)], value: [true ? "whitespace" : nil, false ? "minimap" : nil, false ? "blame" : nil].compactMap { $0 }, multiple: true, size: .small, variant: .plain, tint: .primary, onChange: { next in  }).accessibilityLabel("Show (plain)") } }
+}
+private struct PortableScene255: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Col(spacing: nil, width: nil) { ToggleGroup(items: [ToggleItem(value: "whitespace", label: "Whitespace", enabled: true), ToggleItem(value: "minimap", label: "Minimap", enabled: true), ToggleItem(value: "blame", label: "Blame", enabled: true)], value: [true ? "whitespace" : nil, false ? "minimap" : nil, false ? "blame" : nil].compactMap { $0 }, multiple: true, size: .small, variant: .recessed, tint: .primary, onChange: { next in  }).accessibilityLabel("Show (primary)")
+ToggleGroup(items: [ToggleItem(value: "whitespace", label: "Whitespace", enabled: true), ToggleItem(value: "minimap", label: "Minimap", enabled: true), ToggleItem(value: "blame", label: "Blame", enabled: true)], value: [true ? "whitespace" : nil, false ? "minimap" : nil, false ? "blame" : nil].compactMap { $0 }, multiple: true, size: .small, variant: .recessed, tint: .neutral, onChange: { next in  }).accessibilityLabel("Show (neutral)")
+ToggleGroup(items: [ToggleItem(value: "whitespace", label: "Whitespace", enabled: true), ToggleItem(value: "minimap", label: "Minimap", enabled: true), ToggleItem(value: "blame", label: "Blame", enabled: true)], value: [true ? "whitespace" : nil, false ? "minimap" : nil, false ? "blame" : nil].compactMap { $0 }, multiple: true, size: .small, variant: .recessed, tint: .info, onChange: { next in  }).accessibilityLabel("Show (info)")
+ToggleGroup(items: [ToggleItem(value: "whitespace", label: "Whitespace", enabled: true), ToggleItem(value: "minimap", label: "Minimap", enabled: true), ToggleItem(value: "blame", label: "Blame", enabled: true)], value: [true ? "whitespace" : nil, false ? "minimap" : nil, false ? "blame" : nil].compactMap { $0 }, multiple: true, size: .small, variant: .recessed, tint: .success, onChange: { next in  }).accessibilityLabel("Show (success)")
+ToggleGroup(items: [ToggleItem(value: "whitespace", label: "Whitespace", enabled: true), ToggleItem(value: "minimap", label: "Minimap", enabled: true), ToggleItem(value: "blame", label: "Blame", enabled: true)], value: [true ? "whitespace" : nil, false ? "minimap" : nil, false ? "blame" : nil].compactMap { $0 }, multiple: true, size: .small, variant: .recessed, tint: .warning, onChange: { next in  }).accessibilityLabel("Show (warning)")
+ToggleGroup(items: [ToggleItem(value: "whitespace", label: "Whitespace", enabled: true), ToggleItem(value: "minimap", label: "Minimap", enabled: true), ToggleItem(value: "blame", label: "Blame", enabled: true)], value: [true ? "whitespace" : nil, false ? "minimap" : nil, false ? "blame" : nil].compactMap { $0 }, multiple: true, size: .small, variant: .recessed, tint: .danger, onChange: { next in  }).accessibilityLabel("Show (danger)") } }
+}
+private struct PortableScene256: View {
+@Environment(\.theme) private var theme
+
+var body: some View { Row(spacing: nil) { ToggleGroup(items: [ToggleItem(value: "whitespace", label: "Whitespace", enabled: true), ToggleItem(value: "minimap", label: "Minimap", enabled: true), ToggleItem(value: "blame", label: "Blame", enabled: false)], value: [true ? "whitespace" : nil, false ? "minimap" : nil, false ? "blame" : nil].compactMap { $0 }, multiple: true, size: .small, variant: .recessed, tint: .primary, onChange: { next in  }).accessibilityLabel("Show") } }
 }

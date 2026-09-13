@@ -1,0 +1,903 @@
+{
+  "Sizes": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Tag",
+          "props": {
+            "size": "small"
+          },
+          "on": {
+            "remove": {}
+          },
+          "children": [
+            "small"
+          ]
+        },
+        {
+          "component": "Tag",
+          "props": {
+            "size": "medium"
+          },
+          "on": {
+            "remove": {}
+          },
+          "children": [
+            "medium"
+          ]
+        },
+        {
+          "component": "Tag",
+          "props": {
+            "size": "large"
+          },
+          "on": {
+            "remove": {}
+          },
+          "children": [
+            "large"
+          ]
+        }
+      ]
+    }
+  },
+  "Variants": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Tag",
+          "props": {
+            "variant": "filled"
+          },
+          "children": [
+            "filled"
+          ]
+        },
+        {
+          "component": "Tag",
+          "props": {
+            "variant": "tinted"
+          },
+          "children": [
+            "tinted"
+          ]
+        },
+        {
+          "component": "Tag",
+          "props": {
+            "variant": "outlined"
+          },
+          "children": [
+            "outlined"
+          ]
+        },
+        {
+          "component": "Tag",
+          "props": {
+            "variant": "raised"
+          },
+          "children": [
+            "raised"
+          ]
+        }
+      ]
+    }
+  },
+  "Tints": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Tag",
+          "props": {
+            "tint": "primary"
+          },
+          "on": {
+            "remove": {}
+          },
+          "children": [
+            "primary"
+          ]
+        },
+        {
+          "component": "Tag",
+          "props": {
+            "tint": "neutral"
+          },
+          "on": {
+            "remove": {}
+          },
+          "children": [
+            "neutral"
+          ]
+        },
+        {
+          "component": "Tag",
+          "props": {
+            "tint": "info"
+          },
+          "on": {
+            "remove": {}
+          },
+          "children": [
+            "info"
+          ]
+        },
+        {
+          "component": "Tag",
+          "props": {
+            "tint": "success"
+          },
+          "on": {
+            "remove": {}
+          },
+          "children": [
+            "success"
+          ]
+        },
+        {
+          "component": "Tag",
+          "props": {
+            "tint": "warning"
+          },
+          "on": {
+            "remove": {}
+          },
+          "children": [
+            "warning"
+          ]
+        },
+        {
+          "component": "Tag",
+          "props": {
+            "tint": "danger"
+          },
+          "on": {
+            "remove": {}
+          },
+          "children": [
+            "danger"
+          ]
+        }
+      ]
+    }
+  },
+  "Disabled": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Tag",
+          "props": {
+            "disabled": true,
+            "selected": false
+          },
+          "on": {
+            "select": {}
+          },
+          "children": [
+            "unavailable"
+          ]
+        },
+        {
+          "component": "Tag",
+          "props": {
+            "disabled": true
+          },
+          "on": {
+            "remove": {}
+          },
+          "children": [
+            "pinned"
+          ]
+        }
+      ]
+    }
+  },
+  "Selectable": {
+    "content": {
+      "component": "Row",
+      "props": {
+        "gap": "spacing.1-5"
+      },
+      "children": [
+        {
+          "component": "Tag",
+          "props": {
+            "variant": "outlined"
+          },
+          "bind": {
+            "selected": "bug"
+          },
+          "children": [
+            "bug"
+          ]
+        },
+        {
+          "component": "Tag",
+          "props": {
+            "variant": "outlined"
+          },
+          "bind": {
+            "selected": "good-first-issue"
+          },
+          "children": [
+            "good first issue"
+          ]
+        },
+        {
+          "component": "Tag",
+          "props": {
+            "variant": "outlined"
+          },
+          "bind": {
+            "selected": "needs-design"
+          },
+          "children": [
+            "needs design"
+          ]
+        },
+        {
+          "component": "Tag",
+          "props": {
+            "variant": "outlined"
+          },
+          "bind": {
+            "selected": "blocked"
+          },
+          "children": [
+            "blocked"
+          ]
+        }
+      ]
+    },
+    "state": {
+      "bug": true,
+      "good-first-issue": false,
+      "needs-design": false,
+      "blocked": false
+    }
+  },
+  "Removable": {
+    "content": {
+      "component": "Row",
+      "props": {
+        "gap": "spacing.1-5"
+      },
+      "children": [
+        {
+          "component": "Show",
+          "value": {
+            "state": "bug-present"
+          },
+          "children": [
+            {
+              "component": "Tag",
+              "props": {
+                "removeLabel": "Remove bug"
+              },
+              "on": {
+                "remove": {
+                  "set": "bug-present",
+                  "value": false
+                }
+              },
+              "children": [
+                "bug"
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Show",
+          "value": {
+            "state": "good-first-issue-present"
+          },
+          "children": [
+            {
+              "component": "Tag",
+              "props": {
+                "removeLabel": "Remove good first issue"
+              },
+              "on": {
+                "remove": {
+                  "set": "good-first-issue-present",
+                  "value": false
+                }
+              },
+              "children": [
+                "good first issue"
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Show",
+          "value": {
+            "state": "needs-design-present"
+          },
+          "children": [
+            {
+              "component": "Tag",
+              "props": {
+                "removeLabel": "Remove needs design"
+              },
+              "on": {
+                "remove": {
+                  "set": "needs-design-present",
+                  "value": false
+                }
+              },
+              "children": [
+                "needs design"
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Show",
+          "value": {
+            "state": "blocked-present"
+          },
+          "children": [
+            {
+              "component": "Tag",
+              "props": {
+                "removeLabel": "Remove blocked"
+              },
+              "on": {
+                "remove": {
+                  "set": "blocked-present",
+                  "value": false
+                }
+              },
+              "children": [
+                "blocked"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "bug-present": true,
+      "good-first-issue-present": true,
+      "needs-design-present": true,
+      "blocked-present": true
+    }
+  },
+  "AFilterBar": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 416
+      },
+      "children": [
+        {
+          "component": "Row",
+          "props": {
+            "gap": "spacing.1-5"
+          },
+          "children": [
+            {
+              "component": "Tag",
+              "props": {
+                "variant": "outlined"
+              },
+              "bind": {
+                "selected": "bug"
+              },
+              "children": [
+                "bug"
+              ]
+            },
+            {
+              "component": "Tag",
+              "props": {
+                "variant": "outlined"
+              },
+              "bind": {
+                "selected": "good-first-issue"
+              },
+              "children": [
+                "good first issue"
+              ]
+            },
+            {
+              "component": "Tag",
+              "props": {
+                "variant": "outlined"
+              },
+              "bind": {
+                "selected": "needs-design"
+              },
+              "children": [
+                "needs design"
+              ]
+            },
+            {
+              "component": "Tag",
+              "props": {
+                "variant": "outlined"
+              },
+              "bind": {
+                "selected": "blocked"
+              },
+              "children": [
+                "blocked"
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Row",
+          "props": {
+            "gap": "spacing.1-5"
+          },
+          "children": [
+            {
+              "component": "Show",
+              "value": {
+                "state": "bug-present"
+              },
+              "children": [
+                {
+                  "component": "Tag",
+                  "props": {
+                    "removeLabel": "Remove bug"
+                  },
+                  "on": {
+                    "remove": {
+                      "set": "bug-present",
+                      "value": false
+                    }
+                  },
+                  "children": [
+                    "bug"
+                  ]
+                }
+              ]
+            },
+            {
+              "component": "Show",
+              "value": {
+                "state": "good-first-issue-present"
+              },
+              "children": [
+                {
+                  "component": "Tag",
+                  "props": {
+                    "removeLabel": "Remove good first issue"
+                  },
+                  "on": {
+                    "remove": {
+                      "set": "good-first-issue-present",
+                      "value": false
+                    }
+                  },
+                  "children": [
+                    "good first issue"
+                  ]
+                }
+              ]
+            },
+            {
+              "component": "Show",
+              "value": {
+                "state": "needs-design-present"
+              },
+              "children": [
+                {
+                  "component": "Tag",
+                  "props": {
+                    "removeLabel": "Remove needs design"
+                  },
+                  "on": {
+                    "remove": {
+                      "set": "needs-design-present",
+                      "value": false
+                    }
+                  },
+                  "children": [
+                    "needs design"
+                  ]
+                }
+              ]
+            },
+            {
+              "component": "Show",
+              "value": {
+                "state": "blocked-present"
+              },
+              "children": [
+                {
+                  "component": "Tag",
+                  "props": {
+                    "removeLabel": "Remove blocked"
+                  },
+                  "on": {
+                    "remove": {
+                      "set": "blocked-present",
+                      "value": false
+                    }
+                  },
+                  "children": [
+                    "blocked"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "bug": true,
+      "good-first-issue": false,
+      "needs-design": false,
+      "blocked": false,
+      "bug-present": true,
+      "good-first-issue-present": true,
+      "needs-design-present": true,
+      "blocked-present": true
+    }
+  },
+  "Overview": {
+    "content": {
+      "component": "Page",
+      "props": {
+        "title": "Tag",
+        "description": "A Badge you can act on. The two are one drawing and two components rather than one component with an `interactive` prop, because the difference is not cosmetic: a badge reads its recipes at rest and stays out of the shared state machine, since a label that moves under the pointer reads as something you can press. A tag is something you can press — and taking the state machine is the whole reason it exists."
+      },
+      "children": [
+        {
+          "component": "Section",
+          "props": {
+            "title": "Beside a Badge",
+            "description": "They share the capsule — the same box at the same three densities, written once in badge.css — and nothing else. A tag that is neither selectable nor removable should be a Badge."
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "Badge"
+                  },
+                  "children": [
+                    {
+                      "component": "Badge",
+                      "children": [
+                        "v1.7.0"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "Tag, selectable"
+                  },
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "props": {
+                        "selected": true,
+                        "variant": "outlined"
+                      },
+                      "children": [
+                        "bug"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "Tag, removable"
+                  },
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "on": {
+                        "remove": {}
+                      },
+                      "children": [
+                        "needs design"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Selected",
+            "description": "Drawn twice over: the tinted fill the component swaps the variant to, and the tint's edge. One alone is not enough — a tinted tag that was already tinted would look untouched, and an edge alone is a pixel to spot in a row of forty."
+          },
+          "children": [
+            {
+              "component": "Row",
+              "props": {
+                "gap": "spacing.1-5"
+              },
+              "children": [
+                {
+                  "component": "Tag",
+                  "props": {
+                    "variant": "outlined"
+                  },
+                  "bind": {
+                    "selected": "bug"
+                  },
+                  "children": [
+                    "bug"
+                  ]
+                },
+                {
+                  "component": "Tag",
+                  "props": {
+                    "variant": "outlined"
+                  },
+                  "bind": {
+                    "selected": "good-first-issue"
+                  },
+                  "children": [
+                    "good first issue"
+                  ]
+                },
+                {
+                  "component": "Tag",
+                  "props": {
+                    "variant": "outlined"
+                  },
+                  "bind": {
+                    "selected": "needs-design"
+                  },
+                  "children": [
+                    "needs design"
+                  ]
+                },
+                {
+                  "component": "Tag",
+                  "props": {
+                    "variant": "outlined"
+                  },
+                  "bind": {
+                    "selected": "blocked"
+                  },
+                  "children": [
+                    "blocked"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Dismissing",
+            "description": "The dismiss button is its own control rather than a second job for the label: a chip that removes itself when clicked has no way to be selected, and one that does both from the same target removes things by accident. It is faint at rest and only resolves under the pointer — an ✕ at full strength on every chip turns a list of tags into a list of buttons."
+          },
+          "children": [
+            {
+              "component": "Row",
+              "props": {
+                "gap": "spacing.1-5"
+              },
+              "children": [
+                {
+                  "component": "Show",
+                  "value": {
+                    "state": "bug-present"
+                  },
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "props": {
+                        "removeLabel": "Remove bug"
+                      },
+                      "on": {
+                        "remove": {
+                          "set": "bug-present",
+                          "value": false
+                        }
+                      },
+                      "children": [
+                        "bug"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Show",
+                  "value": {
+                    "state": "good-first-issue-present"
+                  },
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "props": {
+                        "removeLabel": "Remove good first issue"
+                      },
+                      "on": {
+                        "remove": {
+                          "set": "good-first-issue-present",
+                          "value": false
+                        }
+                      },
+                      "children": [
+                        "good first issue"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Show",
+                  "value": {
+                    "state": "needs-design-present"
+                  },
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "props": {
+                        "removeLabel": "Remove needs design"
+                      },
+                      "on": {
+                        "remove": {
+                          "set": "needs-design-present",
+                          "value": false
+                        }
+                      },
+                      "children": [
+                        "needs design"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Show",
+                  "value": {
+                    "state": "blocked-present"
+                  },
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "props": {
+                        "removeLabel": "Remove blocked"
+                      },
+                      "on": {
+                        "remove": {
+                          "set": "blocked-present",
+                          "value": false
+                        }
+                      },
+                      "children": [
+                        "blocked"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Sizes and variants",
+            "description": "Both are the Badge's, because the capsule is the Badge's. What is added is the resting, hover, pressed and disabled states the recipes already carry."
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "filled"
+                  },
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "props": {
+                        "selected": false,
+                        "variant": "filled"
+                      },
+                      "on": {
+                        "select": {}
+                      },
+                      "children": [
+                        "label"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "tinted"
+                  },
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "props": {
+                        "selected": false,
+                        "variant": "tinted"
+                      },
+                      "on": {
+                        "select": {}
+                      },
+                      "children": [
+                        "label"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "outlined"
+                  },
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "props": {
+                        "selected": false,
+                        "variant": "outlined"
+                      },
+                      "on": {
+                        "select": {}
+                      },
+                      "children": [
+                        "label"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "raised"
+                  },
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "props": {
+                        "selected": false,
+                        "variant": "raised"
+                      },
+                      "on": {
+                        "select": {}
+                      },
+                      "children": [
+                        "label"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "bug": true,
+      "good-first-issue": false,
+      "needs-design": false,
+      "blocked": false,
+      "bug-present": true,
+      "good-first-issue-present": true,
+      "needs-design-present": true,
+      "blocked-present": true
+    }
+  }
+}

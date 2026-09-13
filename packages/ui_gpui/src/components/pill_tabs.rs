@@ -55,6 +55,19 @@ impl PillTabs {
         self
     }
 
+    /// Any tab: an optional count, and whether it can be taken.
+    pub fn entry(
+        mut self,
+        value: impl Into<SharedString>,
+        label: impl Into<SharedString>,
+        count: Option<usize>,
+        disabled: bool,
+    ) -> Self {
+        self.items
+            .push((value.into(), label.into(), count, disabled));
+        self
+    }
+
     pub fn tint(mut self, tint: Tint) -> Self {
         self.tint = tint;
         self

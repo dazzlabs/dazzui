@@ -16,6 +16,11 @@ pub struct OtpField {
     pub length: usize,
     pub value: String,
     pub mask: bool,
+    /// Breaks the run where a printed code breaks: `3` makes six digits two groups.
+    pub group_after: Option<usize>,
+    pub invalid: bool,
+    pub tint: crate::Tint,
+    pub enabled: bool,
     pub size: ControlSize,
     pub on_changed: Option<ValueChanged<String>>,
     pub on_completed: Option<ValueChanged<String>>,
@@ -34,6 +39,10 @@ impl OtpField {
             length,
             value: value.into(),
             mask: false,
+            group_after: None,
+            invalid: false,
+            tint: crate::Tint::Primary,
+            enabled: true,
             size: ControlSize::Medium,
             on_changed: None,
             on_completed: None,
@@ -89,23 +98,39 @@ impl State for OtpState {
         let chars: Vec<_> = w.value.chars().collect();
         let focused = app.get(self).focused;
         let clear = crate::generated::colors::TRANSPARENT;
+        let accent = v
+            .ramp(if w.invalid {
+                crate::Tint::Danger
+            } else {
+                w.tint
+            })
+            .shade(v.focus_ring_shade);
+        let live = w.enabled && w.on_changed.is_some();
         let cells: Vec<_> = (0..w.length)
             .map(|i| {
                 let filled = i < chars.len();
-                let here = focused && i == chars.len().min(w.length - 1);
+                let here = live && focused && i == chars.len().min(w.length - 1);
+                let gap = if w.group_after.is_some_and(|after| i > 0 && i % after == 0) {
+                    v.spacing_3 - v.spacing_2
+                } else {
+                    0.0
+                };
                 Container::new()
+                    .margin(inset_painting::EdgeInsetsGeometry::only(gap, 0.0, 0.0, 0.0))
                     .width(m.size)
                     .height(m.size)
                     .decoration(
                         BoxDecoration::new()
-                            .color(if filled || here {
+                            .color(if !live {
+                                v.color_surface_sunken
+                            } else if filled || here {
                                 v.color_surface
                             } else {
                                 v.color_surface_muted
                             })
                             .border(Border::all(
-                                if here {
-                                    v.color_primary.shade(v.focus_ring_shade)
+                                if here || (w.invalid && live) {
+                                    accent
                                 } else {
                                     v.color_border_strong
                                 },
@@ -139,7 +164,7 @@ impl State for OtpState {
             .collect();
         let field = CupertinoTextField::new()
             .controller(app.get(self).controller.unwrap())
-            .enabled(w.on_changed.is_some())
+            .enabled(live)
             .decoration(None)
             .padding(EdgeInsetsGeometry::ZERO)
             .style(TextStyle::new().color(clear))

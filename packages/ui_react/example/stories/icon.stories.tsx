@@ -1,16 +1,15 @@
+import { defineStory } from '../src/lib/scene'
+import scenes from './icon.scene.json'
 import {
   Flash20Regular as Bolt,
   Checkmark20Regular as Check,
-  Document16Regular as Doc16,
   Document20Regular as Doc,
-  Document24Regular as Doc24,
   Globe20Regular as Globe,
 } from '@fluentui/react-icons'
 import {
   ActionBar,
   Badge,
   Button,
-  Callout,
   Icon,
   IconButton,
   SidebarMenuButton,
@@ -19,7 +18,7 @@ import {
 import type { Meta, StoryObj } from '../src/lib/story'
 
 import { Page, Section, Specimen, Stack } from '../src/components/gallery'
-import { Col, Row } from '../src/components/stage'
+import { Col } from '../src/components/stage'
 
 const meta: Meta<typeof Icon> = {
   title: 'Components/Icon',
@@ -113,79 +112,17 @@ export const Overview: Story = {
   ),
 }
 
-export const Default: Story = {
-  render: () => <Icon icon={Bolt} />,
-}
+export const Default: Story = defineStory(scenes.Default)
 
-export const Sizes: Story = {
-  render: () => (
-    <Row>
-      {[12, 14, 16, 20, 24, 32].map(size => (
-        <Icon key={size} icon={Bolt} size={size} />
-      ))}
-    </Row>
-  ),
-}
+export const Sizes: Story = defineStory(scenes.Sizes)
 
-export const SizedByAToken: Story = {
-  render: () => (
-    <Row>
-      <Icon icon={Bolt} size="var(--spacing-4)" />
-      <Icon icon={Bolt} size="var(--spacing-6)" />
-      <Icon icon={Bolt} size="var(--spacing-8)" />
-    </Row>
-  ),
-}
+export const SizedByAToken: Story = defineStory(scenes.SizedByAToken)
 
-export const AnyViewBox: Story = {
-  render: () => (
-    <Row>
-      <Icon icon={Doc16} size={24} />
-      <Icon icon={Doc} size={24} />
-      <Icon icon={Doc24} size={24} />
-    </Row>
-  ),
-}
+export const AnyViewBox: Story = defineStory(scenes.AnyViewBox)
 
-export const InheritedColour: Story = {
-  render: () => (
-    <Col>
-      <Row>
-        {TINTS.map(tint => (
-          <Badge key={tint} tint={tint}>
-            <Icon icon={Check} size={12} /> {tint}
-          </Badge>
-        ))}
-      </Row>
-      <Row>
-        <span>
-          <Icon icon={Doc} size={20} />
-        </span>
-        <span style={{ color: 'var(--color-content-muted)' }}>
-          <Icon icon={Doc} size={20} />
-        </span>
-        <span style={{ color: 'var(--color-content-subtle)' }}>
-          <Icon icon={Doc} size={20} />
-        </span>
-      </Row>
-    </Col>
-  ),
-}
+export const InheritedColour: Story = defineStory(scenes.InheritedColour)
 
-export const InAButton: Story = {
-  render: () => (
-    <Row>
-      <Button variant="filled">
-        <Icon icon={Bolt} size={14} />
-        Translate
-      </Button>
-      <Button>
-        <Icon icon={Doc} size={14} />
-        Open document
-      </Button>
-    </Row>
-  ),
-}
+export const InAButton: Story = defineStory(scenes.InAButton)
 
 export const InAToolbar: Story = {
   render: () => (
@@ -219,16 +156,4 @@ export const InANavRow: Story = {
   ),
 }
 
-export const InACallout: Story = {
-  render: () => (
-    <div style={{ width: '32rem' }}>
-      <Callout
-        icon={<Icon icon={Check} size={16} />}
-        tint="success"
-        title="All 15 pages translated"
-      >
-        Layout and formulas were preserved.
-      </Callout>
-    </div>
-  ),
-}
+export const InACallout: Story = defineStory(scenes.InACallout)

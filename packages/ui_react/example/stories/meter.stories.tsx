@@ -1,4 +1,6 @@
-import { Meter, Progress, TINTS } from '@dazzlabs/dazzui-react'
+import { defineStory } from '../src/lib/scene'
+import scenes from './meter.scene.json'
+import { Meter, Progress } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '../src/lib/story'
 
 import { Page, Section, Specimen, Stack } from '../src/components/gallery'
@@ -69,49 +71,12 @@ export const Overview: Story = {
   ),
 }
 
-export const Bare: Story = {
-  render: () => (
-    <div style={{ width: '18rem' }}>
-      <Meter value={62} />
-    </div>
-  ),
-}
+export const Bare: Story = defineStory(scenes.Bare)
 
-export const WithValue: Story = {
-  render: () => (
-    <div style={{ width: '20rem' }}>
-      <Meter label="Storage" showValue value={62} />
-    </div>
-  ),
-}
+export const WithValue: Story = defineStory(scenes.WithValue)
 
-export const Sizes: Story = {
-  render: () => (
-    <Col width="20rem">
-      {SIZES.map(size => (
-        <Meter key={size} size={size} value={62} />
-      ))}
-    </Col>
-  ),
-}
+export const Sizes: Story = defineStory(scenes.Sizes)
 
-export const Tints: Story = {
-  render: () => (
-    <Col width="20rem">
-      {TINTS.map(tint => (
-        <Meter key={tint} tint={tint} value={62} />
-      ))}
-    </Col>
-  ),
-}
+export const Tints: Story = defineStory(scenes.Tints)
 
-export const InAQuotaList: Story = {
-  render: () => (
-    <Col width="22rem" gap="var(--spacing-4)">
-      <Meter label="Storage" showValue value={62} />
-      <Meter label="Bandwidth" showValue value={41} tint="info" />
-      <Meter label="Build minutes" showValue value={88} tint="warning" />
-      <Meter label="Seats" showValue value={100} tint="danger" />
-    </Col>
-  ),
-}
+export const InAQuotaList: Story = defineStory(scenes.InAQuotaList)

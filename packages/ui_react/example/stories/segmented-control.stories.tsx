@@ -1,4 +1,6 @@
-import { FormField, SegmentedControl, TINTS } from '@dazzlabs/dazzui-react'
+import { defineStory } from '../src/lib/scene'
+import scenes from './segmented-control.scene.json'
+import { SegmentedControl, TINTS } from '@dazzlabs/dazzui-react'
 import type { Meta, StoryObj } from '../src/lib/story'
 import { useState } from 'react'
 
@@ -9,7 +11,6 @@ import {
   Stack,
   TokenTable,
 } from '../src/components/gallery'
-import { Col } from '../src/components/stage'
 import { componentTokens } from '../src/lib/tokens'
 
 const meta: Meta<typeof SegmentedControl> = {
@@ -124,123 +125,20 @@ export const Overview: Story = {
   ),
 }
 
-export const Raised: Story = {
-  render: () => <Picker activeStyle="raised" />,
-}
+export const Raised: Story = defineStory(scenes.Raised)
 
-export const Filled: Story = {
-  render: () => <Picker activeStyle="filled" />,
-}
+export const Filled: Story = defineStory(scenes.Filled)
 
-export const Sizes: Story = {
-  render: () => (
-    <Col>
-      {SIZES.map(size => (
-        <SegmentedControl
-          key={size}
-          aria-label={`Appearance (${size})`}
-          items={THEMES}
-          size={size}
-          value="system"
-        />
-      ))}
-    </Col>
-  ),
-}
+export const Sizes: Story = defineStory(scenes.Sizes)
 
-export const Tints: Story = {
-  render: () => (
-    <Col>
-      {TINTS.map(tint => (
-        <Picker key={tint} tint={tint} />
-      ))}
-    </Col>
-  ),
-}
+export const Tints: Story = defineStory(scenes.Tints)
 
-export const FilledTints: Story = {
-  render: () => (
-    <Col>
-      {TINTS.map(tint => (
-        <Picker key={tint} activeStyle="filled" tint={tint} />
-      ))}
-    </Col>
-  ),
-}
+export const FilledTints: Story = defineStory(scenes.FilledTints)
 
-export const Stretch: Story = {
-  render: () => (
-    <Col width="24rem">
-      <Picker stretch />
-    </Col>
-  ),
-}
+export const Stretch: Story = defineStory(scenes.Stretch)
 
-export const Disabled: Story = {
-  render: () => (
-    <SegmentedControl
-      aria-label="Quality"
-      items={[
-        { value: 'fast', label: 'Fast' },
-        { value: 'balanced', label: 'Balanced' },
-        { value: 'careful', label: 'Careful', disabled: true },
-      ]}
-      value="balanced"
-    />
-  ),
-}
+export const Disabled: Story = defineStory(scenes.Disabled)
 
-export const TwoSegments: Story = {
-  render: () => {
-    const [view, setView] = useState('source')
-    return (
-      <SegmentedControl
-        aria-label="View"
-        items={[
-          { value: 'source', label: 'Source' },
-          { value: 'target', label: 'Target' },
-        ]}
-        value={view}
-        onValueChange={setView}
-      />
-    )
-  },
-}
+export const TwoSegments: Story = defineStory(scenes.TwoSegments)
 
-export const InAForm: Story = {
-  render: () => {
-    const [quality, setQuality] = useState('balanced')
-    const [formality, setFormality] = useState('default')
-
-    return (
-      <Col width="24rem" gap="var(--spacing-4)">
-        <FormField label="Quality" hint="Applies to new jobs only.">
-          <SegmentedControl
-            aria-label="Quality"
-            items={[
-              { value: 'fast', label: 'Fast' },
-              { value: 'balanced', label: 'Balanced' },
-              { value: 'careful', label: 'Careful' },
-            ]}
-            stretch
-            value={quality}
-            onValueChange={setQuality}
-          />
-        </FormField>
-        <FormField label="Formality">
-          <SegmentedControl
-            aria-label="Formality"
-            items={[
-              { value: 'less', label: 'Less' },
-              { value: 'default', label: 'Default' },
-              { value: 'more', label: 'More' },
-            ]}
-            stretch
-            value={formality}
-            onValueChange={setFormality}
-          />
-        </FormField>
-      </Col>
-    )
-  },
-}
+export const InAForm: Story = defineStory(scenes.InAForm)

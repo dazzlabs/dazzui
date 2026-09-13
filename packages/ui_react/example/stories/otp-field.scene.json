@@ -1,0 +1,456 @@
+{
+  "Overview": {
+    "content": {
+      "component": "Page",
+      "props": {
+        "title": "OtpField",
+        "description": "The one-time code a reader is copying out of a message. It is a run of cells rather than a single field because that is what makes it fast: Base UI moves the caret between them, takes a paste of the whole code into all of them at once, hands the browser the autofill hint that pulls the code out of an SMS, and can submit the form the moment the last cell fills."
+      },
+      "children": [
+        {
+          "component": "Section",
+          "props": {
+            "title": "Sizes",
+            "description": "Each cell is the text controls' box at one character wide, so a code sits on the same rhythm as the fields around it — a code entered in a box of its own design would be the only control on the page that was. The mono face and tabular figures keep the digits on one width."
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "small"
+                  },
+                  "children": [
+                    {
+                      "component": "OtpField",
+                      "props": {
+                        "length": 6,
+                        "size": "small"
+                      },
+                      "bind": {
+                        "value": "otp-field"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "medium"
+                  },
+                  "children": [
+                    {
+                      "component": "OtpField",
+                      "props": {
+                        "length": 6,
+                        "size": "medium"
+                      },
+                      "bind": {
+                        "value": "otp-field-2"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "large"
+                  },
+                  "children": [
+                    {
+                      "component": "OtpField",
+                      "props": {
+                        "length": 6,
+                        "size": "large"
+                      },
+                      "bind": {
+                        "value": "otp-field-3"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Grouping",
+            "description": "`groupAfter` breaks the run where a printed code breaks — three and three is how a six-digit code is read aloud. It is a step of air rather than a rule, because a rule would read as two fields."
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "ungrouped"
+                  },
+                  "children": [
+                    {
+                      "component": "OtpField",
+                      "props": {
+                        "length": 6
+                      },
+                      "bind": {
+                        "value": "otp-field-4"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "groupAfter 3"
+                  },
+                  "children": [
+                    {
+                      "component": "OtpField",
+                      "props": {
+                        "length": 6,
+                        "groupAfter": 3
+                      },
+                      "bind": {
+                        "value": "otp-field-5"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Masked and disabled",
+            "description": "`mask` is for a code that is a secret rather than a one-time token — a PIN. A filled cell lifts to the paper and keeps it, so the run says how far through the code the reader is without the caret having to be the only thing that does."
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "masked"
+                  },
+                  "children": [
+                    {
+                      "component": "OtpField",
+                      "props": {
+                        "length": 4,
+                        "mask": true
+                      },
+                      "bind": {
+                        "value": "otp-field-6"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "disabled"
+                  },
+                  "children": [
+                    {
+                      "component": "OtpField",
+                      "props": {
+                        "length": 6,
+                        "disabled": true
+                      },
+                      "bind": {
+                        "value": "otp-field-7"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "otp-field": "204",
+      "otp-field-2": "204",
+      "otp-field-3": "204",
+      "otp-field-4": "204815",
+      "otp-field-5": "204815",
+      "otp-field-6": "20",
+      "otp-field-7": "204815"
+    }
+  },
+  "Bare": {
+    "content": {
+      "component": "OtpField",
+      "props": {
+        "length": 6
+      },
+      "bind": {
+        "value": "otp-field"
+      }
+    },
+    "state": {
+      "otp-field": ""
+    }
+  },
+  "Filled": {
+    "content": {
+      "component": "OtpField",
+      "props": {
+        "length": 6
+      },
+      "bind": {
+        "value": "otp-field"
+      }
+    },
+    "state": {
+      "otp-field": "204815"
+    }
+  },
+  "Grouped": {
+    "content": {
+      "component": "OtpField",
+      "props": {
+        "length": 6,
+        "groupAfter": 3
+      },
+      "bind": {
+        "value": "otp-field"
+      }
+    },
+    "state": {
+      "otp-field": "204815"
+    }
+  },
+  "Sizes": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "OtpField",
+          "props": {
+            "length": 6,
+            "size": "small"
+          },
+          "bind": {
+            "value": "otp-field"
+          }
+        },
+        {
+          "component": "OtpField",
+          "props": {
+            "length": 6,
+            "size": "medium"
+          },
+          "bind": {
+            "value": "otp-field-2"
+          }
+        },
+        {
+          "component": "OtpField",
+          "props": {
+            "length": 6,
+            "size": "large"
+          },
+          "bind": {
+            "value": "otp-field-3"
+          }
+        }
+      ]
+    },
+    "state": {
+      "otp-field": "204",
+      "otp-field-2": "204",
+      "otp-field-3": "204"
+    }
+  },
+  "Masked": {
+    "content": {
+      "component": "OtpField",
+      "props": {
+        "length": 4,
+        "mask": true
+      },
+      "bind": {
+        "value": "otp-field"
+      }
+    },
+    "state": {
+      "otp-field": "2048"
+    }
+  },
+  "Disabled": {
+    "content": {
+      "component": "OtpField",
+      "props": {
+        "length": 6,
+        "disabled": true
+      },
+      "bind": {
+        "value": "otp-field"
+      }
+    },
+    "state": {
+      "otp-field": "204815"
+    }
+  },
+  "InAForm": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 320,
+        "gap": "spacing.4"
+      },
+      "children": [
+        {
+          "component": "Callout",
+          "props": {
+            "tint": "info"
+          },
+          "children": [
+            "We sent a six-digit code to ada@example.com."
+          ]
+        },
+        {
+          "component": "FormField",
+          "props": {
+            "label": "Verification code"
+          },
+          "derive": {
+            "hint": {
+              "if": {
+                "and": [
+                  {
+                    "eq": [
+                      {
+                        "length": {
+                          "state": "code"
+                        }
+                      },
+                      6
+                    ]
+                  },
+                  {
+                    "not": {
+                      "eq": [
+                        {
+                          "state": "code"
+                        },
+                        "204815"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "then": "That code did not match",
+              "else": "It expires in 10 minutes"
+            },
+            "state": {
+              "if": {
+                "and": [
+                  {
+                    "eq": [
+                      {
+                        "length": {
+                          "state": "code"
+                        }
+                      },
+                      6
+                    ]
+                  },
+                  {
+                    "not": {
+                      "eq": [
+                        {
+                          "state": "code"
+                        },
+                        "204815"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "then": "error",
+              "else": "default"
+            }
+          },
+          "children": [
+            {
+              "component": "OtpField",
+              "props": {
+                "length": 6,
+                "groupAfter": 3
+              },
+              "derive": {
+                "state": {
+                  "if": {
+                    "and": [
+                      {
+                        "eq": [
+                          {
+                            "length": {
+                              "state": "code"
+                            }
+                          },
+                          6
+                        ]
+                      },
+                      {
+                        "not": {
+                          "eq": [
+                            {
+                              "state": "code"
+                            },
+                            "204815"
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "then": "error",
+                  "else": "default"
+                }
+              },
+              "bind": {
+                "value": "code"
+              }
+            }
+          ]
+        },
+        {
+          "component": "Button",
+          "props": {
+            "variant": "filled"
+          },
+          "derive": {
+            "disabled": {
+              "not": {
+                "gte": [
+                  {
+                    "length": {
+                      "state": "code"
+                    }
+                  },
+                  6
+                ]
+              }
+            }
+          },
+          "children": [
+            "Verify"
+          ]
+        }
+      ]
+    },
+    "state": {
+      "code": ""
+    }
+  }
+}

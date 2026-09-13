@@ -4574,6 +4574,1230 @@ const generatedScenes = <String, Map<String, dynamic>>{
     "name": "Error",
     "layout": "centered",
   },
+  "components/formfield/over any control": {
+    "content": {
+      "component": "Col",
+      "props": {"width": 384},
+      "children": [
+        {
+          "component": "FormField",
+          "props": {"label": "Quality", "hint": "Applies to new jobs only."},
+          "children": [
+            {
+              "component": "SegmentedControl",
+              "props": {"stretch": true},
+              "bind": {"value": "mode"},
+              "children": [
+                {
+                  "component": "SegmentedItem",
+                  "props": {"value": "fast", "label": "Fast"},
+                },
+                {
+                  "component": "SegmentedItem",
+                  "props": {"value": "balanced", "label": "Balanced"},
+                },
+                {
+                  "component": "SegmentedItem",
+                  "props": {"value": "careful", "label": "Careful"},
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "FormField",
+          "props": {"label": "Review"},
+          "children": [
+            {
+              "component": "Checkbox",
+              "props": {"checked": true},
+              "children": ["Hold jobs for review before export"],
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"mode": "balanced"},
+    "id": "components-formfield--over-any-control",
+    "title": "Components/FormField",
+    "name": "Over Any Control",
+    "layout": "centered",
+  },
+  "components/icon/default": {
+    "content": {
+      "component": "Icon",
+      "props": {"name": "Flash20Regular"},
+    },
+    "id": "components-icon--default",
+    "title": "Components/Icon",
+    "name": "Default",
+    "layout": "centered",
+  },
+  "components/icon/sizes": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Icon",
+          "props": {"name": "Flash20Regular", "size": 12},
+        },
+        {
+          "component": "Icon",
+          "props": {"name": "Flash20Regular", "size": 14},
+        },
+        {
+          "component": "Icon",
+          "props": {"name": "Flash20Regular", "size": 16},
+        },
+        {
+          "component": "Icon",
+          "props": {"name": "Flash20Regular", "size": 20},
+        },
+        {
+          "component": "Icon",
+          "props": {"name": "Flash20Regular", "size": 24},
+        },
+        {
+          "component": "Icon",
+          "props": {"name": "Flash20Regular", "size": 32},
+        },
+      ],
+    },
+    "id": "components-icon--sizes",
+    "title": "Components/Icon",
+    "name": "Sizes",
+    "layout": "centered",
+  },
+  "components/icon/sized by a token": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Icon",
+          "props": {"name": "Flash20Regular", "size": "spacing.4"},
+        },
+        {
+          "component": "Icon",
+          "props": {"name": "Flash20Regular", "size": "spacing.6"},
+        },
+        {
+          "component": "Icon",
+          "props": {"name": "Flash20Regular", "size": "spacing.8"},
+        },
+      ],
+    },
+    "id": "components-icon--sized-by-a-token",
+    "title": "Components/Icon",
+    "name": "Sized By A Token",
+    "layout": "centered",
+  },
+  "components/icon/any view box": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Icon",
+          "props": {"name": "Document16Regular", "size": 24},
+        },
+        {
+          "component": "Icon",
+          "props": {"name": "Document20Regular", "size": 24},
+        },
+        {
+          "component": "Icon",
+          "props": {"name": "Document24Regular", "size": 24},
+        },
+      ],
+    },
+    "id": "components-icon--any-view-box",
+    "title": "Components/Icon",
+    "name": "Any View Box",
+    "layout": "centered",
+  },
+  "components/icon/inherited colour": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "Row",
+          "children": [
+            {
+              "component": "Badge",
+              "props": {"tint": "primary"},
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Checkmark20Regular", "size": 12},
+                },
+                "  ",
+                "primary",
+              ],
+            },
+            {
+              "component": "Badge",
+              "props": {"tint": "neutral"},
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Checkmark20Regular", "size": 12},
+                },
+                "  ",
+                "neutral",
+              ],
+            },
+            {
+              "component": "Badge",
+              "props": {"tint": "info"},
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Checkmark20Regular", "size": 12},
+                },
+                "  ",
+                "info",
+              ],
+            },
+            {
+              "component": "Badge",
+              "props": {"tint": "success"},
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Checkmark20Regular", "size": 12},
+                },
+                "  ",
+                "success",
+              ],
+            },
+            {
+              "component": "Badge",
+              "props": {"tint": "warning"},
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Checkmark20Regular", "size": 12},
+                },
+                "  ",
+                "warning",
+              ],
+            },
+            {
+              "component": "Badge",
+              "props": {"tint": "danger"},
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Checkmark20Regular", "size": 12},
+                },
+                "  ",
+                "danger",
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Row",
+          "children": [
+            {
+              "component": "Inline",
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Document20Regular", "size": 20},
+                },
+              ],
+            },
+            {
+              "component": "Inline",
+              "props": {"tone": "muted"},
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Document20Regular", "size": 20},
+                },
+              ],
+            },
+            {
+              "component": "Inline",
+              "props": {"tone": "subtle"},
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Document20Regular", "size": 20},
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "id": "components-icon--inherited-colour",
+    "title": "Components/Icon",
+    "name": "Inherited Colour",
+    "layout": "centered",
+  },
+  "components/icon/in a button": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Button",
+          "props": {"variant": "filled"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "Flash20Regular", "size": 14},
+            },
+            "Translate",
+          ],
+        },
+        {
+          "component": "Button",
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "Document20Regular", "size": 14},
+            },
+            "Open document",
+          ],
+        },
+      ],
+    },
+    "id": "components-icon--in-a-button",
+    "title": "Components/Icon",
+    "name": "In A Button",
+    "layout": "centered",
+  },
+  "components/icon/in a callout": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 512},
+      "children": [
+        {
+          "component": "Callout",
+          "props": {"tint": "success", "title": "All 15 pages translated"},
+          "children": ["Layout and formulas were preserved."],
+          "slots": {
+            "icon": {
+              "component": "Icon",
+              "props": {"name": "Checkmark20Regular", "size": 16},
+            },
+          },
+        },
+      ],
+    },
+    "id": "components-icon--in-a-callout",
+    "title": "Components/Icon",
+    "name": "In A Callout",
+    "layout": "centered",
+  },
+  "components/iconbutton/overview": {
+    "content": {
+      "component": "Page",
+      "props": {
+        "title": "IconButton",
+        "description": "A square button with no label of its own, so `label` is required and doubles as the native tooltip. It reads the same control recipes as Button, plus a pressed state for a toggle that stays down. It defaults to `plain` on the neutral ramp: a toolbar of these should read as chrome, not as a row of accented actions.",
+      },
+      "children": [
+        {
+          "component": "Section",
+          "props": {
+            "title": "Variants",
+            "description": "The same five recipes a Button wears. `plain` is the default because most icon buttons are chrome; `filled` is for the one that leads — a compose, an add.",
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {"label": "plain"},
+                  "children": [
+                    {
+                      "component": "IconButton",
+                      "props": {"label": "Copy (plain)", "variant": "plain"},
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                    {
+                      "component": "IconButton",
+                      "props": {
+                        "disabled": true,
+                        "label": "Disabled (plain)",
+                        "variant": "plain",
+                      },
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "normal"},
+                  "children": [
+                    {
+                      "component": "IconButton",
+                      "props": {"label": "Copy (normal)", "variant": "normal"},
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                    {
+                      "component": "IconButton",
+                      "props": {
+                        "disabled": true,
+                        "label": "Disabled (normal)",
+                        "variant": "normal",
+                      },
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "filled"},
+                  "children": [
+                    {
+                      "component": "IconButton",
+                      "props": {"label": "Copy (filled)", "variant": "filled"},
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                    {
+                      "component": "IconButton",
+                      "props": {
+                        "disabled": true,
+                        "label": "Disabled (filled)",
+                        "variant": "filled",
+                      },
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "tinted"},
+                  "children": [
+                    {
+                      "component": "IconButton",
+                      "props": {"label": "Copy (tinted)", "variant": "tinted"},
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                    {
+                      "component": "IconButton",
+                      "props": {
+                        "disabled": true,
+                        "label": "Disabled (tinted)",
+                        "variant": "tinted",
+                      },
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "outlined"},
+                  "children": [
+                    {
+                      "component": "IconButton",
+                      "props": {
+                        "label": "Copy (outlined)",
+                        "variant": "outlined",
+                      },
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                    {
+                      "component": "IconButton",
+                      "props": {
+                        "disabled": true,
+                        "label": "Disabled (outlined)",
+                        "variant": "outlined",
+                      },
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "It does not latch",
+            "description": "A glyph button that stays down is a `Toggle`, which is square at this same control height when its label is a lone glyph — so a latching glyph and a plain one sit in one toolbar without a seam. Keeping an on-state here as well would be a second drawing for one state, and the system draws a selection one way: a tinted wash and a heavier label.",
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {"label": "IconButton — acts and returns"},
+                  "children": [
+                    {
+                      "component": "IconButton",
+                      "props": {"label": "Copy"},
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "Toggle — stays down"},
+                  "children": [
+                    {
+                      "component": "Toggle",
+                      "props": {"label": "Pin window"},
+                      "bind": {"pressed": "toggle"},
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Pin20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                    {
+                      "component": "Toggle",
+                      "props": {"label": "Pinned"},
+                      "bind": {"pressed": "toggle-2"},
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Pin20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Sizes",
+            "description": "The button is square at the shared control height, so it lines up with the labelled buttons and the fields beside it. Size the glyph a couple of steps under the box — a glyph filling its button reads as a full stop.",
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {"label": "small"},
+                  "children": [
+                    {
+                      "component": "IconButton",
+                      "props": {"label": "Copy (small)", "size": "small"},
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 14},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "medium"},
+                  "children": [
+                    {
+                      "component": "IconButton",
+                      "props": {"label": "Copy (medium)", "size": "medium"},
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "large"},
+                  "children": [
+                    {
+                      "component": "IconButton",
+                      "props": {"label": "Copy (large)", "size": "large"},
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 20},
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Tints",
+            "description": "Neutral by default, which is what a toolbar wants. Tint the one that carries a consequence — the delete — and leave the rest alone, or the row goes back to saying nothing.",
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {"label": "plain"},
+                  "children": [
+                    {
+                      "component": "IconButton",
+                      "props": {"label": "primary", "tint": "primary"},
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                    {
+                      "component": "IconButton",
+                      "props": {"label": "neutral", "tint": "neutral"},
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                    {
+                      "component": "IconButton",
+                      "props": {"label": "info", "tint": "info"},
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                    {
+                      "component": "IconButton",
+                      "props": {"label": "success", "tint": "success"},
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                    {
+                      "component": "IconButton",
+                      "props": {"label": "warning", "tint": "warning"},
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                    {
+                      "component": "IconButton",
+                      "props": {"label": "danger", "tint": "danger"},
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {"name": "Copy20Regular", "size": 16},
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"toggle": false, "toggle-2": true},
+    "id": "components-iconbutton--overview",
+    "title": "Components/IconButton",
+    "name": "Overview",
+    "layout": "page",
+  },
+  "components/iconbutton/plain": {
+    "content": {
+      "component": "IconButton",
+      "props": {"label": "Copy translation"},
+      "children": [
+        {
+          "component": "Icon",
+          "props": {"name": "Copy20Regular", "size": 16},
+        },
+      ],
+    },
+    "id": "components-iconbutton--plain",
+    "title": "Components/IconButton",
+    "name": "Plain",
+    "layout": "centered",
+  },
+  "components/iconbutton/filled": {
+    "content": {
+      "component": "IconButton",
+      "props": {"label": "New term", "tint": "primary", "variant": "filled"},
+      "children": [
+        {
+          "component": "Icon",
+          "props": {"name": "Add20Regular", "size": 16},
+        },
+      ],
+    },
+    "id": "components-iconbutton--filled",
+    "title": "Components/IconButton",
+    "name": "Filled",
+    "layout": "centered",
+  },
+  "components/iconbutton/variants": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "IconButton",
+          "props": {"label": "plain", "variant": "plain"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "Copy20Regular", "size": 16},
+            },
+          ],
+        },
+        {
+          "component": "IconButton",
+          "props": {"label": "normal", "variant": "normal"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "Copy20Regular", "size": 16},
+            },
+          ],
+        },
+        {
+          "component": "IconButton",
+          "props": {"label": "filled", "variant": "filled"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "Copy20Regular", "size": 16},
+            },
+          ],
+        },
+        {
+          "component": "IconButton",
+          "props": {"label": "tinted", "variant": "tinted"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "Copy20Regular", "size": 16},
+            },
+          ],
+        },
+        {
+          "component": "IconButton",
+          "props": {"label": "outlined", "variant": "outlined"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "Copy20Regular", "size": 16},
+            },
+          ],
+        },
+      ],
+    },
+    "id": "components-iconbutton--variants",
+    "title": "Components/IconButton",
+    "name": "Variants",
+    "layout": "centered",
+  },
+  "components/iconbutton/disabled": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "IconButton",
+          "props": {"disabled": true, "label": "plain", "variant": "plain"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "Copy20Regular", "size": 16},
+            },
+          ],
+        },
+        {
+          "component": "IconButton",
+          "props": {"disabled": true, "label": "normal", "variant": "normal"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "Copy20Regular", "size": 16},
+            },
+          ],
+        },
+        {
+          "component": "IconButton",
+          "props": {"disabled": true, "label": "filled", "variant": "filled"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "Copy20Regular", "size": 16},
+            },
+          ],
+        },
+        {
+          "component": "IconButton",
+          "props": {"disabled": true, "label": "tinted", "variant": "tinted"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "Copy20Regular", "size": 16},
+            },
+          ],
+        },
+        {
+          "component": "IconButton",
+          "props": {
+            "disabled": true,
+            "label": "outlined",
+            "variant": "outlined",
+          },
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "Copy20Regular", "size": 16},
+            },
+          ],
+        },
+      ],
+    },
+    "id": "components-iconbutton--disabled",
+    "title": "Components/IconButton",
+    "name": "Disabled",
+    "layout": "centered",
+  },
+  "components/iconbutton/sizes": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "IconButton",
+          "props": {"label": "Copy (small)", "size": "small"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "Copy20Regular", "size": 14},
+            },
+          ],
+        },
+        {
+          "component": "IconButton",
+          "props": {"label": "Copy (medium)", "size": "medium"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "Copy20Regular", "size": 16},
+            },
+          ],
+        },
+        {
+          "component": "IconButton",
+          "props": {"label": "Copy (large)", "size": "large"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "Copy20Regular", "size": 20},
+            },
+          ],
+        },
+      ],
+    },
+    "id": "components-iconbutton--sizes",
+    "title": "Components/IconButton",
+    "name": "Sizes",
+    "layout": "centered",
+  },
+  "components/iconbutton/tints": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "Row",
+          "children": [
+            {
+              "component": "IconButton",
+              "props": {
+                "label": "plain primary",
+                "tint": "primary",
+                "variant": "plain",
+              },
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Copy20Regular", "size": 16},
+                },
+              ],
+            },
+            {
+              "component": "IconButton",
+              "props": {
+                "label": "plain neutral",
+                "tint": "neutral",
+                "variant": "plain",
+              },
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Copy20Regular", "size": 16},
+                },
+              ],
+            },
+            {
+              "component": "IconButton",
+              "props": {
+                "label": "plain info",
+                "tint": "info",
+                "variant": "plain",
+              },
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Copy20Regular", "size": 16},
+                },
+              ],
+            },
+            {
+              "component": "IconButton",
+              "props": {
+                "label": "plain success",
+                "tint": "success",
+                "variant": "plain",
+              },
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Copy20Regular", "size": 16},
+                },
+              ],
+            },
+            {
+              "component": "IconButton",
+              "props": {
+                "label": "plain warning",
+                "tint": "warning",
+                "variant": "plain",
+              },
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Copy20Regular", "size": 16},
+                },
+              ],
+            },
+            {
+              "component": "IconButton",
+              "props": {
+                "label": "plain danger",
+                "tint": "danger",
+                "variant": "plain",
+              },
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Copy20Regular", "size": 16},
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Row",
+          "children": [
+            {
+              "component": "IconButton",
+              "props": {
+                "label": "tinted primary",
+                "tint": "primary",
+                "variant": "tinted",
+              },
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Copy20Regular", "size": 16},
+                },
+              ],
+            },
+            {
+              "component": "IconButton",
+              "props": {
+                "label": "tinted neutral",
+                "tint": "neutral",
+                "variant": "tinted",
+              },
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Copy20Regular", "size": 16},
+                },
+              ],
+            },
+            {
+              "component": "IconButton",
+              "props": {
+                "label": "tinted info",
+                "tint": "info",
+                "variant": "tinted",
+              },
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Copy20Regular", "size": 16},
+                },
+              ],
+            },
+            {
+              "component": "IconButton",
+              "props": {
+                "label": "tinted success",
+                "tint": "success",
+                "variant": "tinted",
+              },
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Copy20Regular", "size": 16},
+                },
+              ],
+            },
+            {
+              "component": "IconButton",
+              "props": {
+                "label": "tinted warning",
+                "tint": "warning",
+                "variant": "tinted",
+              },
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Copy20Regular", "size": 16},
+                },
+              ],
+            },
+            {
+              "component": "IconButton",
+              "props": {
+                "label": "tinted danger",
+                "tint": "danger",
+                "variant": "tinted",
+              },
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Copy20Regular", "size": 16},
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Row",
+          "children": [
+            {
+              "component": "IconButton",
+              "props": {
+                "label": "filled primary",
+                "tint": "primary",
+                "variant": "filled",
+              },
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Copy20Regular", "size": 16},
+                },
+              ],
+            },
+            {
+              "component": "IconButton",
+              "props": {
+                "label": "filled neutral",
+                "tint": "neutral",
+                "variant": "filled",
+              },
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Copy20Regular", "size": 16},
+                },
+              ],
+            },
+            {
+              "component": "IconButton",
+              "props": {
+                "label": "filled info",
+                "tint": "info",
+                "variant": "filled",
+              },
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Copy20Regular", "size": 16},
+                },
+              ],
+            },
+            {
+              "component": "IconButton",
+              "props": {
+                "label": "filled success",
+                "tint": "success",
+                "variant": "filled",
+              },
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Copy20Regular", "size": 16},
+                },
+              ],
+            },
+            {
+              "component": "IconButton",
+              "props": {
+                "label": "filled warning",
+                "tint": "warning",
+                "variant": "filled",
+              },
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Copy20Regular", "size": 16},
+                },
+              ],
+            },
+            {
+              "component": "IconButton",
+              "props": {
+                "label": "filled danger",
+                "tint": "danger",
+                "variant": "filled",
+              },
+              "children": [
+                {
+                  "component": "Icon",
+                  "props": {"name": "Copy20Regular", "size": 16},
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "id": "components-iconbutton--tints",
+    "title": "Components/IconButton",
+    "name": "Tints",
+    "layout": "centered",
+  },
+  "components/iconbutton/a toolbar": {
+    "content": {
+      "component": "ActionBar",
+      "children": [
+        {
+          "component": "IconButton",
+          "props": {"label": "Copy translation"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "Copy20Regular", "size": 16},
+            },
+          ],
+        },
+        {
+          "component": "Toggle",
+          "props": {"label": "Pin window"},
+          "bind": {"pressed": "pinned"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "Pin20Regular", "size": 16},
+            },
+          ],
+        },
+        {
+          "component": "Divider",
+          "props": {"orientation": "vertical"},
+        },
+        {
+          "component": "IconButton",
+          "props": {"label": "Delete", "tint": "danger"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "Delete20Regular", "size": 16},
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"pinned": false},
+    "id": "components-iconbutton--a-toolbar",
+    "title": "Components/IconButton",
+    "name": "A Toolbar",
+    "layout": "centered",
+  },
   "components/keycap/overview": {
     "content": {
       "component": "Page",
@@ -5145,6 +6369,2130 @@ const generatedScenes = <String, Map<String, dynamic>>{
     "name": "In A Settings Row",
     "layout": "centered",
   },
+  "components/link/overview": {
+    "content": {
+      "component": "Page",
+      "props": {
+        "title": "Link",
+        "description": "Text that goes somewhere. It is the one interactive thing in this package that is genuinely inline, which is why it exists beside Button variant='plain' rather than inside it: a button keeps its box at every variant, and a box is what a link in a sentence must not have. It takes the shared state machine for its colour — the plain recipe, a grade darker on hover — and none of its geometry.",
+      },
+      "children": [
+        {
+          "component": "Section",
+          "props": {
+            "title": "Underline",
+            "description": "`hover` is the default, because a paragraph with a rule under every link reads as struck through. `always` is for a link that has to be findable without a pointer — a list of references, a footer. `none` is for one whose surroundings already say it is a link: a breadcrumb, a row that is entirely a target.",
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {"label": "hover"},
+                  "children": [
+                    {
+                      "component": "Link",
+                      "props": {"href": "#", "underline": "hover"},
+                      "children": ["Open the changelog"],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "always"},
+                  "children": [
+                    {
+                      "component": "Link",
+                      "props": {"href": "#", "underline": "always"},
+                      "children": ["Open the changelog"],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "none"},
+                  "children": [
+                    {
+                      "component": "Link",
+                      "props": {"href": "#", "underline": "none"},
+                      "children": ["Open the changelog"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "External",
+            "description": "Sets the target and the rel that keeps the opener out of the new page's reach, and draws the arrow that says so before the reader commits. The arrow is inline, so it wraps with the last word rather than stranding itself on a line of its own.",
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {"label": "same window"},
+                  "children": [
+                    {
+                      "component": "Link",
+                      "props": {"href": "#"},
+                      "children": ["Release notes"],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "external"},
+                  "children": [
+                    {
+                      "component": "Link",
+                      "props": {
+                        "external": true,
+                        "href": "https://base-ui.com",
+                      },
+                      "children": ["Base UI"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Tints",
+            "description": "A link is accent text, so it reads the plain recipe's content grade off whichever ramp it is tinted with. Danger is the one worth reaching for — a link that deletes something.",
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {"label": "primary"},
+                  "children": [
+                    {
+                      "component": "Link",
+                      "props": {"href": "#", "tint": "primary"},
+                      "children": ["Continue"],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "neutral"},
+                  "children": [
+                    {
+                      "component": "Link",
+                      "props": {"href": "#", "tint": "neutral"},
+                      "children": ["Continue"],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "info"},
+                  "children": [
+                    {
+                      "component": "Link",
+                      "props": {"href": "#", "tint": "info"},
+                      "children": ["Continue"],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "success"},
+                  "children": [
+                    {
+                      "component": "Link",
+                      "props": {"href": "#", "tint": "success"},
+                      "children": ["Continue"],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "warning"},
+                  "children": [
+                    {
+                      "component": "Link",
+                      "props": {"href": "#", "tint": "warning"},
+                      "children": ["Continue"],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "danger"},
+                  "children": [
+                    {
+                      "component": "Link",
+                      "props": {"href": "#", "tint": "danger"},
+                      "children": ["Continue"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "id": "components-link--overview",
+    "title": "Components/Link",
+    "name": "Overview",
+    "layout": "page",
+  },
+  "components/link/underlines": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "Link",
+          "props": {"href": "#", "underline": "hover"},
+          "children": ["Open the changelog"],
+        },
+        {
+          "component": "Link",
+          "props": {"href": "#", "underline": "always"},
+          "children": ["Open the changelog"],
+        },
+        {
+          "component": "Link",
+          "props": {"href": "#", "underline": "none"},
+          "children": ["Open the changelog"],
+        },
+      ],
+    },
+    "id": "components-link--underlines",
+    "title": "Components/Link",
+    "name": "Underlines",
+    "layout": "centered",
+  },
+  "components/link/external": {
+    "content": {
+      "component": "Link",
+      "props": {"external": true, "href": "https://base-ui.com"},
+      "children": ["Base UI"],
+    },
+    "id": "components-link--external",
+    "title": "Components/Link",
+    "name": "External",
+    "layout": "centered",
+  },
+  "components/link/tints": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "Link",
+          "props": {"href": "#", "tint": "primary"},
+          "children": ["Continue"],
+        },
+        {
+          "component": "Link",
+          "props": {"href": "#", "tint": "neutral"},
+          "children": ["Continue"],
+        },
+        {
+          "component": "Link",
+          "props": {"href": "#", "tint": "info"},
+          "children": ["Continue"],
+        },
+        {
+          "component": "Link",
+          "props": {"href": "#", "tint": "success"},
+          "children": ["Continue"],
+        },
+        {
+          "component": "Link",
+          "props": {"href": "#", "tint": "warning"},
+          "children": ["Continue"],
+        },
+        {
+          "component": "Link",
+          "props": {"href": "#", "tint": "danger"},
+          "children": ["Continue"],
+        },
+      ],
+    },
+    "id": "components-link--tints",
+    "title": "Components/Link",
+    "name": "Tints",
+    "layout": "centered",
+  },
+  "components/link/disabled": {
+    "content": {
+      "component": "Link",
+      "props": {"disabled": true, "href": "#"},
+      "children": ["Not available yet"],
+    },
+    "id": "components-link--disabled",
+    "title": "Components/Link",
+    "name": "Disabled",
+    "layout": "centered",
+  },
+  "components/meter/bare": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 288},
+      "children": [
+        {
+          "component": "Meter",
+          "props": {"value": 62},
+        },
+      ],
+    },
+    "id": "components-meter--bare",
+    "title": "Components/Meter",
+    "name": "Bare",
+    "layout": "centered",
+  },
+  "components/meter/with value": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 320},
+      "children": [
+        {
+          "component": "Meter",
+          "props": {"label": "Storage", "showValue": true, "value": 62},
+        },
+      ],
+    },
+    "id": "components-meter--with-value",
+    "title": "Components/Meter",
+    "name": "With Value",
+    "layout": "centered",
+  },
+  "components/meter/sizes": {
+    "content": {
+      "component": "Col",
+      "props": {"width": 320},
+      "children": [
+        {
+          "component": "Meter",
+          "props": {"size": "small", "value": 62},
+        },
+        {
+          "component": "Meter",
+          "props": {"size": "medium", "value": 62},
+        },
+        {
+          "component": "Meter",
+          "props": {"size": "large", "value": 62},
+        },
+      ],
+    },
+    "id": "components-meter--sizes",
+    "title": "Components/Meter",
+    "name": "Sizes",
+    "layout": "centered",
+  },
+  "components/meter/tints": {
+    "content": {
+      "component": "Col",
+      "props": {"width": 320},
+      "children": [
+        {
+          "component": "Meter",
+          "props": {"tint": "primary", "value": 62},
+        },
+        {
+          "component": "Meter",
+          "props": {"tint": "neutral", "value": 62},
+        },
+        {
+          "component": "Meter",
+          "props": {"tint": "info", "value": 62},
+        },
+        {
+          "component": "Meter",
+          "props": {"tint": "success", "value": 62},
+        },
+        {
+          "component": "Meter",
+          "props": {"tint": "warning", "value": 62},
+        },
+        {
+          "component": "Meter",
+          "props": {"tint": "danger", "value": 62},
+        },
+      ],
+    },
+    "id": "components-meter--tints",
+    "title": "Components/Meter",
+    "name": "Tints",
+    "layout": "centered",
+  },
+  "components/meter/in a quota list": {
+    "content": {
+      "component": "Col",
+      "props": {"width": 352, "gap": "spacing.4"},
+      "children": [
+        {
+          "component": "Meter",
+          "props": {"label": "Storage", "showValue": true, "value": 62},
+        },
+        {
+          "component": "Meter",
+          "props": {
+            "label": "Bandwidth",
+            "showValue": true,
+            "value": 41,
+            "tint": "info",
+          },
+        },
+        {
+          "component": "Meter",
+          "props": {
+            "label": "Build minutes",
+            "showValue": true,
+            "value": 88,
+            "tint": "warning",
+          },
+        },
+        {
+          "component": "Meter",
+          "props": {
+            "label": "Seats",
+            "showValue": true,
+            "value": 100,
+            "tint": "danger",
+          },
+        },
+      ],
+    },
+    "id": "components-meter--in-a-quota-list",
+    "title": "Components/Meter",
+    "name": "In A Quota List",
+    "layout": "centered",
+  },
+  "components/numberfield/bare": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 160},
+      "children": [
+        {
+          "component": "NumberField",
+          "bind": {"value": "number-field"},
+        },
+      ],
+    },
+    "state": {"number-field": "12"},
+    "id": "components-numberfield--bare",
+    "title": "Components/NumberField",
+    "name": "Bare",
+    "layout": "centered",
+  },
+  "components/numberfield/with unit": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 160},
+      "children": [
+        {
+          "component": "NumberField",
+          "props": {"min": 8, "max": 24, "unit": "px"},
+          "bind": {"value": "number-field"},
+        },
+      ],
+    },
+    "state": {"number-field": "13"},
+    "id": "components-numberfield--with-unit",
+    "title": "Components/NumberField",
+    "name": "With Unit",
+    "layout": "centered",
+  },
+  "components/numberfield/sizes": {
+    "content": {
+      "component": "Col",
+      "props": {"width": 160},
+      "children": [
+        {
+          "component": "NumberField",
+          "props": {"size": "small"},
+          "bind": {"value": "number-field"},
+        },
+        {
+          "component": "NumberField",
+          "props": {"size": "medium"},
+          "bind": {"value": "number-field-2"},
+        },
+        {
+          "component": "NumberField",
+          "props": {"size": "large"},
+          "bind": {"value": "number-field-3"},
+        },
+      ],
+    },
+    "state": {
+      "number-field": "12",
+      "number-field-2": "12",
+      "number-field-3": "12",
+    },
+    "id": "components-numberfield--sizes",
+    "title": "Components/NumberField",
+    "name": "Sizes",
+    "layout": "centered",
+  },
+  "components/numberfield/states": {
+    "content": {
+      "component": "Col",
+      "props": {"width": 160},
+      "children": [
+        {
+          "component": "NumberField",
+          "bind": {"value": "number-field"},
+        },
+        {
+          "component": "NumberField",
+          "props": {"state": "error"},
+          "bind": {"value": "number-field-2"},
+        },
+        {
+          "component": "NumberField",
+          "props": {"disabled": true},
+          "bind": {"value": "number-field-3"},
+        },
+      ],
+    },
+    "state": {
+      "number-field": "12",
+      "number-field-2": "0",
+      "number-field-3": "12",
+    },
+    "id": "components-numberfield--states",
+    "title": "Components/NumberField",
+    "name": "States",
+    "layout": "centered",
+  },
+  "components/numberfield/in a form": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 288},
+      "children": [
+        {
+          "component": "FormField",
+          "props": {"label": "Dev server port"},
+          "derive": {
+            "hint": {
+              "if": {
+                "eq": [
+                  {"state": "port"},
+                  "",
+                ],
+              },
+              "then": "Required",
+              "else": "Restart to apply",
+            },
+            "state": {
+              "if": {
+                "eq": [
+                  {"state": "port"},
+                  "",
+                ],
+              },
+              "then": "error",
+              "else": "default",
+            },
+          },
+          "children": [
+            {
+              "component": "NumberField",
+              "props": {"min": 1024, "max": 65535},
+              "derive": {
+                "state": {
+                  "if": {
+                    "eq": [
+                      {"state": "port"},
+                      "",
+                    ],
+                  },
+                  "then": "error",
+                  "else": "default",
+                },
+              },
+              "bind": {"value": "port"},
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"port": "5173"},
+    "id": "components-numberfield--in-a-form",
+    "title": "Components/NumberField",
+    "name": "In A Form",
+    "layout": "centered",
+  },
+  "components/numberfield/in settings": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 480},
+      "children": [
+        {
+          "component": "PreferenceSection",
+          "props": {"label": "Editor"},
+          "children": [
+            {
+              "component": "PreferenceRow",
+              "props": {
+                "title": "Font size",
+                "subtitle": "Applies to every project",
+              },
+              "children": [
+                {
+                  "component": "Box",
+                  "props": {"width": 112},
+                  "children": [
+                    {
+                      "component": "NumberField",
+                      "props": {
+                        "min": 8,
+                        "max": 24,
+                        "size": "small",
+                        "unit": "px",
+                      },
+                      "bind": {"value": "number-field"},
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              "component": "PreferenceRow",
+              "props": {"title": "Tab width"},
+              "children": [
+                {
+                  "component": "Box",
+                  "props": {"width": 112},
+                  "children": [
+                    {
+                      "component": "NumberField",
+                      "props": {"min": 1, "max": 8, "size": "small"},
+                      "bind": {"value": "number-field-2"},
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"number-field": "13", "number-field-2": "2"},
+    "id": "components-numberfield--in-settings",
+    "title": "Components/NumberField",
+    "name": "In Settings",
+    "layout": "centered",
+  },
+  "components/optioncard/overview": {
+    "content": {
+      "component": "Page",
+      "props": {
+        "title": "OptionCard",
+        "description": "The shape a small set of mutually exclusive choices takes when each needs a line of explanation and a radio row would not carry it. Wrap a set in a radiogroup. The description is optional, and a set that does not need one is really a SegmentedControl.",
+      },
+      "children": [
+        {
+          "component": "Section",
+          "props": {
+            "title": "Picking one",
+            "description": "Selection is the tinted recipe with the outlined recipe's border on top: the fill says which one is chosen, and the border makes it survive a glance across its neighbours. An option that cannot be picked stays in the row rather than being dropped, so the set keeps its shape and the reason can be written into the description.",
+          },
+          "children": [
+            {
+              "component": "Box",
+              "props": {
+                "role": "radiogroup",
+                "display": "flex",
+                "gap": "spacing.2",
+                "wrap": true,
+              },
+              "children": [
+                {
+                  "component": "OptionCard",
+                  "props": {
+                    "title": "DOCX",
+                    "description": "Keeps styles and comments.",
+                    "selected": true,
+                  },
+                },
+                {
+                  "component": "OptionCard",
+                  "props": {
+                    "title": "PDF",
+                    "description": "Fixed layout, no editing.",
+                  },
+                },
+                {
+                  "component": "OptionCard",
+                  "props": {
+                    "disabled": true,
+                    "title": "InDesign",
+                    "description": "Needs a paid plan.",
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Tints",
+            "description": "The selected treatment across every ramp. A set normally keeps one tint: the colour says “chosen”, and if it varied per card it would be saying something about the card instead.",
+          },
+          "children": [
+            {
+              "component": "Box",
+              "props": {
+                "role": "radiogroup",
+                "display": "flex",
+                "gap": "spacing.2",
+                "wrap": true,
+              },
+              "children": [
+                {
+                  "component": "OptionCard",
+                  "props": {
+                    "title": "primary",
+                    "selected": true,
+                    "tint": "primary",
+                  },
+                },
+                {
+                  "component": "OptionCard",
+                  "props": {
+                    "title": "neutral",
+                    "selected": true,
+                    "tint": "neutral",
+                  },
+                },
+                {
+                  "component": "OptionCard",
+                  "props": {"title": "info", "selected": true, "tint": "info"},
+                },
+                {
+                  "component": "OptionCard",
+                  "props": {
+                    "title": "success",
+                    "selected": true,
+                    "tint": "success",
+                  },
+                },
+                {
+                  "component": "OptionCard",
+                  "props": {
+                    "title": "warning",
+                    "selected": true,
+                    "tint": "warning",
+                  },
+                },
+                {
+                  "component": "OptionCard",
+                  "props": {
+                    "title": "danger",
+                    "selected": true,
+                    "tint": "danger",
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "id": "components-optioncard--overview",
+    "title": "Components/OptionCard",
+    "name": "Overview",
+    "layout": "page",
+  },
+  "components/optioncard/selected": {
+    "content": {
+      "component": "OptionCard",
+      "props": {
+        "title": "DOCX",
+        "description": "Keeps styles and comments.",
+        "selected": true,
+      },
+    },
+    "id": "components-optioncard--selected",
+    "title": "Components/OptionCard",
+    "name": "Selected",
+    "layout": "centered",
+  },
+  "components/optioncard/unselected": {
+    "content": {
+      "component": "OptionCard",
+      "props": {
+        "title": "PDF",
+        "description": "Fixed layout, no further editing.",
+      },
+    },
+    "id": "components-optioncard--unselected",
+    "title": "Components/OptionCard",
+    "name": "Unselected",
+    "layout": "centered",
+  },
+  "components/optioncard/a group": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "role": "radiogroup",
+        "display": "flex",
+        "gap": "spacing.2",
+        "wrap": true,
+      },
+      "children": [
+        {
+          "component": "OptionCard",
+          "props": {
+            "title": "DOCX",
+            "description": "Keeps styles and comments.",
+          },
+          "derive": {
+            "selected": {
+              "eq": [
+                {"state": "selected"},
+                "docx",
+              ],
+            },
+          },
+          "on": {
+            "press": {"set": "selected", "value": "docx"},
+          },
+        },
+        {
+          "component": "OptionCard",
+          "props": {
+            "title": "PDF",
+            "description": "Fixed layout, no further editing.",
+          },
+          "derive": {
+            "selected": {
+              "eq": [
+                {"state": "selected"},
+                "pdf",
+              ],
+            },
+          },
+          "on": {
+            "press": {"set": "selected", "value": "pdf"},
+          },
+        },
+        {
+          "component": "OptionCard",
+          "props": {
+            "title": "Markdown",
+            "description": "Plain text, images linked.",
+          },
+          "derive": {
+            "selected": {
+              "eq": [
+                {"state": "selected"},
+                "md",
+              ],
+            },
+          },
+          "on": {
+            "press": {"set": "selected", "value": "md"},
+          },
+        },
+      ],
+    },
+    "state": {"selected": "docx"},
+    "id": "components-optioncard--a-group",
+    "title": "Components/OptionCard",
+    "name": "A Group",
+    "layout": "centered",
+  },
+  "components/optioncard/without a description": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "role": "radiogroup",
+        "display": "flex",
+        "gap": "spacing.2",
+        "wrap": true,
+      },
+      "children": [
+        {
+          "component": "OptionCard",
+          "props": {"title": "Fast"},
+          "derive": {
+            "selected": {
+              "eq": [
+                {"state": "quality"},
+                "fast",
+              ],
+            },
+          },
+          "on": {
+            "press": {"set": "quality", "value": "fast"},
+          },
+        },
+        {
+          "component": "OptionCard",
+          "props": {"title": "Balanced"},
+          "derive": {
+            "selected": {
+              "eq": [
+                {"state": "quality"},
+                "balanced",
+              ],
+            },
+          },
+          "on": {
+            "press": {"set": "quality", "value": "balanced"},
+          },
+        },
+        {
+          "component": "OptionCard",
+          "props": {"title": "Careful"},
+          "derive": {
+            "selected": {
+              "eq": [
+                {"state": "quality"},
+                "careful",
+              ],
+            },
+          },
+          "on": {
+            "press": {"set": "quality", "value": "careful"},
+          },
+        },
+      ],
+    },
+    "state": {"quality": "balanced"},
+    "id": "components-optioncard--without-a-description",
+    "title": "Components/OptionCard",
+    "name": "Without A Description",
+    "layout": "centered",
+  },
+  "components/optioncard/disabled": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "role": "radiogroup",
+        "display": "flex",
+        "gap": "spacing.2",
+        "wrap": true,
+      },
+      "children": [
+        {
+          "component": "OptionCard",
+          "props": {
+            "title": "DOCX",
+            "description": "Keeps styles and comments.",
+            "selected": true,
+          },
+        },
+        {
+          "component": "OptionCard",
+          "props": {"title": "PDF", "description": "Fixed layout, no editing."},
+        },
+        {
+          "component": "OptionCard",
+          "props": {
+            "disabled": true,
+            "title": "InDesign",
+            "description": "Needs a paid plan.",
+          },
+        },
+      ],
+    },
+    "id": "components-optioncard--disabled",
+    "title": "Components/OptionCard",
+    "name": "Disabled",
+    "layout": "centered",
+  },
+  "components/optioncard/tints": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "role": "radiogroup",
+        "display": "flex",
+        "gap": "spacing.2",
+        "wrap": true,
+      },
+      "children": [
+        {
+          "component": "OptionCard",
+          "props": {"title": "primary", "selected": true, "tint": "primary"},
+        },
+        {
+          "component": "OptionCard",
+          "props": {"title": "neutral", "selected": true, "tint": "neutral"},
+        },
+        {
+          "component": "OptionCard",
+          "props": {"title": "info", "selected": true, "tint": "info"},
+        },
+        {
+          "component": "OptionCard",
+          "props": {"title": "success", "selected": true, "tint": "success"},
+        },
+        {
+          "component": "OptionCard",
+          "props": {"title": "warning", "selected": true, "tint": "warning"},
+        },
+        {
+          "component": "OptionCard",
+          "props": {"title": "danger", "selected": true, "tint": "danger"},
+        },
+      ],
+    },
+    "id": "components-optioncard--tints",
+    "title": "Components/OptionCard",
+    "name": "Tints",
+    "layout": "centered",
+  },
+  "components/optioncard/in a grid": {
+    "content": {
+      "component": "Box",
+      "props": {"role": "radiogroup", "width": 704},
+      "children": [
+        {
+          "component": "Grid",
+          "props": {"min": 208},
+          "children": [
+            {
+              "component": "OptionCard",
+              "props": {
+                "description": "20,000 characters a month, one provider.",
+              },
+              "derive": {
+                "selected": {
+                  "eq": [
+                    {"state": "plan"},
+                    "free",
+                  ],
+                },
+              },
+              "on": {
+                "press": {"set": "plan", "value": "free"},
+              },
+              "slots": {
+                "title": {
+                  "component": "Box",
+                  "props": {
+                    "display": "flex",
+                    "align": "center",
+                    "gap": "spacing.2",
+                  },
+                  "children": ["Free"],
+                },
+              },
+            },
+            {
+              "component": "OptionCard",
+              "props": {
+                "description":
+                    "Unlimited characters, every provider, shared glossaries.",
+              },
+              "derive": {
+                "selected": {
+                  "eq": [
+                    {"state": "plan"},
+                    "pro",
+                  ],
+                },
+              },
+              "on": {
+                "press": {"set": "plan", "value": "pro"},
+              },
+              "slots": {
+                "title": {
+                  "component": "Box",
+                  "props": {
+                    "display": "flex",
+                    "align": "center",
+                    "gap": "spacing.2",
+                  },
+                  "children": [
+                    "Pro",
+                    {
+                      "component": "Badge",
+                      "props": {"size": "small", "tint": "primary"},
+                      "children": ["Current"],
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              "component": "OptionCard",
+              "props": {
+                "description":
+                    "Everything in Pro, plus review workflows and seats.",
+              },
+              "derive": {
+                "selected": {
+                  "eq": [
+                    {"state": "plan"},
+                    "team",
+                  ],
+                },
+              },
+              "on": {
+                "press": {"set": "plan", "value": "team"},
+              },
+              "slots": {
+                "title": {
+                  "component": "Box",
+                  "props": {
+                    "display": "flex",
+                    "align": "center",
+                    "gap": "spacing.2",
+                  },
+                  "children": ["Team"],
+                },
+              },
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"plan": "pro"},
+    "id": "components-optioncard--in-a-grid",
+    "title": "Components/OptionCard",
+    "name": "In A Grid",
+    "layout": "centered",
+  },
+  "components/otpfield/overview": {
+    "content": {
+      "component": "Page",
+      "props": {
+        "title": "OtpField",
+        "description": "The one-time code a reader is copying out of a message. It is a run of cells rather than a single field because that is what makes it fast: Base UI moves the caret between them, takes a paste of the whole code into all of them at once, hands the browser the autofill hint that pulls the code out of an SMS, and can submit the form the moment the last cell fills.",
+      },
+      "children": [
+        {
+          "component": "Section",
+          "props": {
+            "title": "Sizes",
+            "description": "Each cell is the text controls' box at one character wide, so a code sits on the same rhythm as the fields around it — a code entered in a box of its own design would be the only control on the page that was. The mono face and tabular figures keep the digits on one width.",
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {"label": "small"},
+                  "children": [
+                    {
+                      "component": "OtpField",
+                      "props": {"length": 6, "size": "small"},
+                      "bind": {"value": "otp-field"},
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "medium"},
+                  "children": [
+                    {
+                      "component": "OtpField",
+                      "props": {"length": 6, "size": "medium"},
+                      "bind": {"value": "otp-field-2"},
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "large"},
+                  "children": [
+                    {
+                      "component": "OtpField",
+                      "props": {"length": 6, "size": "large"},
+                      "bind": {"value": "otp-field-3"},
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Grouping",
+            "description": "`groupAfter` breaks the run where a printed code breaks — three and three is how a six-digit code is read aloud. It is a step of air rather than a rule, because a rule would read as two fields.",
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {"label": "ungrouped"},
+                  "children": [
+                    {
+                      "component": "OtpField",
+                      "props": {"length": 6},
+                      "bind": {"value": "otp-field-4"},
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "groupAfter 3"},
+                  "children": [
+                    {
+                      "component": "OtpField",
+                      "props": {"length": 6, "groupAfter": 3},
+                      "bind": {"value": "otp-field-5"},
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Masked and disabled",
+            "description": "`mask` is for a code that is a secret rather than a one-time token — a PIN. A filled cell lifts to the paper and keeps it, so the run says how far through the code the reader is without the caret having to be the only thing that does.",
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {"label": "masked"},
+                  "children": [
+                    {
+                      "component": "OtpField",
+                      "props": {"length": 4, "mask": true},
+                      "bind": {"value": "otp-field-6"},
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "disabled"},
+                  "children": [
+                    {
+                      "component": "OtpField",
+                      "props": {"length": 6, "disabled": true},
+                      "bind": {"value": "otp-field-7"},
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "state": {
+      "otp-field": "204",
+      "otp-field-2": "204",
+      "otp-field-3": "204",
+      "otp-field-4": "204815",
+      "otp-field-5": "204815",
+      "otp-field-6": "20",
+      "otp-field-7": "204815",
+    },
+    "id": "components-otpfield--overview",
+    "title": "Components/OtpField",
+    "name": "Overview",
+    "layout": "page",
+  },
+  "components/otpfield/bare": {
+    "content": {
+      "component": "OtpField",
+      "props": {"length": 6},
+      "bind": {"value": "otp-field"},
+    },
+    "state": {"otp-field": ""},
+    "id": "components-otpfield--bare",
+    "title": "Components/OtpField",
+    "name": "Bare",
+    "layout": "centered",
+  },
+  "components/otpfield/filled": {
+    "content": {
+      "component": "OtpField",
+      "props": {"length": 6},
+      "bind": {"value": "otp-field"},
+    },
+    "state": {"otp-field": "204815"},
+    "id": "components-otpfield--filled",
+    "title": "Components/OtpField",
+    "name": "Filled",
+    "layout": "centered",
+  },
+  "components/otpfield/grouped": {
+    "content": {
+      "component": "OtpField",
+      "props": {"length": 6, "groupAfter": 3},
+      "bind": {"value": "otp-field"},
+    },
+    "state": {"otp-field": "204815"},
+    "id": "components-otpfield--grouped",
+    "title": "Components/OtpField",
+    "name": "Grouped",
+    "layout": "centered",
+  },
+  "components/otpfield/sizes": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "OtpField",
+          "props": {"length": 6, "size": "small"},
+          "bind": {"value": "otp-field"},
+        },
+        {
+          "component": "OtpField",
+          "props": {"length": 6, "size": "medium"},
+          "bind": {"value": "otp-field-2"},
+        },
+        {
+          "component": "OtpField",
+          "props": {"length": 6, "size": "large"},
+          "bind": {"value": "otp-field-3"},
+        },
+      ],
+    },
+    "state": {"otp-field": "204", "otp-field-2": "204", "otp-field-3": "204"},
+    "id": "components-otpfield--sizes",
+    "title": "Components/OtpField",
+    "name": "Sizes",
+    "layout": "centered",
+  },
+  "components/otpfield/masked": {
+    "content": {
+      "component": "OtpField",
+      "props": {"length": 4, "mask": true},
+      "bind": {"value": "otp-field"},
+    },
+    "state": {"otp-field": "2048"},
+    "id": "components-otpfield--masked",
+    "title": "Components/OtpField",
+    "name": "Masked",
+    "layout": "centered",
+  },
+  "components/otpfield/disabled": {
+    "content": {
+      "component": "OtpField",
+      "props": {"length": 6, "disabled": true},
+      "bind": {"value": "otp-field"},
+    },
+    "state": {"otp-field": "204815"},
+    "id": "components-otpfield--disabled",
+    "title": "Components/OtpField",
+    "name": "Disabled",
+    "layout": "centered",
+  },
+  "components/otpfield/in a form": {
+    "content": {
+      "component": "Col",
+      "props": {"width": 320, "gap": "spacing.4"},
+      "children": [
+        {
+          "component": "Callout",
+          "props": {"tint": "info"},
+          "children": ["We sent a six-digit code to ada@example.com."],
+        },
+        {
+          "component": "FormField",
+          "props": {"label": "Verification code"},
+          "derive": {
+            "hint": {
+              "if": {
+                "and": [
+                  {
+                    "eq": [
+                      {
+                        "length": {"state": "code"},
+                      },
+                      6,
+                    ],
+                  },
+                  {
+                    "not": {
+                      "eq": [
+                        {"state": "code"},
+                        "204815",
+                      ],
+                    },
+                  },
+                ],
+              },
+              "then": "That code did not match",
+              "else": "It expires in 10 minutes",
+            },
+            "state": {
+              "if": {
+                "and": [
+                  {
+                    "eq": [
+                      {
+                        "length": {"state": "code"},
+                      },
+                      6,
+                    ],
+                  },
+                  {
+                    "not": {
+                      "eq": [
+                        {"state": "code"},
+                        "204815",
+                      ],
+                    },
+                  },
+                ],
+              },
+              "then": "error",
+              "else": "default",
+            },
+          },
+          "children": [
+            {
+              "component": "OtpField",
+              "props": {"length": 6, "groupAfter": 3},
+              "derive": {
+                "state": {
+                  "if": {
+                    "and": [
+                      {
+                        "eq": [
+                          {
+                            "length": {"state": "code"},
+                          },
+                          6,
+                        ],
+                      },
+                      {
+                        "not": {
+                          "eq": [
+                            {"state": "code"},
+                            "204815",
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                  "then": "error",
+                  "else": "default",
+                },
+              },
+              "bind": {"value": "code"},
+            },
+          ],
+        },
+        {
+          "component": "Button",
+          "props": {"variant": "filled"},
+          "derive": {
+            "disabled": {
+              "not": {
+                "gte": [
+                  {
+                    "length": {"state": "code"},
+                  },
+                  6,
+                ],
+              },
+            },
+          },
+          "children": ["Verify"],
+        },
+      ],
+    },
+    "state": {"code": ""},
+    "id": "components-otpfield--in-a-form",
+    "title": "Components/OtpField",
+    "name": "In A Form",
+    "layout": "centered",
+  },
+  "components/pilltabs/overview": {
+    "content": {
+      "component": "Page",
+      "props": {
+        "title": "PillTabs",
+        "description": "Free-standing filter pills. Unlike a segmented control there is no track holding them together, so each pill needs its own fill to be a target at all — which also means they can wrap, and a filter row usually has to. That is the reason to reach for them over a segmented control: a filter row grows with the data.",
+      },
+      "children": [
+        {
+          "component": "Section",
+          "props": {
+            "title": "Filtering",
+            "description": "A count rides inside the pill, dimmed against the label it follows rather than set beside it as a badge — a badge would be a second thing to read, and the number here is an attribute of the filter rather than a state of its own. A filter with nothing behind it stays in the row rather than disappearing, so the set does not reflow every time a permission changes.",
+          },
+          "children": [
+            {
+              "component": "PillTabs",
+              "props": {"label": "History filter", "value": "all"},
+              "children": [
+                {
+                  "component": "PillTab",
+                  "props": {"value": "all", "label": "All history"},
+                },
+                {
+                  "component": "PillTab",
+                  "props": {
+                    "value": "starred",
+                    "label": "Starred",
+                    "count": 64,
+                  },
+                },
+                {
+                  "component": "PillTab",
+                  "props": {
+                    "value": "edited",
+                    "label": "Edited by me",
+                    "count": 18,
+                  },
+                },
+                {
+                  "component": "PillTab",
+                  "props": {
+                    "value": "shared",
+                    "label": "Shared",
+                    "disabled": true,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Tints",
+            "description": "The selected pill is the filled recipe, so the ramp is what picks it out. A filter row keeps one tint: the colour means “this one is on”, and varying it per pill would make it mean something about the pill.",
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {"label": "primary"},
+                  "children": [
+                    {
+                      "component": "PillTabs",
+                      "props": {
+                        "label": "primary",
+                        "tint": "primary",
+                        "value": "open",
+                      },
+                      "children": [
+                        {
+                          "component": "PillTab",
+                          "props": {"value": "all", "label": "All"},
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {"value": "open", "label": "Open"},
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {"value": "done", "label": "Done"},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "neutral"},
+                  "children": [
+                    {
+                      "component": "PillTabs",
+                      "props": {
+                        "label": "neutral",
+                        "tint": "neutral",
+                        "value": "open",
+                      },
+                      "children": [
+                        {
+                          "component": "PillTab",
+                          "props": {"value": "all", "label": "All"},
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {"value": "open", "label": "Open"},
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {"value": "done", "label": "Done"},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "info"},
+                  "children": [
+                    {
+                      "component": "PillTabs",
+                      "props": {
+                        "label": "info",
+                        "tint": "info",
+                        "value": "open",
+                      },
+                      "children": [
+                        {
+                          "component": "PillTab",
+                          "props": {"value": "all", "label": "All"},
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {"value": "open", "label": "Open"},
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {"value": "done", "label": "Done"},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "success"},
+                  "children": [
+                    {
+                      "component": "PillTabs",
+                      "props": {
+                        "label": "success",
+                        "tint": "success",
+                        "value": "open",
+                      },
+                      "children": [
+                        {
+                          "component": "PillTab",
+                          "props": {"value": "all", "label": "All"},
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {"value": "open", "label": "Open"},
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {"value": "done", "label": "Done"},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "warning"},
+                  "children": [
+                    {
+                      "component": "PillTabs",
+                      "props": {
+                        "label": "warning",
+                        "tint": "warning",
+                        "value": "open",
+                      },
+                      "children": [
+                        {
+                          "component": "PillTab",
+                          "props": {"value": "all", "label": "All"},
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {"value": "open", "label": "Open"},
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {"value": "done", "label": "Done"},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "danger"},
+                  "children": [
+                    {
+                      "component": "PillTabs",
+                      "props": {
+                        "label": "danger",
+                        "tint": "danger",
+                        "value": "open",
+                      },
+                      "children": [
+                        {
+                          "component": "PillTab",
+                          "props": {"value": "all", "label": "All"},
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {"value": "open", "label": "Open"},
+                        },
+                        {
+                          "component": "PillTab",
+                          "props": {"value": "done", "label": "Done"},
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Wrapping",
+            "description": "Nine of them in a narrow column. A track that had to hold this many segments would run off the pane.",
+          },
+          "children": [
+            {
+              "component": "Box",
+              "props": {"maxWidth": 352},
+              "children": [
+                {
+                  "component": "PillTabs",
+                  "props": {"label": "Target language", "value": "zh"},
+                  "children": [
+                    {
+                      "component": "PillTab",
+                      "props": {
+                        "value": "zh",
+                        "label": "Chinese",
+                        "count": 168,
+                      },
+                    },
+                    {
+                      "component": "PillTab",
+                      "props": {
+                        "value": "ja",
+                        "label": "Japanese",
+                        "count": 96,
+                      },
+                    },
+                    {
+                      "component": "PillTab",
+                      "props": {"value": "de", "label": "German", "count": 64},
+                    },
+                    {
+                      "component": "PillTab",
+                      "props": {"value": "fr", "label": "French", "count": 48},
+                    },
+                    {
+                      "component": "PillTab",
+                      "props": {"value": "es", "label": "Spanish", "count": 32},
+                    },
+                    {
+                      "component": "PillTab",
+                      "props": {
+                        "value": "pt",
+                        "label": "Portuguese",
+                        "count": 24,
+                      },
+                    },
+                    {
+                      "component": "PillTab",
+                      "props": {"value": "it", "label": "Italian", "count": 12},
+                    },
+                    {
+                      "component": "PillTab",
+                      "props": {"value": "ko", "label": "Korean", "count": 8},
+                    },
+                    {
+                      "component": "PillTab",
+                      "props": {"value": "nl", "label": "Dutch", "count": 4},
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "id": "components-pilltabs--overview",
+    "title": "Components/PillTabs",
+    "name": "Overview",
+    "layout": "page",
+  },
+  "components/pilltabs/default": {
+    "content": {
+      "component": "PillTabs",
+      "props": {"label": "History filter"},
+      "bind": {"value": "filter"},
+      "children": [
+        {
+          "component": "PillTab",
+          "props": {"value": "all", "label": "All"},
+        },
+        {
+          "component": "PillTab",
+          "props": {"value": "open", "label": "Open"},
+        },
+        {
+          "component": "PillTab",
+          "props": {"value": "done", "label": "Done"},
+        },
+      ],
+    },
+    "state": {"filter": "all"},
+    "id": "components-pilltabs--default",
+    "title": "Components/PillTabs",
+    "name": "Default",
+    "layout": "centered",
+  },
+  "components/pilltabs/with counts": {
+    "content": {
+      "component": "PillTabs",
+      "props": {"label": "Segment filter"},
+      "bind": {"value": "filter"},
+      "children": [
+        {
+          "component": "PillTab",
+          "props": {"value": "all", "label": "All", "count": 392},
+        },
+        {
+          "component": "PillTab",
+          "props": {
+            "value": "needs-review",
+            "label": "Needs review",
+            "count": 24,
+          },
+        },
+        {
+          "component": "PillTab",
+          "props": {"value": "done", "label": "Done", "count": 168},
+        },
+        {
+          "component": "PillTab",
+          "props": {"value": "empty", "label": "Untranslated", "count": 0},
+        },
+      ],
+    },
+    "state": {"filter": "needs-review"},
+    "id": "components-pilltabs--with-counts",
+    "title": "Components/PillTabs",
+    "name": "With Counts",
+    "layout": "centered",
+  },
+  "components/pilltabs/disabled": {
+    "content": {
+      "component": "PillTabs",
+      "props": {"label": "History filter", "value": "all"},
+      "children": [
+        {
+          "component": "PillTab",
+          "props": {"value": "all", "label": "All history"},
+        },
+        {
+          "component": "PillTab",
+          "props": {"value": "starred", "label": "Starred", "count": 64},
+        },
+        {
+          "component": "PillTab",
+          "props": {"value": "edited", "label": "Edited by me", "count": 18},
+        },
+        {
+          "component": "PillTab",
+          "props": {"value": "shared", "label": "Shared", "disabled": true},
+        },
+      ],
+    },
+    "id": "components-pilltabs--disabled",
+    "title": "Components/PillTabs",
+    "name": "Disabled",
+    "layout": "centered",
+  },
+  "components/pilltabs/tints": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "PillTabs",
+          "props": {"label": "primary", "tint": "primary", "value": "open"},
+          "children": [
+            {
+              "component": "PillTab",
+              "props": {"value": "all", "label": "All"},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "open", "label": "Open"},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "done", "label": "Done"},
+            },
+          ],
+        },
+        {
+          "component": "PillTabs",
+          "props": {"label": "neutral", "tint": "neutral", "value": "open"},
+          "children": [
+            {
+              "component": "PillTab",
+              "props": {"value": "all", "label": "All"},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "open", "label": "Open"},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "done", "label": "Done"},
+            },
+          ],
+        },
+        {
+          "component": "PillTabs",
+          "props": {"label": "info", "tint": "info", "value": "open"},
+          "children": [
+            {
+              "component": "PillTab",
+              "props": {"value": "all", "label": "All"},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "open", "label": "Open"},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "done", "label": "Done"},
+            },
+          ],
+        },
+        {
+          "component": "PillTabs",
+          "props": {"label": "success", "tint": "success", "value": "open"},
+          "children": [
+            {
+              "component": "PillTab",
+              "props": {"value": "all", "label": "All"},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "open", "label": "Open"},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "done", "label": "Done"},
+            },
+          ],
+        },
+        {
+          "component": "PillTabs",
+          "props": {"label": "warning", "tint": "warning", "value": "open"},
+          "children": [
+            {
+              "component": "PillTab",
+              "props": {"value": "all", "label": "All"},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "open", "label": "Open"},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "done", "label": "Done"},
+            },
+          ],
+        },
+        {
+          "component": "PillTabs",
+          "props": {"label": "danger", "tint": "danger", "value": "open"},
+          "children": [
+            {
+              "component": "PillTab",
+              "props": {"value": "all", "label": "All"},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "open", "label": "Open"},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "done", "label": "Done"},
+            },
+          ],
+        },
+      ],
+    },
+    "id": "components-pilltabs--tints",
+    "title": "Components/PillTabs",
+    "name": "Tints",
+    "layout": "centered",
+  },
+  "components/pilltabs/wrapping": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 352},
+      "children": [
+        {
+          "component": "PillTabs",
+          "props": {"label": "Target language"},
+          "bind": {"value": "language"},
+          "children": [
+            {
+              "component": "PillTab",
+              "props": {"value": "zh", "label": "Chinese", "count": 168},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "ja", "label": "Japanese", "count": 96},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "de", "label": "German", "count": 64},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "fr", "label": "French", "count": 48},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "es", "label": "Spanish", "count": 32},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "pt", "label": "Portuguese", "count": 24},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "it", "label": "Italian", "count": 12},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "ko", "label": "Korean", "count": 8},
+            },
+            {
+              "component": "PillTab",
+              "props": {"value": "nl", "label": "Dutch", "count": 4},
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"language": "zh"},
+    "id": "components-pilltabs--wrapping",
+    "title": "Components/PillTabs",
+    "name": "Wrapping",
+    "layout": "centered",
+  },
+  "components/pilltabs/in a pane header": {
+    "content": {
+      "component": "Col",
+      "props": {"width": 608},
+      "children": [
+        {
+          "component": "ActionBar",
+          "props": {"align": "between"},
+          "children": [
+            {
+              "component": "PillTabs",
+              "props": {"label": "History filter"},
+              "bind": {"value": "filter"},
+              "children": [
+                {
+                  "component": "PillTab",
+                  "props": {"value": "all", "label": "All history"},
+                },
+                {
+                  "component": "PillTab",
+                  "props": {
+                    "value": "starred",
+                    "label": "Starred",
+                    "count": 64,
+                  },
+                },
+                {
+                  "component": "PillTab",
+                  "props": {
+                    "value": "edited",
+                    "label": "Edited by me",
+                    "count": 18,
+                  },
+                },
+                {
+                  "component": "PillTab",
+                  "props": {
+                    "value": "shared",
+                    "label": "Shared",
+                    "disabled": true,
+                  },
+                },
+              ],
+            },
+            {
+              "component": "Box",
+              "props": {"width": 192},
+              "children": [
+                {
+                  "component": "SearchField",
+                  "props": {"placeholder": "Search", "size": "small"},
+                  "bind": {"value": "query"},
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Card",
+          "props": {"variant": "sunken"},
+          "children": [
+            {
+              "component": "Inline",
+              "props": {"tone": "muted"},
+              "children": [
+                "Showing “",
+                {
+                  "component": "Value",
+                  "value": {"state": "filter"},
+                },
+                "”",
+                {
+                  "component": "Value",
+                  "value": {
+                    "if": {
+                      "not": {
+                        "eq": [
+                          {"state": "query"},
+                          "",
+                        ],
+                      },
+                    },
+                    "then": {
+                      "concat": [
+                        " matching “",
+                        {"state": "query"},
+                        "”",
+                      ],
+                    },
+                    "else": "",
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"filter": "all", "query": ""},
+    "id": "components-pilltabs--in-a-pane-header",
+    "title": "Components/PillTabs",
+    "name": "In A Pane Header",
+    "layout": "centered",
+  },
   "components/progress/default": {
     "content": {
       "component": "Box",
@@ -5450,6 +8798,1241 @@ const generatedScenes = <String, Map<String, dynamic>>{
     "name": "Beside Stages",
     "layout": "centered",
   },
+  "components/radio/a group": {
+    "content": {
+      "component": "RadioGroup",
+      "props": {"label": "Translation quality"},
+      "bind": {"value": "quality"},
+      "children": [
+        {
+          "component": "RadioOption",
+          "props": {"value": "fast", "label": "Fast — one pass, no review"},
+        },
+        {
+          "component": "RadioOption",
+          "props": {
+            "value": "balanced",
+            "label": "Balanced — a second pass on low scores",
+          },
+        },
+        {
+          "component": "RadioOption",
+          "props": {
+            "value": "careful",
+            "label": "Careful — every segment reviewed",
+          },
+        },
+        {
+          "component": "RadioOption",
+          "props": {
+            "value": "custom",
+            "label": "Custom (needs a paid plan)",
+            "disabled": true,
+          },
+        },
+      ],
+    },
+    "state": {"quality": "balanced"},
+    "id": "components-radio--a-group",
+    "title": "Components/Radio",
+    "name": "A Group",
+    "layout": "centered",
+  },
+  "components/radio/disabled": {
+    "content": {
+      "component": "RadioGroup",
+      "props": {"label": "Scope"},
+      "bind": {"value": "radio-group"},
+      "children": [
+        {
+          "component": "RadioOption",
+          "props": {"value": "project", "label": "This project only"},
+        },
+        {
+          "component": "RadioOption",
+          "props": {
+            "value": "org",
+            "label": "The whole organisation",
+            "disabled": true,
+          },
+        },
+      ],
+    },
+    "state": {"radio-group": "project"},
+    "id": "components-radio--disabled",
+    "title": "Components/Radio",
+    "name": "Disabled",
+    "layout": "centered",
+  },
+  "components/radio/sizes": {
+    "content": {
+      "component": "Col",
+      "props": {"gap": "spacing.4"},
+      "children": [
+        {
+          "component": "RadioGroup",
+          "props": {
+            "label": "Selected and not",
+            "size": "small",
+            "direction": "row",
+            "gap": "spacing.4",
+          },
+          "bind": {"value": "radio-group"},
+          "children": [
+            {
+              "component": "RadioOption",
+              "props": {"value": "on", "label": "Selected"},
+            },
+            {
+              "component": "RadioOption",
+              "props": {"value": "off", "label": "Not selected"},
+            },
+          ],
+        },
+        {
+          "component": "RadioGroup",
+          "props": {
+            "label": "Selected and not",
+            "size": "medium",
+            "direction": "row",
+            "gap": "spacing.4",
+          },
+          "bind": {"value": "radio-group-2"},
+          "children": [
+            {
+              "component": "RadioOption",
+              "props": {"value": "on", "label": "Selected"},
+            },
+            {
+              "component": "RadioOption",
+              "props": {"value": "off", "label": "Not selected"},
+            },
+          ],
+        },
+        {
+          "component": "RadioGroup",
+          "props": {
+            "label": "Selected and not",
+            "size": "large",
+            "direction": "row",
+            "gap": "spacing.4",
+          },
+          "bind": {"value": "radio-group-3"},
+          "children": [
+            {
+              "component": "RadioOption",
+              "props": {"value": "on", "label": "Selected"},
+            },
+            {
+              "component": "RadioOption",
+              "props": {"value": "off", "label": "Not selected"},
+            },
+          ],
+        },
+      ],
+    },
+    "state": {
+      "radio-group": "on",
+      "radio-group-2": "on",
+      "radio-group-3": "on",
+    },
+    "id": "components-radio--sizes",
+    "title": "Components/Radio",
+    "name": "Sizes",
+    "layout": "centered",
+  },
+  "components/radio/tints": {
+    "content": {
+      "component": "Col",
+      "props": {"gap": "spacing.4"},
+      "children": [
+        {
+          "component": "RadioGroup",
+          "props": {
+            "label": "Selected and not",
+            "tint": "primary",
+            "direction": "row",
+            "gap": "spacing.4",
+          },
+          "bind": {"value": "radio-group"},
+          "children": [
+            {
+              "component": "RadioOption",
+              "props": {"value": "on", "label": "Selected"},
+            },
+            {
+              "component": "RadioOption",
+              "props": {"value": "off", "label": "Not selected"},
+            },
+          ],
+        },
+        {
+          "component": "RadioGroup",
+          "props": {
+            "label": "Selected and not",
+            "tint": "neutral",
+            "direction": "row",
+            "gap": "spacing.4",
+          },
+          "bind": {"value": "radio-group-2"},
+          "children": [
+            {
+              "component": "RadioOption",
+              "props": {"value": "on", "label": "Selected"},
+            },
+            {
+              "component": "RadioOption",
+              "props": {"value": "off", "label": "Not selected"},
+            },
+          ],
+        },
+        {
+          "component": "RadioGroup",
+          "props": {
+            "label": "Selected and not",
+            "tint": "info",
+            "direction": "row",
+            "gap": "spacing.4",
+          },
+          "bind": {"value": "radio-group-3"},
+          "children": [
+            {
+              "component": "RadioOption",
+              "props": {"value": "on", "label": "Selected"},
+            },
+            {
+              "component": "RadioOption",
+              "props": {"value": "off", "label": "Not selected"},
+            },
+          ],
+        },
+        {
+          "component": "RadioGroup",
+          "props": {
+            "label": "Selected and not",
+            "tint": "success",
+            "direction": "row",
+            "gap": "spacing.4",
+          },
+          "bind": {"value": "radio-group-4"},
+          "children": [
+            {
+              "component": "RadioOption",
+              "props": {"value": "on", "label": "Selected"},
+            },
+            {
+              "component": "RadioOption",
+              "props": {"value": "off", "label": "Not selected"},
+            },
+          ],
+        },
+        {
+          "component": "RadioGroup",
+          "props": {
+            "label": "Selected and not",
+            "tint": "warning",
+            "direction": "row",
+            "gap": "spacing.4",
+          },
+          "bind": {"value": "radio-group-5"},
+          "children": [
+            {
+              "component": "RadioOption",
+              "props": {"value": "on", "label": "Selected"},
+            },
+            {
+              "component": "RadioOption",
+              "props": {"value": "off", "label": "Not selected"},
+            },
+          ],
+        },
+        {
+          "component": "RadioGroup",
+          "props": {
+            "label": "Selected and not",
+            "tint": "danger",
+            "direction": "row",
+            "gap": "spacing.4",
+          },
+          "bind": {"value": "radio-group-6"},
+          "children": [
+            {
+              "component": "RadioOption",
+              "props": {"value": "on", "label": "Selected"},
+            },
+            {
+              "component": "RadioOption",
+              "props": {"value": "off", "label": "Not selected"},
+            },
+          ],
+        },
+      ],
+    },
+    "state": {
+      "radio-group": "on",
+      "radio-group-2": "on",
+      "radio-group-3": "on",
+      "radio-group-4": "on",
+      "radio-group-5": "on",
+      "radio-group-6": "on",
+    },
+    "id": "components-radio--tints",
+    "title": "Components/Radio",
+    "name": "Tints",
+    "layout": "centered",
+  },
+  "components/radio/against a checkbox": {
+    "content": {
+      "component": "Row",
+      "props": {"gap": "spacing.8"},
+      "children": [
+        {
+          "component": "Box",
+          "children": [
+            {
+              "component": "SectionLabel",
+              "children": ["Quality"],
+            },
+            {
+              "component": "RadioGroup",
+              "props": {"label": "Quality"},
+              "bind": {"value": "radio-group"},
+              "children": [
+                {
+                  "component": "RadioOption",
+                  "props": {"value": "fast", "label": "Fast"},
+                },
+                {
+                  "component": "RadioOption",
+                  "props": {"value": "careful", "label": "Careful"},
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Box",
+          "children": [
+            {
+              "component": "SectionLabel",
+              "children": ["Include"],
+            },
+            {
+              "component": "Col",
+              "props": {"gap": "spacing.2"},
+              "children": [
+                {
+                  "component": "Checkbox",
+                  "bind": {"checked": "checkbox"},
+                  "children": ["Reviewer notes"],
+                },
+                {
+                  "component": "Checkbox",
+                  "bind": {"checked": "checkbox-2"},
+                  "children": ["Embedded images"],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"radio-group": "fast", "checkbox": true, "checkbox-2": false},
+    "id": "components-radio--against-a-checkbox",
+    "title": "Components/Radio",
+    "name": "Against A Checkbox",
+    "layout": "centered",
+  },
+  "components/radio/in a form": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 384},
+      "children": [
+        {
+          "component": "Card",
+          "children": [
+            {
+              "component": "SectionLabel",
+              "children": ["Apply this glossary to"],
+            },
+            {
+              "component": "RadioGroup",
+              "props": {"label": "Scope"},
+              "bind": {"value": "scope"},
+              "children": [
+                {
+                  "component": "RadioOption",
+                  "props": {"value": "project", "label": "This project only"},
+                },
+                {
+                  "component": "RadioOption",
+                  "props": {
+                    "value": "account",
+                    "label": "Every project on this account",
+                  },
+                },
+                {
+                  "component": "RadioOption",
+                  "props": {
+                    "value": "org",
+                    "label": "The whole organisation",
+                    "disabled": true,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"scope": "project"},
+    "id": "components-radio--in-a-form",
+    "title": "Components/Radio",
+    "name": "In A Form",
+    "layout": "centered",
+  },
+  "components/searchfield/overview": {
+    "content": {
+      "component": "Page",
+      "props": {
+        "title": "SearchField",
+        "description": "Inline search for a list or a table. The box belongs to the wrapper rather than the input, because the glyph and the trailing slot sit inside it — which is also why the focus ring comes from `:focus-within`. It holds no results of its own, so the same component narrows a table, a rail, or a menu without knowing which.",
+      },
+      "children": [
+        {
+          "component": "Section",
+          "props": {
+            "title": "The trailing slot",
+            "description": "A hint sits there while the field is empty and gives way to the clear button once there is something to clear, so the two never compete for the same corner. Type something and press Escape: it clears first, and only dismisses once the field is already empty, so a stray press never closes a search mid-way.",
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {"label": "empty"},
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {"width": 288},
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {"placeholder": "Search terms"},
+                          "bind": {"value": "query"},
+                          "slots": {
+                            "hint": {
+                              "component": "KeyCap",
+                              "props": {"size": "small"},
+                              "children": ["⌘F"],
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "with a query"},
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {"width": 288},
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {"placeholder": "Search terms"},
+                          "bind": {"value": "query-2"},
+                          "slots": {
+                            "hint": {
+                              "component": "KeyCap",
+                              "props": {"size": "small"},
+                              "children": ["⌘F"],
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Sizes",
+            "description": "The glyph and the trailing slot hold their distance from the edges at every size, so the text starts and ends on the same inset a plain TextField's does.",
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {"label": "small"},
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {"width": 288},
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms",
+                            "size": "small",
+                          },
+                          "bind": {"value": "query-3"},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "medium"},
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {"width": 288},
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms",
+                            "size": "medium",
+                          },
+                          "bind": {"value": "query-4"},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "large"},
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {"width": 288},
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms",
+                            "size": "large",
+                          },
+                          "bind": {"value": "query-5"},
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Tints",
+            "description": "The tint reaches the focus ring and the focused border. Focus each of these — nothing else about the field changes, because a search box is chrome and should not be carrying a colour of its own at rest.",
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {"label": "primary"},
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {"width": 288},
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms",
+                            "tint": "primary",
+                          },
+                          "bind": {"value": "query-6"},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "neutral"},
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {"width": 288},
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms",
+                            "tint": "neutral",
+                          },
+                          "bind": {"value": "query-7"},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "info"},
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {"width": 288},
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms",
+                            "tint": "info",
+                          },
+                          "bind": {"value": "query-8"},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "success"},
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {"width": 288},
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms",
+                            "tint": "success",
+                          },
+                          "bind": {"value": "query-9"},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "warning"},
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {"width": 288},
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms",
+                            "tint": "warning",
+                          },
+                          "bind": {"value": "query-10"},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "danger"},
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {"width": 288},
+                      "children": [
+                        {
+                          "component": "SearchField",
+                          "props": {
+                            "placeholder": "Search terms",
+                            "tint": "danger",
+                          },
+                          "bind": {"value": "query-11"},
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "state": {
+      "query": "",
+      "query-2": "placeholder",
+      "query-3": "",
+      "query-4": "",
+      "query-5": "",
+      "query-6": "",
+      "query-7": "",
+      "query-8": "",
+      "query-9": "",
+      "query-10": "",
+      "query-11": "",
+    },
+    "id": "components-searchfield--overview",
+    "title": "Components/SearchField",
+    "name": "Overview",
+    "layout": "page",
+  },
+  "components/searchfield/empty": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 288},
+      "children": [
+        {
+          "component": "SearchField",
+          "props": {"placeholder": "Search terms"},
+          "bind": {"value": "query"},
+        },
+      ],
+    },
+    "state": {"query": ""},
+    "id": "components-searchfield--empty",
+    "title": "Components/SearchField",
+    "name": "Empty",
+    "layout": "centered",
+  },
+  "components/searchfield/with a query": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 288},
+      "children": [
+        {
+          "component": "SearchField",
+          "props": {"placeholder": "Search terms"},
+          "bind": {"value": "query"},
+        },
+      ],
+    },
+    "state": {"query": "placeholder"},
+    "id": "components-searchfield--with-a-query",
+    "title": "Components/SearchField",
+    "name": "With A Query",
+    "layout": "centered",
+  },
+  "components/searchfield/with a hint": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 288},
+      "children": [
+        {
+          "component": "SearchField",
+          "props": {"placeholder": "Search terms"},
+          "bind": {"value": "query"},
+          "slots": {
+            "hint": {
+              "component": "KeyCap",
+              "props": {"size": "small"},
+              "children": ["⌘F"],
+            },
+          },
+        },
+      ],
+    },
+    "state": {"query": ""},
+    "id": "components-searchfield--with-a-hint",
+    "title": "Components/SearchField",
+    "name": "With A Hint",
+    "layout": "centered",
+  },
+  "components/searchfield/sizes": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "Box",
+          "props": {"width": 288},
+          "children": [
+            {
+              "component": "SearchField",
+              "props": {"placeholder": "Search terms", "size": "small"},
+              "bind": {"value": "query"},
+            },
+          ],
+        },
+        {
+          "component": "Box",
+          "props": {"width": 288},
+          "children": [
+            {
+              "component": "SearchField",
+              "props": {"placeholder": "Search terms", "size": "medium"},
+              "bind": {"value": "query-2"},
+            },
+          ],
+        },
+        {
+          "component": "Box",
+          "props": {"width": 288},
+          "children": [
+            {
+              "component": "SearchField",
+              "props": {"placeholder": "Search terms", "size": "large"},
+              "bind": {"value": "query-3"},
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"query": "", "query-2": "", "query-3": ""},
+    "id": "components-searchfield--sizes",
+    "title": "Components/SearchField",
+    "name": "Sizes",
+    "layout": "centered",
+  },
+  "components/searchfield/tints": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "Box",
+          "props": {"width": 288},
+          "children": [
+            {
+              "component": "SearchField",
+              "props": {"placeholder": "Search terms", "tint": "primary"},
+              "bind": {"value": "query"},
+            },
+          ],
+        },
+        {
+          "component": "Box",
+          "props": {"width": 288},
+          "children": [
+            {
+              "component": "SearchField",
+              "props": {"placeholder": "Search terms", "tint": "neutral"},
+              "bind": {"value": "query-2"},
+            },
+          ],
+        },
+        {
+          "component": "Box",
+          "props": {"width": 288},
+          "children": [
+            {
+              "component": "SearchField",
+              "props": {"placeholder": "Search terms", "tint": "info"},
+              "bind": {"value": "query-3"},
+            },
+          ],
+        },
+        {
+          "component": "Box",
+          "props": {"width": 288},
+          "children": [
+            {
+              "component": "SearchField",
+              "props": {"placeholder": "Search terms", "tint": "success"},
+              "bind": {"value": "query-4"},
+            },
+          ],
+        },
+        {
+          "component": "Box",
+          "props": {"width": 288},
+          "children": [
+            {
+              "component": "SearchField",
+              "props": {"placeholder": "Search terms", "tint": "warning"},
+              "bind": {"value": "query-5"},
+            },
+          ],
+        },
+        {
+          "component": "Box",
+          "props": {"width": 288},
+          "children": [
+            {
+              "component": "SearchField",
+              "props": {"placeholder": "Search terms", "tint": "danger"},
+              "bind": {"value": "query-6"},
+            },
+          ],
+        },
+      ],
+    },
+    "state": {
+      "query": "",
+      "query-2": "",
+      "query-3": "",
+      "query-4": "",
+      "query-5": "",
+      "query-6": "",
+    },
+    "id": "components-searchfield--tints",
+    "title": "Components/SearchField",
+    "name": "Tints",
+    "layout": "centered",
+  },
+  "components/searchfield/dismissable": {
+    "content": {
+      "component": "Box",
+      "children": [
+        {
+          "component": "Show",
+          "value": {"state": "dismissed"},
+          "children": [
+            {
+              "component": "ActionBar",
+              "children": [
+                {
+                  "component": "Inline",
+                  "props": {"tone": "muted"},
+                  "children": ["Dismissed."],
+                },
+                {
+                  "component": "Button",
+                  "props": {"size": "small"},
+                  "on": {
+                    "press": {"set": "dismissed", "value": false},
+                  },
+                  "children": ["Search again"],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Show",
+          "value": {
+            "not": {"state": "dismissed"},
+          },
+          "children": [
+            {
+              "component": "Box",
+              "props": {"width": 288},
+              "children": [
+                {
+                  "component": "SearchField",
+                  "props": {"placeholder": "Search terms"},
+                  "bind": {"value": "query"},
+                  "on": {
+                    "dismiss": {"set": "dismissed", "value": true},
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"query": "placeholder", "dismissed": false},
+    "id": "components-searchfield--dismissable",
+    "title": "Components/SearchField",
+    "name": "Dismissable",
+    "layout": "centered",
+  },
+  "components/searchfield/filtering a list": {
+    "content": {
+      "component": "Col",
+      "props": {"width": 512},
+      "children": [
+        {
+          "component": "SearchField",
+          "props": {"placeholder": "Search terms"},
+          "bind": {"value": "query"},
+          "slots": {
+            "hint": {
+              "component": "KeyCap",
+              "props": {"size": "small"},
+              "children": ["⌘F"],
+            },
+          },
+        },
+        {
+          "component": "Table",
+          "children": [
+            {
+              "component": "TableHead",
+              "children": [
+                {
+                  "component": "TableCell",
+                  "props": {"head": true},
+                  "children": ["Term"],
+                },
+                {
+                  "component": "TableCell",
+                  "props": {"head": true},
+                  "children": ["Translation"],
+                },
+                {
+                  "component": "TableCell",
+                  "props": {"head": true, "align": "end"},
+                  "children": ["Hits"],
+                },
+              ],
+            },
+            {
+              "component": "Show",
+              "value": {
+                "contains": [
+                  "segment",
+                  {
+                    "lower": {"state": "query"},
+                  },
+                ],
+              },
+              "children": [
+                {
+                  "component": "TableRow",
+                  "children": [
+                    {
+                      "component": "TableCell",
+                      "children": ["segment"],
+                    },
+                    {
+                      "component": "TableCell",
+                      "children": ["段"],
+                    },
+                    {
+                      "component": "TableCell",
+                      "props": {"align": "end"},
+                      "children": ["412"],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              "component": "Show",
+              "value": {
+                "contains": [
+                  "glossary",
+                  {
+                    "lower": {"state": "query"},
+                  },
+                ],
+              },
+              "children": [
+                {
+                  "component": "TableRow",
+                  "children": [
+                    {
+                      "component": "TableCell",
+                      "children": ["glossary"],
+                    },
+                    {
+                      "component": "TableCell",
+                      "children": ["术语库"],
+                    },
+                    {
+                      "component": "TableCell",
+                      "props": {"align": "end"},
+                      "children": ["168"],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              "component": "Show",
+              "value": {
+                "contains": [
+                  "provider",
+                  {
+                    "lower": {"state": "query"},
+                  },
+                ],
+              },
+              "children": [
+                {
+                  "component": "TableRow",
+                  "children": [
+                    {
+                      "component": "TableCell",
+                      "children": ["provider"],
+                    },
+                    {
+                      "component": "TableCell",
+                      "children": ["服务"],
+                    },
+                    {
+                      "component": "TableCell",
+                      "props": {"align": "end"},
+                      "children": ["96"],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              "component": "Show",
+              "value": {
+                "contains": [
+                  "placeholder",
+                  {
+                    "lower": {"state": "query"},
+                  },
+                ],
+              },
+              "children": [
+                {
+                  "component": "TableRow",
+                  "children": [
+                    {
+                      "component": "TableCell",
+                      "children": ["placeholder"],
+                    },
+                    {
+                      "component": "TableCell",
+                      "children": ["占位符"],
+                    },
+                    {
+                      "component": "TableCell",
+                      "props": {"align": "end"},
+                      "children": ["24"],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              "component": "Show",
+              "value": {
+                "not": {
+                  "or": [
+                    {
+                      "or": [
+                        {
+                          "or": [
+                            {
+                              "contains": [
+                                "segment",
+                                {
+                                  "lower": {"state": "query"},
+                                },
+                              ],
+                            },
+                            {
+                              "contains": [
+                                "glossary",
+                                {
+                                  "lower": {"state": "query"},
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                        {
+                          "contains": [
+                            "provider",
+                            {
+                              "lower": {"state": "query"},
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      "contains": [
+                        "placeholder",
+                        {
+                          "lower": {"state": "query"},
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+              "children": [
+                {
+                  "component": "EmptyState",
+                  "derive": {
+                    "title": {
+                      "concat": [
+                        "No terms match “",
+                        {"state": "query"},
+                        "”",
+                      ],
+                    },
+                  },
+                  "slots": {
+                    "action": {
+                      "component": "Button",
+                      "on": {
+                        "press": {"set": "query", "value": ""},
+                      },
+                      "children": ["Clear search"],
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"query": ""},
+    "id": "components-searchfield--filtering-a-list",
+    "title": "Components/SearchField",
+    "name": "Filtering A List",
+    "layout": "centered",
+  },
+  "components/searchfield/in a pane header": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 512},
+      "children": [
+        {
+          "component": "Card",
+          "children": [
+            {
+              "component": "ActionBar",
+              "props": {"align": "between"},
+              "children": [
+                {
+                  "component": "Box",
+                  "props": {"grow": true, "maxWidth": 256},
+                  "children": [
+                    {
+                      "component": "SearchField",
+                      "props": {"placeholder": "Search terms"},
+                      "bind": {"value": "query"},
+                    },
+                  ],
+                },
+                {
+                  "component": "ActionBar",
+                  "children": [
+                    {
+                      "component": "Button",
+                      "children": ["Import"],
+                    },
+                    {
+                      "component": "Button",
+                      "props": {"variant": "filled"},
+                      "children": ["New term"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"query": ""},
+    "id": "components-searchfield--in-a-pane-header",
+    "title": "Components/SearchField",
+    "name": "In A Pane Header",
+    "layout": "centered",
+  },
   "components/sectionlabel/overview": {
     "content": {
       "component": "Page",
@@ -5703,6 +10286,1071 @@ const generatedScenes = <String, Map<String, dynamic>>{
     "id": "components-sectionlabel--in-a-panel",
     "title": "Components/SectionLabel",
     "name": "In A Panel",
+    "layout": "centered",
+  },
+  "components/segmentedcontrol/raised": {
+    "content": {
+      "component": "SegmentedControl",
+      "props": {"label": "Appearance", "activeStyle": "raised"},
+      "bind": {"value": "theme"},
+      "children": [
+        {
+          "component": "SegmentedItem",
+          "props": {"value": "light", "label": "Light"},
+        },
+        {
+          "component": "SegmentedItem",
+          "props": {"value": "dark", "label": "Dark"},
+        },
+        {
+          "component": "SegmentedItem",
+          "props": {"value": "system", "label": "System"},
+        },
+      ],
+    },
+    "state": {"theme": "system"},
+    "id": "components-segmentedcontrol--raised",
+    "title": "Components/SegmentedControl",
+    "name": "Raised",
+    "layout": "centered",
+  },
+  "components/segmentedcontrol/filled": {
+    "content": {
+      "component": "SegmentedControl",
+      "props": {"label": "Appearance", "activeStyle": "filled"},
+      "bind": {"value": "theme"},
+      "children": [
+        {
+          "component": "SegmentedItem",
+          "props": {"value": "light", "label": "Light"},
+        },
+        {
+          "component": "SegmentedItem",
+          "props": {"value": "dark", "label": "Dark"},
+        },
+        {
+          "component": "SegmentedItem",
+          "props": {"value": "system", "label": "System"},
+        },
+      ],
+    },
+    "state": {"theme": "system"},
+    "id": "components-segmentedcontrol--filled",
+    "title": "Components/SegmentedControl",
+    "name": "Filled",
+    "layout": "centered",
+  },
+  "components/segmentedcontrol/sizes": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance (small)",
+            "size": "small",
+            "value": "system",
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "light", "label": "Light"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "dark", "label": "Dark"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "system", "label": "System"},
+            },
+          ],
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance (medium)",
+            "size": "medium",
+            "value": "system",
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "light", "label": "Light"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "dark", "label": "Dark"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "system", "label": "System"},
+            },
+          ],
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance (large)",
+            "size": "large",
+            "value": "system",
+          },
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "light", "label": "Light"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "dark", "label": "Dark"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "system", "label": "System"},
+            },
+          ],
+        },
+      ],
+    },
+    "id": "components-segmentedcontrol--sizes",
+    "title": "Components/SegmentedControl",
+    "name": "Sizes",
+    "layout": "centered",
+  },
+  "components/segmentedcontrol/tints": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "SegmentedControl",
+          "props": {"label": "Appearance", "tint": "primary"},
+          "bind": {"value": "theme"},
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "light", "label": "Light"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "dark", "label": "Dark"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "system", "label": "System"},
+            },
+          ],
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {"label": "Appearance", "tint": "neutral"},
+          "bind": {"value": "theme-2"},
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "light", "label": "Light"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "dark", "label": "Dark"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "system", "label": "System"},
+            },
+          ],
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {"label": "Appearance", "tint": "info"},
+          "bind": {"value": "theme-3"},
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "light", "label": "Light"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "dark", "label": "Dark"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "system", "label": "System"},
+            },
+          ],
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {"label": "Appearance", "tint": "success"},
+          "bind": {"value": "theme-4"},
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "light", "label": "Light"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "dark", "label": "Dark"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "system", "label": "System"},
+            },
+          ],
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {"label": "Appearance", "tint": "warning"},
+          "bind": {"value": "theme-5"},
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "light", "label": "Light"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "dark", "label": "Dark"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "system", "label": "System"},
+            },
+          ],
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {"label": "Appearance", "tint": "danger"},
+          "bind": {"value": "theme-6"},
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "light", "label": "Light"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "dark", "label": "Dark"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "system", "label": "System"},
+            },
+          ],
+        },
+      ],
+    },
+    "state": {
+      "theme": "system",
+      "theme-2": "system",
+      "theme-3": "system",
+      "theme-4": "system",
+      "theme-5": "system",
+      "theme-6": "system",
+    },
+    "id": "components-segmentedcontrol--tints",
+    "title": "Components/SegmentedControl",
+    "name": "Tints",
+    "layout": "centered",
+  },
+  "components/segmentedcontrol/filled tints": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "activeStyle": "filled",
+            "tint": "primary",
+          },
+          "bind": {"value": "theme"},
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "light", "label": "Light"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "dark", "label": "Dark"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "system", "label": "System"},
+            },
+          ],
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "activeStyle": "filled",
+            "tint": "neutral",
+          },
+          "bind": {"value": "theme-2"},
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "light", "label": "Light"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "dark", "label": "Dark"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "system", "label": "System"},
+            },
+          ],
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "activeStyle": "filled",
+            "tint": "info",
+          },
+          "bind": {"value": "theme-3"},
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "light", "label": "Light"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "dark", "label": "Dark"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "system", "label": "System"},
+            },
+          ],
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "activeStyle": "filled",
+            "tint": "success",
+          },
+          "bind": {"value": "theme-4"},
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "light", "label": "Light"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "dark", "label": "Dark"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "system", "label": "System"},
+            },
+          ],
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "activeStyle": "filled",
+            "tint": "warning",
+          },
+          "bind": {"value": "theme-5"},
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "light", "label": "Light"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "dark", "label": "Dark"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "system", "label": "System"},
+            },
+          ],
+        },
+        {
+          "component": "SegmentedControl",
+          "props": {
+            "label": "Appearance",
+            "activeStyle": "filled",
+            "tint": "danger",
+          },
+          "bind": {"value": "theme-6"},
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "light", "label": "Light"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "dark", "label": "Dark"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "system", "label": "System"},
+            },
+          ],
+        },
+      ],
+    },
+    "state": {
+      "theme": "system",
+      "theme-2": "system",
+      "theme-3": "system",
+      "theme-4": "system",
+      "theme-5": "system",
+      "theme-6": "system",
+    },
+    "id": "components-segmentedcontrol--filled-tints",
+    "title": "Components/SegmentedControl",
+    "name": "Filled Tints",
+    "layout": "centered",
+  },
+  "components/segmentedcontrol/stretch": {
+    "content": {
+      "component": "Col",
+      "props": {"width": 384},
+      "children": [
+        {
+          "component": "SegmentedControl",
+          "props": {"label": "Appearance", "stretch": true},
+          "bind": {"value": "theme"},
+          "children": [
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "light", "label": "Light"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "dark", "label": "Dark"},
+            },
+            {
+              "component": "SegmentedItem",
+              "props": {"value": "system", "label": "System"},
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"theme": "system"},
+    "id": "components-segmentedcontrol--stretch",
+    "title": "Components/SegmentedControl",
+    "name": "Stretch",
+    "layout": "centered",
+  },
+  "components/segmentedcontrol/disabled": {
+    "content": {
+      "component": "SegmentedControl",
+      "props": {"label": "Quality", "value": "balanced"},
+      "children": [
+        {
+          "component": "SegmentedItem",
+          "props": {"value": "fast", "label": "Fast"},
+        },
+        {
+          "component": "SegmentedItem",
+          "props": {"value": "balanced", "label": "Balanced"},
+        },
+        {
+          "component": "SegmentedItem",
+          "props": {"value": "careful", "label": "Careful", "disabled": true},
+        },
+      ],
+    },
+    "id": "components-segmentedcontrol--disabled",
+    "title": "Components/SegmentedControl",
+    "name": "Disabled",
+    "layout": "centered",
+  },
+  "components/segmentedcontrol/two segments": {
+    "content": {
+      "component": "SegmentedControl",
+      "props": {"label": "View"},
+      "bind": {"value": "view"},
+      "children": [
+        {
+          "component": "SegmentedItem",
+          "props": {"value": "source", "label": "Source"},
+        },
+        {
+          "component": "SegmentedItem",
+          "props": {"value": "target", "label": "Target"},
+        },
+      ],
+    },
+    "state": {"view": "source"},
+    "id": "components-segmentedcontrol--two-segments",
+    "title": "Components/SegmentedControl",
+    "name": "Two Segments",
+    "layout": "centered",
+  },
+  "components/segmentedcontrol/in a form": {
+    "content": {
+      "component": "Col",
+      "props": {"width": 384, "gap": "spacing.4"},
+      "children": [
+        {
+          "component": "FormField",
+          "props": {"label": "Quality", "hint": "Applies to new jobs only."},
+          "children": [
+            {
+              "component": "SegmentedControl",
+              "props": {"label": "Quality", "stretch": true},
+              "bind": {"value": "quality"},
+              "children": [
+                {
+                  "component": "SegmentedItem",
+                  "props": {"value": "fast", "label": "Fast"},
+                },
+                {
+                  "component": "SegmentedItem",
+                  "props": {"value": "balanced", "label": "Balanced"},
+                },
+                {
+                  "component": "SegmentedItem",
+                  "props": {"value": "careful", "label": "Careful"},
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "FormField",
+          "props": {"label": "Formality"},
+          "children": [
+            {
+              "component": "SegmentedControl",
+              "props": {"label": "Formality", "stretch": true},
+              "bind": {"value": "formality"},
+              "children": [
+                {
+                  "component": "SegmentedItem",
+                  "props": {"value": "less", "label": "Less"},
+                },
+                {
+                  "component": "SegmentedItem",
+                  "props": {"value": "default", "label": "Default"},
+                },
+                {
+                  "component": "SegmentedItem",
+                  "props": {"value": "more", "label": "More"},
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"quality": "balanced", "formality": "default"},
+    "id": "components-segmentedcontrol--in-a-form",
+    "title": "Components/SegmentedControl",
+    "name": "In A Form",
+    "layout": "centered",
+  },
+  "components/skeleton/overview": {
+    "content": {
+      "component": "Page",
+      "props": {
+        "title": "Skeleton",
+        "description": "The shape of something that has not arrived. A Spinner says the app is busy; a skeleton says what is coming and where it will be — which is why it belongs on the first load of a view whose layout is already known, and a spinner belongs on an action whose result is not. Drawing one for content that then lands somewhere else is worse than drawing nothing.",
+      },
+      "children": [
+        {
+          "component": "Section",
+          "props": {
+            "title": "Shapes",
+            "description": "`text` is a bar on the line box of the type it stands in for, so it needs no height. `circle` is an avatar or a glyph and squares itself from its width alone. `rect` is everything with a box of its own — a thumbnail, a chart, a card.",
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {"label": "text"},
+                  "children": [
+                    {
+                      "component": "Skeleton",
+                      "props": {"width": "spacing.20"},
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "circle"},
+                  "children": [
+                    {
+                      "component": "Skeleton",
+                      "props": {"shape": "circle", "width": "spacing.10"},
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "rect"},
+                  "children": [
+                    {
+                      "component": "Skeleton",
+                      "props": {
+                        "shape": "rect",
+                        "width": "spacing.20",
+                        "height": "spacing.12",
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Lines",
+            "description": "A paragraph's worth of bars, with the last one short. The ragged edge is most of what makes a block of bars legible as text at all — a full-width final line reads as a table.",
+          },
+          "children": [
+            {
+              "component": "Box",
+              "props": {"width": 320},
+              "children": [
+                {"component": "SkeletonText"},
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Materials",
+            "description": "The fill is surface-sunken — the same dead step a disabled control flattens to, which is exactly what a skeleton is. The sweep over it is surface-subtle, the ink wash the whole system already hovers with, so the highlight moves by the same amount on paper, on a card and on a dark canvas without a per-theme value. Unlike the spinner it takes no reduced-motion exception: a still spinner reads as a hung app, where a still skeleton still says everything it has to say.",
+          },
+          "children": [
+            {
+              "component": "Card",
+              "children": [
+                {
+                  "component": "Col",
+                  "props": {"gap": "spacing.3"},
+                  "children": [
+                    {
+                      "component": "Row",
+                      "props": {"gap": "spacing.3"},
+                      "children": [
+                        {
+                          "component": "Skeleton",
+                          "props": {"shape": "circle", "width": "spacing.10"},
+                        },
+                        {
+                          "component": "Col",
+                          "props": {"gap": "spacing.2", "width": "spacing.20"},
+                          "children": [
+                            {
+                              "component": "Skeleton",
+                              "props": {"width": "70%"},
+                            },
+                            {
+                              "component": "Skeleton",
+                              "props": {"width": "45%"},
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      "component": "SkeletonText",
+                      "props": {"lines": 2},
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "id": "components-skeleton--overview",
+    "title": "Components/Skeleton",
+    "name": "Overview",
+    "layout": "page",
+  },
+  "components/skeleton/shapes": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Skeleton",
+          "props": {"shape": "circle", "width": "spacing.10"},
+        },
+        {
+          "component": "Skeleton",
+          "props": {
+            "shape": "rect",
+            "width": "spacing.20",
+            "height": "spacing.12",
+          },
+        },
+      ],
+    },
+    "id": "components-skeleton--shapes",
+    "title": "Components/Skeleton",
+    "name": "Shapes",
+    "layout": "centered",
+  },
+  "components/skeleton/text": {
+    "content": {
+      "component": "Col",
+      "props": {"width": 320},
+      "children": [
+        {"component": "SkeletonText"},
+      ],
+    },
+    "id": "components-skeleton--text",
+    "title": "Components/Skeleton",
+    "name": "Text",
+    "layout": "centered",
+  },
+  "components/skeleton/lines": {
+    "content": {
+      "component": "Col",
+      "props": {"width": 320},
+      "children": [
+        {
+          "component": "SkeletonText",
+          "props": {"lines": 5},
+        },
+      ],
+    },
+    "id": "components-skeleton--lines",
+    "title": "Components/Skeleton",
+    "name": "Lines",
+    "layout": "centered",
+  },
+  "components/skeleton/a list row": {
+    "content": {
+      "component": "Col",
+      "props": {"width": 320},
+      "children": [
+        {
+          "component": "Row",
+          "props": {"gap": "spacing.3"},
+          "children": [
+            {
+              "component": "Skeleton",
+              "props": {"shape": "circle", "width": "spacing.10"},
+            },
+            {
+              "component": "Col",
+              "props": {"gap": "spacing.2", "width": "spacing.20"},
+              "children": [
+                {
+                  "component": "Skeleton",
+                  "props": {"width": "70%"},
+                },
+                {
+                  "component": "Skeleton",
+                  "props": {"width": "45%"},
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "id": "components-skeleton--a-list-row",
+    "title": "Components/Skeleton",
+    "name": "A List Row",
+    "layout": "centered",
+  },
+  "components/skeleton/in a card": {
+    "content": {
+      "component": "Col",
+      "props": {"width": 352},
+      "children": [
+        {
+          "component": "Card",
+          "children": [
+            {
+              "component": "Col",
+              "props": {"gap": "spacing.3"},
+              "children": [
+                {
+                  "component": "Row",
+                  "props": {"gap": "spacing.3"},
+                  "children": [
+                    {
+                      "component": "Skeleton",
+                      "props": {"shape": "circle", "width": "spacing.10"},
+                    },
+                    {
+                      "component": "Col",
+                      "props": {"gap": "spacing.2", "width": "spacing.20"},
+                      "children": [
+                        {
+                          "component": "Skeleton",
+                          "props": {"width": "70%"},
+                        },
+                        {
+                          "component": "Skeleton",
+                          "props": {"width": "45%"},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "SkeletonText",
+                  "props": {"lines": 2},
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "id": "components-skeleton--in-a-card",
+    "title": "Components/Skeleton",
+    "name": "In A Card",
+    "layout": "centered",
+  },
+  "components/slider/bare": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 288},
+      "children": [
+        {
+          "component": "Slider",
+          "bind": {"value": "slider"},
+        },
+      ],
+    },
+    "state": {"slider": 40},
+    "id": "components-slider--bare",
+    "title": "Components/Slider",
+    "name": "Bare",
+    "layout": "centered",
+  },
+  "components/slider/with value": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 320},
+      "children": [
+        {
+          "component": "Slider",
+          "props": {"showValue": true},
+          "bind": {"value": "slider"},
+        },
+      ],
+    },
+    "state": {"slider": 40},
+    "id": "components-slider--with-value",
+    "title": "Components/Slider",
+    "name": "With Value",
+    "layout": "centered",
+  },
+  "components/slider/range": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 320},
+      "children": [
+        {
+          "component": "Slider",
+          "props": {"showValue": true},
+          "bind": {"end": "slider-end", "value": "slider"},
+        },
+      ],
+    },
+    "state": {"slider": 20, "slider-end": 70},
+    "id": "components-slider--range",
+    "title": "Components/Slider",
+    "name": "Range",
+    "layout": "centered",
+  },
+  "components/slider/sizes": {
+    "content": {
+      "component": "Col",
+      "props": {"width": 320},
+      "children": [
+        {
+          "component": "Slider",
+          "props": {"size": "small"},
+          "bind": {"value": "slider"},
+        },
+        {
+          "component": "Slider",
+          "props": {"size": "medium"},
+          "bind": {"value": "slider-2"},
+        },
+        {
+          "component": "Slider",
+          "props": {"size": "large"},
+          "bind": {"value": "slider-3"},
+        },
+      ],
+    },
+    "state": {"slider": 40, "slider-2": 40, "slider-3": 40},
+    "id": "components-slider--sizes",
+    "title": "Components/Slider",
+    "name": "Sizes",
+    "layout": "centered",
+  },
+  "components/slider/tints": {
+    "content": {
+      "component": "Col",
+      "props": {"width": 320},
+      "children": [
+        {
+          "component": "Slider",
+          "props": {"tint": "primary"},
+          "bind": {"value": "slider"},
+        },
+        {
+          "component": "Slider",
+          "props": {"tint": "neutral"},
+          "bind": {"value": "slider-2"},
+        },
+        {
+          "component": "Slider",
+          "props": {"tint": "info"},
+          "bind": {"value": "slider-3"},
+        },
+        {
+          "component": "Slider",
+          "props": {"tint": "success"},
+          "bind": {"value": "slider-4"},
+        },
+        {
+          "component": "Slider",
+          "props": {"tint": "warning"},
+          "bind": {"value": "slider-5"},
+        },
+        {
+          "component": "Slider",
+          "props": {"tint": "danger"},
+          "bind": {"value": "slider-6"},
+        },
+      ],
+    },
+    "state": {
+      "slider": 60,
+      "slider-2": 60,
+      "slider-3": 60,
+      "slider-4": 60,
+      "slider-5": 60,
+      "slider-6": 60,
+    },
+    "id": "components-slider--tints",
+    "title": "Components/Slider",
+    "name": "Tints",
+    "layout": "centered",
+  },
+  "components/slider/disabled": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 320},
+      "children": [
+        {
+          "component": "Slider",
+          "props": {"disabled": true, "showValue": true},
+          "bind": {"value": "slider"},
+        },
+      ],
+    },
+    "state": {"slider": 40},
+    "id": "components-slider--disabled",
+    "title": "Components/Slider",
+    "name": "Disabled",
+    "layout": "centered",
+  },
+  "components/slider/interactive": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 352},
+      "children": [
+        {
+          "component": "FormField",
+          "props": {"label": "Editor font size"},
+          "derive": {
+            "hint": {
+              "concat": [
+                {
+                  "text": {"state": "size"},
+                },
+                "px",
+              ],
+            },
+          },
+          "children": [
+            {
+              "component": "Slider",
+              "props": {"min": 8, "max": 24, "showValue": true, "unit": "px"},
+              "bind": {"value": "size"},
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"size": 13},
+    "id": "components-slider--interactive",
+    "title": "Components/Slider",
+    "name": "Interactive",
+    "layout": "centered",
+  },
+  "components/slider/in settings": {
+    "content": {
+      "component": "Box",
+      "props": {"width": 480},
+      "children": [
+        {
+          "component": "PreferenceSection",
+          "props": {"label": "Appearance"},
+          "children": [
+            {
+              "component": "PreferenceRow",
+              "props": {
+                "title": "Editor font size",
+                "subtitle": "Applies to every open project",
+              },
+              "children": [
+                {
+                  "component": "Box",
+                  "props": {"width": 160},
+                  "children": [
+                    {
+                      "component": "Slider",
+                      "props": {"min": 8, "max": 24, "size": "small"},
+                      "bind": {"value": "slider"},
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              "component": "PreferenceRow",
+              "props": {"title": "Sidebar width"},
+              "children": [
+                {
+                  "component": "Box",
+                  "props": {"width": 160},
+                  "children": [
+                    {
+                      "component": "Slider",
+                      "props": {"min": 180, "max": 360, "size": "small"},
+                      "bind": {"value": "slider-2"},
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"slider": 13, "slider-2": 240},
+    "id": "components-slider--in-settings",
+    "title": "Components/Slider",
+    "name": "In Settings",
     "layout": "centered",
   },
   "components/spinner/default": {
@@ -7511,6 +13159,618 @@ const generatedScenes = <String, Map<String, dynamic>>{
     "name": "Alignment",
     "layout": "centered",
   },
+  "components/tag/overview": {
+    "content": {
+      "component": "Page",
+      "props": {
+        "title": "Tag",
+        "description": "A Badge you can act on. The two are one drawing and two components rather than one component with an `interactive` prop, because the difference is not cosmetic: a badge reads its recipes at rest and stays out of the shared state machine, since a label that moves under the pointer reads as something you can press. A tag is something you can press — and taking the state machine is the whole reason it exists.",
+      },
+      "children": [
+        {
+          "component": "Section",
+          "props": {
+            "title": "Beside a Badge",
+            "description": "They share the capsule — the same box at the same three densities, written once in badge.css — and nothing else. A tag that is neither selectable nor removable should be a Badge.",
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {"label": "Badge"},
+                  "children": [
+                    {
+                      "component": "Badge",
+                      "children": ["v1.7.0"],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "Tag, selectable"},
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "props": {"selected": true, "variant": "outlined"},
+                      "children": ["bug"],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "Tag, removable"},
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "on": {"remove": {}},
+                      "children": ["needs design"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Selected",
+            "description": "Drawn twice over: the tinted fill the component swaps the variant to, and the tint's edge. One alone is not enough — a tinted tag that was already tinted would look untouched, and an edge alone is a pixel to spot in a row of forty.",
+          },
+          "children": [
+            {
+              "component": "Row",
+              "props": {"gap": "spacing.1-5"},
+              "children": [
+                {
+                  "component": "Tag",
+                  "props": {"variant": "outlined"},
+                  "bind": {"selected": "bug"},
+                  "children": ["bug"],
+                },
+                {
+                  "component": "Tag",
+                  "props": {"variant": "outlined"},
+                  "bind": {"selected": "good-first-issue"},
+                  "children": ["good first issue"],
+                },
+                {
+                  "component": "Tag",
+                  "props": {"variant": "outlined"},
+                  "bind": {"selected": "needs-design"},
+                  "children": ["needs design"],
+                },
+                {
+                  "component": "Tag",
+                  "props": {"variant": "outlined"},
+                  "bind": {"selected": "blocked"},
+                  "children": ["blocked"],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Dismissing",
+            "description": "The dismiss button is its own control rather than a second job for the label: a chip that removes itself when clicked has no way to be selected, and one that does both from the same target removes things by accident. It is faint at rest and only resolves under the pointer — an ✕ at full strength on every chip turns a list of tags into a list of buttons.",
+          },
+          "children": [
+            {
+              "component": "Row",
+              "props": {"gap": "spacing.1-5"},
+              "children": [
+                {
+                  "component": "Show",
+                  "value": {"state": "bug-present"},
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "props": {"removeLabel": "Remove bug"},
+                      "on": {
+                        "remove": {"set": "bug-present", "value": false},
+                      },
+                      "children": ["bug"],
+                    },
+                  ],
+                },
+                {
+                  "component": "Show",
+                  "value": {"state": "good-first-issue-present"},
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "props": {"removeLabel": "Remove good first issue"},
+                      "on": {
+                        "remove": {
+                          "set": "good-first-issue-present",
+                          "value": false,
+                        },
+                      },
+                      "children": ["good first issue"],
+                    },
+                  ],
+                },
+                {
+                  "component": "Show",
+                  "value": {"state": "needs-design-present"},
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "props": {"removeLabel": "Remove needs design"},
+                      "on": {
+                        "remove": {
+                          "set": "needs-design-present",
+                          "value": false,
+                        },
+                      },
+                      "children": ["needs design"],
+                    },
+                  ],
+                },
+                {
+                  "component": "Show",
+                  "value": {"state": "blocked-present"},
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "props": {"removeLabel": "Remove blocked"},
+                      "on": {
+                        "remove": {"set": "blocked-present", "value": false},
+                      },
+                      "children": ["blocked"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Sizes and variants",
+            "description": "Both are the Badge's, because the capsule is the Badge's. What is added is the resting, hover, pressed and disabled states the recipes already carry.",
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {"label": "filled"},
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "props": {"selected": false, "variant": "filled"},
+                      "on": {"select": {}},
+                      "children": ["label"],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "tinted"},
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "props": {"selected": false, "variant": "tinted"},
+                      "on": {"select": {}},
+                      "children": ["label"],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "outlined"},
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "props": {"selected": false, "variant": "outlined"},
+                      "on": {"select": {}},
+                      "children": ["label"],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {"label": "raised"},
+                  "children": [
+                    {
+                      "component": "Tag",
+                      "props": {"selected": false, "variant": "raised"},
+                      "on": {"select": {}},
+                      "children": ["label"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "state": {
+      "bug": true,
+      "good-first-issue": false,
+      "needs-design": false,
+      "blocked": false,
+      "bug-present": true,
+      "good-first-issue-present": true,
+      "needs-design-present": true,
+      "blocked-present": true,
+    },
+    "id": "components-tag--overview",
+    "title": "Components/Tag",
+    "name": "Overview",
+    "layout": "page",
+  },
+  "components/tag/selectable": {
+    "content": {
+      "component": "Row",
+      "props": {"gap": "spacing.1-5"},
+      "children": [
+        {
+          "component": "Tag",
+          "props": {"variant": "outlined"},
+          "bind": {"selected": "bug"},
+          "children": ["bug"],
+        },
+        {
+          "component": "Tag",
+          "props": {"variant": "outlined"},
+          "bind": {"selected": "good-first-issue"},
+          "children": ["good first issue"],
+        },
+        {
+          "component": "Tag",
+          "props": {"variant": "outlined"},
+          "bind": {"selected": "needs-design"},
+          "children": ["needs design"],
+        },
+        {
+          "component": "Tag",
+          "props": {"variant": "outlined"},
+          "bind": {"selected": "blocked"},
+          "children": ["blocked"],
+        },
+      ],
+    },
+    "state": {
+      "bug": true,
+      "good-first-issue": false,
+      "needs-design": false,
+      "blocked": false,
+    },
+    "id": "components-tag--selectable",
+    "title": "Components/Tag",
+    "name": "Selectable",
+    "layout": "centered",
+  },
+  "components/tag/removable": {
+    "content": {
+      "component": "Row",
+      "props": {"gap": "spacing.1-5"},
+      "children": [
+        {
+          "component": "Show",
+          "value": {"state": "bug-present"},
+          "children": [
+            {
+              "component": "Tag",
+              "props": {"removeLabel": "Remove bug"},
+              "on": {
+                "remove": {"set": "bug-present", "value": false},
+              },
+              "children": ["bug"],
+            },
+          ],
+        },
+        {
+          "component": "Show",
+          "value": {"state": "good-first-issue-present"},
+          "children": [
+            {
+              "component": "Tag",
+              "props": {"removeLabel": "Remove good first issue"},
+              "on": {
+                "remove": {"set": "good-first-issue-present", "value": false},
+              },
+              "children": ["good first issue"],
+            },
+          ],
+        },
+        {
+          "component": "Show",
+          "value": {"state": "needs-design-present"},
+          "children": [
+            {
+              "component": "Tag",
+              "props": {"removeLabel": "Remove needs design"},
+              "on": {
+                "remove": {"set": "needs-design-present", "value": false},
+              },
+              "children": ["needs design"],
+            },
+          ],
+        },
+        {
+          "component": "Show",
+          "value": {"state": "blocked-present"},
+          "children": [
+            {
+              "component": "Tag",
+              "props": {"removeLabel": "Remove blocked"},
+              "on": {
+                "remove": {"set": "blocked-present", "value": false},
+              },
+              "children": ["blocked"],
+            },
+          ],
+        },
+      ],
+    },
+    "state": {
+      "bug-present": true,
+      "good-first-issue-present": true,
+      "needs-design-present": true,
+      "blocked-present": true,
+    },
+    "id": "components-tag--removable",
+    "title": "Components/Tag",
+    "name": "Removable",
+    "layout": "centered",
+  },
+  "components/tag/sizes": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Tag",
+          "props": {"size": "small"},
+          "on": {"remove": {}},
+          "children": ["small"],
+        },
+        {
+          "component": "Tag",
+          "props": {"size": "medium"},
+          "on": {"remove": {}},
+          "children": ["medium"],
+        },
+        {
+          "component": "Tag",
+          "props": {"size": "large"},
+          "on": {"remove": {}},
+          "children": ["large"],
+        },
+      ],
+    },
+    "id": "components-tag--sizes",
+    "title": "Components/Tag",
+    "name": "Sizes",
+    "layout": "centered",
+  },
+  "components/tag/variants": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Tag",
+          "props": {"variant": "filled"},
+          "children": ["filled"],
+        },
+        {
+          "component": "Tag",
+          "props": {"variant": "tinted"},
+          "children": ["tinted"],
+        },
+        {
+          "component": "Tag",
+          "props": {"variant": "outlined"},
+          "children": ["outlined"],
+        },
+        {
+          "component": "Tag",
+          "props": {"variant": "raised"},
+          "children": ["raised"],
+        },
+      ],
+    },
+    "id": "components-tag--variants",
+    "title": "Components/Tag",
+    "name": "Variants",
+    "layout": "centered",
+  },
+  "components/tag/tints": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Tag",
+          "props": {"tint": "primary"},
+          "on": {"remove": {}},
+          "children": ["primary"],
+        },
+        {
+          "component": "Tag",
+          "props": {"tint": "neutral"},
+          "on": {"remove": {}},
+          "children": ["neutral"],
+        },
+        {
+          "component": "Tag",
+          "props": {"tint": "info"},
+          "on": {"remove": {}},
+          "children": ["info"],
+        },
+        {
+          "component": "Tag",
+          "props": {"tint": "success"},
+          "on": {"remove": {}},
+          "children": ["success"],
+        },
+        {
+          "component": "Tag",
+          "props": {"tint": "warning"},
+          "on": {"remove": {}},
+          "children": ["warning"],
+        },
+        {
+          "component": "Tag",
+          "props": {"tint": "danger"},
+          "on": {"remove": {}},
+          "children": ["danger"],
+        },
+      ],
+    },
+    "id": "components-tag--tints",
+    "title": "Components/Tag",
+    "name": "Tints",
+    "layout": "centered",
+  },
+  "components/tag/disabled": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Tag",
+          "props": {"disabled": true, "selected": false},
+          "on": {"select": {}},
+          "children": ["unavailable"],
+        },
+        {
+          "component": "Tag",
+          "props": {"disabled": true},
+          "on": {"remove": {}},
+          "children": ["pinned"],
+        },
+      ],
+    },
+    "id": "components-tag--disabled",
+    "title": "Components/Tag",
+    "name": "Disabled",
+    "layout": "centered",
+  },
+  "components/tag/a filter bar": {
+    "content": {
+      "component": "Col",
+      "props": {"width": 416},
+      "children": [
+        {
+          "component": "Row",
+          "props": {"gap": "spacing.1-5"},
+          "children": [
+            {
+              "component": "Tag",
+              "props": {"variant": "outlined"},
+              "bind": {"selected": "bug"},
+              "children": ["bug"],
+            },
+            {
+              "component": "Tag",
+              "props": {"variant": "outlined"},
+              "bind": {"selected": "good-first-issue"},
+              "children": ["good first issue"],
+            },
+            {
+              "component": "Tag",
+              "props": {"variant": "outlined"},
+              "bind": {"selected": "needs-design"},
+              "children": ["needs design"],
+            },
+            {
+              "component": "Tag",
+              "props": {"variant": "outlined"},
+              "bind": {"selected": "blocked"},
+              "children": ["blocked"],
+            },
+          ],
+        },
+        {
+          "component": "Row",
+          "props": {"gap": "spacing.1-5"},
+          "children": [
+            {
+              "component": "Show",
+              "value": {"state": "bug-present"},
+              "children": [
+                {
+                  "component": "Tag",
+                  "props": {"removeLabel": "Remove bug"},
+                  "on": {
+                    "remove": {"set": "bug-present", "value": false},
+                  },
+                  "children": ["bug"],
+                },
+              ],
+            },
+            {
+              "component": "Show",
+              "value": {"state": "good-first-issue-present"},
+              "children": [
+                {
+                  "component": "Tag",
+                  "props": {"removeLabel": "Remove good first issue"},
+                  "on": {
+                    "remove": {
+                      "set": "good-first-issue-present",
+                      "value": false,
+                    },
+                  },
+                  "children": ["good first issue"],
+                },
+              ],
+            },
+            {
+              "component": "Show",
+              "value": {"state": "needs-design-present"},
+              "children": [
+                {
+                  "component": "Tag",
+                  "props": {"removeLabel": "Remove needs design"},
+                  "on": {
+                    "remove": {"set": "needs-design-present", "value": false},
+                  },
+                  "children": ["needs design"],
+                },
+              ],
+            },
+            {
+              "component": "Show",
+              "value": {"state": "blocked-present"},
+              "children": [
+                {
+                  "component": "Tag",
+                  "props": {"removeLabel": "Remove blocked"},
+                  "on": {
+                    "remove": {"set": "blocked-present", "value": false},
+                  },
+                  "children": ["blocked"],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "state": {
+      "bug": true,
+      "good-first-issue": false,
+      "needs-design": false,
+      "blocked": false,
+      "bug-present": true,
+      "good-first-issue-present": true,
+      "needs-design-present": true,
+      "blocked-present": true,
+    },
+    "id": "components-tag--a-filter-bar",
+    "title": "Components/Tag",
+    "name": "A Filter Bar",
+    "layout": "centered",
+  },
   "components/textfield/default": {
     "state": {"text": "Jianying Li"},
     "content": {
@@ -7977,6 +14237,874 @@ const generatedScenes = <String, Map<String, dynamic>>{
     "id": "components-textfield--controlled",
     "title": "Components/TextField",
     "name": "Controlled",
+    "layout": "centered",
+  },
+  "components/toggle/pressed": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Toggle",
+          "bind": {"pressed": "toggle"},
+          "children": ["Wrap"],
+        },
+        {
+          "component": "Toggle",
+          "bind": {"pressed": "toggle-2"},
+          "children": ["Wrap"],
+        },
+      ],
+    },
+    "state": {"toggle": false, "toggle-2": true},
+    "id": "components-toggle--pressed",
+    "title": "Components/Toggle",
+    "name": "Pressed",
+    "layout": "centered",
+  },
+  "components/toggle/sizes": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Toggle",
+          "props": {"size": "tiny", "variant": "recessed"},
+          "bind": {"pressed": "toggle"},
+          "children": ["tiny"],
+        },
+        {
+          "component": "Toggle",
+          "props": {"size": "small", "variant": "recessed"},
+          "bind": {"pressed": "toggle-2"},
+          "children": ["small"],
+        },
+        {
+          "component": "Toggle",
+          "props": {"size": "medium", "variant": "recessed"},
+          "bind": {"pressed": "toggle-3"},
+          "children": ["medium"],
+        },
+        {
+          "component": "Toggle",
+          "props": {"size": "large", "variant": "recessed"},
+          "bind": {"pressed": "toggle-4"},
+          "children": ["large"],
+        },
+      ],
+    },
+    "state": {
+      "toggle": true,
+      "toggle-2": true,
+      "toggle-3": true,
+      "toggle-4": true,
+    },
+    "id": "components-toggle--sizes",
+    "title": "Components/Toggle",
+    "name": "Sizes",
+    "layout": "centered",
+  },
+  "components/toggle/variants": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "Row",
+          "children": [
+            {
+              "component": "Toggle",
+              "props": {"variant": "recessed"},
+              "bind": {"pressed": "toggle"},
+              "children": ["recessed"],
+            },
+            {
+              "component": "Toggle",
+              "props": {"variant": "normal"},
+              "bind": {"pressed": "toggle-2"},
+              "children": ["normal"],
+            },
+            {
+              "component": "Toggle",
+              "props": {"variant": "filled"},
+              "bind": {"pressed": "toggle-3"},
+              "children": ["filled"],
+            },
+            {
+              "component": "Toggle",
+              "props": {"variant": "tinted"},
+              "bind": {"pressed": "toggle-4"},
+              "children": ["tinted"],
+            },
+            {
+              "component": "Toggle",
+              "props": {"variant": "outlined"},
+              "bind": {"pressed": "toggle-5"},
+              "children": ["outlined"],
+            },
+            {
+              "component": "Toggle",
+              "props": {"variant": "plain"},
+              "bind": {"pressed": "toggle-6"},
+              "children": ["plain"],
+            },
+          ],
+        },
+        {
+          "component": "Row",
+          "children": [
+            {
+              "component": "Toggle",
+              "props": {"variant": "recessed"},
+              "bind": {"pressed": "toggle-7"},
+              "children": ["recessed"],
+            },
+            {
+              "component": "Toggle",
+              "props": {"variant": "normal"},
+              "bind": {"pressed": "toggle-8"},
+              "children": ["normal"],
+            },
+            {
+              "component": "Toggle",
+              "props": {"variant": "filled"},
+              "bind": {"pressed": "toggle-9"},
+              "children": ["filled"],
+            },
+            {
+              "component": "Toggle",
+              "props": {"variant": "tinted"},
+              "bind": {"pressed": "toggle-10"},
+              "children": ["tinted"],
+            },
+            {
+              "component": "Toggle",
+              "props": {"variant": "outlined"},
+              "bind": {"pressed": "toggle-11"},
+              "children": ["outlined"],
+            },
+            {
+              "component": "Toggle",
+              "props": {"variant": "plain"},
+              "bind": {"pressed": "toggle-12"},
+              "children": ["plain"],
+            },
+          ],
+        },
+      ],
+    },
+    "state": {
+      "toggle": false,
+      "toggle-2": false,
+      "toggle-3": false,
+      "toggle-4": false,
+      "toggle-5": false,
+      "toggle-6": false,
+      "toggle-7": true,
+      "toggle-8": true,
+      "toggle-9": true,
+      "toggle-10": true,
+      "toggle-11": true,
+      "toggle-12": true,
+    },
+    "id": "components-toggle--variants",
+    "title": "Components/Toggle",
+    "name": "Variants",
+    "layout": "centered",
+  },
+  "components/toggle/tints": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Toggle",
+          "props": {"tint": "primary"},
+          "bind": {"pressed": "toggle"},
+          "children": ["primary"],
+        },
+        {
+          "component": "Toggle",
+          "props": {"tint": "neutral"},
+          "bind": {"pressed": "toggle-2"},
+          "children": ["neutral"],
+        },
+        {
+          "component": "Toggle",
+          "props": {"tint": "info"},
+          "bind": {"pressed": "toggle-3"},
+          "children": ["info"],
+        },
+        {
+          "component": "Toggle",
+          "props": {"tint": "success"},
+          "bind": {"pressed": "toggle-4"},
+          "children": ["success"],
+        },
+        {
+          "component": "Toggle",
+          "props": {"tint": "warning"},
+          "bind": {"pressed": "toggle-5"},
+          "children": ["warning"],
+        },
+        {
+          "component": "Toggle",
+          "props": {"tint": "danger"},
+          "bind": {"pressed": "toggle-6"},
+          "children": ["danger"],
+        },
+      ],
+    },
+    "state": {
+      "toggle": true,
+      "toggle-2": true,
+      "toggle-3": true,
+      "toggle-4": true,
+      "toggle-5": true,
+      "toggle-6": true,
+    },
+    "id": "components-toggle--tints",
+    "title": "Components/Toggle",
+    "name": "Tints",
+    "layout": "centered",
+  },
+  "components/toggle/disabled": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Toggle",
+          "props": {"disabled": true},
+          "bind": {"pressed": "toggle"},
+          "children": ["Wrap"],
+        },
+        {
+          "component": "Toggle",
+          "props": {"disabled": true},
+          "bind": {"pressed": "toggle-2"},
+          "children": ["Wrap"],
+        },
+      ],
+    },
+    "state": {"toggle": false, "toggle-2": true},
+    "id": "components-toggle--disabled",
+    "title": "Components/Toggle",
+    "name": "Disabled",
+    "layout": "centered",
+  },
+  "components/toggle/a toolbar": {
+    "content": {
+      "component": "Row",
+      "props": {"gap": "spacing.1"},
+      "children": [
+        {
+          "component": "Toggle",
+          "props": {"label": "Bold"},
+          "bind": {"pressed": "on"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "TextBold24Regular", "fit": true},
+            },
+          ],
+        },
+        {
+          "component": "Toggle",
+          "props": {"label": "Italic"},
+          "bind": {"pressed": "toggle"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "TextItalic24Regular", "fit": true},
+            },
+          ],
+        },
+        {
+          "component": "Toggle",
+          "props": {"label": "Underline"},
+          "bind": {"pressed": "toggle-2"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "TextUnderline24Regular", "fit": true},
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"on": true, "toggle": false, "toggle-2": false},
+    "id": "components-toggle--a-toolbar",
+    "title": "Components/Toggle",
+    "name": "A Toolbar",
+    "layout": "centered",
+  },
+  "components/togglegroup/overview": {
+    "content": {
+      "component": "Page",
+      "props": {
+        "title": "ToggleGroup",
+        "description": "Several toggles that belong together, joined into one control. Joined rather than merely adjacent: the corners are rounded at the ends of the run only and the shared edges collapse to one, which is what says the group is one thing with several states rather than three buttons that happen to touch.",
+      },
+      "children": [
+        {
+          "component": "Section",
+          "props": {
+            "title": "Beside a SegmentedControl",
+            "description": "This is where the two part company. A segmented control is a choice between its segments and always has exactly one; a toggle group can have several on at once, or none. Drawing a mandatory single choice with this one would let the reader clear a choice that cannot be cleared.",
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {"label": "SegmentedControl — one, always"},
+                  "children": [
+                    {
+                      "component": "SegmentedControl",
+                      "props": {"label": "View", "value": "source"},
+                      "children": [
+                        {
+                          "component": "SegmentedItem",
+                          "props": {"value": "source", "label": "Source"},
+                        },
+                        {
+                          "component": "SegmentedItem",
+                          "props": {"value": "preview", "label": "Preview"},
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "ToggleGroup — any number, including none",
+                  },
+                  "children": [
+                    {
+                      "component": "ToggleGroup",
+                      "props": {"label": "Text style"},
+                      "children": [
+                        {
+                          "component": "ToggleItem",
+                          "props": {"value": "bold", "label": "Bold"},
+                          "bind": {"pressed": "bold"},
+                          "children": [
+                            {
+                              "component": "Icon",
+                              "props": {
+                                "name": "TextBold24Regular",
+                                "fit": true,
+                              },
+                            },
+                          ],
+                        },
+                        {
+                          "component": "ToggleItem",
+                          "props": {"value": "italic", "label": "Italic"},
+                          "bind": {"pressed": "italic"},
+                          "children": [
+                            {
+                              "component": "Icon",
+                              "props": {
+                                "name": "TextItalic24Regular",
+                                "fit": true,
+                              },
+                            },
+                          ],
+                        },
+                        {
+                          "component": "ToggleItem",
+                          "props": {"value": "underline", "label": "Underline"},
+                          "bind": {"pressed": "underline"},
+                          "children": [
+                            {
+                              "component": "Icon",
+                              "props": {
+                                "name": "TextUnderline24Regular",
+                                "fit": true,
+                              },
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "One tab stop",
+            "description": "Base UI owns the part that is easy to get wrong: the group is a single tab stop and the arrow keys move inside it, which is what keeps a toolbar of twelve toggles from being twelve stops on the way to the document.",
+          },
+          "children": [
+            {
+              "component": "ToggleGroup",
+              "props": {"label": "Text style"},
+              "children": [
+                {
+                  "component": "ToggleItem",
+                  "props": {"value": "bold", "label": "Bold"},
+                  "bind": {"pressed": "bold-2"},
+                  "children": [
+                    {
+                      "component": "Icon",
+                      "props": {"name": "TextBold24Regular", "fit": true},
+                    },
+                  ],
+                },
+                {
+                  "component": "ToggleItem",
+                  "props": {"value": "italic", "label": "Italic"},
+                  "bind": {"pressed": "italic-2"},
+                  "children": [
+                    {
+                      "component": "Icon",
+                      "props": {"name": "TextItalic24Regular", "fit": true},
+                    },
+                  ],
+                },
+                {
+                  "component": "ToggleItem",
+                  "props": {"value": "underline", "label": "Underline"},
+                  "bind": {"pressed": "underline-2"},
+                  "children": [
+                    {
+                      "component": "Icon",
+                      "props": {"name": "TextUnderline24Regular", "fit": true},
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Words",
+            "description": "Nothing about the group is glyph-only. A run of labelled toggles is what a filter bar wants, and the joined edges are what say the three answers are about one question.",
+          },
+          "children": [
+            {
+              "component": "ToggleGroup",
+              "props": {"label": "Show"},
+              "children": [
+                {
+                  "component": "ToggleItem",
+                  "props": {
+                    "value": "whitespace",
+                    "label": "Whitespace",
+                    "pressed": true,
+                  },
+                },
+                {
+                  "component": "ToggleItem",
+                  "props": {"value": "minimap", "label": "Minimap"},
+                },
+                {
+                  "component": "ToggleItem",
+                  "props": {"value": "blame", "label": "Blame"},
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    "state": {
+      "bold": true,
+      "italic": false,
+      "underline": false,
+      "bold-2": true,
+      "italic-2": false,
+      "underline-2": false,
+    },
+    "id": "components-togglegroup--overview",
+    "title": "Components/ToggleGroup",
+    "name": "Overview",
+    "layout": "page",
+  },
+  "components/togglegroup/glyphs": {
+    "content": {
+      "component": "ToggleGroup",
+      "props": {"label": "Text style"},
+      "children": [
+        {
+          "component": "ToggleItem",
+          "props": {"value": "bold", "label": "Bold"},
+          "bind": {"pressed": "bold"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "TextBold24Regular", "fit": true},
+            },
+          ],
+        },
+        {
+          "component": "ToggleItem",
+          "props": {"value": "italic", "label": "Italic"},
+          "bind": {"pressed": "italic"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "TextItalic24Regular", "fit": true},
+            },
+          ],
+        },
+        {
+          "component": "ToggleItem",
+          "props": {"value": "underline", "label": "Underline"},
+          "bind": {"pressed": "underline"},
+          "children": [
+            {
+              "component": "Icon",
+              "props": {"name": "TextUnderline24Regular", "fit": true},
+            },
+          ],
+        },
+      ],
+    },
+    "state": {"bold": true, "italic": false, "underline": false},
+    "id": "components-togglegroup--glyphs",
+    "title": "Components/ToggleGroup",
+    "name": "Glyphs",
+    "layout": "centered",
+  },
+  "components/togglegroup/words": {
+    "content": {
+      "component": "ToggleGroup",
+      "props": {"label": "Show"},
+      "children": [
+        {
+          "component": "ToggleItem",
+          "props": {"value": "whitespace", "label": "Whitespace"},
+          "bind": {"pressed": "whitespace"},
+          "children": ["Whitespace"],
+        },
+        {
+          "component": "ToggleItem",
+          "props": {"value": "minimap", "label": "Minimap"},
+          "bind": {"pressed": "minimap"},
+          "children": ["Minimap"],
+        },
+        {
+          "component": "ToggleItem",
+          "props": {"value": "blame", "label": "Blame"},
+          "bind": {"pressed": "blame"},
+          "children": ["Blame"],
+        },
+      ],
+    },
+    "state": {"whitespace": true, "minimap": false, "blame": false},
+    "id": "components-togglegroup--words",
+    "title": "Components/ToggleGroup",
+    "name": "Words",
+    "layout": "centered",
+  },
+  "components/togglegroup/single": {
+    "content": {
+      "component": "ToggleGroup",
+      "props": {"label": "Panel", "multiple": false},
+      "bind": {"value": "panel"},
+      "children": [
+        {
+          "component": "ToggleItem",
+          "props": {"value": "whitespace", "label": "Whitespace"},
+          "children": ["Whitespace"],
+        },
+        {
+          "component": "ToggleItem",
+          "props": {"value": "minimap", "label": "Minimap"},
+          "children": ["Minimap"],
+        },
+        {
+          "component": "ToggleItem",
+          "props": {"value": "blame", "label": "Blame"},
+          "children": ["Blame"],
+        },
+      ],
+    },
+    "state": {"panel": "minimap"},
+    "id": "components-togglegroup--single",
+    "title": "Components/ToggleGroup",
+    "name": "Single",
+    "layout": "centered",
+  },
+  "components/togglegroup/variants": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "ToggleGroup",
+          "props": {"label": "Show (recessed)", "variant": "recessed"},
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true,
+              },
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "minimap", "label": "Minimap"},
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "blame", "label": "Blame"},
+            },
+          ],
+        },
+        {
+          "component": "ToggleGroup",
+          "props": {"label": "Show (normal)", "variant": "normal"},
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true,
+              },
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "minimap", "label": "Minimap"},
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "blame", "label": "Blame"},
+            },
+          ],
+        },
+        {
+          "component": "ToggleGroup",
+          "props": {"label": "Show (outlined)", "variant": "outlined"},
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true,
+              },
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "minimap", "label": "Minimap"},
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "blame", "label": "Blame"},
+            },
+          ],
+        },
+        {
+          "component": "ToggleGroup",
+          "props": {"label": "Show (plain)", "variant": "plain"},
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true,
+              },
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "minimap", "label": "Minimap"},
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "blame", "label": "Blame"},
+            },
+          ],
+        },
+      ],
+    },
+    "id": "components-togglegroup--variants",
+    "title": "Components/ToggleGroup",
+    "name": "Variants",
+    "layout": "centered",
+  },
+  "components/togglegroup/tints": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "ToggleGroup",
+          "props": {"label": "Show (primary)", "tint": "primary"},
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true,
+              },
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "minimap", "label": "Minimap"},
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "blame", "label": "Blame"},
+            },
+          ],
+        },
+        {
+          "component": "ToggleGroup",
+          "props": {"label": "Show (neutral)", "tint": "neutral"},
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true,
+              },
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "minimap", "label": "Minimap"},
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "blame", "label": "Blame"},
+            },
+          ],
+        },
+        {
+          "component": "ToggleGroup",
+          "props": {"label": "Show (info)", "tint": "info"},
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true,
+              },
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "minimap", "label": "Minimap"},
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "blame", "label": "Blame"},
+            },
+          ],
+        },
+        {
+          "component": "ToggleGroup",
+          "props": {"label": "Show (success)", "tint": "success"},
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true,
+              },
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "minimap", "label": "Minimap"},
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "blame", "label": "Blame"},
+            },
+          ],
+        },
+        {
+          "component": "ToggleGroup",
+          "props": {"label": "Show (warning)", "tint": "warning"},
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true,
+              },
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "minimap", "label": "Minimap"},
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "blame", "label": "Blame"},
+            },
+          ],
+        },
+        {
+          "component": "ToggleGroup",
+          "props": {"label": "Show (danger)", "tint": "danger"},
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true,
+              },
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "minimap", "label": "Minimap"},
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "blame", "label": "Blame"},
+            },
+          ],
+        },
+      ],
+    },
+    "id": "components-togglegroup--tints",
+    "title": "Components/ToggleGroup",
+    "name": "Tints",
+    "layout": "centered",
+  },
+  "components/togglegroup/disabled": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "ToggleGroup",
+          "props": {"label": "Show"},
+          "children": [
+            {
+              "component": "ToggleItem",
+              "props": {
+                "value": "whitespace",
+                "label": "Whitespace",
+                "pressed": true,
+              },
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "minimap", "label": "Minimap"},
+            },
+            {
+              "component": "ToggleItem",
+              "props": {"value": "blame", "label": "Blame", "disabled": true},
+            },
+          ],
+        },
+      ],
+    },
+    "id": "components-togglegroup--disabled",
+    "title": "Components/ToggleGroup",
+    "name": "Disabled",
     "layout": "centered",
   },
 };

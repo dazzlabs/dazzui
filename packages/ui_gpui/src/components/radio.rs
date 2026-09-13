@@ -1,6 +1,6 @@
 use gpui::{
-    App, ElementId, FocusHandle, InteractiveElement, IntoElement, ParentElement, RenderOnce,
-    SharedString, StatefulInteractiveElement, Styled, Window, div, relative,
+    App, ElementId, FocusHandle, InteractiveElement, IntoElement, ParentElement, Pixels,
+    RenderOnce, SharedString, StatefulInteractiveElement, Styled, Window, div, relative,
 };
 
 use crate::prelude::*;
@@ -164,6 +164,8 @@ pub struct RadioGroup {
     selected: SharedString,
     size: RadioSize,
     tint: Tint,
+    horizontal: bool,
+    gap: Option<Pixels>,
     on_select: Option<ValueListener<SharedString>>,
 }
 
@@ -175,8 +177,22 @@ impl RadioGroup {
             selected: selected.into(),
             size: RadioSize::Medium,
             tint: Tint::Primary,
+            horizontal: false,
+            gap: None,
             on_select: None,
         }
+    }
+
+    /// Lays a short set of answers on one line, the way a scope choice does.
+    pub fn horizontal(mut self, horizontal: bool) -> Self {
+        self.horizontal = horizontal;
+        self
+    }
+
+    /// The run between options; the column's own step when unset.
+    pub fn gap(mut self, gap: Pixels) -> Self {
+        self.gap = Some(gap);
+        self
     }
 
     /// One choice: the value it stands for and the label it prints.
@@ -227,6 +243,8 @@ impl RenderOnce for RadioGroup {
             selected,
             size,
             tint,
+            horizontal,
+            gap,
             on_select,
         } = self;
         let on_select: Option<SharedValueListener<SharedString>> = on_select.map(std::rc::Rc::from);
@@ -236,8 +254,8 @@ impl RenderOnce for RadioGroup {
         div()
             .id(id)
             .flex()
-            .flex_col()
-            .gap(vars.spacing_2_5)
+            .when(!horizontal, |el| el.flex_col())
+            .gap(gap.unwrap_or(vars.spacing_2_5))
             .children(
                 options
                     .into_iter()
