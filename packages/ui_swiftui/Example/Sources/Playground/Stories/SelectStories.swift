@@ -64,7 +64,8 @@ enum SelectStories {
         size: size,
         state: state,
         tint: tint,
-        enabled: enabled
+        enabled: enabled,
+        fullWidth: true
       )
       .frame(width: 220)
     }

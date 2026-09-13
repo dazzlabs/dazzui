@@ -82,7 +82,8 @@ enum FormFieldStories {
             SelectOption(value: "eu", label: "Europe"),
             SelectOption(value: "ap", label: "Asia Pacific"),
           ],
-          selection: $region
+          selection: $region,
+          fullWidth: true
         )
       }
       .frame(width: 320)
@@ -135,7 +136,8 @@ enum FormFieldStories {
               SelectOption(value: "eu", label: "Europe"),
               SelectOption(value: "ap", label: "Asia Pacific"),
             ],
-            selection: $region
+            selection: $region,
+            fullWidth: true
           )
         }
         FormField(label: "Notes", hint: "Markdown is supported.") {

@@ -149,7 +149,8 @@ enum DialogStories {
                 SelectOption(value: "eu", label: "Europe"),
                 SelectOption(value: "ap", label: "Asia Pacific"),
               ],
-              selection: $region
+              selection: $region,
+              fullWidth: true
             )
           }
         }

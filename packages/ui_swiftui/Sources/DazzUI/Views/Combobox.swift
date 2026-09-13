@@ -81,20 +81,16 @@ public struct Combobox<Value: Hashable>: View {
     let metrics = vars.metrics(size.controlSize)
 
     field(metrics: metrics)
-      .anchored(.bottom, .start, gap: vars.spacing1) {
-        if open && enabled {
-          // The list is at least as wide as the field it dropped from, the way
-          // a select's is.
-          MenuSheet(minWidth: nil) { list }
-        }
-      }
-      .background {
-        if open {
-          SwiftUI.Button("") { open = false }
-            .keyboardShortcut(.cancelAction)
-            .opacity(0)
-            .frame(width: 0, height: 0)
-        }
+      // Not modal, as Base UI's combobox is not: the field keeps the typing
+      // while the list is open, and a press on the field is the field's.
+      .floatingPanel(
+        isPresented: Binding(get: { open && enabled }, set: { open = $0 }),
+        gap: vars.spacing1,
+        modal: false
+      ) { anchor in
+        // The list is at least as wide as the field it dropped from, the way
+        // a select's is.
+        AnchoredMenuSheet(width: anchor.width) { list }
       }
   }
 
@@ -246,28 +242,22 @@ public struct Autocomplete: View {
     )
     .focused($focused)
     .onChange(of: text) { _ in open = true }
-    .anchored(.bottom, .start, gap: vars.spacing1) {
-      if open && enabled {
-        MenuSheet {
-          if matches.isEmpty {
-            MenuEmpty(label: emptyLabel)
-          } else {
-            ForEach(matches, id: \.self) { item in
-              MenuRow(item: MenuItem(item), tint: .neutral) {
-                text = item
-                open = false
-              }
+    .floatingPanel(
+      isPresented: Binding(get: { open && enabled }, set: { open = $0 }),
+      gap: vars.spacing1,
+      modal: false
+    ) { anchor in
+      AnchoredMenuSheet(width: anchor.width) {
+        if matches.isEmpty {
+          MenuEmpty(label: emptyLabel)
+        } else {
+          ForEach(matches, id: \.self) { item in
+            MenuRow(item: MenuItem(item), tint: .neutral) {
+              text = item
+              open = false
             }
           }
         }
-      }
-    }
-    .background {
-      if open {
-        SwiftUI.Button("") { open = false }
-          .keyboardShortcut(.cancelAction)
-          .opacity(0)
-          .frame(width: 0, height: 0)
       }
     }
   }

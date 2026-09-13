@@ -249,6 +249,18 @@ public struct SelectOption<Value: Hashable>: Identifiable {
 ///
 /// A Select is a TextField with a chevron, so it shares the box outright: the
 /// same height, the same corner, the same border recipe, the same focus lift.
+/// Its list is the ``MenuSheet``, the panel a ``Menu`` and a ``Combobox``
+/// open, with a tick on the chosen row.
+///
+/// The trigger is drawn here rather than handed to `SwiftUI.Menu` as a label.
+/// On macOS that menu flattens its label into a native pop-up button — a title
+/// and an image — so the box's height and padding are dropped and the chevron
+/// is moved to the leading edge, whatever the label's own layout says.
+///
+/// It is as wide as its longest option, so choosing a shorter one does not
+/// make it jump, and it does not take the room a row leaves over. A select
+/// that should fill its column the way a text field does — in a form, or in a
+/// column of a set width — asks for it with `fullWidth`.
 public struct Select<Value: Hashable>: View {
   public var options: [SelectOption<Value>]
   @Binding public var selection: Value
@@ -256,9 +268,12 @@ public struct Select<Value: Hashable>: View {
   public var state: TextFieldState
   public var tint: Tint
   public var enabled: Bool
+  /// Fill the width offered rather than the longest option's.
+  public var fullWidth: Bool
 
   @Environment(\.theme) private var theme
   @FocusState private var focused: Bool
+  @State private var open = false
 
   public init(
     options: [SelectOption<Value>],
@@ -266,7 +281,8 @@ public struct Select<Value: Hashable>: View {
     size: TextFieldSize = .medium,
     state: TextFieldState = .default,
     tint: Tint = .primary,
-    enabled: Bool = true
+    enabled: Bool = true,
+    fullWidth: Bool = false
   ) {
     self.options = options
     self._selection = selection
@@ -274,67 +290,85 @@ public struct Select<Value: Hashable>: View {
     self.state = state
     self.tint = tint
     self.enabled = enabled
+    self.fullWidth = fullWidth
   }
 
   public var body: some View {
     let vars = theme.vars
-    let metrics = vars.metrics(size.controlSize)
-    let ramp = tintFor(state, tint)
 
-    // `SwiftUI.Menu`, because this package's own `Menu` is the popover list
-    // rather than the platform's dropdown.
-    SwiftUI.Menu {
-      ForEach(options) { option in
-        SwiftUI.Button(option.label) { selection = option.value }
-          .disabled(!option.enabled)
+    trigger
+      // Modal, as Base UI's select is: the form behind waits for a choice.
+      .floatingPanel(isPresented: $open, gap: vars.spacing1, modal: true) { anchor in
+        AnchoredMenuSheet(width: anchor.width) { list }
       }
-    } label: {
+      .onChange(of: enabled) { if !$0 { open = false } }
+  }
+
+  private var trigger: some View {
+    let vars = theme.vars
+    let metrics = vars.metrics(size.controlSize)
+
+    return Pressable(
+      action: { open.toggle() },
+      enabled: enabled,
+      cornerRadius: vars.radiusMedium
+    ) { _ in
+      // The value takes the room and the chevron sits at the trailing edge.
       HStack(spacing: vars.spacing2) {
-        Text(selectedLabel)
-          .lineLimit(1)
-          .frame(maxWidth: .infinity, alignment: .leading)
+        ZStack(alignment: .leading) {
+          // Every label, unseen, so the box is the longest one's width.
+          ForEach(options) { option in
+            Text(option.label).hidden()
+          }
+          Text(selectedLabel)
+        }
+        .lineLimit(1)
+        .truncationMode(.tail)
+        .frame(maxWidth: fullWidth ? .infinity : nil, alignment: .leading)
         Icon(.chevronDown12Regular, size: vars.spacing3)
           .foregroundStyle(vars.colorContentSubtle)
       }
       .font(FieldStyle.font(size: metrics.content.size, mono: false, vars: vars))
-      .padding(.leading, vars.spacing3)
-      .padding(.trailing, vars.spacing3)
+      .padding(.horizontal, vars.spacing3)
       .frame(height: metrics.size)
-      .contentShape(Rectangle())
+      // The trigger of an open list is not idle, so it lifts while the list
+      // is open as well as while it holds the focus.
+      .fieldChrome(
+        FieldStyle(
+          vars: vars,
+          tint: tintFor(state, tint),
+          invalid: state == .error,
+          enabled: enabled,
+          focused: focused || open
+        ),
+        cornerRadius: vars.radiusMedium,
+        vars: vars
+      )
     }
-    .modifier(BareMenu())
     .focused($focused)
-    .disabled(!enabled)
-    .fieldChrome(
-      FieldStyle(
-        vars: vars,
-        tint: ramp,
-        invalid: state == .error,
-        enabled: enabled,
-        focused: focused
-      ),
-      cornerRadius: vars.radiusMedium,
-      vars: vars
-    )
+    .accessibilityValue(selectedLabel)
+  }
+
+  private var list: some View {
+    ForEach(options) { option in
+      MenuRow(
+        item: MenuItem(
+          option.label,
+          checked: option.value == selection,
+          disabled: !option.enabled
+        ),
+        tint: .neutral
+      ) {
+        selection = option.value
+        open = false
+      }
+    }
   }
 
   private var selectedLabel: String {
     options.first { $0.value == selection }?.label ?? ""
   }
 }
-
-/// Strips the platform's own menu chrome, so the shared field box is the only
-/// box drawn and the chevron the only indicator.
-private struct BareMenu: ViewModifier {
-  func body(content: Content) -> some View {
-    #if os(macOS)
-      content.menuStyle(.borderlessButton).menuIndicator(.hidden)
-    #else
-      content.menuStyle(.button).buttonStyle(.plain)
-    #endif
-  }
-}
-
 
 // MARK: - FieldValue
 

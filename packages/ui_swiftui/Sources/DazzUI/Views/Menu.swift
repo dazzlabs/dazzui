@@ -75,11 +75,12 @@ public struct MenuItem: Identifiable {
 
 /// A popover menu.
 ///
-/// It closes on Escape and on selecting a row, so it stays operable from the
-/// keyboard as well as the mouse. Dismissal on an outside press is the host
-/// window's job here rather than the menu's: SwiftUI has no equivalent of the
-/// document-level pointer listener the React menu installs, and a full-screen
-/// catcher would swallow the very click the user meant for something else.
+/// It closes on Escape, on selecting a row, and on a press outside it, so it
+/// stays operable from the keyboard as well as the mouse. The panel is a
+/// ``View/floatingPanel(isPresented:side:align:gap:modal:panel:)``, so it is
+/// drawn above the whole window rather than only above the trigger's siblings,
+/// and like Base UI's menu it is modal: the window behind waits while it is
+/// open.
 ///
 /// Named `Menu` rather than prefixed, and reached as `DazzUI.Menu` where
 /// `SwiftUI.Menu` is also in scope.
@@ -108,22 +109,16 @@ public struct Menu<Trigger: View>: View {
 
   public var body: some View {
     trigger(MenuTriggerState(open: open, toggle: { open.toggle() }))
-      .overlay(alignment: align == .start ? .bottomLeading : .bottomTrailing) {
-        if open {
-          panel
-            // Pins the panel's *top* edge to the trigger's bottom edge, which
-            // is what `top: 100%` does to an absolutely placed panel.
-            .alignmentGuide(.bottom) { _ in 0 }
-            .offset(y: theme.vars.spacing1)
-        }
-      }
-      .background {
-        if open {
-          SwiftUI.Button("") { open = false }
-            .keyboardShortcut(.cancelAction)
-            .opacity(0)
-            .frame(width: 0, height: 0)
-        }
+      // Modal, as Base UI's menu is by default: a press outside only closes
+      // it, so pressing the trigger again closes rather than reopens.
+      .floatingPanel(
+        isPresented: $open,
+        side: .bottom,
+        align: align == .start ? .start : .end,
+        gap: theme.vars.spacing1,
+        modal: true
+      ) {
+        panel
       }
   }
 
@@ -170,6 +165,26 @@ struct MenuSheet<Content: View>: View {
     .tokenShadow(vars.shadowLg)
     .fixedSize(horizontal: minWidth == nil, vertical: true)
     .accessibilityElement(children: .contain)
+  }
+}
+
+/// The sheet a list dropped from a field or a select wears: at least as wide
+/// as what it dropped from — `min-width: var(--anchor-width)` — and wider
+/// where a row needs it. The sheet sizes to its content, so the floor goes on
+/// the content, less the sheet's own inset.
+struct AnchoredMenuSheet<Rows: View>: View {
+  let width: CGFloat
+  @ViewBuilder let rows: () -> Rows
+
+  @Environment(\.theme) private var theme
+
+  var body: some View {
+    let inset = theme.vars.spacing1 * 2
+
+    MenuSheet {
+      VStack(spacing: 0) { rows() }
+        .frame(minWidth: max(0, width - inset))
+    }
   }
 }
 

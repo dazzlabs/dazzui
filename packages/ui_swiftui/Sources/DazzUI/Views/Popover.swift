@@ -148,36 +148,34 @@ public struct Popover<Trigger: View, Content: View>: View {
     let vars = theme.vars
 
     trigger(PopoverTriggerState(open: open, toggle: { open.toggle() }))
-      .anchored(side, align, gap: vars.spacing1) {
-        if open {
-          PopoverPanel(width: width) {
-            if let title {
-              Text(title)
-                .font(.system(size: vars.labelLarge.size, weight: vars.labelLarge.weight))
-                .foregroundStyle(vars.colorContent)
-            }
-            if let description {
-              Text(description)
-                .font(vars.bodySmall.font)
-                .lineSpacing(vars.bodySmall.lineSpacing)
-                .foregroundStyle(vars.colorContentSecondary)
-                .padding(.top, vars.spacing1)
-                .fixedSize(horizontal: false, vertical: true)
-            }
-            // The run between the head and whatever the panel is actually for.
-            // It is a pad above the body rather than a gap on the panel, so a
-            // popover that is only a form has no leading space to trim.
-            content()
-              .padding(.top, title == nil && description == nil ? 0 : vars.spacing3)
+      // Not modal, as Base UI's popover is not by default: a press outside
+      // closes it and still lands, and the trigger keeps toggling it.
+      .floatingPanel(
+        isPresented: $open,
+        side: side,
+        align: align,
+        gap: vars.spacing1,
+        modal: false
+      ) {
+        PopoverPanel(width: width) {
+          if let title {
+            Text(title)
+              .font(.system(size: vars.labelLarge.size, weight: vars.labelLarge.weight))
+              .foregroundStyle(vars.colorContent)
           }
-        }
-      }
-      .background {
-        if open {
-          SwiftUI.Button("") { open = false }
-            .keyboardShortcut(.cancelAction)
-            .opacity(0)
-            .frame(width: 0, height: 0)
+          if let description {
+            Text(description)
+              .font(vars.bodySmall.font)
+              .lineSpacing(vars.bodySmall.lineSpacing)
+              .foregroundStyle(vars.colorContentSecondary)
+              .padding(.top, vars.spacing1)
+              .fixedSize(horizontal: false, vertical: true)
+          }
+          // The run between the head and whatever the panel is actually for.
+          // It is a pad above the body rather than a gap on the panel, so a
+          // popover that is only a form has no leading space to trim.
+          content()
+            .padding(.top, title == nil && description == nil ? 0 : vars.spacing3)
         }
       }
   }
