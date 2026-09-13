@@ -74,6 +74,7 @@ pub struct TextBuffer {
     selection_reversed: bool,
     marked_range: Option<Range<usize>>,
     multi_line: bool,
+    read_only: bool,
     lines: Vec<WrappedLine>,
     last_bounds: Option<Bounds<Pixels>>,
     last_line_height: Pixels,
@@ -90,6 +91,7 @@ impl TextBuffer {
             selection_reversed: false,
             marked_range: None,
             multi_line: false,
+            read_only: false,
             lines: Vec::new(),
             last_bounds: None,
             last_line_height: px(0.),
@@ -107,6 +109,12 @@ impl TextBuffer {
     /// A field whose Return inserts a line rather than doing nothing.
     pub fn multi_line(mut self, multi_line: bool) -> Self {
         self.multi_line = multi_line;
+        self
+    }
+
+    /// Preserve focus and selection while rejecting edits from keys and input methods.
+    pub fn read_only(mut self, read_only: bool) -> Self {
+        self.read_only = read_only;
         self
     }
 
@@ -398,6 +406,9 @@ impl EntityInputHandler for TextBuffer {
         _: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        if self.read_only {
+            return;
+        }
         let range = range_utf16
             .as_ref()
             .map(|range| self.range_from_utf16(range))
@@ -421,6 +432,9 @@ impl EntityInputHandler for TextBuffer {
         _: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        if self.read_only {
+            return;
+        }
         let range = range_utf16
             .as_ref()
             .map(|range| self.range_from_utf16(range))

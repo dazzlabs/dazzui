@@ -74,7 +74,12 @@ The DazzUI design system, as a pnpm workspace:
   inside the package; `Example/Playground.xcodeproj` is the runnable iOS
   gallery. Open it, select an iPhone or iPad simulator, and run the Playground
   scheme. Its project configuration is generated from `Example/project.yml`.
-- `apps/storybook` (`@dazzlabs/dazzui-storybook`) — a Storybook gallery that
+  `Example/GeneratedStories.swift` and `Example/Tests/scenes.json` are generated
+  from the React example's shared declarations by `pnpm playgrounds:generate`.
+  `tools/playgrounds/ios-scene.mjs` maps content and events to system controls;
+  mobile appearance remains native. The Xcode test scheme checks the registry,
+  all-theme rendering and shared non-timed interaction checkpoints.
+- `packages/ui_react/example` (`@dazzlabs/dazzui-react-playground`) — the React playground that
   documents both: `Tokens/*` for the token graph, `Components/*` for the
   components.
 - `examples/workbench` (`@dazzlabs/dazzui-example-workbench`) — a Git-rooted
@@ -123,7 +128,11 @@ control drawing or wrappers. `packages/ds/plugins/compose.mjs` generates its
 committed `src/main/kotlin/dev/dazzlabs/dazzui/mobile/generated/` file with all
 theme families. Run `pnpm tokens` to regenerate; never edit the output.
 From that package, run `./gradlew assembleDebug testDebugUnitTest :example:assembleDebug`
-with JDK 17 and Android SDK 36. The package is invisible to pnpm.
+with JDK 17 and Android SDK 36. The package is invisible to pnpm. Its example
+consumes generated `example/src/main/assets/scenes.json` from the React example's
+shared declarations. The generic Compose renderer and state/clock interpreter
+contain no story-specific fixtures. Run `:example:connectedDebugAndroidTest` on a
+connected device to exercise shared checkpoints and all-theme native rendering.
 
 Run these from the repository root.
 
@@ -140,7 +149,7 @@ pnpm components        # build packages/ui_react into its dist/
 ```
 
 ```bash
-pnpm storybook         # build both, then serve Storybook on :6006
+pnpm playground         # build both, then serve the React playground on :6006
 ```
 
 ```bash
@@ -160,7 +169,7 @@ pnpm canvas:desktop    # build the canvas, then open it as a native window
 ```
 
 ```bash
-pnpm parity            # build Storybook, then extract the React reference and distribute it
+pnpm parity            # build the React playground, then extract the React reference and distribute it
 ```
 
 ```bash
@@ -261,7 +270,7 @@ bundled in rather than pushed onto consumers as a third stylesheet.
 Because `src/generated/` is committed, this package builds without `ds` having
 run — there is no dependency edge and so no build order to get wrong. The cost
 is that editing a token file does nothing until the generator runs, which is
-why `pnpm packages` runs both and the storybook scripts call it.
+why `pnpm packages` runs both and the playground scripts call it.
 
 Never hand-edit `src/generated/`. A value a component needs belongs in
 `packages/ds`, and anything written there is overwritten on the next build.
@@ -273,13 +282,13 @@ standard is written in stylesheets — which a port reads with its eyes. The
 parity pipeline reads it with a browser instead, so that what a port is held
 to is a number rather than an impression.
 
-1. `apps/storybook/scripts/parity.mjs` serves the Storybook build and opens
+1. `packages/ui_react/example/scripts/parity.mjs` serves the React playground build and opens
    every story it lists, in every theme, in a headless Chromium at a fixed
    window (960×640 at 2x, reduced motion). For each it records every
    component root on the page — anything carrying a bare `ff-*` class — with
    its `data-*` axes, its box, and the computed border, corner, colour, type
    and shadow; and takes a screenshot. It stages three things under
-   `apps/storybook/parity/` (gitignored, the way `dist/` is for tokens):
+   `packages/ui_react/example/parity/` (gitignored, the way `dist/` is for tokens):
    - `stories.json` — the story list, and the cross-platform key
    - `reference/<page>.json` — what every story rendered, per theme
    - `screenshots/<theme>/<id>.png` — for the side-by-side report; never
@@ -557,7 +566,7 @@ lands.
 Studio Light sets **no attribute at all** — selecting it means removing
 `data-theme`, not writing `studio-light`. Writing it would leave the page
 looking right for the wrong reason, since none of the theme blocks would
-match. Storybook's theme toolbar does exactly this; see `.storybook/preview.ts`.
+match. The React playground does exactly this; see `packages/ui_react/example/src/lib/themes.ts`.
 
 Flutter has no cascade, so `plugins/flutter.mjs` collapses each theme's mode
 chain into a whole `ThemeVariables` instance — `themeVariablesStudioDark`,
@@ -720,14 +729,32 @@ is where the platform forced a different shape.
   descendant of the focused element never fires, and only a simulated
   backspace says so.
 
-## Storybook conventions
+## Playground conventions
 
-- Stories live in `apps/storybook/src/stories/*.stories.tsx`, titled
-  `Tokens/<Group>` or `Components/<Name>`. Sidebar order is set by the
-  `storySort` comparator in `.storybook/preview.ts`, which sorts groups and
-  pages but returns 0 for two entries sharing a title — so the stories inside
-  one component keep the order they are written in. Adding a story means
-  putting the export where it belongs in the file.
+- Stories live in `packages/ui_react/example/stories/*.stories.tsx`, titled
+  `Tokens/<Group>` or `Components/<Name>`. `tools/playgrounds/catalog.mjs`
+  reads declarations in source order, sorts pages, and generates the catalog.
+  Export names determine stable IDs independently of display-name overrides.
+- The React example is a Vite application, with local `Meta` and `StoryObj`
+  types; it has no Storybook runtime or dependency. Existing explicit render
+  functions and decorators remain supported during scene migration.
+- Portable story content lives beside the declaration in `*.scene.json` and
+  is consumed through `defineStory`. Run `pnpm playgrounds:generate` after
+  changing declarations or scenes; `pnpm playgrounds:check` detects stale
+  output. Generation needs Dart and rustfmt to format native output.
+- All story content, fixtures, state and interactions must be expressed by shared
+  declarations. Platform adapters contain framework plumbing and component mappings
+  only. Native story-specific implementations are temporary migration debt.
+  `pnpm playgrounds:complete` is the all-story/all-platform acceptance gate.
+- Never hand-edit playground generated files. Their ownership and hashes are
+  recorded in `tools/playgrounds/outputs.json`. Source changes belong in the
+  React scene declarations or the platform adapters. `coverage.json` records
+  pending scene/adapter migrations; a legacy native implementation is not
+  generated content. See `packages/ui_react/example/README.md` for current scope.
+- The isolated canvas exposes `window.__PLAYGROUND__` for automation. Stable
+  `story`, `theme`, `canvas` query parameters replace Storybook's iframe and
+  private channel. Golden baselines require explicit review/update; React
+  measurement parity remains independent of those per-platform baselines.
 - **One documented page per component, and it is `Overview`.** It is the only
   story that renders a `Page`, and it carries the whole write-up: what the
   component is, the axes it varies along, and the token table where the
@@ -784,7 +811,7 @@ opened lately — an overflow, a bad length, a lost element state.
 
 `examples/*` are apps, not packages: private, never published, and each one
 built and served on its own port. An example is added to `pnpm-workspace.yaml`
-by the `examples/*` glob and given a root script beside the Storybook's.
+by the `examples/*` glob and given a root script beside the playground's.
 
 The rules an example does keep are the ones that make it worth having:
 

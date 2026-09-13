@@ -5,6 +5,8 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose") version "2.2.20"
 }
 
+extra["composeBomVersion"] = "2026.03.01"
+
 group = "dev.dazzui"
 version = "0.0.0"
 
@@ -22,7 +24,7 @@ android {
 kotlin { jvmToolchain(17) }
 
 dependencies {
-    api(platform("androidx.compose:compose-bom:2026.03.01"))
+    api(platform("androidx.compose:compose-bom:${project.extra["composeBomVersion"]}"))
     api("androidx.compose.material3:material3")
     implementation("androidx.compose.foundation:foundation")
     testImplementation("junit:junit:4.13.2")

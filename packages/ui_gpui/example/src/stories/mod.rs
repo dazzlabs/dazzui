@@ -14,10 +14,6 @@ pub mod action_bar;
 pub mod aside;
 pub mod autocomplete;
 pub mod avatar;
-pub mod badge;
-pub mod button;
-pub mod callout;
-pub mod card;
 pub mod checkbox;
 pub mod code;
 pub mod code_block;
@@ -25,7 +21,6 @@ pub mod collapsible;
 pub mod combobox;
 pub mod context_menu;
 pub mod dialog;
-pub mod divider;
 pub mod drawer;
 pub mod empty_state;
 pub mod form;
@@ -58,7 +53,6 @@ pub mod skeleton;
 pub mod slider;
 pub mod spinner;
 pub mod splitter;
-pub mod step_list;
 pub mod switch;
 pub mod table;
 pub mod tag;
@@ -67,85 +61,9 @@ pub mod toast;
 pub mod toggle;
 pub mod toggle_group;
 
-use crate::storybook::{StoryGroup, StoryRef};
+use crate::storybook::StoryRef;
 
-pub const GROUPS: &[StoryGroup] = &[
-    StoryGroup::new(
-        "Tokens",
-        &[
-            tokens::color::PAGE,
-            tokens::typography::PAGE,
-            tokens::spacing::PAGE,
-            tokens::radius::PAGE,
-            tokens::effect::PAGE,
-            tokens::control::PAGE,
-            tokens::theme::PAGE,
-        ],
-    ),
-    StoryGroup::new(
-        "Components",
-        &[
-            accordion::PAGE,
-            action_bar::PAGE,
-            autocomplete::PAGE,
-            avatar::PAGE,
-            aside::PAGE,
-            badge::PAGE,
-            button::PAGE,
-            callout::PAGE,
-            card::PAGE,
-            checkbox::PAGE,
-            code::PAGE,
-            code_block::PAGE,
-            collapsible::PAGE,
-            combobox::PAGE,
-            context_menu::PAGE,
-            dialog::PAGE,
-            divider::PAGE,
-            drawer::PAGE,
-            empty_state::PAGE,
-            form::PAGE,
-            form_field::PAGE,
-            icon::PAGE,
-            icon_button::PAGE,
-            key_cap::PAGE,
-            link::PAGE,
-            menu::PAGE,
-            menubar::PAGE,
-            meter::PAGE,
-            nav_item::PAGE,
-            number_field::PAGE,
-            option_card::PAGE,
-            otp_field::PAGE,
-            pill_tabs::PAGE,
-            popover::PAGE,
-            preferences::PAGE,
-            preview_card::PAGE,
-            progress::PAGE,
-            radio::PAGE,
-            rail::PAGE,
-            search_field::PAGE,
-            section_label::PAGE,
-            segmented_control::PAGE,
-            select::PAGE,
-            shortcut_recorder::PAGE,
-            sidebar::PAGE,
-            skeleton::PAGE,
-            slider::PAGE,
-            spinner::PAGE,
-            splitter::PAGE,
-            step_list::PAGE,
-            switch::PAGE,
-            table::PAGE,
-            tag::PAGE,
-            text_field::PAGE,
-            toast::PAGE,
-            toggle::PAGE,
-            toggle_group::PAGE,
-            tree::PAGE,
-        ],
-    ),
-];
+pub use crate::generated_stories::GROUPS;
 
 /// Where the canvas points when the window opens.
 pub const FIRST: StoryRef = StoryRef::new("Button", "Overview");

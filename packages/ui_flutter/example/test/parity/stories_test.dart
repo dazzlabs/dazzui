@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// The React story list is the contract's index.
 ///
-/// `stories.json` is what `apps/storybook` renders, written by its parity
+/// `stories.json` is what `packages/ui_react/example` renders, written by its parity
 /// extractor and distributed here; every id in it is a story this playground
 /// is expected to draw under the same name. A story missing here is a gap in
 /// the port, and a story here that React does not have is a name the port

@@ -3,7 +3,7 @@
 
 use dazzui::{
     ActionBar, ActionBarAlign, ActiveTheme, Badge, BadgeSize, Button, ControlVariant, Icon,
-    IconButton, KeyCap, KeyCapSize, Tint, assets::icons,
+    IconButton, Tint, assets::icons,
 };
 use gpui::{IntoElement, ParentElement, SharedString, Styled, div, px};
 
@@ -72,44 +72,11 @@ pub const PAGE: StoryPage = StoryPage::new(
                 )
                 .into_any_element()
         }),
-        Story::new("Start", |_, _, _| {
-            bar(ActionBarAlign::Start).into_any_element()
-        }),
-        Story::new("End", |_, _, _| bar(ActionBarAlign::End).into_any_element()),
-        Story::new("Between", |_, _, _| {
-            bar(ActionBarAlign::Between).into_any_element()
-        }),
         Story::new("As a toolbar", |_, _, cx| {
             let vars = cx.theme().vars;
             div()
                 .w(px(320.))
                 .child(toolbar(vars.control_tiny_size))
-                .into_any_element()
-        }),
-        Story::new("An action row", |_, _, _| {
-            div()
-                .w(px(380.))
-                .child(
-                    ActionBar::new()
-                        .align(ActionBarAlign::End)
-                        .child(Button::new("cancel", "Cancel"))
-                        .child(Button::new("save", "Save").variant(ControlVariant::Filled)),
-                )
-                .into_any_element()
-        }),
-        Story::new("With a key hint", |_, _, _| {
-            div()
-                .w(px(380.))
-                .child(
-                    ActionBar::new()
-                        .align(ActionBarAlign::Between)
-                        .child(KeyCap::new("⌘↩").size(KeyCapSize::Small))
-                        .child(
-                            Button::new("send", "Send")
-                                .variant(ControlVariant::Filled)
-                                .shortcut("⌘↩"),
-                        ),
-                )
                 .into_any_element()
         }),
         Story::new("Mixed controls", |_, _, _| {

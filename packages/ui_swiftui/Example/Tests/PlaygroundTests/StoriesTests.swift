@@ -1,10 +1,13 @@
 import XCTest
+import SwiftUI
+import AppKit
+import DazzUI
 
 @testable import Playground
 
 /// The React story list is the contract's index.
 ///
-/// `Parity/stories.json` is what `apps/storybook` renders, written by its
+/// `Parity/stories.json` is what `packages/ui_react/example` renders, written by its
 /// parity extractor and distributed here; every id in it is a story this
 /// playground is expected to draw under the same name. A story missing here
 /// is a gap in the port, and a story here that React does not have is a name
@@ -19,6 +22,52 @@ import XCTest
 /// lists are recorded by the first run that finds them missing. A checkout
 /// without the data skips rather than fails.
 final class StoriesTests: XCTestCase {
+  @MainActor func testEmptyStateWithoutActionHasNoPhantomActionGap() {
+    let vars = ThemeName.studioLight.variables
+    let actual = NSHostingView(rootView: EmptyState("Nothing")
+      .theme(.studioLight).fixedSize(horizontal: false, vertical: true).frame(width: 320))
+    let expected = NSHostingView(rootView: Text("Nothing")
+      .font(vars.bodyMedium.font).lineSpacing(vars.bodyMedium.lineSpacing)
+      .padding(.vertical, vars.spacing14).padding(.horizontal, vars.spacing8)
+      .frame(width: 320))
+    XCTAssertEqual(actual.fittingSize.height, expected.fittingSize.height, accuracy: 0.5)
+  }
+
+  @MainActor func testGeneratedScenesRenderInEveryTheme() throws {
+    for entry in GeneratedStories.entries {
+      for theme in ThemeName.allCases {
+        let view = try XCTUnwrap(GeneratedStories.content("\(entry.group)/\(entry.page)/\(entry.name)"))
+        let host = NSHostingView(rootView: view.theme(theme).frame(width: 960, height: 640))
+        host.frame = NSRect(x: 0, y: 0, width: 960, height: 640)
+        host.layoutSubtreeIfNeeded()
+        let bitmap = try XCTUnwrap(host.bitmapImageRepForCachingDisplay(in: host.bounds))
+        host.cacheDisplay(in: host.bounds, to: bitmap)
+        XCTAssertGreaterThan(bitmap.pixelsWide, 0, "\(entry.id) / \(theme.rawValue)")
+      }
+    }
+  }
+
+  func testGeneratedStoriesCreateTheirOwnCatalog() {
+    let groups = GeneratedStories.apply([])
+    let ids = groups.flatMap(\.pages).flatMap(\.stories).compactMap(\.sourceId)
+    XCTAssertEqual(Set(ids), Set(GeneratedStories.entries.map(\.id)))
+    XCTAssertEqual(ids.count, Set(ids).count)
+    XCTAssertEqual(GeneratedStories.apply(groups).flatMap(\.pages).flatMap(\.stories).count, ids.count)
+  }
+
+  func testGeneratedStoriesPreserveExtensionsAndReplaceMatchingEntries() {
+    let input = [StoryGroup("Components", pages: [StoryPage("Button", stories: [
+      Story("Normal") { EmptyView() },
+      Story("Local extension") { EmptyView() },
+    ])])]
+    let output = GeneratedStories.apply(input)
+    let stories = output[0].pages.first(where: { $0.name == "Button" })!.stories
+    XCTAssertEqual(stories.filter { $0.name == "Normal" }.count, 1)
+    XCTAssertEqual(stories.first(where: { $0.name == "Normal" })?.sourceId, "components-button--normal")
+    XCTAssertTrue(stories.contains { $0.name == "Local extension" })
+    XCTAssertEqual(input[0].pages[0].stories.count, 2)
+  }
+
   private var parity: URL {
     URL(fileURLWithPath: #filePath)
       .deletingLastPathComponent()

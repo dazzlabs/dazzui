@@ -123,9 +123,6 @@ pub const PAGE: StoryPage = StoryPage::new(
                 )
                 .into_any_element()
         }),
-        Story::new("A confirmation", |_, _, _| {
-            confirmation("story").into_any_element()
-        }),
         Story::new("Danger", |_, _, _| danger("story").into_any_element()),
         Story::new("A form", |state, _, _| {
             Dialog::new()

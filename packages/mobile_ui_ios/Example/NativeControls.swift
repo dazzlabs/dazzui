@@ -7,8 +7,14 @@ struct NativeControls: View {
   @State private var appearance = Appearance.system
 
   var body: some View {
-    ControlsForm(family: $family, appearance: $appearance)
-      .mobileTheme(family, colorScheme: appearance.colorScheme)
+    Group {
+      if let id = ProcessInfo.processInfo.environment["PLAYGROUND_STORY"],
+         let story = mobileStories.first(where: { $0.id == id }) {
+        ScrollView { story.build().padding() }.id(story.id)
+      } else {
+        ControlsForm(family: $family, appearance: $appearance)
+      }
+    }.mobileTheme(family, colorScheme: appearance.colorScheme)
   }
 }
 
@@ -25,83 +31,35 @@ private enum Appearance: String, CaseIterable, Identifiable {
 }
 
 private struct ControlsForm: View {
-  @Environment(\.mobilePalette) private var palette
   @Binding var family: ThemeFamily
   @Binding var appearance: Appearance
-  @State private var name = ""
-  @State private var notifications = true
-  @State private var volume = 0.5
-  @State private var date = Date()
-  @State private var count = 1
-  @State private var showSheet = false
-  @State private var showAlert = false
+  @State private var search = ""
 
   var body: some View {
     NavigationStack {
-      Form {
+      List {
         Section("Theme") {
           Picker("Family", selection: $family) {
-            ForEach(ThemeFamily.allCases) { family in
-              Text(family.rawValue.capitalized).tag(family)
-            }
+            ForEach(ThemeFamily.allCases) { Text($0.rawValue.capitalized).tag($0) }
           }
           Picker("Appearance", selection: $appearance) {
-            ForEach(Appearance.allCases) { appearance in
-              Text(appearance.rawValue.capitalized).tag(appearance)
-            }
+            ForEach(Appearance.allCases) { Text($0.rawValue.capitalized).tag($0) }
           }
         }
-        Section("Controls") {
-          TextField("Name", text: $name)
-          Toggle("Notifications", isOn: $notifications)
-          Slider(value: $volume) { Text("Volume") }
-          Stepper("Copies: \(count)", value: $count, in: 1...10)
-          DatePicker("Date", selection: $date, displayedComponents: .date)
-          ProgressView("Progress", value: volume)
-        }
-        Section("Actions") {
-          Button("Show sheet") { showSheet = true }
-          Button("Save") { showAlert = true }
-            .buttonStyle(.borderedProminent)
-          Button("Unavailable") {}.disabled(true)
-          Button("Delete", role: .destructive) { showAlert = true }
-          Menu("More") {
-            Button("Duplicate") { count += 1 }
-            ShareLink(item: "DazzUI Mobile")
-          }
-          NavigationLink("Details") {
-            Text("System navigation and Dynamic Type.")
-              .navigationTitle("Details")
-          }
-        }
-        Section("DS colours") {
-          Label("Semantic content", systemImage: "paintpalette")
-            .foregroundStyle(palette.colorContent)
-            .listRowBackground(palette.colorSurfaceMuted)
-        }
-      }
-      .navigationTitle("Native controls")
-      .sheet(isPresented: $showSheet) {
-        NavigationStack {
-          Form {
-            Toggle("Notifications", isOn: $notifications)
-            Text("System sheet presentation")
-          }
-          .navigationTitle("Preferences")
-          .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
-              Button("Done") { showSheet = false }
+        ForEach(Array(Set(mobileStories.map(\.title))).sorted(), id: \.self) { title in
+          Section(title) {
+            ForEach(mobileStories.filter { $0.title == title && (search.isEmpty || "\($0.title) \($0.name)".localizedCaseInsensitiveContains(search)) }) { story in
+              NavigationLink(story.name) {
+                ScrollView { story.build().padding() }
+                  .id(story.id)
+                  .navigationTitle(story.name)
+              }.accessibilityIdentifier(story.id)
             }
           }
         }
       }
-      .alert("Saved", isPresented: $showAlert) {
-        Button("OK", role: .cancel) {}
-      }
+      .searchable(text: $search, prompt: "Find a story")
+      .navigationTitle("Playground")
     }
   }
-}
-
-#Preview {
-  NativeControls()
 }

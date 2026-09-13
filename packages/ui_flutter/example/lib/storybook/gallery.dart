@@ -1,4 +1,6 @@
 import 'package:dazzui/dazzui.dart';
+import 'package:flutter/rendering.dart' show OverflowBoxFit;
+import 'package:flutter/widgets.dart' as widgets;
 
 import 'stage.dart';
 
@@ -224,16 +226,51 @@ class TileGrid extends StatelessWidget {
         final double available = constraints.maxWidth.isFinite
             ? constraints.maxWidth
             : proseMeasure;
-        final int columns = (available / min).floor().clamp(1, 6);
-        final double width =
-            (available - vars.spacing4 * (columns - 1)) / columns;
+        final gap = vars.spacing4;
+        final extent = available < min ? min : available;
+        final int columns = ((extent + gap) / (min + gap)).floor().clamp(
+          1,
+          65535,
+        );
+        final double width = (extent - gap * (columns - 1)) / columns;
 
-        return Wrap(
-          spacing: vars.spacing4,
-          runSpacing: vars.spacing4,
-          children: [
-            for (final child in children) SizedBox(width: width, child: child),
-          ],
+        return OverflowBox(
+          alignment: Alignment.topLeft,
+          fit: OverflowBoxFit.deferToChild,
+          minWidth: extent,
+          maxWidth: extent,
+          child: widgets.Table(
+            defaultVerticalAlignment:
+                widgets.TableCellVerticalAlignment.intrinsicHeight,
+            columnWidths: {
+              for (var i = 0; i < columns * 2 - 1; i++)
+                i: widgets.FixedColumnWidth(i.isEven ? width : gap),
+            },
+            children: [
+              for (
+                var start = 0;
+                start < children.length;
+                start += columns
+              ) ...[
+                if (start > 0)
+                  widgets.TableRow(
+                    children: [
+                      for (var i = 0; i < columns * 2 - 1; i++)
+                        SizedBox(height: gap),
+                    ],
+                  ),
+                widgets.TableRow(
+                  children: [
+                    for (var i = 0; i < columns * 2 - 1; i++)
+                      if (i.isEven && start + i ~/ 2 < children.length)
+                        children[start + i ~/ 2]
+                      else
+                        const SizedBox.shrink(),
+                  ],
+                ),
+              ],
+            ],
+          ),
         );
       },
     );

@@ -1,0 +1,117 @@
+{
+  "WithAHint": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 384
+      },
+      "children": [
+        {
+          "component": "FormField",
+          "props": {
+            "label": "Display name",
+            "hint": "Shown on shared documents."
+          },
+          "children": [
+            {
+              "component": "TextField",
+              "props": {},
+              "id": "field-0-0",
+              "bind": {
+                "value": "field-0-0"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "field-0-0": "Jianying Li"
+    }
+  },
+  "WithoutAHint": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 384
+      },
+      "children": [
+        {
+          "component": "FormField",
+          "props": {
+            "label": "Display name"
+          },
+          "children": [
+            {
+              "component": "TextField",
+              "props": {},
+              "id": "field-0-0",
+              "bind": {
+                "value": "field-0-0"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "field-0-0": "Jianying Li"
+    }
+  },
+  "ErrorState": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 384
+      },
+      "children": [
+        {
+          "component": "FormField",
+          "props": {
+            "label": "API key",
+            "state": "error",
+            "hint": "The provider rejected this key."
+          },
+          "children": [
+            {
+              "component": "TextField",
+              "props": {
+                "mono": true,
+                "state": "error"
+              },
+              "id": "field-0-0",
+              "bind": {
+                "value": "field-0-0"
+              }
+            }
+          ]
+        },
+        {
+          "component": "FormField",
+          "props": {
+            "label": "Endpoint",
+            "state": "error",
+            "hint": "Must start with https://."
+          },
+          "children": [
+            {
+              "component": "TextField",
+              "props": {
+                "mono": true,
+                "state": "error"
+              },
+              "id": "field-1-0",
+              "bind": {
+                "value": "field-1-0"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "field-0-0": "sk-0000000000",
+      "field-1-0": "http://localhost:8080"
+    }
+  }
+}

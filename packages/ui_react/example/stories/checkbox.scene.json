@@ -1,0 +1,279 @@
+{
+  "Checked": {
+    "content": {
+      "component": "Checkbox",
+      "props": {
+        "checked": true
+      },
+      "children": [
+        "Translated text"
+      ]
+    }
+  },
+  "Unchecked": {
+    "content": {
+      "component": "Checkbox",
+      "props": {
+        "checked": false
+      },
+      "children": [
+        "Translated text"
+      ]
+    }
+  },
+  "Disabled": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "gap": "spacing.2"
+      },
+      "children": [
+        {
+          "component": "Checkbox",
+          "props": {
+            "checked": true,
+            "disabled": true
+          },
+          "children": [
+            "Revision history"
+          ]
+        },
+        {
+          "component": "Checkbox",
+          "props": {
+            "checked": false,
+            "disabled": true
+          },
+          "children": [
+            "Revision history"
+          ]
+        }
+      ]
+    }
+  },
+  "Sizes": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "gap": "spacing.2"
+      },
+      "children": [
+        {
+          "component": "Row",
+          "children": [
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": true,
+                "size": "small"
+              },
+              "children": [
+                "Set"
+              ]
+            },
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": false,
+                "size": "small"
+              },
+              "children": [
+                "Unset"
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Row",
+          "children": [
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": true,
+                "size": "medium"
+              },
+              "children": [
+                "Set"
+              ]
+            },
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": false,
+                "size": "medium"
+              },
+              "children": [
+                "Unset"
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Row",
+          "children": [
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": true,
+                "size": "large"
+              },
+              "children": [
+                "Set"
+              ]
+            },
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": false,
+                "size": "large"
+              },
+              "children": [
+                "Unset"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Tints": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "gap": "spacing.2"
+      },
+      "children": [
+        {
+          "component": "Row",
+          "children": [
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": true,
+                "tint": "primary"
+              },
+              "children": [
+                "primary"
+              ]
+            },
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": true,
+                "tint": "neutral"
+              },
+              "children": [
+                "neutral"
+              ]
+            },
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": true,
+                "tint": "info"
+              },
+              "children": [
+                "info"
+              ]
+            },
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": true,
+                "tint": "success"
+              },
+              "children": [
+                "success"
+              ]
+            },
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": true,
+                "tint": "warning"
+              },
+              "children": [
+                "warning"
+              ]
+            },
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": true,
+                "tint": "danger"
+              },
+              "children": [
+                "danger"
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Row",
+          "children": [
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": false,
+                "tint": "primary"
+              },
+              "children": [
+                "primary"
+              ]
+            },
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": false,
+                "tint": "neutral"
+              },
+              "children": [
+                "neutral"
+              ]
+            },
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": false,
+                "tint": "info"
+              },
+              "children": [
+                "info"
+              ]
+            },
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": false,
+                "tint": "success"
+              },
+              "children": [
+                "success"
+              ]
+            },
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": false,
+                "tint": "warning"
+              },
+              "children": [
+                "warning"
+              ]
+            },
+            {
+              "component": "Checkbox",
+              "props": {
+                "checked": false,
+                "tint": "danger"
+              },
+              "children": [
+                "danger"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

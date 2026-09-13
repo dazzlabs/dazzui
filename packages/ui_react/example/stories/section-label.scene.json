@@ -1,0 +1,341 @@
+{
+  "Default": {
+    "content": {
+      "component": "SectionLabel",
+      "children": [
+        "Quality signals"
+      ]
+    }
+  },
+  "Faint": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "SectionLabel",
+          "children": [
+            "Quality signals"
+          ]
+        },
+        {
+          "component": "SectionLabel",
+          "props": {
+            "faint": true
+          },
+          "children": [
+            "Quality signals"
+          ]
+        }
+      ]
+    }
+  },
+  "Tints": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "SectionLabel",
+          "props": {
+            "tint": "primary"
+          },
+          "children": [
+            "primary"
+          ]
+        },
+        {
+          "component": "SectionLabel",
+          "props": {
+            "tint": "neutral"
+          },
+          "children": [
+            "neutral"
+          ]
+        },
+        {
+          "component": "SectionLabel",
+          "props": {
+            "tint": "info"
+          },
+          "children": [
+            "info"
+          ]
+        },
+        {
+          "component": "SectionLabel",
+          "props": {
+            "tint": "success"
+          },
+          "children": [
+            "success"
+          ]
+        },
+        {
+          "component": "SectionLabel",
+          "props": {
+            "tint": "warning"
+          },
+          "children": [
+            "warning"
+          ]
+        },
+        {
+          "component": "SectionLabel",
+          "props": {
+            "tint": "danger"
+          },
+          "children": [
+            "danger"
+          ]
+        }
+      ]
+    }
+  },
+  "Overview": {
+    "content": {
+      "component": "Page",
+      "props": {
+        "title": "SectionLabel",
+        "description": "The micro-heading that organises a pane. Sentence case, no uppercasing and no added tracking — one size covers sidebars, rails, and pane headings, so tone is the only axis worth varying. `SidebarGroupLabel` and `PreferenceSection` both render one for you; this is what those are made of."
+      },
+      "children": [
+        {
+          "component": "Section",
+          "props": {
+            "title": "Tints",
+            "description": "Untinted it takes the muted content colour, which is what a heading almost always wants. A tint moves it onto a ramp, for a heading that has to carry a state with it — a section reporting a failure, a group flagged for review."
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "default"
+                  },
+                  "children": [
+                    {
+                      "component": "SectionLabel",
+                      "children": [
+                        "Quality signals"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "tinted"
+                  },
+                  "children": [
+                    {
+                      "component": "SectionLabel",
+                      "props": {
+                        "tint": "primary"
+                      },
+                      "children": [
+                        "primary"
+                      ]
+                    },
+                    {
+                      "component": "SectionLabel",
+                      "props": {
+                        "tint": "neutral"
+                      },
+                      "children": [
+                        "neutral"
+                      ]
+                    },
+                    {
+                      "component": "SectionLabel",
+                      "props": {
+                        "tint": "info"
+                      },
+                      "children": [
+                        "info"
+                      ]
+                    },
+                    {
+                      "component": "SectionLabel",
+                      "props": {
+                        "tint": "success"
+                      },
+                      "children": [
+                        "success"
+                      ]
+                    },
+                    {
+                      "component": "SectionLabel",
+                      "props": {
+                        "tint": "warning"
+                      },
+                      "children": [
+                        "warning"
+                      ]
+                    },
+                    {
+                      "component": "SectionLabel",
+                      "props": {
+                        "tint": "danger"
+                      },
+                      "children": [
+                        "danger"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Over a panel",
+            "description": "It names what the numbers below it are. The card already sets the gap, so the label needs no margin — which is the reason it is a span rather than a heading element with a browser margin to undo."
+          },
+          "children": [
+            {
+              "component": "Row",
+              "children": [
+                {
+                  "component": "Box",
+                  "props": {
+                    "width": 208
+                  },
+                  "children": [
+                    {
+                      "component": "Card",
+                      "children": [
+                        {
+                          "component": "SectionLabel",
+                          "children": [
+                            "Segments"
+                          ]
+                        },
+                        {
+                          "component": "Inline",
+                          "props": {
+                            "fontSize": "title.large"
+                          },
+                          "children": [
+                            "392"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Box",
+                  "props": {
+                    "width": 208
+                  },
+                  "children": [
+                    {
+                      "component": "Card",
+                      "props": {
+                        "tint": "warning",
+                        "variant": "tinted"
+                      },
+                      "children": [
+                        {
+                          "component": "SectionLabel",
+                          "props": {
+                            "tint": "warning"
+                          },
+                          "children": [
+                            "Low scores"
+                          ]
+                        },
+                        {
+                          "component": "Inline",
+                          "props": {
+                            "fontSize": "title.large"
+                          },
+                          "children": [
+                            "24"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "InAPanel": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Box",
+          "props": {
+            "width": 208
+          },
+          "children": [
+            {
+              "component": "Card",
+              "children": [
+                {
+                  "component": "SectionLabel",
+                  "children": [
+                    "Segments"
+                  ]
+                },
+                {
+                  "component": "Inline",
+                  "props": {
+                    "fontSize": "title.large"
+                  },
+                  "children": [
+                    "392"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Box",
+          "props": {
+            "width": 208
+          },
+          "children": [
+            {
+              "component": "Card",
+              "props": {
+                "tint": "warning",
+                "variant": "tinted"
+              },
+              "children": [
+                {
+                  "component": "SectionLabel",
+                  "props": {
+                    "tint": "warning"
+                  },
+                  "children": [
+                    "Low scores"
+                  ]
+                },
+                {
+                  "component": "Inline",
+                  "props": {
+                    "fontSize": "title.large"
+                  },
+                  "children": [
+                    "24"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -9,9 +9,9 @@ public sealed class PlaygroundShell : Grid
 {
     public sealed record Entry(StoryPage Page, Story Story)
     {
-        public string Id => System.Text.RegularExpressions.Regex.Replace($"{Page.Group}-{Page.Name}", "[^a-zA-Z0-9]+", "-").ToLowerInvariant() + "--" + System.Text.RegularExpressions.Regex.Replace(Story.Name, "[^a-zA-Z0-9]+", "-").ToLowerInvariant().Trim('-');
+        public string Id => Story.SourceId ?? System.Text.RegularExpressions.Regex.Replace($"{Page.Group}-{Page.Name}", "[^a-zA-Z0-9]+", "-").ToLowerInvariant() + "--" + System.Text.RegularExpressions.Regex.Replace(Story.Name, "[^a-zA-Z0-9]+", "-").ToLowerInvariant().Trim('-');
     }
-    public static IReadOnlyList<Entry> Entries { get; } = Registry.Pages.SelectMany(page => page.Stories.Select(story => new Entry(page, story))).ToArray();
+    public static IReadOnlyList<Entry> Entries { get; } = GeneratedStories.Apply(Registry.Pages).SelectMany(page => page.Stories.Select(story => new Entry(page, story))).ToArray();
     private readonly UI.SegmentedControl family = new() { Size = UI.ControlSize.Small };
     private readonly UI.SegmentedControl brightness = new() { Size = UI.ControlSize.Small };
     private readonly UI.SearchField search = new() { PlaceholderText = "Find a widget", Size = UI.ControlSize.Small };
@@ -125,7 +125,7 @@ public sealed class PlaygroundShell : Grid
     {
         var entry = CurrentEntry;
         breadcrumb.Text = $"{entry.Page.Group}  /  {entry.Page.Name}  /  {entry.Story.Name}";
-        CurrentSpecimen = entry.Story.Build(theme);
+        CurrentSpecimen = GeneratedStories.Build(entry.Page.Group, entry.Page.Name, entry.Story.Name, theme) ?? entry.Story.Build(theme);
         var presenter = new ContentControl { Content = CurrentSpecimen, HorizontalContentAlignment = entry.Story.Layout == StoryLayout.Centered ? HorizontalAlignment.Center : HorizontalAlignment.Stretch, VerticalContentAlignment = entry.Story.Layout == StoryLayout.Centered ? VerticalAlignment.Center : VerticalAlignment.Top, Padding = new Thickness(theme.Number("spacing.8")) };
         canvas.Child = entry.Story.Layout == StoryLayout.Fullscreen ? presenter : new ScrollViewer { Content = presenter, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
     }

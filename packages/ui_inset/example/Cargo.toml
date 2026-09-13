@@ -5,14 +5,20 @@ edition = "2024"
 publish = false
 
 [dependencies]
+inset-rendering = { path = "../../../../inset/crates/inset-rendering" }
 dazzui_inset = { path = ".." }
 inset = { path = "../../../../inset/crates/inset", default-features = false }
 inset-cupertino = { path = "../../../../inset/crates/inset-cupertino" }
 
+inset-painting = { path = "../../../../inset/crates/inset-painting" }
+
+serde_json = "1"
+
 [dev-dependencies]
+inset-services = { path = "../../../../inset/crates/inset-services" }
+inset-gestures = { path = "../../../../inset/crates/inset-gestures" }
 inset-embedder = { path = "../../../../inset/crates/inset-embedder" }
 inset-foundation = { path = "../../../../inset/crates/inset-foundation" }
 inset-scheduler = { path = "../../../../inset/crates/inset-scheduler" }
 inset-widgets = { path = "../../../../inset/crates/inset-widgets" }
-inset-painting = { path = "../../../../inset/crates/inset-painting" }
 valo-system-fonts = "0.4.4"

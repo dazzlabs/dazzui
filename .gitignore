@@ -29,7 +29,7 @@ storybook.log
 # Parity: the React reference the extractor writes, the copies it distributes
 # into the platform playgrounds, what their tests measure, and the lists the
 # tests record. All of it is regenerated — `pnpm parity`, then the suites.
-/apps/storybook/parity/
+/packages/ui_react/example/parity/
 **/parity/stories.json
 **/parity/reference/
 **/parity/measured.json
@@ -49,3 +49,10 @@ storybook.log
 .build
 .swiftpm
 xcuserdata/
+
+# Local browser test artifacts
+**/playwright-report/
+**/test-results/
+
+# Golden screenshot baselines are local to each machine
+packages/ui_react/example/tests/goldens/

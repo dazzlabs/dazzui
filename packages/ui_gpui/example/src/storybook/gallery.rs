@@ -333,6 +333,97 @@ impl RenderOnce for Tiles {
     }
 }
 
+/// Responsive auto-fill grid. Its column count follows its own allocated width,
+/// including when nested in a card or a fixed-width specimen. A changed width
+/// schedules one layout pass; unchanged dimensions never schedule another.
+pub fn responsive_tiles(
+    min: Pixels,
+    children: Vec<AnyElement>,
+    columns: std::rc::Rc<std::cell::Cell<u16>>,
+    gap: Pixels,
+) -> gpui::Div {
+    div()
+        .w_full()
+        .child(
+            div()
+                .grid()
+                .w_full()
+                .min_w(min)
+                .grid_cols(columns.get())
+                .gap(gap)
+                .children(children),
+        )
+        .on_children_prepainted(move |bounds, window, _| {
+            let width = bounds[0].size.width;
+            let count = ((f32::from(width) + f32::from(gap)) / (f32::from(min) + f32::from(gap)))
+                .floor()
+                .clamp(1., u16::MAX as f32) as u16;
+            if columns.replace(count) != count {
+                window.request_animation_frame();
+            }
+        })
+}
+
+#[cfg(test)]
+mod grid_tests {
+    use super::*;
+    use gpui::{Context, Render, TestAppContext};
+    struct GridHost {
+        width: Pixels,
+        columns: std::rc::Rc<std::cell::Cell<u16>>,
+    }
+    impl Render for GridHost {
+        fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+            dazzui::themed(
+                dazzui::ThemeName::StudioLight,
+                div().w(self.width).child(responsive_tiles(
+                    px(200.),
+                    (0..4)
+                        .map(|i| {
+                            div()
+                                .h(px(if i == 1 { 40. } else { 20. }))
+                                .debug_selector(move || format!("tile-{i}").into())
+                                .into_any_element()
+                        })
+                        .collect(),
+                    self.columns.clone(),
+                    px(16.),
+                )),
+            )
+        }
+    }
+    #[gpui::test]
+    fn columns_follow_container_width_and_resize(cx: &mut TestAppContext) {
+        let (view, cx) = cx.add_window_view(|_, _| GridHost {
+            width: px(640.),
+            columns: std::rc::Rc::new(std::cell::Cell::new(1)),
+        });
+        cx.run_until_parked();
+        view.update(cx, |_, cx| cx.notify());
+        cx.run_until_parked();
+        let first = cx.debug_bounds("tile-0").unwrap();
+        let third = cx.debug_bounds("tile-2").unwrap();
+        let fourth = cx.debug_bounds("tile-3").unwrap();
+        assert_eq!(first.origin.y, third.origin.y);
+        assert!(fourth.origin.y > first.origin.y);
+        assert!(
+            (f32::from(first.size.width) - (640. - 32.) / 3.).abs() < 1.,
+            "{first:?}"
+        );
+        view.update(cx, |view, cx| {
+            view.width = px(600.);
+            cx.notify();
+        });
+        cx.run_until_parked();
+        view.update(cx, |_, cx| cx.notify());
+        cx.run_until_parked();
+        let first = cx.debug_bounds("tile-0").unwrap();
+        let third = cx.debug_bounds("tile-2").unwrap();
+        assert!(third.origin.y > first.origin.y);
+        assert!((f32::from(first.size.width) - 292.).abs() < 1.);
+    }
+}
+
 /// The tokens a component owns, and what they resolve to in this theme.
 ///
 /// It appears only where the component genuinely owns tokens — the files in

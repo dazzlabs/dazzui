@@ -2,6 +2,8 @@
 use dazzui_inset as ui;
 use inset::*;
 use std::{collections::BTreeSet, rc::Rc};
+pub mod generated_stories;
+pub mod scene_state;
 pub mod stories;
 pub mod storybook;
 #[derive(Debug)]
@@ -32,6 +34,18 @@ impl Demo {
             toast: ui::ToastManager::new(app),
         }
     }
+}
+/// Legacy overviews remain available only until their shared scene takes over.
+pub fn legacy_pages() -> Vec<&'static storybook::StoryPage> {
+    stories::PAGES
+        .iter()
+        .filter(|page| {
+            let id = storybook::story_id(page.name, "Overview");
+            !generated_stories::STORIES
+                .iter()
+                .any(|(generated, _)| *generated == id)
+        })
+        .collect()
 }
 #[derive(Debug)]
 pub struct GalleryState {
@@ -72,13 +86,14 @@ impl StatelessWidget for Gallery {
                 item
             })
             .collect();
+        let legacy = legacy_pages();
         let mut nav = vec![
             Text::new("DazzUI / Inset")
                 .style(v.title_medium.text_style())
                 .into_widget(),
             ui::Menu::new(ui::THEMES[theme].0, theme_items).into_widget(),
         ];
-        nav.extend(stories::PAGES.iter().enumerate().map(|(i, p)| {
+        nav.extend(legacy.iter().enumerate().map(|(i, p)| {
             let state = self.state.clone();
             ui::NavItem::new(p.name)
                 .selected(i == page)
@@ -90,18 +105,43 @@ impl StatelessWidget for Gallery {
                 })
                 .into_widget()
         }));
-        let entry = &stories::PAGES[page];
-        let render = entry.render;
-        let demo = self.demo.clone();
-        let specimen = Builder::new(move |app, context| {
-            let v = ui::Theme::of(app, context);
-            let widget = render(app, &demo);
-            Container::new()
-                .width(v.spacing_20 * 5.0)
-                .child(widget)
+        nav.extend(
+            generated_stories::STORIES
+                .iter()
+                .enumerate()
+                .map(|(i, (_, title))| {
+                    let state = self.state.clone();
+                    let index = legacy.len() + i;
+                    ui::NavItem::new(*title)
+                        .selected(index == page)
+                        .on_pressed(move |app| {
+                            app.update(&state, |s, cx| {
+                                s.page = index;
+                                cx.notify();
+                            })
+                        })
+                        .into_widget()
+                }),
+        );
+        let content = if page >= legacy.len() {
+            let (id, _) = generated_stories::STORIES[page - legacy.len()];
+            Center::new()
+                .child(generated_stories::build(id).expect("registered generated story"))
                 .into_widget()
-        });
-        let content = storybook::gallery::Overview::new(entry.name, entry.description, specimen);
+        } else {
+            let entry = legacy[page];
+            let render = entry.render;
+            let demo = self.demo.clone();
+            let specimen = Builder::new(move |app, context| {
+                let v = ui::Theme::of(app, context);
+                let widget = render(app, &demo);
+                Container::new()
+                    .width(v.spacing_20 * 5.0)
+                    .child(widget)
+                    .into_widget()
+            });
+            storybook::gallery::Overview::new(entry.name, entry.description, specimen).into_widget()
+        };
         let main = Row::new()
             .cross_axis_alignment(CrossAxisAlignment::Stretch)
             .children([

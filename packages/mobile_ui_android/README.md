@@ -86,6 +86,41 @@ the ignored `local.properties`. Open this directory in Android Studio, or:
 ./gradlew :example:installDebug
 ```
 
-The example is an Android app with a family menu, system/manual appearance,
-and interactive stock Material controls. Launch **DazzUI Mobile** after
-installing on a device or emulator. Gradle is independent of pnpm.
+The example has a searchable shared story catalog, a family menu, and
+system/manual appearance. Launch **DazzUI Mobile** after installing on a
+device or emulator. Gradle is independent of pnpm.
+
+## Shared scenes
+
+`example/src/main/assets/scenes.json` and `GeneratedExpression.kt` are generated
+from `packages/ui_react/example/stories/` by `pnpm playgrounds:generate` at the
+repository root. Never edit these outputs. All 143 currently declared scenes are
+available; another 345 React stories still need declaration migration.
+
+`Scene.kt` maps the data to stock Material 3 controls and Compose layouts.
+`SceneState.kt` handles scalar bindings, typed expressions, button assignments
+and chronological timers. There are no story-specific Kotlin renderers. Selecting
+a story constructs fresh state; leaving the composition cancels its frame clock.
+The `story` intent extra opens an isolated stable story ID for automation.
+
+Mobile uses Material typography, shapes, colors, states and touch targets. Desktop
+control metrics and recipes do not override those defaults. Grids adapt to the
+mobile viewport, cards/callouts use Material Card, steps use native selection
+indicators, and Dialog uses AlertDialog. This is shared semantic content and
+interaction coverage, not desktop pixel parity.
+
+Run on a connected emulator or device:
+
+```sh
+./gradlew :example:connectedDebugAndroidTest
+```
+
+The native suite reads the generated checkpoints, drives actual Compose controls,
+and checks text, disabled state and all expected state values. All-theme rendering
+also compares every declared text/input value against the native semantics tree. Timer checkpoints
+advance the same scene clock deterministically. Separate coverage exercises real
+frame updates, cancellation on removal, native divider height, spinner contrast,
+and catalog search/open/revisit reset behavior.
+Espresso is pinned to 3.7 because Compose's older transitive version uses an input
+reflection API removed by Android 16. Both app and test configurations share the
+root Compose BOM version.

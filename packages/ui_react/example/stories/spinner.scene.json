@@ -1,0 +1,201 @@
+{
+  "Default": {
+    "content": {
+      "component": "Spinner"
+    }
+  },
+  "Sizes": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Spinner",
+          "props": {
+            "size": "small"
+          }
+        },
+        {
+          "component": "Spinner",
+          "props": {
+            "size": "medium"
+          }
+        },
+        {
+          "component": "Spinner",
+          "props": {
+            "size": "large"
+          }
+        }
+      ]
+    }
+  },
+  "Tints": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Spinner",
+          "props": {
+            "tint": "primary"
+          }
+        },
+        {
+          "component": "Spinner",
+          "props": {
+            "tint": "neutral"
+          }
+        },
+        {
+          "component": "Spinner",
+          "props": {
+            "tint": "info"
+          }
+        },
+        {
+          "component": "Spinner",
+          "props": {
+            "tint": "success"
+          }
+        },
+        {
+          "component": "Spinner",
+          "props": {
+            "tint": "warning"
+          }
+        },
+        {
+          "component": "Spinner",
+          "props": {
+            "tint": "danger"
+          }
+        }
+      ]
+    }
+  },
+  "InAButton": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Button",
+          "props": {
+            "disabled": true,
+            "variant": "filled"
+          },
+          "children": [
+            {
+              "component": "Spinner",
+              "props": {
+                "size": "small",
+                "tint": "primary"
+              }
+            },
+            "Translating…"
+          ]
+        },
+        {
+          "component": "Button",
+          "props": {
+            "disabled": true
+          },
+          "children": [
+            {
+              "component": "Spinner",
+              "props": {
+                "size": "small",
+                "tint": "neutral"
+              }
+            },
+            "Checking the key…"
+          ]
+        }
+      ]
+    }
+  },
+  "InProse": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "display": "inline-flex",
+        "align": "center",
+        "gap": "spacing.2",
+        "tone": "muted"
+      },
+      "children": [
+        {
+          "component": "Spinner",
+          "props": {
+            "size": "small",
+            "tint": "neutral"
+          }
+        },
+        "Testing the connection — 1.4s elapsed"
+      ]
+    }
+  },
+  "OnAnAccent": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Card",
+          "props": {
+            "size": "small",
+            "tint": "primary",
+            "variant": "tinted"
+          },
+          "children": [
+            {
+              "component": "Spinner"
+            }
+          ]
+        },
+        {
+          "component": "Button",
+          "props": {
+            "variant": "filled"
+          },
+          "children": [
+            {
+              "component": "Spinner",
+              "props": {
+                "onAccent": true,
+                "size": "small"
+              }
+            },
+            "Publishing"
+          ]
+        }
+      ]
+    }
+  },
+  "InACallout": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 512
+      },
+      "children": [
+        {
+          "component": "Callout",
+          "props": {
+            "tint": "primary",
+            "title": "Translation memory is syncing"
+          },
+          "children": [
+            "Segments you edit now are queued and upload when it finishes."
+          ],
+          "slots": {
+            "icon": {
+              "component": "Spinner",
+              "props": {
+                "size": "small",
+                "tint": "primary"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

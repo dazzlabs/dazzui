@@ -1,5 +1,6 @@
 use gpui::{
-    App, IntoElement, ParentElement, RenderOnce, SharedString, Styled, Window, div, relative,
+    AnyElement, App, IntoElement, ParentElement, RenderOnce, SharedString, Styled, Window, div,
+    relative,
 };
 
 use crate::prelude::*;
@@ -60,6 +61,7 @@ impl BadgeSize {
 #[derive(IntoElement)]
 pub struct Badge {
     label: SharedString,
+    content: Option<Vec<AnyElement>>,
     size: BadgeSize,
     variant: BadgeVariant,
     /// Which colour ramp the variant resolves against.
@@ -70,10 +72,17 @@ impl Badge {
     pub fn new(label: impl Into<SharedString>) -> Self {
         Badge {
             label: label.into(),
+            content: None,
             size: BadgeSize::Medium,
             variant: BadgeVariant::Tinted,
             tint: Tint::Primary,
         }
+    }
+
+    /// Custom label children retain the badge's own typography and recipe.
+    pub fn content(mut self, children: Vec<AnyElement>) -> Self {
+        self.content = Some(children);
+        self
     }
 
     pub fn size(mut self, size: BadgeSize) -> Self {
@@ -152,6 +161,9 @@ impl RenderOnce for Badge {
                     .weight(vars.label_medium.weight),
             )
             .line_height(relative(1.4))
-            .child(self.label)
+            .map(|el| match self.content {
+                Some(children) => el.children(children),
+                None => el.child(self.label),
+            })
     }
 }

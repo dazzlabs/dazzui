@@ -6,7 +6,11 @@ import 'package:dazzui_example/storybook/story.dart';
 import 'package:dazzui_example/storybook/story_index.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'layout_font.dart';
+
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(loadLayoutFont);
   testWidgets('the window opens on the first story', (tester) async {
     tester.view.physicalSize = const Size(2160, 1440);
     tester.view.devicePixelRatio = 2.0;
@@ -34,9 +38,14 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     expect(tester.takeException(), isNull);
 
+    await tester.ensureVisible(find.text('Sizes').first);
     await tester.tap(find.text('Sizes').first);
     await tester.pump(const Duration(milliseconds: 300));
     expect(tester.takeException(), isNull);
+    expect(
+      tester.widget<StoryStage>(find.byType(StoryStage)).selection.story,
+      'Sizes',
+    );
   });
 
   // Every story, in every theme. The stage is pumped directly rather than
@@ -83,7 +92,7 @@ class _Harness extends StatelessWidget {
     return Host(
       title: 'DazzUI stories',
       home: Theme(
-        data: theme.data,
+        data: layoutTheme(theme.data),
         child: ColoredBox(
           color: theme.data.vars.colorSurface,
           child: StoryStage(selection: ref),

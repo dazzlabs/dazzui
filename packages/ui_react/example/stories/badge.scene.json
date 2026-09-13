@@ -1,0 +1,1191 @@
+{
+  "Overview": {
+    "content": {
+      "component": "Page",
+      "props": {
+        "title": "Badge",
+        "description": "A short label that names a state or a count. It is not interactive, so it wears only the resting state of a control recipe and deliberately skips the shared state machine — a label that changed colour under the pointer would read as something you can press. Pick the recipe with `variant`, pick the ramp it resolves against with `tint`."
+      },
+      "children": [
+        {
+          "component": "Section",
+          "props": {
+            "title": "Variant and tint",
+            "description": "Every combination the two axes allow — three of the six recipes, the ones that read as a label rather than as a control — plus the one variant the badge owns. `raised` is paper fill and quiet ink, no ramp: the chip that sits on a grey card, where a `tinted` neutral would sink into the card and a `filled` one would shout. There is no `normal` or `plain` badge, because both would be text with padding around it."
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "filled"
+                  },
+                  "children": [
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "primary",
+                        "variant": "filled"
+                      },
+                      "children": [
+                        "Primary"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "neutral",
+                        "variant": "filled"
+                      },
+                      "children": [
+                        "Neutral"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "info",
+                        "variant": "filled"
+                      },
+                      "children": [
+                        "Info"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "success",
+                        "variant": "filled"
+                      },
+                      "children": [
+                        "Success"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "warning",
+                        "variant": "filled"
+                      },
+                      "children": [
+                        "Warning"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "danger",
+                        "variant": "filled"
+                      },
+                      "children": [
+                        "Danger"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "tinted"
+                  },
+                  "children": [
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "primary",
+                        "variant": "tinted"
+                      },
+                      "children": [
+                        "Primary"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "neutral",
+                        "variant": "tinted"
+                      },
+                      "children": [
+                        "Neutral"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "info",
+                        "variant": "tinted"
+                      },
+                      "children": [
+                        "Info"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "success",
+                        "variant": "tinted"
+                      },
+                      "children": [
+                        "Success"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "warning",
+                        "variant": "tinted"
+                      },
+                      "children": [
+                        "Warning"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "danger",
+                        "variant": "tinted"
+                      },
+                      "children": [
+                        "Danger"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "outlined"
+                  },
+                  "children": [
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "primary",
+                        "variant": "outlined"
+                      },
+                      "children": [
+                        "Primary"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "neutral",
+                        "variant": "outlined"
+                      },
+                      "children": [
+                        "Neutral"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "info",
+                        "variant": "outlined"
+                      },
+                      "children": [
+                        "Info"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "success",
+                        "variant": "outlined"
+                      },
+                      "children": [
+                        "Success"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "warning",
+                        "variant": "outlined"
+                      },
+                      "children": [
+                        "Warning"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "danger",
+                        "variant": "outlined"
+                      },
+                      "children": [
+                        "Danger"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "raised"
+                  },
+                  "children": [
+                    {
+                      "component": "Box",
+                      "props": {
+                        "display": "inline-flex",
+                        "gap": "spacing.2",
+                        "padding": "spacing.3",
+                        "surface": "color.surface.muted",
+                        "radius": "radius.large"
+                      },
+                      "children": [
+                        {
+                          "component": "Badge",
+                          "props": {
+                            "variant": "raised"
+                          },
+                          "children": [
+                            "Draft"
+                          ]
+                        },
+                        {
+                          "component": "Badge",
+                          "props": {
+                            "variant": "raised"
+                          },
+                          "children": [
+                            "3 items"
+                          ]
+                        },
+                        {
+                          "component": "Badge",
+                          "props": {
+                            "variant": "raised"
+                          },
+                          "children": [
+                            "Synced"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Sizes",
+            "description": "Each size borrows the padding of the control size one step below it, and sets its label in the caption face, so a badge reads as a label rather than as a control that stopped working."
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "small"
+                  },
+                  "children": [
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "size": "small"
+                      },
+                      "children": [
+                        "Beta"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "size": "small",
+                        "tint": "success",
+                        "variant": "filled"
+                      },
+                      "children": [
+                        "Live"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "size": "small",
+                        "tint": "neutral",
+                        "variant": "outlined"
+                      },
+                      "children": [
+                        "Draft"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "medium"
+                  },
+                  "children": [
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "size": "medium"
+                      },
+                      "children": [
+                        "Beta"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "size": "medium",
+                        "tint": "success",
+                        "variant": "filled"
+                      },
+                      "children": [
+                        "Live"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "size": "medium",
+                        "tint": "neutral",
+                        "variant": "outlined"
+                      },
+                      "children": [
+                        "Draft"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "large"
+                  },
+                  "children": [
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "size": "large"
+                      },
+                      "children": [
+                        "Beta"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "size": "large",
+                        "tint": "success",
+                        "variant": "filled"
+                      },
+                      "children": [
+                        "Live"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "size": "large",
+                        "tint": "neutral",
+                        "variant": "outlined"
+                      },
+                      "children": [
+                        "Draft"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Where it lands",
+            "description": "The trailing cell of a table, the trailing slot of a preference row, the count on a navigation row. In all three it annotates something the row already names, which is why it stays small and never carries the only copy that matters. A leading dot needs no prop: the badge is an inline flex row and the glyph inherits its content colour."
+          },
+          "children": [
+            {
+              "component": "Stack",
+              "children": [
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "glyph"
+                  },
+                  "children": [
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "success"
+                      },
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {
+                            "name": "Circle20Filled",
+                            "size": 8
+                          }
+                        },
+                        " Connected"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "warning"
+                      },
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {
+                            "name": "Circle20Filled",
+                            "size": 8
+                          }
+                        },
+                        " Degraded"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "danger"
+                      },
+                      "children": [
+                        {
+                          "component": "Icon",
+                          "props": {
+                            "name": "Circle20Filled",
+                            "size": 8
+                          }
+                        },
+                        " Offline"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "component": "Specimen",
+                  "props": {
+                    "label": "counts"
+                  },
+                  "children": [
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "neutral"
+                      },
+                      "children": [
+                        "412 terms"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "primary"
+                      },
+                      "children": [
+                        "168 / 392"
+                      ]
+                    },
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "tint": "neutral",
+                        "variant": "outlined"
+                      },
+                      "children": [
+                        "v2.4.1"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Tinted": {
+    "content": {
+      "component": "Badge",
+      "children": [
+        "Beta"
+      ]
+    }
+  },
+  "Filled": {
+    "content": {
+      "component": "Badge",
+      "props": {
+        "tint": "success",
+        "variant": "filled"
+      },
+      "children": [
+        "Live"
+      ]
+    }
+  },
+  "Outlined": {
+    "content": {
+      "component": "Badge",
+      "props": {
+        "tint": "neutral",
+        "variant": "outlined"
+      },
+      "children": [
+        "Draft"
+      ]
+    }
+  },
+  "Raised": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "display": "inline-flex",
+        "gap": "spacing.2",
+        "padding": "spacing.3",
+        "surface": "color.surface.muted",
+        "radius": "radius.large"
+      },
+      "children": [
+        {
+          "component": "Badge",
+          "props": {
+            "variant": "raised"
+          },
+          "children": [
+            "Draft"
+          ]
+        },
+        {
+          "component": "Badge",
+          "props": {
+            "variant": "raised"
+          },
+          "children": [
+            "3 items"
+          ]
+        }
+      ]
+    }
+  },
+  "AllVariants": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Badge",
+          "props": {
+            "variant": "filled"
+          },
+          "children": [
+            "Filled"
+          ]
+        },
+        {
+          "component": "Badge",
+          "props": {
+            "variant": "tinted"
+          },
+          "children": [
+            "Tinted"
+          ]
+        },
+        {
+          "component": "Badge",
+          "props": {
+            "variant": "outlined"
+          },
+          "children": [
+            "Outlined"
+          ]
+        },
+        {
+          "component": "Box",
+          "props": {
+            "display": "inline-flex",
+            "gap": "spacing.2",
+            "padding": "spacing.3",
+            "surface": "color.surface.muted",
+            "radius": "radius.large"
+          },
+          "children": [
+            {
+              "component": "Badge",
+              "props": {
+                "variant": "raised"
+              },
+              "children": [
+                "Raised"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "States": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Badge",
+          "props": {
+            "tint": "success"
+          },
+          "children": [
+            "Connected"
+          ]
+        },
+        {
+          "component": "Badge",
+          "props": {
+            "tint": "warning"
+          },
+          "children": [
+            "Rate limited"
+          ]
+        },
+        {
+          "component": "Badge",
+          "props": {
+            "tint": "danger",
+            "variant": "filled"
+          },
+          "children": [
+            "Failed"
+          ]
+        },
+        {
+          "component": "Badge",
+          "props": {
+            "tint": "neutral",
+            "variant": "outlined"
+          },
+          "children": [
+            "Draft"
+          ]
+        }
+      ]
+    }
+  },
+  "Tints": {
+    "content": {
+      "component": "Col",
+      "children": [
+        {
+          "component": "Row",
+          "children": [
+            {
+              "component": "Badge",
+              "props": {
+                "tint": "primary",
+                "variant": "filled"
+              },
+              "children": [
+                "Primary"
+              ]
+            },
+            {
+              "component": "Badge",
+              "props": {
+                "tint": "neutral",
+                "variant": "filled"
+              },
+              "children": [
+                "Neutral"
+              ]
+            },
+            {
+              "component": "Badge",
+              "props": {
+                "tint": "info",
+                "variant": "filled"
+              },
+              "children": [
+                "Info"
+              ]
+            },
+            {
+              "component": "Badge",
+              "props": {
+                "tint": "success",
+                "variant": "filled"
+              },
+              "children": [
+                "Success"
+              ]
+            },
+            {
+              "component": "Badge",
+              "props": {
+                "tint": "warning",
+                "variant": "filled"
+              },
+              "children": [
+                "Warning"
+              ]
+            },
+            {
+              "component": "Badge",
+              "props": {
+                "tint": "danger",
+                "variant": "filled"
+              },
+              "children": [
+                "Danger"
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Row",
+          "children": [
+            {
+              "component": "Badge",
+              "props": {
+                "tint": "primary",
+                "variant": "tinted"
+              },
+              "children": [
+                "Primary"
+              ]
+            },
+            {
+              "component": "Badge",
+              "props": {
+                "tint": "neutral",
+                "variant": "tinted"
+              },
+              "children": [
+                "Neutral"
+              ]
+            },
+            {
+              "component": "Badge",
+              "props": {
+                "tint": "info",
+                "variant": "tinted"
+              },
+              "children": [
+                "Info"
+              ]
+            },
+            {
+              "component": "Badge",
+              "props": {
+                "tint": "success",
+                "variant": "tinted"
+              },
+              "children": [
+                "Success"
+              ]
+            },
+            {
+              "component": "Badge",
+              "props": {
+                "tint": "warning",
+                "variant": "tinted"
+              },
+              "children": [
+                "Warning"
+              ]
+            },
+            {
+              "component": "Badge",
+              "props": {
+                "tint": "danger",
+                "variant": "tinted"
+              },
+              "children": [
+                "Danger"
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Row",
+          "children": [
+            {
+              "component": "Badge",
+              "props": {
+                "tint": "primary",
+                "variant": "outlined"
+              },
+              "children": [
+                "Primary"
+              ]
+            },
+            {
+              "component": "Badge",
+              "props": {
+                "tint": "neutral",
+                "variant": "outlined"
+              },
+              "children": [
+                "Neutral"
+              ]
+            },
+            {
+              "component": "Badge",
+              "props": {
+                "tint": "info",
+                "variant": "outlined"
+              },
+              "children": [
+                "Info"
+              ]
+            },
+            {
+              "component": "Badge",
+              "props": {
+                "tint": "success",
+                "variant": "outlined"
+              },
+              "children": [
+                "Success"
+              ]
+            },
+            {
+              "component": "Badge",
+              "props": {
+                "tint": "warning",
+                "variant": "outlined"
+              },
+              "children": [
+                "Warning"
+              ]
+            },
+            {
+              "component": "Badge",
+              "props": {
+                "tint": "danger",
+                "variant": "outlined"
+              },
+              "children": [
+                "Danger"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Sizes": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Badge",
+          "props": {
+            "size": "small",
+            "tint": "success",
+            "variant": "filled"
+          },
+          "children": [
+            "Live"
+          ]
+        },
+        {
+          "component": "Badge",
+          "props": {
+            "size": "medium",
+            "tint": "success",
+            "variant": "filled"
+          },
+          "children": [
+            "Live"
+          ]
+        },
+        {
+          "component": "Badge",
+          "props": {
+            "size": "large",
+            "tint": "success",
+            "variant": "filled"
+          },
+          "children": [
+            "Live"
+          ]
+        }
+      ]
+    }
+  },
+  "WithAGlyph": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Badge",
+          "props": {
+            "tint": "success"
+          },
+          "children": [
+            {
+              "component": "Icon",
+              "props": {
+                "name": "Circle20Filled",
+                "size": 8
+              }
+            },
+            " Connected"
+          ]
+        },
+        {
+          "component": "Badge",
+          "props": {
+            "tint": "warning"
+          },
+          "children": [
+            {
+              "component": "Icon",
+              "props": {
+                "name": "Circle20Filled",
+                "size": 8
+              }
+            },
+            " Degraded"
+          ]
+        },
+        {
+          "component": "Badge",
+          "props": {
+            "tint": "danger"
+          },
+          "children": [
+            {
+              "component": "Icon",
+              "props": {
+                "name": "Circle20Filled",
+                "size": 8
+              }
+            },
+            " Offline"
+          ]
+        }
+      ]
+    }
+  },
+  "Counts": {
+    "content": {
+      "component": "Row",
+      "children": [
+        {
+          "component": "Badge",
+          "props": {
+            "tint": "neutral"
+          },
+          "children": [
+            "412 terms"
+          ]
+        },
+        {
+          "component": "Badge",
+          "props": {
+            "tint": "primary"
+          },
+          "children": [
+            "168 / 392"
+          ]
+        },
+        {
+          "component": "Badge",
+          "props": {
+            "tint": "neutral",
+            "variant": "outlined"
+          },
+          "children": [
+            "v2.4.1"
+          ]
+        }
+      ]
+    }
+  },
+  "InAPreferenceRow": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 480
+      },
+      "children": [
+        {
+          "component": "PreferenceSection",
+          "props": {
+            "label": "Providers"
+          },
+          "children": [
+            {
+              "component": "PreferenceRow",
+              "props": {
+                "title": "Primary",
+                "subtitle": "DeepL"
+              },
+              "children": [
+                {
+                  "component": "Badge",
+                  "props": {
+                    "tint": "success"
+                  },
+                  "children": [
+                    "Connected"
+                  ]
+                }
+              ]
+            },
+            {
+              "component": "PreferenceRow",
+              "props": {
+                "title": "Fallback",
+                "subtitle": "Google Translate"
+              },
+              "children": [
+                {
+                  "component": "Badge",
+                  "props": {
+                    "tint": "neutral"
+                  },
+                  "children": [
+                    "Idle"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "InATable": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 512
+      },
+      "children": [
+        {
+          "component": "Table",
+          "children": [
+            {
+              "component": "TableHead",
+              "children": [
+                {
+                  "component": "TableCell",
+                  "props": {
+                    "head": true
+                  },
+                  "children": [
+                    "Provider"
+                  ]
+                },
+                {
+                  "component": "TableCell",
+                  "props": {
+                    "head": true,
+                    "align": "end"
+                  },
+                  "children": [
+                    "Status"
+                  ]
+                }
+              ]
+            },
+            {
+              "component": "TableRow",
+              "children": [
+                {
+                  "component": "TableCell",
+                  "children": [
+                    "DeepL"
+                  ]
+                },
+                {
+                  "component": "TableCell",
+                  "props": {
+                    "align": "end"
+                  },
+                  "children": [
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "size": "small",
+                        "tint": "success"
+                      },
+                      "children": [
+                        "Connected"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "component": "TableRow",
+              "children": [
+                {
+                  "component": "TableCell",
+                  "children": [
+                    "Google Translate"
+                  ]
+                },
+                {
+                  "component": "TableCell",
+                  "props": {
+                    "align": "end"
+                  },
+                  "children": [
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "size": "small",
+                        "tint": "neutral"
+                      },
+                      "children": [
+                        "Idle"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "component": "TableRow",
+              "children": [
+                {
+                  "component": "TableCell",
+                  "children": [
+                    "Custom endpoint"
+                  ]
+                },
+                {
+                  "component": "TableCell",
+                  "props": {
+                    "align": "end"
+                  },
+                  "children": [
+                    {
+                      "component": "Badge",
+                      "props": {
+                        "size": "small",
+                        "tint": "danger"
+                      },
+                      "children": [
+                        "Unreachable"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

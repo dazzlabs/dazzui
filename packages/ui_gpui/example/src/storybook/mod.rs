@@ -1,4 +1,4 @@
-//! The playground is organised the way `apps/storybook` is, and for the same
+//! The playground is organised the way `packages/ui_react/example` is, and for the same
 //! reason: a gallery of six themed pages tells you what the system looks like,
 //! but not where a component's states are written down. One page per
 //! component, an `Overview` that argues for it, and every other story the
@@ -44,7 +44,7 @@ pub enum StoryLayout {
 /// with every run of anything but a letter or a digit collapsed to one dash.
 ///
 /// The id is the key the React reference is written under, so it is what
-/// makes a story here and the story in `apps/storybook` the same story. A
+/// makes a story here and the story in `packages/ui_react/example` the same story. A
 /// name that differs only in case or spacing (`All variants`, `All
 /// Variants`) lands on the same id; a name that differs in a word does not.
 pub fn story_id(group: &str, page: &str, story: &str) -> String {
@@ -74,9 +74,12 @@ pub fn story_ids() -> Vec<String> {
         .iter()
         .flat_map(|group| {
             group.pages.iter().flat_map(move |page| {
-                page.stories
-                    .iter()
-                    .map(move |story| story_id(group.name, page.name, story.name))
+                page.stories.iter().map(move |story| {
+                    story
+                        .source_id
+                        .map(str::to_owned)
+                        .unwrap_or_else(|| story_id(group.name, page.name, story.name))
+                })
             })
         })
         .collect()
@@ -84,6 +87,7 @@ pub fn story_ids() -> Vec<String> {
 
 /// One story: a name in the sidebar and the element it draws.
 pub struct Story {
+    pub source_id: Option<&'static str>,
     pub name: &'static str,
     pub layout: StoryLayout,
     pub render: StoryFn,
@@ -92,6 +96,7 @@ pub struct Story {
 impl Story {
     pub const fn new(name: &'static str, render: StoryFn) -> Self {
         Story {
+            source_id: None,
             name,
             layout: StoryLayout::Centered,
             render,
@@ -101,6 +106,7 @@ impl Story {
     /// The documented page. One per component, and it is always `Overview`.
     pub const fn page(name: &'static str, render: StoryFn) -> Self {
         Story {
+            source_id: None,
             name,
             layout: StoryLayout::Page,
             render,
@@ -109,6 +115,7 @@ impl Story {
 
     pub const fn fullscreen(name: &'static str, render: StoryFn) -> Self {
         Story {
+            source_id: None,
             name,
             layout: StoryLayout::Fullscreen,
             render,

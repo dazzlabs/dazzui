@@ -126,7 +126,7 @@ enum ControlStories {
             """
         ) {
           VStack(alignment: .leading, spacing: vars.spacing5) {
-            ForEach(ButtonStories.variants, id: \.self) { variant in
+            ForEach(DazzUI.ControlVariant.allCases, id: \.self) { variant in
               VStack(alignment: .leading, spacing: vars.spacing2) {
                 Text(variant.rawValue)
                   .font(vars.labelMedium.font)

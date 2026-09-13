@@ -1,0 +1,33 @@
+{
+  "name": "@dazzlabs/dazzui-react-playground",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Gallery for the DazzUI design system",
+  "scripts": {
+    "dev": "pnpm -w run packages && pnpm -w playgrounds:generate && vite --host 127.0.0.1 --port 6006",
+    "build": "pnpm -w run packages && pnpm -w playgrounds:generate && vite build",
+    "parity": "pnpm run build && node scripts/parity.mjs",
+    "parity:extract": "node scripts/parity.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "playwright test --project smoke",
+    "golden": "playwright test --project golden",
+    "dev:preview": "pnpm -w run packages && pnpm -w playgrounds:generate && vite --host 0.0.0.0 --port $PORT",
+    "golden:pilot": "playwright test --project golden-pilot"
+  },
+  "dependencies": {
+    "@dazzlabs/dazzui-react": "workspace:*",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@fluentui/react-icons": "^2.0.339",
+    "@playwright/test": "1.63.0",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "playwright": "^1.63.0",
+    "typescript": "~6.0.3",
+    "vite": "^8.1.5"
+  }
+}

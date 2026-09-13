@@ -8,7 +8,7 @@ import Foundation
 /// within Components, alphabetical — there is one page per component, so the
 /// group is an index you look a name up in.
 enum StoryIndex {
-  static let groups: [StoryGroup] = [
+  static let groups: [StoryGroup] = GeneratedStories.apply([
     StoryGroup("Tokens", pages: [
       ColorStories.page,
       TypographyStories.page,
@@ -24,10 +24,6 @@ enum StoryIndex {
       AutocompleteStories.page,
       AvatarStories.page,
       AsideStories.page,
-      BadgeStories.page,
-      ButtonStories.page,
-      CalloutStories.page,
-      CardStories.page,
       CheckboxStories.page,
       CodeStories.page,
       CodeBlockStories.page,
@@ -35,7 +31,6 @@ enum StoryIndex {
       ComboboxStories.page,
       ContextMenuStories.page,
       DialogStories.page,
-      DividerStories.page,
       DrawerStories.page,
       EmptyStateStories.page,
       FormStories.page,
@@ -68,7 +63,6 @@ enum StoryIndex {
       SliderStories.page,
       SpinnerStories.page,
       SplitterStories.page,
-      StepListStories.page,
       SwitchStories.page,
       TableStories.page,
       TagStories.page,
@@ -79,7 +73,7 @@ enum StoryIndex {
       TooltipStories.page,
       TreeStories.page,
     ])
-  ]
+  ])
 
   /// Where the canvas points when the window opens.
   static let first = StoryRef(page: "Button", story: "Overview")
@@ -96,7 +90,7 @@ enum StoryIndex {
   static var ids: [String] {
     groups.flatMap { group in
       group.pages.flatMap { page in
-        page.stories.map { storyId(group: group.name, page: page.name, story: $0.name) }
+        page.stories.map { $0.sourceId ?? storyId(group: group.name, page: page.name, story: $0.name) }
       }
     }
   }

@@ -54,3 +54,6 @@ mod field_box;
 mod focus_ring;
 pub use field_box::*;
 pub use focus_ring::*;
+
+mod icon;
+pub use icon::*;

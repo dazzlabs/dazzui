@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The playground is organised the way `apps/storybook` is, and for the same
+/// The playground is organised the way `packages/ui_react/example` is, and for the same
 /// reason: a gallery of six themed pages tells you what the system looks like,
 /// but not where a component's states are written down. One page per
 /// component, an `Overview` that argues for it, and every other story the
@@ -30,7 +30,7 @@ enum StoryLayout {
 /// every run of anything but a letter or a digit collapsed to one dash.
 ///
 /// The id is the key the React reference is written under, so it is what
-/// makes a story here and the story in `apps/storybook` the same story. A
+/// makes a story here and the story in `packages/ui_react/example` the same story. A
 /// name that differs only in case or spacing (`All variants`, `All Variants`)
 /// lands on the same id; a name that differs in a word does not.
 func storyId(group: String, page: String, story: String) -> String {
@@ -47,6 +47,7 @@ private func sanitize(_ text: String) -> String {
 /// One story: a name in the sidebar and the view it draws.
 struct Story: Identifiable {
   let name: String
+  let sourceId: String?
   let layout: StoryLayout
   let content: () -> AnyView
 
@@ -55,10 +56,12 @@ struct Story: Identifiable {
   init<Content: View>(
     _ name: String,
     layout: StoryLayout = .centered,
+    sourceId: String? = nil,
     @ViewBuilder content: @escaping () -> Content
   ) {
     self.name = name
     self.layout = layout
+    self.sourceId = sourceId
     // Type-erased at the boundary rather than at the call site, so a story is
     // written as the component and nothing else.
     self.content = { AnyView(content()) }

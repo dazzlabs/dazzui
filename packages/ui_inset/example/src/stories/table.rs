@@ -4,8 +4,12 @@ use inset::*;
 pub fn overview(_app: &mut App, _demo: &Demo) -> WidgetRef {
     ui::Table::new(vec![
         ui::TableHead::new(vec![
-            ui::TableCell::new(Text::new("Name")).into_widget(),
-            ui::TableCell::new(Text::new("Status")).into_widget(),
+            ui::TableCell::new(Text::new("Name"))
+                .head(true)
+                .into_widget(),
+            ui::TableCell::new(Text::new("Status"))
+                .head(true)
+                .into_widget(),
         ])
         .into_widget(),
         ui::TableRow::new(vec![

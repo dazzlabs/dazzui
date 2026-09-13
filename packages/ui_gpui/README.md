@@ -164,7 +164,7 @@ cargo build --features runtime-shaders
 It changes nothing about what is drawn.
 
 `tests/parity.rs` is the one test that reads data rather than asserting
-values it knows: `tests/parity/` holds what `apps/storybook` rendered for
+values it knows: `tests/parity/` holds what `packages/ui_react/example` rendered for
 every story in every theme, distributed by the parity extractor
 (`pnpm parity` at the root; nothing under that directory is committed), and
 the test builds each specimen it finds there, measures it, and lists every
@@ -176,7 +176,7 @@ on each side.
 ## Playground
 
 `example/` holds the playground — one page per component, organised the way
-`apps/storybook` is, with a Tokens group beside it and a Themes page that
+`packages/ui_react/example` is, with a Tokens group beside it and a Themes page that
 renders the same view under all four themes at once:
 
 ```bash

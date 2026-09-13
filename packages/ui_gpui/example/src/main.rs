@@ -1,10 +1,12 @@
 //! The DazzUI playground for GPUI.
 //!
-//! Organised the way `apps/storybook` is — one page per component, reached
+//! Organised the way `packages/ui_react/example` is — one page per component, reached
 //! from a story tree — and drawn with the design system it documents, so a
 //! theme switch carries the furniture with it too. It is the counterpart of
 //! `packages/ui_flutter/example` and `packages/ui_swiftui/Example`.
 
+mod generated_stories;
+mod scene;
 mod stories;
 mod storybook;
 
@@ -26,12 +28,13 @@ use storybook::{StoryLayout, StoryRef};
 
 /// The playground's whole state.
 ///
-/// One view holds it because the stories are specimens rather than screens: a
-/// story has no state a neighbouring story could not read, and threading an
-/// entity per component through the window would say otherwise.
+/// Shared scenes reset their declared state when the selected story changes.
+/// The remaining named fields belong to legacy stories awaiting migration.
 pub struct Playground {
     /// Where the canvas is pointed.
     pub selection: StoryRef,
+    generated_story: Option<String>,
+    generated: scene::SceneState,
     /// Which pages the tree has open. Storybook opens the page you select and
     /// leaves the rest as they were, so this is a set rather than one name.
     pub opened: HashSet<&'static str>,
@@ -132,6 +135,8 @@ impl Playground {
 
         Playground {
             selection: stories::FIRST,
+            generated_story: None,
+            generated: Default::default(),
             opened: HashSet::from([stories::FIRST.page]),
             filter,
             theme: ThemeName::StudioLight,
@@ -253,6 +258,18 @@ impl Render for Playground {
         #[cfg(test)]
         tests::RENDERS.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
 
+        let selected = storybook::story(self.selection).map(|story| {
+            story.source_id.map(str::to_owned).unwrap_or_else(|| {
+                storybook::story_id("Components", self.selection.page, story.name)
+            })
+        });
+        if self.generated_story != selected {
+            self.generated = scene::SceneState::new(
+                generated_stories::definition(selected.as_deref().unwrap_or("")),
+                cx,
+            );
+            self.generated_story = selected;
+        }
         let theme = self.theme;
         let vars = theme.variables();
         let this = cx.entity();
@@ -466,7 +483,11 @@ impl Playground {
             .child(match story {
                 None => div().flex_1().child("No story selected").into_any_element(),
                 Some(story) => {
-                    let content = (story.render)(self, this, cx);
+                    let id = story.source_id.map(str::to_owned).unwrap_or_else(|| {
+                        storybook::story_id("Components", self.selection.page, story.name)
+                    });
+                    let content = generated_stories::build(&id, self, cx)
+                        .unwrap_or_else(|| (story.render)(self, this, cx));
                     match story.layout {
                         // A bare specimen sits in the middle of the canvas
                         // rather than in its corner, which is what
@@ -612,6 +633,46 @@ mod tests {
                 }
             }
         }
+    }
+
+    #[gpui::test]
+    fn shared_state_is_scoped_to_the_selected_story(cx: &mut TestAppContext) {
+        let (view, cx) = cx.add_window_view(|_, cx| Playground::new(cx));
+        view.update(cx, |state, cx| {
+            state.selection = StoryRef::new("Switch", "Interactive");
+            cx.notify();
+        });
+        cx.run_until_parked();
+        let target = cx.debug_bounds("switch").unwrap().center();
+        cx.simulate_click(target, gpui::Modifiers::default());
+        cx.run_until_parked();
+        view.update(cx, |state, cx| {
+            assert!(!state.generated.values["on"].boolean());
+            state.theme = ThemeName::StudioDark;
+            cx.notify();
+        });
+        cx.run_until_parked();
+        view.update(cx, |state, cx| {
+            assert!(
+                !state.generated.values["on"].boolean(),
+                "theme changes preserve state"
+            );
+            state.selection = StoryRef::new("Switch", "Off");
+            cx.notify();
+        });
+        cx.run_until_parked();
+        view.update(cx, |state, cx| {
+            assert!(state.generated.values.is_empty());
+            state.selection = StoryRef::new("Switch", "Interactive");
+            cx.notify();
+        });
+        cx.run_until_parked();
+        view.update(cx, |state, _| {
+            assert!(
+                state.generated.values["on"].boolean(),
+                "returning starts a fresh scene"
+            );
+        });
     }
 
     /// Every story the sidebar lists is one the canvas can find, which is what

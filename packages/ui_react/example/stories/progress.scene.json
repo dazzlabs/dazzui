@@ -1,0 +1,380 @@
+{
+  "Default": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 416
+      },
+      "children": [
+        {
+          "component": "Progress",
+          "props": {
+            "value": 43
+          }
+        }
+      ]
+    }
+  },
+  "Values": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 416
+      },
+      "children": [
+        {
+          "component": "Progress",
+          "props": {
+            "value": 0
+          }
+        },
+        {
+          "component": "Progress",
+          "props": {
+            "value": 12
+          }
+        },
+        {
+          "component": "Progress",
+          "props": {
+            "value": 48
+          }
+        },
+        {
+          "component": "Progress",
+          "props": {
+            "value": 76
+          }
+        },
+        {
+          "component": "Progress",
+          "props": {
+            "value": 100
+          }
+        }
+      ]
+    }
+  },
+  "Indeterminate": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 416
+      },
+      "children": [
+        {
+          "component": "Progress"
+        },
+        {
+          "component": "Progress",
+          "props": {
+            "tint": "info"
+          }
+        }
+      ]
+    }
+  },
+  "Gradient": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 416
+      },
+      "children": [
+        {
+          "component": "Progress",
+          "props": {
+            "gradient": true,
+            "value": 62
+          }
+        },
+        {
+          "component": "Progress",
+          "props": {
+            "gradient": true
+          }
+        }
+      ]
+    }
+  },
+  "Sizes": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 416
+      },
+      "children": [
+        {
+          "component": "Progress",
+          "props": {
+            "size": "small",
+            "value": 64
+          }
+        },
+        {
+          "component": "Progress",
+          "props": {
+            "size": "medium",
+            "value": 64
+          }
+        },
+        {
+          "component": "Progress",
+          "props": {
+            "size": "large",
+            "value": 64
+          }
+        }
+      ]
+    }
+  },
+  "Tints": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 416
+      },
+      "children": [
+        {
+          "component": "Progress",
+          "props": {
+            "tint": "primary",
+            "value": 64
+          }
+        },
+        {
+          "component": "Progress",
+          "props": {
+            "tint": "neutral",
+            "value": 64
+          }
+        },
+        {
+          "component": "Progress",
+          "props": {
+            "tint": "info",
+            "value": 64
+          }
+        },
+        {
+          "component": "Progress",
+          "props": {
+            "tint": "success",
+            "value": 64
+          }
+        },
+        {
+          "component": "Progress",
+          "props": {
+            "tint": "warning",
+            "value": 64
+          }
+        },
+        {
+          "component": "Progress",
+          "props": {
+            "tint": "danger",
+            "value": 64
+          }
+        }
+      ]
+    }
+  },
+  "WithACount": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 384
+      },
+      "children": [
+        {
+          "component": "Card",
+          "children": [
+            {
+              "component": "Box",
+              "props": {
+                "display": "flex",
+                "align": "center",
+                "justify": "between"
+              },
+              "children": [
+                {
+                  "component": "SectionLabel",
+                  "children": [
+                    "handbook.docx"
+                  ]
+                },
+                {
+                  "component": "Badge",
+                  "props": {
+                    "size": "small",
+                    "tint": "primary"
+                  },
+                  "children": [
+                    "43%"
+                  ]
+                }
+              ]
+            },
+            {
+              "component": "Progress",
+              "props": {
+                "value": 43
+              }
+            },
+            {
+              "component": "Inline",
+              "props": {
+                "tone": "muted"
+              },
+              "children": [
+                "168 of 392 segments"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Live": {
+    "state": {
+      "value": 8
+    },
+    "timers": [
+      {
+        "every": 400,
+        "set": "value",
+        "value": {
+          "if": {
+            "gte": [
+              {
+                "state": "value"
+              },
+              100
+            ]
+          },
+          "then": 0,
+          "else": {
+            "add": [
+              {
+                "state": "value"
+              },
+              4
+            ]
+          }
+        }
+      }
+    ],
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 416
+      },
+      "children": [
+        {
+          "component": "Progress",
+          "id": "progress",
+          "derive": {
+            "value": {
+              "state": "value"
+            }
+          }
+        }
+      ]
+    },
+    "checkpoints": [
+      {
+        "id": "initial",
+        "steps": [],
+        "expect": {
+          "value": 8
+        }
+      },
+      {
+        "id": "tick",
+        "steps": [
+          {
+            "action": "advance",
+            "milliseconds": 400
+          }
+        ],
+        "expect": {
+          "value": 12
+        }
+      },
+      {
+        "id": "finished",
+        "steps": [
+          {
+            "action": "advance",
+            "milliseconds": 9200
+          }
+        ],
+        "expect": {
+          "value": 100
+        }
+      },
+      {
+        "id": "wrapped",
+        "steps": [
+          {
+            "action": "advance",
+            "milliseconds": 9600
+          }
+        ],
+        "expect": {
+          "value": 0
+        }
+      }
+    ]
+  },
+  "BesideStages": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 384
+      },
+      "children": [
+        {
+          "component": "Card",
+          "children": [
+            {
+              "component": "Progress",
+              "props": {
+                "value": 43
+              }
+            },
+            {
+              "component": "StepList",
+              "children": [
+                {
+                  "component": "Step",
+                  "props": {
+                    "status": "done",
+                    "label": "Parsed the document",
+                    "meta": "15 pages"
+                  }
+                },
+                {
+                  "component": "Step",
+                  "props": {
+                    "status": "active",
+                    "label": "Translating",
+                    "meta": "168 / 392"
+                  }
+                },
+                {
+                  "component": "Step",
+                  "props": {
+                    "status": "idle",
+                    "label": "Rebuilding the layout"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

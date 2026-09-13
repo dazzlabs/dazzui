@@ -43,6 +43,32 @@ export async function nativeCatalog() {
           layout: match[1] === 'Overview' ? 'page' : 'centered',
         })
   }
+  // Button, Badge and StepList content has moved out of the handwritten Flutter/SwiftUI pages.
+  // Its canonical catalog now comes directly from the shared declarations.
+  const react = JSON.parse(
+    await fs.readFile(
+      path.join(root, '../ui_react/example/src/generated/catalog.json'),
+      'utf8'
+    )
+  )
+  for (const page of [
+    'Button',
+    'Badge',
+    'StepList',
+    'Callout',
+    'Card',
+    'Divider',
+  ])
+    catalog.set(page, {
+      name: page,
+      group: 'Components',
+      stories: react.stories
+        .filter(story => story.title === `Components/${page}`)
+        .map(story => ({
+          name: story.name,
+          layout: story.exportName === 'Overview' ? 'page' : story.layout,
+        })),
+    })
   return [...catalog.values()]
 }
 const catalog = await nativeCatalog()
@@ -73,6 +99,14 @@ if (process.argv.includes('--check')) {
 } else {
   const output = path.join(root, 'example/Stories')
   for (const page of catalog) {
+    // Owned by tools/playgrounds; never overwrite its generated catalog.
+    if (
+      page.group === 'Components' &&
+      ['Button', 'Badge', 'StepList', 'Callout', 'Card', 'Divider'].includes(
+        page.name
+      )
+    )
+      continue
     const className = page.name + 'Stories'
     const directory = path.join(output, page.group === 'Tokens' ? 'Tokens' : '')
     await fs.mkdir(directory, { recursive: true })

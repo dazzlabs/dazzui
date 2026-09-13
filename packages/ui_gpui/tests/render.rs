@@ -789,6 +789,40 @@ fn a_field_takes_what_is_typed_into_it(cx: &mut TestAppContext) {
     assert_eq!(field.read_with(cx, |field, _| field.value().clone()), "v2");
 }
 
+#[gpui::test]
+fn a_read_only_field_selects_and_copies_without_accepting_edits(cx: &mut TestAppContext) {
+    let (typist, cx) = cx.add_window_view(|_, cx| Typist {
+        field: cx.new(|cx| {
+            TextBuffer::new(cx, "Search")
+                .with_value("Read only")
+                .read_only(true)
+        }),
+    });
+    cx.run_until_parked();
+    let field = typist.read_with(cx, |typist, _| typist.field.clone());
+    cx.update(|window, cx| field.read(cx).focus(window));
+    cx.run_until_parked();
+    cx.simulate_keystrokes("cmd-a cmd-c");
+    assert_eq!(
+        cx.update(|_, cx| cx.read_from_clipboard().and_then(|item| item.text()))
+            .as_deref(),
+        Some("Read only")
+    );
+    cx.simulate_input("Changed");
+    cx.simulate_keystrokes("backspace delete cmd-x cmd-v");
+    cx.run_until_parked();
+    assert_eq!(
+        field.read_with(cx, |field, _| field.value().clone()),
+        "Read only"
+    );
+    // Programmatic binding updates still reach a read-only field.
+    field.update(cx, |field, cx| field.set_value("Updated externally", cx));
+    assert_eq!(
+        field.read_with(cx, |field, _| field.value().clone()),
+        "Updated externally"
+    );
+}
+
 /// A view holding one field, because a field belongs to whoever owns it.
 struct Typist {
     field: gpui::Entity<TextBuffer>,
@@ -970,4 +1004,38 @@ fn probe(seen: std::rc::Rc<std::cell::RefCell<Vec<ThemeName>>>) -> AnyElement {
         div().into_any_element()
     })
     .into_any_element()
+}
+
+#[gpui::test]
+fn badge_children_preserve_plain_label_geometry(cx: &mut TestAppContext) {
+    struct Labels {
+        measured: Measured,
+    }
+    impl Render for Labels {
+        fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+            let measured = self.measured.clone();
+            div()
+                .flex()
+                .children(BadgeSize::ALL.into_iter().flat_map(|size| {
+                    [
+                        Badge::new("Beta").size(size).into_any_element(),
+                        Badge::new("")
+                            .size(size)
+                            .content(vec![div().child("Beta").into_any_element()])
+                            .into_any_element(),
+                    ]
+                }))
+                .on_children_prepainted(move |bounds, _, _| *measured.0.borrow_mut() = bounds)
+        }
+    }
+    let measured = Measured::default();
+    let (_, cx) = cx.add_window_view(|_, _| Labels {
+        measured: measured.clone(),
+    });
+    cx.run_until_parked();
+    let bounds = measured.0.borrow();
+    assert_eq!(bounds.len(), 6);
+    for pair in bounds.chunks_exact(2) {
+        assert_eq!(pair[0].size, pair[1].size);
+    }
 }

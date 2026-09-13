@@ -4,7 +4,7 @@ use dazzui::{Card, Divider, NavItem, SectionLabel, Sidebar, SidebarGroup, Tint};
 use gpui::{IntoElement, ParentElement, Styled, div, px};
 
 use crate::storybook::gallery::{DocPage, Section, Specimen, Specimens, capitalize};
-use crate::storybook::stage::{Col, Frame, Pane};
+use crate::storybook::stage::{Frame, Pane};
 use crate::storybook::{Story, StoryPage};
 
 pub const PAGE: StoryPage = StoryPage::new(
@@ -50,19 +50,6 @@ pub const PAGE: StoryPage = StoryPage::new(
                         .child(in_a_panel()),
                 )
                 .into_any_element()
-        }),
-        Story::new("Default", |_, _, _| {
-            SectionLabel::new("Library").into_any_element()
-        }),
-        Story::new("Faint", |_, _, _| {
-            SectionLabel::new("Library").faint(true).into_any_element()
-        }),
-        Story::new("Tints", |_, _, _| {
-            let mut col = Col::new();
-            for tint in Tint::ALL {
-                col = col.child(SectionLabel::new(capitalize(tint.name())).tint(tint));
-            }
-            col.into_any_element()
         }),
         Story::new("In a panel", |_, _, _| in_a_panel().into_any_element()),
         Story::new("In a column", |_, _, _| {

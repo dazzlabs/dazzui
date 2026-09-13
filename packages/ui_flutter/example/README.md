@@ -15,7 +15,7 @@ flutter test
 
 ## How it is organised
 
-The same way `apps/storybook` is, and for the same reason: a gallery of themed
+The same way `packages/ui_react/example` is, and for the same reason: a gallery of themed
 pages tells you what the system looks like, but not where a widget's states are
 written down. So there is **one page per widget**, reached from a story tree,
 and the theme picker sits over all of it.

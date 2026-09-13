@@ -73,25 +73,6 @@ pub const PAGE: StoryPage = StoryPage::new(
                 )
                 .into_any_element()
         }),
-        Story::new("With a hint", |state, _, _| {
-            div()
-                .w(px(320.))
-                .child(
-                    FormField::new("Workspace name")
-                        .hint("Shown to everyone in the workspace.")
-                        .child(TextField::new(&state.name)),
-                )
-                .into_any_element()
-        }),
-        Story::new("Without a hint", |state, _, _| {
-            div()
-                .w(px(320.))
-                .child(FormField::new("Workspace name").child(TextField::new(&state.name)))
-                .into_any_element()
-        }),
-        Story::new("Error state", |state, _, _| {
-            div().w(px(320.)).child(invalid(state)).into_any_element()
-        }),
         Story::new("Tints", |_, _, _| {
             let mut col = Col::new().width(px(320.));
             for tint in Tint::ALL {

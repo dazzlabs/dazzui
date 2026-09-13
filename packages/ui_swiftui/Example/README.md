@@ -35,7 +35,7 @@ the detail.
 
 ## How it is organised
 
-The same way `apps/storybook` is, and for the same reason: a gallery of themed
+The same way `packages/ui_react/example` is, and for the same reason: a gallery of themed
 pages tells you what the system looks like, but not where a component's states
 are written down. So there is **one page per component**, reached from a story
 tree, and the theme picker sits over all of it.
@@ -54,7 +54,7 @@ Sources/Playground/
 Tests/PlaygroundTests/
   StoriesTests.swift     holds the story index to the React story list
   ReferenceTests.swift   measures each component against what React drew
-Parity/                  what apps/storybook's parity extractor distributed,
+Parity/                  what packages/ui_react/example's parity extractor distributed,
                          and what the suite drew (neither is committed)
 ```
 

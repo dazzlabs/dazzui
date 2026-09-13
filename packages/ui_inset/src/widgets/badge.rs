@@ -29,6 +29,10 @@ impl Badge {
             size: ControlSize::Medium,
         }
     }
+    pub fn child<K>(mut self, child: impl IntoWidget<K>) -> Self {
+        self.child = child.into_widget();
+        self
+    }
     pub fn tint(mut self, tint: Tint) -> Self {
         self.tint = tint;
         self

@@ -12,14 +12,14 @@ enum IconButtonStories {
       }
       Story("Variants") {
         Row {
-          ForEach(ButtonStories.variants, id: \.self) { variant in
+          ForEach(DazzUI.ControlVariant.allCases, id: \.self) { variant in
             IconButton(label: label(variant), icon: .star16Regular, variant: variant) {}
           }
         }
       }
       Story("Disabled") {
         Row {
-          ForEach(ButtonStories.variants, id: \.self) { variant in
+          ForEach(DazzUI.ControlVariant.allCases, id: \.self) { variant in
             IconButton(
               label: label(variant),
               icon: .star16Regular,
@@ -116,7 +116,7 @@ enum IconButtonStories {
             """
         ) {
           Stack {
-            ForEach(ButtonStories.variants, id: \.self) { variant in
+            ForEach(DazzUI.ControlVariant.allCases, id: \.self) { variant in
               Specimen(variant.rawValue) {
                 ForEach(Tint.allCases, id: \.self) { tint in
                   IconButton(

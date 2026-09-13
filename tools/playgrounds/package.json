@@ -1,0 +1,13 @@
+{
+  "name": "@dazzlabs/dazzui-playground-tools",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "node generate.mjs",
+    "check": "node generate.mjs --check",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3"
+  }
+}

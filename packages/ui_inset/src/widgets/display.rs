@@ -1,7 +1,9 @@
 use super::{Card, CardVariant};
 use crate::{ControlSize, ControlState, ControlVariant, Theme, Tint};
 use inset_foundation::App;
-use inset_painting::{BorderRadiusGeometry, BoxDecoration, EdgeInsetsGeometry};
+use inset_painting::{
+    Border, BorderRadiusGeometry, BorderStyle, BoxDecoration, EdgeInsetsGeometry,
+};
 use inset_rendering::{CrossAxisAlignment, MainAxisSize};
 use inset_widgets::*;
 
@@ -192,6 +194,8 @@ pub struct Callout {
     pub message: String,
     pub tint: Tint,
     pub actions: Vec<WidgetRef>,
+    pub icon: Option<WidgetRef>,
+    pub size: ControlSize,
 }
 impl Callout {
     pub fn new(title: impl Into<String>, message: impl Into<String>) -> Self {
@@ -200,6 +204,8 @@ impl Callout {
             message: message.into(),
             tint: Tint::Info,
             actions: vec![],
+            icon: None,
+            size: ControlSize::Medium,
         }
     }
 }
@@ -212,36 +218,89 @@ impl StatelessWidget for Callout {
         let content = v
             .control_colors(ControlVariant::Tinted, self.tint, ControlState::Normal)
             .content;
-        let mut children = vec![
-            Text::new(&self.title)
-                .style(v.label_medium.text_style().color(title_color))
-                .into_widget(),
-        ];
-        if !self.message.is_empty() {
-            children.push(
-                Text::new(&self.message)
-                    .style(v.body_small.text_style().color(content))
+        let mut body = vec![];
+        if !self.title.is_empty() {
+            body.push(
+                Text::new(&self.title)
+                    .style(v.label_medium.text_style().height(1.4).color(title_color))
                     .into_widget(),
             );
         }
+        if !self.message.is_empty() {
+            body.push(
+                Text::new(&self.message)
+                    .style(
+                        v.label_quiet
+                            .text_style()
+                            .font_weight(v.caption_small.weight)
+                            .height(1.5)
+                            .color(content),
+                    )
+                    .into_widget(),
+            );
+        }
+        let mut children = vec![];
+        if let Some(icon) = &self.icon {
+            children.push(
+                IconTheme::merge(
+                    None,
+                    IconThemeData::new()
+                        .size(v.spacing_5)
+                        .color(v.ramp(self.tint).shade(600)),
+                    icon.clone(),
+                )
+                .into_widget(),
+            );
+        }
+        children.push(
+            Expanded::new(
+                Column::new()
+                    .main_axis_size(MainAxisSize::Min)
+                    .cross_axis_alignment(CrossAxisAlignment::Start)
+                    .spacing(v.spacing_1)
+                    .children(body),
+            )
+            .into_widget(),
+        );
         if !self.actions.is_empty() {
             children.push(
                 Row::new()
+                    .main_axis_size(MainAxisSize::Min)
                     .spacing(v.spacing_2)
                     .children(self.actions.clone())
                     .into_widget(),
             );
         }
-        Card::new(
-            Column::new()
-                .main_axis_size(MainAxisSize::Min)
-                .cross_axis_alignment(CrossAxisAlignment::Start)
-                .spacing(v.spacing_1)
-                .children(children),
-        )
-        .variant(CardVariant::Tinted)
-        .tint(self.tint)
-        .into_widget()
+        let (y, x, radius) = match self.size {
+            ControlSize::Tiny | ControlSize::Small => (v.spacing_2, v.spacing_3, v.radius_medium),
+            ControlSize::Medium => (v.spacing_3, v.spacing_3_5, v.radius_large),
+            ControlSize::Large => (v.spacing_4, v.spacing_4, v.radius_large),
+        };
+        Container::new()
+            .padding(EdgeInsetsGeometry::symmetric(y, x))
+            .decoration(
+                BoxDecoration::new()
+                    .color(v.wash(self.tint, v.wash_surface))
+                    .border(Border::all(
+                        v.wash(self.tint, v.wash_edge),
+                        v.stroke_hairline,
+                        BorderStyle::Solid,
+                        -1.0,
+                    ))
+                    .border_radius(BorderRadiusGeometry::circular(radius)),
+            )
+            .child(
+                Row::new()
+                    .main_axis_size(MainAxisSize::Max)
+                    .cross_axis_alignment(if self.message.is_empty() {
+                        CrossAxisAlignment::Center
+                    } else {
+                        CrossAxisAlignment::Start
+                    })
+                    .spacing(v.spacing_2_5)
+                    .children(children),
+            )
+            .into_widget()
     }
 }
 #[derive(Debug, Clone)]

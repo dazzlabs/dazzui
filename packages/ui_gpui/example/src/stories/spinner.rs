@@ -61,27 +61,6 @@ pub const PAGE: StoryPage = StoryPage::new(
                 )
                 .into_any_element()
         }),
-        Story::new("Default", |_, _, _| Spinner::new().into_any_element()),
-        Story::new("Sizes", |_, _, _| {
-            let mut row = Row::new();
-            for size in SIZES {
-                row = row.child(Spinner::new().size(size));
-            }
-            row.into_any_element()
-        }),
-        Story::new("Tints", |_, _, _| {
-            let mut row = Row::new();
-            for tint in Tint::ALL {
-                row = row.child(Spinner::new().tint(tint));
-            }
-            row.into_any_element()
-        }),
-        Story::new("On an accent", |_, _, _| {
-            Row::new()
-                .child(Spinner::new().on_accent(true))
-                .child(Spinner::new())
-                .into_any_element()
-        }),
         Story::new("Beside a button", |_, _, _| {
             Row::new()
                 .child(
@@ -92,7 +71,6 @@ pub const PAGE: StoryPage = StoryPage::new(
                 .child(Spinner::new().size(SpinnerSize::Small))
                 .into_any_element()
         }),
-        Story::new("In a callout", |_, _, _| in_a_callout().into_any_element()),
         Story::new("In a panel", |_, _, _| in_a_panel().into_any_element()),
     ],
 );

@@ -10,7 +10,7 @@ pnpm parity:view
 
 It reads three things off the disk, none of which it produces:
 
-- **The React reference** — `apps/storybook/parity/` (the extractor's
+- **The React reference** — `packages/ui_react/example/parity/` (the extractor's
   staging, when `pnpm parity` has run here; screenshots come from there
   too) or, failing that, the copy distributed into the Flutter playground.
   The reference is folded into *specimens* — a class and its axes — the

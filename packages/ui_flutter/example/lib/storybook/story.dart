@@ -1,6 +1,6 @@
 import 'package:dazzui/dazzui.dart';
 
-/// The playground is organised the way `apps/storybook` is, and for the same
+/// The playground is organised the way `packages/ui_react/example` is, and for the same
 /// reason: a gallery of six themed pages tells you what the system looks like,
 /// but not where a widget's states are written down. One page per widget, an
 /// `Overview` that argues for it, and every other story the widget and nothing
@@ -32,7 +32,7 @@ enum StoryLayout {
 /// every run of anything but a letter or a digit collapsed to one dash.
 ///
 /// The id is the key the React reference is written under, so it is what
-/// makes a story here and the story in `apps/storybook` the same story. A
+/// makes a story here and the story in `packages/ui_react/example` the same story. A
 /// name that differs only in case or spacing (`All variants`, `All Variants`)
 /// lands on the same id; a name that differs in a word does not.
 String storyId(String group, String page, String story) {
@@ -48,8 +48,14 @@ String _sanitize(String text) {
 
 /// One story: a name in the sidebar and the widget it draws.
 class Story {
-  const Story(this.name, this.builder, {this.layout = StoryLayout.centered});
+  const Story(
+    this.name,
+    this.builder, {
+    this.layout = StoryLayout.centered,
+    this.sourceId,
+  });
 
+  final String? sourceId;
   final String name;
   final WidgetBuilder builder;
   final StoryLayout layout;

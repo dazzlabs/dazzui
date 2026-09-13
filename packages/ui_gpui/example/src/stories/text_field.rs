@@ -1,12 +1,12 @@
 //! `Components/TextField` — the box a value is typed into.
 
 use dazzui::{
-    Button, ControlVariant, FieldValue, FormField, TextField, TextFieldSize, TextFieldState, Tint,
+    FieldValue, FormField, TextField, TextFieldSize, TextFieldState,
 };
 use gpui::{IntoElement, ParentElement, Styled, div, px};
 
 use crate::storybook::gallery::{DocPage, Section};
-use crate::storybook::stage::{Col, Row};
+use crate::storybook::stage::Col;
 use crate::storybook::{Story, StoryPage};
 
 const SIZES: [TextFieldSize; 3] = [
@@ -86,64 +86,6 @@ pub const PAGE: StoryPage = StoryPage::new(
                                 .child(FieldValue::new("DazzUI")),
                         ),
                 )
-                .into_any_element()
-        }),
-        Story::new("Default", |state, _, _| {
-            div()
-                .w(px(240.))
-                .child(TextField::new(&state.name))
-                .into_any_element()
-        }),
-        Story::new("Placeholder", |state, _, _| {
-            div()
-                .w(px(240.))
-                .child(TextField::new(&state.notes))
-                .into_any_element()
-        }),
-        Story::new("Disabled", |state, _, _| {
-            div()
-                .w(px(240.))
-                .child(TextField::new(&state.name).disabled(true))
-                .into_any_element()
-        }),
-        Story::new("Error state", |state, _, _| {
-            div()
-                .w(px(240.))
-                .child(TextField::new(&state.email).state(TextFieldState::Error))
-                .into_any_element()
-        }),
-        Story::new("States", |state, _, _| {
-            Col::new()
-                .width(px(240.))
-                .child(TextField::new(&state.name))
-                .child(TextField::new(&state.email).state(TextFieldState::Error))
-                .child(TextField::new(&state.name).disabled(true))
-                .into_any_element()
-        }),
-        Story::new("Sizes", |state, _, _| {
-            let mut col = Col::new().width(px(240.));
-            for size in SIZES {
-                col = col.child(TextField::new(&state.name).size(size));
-            }
-            col.into_any_element()
-        }),
-        Story::new("Tints", |state, _, _| {
-            let mut col = Col::new().width(px(240.));
-            for tint in Tint::ALL {
-                col = col.child(TextField::new(&state.name).tint(tint));
-            }
-            col.into_any_element()
-        }),
-        Story::new("Mono", |state, _, _| {
-            div()
-                .w(px(240.))
-                .child(TextField::new(&state.name).mono(true))
-                .into_any_element()
-        }),
-        Story::new("Beside a button", |state, _, _| {
-            Row::new()
-                .child(div().w(px(240.)).child(TextField::new(&state.name)))
-                .child(Button::new("add", "Add").variant(ControlVariant::Filled))
                 .into_any_element()
         }),
         Story::new("A read-only value", |_, _, _| {

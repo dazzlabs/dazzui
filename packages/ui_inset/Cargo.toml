@@ -10,6 +10,7 @@ members = ["example"]
 resolver = "3"
 
 [dependencies]
+kurbo = "0.11.3"
 inset-foundation = { path = "../../../inset/crates/inset-foundation" }
 inset-embedder = { path = "../../../inset/crates/inset-embedder" }
 inset-painting = { path = "../../../inset/crates/inset-painting" }

@@ -36,7 +36,7 @@ import {
 } from './src/lib/model'
 
 const ROOT = path.resolve(import.meta.dirname, '..', '..')
-const STAGING = path.join(ROOT, 'apps', 'storybook', 'parity')
+const STAGING = path.join(ROOT, 'packages', 'ui_react', 'example', 'parity')
 
 const PLATFORMS: { id: PlatformId; label: string; dir: string }[] = [
   {

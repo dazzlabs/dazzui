@@ -28,8 +28,8 @@ public struct EmptyState<Action: View>: View {
         .foregroundStyle(vars.colorContentSubtle)
       // A row of controls, so it takes the control gap rather than the block
       // gap.
-      HStack(spacing: vars.controlMediumGap) {
-        action()
+      if Action.self != EmptyView.self {
+        HStack(spacing: vars.controlMediumGap) { action() }
       }
     }
     .padding(.vertical, vars.spacing14)

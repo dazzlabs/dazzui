@@ -1,0 +1,99 @@
+{
+  "AConfirmation": {
+    "state": {
+      "open": true
+    },
+    "content": {
+      "component": "Dialog",
+      "bind": {
+        "open": "open"
+      },
+      "props": {
+        "width": 352
+      },
+      "children": [
+        {
+          "component": "DialogHeader",
+          "props": {
+            "title": "Discard this draft?"
+          }
+        },
+        {
+          "component": "DialogBody",
+          "children": [
+            {
+              "component": "Text",
+              "children": [
+                "The 24 segments you edited since the last save will be lost."
+              ]
+            }
+          ]
+        },
+        {
+          "component": "DialogFooter",
+          "children": [
+            {
+              "component": "ActionBar",
+              "props": {
+                "align": "end",
+                "pushEnd": true
+              },
+              "children": [
+                {
+                  "component": "Button",
+                  "id": "cancel",
+                  "on": {
+                    "press": {
+                      "set": "open",
+                      "value": false
+                    }
+                  },
+                  "children": [
+                    "Keep editing"
+                  ]
+                },
+                {
+                  "component": "Button",
+                  "id": "confirm",
+                  "on": {
+                    "press": {
+                      "set": "open",
+                      "value": false
+                    }
+                  },
+                  "props": {
+                    "variant": "filled"
+                  },
+                  "children": [
+                    "Discard"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "checkpoints": [
+      {
+        "id": "initial",
+        "steps": [],
+        "expect": {
+          "open": true
+        }
+      },
+      {
+        "id": "cancelled",
+        "steps": [
+          {
+            "action": "click",
+            "target": "cancel"
+          }
+        ],
+        "expect": {
+          "open": false
+        }
+      }
+    ]
+  }
+}

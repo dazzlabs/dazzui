@@ -276,6 +276,10 @@ impl Switch {
         self.0.label = label.into();
         self
     }
+    pub fn tint(mut self, tint: Tint) -> Self {
+        self.0.tint = tint;
+        self
+    }
     pub fn size(mut self, size: ControlSize) -> Self {
         self.0.size = size;
         self

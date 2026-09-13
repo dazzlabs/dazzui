@@ -1,6 +1,6 @@
 use gpui::{
-    App, ClickEvent, ElementId, FocusHandle, InteractiveElement, IntoElement, ParentElement,
-    RenderOnce, SharedString, StatefulInteractiveElement, Styled, Window, div,
+    AnyElement, App, ClickEvent, ElementId, FocusHandle, InteractiveElement, IntoElement,
+    ParentElement, RenderOnce, SharedString, StatefulInteractiveElement, Styled, Window, div,
 };
 
 use crate::components::Icon;
@@ -13,13 +13,13 @@ use crate::{ClickListener, ControlSize, ControlVariant, Tint, focus_ring, pressa
 /// picks the recipe, a tint picks the ramp it resolves against, and hover,
 /// press and disabled follow on their own. So this component is only the box.
 ///
-/// The label is a string and the leading glyph an [`Icon`], where React takes
-/// arbitrary children: a button's label is a word, and an element tree in the
-/// place of one is a composition the caller can build out of a `div`.
+/// Labels may be text or native children, so icons and progress indicators
+/// keep the same press, focus and recipe behavior as a plain label.
 #[derive(IntoElement)]
 pub struct Button {
     id: ElementId,
     label: SharedString,
+    content: Option<Vec<AnyElement>>,
     size: ControlSize,
     variant: ControlVariant,
     tint: Tint,
@@ -37,6 +37,7 @@ impl Button {
         Button {
             id: id.into(),
             label: label.into(),
+            content: None,
             size: ControlSize::Small,
             variant: ControlVariant::Recessed,
             tint: Tint::Primary,
@@ -47,6 +48,12 @@ impl Button {
             focus_handle: None,
             on_click: None,
         }
+    }
+
+    /// Native children share the button's content color, type and gap.
+    pub fn content(mut self, children: Vec<AnyElement>) -> Self {
+        self.content = Some(children);
+        self
     }
 
     pub fn size(mut self, size: ControlSize) -> Self {
@@ -111,6 +118,7 @@ impl RenderOnce for Button {
         let Button {
             id,
             label,
+            content,
             variant,
             tint,
             full_width,
@@ -169,7 +177,10 @@ impl RenderOnce for Button {
                 .when_some(icon, |el, icon| {
                     el.child(icon.size(metrics.content.size).color(colors.content))
                 })
-                .child(label)
+                .map(|el| match content {
+                    Some(children) => el.children(children),
+                    None => el.child(label),
+                })
                 .when_some(shortcut, |el, shortcut| {
                     // A trailing shortcut is a hint, not part of the label —
                     // it takes the display cut and steps back.

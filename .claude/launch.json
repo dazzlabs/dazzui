@@ -2,11 +2,11 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "storybook",
+      "name": "playground",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": [
         "--filter",
-        "@dazzlabs/dazzui-storybook",
+        "@dazzlabs/dazzui-react-playground",
         "dev:preview"
       ],
       "port": 6006,

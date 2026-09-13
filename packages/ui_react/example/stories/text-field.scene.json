@@ -1,0 +1,651 @@
+{
+  "Default": {
+    "state": {
+      "text": "Jianying Li"
+    },
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 352
+      },
+      "children": [
+        {
+          "component": "TextField",
+          "id": "field",
+          "bind": {
+            "value": "text"
+          }
+        }
+      ]
+    },
+    "checkpoints": [
+      {
+        "id": "initial",
+        "steps": [],
+        "expect": {
+          "text": "Jianying Li"
+        }
+      },
+      {
+        "id": "edited",
+        "steps": [
+          {
+            "action": "fill",
+            "target": "field",
+            "value": "Ada Lovelace"
+          }
+        ],
+        "expect": {
+          "text": "Ada Lovelace"
+        }
+      }
+    ]
+  },
+  "Placeholder": {
+    "state": {
+      "text": ""
+    },
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 352
+      },
+      "children": [
+        {
+          "component": "TextField",
+          "id": "field",
+          "bind": {
+            "value": "text"
+          },
+          "props": {
+            "placeholder": "Search terms"
+          }
+        }
+      ]
+    }
+  },
+  "ReadOnly": {
+    "state": {
+      "text": "Read only"
+    },
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 352
+      },
+      "children": [
+        {
+          "component": "TextField",
+          "id": "field",
+          "bind": {
+            "value": "text"
+          },
+          "props": {
+            "readOnly": true
+          }
+        }
+      ]
+    }
+  },
+  "Disabled": {
+    "state": {
+      "text": "Disabled"
+    },
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 352
+      },
+      "children": [
+        {
+          "component": "TextField",
+          "id": "field",
+          "bind": {
+            "value": "text"
+          },
+          "props": {
+            "disabled": true
+          }
+        }
+      ]
+    }
+  },
+  "ErrorState": {
+    "state": {
+      "text": "Rejected value"
+    },
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 352
+      },
+      "children": [
+        {
+          "component": "TextField",
+          "id": "field",
+          "bind": {
+            "value": "text"
+          },
+          "props": {
+            "state": "error"
+          }
+        }
+      ]
+    }
+  },
+  "States": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 352
+      },
+      "children": [
+        {
+          "component": "TextField",
+          "props": {},
+          "id": "field-0",
+          "bind": {
+            "value": "field-0"
+          }
+        },
+        {
+          "component": "TextField",
+          "props": {
+            "placeholder": "Placeholder"
+          },
+          "id": "field-1",
+          "bind": {
+            "value": "field-1"
+          }
+        },
+        {
+          "component": "TextField",
+          "props": {
+            "readOnly": true
+          },
+          "id": "field-2",
+          "bind": {
+            "value": "field-2"
+          }
+        },
+        {
+          "component": "TextField",
+          "props": {
+            "disabled": true
+          },
+          "id": "field-3",
+          "bind": {
+            "value": "field-3"
+          }
+        },
+        {
+          "component": "TextField",
+          "props": {
+            "state": "error"
+          },
+          "id": "field-4",
+          "bind": {
+            "value": "field-4"
+          }
+        }
+      ]
+    },
+    "state": {
+      "field-0": "Jianying Li",
+      "field-1": "",
+      "field-2": "Read only",
+      "field-3": "Disabled",
+      "field-4": "Rejected value"
+    }
+  },
+  "Sizes": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 352
+      },
+      "children": [
+        {
+          "component": "TextField",
+          "props": {
+            "placeholder": "small",
+            "size": "small"
+          },
+          "id": "field-0",
+          "bind": {
+            "value": "field-0"
+          }
+        },
+        {
+          "component": "TextField",
+          "props": {
+            "placeholder": "medium",
+            "size": "medium"
+          },
+          "id": "field-1",
+          "bind": {
+            "value": "field-1"
+          }
+        },
+        {
+          "component": "TextField",
+          "props": {
+            "placeholder": "large",
+            "size": "large"
+          },
+          "id": "field-2",
+          "bind": {
+            "value": "field-2"
+          }
+        }
+      ]
+    },
+    "state": {
+      "field-0": "",
+      "field-1": "",
+      "field-2": ""
+    }
+  },
+  "BesideAButton": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 352
+      },
+      "children": [
+        {
+          "component": "ActionBar",
+          "children": [
+            {
+              "component": "TextField",
+              "props": {
+                "placeholder": "Search terms",
+                "size": "small"
+              },
+              "id": "field-0-0",
+              "bind": {
+                "value": "field-0-0"
+              }
+            },
+            {
+              "component": "Button",
+              "props": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "children": [
+                "Go"
+              ]
+            }
+          ]
+        },
+        {
+          "component": "ActionBar",
+          "children": [
+            {
+              "component": "TextField",
+              "props": {
+                "placeholder": "Search terms",
+                "size": "medium"
+              },
+              "id": "field-1-0",
+              "bind": {
+                "value": "field-1-0"
+              }
+            },
+            {
+              "component": "Button",
+              "props": {
+                "size": "medium",
+                "variant": "filled"
+              },
+              "children": [
+                "Go"
+              ]
+            }
+          ]
+        },
+        {
+          "component": "ActionBar",
+          "children": [
+            {
+              "component": "TextField",
+              "props": {
+                "placeholder": "Search terms",
+                "size": "large"
+              },
+              "id": "field-2-0",
+              "bind": {
+                "value": "field-2-0"
+              }
+            },
+            {
+              "component": "Button",
+              "props": {
+                "size": "large",
+                "variant": "filled"
+              },
+              "children": [
+                "Go"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "state": {
+      "field-0-0": "",
+      "field-1-0": "",
+      "field-2-0": ""
+    }
+  },
+  "Mono": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 352
+      },
+      "children": [
+        {
+          "component": "TextField",
+          "props": {
+            "mono": true
+          },
+          "id": "field-0",
+          "bind": {
+            "value": "field-0"
+          }
+        },
+        {
+          "component": "TextField",
+          "props": {
+            "mono": true
+          },
+          "id": "field-1",
+          "bind": {
+            "value": "field-1"
+          }
+        },
+        {
+          "component": "TextField",
+          "props": {
+            "mono": true,
+            "placeholder": "~/Library/Application Support"
+          },
+          "id": "field-2",
+          "bind": {
+            "value": "field-2"
+          }
+        }
+      ]
+    },
+    "state": {
+      "field-0": "https://api.deepl.com/v2",
+      "field-1": "sk-9f3c7a01b4224e8d",
+      "field-2": ""
+    }
+  },
+  "Tints": {
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 352
+      },
+      "children": [
+        {
+          "component": "TextField",
+          "props": {
+            "placeholder": "primary",
+            "tint": "primary"
+          },
+          "id": "field-0",
+          "bind": {
+            "value": "field-0"
+          }
+        },
+        {
+          "component": "TextField",
+          "props": {
+            "placeholder": "neutral",
+            "tint": "neutral"
+          },
+          "id": "field-1",
+          "bind": {
+            "value": "field-1"
+          }
+        },
+        {
+          "component": "TextField",
+          "props": {
+            "placeholder": "info",
+            "tint": "info"
+          },
+          "id": "field-2",
+          "bind": {
+            "value": "field-2"
+          }
+        },
+        {
+          "component": "TextField",
+          "props": {
+            "placeholder": "success",
+            "tint": "success"
+          },
+          "id": "field-3",
+          "bind": {
+            "value": "field-3"
+          }
+        },
+        {
+          "component": "TextField",
+          "props": {
+            "placeholder": "warning",
+            "tint": "warning"
+          },
+          "id": "field-4",
+          "bind": {
+            "value": "field-4"
+          }
+        },
+        {
+          "component": "TextField",
+          "props": {
+            "placeholder": "danger",
+            "tint": "danger"
+          },
+          "id": "field-5",
+          "bind": {
+            "value": "field-5"
+          }
+        }
+      ]
+    },
+    "state": {
+      "field-0": "",
+      "field-1": "",
+      "field-2": "",
+      "field-3": "",
+      "field-4": "",
+      "field-5": ""
+    }
+  },
+  "Controlled": {
+    "state": {
+      "name": "handbook"
+    },
+    "content": {
+      "component": "Col",
+      "props": {
+        "width": 352
+      },
+      "children": [
+        {
+          "component": "FormField",
+          "id": "field-group",
+          "props": {
+            "label": "File name"
+          },
+          "derive": {
+            "state": {
+              "if": {
+                "eq": [
+                  {
+                    "trim": {
+                      "state": "name"
+                    }
+                  },
+                  ""
+                ]
+              },
+              "then": "error",
+              "else": "default"
+            },
+            "hint": {
+              "if": {
+                "eq": [
+                  {
+                    "trim": {
+                      "state": "name"
+                    }
+                  },
+                  ""
+                ]
+              },
+              "then": "A file needs a name.",
+              "else": {
+                "concat": [
+                  "Saved as ",
+                  {
+                    "trim": {
+                      "state": "name"
+                    }
+                  },
+                  ".docx"
+                ]
+              }
+            }
+          },
+          "children": [
+            {
+              "component": "TextField",
+              "id": "name",
+              "bind": {
+                "value": "name"
+              },
+              "derive": {
+                "state": {
+                  "if": {
+                    "eq": [
+                      {
+                        "trim": {
+                          "state": "name"
+                        }
+                      },
+                      ""
+                    ]
+                  },
+                  "then": "error",
+                  "else": "default"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "component": "Button",
+          "id": "export",
+          "props": {
+            "variant": "filled"
+          },
+          "derive": {
+            "disabled": {
+              "eq": [
+                {
+                  "trim": {
+                    "state": "name"
+                  }
+                },
+                ""
+              ]
+            }
+          },
+          "children": [
+            "Export"
+          ]
+        }
+      ]
+    },
+    "checkpoints": [
+      {
+        "id": "initial",
+        "steps": [],
+        "expect": {
+          "name": "handbook"
+        },
+        "expectText": {
+          "field-group": "File nameSaved as handbook.docx"
+        },
+        "expectDisabled": {
+          "export": false
+        }
+      },
+      {
+        "id": "empty",
+        "steps": [
+          {
+            "action": "fill",
+            "target": "name",
+            "value": ""
+          }
+        ],
+        "expect": {
+          "name": ""
+        },
+        "expectText": {
+          "field-group": "File nameA file needs a name."
+        },
+        "expectDisabled": {
+          "export": true
+        }
+      },
+      {
+        "id": "whitespace",
+        "steps": [
+          {
+            "action": "fill",
+            "target": "name",
+            "value": " \t ﻿ "
+          }
+        ],
+        "expect": {
+          "name": " \t ﻿ "
+        },
+        "expectText": {
+          "field-group": "File nameA file needs a name."
+        },
+        "expectDisabled": {
+          "export": true
+        }
+      },
+      {
+        "id": "renamed",
+        "steps": [
+          {
+            "action": "fill",
+            "target": "name",
+            "value": "  Aurora  "
+          }
+        ],
+        "expect": {
+          "name": "  Aurora  "
+        },
+        "expectText": {
+          "field-group": "File nameSaved as Aurora.docx"
+        },
+        "expectDisabled": {
+          "export": false
+        }
+      }
+    ]
+  }
+}

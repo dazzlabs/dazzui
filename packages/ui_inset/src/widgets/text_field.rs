@@ -15,6 +15,8 @@ pub struct TextField {
     pub placeholder: String,
     pub size: ControlSize,
     pub invalid: bool,
+    pub mono: bool,
+    pub tint: Tint,
     pub disabled: bool,
     pub read_only: bool,
     pub obscure_text: bool,
@@ -45,6 +47,14 @@ impl TextField {
     }
     pub fn size(mut self, size: ControlSize) -> Self {
         self.size = size;
+        self
+    }
+    pub fn mono(mut self, mono: bool) -> Self {
+        self.mono = mono;
+        self
+    }
+    pub fn tint(mut self, tint: Tint) -> Self {
+        self.tint = tint;
         self
     }
     pub fn invalid(mut self, invalid: bool) -> Self {
@@ -97,11 +107,7 @@ impl State for TextFieldState {
         let v = Theme::of(app, context);
         let m = v.metrics(w.size);
         let focused = app.get(self).focused;
-        let tint = if w.invalid {
-            Tint::Danger
-        } else {
-            Tint::Primary
-        };
+        let tint = if w.invalid { Tint::Danger } else { w.tint };
         let accent = v.ramp(tint).shade(v.focus_ring_shade);
         let surface = if w.disabled {
             v.color_surface_sunken
@@ -125,13 +131,22 @@ impl State for TextFieldState {
         } else {
             v.label_medium
         };
-        let style = DefaultTextStyle::of(app, context)
-            .style
-            .merge(Some(&face.text_style().color(if w.disabled {
-                v.color_content_faint
-            } else {
-                v.color_content
-            })));
+        let mut style =
+            DefaultTextStyle::of(app, context)
+                .style
+                .merge(Some(&face.text_style().color(if w.disabled {
+                    v.color_content_faint
+                } else {
+                    v.color_content
+                })));
+        if w.mono {
+            style = style.font_family("monospace");
+        }
+        let placeholder_style = if w.mono {
+            face.text_style().font_family("monospace")
+        } else {
+            face.text_style()
+        };
         let mut field = CupertinoTextField::new()
             .decoration(None)
             .padding(EdgeInsetsGeometry::symmetric(
@@ -140,7 +155,7 @@ impl State for TextFieldState {
             ))
             .style(style)
             .placeholder(&w.placeholder)
-            .placeholder_style(Some(face.text_style().color(v.color_content_faint)))
+            .placeholder_style(Some(placeholder_style.color(v.color_content_faint)))
             .cursor_color(accent)
             .enabled(!w.disabled)
             .read_only(w.read_only)

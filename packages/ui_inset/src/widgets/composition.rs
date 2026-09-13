@@ -2,25 +2,39 @@ use super::{Callback, Pressable, Spinner};
 use crate::{ControlState, ControlVariant, Theme, Tint};
 use inset_foundation::App;
 use inset_painting::{
-    Border, BorderRadiusGeometry, BorderStyle, BoxDecoration, EdgeInsetsGeometry,
+    AlignmentGeometry, Border, BorderRadiusGeometry, BorderStyle, BoxDecoration, EdgeInsetsGeometry,
 };
-use inset_rendering::{BoxConstraints, CrossAxisAlignment, MainAxisSize};
+use inset_rendering::{BoxConstraints, CrossAxisAlignment, MainAxisAlignment, MainAxisSize};
 use inset_widgets::{
-    BuildContext, Column, ConstrainedBox, Container, Expanded, IntoWidget, Row, StatelessWidget,
-    Text, WidgetRef,
+    Align, BuildContext, Column, ConstrainedBox, Container, DefaultTextStyle, Expanded, IntoWidget,
+    Row, StatelessWidget, Text, WidgetRef,
 };
 use std::rc::Rc;
 #[derive(Debug, Clone)]
 pub struct ActionBar {
     pub children: Vec<WidgetRef>,
     pub vertical: bool,
+    pub align: MainAxisAlignment,
+    pub stretch: bool,
 }
 impl ActionBar {
     pub fn new(children: Vec<WidgetRef>) -> Self {
         Self {
             children,
             vertical: false,
+            align: MainAxisAlignment::Start,
+            stretch: false,
         }
+    }
+}
+impl ActionBar {
+    pub fn stretch(mut self, stretch: bool) -> Self {
+        self.stretch = stretch;
+        self
+    }
+    pub fn align(mut self, align: MainAxisAlignment) -> Self {
+        self.align = align;
+        self
     }
 }
 impl StatelessWidget for ActionBar {
@@ -34,7 +48,13 @@ impl StatelessWidget for ActionBar {
                 .into_widget()
         } else {
             Row::new()
-                .main_axis_size(MainAxisSize::Min)
+                .main_axis_size(MainAxisSize::Max)
+                .main_axis_alignment(self.align)
+                .cross_axis_alignment(if self.stretch {
+                    CrossAxisAlignment::Stretch
+                } else {
+                    CrossAxisAlignment::Center
+                })
                 .spacing(v.control_small_gap)
                 .children(self.children.clone())
                 .into_widget()
@@ -168,6 +188,7 @@ pub struct Step {
     pub label: String,
     pub meta: Option<String>,
     pub status: StepStatus,
+    pub tint: Tint,
 }
 impl Step {
     pub fn new(label: impl Into<String>, status: StepStatus) -> Self {
@@ -175,6 +196,7 @@ impl Step {
             label: label.into(),
             meta: None,
             status,
+            tint: Tint::Primary,
         }
     }
 }
@@ -187,7 +209,12 @@ impl StatelessWidget for Step {
             _ => v.color_content_muted,
         };
         let marker = match self.status {
-            StepStatus::Active => Spinner::new().into_widget(),
+            StepStatus::Active => Spinner {
+                size: crate::ControlSize::Medium,
+                tint: self.tint,
+                on_accent: false,
+            }
+            .into_widget(),
             StepStatus::Done => Text::new("✓")
                 .style(v.label_small.text_style().color(v.color_success.shade(600)))
                 .into_widget(),
@@ -197,13 +224,26 @@ impl StatelessWidget for Step {
         };
         let mut children = vec![
             marker,
-            Expanded::new(Text::new(&self.label).style(v.label_quiet.text_style().color(color)))
-                .into_widget(),
+            Expanded::new(
+                Text::new(&self.label).style(if self.status == StepStatus::Active {
+                    v.label_medium.text_style().color(color)
+                } else {
+                    v.label_quiet.text_style().color(color)
+                }),
+            )
+            .into_widget(),
         ];
         if let Some(meta) = &self.meta {
             children.push(
                 Text::new(meta)
-                    .style(v.caption_small.text_style().color(v.color_content_faint))
+                    .style(v.caption_small.text_style().color(
+                        if self.status == StepStatus::Active {
+                            v.control_colors(ControlVariant::Plain, self.tint, ControlState::Normal)
+                                .content
+                        } else {
+                            v.color_content_faint
+                        },
+                    ))
                     .into_widget(),
             );
         }
@@ -362,7 +402,7 @@ impl StatelessWidget for TableHead {
         let v = Theme::of(app, context);
         Container::new()
             .color(v.color_surface_chrome)
-            .padding(EdgeInsetsGeometry::symmetric(v.spacing_2, v.spacing_5))
+            .padding(EdgeInsetsGeometry::symmetric(0.0, v.spacing_5))
             .child(Row::new().children(self.cells.clone()))
             .into_widget()
     }
@@ -412,19 +452,55 @@ impl StatelessWidget for TableRow {
 pub struct TableCell {
     pub child: WidgetRef,
     pub flex: i32,
+    pub head: bool,
+    pub end: bool,
 }
 impl TableCell {
     pub fn new<K>(child: impl IntoWidget<K>) -> Self {
         Self {
             child: child.into_widget(),
             flex: 1,
+            head: false,
+            end: false,
         }
     }
 }
+impl TableCell {
+    pub fn head(mut self, head: bool) -> Self {
+        self.head = head;
+        self
+    }
+    pub fn end(mut self, end: bool) -> Self {
+        self.end = end;
+        self
+    }
+}
 impl StatelessWidget for TableCell {
-    fn build(&self, _: &mut App, _: BuildContext) -> WidgetRef {
-        Expanded::new(self.child.clone())
-            .flex(self.flex)
-            .into_widget()
+    fn build(&self, app: &mut App, context: BuildContext) -> WidgetRef {
+        let v = Theme::of(app, context);
+        let style = if self.head {
+            v.label_small.text_style().color(v.color_content_faint)
+        } else {
+            v.body_medium.text_style()
+        };
+        Expanded::new(
+            Container::new()
+                .padding(EdgeInsetsGeometry::symmetric(
+                    if self.head { v.spacing_2 } else { 0.0 },
+                    0.0,
+                ))
+                .child(
+                    Align::new()
+                        .height_factor(1.0)
+                        .alignment(if self.end {
+                            AlignmentGeometry::CENTER_RIGHT
+                        } else {
+                            AlignmentGeometry::CENTER_LEFT
+                        })
+                        .child(DefaultTextStyle::new(style, self.child.clone())),
+                ),
+        )
+        .flex(self.flex)
+        .into_widget()
     }
 }

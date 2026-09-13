@@ -189,6 +189,7 @@ pub struct Progress {
     pub value: Option<f64>,
     pub size: ControlSize,
     pub tint: Tint,
+    pub gradient: bool,
 }
 impl Progress {
     pub fn new(value: Option<f64>) -> Self {
@@ -197,6 +198,7 @@ impl Progress {
             value,
             size: ControlSize::Small,
             tint: Tint::Primary,
+            gradient: false,
         }
     }
 }
@@ -208,14 +210,22 @@ impl StatelessWidget for Progress {
             ControlSize::Medium => v.spacing_1_5,
             _ => v.spacing_1,
         };
-        let color = v.ramp(self.tint).shade(600);
+        let color = if self.gradient {
+            v.progress_gradient_from
+        } else {
+            v.ramp(self.tint).shade(600)
+        };
+        let end = self.gradient.then_some(v.progress_gradient_to);
+        let fill = move || {
+            SizedBox::expand().child(CustomPaint::new().painter(ProgressFill { color, end }))
+        };
         let child = if let Some(value) = self.value {
             Align::new()
                 .alignment(AlignmentGeometry::CENTER_LEFT)
                 .child(
                     FractionallySizedBox::new()
                         .width_factor(value)
-                        .child(Container::new().color(color)),
+                        .child(fill()),
                 )
                 .into_widget()
         } else {
@@ -224,11 +234,7 @@ impl StatelessWidget for Progress {
                 builder: Rc::new(move |_, _, value| {
                     Align::new()
                         .alignment(AlignmentGeometry::xy(value * 2.0 - 1.0, 0.0))
-                        .child(
-                            FractionallySizedBox::new()
-                                .width_factor(0.4)
-                                .child(Container::new().color(color)),
-                        )
+                        .child(FractionallySizedBox::new().width_factor(0.4).child(fill()))
                         .into_widget()
                 }),
             }
@@ -243,6 +249,40 @@ impl StatelessWidget for Progress {
                     .child(child),
             )
             .into_widget()
+    }
+}
+struct ProgressFill {
+    color: Color,
+    end: Option<Color>,
+}
+impl CustomPainter for ProgressFill {
+    fn paint(&self, _: &mut App, canvas: &mut Canvas, size: Size) {
+        if size.width() <= 0.0 || size.height() <= 0.0 {
+            return;
+        }
+        let paint = if let Some(end) = self.end {
+            Paint::from_shader(inset_embedder::valo::Shader::linear(
+                inset_embedder::valo::Point::new(0.0, 0.0),
+                inset_embedder::valo::Point::new(size.width() as f32, 0.0),
+                self.color.into(),
+                end.into(),
+            ))
+        } else {
+            Paint {
+                color: self.color.into(),
+                ..Default::default()
+            }
+        };
+        canvas.draw_rect(
+            inset_embedder::Rect::from_ltwh(0.0, 0.0, size.width(), size.height()),
+            &paint,
+        );
+    }
+    fn should_repaint(&self, _: &App, _: &dyn CustomPainter) -> bool {
+        true
+    }
+    fn as_any(&self) -> &dyn std::any::Any {
+        self
     }
 }
 #[derive(Debug, Clone)]
@@ -335,5 +375,53 @@ impl StatelessWidget for Skeleton {
             }),
         }
         .into_widget()
+    }
+}
+
+#[cfg(test)]
+mod progress_tests {
+    use super::*;
+    use inset_embedder::valo::{Op, Shader};
+    #[test]
+    fn gradient_records_the_theme_endpoints_over_the_actual_fill_width() {
+        let cell = inset_foundation::AppCell::new();
+        for (_, theme) in crate::THEMES {
+            for width in [0.0, 80.0, 160.0] {
+                let mut canvas = Canvas::new();
+                ProgressFill {
+                    color: theme.progress_gradient_from,
+                    end: Some(theme.progress_gradient_to),
+                }
+                .paint(&mut cell.borrow_mut(), &mut canvas, Size::new(width, 4.0));
+                let picture = canvas.build();
+                if width == 0.0 {
+                    assert_eq!(picture.draw_count(), 0);
+                    continue;
+                }
+                let paint = picture
+                    .ops()
+                    .iter()
+                    .find_map(|op| {
+                        if let Op::DrawRect { paint, .. } = op {
+                            Some(paint)
+                        } else {
+                            None
+                        }
+                    })
+                    .unwrap();
+                let Some(Shader::Linear {
+                    start, end, stops, ..
+                }) = &paint.shader
+                else {
+                    panic!("gradient must be painted")
+                };
+                assert_eq!(start.x, 0.0);
+                assert_eq!(end.x, width as f32);
+                assert_eq!(stops[0].color, theme.progress_gradient_from.into());
+                assert_eq!(stops[1].color, theme.progress_gradient_to.into());
+                assert_eq!(stops[0].offset, 0.0);
+                assert_eq!(stops[1].offset, 1.0);
+            }
+        }
     }
 }

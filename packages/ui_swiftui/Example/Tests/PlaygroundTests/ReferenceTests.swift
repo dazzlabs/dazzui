@@ -5,7 +5,7 @@ import XCTest
 
 /// The React reference, measured against.
 ///
-/// `Parity/reference/*.json` is what `apps/storybook` rendered: every
+/// `Parity/reference/*.json` is what `packages/ui_react/example` rendered: every
 /// component root on every story, in every theme, with its `data-*` axes and
 /// the box, border, corner, colours and type the browser computed. This test
 /// reads those probes back as *specimens* — a class and its axes — builds

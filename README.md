@@ -1,7 +1,7 @@
 # DazzUI
 
 The DazzUI design system: one set of design tokens, a package per
-platform that implements them, an app that documents both, and examples that
+platform that implements them, a playground in each platform package, and examples that
 put them to work.
 
 ## Workspace
@@ -18,7 +18,7 @@ shapes and behavior. See its [setup and playground](packages/mobile_ui_android/R
 | `packages/ui_gpui`   | `dazzui`               | The [GPUI](https://gpui.rs) implementation, in Rust, with a playground beside it.                                |
 | `packages/ui_inset` | `dazzui_inset` | Inset implementation in Rust, with generated themes and a native gallery. See its [setup and scope](packages/ui_inset/README.md). |
 | `packages/ui_winui3` | `DazzUI` | The WinUI 3 implementation, generated themes and native Windows playground. See its [README](packages/ui_winui3/README.md). |
-| `apps/storybook`     | `@dazzlabs/dazzui-storybook` | A gallery of both: every token, and every component with the tokens it is drawn from.                            |
+| `packages/ui_react/example`     | `@dazzlabs/dazzui-react-playground` | The React reference playground and shared scene sources.                            |
 | `examples/workbench` | `@dazzlabs/dazzui-example-workbench` | A Git-rooted agent workbench — project tabs, nine pages, a cross-project task queue — built entirely out of the React components. |
 | `examples/canvas`    | `@dazzlabs/dazzui-example-canvas` | A design canvas, where the drawing itself is painted out of the tint recipes. |
 
@@ -53,7 +53,7 @@ pnpm packages
 Browse them at <http://localhost:6006>:
 
 ```bash
-pnpm storybook
+pnpm playground
 ```
 
 Or see them composed into an app, at <http://localhost:5180>:
@@ -105,8 +105,8 @@ smoke tests. It can also build without pnpm; see
 | `pnpm tokens`          | Build `packages/ds`, generating into the platform packages |
 | `pnpm components`      | Build `packages/ui_react` into its `dist/`              |
 | `pnpm packages`        | Both of the above, in order                             |
-| `pnpm storybook`       | Build both packages, then start Storybook on port 6006  |
-| `pnpm storybook:build` | Build a static Storybook into `apps/storybook/dist`     |
+| `pnpm playground`       | Build both packages, then start Storybook on port 6006  |
+| `pnpm playground:build` | Build a static Storybook into `packages/ui_react/example/dist`     |
 | `pnpm workbench`       | Build both packages, then serve the example on port 5180 |
 | `pnpm workbench:desktop` | Build the example, then open it as a native window     |
 | `pnpm workbench:desktop:build` | Package the window into `dist-desktop/`          |

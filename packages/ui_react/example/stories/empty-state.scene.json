@@ -1,0 +1,340 @@
+{
+  "OnItsOwn": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 384
+      },
+      "children": [
+        {
+          "component": "Card",
+          "props": {
+            "variant": "sunken"
+          },
+          "children": [
+            {
+              "component": "EmptyState",
+              "props": {
+                "title": "No documents yet"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "WithAnAction": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 384
+      },
+      "children": [
+        {
+          "component": "Card",
+          "props": {
+            "variant": "sunken"
+          },
+          "children": [
+            {
+              "component": "EmptyState",
+              "props": {
+                "title": "No glossary terms match this filter"
+              },
+              "slots": {
+                "action": {
+                  "component": "Button",
+                  "children": [
+                    "Clear filter"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "WithTwoActions": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 384
+      },
+      "children": [
+        {
+          "component": "Card",
+          "props": {
+            "variant": "sunken"
+          },
+          "children": [
+            {
+              "component": "EmptyState",
+              "props": {
+                "title": "No documents yet"
+              },
+              "slots": {
+                "action": {
+                  "component": "ActionBar",
+                  "children": [
+                    {
+                      "component": "Button",
+                      "props": {
+                        "variant": "filled"
+                      },
+                      "children": [
+                        "Import a file"
+                      ]
+                    },
+                    {
+                      "component": "Button",
+                      "props": {
+                        "variant": "plain"
+                      },
+                      "children": [
+                        "Paste text"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "NothingYet": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 384
+      },
+      "children": [
+        {
+          "component": "Card",
+          "props": {
+            "variant": "sunken"
+          },
+          "children": [
+            {
+              "component": "EmptyState",
+              "props": {
+                "title": "No glossaries yet"
+              },
+              "slots": {
+                "action": {
+                  "component": "Button",
+                  "props": {
+                    "variant": "filled"
+                  },
+                  "children": [
+                    "New glossary"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "NothingMatched": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 384
+      },
+      "children": [
+        {
+          "component": "Card",
+          "props": {
+            "variant": "sunken"
+          },
+          "children": [
+            {
+              "component": "EmptyState",
+              "props": {
+                "title": "No terms match “placeholder”"
+              },
+              "slots": {
+                "action": {
+                  "component": "Button",
+                  "children": [
+                    "Clear search"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "NothingToDo": {
+    "content": {
+      "component": "Box",
+      "props": {
+        "width": 384
+      },
+      "children": [
+        {
+          "component": "Card",
+          "props": {
+            "variant": "sunken"
+          },
+          "children": [
+            {
+              "component": "EmptyState",
+              "props": {
+                "title": "Everything is translated"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Overview": {
+    "content": {
+      "component": "Page",
+      "props": {
+        "title": "EmptyState",
+        "description": "What a pane shows before it has content: one muted line and at most one action. The surrounding chrome already names the pane, so there is no heading, no explainer copy, and no illustration. It centres in whatever it is given, so it needs no height of its own."
+      },
+      "children": [
+        {
+          "component": "Section",
+          "props": {
+            "title": "With and without an action",
+            "description": "The action row takes the control gap rather than the block gap, because it holds controls. One action is the norm; two is the most it should ever carry, and only when neither is obviously the way out."
+          },
+          "children": [
+            {
+              "component": "Grid",
+              "props": {
+                "min": 288
+              },
+              "children": [
+                {
+                  "component": "Card",
+                  "props": {
+                    "variant": "sunken"
+                  },
+                  "children": [
+                    {
+                      "component": "EmptyState",
+                      "props": {
+                        "title": "No documents yet"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "component": "Card",
+                  "props": {
+                    "variant": "sunken"
+                  },
+                  "children": [
+                    {
+                      "component": "EmptyState",
+                      "props": {
+                        "title": "No glossary terms match this filter"
+                      },
+                      "slots": {
+                        "action": {
+                          "component": "Button",
+                          "children": [
+                            "Clear filter"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "component": "Section",
+          "props": {
+            "title": "Wording",
+            "description": "An empty pane and an empty result are different states and read differently: one says nothing has been added, the other says a filter matched nothing. Copy is the only thing carrying that difference, so it has to be exact."
+          },
+          "children": [
+            {
+              "component": "Grid",
+              "props": {
+                "min": 256
+              },
+              "children": [
+                {
+                  "component": "Card",
+                  "props": {
+                    "variant": "sunken"
+                  },
+                  "children": [
+                    {
+                      "component": "EmptyState",
+                      "props": {
+                        "title": "No glossaries yet"
+                      },
+                      "slots": {
+                        "action": {
+                          "component": "Button",
+                          "props": {
+                            "variant": "filled"
+                          },
+                          "children": [
+                            "New glossary"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "component": "Card",
+                  "props": {
+                    "variant": "sunken"
+                  },
+                  "children": [
+                    {
+                      "component": "EmptyState",
+                      "props": {
+                        "title": "No terms match “placeholder”"
+                      },
+                      "slots": {
+                        "action": {
+                          "component": "Button",
+                          "children": [
+                            "Clear search"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "component": "Card",
+                  "props": {
+                    "variant": "sunken"
+                  },
+                  "children": [
+                    {
+                      "component": "EmptyState",
+                      "props": {
+                        "title": "Everything is translated"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

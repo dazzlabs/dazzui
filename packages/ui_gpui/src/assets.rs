@@ -29,6 +29,8 @@ use gpui::{AssetSource, SharedString};
 /// The names are Fluent's own, so a component naming `CHECKMARK_12_FILLED`
 /// names the same glyph the React component imports as `Checkmark12Filled`.
 pub mod icons {
+    pub const CIRCLE_20_FILLED: &str = "dazzui/icons/circle_20_filled.svg";
+    pub const ARROW_DOWNLOAD_20_REGULAR: &str = "dazzui/icons/arrow_download_20_regular.svg";
     pub const ALERT_16_REGULAR: &str = "dazzui/icons/alert_16_regular.svg";
     pub const CHECKBOX_CHECKED_16_REGULAR: &str =
         "dazzui/icons/checkbox_checked_16_regular.svg";
@@ -61,6 +63,14 @@ pub mod icons {
 /// Every glyph, embedded. Nothing is read from disk at runtime, so a host
 /// ships one binary rather than a binary and a resource directory.
 const FILES: &[(&str, &str)] = &[
+    (
+        icons::CIRCLE_20_FILLED,
+        include_str!("../assets/icons/circle_20_filled.svg"),
+    ),
+    (
+        icons::ARROW_DOWNLOAD_20_REGULAR,
+        include_str!("../assets/icons/arrow_download_20_regular.svg"),
+    ),
     (
         icons::ALERT_16_REGULAR,
         include_str!("../assets/icons/alert_16_regular.svg"),

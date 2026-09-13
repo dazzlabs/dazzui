@@ -1,12 +1,9 @@
+import '../generated/scenes.dart';
 import '../stories/accordion_stories.dart';
 import '../stories/action_bar_stories.dart';
 import '../stories/aside_stories.dart';
 import '../stories/autocomplete_stories.dart';
 import '../stories/avatar_stories.dart';
-import '../stories/badge_stories.dart';
-import '../stories/button_stories.dart';
-import '../stories/callout_stories.dart';
-import '../stories/card_stories.dart';
 import '../stories/checkbox_stories.dart';
 import '../stories/code_block_stories.dart';
 import '../stories/code_stories.dart';
@@ -14,7 +11,6 @@ import '../stories/collapsible_stories.dart';
 import '../stories/combobox_stories.dart';
 import '../stories/context_menu_stories.dart';
 import '../stories/dialog_stories.dart';
-import '../stories/divider_stories.dart';
 import '../stories/drawer_stories.dart';
 import '../stories/empty_state_stories.dart';
 import '../stories/form_field_stories.dart';
@@ -44,7 +40,6 @@ import '../stories/skeleton_stories.dart';
 import '../stories/slider_stories.dart';
 import '../stories/spinner_stories.dart';
 import '../stories/splitter_stories.dart';
-import '../stories/step_list_stories.dart';
 import '../stories/switch_stories.dart';
 import '../stories/table_stories.dart';
 import '../stories/tag_stories.dart';
@@ -72,7 +67,7 @@ import 'story.dart';
 class StoryIndex {
   StoryIndex._();
 
-  static final List<StoryGroup> groups = [
+  static final List<StoryGroup> groups = generatedGroups([
     StoryGroup('Tokens', [
       ColorStories.page,
       TypographyStories.page,
@@ -88,10 +83,6 @@ class StoryIndex {
       AsideStories.page,
       AutocompleteStories.page,
       AvatarStories.page,
-      BadgeStories.page,
-      ButtonStories.page,
-      CalloutStories.page,
-      CardStories.page,
       CheckboxStories.page,
       CodeStories.page,
       CodeBlockStories.page,
@@ -100,7 +91,6 @@ class StoryIndex {
       ContextMenuStories.page,
       TableStories.page,
       DialogStories.page,
-      DividerStories.page,
       DrawerStories.page,
       EmptyStateStories.page,
       FormStories.page,
@@ -130,7 +120,6 @@ class StoryIndex {
       SkeletonStories.page,
       SliderStories.page,
       SplitterStories.page,
-      StepListStories.page,
       SwitchStories.page,
       TagStories.page,
       TextFieldStories.page,
@@ -139,7 +128,7 @@ class StoryIndex {
       ToggleGroupStories.page,
       TreeStories.page,
     ]),
-  ];
+  ]);
 
   /// Where the canvas points when the window opens.
   static const StoryRef first = StoryRef('Button', 'Overview');
@@ -159,7 +148,7 @@ class StoryIndex {
     for (final StoryGroup group in groups)
       for (final StoryPage page in group.pages)
         for (final Story story in page.stories)
-          storyId(group.name, page.name, story.name),
+          story.sourceId ?? storyId(group.name, page.name, story.name),
   ];
 
   static Story? story(StoryRef ref) {
