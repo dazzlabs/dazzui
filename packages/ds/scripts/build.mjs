@@ -22,11 +22,6 @@ import { expandRecipes } from './recipes.mjs'
  */
 const TARGETS = [
   {
-    package: 'dazzui (inset)',
-    dir: path.join('..', 'ui_inset', 'src', 'generated'),
-    files: ['inset/colors.rs', 'inset/theme_variables.rs'],
-  },
-  {
     package: 'DazzUI (WinUI 3)',
     dir: path.join('..', 'ui_winui3', 'src', 'DazzUI', 'Generated'),
     files: ['winui3/tokens.json'],
@@ -76,11 +71,6 @@ const TARGETS = [
       'mobile-swiftui/Palette.swift',
       'mobile-swiftui/ThemeFamily.swift',
     ],
-  },
-  {
-    package: 'dazzui (gpui)',
-    dir: path.join('..', 'ui_gpui', 'src', 'generated'),
-    files: ['gpui/colors.rs', 'gpui/theme_variables.rs'],
   },
 ]
 

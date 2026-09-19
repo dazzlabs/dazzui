@@ -21,9 +21,6 @@ export const spacing = {
   react: token => `var(--${token.replace('.', '-')})`,
   dart: token => `spacing${step(token).replace('-', '')}`,
   swift: token => `theme.vars.spacing${step(token).replace('-', '')}`,
-  gpui: token =>
-    `state.theme.variables().spacing_${step(token).replace('-', '_')}`,
-  inset: token => `v.spacing_${step(token).replace('-', '_')}`,
 }
 
 /** Token lookups the interpreted runtimes cannot derive by reflection. */

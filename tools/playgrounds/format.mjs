@@ -25,7 +25,5 @@ export function formatOutputs(outputs) {
           content
         )
       )
-    if (file.endsWith('.rs'))
-      outputs.set(file, run('rustfmt', ['--edition', '2024'], content))
   }
 }

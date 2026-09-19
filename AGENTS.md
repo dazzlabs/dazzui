@@ -38,22 +38,6 @@ The DazzUI design system, as a pnpm workspace:
   supplies the app plumbing with `WidgetsApp`; see `example/lib/host.dart`
   and `test/host.dart`. `example/` holds the playground app (`flutter run`
   from that directory, macOS and web).
-- `packages/ui_gpui` (`dazzui`) — the [GPUI] implementation, in Rust.
-  A Cargo workspace, invisible to pnpm: run `cargo test` / `cargo clippy` from
-  inside the package. Like the others, `src/generated/` holds what `ds` wrote
-  and is committed. GPUI has no cascade *and* no default arguments, so the
-  generator splits the token set in two — `ThemeSeed` is what a theme
-  re-points and a `const fn` derives the rest — which is what lets each theme
-  be a `static` a component borrows rather than a value it rebuilds.
-  `example/` holds the playground (`cargo run -p dazzui_playground`), a
-  workspace member so the two share one `target/`.
-- `packages/ui_inset` (`dazzui_inset`) — the Inset implementation in Rust,
-  ported from Flutter. An independent Cargo workspace with a 54-page example;
-  `pnpm inset`, `pnpm inset:test`, and `pnpm inset:check` run it and its checks.
-  It uses the sibling `../inset` checkout and the package-pinned nightly toolchain.
-  `ds/plugins/inset.mjs` shares the Rust token compiler with GPUI and emits
-  committed native Inset sources under `src/generated/`; never edit them.
-  See its README and PORTING.md for setup and remaining behavioral parity gaps.
 - `packages/ui_winui3` (`DazzUI`) — the WinUI 3 implementation, in C#.
   Invisible to pnpm's workspace graph; `pnpm winui3` builds and opens the
   unpackaged, self-contained Windows playground. `pnpm winui3:test` runs
@@ -110,7 +94,14 @@ The split is the point: anything a platform package needs but cannot express
 belongs in `packages/ds`, so the platforms stay implementations of one design
 rather than four designs that resemble each other.
 
-[GPUI]: https://gpui.rs
+**The two Rust ports are maintained on `platform/gpui`, not here.**
+`packages/ui_gpui` (the [GPUI](https://gpui.rs) implementation) and
+`packages/ui_inset` (the Inset one, ported from Flutter) live on that branch
+with everything they need: their own generated sources, the `ds` plugins that
+write them (`gpui.mjs`, `inset.mjs` and the `rust.mjs` token compiler the two
+share), their parity target, and the playground adapters that compile the
+shared scenes into Rust. A token or scene change that has to reach them is
+merged into that branch rather than carried here.
 
 Every domain-free component from `beyondtranslate/packages/ui` has been
 migrated. What is left there is the desktop shell — WindowFrame, Sidebar,
@@ -184,20 +175,6 @@ pnpm parity:flutter    # draw the Flutter specimens in a real window, where the 
 pnpm typecheck         # tsc over every workspace package
 ```
 
-The Rust package is invisible to pnpm, the way the Flutter one is. From
-`packages/ui_gpui`:
-
-```bash
-cargo test             # the token assertions, and a headless draw of every component
-```
-
-```bash
-cargo run -p dazzui_playground   # the playground, in a window
-```
-
-Add `--features runtime-shaders` on a Mac without the Metal toolchain
-installed; the package README says why.
-
 ```bash
 pnpm lint              # oxlint over the workspace
 ```
@@ -222,8 +199,6 @@ pnpm format            # oxfmt over the workspace
      sources, from `plugins/flutter.mjs`
    - `swiftui/Colors.swift` + `swiftui/ThemeVariables.swift` — the Swift token
      sources, from `plugins/swiftui.mjs`
-   - `gpui/colors.rs` + `gpui/theme_variables.rs` — the Rust token sources,
-     from `plugins/gpui.mjs`
 
    `plugins/contrast.mjs` runs alongside and emits nothing: it holds the ink
    ladder to WCAG contrast in every theme and fails the build when a
@@ -294,9 +269,9 @@ to is a number rather than an impression.
    - `screenshots/<theme>/<id>.png` — for the side-by-side report; never
      distributed, since a screenshot is only reproducible on one machine
 2. It then distributes `stories.json` and `reference/` into each platform's
-   parity directory — `packages/ui_flutter/example/test/parity/`,
-   `packages/ui_swiftui/Example/Tests/PlaygroundTests/Parity/`,
-   `packages/ui_gpui/tests/parity/` — so a platform's tests run from inside
+   parity directory — `packages/ui_flutter/example/test/parity/` and
+   `packages/ui_swiftui/Example/Tests/PlaygroundTests/Parity/` — so a
+   platform's tests run from inside
    the package. Unlike the generated token files, **none of this is
    committed**: it is a measurement, not a contract, and it is regenerated
    by `pnpm parity`. A checkout without it skips the parity tests rather
@@ -337,18 +312,16 @@ the browser's, and a value the specimen's appearances disagree on is
 skipped as the story's rather than the component's.
 
 **And every side draws.** A value table is as complete as the framework
-under it allows, and only one of the three will say what colour a view
+under it allows, and not every one of them will say what colour a view
 painted or what face it set a label in: a SwiftUI `View` is a value rather
-than a tree, and GPUI's scene is `pub(crate)` and gone by the time a test
-could look at it. So each side also *draws* every specimen it can build, at
+than a tree. So each side also *draws* every specimen it can build, at
 the reference's scale, and the viewer puts the pictures side by side with
 how much of each differs from React's. The extractor draws one picture per
 specimen beside its screenshots; SwiftUI draws with `ImageRenderer` in the
 suite; Flutter draws in a **real window** (`pnpm parity:flutter`), because a
 widget test resolves a face-less `TextStyle` to a font whose every glyph is
 a filled rectangle, and the generated type styles name only a fallback
-family on purpose. GPUI cannot draw at all in a headless test, so it has
-pictures from no one and its table is what it has.
+family on purpose.
 
 A specimen whose React element holds other elements rather than one run of
 text — a card's heading over a paragraph — is drawn but not counted: an
@@ -379,10 +352,6 @@ pass — an adapter that builds the wrong thing is fixed in the adapter.
 
 ```bash
 cd packages/ui_flutter/example && flutter test test/parity/
-```
-
-```bash
-cd packages/ui_gpui && cargo test --test parity -- --nocapture
 ```
 
 ```bash
@@ -595,7 +564,8 @@ a stored member of its own — `controlColorTintedContentNormalShade`,
 `control_color_filled_surface_normal_shade` — which the theme instance
 re-points and the computed descriptor reads. Only shades that carry a mode
 get one; the rest stay literal. This is what the parity tests caught first:
-every dark-theme control colour on Swift and GPUI was one step off.
+every dark-theme control colour on Swift and in the Rust port was one step
+off.
 
 ## Component conventions
 
@@ -709,34 +679,6 @@ every dark-theme control colour on Swift and GPUI was one step off.
   is resolved by the same plugin onto `:root`, so no component has to apply an
   alpha in CSS.
 
-## GPUI conventions
-
-The Rust port follows the component conventions above; what is worth knowing
-is where the platform forced a different shape.
-
-- A component is a `RenderOnce` builder struct — `Button::new(id, label)` then
-  `.variant()`, `.tint()`, `.on_click()` — and reads the theme through
-  `cx.theme()`. It holds no state, so anything it has to remember between
-  frames goes in GPUI's element state through `pressable` or `latched` rather
-  than into a host's view.
-- **`pressable` is the state machine.** GPUI's own `hover()` and `active()`
-  refinements resolve a phase after a text run's colour is baked, so a recipe
-  whose content darkens under the pointer would move its surface and leave its
-  label behind. `pressable` decides the state before the subtree is built,
-  which is why every interactive component is wrapped in one.
-- Colour and geometry come off `cx.theme().vars` — never a literal. Where the
-  React stylesheet itself holds one (a spinner's 25% track, a dangerous
-  dialog's 34% edge), it is a named `const` with the same reason beside it.
-- `src/components/mod.rs` is the registry, the way `styles/components.css` is
-  on the React side: a component ships once it is listed there.
-- Tests are the substitute for a Storybook. `tests/render.rs` draws every
-  component in every theme headlessly, measures the control heights
-  against the size profile, asserts on the recipes, and simulates the pointer
-  and the keyboard — which is the part of a screenshot that can be checked
-  without a screen. It is also what catches a wiring bug: a key listener on a
-  descendant of the focused element never fires, and only a simulated
-  backspace says so.
-
 ## Playground conventions
 
 - Stories live in `packages/ui_react/example/stories/*.stories.tsx`, titled
@@ -749,7 +691,7 @@ is where the platform forced a different shape.
 - Portable story content lives beside the declaration in `*.scene.json` and
   is consumed through `defineStory`. Run `pnpm playgrounds:generate` after
   changing declarations or scenes; `pnpm playgrounds:check` detects stale
-  output. Generation needs Dart and rustfmt to format native output.
+  output. Generation needs Dart to format native output.
 - All story content, fixtures, state and interactions must be expressed by shared
   declarations. Platform adapters contain framework plumbing and component mappings
   only. Native story-specific implementations are temporary migration debt.
@@ -802,18 +744,16 @@ is where the platform forced a different shape.
   itself with DazzUI tokens; keep it that way.
 
 **The platform playgrounds are organised the same way**, in their own dialect:
-`packages/ui_swiftui/Example`, `packages/ui_flutter/example` and
-`packages/ui_gpui/example` each carry a `Storybook/` (`storybook/`) framework —
+`packages/ui_swiftui/Example` and `packages/ui_flutter/example` each carry a
+`Storybook/` (`storybook/`) framework —
 a `Story`, a `StoryPage`, a `StoryGroup`, a registry, the sidebar tree, and the
 same split between documentation furniture (`Gallery`) and bare-story
 arrangement (`Stage`) — and one story file per component beside it. A page
-ships once it is named in the registry. The GPUI index is a `const`, because a
-story there is a plain `fn` pointer with nothing to capture.
+ships once it is named in the registry.
 
-Two of them are also where the coverage is: the Flutter example's widget test
-pumps every story in every theme, and the GPUI example's `cargo test` draws
-every story in every theme headlessly. Both are what catch a story nobody has
-opened lately — an overflow, a bad length, a lost element state.
+The Flutter one is also where the coverage is: its widget test pumps every
+story in every theme, which is what catches a story nobody has opened lately —
+an overflow, a bad length, a lost element state.
 
 ## Example conventions
 

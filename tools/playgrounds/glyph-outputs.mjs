@@ -1,4 +1,4 @@
-import { GLYPHS, camel, glyphSvg, snake } from './glyphs.mjs'
+import { GLYPHS, snake } from './glyphs.mjs'
 
 const q = JSON.stringify
 const header =
@@ -23,62 +23,6 @@ ${names.map(name => `  ${q(name)}: FluentIcons.${snake(name)},`).join('\n')}
 `
   )
   outputs.set(
-    'packages/ui_gpui/example/src/generated_glyphs.rs',
-    `${header}//! Serves the scene glyphs beside the crate's own asset source.
-use std::borrow::Cow;
-
-use gpui::{AssetSource, SharedString};
-
-const GLYPHS: &[(&str, &str)] = &[
-${names
-  .map(name => {
-    const { grid, data } = glyphSvg(name)
-    return `  (${q(`scene-glyphs/${snake(name)}.svg`)}, ${q(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${grid} ${grid}"><path d="${data}"/></svg>`)}),`
-  })
-  .join('\n')}
-];
-
-pub fn path(name: &str) -> &'static str {
-  match name {
-${names.map(name => `    ${q(name)} => ${q(`scene-glyphs/${snake(name)}.svg`)},`).join('\n')}
-    _ => panic!("unknown scene glyph"),
-  }
-}
-
-pub struct Assets;
-
-impl AssetSource for Assets {
-  fn load(&self, path: &str) -> gpui::Result<Option<Cow<'static, [u8]>>> {
-    if let Some((_, svg)) = GLYPHS.iter().find(|(name, _)| *name == path) {
-      return Ok(Some(Cow::Borrowed(svg.as_bytes())));
-    }
-    dazzui::assets::Assets.load(path)
-  }
-
-  fn list(&self, path: &str) -> gpui::Result<Vec<SharedString>> {
-    dazzui::assets::Assets.list(path)
-  }
-}
-`
-  )
-  outputs.set(
-    'packages/ui_inset/example/src/generated_glyphs.rs',
-    `${header}use dazzui_inset as ui;
-
-pub fn glyph(name: &str) -> ui::FluentGlyph {
-  match name {
-${names
-  .map(name => {
-    const { grid, data } = glyphSvg(name)
-    return `    ${q(name)} => ui::FluentGlyph::Path(${q(data)}, ${grid}.0),`
-  })
-  .join('\n')}
-    _ => panic!("unknown scene glyph"),
-  }
-}
-`
-  )
-  outputs.set(
     'packages/mobile_ui_android/example/src/main/kotlin/dev/dazzlabs/dazzui/mobile/example/GeneratedGlyphs.kt',
     `${header}package dev.dazzlabs.dazzui.mobile.example
 
@@ -97,5 +41,3 @@ ${names.map(name => `    ${q(name)} to Icons.Filled.${GLYPHS[name].material},`).
   )
   return outputs
 }
-
-export { camel }

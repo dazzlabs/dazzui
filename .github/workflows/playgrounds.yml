@@ -18,11 +18,9 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '24.21.0'
-      - name: Install pinned formatting and Flutter runtimes
+      - name: Install the pinned Flutter runtime
         shell: bash
         run: |
-          rustup toolchain install 1.98.1 --profile minimal --component rustfmt
-          rustup default 1.98.1
           git init "$RUNNER_TEMP/flutter"
           git -C "$RUNNER_TEMP/flutter" remote add origin https://github.com/flutter/flutter.git
           git -C "$RUNNER_TEMP/flutter" fetch --depth 1 origin c8c5e3bd7542962ee8b09a12ac469d7d1ff823e0

@@ -17,7 +17,7 @@ pnpm parity                     # measure the React build and distribute referen
 pnpm parity:view                # compare platform measurements
 ```
 
-Generation requires Node, Dart (`DART` can select its executable), and rustfmt.
+Generation requires Node and Dart (`DART` can select its executable).
 Native output is formatted before comparison. Neither a native package nor its
 example requires Node to build from a checkout. `pnpm playground:test` expects a
 current build; install Chromium with `pnpm exec playwright install chromium`
@@ -75,8 +75,8 @@ frames. Errors fail automation instead of reporting a successful empty canvas.
 
 All 64 React pages and 488 stories have moved. There are now 143 shared declarations:
 six ActionBar scenes, 13 Badge scenes, all 17 Button stories (including Overview), eight Switch scenes, eleven TextField
-scenes, three FormField scenes, seven Spinner scenes, ten KeyCap scenes, all twelve Card scenes, nine Progress scenes, all eight StepList scenes, all eleven Callout scenes, seven EmptyState scenes, five SectionLabel scenes, eight Divider scenes, five Checkbox scenes, two Table scenes and one Dialog confirmation. Flutter, desktop SwiftUI, GPUI, native iOS and Android consume all 143; WinUI 3 and Inset consume 18 static Button and Badge scenes. The handwritten Button, Badge, StepList, Callout, Card and Divider
-pages in Flutter, SwiftUI and GPUI have been removed. Remaining scene content and
+scenes, three FormField scenes, seven Spinner scenes, ten KeyCap scenes, all twelve Card scenes, nine Progress scenes, all eight StepList scenes, all eleven Callout scenes, seven EmptyState scenes, five SectionLabel scenes, eight Divider scenes, five Checkbox scenes, two Table scenes and one Dialog confirmation. Flutter, desktop SwiftUI, native iOS and Android consume all 143; WinUI 3 consumes 18 static Button and Badge scenes. The handwritten Button, Badge, StepList, Callout, Card and Divider
+pages in Flutter and SwiftUI have been removed. Remaining scene content and
 interaction migrations, native stateful adapters, and mobile semantic adapters
 are still pending.
 
@@ -88,17 +88,14 @@ emits it. It currently fails intentionally; directory generation and native
 fallbacks do not satisfy this completion gate.
 
 Flutter, SwiftUI and WinUI merge portable declarations into their catalogs,
-including new stories and pages without handwritten placeholders. GPUI emits its
-entire const catalog, selecting generated renderers for portable scenes and native
-render functions for the remaining entries. Matching IDs and display names come
-from React; native-only extensions remain explicit. A generated catalog is not
-counted as generated scene content.
+including new stories and pages without handwritten placeholders. Matching IDs
+and display names come from React; native-only extensions remain explicit. A
+generated catalog is not counted as generated scene content.
 
 `tools/playgrounds/coverage.json` enumerates the remaining work per platform.
 An existing native rendering is not claimed as generated content or pixel parity.
 The mobile examples keep system controls and are not measured against desktop
-React geometry. Inset currently lists portable specimens after its existing
-component overviews, since its previous gallery had no per-story index.
+React geometry.
 
 ## Visual testing
 
@@ -156,8 +153,6 @@ the scene namespace and checkpoints can address their interactive descendants.
 
 `Grid.min` declares a minimum column width in logical pixels. Columns account for
 the shared spacing gap and preserve the width of unfilled last-row columns.
-GPUI retains the measured column count only as scene layout state and requests
-a fresh view render when the allocated width changes.
 
 Inline typography uses named `fontSize` tokens and a `mono` flag; dimensions stay
 in logical pixels. The static importer expands pure local templates into scene

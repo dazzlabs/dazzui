@@ -74,10 +74,6 @@ const TARGETS = [
     // bundle, and four themes' worth of drawings share their file names.
     dir: path.join('..', '..', 'ui_swiftui', 'Example', 'Parity'),
   },
-  {
-    package: 'dazzui (gpui)',
-    dir: path.join('..', '..', 'ui_gpui', 'tests', 'parity'),
-  },
 ]
 
 /**

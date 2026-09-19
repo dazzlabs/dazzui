@@ -46,9 +46,7 @@ an adapter is given the axes and the text and nothing else.
 
 The drawings come from `pnpm parity` for React, from the suite itself for
 SwiftUI, and from `pnpm parity:flutter` for Flutter — a real window,
-because a widget test draws every glyph as a filled rectangle. GPUI cannot
-draw in a headless test at all, so it has no pictures and its table is what
-it has.
+because a widget test draws every glyph as a filled rectangle.
 
 **What is comparable is the suite's decision, not this page's.** The viewer
 renders what it is given and asks only whether both sides have a value —

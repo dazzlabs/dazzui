@@ -15,19 +15,22 @@ shapes and behavior. See its [setup and playground](packages/mobile_ui_android/R
 | `packages/ds`        | `@dazzlabs/dazzui-ds`           | The design system itself: tokens built with [Terrazzo](https://terrazzo.app/). A generator, not a dependency.    |
 | `packages/ui_react`  | `@dazzlabs/dazzui-react`     | The React implementation. Plain CSS over the tokens — no Tailwind, no icon set.                                  |
 | `packages/mobile_ui_ios` | `DazzMobileUI` | Native SwiftUI mobile controls with ds colours; system typography, geometry and behaviour. |
-| `packages/ui_gpui`   | `dazzui`               | The [GPUI](https://gpui.rs) implementation, in Rust, with a playground beside it.                                |
-| `packages/ui_inset` | `dazzui_inset` | Inset implementation in Rust, with generated themes and a native gallery. See its [setup and scope](packages/ui_inset/README.md). |
 | `packages/ui_winui3` | `DazzUI` | The WinUI 3 implementation, generated themes and native Windows playground. See its [README](packages/ui_winui3/README.md). |
 | `packages/ui_react/example`     | `@dazzlabs/dazzui-react-playground` | The React reference playground and shared scene sources.                            |
 | `examples/workbench` | `@dazzlabs/dazzui-example-workbench` | A Git-rooted agent workbench — project tabs, nine pages, a cross-project task queue — built entirely out of the React components. |
 | `examples/canvas`    | `@dazzlabs/dazzui-example-canvas` | A design canvas, where the drawing itself is painted out of the tint recipes. |
 
 Further platform packages sit beside `ui_react` as they land — `ui_flutter`,
-`ui_swiftui`, `ui_gpui` — each implementing the same tokens for its own
+`ui_swiftui` — each implementing the same tokens for its own
 platform. Only
 `packages/ds` decides what a value is, and it hands each platform its own
 generated sources rather than being installed alongside them: a platform
 package builds, ships and is consumed on its own.
+
+The two Rust ports — `packages/ui_gpui` and `packages/ui_inset` — are
+maintained on the `platform/gpui` branch rather than here. Everything they
+need is on it: their own generated sources, the `ds` plugins that write them,
+and the playground adapters that compile the shared scenes into Rust.
 
 `examples/` is where the system is used rather than documented. A gallery shows
 every component on its own; an example has to make them agree with each other,
@@ -78,15 +81,6 @@ pnpm workbench:desktop
 ```bash
 pnpm canvas:desktop
 ```
-
-The Rust package is invisible to pnpm, the way the Flutter one is. Its
-playground opens in a native window:
-
-```bash
-cargo run -p dazzui_playground
-```
-
-from `packages/ui_gpui`.
 
 The WinUI 3 playground runs on Windows with the .NET 8 SDK or later:
 

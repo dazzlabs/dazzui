@@ -73,8 +73,8 @@ Sources/DazzUI/
 ```
 
 `Views/` rather than `Components/` because each platform package speaks its
-own dialect: React has `components/`, Flutter has `widgets/`, GPUI has
-`components/`, and the SwiftUI word for a piece of interface is `View`. The
+own dialect: React has `components/`, Flutter has `widgets/`, and the SwiftUI
+word for a piece of interface is `View`. The
 *names* inside follow React exactly; the folder follows the platform.
 
 ## Foundation

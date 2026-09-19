@@ -49,7 +49,6 @@ const PLATFORMS: { id: PlatformId; label: string; dir: string }[] = [
     label: 'SwiftUI',
     dir: 'packages/ui_swiftui/Example/Parity',
   },
-  { id: 'gpui', label: 'GPUI', dir: 'packages/ui_gpui/tests/parity' },
 ]
 
 /** The computed style the extractor recorded, by the field it answers. */

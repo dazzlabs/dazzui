@@ -8,14 +8,11 @@ authoring, host automation, commands, and the current migration boundary.
 - `schema/scene.mjs` validates portable content, state and checkpoints.
 - `migrate-static.mjs` imports supported static TSX into data; imperative code is rejected.
 - `completeness.mjs` enforces the final all-story/all-target acceptance gate.
-- `gpui-scene.mjs` compiles scenes into native GPUI components, including scalar state, input bindings, actions and conditional text. Shared checkpoints generate native mouse interaction tests.
-- `native-catalog.mjs` emits the GPUI const catalog with stable source IDs.
 - `swift-scene.mjs` compiles shared nodes, bindings and actions into SwiftUI views.
 - `ios-scene.mjs` maps the shared content, state, slots, actions and timers to system SwiftUI controls for the mobile gallery.
 - `android.mjs` emits the shared Android asset catalog and expression character set; the Compose host interprets these with native controls and a controllable frame clock.
-- `inset-scene.mjs` compiles shared content, slots, scalar state, selection and input bindings, assignments and derived form content into native Inset widgets; unsupported state types, events and properties remain explicit coverage gaps.
 - `native.mjs` emits native scene data/builders and a per-platform worklist.
-- `format.mjs` runs Dart and Rust formatting before output comparison.
+- `format.mjs` runs Dart formatting before output comparison.
 - `generate.mjs` writes outputs or checks for drift with `--check`.
 - `outputs.json` records owned files and their hashes. Obsolete owned files are
   removed only if their content still matches the generator's last output.
@@ -27,9 +24,14 @@ components, properties, bindings, targets, duplicate IDs and unrecognized export
 fail generation. Native hosts keep using their existing implementations for
 stories not yet covered; those IDs remain visible in the worklist.
 
-The pipeline currently emits a data-backed Flutter adapter, typed SwiftUI scenes,
-compiled GPUI scenes with native editing buffers and dialog actions, iOS and Android system-control catalogs, 143 Inset scenes with controlled selection, text editing and derived form content, and static Button and Badge builders for WinUI 3. Completing the remaining scene and
+The pipeline currently emits a data-backed Flutter adapter, typed SwiftUI
+scenes, iOS and Android system-control catalogs, and static Button and Badge
+builders for WinUI 3. Completing the remaining scene and
 adapter work is required before all native example content has a single source.
+
+The GPUI and Inset compilers (`gpui-scene.mjs`, `native-catalog.mjs`,
+`inset-scene.mjs`) live on the `platform/gpui` branch with the two packages
+they emit into.
 
 All content and interactions must be shared declarations. Story-specific native
 fixtures are migration debt, never an allowed escape hatch. `pnpm playgrounds:complete`

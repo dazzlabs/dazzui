@@ -43,7 +43,7 @@ export const THEMES: readonly { id: ThemeId; label: string }[] = [
   { id: 'nocturne-dark', label: 'Nocturne Dark' },
 ]
 
-export type PlatformId = 'flutter' | 'swiftui' | 'gpui'
+export type PlatformId = 'flutter' | 'swiftui'
 
 /** The fields a check can be about, in the order the tables list them. */
 export const FIELDS = [

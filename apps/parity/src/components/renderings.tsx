@@ -20,12 +20,11 @@ export interface RenderingsProps {
  * The pictures, side by side: what React drew and what each port drew of the
  * same specimen under the same theme.
  *
- * This is the half of the comparison the value table cannot reach. Only one
- * of the three frameworks will say what colour a view painted or what face it
- * set a label in — a SwiftUI `View` is a value rather than a tree, and GPUI's
- * scene is gone by the time a test could look at it — so a table of theirs is
- * a box and little else. Every one of them will *draw*, though, and a drawing
- * carries every decision at once.
+ * This is the half of the comparison the value table cannot reach. Not every
+ * framework will say what colour a view painted or what face it set a label
+ * in — a SwiftUI `View` is a value rather than a tree — so a table of theirs
+ * is a box and little else. Every one of them will *draw*, though, and a
+ * drawing carries every decision at once.
  *
  * The number under each port is how much of its drawing differs from
  * React's. It is never zero and is not meant to be: two rasterisers do not

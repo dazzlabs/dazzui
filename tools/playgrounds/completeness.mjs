@@ -1,12 +1,4 @@
-export const PLATFORMS = [
-  'flutter',
-  'swiftui',
-  'gpui',
-  'winui3',
-  'inset',
-  'ios',
-  'android',
-]
+export const PLATFORMS = ['flutter', 'swiftui', 'winui3', 'ios', 'android']
 
 /** Completion means every source story is declarative and emitted on every target. */
 export function requireComplete(stories, scenes, report) {

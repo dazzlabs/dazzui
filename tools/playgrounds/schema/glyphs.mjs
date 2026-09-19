@@ -1,8 +1,7 @@
 // The Fluent glyphs a scene may name. React, Flutter and SwiftUI draw the
-// glyph from their own Fluent package; GPUI and Inset receive the SVG path
-// React renders. Mobile platforms draw system symbols, so each entry names the
-// nearest SF Symbol and Material icon: the mapping is mobile adapter data,
-// never story content.
+// glyph from their own Fluent package. Mobile platforms draw system symbols,
+// so each entry names the nearest SF Symbol and Material icon: the mapping is
+// mobile adapter data, never story content.
 export const GLYPHS = {
   Add20Regular: { symbol: 'plus', material: 'Add' },
   ArrowDownload20Regular: {

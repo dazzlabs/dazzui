@@ -1,15 +1,7 @@
-import {
-  gpuiScene,
-  gpuiSupports,
-  gpuiCheckpointTests,
-  gpuiDefinition,
-} from './gpui-scene.mjs'
-import { gpuiCatalog } from './native-catalog.mjs'
 import { PLATFORMS } from './completeness.mjs'
 import { swiftScene } from './swift-scene.mjs'
 import { iosCatalog, iosScene } from './ios-scene.mjs'
 import { androidOutputs, androidSupports } from './android.mjs'
-import { insetScene, insetSupports, insetTimers } from './inset-scene.mjs'
 import { TRIM_CHARACTERS } from './schema/value.mjs'
 import { glyphOutputs } from './glyph-outputs.mjs'
 import { tokenOutputs } from './tokens.mjs'
@@ -63,8 +55,6 @@ function staticNode(node, platform, key = 'specimen') {
     const size = cap(props.size ?? 'medium'),
       variant = cap(props.variant ?? 'tinted'),
       tint = cap(props.tint ?? 'primary')
-    if (platform === 'inset')
-      return `ui::Badge::new(${label}).size(ui::ControlSize::${size}).variant(ui::BadgeVariant::${variant}).tint(ui::Tint::${tint}).into_widget()`
     if (platform === 'winui3')
       return `new UI.Badge { Content = ${label}, Theme = theme, Size = UI.ControlSize.${size}, Variant = UI.BadgeVariant.${variant}, Tint = UI.WidgetTint.${tint} }`
     throw Error(`Static Badge emitter is not used for ${platform}`)
@@ -78,10 +68,6 @@ function staticNode(node, platform, key = 'specimen') {
       tint = props.tint ?? 'primary'
     if (platform === 'swiftui')
       return `DazzUI.Button(${text}, size: .${size}, variant: .${variant}, tint: .${tint}, enabled: ${!props.disabled}) {}`
-    if (platform === 'gpui')
-      return `Button::new(${q(key)}, ${text}).size(ControlSize::${cap(size)}).variant(ControlVariant::${cap(variant)}).tint(Tint::${cap(tint)}).disabled(${!!props.disabled}).into_any_element()`
-    if (platform === 'inset')
-      return `ui::Button::new(${text}).size(ui::ControlSize::${cap(size)}).variant(ui::ControlVariant::${cap(variant)}).tint(ui::Tint::${cap(tint)})${props.disabled ? '' : '.on_pressed(|_| {})'}.into_widget()`
     return `new UI.Button { Content = ${text}, Theme = theme, Size = UI.ControlSize.${cap(size)}, Variant = UI.ControlVariant.${cap(variant)}, Tint = UI.WidgetTint.${cap(tint)}, IsEnabled = ${!props.disabled}, HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left }`
   }
   const children = node.children.map((child, i) =>
@@ -89,10 +75,6 @@ function staticNode(node, platform, key = 'specimen') {
   )
   if (platform === 'swiftui')
     return `${node.component} {\n${children.join('\n')}\n}`
-  if (platform === 'gpui')
-    return `crate::storybook::stage::${node.component}::new()${children.map(child => `.child(${child})`).join('')}.into_any_element()`
-  if (platform === 'inset')
-    return `crate::storybook::stage::${node.component === 'Row' ? 'row' : 'column'}(vec![${children.join(',')}])`
   return `Stage.${node.component === 'Row' ? 'Row' : 'Column'}(theme, ${children.join(', ')})`
 }
 
@@ -108,12 +90,6 @@ export function nativeOutputs(stories, scenes) {
       staticControls(scenes.get(s.id).content) &&
       !Object.keys(scenes.get(s.id).state ?? {}).length &&
       !(scenes.get(s.id).timers ?? []).length
-  )
-  const gpuiStories = stories.filter(
-    s => scenes.has(s.id) && gpuiSupports(scenes.get(s.id))
-  )
-  const insetStories = stories.filter(
-    s => scenes.has(s.id) && insetSupports(scenes.get(s.id))
   )
   // Each compiler reports what it can express; a scene it cannot is left out
   // of that platform's output and stays visible in the coverage worklist.
@@ -285,85 +261,6 @@ ${portable.map((s, i) => swiftScene(scenes.get(s.id), i)).join('\n')}
 `
   )
   outputs.set(
-    'packages/ui_gpui/example/src/generated_stories.rs',
-    `${header}use dazzui::{Button, ControlSize, ControlVariant, Tint};
-use gpui::{AnyElement, IntoElement, ParentElement, Styled, InteractiveElement};
-use crate::scene::Value;
-${gpuiCatalog(
-  stories,
-  gpuiStories.map(s => ({
-    ...s,
-    layout: scenes.get(s.id).content.component === 'Page' ? 'padded' : s.layout,
-  }))
-)}
-pub fn definition(id: &str) -> crate::scene::Definition {
-  match id {
-${gpuiStories.map((s, i) => `${q(s.id)} => definition_${i}(),`).join('\n')}
-    _ => Default::default(),
-  }
-}
-// One function per scene: a single match over every scene body shares one
-// debug-build stack frame large enough to overflow a test thread.
-pub fn build(id: &str, state: &crate::Playground, cx: &mut gpui::Context<crate::Playground>) -> Option<AnyElement> {
-  Some(match id {
-${gpuiStories.map((s, i) => `${q(s.id)} => scene_${i}(state, cx),`).join('\n')}
-    _ => return None,
-  })
-}
-${gpuiStories.map((s, i) => `fn definition_${i}() -> crate::scene::Definition { ${gpuiDefinition(scenes.get(s.id), s.id)} }\n#[allow(unused_variables)]\nfn scene_${i}(state: &crate::Playground, cx: &mut gpui::Context<crate::Playground>) -> AnyElement { ${gpuiScene(scenes.get(s.id).content, s.id)} }`).join('\n')}
-${gpuiCheckpointTests(gpuiStories, scenes)}
-`
-  )
-  outputs.set(
-    'packages/ui_inset/example/src/generated_stories.rs',
-    `${header}use dazzui_inset as ui;
-use inset::*;
-use inset_painting::{BoxDecoration, BorderRadiusGeometry};
-use inset_rendering::BoxConstraints;
-pub const STORIES: &[(&str, &str)] = &[
-${insetStories.map(s => `(${q(s.id)}, ${q(`${s.title} / ${s.name}`)}),`).join('\n')}
-];
-pub const TRIM_CODE_POINTS: &[u32] = &[${[...TRIM_CHARACTERS].map(c => c.codePointAt(0)).join(',')}];
-pub const INTERACTIONS: &str = ${q(JSON.stringify(Object.fromEntries(insetStories.filter(s => scenes.get(s.id).checkpoints?.length).map(s => [s.id, scenes.get(s.id).checkpoints]))))};
-pub fn build(id: &str) -> Option<WidgetRef> { build_observed(id, None) }
-pub fn build_observed(id: &str, observer: Option<crate::scene_state::Observer>) -> Option<WidgetRef> {
-  if !STORIES.iter().any(|entry| entry.0 == id) { return None; }
-  let initial = match id {
-${insetStories
-  .filter(s => Object.keys(scenes.get(s.id).state ?? {}).length)
-  .map(
-    s =>
-      `${q(s.id)} => vec![${Object.entries(scenes.get(s.id).state)
-        .map(
-          ([key, value]) =>
-            `(${q(key)}.to_string(), serde_json::json!(${q(value)}))`
-        )
-        .join(',')}],`
-  )
-  .join('\n')}
-    _ => vec![],
-  }.into_iter().collect();
-  let timers = match id {
-${insetStories
-  .filter(s => scenes.get(s.id).timers?.length)
-  .map(s => `${q(s.id)} => ${insetTimers(scenes.get(s.id))},`)
-  .join('\n')}
-    _ => vec![],
-  };
-  let id = id.to_owned();
-  Some(crate::scene_state::Scene::new(id.clone(), initial, observer, move |app, context, state| {
-  // One function per scene: a single match over every scene body would share
-  // one debug-build stack frame large enough to overflow a test thread.
-  match id.as_str() {
-${insetStories.map((s, i) => `${q(s.id)} => scene_${i}(app, context, state),`).join('\n')}
-    _ => unreachable!(),
-  }
-  }).timers(timers).into_widget())
-}
-${insetStories.map((s, i) => `#[allow(unused_variables)]\nfn scene_${i}(app: &mut App, context: BuildContext, state: &crate::scene_state::SceneHandle) -> WidgetRef {\n  let v = ui::Theme::of(app, context);\n  ${insetScene(scenes.get(s.id))}\n}`).join('\n')}
-`
-  )
-  outputs.set(
     'packages/ui_winui3/example/Storybook/GeneratedStories.cs',
     `${header}using Microsoft.UI.Xaml;
 using UI = DazzUI;
@@ -432,19 +329,14 @@ ${stories
               ? portable.map(s => s.id)
               : platform === 'ios'
                 ? [...iosScenes.keys()]
-                : platform === 'inset'
-                  ? insetStories.map(s => s.id)
-                  : platform === 'gpui'
-                    ? gpuiStories.map(s => s.id)
-                    : platform === 'android'
-                      ? stories
-                          .filter(
-                            s =>
-                              scenes.has(s.id) &&
-                              androidSupports(scenes.get(s.id))
-                          )
-                          .map(s => s.id)
-                      : staticStories.map(s => s.id)
+                : platform === 'android'
+                  ? stories
+                      .filter(
+                        s =>
+                          scenes.has(s.id) && androidSupports(scenes.get(s.id))
+                      )
+                      .map(s => s.id)
+                  : staticStories.map(s => s.id)
         return [
           platform,
           {
