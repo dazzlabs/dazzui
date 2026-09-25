@@ -104,10 +104,9 @@ whatever width the viewport offered. Text controls are edged with the same
 hairline as separators.
 
 Remaining visual work includes multiline text metrics, independent shadow
-layers, and shared popup presentation: Select still uses the system menu,
-while Menu and Tooltip use overlays without collision avoidance. These need
-side-by-side rendering checks across every theme; a successful build is
-not a visual parity check.
+layers, and shared popup presentation: Menu and Tooltip use overlays without
+collision avoidance. These need side-by-side rendering checks across every
+theme; a successful build is not a visual parity check.
 
 | What | Why |
 | --- | --- |

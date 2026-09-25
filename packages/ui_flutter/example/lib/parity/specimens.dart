@@ -252,6 +252,24 @@ Widget? build(Probe probe) {
         enabled: !probe.disabled,
         maxLines: data.containsKey('multiline') ? 3 : 1,
       );
+    case 'dz-select':
+      // The trigger is a field with a chevron, so the specimen is the same
+      // box with a value in it rather than a caret. The chosen option is the
+      // story's, not an axis: React prints whichever value the story set, and
+      // the row is only ever built with that one selected.
+      final List<SelectOption<String>> options = selectOptions(probe.text);
+      return Select<String>(
+        options: options,
+        value: options.first.value,
+        state: data['aria-invalid'] == 'true'
+            ? TextFieldState.error
+            : TextFieldState.normal,
+        tint: pick(TextFieldTint.values, data['tint']) ?? TextFieldTint.primary,
+        size: probe.size(WidgetSize.medium),
+        // A disabled select is one with no handler, the way a field that takes
+        // no typing is: the two are the same fact about the control.
+        onChanged: probe.disabled ? null : (_) {},
+      );
     // The containers, which are here for their edges rather than their
     // boxes: what a panel decides for itself is its ground, its outline and
     // its corner, and what it holds came from the story.
@@ -428,4 +446,20 @@ T? pick<T extends Enum>(List<T> values, String? name) {
     if (value.name == name) return value;
   }
   return null;
+}
+
+/// A select's options with whichever one React printed as the chosen label.
+///
+/// A select's value is the story's rather than an axis — the probe carries the
+/// label it rendered and nothing else about the list — so the specimen is
+/// built with that label selected and enough rows around it for a list to
+/// exist. Every option is enabled: a disabled row is a story's decision about
+/// one of them, and the trigger's own state is the axis being measured.
+List<SelectOption<String>> selectOptions(String chosen) {
+  final String value = chosen.isEmpty ? 'Choose…' : chosen;
+  return [
+    SelectOption(value: value, label: value),
+    const SelectOption(value: 'second', label: 'Second choice'),
+    const SelectOption(value: 'third', label: 'Third choice'),
+  ];
 }

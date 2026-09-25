@@ -35,6 +35,7 @@ import '../stories/rail_stories.dart';
 import '../stories/search_field_stories.dart';
 import '../stories/section_label_stories.dart';
 import '../stories/segmented_control_stories.dart';
+import '../stories/select_stories.dart';
 import '../stories/sidebar_stories.dart';
 import '../stories/skeleton_stories.dart';
 import '../stories/slider_stories.dart';
@@ -116,6 +117,7 @@ class StoryIndex {
       SearchFieldStories.page,
       SectionLabelStories.page,
       SegmentedControlStories.page,
+      SelectStories.page,
       SidebarStories.page,
       SkeletonStories.page,
       SliderStories.page,

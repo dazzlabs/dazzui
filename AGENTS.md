@@ -641,6 +641,17 @@ off.
   attribute reveals the tick column. Gaps between a popup and its trigger are
   padding on the positioner rather than an offset passed in code, so the gap
   is a token and the collision logic counts it when the panel flips.
+- **A text control's family is one file per platform, and the three wear the
+  same box.** React keeps `TextField`, `Select` and `FieldValue` in
+  `text-field.tsx` because the box, the states and the tinting are one design
+  either way; Flutter mirrors that with `field_box.dart` holding the
+  decoration every one of them reads, and SwiftUI with `TextField.swift`
+  holding all three. A control added to one of those files is a claim that it
+  belongs to the family — a `Select` is a field with a chevron, a `Combobox` a
+  select with a query — so it shares the height, the corner and the recipe
+  rather than resembling them. The Flutter port went without a `Select` for a
+  long time; it is the reason `pending.txt` exists, and its stories left that
+  list the day it landed.
 - CSS cannot index a ramp by a variable, so the shade/alpha recipes are
   resolved in the token build instead — `plugins/control.mjs` emits both the
   `[data-tint]` ramp bindings (`--tint-50` … `--tint-950`) and a finished color
