@@ -13,7 +13,16 @@ import '@dazzlabs/dazzui-react/components.css'
 import './styles/preview.css'
 import './styles/playground.css'
 import catalog from './generated/catalog.json'
-import { applyTheme, DEFAULT_THEME, THEMES } from './lib/themes'
+import {
+  ALL_THEMES,
+  applyTheme,
+  DEFAULT_THEME,
+  joinTheme,
+  type Mode,
+  MODES,
+  splitTheme,
+  THEME_STYLES,
+} from './lib/themes'
 import type { StoryModule, StoryObj } from './lib/story'
 
 const modules = import.meta.glob<StoryModule>('../stories/*.stories.tsx')
@@ -36,7 +45,7 @@ declare global {
 
 const query = () => new URLSearchParams(location.search)
 const themeValue = (value: string | null) =>
-  THEMES.some(t => t.value === value) ? value! : DEFAULT_THEME
+  value && ALL_THEMES.includes(value) ? value : DEFAULT_THEME
 const initial = (): Selection => ({
   story:
     query().get('story') ?? query().get('id') ?? 'components-button--overview',
@@ -187,6 +196,7 @@ function Playground() {
     history.pushState(null, '', url)
     setSelection(s => ({ story, theme, revision: s.revision + 1 }))
   }
+  const themeParts = splitTheme(selection.theme)
   const canvas = `./index.html?${new URLSearchParams({ canvas: '1', story: selection.story, theme: selection.theme })}`
   return (
     <div className="pg-shell">
@@ -236,15 +246,50 @@ function Playground() {
             {current ? `${current.title} / ${current.name}` : 'Unknown story'}
           </span>
           <label>
-            Theme{' '}
+            Style{' '}
             <select
-              aria-label="Theme"
-              value={selection.theme}
-              onChange={event => navigate(selection.story, event.target.value)}
+              aria-label="Theme style"
+              value={themeParts?.style.value}
+              onChange={event =>
+                navigate(
+                  selection.story,
+                  joinTheme(event.target.value, themeParts?.mode ?? 'light')
+                )
+              }
             >
-              {THEMES.map(theme => (
-                <option key={theme.value} value={theme.value}>
-                  {theme.title}
+              {THEME_STYLES.map(group => (
+                <optgroup key={group.title} label={group.title}>
+                  {group.styles.map(style => (
+                    <option key={style.value} value={style.value}>
+                      {style.title}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </label>
+          <label>
+            Mode{' '}
+            <select
+              aria-label="Theme mode"
+              value={themeParts?.mode}
+              onChange={event =>
+                navigate(
+                  selection.story,
+                  joinTheme(
+                    themeParts?.style.value ?? '',
+                    event.target.value as Mode
+                  )
+                )
+              }
+            >
+              {MODES.map(mode => (
+                <option
+                  key={mode.value}
+                  value={mode.value}
+                  disabled={!themeParts?.style.modes[mode.value]}
+                >
+                  {mode.title}
                 </option>
               ))}
             </select>

@@ -99,7 +99,7 @@ public struct OtpField: View {
           // the only thing that does. Only the cell the caret is in glows.
           focused: here || filled
         ),
-        cornerRadius: vars.radiusMedium,
+        cornerRadius: vars.controlFieldRadius,
         vars: vars
       )
   }

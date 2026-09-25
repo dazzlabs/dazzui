@@ -16,7 +16,7 @@
   height: var(--control-size);
   padding: 0;
   border: var(--stroke-hairline) solid var(--color-border-strong);
-  border-radius: var(--radius-medium);
+  border-radius: var(--control-field-radius);
   background-color: var(--color-surface-muted);
   color: var(--color-content);
   text-align: center;

@@ -64,6 +64,9 @@ public sealed class SearchField : TextField
     protected override void Apply()
     {
         base.Apply();
+        // A search field is a control, not a field box: it keeps the regular
+        // control corner, which is a capsule where buttons are (macOS 27).
+        Skin.SetCorner(this, Theme.Number("radius.medium"));
         ApplySearchInsets();
     }
     private void ApplySearchInsets()

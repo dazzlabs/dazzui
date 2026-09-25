@@ -24,6 +24,129 @@ export const THEMES = [
   { value: 'nocturne-dark', title: 'Nocturne Dark' },
 ] as const
 
+/** The two appearances a theme comes in. */
+export type Mode = 'light' | 'dark'
+
+export const MODES: readonly { value: Mode; title: string }[] = [
+  { value: 'light', title: 'Light' },
+  { value: 'dark', title: 'Dark' },
+]
+
+/**
+ * A theme *style* — a family — and the theme it is in each mode. The
+ * toolbar picks the two separately: the style, then the mode. Every style
+ * today comes in both; `modes` stays partial so one that does not can say
+ * so, and the toolbar disables the mode it lacks.
+ */
+export interface ThemeStyle {
+  value: string
+  title: string
+  modes: Partial<Record<Mode, string>>
+}
+
+/** The styles, grouped the way the toolbar lists them. */
+export interface ThemeStyleGroup {
+  title: string
+  styles: readonly ThemeStyle[]
+}
+
+/** A style that comes in both modes, as `<value>-light` / `<value>-dark`. */
+const paired = (value: string, title: string): ThemeStyle => ({
+  value,
+  title,
+  modes: { light: `${value}-light`, dark: `${value}-dark` },
+})
+
+/**
+ * Every style the toolbar offers. The first group is the twelve in
+ * `THEMES`; the other two are the imported themes — the desktops of
+ * `packages/ds/themes/desktops.yaml` and Omarchy's of
+ * `packages/ds/themes/omarchy.yaml`, in their files' order. The imported
+ * ones are not in `THEMES`, since the parity extractor and the golden suite
+ * measure the drawn families the ports are held to, and an imported theme is
+ * derived from three colours rather than drawn.
+ */
+export const THEME_STYLES: readonly ThemeStyleGroup[] = [
+  {
+    title: 'DazzUI',
+    styles: [
+      paired('studio', 'Studio'),
+      paired('bright', 'Bright'),
+      paired('frost', 'Frost'),
+      paired('graphite', 'Graphite'),
+      paired('ember', 'Ember'),
+      paired('nocturne', 'Nocturne'),
+    ],
+  },
+  {
+    title: 'Desktops',
+    styles: [
+      paired('macos27', 'macOS 27 Golden Gate'),
+      paired('macos15', 'macOS 15 Sequoia'),
+      paired('windows11', 'Windows 11'),
+      paired('ubuntu', 'Ubuntu'),
+      paired('debian', 'Debian (GNOME)'),
+      paired('fedora', 'Fedora (GNOME)'),
+      paired('kde', 'KDE Plasma'),
+    ],
+  },
+  {
+    title: 'Omarchy',
+    styles: [
+      paired('omarchy-tokyo-night', 'Tokyo Night'),
+      paired('omarchy-catppuccin', 'Catppuccin'),
+      paired('omarchy-catppuccin-latte', 'Catppuccin Latte'),
+      paired('omarchy-ethereal', 'Ethereal'),
+      paired('omarchy-everforest', 'Everforest'),
+      paired('omarchy-flexoki-light', 'Flexoki Light'),
+      paired('omarchy-gruvbox', 'Gruvbox'),
+      paired('omarchy-hackerman', 'Hackerman'),
+      paired('omarchy-kanagawa', 'Kanagawa'),
+      paired('omarchy-last-horizon', 'Last Horizon'),
+      paired('omarchy-lumon', 'Lumon'),
+      paired('omarchy-lupine', 'Lupine'),
+      paired('omarchy-matte-black', 'Matte Black'),
+      paired('omarchy-miasma', 'Miasma'),
+      paired('omarchy-nord', 'Nord'),
+      paired('omarchy-osaka-jade', 'Osaka Jade'),
+      paired('omarchy-retro-82', 'Retro 82'),
+      paired('omarchy-ristretto', 'Ristretto'),
+      paired('omarchy-rose-pine', 'Rosé Pine'),
+      paired('omarchy-solitude', 'Solitude'),
+      paired('omarchy-vantablack', 'Vantablack'),
+      paired('omarchy-white', 'White'),
+    ],
+  },
+]
+
+const STYLES = THEME_STYLES.flatMap(group => group.styles)
+
+/** Every theme the toolbar can reach, as `data-theme` values. */
+export const ALL_THEMES: readonly string[] = STYLES.flatMap(style =>
+  MODES.flatMap(mode => style.modes[mode.value] ?? [])
+)
+
+/** The style and mode a theme is, or undefined for a theme no style has. */
+export function splitTheme(
+  theme: string
+): { style: ThemeStyle; mode: Mode } | undefined {
+  for (const style of STYLES) {
+    for (const { value: mode } of MODES) {
+      if (style.modes[mode] === theme) return { style, mode }
+    }
+  }
+  return undefined
+}
+
+/**
+ * The theme for a style in a mode — or, when the style does not come in
+ * that mode, in the one it does, so changing style never lands on nothing.
+ */
+export function joinTheme(styleValue: string, mode: Mode): string {
+  const style = STYLES.find(entry => entry.value === styleValue) ?? STYLES[0]
+  return style.modes[mode] ?? Object.values(style.modes)[0]!
+}
+
 export type ThemeValue = (typeof THEMES)[number]['value']
 
 /** The default theme: the one that clears `data-theme` instead of setting it. */

@@ -124,7 +124,7 @@ internal static class Skin
     public static void Input(Control control, Theme theme, ControlSize size, bool invalid = false)
     {
         Control(control, theme, size);
-        SetCorner(control, theme.Number("radius.medium"));
+        SetCorner(control, theme.Number("control.field.radius"));
         control.BorderThickness = new Thickness(theme.Number("stroke.hairline"));
         control.BorderBrush = invalid ? theme.Recipe(ControlVariant.Outlined, WidgetTint.Danger, "border") : theme.Brush("color.border-strong");
         control.Background = theme.Brush(control.IsEnabled ? "color.surface-muted" : "color.surface-sunken");

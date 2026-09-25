@@ -162,8 +162,9 @@ private struct Segment<Value: Hashable>: View {
     return vars.metrics(size.control).size - 2 * vars.segmentedControlInset
   }
 
+  /// A square track (Omarchy) leaves the capsule square, not negative.
   private var radius: CGFloat {
-    trackRadius - theme.vars.segmentedControlInset
+    max(0, trackRadius - theme.vars.segmentedControlInset)
   }
 
   private var weight: Font.Weight {

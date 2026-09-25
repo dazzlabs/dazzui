@@ -106,7 +106,7 @@ public struct NumberField: View {
         enabled: enabled,
         focused: focused
       ),
-      cornerRadius: vars.radiusMedium,
+      cornerRadius: vars.controlFieldRadius,
       vars: vars
     )
   }

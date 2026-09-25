@@ -6,9 +6,12 @@ import controlPlugin from './plugins/control.mjs'
 import flutterPlugin from './plugins/flutter.mjs'
 import swiftUIPlugin from './plugins/swiftui.mjs'
 import winUI3Plugin from './plugins/winui3.mjs'
+import { importedSelectors } from './scripts/themes.mjs'
 
 /**
- * The twelve themes, as six families over one default.
+ * The seventy themes: six drawn families over one default, and the
+ * imported ones — Omarchy's twenty-two and seven desktops, each light and
+ * dark.
  *
  * Studio Light is the default and needs no mode: it is what `:root` holds.
  * Every other theme is selected by `data-theme`, and the modes compose rather
@@ -33,6 +36,14 @@ import winUI3Plugin from './plugins/winui3.mjs'
  * The selector is an attribute rather than a media query because the theme is
  * a choice the app makes, not one the OS makes for it; a host that wants to
  * follow the OS sets the attribute from `prefers-color-scheme` itself.
+ *
+ * The imported themes are read off another system rather than drawn:
+ * Omarchy's twenty-two, `omarchy-<name>-*`, and the desktops' — `macos27-*`,
+ * `macos15-*`, `windows11-*`, `ubuntu-*`, `debian-*`, `fedora-*`, `kde-*`. They come from
+ * `themes/*.yaml` and take the same three places in the order: a metrics
+ * mode beside the families (Hyprland's square corner, AppKit's capsule,
+ * Adwaita's 9px button), `dark` for the dark ones, and a mode per theme
+ * last, carrying the roles `scripts/themes.mjs` derives from its palette.
  */
 const modeSelectors = [
   {
@@ -66,6 +77,7 @@ const modeSelectors = [
     ],
     scheme: 'light',
   },
+  ...importedSelectors.families,
   {
     mode: 'dark',
     selectors: [
@@ -75,6 +87,7 @@ const modeSelectors = [
       "[data-theme='graphite-dark']",
       "[data-theme='ember-dark']",
       "[data-theme='nocturne-dark']",
+      ...importedSelectors.dark,
     ],
     scheme: 'dark',
   },
@@ -103,7 +116,34 @@ const modeSelectors = [
     selectors: ["[data-theme='nocturne-dark']"],
     scheme: 'dark',
   },
+  ...importedSelectors.corners,
 ]
+
+/**
+ * The themes the mobile packages carry: those that come in pairs. Their
+ * generators hand a host a family and let the OS pick its light or dark
+ * half, so a theme without a `-light`/`-dark` counterpart would have nowhere
+ * to go and stays on the desktop platforms, where a theme is chosen whole.
+ * Every theme comes in pairs today; the filter keeps a future single-mode
+ * import from breaking the mobile builds. Studio Light is `:root` and pairs with `studio-dark`.
+ */
+const themeOf = selector => /\[data-theme='([^']+)'\]/.exec(selector)?.[1]
+const allThemes = new Set([
+  'studio-light',
+  ...modeSelectors.flatMap(entry => entry.selectors.map(themeOf)),
+])
+const paired = theme => {
+  const match = /^(.+)-(light|dark)$/.exec(theme)
+  if (!match) return false
+  const other = match[2] === 'light' ? 'dark' : 'light'
+  return allThemes.has(`${match[1]}-${other}`)
+}
+const pairedModeSelectors = modeSelectors
+  .map(entry => ({
+    ...entry,
+    selectors: entry.selectors.filter(selector => paired(themeOf(selector))),
+  }))
+  .filter(entry => entry.selectors.length > 0)
 
 export default defineConfig({
   tokens: [
@@ -171,9 +211,9 @@ export default defineConfig({
     contrastPlugin({ modeSelectors }),
     controlPlugin({ modeSelectors }),
     flutterPlugin({ modeSelectors }),
-    swiftUIPlugin({ modeSelectors }),
+    swiftUIPlugin({ modeSelectors, mobileModeSelectors: pairedModeSelectors }),
     winUI3Plugin({ modeSelectors }),
-    composePlugin({ modeSelectors }),
+    composePlugin({ modeSelectors: pairedModeSelectors }),
   ],
   outDir: './dist/',
   lint: {

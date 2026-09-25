@@ -41,6 +41,23 @@ control:
   # in Bright — and an alias a theme re-picks cannot be carried by the native
   # generators, which resolve a mode to a stored member and need it to be a
   # value. (The CSS side could follow the alias; Dart, Swift and Rust cannot.)
+  # The corner a text control's box wears — a field, a select, a combobox,
+  # a number field, the one-time-code cells, a shortcut recorder: the family
+  # that shares one box. It is the regular control corner in every drawn
+  # family, and it is its own role for the families that draw buttons and
+  # fields differently: Liquid Glass makes a button, a search field and a
+  # segmented track a capsule and leaves a text field a rounded rectangle.
+  # Stated against the corner metrics for the reason `container` is: an
+  # alias a theme re-picks cannot be carried by the native generators.
+  field:
+    radius:
+      $type: dimension
+      $value: "{base.corner.md}"
+      $extensions:
+        mode:
+          bright: 9999px
+          graphite: "{base.corner.sm}"
+          nocturne: "{base.corner.sm}"
   container:
     radius:
       $type: dimension

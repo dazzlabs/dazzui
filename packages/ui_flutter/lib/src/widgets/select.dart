@@ -166,7 +166,7 @@ class _SelectState<T> extends State<Select<T>> {
             return Pressable(
               onPressed: enabled ? _toggle : null,
               enabled: enabled,
-              borderRadius: BorderRadius.circular(vars.radiusMedium),
+              borderRadius: BorderRadius.circular(vars.controlFieldRadius),
               builder: (context, states) =>
                   _box(context, vars, states, bounded: bounded),
             );

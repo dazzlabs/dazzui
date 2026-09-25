@@ -135,7 +135,7 @@ public struct Combobox<Value: Hashable>: View {
         enabled: enabled,
         focused: focused || open
       ),
-      cornerRadius: vars.radiusMedium,
+      cornerRadius: vars.controlFieldRadius,
       vars: vars
     )
   }

@@ -458,6 +458,16 @@ function generateThemeInstances(tokens, modeSelectors) {
         },
         tokens
       )
+      // A re-sized type style is two stored numbers (see
+      // `storeTypeMetrics`), not a `TextStyle` parameter.
+      if (value.type === 'TextStyle') {
+        const name = tokenIdToVarName(id)
+        overrides.push(
+          `  ${name}FontSize: ${convertDimensionValue(themed.$value.fontSize, tokens)},`,
+          `  ${name}LineHeight: ${convertDimensionValue(themed.$value.lineHeight, tokens)},`
+        )
+        continue
+      }
       // The theme instance is a `const` expression, and a swatch index
       // (`Colors.ink[600]!`) is not — so a color override collapses to the
       // resolved constant, the way the default it replaces does.
@@ -1315,6 +1325,28 @@ function generateClassContent(categories, allTokens) {
             value = { type: 'Color', value: convertColorValue(token.$value) }
             useGetter = false
           }
+          // The same for a length a theme re-picks — a desktop's own control
+          // padding — whose default aliases a semantic step. Only a step no
+          // theme moves: the stored default is that step's value, and a theme
+          // that moved the step would not move this field with it.
+          if (useGetter && themed && value.type === 'double') {
+            assertFixedAlias(token, allTokens)
+            value = {
+              type: 'double',
+              value: convertDimensionValue(token.$value, allTokens),
+            }
+            useGetter = false
+          }
+          if (useGetter && themed && value.type === 'TextStyle') {
+            value = storeTypeMetrics(
+              token,
+              varName,
+              value,
+              targetFieldSections,
+              targetInitializerSections,
+              allTokens
+            )
+          }
 
           if (useGetter) {
             if (value.type === 'TextStyle' && value.value.includes(',')) {
@@ -1733,6 +1765,28 @@ function generateClassContent(categories, allTokens) {
         if (useGetter && themed && value.type === 'Color') {
           value = { type: 'Color', value: convertColorValue(token.$value) }
           useGetter = false
+        }
+        // The same for a length a theme re-picks — a desktop's own control
+        // padding — whose default aliases a semantic step. Only a step no
+        // theme moves: the stored default is that step's value, and a theme
+        // that moved the step would not move this field with it.
+        if (useGetter && themed && value.type === 'double') {
+          assertFixedAlias(token, allTokens)
+          value = {
+            type: 'double',
+            value: convertDimensionValue(token.$value, allTokens),
+          }
+          useGetter = false
+        }
+        if (useGetter && themed && value.type === 'TextStyle') {
+          value = storeTypeMetrics(
+            token,
+            varName,
+            value,
+            targetFieldSections,
+            targetInitializerSections,
+            allTokens
+          )
         }
 
         if (useGetter) {
@@ -2468,6 +2522,60 @@ function convertShadowValue(value, tokens) {
   }
 
   return '[]'
+}
+
+/**
+ * A themed length that aliases a semantic step is stored at that step's
+ * value, which is only right while no theme moves the step: one that did
+ * would leave this field behind. Such a role is stated against the
+ * `base` metrics with a mode per family instead — `control.container.radius`
+ * and `control.field.radius` are the model — and this says so at build time
+ * rather than shipping the stale corner.
+ */
+function assertFixedAlias(token, tokens) {
+  const ref = extractTokenId(
+    token.$originalValue ?? token.originalValue?.$value
+  )
+  const target = ref && tokens[ref]
+  if (target && Object.keys(target.mode ?? {}).some(mode => mode !== '.')) {
+    throw new Error(
+      `${token.id} carries a mode but aliases {${ref}}, which themes move ` +
+        'too. State it against a base token with a mode per family, the ' +
+        'way control.container.radius is.'
+    )
+  }
+}
+
+/**
+ * A type style a theme re-sizes — a desktop's own type scale — keeps its
+ * size and line height as stored fields of their own, the way a recipe's
+ * re-picked shade does: the style stays a getter, so it still reads the
+ * face and weight fields of the instance it is on, and the theme instance
+ * re-points `<style>FontSize` and `<style>LineHeight` rather than a
+ * `TextStyle` a getter would have no parameter for.
+ */
+function storeTypeMetrics(token, varName, value, fields, initializers, tokens) {
+  const size = convertDimensionValue(token.$value.fontSize, tokens)
+  const leading = convertDimensionValue(token.$value.lineHeight, tokens)
+  fields.push(
+    `  /// The size \`${varName}\` is set at; a theme re-points it.`,
+    `  final double ${varName}FontSize;`,
+    `  /// The line height \`${varName}\` is set at; a theme re-points it.`,
+    `  final double ${varName}LineHeight;`
+  )
+  initializers.push(
+    `    this.${varName}FontSize = ${size},`,
+    `    this.${varName}LineHeight = ${leading},`
+  )
+  return {
+    ...value,
+    value: value.value
+      .replace(/fontSize: [^,)]+/, `fontSize: ${varName}FontSize`)
+      .replace(
+        /height: [^,)]+/,
+        `height: ${varName}LineHeight / ${varName}FontSize`
+      ),
+  }
 }
 
 /**

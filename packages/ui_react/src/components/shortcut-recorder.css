@@ -20,7 +20,7 @@
      which an explicit height hides until the box stops being explicit. */
   padding-block: 0;
   border: var(--stroke-hairline) solid var(--color-border-strong);
-  border-radius: var(--radius-medium);
+  border-radius: var(--control-field-radius);
   background-color: var(--color-surface-muted);
   color: var(--color-content);
   white-space: nowrap;

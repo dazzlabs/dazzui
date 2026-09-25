@@ -1,0 +1,285 @@
+# The desktops an app built on DazzUI runs beside, each in its light and
+# dark appearance: the colours and the corners of the controls the platform
+# itself draws, so a DazzUI window can sit among native ones without reading
+# as a guest. The values are the ones dazzle's prototype draws its native
+# windows with (`prototype/src/styles/native.css`), and they cite the same
+# sources: AppKit, WinUI 3 / Fluent 2, libadwaita, Yaru and Breeze.
+#
+# Each theme is the three colours its desktop builds a window out of — the
+# window background, the label colour and the system accent — plus the
+# alpha its separator rules at, where the source states one, and
+# `scripts/themes.mjs` derives the rest, exactly as it does for Omarchy. A
+# label colour with an alpha (AppKit's is black at 85%) is written that way
+# and composited over the background.
+#
+# A desktop's metrics are its own as well as its colours: the corners, the
+# control heights, and the type scale. Per role, `radius.small` and
+# `radius.medium` are the control corner, `large` and `control.container` a
+# container's, `big` and `frame.popover` a floating sheet's, `frame.window`
+# the window's; `control.<size>.size` is the platform's control height at
+# each size DazzUI draws (mini, small, regular, large on the Mac), and
+# `control.medium.padding.inline` its button's side inset. `type` is its type
+# ramp — `[size, leading]` per step, and `label`, the size its controls set
+# their text in — which `scripts/themes.mjs` spreads over every face set at
+# that step. The face itself stays DazzUI's: the scale is the platform's,
+# the family is the design's.
+metrics:
+  # macOS 27 Golden Gate, Liquid Glass: buttons are capsules at the large
+  # size, and every other corner is concentric with the 16pt window.
+  macos27:
+    radius.tiny: 6px
+    # A button, a search field and a segmented track are capsules at every
+    # size; a text field is the rounded rectangle Liquid Glass draws it as.
+    radius.small: 9999px
+    radius.medium: 9999px
+    control.field.radius: 8px
+    radius.large: 10px
+    radius.big: 16px
+    frame.window.radius: 16px
+    frame.popover.radius: 16px
+    control.container.radius: 10px
+    checkbox.radius: 4px
+    # Sparkle moves to the large control size from macOS 26 on, and that
+    # 28pt capsule with its 18pt side inset is the regular button here.
+    control.tiny.size: 20px
+    control.small.size: 24px
+    control.medium.size: 28px
+    control.large.size: 32px
+    control.medium.padding.inline: 18px
+    type:
+      caption: [10, 13]
+      small: [11, 14]
+      body: [13, 16]
+      emphasis: [15, 20]
+      title: [17, 22]
+      label: 13
+  # macOS 15 Sequoia: NSButton's rounded bezel at 6pt, NSBox at 6pt, a
+  # window and a popover at 10pt.
+  macos15:
+    radius.tiny: 4px
+    radius.small: 6px
+    radius.medium: 6px
+    control.field.radius: 6px
+    radius.large: 6px
+    radius.big: 10px
+    frame.window.radius: 10px
+    frame.popover.radius: 10px
+    control.container.radius: 6px
+    checkbox.radius: 3px
+    control.tiny.size: 16px
+    control.small.size: 19px
+    control.medium.size: 22px
+    control.large.size: 28px
+    control.medium.padding.inline: 12px
+    type:
+      caption: [10, 13]
+      small: [11, 14]
+      body: [13, 16]
+      emphasis: [15, 20]
+      title: [17, 22]
+      label: 13
+  # Windows 11: Fluent's ControlCornerRadius 4 and OverlayCornerRadius 8.
+  windows11:
+    radius.tiny: 4px
+    radius.small: 4px
+    radius.medium: 4px
+    control.field.radius: 4px
+    radius.large: 8px
+    radius.big: 8px
+    frame.window.radius: 8px
+    frame.popover.radius: 8px
+    control.container.radius: 4px
+    checkbox.radius: 4px
+    control.tiny.size: 24px
+    control.small.size: 28px
+    control.medium.size: 32px
+    control.large.size: 40px
+    control.medium.padding.inline: 11px
+    type:
+      caption: [12, 16]
+      small: [12, 16]
+      body: [14, 20]
+      emphasis: [18, 24]
+      title: [20, 28]
+      label: 14
+  # GNOME's libadwaita, which Debian and Fedora ship unchanged and Ubuntu's
+  # Yaru keeps the geometry of: $button_radius 9, $card_radius 12, a window
+  # at $button_radius + 6.
+  adwaita:
+    radius.tiny: 6px
+    radius.small: 9px
+    radius.medium: 9px
+    control.field.radius: 9px
+    radius.large: 12px
+    radius.big: 12px
+    frame.window.radius: 15px
+    frame.popover.radius: 12px
+    control.container.radius: 12px
+    checkbox.radius: 6px
+    control.tiny.size: 24px
+    control.small.size: 28px
+    control.medium.size: 34px
+    control.large.size: 40px
+    control.medium.padding.inline: 12px
+    type:
+      caption: [12, 15]
+      small: [12.5, 17]
+      body: [14.5, 20]
+      emphasis: [16.5, 22]
+      title: [20, 26]
+      label: 14.5
+  # KDE Plasma's Breeze: Frame_FrameRadius 5 for every frame and button.
+  kde:
+    radius.tiny: 3px
+    radius.small: 5px
+    radius.medium: 5px
+    control.field.radius: 5px
+    radius.large: 5px
+    radius.big: 5px
+    frame.window.radius: 5px
+    frame.popover.radius: 5px
+    control.container.radius: 5px
+    checkbox.radius: 3px
+    control.tiny.size: 22px
+    control.small.size: 26px
+    control.medium.size: 30px
+    control.large.size: 36px
+    control.medium.padding.inline: 6px
+    type:
+      caption: [10.67, 14]
+      small: [11.5, 15]
+      body: [13.33, 18]
+      emphasis: [16, 21]
+      title: [18.67, 24]
+      label: 13.33
+
+themes:
+  macos27-light:
+    separator: 0.07
+    title: macOS 27 Light
+    metrics: macos27
+    scheme: light
+    background: "#f5f5f7"
+    foreground: "#000000d9"
+    accent: "#0088ff"
+    on-accent: "#ffffff"
+  macos27-dark:
+    separator: 0.08
+    title: macOS 27 Dark
+    metrics: macos27
+    scheme: dark
+    background: "#232326"
+    foreground: "#ffffffd9"
+    accent: "#0091ff"
+    on-accent: "#ffffff"
+  macos15-light:
+    separator: 0.1
+    title: macOS 15 Light
+    metrics: macos15
+    scheme: light
+    background: "#ececec"
+    foreground: "#000000d9"
+    accent: "#007aff"
+    on-accent: "#ffffff"
+  macos15-dark:
+    separator: 0.1
+    title: macOS 15 Dark
+    metrics: macos15
+    scheme: dark
+    background: "#323232"
+    foreground: "#ffffffd9"
+    accent: "#0a84ff"
+    on-accent: "#ffffff"
+  windows11-light:
+    separator: 0.08
+    title: Windows 11 Light
+    metrics: windows11
+    scheme: light
+    background: "#f3f3f3"
+    foreground: "#000000e6"
+    accent: "#005fb8"
+    on-accent: "#ffffff"
+  windows11-dark:
+    separator: 0.08
+    title: Windows 11 Dark
+    metrics: windows11
+    scheme: dark
+    background: "#202020"
+    foreground: "#ffffff"
+    accent: "#60cdff"
+    on-accent: "#000000"
+  # Yaru: Adwaita's controls in Ubuntu orange, over its own greys.
+  ubuntu-light:
+    separator: 0.1
+    title: Ubuntu Light
+    metrics: adwaita
+    scheme: light
+    background: "#fafafa"
+    foreground: "#3d3d3d"
+    accent: "#e95420"
+    on-accent: "#ffffff"
+  ubuntu-dark:
+    separator: 0.1
+    title: Ubuntu Dark
+    metrics: adwaita
+    scheme: dark
+    background: "#2c2c2c"
+    foreground: "#f7f7f7"
+    accent: "#e95420"
+    on-accent: "#ffffff"
+  # Debian and Fedora ship GNOME's Adwaita unchanged, so the two are the same
+  # theme under their own names; what tells the desktops apart is the
+  # wallpaper, which is not the app's to draw.
+  debian-light:
+    separator: 0.1
+    title: Debian (GNOME) Light
+    metrics: adwaita
+    scheme: light
+    background: "#fafafb"
+    foreground: "#000006cc"
+    accent: "#3584e4"
+    on-accent: "#ffffff"
+  debian-dark:
+    separator: 0.1
+    title: Debian (GNOME) Dark
+    metrics: adwaita
+    scheme: dark
+    background: "#222226"
+    foreground: "#ffffff"
+    accent: "#3584e4"
+    on-accent: "#ffffff"
+  fedora-light:
+    separator: 0.1
+    title: Fedora (GNOME) Light
+    metrics: adwaita
+    scheme: light
+    background: "#fafafb"
+    foreground: "#000006cc"
+    accent: "#3584e4"
+    on-accent: "#ffffff"
+  fedora-dark:
+    separator: 0.1
+    title: Fedora (GNOME) Dark
+    metrics: adwaita
+    scheme: dark
+    background: "#222226"
+    foreground: "#ffffff"
+    accent: "#3584e4"
+    on-accent: "#ffffff"
+  # Breeze prints white on its #3daee9 highlight, at 2.5:1 — under the 3:1
+  # the filled label is held to — so the label is the window text instead,
+  # left to the derivation.
+  kde-light:
+    title: KDE Plasma Light
+    metrics: kde
+    scheme: light
+    background: "#eff0f1"
+    foreground: "#232629"
+    accent: "#3daee9"
+  kde-dark:
+    title: KDE Plasma Dark
+    metrics: kde
+    scheme: dark
+    background: "#202326"
+    foreground: "#fcfcfc"
+    accent: "#3daee9"

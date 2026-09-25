@@ -132,7 +132,7 @@
 .dz-combobox__group {
   padding-block: var(--control-padding-block);
   padding-inline: var(--spacing-3);
-  border-radius: var(--radius-medium);
+  border-radius: var(--control-field-radius);
   font-family: var(--control-font-family);
   font-size: var(--control-font-size);
   font-weight: var(--body-small-font-weight);

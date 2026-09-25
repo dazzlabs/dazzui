@@ -8,6 +8,7 @@ import YAML from 'yaml'
 import yamlToMomoa from 'yaml-to-momoa'
 import config from '../terrazzo.config.mjs'
 import { expandRecipes } from './recipes.mjs'
+import { checkMetrics, expandThemes } from './themes.mjs'
 
 /**
  * Where each platform package's generated sources land.
@@ -96,11 +97,14 @@ async function generate() {
   if (!sources) {
     throw new Error('Could not load the token files terrazzo.config.mjs lists.')
   }
+  const documents = []
   for (const source of sources) {
     const document = YAML.parse(source.src)
-    const expanded = expandRecipes(document)
+    documents.push(document)
+    const expanded = expandThemes(expandRecipes(document))
     if (expanded !== document) source.src = expanded
   }
+  checkMetrics(documents)
 
   const parsed = await parse(sources, { config, logger, yamlToMomoa })
   const result = await build(parsed.tokens, {

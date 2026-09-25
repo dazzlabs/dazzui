@@ -495,8 +495,9 @@ Four things that surprise people:
 
 ### Themes
 
-Twelve, as six families over one default, defined once in `terrazzo.config.mjs`
-and passed to all three plugins so the platforms cannot drift:
+Twelve drawn themes, as six families over one default, plus the imported
+themes below — defined once in `terrazzo.config.mjs` and passed to
+every plugin so the platforms cannot drift:
 
 | `data-theme`     | modes applied                     |
 | ---------------- | --------------------------------- |
@@ -517,8 +518,6 @@ The modes compose rather than repeat, so a value shared along the light/dark
 axis or along a family is written once. A family whose accent reads correctly
 in both directions needs no dark corner at all — Frost is the one that does
 not have one, because a teal is a teal on either canvas, where Bright,
-| `nocturne-light` | `nocturne`                        |
-| `nocturne-dark`  | `nocturne`, `dark`, `nocturne-dark` |
 Graphite and Ember each invert or lift their ramp and so carry a second
 ladder. Nocturne's blurple is written once the same way, and its dark corner
 carries only the surfaces and ink of the design system it is read off — the
@@ -531,6 +530,78 @@ through `radius.big` and both `frame` corners step down one rung of the same
 ladder. Graphite does it to draw a crisper monochrome corner; Nocturne because
 the mockups round a row at 7 and a card at 8, which is exactly where that rung
 lands.
+
+**The imported themes are read off another system, not drawn.** Beside the
+twelve sit two sources under `packages/ds/themes/`:
+
+- `omarchy.yaml` — [Omarchy](https://github.com/basecamp/omarchy)'s
+  twenty-two themes from its `colors.toml` files, as
+  `omarchy-<name>-light` / `-dark`. Omarchy ships each in one appearance;
+  that one is exact, and the other is derived from the same three colours
+  (`opposite` in the file, `bothModes` in the script) — the foreground
+  becomes the paper, the paper the ink, the accent pressed or lifted to stay
+  legible. The derived half is DazzUI's reading, not Omarchy's.
+- `desktops.yaml` — seven desktops in light and dark: `macos27-*`,
+  `macos15-*`, `windows11-*`, `ubuntu-*`, `debian-*`, `fedora-*`, `kde-*`,
+  from the values dazzle's prototype draws its native windows with (AppKit,
+  WinUI 3 / Fluent 2, libadwaita, Yaru, Breeze). Debian and Fedora ship
+  Adwaita unchanged, so they are the same theme under two names.
+
+A file holds two things. Per theme: a title, a scheme, and the three colours
+the source builds a window from — background, foreground (an alpha is
+composited over the background, as AppKit's 85% label is), accent — and,
+where the source says so, `on-accent`. And `metrics`: the geometry a family
+shares, as token path → value, applied under a family mode (`omarchy` —
+Hyprland's square corner; `macos27` — the capsule; `macos15`; `windows11`;
+`adwaita`, which Debian, Fedora and Ubuntu all wear; `kde`). A desktop's
+metrics are its own control heights (`control.<size>.size`), its button
+inset, and a `type` scale — `[size, leading]` per `base.type` step plus
+`label`, the size its controls set their text in — which the script spreads
+over every face set at that step, keeping the design's family and weight. A theme applies
+its metrics mode, then `dark` if it is a dark one, then a mode named after
+the theme itself. Adding a theme is an entry in one of those files; the
+config reads its selectors from them, and a metrics path no token file
+declares fails the build.
+
+Everything else is derived by `scripts/themes.mjs` before the graph is
+parsed, alongside the recipe expansion and in the same spirit: nothing is
+written back. `surface` is the background exactly; the rest of the surface
+ladder steps off it towards the foreground (a dark column steps under it) by
+the CIE L* intervals `plugins/contrast.mjs` guards, a little above the
+floors; the quieter inks are the foreground mixed back into the paper and
+pushed up to 4.5:1; hairlines are the foreground at the source's own
+`separator` alpha where it states one (AppKit's 7–8%, Fluent's 8%,
+Adwaita's 10%), else at the shared 13/16%, with the floating edge a rung
+above, and `border-muted` at 38%; `on-accent` is the source's, else the
+paper, else the ink, whichever clears 3:1. The primary ramp is written into
+`base.color` under the theme's name — OKLCH through the accent, with the
+accent itself at the step `filled` picks (600 on paper, 500 on a dark
+ground), so a filled button is the source's accent to the digit — and the
+text steps a recipe reads are pushed to 4.5:1 on the paper. The contrast
+guard then holds every imported theme exactly as it holds a drawn one.
+The face stays the design's own; the scale is the platform's.
+
+Two things a theme re-sizes needed the native generators to store what they
+used to compute, following the rule a re-picked recipe shade already had: a
+type style that carries a mode keeps `<style>FontSize` and
+`<style>LineHeight` as stored members in Dart (the style stays a getter
+over them), and a length that carries a mode but aliases a semantic step
+(`control.medium.padding.inline` → `spacing.4`) is stored at its resolved
+default in Dart and Swift, so a theme instance has a parameter to pass.
+That is only sound while no theme moves the step it aliases — a theme that
+did would leave the stored field behind — so both generators fail the build
+when a themed length aliases a themed token; such a role is stated against
+`base` with a mode per family, as `control.container.radius` and
+`control.field.radius` are.
+
+The mobile packages carry only themes that come in `-light`/`-dark` pairs —
+they hand a host a family and let the OS pick its half — which every theme
+now does, so the desktops and Omarchy reach them as families. The React
+playground picks a theme in two steps, *style* then *mode*
+(`THEME_STYLES`, `splitTheme` and `joinTheme` in `themes.ts`; the URL still
+carries one `theme`), and a style that lacks a mode has it disabled. The
+imported styles stay out of `THEMES`, and so out of the parity reference and
+the golden suite: the ports are held to the drawn families.
 
 Studio Light sets **no attribute at all** — selecting it means removing
 `data-theme`, not writing `studio-light`. Writing it would leave the page
@@ -649,7 +720,12 @@ off.
   holding all three. A control added to one of those files is a claim that it
   belongs to the family — a `Select` is a field with a chevron, a `Combobox` a
   select with a query — so it shares the height, the corner and the recipe
-  rather than resembling them. The Flutter port went without a `Select` for a
+  rather than resembling them. That corner is `control.field.radius` —
+  the regular control corner in every drawn family, and its own role
+  because some families draw a field and a button differently (macOS 27's
+  capsule buttons and search fields beside rounded-rectangle text fields).
+  A search field and a segmented track are controls, not field boxes, and
+  keep `radius.medium`. The Flutter port went without a `Select` for a
   long time; it is the reason `pending.txt` exists, and its stories left that
   list the day it landed.
 - CSS cannot index a ramp by a variable, so the shade/alpha recipes are

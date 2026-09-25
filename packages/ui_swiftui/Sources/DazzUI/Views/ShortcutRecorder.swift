@@ -203,7 +203,7 @@ public struct ShortcutRecorder: View {
     Pressable(
       action: beginRecording,
       enabled: !disabled,
-      cornerRadius: vars.radiusMedium
+      cornerRadius: vars.controlFieldRadius
     ) { _ in
       Text(label)
         .font(.system(size: vars.labelStrong.size, weight: labelWeight))
@@ -215,14 +215,14 @@ public struct ShortcutRecorder: View {
         .frame(minWidth: vars.shortcutRecorderWidth)
         .frame(height: vars.controlMediumSize)
         .background(surface)
-        .clipShape(RoundedRectangle(cornerRadius: vars.radiusMedium, style: .circular))
-        .border(border, width: hairline, cornerRadius: vars.radiusMedium)
+        .clipShape(RoundedRectangle(cornerRadius: vars.controlFieldRadius, style: .circular))
+        .border(border, width: hairline, cornerRadius: vars.controlFieldRadius)
         // The glow behind the field: the accent while listening, danger for a
         // press it could not take.
         .focusRing(
           visible: glow != nil,
           color: glow ?? .clear,
-          cornerRadius: vars.radiusMedium,
+          cornerRadius: vars.controlFieldRadius,
           width: vars.focusWidth
         )
         .opacity(disabled ? Self.disabledOpacity : 1)
@@ -240,7 +240,7 @@ public struct ShortcutRecorder: View {
     .focusRing(
       visible: focused && !disabled,
       color: vars.focusRing,
-      cornerRadius: vars.radiusMedium,
+      cornerRadius: vars.controlFieldRadius,
       width: vars.focusWidth
     )
     .onChange(of: focused) { isFocused in

@@ -1,0 +1,168 @@
+# Omarchy's built-in themes, as the three colours each one's `colors.toml`
+# in basecamp/omarchy decides everything else from: the background, the
+# foreground and the accent. Omarchy's own shell (`shell/Commons/Style.qml`,
+# `default/themed/shell.toml.tpl`) is built out of exactly these three — a
+# fill is the foreground at an alpha over the background, a selection is the
+# accent — which is what lets a DazzUI theme be read off the same three
+# rather than off a screenshot. `scripts/themes.mjs` derives the rest.
+#
+# Each theme ships in the one appearance Omarchy gives it — `scheme` — and
+# comes in both: `omarchy-<name>-<scheme>` is the theme as Omarchy draws it,
+# to the digit, and the other mode is derived from the same three colours
+# (`opposite` below; see `bothModes` in `scripts/themes.mjs`). The derived
+# half is DazzUI's reading of the theme, not Omarchy's.
+
+# Hyprland's `rounding = 0`, which Omarchy's shell mirrors in its
+# `cornerRadius`: a button, a field, a card, a popover and a window are all
+# cut square. `radius.full` is left alone, so what is round by nature — a
+# radio, a switch's thumb — stays round.
+metrics:
+  omarchy:
+    radius.tiny: 0px
+    radius.small: 0px
+    radius.medium: 0px
+    radius.large: 0px
+    radius.big: 0px
+    frame.window.radius: 0px
+    frame.popover.radius: 0px
+    control.container.radius: 0px
+    control.field.radius: 0px
+    checkbox.radius: 0px
+
+defaults:
+  metrics: omarchy
+  opposite: true
+
+themes:
+  omarchy-tokyo-night:
+    title: Tokyo Night
+    scheme: dark
+    background: "#1a1b26"
+    foreground: "#a9b1d6"
+    accent: "#7aa2f7"
+  omarchy-catppuccin:
+    title: Catppuccin
+    scheme: dark
+    background: "#1e1e2e"
+    foreground: "#cdd6f4"
+    accent: "#89b4fa"
+  omarchy-catppuccin-latte:
+    title: Catppuccin Latte
+    scheme: light
+    background: "#eff1f5"
+    foreground: "#4c4f69"
+    accent: "#1e66f5"
+  omarchy-ethereal:
+    title: Ethereal
+    scheme: dark
+    background: "#060b1e"
+    foreground: "#ffcead"
+    accent: "#7d82d9"
+  omarchy-everforest:
+    title: Everforest
+    scheme: dark
+    background: "#2d353b"
+    foreground: "#d3c6aa"
+    accent: "#7fbbb3"
+  omarchy-flexoki-light:
+    title: Flexoki Light
+    scheme: light
+    background: "#fffcf0"
+    foreground: "#100f0f"
+    accent: "#205ea6"
+  omarchy-gruvbox:
+    title: Gruvbox
+    scheme: dark
+    background: "#282828"
+    foreground: "#d4be98"
+    accent: "#7daea3"
+  omarchy-hackerman:
+    title: Hackerman
+    scheme: dark
+    background: "#0b0c16"
+    foreground: "#ddf7ff"
+    accent: "#82fb9c"
+  omarchy-kanagawa:
+    title: Kanagawa
+    scheme: dark
+    background: "#1f1f28"
+    foreground: "#dcd7ba"
+    accent: "#dcd7ba"
+  omarchy-last-horizon:
+    title: Last Horizon
+    scheme: dark
+    background: "#0c0b0c"
+    foreground: "#fafcfb"
+    accent: "#b59790"
+  omarchy-lumon:
+    title: Lumon
+    scheme: dark
+    background: "#16242d"
+    foreground: "#d6e2ee"
+    accent: "#8bc9eb"
+  omarchy-lupine:
+    title: Lupine
+    scheme: light
+    background: "#fafafa"
+    foreground: "#212121"
+    accent: "#3264eb"
+  omarchy-matte-black:
+    title: Matte Black
+    scheme: dark
+    background: "#121212"
+    foreground: "#bebebe"
+    accent: "#e68e0d"
+  omarchy-miasma:
+    title: Miasma
+    scheme: dark
+    background: "#222222"
+    foreground: "#c2c2b0"
+    accent: "#78824b"
+  omarchy-nord:
+    title: Nord
+    scheme: dark
+    background: "#2e3440"
+    foreground: "#d8dee9"
+    accent: "#81a1c1"
+  omarchy-osaka-jade:
+    title: Osaka Jade
+    scheme: dark
+    background: "#111c18"
+    foreground: "#c1c497"
+    accent: "#509475"
+  omarchy-retro-82:
+    title: Retro 82
+    scheme: dark
+    background: "#05182e"
+    foreground: "#f6dcac"
+    accent: "#faa968"
+  omarchy-ristretto:
+    title: Ristretto
+    scheme: dark
+    background: "#2c2525"
+    foreground: "#e6d9db"
+    accent: "#f38d70"
+  omarchy-rose-pine:
+    title: Rosé Pine
+    scheme: light
+    background: "#faf4ed"
+    foreground: "#575279"
+    accent: "#56949f"
+  omarchy-solitude:
+    title: Solitude
+    scheme: dark
+    background: "#101315"
+    foreground: "#cacccc"
+    accent: "#798186"
+  omarchy-vantablack:
+    title: Vantablack
+    scheme: dark
+    background: "#000000"
+    foreground: "#ffffff"
+    accent: "#8d8d8d"
+  omarchy-white:
+    title: White
+    scheme: light
+    background: "#ffffff"
+    foreground: "#000000"
+    accent: "#6e6e6e"

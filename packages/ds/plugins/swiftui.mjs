@@ -26,6 +26,9 @@ import YAML from 'yaml'
 class SwiftUIPlugin {
   constructor(options = {}) {
     this.modeSelectors = options.modeSelectors ?? []
+    // The mobile package hands a host a family and lets the OS pick its
+    // half, so it carries only the themes that come in pairs.
+    this.mobileModeSelectors = options.mobileModeSelectors ?? this.modeSelectors
   }
 
   get name() {
@@ -56,14 +59,21 @@ class SwiftUIPlugin {
     )
     outputFile(
       'mobile-swiftui/Palette.swift',
-      generateThemeVariablesFile(mobileTokens, sources, this.modeSelectors)
+      generateThemeVariablesFile(
+        mobileTokens,
+        sources,
+        this.mobileModeSelectors
+      )
         .replaceAll('ThemeVariables', 'Palette')
         .replace('The complete token set', 'The colour token set') +
         '\npublic extension Palette {\n' +
         '  /// The ds filled action colour, applied through SwiftUI tint.\n' +
         '  var accent: Color { colorPrimary[nativeTintShade] }\n}\n'
     )
-    const themes = ['studio-light', ...collectThemes(this.modeSelectors).keys()]
+    const themes = [
+      'studio-light',
+      ...collectThemes(this.mobileModeSelectors).keys(),
+    ]
     const families = [
       ...new Set(themes.map(theme => theme.replace(/-(light|dark)$/, ''))),
     ]
@@ -234,7 +244,23 @@ function buildMembers(categories, tokens) {
           continue
         }
 
-        const value = convertTokenValue(token, tokens)
+        let value = convertTokenValue(token, tokens)
+        // A length a theme re-picks — a desktop's own control padding —
+        // has to be stored, or the theme has no parameter to pass it to; so
+        // a default that aliases a semantic step collapses to its value.
+        const themed = Object.keys(token.mode ?? {}).some(mode => mode !== '.')
+        // Only a step no theme moves, or the stored default goes stale.
+        if (value.references && themed && value.type === 'CGFloat') {
+          const ref = refId(originalOf(token))
+          if (Object.keys(tokens[ref]?.mode ?? {}).some(mode => mode !== '.')) {
+            throw new Error(
+              `${id} carries a mode but aliases {${ref}}, which themes move ` +
+                'too. State it against a base token with a mode per family, ' +
+                'the way control.container.radius is.'
+            )
+          }
+          value = { type: 'CGFloat', value: double(dimension(token.$value)) }
+        }
         const member = {
           doc: docComment(token),
           name: tokenIdToVarName(id),

@@ -25,6 +25,11 @@
 # decides ties), so a `<family>-dark` mode carries only what is true of that
 # corner alone — and Frost, whose teal reads correctly in both directions,
 # needs no such mode for its ramp at all.
+#
+# The imported themes — Omarchy's and the desktops' — write nothing here.
+# Their modes are derived from `themes/*.yaml` by `scripts/themes.mjs` and
+# added to these tokens before the graph is parsed, so the file only ever
+# shows the families that were drawn.
 color:
   primary:
     "50":

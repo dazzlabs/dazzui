@@ -217,8 +217,8 @@ public struct TextField: View {
         focused: focused
       ),
       // A growing box takes the container corner; a single line takes the
-      // regular control corner, one step above the buttons'.
-      cornerRadius: multiline ? vars.radiusLarge : vars.radiusMedium,
+      // field corner, one step above the buttons' in every drawn family.
+      cornerRadius: multiline ? vars.radiusLarge : vars.controlFieldRadius,
       vars: vars
     )
   }
@@ -311,7 +311,7 @@ public struct Select<Value: Hashable>: View {
     return Pressable(
       action: { open.toggle() },
       enabled: enabled,
-      cornerRadius: vars.radiusMedium
+      cornerRadius: vars.controlFieldRadius
     ) { _ in
       // The value takes the room and the chevron sits at the trailing edge.
       HStack(spacing: vars.spacing2) {
@@ -341,7 +341,7 @@ public struct Select<Value: Hashable>: View {
           enabled: enabled,
           focused: focused || open
         ),
-        cornerRadius: vars.radiusMedium,
+        cornerRadius: vars.controlFieldRadius,
         vars: vars
       )
     }
@@ -406,7 +406,7 @@ public struct FieldValue<Content: View>: View {
       .frame(height: metrics.size)
       .fieldChrome(
         FieldStyle(vars: vars, tint: .primary, invalid: false, enabled: true, focused: false),
-        cornerRadius: vars.radiusMedium,
+        cornerRadius: vars.controlFieldRadius,
         vars: vars
       )
   }
