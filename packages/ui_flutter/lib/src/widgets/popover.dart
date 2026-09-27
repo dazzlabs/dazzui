@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -192,6 +194,38 @@ class _PopoverState extends State<Popover> {
 /// dismisses, the Escape that dismisses, and the gap between the panel and its
 /// trigger — which is padding on the follower rather than a number passed in,
 /// so it stays a token.
+/// Base UI keeps a popup this far inside the viewport (its default
+/// `collisionPadding`).
+const double _popupCollisionPadding = 5;
+
+/// The room a popup opening on [side] of the widget at [anchor] has before
+/// the window's edge: Base UI's `--available-height`, which `popup.css` caps
+/// a popup at so a long list scrolls inside it rather than running off the
+/// window. Pass the context of the widget the popup is anchored to — the one
+/// inside its `CompositedTransformTarget` — not the overlay's.
+double popupAvailableHeight(
+  BuildContext anchor, {
+  required PopoverSide side,
+  required double gap,
+}) {
+  final RenderObject? box = anchor.findRenderObject();
+  final RenderObject? overlay = Overlay.maybeOf(
+    anchor,
+  )?.context.findRenderObject();
+  if (box is! RenderBox || !box.hasSize || overlay is! RenderBox) {
+    return double.infinity;
+  }
+  final double top = box.localToGlobal(Offset.zero, ancestor: overlay).dy;
+  final double bottom = top + box.size.height;
+  final double height = overlay.size.height;
+  final double available = switch (side) {
+    PopoverSide.bottom => height - bottom - gap,
+    PopoverSide.top => top - gap,
+    PopoverSide.left || PopoverSide.right => height,
+  };
+  return math.max(0, available - _popupCollisionPadding);
+}
+
 class PopoverOverlay extends StatelessWidget {
   const PopoverOverlay({
     super.key,
@@ -201,6 +235,7 @@ class PopoverOverlay extends StatelessWidget {
     required this.gap,
     required this.onDismiss,
     this.dismissOnOutsidePress = true,
+    this.maxHeight,
     required this.child,
   });
 
@@ -210,6 +245,11 @@ class PopoverOverlay extends StatelessWidget {
   final double gap;
   final VoidCallback onDismiss;
   final bool dismissOnOutsidePress;
+
+  /// How tall the popup may grow — `popup.css`'s
+  /// `max-height: var(--available-height)`, which [popupAvailableHeight]
+  /// works out. Null leaves it unbounded.
+  final double? maxHeight;
   final Widget child;
 
   (Alignment target, Alignment follower, Offset offset) get _anchors {
@@ -276,7 +316,15 @@ class PopoverOverlay extends StatelessWidget {
                     },
                   ),
                 },
-                child: FocusScope(autofocus: true, child: child),
+                child: FocusScope(
+                  autofocus: true,
+                  child: maxHeight == null
+                      ? child
+                      : ConstrainedBox(
+                          constraints: BoxConstraints(maxHeight: maxHeight!),
+                          child: child,
+                        ),
+                ),
               ),
             ),
           ),

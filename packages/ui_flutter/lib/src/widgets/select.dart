@@ -143,6 +143,11 @@ class _SelectState<T> extends State<Select<T>> {
           align: PopoverAlign.start,
           gap: vars.spacing1,
           onDismiss: _close,
+          maxHeight: popupAvailableHeight(
+            this.context,
+            side: PopoverSide.bottom,
+            gap: vars.spacing1,
+          ),
           // The list is at least as wide as the trigger it dropped from, so a
           // long label never has to be read in a narrower column than it was
           // chosen in.
@@ -317,14 +322,19 @@ class _SelectList<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget row(SelectOption<T> option) => MenuRow(
-      item: MenuItem(
-        label: option.label,
-        checked: option.value == selected,
-        enabled: option.enabled,
-      ),
-      onSelect: option.enabled ? () => onChoose(option) : null,
-    );
+    Widget row(SelectOption<T> option) {
+      final bool checked = option.value == selected;
+      final Widget drawn = MenuRow(
+        item: MenuItem(
+          label: option.label,
+          checked: checked,
+          enabled: option.enabled,
+        ),
+        onSelect: option.enabled ? () => onChoose(option) : null,
+      );
+      // A long list opens on its choice, as a native select does.
+      return checked ? _RevealOnOpen(child: drawn) : drawn;
+    }
 
     final List<Widget> children = groups.isEmpty
         ? [for (final SelectOption<T> option in options) row(option)]
@@ -337,4 +347,27 @@ class _SelectList<T> extends StatelessWidget {
 
     return MenuPanel(children: children);
   }
+}
+
+/// Scrolls its child into view once, as the list it sits in opens.
+class _RevealOnOpen extends StatefulWidget {
+  const _RevealOnOpen({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_RevealOnOpen> createState() => _RevealOnOpenState();
+}
+
+class _RevealOnOpenState extends State<_RevealOnOpen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) Scrollable.ensureVisible(context, alignment: 0.5);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

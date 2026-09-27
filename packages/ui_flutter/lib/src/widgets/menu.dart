@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import '../foundation/widget_tint.dart';
 import '../generated/theme_variables.dart';
 import '../theme/theme.dart';
+import 'popover.dart';
 import 'pressable.dart';
 
 /// Which edge of the trigger the panel is aligned to.
@@ -113,6 +114,11 @@ class _MenuState extends State<Menu> {
           items: widget.items,
           onDismiss: _close,
           gap: vars.spacing1,
+          maxHeight: popupAvailableHeight(
+            this.context,
+            side: PopoverSide.bottom,
+            gap: vars.spacing1,
+          ),
         ),
         child: widget.trigger(
           context,
@@ -130,6 +136,7 @@ class _MenuOverlay extends StatelessWidget {
     required this.items,
     required this.onDismiss,
     required this.gap,
+    required this.maxHeight,
   });
 
   final LayerLink link;
@@ -137,6 +144,7 @@ class _MenuOverlay extends StatelessWidget {
   final List<MenuItem> items;
   final VoidCallback onDismiss;
   final double gap;
+  final double maxHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -178,17 +186,20 @@ class _MenuOverlay extends StatelessWidget {
                 },
                 child: FocusScope(
                   autofocus: true,
-                  child: MenuPanel(
-                    children: [
-                      for (final MenuItem item in items)
-                        MenuRow(
-                          item: item,
-                          onSelect: () {
-                            item.onSelect?.call();
-                            onDismiss();
-                          },
-                        ),
-                    ],
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxHeight: maxHeight),
+                    child: MenuPanel(
+                      children: [
+                        for (final MenuItem item in items)
+                          MenuRow(
+                            item: item,
+                            onSelect: () {
+                              item.onSelect?.call();
+                              onDismiss();
+                            },
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -237,10 +248,14 @@ class MenuPanel extends StatelessWidget {
             borderRadius: BorderRadius.circular(vars.radiusLarge),
             boxShadow: vars.shadowLg,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: children,
+          // `overflow: hidden auto`: a panel capped at the room it has
+          // scrolls its rows; one that fits is as tall as they are.
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: children,
+            ),
           ),
         ),
       ),

@@ -257,4 +257,65 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets(
+    'a list longer than the room below scrolls, opened on its choice',
+    (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(400, 300);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final List<SelectOption<int>> many = [
+        for (int i = 0; i < 40; i++) SelectOption(value: i, label: 'Option $i'),
+      ];
+
+      await tester.pumpWidget(
+        host(
+          Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 40),
+              child: SizedBox(
+                width: 200,
+                child: Select<int>(options: many, value: 30, onChanged: (_) {}),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(Select<int>));
+      await tester.pumpAndSettle();
+
+      // `max-height: var(--available-height)`: the panel stops short of the
+      // window's bottom edge, by Base UI's collision padding, and draws no
+      // overflow.
+      expect(tester.takeException(), isNull);
+      final Rect panel = tester.getRect(find.byType(MenuPanel));
+      expect(panel.bottom, lessThanOrEqualTo(300 - 5));
+      // The choice is in view; the first rows have scrolled away.
+      final Finder chosen = find.descendant(
+        of: find.byType(MenuPanel),
+        matching: find.text('Option 30'),
+      );
+      expect(panel.contains(tester.getCenter(chosen)), isTrue);
+      expect(
+        panel.contains(
+          tester.getCenter(
+            find.descendant(
+              of: find.byType(MenuPanel),
+              matching: find.text('Option 0'),
+            ),
+          ),
+        ),
+        isFalse,
+      );
+
+      // The rows still answer after scrolling.
+      await tester.tap(chosen);
+      await tester.pump();
+      expect(find.byType(MenuPanel), findsNothing);
+    },
+  );
 }

@@ -200,6 +200,11 @@ class _ComboboxState<T> extends State<Combobox<T>> {
           align: PopoverAlign.start,
           gap: vars.spacing1,
           onDismiss: _close,
+          maxHeight: popupAvailableHeight(
+            this.context,
+            side: PopoverSide.bottom,
+            gap: vars.spacing1,
+          ),
           // The list is at least as wide as the field it dropped from, the way
           // a select's is.
           child: ConstrainedBox(
@@ -489,6 +494,11 @@ class _AutocompleteState extends State<Autocomplete> {
           align: PopoverAlign.start,
           gap: vars.spacing1,
           onDismiss: _close,
+          maxHeight: popupAvailableHeight(
+            this.context,
+            side: PopoverSide.bottom,
+            gap: vars.spacing1,
+          ),
           child: ConstrainedBox(
             constraints: BoxConstraints(minWidth: _anchorWidth),
             child: MenuPanel(
