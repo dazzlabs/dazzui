@@ -1,16 +1,41 @@
-name: Playgrounds
+name: JS CI
 
+# The design system and everything pnpm builds: ds, the React package and
+# its playground, the examples and the tools. Flutter is installed because
+# the playground generator formats the Dart it writes. It runs on a change
+# to any package, since `playgrounds:check` holds the generated files of
+# every one of them.
 on:
   pull_request:
+    paths:
+      - "ds/**"
+      - "packages/**"
+      - "examples/**"
+      - "tools/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".oxfmtrc.json"
+      - ".github/workflows/js-ci.yml"
   push:
     branches: [main]
+    paths:
+      - "ds/**"
+      - "packages/**"
+      - "examples/**"
+      - "tools/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".oxfmtrc.json"
+      - ".github/workflows/js-ci.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  react-flutter:
+  js:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
@@ -39,10 +64,6 @@ jobs:
         run: pnpm --filter @dazzlabs/dazzui-react-playground exec vite build
       - run: pnpm --filter @dazzlabs/dazzui-react-playground exec playwright install --with-deps chromium
       - run: pnpm playground:test
-      - name: Flutter shared checkpoints and gallery
-        working-directory: packages/dart/dazzui/example
-        run: flutter test test/generated_scenes_test.dart test/playground_test.dart
-
       - name: Retain browser failure diagnostics
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -53,13 +74,3 @@ jobs:
             packages/js/dazzui-react/example/test-results
           retention-days: 7
           if-no-files-found: ignore
-
-  winui-build:
-    runs-on: windows-2025
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
-        with:
-          dotnet-version: '8.0.x'
-      - run: dotnet build packages/csharp/DazzUI/example/Playground.csproj

@@ -1,0 +1,36 @@
+name: Dart CI
+
+# The Flutter package. A token or story change reaches it as a change to
+# its committed generated files, which is what the paths below catch.
+on:
+  pull_request:
+    paths:
+      - "packages/dart/**"
+      - ".github/workflows/dart-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "packages/dart/**"
+      - ".github/workflows/dart-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  flutter:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Install the pinned Flutter runtime
+        shell: bash
+        run: |
+          git init "$RUNNER_TEMP/flutter"
+          git -C "$RUNNER_TEMP/flutter" remote add origin https://github.com/flutter/flutter.git
+          git -C "$RUNNER_TEMP/flutter" fetch --depth 1 origin c8c5e3bd7542962ee8b09a12ac469d7d1ff823e0
+          git -C "$RUNNER_TEMP/flutter" checkout --detach FETCH_HEAD
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+      - name: Flutter shared checkpoints and gallery
+        working-directory: packages/dart/dazzui/example
+        run: flutter test test/generated_scenes_test.dart test/playground_test.dart

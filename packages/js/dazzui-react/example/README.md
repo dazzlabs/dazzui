@@ -132,11 +132,11 @@ pixel baseline.
 
 ## CI
 
-`.github/workflows/playgrounds.yml` checks generation, schema tests, formatting,
-TypeScript, the React twelve-theme rendering matrix, and Flutter shared
-checkpoints/gallery tests. The Flutter framework revision and Rust formatter
-version match the local generation environment. A separate Windows job compiles
-WinUI with its native XAML compiler. Browser failure reports are retained for
+`.github/workflows/js-ci.yml` checks generation, schema tests, formatting,
+TypeScript and the React twelve-theme rendering matrix; `dart-ci.yml` runs the
+Flutter shared checkpoints/gallery tests; `csharp-ci.yml` compiles WinUI with
+its native XAML compiler on Windows. The Flutter framework revision and Rust
+formatter version match the local generation environment. Browser failure reports are retained for
 seven days. The workflow has been authored but has not been run on GitHub in this
 change. The macOS-only pilot goldens are not used as Linux CI baselines.
 
