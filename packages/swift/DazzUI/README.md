@@ -9,6 +9,14 @@ read off the React source; where the two disagree, the React file wins.
 
 ## Using it
 
+A host depends on it by the repository's URL, pinned to a commit — the root
+`Package.swift` re-exports this package (and `DazzMobileUI`), since SwiftPM
+reads a manifest only at a repository's root:
+
+```swift
+.package(url: "https://github.com/dazzlabs/dazzui.git", revision: "<commit>")
+```
+
 ```swift
 import DazzUI
 
