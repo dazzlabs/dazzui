@@ -600,8 +600,14 @@ now does, so the desktops and Omarchy reach them as families. The React
 playground picks a theme in two steps, *style* then *mode*
 (`THEME_STYLES`, `splitTheme` and `joinTheme` in `themes.ts`; the URL still
 carries one `theme`), and a style that lacks a mode has it disabled. The
-imported styles stay out of `THEMES`, and so out of the parity reference and
-the golden suite: the ports are held to the drawn families.
+Flutter playground does the same with a grouped `Select` and a brightness
+(`playgroundStyleGroups` in `example/lib/playground_theme.dart`), reading
+each theme off the generated `themeVariablesByName` map — every theme by
+its `data-theme` name — rather than a case per theme; a test holds that
+list to the map both ways, and draws the control pages under every imported
+theme. The imported styles stay out of `THEMES` and `PlaygroundTheme`, and
+so out of the parity reference, the golden suite and the every-story test:
+the ports are held to the drawn families.
 
 Studio Light sets **no attribute at all** — selecting it means removing
 `data-theme`, not writing `studio-light`. Writing it would leave the page

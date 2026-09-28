@@ -403,6 +403,7 @@ function generateThemeInstances(tokens, modeSelectors) {
   if (themes.size === 0) return ''
 
   const blocks = []
+  const emitted = []
 
   // A ramp is one `ColorSwatch<int>` field rather than eleven `Color`s, so a
   // theme that re-points a whole ramp has to re-point that one field. Any
@@ -566,7 +567,23 @@ const ${themeInstanceName(theme)} = ThemeVariables(
 ${overrides.join('\n')}
 );
 `)
+    emitted.push(theme)
   }
+
+  // Every theme by the name `data-theme` gives it, so a host — or a
+  // playground offering seventy of them — can pick one by name rather than
+  // by a hand-written case per theme. Studio Light is the default instance.
+  const entries = [
+    `  'studio-light': themeVariables,`,
+    ...emitted.map(theme => `  '${theme}': ${themeInstanceName(theme)},`),
+  ]
+  blocks.push(`
+/// Every theme, by the name \`data-theme\` gives it on the web.
+/// DO NOT EDIT - This file is auto-generated
+const Map<String, ThemeVariables> themeVariablesByName = {
+${entries.join('\n')}
+};
+`)
 
   return blocks.join('')
 }

@@ -38,11 +38,12 @@ class PlaygroundWindow extends StatefulWidget {
 
 class _PlaygroundWindowState extends State<PlaygroundWindow> {
   StoryRef _selection = StoryIndex.first;
-  PlaygroundTheme _theme = PlaygroundTheme.studioLight;
+  PlaygroundStyle _style = playgroundStyleGroups.first.styles.first;
+  bool _dark = false;
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData data = _theme.data;
+    final ThemeData data = playgroundThemeData(_style, dark: _dark);
 
     return Theme(
       data: data,
@@ -51,8 +52,10 @@ class _PlaygroundWindowState extends State<PlaygroundWindow> {
         child: Column(
           children: [
             _Toolbar(
-              theme: _theme,
-              onThemeChanged: (theme) => setState(() => _theme = theme),
+              style: _style,
+              dark: _dark,
+              onStyleChanged: (style) => setState(() => _style = style),
+              onDarkChanged: (dark) => setState(() => _dark = dark),
             ),
             const Divider(height: 1),
             Expanded(
@@ -77,10 +80,17 @@ class _PlaygroundWindowState extends State<PlaygroundWindow> {
 }
 
 class _Toolbar extends StatelessWidget {
-  const _Toolbar({required this.theme, required this.onThemeChanged});
+  const _Toolbar({
+    required this.style,
+    required this.dark,
+    required this.onStyleChanged,
+    required this.onDarkChanged,
+  });
 
-  final PlaygroundTheme theme;
-  final ValueChanged<PlaygroundTheme> onThemeChanged;
+  final PlaygroundStyle style;
+  final bool dark;
+  final ValueChanged<PlaygroundStyle> onStyleChanged;
+  final ValueChanged<bool> onDarkChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -93,8 +103,8 @@ class _Toolbar extends StatelessWidget {
       child: Row(
         spacing: vars.spacing3,
         children: [
-          // The title is what gives way in a narrow window: six families
-          // and a brightness are the controls, and a name that truncates
+          // The title is what gives way in a narrow window: a style and a
+          // brightness are the controls, and a name that truncates
           // costs less than a control that overflows.
           Expanded(
             child: Row(
@@ -115,24 +125,32 @@ class _Toolbar extends StatelessWidget {
               ],
             ),
           ),
-          // A family and a brightness rather than twelve names: that is the
+          // A style and a brightness rather than seventy names: that is the
           // shape of the graph — a family is a mode, `dark` is a mode — and
-          // twelve names would not fit a titlebar in any case.
-          SegmentedControl<PlaygroundFamily>(
-            value: theme.family,
-            onChanged: (family) => onThemeChanged(
-              PlaygroundTheme.of(family, dark: theme.isDark),
+          // the styles, thirty-five of them in three groups, are a list to
+          // choose from rather than a row of segments.
+          SizedBox(
+            width: vars.frameAsideWidth,
+            child: Select<PlaygroundStyle>(
+              value: style,
+              onChanged: (next) {
+                if (next != null) onStyleChanged(next);
+              },
+              groups: [
+                for (final group in playgroundStyleGroups)
+                  SelectGroup(
+                    label: group.title,
+                    options: [
+                      for (final candidate in group.styles)
+                        SelectOption(value: candidate, label: candidate.title),
+                    ],
+                  ),
+              ],
             ),
-            items: [
-              for (final candidate in PlaygroundFamily.values)
-                SegmentedItem(value: candidate, label: candidate.title),
-            ],
           ),
           SegmentedControl<bool>(
-            value: theme.isDark,
-            onChanged: (dark) => onThemeChanged(
-              PlaygroundTheme.of(theme.family, dark: dark),
-            ),
+            value: dark,
+            onChanged: onDarkChanged,
             items: const [
               SegmentedItem(value: false, label: 'Light'),
               SegmentedItem(value: true, label: 'Dark'),
