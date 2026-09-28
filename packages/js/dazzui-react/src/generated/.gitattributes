@@ -1,0 +1,3 @@
+# Written by ds. Committed so a token change shows up in the diff,
+# but collapsed by default, because nobody reviews it by hand.
+*.css linguist-generated=true

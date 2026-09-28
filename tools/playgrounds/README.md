@@ -1,6 +1,6 @@
 # Playground generation
 
-Source: `packages/ui_react/example/stories/`. See the React example README for
+Source: `packages/js/dazzui-react/example/stories/`. See the React example README for
 authoring, host automation, commands, and the current migration boundary.
 
 - `catalog.mjs` reads TSX declarations and preserves stable IDs and source order.

@@ -15,109 +15,7 @@ importers:
         specifier: ^1.31.0
         version: 1.31.0
 
-  apps/parity:
-    dependencies:
-      '@dazzlabs/dazzui-react':
-        specifier: workspace:*
-        version: link:../../packages/ui_react
-      '@fluentui/react-icons':
-        specifier: ^2.0.339
-        version: 2.0.339(react@19.2.8)
-      react:
-        specifier: ^19.2.7
-        version: 19.2.8
-      react-dom:
-        specifier: ^19.2.7
-        version: 19.2.8(react@19.2.8)
-    devDependencies:
-      '@types/node':
-        specifier: ^24.13.3
-        version: 24.13.3
-      '@types/react':
-        specifier: ^19.2.0
-        version: 19.2.18
-      '@types/react-dom':
-        specifier: ^19.2.0
-        version: 19.2.5(@types/react@19.2.18)
-      '@vitejs/plugin-react':
-        specifier: ^6.1.1
-        version: 6.1.1(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(yaml@2.9.0))
-      typescript:
-        specifier: ~6.0.3
-        version: 6.0.3
-      vite:
-        specifier: ^8.1.5
-        version: 8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(yaml@2.9.0)
-
-  examples/canvas:
-    dependencies:
-      '@dazzlabs/dazzui-react':
-        specifier: workspace:*
-        version: link:../../packages/ui_react
-      '@fluentui/react-icons':
-        specifier: ^2.0.339
-        version: 2.0.339(react@19.2.8)
-      react:
-        specifier: ^19.2.7
-        version: 19.2.8
-      react-dom:
-        specifier: ^19.2.7
-        version: 19.2.8(react@19.2.8)
-    devDependencies:
-      '@types/react':
-        specifier: ^19.2.0
-        version: 19.2.18
-      '@types/react-dom':
-        specifier: ^19.2.0
-        version: 19.2.5(@types/react@19.2.18)
-      '@vitejs/plugin-react':
-        specifier: ^6.1.1
-        version: 6.1.1(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(yaml@2.9.0))
-      deno:
-        specifier: ^2.9.6
-        version: 2.9.6
-      typescript:
-        specifier: ~6.0.3
-        version: 6.0.3
-      vite:
-        specifier: ^8.1.5
-        version: 8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(yaml@2.9.0)
-
-  examples/workbench:
-    dependencies:
-      '@dazzlabs/dazzui-react':
-        specifier: workspace:*
-        version: link:../../packages/ui_react
-      '@fluentui/react-icons':
-        specifier: ^2.0.339
-        version: 2.0.339(react@19.2.8)
-      react:
-        specifier: ^19.2.7
-        version: 19.2.8
-      react-dom:
-        specifier: ^19.2.7
-        version: 19.2.8(react@19.2.8)
-    devDependencies:
-      '@types/react':
-        specifier: ^19.2.0
-        version: 19.2.18
-      '@types/react-dom':
-        specifier: ^19.2.0
-        version: 19.2.5(@types/react@19.2.18)
-      '@vitejs/plugin-react':
-        specifier: ^6.1.1
-        version: 6.1.1(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(yaml@2.9.0))
-      deno:
-        specifier: ^2.9.6
-        version: 2.9.6
-      typescript:
-        specifier: ~6.0.3
-        version: 6.0.3
-      vite:
-        specifier: ^8.1.5
-        version: 8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(yaml@2.9.0)
-
-  packages/ds:
+  ds:
     devDependencies:
       '@terrazzo/cli':
         specifier: ^0.10.3
@@ -135,7 +33,75 @@ importers:
         specifier: ^0.0.6
         version: 0.0.6
 
-  packages/ui_react:
+  examples/react_canvas:
+    dependencies:
+      '@dazzlabs/dazzui-react':
+        specifier: workspace:*
+        version: link:../../packages/js/dazzui-react
+      '@fluentui/react-icons':
+        specifier: ^2.0.339
+        version: 2.0.339(react@19.2.8)
+      react:
+        specifier: ^19.2.7
+        version: 19.2.8
+      react-dom:
+        specifier: ^19.2.7
+        version: 19.2.8(react@19.2.8)
+    devDependencies:
+      '@types/react':
+        specifier: ^19.2.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.2.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^6.1.1
+        version: 6.1.1(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(yaml@2.9.0))
+      deno:
+        specifier: ^2.9.6
+        version: 2.9.6
+      typescript:
+        specifier: ~6.0.3
+        version: 6.0.3
+      vite:
+        specifier: ^8.1.5
+        version: 8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(yaml@2.9.0)
+
+  examples/react_workbench:
+    dependencies:
+      '@dazzlabs/dazzui-react':
+        specifier: workspace:*
+        version: link:../../packages/js/dazzui-react
+      '@fluentui/react-icons':
+        specifier: ^2.0.339
+        version: 2.0.339(react@19.2.8)
+      react:
+        specifier: ^19.2.7
+        version: 19.2.8
+      react-dom:
+        specifier: ^19.2.7
+        version: 19.2.8(react@19.2.8)
+    devDependencies:
+      '@types/react':
+        specifier: ^19.2.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.2.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^6.1.1
+        version: 6.1.1(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(yaml@2.9.0))
+      deno:
+        specifier: ^2.9.6
+        version: 2.9.6
+      typescript:
+        specifier: ~6.0.3
+        version: 6.0.3
+      vite:
+        specifier: ^8.1.5
+        version: 8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(yaml@2.9.0)
+
+  packages/js/dazzui-react:
     dependencies:
       '@base-ui/react':
         specifier: 1.7.0
@@ -163,7 +129,7 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3(esbuild@0.28.2)(rolldown@1.2.6)(typescript@6.0.3)(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(yaml@2.9.0))
 
-  packages/ui_react/example:
+  packages/js/dazzui-react/example:
     dependencies:
       '@dazzlabs/dazzui-react':
         specifier: workspace:*
@@ -193,6 +159,40 @@ importers:
       playwright:
         specifier: ^1.63.0
         version: 1.63.0
+      typescript:
+        specifier: ~6.0.3
+        version: 6.0.3
+      vite:
+        specifier: ^8.1.5
+        version: 8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(yaml@2.9.0)
+
+  tools/parity:
+    dependencies:
+      '@dazzlabs/dazzui-react':
+        specifier: workspace:*
+        version: link:../../packages/js/dazzui-react
+      '@fluentui/react-icons':
+        specifier: ^2.0.339
+        version: 2.0.339(react@19.2.8)
+      react:
+        specifier: ^19.2.7
+        version: 19.2.8
+      react-dom:
+        specifier: ^19.2.7
+        version: 19.2.8(react@19.2.8)
+    devDependencies:
+      '@types/node':
+        specifier: ^24.13.3
+        version: 24.13.3
+      '@types/react':
+        specifier: ^19.2.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.2.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^6.1.1
+        version: 6.1.1(vite@8.2.2(@types/node@24.13.3)(esbuild@0.28.2)(yaml@2.9.0))
       typescript:
         specifier: ~6.0.3
         version: 6.0.3

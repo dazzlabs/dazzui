@@ -9,11 +9,11 @@ export function glyphOutputs() {
   const names = Object.keys(GLYPHS).sort()
   const outputs = new Map()
   outputs.set(
-    'packages/ui_react/example/src/generated/glyphs.ts',
+    'packages/js/dazzui-react/example/src/generated/glyphs.ts',
     `${header}export {\n${names.map(name => `  ${name},`).join('\n')}\n} from '@fluentui/react-icons'\n`
   )
   outputs.set(
-    'packages/ui_flutter/example/lib/generated/glyphs.dart',
+    'packages/dart/dazzui/example/lib/generated/glyphs.dart',
     `${header}import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/widgets.dart';
 
@@ -23,7 +23,7 @@ ${names.map(name => `  ${q(name)}: FluentIcons.${snake(name)},`).join('\n')}
 `
   )
   outputs.set(
-    'packages/mobile_ui_android/example/src/main/kotlin/dev/dazzlabs/dazzui/mobile/example/GeneratedGlyphs.kt',
+    'packages/kotlin/dazzui-mobile/example/src/main/kotlin/dev/dazzlabs/dazzui/mobile/example/GeneratedGlyphs.kt',
     `${header}package dev.dazzlabs.dazzui.mobile.example
 
 import androidx.compose.material.icons.Icons

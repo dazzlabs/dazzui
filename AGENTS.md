@@ -4,24 +4,41 @@ Guidance for coding agents working in this repository.
 
 ## What this is
 
-The DazzUI design system, as a pnpm workspace:
+The DazzUI design system: one token source and an implementation per UI
+toolkit. The layout follows [nativeapi](https://github.com/libnativeapi/nativeapi)'s
+`core/` + `bindings/<language>/<package>`:
 
-- `packages/ds` (`@dazzlabs/dazzui-ds`) — the design system: the tokens, built
+```
+ds/                          the design system — the only place a value is decided
+packages/<language>/<name>/  an implementation, named as it is published
+  js/dazzui-react            swift/DazzUI · swift/DazzMobileUI
+  dart/dazzui                csharp/DazzUI · kotlin/dazzui-mobile
+examples/<framework>_<name>/ apps built out of a package
+tools/                       playground generator, parity viewer
+```
+
+A package is grouped by language because a language is a toolchain: one
+workspace, one formatter, one build tool. Only `ds`, `packages/js/*` and
+their examples and tools are pnpm workspace members; every other language
+directory is invisible to pnpm by construction rather than by the accident
+of having no `package.json`. A package's own playground is its `example/`
+(`Example/` in Swift).
+
+
+- `ds` (`@dazzlabs/dazzui-ds`) — the design system: the tokens, built
   with [Terrazzo](https://terrazzo.app/). It holds no components, it is the
   only place a value is decided, and it is a **generator rather than a
   dependency**: its build writes into the platform packages, which nothing
   imports it from.
-- `packages/ui_react` (`@dazzlabs/dazzui-react`) — the React implementation.
+- `packages/js/dazzui-react` (`@dazzlabs/dazzui-react`) — the React implementation.
   `src/generated/` holds what `ds` wrote and is committed, so the package
   builds and ships on its own. Its behaviour comes from
   [Base UI](https://base-ui.com) — headless primitives that own the parts a
   design system has no opinion about, and that a hand-rolled component gets
   wrong for years: focus traps, roving arrow keys, type-ahead, collision-aware
   positioning, the hidden inputs a form needs. This package is what is drawn
-  on top. Further platform packages sit beside it as they land
-  (`ui_swiftui`), which is why the directory carries the platform in its
-  name.
-- `packages/ui_flutter` (`dazzui`) — the Flutter implementation,
+  on top.
+- `packages/dart/dazzui` (`dazzui`) — the Flutter implementation,
   migrated from `dazzui-flutter`. A plain Dart/Flutter package, invisible to pnpm:
   run `flutter analyze` / `flutter test` from inside the package. Like the
   React package, `lib/src/generated/` holds what `ds` wrote and is committed.
@@ -34,11 +51,15 @@ The DazzUI design system, as a pnpm workspace:
   style) is small enough to replace outright: the base class is
   `src/foundation/theme_extension.dart`, the ambient style is the package's
   own `Theme`, and the three glyphs the kit draws itself come from
-  `fluentui_system_icons` — the same set `ui_react` takes them from. A host
+  `fluentui_system_icons` — the same set `dazzui-react` takes them from. A host
   supplies the app plumbing with `WidgetsApp`; see `example/lib/host.dart`
   and `test/host.dart`. `example/` holds the playground app (`flutter run`
   from that directory, macOS and web).
-- `packages/ui_winui3` (`DazzUI`) — the WinUI 3 implementation, in C#.
+- `packages/swift/DazzUI` (`DazzUI`) — the macOS SwiftUI implementation,
+  drawn to the same geometry as React and held to it by the parity suite.
+  `Sources/DazzUI/Generated/` is committed output from ds; `Example/` is the
+  playground.
+- `packages/csharp/DazzUI` (`DazzUI`) — the WinUI 3 implementation, in C#.
   Invisible to pnpm's workspace graph; `pnpm winui3` builds and opens the
   unpackaged, self-contained Windows playground. `pnpm winui3:test` runs
   real-window smoke tests. `src/DazzUI/Generated/tokens.json` is emitted
@@ -49,7 +70,7 @@ The DazzUI design system, as a pnpm workspace:
   by `scripts/sync-stories.mjs`. It is not yet part of the React pixel/reference
   parity suites; its own smoke suite renders every story in all twelve themes.
   See its README for the current scope and standalone .NET commands.
-- `packages/mobile_ui_ios` (`DazzMobileUI`) — native SwiftUI for
+- `packages/swift/DazzMobileUI` (`DazzMobileUI`) — native SwiftUI for
   mobile. This package uses ds colours and entirely system components; it
   intentionally does not port React geometry or custom control rendering.
   `Sources/DazzMobileUI/Generated/` is committed output from ds.
@@ -63,11 +84,11 @@ The DazzUI design system, as a pnpm workspace:
   `tools/playgrounds/ios-scene.mjs` maps content and events to system controls;
   mobile appearance remains native. The Xcode test scheme checks the registry,
   all-theme rendering and shared non-timed interaction checkpoints.
-- `packages/ui_react/example` (`@dazzlabs/dazzui-react-playground`) — the React playground that
+- `packages/js/dazzui-react/example` (`@dazzlabs/dazzui-react-playground`) — the React playground that
   documents both: `Tokens/*` for the token graph, `Components/*` for the
   components.
-- `examples/workbench` (`@dazzlabs/dazzui-example-workbench`) — a Git-rooted
-  agent workbench, built entirely out of `ui_react`: several projects open as
+- `examples/react_workbench` (`@dazzlabs/dazzui-example-workbench`) — a Git-rooted
+  agent workbench, built entirely out of `dazzui-react`: several projects open as
   titlebar tabs, a sidebar whose lower half is whatever the open page is
   *made of*, and seven pages on ⌘1–7 — chat with a dock beside it, a
   cross-project inbox, review, Git, tests, GitHub (issues and pull requests
@@ -81,7 +102,7 @@ The DazzUI design system, as a pnpm workspace:
   [Deno Desktop](https://docs.deno.com/runtime/desktop/), as a native window;
   `deno` is a devDependency of the package, so there is nothing to install
   for it.
-- `examples/canvas` (`@dazzlabs/dazzui-example-canvas`) — a design canvas, built
+- `examples/react_canvas` (`@dazzlabs/dazzui-example-canvas`) — a design canvas, built
   the same way and asking the design system a different question. The
   workbench is a reading app; this one has a *drawing* in the middle of it, which
   is the one region of a window whose colours are usually the user's rather
@@ -91,12 +112,13 @@ The DazzUI design system, as a pnpm workspace:
   on its own port and packages into its own window.
 
 The split is the point: anything a platform package needs but cannot express
-belongs in `packages/ds`, so the platforms stay implementations of one design
+belongs in `ds`, so the platforms stay implementations of one design
 rather than four designs that resemble each other.
 
 **The two Rust ports are maintained on `platform/gpui`, not here.**
-`packages/ui_gpui` (the [GPUI](https://gpui.rs) implementation) and
-`packages/ui_inset` (the Inset one, ported from Flutter) live on that branch
+The [GPUI](https://gpui.rs) implementation and the Inset one (ported from
+Flutter) — `packages/rust/dazzui` and `packages/rust/dazzui_inset` in this
+layout — live on that branch
 with everything they need: their own generated sources, the `ds` plugins that
 write them (`gpui.mjs`, `inset.mjs` and the `rust.mjs` token compiler the two
 share), their parity target, and the playground adapters that compile the
@@ -111,11 +133,11 @@ parts.
 
 ## Commands
 
-`packages/mobile_ui_android` is an independent Android Gradle library with an
+`packages/kotlin/dazzui-mobile` is an independent Android Gradle library with an
 `example` app. It uses only stock AndroidX Compose Material 3 components and
 ds colors; desktop geometry and React component parity do not apply. Its
 `DazzTheme` changes only `MaterialTheme.colorScheme`. Do not add custom
-control drawing or wrappers. `packages/ds/plugins/compose.mjs` generates its
+control drawing or wrappers. `ds/plugins/compose.mjs` generates its
 committed `src/main/kotlin/dev/dazzlabs/dazzui/mobile/generated/` file with all
 theme families. Run `pnpm tokens` to regenerate; never edit the output.
 From that package, run `./gradlew assembleDebug testDebugUnitTest :example:assembleDebug`
@@ -132,11 +154,11 @@ pnpm install
 ```
 
 ```bash
-pnpm tokens            # build packages/ds into its dist/
+pnpm tokens            # build ds into its dist/
 ```
 
 ```bash
-pnpm components        # build packages/ui_react into its dist/
+pnpm components        # build packages/js/dazzui-react into its dist/
 ```
 
 ```bash
@@ -191,7 +213,7 @@ pnpm format            # oxfmt over the workspace
    under `control.color` writes only its decisions, and
    `scripts/recipes.mjs` fills in the derived cells before the graph is
    parsed (see the token conventions below). The plugins then stage
-   `packages/ds/dist/`:
+   `ds/dist/`:
    - `style.css` — CSS custom properties (the contract consumers use)
    - `control.css` — the ramp bindings and the resolved interactive color
      recipes, from `plugins/control.mjs`
@@ -206,8 +228,8 @@ pnpm format            # oxfmt over the workspace
    do this — 0.10 lints each token file with only that file's tokens.)
 2. `distribute()` in `scripts/build.mjs` then copies each platform's files out
    of that staging directory into the platform package itself — the two
-   stylesheets into `packages/ui_react/src/generated/`, the two Dart files
-   into `packages/ui_flutter/lib/src/generated/`, and so on for Swift and
+   stylesheets into `packages/js/dazzui-react/src/generated/`, the two Dart files
+   into `packages/dart/dazzui/lib/src/generated/`, and so on for Swift and
    Rust. The `TARGETS` list is where a new platform package is added. The
    Dart copies are then run through `dart format` (PATH first, fvm's stable
    as fallback), because the committed files are formatted and a rebuild
@@ -227,7 +249,7 @@ platform package reads, and they are committed.
 
 ## Component pipeline
 
-`vite build` bundles `packages/ui_react/src/` into that package's own `dist/`:
+`vite build` bundles `packages/js/dazzui-react/src/` into that package's own `dist/`:
 
 - `index.js` + `*.d.ts` — the components; React and Base UI stay external
 - `components.css` — every component stylesheet, via the `styles.ts` entry
@@ -248,29 +270,29 @@ is that editing a token file does nothing until the generator runs, which is
 why `pnpm packages` runs both and the playground scripts call it.
 
 Never hand-edit `src/generated/`. A value a component needs belongs in
-`packages/ds`, and anything written there is overwritten on the next build.
+`ds`, and anything written there is overwritten on the next build.
 
 ## Parity pipeline
 
-`packages/ui_react` is the standard the other platforms are held to, and the
+`packages/js/dazzui-react` is the standard the other platforms are held to, and the
 standard is written in stylesheets — which a port reads with its eyes. The
 parity pipeline reads it with a browser instead, so that what a port is held
 to is a number rather than an impression.
 
-1. `packages/ui_react/example/scripts/parity.mjs` serves the React playground build and opens
+1. `packages/js/dazzui-react/example/scripts/parity.mjs` serves the React playground build and opens
    every story it lists, in every theme, in a headless Chromium at a fixed
    window (960×640 at 2x, reduced motion). For each it records every
    component root on the page — anything carrying a bare `ff-*` class — with
    its `data-*` axes, its box, and the computed border, corner, colour, type
    and shadow; and takes a screenshot. It stages three things under
-   `packages/ui_react/example/parity/` (gitignored, the way `dist/` is for tokens):
+   `packages/js/dazzui-react/example/parity/` (gitignored, the way `dist/` is for tokens):
    - `stories.json` — the story list, and the cross-platform key
    - `reference/<page>.json` — what every story rendered, per theme
    - `screenshots/<theme>/<id>.png` — for the side-by-side report; never
      distributed, since a screenshot is only reproducible on one machine
 2. It then distributes `stories.json` and `reference/` into each platform's
-   parity directory — `packages/ui_flutter/example/test/parity/` and
-   `packages/ui_swiftui/Example/Tests/PlaygroundTests/Parity/` — so a
+   parity directory — `packages/dart/dazzui/example/test/parity/` and
+   `packages/swift/DazzUI/Example/Tests/PlaygroundTests/Parity/` — so a
    platform's tests run from inside
    the package. Unlike the generated token files, **none of this is
    committed**: it is a measurement, not a contract, and it is regenerated
@@ -329,7 +351,7 @@ adapter is given the axes and the text and nothing else, so the difference
 between those two pictures is the story's content rather than the
 component's drawing.
 
-`apps/parity` (`pnpm parity:view`) is the viewer over all of this: each
+`tools/parity` (`pnpm parity:view`) is the viewer over all of this: each
 platform's reference test also writes `measured.json` beside its drift
 list (gitignored — it is an output), and the viewer shows React's value
 beside each platform's for every specimen, with the React rendering cut
@@ -351,11 +373,11 @@ the test prints the value on each side. Never add a line to make a test
 pass — an adapter that builds the wrong thing is fixed in the adapter.
 
 ```bash
-cd packages/ui_flutter/example && flutter test test/parity/
+cd packages/dart/dazzui/example && flutter test test/parity/
 ```
 
 ```bash
-cd packages/ui_swiftui/Example && xcodebuild -project Playground.xcodeproj -scheme Playground -destination 'platform=macOS' -derivedDataPath .build/xcode test
+cd packages/swift/DazzUI/Example && xcodebuild -project Playground.xcodeproj -scheme Playground -destination 'platform=macOS' -derivedDataPath .build/xcode test
 ```
 
 Never hand-edit a distributed `stories.json` or `reference/`; rerun
@@ -449,7 +471,7 @@ The colour system reads in washes and grades:
   (1px) draws separators, on every platform and at every display scale — it
   used to halve on Retina to land on one device pixel, and against the
   mockups the system is drawn to a halved rule read as too thin to be a
-  decision. `ui_react`'s `src/styles/base.css` carries the box-sizing and
+  decision. `dazzui-react`'s `src/styles/base.css` carries the box-sizing and
   reduced-motion ground rules.
 - **A separator is ink at 13% over paper, 16% over a dark ground** —
   `color.border`, the same two numbers in every family, since the ink each
@@ -532,7 +554,7 @@ the mockups round a row at 7 and a card at 8, which is exactly where that rung
 lands.
 
 **The imported themes are read off another system, not drawn.** Beside the
-twelve sit two sources under `packages/ds/themes/`:
+twelve sit two sources under `ds/themes/`:
 
 - `omarchy.yaml` — [Omarchy](https://github.com/basecamp/omarchy)'s
   twenty-two themes from its `colors.toml` files, as
@@ -612,7 +634,7 @@ the ports are held to the drawn families.
 Studio Light sets **no attribute at all** — selecting it means removing
 `data-theme`, not writing `studio-light`. Writing it would leave the page
 looking right for the wrong reason, since none of the theme blocks would
-match. The React playground does exactly this; see `packages/ui_react/example/src/lib/themes.ts`.
+match. The React playground does exactly this; see `packages/js/dazzui-react/example/src/lib/themes.ts`.
 
 Flutter has no cascade, so `plugins/flutter.mjs` collapses each theme's mode
 chain into a whole `ThemeVariables` instance — `themeVariablesStudioDark`,
@@ -774,7 +796,7 @@ off.
 
 ## Playground conventions
 
-- Stories live in `packages/ui_react/example/stories/*.stories.tsx`, titled
+- Stories live in `packages/js/dazzui-react/example/stories/*.stories.tsx`, titled
   `Tokens/<Group>` or `Components/<Name>`. `tools/playgrounds/catalog.mjs`
   reads declarations in source order, sorts pages, and generates the catalog.
   Export names determine stable IDs independently of display-name overrides.
@@ -793,7 +815,7 @@ off.
   recorded in `tools/playgrounds/outputs.json`. Source changes belong in the
   React scene declarations or the platform adapters. `coverage.json` records
   pending scene/adapter migrations; a legacy native implementation is not
-  generated content. See `packages/ui_react/example/README.md` for current scope.
+  generated content. See `packages/js/dazzui-react/example/README.md` for current scope.
 - The isolated canvas exposes `window.__PLAYGROUND__` for automation. Stable
   `story`, `theme`, `canvas` query parameters replace Storybook's iframe and
   private channel. Golden baselines require explicit review/update; React
@@ -822,7 +844,7 @@ off.
   give a component the width or the window it needs, and draw nothing
   themselves.
 - The token table appears **only** where the component owns tokens — the
-  thirteen files in `packages/ds/tokens/component/`, plus the `frame` metrics
+  thirteen files in `ds/tokens/component/`, plus the `frame` metrics
   the shell columns are sized by. Most components own none: they read the shared
   vocabulary directly, which is documented on `Tokens/Control`, and a table
   that would come back empty is not worth a section.
@@ -837,7 +859,7 @@ off.
   itself with DazzUI tokens; keep it that way.
 
 **The platform playgrounds are organised the same way**, in their own dialect:
-`packages/ui_swiftui/Example` and `packages/ui_flutter/example` each carry a
+`packages/swift/DazzUI/Example` and `packages/dart/dazzui/example` each carry a
 `Storybook/` (`storybook/`) framework —
 a `Story`, a `StoryPage`, a `StoryGroup`, a registry, the sidebar tree, and the
 same split between documentation furniture (`Gallery`) and bare-story
@@ -864,7 +886,7 @@ The rules an example does keep are the ones that make it worth having:
   constant with the reason beside it.
 - **Interactive colour comes off the recipes.** A part that is tinted carries
   `data-tint` and reads `--control-color-<variant>-<part>-<state>`, exactly as a
-  component in `ui_react` does. Writing a ramp step into an example's CSS is
+  component in `dazzui-react` does. Writing a ramp step into an example's CSS is
   the same mistake there as it is in the library, and the theme menu is what
   makes it visible.
 - **The same shape as the library.** A component that owns styles is a
@@ -877,7 +899,7 @@ The rules an example does keep are the ones that make it worth having:
 - **Override by source order, not by force.** Where an example has to reshape a
   library component, it does it with a class of its own at one selector deeper
   (`.wb-composer .wb-composer__input`), which is the extension point `cx()`
-  documents. It never edits `ui_react`, and it never reaches for `!important`.
+  documents. It never edits `dazzui-react`, and it never reaches for `!important`.
   A second navigation column is the same move: the workbench's sidebar is
   `Sidebar collapsible="none"` with `--sidebar-width` re-pointed on the class,
   which is what that component is drawn for. Inside a `Dialog` it is not —
@@ -900,7 +922,7 @@ The rules an example does keep are the ones that make it worth having:
   oxlint defaults): single quotes, no semicolons, 80 columns, 2-space indent,
   omit parens on single-argument arrows.
 - Run `pnpm format` and `pnpm lint` before committing. One oxlint warning in
-  `packages/ds` predates this setup.
+  `ds` predates this setup.
 
 ## Commits
 

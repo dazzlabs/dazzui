@@ -9,7 +9,7 @@ import { nativeOutputs } from './native.mjs'
 import { validateScene } from './schema/scene.mjs'
 
 const root = fileURLToPath(new URL('../../', import.meta.url))
-const example = path.join(root, 'packages/ui_react/example')
+const example = path.join(root, 'packages/js/dazzui-react/example')
 const files = (await fs.readdir(path.join(example, 'stories')))
   .filter(f => f.endsWith('.stories.tsx'))
   .sort()
@@ -27,7 +27,7 @@ const stories = sortStories(
 )
 const manifest = {
   version: 1,
-  source: 'packages/ui_react/example/stories',
+  source: 'packages/js/dazzui-react/example/stories',
   stories,
 }
 const scenes = new Map()
@@ -44,11 +44,11 @@ for (const story of stories) {
 }
 const outputs = new Map([
   [
-    'packages/ui_react/example/src/generated/catalog.json',
+    'packages/js/dazzui-react/example/src/generated/catalog.json',
     JSON.stringify(manifest, null, 2) + '\n',
   ],
   [
-    'packages/ui_react/example/src/generated/scenes.json',
+    'packages/js/dazzui-react/example/src/generated/scenes.json',
     JSON.stringify(Object.fromEntries(scenes), null, 2) + '\n',
   ],
 ])

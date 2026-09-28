@@ -334,7 +334,7 @@ export function extractStaticStories(
         imports.get(n.text)?.module === '@dazzlabs/dazzui-react'
       ) {
         const file = new URL(
-          '../../packages/ui_react/src/lib/tint.ts',
+          '../../packages/js/dazzui-react/src/lib/tint.ts',
           import.meta.url
         )
         const tintAst = ts.createSourceFile(

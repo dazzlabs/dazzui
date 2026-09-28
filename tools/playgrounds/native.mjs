@@ -81,7 +81,7 @@ function staticNode(node, platform, key = 'specimen') {
 export function nativeOutputs(stories, scenes) {
   const outputs = new Map()
   outputs.set(
-    'packages/ui_flutter/example/lib/generated/expression.dart',
+    'packages/dart/dazzui/example/lib/generated/expression.dart',
     `${header}const sceneTrimCodeUnits = <int>[${[...TRIM_CHARACTERS].map(c => c.charCodeAt(0)).join(',')}];\n`
   )
   const staticStories = stories.filter(
@@ -111,11 +111,11 @@ export function nativeOutputs(stories, scenes) {
     [...scenes].filter(([, scene]) => flutterSupports(scene))
   )
   outputs.set(
-    'packages/mobile_ui_ios/Example/GeneratedStories.swift',
+    'packages/swift/DazzMobileUI/Example/GeneratedStories.swift',
     iosCatalog(stories, iosScenes)
   )
   outputs.set(
-    'packages/mobile_ui_ios/Example/Tests/scenes.json',
+    'packages/swift/DazzMobileUI/Example/Tests/scenes.json',
     JSON.stringify(Object.fromEntries(iosScenes), null, 2) + '\n'
   )
   for (const [file, content] of glyphOutputs()) outputs.set(file, content)
@@ -151,7 +151,7 @@ export function nativeOutputs(stories, scenes) {
     return String(value)
   }
   outputs.set(
-    'packages/ui_flutter/example/lib/generated/scenes.dart',
+    'packages/dart/dazzui/example/lib/generated/scenes.dart',
     `${header}import 'package:dazzui/dazzui.dart';
 import '../playground/scene.dart';
 import '../storybook/story.dart';
@@ -208,7 +208,7 @@ List<StoryGroup> generatedGroups(List<StoryGroup> groups) {
 `
   )
   outputs.set(
-    'packages/ui_swiftui/Example/Sources/Playground/Storybook/GeneratedStories.swift',
+    'packages/swift/DazzUI/Example/Sources/Playground/Storybook/GeneratedStories.swift',
     `${header}import SwiftUI
 import DazzUI
 
@@ -261,7 +261,7 @@ ${portable.map((s, i) => swiftScene(scenes.get(s.id), i)).join('\n')}
 `
   )
   outputs.set(
-    'packages/ui_winui3/example/Storybook/GeneratedStories.cs',
+    'packages/csharp/DazzUI/example/Storybook/GeneratedStories.cs',
     `${header}using Microsoft.UI.Xaml;
 using UI = DazzUI;
 namespace DazzUI.Playground.Storybook;
@@ -299,7 +299,7 @@ ${staticStories.map(s => `${q(`${s.title}/${s.name}`.toLowerCase())} => ${static
     'Divider',
   ])
     outputs.set(
-      `packages/ui_winui3/example/Stories/${page}Stories.cs`,
+      `packages/csharp/DazzUI/example/Stories/${page}Stories.cs`,
       `${header}using DazzUI.Playground.Storybook;
 namespace DazzUI.Playground.Stories;
 public static class ${page}Stories {

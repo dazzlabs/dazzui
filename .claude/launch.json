@@ -42,7 +42,7 @@
         "http.server",
         "8321",
         "-d",
-        "packages/ui_flutter/example/build/web"
+        "packages/dart/dazzui/example/build/web"
       ],
       "port": 8321
     },

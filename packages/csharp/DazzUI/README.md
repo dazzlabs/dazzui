@@ -1,0 +1,131 @@
+# DazzUI for WinUI 3
+
+A native Windows implementation of the DazzUI design system, with twelve
+shared themes and a playground covering 59 component pages and 7 token pages.
+The 489 named stories follow the Flutter/SwiftUI playground catalog. The shell
+provides theme family and brightness controls, searchable grouped navigation,
+breadcrumbs, Overview documentation and individual specimens.
+
+## Run
+
+Requires Windows 10 build 19041 or newer and the .NET 8 SDK or later. NuGet
+access is required for the first restore. Visual Studio is optional; for IDE
+work, open `DazzUI.sln` with the WinUI development workload installed.
+
+From the repository root:
+
+```powershell
+pnpm winui3
+pnpm winui3:build
+pnpm winui3:test
+```
+
+From this directory, without Node or pnpm:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run.ps1 -SmokeTest
+dotnet build src/DazzUI/DazzUI.csproj
+```
+
+`run.ps1` accepts `-Configuration Release`, `-Platform ARM64` and `-NoBuild`.
+The playground is unpackaged and self-contained: it bundles .NET and Windows
+App SDK dependencies, so no MSIX registration, signing certificate or separate
+Windows App Runtime installation is needed. Keep the entire output directory
+when copying the app. ARM64 is configured but requires validation on ARM64 hardware.
+
+## Components
+
+- Actions and presentation: Button, IconButton, Toggle, ToggleGroup, Link,
+  Badge, Card, Avatar, AvatarGroup, Callout, Code, CodeBlock, Divider, EmptyState,
+  Icon, KeyCap and SectionLabel.
+- Fields and selection: TextField, SearchField, FieldValue, Select,
+  Autocomplete, Combobox, NumberField, OtpField, Form, FormField, Fieldset,
+  Checkbox, CheckboxGroup, Radio, RadioGroup, Switch, OptionCard,
+  SegmentedControl, PillTabs, Tag and ShortcutRecorder.
+- Feedback: Progress, Meter, Slider, RangeSlider, Spinner, Skeleton,
+  SkeletonText, Step, StepList, Toast and ToastViewport.
+- Layout and navigation: ActionBar, Accordion, Collapsible, Preferences,
+  PreferenceSection, PreferenceGroup, PreferenceRow, Sidebar, SidebarGroup,
+  NavItem, Aside, Rail, Splitter, Tree and Table.
+- Overlays: Menu, ContextMenu, Menubar, Popover, PreviewCard, Tooltip,
+  Dialog and Drawer.
+
+Native WinUI primitives own editing, selection, focus and popup behavior.
+Controls that WinUI does not support subclassing are composed and expose their
+native input through `Input`, `Indicator`, `View` or `Native`. RangeSlider and
+Splitter implement their extra drag and keyboard behavior with native Thumb
+controls and range-value automation peers. Fluent System Icons are vendored
+from the same icon package React uses, with the upstream MIT license included.
+
+## Consume and theme
+
+Reference `src/DazzUI/DazzUI.csproj` from a WinUI 3 app. Merge
+`XamlControlsResources` in the host application resources, as `example/App.xaml`
+does. The library loads its component templates from `Themes/Generic.xaml`.
+
+```csharp
+var input = new DazzUI.TextField { PlaceholderText = "Project name" };
+var button = new DazzUI.Button
+{
+    Content = "Save",
+    Tint = DazzUI.WidgetTint.Primary,
+    Variant = DazzUI.ControlVariant.Filled,
+    Size = DazzUI.ControlSize.Medium,
+};
+button.Click += (_, _) => Save(input.Text);
+
+var scope = new DazzUI.ThemeScope
+{
+    Theme = new DazzUI.Theme("studio-light"),
+    Content = new StackPanel { Children = { input, button } },
+};
+
+// A theme change preserves editing and selection state.
+scope.Theme = new DazzUI.Theme("bright-dark");
+```
+
+`Appearance.SetTheme(root, theme)` also themes an existing subtree. An explicit
+component theme overrides its ancestor. Theme, tint and size are dependency
+properties; Button's variant and Badge/Card variants support bindings too.
+Set composition properties and item collections before attaching a component.
+After changing a composition or collection on a loaded component, call
+`Appearance.Refresh(component)`. Native value and selection properties update
+through their native controls and events.
+
+## Tokens and stories
+
+`ds/plugins/winui3.mjs` emits `Generated/tokens.json` through the
+existing Terrazzo pipeline. `pnpm tokens` distributes the snapshot; commit it
+and never edit it by hand. Palette, geometry and recipe decisions stay in ds.
+The .NET library embeds the snapshot and builds independently of ds and Node.
+
+- `example/Storybook/`: registry, Overview documentation and specimen layouts.
+- `example/Stories/`: one story registry per component, and shared specimen builders.
+- `scripts/sync-stories.mjs`: synchronize names/layouts from SwiftUI and the
+  additional Flutter stories. `--check <stories.json>` verifies the actual
+  runtime registry in both directions and rejects duplicates.
+- `scripts/sync-icons.mjs`: refresh the vendored Fluent paths from the React
+  dependency already installed in the workspace.
+
+## Validation
+
+```powershell
+node --test ds/plugins/winui3.test.mjs
+pnpm winui3:test
+```
+
+The smoke suite needs an interactive Windows desktop. It runs in a temporary
+real WinUI window, renders all 489 stories in each of the 12 themes, and checks
+button geometry, state recipes and live tint changes. Interaction checks cover
+checkbox/radio automation, form validation and submission, OTP paste and
+masking, range constraints, inherited themes without resetting input, menu
+actions, popovers, dialog results and all four drawer edges.
+
+Reports, the runtime story registry, and PNG captures are written to a unique
+ignored `artifacts/smoke-*` directory. When the sibling native sources and Node
+are available, the run script also checks registry coverage against them.
+
+Story/catalog alignment and native rendering tests are separate from React
+pixel parity. WinUI is not yet integrated into the repository's React reference
+measurement/viewer pipeline; these tests do not assert pixel-identical output.

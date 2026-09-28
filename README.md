@@ -6,28 +6,30 @@ put them to work.
 
 ## Workspace
 
-`packages/mobile_ui_android` is the Android mobile package: ds colors applied
-to official Compose Material 3 components, retaining their system typography,
-shapes and behavior. See its [setup and playground](packages/mobile_ui_android/README.md).
+The layout follows [nativeapi](https://github.com/libnativeapi/nativeapi)'s
+`core/` + `bindings/<language>/<package>`: the design system at the top, and
+an implementation per UI toolkit under `packages/<language>/`, named as it is
+published. Each package carries its own playground in `example/`.
 
-| Path                 | Package                      | What it is                                                                                                       |
-| -------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `packages/ds`        | `@dazzlabs/dazzui-ds`           | The design system itself: tokens built with [Terrazzo](https://terrazzo.app/). A generator, not a dependency.    |
-| `packages/ui_react`  | `@dazzlabs/dazzui-react`     | The React implementation. Plain CSS over the tokens — no Tailwind, no icon set.                                  |
-| `packages/mobile_ui_ios` | `DazzMobileUI` | Native SwiftUI mobile controls with ds colours; system typography, geometry and behaviour. |
-| `packages/ui_winui3` | `DazzUI` | The WinUI 3 implementation, generated themes and native Windows playground. See its [README](packages/ui_winui3/README.md). |
-| `packages/ui_react/example`     | `@dazzlabs/dazzui-react-playground` | The React reference playground and shared scene sources.                            |
-| `examples/workbench` | `@dazzlabs/dazzui-example-workbench` | A Git-rooted agent workbench — project tabs, nine pages, a cross-project task queue — built entirely out of the React components. |
-| `examples/canvas`    | `@dazzlabs/dazzui-example-canvas` | A design canvas, where the drawing itself is painted out of the tint recipes. |
+| Path                          | Package                             | What it is                                                                                                  |
+| ----------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `ds`                          | `@dazzlabs/dazzui-ds`               | The design system itself: tokens built with [Terrazzo](https://terrazzo.app/). A generator, not a dependency. |
+| `packages/js/dazzui-react`    | `@dazzlabs/dazzui-react`            | The React implementation, and the standard the others are held to. Plain CSS over the tokens.               |
+| `packages/dart/dazzui`        | `dazzui`                            | The Flutter implementation.                                                                                 |
+| `packages/swift/DazzUI`       | `DazzUI`                            | The macOS SwiftUI implementation.                                                                           |
+| `packages/swift/DazzMobileUI` | `DazzMobileUI`                      | iOS: system SwiftUI controls with ds colours.                                                               |
+| `packages/csharp/DazzUI`      | `DazzUI`                            | The WinUI 3 implementation. See its [README](packages/csharp/DazzUI/README.md).                              |
+| `packages/kotlin/dazzui-mobile` | `dazzui-mobile`                   | Android: stock Compose Material 3 with ds colours. See its [README](packages/kotlin/dazzui-mobile/README.md). |
+| `examples/react_workbench`    | `@dazzlabs/dazzui-example-workbench` | A Git-rooted agent workbench built entirely out of the React components.                                   |
+| `examples/react_canvas`       | `@dazzlabs/dazzui-example-canvas`   | A design canvas, where the drawing itself is painted out of the tint recipes.                              |
+| `tools/playgrounds`           | `@dazzlabs/dazzui-playground-tools` | Generates every playground's stories from the React declarations.                                           |
+| `tools/parity`                | `@dazzlabs/dazzui-parity`           | The drift viewer: what each platform measured beside React.                                                 |
 
-Further platform packages sit beside `ui_react` as they land — `ui_flutter`,
-`ui_swiftui` — each implementing the same tokens for its own
-platform. Only
-`packages/ds` decides what a value is, and it hands each platform its own
-generated sources rather than being installed alongside them: a platform
-package builds, ships and is consumed on its own.
+Only `ds` decides what a value is, and it hands each package its own
+generated sources rather than being installed alongside them: a package
+builds, ships and is consumed on its own.
 
-The two Rust ports — `packages/ui_gpui` and `packages/ui_inset` — are
+The two Rust ports — `packages/rust/dazzui` and `packages/rust/dazzui_inset` — are
 maintained on the `platform/gpui` branch rather than here. Everything they
 need is on it: their own generated sources, the `ds` plugins that write them,
 and the playground adapters that compile the shared scenes into Rust.
@@ -90,17 +92,17 @@ pnpm winui3
 
 `pnpm winui3:build` builds it, and `pnpm winui3:test` runs the real-window
 smoke tests. It can also build without pnpm; see
-[`packages/ui_winui3`](packages/ui_winui3/README.md).
+[`packages/csharp/DazzUI`](packages/csharp/DazzUI/README.md).
 
 ## Scripts
 
 | Script                 | What it does                                            |
 | ---------------------- | ------------------------------------------------------- |
-| `pnpm tokens`          | Build `packages/ds`, generating into the platform packages |
-| `pnpm components`      | Build `packages/ui_react` into its `dist/`              |
+| `pnpm tokens`          | Build `ds`, generating into the platform packages |
+| `pnpm components`      | Build `packages/js/dazzui-react` into its `dist/`              |
 | `pnpm packages`        | Both of the above, in order                             |
 | `pnpm playground`       | Build both packages, then start Storybook on port 6006  |
-| `pnpm playground:build` | Build a static Storybook into `packages/ui_react/example/dist`     |
+| `pnpm playground:build` | Build a static Storybook into `packages/js/dazzui-react/example/dist`     |
 | `pnpm workbench`       | Build both packages, then serve the example on port 5180 |
 | `pnpm workbench:desktop` | Build the example, then open it as a native window     |
 | `pnpm workbench:desktop:build` | Package the window into `dist-desktop/`          |

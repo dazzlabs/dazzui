@@ -21,7 +21,7 @@ test('Android excludes future content and interactions from generated coverage',
   assert.deepEqual(
     JSON.parse(
       output.get(
-        'packages/mobile_ui_android/example/src/main/assets/scenes.json'
+        'packages/kotlin/dazzui-mobile/example/src/main/assets/scenes.json'
       )
     ),
     []

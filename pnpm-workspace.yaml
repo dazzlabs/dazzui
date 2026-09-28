@@ -1,9 +1,9 @@
 packages:
-  - "apps/*"
+  - "ds"
+  - "packages/js/*"
+  - "packages/js/*/example"
   - "examples/*"
-  - "packages/*"
-  - "packages/ui_react/example"
-  - "tools/playgrounds"
+  - "tools/*"
 
 allowBuilds:
   deno: true

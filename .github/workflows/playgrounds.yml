@@ -40,7 +40,7 @@ jobs:
       - run: pnpm --filter @dazzlabs/dazzui-react-playground exec playwright install --with-deps chromium
       - run: pnpm playground:test
       - name: Flutter shared checkpoints and gallery
-        working-directory: packages/ui_flutter/example
+        working-directory: packages/dart/dazzui/example
         run: flutter test test/generated_scenes_test.dart test/playground_test.dart
 
       - name: Retain browser failure diagnostics
@@ -49,8 +49,8 @@ jobs:
         with:
           name: playground-browser-diagnostics
           path: |
-            packages/ui_react/example/playwright-report
-            packages/ui_react/example/test-results
+            packages/js/dazzui-react/example/playwright-report
+            packages/js/dazzui-react/example/test-results
           retention-days: 7
           if-no-files-found: ignore
 
@@ -62,4 +62,4 @@ jobs:
       - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
         with:
           dotnet-version: '8.0.x'
-      - run: dotnet build packages/ui_winui3/example/Playground.csproj
+      - run: dotnet build packages/csharp/DazzUI/example/Playground.csproj
