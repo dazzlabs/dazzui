@@ -45,5 +45,5 @@ packages` does both in order.
   `ds` rather than writing a literal into the CSS.
 - Never hand-edit `src/generated/`; the next generator run overwrites it.
 
-See AGENTS.md at the repository root for the rules on tinting and the shared
-control state machine.
+See [`specs/components.md`](../../../specs/components.md) for the rules on
+tinting and the shared control state machine.

@@ -4,7 +4,7 @@ import type { Doc, Shape } from '../lib/scene'
  * The drawing the prototype opens at.
  *
  * It draws this repository rather than a made-up product: the first page is
- * the token pipeline `AGENTS.md` describes, step for step, and the second is a
+ * the token pipeline `specs/tokens.md` describes, step for step, and the second is a
  * cover for the design system the canvas is built out of. A prototype that
  * invents its content has to invent its labels too, and invented labels are
  * the first thing that reads as a mock.

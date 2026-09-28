@@ -40,8 +40,8 @@ Adding a platform means adding an entry to `TARGETS` in `scripts/build.mjs`.
 
 `control.css` exists because CSS cannot index a colour ramp by a variable.
 `plugins/control.mjs` resolves the `control.color.*` recipes at build time so
-no stylesheet has to write a shade number down. See AGENTS.md for the rules
-that come with it.
+no stylesheet has to write a shade number down. See [`specs/tokens.md`](../specs/tokens.md) for
+the rules that come with it.
 
 ## Layers
 
