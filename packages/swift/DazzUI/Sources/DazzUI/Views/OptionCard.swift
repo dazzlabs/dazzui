@@ -15,6 +15,9 @@ public struct OptionCard<Title: View, Description: View>: View {
   public var action: () -> Void
   @ViewBuilder public var title: () -> Title
   @ViewBuilder public var description: () -> Description
+  /// The inset of the card's content. A card whose title is a picture of
+  /// the option takes zero, and the picture runs to the card's edge.
+  public var padding: EdgeInsets?
 
   @Environment(\.theme) private var theme
   @Environment(\.hairline) private var hairline
@@ -24,10 +27,12 @@ public struct OptionCard<Title: View, Description: View>: View {
     selected: Bool = false,
     tint: Tint = .primary,
     enabled: Bool = true,
+    padding: EdgeInsets? = nil,
     action: @escaping () -> Void,
     @ViewBuilder title: @escaping () -> Title,
     @ViewBuilder description: @escaping () -> Description
   ) {
+    self.padding = padding
     self.selected = selected
     self.tint = tint
     self.enabled = enabled
@@ -40,7 +45,7 @@ public struct OptionCard<Title: View, Description: View>: View {
     let vars = theme.vars
 
     Pressable(action: action, enabled: enabled, cornerRadius: vars.radiusLarge) { state in
-      VStack(alignment: .leading, spacing: vars.spacing15) {
+      VStack(alignment: .leading, spacing: padding == nil ? vars.spacing15 : 0) {
         title()
           .font(.system(size: vars.labelStrong.size, weight: vars.labelStrong.weight))
           .lineSpacing(vars.labelStrong.lineSpacing)
@@ -62,8 +67,15 @@ public struct OptionCard<Title: View, Description: View>: View {
           ? vars.colorContent
           : vars.resolve(vars.descriptor(.normal, .content), tint: tint, state: .disabled)
       )
-      .padding(.vertical, vars.spacing35)
-      .padding(.horizontal, vars.spacing3)
+      .padding(
+        padding
+          ?? EdgeInsets(
+            top: vars.spacing35,
+            leading: vars.spacing3,
+            bottom: vars.spacing35,
+            trailing: vars.spacing3
+          )
+      )
       .background(surface(state: state))
       .clipShape(RoundedRectangle(cornerRadius: vars.radiusLarge, style: .circular))
       // Selection *thickens* the border as well as colouring it, which is what

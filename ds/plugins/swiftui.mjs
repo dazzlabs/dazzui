@@ -43,6 +43,10 @@ class SwiftUIPlugin {
       'swiftui/ThemeVariables.swift',
       generateThemeVariablesFile(tokens, sources, this.modeSelectors)
     )
+    outputFile(
+      'swiftui/ThemeName.swift',
+      generateThemeNameFile(this.modeSelectors)
+    )
     // The mobile package wears system controls; only colour crosses over.
     const mobileTokens = Object.fromEntries(
       Object.entries(tokens).filter(([id]) =>
@@ -158,6 +162,48 @@ function generateColorsFile(tokens, sources) {
 }
 
 // MARK: - ThemeVariables.swift
+
+/**
+ * Every theme the graph carries, by the name \`data-theme\` gives it — the
+ * drawn families first, each light then dark, then the imported ones in
+ * their files' order. Studio Light is the baseline: its variables are the
+ * initialiser's own defaults.
+ */
+function generateThemeNameFile(modeSelectors) {
+  const seen = [
+    'studio-light',
+    'studio-dark',
+    ...collectThemes(modeSelectors).keys(),
+  ]
+  const families = [
+    ...new Set(seen.map(theme => theme.replace(/-(light|dark)$/, ''))),
+  ]
+  const themes = families.flatMap(family =>
+    ['light', 'dark']
+      .map(mode => `${family}-${mode}`)
+      .filter(theme => seen.includes(theme))
+  )
+  return `import SwiftUI
+
+${HEADER}
+
+/// Every theme the token graph carries, named as \`data-theme\` names it.
+public enum ThemeName: String, CaseIterable, Sendable {
+${themes.map(theme => `  case ${swiftName(theme)} = "${theme}"`).join('\n')}
+
+  public var variables: ThemeVariables {
+    switch self {
+${themes.map(theme => `    case .${swiftName(theme)}: return .${swiftName(theme)}`).join('\n')}
+    }
+  }
+
+  /// A theme's half is in its name, as it is in the stylesheet.
+  public var colorScheme: ColorScheme {
+    rawValue.hasSuffix("-dark") ? .dark : .light
+  }
+}
+`
+}
 
 function generateThemeVariablesFile(tokens, sources, modeSelectors) {
   const categories = categorizeTokensBySource(tokens, sources)

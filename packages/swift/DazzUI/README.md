@@ -1,7 +1,7 @@
 # DazzUI
 
 The DazzUI design system for SwiftUI — the platform sibling of
-`packages/js/dazzui-react` and `packages/dart/dazzui`. Same tokens, same twelve themes,
+`packages/js/dazzui-react` and `packages/dart/dazzui`. Same tokens, same themes,
 same components.
 
 **`packages/js/dazzui-react` is the standard.** Every name, prop and metric here is
@@ -62,6 +62,10 @@ whole `ThemeVariables` value — `.studioDark`, `.brightLight`, `.brightDark` �
 beside the `.studioLight` default. It reads the themes back out of the same
 `modeSelectors` the stylesheets use, so adding a theme reaches Swift without
 the plugin being touched.
+
+`ThemeName` names every theme the token graph carries — the twelve drawn
+ones below and the imported ones — and is generated with the variables, so
+a theme added to ds reaches it without an edit here.
 
 | `ThemeName`    | Feel |
 | -------------- | ---- |
@@ -165,7 +169,7 @@ the catalog.
 that renders the same view under every theme at once:
 
 ```bash
-open Example/Playground.xcodeproj
+open Example/Example.xcodeproj
 ```
 
 ⌘R runs it. The project builds a real `.app`, so it debugs and profiles like

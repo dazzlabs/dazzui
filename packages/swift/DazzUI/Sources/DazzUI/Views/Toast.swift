@@ -228,3 +228,180 @@ public struct ToastViewport<Content: View>: View {
     )
   }
 }
+
+/// What a toast offers to do about the thing it reports.
+public struct ToastAction {
+  public let label: String
+  public let action: () -> Void
+
+  public init(_ label: String, action: @escaping () -> Void) {
+    self.label = label
+    self.action = action
+  }
+}
+
+/// A toast to raise: what happened, and how it is shown.
+///
+/// Unless `timeout` says otherwise a danger toast stays until dismissed, one
+/// with an action stays long enough to be acted on, and any other leaves
+/// after five seconds — React's timings.
+public struct ToastOptions {
+  public var title: String
+  public var tint: Tint
+  public var action: ToastAction?
+  public var dismissable: Bool
+  public var timeout: TimeInterval?
+
+  public init(
+    title: String,
+    tint: Tint = .neutral,
+    action: ToastAction? = nil,
+    dismissable: Bool = true,
+    timeout: TimeInterval? = nil
+  ) {
+    self.title = title
+    self.tint = tint
+    self.action = action
+    self.dismissable = dismissable
+    self.timeout = timeout
+  }
+
+  var resolvedTimeout: TimeInterval {
+    timeout ?? (tint == .danger ? 0 : action != nil ? 8 : 5)
+  }
+}
+
+/// The toasts raised under a ``ToastProvider``, oldest first.
+@MainActor
+public final class Toaster: ObservableObject {
+  public struct Raised: Identifiable {
+    public let id: Int
+    public let options: ToastOptions
+  }
+
+  @Published public private(set) var toasts: [Raised] = []
+  private var next = 0
+
+  public init() {}
+
+  /// Raises a toast and returns its id, for ``close(_:)``.
+  @discardableResult
+  public func add(_ options: ToastOptions) -> Int {
+    let id = next
+    next += 1
+    toasts.append(Raised(id: id, options: options))
+    let timeout = options.resolvedTimeout
+    if timeout > 0 {
+      DispatchQueue.main.asyncAfter(deadline: .now() + timeout) { [weak self] in
+        self?.close(id)
+      }
+    }
+    return id
+  }
+
+  /// Dismisses one toast, or every toast when `id` is nil.
+  public func close(_ id: Int? = nil) {
+    toasts.removeAll { id == nil || $0.id == id }
+  }
+}
+
+private struct ToasterKey: EnvironmentKey {
+  static let defaultValue: Toaster? = nil
+}
+
+public extension EnvironmentValues {
+  /// The toaster the nearest ``ToastProvider`` holds.
+  var toaster: Toaster? {
+    get { self[ToasterKey.self] }
+    set { self[ToasterKey.self] = newValue }
+  }
+}
+
+/// Where toasts are raised from: anything inside reaches `\.toaster`, and a
+/// ``ToasterViewport`` inside shows what was raised.
+public struct ToastProvider<Content: View>: View {
+  @ViewBuilder public var content: () -> Content
+  @StateObject private var toaster = Toaster()
+
+  public init(@ViewBuilder content: @escaping () -> Content) {
+    self.content = content
+  }
+
+  public var body: some View {
+    content().environment(\.toaster, toaster)
+  }
+}
+
+/// The provider's toasts, stacked across the window's bottom edge — or its
+/// top, newest nearest the edge. It draws nothing where it stands: the stack
+/// is the window's, handed to its overlay.
+public struct ToasterViewport: View {
+  public var placement: ToastPlacement
+
+  @Environment(\.toaster) private var toaster
+  @Environment(\.overlayStack) private var stack
+  @Environment(\.theme) private var theme
+  @State private var id = UUID()
+
+  public init(placement: ToastPlacement = .bottom) {
+    self.placement = placement
+  }
+
+  public var body: some View {
+    Group {
+      if let toaster {
+        ToasterStack(toaster: toaster, placement: placement, stack: stack, id: id)
+      }
+    }
+    .onDisappear { stack?.hide(id) }
+  }
+}
+
+private struct ToasterStack: View {
+  @ObservedObject var toaster: Toaster
+  let placement: ToastPlacement
+  let stack: OverlayStack?
+  let id: UUID
+
+  @Environment(\.theme) private var theme
+
+  var body: some View {
+    Color.clear
+      .frame(width: 0, height: 0)
+      .onAppear { publish() }
+      .onChange(of: toaster.toasts.map(\.id)) { _ in publish() }
+      .onChange(of: theme.name) { _ in publish() }
+  }
+
+  private func publish() {
+    guard let stack else { return }
+    let toasts = placement == .top ? Array(toaster.toasts.reversed()) : toaster.toasts
+    stack.show(
+      id,
+      AnyView(
+        ToastViewport(placement: placement) {
+          ForEach(toasts) { raised in
+            Toast(
+              tint: raised.options.tint,
+              onDismiss: raised.options.dismissable ? { toaster.close(raised.id) } : nil,
+              leading: { EmptyView() },
+              message: { Text(raised.options.title) },
+              trailing: {
+                if let action = raised.options.action {
+                  Button(size: .small, variant: .plain, tint: raised.options.tint) {
+                    action.action()
+                    toaster.close(raised.id)
+                  } label: {
+                    Text(action.label)
+                  }
+                }
+              }
+            )
+          }
+        }
+        .allowsHitTesting(!toasts.isEmpty)
+        .theme(theme.name)
+      )
+    )
+  }
+}

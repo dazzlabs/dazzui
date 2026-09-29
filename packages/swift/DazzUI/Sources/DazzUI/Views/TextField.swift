@@ -270,6 +270,9 @@ public struct Select<Value: Hashable>: View {
   public var enabled: Bool
   /// Fill the width offered rather than the longest option's.
   public var fullWidth: Bool
+  /// What the field says while its selection matches no option — React's
+  /// `placeholder`, in the faint ink a placeholder is.
+  public var placeholder: String
 
   @Environment(\.theme) private var theme
   @FocusState private var focused: Bool
@@ -278,6 +281,7 @@ public struct Select<Value: Hashable>: View {
   public init(
     options: [SelectOption<Value>],
     selection: Binding<Value>,
+    placeholder: String = "Choose…",
     size: TextFieldSize = .medium,
     state: TextFieldState = .default,
     tint: Tint = .primary,
@@ -286,6 +290,7 @@ public struct Select<Value: Hashable>: View {
   ) {
     self.options = options
     self._selection = selection
+    self.placeholder = placeholder
     self.size = size
     self.state = state
     self.tint = tint
@@ -320,7 +325,12 @@ public struct Select<Value: Hashable>: View {
           ForEach(options) { option in
             Text(option.label).hidden()
           }
-          Text(selectedLabel)
+          Text(placeholder).hidden()
+          if let chosen = options.first(where: { $0.value == selection }) {
+            Text(chosen.label)
+          } else {
+            Text(placeholder).foregroundStyle(vars.colorContentFaint)
+          }
         }
         .lineLimit(1)
         .truncationMode(.tail)
@@ -366,7 +376,7 @@ public struct Select<Value: Hashable>: View {
   }
 
   private var selectedLabel: String {
-    options.first { $0.value == selection }?.label ?? ""
+    options.first { $0.value == selection }?.label ?? placeholder
   }
 }
 

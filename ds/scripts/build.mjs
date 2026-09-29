@@ -82,7 +82,11 @@ const TARGETS = [
       'DazzUI',
       'Generated'
     ),
-    files: ['swiftui/Colors.swift', 'swiftui/ThemeVariables.swift'],
+    files: [
+      'swiftui/Colors.swift',
+      'swiftui/ThemeName.swift',
+      'swiftui/ThemeVariables.swift',
+    ],
   },
   {
     package: 'DazzMobileUI',
