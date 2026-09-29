@@ -33,12 +33,18 @@ class OptionCard extends StatelessWidget {
     this.tint = OptionCardTint.primary,
     this.semanticsLabel,
     this.titleContent,
+    this.padding,
   });
 
   final String title;
 
   /// Rich content in place of the title text — a label with a badge beside it.
   final Widget? titleContent;
+
+  /// The inset of the card's content. A card whose [titleContent] draws to
+  /// its edge — a picture of what the option is — takes zero, and the
+  /// content is clipped to the card's corner.
+  final EdgeInsetsGeometry? padding;
   final String? description;
   final bool selected;
 
@@ -97,10 +103,13 @@ class OptionCard extends StatelessWidget {
         return AnimatedContainer(
           duration: vars.motionDuration,
           curve: vars.motionEasing,
-          padding: EdgeInsets.symmetric(
-            vertical: vars.spacing35,
-            horizontal: vars.spacing3,
-          ),
+          padding:
+              padding ??
+              EdgeInsets.symmetric(
+                vertical: vars.spacing35,
+                horizontal: vars.spacing3,
+              ),
+          clipBehavior: padding == null ? Clip.none : Clip.antiAlias,
           decoration: BoxDecoration(
             color: surface,
             border: Border.all(color: border, width: borderWidth),
@@ -109,7 +118,7 @@ class OptionCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
-            spacing: vars.spacing15,
+            spacing: padding == null ? vars.spacing15 : 0,
             children: [
               DefaultTextStyle.merge(
                 style: vars.labelStrong.copyWith(
