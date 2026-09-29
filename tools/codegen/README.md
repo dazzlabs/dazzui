@@ -1,38 +1,21 @@
-# Playground generation
+# Codegen
 
-Source: `packages/js/dazzui-react/example/stories/`. See the React example README for
-authoring, host automation, commands, and the current migration boundary.
+Compiles the React example's stories into the other platforms' examples.
+The rules are in [`specs/playgrounds.md`](../../specs/playgrounds.md).
 
-- `catalog.mjs` reads TSX declarations and preserves stable IDs and source order.
-- `schema/value.mjs` validates and evaluates shared conditional content and derived form properties.
-- `schema/scene.mjs` validates portable content, state and checkpoints.
-- `migrate-static.mjs` imports supported static TSX into data; imperative code is rejected.
-- `completeness.mjs` enforces the final all-story/all-target acceptance gate.
-- `swift-scene.mjs` compiles shared nodes, bindings and actions into SwiftUI views.
-- `ios-scene.mjs` maps the shared content, state, slots, actions and timers to system SwiftUI controls for the mobile gallery.
-- `android.mjs` emits the shared Android asset catalog and expression character set; the Compose host interprets these with native controls and a controllable frame clock.
-- `native.mjs` emits native scene data/builders and a per-platform worklist.
-- `format.mjs` runs Dart formatting before output comparison.
-- `generate.mjs` writes outputs or checks for drift with `--check`.
-- `outputs.json` records owned files and their hashes. Obsolete owned files are
-  removed only if their content still matches the generator's last output.
-- `coverage.json` is generated coverage, not a claim of visual equivalence.
+- `stories.mjs` reads `packages/js/dazzui-react/example/src/stories/*.tsx`
+  and evaluates each ahead of time into data: a tree of components, the
+  slots it keeps live, and the actions its events make. It also reads the
+  React example's theme list.
+- `flutter.mjs` is the Flutter side: `SUPPORT`, every component and prop
+  the Flutter example draws, and the emitters for its generated sources —
+  a file per story, the index, the themes, the glyphs.
+- `generate.mjs` writes the outputs, or with `--check` fails on drift, and
+  keeps `outputs.json`, the files it owns and their hashes.
+- `format.mjs` runs `dart format` before comparing.
 
-Never edit emitted sources to change a specimen. Extend the schema and adapter,
-edit the scene source, run generation, and test the consuming example. Unknown
-components, properties, bindings, targets, duplicate IDs and unrecognized exports
-fail generation. Native hosts keep using their existing implementations for
-stories not yet covered; those IDs remain visible in the worklist.
-
-The pipeline currently emits a data-backed Flutter adapter, typed SwiftUI
-scenes, iOS and Android system-control catalogs, and static Button and Badge
-builders for WinUI 3. Completing the remaining scene and
-adapter work is required before all native example content has a single source.
-
-The GPUI and Inset compilers (`gpui-scene.mjs`, `native-catalog.mjs`,
-`inset-scene.mjs`) live on the `platform/gpui` branch with the two packages
-they emit into.
-
-All content and interactions must be shared declarations. Story-specific native
-fixtures are migration debt, never an allowed escape hatch. `pnpm codegen:complete`
-is the strict completion check; `pnpm codegen:check` only checks output freshness.
+```sh
+pnpm codegen          # from the repository root
+pnpm codegen:check
+pnpm codegen:test
+```

@@ -26,8 +26,7 @@
     "codegen:test": "pnpm --filter @dazzlabs/dazzui-codegen test",
     "playground:test": "pnpm --filter @dazzlabs/dazzui-react-playground test",
     "playground:golden": "pnpm --filter @dazzlabs/dazzui-react-playground golden",
-    "playground:golden:pilot": "pnpm --filter @dazzlabs/dazzui-react-playground golden:pilot",
-    "codegen:complete": "pnpm --filter @dazzlabs/dazzui-codegen exec node generate.mjs --check --require-complete"
+    "playground:golden:pilot": "pnpm --filter @dazzlabs/dazzui-react-playground golden:pilot"
   },
   "devDependencies": {
     "oxfmt": "^0.16.0",

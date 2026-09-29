@@ -1,66 +1,59 @@
 import fs from 'node:fs/promises'
 import { createHash } from 'node:crypto'
-import { requireComplete } from './completeness.mjs'
-import { formatOutputs } from './format.mjs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { parseStories, sortStories } from './catalog.mjs'
-import { nativeOutputs } from './native.mjs'
-import { validateScene } from './schema/scene.mjs'
+import {
+  glyphsDart,
+  storiesIndexDart,
+  storyDart,
+  storyFile,
+  themesDart,
+  unsupported,
+} from './flutter.mjs'
+import { formatOutputs } from './format.mjs'
+import { readStories, readThemes } from './stories.mjs'
 
 const root = fileURLToPath(new URL('../../', import.meta.url))
-const example = path.join(root, 'packages/js/dazzui-react/example')
-const files = (await fs.readdir(path.join(example, 'stories')))
-  .filter(f => f.endsWith('.stories.tsx'))
-  .sort()
-const stories = sortStories(
-  (
-    await Promise.all(
-      files.map(async file =>
-        parseStories(
-          await fs.readFile(path.join(example, 'stories', file), 'utf8'),
-          file
-        )
-      )
-    )
-  ).flat()
+const check = process.argv.includes('--check')
+
+const stories = await readStories(root)
+const gaps = unsupported(stories)
+if (gaps.length)
+  throw new Error(
+    `Flutter cannot draw what these stories ask for. Map each in ` +
+      `packages/dart/dazzui/example/lib/scene/components.dart, then list it ` +
+      `in tools/codegen/flutter.mjs:\n${gaps.join('\n')}`
+  )
+const themes = await readThemes(root)
+const variables = await fs.readFile(
+  path.join(
+    root,
+    'packages/dart/dazzui/lib/src/generated/theme_variables.dart'
+  ),
+  'utf8'
 )
-const manifest = {
-  version: 1,
-  source: 'packages/js/dazzui-react/example/stories',
-  stories,
-}
-const scenes = new Map()
-for (const story of stories) {
-  if (!story.scene) continue
-  const source = JSON.parse(
-    await fs.readFile(path.join(example, 'stories', story.scene.file), 'utf8')
-  )
-  const scene = validateScene(
-    source[story.scene.key],
-    `${story.scene.file}/${story.scene.key}`
-  )
-  scenes.set(story.id, scene)
-}
+
+/*
+ * The Flutter example is laid out as the React one is: `stories/` a file
+ * per component, `lib/` the story type and the themes.
+ */
+const flutter = 'packages/dart/dazzui/example/lib'
 const outputs = new Map([
-  [
-    'packages/js/dazzui-react/example/src/generated/catalog.json',
-    JSON.stringify(manifest, null, 2) + '\n',
-  ],
-  [
-    'packages/js/dazzui-react/example/src/generated/scenes.json',
-    JSON.stringify(Object.fromEntries(scenes), null, 2) + '\n',
-  ],
+  ...stories.map(story => [
+    `${flutter}/stories/${storyFile(story.id)}`,
+    storyDart(story),
+  ]),
+  [`${flutter}/stories/index.dart`, storiesIndexDart(stories)],
+  [`${flutter}/lib/glyphs.dart`, glyphsDart(stories)],
+  [`${flutter}/lib/themes.dart`, themesDart(themes, variables)],
 ])
-for (const [file, content] of nativeOutputs(stories, scenes))
-  outputs.set(file, content)
-if (process.argv.includes('--require-complete'))
-  requireComplete(
-    stories,
-    scenes,
-    JSON.parse(outputs.get('tools/codegen/coverage.json'))
-  )
 formatOutputs(outputs)
+
+/*
+ * `outputs.json` records what this owns and the hash it last wrote. A file it
+ * owned and no longer writes is deleted — but only while it still matches
+ * that hash, so a hand edit is never thrown away.
+ */
 const ownershipPath = 'tools/codegen/outputs.json'
 const previous = JSON.parse(
   await fs.readFile(path.join(root, ownershipPath), 'utf8').catch(error => {
@@ -87,7 +80,7 @@ for (const [relative, expectedHash] of Object.entries(previous)) {
   if (content === null) continue
   if (hash(content) !== expectedHash)
     throw new Error(`Refusing to delete modified generated file: ${relative}`)
-  if (process.argv.includes('--check')) stale.push(relative)
+  if (check) stale.push(relative)
   else await fs.unlink(file)
 }
 outputs.set(
@@ -107,16 +100,14 @@ for (const [relative, content] of outputs) {
     return null
   })
   if (current === content) continue
-  if (process.argv.includes('--check')) stale.push(relative)
+  if (check) stale.push(relative)
   else {
     await fs.mkdir(path.dirname(file), { recursive: true })
     await fs.writeFile(file, content)
   }
 }
 if (stale.length)
-  throw new Error(
-    `Run pnpm codegen; stale outputs:\n${stale.join('\n')}`
-  )
+  throw new Error(`Run pnpm codegen; stale outputs:\n${stale.join('\n')}`)
 console.log(
-  `${stories.length} stories across ${new Set(stories.map(s => s.title)).size} pages; ${outputs.size} generated files checked`
+  `${stories.length} stories, ${stories.reduce((n, s) => n + s.examples.length, 0)} examples; ${outputs.size} generated files checked`
 )

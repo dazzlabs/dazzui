@@ -31,6 +31,6 @@ jobs:
           git -C "$RUNNER_TEMP/flutter" fetch --depth 1 origin c8c5e3bd7542962ee8b09a12ac469d7d1ff823e0
           git -C "$RUNNER_TEMP/flutter" checkout --detach FETCH_HEAD
           echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
-      - name: Flutter shared checkpoints and gallery
+      - name: Every story, in light and dark, and its interactions
         working-directory: packages/dart/dazzui/example
-        run: flutter test test/generated_scenes_test.dart test/playground_test.dart
+        run: flutter test test/stories_test.dart

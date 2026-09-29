@@ -52,8 +52,10 @@ of having no `package.json`. A package's own playground is its `example/`
   own `Theme`, and the three glyphs the kit draws itself come from
   `fluentui_system_icons` — the same set `dazzui-react` takes them from. A host
   supplies the app plumbing with `WidgetsApp`; see `example/lib/host.dart`
-  and `test/host.dart`. `example/` holds the playground app (`flutter run`
-  from that directory, macOS and web).
+  and `test/host.dart`. `example/` is the Flutter example (`flutter run`
+  from that directory, macOS and web): the React example's window, drawn
+  with this package, whose stories `pnpm codegen` compiles from the React
+  ones — see `specs/playgrounds.md`.
 - `packages/swift/DazzUI` (`DazzUI`) — the macOS SwiftUI implementation,
   drawn to the same geometry as React and held to it by the parity suite.
   `Sources/DazzUI/Generated/` is committed output from ds; `Example/` is the
@@ -78,10 +80,9 @@ of having no `package.json`. A package's own playground is its `example/`
   inside the package; `Example/Playground.xcodeproj` is the runnable iOS
   gallery. Open it, select an iPhone or iPad simulator, and run the Playground
   scheme. Its project configuration is generated from `Example/project.yml`.
-  `Example/GeneratedStories.swift` and `Example/Tests/scenes.json` are generated
-  from the React example's shared declarations by `pnpm codegen`.
-  `tools/codegen/ios-scene.mjs` maps content and events to system controls;
-  mobile appearance remains native. The Xcode test scheme checks the registry,
+  `Example/GeneratedStories.swift` and `Example/Tests/scenes.json` were
+  generated from the React example's former declarations and are frozen:
+  `pnpm codegen` no longer writes them. Mobile appearance remains native. The Xcode test scheme checks the registry,
   all-theme rendering and shared non-timed interaction checkpoints.
 - `packages/kotlin/dazzui-mobile` is an independent Android Gradle library with
   an `example` app. It uses only stock AndroidX Compose Material 3 components
@@ -92,15 +93,16 @@ of having no `package.json`. A package's own playground is its `example/`
   all theme families. Run `pnpm tokens` to regenerate; never edit the output.
   From that package, run `./gradlew assembleDebug testDebugUnitTest
   :example:assembleDebug` with JDK 17 and Android SDK 36. The package is
-  invisible to pnpm. Its example consumes generated
-  `example/src/main/assets/scenes.json` from the React example's shared
-  declarations. The generic Compose renderer and state/clock interpreter
+  invisible to pnpm. Its example consumes
+  `example/src/main/assets/scenes.json`, generated from the React example's
+  former declarations and frozen: `pnpm codegen` no longer writes it. The generic Compose renderer and state/clock interpreter
   contain no story-specific fixtures. Run `:example:connectedDebugAndroidTest`
   on a connected device to exercise shared checkpoints and all-theme native
   rendering.
-- `packages/js/dazzui-react/example` (`@dazzlabs/dazzui-react-playground`) — the React playground that
-  documents both: `Tokens/*` for the token graph, `Components/*` for the
-  components.
+- `packages/js/dazzui-react/example` (`@dazzlabs/dazzui-react-example`) — the
+  React example: every component, live, in every theme, in a desktop
+  window. Its `src/stories/` are the source codegen compiles into the other
+  platforms' examples.
 
 The split is the point: anything a platform package needs but cannot express
 belongs in `ds`, so the platforms stay implementations of one design
@@ -139,7 +141,7 @@ pnpm components        # build packages/js/dazzui-react into its dist/
 ```
 
 ```bash
-pnpm playground         # build both, then serve the React playground on :6006
+pnpm example            # build both, then serve the React example on :6006
 ```
 
 ```bash
@@ -175,7 +177,7 @@ before making it:
 - [`specs/themes.md`](specs/themes.md) — The twelve drawn themes, the imported ones, and how each platform carries a theme.
 - [`specs/components.md`](specs/components.md) — How the React package is built and how a component is drawn — the model every port follows.
 - [`specs/parity.md`](specs/parity.md) — How the ports are held to React: the extracted reference, the registry and reference tests, and the drift lists.
-- [`specs/playgrounds.md`](specs/playgrounds.md) — How stories are declared once and generated into every playground.
+- [`specs/playgrounds.md`](specs/playgrounds.md) — How a story is written once, in the React example, and compiled into the other platforms' examples.
 
 ## Code style
 
