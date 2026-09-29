@@ -13,28 +13,6 @@
       "autoPort": true
     },
     {
-      "name": "workbench",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": [
-        "--filter",
-        "@dazzlabs/dazzui-example-workbench",
-        "dev"
-      ],
-      "port": 5180,
-      "autoPort": true
-    },
-    {
-      "name": "canvas",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": [
-        "--filter",
-        "@dazzlabs/dazzui-example-canvas",
-        "dev"
-      ],
-      "port": 5181,
-      "autoPort": true
-    },
-    {
       "name": "ui-flutter-example",
       "runtimeExecutable": "python3",
       "runtimeArgs": [

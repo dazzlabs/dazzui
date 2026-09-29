@@ -1,8 +1,7 @@
 # DazzUI
 
 The DazzUI design system: one set of design tokens, a package per
-platform that implements them, a playground in each platform package, and examples that
-put them to work.
+platform that implements them, and a playground in each platform package.
 
 ## Workspace
 
@@ -20,8 +19,6 @@ published. Each package carries its own playground in `example/`.
 | `packages/swift/DazzMobileUI` | `DazzMobileUI`                      | iOS: system SwiftUI controls with ds colours.                                                               |
 | `packages/csharp/DazzUI`      | `DazzUI`                            | The WinUI 3 implementation. See its [README](packages/csharp/DazzUI/README.md).                              |
 | `packages/kotlin/dazzui-mobile` | `dazzui-mobile`                   | Android: stock Compose Material 3 with ds colours. See its [README](packages/kotlin/dazzui-mobile/README.md). |
-| `examples/react_workbench`    | `@dazzlabs/dazzui-example-workbench` | A Git-rooted agent workbench built entirely out of the React components.                                   |
-| `examples/react_canvas`       | `@dazzlabs/dazzui-example-canvas`   | A design canvas, where the drawing itself is painted out of the tint recipes.                              |
 | `tools/codegen`               | `@dazzlabs/dazzui-codegen`          | Generates every playground's stories from the React declarations.                                           |
 | `tools/parity`                | `@dazzlabs/dazzui-parity`           | The drift viewer: what each platform measured beside React.                                                 |
 
@@ -33,15 +30,6 @@ The two Rust ports — `packages/rust/dazzui` and `packages/rust/dazzui_inset` �
 maintained on the `platform/gpui` branch rather than here. Everything they
 need is on it: their own generated sources, the `ds` plugins that write them,
 and the playground adapters that compile the shared scenes into Rust.
-
-`examples/` is where the system is used rather than documented. A gallery shows
-every component on its own; an example has to make them agree with each other,
-which is the only way to find out whether the vocabulary is enough to build an
-app out of. The two ask different questions of it: the workbench is a
-reading app made of rows and forms, and the canvas has a drawing in the middle
-of it — the one region of a window whose colours are usually the user's rather
-than the designer's, and which here is painted out of the same tint recipes a
-button is.
 
 ## Getting started
 
@@ -59,29 +47,6 @@ Browse them at <http://localhost:6006>:
 
 ```bash
 pnpm playground
-```
-
-Or see them composed into an app, at <http://localhost:5180>:
-
-```bash
-pnpm workbench
-```
-
-And into a design canvas, at <http://localhost:5181>:
-
-```bash
-pnpm canvas
-```
-
-Either one in a native window packaged with
-[Deno Desktop](https://docs.deno.com/runtime/desktop/):
-
-```bash
-pnpm workbench:desktop
-```
-
-```bash
-pnpm canvas:desktop
 ```
 
 The WinUI 3 playground runs on Windows with the .NET 8 SDK or later:
@@ -103,12 +68,6 @@ smoke tests. It can also build without pnpm; see
 | `pnpm packages`        | Both of the above, in order                             |
 | `pnpm playground`       | Build both packages, then start Storybook on port 6006  |
 | `pnpm playground:build` | Build a static Storybook into `packages/js/dazzui-react/example/dist`     |
-| `pnpm workbench`       | Build both packages, then serve the example on port 5180 |
-| `pnpm workbench:desktop` | Build the example, then open it as a native window     |
-| `pnpm workbench:desktop:build` | Package the window into `dist-desktop/`          |
-| `pnpm canvas`          | Build both packages, then serve the canvas on port 5181 |
-| `pnpm canvas:desktop`  | Build the canvas, then open it as a native window       |
-| `pnpm canvas:desktop:build` | Package that window into `dist-desktop/`           |
 | `pnpm build`           | Build everything and the static Storybook               |
 | `pnpm typecheck`       | Run `tsc` across the workspace                          |
 | `pnpm lint`            | Lint the workspace with [oxlint](https://oxc.rs/)       |

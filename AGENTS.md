@@ -13,13 +13,12 @@ ds/                          the design system — the only place a value is dec
 packages/<language>/<name>/  an implementation, named as it is published
   js/dazzui-react            swift/DazzUI · swift/DazzMobileUI
   dart/dazzui                csharp/DazzUI · kotlin/dazzui-mobile
-examples/<framework>_<name>/ apps built out of a package
 tools/                       playground generator, parity viewer
 ```
 
 A package is grouped by language because a language is a toolchain: one
 workspace, one formatter, one build tool. Only `ds`, `packages/js/*` and
-their examples and tools are pnpm workspace members; every other language
+their playgrounds and tools are pnpm workspace members; every other language
 directory is invisible to pnpm by construction rather than by the accident
 of having no `package.json`. A package's own playground is its `example/`
 (`Example/` in Swift).
@@ -102,29 +101,6 @@ of having no `package.json`. A package's own playground is its `example/`
 - `packages/js/dazzui-react/example` (`@dazzlabs/dazzui-react-playground`) — the React playground that
   documents both: `Tokens/*` for the token graph, `Components/*` for the
   components.
-- `examples/react_workbench` (`@dazzlabs/dazzui-example-workbench`) — a Git-rooted
-  agent workbench, built entirely out of `dazzui-react`: several projects open as
-  titlebar tabs, a sidebar whose lower half is whatever the open page is
-  *made of*, and seven pages on ⌘1–7 — chat with a dock beside it, a
-  cross-project inbox, review, Git, tests, GitHub (issues and pull requests
-  as two faces of one page) and release — with settings as a sheet on ⌘,
-  rather than an eighth page. It is where the
-  system is *used* rather than documented: a gallery shows every component on
-  its own, and only an app has to make them agree with each other. It
-  consumes the package the way any consumer would — the two published
-  stylesheets and the components — and holds no literal values of its own. It
-  runs in a browser tab and, through
-  [Deno Desktop](https://docs.deno.com/runtime/desktop/), as a native window;
-  `deno` is a devDependency of the package, so there is nothing to install
-  for it.
-- `examples/react_canvas` (`@dazzlabs/dazzui-example-canvas`) — a design canvas, built
-  the same way and asking the design system a different question. The
-  workbench is a reading app; this one has a *drawing* in the middle of it, which
-  is the one region of a window whose colours are usually the user's rather
-  than the designer's. Here they are not: a shape carries a `tint` and a
-  `variant` exactly as a `Badge` does, and the token build resolves the pair,
-  so the drawing follows the theme menu into Bright and into the dark. It runs
-  on its own port and packages into its own window.
 
 The split is the point: anything a platform package needs but cannot express
 belongs in `ds`, so the platforms stay implementations of one design
@@ -167,22 +143,6 @@ pnpm playground         # build both, then serve the React playground on :6006
 ```
 
 ```bash
-pnpm workbench         # build both, then serve the example on :5180
-```
-
-```bash
-pnpm workbench:desktop  # build the example, then open it as a native window
-```
-
-```bash
-pnpm canvas            # build both, then serve the canvas example on :5181
-```
-
-```bash
-pnpm canvas:desktop    # build the canvas, then open it as a native window
-```
-
-```bash
 pnpm parity            # build the React playground, then extract the React reference and distribute it
 ```
 
@@ -216,7 +176,6 @@ before making it:
 - [`specs/components.md`](specs/components.md) — How the React package is built and how a component is drawn — the model every port follows.
 - [`specs/parity.md`](specs/parity.md) — How the ports are held to React: the extracted reference, the registry and reference tests, and the drift lists.
 - [`specs/playgrounds.md`](specs/playgrounds.md) — How stories are declared once and generated into every playground.
-- [`specs/examples.md`](specs/examples.md) — What an app in `examples/` may and may not do.
 
 ## Code style
 

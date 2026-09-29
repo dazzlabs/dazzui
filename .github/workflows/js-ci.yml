@@ -1,7 +1,7 @@
 name: JS CI
 
 # The design system and everything pnpm builds: ds, the React package and
-# its playground, the examples and the tools. Flutter is installed because
+# its playground, and the tools. Flutter is installed because
 # the playground generator formats the Dart it writes. It runs on a change
 # to any package, since `codegen:check` holds the generated files of
 # every one of them.
@@ -10,7 +10,6 @@ on:
     paths:
       - "ds/**"
       - "packages/**"
-      - "examples/**"
       - "tools/**"
       - "package.json"
       - "pnpm-lock.yaml"
@@ -22,7 +21,6 @@ on:
     paths:
       - "ds/**"
       - "packages/**"
-      - "examples/**"
       - "tools/**"
       - "package.json"
       - "pnpm-lock.yaml"

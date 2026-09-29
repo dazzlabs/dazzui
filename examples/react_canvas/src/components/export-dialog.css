@@ -1,7 +1,0 @@
-/* The sheet's rows are four separate questions, so they are spaced as rows
-   rather than as a paragraph. */
-.cv-export {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-4);
-}

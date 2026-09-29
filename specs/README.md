@@ -10,4 +10,3 @@ and the layout; these carry the reasons.
 | [Components](components.md) | How the React package is built and how a component is drawn — the model every port follows. |
 | [Parity](parity.md) | How the ports are held to React: the extracted reference, the registry and reference tests, and the drift lists. |
 | [Playgrounds](playgrounds.md) | How stories are declared once and generated into every playground. |
-| [Examples](examples.md) | What an app in `examples/` may and may not do. |
