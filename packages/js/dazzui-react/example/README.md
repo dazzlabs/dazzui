@@ -9,9 +9,9 @@ From the repository root:
 ```sh
 pnpm playground                 # build tokens/components, generate, serve :6006
 pnpm playground:build           # production build
-pnpm playgrounds:generate       # validate stories and generate native examples
-pnpm playgrounds:check          # fail for stale/missing/obsolete generated files
-pnpm playgrounds:test           # generator contract tests
+pnpm codegen                    # validate stories and generate native examples
+pnpm codegen:check              # fail for stale/missing/obsolete generated files
+pnpm codegen:test               # generator contract tests
 pnpm playground:test            # built example: every story × twelve themes
 pnpm parity                     # measure the React build and distribute references
 pnpm parity:view                # compare platform measurements
@@ -53,7 +53,7 @@ export const Filled = defineStory(scenes.Filled)
 }
 ```
 
-`tools/playgrounds/schema/scene.mjs` validates the supported component and prop
+`tools/codegen/schema/scene.mjs` validates the supported component and prop
 vocabulary. A state binding names a declared scalar state. Switch and Checkbox bind `checked`;
 `Value` nodes read state or choose between same-typed branches with `if`/`then`/`else`.
 Expressions are validated data and never embedded JavaScript. `trim`, string-only
@@ -83,7 +83,7 @@ are still pending.
 All content and interactions must ultimately live in these declarations. Native
 adapters may map components and implement framework plumbing, but may not define
 story-specific fixtures, descriptions, initial states or interaction branches.
-`pnpm playgrounds:complete` fails until every story is declared and every target
+`pnpm codegen:complete` fails until every story is declared and every target
 emits it. It currently fails intentionally; directory generation and native
 fallbacks do not satisfy this completion gate.
 
@@ -92,7 +92,7 @@ including new stories and pages without handwritten placeholders. Matching IDs
 and display names come from React; native-only extensions remain explicit. A
 generated catalog is not counted as generated scene content.
 
-`tools/playgrounds/coverage.json` enumerates the remaining work per platform.
+`tools/codegen/coverage.json` enumerates the remaining work per platform.
 An existing native rendering is not claimed as generated content or pixel parity.
 The mobile examples keep system controls and are not measured against desktop
 React geometry.

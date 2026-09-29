@@ -3,7 +3,7 @@ name: JS CI
 # The design system and everything pnpm builds: ds, the React package and
 # its playground, the examples and the tools. Flutter is installed because
 # the playground generator formats the Dart it writes. It runs on a change
-# to any package, since `playgrounds:check` holds the generated files of
+# to any package, since `codegen:check` holds the generated files of
 # every one of them.
 on:
   pull_request:
@@ -54,8 +54,8 @@ jobs:
       - run: npm install --global pnpm@11.24.0
       - run: flutter --version
       - run: pnpm install --frozen-lockfile
-      - run: pnpm playgrounds:check
-      - run: pnpm playgrounds:test
+      - run: pnpm codegen:check
+      - run: pnpm codegen:test
       - run: pnpm components
       - run: pnpm typecheck
       - run: pnpm lint

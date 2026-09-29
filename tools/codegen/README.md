@@ -34,5 +34,5 @@ The GPUI and Inset compilers (`gpui-scene.mjs`, `native-catalog.mjs`,
 they emit into.
 
 All content and interactions must be shared declarations. Story-specific native
-fixtures are migration debt, never an allowed escape hatch. `pnpm playgrounds:complete`
-is the strict completion check; `pnpm playgrounds:check` only checks output freshness.
+fixtures are migration debt, never an allowed escape hatch. `pnpm codegen:complete`
+is the strict completion check; `pnpm codegen:check` only checks output freshness.

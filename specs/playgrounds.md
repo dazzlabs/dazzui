@@ -3,22 +3,22 @@
 How stories are declared once and generated into every playground.
 
 - Stories live in `packages/js/dazzui-react/example/stories/*.stories.tsx`, titled
-  `Tokens/<Group>` or `Components/<Name>`. `tools/playgrounds/catalog.mjs`
+  `Tokens/<Group>` or `Components/<Name>`. `tools/codegen/catalog.mjs`
   reads declarations in source order, sorts pages, and generates the catalog.
   Export names determine stable IDs independently of display-name overrides.
 - The React example is a Vite application, with local `Meta` and `StoryObj`
   types; it has no Storybook runtime or dependency. Existing explicit render
   functions and decorators remain supported during scene migration.
 - Portable story content lives beside the declaration in `*.scene.json` and
-  is consumed through `defineStory`. Run `pnpm playgrounds:generate` after
-  changing declarations or scenes; `pnpm playgrounds:check` detects stale
+  is consumed through `defineStory`. Run `pnpm codegen` after
+  changing declarations or scenes; `pnpm codegen:check` detects stale
   output. Generation needs Dart to format native output.
 - All story content, fixtures, state and interactions must be expressed by shared
   declarations. Platform adapters contain framework plumbing and component mappings
   only. Native story-specific implementations are temporary migration debt.
-  `pnpm playgrounds:complete` is the all-story/all-platform acceptance gate.
+  `pnpm codegen:complete` is the all-story/all-platform acceptance gate.
 - Never hand-edit playground generated files. Their ownership and hashes are
-  recorded in `tools/playgrounds/outputs.json`. Source changes belong in the
+  recorded in `tools/codegen/outputs.json`. Source changes belong in the
   React scene declarations or the platform adapters. `coverage.json` records
   pending scene/adapter migrations; a legacy native implementation is not
   generated content. See `packages/js/dazzui-react/example/README.md` for current scope.

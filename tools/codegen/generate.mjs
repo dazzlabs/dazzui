@@ -58,10 +58,10 @@ if (process.argv.includes('--require-complete'))
   requireComplete(
     stories,
     scenes,
-    JSON.parse(outputs.get('tools/playgrounds/coverage.json'))
+    JSON.parse(outputs.get('tools/codegen/coverage.json'))
   )
 formatOutputs(outputs)
-const ownershipPath = 'tools/playgrounds/outputs.json'
+const ownershipPath = 'tools/codegen/outputs.json'
 const previous = JSON.parse(
   await fs.readFile(path.join(root, ownershipPath), 'utf8').catch(error => {
     if (error.code !== 'ENOENT') throw error
@@ -74,7 +74,7 @@ for (const [relative, expectedHash] of Object.entries(previous)) {
   if (outputs.has(relative)) continue
   if (
     !relative.startsWith('packages/') &&
-    !relative.startsWith('tools/playgrounds/')
+    !relative.startsWith('tools/codegen/')
   )
     throw new Error(`Invalid owned output: ${relative}`)
   const file = path.resolve(root, relative)
@@ -115,7 +115,7 @@ for (const [relative, content] of outputs) {
 }
 if (stale.length)
   throw new Error(
-    `Run pnpm playgrounds:generate; stale outputs:\n${stale.join('\n')}`
+    `Run pnpm codegen; stale outputs:\n${stale.join('\n')}`
   )
 console.log(
   `${stories.length} stories across ${new Set(stories.map(s => s.title)).size} pages; ${outputs.size} generated files checked`

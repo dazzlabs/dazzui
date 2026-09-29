@@ -29,13 +29,13 @@
     "format:check": "oxfmt --check ./",
     "playground": "pnpm --filter @dazzlabs/dazzui-react-playground dev",
     "playground:build": "pnpm --filter @dazzlabs/dazzui-react-playground build",
-    "playgrounds:generate": "pnpm --filter @dazzlabs/dazzui-playground-tools generate",
-    "playgrounds:check": "pnpm --filter @dazzlabs/dazzui-playground-tools check",
-    "playgrounds:test": "pnpm --filter @dazzlabs/dazzui-playground-tools test",
+    "codegen": "pnpm --filter @dazzlabs/dazzui-codegen generate",
+    "codegen:check": "pnpm --filter @dazzlabs/dazzui-codegen check",
+    "codegen:test": "pnpm --filter @dazzlabs/dazzui-codegen test",
     "playground:test": "pnpm --filter @dazzlabs/dazzui-react-playground test",
     "playground:golden": "pnpm --filter @dazzlabs/dazzui-react-playground golden",
     "playground:golden:pilot": "pnpm --filter @dazzlabs/dazzui-react-playground golden:pilot",
-    "playgrounds:complete": "pnpm --filter @dazzlabs/dazzui-playground-tools exec node generate.mjs --check --require-complete"
+    "codegen:complete": "pnpm --filter @dazzlabs/dazzui-codegen exec node generate.mjs --check --require-complete"
   },
   "devDependencies": {
     "oxfmt": "^0.16.0",

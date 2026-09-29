@@ -22,7 +22,7 @@ published. Each package carries its own playground in `example/`.
 | `packages/kotlin/dazzui-mobile` | `dazzui-mobile`                   | Android: stock Compose Material 3 with ds colours. See its [README](packages/kotlin/dazzui-mobile/README.md). |
 | `examples/react_workbench`    | `@dazzlabs/dazzui-example-workbench` | A Git-rooted agent workbench built entirely out of the React components.                                   |
 | `examples/react_canvas`       | `@dazzlabs/dazzui-example-canvas`   | A design canvas, where the drawing itself is painted out of the tint recipes.                              |
-| `tools/playgrounds`           | `@dazzlabs/dazzui-playground-tools` | Generates every playground's stories from the React declarations.                                           |
+| `tools/codegen`               | `@dazzlabs/dazzui-codegen`          | Generates every playground's stories from the React declarations.                                           |
 | `tools/parity`                | `@dazzlabs/dazzui-parity`           | The drift viewer: what each platform measured beside React.                                                 |
 
 Only `ds` decides what a value is, and it hands each package its own

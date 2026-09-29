@@ -5,14 +5,14 @@
   "type": "module",
   "description": "Gallery for the DazzUI design system",
   "scripts": {
-    "dev": "pnpm -w run packages && pnpm -w playgrounds:generate && vite --host 127.0.0.1 --port 6006",
-    "build": "pnpm -w run packages && pnpm -w playgrounds:generate && vite build",
+    "dev": "pnpm -w run packages && pnpm -w codegen && vite --host 127.0.0.1 --port 6006",
+    "build": "pnpm -w run packages && pnpm -w codegen && vite build",
     "parity": "pnpm run build && node scripts/parity.mjs",
     "parity:extract": "node scripts/parity.mjs",
     "typecheck": "tsc --noEmit",
     "test": "playwright test --project smoke",
     "golden": "playwright test --project golden",
-    "dev:preview": "pnpm -w run packages && pnpm -w playgrounds:generate && vite --host 0.0.0.0 --port $PORT",
+    "dev:preview": "pnpm -w run packages && pnpm -w codegen && vite --host 0.0.0.0 --port $PORT",
     "golden:pilot": "playwright test --project golden-pilot"
   },
   "dependencies": {

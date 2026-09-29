@@ -14,6 +14,6 @@ export function requireComplete(stories, scenes, report) {
   }).filter(Boolean)
   if (missingDeclarations.length || gaps.length)
     throw new Error(
-      `Shared-declaration migration is incomplete.\n${missingDeclarations.length} stories still contain React-only content/interaction.\n${gaps.join('\n')}\nSee tools/playgrounds/coverage.json. Native catalog entries and legacy renderers do not count as generated scenes.`
+      `Shared-declaration migration is incomplete.\n${missingDeclarations.length} stories still contain React-only content/interaction.\n${gaps.join('\n')}\nSee tools/codegen/coverage.json. Native catalog entries and legacy renderers do not count as generated scenes.`
     )
 }

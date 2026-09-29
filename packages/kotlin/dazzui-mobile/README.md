@@ -92,7 +92,7 @@ device or emulator. Gradle is independent of pnpm.
 ## Shared scenes
 
 `example/src/main/assets/scenes.json` and `GeneratedExpression.kt` are generated
-from `packages/js/dazzui-react/example/stories/` by `pnpm playgrounds:generate` at the
+from `packages/js/dazzui-react/example/stories/` by `pnpm codegen` at the
 repository root. Never edit these outputs. All 143 currently declared scenes are
 available; another 345 React stories still need declaration migration.
 

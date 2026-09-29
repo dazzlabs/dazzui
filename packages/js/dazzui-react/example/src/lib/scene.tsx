@@ -1,11 +1,11 @@
 import {
   evaluateValue,
   type SceneValue,
-} from '../../../../../../tools/playgrounds/schema/value.mjs'
+} from '../../../../../../tools/codegen/schema/value.mjs'
 import {
   ITEMS,
   validateScene,
-} from '../../../../../../tools/playgrounds/schema/scene.mjs'
+} from '../../../../../../tools/codegen/schema/scene.mjs'
 import { createElement, useEffect, useState, type ReactNode } from 'react'
 import * as UI from '@dazzlabs/dazzui-react'
 import * as Glyphs from '../generated/glyphs'

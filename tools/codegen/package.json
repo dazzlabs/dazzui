@@ -1,5 +1,5 @@
 {
-  "name": "@dazzlabs/dazzui-playground-tools",
+  "name": "@dazzlabs/dazzui-codegen",
   "private": true,
   "type": "module",
   "scripts": {

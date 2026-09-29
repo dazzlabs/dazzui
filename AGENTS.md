@@ -80,8 +80,8 @@ of having no `package.json`. A package's own playground is its `example/`
   gallery. Open it, select an iPhone or iPad simulator, and run the Playground
   scheme. Its project configuration is generated from `Example/project.yml`.
   `Example/GeneratedStories.swift` and `Example/Tests/scenes.json` are generated
-  from the React example's shared declarations by `pnpm playgrounds:generate`.
-  `tools/playgrounds/ios-scene.mjs` maps content and events to system controls;
+  from the React example's shared declarations by `pnpm codegen`.
+  `tools/codegen/ios-scene.mjs` maps content and events to system controls;
   mobile appearance remains native. The Xcode test scheme checks the registry,
   all-theme rendering and shared non-timed interaction checkpoints.
 - `packages/kotlin/dazzui-mobile` is an independent Android Gradle library with

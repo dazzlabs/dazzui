@@ -102,7 +102,7 @@ if (process.argv.includes('--check')) {
 } else {
   const output = path.join(root, 'example/Stories')
   for (const page of catalog) {
-    // Owned by tools/playgrounds; never overwrite its generated catalog.
+    // Owned by tools/codegen; never overwrite its generated catalog.
     if (
       page.group === 'Components' &&
       ['Button', 'Badge', 'StepList', 'Callout', 'Card', 'Divider'].includes(
