@@ -11,18 +11,28 @@ import {
   unsupported,
 } from './flutter.mjs'
 import { formatOutputs } from './format.mjs'
+import * as swiftui from './swiftui.mjs'
 import { readStories, readThemes } from './stories.mjs'
 
 const root = fileURLToPath(new URL('../../', import.meta.url))
 const check = process.argv.includes('--check')
 
 const stories = await readStories(root)
-const gaps = unsupported(stories)
+const gaps = [
+  ...unsupported(stories).map(
+    gap =>
+      `${gap} — map it in packages/dart/dazzui/example/lib/lib/mapping.dart and list it in tools/codegen/flutter.mjs`
+  ),
+  ...swiftui
+    .unsupported(stories)
+    .map(
+      gap =>
+        `${gap} — map it in packages/swift/DazzUI/Example/Sources/Example/Lib/Mapping.swift and list it in tools/codegen/swiftui.mjs`
+    ),
+]
 if (gaps.length)
   throw new Error(
-    `Flutter cannot draw what these stories ask for. Map each in ` +
-      `packages/dart/dazzui/example/lib/scene/components.dart, then list it ` +
-      `in tools/codegen/flutter.mjs:\n${gaps.join('\n')}`
+    `A platform cannot draw what these stories ask for:\n${gaps.join('\n')}`
   )
 const themes = await readThemes(root)
 const variables = await fs.readFile(
@@ -47,6 +57,27 @@ const outputs = new Map([
   [`${flutter}/lib/glyphs.dart`, glyphsDart(stories)],
   [`${flutter}/lib/themes.dart`, themesDart(themes, variables)],
 ])
+
+/* The SwiftUI example, laid out the same way. */
+const swift = 'packages/swift/DazzUI/Example/Sources/Example'
+const themeNames = await fs.readFile(
+  path.join(
+    root,
+    'packages/swift/DazzUI/Sources/DazzUI/Generated/ThemeName.swift'
+  ),
+  'utf8'
+)
+for (const story of stories)
+  outputs.set(
+    `${swift}/Stories/${swiftui.storyFile(story.id)}`,
+    swiftui.storySwift(story)
+  )
+outputs.set(`${swift}/Stories/Index.swift`, swiftui.storiesIndexSwift(stories))
+outputs.set(`${swift}/Lib/Glyphs.swift`, swiftui.glyphsSwift(stories))
+outputs.set(
+  `${swift}/Lib/Themes.swift`,
+  swiftui.themesSwift(themes, themeNames)
+)
 formatOutputs(outputs)
 
 /*

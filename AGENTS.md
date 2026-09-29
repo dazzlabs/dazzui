@@ -59,7 +59,8 @@ of having no `package.json`. A package's own playground is its `example/`
 - `packages/swift/DazzUI` (`DazzUI`) — the macOS SwiftUI implementation,
   drawn to the same geometry as React and held to it by the parity suite.
   `Sources/DazzUI/Generated/` is committed output from ds; `Example/` is the
-  playground.
+  SwiftUI example: the React example's window, drawn with this package,
+  whose stories `pnpm codegen` compiles from the React ones.
 - `packages/csharp/DazzUI` (`DazzUI`) — the WinUI 3 implementation, in C#.
   Invisible to pnpm's workspace graph; `pnpm winui3` builds and opens the
   unpackaged, self-contained Windows playground. `pnpm winui3:test` runs

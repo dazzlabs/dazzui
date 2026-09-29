@@ -1,6 +1,6 @@
 # Codegen
 
-Compiles the React example's stories into the other platforms' examples.
+Compiles the React example's stories into the Flutter and SwiftUI examples.
 The rules are in [`specs/playgrounds.md`](../../specs/playgrounds.md).
 
 - `stories.mjs` reads `packages/js/dazzui-react/example/src/stories/*.tsx`
@@ -10,6 +10,10 @@ The rules are in [`specs/playgrounds.md`](../../specs/playgrounds.md).
 - `flutter.mjs` is the Flutter side: `SUPPORT`, every component and prop
   the Flutter example draws, and the emitters for its generated sources —
   a file per story, the index, the themes, the glyphs.
+- `swiftui.mjs` is the SwiftUI side, the same four emitters and its own
+  `SUPPORT`.
+- `support.mjs` finds what a story sets that a platform's `SUPPORT` does not
+  name.
 - `generate.mjs` writes the outputs, or with `--check` fails on drift, and
   keeps `outputs.json`, the files it owns and their hashes.
 - `format.mjs` runs `dart format` before comparing.

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { SUPPORT, unsupported } from '../flutter.mjs'
+import * as swiftui from '../swiftui.mjs'
 import { readStories, StoryCompiler } from '../stories.mjs'
 
 const root = fileURLToPath(new URL('../../../', import.meta.url))
@@ -34,6 +35,7 @@ test('every React story compiles, and Flutter draws all of it', async () => {
   const stories = await readStories(root)
   assert.ok(stories.length > 0)
   assert.deepEqual(unsupported(stories), [])
+  assert.deepEqual(swiftui.unsupported(stories), [])
   for (const { id, name, examples } of stories) {
     assert.match(id, /^[a-z][a-z0-9-]*$/)
     assert.ok(name && examples.length, id)
@@ -159,4 +161,22 @@ test('Flutter reports a prop it does not draw', () => {
     'probe preview: <Button wobble> is not drawn by Flutter',
   ])
   assert.ok(SUPPORT.Button.includes('onClick'))
+})
+
+test('a SwiftUI story member that is a keyword is fenced, and its JSON is raw', () => {
+  const story = {
+    id: 'switch',
+    name: 'Switch',
+    summary: 'A "quoted" $ummary \\ with a backslash.',
+    preview: { content: 'x' },
+    examples: [],
+  }
+  const swift = swiftui.storySwift(story)
+  assert.match(swift, /static let `switch` = Story\(/)
+  assert.match(swift, /#"""\n/)
+  assert.ok(
+    swift.includes('"summary": "A \\"quoted\\" $ummary \\\\ with a backslash."')
+  )
+  assert.equal(swiftui.storyFile('icon-button'), 'IconButton.swift')
+  assert.match(swiftui.storiesIndexSwift([story]), /    `switch`,/)
 })

@@ -21,7 +21,7 @@ to is a number rather than an impression.
      distributed, since a screenshot is only reproducible on one machine
 2. It then distributes `stories.json` and `reference/` into each platform's
    parity directory — `packages/dart/dazzui/example/test/parity/` and
-   `packages/swift/DazzUI/Example/Tests/PlaygroundTests/Parity/` — so a
+   `packages/swift/DazzUI/Example/Tests/ExampleTests/Parity/` — so a
    platform's tests run from inside
    the package. Unlike the generated token files, **none of this is
    committed**: it is a measurement, not a contract, and it is regenerated
@@ -106,7 +106,7 @@ cd packages/dart/dazzui/example && flutter test test/parity/
 ```
 
 ```bash
-cd packages/swift/DazzUI/Example && xcodebuild -project Playground.xcodeproj -scheme Playground -destination 'platform=macOS' -derivedDataPath .build/xcode test
+cd packages/swift/DazzUI/Example && xcodebuild -project Example.xcodeproj -scheme Example -destination 'platform=macOS' -derivedDataPath .build/xcode test
 ```
 
 Never hand-edit a distributed `stories.json` or `reference/`; rerun

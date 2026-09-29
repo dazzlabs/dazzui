@@ -1,16 +1,17 @@
+import { CHILDREN as children, gaps } from './support.mjs'
+
 /*
  * The Flutter example's generated sources: the stories as data, the glyphs
  * they name, and the themes the window offers.
  *
  * `SUPPORT` is the contract with the Flutter scene interpreter
- * (`example/lib/scene/components.dart`): every component a story uses and
+ * (`example/lib/lib/mapping.dart`): every component a story uses and
  * every prop it sets must be listed here, and each listing is something the
  * interpreter draws. A story that reaches past it fails generation, naming
  * the component and the prop — a React change never lands on Flutter as a
  * quiet gap.
  */
 
-const children = '#children'
 const tint = 'tint'
 const size = 'size'
 const label = 'aria-label'
@@ -157,31 +158,7 @@ export const SUPPORT = {
 }
 
 /** Every component and prop a story sets that Flutter does not draw. */
-export function unsupported(stories) {
-  const gaps = new Set()
-  const visit = (value, where) => {
-    if (Array.isArray(value)) return value.forEach(item => visit(item, where))
-    if (!value || typeof value !== 'object') return
-    if ('$el' in value) {
-      const known = SUPPORT[value.$el]
-      if (!known) gaps.add(`${where}: <${value.$el}> is not drawn by Flutter`)
-      else {
-        for (const prop of Object.keys(value.props ?? {}))
-          if (!known.includes(prop))
-            gaps.add(`${where}: <${value.$el} ${prop}> is not drawn by Flutter`)
-        if (value.children && !known.includes(children))
-          gaps.add(`${where}: <${value.$el}> takes no children on Flutter`)
-      }
-    }
-    for (const item of Object.values(value)) visit(item, where)
-  }
-  for (const story of stories) {
-    visit(story.preview, `${story.id} preview`)
-    for (const example of story.examples)
-      visit(example.scene, `${story.id} / ${example.title}`)
-  }
-  return [...gaps]
-}
+export const unsupported = stories => gaps(stories, SUPPORT, 'Flutter')
 
 /* Dart ------------------------------------------------------------------ */
 
