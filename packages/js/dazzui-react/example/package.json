@@ -1,32 +1,25 @@
 {
-  "name": "@dazzlabs/dazzui-react-playground",
+  "name": "@dazzlabs/dazzui-react-example",
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Gallery for the DazzUI design system",
+  "description": "The React example: every DazzUI component, live, in every theme",
   "scripts": {
-    "dev": "pnpm -w run packages && pnpm -w codegen && vite --host 127.0.0.1 --port 6006",
-    "build": "pnpm -w run packages && pnpm -w codegen && vite build",
-    "parity": "pnpm run build && node scripts/parity.mjs",
-    "parity:extract": "node scripts/parity.mjs",
-    "typecheck": "tsc --noEmit",
-    "test": "playwright test --project smoke",
-    "golden": "playwright test --project golden",
-    "dev:preview": "pnpm -w run packages && pnpm -w codegen && vite --host 0.0.0.0 --port $PORT",
-    "golden:pilot": "playwright test --project golden-pilot"
+    "dev": "pnpm -w run packages && vite --host 127.0.0.1 --port 6006",
+    "dev:preview": "pnpm -w run packages && vite --host 0.0.0.0 --port $PORT",
+    "build": "pnpm -w run packages && vite build",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@dazzlabs/dazzui-react": "workspace:*",
+    "@fluentui/react-icons": "^2.0.339",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
   "devDependencies": {
-    "@fluentui/react-icons": "^2.0.339",
-    "@playwright/test": "1.63.0",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
-    "playwright": "^1.63.0",
     "typescript": "~6.0.3",
     "vite": "^8.1.5"
   }

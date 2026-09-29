@@ -1,0 +1,99 @@
+/*
+ * The example's own ground. Everything reads from the tokens it shows, so a
+ * theme change redraws the example along with the components in it.
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-surface);
+  color: var(--color-content);
+  font-family: var(--body-medium-font-family);
+  font-size: var(--body-medium-font-size);
+  font-weight: var(--body-medium-font-weight);
+  line-height: var(--body-medium-line-height);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+.g-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-family: var(--title-small-font-family);
+  font-size: var(--title-small-font-size);
+  font-weight: var(--title-small-font-weight);
+  line-height: var(--title-small-line-height);
+  color: inherit;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.g-brand__mark {
+  width: var(--spacing-5);
+  height: var(--spacing-5);
+  border-radius: var(--radius-small);
+  background: var(--color-primary-500);
+}
+
+/*
+ * A theme in miniature. Every colour is the theme's own, asked for by the
+ * `data-theme` the preview carries, so it is right in whatever theme the
+ * page around it is in.
+ */
+.g-preview {
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+  height: var(--spacing-14);
+  border: var(--stroke-hairline) solid var(--color-border-strong);
+  border-radius: var(--spacing-1-5);
+  background: var(--color-surface);
+}
+
+.g-preview__column {
+  flex: none;
+  width: 28%;
+  border-inline-end: var(--stroke-hairline) solid var(--color-border-strong);
+  background: var(--color-surface-column);
+}
+
+.g-preview__paper {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  padding: var(--spacing-2);
+}
+
+.g-preview__ink {
+  height: var(--spacing-0-5);
+  border-radius: var(--spacing-px);
+  background: var(--color-content);
+}
+
+.g-preview__ink + .g-preview__ink {
+  width: 60%;
+  opacity: 0.4;
+}
+
+.g-preview__accent {
+  width: var(--spacing-6);
+  height: var(--spacing-2-5);
+  margin-block-start: auto;
+  border-radius: var(--spacing-1);
+  background: var(--color-primary-500);
+}

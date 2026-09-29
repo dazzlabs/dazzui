@@ -1,61 +1,27 @@
 import type { CSSProperties, ReactNode } from 'react'
 
-/*
- * The arrangements a bare specimen needs.
- *
- * Only a component's `Overview` is a documented page; every other story
- * renders the component and nothing else — no headings, no prose, no labelled
- * rows — so all it ever needs is a row or a column with a gap in it, and a
- * width where the component has none of its own.
- */
-
-type StageProps = {
+interface StageProps {
   gap?: string
   width?: string
+  align?: CSSProperties['alignItems']
   children: ReactNode
 }
 
-export function Row({ gap = 'var(--spacing-3)', width, children }: StageProps) {
-  const style: CSSProperties = {
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    gap,
-    width,
-  }
-  return <div style={style}>{children}</div>
-}
-
-export function Col({ gap = 'var(--spacing-3)', width, children }: StageProps) {
-  const style: CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap,
-    width,
-  }
-  return <div style={style}>{children}</div>
-}
-
-/** A window, for the columns that only make sense with a pane beside them. */
-export function Frame({
-  height = '22rem',
-  width = '46rem',
+/** Instances side by side. Draws nothing itself. */
+export function Row({
+  gap = '3',
+  width,
+  align = 'center',
   children,
-}: {
-  height?: string
-  width?: string
-  children: ReactNode
-}) {
+}: StageProps) {
   return (
     <div
       style={{
         display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: align,
+        gap: `var(--spacing-${gap})`,
         width,
-        height,
-        overflow: 'hidden',
-        border: 'var(--spacing-px) solid var(--color-border)',
-        borderRadius: 'var(--radius-large)',
-        background: 'var(--color-surface)',
       }}
     >
       {children}
@@ -63,10 +29,24 @@ export function Frame({
   )
 }
 
-/** The empty pane a navigation column is a navigation column to. */
-export function Pane({ children }: { children?: ReactNode }) {
+/** Instances stacked, at the width the component needs. */
+export function Col({
+  gap = '3',
+  width,
+  align = 'stretch',
+  children,
+}: StageProps) {
   return (
-    <div style={{ flex: 1, minWidth: 0, padding: 'var(--spacing-5)' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: align,
+        gap: `var(--spacing-${gap})`,
+        width,
+        maxWidth: '100%',
+      }}
+    >
       {children}
     </div>
   )

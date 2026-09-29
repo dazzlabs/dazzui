@@ -1,25 +1,21 @@
-import type { ComponentType, ReactNode } from 'react'
+import type { ComponentType } from 'react'
 
-export type Layout = 'centered' | 'fullscreen' | 'padded'
-export interface Parameters {
-  layout?: Layout
-}
-export type Decorator = (Story: ComponentType) => ReactNode
-// The generic retains existing story declarations while the scene migration
-// proceeds. Components are rendered explicitly; the host never infers props.
-export interface Meta<T = unknown> {
+export interface Example {
   title: string
-  component?: T
-  parameters?: Parameters
-  decorators?: Decorator[]
+  note?: string
+  Demo: ComponentType
 }
-export interface StoryObj<_T = unknown> {
-  name?: string
-  parameters?: Parameters
-  render: () => ReactNode
-  decorators?: Decorator[]
-}
-export interface StoryModule {
-  default: Meta
-  [name: string]: StoryObj | Meta
+
+/**
+ * A component, as the shell reads it. `Preview` is the one specimen that
+ * stands for the component in the overview; `examples` are what its page
+ * shows.
+ */
+export interface Story {
+  /** The kit's own file name for the component, and its place in the address. */
+  id: string
+  name: string
+  summary: string
+  Preview: ComponentType
+  examples: readonly Example[]
 }

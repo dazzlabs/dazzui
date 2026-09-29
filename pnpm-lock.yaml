@@ -66,6 +66,9 @@ importers:
       '@dazzlabs/dazzui-react':
         specifier: workspace:*
         version: link:..
+      '@fluentui/react-icons':
+        specifier: ^2.0.339
+        version: 2.0.339(react@19.2.8)
       react:
         specifier: ^19.2.7
         version: 19.2.8
@@ -73,12 +76,6 @@ importers:
         specifier: ^19.2.7
         version: 19.2.8(react@19.2.8)
     devDependencies:
-      '@fluentui/react-icons':
-        specifier: ^2.0.339
-        version: 2.0.339(react@19.2.8)
-      '@playwright/test':
-        specifier: 1.63.0
-        version: 1.63.0
       '@types/node':
         specifier: ^24.13.3
         version: 24.13.3
@@ -88,9 +85,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.2.0
         version: 19.2.5(@types/react@19.2.18)
-      playwright:
-        specifier: ^1.63.0
-        version: 1.63.0
       typescript:
         specifier: ~6.0.3
         version: 6.0.3
@@ -483,11 +477,6 @@ packages:
     resolution: {integrity: sha512-AS/h58HfloccRlVs7P3zbyZfxNS62JuE8/3fYGjkiRlR1ZoDxdqmz5QgLEn+YxxFUTMmclGAPMFHg9z2Pk315A==}
     cpu: [x64]
     os: [win32]
-
-  '@playwright/test@1.63.0':
-    resolution: {integrity: sha512-oxMK4vllB9RK5NQ2l1pq1IfOf2AvnEuj/vYGDj0H2nMtmtZpKtCwt/l00GEO6xjGfpBNAvjovvYdCm50dRQkpQ==}
-    engines: {node: '>=20'}
-    hasBin: true
 
   '@rolldown/binding-android-arm-eabi@1.2.6':
     resolution: {integrity: sha512-b+jTcARdTiFLI6jB4a5XjTm0RWd6KcRfQj/I2356fxUZemiho9zQLxo0RtCuMDAyKcLo6cEltkgbQp6d1+sjjQ==}
@@ -990,16 +979,6 @@ packages:
   pkg-types@2.3.1:
     resolution: {integrity: sha512-y+ichcgc2LrADuhLNAx8DFjVfgz91pRxfZdI3UDhxHvcVEZsenLO+7XaU5vOp0u/7V/wZ+plyuQxtrDlZJ+yeg==}
 
-  playwright-core@1.63.0:
-    resolution: {integrity: sha512-rYCsBF/M5HjUch52bbtVONEFjv6Xu8sm8h72dNlR5bzIE1fvC/bxgspzkjSfU+MweEMmPM8KJebG6nnyxo5mCg==}
-    engines: {node: '>=20'}
-    hasBin: true
-
-  playwright@1.63.0:
-    resolution: {integrity: sha512-+7ziBLidS4NaNCdt57SUDT+wYmmd5fmiQejUic/kb+YsYSCPyOOE9sebzMjNmQrsnNpDJqd4WHvV/8lfKfUDUg==}
-    engines: {node: '>=20'}
-    hasBin: true
-
   postcss@8.5.26:
     resolution: {integrity: sha512-u82N74LFzG8ca+dD8puPnplTXoGH4fTPpVGuIbt36G3qvNlkvfD0lEAZSxaly3KX8TS/L1A1gsCEmvKmBcVbkQ==}
     engines: {node: ^10 || ^12 || >=14}
@@ -1441,10 +1420,6 @@ snapshots:
   '@oxlint/win32-x64@1.31.0':
     optional: true
 
-  '@playwright/test@1.63.0':
-    dependencies:
-      playwright: 1.63.0
-
   '@rolldown/binding-android-arm-eabi@1.2.6':
     optional: true
 
@@ -1872,12 +1847,6 @@ snapshots:
       confbox: 0.2.4
       exsolve: 1.1.1
       pathe: 2.0.3
-
-  playwright-core@1.63.0: {}
-
-  playwright@1.63.0:
-    dependencies:
-      playwright-core: 1.63.0
 
   postcss@8.5.26:
     dependencies:

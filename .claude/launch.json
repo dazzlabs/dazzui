@@ -2,11 +2,11 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "playground",
+      "name": "example",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": [
         "--filter",
-        "@dazzlabs/dazzui-react-playground",
+        "@dazzlabs/dazzui-react-example",
         "dev:preview"
       ],
       "port": 6006,
