@@ -3,21 +3,22 @@ import { useState } from 'react'
 import { Row } from '../components/stage'
 import type { Story } from '../lib/story'
 
+/** A tag that remembers whether it was picked. */
+function Filter({ name, picked = false }: { name: string; picked?: boolean }) {
+  const [selected, setSelected] = useState(picked)
+  return (
+    <Tag selected={selected} onSelectedChange={setSelected}>
+      {name}
+    </Tag>
+  )
+}
+
 function Filters() {
-  const [picked, setPicked] = useState<readonly string[]>(['Design'])
   return (
     <Row gap="2">
-      {['Design', 'Engineering', 'Research'].map(name => (
-        <Tag
-          key={name}
-          selected={picked.includes(name)}
-          onSelectedChange={on =>
-            setPicked(on ? [...picked, name] : picked.filter(p => p !== name))
-          }
-        >
-          {name}
-        </Tag>
-      ))}
+      <Filter name="Design" picked />
+      <Filter name="Engineering" />
+      <Filter name="Research" />
     </Row>
   )
 }

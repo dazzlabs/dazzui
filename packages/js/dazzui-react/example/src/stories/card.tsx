@@ -1,5 +1,5 @@
 import { Card, type CardVariant } from '@dazzlabs/dazzui-react'
-import { Row } from '../components/stage'
+import { Col, Row, Text } from '../components/stage'
 import type { Story } from '../lib/story'
 
 const CARDS: CardVariant[] = ['raised', 'outlined', 'sunken', 'tinted']
@@ -9,12 +9,14 @@ const story: Story = {
   name: 'Card',
   summary: 'A surface that holds one thing apart from what is around it.',
   Preview: () => (
-    <Card style={{ width: '15rem' }}>
-      <strong>Weekly digest</strong>
-      <div style={{ color: 'var(--color-content-secondary)' }}>
-        Seven updates across three projects.
-      </div>
-    </Card>
+    <Col width="15rem">
+      <Card>
+        <Col gap="1">
+          <Text strong>Weekly digest</Text>
+          <Text tone="secondary">Seven updates across three projects.</Text>
+        </Col>
+      </Card>
+    </Col>
   ),
   examples: [
     {
@@ -22,9 +24,9 @@ const story: Story = {
       Demo: () => (
         <Row align="stretch">
           {CARDS.map(variant => (
-            <Card key={variant} variant={variant} style={{ width: '10rem' }}>
-              {variant}
-            </Card>
+            <Col key={variant} width="10rem">
+              <Card variant={variant}>{variant}</Card>
+            </Col>
           ))}
         </Row>
       ),
@@ -34,9 +36,9 @@ const story: Story = {
       Demo: () => (
         <Row align="start">
           {(['small', 'medium', 'large'] as const).map(size => (
-            <Card key={size} size={size} style={{ width: '10rem' }}>
-              {size}
-            </Card>
+            <Col key={size} width="10rem">
+              <Card size={size}>{size}</Card>
+            </Col>
           ))}
         </Row>
       ),

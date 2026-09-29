@@ -1,22 +1,14 @@
 import { Switch, TINTS } from '@dazzlabs/dazzui-react'
-import { type ReactNode } from 'react'
-import { Col, Row } from '../components/stage'
+import { Col, Row, Text } from '../components/stage'
 import type { Story } from '../lib/story'
 
 /** A switch draws no label of its own, so the row that names it is here. */
-function Labelled({ label, children }: { label: string; children: ReactNode }) {
+function Labelled({ label, on = false }: { label: string; on?: boolean }) {
   return (
-    <label
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: 'var(--spacing-4)',
-      }}
-    >
-      {label}
-      {children}
-    </label>
+    <Row justify="between" gap="4">
+      <Text>{label}</Text>
+      <Switch defaultChecked={on} aria-label={label} />
+    </Row>
   )
 }
 
@@ -26,12 +18,8 @@ const story: Story = {
   summary: 'A setting that takes effect the moment it is flipped.',
   Preview: () => (
     <Col width="14rem">
-      <Labelled label="Notifications">
-        <Switch defaultChecked />
-      </Labelled>
-      <Labelled label="Sync over cellular">
-        <Switch />
-      </Labelled>
+      <Labelled label="Notifications" on />
+      <Labelled label="Sync over cellular" />
     </Col>
   ),
   examples: [

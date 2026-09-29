@@ -24,6 +24,15 @@ kit's `button.tsx` — whose default export is one `Story`: a name, a summary,
 a `Preview` and its examples. Nothing else changes; the file is picked up
 by being there.
 
+## Stories are compiled
+
+Codegen compiles every story into the other platforms' examples, so a story
+is written in the portable subset: values from the kit, the icons, the stage
+and `useState`; elements that are kit components, glyphs or the stage's
+`Row`, `Col`, `Frame` and `Text` — no HTML, no `style`; event handlers that
+only set state or raise a toast. Anything else fails `pnpm codegen` with the
+file and line. See [`specs/playgrounds.md`](../../../../specs/playgrounds.md).
+
 The address is the state: `?theme=ember-dark`, and `#/button` for the page.
 
 ## The window
