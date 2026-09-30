@@ -157,7 +157,7 @@ class _IconButtonState extends State<IconButton> {
           ),
           child: IconTheme.merge(
             data: IconThemeData(
-              size: widget.iconSize ?? vars.spacing35,
+              size: widget.iconSize ?? vars.controlIconSize(widget.size),
               color: content,
             ),
             child: widget.icon,

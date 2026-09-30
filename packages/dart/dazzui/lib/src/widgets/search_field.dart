@@ -176,7 +176,7 @@ class _SearchFieldState extends State<SearchField> {
           children: [
             Icon(
               FluentIcons.search_16_regular,
-              size: vars.spacing4,
+              size: vars.controlIconSize(widget.size),
               color: vars.colorContentFaint,
             ),
             Expanded(
@@ -227,7 +227,7 @@ class _ClearButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(vars.radiusTiny),
       builder: (context, states) => Icon(
         FluentIcons.dismiss_12_regular,
-        size: vars.spacing3,
+        size: vars.iconSmall,
         color: states.contains(WidgetState.hovered)
             ? vars.colorContent
             : vars.colorContentFaint,

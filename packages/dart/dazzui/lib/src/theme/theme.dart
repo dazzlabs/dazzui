@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../foundation/theme_extension.dart';
+import '../foundation/widget_size.dart';
 import '../generated/theme_variables.dart';
 import '../painting/varianted_widget_state_color.dart';
 import '../painting/widget_property.dart';
@@ -320,12 +321,24 @@ class _Ambient extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTextStyle.merge(
       style: data.vars.bodyMedium.copyWith(color: data.vars.colorContent),
-      child: child,
+      child: IconTheme.merge(
+        data: IconThemeData(size: data.vars.iconMedium),
+        child: child,
+      ),
     );
   }
 }
 
 extension ThemeVariablesX on ThemeVariables {
+  /// The icon role in the shared control size profile.
+  double controlIconSize(Size size) =>
+      switch (size is WidgetSize ? size.namedSize : NamedSize.small) {
+        NamedSize.tiny => controlTinyIconSize,
+        NamedSize.small => controlSmallIconSize,
+        NamedSize.medium => controlMediumIconSize,
+        NamedSize.large => controlLargeIconSize,
+      };
+
   /// The control seed color.
   WidgetProperty<ColorSwatch<int>> get controlColor {
     return TintedWidgetProperty<ColorSwatch<int>>(

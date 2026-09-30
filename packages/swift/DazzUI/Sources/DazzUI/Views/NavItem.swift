@@ -87,7 +87,8 @@ public struct NavItem<Leading: View, Label: View>: View {
           // The glyph is taller than the label, so it is boxed to the row's
           // line height and allowed to overflow rather than stretching the row.
           icon()
-            .frame(width: vars.spacing4, height: vars.labelQuiet.size)
+            .environment(\.dazzIconSize, vars.iconMedium)
+            .frame(width: vars.iconMedium, height: vars.labelQuiet.size)
         }
         label()
         Spacer(minLength: 0)
@@ -211,7 +212,7 @@ public extension NavItem where Leading == Icon, Label == Text {
       tint: tint,
       enabled: enabled,
       action: action,
-      icon: { Icon(icon, size: 16) },
+      icon: { Icon(icon) },
       label: { Text(title) }
     )
   }

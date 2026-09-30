@@ -64,7 +64,7 @@ public struct MenuItem: Identifiable {
   ) {
     self.init(
       label: label,
-      icon: icon.map { AnyView(Icon($0, size: 14)) },
+      icon: icon.map { AnyView(Icon($0)) },
       shortcut: shortcut.map { AnyView(Text($0)) },
       checked: checked,
       disabled: disabled,
@@ -259,12 +259,12 @@ struct MenuRow: View {
           // `Checkmark12Filled`, the glyph `menu.tsx` names. The column holds
           // its width whether or not the item is checked, so the labels of a
           // radio group stay on one left edge.
-          Icon(.checkmark12Filled, size: vars.labelSmall.size)
-            .frame(width: vars.spacing3)
+          Icon(.checkmark12Filled, size: vars.iconSmall)
+            .frame(width: vars.iconSmall)
             .opacity(checked ? 1 : 0)
         }
         if let icon = item.icon {
-          icon.foregroundStyle(vars.colorContentMuted)
+          icon.environment(\.dazzIconSize, vars.iconMedium).foregroundStyle(vars.colorContentMuted)
         }
         Text(item.label)
           .frame(maxWidth: .infinity, alignment: .leading)

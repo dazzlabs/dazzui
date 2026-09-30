@@ -284,7 +284,7 @@ private struct FieldAction: View {
     let vars = theme.vars
 
     Pressable(action: action, enabled: true, cornerRadius: vars.radiusSmall, help: help) { state in
-      Icon(icon, size: vars.labelSmall.size)
+      Icon(icon, size: vars.iconSmall)
         .foregroundStyle(state.hovered ? vars.colorContent : vars.colorContentSubtle)
         .frame(width: vars.spacing5, height: vars.spacing5)
         .background(state.hovered || state.pressed ? wash : .clear)
@@ -298,10 +298,10 @@ private struct FieldAction: View {
   }
 }
 
-private extension Array {
+extension Array {
   /// The element at an index that may be out of range — what a "same group as
   /// the row before" test needs at the top of the list.
-  subscript(safe index: Int) -> Element? {
+  fileprivate subscript(safe index: Int) -> Element? {
     indices.contains(index) ? self[index] : nil
   }
 }

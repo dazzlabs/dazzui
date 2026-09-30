@@ -86,14 +86,14 @@ class DisclosureHeader extends StatelessWidget {
               // when open — one glyph rotated rather than two swapped, so the
               // turn is the animation. It is the only moving part.
               SizedBox(
-                width: vars.spacing3,
+                width: vars.iconSmall,
                 child: AnimatedRotation(
                   duration: vars.motionDuration,
                   curve: vars.motionEasing,
                   turns: open ? 0.25 : 0,
                   child: Icon(
                     FluentIcons.chevron_right_12_regular,
-                    size: vars.labelSmall.fontSize,
+                    size: vars.iconSmall,
                     color: interactive ? vars.colorContentSubtle : content,
                   ),
                 ),
@@ -101,7 +101,7 @@ class DisclosureHeader extends StatelessWidget {
               if (icon != null)
                 Icon(
                   icon,
-                  size: vars.spacing35,
+                  size: vars.iconMedium,
                   color: interactive ? vars.colorContentMuted : content,
                 ),
               Expanded(
@@ -141,7 +141,7 @@ class DisclosurePanel extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsetsDirectional.fromSTEB(
-        vars.spacing2 + vars.spacing3 + vars.spacing2,
+        vars.spacing2 + vars.iconSmall + vars.spacing2,
         vars.spacing1,
         vars.spacing2,
         vars.spacing3,

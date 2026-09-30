@@ -96,7 +96,7 @@ private struct ComponentList: View {
           .padding(.horizontal, vars.spacing25)
 
           NavItem(active: page == nil, size: .small, action: { page = nil }) {
-            Icon(.home20Regular, size: 16)
+            Icon(.home20Regular)
           } label: {
             Text("Overview")
           }
@@ -149,7 +149,7 @@ private struct Toolbar: View {
     HStack(spacing: vars.spacing2) {
       Tooltip(side: .bottom) { Text("Toggle sidebar  ⌘B") } content: {
         IconButton(label: "Toggle sidebar", action: toggleList) {
-          Icon(.panelLeft20Regular, size: 16)
+          Icon(.panelLeft20Regular)
         }
       }
       HStack(alignment: .firstTextBaseline, spacing: vars.spacing2) {
@@ -162,7 +162,7 @@ private struct Toolbar: View {
       Spacer()
       Tooltip(side: .bottom) { Text("Toggle theme panel") } content: {
         IconButton(label: "Toggle theme panel", action: toggleThemes) {
-          Icon(.panelRight20Regular, size: 16)
+          Icon(.panelRight20Regular)
         }
       }
     }
@@ -176,8 +176,8 @@ private struct Toolbar: View {
 
 /* The document ---------------------------------------------------------- */
 
-private extension View {
-  func page(_ vars: ThemeVariables) -> some View {
+extension View {
+  fileprivate func page(_ vars: ThemeVariables) -> some View {
     padding(.top, vars.spacing5)
       .padding(.horizontal, vars.spacing6)
       .padding(.bottom, vars.spacing10)

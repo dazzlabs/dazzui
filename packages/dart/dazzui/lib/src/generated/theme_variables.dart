@@ -103,6 +103,9 @@ class ThemeVariables {
     this.frameRailWidth = 150,
     this.frameAsideWidth = 214,
     this.frameNavGap = 3,
+    this.iconSmall = 12,
+    this.iconMedium = 16,
+    this.iconLarge = 20,
     this.motionDuration = const Duration(microseconds: 150000),
     this.motionEasing = const Cubic(0.4, 0, 0.2, 1),
     this.radiusNone = 0,
@@ -307,6 +310,11 @@ class ThemeVariables {
   final double frameRailWidth;
   final double frameAsideWidth;
   final double frameNavGap;
+
+  // Icon
+  final double iconSmall;
+  final double iconMedium;
+  final double iconLarge;
 
   // Motion
   final Duration motionDuration;
@@ -715,24 +723,28 @@ class ThemeVariables {
   final double controlPressedAlpha;
   final double controlFieldRadius;
   final double controlContainerRadius;
+  double get controlTinyIconSize => iconSmall;
   double get controlTinyGap => spacing1;
   double get controlTinyPaddingBlock => spacing1;
   double get controlTinyPaddingInline => spacing25;
   final double controlTinySize;
   double get controlTinyRadius => radiusSmall;
   TextStyle get controlTinyContent => labelSmall;
+  double get controlSmallIconSize => iconMedium;
   double get controlSmallGap => spacing15;
   double get controlSmallPaddingBlock => spacing1;
   double get controlSmallPaddingInline => spacing3;
   final double controlSmallSize;
   double get controlSmallRadius => radiusSmall;
   TextStyle get controlSmallContent => labelMedium;
+  double get controlMediumIconSize => iconMedium;
   double get controlMediumGap => spacing2;
   double get controlMediumPaddingBlock => spacing15;
   final double controlMediumPaddingInline;
   final double controlMediumSize;
   double get controlMediumRadius => radiusSmall;
   TextStyle get controlMediumContent => labelMedium;
+  double get controlLargeIconSize => iconLarge;
   double get controlLargeGap => spacing2;
   double get controlLargePaddingBlock => spacing15;
   double get controlLargePaddingInline => spacing4;
@@ -889,6 +901,9 @@ class ThemeVariables {
     double? frameRailWidth,
     double? frameAsideWidth,
     double? frameNavGap,
+    double? iconSmall,
+    double? iconMedium,
+    double? iconLarge,
     Duration? motionDuration,
     Cubic? motionEasing,
     double? radiusNone,
@@ -1047,6 +1062,9 @@ class ThemeVariables {
       frameRailWidth: frameRailWidth ?? this.frameRailWidth,
       frameAsideWidth: frameAsideWidth ?? this.frameAsideWidth,
       frameNavGap: frameNavGap ?? this.frameNavGap,
+      iconSmall: iconSmall ?? this.iconSmall,
+      iconMedium: iconMedium ?? this.iconMedium,
+      iconLarge: iconLarge ?? this.iconLarge,
       motionDuration: motionDuration ?? this.motionDuration,
       motionEasing: motionEasing ?? this.motionEasing,
       radiusNone: radiusNone ?? this.radiusNone,
@@ -6069,6 +6087,9 @@ const themeVariablesWindows11Light = ThemeVariables(
   controlLargeSize: 40,
   frameWindowRadius: 8,
   framePopoverRadius: 8,
+  iconSmall: 14,
+  iconMedium: 20,
+  iconLarge: 24,
   radiusTiny: 4,
   radiusSmall: 4,
   radiusMedium: 4,
@@ -6200,6 +6221,9 @@ const themeVariablesWindows11Dark = ThemeVariables(
   focusRingAlpha: 0.5,
   frameWindowRadius: 8,
   framePopoverRadius: 8,
+  iconSmall: 14,
+  iconMedium: 20,
+  iconLarge: 24,
   radiusTiny: 4,
   radiusSmall: 4,
   radiusMedium: 4,
@@ -6297,6 +6321,9 @@ const themeVariablesUbuntuLight = ThemeVariables(
   controlLargeSize: 40,
   frameWindowRadius: 15,
   framePopoverRadius: 12,
+  iconSmall: 14,
+  iconMedium: 20,
+  iconLarge: 24,
   radiusTiny: 6,
   radiusSmall: 9,
   radiusMedium: 9,
@@ -6428,6 +6455,9 @@ const themeVariablesUbuntuDark = ThemeVariables(
   focusRingAlpha: 0.5,
   frameWindowRadius: 15,
   framePopoverRadius: 12,
+  iconSmall: 14,
+  iconMedium: 20,
+  iconLarge: 24,
   radiusTiny: 6,
   radiusSmall: 9,
   radiusMedium: 9,
@@ -6525,6 +6555,9 @@ const themeVariablesDebianLight = ThemeVariables(
   controlLargeSize: 40,
   frameWindowRadius: 15,
   framePopoverRadius: 12,
+  iconSmall: 14,
+  iconMedium: 20,
+  iconLarge: 24,
   radiusTiny: 6,
   radiusSmall: 9,
   radiusMedium: 9,
@@ -6656,6 +6689,9 @@ const themeVariablesDebianDark = ThemeVariables(
   focusRingAlpha: 0.5,
   frameWindowRadius: 15,
   framePopoverRadius: 12,
+  iconSmall: 14,
+  iconMedium: 20,
+  iconLarge: 24,
   radiusTiny: 6,
   radiusSmall: 9,
   radiusMedium: 9,
@@ -6753,6 +6789,9 @@ const themeVariablesFedoraLight = ThemeVariables(
   controlLargeSize: 40,
   frameWindowRadius: 15,
   framePopoverRadius: 12,
+  iconSmall: 14,
+  iconMedium: 20,
+  iconLarge: 24,
   radiusTiny: 6,
   radiusSmall: 9,
   radiusMedium: 9,
@@ -6884,6 +6923,9 @@ const themeVariablesFedoraDark = ThemeVariables(
   focusRingAlpha: 0.5,
   frameWindowRadius: 15,
   framePopoverRadius: 12,
+  iconSmall: 14,
+  iconMedium: 20,
+  iconLarge: 24,
   radiusTiny: 6,
   radiusSmall: 9,
   radiusMedium: 9,

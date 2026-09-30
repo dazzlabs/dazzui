@@ -117,3 +117,23 @@
   top: 0;
   flex-direction: column-reverse;
 }
+
+.dz-toast__icon {
+  --dz-icon-size: var(--icon-medium);
+}
+
+.dz-toast__icon > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+  flex-shrink: 0;
+}
+
+.dz-toast__dismiss {
+  --dz-icon-size: var(--icon-small);
+}
+
+.dz-toast__dismiss > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+  flex-shrink: 0;
+}

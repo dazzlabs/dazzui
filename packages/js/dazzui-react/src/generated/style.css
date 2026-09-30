@@ -998,6 +998,7 @@
   --control-large-content-font-weight: var(--label-medium-font-weight);
   --control-large-content-line-height: var(--label-medium-line-height);
   --control-large-gap: var(--spacing-2);
+  --control-large-icon-size: var(--icon-large);
   --control-large-padding-block: var(--spacing-1-5);
   --control-large-padding-inline: var(--spacing-4);
   --control-large-radius: var(--radius-medium);
@@ -1007,6 +1008,7 @@
   --control-medium-content-font-weight: var(--label-medium-font-weight);
   --control-medium-content-line-height: var(--label-medium-line-height);
   --control-medium-gap: var(--spacing-2);
+  --control-medium-icon-size: var(--icon-medium);
   --control-medium-padding-block: var(--spacing-1-5);
   --control-medium-padding-inline: var(--spacing-4);
   --control-medium-radius: var(--radius-small);
@@ -1016,6 +1018,7 @@
   --control-small-content-font-weight: var(--label-medium-font-weight);
   --control-small-content-line-height: var(--label-medium-line-height);
   --control-small-gap: var(--spacing-1-5);
+  --control-small-icon-size: var(--icon-medium);
   --control-small-padding-block: var(--spacing-1);
   --control-small-padding-inline: var(--spacing-3);
   --control-small-radius: var(--radius-small);
@@ -1025,6 +1028,7 @@
   --control-tiny-content-font-weight: var(--label-small-font-weight);
   --control-tiny-content-line-height: var(--label-small-line-height);
   --control-tiny-gap: var(--spacing-1);
+  --control-tiny-icon-size: var(--icon-small);
   --control-tiny-padding-block: var(--spacing-1);
   --control-tiny-padding-inline: var(--spacing-2-5);
   --control-tiny-radius: var(--radius-small);
@@ -1054,6 +1058,9 @@
   --headline-small-font-size: var(--base-type-xl);
   --headline-small-font-weight: var(--base-font-weight-semibold);
   --headline-small-line-height: var(--base-leading-xl);
+  --icon-large: var(--spacing-5);
+  --icon-medium: var(--spacing-4);
+  --icon-small: var(--spacing-3);
   --label-large-font-family: var(--base-font-ui);
   --label-large-font-size: var(--base-type-body);
   --label-large-font-weight: var(--base-font-weight-semibold);
@@ -1637,6 +1644,9 @@
   --control-tiny-size: 24px;
   --frame-popover-radius: 8px;
   --frame-window-radius: 8px;
+  --icon-large: var(--spacing-6);
+  --icon-medium: var(--spacing-5);
+  --icon-small: var(--spacing-3-5);
   --label-large-font-family: var(--base-font-ui);
   --label-large-font-size: 14px;
   --label-large-font-weight: var(--base-font-weight-semibold);
@@ -1717,6 +1727,9 @@
   --control-tiny-size: 24px;
   --frame-popover-radius: 12px;
   --frame-window-radius: 15px;
+  --icon-large: var(--spacing-6);
+  --icon-medium: var(--spacing-5);
+  --icon-small: var(--spacing-3-5);
   --label-large-font-family: var(--base-font-ui);
   --label-large-font-size: 14.5px;
   --label-large-font-weight: var(--base-font-weight-semibold);

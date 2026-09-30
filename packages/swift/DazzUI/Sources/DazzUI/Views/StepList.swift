@@ -69,10 +69,10 @@ public struct Step<Label: View, Meta: View>: View {
     let vars = theme.vars
 
     // `Checkmark12Filled`, the glyph `step-list.tsx` names.
-    return Icon(.checkmark12Filled, size: vars.labelSmall.size)
+    return Icon(.checkmark12Filled, size: vars.iconSmall)
       .opacity(status == .done ? 1 : 0)
       .foregroundStyle(vars.colorSuccess[600])
-      .frame(width: vars.spacing4, height: vars.spacing4)
+      .frame(width: vars.iconMedium, height: vars.iconMedium)
       // Done is success wherever the list is tinted: a finished step is not a
       // variation on the accent, it is the one fixed meaning in the column.
       // The fill is a wash of the hue rather than an opaque chip, so it sits

@@ -84,7 +84,7 @@ class Toast extends StatelessWidget {
             spacing: vars.spacing25,
             children: [
               if (icon != null)
-                Icon(icon, size: vars.spacing4, color: ramp[600]),
+                Icon(icon, size: vars.iconMedium, color: ramp[600]),
               Flexible(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: vars.spacing05),

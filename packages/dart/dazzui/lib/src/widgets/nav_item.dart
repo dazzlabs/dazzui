@@ -84,11 +84,11 @@ class NavItem extends StatelessWidget {
                 // row's line height and allowed to overflow rather than
                 // stretching the row.
                 SizedBox(
-                  width: vars.spacing4,
+                  width: vars.iconMedium,
                   height: vars.labelQuiet.fontSize,
                   child: OverflowBox(
-                    maxHeight: vars.spacing4,
-                    child: Icon(icon, size: vars.spacing4, color: content),
+                    maxHeight: vars.iconMedium,
+                    child: Icon(icon, size: vars.iconMedium, color: content),
                   ),
                 ),
               Expanded(
@@ -101,7 +101,9 @@ class NavItem extends StatelessWidget {
               ),
               if (trailing != null)
                 IconTheme(
-                  data: IconTheme.of(context).copyWith(color: content),
+                  data: IconTheme.of(
+                    context,
+                  ).copyWith(color: content, size: vars.iconMedium),
                   child: trailing!,
                 ),
             ],

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart' show OverflowBoxFit;
 import 'package:flutter/widgets.dart';
 
 import '../foundation/widget_size.dart';
@@ -213,46 +214,53 @@ class _ButtonState extends State<Button> {
               border: Border.all(color: border, width: context.hairlineWidth),
               borderRadius: borderRadius,
             ),
-            child: AnimatedDefaultTextStyle(
-              duration: vars.motionDuration,
-              curve: vars.motionEasing,
-              // `AnimatedDefaultTextStyle` has no `.merge`, so the merge is
-              // done by hand: the label face is layered onto whatever the
-              // host set above rather than replacing it, which is what lets
-              // a host's font family reach the label at all.
-              style: DefaultTextStyle.of(
-                context,
-              ).style.merge(labelStyle.copyWith(color: content)),
-              softWrap: false,
-              child: IconTheme(
-                data: IconTheme.of(context).copyWith(
-                  size: vars.spacing4,
-                  color: content,
-                ),
-                child: Row(
-                  mainAxisSize: widget.expand
-                      ? MainAxisSize.max
-                      : MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  spacing: _gap(vars, widget.size),
-                  children: [
-                    widget.child,
-                    // A trailing shortcut is a hint, not part of the label — it
-                    // takes the display cut and steps back.
-                    if (widget.shortcut != null)
-                      Opacity(
-                        opacity: 0.7,
-                        child: DefaultTextStyle.merge(
-                          style: vars.labelStrong.copyWith(
-                            fontSize: labelStyle.fontSize,
-                            fontWeight: labelStyle.fontWeight,
-                            height: 1,
-                            color: content,
+            // CSS centres a glyph even when it is taller than the padded
+            // line box. Keep that overflow instead of squeezing the Icon.
+            child: OverflowBox(
+              minHeight: 0,
+              maxHeight: double.infinity,
+              fit: OverflowBoxFit.deferToChild,
+              child: AnimatedDefaultTextStyle(
+                duration: vars.motionDuration,
+                curve: vars.motionEasing,
+                // `AnimatedDefaultTextStyle` has no `.merge`, so the merge is
+                // done by hand: the label face is layered onto whatever the
+                // host set above rather than replacing it, which is what lets
+                // a host's font family reach the label at all.
+                style: DefaultTextStyle.of(
+                  context,
+                ).style.merge(labelStyle.copyWith(color: content)),
+                softWrap: false,
+                child: IconTheme(
+                  data: IconTheme.of(context).copyWith(
+                    size: vars.controlIconSize(widget.size),
+                    color: content,
+                  ),
+                  child: Row(
+                    mainAxisSize: widget.expand
+                        ? MainAxisSize.max
+                        : MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: _gap(vars, widget.size),
+                    children: [
+                      widget.child,
+                      // A trailing shortcut is a hint, not part of the label — it
+                      // takes the display cut and steps back.
+                      if (widget.shortcut != null)
+                        Opacity(
+                          opacity: 0.7,
+                          child: DefaultTextStyle.merge(
+                            style: vars.labelStrong.copyWith(
+                              fontSize: labelStyle.fontSize,
+                              fontWeight: labelStyle.fontWeight,
+                              height: 1,
+                              color: content,
+                            ),
+                            child: widget.shortcut!,
                           ),
-                          child: widget.shortcut!,
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -35,8 +35,7 @@ static partial class Stories
                           "props": {
                             "icon": {
                               "$icon": "Folder20Regular"
-                            },
-                            "size": 16
+                            }
                           }
                         },
                         "children": [
@@ -48,8 +47,7 @@ static partial class Stories
                               "props": {
                                 "icon": {
                                   "$icon": "Folder20Regular"
-                                },
-                                "size": 16
+                                }
                               }
                             },
                             "children": [
@@ -61,8 +59,7 @@ static partial class Stories
                                   "props": {
                                     "icon": {
                                       "$icon": "Document20Regular"
-                                    },
-                                    "size": 16
+                                    }
                                   }
                                 }
                               },
@@ -74,8 +71,7 @@ static partial class Stories
                                   "props": {
                                     "icon": {
                                       "$icon": "Document20Regular"
-                                    },
-                                    "size": 16
+                                    }
                                   }
                                 }
                               }
@@ -89,8 +85,7 @@ static partial class Stories
                               "props": {
                                 "icon": {
                                   "$icon": "Folder20Regular"
-                                },
-                                "size": 16
+                                }
                               }
                             },
                             "children": [
@@ -102,8 +97,7 @@ static partial class Stories
                                   "props": {
                                     "icon": {
                                       "$icon": "Document20Regular"
-                                    },
-                                    "size": 16
+                                    }
                                   }
                                 }
                               }
@@ -117,8 +111,7 @@ static partial class Stories
                               "props": {
                                 "icon": {
                                   "$icon": "Document20Regular"
-                                },
-                                "size": 16
+                                }
                               }
                             }
                           }
@@ -132,8 +125,7 @@ static partial class Stories
                           "props": {
                             "icon": {
                               "$icon": "Document20Regular"
-                            },
-                            "size": 16
+                            }
                           }
                         }
                       },
@@ -145,8 +137,7 @@ static partial class Stories
                           "props": {
                             "icon": {
                               "$icon": "Document20Regular"
-                            },
-                            "size": 16
+                            }
                           }
                         }
                       }
@@ -202,8 +193,7 @@ static partial class Stories
                               "props": {
                                 "icon": {
                                   "$icon": "Folder20Regular"
-                                },
-                                "size": 16
+                                }
                               }
                             },
                             "children": [
@@ -215,8 +205,7 @@ static partial class Stories
                                   "props": {
                                     "icon": {
                                       "$icon": "Folder20Regular"
-                                    },
-                                    "size": 16
+                                    }
                                   }
                                 },
                                 "children": [
@@ -228,8 +217,7 @@ static partial class Stories
                                       "props": {
                                         "icon": {
                                           "$icon": "Document20Regular"
-                                        },
-                                        "size": 16
+                                        }
                                       }
                                     }
                                   },
@@ -241,8 +229,7 @@ static partial class Stories
                                       "props": {
                                         "icon": {
                                           "$icon": "Document20Regular"
-                                        },
-                                        "size": 16
+                                        }
                                       }
                                     }
                                   }
@@ -256,8 +243,7 @@ static partial class Stories
                                   "props": {
                                     "icon": {
                                       "$icon": "Folder20Regular"
-                                    },
-                                    "size": 16
+                                    }
                                   }
                                 },
                                 "children": [
@@ -269,8 +255,7 @@ static partial class Stories
                                       "props": {
                                         "icon": {
                                           "$icon": "Document20Regular"
-                                        },
-                                        "size": 16
+                                        }
                                       }
                                     }
                                   }
@@ -284,8 +269,7 @@ static partial class Stories
                                   "props": {
                                     "icon": {
                                       "$icon": "Document20Regular"
-                                    },
-                                    "size": 16
+                                    }
                                   }
                                 }
                               }
@@ -299,8 +283,7 @@ static partial class Stories
                               "props": {
                                 "icon": {
                                   "$icon": "Document20Regular"
-                                },
-                                "size": 16
+                                }
                               }
                             }
                           },
@@ -312,8 +295,7 @@ static partial class Stories
                               "props": {
                                 "icon": {
                                   "$icon": "Document20Regular"
-                                },
-                                "size": 16
+                                }
                               }
                             }
                           }
@@ -367,8 +349,7 @@ static partial class Stories
                               "props": {
                                 "icon": {
                                   "$icon": "Folder20Regular"
-                                },
-                                "size": 16
+                                }
                               }
                             },
                             "children": [
@@ -380,8 +361,7 @@ static partial class Stories
                                   "props": {
                                     "icon": {
                                       "$icon": "Document20Regular"
-                                    },
-                                    "size": 16
+                                    }
                                   }
                                 },
                                 "meta": {
@@ -402,8 +382,7 @@ static partial class Stories
                                   "props": {
                                     "icon": {
                                       "$icon": "Document20Regular"
-                                    },
-                                    "size": 16
+                                    }
                                   }
                                 },
                                 "meta": {
@@ -427,8 +406,7 @@ static partial class Stories
                               "props": {
                                 "icon": {
                                   "$icon": "Document20Regular"
-                                },
-                                "size": 16
+                                }
                               }
                             },
                             "disabled": true,

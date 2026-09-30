@@ -8,13 +8,13 @@ import type { Story } from '../lib/story'
 const file = (id: string, label = id): TreeNode => ({
   id,
   label,
-  icon: <Icon icon={Document20Regular} size={16} />,
+  icon: <Icon icon={Document20Regular} />,
 })
 
 const folder = (id: string, children: TreeNode[], label = id): TreeNode => ({
   id,
   label,
-  icon: <Icon icon={Folder20Regular} size={16} />,
+  icon: <Icon icon={Folder20Regular} />,
   children,
 })
 

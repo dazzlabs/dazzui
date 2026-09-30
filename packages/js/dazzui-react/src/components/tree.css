@@ -94,9 +94,13 @@
   transition: transform var(--motion-duration) var(--motion-easing);
 }
 
+.dz-tree__twisty {
+  --dz-icon-size: var(--icon-small);
+}
+
 .dz-tree__twisty > svg {
-  width: var(--spacing-3);
-  height: var(--spacing-3);
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
 }
 
 .dz-tree__item[aria-expanded='true'] > .dz-tree__twisty {
@@ -110,9 +114,13 @@
   color: var(--color-content-subtle);
 }
 
+.dz-tree__icon {
+  --dz-icon-size: var(--icon-medium);
+}
+
 .dz-tree__icon > svg {
-  width: var(--spacing-4);
-  height: var(--spacing-4);
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
 }
 
 /* The selected row's glyph goes with its label rather than staying subtle —

@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-import '../generated/theme_variables.dart';
 import '../foundation/widget_tint.dart';
+import '../generated/theme_variables.dart';
 import '../theme/theme.dart';
 import 'spinner.dart';
 
@@ -125,7 +125,7 @@ class _Marker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeVariables vars = Theme.of(context).vars;
-    final double box = vars.spacing4;
+    final double box = vars.iconMedium;
 
     if (status == StepStatus.active) {
       return SizedBox(
@@ -150,7 +150,7 @@ class _Marker extends StatelessWidget {
           color: success.withValues(alpha: 0.14),
         ),
         child: CustomPaint(
-          size: Size.square(vars.labelSmall.fontSize!),
+          size: Size.square(vars.iconSmall),
           painter: _CheckPainter(color: success),
         ),
       );

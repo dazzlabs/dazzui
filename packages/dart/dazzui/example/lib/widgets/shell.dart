@@ -68,7 +68,7 @@ class _ShellState extends State<Shell> {
           child: DefaultTextStyle(
             style: vars.bodyMedium.copyWith(color: vars.colorContent),
             child: IconTheme(
-              data: IconThemeData(color: vars.colorContent, size: 20),
+              data: IconThemeData(color: vars.colorContent, size: vars.iconMedium),
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final double list = _listOpen ? _listWidth : 0;
@@ -291,7 +291,7 @@ class _Toolbar extends StatelessWidget {
             label: 'Toggle sidebar  ⌘B',
             side: PopoverSide.bottom,
             child: IconButton(
-              icon: const Icon(FluentIcons.panel_left_20_regular, size: 16),
+              icon: const Icon(FluentIcons.panel_left_20_regular),
               semanticsLabel: 'Toggle sidebar',
               onPressed: onToggleList,
             ),
@@ -324,7 +324,7 @@ class _Toolbar extends StatelessWidget {
             label: 'Toggle theme panel',
             side: PopoverSide.bottom,
             child: IconButton(
-              icon: const Icon(FluentIcons.panel_right_20_regular, size: 16),
+              icon: const Icon(FluentIcons.panel_right_20_regular),
               semanticsLabel: 'Toggle theme panel',
               onPressed: onToggleThemes,
             ),

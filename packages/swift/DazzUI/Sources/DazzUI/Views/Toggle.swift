@@ -82,6 +82,7 @@ public struct Toggle<Label: View>: View {
       )
 
       label()
+        .environment(\.dazzIconSize, metrics.iconSize)
         .font(
           .system(
             size: metrics.content.size,
@@ -144,7 +145,7 @@ public extension Toggle where Label == Icon {
       accessibilityName: label,
       action: action,
       // The same glyph step ``IconButton`` draws, so the two line up.
-      label: { Icon(icon, size: 16) }
+      label: { Icon(icon) }
     )
   }
 }
@@ -263,7 +264,7 @@ public struct ToggleGroup: View {
           action: { press(item.value) }
         ) {
           if let icon = item.icon {
-            Icon(icon, size: metrics.content.size)
+            Icon(icon, size: metrics.iconSize)
           } else {
             Text(item.label)
           }

@@ -91,3 +91,13 @@
   background-color: var(--control-color-filled-surface-normal);
   color: var(--control-color-filled-content-normal);
 }
+
+.dz-segmented-control__segment {
+  --dz-icon-size: var(--control-icon-size);
+}
+
+.dz-segmented-control__segment > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+  flex-shrink: 0;
+}

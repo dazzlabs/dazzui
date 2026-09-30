@@ -331,6 +331,7 @@ function renderStateMachine(recipes) {
 function renderSizeProfiles(sizes) {
   const BOUND = [
     ['size', 'size'],
+    ['icon-size', 'icon-size'],
     ['gap', 'gap'],
     ['padding-block', 'padding-block'],
     ['padding-inline', 'padding-inline'],

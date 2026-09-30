@@ -173,7 +173,10 @@ class Checkbox extends StatelessWidget {
                       color: vars.colorOnAccent,
                       // The glyph sits a step under the label so it clears the
                       // box's corners.
-                      dimension: vars.labelSmall.fontSize!,
+                      dimension: vars.iconSmall.clamp(
+                        0,
+                        box - vars.checkboxThickness * 2,
+                      ),
                       dash: mixed,
                     )
                   : null,

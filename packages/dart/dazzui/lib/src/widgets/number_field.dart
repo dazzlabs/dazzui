@@ -357,7 +357,7 @@ class _StepButton extends StatelessWidget {
           ),
           child: Icon(
             icon,
-            size: vars.captionSmall.fontSize,
+            size: vars.iconSmall.clamp(0, vars.spacing3),
             color: onPressed == null
                 ? vars.controlColorNormalContent.disabledColor!
                 : washed

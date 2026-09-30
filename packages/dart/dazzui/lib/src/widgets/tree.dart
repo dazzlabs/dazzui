@@ -430,7 +430,7 @@ class _TreeRow<T> extends StatelessWidget {
                   SizedBox(width: vars.spacing1),
                   Icon(
                     row.node.icon,
-                    size: vars.spacing4,
+                    size: vars.iconMedium,
                     color: selected ? content : vars.colorContentSubtle,
                   ),
                 ],
@@ -497,7 +497,7 @@ class _Twisty extends StatelessWidget {
                 turns: open ? 0.25 : 0,
                 child: Icon(
                   FluentIcons.chevron_right_12_regular,
-                  size: vars.spacing3,
+                  size: vars.iconSmall,
                   color: vars.colorContentFaint,
                 ),
               ),

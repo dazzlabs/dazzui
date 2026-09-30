@@ -478,6 +478,13 @@ function generateThemeInstances(tokens, modeSelectors) {
         )
         continue
       }
+      // A top-level const theme cannot refer to an instance spacing getter.
+      if (token.$type === 'dimension') {
+        overrides.push(
+          `  ${tokenIdToVarName(id)}: ${convertDimensionValue(themed.$value, tokens)},`
+        )
+        continue
+      }
       overrides.push(`  ${tokenIdToVarName(id)}: ${value.value},`)
     }
 

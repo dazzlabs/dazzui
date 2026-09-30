@@ -98,3 +98,9 @@
   font-size: var(--body-small-font-size);
   line-height: var(--body-small-line-height);
 }
+
+.dz-combobox__action svg {
+  width: var(--icon-small);
+  height: var(--icon-small);
+  flex-shrink: 0;
+}

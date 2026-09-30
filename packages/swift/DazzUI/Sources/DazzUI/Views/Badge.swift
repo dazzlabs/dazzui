@@ -50,6 +50,7 @@ public struct Badge<Label: View>: View {
     let vars = theme.vars
 
     label()
+      .environment(\.dazzIconSize, vars.iconSmall)
       .font(.system(size: fontSize, weight: vars.labelMedium.weight))
       .lineLimit(1)
       // Match the single CSS line box before adding padding and border.

@@ -387,7 +387,7 @@ private struct ClearButton: View {
     let vars = theme.vars
 
     Pressable(action: action, cornerRadius: vars.radiusNone, help: label) { state in
-      Icon(.dismissCircle12Filled, size: vars.labelMedium.size)
+      Icon(.dismissCircle12Filled, size: vars.iconSmall)
         .foregroundStyle(
           state.hovered || state.pressed ? vars.colorContentSubtle : vars.colorContentFaint
         )

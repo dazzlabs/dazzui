@@ -383,7 +383,7 @@ class _FieldAction extends StatelessWidget {
           ),
           child: Icon(
             icon,
-            size: vars.labelSmall.fontSize,
+            size: vars.iconSmall,
             color: washed ? vars.colorContent : vars.colorContentSubtle,
           ),
         );

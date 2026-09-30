@@ -1440,7 +1440,7 @@ class _TextFieldState extends State<TextField>
           padding: const EdgeInsets.symmetric(horizontal: 6.0),
           child: Icon(
             CupertinoIcons.clear_thick_circled,
-            size: 18.0,
+            size: Theme.of(context).vars.iconSmall,
             color: CupertinoDynamicColor.resolve(_kClearButtonColor, context),
           ),
         ),

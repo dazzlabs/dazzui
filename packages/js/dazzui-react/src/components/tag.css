@@ -87,9 +87,13 @@
   margin-inline-end: var(--spacing-1);
 }
 
+.dz-tag__icon {
+  --dz-icon-size: var(--icon-small);
+}
+
 .dz-tag__icon > svg {
-  width: var(--spacing-3);
-  height: var(--spacing-3);
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
 }
 
 /*
@@ -118,9 +122,13 @@
     opacity var(--motion-duration) var(--motion-easing);
 }
 
+.dz-tag__remove {
+  --dz-icon-size: var(--icon-small);
+}
+
 .dz-tag__remove > svg {
-  width: var(--spacing-3);
-  height: var(--spacing-3);
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
 }
 
 /* A wash of the capsule's own ink rather than a recipe: this button sits on

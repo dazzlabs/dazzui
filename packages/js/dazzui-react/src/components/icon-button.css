@@ -51,3 +51,13 @@
   height: var(--control-size);
   border-radius: var(--control-radius);
 }
+
+.dz-icon-button {
+  --dz-icon-size: var(--control-icon-size);
+}
+
+.dz-icon-button > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+  flex-shrink: 0;
+}

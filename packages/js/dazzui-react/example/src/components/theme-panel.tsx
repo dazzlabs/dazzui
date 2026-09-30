@@ -54,7 +54,7 @@ export function ThemePanel({ theme, setTheme, width, resizer }: Props) {
             setTheme({ ...theme, mode: pressed ? 'dark' : 'light' })
           }
         >
-          <Icon icon={dark ? Moon : Sun} size={16} />
+          <Icon icon={dark ? Moon : Sun} />
         </Toggle>
       </SidebarHeader>
       <SidebarContent>

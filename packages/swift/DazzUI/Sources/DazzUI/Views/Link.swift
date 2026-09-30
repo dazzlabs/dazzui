@@ -68,7 +68,7 @@ public struct Link: View {
         Text(title)
           .underline(ruled(state: state))
         if external {
-          Icon(.arrowUpRight12Regular, size: vars.spacing3)
+          Icon(.arrowUpRight12Regular, size: vars.iconSmall)
         }
       }
       .foregroundStyle(content)

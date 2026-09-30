@@ -55,6 +55,7 @@ public struct Button<Label: View>: View {
 
       HStack(spacing: metrics.gap) {
         label()
+          .environment(\.dazzIconSize, metrics.iconSize)
         if let shortcut {
           // A trailing shortcut is a hint, not part of the label — it takes
           // the display cut and steps back.

@@ -16,14 +16,14 @@ export interface IconProps extends Omit<
   'width' | 'height' | 'ref'
 > {
   icon: IconGlyph
-  /** Rendered edge length. Fixed-size glyphs are scaled to fit. */
+  /** Rendered edge length. Defaults to the enclosing component's size or the theme's medium icon. */
   size?: number | string
 }
 
 /** Draws a glyph at a given size, inheriting the surrounding text color. */
 export function Icon({
   icon: Glyph,
-  size = 20,
+  size = 'var(--dz-icon-size, var(--icon-medium))',
   className,
   ...props
 }: IconProps) {

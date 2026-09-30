@@ -80,6 +80,9 @@ metrics:
       label: 13
   # Windows 11: Fluent's ControlCornerRadius 4 and OverlayCornerRadius 8.
   windows11:
+    icon.small: "{spacing.3.5}"
+    icon.medium: "{spacing.5}"
+    icon.large: "{spacing.6}"
     radius.tiny: 4px
     radius.small: 4px
     radius.medium: 4px
@@ -106,6 +109,9 @@ metrics:
   # Yaru keeps the geometry of: $button_radius 9, $card_radius 12, a window
   # at $button_radius + 6.
   adwaita:
+    icon.small: "{spacing.3.5}"
+    icon.medium: "{spacing.5}"
+    icon.large: "{spacing.6}"
     radius.tiny: 6px
     radius.small: 9px
     radius.medium: 9px

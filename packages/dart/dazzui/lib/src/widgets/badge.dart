@@ -168,6 +168,7 @@ class _BadgeState extends State<Badge> with SingleTickerProviderStateMixin {
               // default instead of the size its surroundings set.
               data: IconTheme.of(context).copyWith(
                 color: foregroundColor,
+                size: vars.iconSmall,
               ),
               child: widget.child,
             ),

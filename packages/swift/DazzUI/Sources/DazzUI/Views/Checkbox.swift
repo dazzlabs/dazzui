@@ -110,17 +110,20 @@ public struct Checkbox<Label: View>: View {
 
     // A tick says every one; a dash says some. Both sit a step under the label
     // so they clear the box's corners.
-    return Icon(indeterminate ? .subtract12Filled : .checkmark12Filled, size: vars.labelSmall.size)
-      .opacity(marked ? 1 : 0)
-      .foregroundStyle(recipe(.content))
-      .frame(width: boxSize, height: boxSize)
-      .background(filled)
-      .clipShape(RoundedRectangle(cornerRadius: vars.checkboxRadius, style: .circular))
-      .border(
-        marked ? filled : vars.colorBorderMuted,
-        width: vars.checkboxThickness,
-        cornerRadius: vars.checkboxRadius
-      )
+    return Icon(
+      indeterminate ? .subtract12Filled : .checkmark12Filled,
+      size: min(vars.iconSmall, boxSize - vars.checkboxThickness * 2)
+    )
+    .opacity(marked ? 1 : 0)
+    .foregroundStyle(recipe(.content))
+    .frame(width: boxSize, height: boxSize)
+    .background(filled)
+    .clipShape(RoundedRectangle(cornerRadius: vars.checkboxRadius, style: .circular))
+    .border(
+      marked ? filled : vars.colorBorderMuted,
+      width: vars.checkboxThickness,
+      cornerRadius: vars.checkboxRadius
+    )
   }
 
   /// The checked box paints the resting `filled` recipe. A checkbox has no

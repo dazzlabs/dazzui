@@ -45,8 +45,8 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: var(--spacing-4);
-  height: var(--spacing-4);
+  width: var(--icon-medium);
+  height: var(--icon-medium);
   border-radius: var(--radius-full);
   font-size: var(--label-small-font-size);
   line-height: 1;
@@ -84,4 +84,14 @@
 
 .dz-step[data-status='active'] .dz-step__meta {
   color: var(--control-color-plain-content-normal);
+}
+
+.dz-step__marker {
+  --dz-icon-size: var(--icon-small);
+}
+
+.dz-step__marker > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+  flex-shrink: 0;
 }

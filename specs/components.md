@@ -84,7 +84,13 @@ Never hand-edit `src/generated/`. A value a component needs belongs in
   hides its dash (`.dz-checkbox .dz-checkbox__dash`); every other part puts
   the glyph in a span of its own — `.dz-checkbox__mark`, `.dz-select__chevron`
   — and styles that.
-- Sized controls read the `[data-size]` profile bindings — `--control-size`,
+- Icons use the shared `icon.small / medium / large` theme scale. A leading
+  slot binds `--dz-icon-size` and sizes its direct SVG children with it, so
+  raw icon-library SVGs and `Icon` agree. Sized controls bind it to
+  `--control-icon-size`; auxiliary chevrons, checks and dismiss glyphs use
+  `--icon-small`. Keep explicit inline sizes as overrides and never size
+  arbitrary descendants, avatars or spinners as glyphs.
+- Sized controls read the `[data-size]` profile bindings — `--control-size`, `--control-icon-size`,
   `--control-gap`, `--control-padding-*`, `--control-radius`,
   `--control-font-*`, `--control-line-height` — once in their base rule
   instead of restating geometry per size (Button and IconButton are the

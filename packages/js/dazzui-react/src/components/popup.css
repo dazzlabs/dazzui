@@ -106,7 +106,7 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: var(--spacing-3);
+  width: var(--icon-small);
   font-size: var(--label-small-font-size);
   visibility: hidden;
 }
@@ -152,4 +152,24 @@
 
 .dz-popup__group + .dz-popup__group {
   margin-top: var(--spacing-1);
+}
+
+.dz-popup__icon {
+  --dz-icon-size: var(--icon-medium);
+}
+
+.dz-popup__icon > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+  flex-shrink: 0;
+}
+
+.dz-popup__check {
+  --dz-icon-size: var(--icon-small);
+}
+
+.dz-popup__check > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+  flex-shrink: 0;
 }

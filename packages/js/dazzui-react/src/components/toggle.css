@@ -30,13 +30,6 @@
     color var(--motion-duration) var(--motion-easing);
 }
 
-/* A glyph label takes the type's size, so a toolbar of these lines up with
-   the buttons beside it rather than with whatever the icon set ships at. */
-.dz-toggle > svg {
-  width: var(--control-font-size);
-  height: var(--control-font-size);
-}
-
 /*
  * A toggle whose whole label is one glyph is square at the control height, the
  * way an `IconButton` is — the padding goes, because a glyph has no side
@@ -126,4 +119,14 @@
 .dz-toggle-group > .dz-toggle[data-pressed] {
   position: relative;
   z-index: 1;
+}
+
+.dz-toggle {
+  --dz-icon-size: var(--control-icon-size);
+}
+
+.dz-toggle > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+  flex-shrink: 0;
 }

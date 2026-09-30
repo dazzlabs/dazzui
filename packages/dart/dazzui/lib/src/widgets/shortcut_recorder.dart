@@ -312,7 +312,7 @@ class _ShortcutRecorderState extends State<ShortcutRecorder> {
             borderRadius: BorderRadius.circular(vars.radiusFull),
             builder: (context, states) => Icon(
               FluentIcons.dismiss_circle_12_filled,
-              size: vars.labelMedium.fontSize,
+              size: vars.iconSmall,
               color: states.contains(WidgetState.hovered)
                   ? vars.colorContentSubtle
                   : vars.colorContentFaint,

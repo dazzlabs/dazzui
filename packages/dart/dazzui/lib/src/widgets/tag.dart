@@ -174,12 +174,14 @@ class Tag extends StatelessWidget {
         child: DefaultTextStyle.merge(
           style: face.copyWith(color: content),
           child: IconTheme(
-            data: IconTheme.of(context).copyWith(color: content),
+            data: IconTheme.of(
+              context,
+            ).copyWith(color: content, size: vars.iconSmall),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 if (icon != null) ...<Widget>[
-                  Icon(icon, size: vars.spacing3),
+                  Icon(icon, size: vars.iconSmall),
                   SizedBox(width: vars.spacing1),
                 ],
                 label,
@@ -266,7 +268,7 @@ class _Dismiss extends StatelessWidget {
             opacity: dead ? _deadOpacity : (hovered ? 1 : _restOpacity),
             child: Icon(
               FluentIcons.dismiss_12_regular,
-              size: vars.spacing3,
+              size: vars.iconSmall,
               color: ink,
             ),
           ),

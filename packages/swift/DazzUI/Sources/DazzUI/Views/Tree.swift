@@ -155,7 +155,7 @@ private struct Row: View {
       HStack(spacing: 0) {
         Twisty(branch: node.isBranch, open: open, enabled: node.enabled, action: onToggle)
         if let icon = node.icon {
-          Icon(icon, size: vars.spacing4)
+          Icon(icon, size: vars.iconMedium)
             .foregroundStyle(selected ? content(state) : vars.colorContentSubtle)
             .padding(.leading, vars.spacing1)
         }
@@ -243,7 +243,7 @@ private struct Twisty: View {
 
     Group {
       if branch {
-        Icon(.chevronRight12Regular, size: vars.spacing3)
+        Icon(.chevronRight12Regular, size: vars.iconSmall)
           .rotationEffect(.degrees(open ? 90 : 0))
           .foregroundStyle(vars.colorContentFaint)
           .animation(vars.motion, value: open)

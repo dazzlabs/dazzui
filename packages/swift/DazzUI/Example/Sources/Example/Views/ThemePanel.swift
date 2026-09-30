@@ -24,7 +24,7 @@ struct ThemePanel: View {
             accessibilityName: theme.dark ? "Switch to light" : "Switch to dark",
             action: { theme.dark.toggle() }
           ) {
-            Icon(theme.dark ? .weatherMoon20Regular : .weatherSunny20Regular, size: 16)
+            Icon(theme.dark ? .weatherMoon20Regular : .weatherSunny20Regular)
           }
         }
       }

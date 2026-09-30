@@ -58,6 +58,7 @@ public struct IconButton<Content: View>: View {
         )
 
         content()
+          .environment(\.dazzIconSize, metrics.iconSize)
           .foregroundStyle(foreground(colors: colors, state: state))
           .frame(width: metrics.size, height: metrics.size)
           .background(background(colors: colors, state: state))
@@ -118,7 +119,7 @@ public extension IconButton where Content == Icon {
       tint: tint,
       enabled: enabled,
       action: action,
-      content: { Icon(icon, size: 16) }
+      content: { Icon(icon) }
     )
   }
 }

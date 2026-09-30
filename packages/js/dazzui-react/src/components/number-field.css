@@ -97,3 +97,11 @@
   outline: var(--focus-width) solid var(--focus-ring);
   outline-offset: 0;
 }
+
+/* Two stacked actions share the field's height, so the glyph must fit
+   its half even in the most compact theme. */
+.dz-number-field__step > svg {
+  width: min(var(--icon-small), var(--spacing-3));
+  height: min(var(--icon-small), var(--spacing-3));
+  flex-shrink: 0;
+}

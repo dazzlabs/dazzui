@@ -365,9 +365,9 @@
     color var(--motion-duration) var(--motion-easing);
 }
 
-/* The last span is the label, and a label that will not fit is cut rather
-   than wrapped: a row is one line. */
-.dz-sidebar__menu-button > span:last-child {
+/* A trailing label span truncates on one line. With plain-text children,
+   the icon is the last element child, so keep its overflow visible. */
+.dz-sidebar__menu-button > span:last-child:not(.dz-sidebar__menu-icon) {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -495,15 +495,25 @@
  * height and allowed to overflow rather than stretching the row.
  */
 .dz-sidebar__menu-icon {
+  --dz-icon-size: var(--icon-medium);
   display: flex;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: var(--spacing-4);
+  width: var(--icon-medium);
   height: 1em;
 }
 
+/* Raw SVG glyphs and Icon share the theme size; an explicit inline size
+   still takes precedence. */
+.dz-sidebar__menu-icon > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+  flex-shrink: 0;
+}
+
 .dz-sidebar__menu-button > .dz-icon {
+  --dz-icon-size: var(--icon-medium);
   flex-shrink: 0;
 }
 
@@ -543,7 +553,8 @@
 .dz-sidebar[data-collapsible='icon'] .dz-sidebar__menu-button {
   width: var(--control-medium-size);
   height: var(--control-medium-size);
-  padding: 0 calc((var(--control-medium-size) - var(--spacing-4)) / 2);
+  padding: 0
+    calc((var(--control-medium-size) - var(--icon-medium)) / 2);
   overflow: hidden;
 }
 

@@ -53,6 +53,7 @@ public struct Toast<Leading: View, Message: View, Trailing: View>: View {
 
     HStack(spacing: vars.spacing25) {
       leading()
+        .environment(\.dazzIconSize, vars.iconMedium)
         .foregroundStyle(vars.ramp(tint)[600])
       message()
         .font(vars.labelMedium.font)
@@ -165,7 +166,7 @@ private struct ToastDismiss: View {
     let vars = theme.vars
 
     Pressable(action: action, cornerRadius: vars.radiusSmall) { state in
-      Icon(.dismiss12Regular, size: vars.labelMedium.size)
+      Icon(.dismiss12Regular, size: vars.iconSmall)
         .foregroundStyle(
           state.hovered || state.pressed ? vars.colorContent : vars.colorContentSubtle
         )

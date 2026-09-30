@@ -335,7 +335,7 @@ public struct Select<Value: Hashable>: View {
         .lineLimit(1)
         .truncationMode(.tail)
         .frame(maxWidth: fullWidth ? .infinity : nil, alignment: .leading)
-        Icon(.chevronDown12Regular, size: vars.spacing3)
+        Icon(.chevronDown12Regular, size: vars.iconSmall)
           .foregroundStyle(vars.colorContentSubtle)
       }
       .font(FieldStyle.font(size: metrics.content.size, mono: false, vars: vars))

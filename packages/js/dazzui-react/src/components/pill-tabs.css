@@ -71,3 +71,13 @@
 .dz-pill-tabs__count {
   font-variant-numeric: tabular-nums;
 }
+
+.dz-pill-tabs__tab {
+  --dz-icon-size: var(--icon-medium);
+}
+
+.dz-pill-tabs__tab > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+  flex-shrink: 0;
+}

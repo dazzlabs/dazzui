@@ -58,6 +58,7 @@ public struct Callout<Leading: View, Description: View, Trailing: View>: View {
 
     HStack(alignment: hasDescription ? .top : .center, spacing: vars.spacing25) {
       leading()
+        .environment(\.dazzIconSize, vars.iconMedium)
         .foregroundStyle(vars.ramp(tint)[600])
       VStack(alignment: .leading, spacing: vars.spacing1) {
         if let title {

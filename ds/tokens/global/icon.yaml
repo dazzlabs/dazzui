@@ -1,0 +1,11 @@
+# Shared glyph sizes. Small is auxiliary chrome, medium is a leading or
+# navigation glyph, and large is for prominent controls and illustrations.
+# Desktop metrics remap the scale; light and dark share the same geometry.
+icon:
+  $type: dimension
+  small:
+    $value: "{spacing.3}"
+  medium:
+    $value: "{spacing.4}"
+  large:
+    $value: "{spacing.5}"

@@ -135,7 +135,7 @@ final Map<String, ComponentBuilder> components = {
     invalid: n.string('state') == 'error',
     child: _one(n),
   ),
-  'Icon': (n) => Icon(glyphOf(n.props['icon']), size: n.number('size') ?? 20),
+  'Icon': (n) => Icon(glyphOf(n.props['icon']), size: n.number('size')),
   'IconButton': (n) => IconButton(
     icon: _one(n),
     semanticsLabel: n.string('label'),
@@ -458,7 +458,7 @@ final Map<String, ComponentBuilder> components = {
   'SidebarTrigger': (n) {
     final _SidebarState sidebar = _SidebarState.of(n.context);
     return IconButton(
-      icon: const Icon(FluentIcons.panel_left_20_regular, size: 16),
+      icon: const Icon(FluentIcons.panel_left_20_regular),
       semanticsLabel: 'Toggle sidebar',
       onPressed: sidebar.toggle,
     );

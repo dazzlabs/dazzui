@@ -81,3 +81,13 @@
   font-family: var(--label-strong-font-family);
   opacity: 0.7;
 }
+
+.dz-button {
+  --dz-icon-size: var(--control-icon-size);
+}
+
+.dz-button > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+  flex-shrink: 0;
+}

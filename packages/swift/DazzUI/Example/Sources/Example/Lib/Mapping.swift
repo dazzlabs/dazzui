@@ -184,7 +184,9 @@ let components: [String: ComponentBuilder] = [
       ) { n.kids }
     )
   },
-  "Icon": { n in AnyView(Icon(glyph(n.props["icon"] ?? .null), size: n.number("size") ?? 20)) },
+  "Icon": { n in
+    AnyView(Icon(glyph(n.props["icon"] ?? .null), size: n.number("size").map { CGFloat($0) }))
+  },
   "IconButton": { n in
     AnyView(
       IconButton(
@@ -1011,7 +1013,7 @@ private struct SidebarRow: View {
   var body: some View {
     let icon = node.props["icon"].flatMap(iconOf)
     let row = NavItem(active: node.flag("active"), action: node.press()) {
-      if let icon { Icon(icon, size: 16) }
+      if let icon { Icon(icon) }
     } label: {
       Text(sidebar.showsLabels ? node.text : "")
     }
@@ -1035,7 +1037,7 @@ private struct SidebarTriggerNode: View {
 
   var body: some View {
     IconButton(label: "Toggle sidebar", action: sidebar.toggle) {
-      Icon(.panelLeft20Regular, size: 16)
+      Icon(.panelLeft20Regular)
     }
   }
 }

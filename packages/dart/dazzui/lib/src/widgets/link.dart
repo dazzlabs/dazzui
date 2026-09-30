@@ -138,7 +138,7 @@ class Link extends StatelessWidget {
                       ),
                       child: Icon(
                         FluentIcons.arrow_up_right_12_regular,
-                        size: vars.spacing3,
+                        size: vars.iconSmall,
                         color: content,
                       ),
                     ),

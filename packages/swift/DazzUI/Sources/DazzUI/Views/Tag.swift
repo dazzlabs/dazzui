@@ -194,7 +194,7 @@ private struct Dismiss: View {
 
     Pressable(action: action, enabled: enabled, cornerRadius: vars.radiusFull, help: label) {
       state in
-      Icon(.dismiss12Regular, size: vars.spacing3)
+      Icon(.dismiss12Regular, size: vars.iconSmall)
         .foregroundStyle(ink)
         .opacity(
           !state.enabled

@@ -322,12 +322,12 @@ class MenuRow extends StatelessWidget {
               // so the labels of a radio group stay on one left edge.
               if (item.checked != null)
                 SizedBox(
-                  width: vars.spacing3,
+                  width: vars.iconSmall,
                   child: Opacity(
                     opacity: item.checked! ? 1 : 0,
                     child: Icon(
                       FluentIcons.checkmark_12_filled,
-                      size: vars.labelSmall.fontSize,
+                      size: vars.iconSmall,
                       color: content,
                     ),
                   ),
@@ -335,7 +335,7 @@ class MenuRow extends StatelessWidget {
               if (item.icon != null)
                 Icon(
                   item.icon,
-                  size: vars.spacing35,
+                  size: vars.iconMedium,
                   color: enabled ? vars.colorContentMuted : content,
                 ),
               Expanded(

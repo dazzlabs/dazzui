@@ -297,7 +297,7 @@ class _SelectState<T> extends State<Select<T>> {
             _value(vars, chosen),
           Icon(
             FluentIcons.chevron_down_12_regular,
-            size: vars.spacing3,
+            size: vars.iconSmall,
             color: enabled ? vars.colorContentSubtle : vars.colorContentFaint,
           ),
         ],

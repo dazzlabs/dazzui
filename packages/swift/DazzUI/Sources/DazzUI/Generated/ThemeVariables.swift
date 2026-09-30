@@ -60,6 +60,9 @@ public struct ThemeVariables: Sendable {
     frameRailWidth: CGFloat = 150.0,
     frameAsideWidth: CGFloat = 214.0,
     frameNavGap: CGFloat = 3.0,
+    iconSmall: CGFloat = 12.0,
+    iconMedium: CGFloat = 16.0,
+    iconLarge: CGFloat = 20.0,
     motionDuration: Double = 0.15,
     motionEasing: BezierCurve = BezierCurve(0.4, 0.0, 0.2, 1.0),
     radiusNone: CGFloat = 0.0,
@@ -236,6 +239,9 @@ public struct ThemeVariables: Sendable {
     self.frameRailWidth = frameRailWidth
     self.frameAsideWidth = frameAsideWidth
     self.frameNavGap = frameNavGap
+    self.iconSmall = iconSmall
+    self.iconMedium = iconMedium
+    self.iconLarge = iconLarge
     self.motionDuration = motionDuration
     self.motionEasing = motionEasing
     self.radiusNone = radiusNone
@@ -378,6 +384,9 @@ public struct ThemeVariables: Sendable {
   public let frameRailWidth: CGFloat
   public let frameAsideWidth: CGFloat
   public let frameNavGap: CGFloat
+  public let iconSmall: CGFloat
+  public let iconMedium: CGFloat
+  public let iconLarge: CGFloat
   public let motionDuration: Double
   public let motionEasing: BezierCurve
   public let radiusNone: CGFloat
@@ -476,20 +485,24 @@ public struct ThemeVariables: Sendable {
   public let controlColorPlainContentPressedShade: Int
   public let controlColorPlainBorder: ColorDescriptor
 
+  public var controlTinyIconSize: CGFloat { iconSmall }
   public var controlTinyGap: CGFloat { spacing1 }
   public var controlTinyPaddingBlock: CGFloat { spacing1 }
   public var controlTinyPaddingInline: CGFloat { spacing25 }
   public var controlTinyRadius: CGFloat { radiusSmall }
   public var controlTinyContent: TypeStyle { labelSmall }
+  public var controlSmallIconSize: CGFloat { iconMedium }
   public var controlSmallGap: CGFloat { spacing15 }
   public var controlSmallPaddingBlock: CGFloat { spacing1 }
   public var controlSmallPaddingInline: CGFloat { spacing3 }
   public var controlSmallRadius: CGFloat { radiusSmall }
   public var controlSmallContent: TypeStyle { labelMedium }
+  public var controlMediumIconSize: CGFloat { iconMedium }
   public var controlMediumGap: CGFloat { spacing2 }
   public var controlMediumPaddingBlock: CGFloat { spacing15 }
   public var controlMediumRadius: CGFloat { radiusSmall }
   public var controlMediumContent: TypeStyle { labelMedium }
+  public var controlLargeIconSize: CGFloat { iconLarge }
   public var controlLargeGap: CGFloat { spacing2 }
   public var controlLargePaddingBlock: CGFloat { spacing15 }
   public var controlLargePaddingInline: CGFloat { spacing4 }
@@ -3998,6 +4011,9 @@ public extension ThemeVariables {
     controlLargeSize: 40.0,
     frameWindowRadius: 8.0,
     framePopoverRadius: 8.0,
+    iconSmall: 14.0,
+    iconMedium: 20.0,
+    iconLarge: 24.0,
     radiusTiny: 4.0,
     radiusSmall: 4.0,
     radiusMedium: 4.0,
@@ -4069,6 +4085,9 @@ public extension ThemeVariables {
     focusRingAlpha: 0.5,
     frameWindowRadius: 8.0,
     framePopoverRadius: 8.0,
+    iconSmall: 14.0,
+    iconMedium: 20.0,
+    iconLarge: 24.0,
     radiusTiny: 4.0,
     radiusSmall: 4.0,
     radiusMedium: 4.0,
@@ -4150,6 +4169,9 @@ public extension ThemeVariables {
     controlLargeSize: 40.0,
     frameWindowRadius: 15.0,
     framePopoverRadius: 12.0,
+    iconSmall: 14.0,
+    iconMedium: 20.0,
+    iconLarge: 24.0,
     radiusTiny: 6.0,
     radiusSmall: 9.0,
     radiusMedium: 9.0,
@@ -4221,6 +4243,9 @@ public extension ThemeVariables {
     focusRingAlpha: 0.5,
     frameWindowRadius: 15.0,
     framePopoverRadius: 12.0,
+    iconSmall: 14.0,
+    iconMedium: 20.0,
+    iconLarge: 24.0,
     radiusTiny: 6.0,
     radiusSmall: 9.0,
     radiusMedium: 9.0,
@@ -4302,6 +4327,9 @@ public extension ThemeVariables {
     controlLargeSize: 40.0,
     frameWindowRadius: 15.0,
     framePopoverRadius: 12.0,
+    iconSmall: 14.0,
+    iconMedium: 20.0,
+    iconLarge: 24.0,
     radiusTiny: 6.0,
     radiusSmall: 9.0,
     radiusMedium: 9.0,
@@ -4373,6 +4401,9 @@ public extension ThemeVariables {
     focusRingAlpha: 0.5,
     frameWindowRadius: 15.0,
     framePopoverRadius: 12.0,
+    iconSmall: 14.0,
+    iconMedium: 20.0,
+    iconLarge: 24.0,
     radiusTiny: 6.0,
     radiusSmall: 9.0,
     radiusMedium: 9.0,
@@ -4454,6 +4485,9 @@ public extension ThemeVariables {
     controlLargeSize: 40.0,
     frameWindowRadius: 15.0,
     framePopoverRadius: 12.0,
+    iconSmall: 14.0,
+    iconMedium: 20.0,
+    iconLarge: 24.0,
     radiusTiny: 6.0,
     radiusSmall: 9.0,
     radiusMedium: 9.0,
@@ -4525,6 +4559,9 @@ public extension ThemeVariables {
     focusRingAlpha: 0.5,
     frameWindowRadius: 15.0,
     framePopoverRadius: 12.0,
+    iconSmall: 14.0,
+    iconMedium: 20.0,
+    iconLarge: 24.0,
     radiusTiny: 6.0,
     radiusSmall: 9.0,
     radiusMedium: 9.0,

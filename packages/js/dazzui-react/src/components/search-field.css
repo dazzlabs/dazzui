@@ -86,3 +86,23 @@
   font-weight: var(--body-small-font-weight);
   line-height: var(--control-line-height);
 }
+
+.dz-search-field {
+  --dz-icon-size: var(--control-icon-size);
+}
+
+.dz-search-field > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+  flex-shrink: 0;
+}
+
+.dz-search-field__clear {
+  --dz-icon-size: var(--icon-small);
+}
+
+.dz-search-field__clear > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+  flex-shrink: 0;
+}

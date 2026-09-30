@@ -261,6 +261,7 @@ public struct PreferenceRow<Icon: View, Trailing: View>: View {
       // Uncoloured on purpose: a Badge or a Switch in these slots keeps its
       // own ink rather than inheriting a wash.
       icon()
+        .environment(\.dazzIconSize, vars.iconMedium)
       VStack(alignment: .leading, spacing: vars.spacing1) {
         // A row rests at `labelQuiet`, the way a list row does: every title at
         // the label weight was a column of bold with nothing left to outrank

@@ -297,6 +297,7 @@
 
 [data-size='tiny'] {
   --control-size: var(--control-tiny-size);
+  --control-icon-size: var(--control-tiny-icon-size);
   --control-gap: var(--control-tiny-gap);
   --control-padding-block: var(--control-tiny-padding-block);
   --control-padding-inline: var(--control-tiny-padding-inline);
@@ -309,6 +310,7 @@
 
 [data-size='small'] {
   --control-size: var(--control-small-size);
+  --control-icon-size: var(--control-small-icon-size);
   --control-gap: var(--control-small-gap);
   --control-padding-block: var(--control-small-padding-block);
   --control-padding-inline: var(--control-small-padding-inline);
@@ -321,6 +323,7 @@
 
 [data-size='medium'] {
   --control-size: var(--control-medium-size);
+  --control-icon-size: var(--control-medium-icon-size);
   --control-gap: var(--control-medium-gap);
   --control-padding-block: var(--control-medium-padding-block);
   --control-padding-inline: var(--control-medium-padding-inline);
@@ -333,6 +336,7 @@
 
 [data-size='large'] {
   --control-size: var(--control-large-size);
+  --control-icon-size: var(--control-large-icon-size);
   --control-gap: var(--control-large-gap);
   --control-padding-block: var(--control-large-padding-block);
   --control-padding-inline: var(--control-large-padding-inline);

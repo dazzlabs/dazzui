@@ -153,6 +153,7 @@ export default defineConfig({
     './tokens/global/effect.yaml',
     './tokens/global/focus.yaml',
     './tokens/global/frame.yaml',
+    './tokens/global/icon.yaml',
     './tokens/global/motion.yaml',
     './tokens/global/radius.yaml',
     './tokens/global/spacing.yaml',

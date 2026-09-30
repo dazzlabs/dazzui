@@ -106,3 +106,13 @@
   outline: var(--focus-width) solid var(--focus-ring);
   outline-offset: var(--focus-offset);
 }
+
+.dz-shortcut-recorder__clear {
+  --dz-icon-size: var(--icon-small);
+}
+
+.dz-shortcut-recorder__clear > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+  flex-shrink: 0;
+}

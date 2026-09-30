@@ -64,7 +64,7 @@ public struct SearchField<Hint: View>: View {
     )
 
     HStack(spacing: metrics.gap) {
-      Icon(.search16Regular, size: vars.spacing35)
+      Icon(.search16Regular, size: metrics.iconSize)
         .foregroundStyle(vars.colorContentFaint)
 
       field
@@ -113,7 +113,7 @@ public struct SearchField<Hint: View>: View {
       action: { onValueChange("") },
       cornerRadius: vars.radiusNone
     ) { state in
-      Icon(.dismiss12Regular, size: theme.vars.labelMedium.size)
+      Icon(.dismiss12Regular, size: theme.vars.iconSmall)
         .foregroundStyle(state.hovered ? vars.colorContent : vars.colorContentFaint)
         .animation(vars.motion, value: state.hovered)
     }

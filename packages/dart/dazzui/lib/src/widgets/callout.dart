@@ -139,7 +139,7 @@ class _CalloutState extends State<Callout> {
             IconTheme(
               data: IconTheme.of(context).copyWith(
                 color: ramp[600],
-                size: vars.spacing4,
+                size: vars.iconMedium,
               ),
               child: widget.icon!,
             ),

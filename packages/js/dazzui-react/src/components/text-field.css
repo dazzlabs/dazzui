@@ -168,3 +168,13 @@
 .dz-combobox__group {
   height: var(--control-size);
 }
+
+.dz-select__chevron {
+  --dz-icon-size: var(--icon-small);
+}
+
+.dz-select__chevron > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+  flex-shrink: 0;
+}

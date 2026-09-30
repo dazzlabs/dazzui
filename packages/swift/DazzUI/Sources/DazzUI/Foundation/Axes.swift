@@ -84,6 +84,7 @@ public struct ControlColors: Sendable, Equatable {
 /// carries the design's own control type.
 public struct ControlMetrics: Sendable, Equatable {
   public let size: CGFloat
+  public let iconSize: CGFloat
   public let gap: CGFloat
   public let paddingBlock: CGFloat
   public let paddingInline: CGFloat
@@ -111,6 +112,7 @@ public extension ThemeVariables {
     case .tiny:
       return ControlMetrics(
         size: controlTinySize,
+        iconSize: controlTinyIconSize,
         gap: controlTinyGap,
         paddingBlock: controlTinyPaddingBlock,
         paddingInline: controlTinyPaddingInline,
@@ -120,6 +122,7 @@ public extension ThemeVariables {
     case .small:
       return ControlMetrics(
         size: controlSmallSize,
+        iconSize: controlSmallIconSize,
         gap: controlSmallGap,
         paddingBlock: controlSmallPaddingBlock,
         paddingInline: controlSmallPaddingInline,
@@ -129,6 +132,7 @@ public extension ThemeVariables {
     case .medium:
       return ControlMetrics(
         size: controlMediumSize,
+        iconSize: controlMediumIconSize,
         gap: controlMediumGap,
         paddingBlock: controlMediumPaddingBlock,
         paddingInline: controlMediumPaddingInline,
@@ -138,6 +142,7 @@ public extension ThemeVariables {
     case .large:
       return ControlMetrics(
         size: controlLargeSize,
+        iconSize: controlLargeIconSize,
         gap: controlLargeGap,
         paddingBlock: controlLargePaddingBlock,
         paddingInline: controlLargePaddingInline,

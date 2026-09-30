@@ -152,7 +152,7 @@ export function Shell({ page, open, theme, setTheme }: ShellProps) {
               aria-expanded={inspecting}
               onClick={() => setInspecting(!inspecting)}
             >
-              <Icon icon={PanelGlyph} size={16} />
+              <Icon icon={PanelGlyph} />
             </IconButton>
           </Tooltip>
         </header>

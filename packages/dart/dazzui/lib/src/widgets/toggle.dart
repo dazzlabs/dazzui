@@ -157,10 +157,8 @@ Widget _toggleBody(
       child: IconTheme(
         data: IconTheme.of(context).copyWith(
           color: content,
-          // A glyph label takes the type's size, so a toolbar of these lines
-          // up with the buttons beside it rather than with whatever the icon
-          // set ships at.
-          size: profile.face.fontSize,
+          // Share the control profile with Button and IconButton.
+          size: vars.controlIconSize(size),
         ),
         child: child,
       ),

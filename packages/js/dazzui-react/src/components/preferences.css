@@ -241,3 +241,13 @@
   gap: var(--spacing-2-5);
   margin-inline-start: auto;
 }
+
+.dz-preference-row__icon {
+  --dz-icon-size: var(--icon-medium);
+}
+
+.dz-preference-row__icon > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+  flex-shrink: 0;
+}

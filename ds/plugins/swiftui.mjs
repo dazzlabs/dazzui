@@ -456,7 +456,18 @@ public extension ThemeVariables {
         { ...token, $value: themed.$value, $originalValue: originalOf(themed) },
         tokens
       )
-      if (value.references) continue
+      if (value.references) {
+        if (
+          value.type !== 'CGFloat' ||
+          !declarationOrder.has(tokenIdToVarName(id))
+        )
+          continue
+        overrides.push({
+          name: tokenIdToVarName(id),
+          value: double(dimension(themed.$value)),
+        })
+        continue
+      }
       overrides.push({ name: tokenIdToVarName(id), value: value.value })
     }
 

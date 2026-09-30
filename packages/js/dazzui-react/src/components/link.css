@@ -52,7 +52,11 @@
   text-decoration-line: none;
 }
 
+.dz-link__external {
+  --dz-icon-size: var(--icon-small);
+}
+
 .dz-link__external > svg {
-  width: var(--spacing-3);
-  height: var(--spacing-3);
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
 }

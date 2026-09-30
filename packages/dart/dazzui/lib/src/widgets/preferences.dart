@@ -325,7 +325,11 @@ class PreferenceRow extends StatelessWidget {
         children: [
           // Uncoloured on purpose: a Badge or a Switch in these slots keeps
           // its own ink rather than inheriting a wash.
-          ?icon,
+          if (icon != null)
+            IconTheme.merge(
+              data: IconThemeData(size: vars.iconMedium),
+              child: icon!,
+            ),
           Expanded(
             child: Padding(
               // The pad rides on the text, so a row that grows a subtitle

@@ -179,7 +179,7 @@ private struct StepButton: View {
       cornerRadius: vars.radiusTiny,
       help: help
     ) { state in
-      Icon(icon, size: vars.captionSmall.size)
+      Icon(icon, size: min(vars.iconSmall, vars.spacing3))
         .foregroundStyle(ink(state: state))
         .frame(width: vars.spacing4)
         .frame(maxHeight: .infinity)

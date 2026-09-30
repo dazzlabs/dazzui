@@ -219,7 +219,7 @@ export function SidebarTrigger({
       }}
       {...props}
     >
-      {children ?? <Icon icon={PanelLeft20Regular} size={16} />}
+      {children ?? <Icon icon={PanelLeft20Regular} />}
     </IconButton>
   )
 }

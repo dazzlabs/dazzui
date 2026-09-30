@@ -94,3 +94,13 @@
   padding-inline: var(--spacing-4);
   border-radius: var(--radius-large);
 }
+
+.dz-callout__icon {
+  --dz-icon-size: var(--icon-medium);
+}
+
+.dz-callout__icon > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+  flex-shrink: 0;
+}

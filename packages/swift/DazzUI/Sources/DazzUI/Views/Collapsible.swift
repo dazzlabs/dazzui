@@ -30,13 +30,13 @@ struct DisclosureHeader<Meta: View>: View {
         // The chevron points along the row when shut and down the page when
         // open — one glyph rotated rather than two swapped, so the turn is the
         // animation. It is the only moving part.
-        Icon(.chevronRight12Regular, size: vars.labelSmall.size)
+        Icon(.chevronRight12Regular, size: vars.iconSmall)
           .rotationEffect(.degrees(open ? 90 : 0))
-          .frame(width: vars.spacing3)
+          .frame(width: vars.iconSmall)
           .foregroundStyle(enabled ? vars.colorContentSubtle : disabledInk)
           .animation(vars.motion, value: open)
         if let icon {
-          Icon(icon, size: vars.spacing4)
+          Icon(icon, size: vars.iconMedium)
             .foregroundStyle(enabled ? vars.colorContentMuted : disabledInk)
         }
         Text(title)
@@ -112,7 +112,7 @@ struct DisclosurePanel<Content: View>: View {
       .lineSpacing(vars.bodySmall.lineSpacing)
       .foregroundStyle(vars.colorContentSecondary)
       .frame(maxWidth: .infinity, alignment: .leading)
-      .padding(.leading, vars.spacing2 + vars.spacing3 + vars.spacing2)
+      .padding(.leading, vars.spacing2 + vars.iconSmall + vars.spacing2)
       .padding(.trailing, vars.spacing2)
       .padding(.top, vars.spacing1)
       .padding(.bottom, vars.spacing3)

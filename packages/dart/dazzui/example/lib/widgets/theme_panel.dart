@@ -43,7 +43,6 @@ class ThemePanel extends StatelessWidget {
                 theme.dark
                     ? FluentIcons.weather_moon_20_regular
                     : FluentIcons.weather_sunny_20_regular,
-                size: 16,
               ),
             ),
           ),

@@ -71,6 +71,22 @@ the theme itself. Adding a theme is an entry in one of those files; the
 config reads its selectors from them, and a metrics path no token file
 declares fails the build.
 
+Glyphs use the shared `icon.small / medium / large` scale: 12/16/20px
+in the drawn families, Omarchy, macOS and KDE; 14/20/24px in Windows 11
+and the GNOME families. These are DazzUI's density decisions, identical in
+light and dark. Auxiliary glyphs (chevrons, checks, dismiss) use small;
+leading and navigation glyphs use medium. Sized controls bind their icon
+through `control.<size>.icon-size`: tiny uses small, small and medium use
+medium, large uses large. Marks inside constrained boxes fit that box.
+React's `Icon` defaults to its enclosing slot's size, or `icon.medium` when
+standalone. An explicit `size` or inline width/height overrides the default.
+Slots size raw SVGs as well, without changing avatars or spinners.
+Flutter installs the medium default through `IconTheme` and scopes each slot;
+SwiftUI's `Icon` reads an inherited slot size before falling back to the theme.
+Both preserve explicit sizes and share the same control profiles. Generated
+native theme instances resolve spacing aliases to constants, so desktop
+metrics reach the native implementations as well as CSS.
+
 Everything else is derived by `scripts/themes.mjs` before the graph is
 parsed, alongside the recipe expansion and in the same spirit: nothing is
 written back. `surface` is the background exactly; the rest of the surface
