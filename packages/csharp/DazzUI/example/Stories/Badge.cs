@@ -27,7 +27,8 @@ static partial class Stories
                   },
                   "children": [
                     "Live"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Badge",
@@ -36,7 +37,8 @@ static partial class Stories
                   },
                   "children": [
                     "Draft"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "Badge",
@@ -45,7 +47,8 @@ static partial class Stories
                   },
                   "children": [
                     "12"
-                  ]
+                  ],
+                  "$at": 2
                 }
               ]
             }
@@ -67,7 +70,8 @@ static partial class Stories
                       },
                       "children": [
                         "filled"
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "Badge",
@@ -76,7 +80,8 @@ static partial class Stories
                       },
                       "children": [
                         "tinted"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "Badge",
@@ -85,7 +90,8 @@ static partial class Stories
                       },
                       "children": [
                         "outlined"
-                      ]
+                      ],
+                      "$at": 2
                     },
                     {
                       "$el": "Badge",
@@ -94,7 +100,8 @@ static partial class Stories
                       },
                       "children": [
                         "raised"
-                      ]
+                      ],
+                      "$at": 3
                     }
                   ]
                 }
@@ -116,7 +123,8 @@ static partial class Stories
                       },
                       "children": [
                         "primary"
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "Badge",
@@ -125,7 +133,8 @@ static partial class Stories
                       },
                       "children": [
                         "neutral"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "Badge",
@@ -134,7 +143,8 @@ static partial class Stories
                       },
                       "children": [
                         "info"
-                      ]
+                      ],
+                      "$at": 2
                     },
                     {
                       "$el": "Badge",
@@ -143,7 +153,8 @@ static partial class Stories
                       },
                       "children": [
                         "success"
-                      ]
+                      ],
+                      "$at": 3
                     },
                     {
                       "$el": "Badge",
@@ -152,7 +163,8 @@ static partial class Stories
                       },
                       "children": [
                         "warning"
-                      ]
+                      ],
+                      "$at": 4
                     },
                     {
                       "$el": "Badge",
@@ -161,7 +173,8 @@ static partial class Stories
                       },
                       "children": [
                         "danger"
-                      ]
+                      ],
+                      "$at": 5
                     }
                   ]
                 }

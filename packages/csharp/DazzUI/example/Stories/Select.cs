@@ -43,7 +43,8 @@ static partial class Stories
                     ],
                     "defaultValue": "en",
                     "aria-label": "Language"
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             }
@@ -82,7 +83,8 @@ static partial class Stories
                         ],
                         "defaultValue": "zh",
                         "aria-label": "small"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "Select",
@@ -108,7 +110,8 @@ static partial class Stories
                         ],
                         "defaultValue": "zh",
                         "aria-label": "medium"
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "Select",
@@ -134,7 +137,8 @@ static partial class Stories
                         ],
                         "defaultValue": "zh",
                         "aria-label": "large"
-                      }
+                      },
+                      "$at": 2
                     }
                   ]
                 }
@@ -172,7 +176,8 @@ static partial class Stories
                         ],
                         "placeholder": "Choose a language",
                         "aria-label": "Language"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "Select",
@@ -198,7 +203,8 @@ static partial class Stories
                         "defaultValue": "ja",
                         "disabled": true,
                         "aria-label": "Disabled"
-                      }
+                      },
+                      "$at": 1
                     }
                   ]
                 }

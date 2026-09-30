@@ -23,7 +23,8 @@ static partial class Stories
                   "$el": "Button",
                   "children": [
                     "Open filters"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 "footer": {
                   "$el": "DrawerClose",
@@ -35,9 +36,11 @@ static partial class Stories
                       },
                       "children": [
                         "Done"
-                      ]
+                      ],
+                      "$at": 3
                     }
-                  }
+                  },
+                  "$at": 2
                 }
               },
               "children": [
@@ -63,7 +66,8 @@ static partial class Stories
                           "$el": "Switch",
                           "props": {
                             "aria-label": "Archived projects"
-                          }
+                          },
+                          "$at": 4
                         }
                       ]
                     },
@@ -84,13 +88,15 @@ static partial class Stories
                           "props": {
                             "defaultChecked": true,
                             "aria-label": "Shared with me"
-                          }
+                          },
+                          "$at": 5
                         }
                       ]
                     }
                   ]
                 }
-              ]
+              ],
+              "$at": 0
             }
           },
           "examples": [
@@ -106,7 +112,8 @@ static partial class Stories
                       "$el": "Button",
                       "children": [
                         "Open filters"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     "footer": {
                       "$el": "DrawerClose",
@@ -118,9 +125,11 @@ static partial class Stories
                           },
                           "children": [
                             "Done"
-                          ]
+                          ],
+                          "$at": 3
                         }
-                      }
+                      },
+                      "$at": 2
                     }
                   },
                   "children": [
@@ -146,7 +155,8 @@ static partial class Stories
                               "$el": "Switch",
                               "props": {
                                 "aria-label": "Archived projects"
-                              }
+                              },
+                              "$at": 4
                             }
                           ]
                         },
@@ -167,13 +177,15 @@ static partial class Stories
                               "props": {
                                 "defaultChecked": true,
                                 "aria-label": "Shared with me"
-                              }
+                              },
+                              "$at": 5
                             }
                           ]
                         }
                       ]
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               }
             },
@@ -193,7 +205,8 @@ static partial class Stories
                           "$el": "Button",
                           "children": [
                             "left"
-                          ]
+                          ],
+                          "$at": 1
                         },
                         "footer": {
                           "$el": "DrawerClose",
@@ -205,9 +218,11 @@ static partial class Stories
                               },
                               "children": [
                                 "Done"
-                              ]
+                              ],
+                              "$at": 3
                             }
-                          }
+                          },
+                          "$at": 2
                         }
                       },
                       "children": [
@@ -233,7 +248,8 @@ static partial class Stories
                                   "$el": "Switch",
                                   "props": {
                                     "aria-label": "Archived projects"
-                                  }
+                                  },
+                                  "$at": 4
                                 }
                               ]
                             },
@@ -254,13 +270,15 @@ static partial class Stories
                                   "props": {
                                     "defaultChecked": true,
                                     "aria-label": "Shared with me"
-                                  }
+                                  },
+                                  "$at": 5
                                 }
                               ]
                             }
                           ]
                         }
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "Drawer",
@@ -272,7 +290,8 @@ static partial class Stories
                           "$el": "Button",
                           "children": [
                             "right"
-                          ]
+                          ],
+                          "$at": 7
                         },
                         "footer": {
                           "$el": "DrawerClose",
@@ -284,9 +303,11 @@ static partial class Stories
                               },
                               "children": [
                                 "Done"
-                              ]
+                              ],
+                              "$at": 9
                             }
-                          }
+                          },
+                          "$at": 8
                         }
                       },
                       "children": [
@@ -312,7 +333,8 @@ static partial class Stories
                                   "$el": "Switch",
                                   "props": {
                                     "aria-label": "Archived projects"
-                                  }
+                                  },
+                                  "$at": 10
                                 }
                               ]
                             },
@@ -333,13 +355,15 @@ static partial class Stories
                                   "props": {
                                     "defaultChecked": true,
                                     "aria-label": "Shared with me"
-                                  }
+                                  },
+                                  "$at": 11
                                 }
                               ]
                             }
                           ]
                         }
-                      ]
+                      ],
+                      "$at": 6
                     },
                     {
                       "$el": "Drawer",
@@ -351,7 +375,8 @@ static partial class Stories
                           "$el": "Button",
                           "children": [
                             "top"
-                          ]
+                          ],
+                          "$at": 13
                         },
                         "footer": {
                           "$el": "DrawerClose",
@@ -363,9 +388,11 @@ static partial class Stories
                               },
                               "children": [
                                 "Done"
-                              ]
+                              ],
+                              "$at": 15
                             }
-                          }
+                          },
+                          "$at": 14
                         }
                       },
                       "children": [
@@ -391,7 +418,8 @@ static partial class Stories
                                   "$el": "Switch",
                                   "props": {
                                     "aria-label": "Archived projects"
-                                  }
+                                  },
+                                  "$at": 16
                                 }
                               ]
                             },
@@ -412,13 +440,15 @@ static partial class Stories
                                   "props": {
                                     "defaultChecked": true,
                                     "aria-label": "Shared with me"
-                                  }
+                                  },
+                                  "$at": 17
                                 }
                               ]
                             }
                           ]
                         }
-                      ]
+                      ],
+                      "$at": 12
                     },
                     {
                       "$el": "Drawer",
@@ -430,7 +460,8 @@ static partial class Stories
                           "$el": "Button",
                           "children": [
                             "bottom"
-                          ]
+                          ],
+                          "$at": 19
                         },
                         "footer": {
                           "$el": "DrawerClose",
@@ -442,9 +473,11 @@ static partial class Stories
                               },
                               "children": [
                                 "Done"
-                              ]
+                              ],
+                              "$at": 21
                             }
-                          }
+                          },
+                          "$at": 20
                         }
                       },
                       "children": [
@@ -470,7 +503,8 @@ static partial class Stories
                                   "$el": "Switch",
                                   "props": {
                                     "aria-label": "Archived projects"
-                                  }
+                                  },
+                                  "$at": 22
                                 }
                               ]
                             },
@@ -491,13 +525,15 @@ static partial class Stories
                                   "props": {
                                     "defaultChecked": true,
                                     "aria-label": "Shared with me"
-                                  }
+                                  },
+                                  "$at": 23
                                 }
                               ]
                             }
                           ]
                         }
-                      ]
+                      ],
+                      "$at": 18
                     }
                   ]
                 }

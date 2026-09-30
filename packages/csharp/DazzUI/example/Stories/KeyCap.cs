@@ -27,7 +27,8 @@ static partial class Stories
                   },
                   "children": [
                     "⌘"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "KeyCap",
@@ -36,7 +37,8 @@ static partial class Stories
                   },
                   "children": [
                     "⇧"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "KeyCap",
@@ -45,7 +47,8 @@ static partial class Stories
                   },
                   "children": [
                     "P"
-                  ]
+                  ],
+                  "$at": 2
                 }
               ]
             }
@@ -64,7 +67,8 @@ static partial class Stories
                       },
                       "children": [
                         "⌘K"
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "KeyCap",
@@ -73,7 +77,8 @@ static partial class Stories
                       },
                       "children": [
                         "⌘K"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "KeyCap",
@@ -82,7 +87,8 @@ static partial class Stories
                       },
                       "children": [
                         "⌘K"
-                      ]
+                      ],
+                      "$at": 2
                     }
                   ]
                 }
@@ -101,7 +107,8 @@ static partial class Stories
                       },
                       "children": [
                         "Esc"
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "KeyCap",
@@ -110,7 +117,8 @@ static partial class Stories
                       },
                       "children": [
                         "Esc"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "KeyCap",
@@ -119,7 +127,8 @@ static partial class Stories
                       },
                       "children": [
                         "Esc"
-                      ]
+                      ],
+                      "$at": 2
                     }
                   ]
                 }

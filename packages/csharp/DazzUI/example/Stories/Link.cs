@@ -24,7 +24,8 @@ static partial class Stories
                   },
                   "children": [
                     "Read the guide"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Link",
@@ -34,7 +35,8 @@ static partial class Stories
                   },
                   "children": [
                     "Open the repository"
-                  ]
+                  ],
+                  "$at": 1
                 }
               ]
             }
@@ -57,7 +59,8 @@ static partial class Stories
                       },
                       "children": [
                         "On hover"
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "Link",
@@ -67,7 +70,8 @@ static partial class Stories
                       },
                       "children": [
                         "Always"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "Link",
@@ -77,7 +81,8 @@ static partial class Stories
                       },
                       "children": [
                         "Never"
-                      ]
+                      ],
+                      "$at": 2
                     }
                   ]
                 }
@@ -100,7 +105,8 @@ static partial class Stories
                       },
                       "children": [
                         "primary"
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "Link",
@@ -110,7 +116,8 @@ static partial class Stories
                       },
                       "children": [
                         "neutral"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "Link",
@@ -120,7 +127,8 @@ static partial class Stories
                       },
                       "children": [
                         "info"
-                      ]
+                      ],
+                      "$at": 2
                     },
                     {
                       "$el": "Link",
@@ -130,7 +138,8 @@ static partial class Stories
                       },
                       "children": [
                         "success"
-                      ]
+                      ],
+                      "$at": 3
                     },
                     {
                       "$el": "Link",
@@ -140,7 +149,8 @@ static partial class Stories
                       },
                       "children": [
                         "warning"
-                      ]
+                      ],
+                      "$at": 4
                     },
                     {
                       "$el": "Link",
@@ -150,7 +160,8 @@ static partial class Stories
                       },
                       "children": [
                         "danger"
-                      ]
+                      ],
+                      "$at": 5
                     }
                   ]
                 }

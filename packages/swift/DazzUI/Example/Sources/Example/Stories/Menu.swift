@@ -16,7 +16,8 @@ extension Stories {
               "$el": "Button",
               "children": [
                 "Actions"
-              ]
+              ],
+              "$at": 1
             },
             "items": [
               {
@@ -27,7 +28,8 @@ extension Stories {
                     "icon": {
                       "$icon": "Edit20Regular"
                     }
-                  }
+                  },
+                  "$at": 2
                 }
               },
               {
@@ -38,7 +40,8 @@ extension Stories {
                     "icon": {
                       "$icon": "Copy20Regular"
                     }
-                  }
+                  },
+                  "$at": 3
                 },
                 "shortcut": {
                   "$el": "KeyCap",
@@ -47,7 +50,8 @@ extension Stories {
                   },
                   "children": [
                     "⌘D"
-                  ]
+                  ],
+                  "$at": 4
                 }
               },
               {
@@ -58,12 +62,14 @@ extension Stories {
                     "icon": {
                       "$icon": "Delete20Regular"
                     }
-                  }
+                  },
+                  "$at": 5
                 },
                 "disabled": true
               }
             ]
-          }
+          },
+          "$at": 0
         }
       },
       "examples": [
@@ -77,7 +83,8 @@ extension Stories {
                   "$el": "Button",
                   "children": [
                     "Actions"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 "items": [
                   {
@@ -88,7 +95,8 @@ extension Stories {
                         "icon": {
                           "$icon": "Edit20Regular"
                         }
-                      }
+                      },
+                      "$at": 2
                     }
                   },
                   {
@@ -99,7 +107,8 @@ extension Stories {
                         "icon": {
                           "$icon": "Copy20Regular"
                         }
-                      }
+                      },
+                      "$at": 3
                     },
                     "shortcut": {
                       "$el": "KeyCap",
@@ -108,7 +117,8 @@ extension Stories {
                       },
                       "children": [
                         "⌘D"
-                      ]
+                      ],
+                      "$at": 4
                     }
                   },
                   {
@@ -119,12 +129,14 @@ extension Stories {
                         "icon": {
                           "$icon": "Delete20Regular"
                         }
-                      }
+                      },
+                      "$at": 5
                     },
                     "disabled": true
                   }
                 ]
-              }
+              },
+              "$at": 0
             }
           }
         },
@@ -143,7 +155,8 @@ extension Stories {
                         "icon": {
                           "$icon": "Edit20Regular"
                         }
-                      }
+                      },
+                      "$at": 1
                     }
                   },
                   {
@@ -154,7 +167,8 @@ extension Stories {
                         "icon": {
                           "$icon": "Copy20Regular"
                         }
-                      }
+                      },
+                      "$at": 2
                     },
                     "shortcut": {
                       "$el": "KeyCap",
@@ -163,7 +177,8 @@ extension Stories {
                       },
                       "children": [
                         "⌘D"
-                      ]
+                      ],
+                      "$at": 3
                     }
                   },
                   {
@@ -174,7 +189,8 @@ extension Stories {
                         "icon": {
                           "$icon": "Delete20Regular"
                         }
-                      }
+                      },
+                      "$at": 4
                     },
                     "disabled": true
                   }
@@ -194,11 +210,13 @@ extension Stories {
                       },
                       "children": [
                         "Right-click this card"
-                      ]
+                      ],
+                      "$at": 5
                     }
                   ]
                 }
-              ]
+              ],
+              "$at": 0
             }
           }
         },
@@ -220,7 +238,8 @@ extension Stories {
                             "icon": {
                               "$icon": "Edit20Regular"
                             }
-                          }
+                          },
+                          "$at": 1
                         }
                       },
                       {
@@ -231,7 +250,8 @@ extension Stories {
                             "icon": {
                               "$icon": "Copy20Regular"
                             }
-                          }
+                          },
+                          "$at": 2
                         },
                         "shortcut": {
                           "$el": "KeyCap",
@@ -240,7 +260,8 @@ extension Stories {
                           },
                           "children": [
                             "⌘D"
-                          ]
+                          ],
+                          "$at": 3
                         }
                       },
                       {
@@ -251,7 +272,8 @@ extension Stories {
                             "icon": {
                               "$icon": "Delete20Regular"
                             }
-                          }
+                          },
+                          "$at": 4
                         },
                         "disabled": true
                       }
@@ -282,7 +304,8 @@ extension Stories {
                     ]
                   }
                 ]
-              }
+              },
+              "$at": 0
             }
           }
         }

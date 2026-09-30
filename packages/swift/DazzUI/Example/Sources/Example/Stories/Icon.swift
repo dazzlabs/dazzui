@@ -21,7 +21,8 @@ extension Stories {
                 "icon": {
                   "$icon": "Home20Regular"
                 }
-              }
+              },
+              "$at": 0
             },
             {
               "$el": "Icon",
@@ -29,7 +30,8 @@ extension Stories {
                 "icon": {
                   "$icon": "Search20Regular"
                 }
-              }
+              },
+              "$at": 1
             },
             {
               "$el": "Icon",
@@ -37,7 +39,8 @@ extension Stories {
                 "icon": {
                   "$icon": "Folder20Regular"
                 }
-              }
+              },
+              "$at": 2
             },
             {
               "$el": "Icon",
@@ -45,7 +48,8 @@ extension Stories {
                 "icon": {
                   "$icon": "Document20Regular"
                 }
-              }
+              },
+              "$at": 3
             },
             {
               "$el": "Icon",
@@ -53,7 +57,8 @@ extension Stories {
                 "icon": {
                   "$icon": "Add20Regular"
                 }
-              }
+              },
+              "$at": 4
             }
           ]
         }
@@ -74,7 +79,8 @@ extension Stories {
                     "icon": {
                       "$icon": "Home20Regular"
                     }
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "Icon",
@@ -82,7 +88,8 @@ extension Stories {
                     "icon": {
                       "$icon": "Search20Regular"
                     }
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "Icon",
@@ -90,7 +97,8 @@ extension Stories {
                     "icon": {
                       "$icon": "Folder20Regular"
                     }
-                  }
+                  },
+                  "$at": 2
                 },
                 {
                   "$el": "Icon",
@@ -98,7 +106,8 @@ extension Stories {
                     "icon": {
                       "$icon": "Document20Regular"
                     }
-                  }
+                  },
+                  "$at": 3
                 },
                 {
                   "$el": "Icon",
@@ -106,7 +115,8 @@ extension Stories {
                     "icon": {
                       "$icon": "Add20Regular"
                     }
-                  }
+                  },
+                  "$at": 4
                 },
                 {
                   "$el": "Icon",
@@ -114,7 +124,8 @@ extension Stories {
                     "icon": {
                       "$icon": "Settings20Regular"
                     }
-                  }
+                  },
+                  "$at": 5
                 },
                 {
                   "$el": "Icon",
@@ -122,7 +133,8 @@ extension Stories {
                     "icon": {
                       "$icon": "Delete20Regular"
                     }
-                  }
+                  },
+                  "$at": 6
                 }
               ]
             }
@@ -144,7 +156,8 @@ extension Stories {
                       "$icon": "Settings20Regular"
                     },
                     "size": 12
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "Icon",
@@ -153,7 +166,8 @@ extension Stories {
                       "$icon": "Settings20Regular"
                     },
                     "size": 16
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "Icon",
@@ -162,7 +176,8 @@ extension Stories {
                       "$icon": "Settings20Regular"
                     },
                     "size": 20
-                  }
+                  },
+                  "$at": 2
                 },
                 {
                   "$el": "Icon",
@@ -171,7 +186,8 @@ extension Stories {
                       "$icon": "Settings20Regular"
                     },
                     "size": 24
-                  }
+                  },
+                  "$at": 3
                 },
                 {
                   "$el": "Icon",
@@ -180,7 +196,8 @@ extension Stories {
                       "$icon": "Settings20Regular"
                     },
                     "size": 32
-                  }
+                  },
+                  "$at": 4
                 }
               ]
             }
@@ -207,7 +224,8 @@ extension Stories {
                         "icon": {
                           "$icon": "Folder20Regular"
                         }
-                      }
+                      },
+                      "$at": 0
                     }
                   ]
                 },
@@ -223,7 +241,8 @@ extension Stories {
                         "icon": {
                           "$icon": "Folder20Regular"
                         }
-                      }
+                      },
+                      "$at": 1
                     }
                   ]
                 },
@@ -239,7 +258,8 @@ extension Stories {
                         "icon": {
                           "$icon": "Folder20Regular"
                         }
-                      }
+                      },
+                      "$at": 2
                     }
                   ]
                 },
@@ -255,7 +275,8 @@ extension Stories {
                         "icon": {
                           "$icon": "Folder20Regular"
                         }
-                      }
+                      },
+                      "$at": 3
                     }
                   ]
                 }

@@ -23,6 +23,7 @@ const story = Story(
             "defaultValue": "en",
             "aria-label": "Language",
           },
+          "\$at": 0,
         },
       ],
     },
@@ -48,6 +49,7 @@ const story = Story(
                 "defaultValue": "zh",
                 "aria-label": "small",
               },
+              "\$at": 0,
             },
             {
               "\$el": "Select",
@@ -62,6 +64,7 @@ const story = Story(
                 "defaultValue": "zh",
                 "aria-label": "medium",
               },
+              "\$at": 1,
             },
             {
               "\$el": "Select",
@@ -76,6 +79,7 @@ const story = Story(
                 "defaultValue": "zh",
                 "aria-label": "large",
               },
+              "\$at": 2,
             },
           ],
         },
@@ -100,6 +104,7 @@ const story = Story(
                 "placeholder": "Choose a language",
                 "aria-label": "Language",
               },
+              "\$at": 0,
             },
             {
               "\$el": "Select",
@@ -114,6 +119,7 @@ const story = Story(
                 "disabled": true,
                 "aria-label": "Disabled",
               },
+              "\$at": 1,
             },
           ],
         },

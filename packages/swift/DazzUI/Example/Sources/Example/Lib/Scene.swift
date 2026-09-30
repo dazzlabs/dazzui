@@ -68,7 +68,7 @@ struct NodeView: View {
     case .object(let object) where object["$el"] != nil:
       let parsed = Node(node, context)
       if let build = components[parsed.component] {
-        build(parsed)
+        build(parsed).specimen(object["$at"]?.number.map { Int($0) })
       } else {
         fatalError("No SwiftUI mapping for <\(parsed.component)>")
       }

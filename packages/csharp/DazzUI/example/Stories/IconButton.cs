@@ -29,9 +29,11 @@ static partial class Stories
                         "icon": {
                           "$icon": "Add20Regular"
                         }
-                      }
+                      },
+                      "$at": 1
                     }
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "IconButton",
@@ -46,9 +48,11 @@ static partial class Stories
                         "icon": {
                           "$icon": "Settings20Regular"
                         }
-                      }
+                      },
+                      "$at": 3
                     }
-                  ]
+                  ],
+                  "$at": 2
                 },
                 {
                   "$el": "IconButton",
@@ -64,9 +68,11 @@ static partial class Stories
                         "icon": {
                           "$icon": "Delete20Regular"
                         }
-                      }
+                      },
+                      "$at": 5
                     }
-                  ]
+                  ],
+                  "$at": 4
                 }
               ]
             }
@@ -91,9 +97,11 @@ static partial class Stories
                             "icon": {
                               "$icon": "Settings20Regular"
                             }
-                          }
+                          },
+                          "$at": 1
                         }
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "IconButton",
@@ -108,9 +116,11 @@ static partial class Stories
                             "icon": {
                               "$icon": "Settings20Regular"
                             }
-                          }
+                          },
+                          "$at": 3
                         }
-                      ]
+                      ],
+                      "$at": 2
                     },
                     {
                       "$el": "IconButton",
@@ -125,9 +135,11 @@ static partial class Stories
                             "icon": {
                               "$icon": "Settings20Regular"
                             }
-                          }
+                          },
+                          "$at": 5
                         }
-                      ]
+                      ],
+                      "$at": 4
                     },
                     {
                       "$el": "IconButton",
@@ -142,9 +154,11 @@ static partial class Stories
                             "icon": {
                               "$icon": "Settings20Regular"
                             }
-                          }
+                          },
+                          "$at": 7
                         }
-                      ]
+                      ],
+                      "$at": 6
                     },
                     {
                       "$el": "IconButton",
@@ -159,9 +173,11 @@ static partial class Stories
                             "icon": {
                               "$icon": "Settings20Regular"
                             }
-                          }
+                          },
+                          "$at": 9
                         }
-                      ]
+                      ],
+                      "$at": 8
                     },
                     {
                       "$el": "IconButton",
@@ -176,9 +192,11 @@ static partial class Stories
                             "icon": {
                               "$icon": "Settings20Regular"
                             }
-                          }
+                          },
+                          "$at": 11
                         }
-                      ]
+                      ],
+                      "$at": 10
                     }
                   ]
                 }
@@ -203,9 +221,11 @@ static partial class Stories
                             "icon": {
                               "$icon": "Add20Regular"
                             }
-                          }
+                          },
+                          "$at": 1
                         }
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "IconButton",
@@ -220,9 +240,11 @@ static partial class Stories
                             "icon": {
                               "$icon": "Add20Regular"
                             }
-                          }
+                          },
+                          "$at": 3
                         }
-                      ]
+                      ],
+                      "$at": 2
                     },
                     {
                       "$el": "IconButton",
@@ -237,9 +259,11 @@ static partial class Stories
                             "icon": {
                               "$icon": "Add20Regular"
                             }
-                          }
+                          },
+                          "$at": 5
                         }
-                      ]
+                      ],
+                      "$at": 4
                     },
                     {
                       "$el": "IconButton",
@@ -254,9 +278,11 @@ static partial class Stories
                             "icon": {
                               "$icon": "Add20Regular"
                             }
-                          }
+                          },
+                          "$at": 7
                         }
-                      ]
+                      ],
+                      "$at": 6
                     }
                   ]
                 }

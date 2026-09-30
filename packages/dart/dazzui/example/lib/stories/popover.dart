@@ -13,6 +13,7 @@ const story = Story(
         "trigger": {
           "\$el": "Button",
           "children": ["Share"],
+          "\$at": 1,
         },
         "title": "Share this project",
         "description": "Anyone with the link can read it.",
@@ -30,6 +31,7 @@ const story = Story(
                 "defaultValue": "https://dazz.example/p/4f9a",
                 "aria-label": "Link",
               },
+              "\$at": 2,
             },
             {
               "\$el": "PopoverClose",
@@ -38,12 +40,15 @@ const story = Story(
                   "\$el": "Button",
                   "props": {"variant": "filled"},
                   "children": ["Done"],
+                  "\$at": 4,
                 },
               },
+              "\$at": 3,
             },
           ],
         },
       ],
+      "\$at": 0,
     },
   ),
   examples: [
@@ -56,6 +61,7 @@ const story = Story(
             "trigger": {
               "\$el": "Button",
               "children": ["Share"],
+              "\$at": 1,
             },
             "title": "Share this project",
             "description": "Anyone with the link can read it.",
@@ -73,6 +79,7 @@ const story = Story(
                     "defaultValue": "https://dazz.example/p/4f9a",
                     "aria-label": "Link",
                   },
+                  "\$at": 2,
                 },
                 {
                   "\$el": "PopoverClose",
@@ -81,12 +88,15 @@ const story = Story(
                       "\$el": "Button",
                       "props": {"variant": "filled"},
                       "children": ["Done"],
+                      "\$at": 4,
                     },
                   },
+                  "\$at": 3,
                 },
               ],
             },
           ],
+          "\$at": 0,
         },
       ),
     ),
@@ -103,9 +113,11 @@ const story = Story(
                 "trigger": {
                   "\$el": "Button",
                   "children": ["top"],
+                  "\$at": 1,
                 },
                 "title": "Opens to the top",
               },
+              "\$at": 0,
             },
             {
               "\$el": "Popover",
@@ -114,9 +126,11 @@ const story = Story(
                 "trigger": {
                   "\$el": "Button",
                   "children": ["bottom"],
+                  "\$at": 3,
                 },
                 "title": "Opens to the bottom",
               },
+              "\$at": 2,
             },
             {
               "\$el": "Popover",
@@ -125,9 +139,11 @@ const story = Story(
                 "trigger": {
                   "\$el": "Button",
                   "children": ["left"],
+                  "\$at": 5,
                 },
                 "title": "Opens to the left",
               },
+              "\$at": 4,
             },
             {
               "\$el": "Popover",
@@ -136,9 +152,11 @@ const story = Story(
                 "trigger": {
                   "\$el": "Button",
                   "children": ["right"],
+                  "\$at": 7,
                 },
                 "title": "Opens to the right",
               },
+              "\$at": 6,
             },
           ],
         },

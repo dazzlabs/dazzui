@@ -19,7 +19,8 @@ extension Stories {
               },
               "children": [
                 "Save changes"
-              ]
+              ],
+              "$at": 0
             },
             {
               "$el": "Button",
@@ -28,7 +29,8 @@ extension Stories {
               },
               "children": [
                 "Cancel"
-              ]
+              ],
+              "$at": 1
             }
           ]
         }
@@ -48,7 +50,8 @@ extension Stories {
                   },
                   "children": [
                     "filled"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Button",
@@ -57,7 +60,8 @@ extension Stories {
                   },
                   "children": [
                     "tinted"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "Button",
@@ -66,7 +70,8 @@ extension Stories {
                   },
                   "children": [
                     "outlined"
-                  ]
+                  ],
+                  "$at": 2
                 },
                 {
                   "$el": "Button",
@@ -75,7 +80,8 @@ extension Stories {
                   },
                   "children": [
                     "normal"
-                  ]
+                  ],
+                  "$at": 3
                 },
                 {
                   "$el": "Button",
@@ -84,7 +90,8 @@ extension Stories {
                   },
                   "children": [
                     "recessed"
-                  ]
+                  ],
+                  "$at": 4
                 },
                 {
                   "$el": "Button",
@@ -93,7 +100,8 @@ extension Stories {
                   },
                   "children": [
                     "plain"
-                  ]
+                  ],
+                  "$at": 5
                 }
               ]
             }
@@ -116,7 +124,8 @@ extension Stories {
                       },
                       "children": [
                         "primary"
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "Button",
@@ -126,7 +135,8 @@ extension Stories {
                       },
                       "children": [
                         "neutral"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "Button",
@@ -136,7 +146,8 @@ extension Stories {
                       },
                       "children": [
                         "info"
-                      ]
+                      ],
+                      "$at": 2
                     },
                     {
                       "$el": "Button",
@@ -146,7 +157,8 @@ extension Stories {
                       },
                       "children": [
                         "success"
-                      ]
+                      ],
+                      "$at": 3
                     },
                     {
                       "$el": "Button",
@@ -156,7 +168,8 @@ extension Stories {
                       },
                       "children": [
                         "warning"
-                      ]
+                      ],
+                      "$at": 4
                     },
                     {
                       "$el": "Button",
@@ -166,7 +179,8 @@ extension Stories {
                       },
                       "children": [
                         "danger"
-                      ]
+                      ],
+                      "$at": 5
                     }
                   ]
                 },
@@ -181,7 +195,8 @@ extension Stories {
                       },
                       "children": [
                         "primary"
-                      ]
+                      ],
+                      "$at": 6
                     },
                     {
                       "$el": "Button",
@@ -191,7 +206,8 @@ extension Stories {
                       },
                       "children": [
                         "neutral"
-                      ]
+                      ],
+                      "$at": 7
                     },
                     {
                       "$el": "Button",
@@ -201,7 +217,8 @@ extension Stories {
                       },
                       "children": [
                         "info"
-                      ]
+                      ],
+                      "$at": 8
                     },
                     {
                       "$el": "Button",
@@ -211,7 +228,8 @@ extension Stories {
                       },
                       "children": [
                         "success"
-                      ]
+                      ],
+                      "$at": 9
                     },
                     {
                       "$el": "Button",
@@ -221,7 +239,8 @@ extension Stories {
                       },
                       "children": [
                         "warning"
-                      ]
+                      ],
+                      "$at": 10
                     },
                     {
                       "$el": "Button",
@@ -231,7 +250,8 @@ extension Stories {
                       },
                       "children": [
                         "danger"
-                      ]
+                      ],
+                      "$at": 11
                     }
                   ]
                 }
@@ -252,7 +272,8 @@ extension Stories {
                   },
                   "children": [
                     "Tiny"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Button",
@@ -261,7 +282,8 @@ extension Stories {
                   },
                   "children": [
                     "Small"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "Button",
@@ -270,7 +292,8 @@ extension Stories {
                   },
                   "children": [
                     "Medium"
-                  ]
+                  ],
+                  "$at": 2
                 },
                 {
                   "$el": "Button",
@@ -279,7 +302,8 @@ extension Stories {
                   },
                   "children": [
                     "Large"
-                  ]
+                  ],
+                  "$at": 3
                 }
               ]
             }
@@ -303,10 +327,12 @@ extension Stories {
                         "icon": {
                           "$icon": "ArrowDownload20Regular"
                         }
-                      }
+                      },
+                      "$at": 1
                     },
                     "Export"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Button",
@@ -315,12 +341,14 @@ extension Stories {
                       "$el": "KeyCap",
                       "children": [
                         "⌘S"
-                      ]
+                      ],
+                      "$at": 3
                     }
                   },
                   "children": [
                     "Save"
-                  ]
+                  ],
+                  "$at": 2
                 },
                 {
                   "$el": "Button",
@@ -329,7 +357,8 @@ extension Stories {
                   },
                   "children": [
                     "Disabled"
-                  ]
+                  ],
+                  "$at": 4
                 }
               ]
             }

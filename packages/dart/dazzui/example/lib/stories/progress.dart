@@ -14,6 +14,7 @@ const story = Story(
         {
           "\$el": "Progress",
           "props": {"value": 64, "aria-label": "Uploading"},
+          "\$at": 0,
         },
       ],
     },
@@ -29,14 +30,17 @@ const story = Story(
             {
               "\$el": "Progress",
               "props": {"size": "small", "value": 48, "aria-label": "small"},
+              "\$at": 0,
             },
             {
               "\$el": "Progress",
               "props": {"size": "medium", "value": 48, "aria-label": "medium"},
+              "\$at": 1,
             },
             {
               "\$el": "Progress",
               "props": {"size": "large", "value": 48, "aria-label": "large"},
+              "\$at": 2,
             },
           ],
         },
@@ -56,6 +60,7 @@ const story = Story(
                 "tint": "success",
                 "aria-label": "Success",
               },
+              "\$at": 0,
             },
             {
               "\$el": "Progress",
@@ -64,10 +69,12 @@ const story = Story(
                 "tint": "warning",
                 "aria-label": "Warning",
               },
+              "\$at": 1,
             },
             {
               "\$el": "Progress",
               "props": {"value": 30, "tint": "danger", "aria-label": "Danger"},
+              "\$at": 2,
             },
             {
               "\$el": "Progress",
@@ -76,6 +83,7 @@ const story = Story(
                 "gradient": true,
                 "aria-label": "Gradient",
               },
+              "\$at": 3,
             },
           ],
         },

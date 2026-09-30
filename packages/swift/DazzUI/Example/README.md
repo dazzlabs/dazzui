@@ -78,3 +78,11 @@ The build produces a plain executable rather than an app bundle, which
 launches without a dock presence and behind whatever window has focus. The
 `AppDelegate` asks for the regular activation policy, which is what brings it
 forward.
+
+## Conformance
+
+`tool/conformance.sh --out <dir>` is the SwiftUI collector `pnpm conformance`
+runs: `Tests/ExampleTests/ConformanceCollector.swift` draws every scene of
+`tools/conformance/scenes.json` and writes what it can read of them — their
+boxes and pictures. See [`specs/conformance.md`](../../../../specs/conformance.md).
+Run without it, the test skips itself.

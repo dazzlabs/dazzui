@@ -21,7 +21,8 @@ static partial class Stories
                   "$el": "Button",
                   "children": [
                     "Actions"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 "items": [
                   {
@@ -32,7 +33,8 @@ static partial class Stories
                         "icon": {
                           "$icon": "Edit20Regular"
                         }
-                      }
+                      },
+                      "$at": 2
                     }
                   },
                   {
@@ -43,7 +45,8 @@ static partial class Stories
                         "icon": {
                           "$icon": "Copy20Regular"
                         }
-                      }
+                      },
+                      "$at": 3
                     },
                     "shortcut": {
                       "$el": "KeyCap",
@@ -52,7 +55,8 @@ static partial class Stories
                       },
                       "children": [
                         "⌘D"
-                      ]
+                      ],
+                      "$at": 4
                     }
                   },
                   {
@@ -63,12 +67,14 @@ static partial class Stories
                         "icon": {
                           "$icon": "Delete20Regular"
                         }
-                      }
+                      },
+                      "$at": 5
                     },
                     "disabled": true
                   }
                 ]
-              }
+              },
+              "$at": 0
             }
           },
           "examples": [
@@ -82,7 +88,8 @@ static partial class Stories
                       "$el": "Button",
                       "children": [
                         "Actions"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     "items": [
                       {
@@ -93,7 +100,8 @@ static partial class Stories
                             "icon": {
                               "$icon": "Edit20Regular"
                             }
-                          }
+                          },
+                          "$at": 2
                         }
                       },
                       {
@@ -104,7 +112,8 @@ static partial class Stories
                             "icon": {
                               "$icon": "Copy20Regular"
                             }
-                          }
+                          },
+                          "$at": 3
                         },
                         "shortcut": {
                           "$el": "KeyCap",
@@ -113,7 +122,8 @@ static partial class Stories
                           },
                           "children": [
                             "⌘D"
-                          ]
+                          ],
+                          "$at": 4
                         }
                       },
                       {
@@ -124,12 +134,14 @@ static partial class Stories
                             "icon": {
                               "$icon": "Delete20Regular"
                             }
-                          }
+                          },
+                          "$at": 5
                         },
                         "disabled": true
                       }
                     ]
-                  }
+                  },
+                  "$at": 0
                 }
               }
             },
@@ -148,7 +160,8 @@ static partial class Stories
                             "icon": {
                               "$icon": "Edit20Regular"
                             }
-                          }
+                          },
+                          "$at": 1
                         }
                       },
                       {
@@ -159,7 +172,8 @@ static partial class Stories
                             "icon": {
                               "$icon": "Copy20Regular"
                             }
-                          }
+                          },
+                          "$at": 2
                         },
                         "shortcut": {
                           "$el": "KeyCap",
@@ -168,7 +182,8 @@ static partial class Stories
                           },
                           "children": [
                             "⌘D"
-                          ]
+                          ],
+                          "$at": 3
                         }
                       },
                       {
@@ -179,7 +194,8 @@ static partial class Stories
                             "icon": {
                               "$icon": "Delete20Regular"
                             }
-                          }
+                          },
+                          "$at": 4
                         },
                         "disabled": true
                       }
@@ -199,11 +215,13 @@ static partial class Stories
                           },
                           "children": [
                             "Right-click this card"
-                          ]
+                          ],
+                          "$at": 5
                         }
                       ]
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               }
             },
@@ -225,7 +243,8 @@ static partial class Stories
                                 "icon": {
                                   "$icon": "Edit20Regular"
                                 }
-                              }
+                              },
+                              "$at": 1
                             }
                           },
                           {
@@ -236,7 +255,8 @@ static partial class Stories
                                 "icon": {
                                   "$icon": "Copy20Regular"
                                 }
-                              }
+                              },
+                              "$at": 2
                             },
                             "shortcut": {
                               "$el": "KeyCap",
@@ -245,7 +265,8 @@ static partial class Stories
                               },
                               "children": [
                                 "⌘D"
-                              ]
+                              ],
+                              "$at": 3
                             }
                           },
                           {
@@ -256,7 +277,8 @@ static partial class Stories
                                 "icon": {
                                   "$icon": "Delete20Regular"
                                 }
-                              }
+                              },
+                              "$at": 4
                             },
                             "disabled": true
                           }
@@ -287,7 +309,8 @@ static partial class Stories
                         ]
                       }
                     ]
-                  }
+                  },
+                  "$at": 0
                 }
               }
             }

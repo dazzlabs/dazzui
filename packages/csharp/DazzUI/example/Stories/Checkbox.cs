@@ -24,13 +24,15 @@ static partial class Stories
                   },
                   "children": [
                     "Send me the digest"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Checkbox",
                   "children": [
                     "Include archived projects"
-                  ]
+                  ],
+                  "$at": 1
                 }
               ]
             }
@@ -46,7 +48,8 @@ static partial class Stories
                       "$el": "Checkbox",
                       "children": [
                         "Unchecked"
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "Checkbox",
@@ -55,7 +58,8 @@ static partial class Stories
                       },
                       "children": [
                         "Checked"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "Checkbox",
@@ -64,7 +68,8 @@ static partial class Stories
                       },
                       "children": [
                         "Indeterminate"
-                      ]
+                      ],
+                      "$at": 2
                     },
                     {
                       "$el": "Checkbox",
@@ -74,7 +79,8 @@ static partial class Stories
                       },
                       "children": [
                         "Disabled"
-                      ]
+                      ],
+                      "$at": 3
                     }
                   ]
                 }
@@ -91,7 +97,8 @@ static partial class Stories
                   },
                   "children": [
                     "Send me the digest"
-                  ]
+                  ],
+                  "$at": 0
                 }
               }
             },
@@ -112,7 +119,8 @@ static partial class Stories
                       },
                       "children": [
                         "primary"
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "Checkbox",
@@ -122,7 +130,8 @@ static partial class Stories
                       },
                       "children": [
                         "neutral"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "Checkbox",
@@ -132,7 +141,8 @@ static partial class Stories
                       },
                       "children": [
                         "info"
-                      ]
+                      ],
+                      "$at": 2
                     },
                     {
                       "$el": "Checkbox",
@@ -142,7 +152,8 @@ static partial class Stories
                       },
                       "children": [
                         "success"
-                      ]
+                      ],
+                      "$at": 3
                     },
                     {
                       "$el": "Checkbox",
@@ -152,7 +163,8 @@ static partial class Stories
                       },
                       "children": [
                         "warning"
-                      ]
+                      ],
+                      "$at": 4
                     },
                     {
                       "$el": "Checkbox",
@@ -162,7 +174,8 @@ static partial class Stories
                       },
                       "children": [
                         "danger"
-                      ]
+                      ],
+                      "$at": 5
                     }
                   ]
                 }

@@ -30,7 +30,8 @@ extension Stories {
             ],
             "defaultValue": "all",
             "aria-label": "Inbox"
-          }
+          },
+          "$at": 0
         }
       },
       "examples": [
@@ -58,7 +59,8 @@ extension Stories {
                 ],
                 "defaultValue": "unread",
                 "aria-label": "Inbox"
-              }
+              },
+              "$at": 0
             }
           }
         }

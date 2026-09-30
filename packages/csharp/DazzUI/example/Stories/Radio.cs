@@ -33,7 +33,8 @@ static partial class Stories
                 ],
                 "defaultValue": "team",
                 "aria-label": "Plan"
-              }
+              },
+              "$at": 0
             }
           },
           "examples": [
@@ -59,7 +60,8 @@ static partial class Stories
                     ],
                     "defaultValue": "free",
                     "aria-label": "Plan"
-                  }
+                  },
+                  "$at": 0
                 }
               }
             },
@@ -93,7 +95,8 @@ static partial class Stories
                         ],
                         "defaultValue": "team",
                         "aria-label": "small"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "RadioGroup",
@@ -115,7 +118,8 @@ static partial class Stories
                         ],
                         "defaultValue": "team",
                         "aria-label": "medium"
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "RadioGroup",
@@ -137,7 +141,8 @@ static partial class Stories
                         ],
                         "defaultValue": "team",
                         "aria-label": "large"
-                      }
+                      },
+                      "$at": 2
                     }
                   ]
                 }

@@ -14,20 +14,25 @@ const story = Story(
         {
           "\$el": "Avatar",
           "props": {"name": "Ada Lovelace"},
+          "\$at": 1,
         },
         {
           "\$el": "Avatar",
           "props": {"name": "Grace Hopper"},
+          "\$at": 2,
         },
         {
           "\$el": "Avatar",
           "props": {"name": "Alan Turing"},
+          "\$at": 3,
         },
         {
           "\$el": "Avatar",
           "props": {"name": "Edsger Dijkstra"},
+          "\$at": 4,
         },
       ],
+      "\$at": 0,
     },
   ),
   examples: [
@@ -40,14 +45,17 @@ const story = Story(
             {
               "\$el": "Avatar",
               "props": {"size": "small", "name": "Ada Lovelace"},
+              "\$at": 0,
             },
             {
               "\$el": "Avatar",
               "props": {"size": "medium", "name": "Ada Lovelace"},
+              "\$at": 1,
             },
             {
               "\$el": "Avatar",
               "props": {"size": "large", "name": "Ada Lovelace"},
+              "\$at": 2,
             },
             {
               "\$el": "Avatar",
@@ -56,6 +64,7 @@ const story = Story(
                 "shape": "square",
                 "name": "Ada Lovelace",
               },
+              "\$at": 3,
             },
           ],
         },
@@ -71,20 +80,25 @@ const story = Story(
             {
               "\$el": "Avatar",
               "props": {"name": "Ada Lovelace"},
+              "\$at": 1,
             },
             {
               "\$el": "Avatar",
               "props": {"name": "Grace Hopper"},
+              "\$at": 2,
             },
             {
               "\$el": "Avatar",
               "props": {"name": "Alan Turing"},
+              "\$at": 3,
             },
             {
               "\$el": "Avatar",
               "props": {"name": "Edsger Dijkstra"},
+              "\$at": 4,
             },
           ],
+          "\$at": 0,
         },
       ),
     ),

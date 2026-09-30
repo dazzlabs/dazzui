@@ -24,7 +24,8 @@ static partial class Stories
                   },
                   "children": [
                     "Save changes"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Button",
@@ -33,7 +34,8 @@ static partial class Stories
                   },
                   "children": [
                     "Cancel"
-                  ]
+                  ],
+                  "$at": 1
                 }
               ]
             }
@@ -53,7 +55,8 @@ static partial class Stories
                       },
                       "children": [
                         "filled"
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "Button",
@@ -62,7 +65,8 @@ static partial class Stories
                       },
                       "children": [
                         "tinted"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "Button",
@@ -71,7 +75,8 @@ static partial class Stories
                       },
                       "children": [
                         "outlined"
-                      ]
+                      ],
+                      "$at": 2
                     },
                     {
                       "$el": "Button",
@@ -80,7 +85,8 @@ static partial class Stories
                       },
                       "children": [
                         "normal"
-                      ]
+                      ],
+                      "$at": 3
                     },
                     {
                       "$el": "Button",
@@ -89,7 +95,8 @@ static partial class Stories
                       },
                       "children": [
                         "recessed"
-                      ]
+                      ],
+                      "$at": 4
                     },
                     {
                       "$el": "Button",
@@ -98,7 +105,8 @@ static partial class Stories
                       },
                       "children": [
                         "plain"
-                      ]
+                      ],
+                      "$at": 5
                     }
                   ]
                 }
@@ -121,7 +129,8 @@ static partial class Stories
                           },
                           "children": [
                             "primary"
-                          ]
+                          ],
+                          "$at": 0
                         },
                         {
                           "$el": "Button",
@@ -131,7 +140,8 @@ static partial class Stories
                           },
                           "children": [
                             "neutral"
-                          ]
+                          ],
+                          "$at": 1
                         },
                         {
                           "$el": "Button",
@@ -141,7 +151,8 @@ static partial class Stories
                           },
                           "children": [
                             "info"
-                          ]
+                          ],
+                          "$at": 2
                         },
                         {
                           "$el": "Button",
@@ -151,7 +162,8 @@ static partial class Stories
                           },
                           "children": [
                             "success"
-                          ]
+                          ],
+                          "$at": 3
                         },
                         {
                           "$el": "Button",
@@ -161,7 +173,8 @@ static partial class Stories
                           },
                           "children": [
                             "warning"
-                          ]
+                          ],
+                          "$at": 4
                         },
                         {
                           "$el": "Button",
@@ -171,7 +184,8 @@ static partial class Stories
                           },
                           "children": [
                             "danger"
-                          ]
+                          ],
+                          "$at": 5
                         }
                       ]
                     },
@@ -186,7 +200,8 @@ static partial class Stories
                           },
                           "children": [
                             "primary"
-                          ]
+                          ],
+                          "$at": 6
                         },
                         {
                           "$el": "Button",
@@ -196,7 +211,8 @@ static partial class Stories
                           },
                           "children": [
                             "neutral"
-                          ]
+                          ],
+                          "$at": 7
                         },
                         {
                           "$el": "Button",
@@ -206,7 +222,8 @@ static partial class Stories
                           },
                           "children": [
                             "info"
-                          ]
+                          ],
+                          "$at": 8
                         },
                         {
                           "$el": "Button",
@@ -216,7 +233,8 @@ static partial class Stories
                           },
                           "children": [
                             "success"
-                          ]
+                          ],
+                          "$at": 9
                         },
                         {
                           "$el": "Button",
@@ -226,7 +244,8 @@ static partial class Stories
                           },
                           "children": [
                             "warning"
-                          ]
+                          ],
+                          "$at": 10
                         },
                         {
                           "$el": "Button",
@@ -236,7 +255,8 @@ static partial class Stories
                           },
                           "children": [
                             "danger"
-                          ]
+                          ],
+                          "$at": 11
                         }
                       ]
                     }
@@ -257,7 +277,8 @@ static partial class Stories
                       },
                       "children": [
                         "Tiny"
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "Button",
@@ -266,7 +287,8 @@ static partial class Stories
                       },
                       "children": [
                         "Small"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "Button",
@@ -275,7 +297,8 @@ static partial class Stories
                       },
                       "children": [
                         "Medium"
-                      ]
+                      ],
+                      "$at": 2
                     },
                     {
                       "$el": "Button",
@@ -284,7 +307,8 @@ static partial class Stories
                       },
                       "children": [
                         "Large"
-                      ]
+                      ],
+                      "$at": 3
                     }
                   ]
                 }
@@ -308,10 +332,12 @@ static partial class Stories
                             "icon": {
                               "$icon": "ArrowDownload20Regular"
                             }
-                          }
+                          },
+                          "$at": 1
                         },
                         "Export"
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "Button",
@@ -320,12 +346,14 @@ static partial class Stories
                           "$el": "KeyCap",
                           "children": [
                             "⌘S"
-                          ]
+                          ],
+                          "$at": 3
                         }
                       },
                       "children": [
                         "Save"
-                      ]
+                      ],
+                      "$at": 2
                     },
                     {
                       "$el": "Button",
@@ -334,7 +362,8 @@ static partial class Stories
                       },
                       "children": [
                         "Disabled"
-                      ]
+                      ],
+                      "$at": 4
                     }
                   ]
                 }

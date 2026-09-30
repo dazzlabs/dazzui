@@ -13,7 +13,8 @@ extension Stories {
           "$el": "EmptyState",
           "props": {
             "title": "No projects yet"
-          }
+          },
+          "$at": 0
         }
       },
       "examples": [
@@ -30,7 +31,8 @@ extension Stories {
                   "$el": "EmptyState",
                   "props": {
                     "title": "Nothing matches that search"
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             }
@@ -56,9 +58,11 @@ extension Stories {
                       },
                       "children": [
                         "New project"
-                      ]
+                      ],
+                      "$at": 1
                     }
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             }

@@ -26,6 +26,7 @@ const story = Story(
             },
           },
           "children": ["Design"],
+          "\$at": 0,
         },
         {
           "\$el": "Tag",
@@ -41,6 +42,7 @@ const story = Story(
             },
           },
           "children": ["Engineering"],
+          "\$at": 1,
         },
         {
           "\$el": "Tag",
@@ -56,6 +58,7 @@ const story = Story(
             },
           },
           "children": ["Research"],
+          "\$at": 2,
         },
       ],
     },
@@ -83,6 +86,7 @@ const story = Story(
                 },
               },
               "children": ["Design"],
+              "\$at": 0,
             },
             {
               "\$el": "Tag",
@@ -98,6 +102,7 @@ const story = Story(
                 },
               },
               "children": ["Engineering"],
+              "\$at": 1,
             },
             {
               "\$el": "Tag",
@@ -113,6 +118,7 @@ const story = Story(
                 },
               },
               "children": ["Research"],
+              "\$at": 2,
             },
           ],
         },
@@ -131,6 +137,7 @@ const story = Story(
                 "onRemove": {"\$do": []},
               },
               "children": ["alice@example.com"],
+              "\$at": 0,
             },
             {
               "\$el": "Tag",
@@ -139,6 +146,7 @@ const story = Story(
                 "tint": "info",
               },
               "children": ["bob@example.com"],
+              "\$at": 1,
             },
           ],
         },

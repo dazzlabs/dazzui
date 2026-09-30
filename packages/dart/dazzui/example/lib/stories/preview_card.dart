@@ -19,6 +19,7 @@ const story = Story(
               "\$el": "Link",
               "props": {"href": "#/preview-card"},
               "children": ["@ada"],
+              "\$at": 1,
             },
           },
           "children": [
@@ -28,6 +29,7 @@ const story = Story(
                 {
                   "\$el": "Avatar",
                   "props": {"name": "Ada Lovelace"},
+                  "\$at": 2,
                 },
                 {
                   "\$el": "Col",
@@ -48,6 +50,7 @@ const story = Story(
               ],
             },
           ],
+          "\$at": 0,
         },
       ],
     },
@@ -68,6 +71,7 @@ const story = Story(
                   "\$el": "Link",
                   "props": {"href": "#/preview-card"},
                   "children": ["@ada"],
+                  "\$at": 1,
                 },
               },
               "children": [
@@ -77,6 +81,7 @@ const story = Story(
                     {
                       "\$el": "Avatar",
                       "props": {"name": "Ada Lovelace"},
+                      "\$at": 2,
                     },
                     {
                       "\$el": "Col",
@@ -97,6 +102,7 @@ const story = Story(
                   ],
                 },
               ],
+              "\$at": 0,
             },
             " ",
             "three days ago.",
@@ -115,6 +121,7 @@ const story = Story(
               "\$el": "Button",
               "props": {"size": "small"},
               "children": ["dazzlabs/dazzui"],
+              "\$at": 1,
             },
           },
           "children": [
@@ -134,6 +141,7 @@ const story = Story(
                       "\$el": "Badge",
                       "props": {"size": "small", "tint": "neutral"},
                       "children": ["public"],
+                      "\$at": 2,
                     },
                   ],
                 },
@@ -145,6 +153,7 @@ const story = Story(
               ],
             },
           ],
+          "\$at": 0,
         },
       ),
     ),

@@ -13,6 +13,7 @@ const story = Story(
         "trigger": {
           "\$el": "Button",
           "children": ["Actions"],
+          "\$at": 1,
         },
         "items": [
           {
@@ -22,6 +23,7 @@ const story = Story(
               "props": {
                 "icon": {"\$icon": "Edit20Regular"},
               },
+              "\$at": 2,
             },
           },
           {
@@ -31,11 +33,13 @@ const story = Story(
               "props": {
                 "icon": {"\$icon": "Copy20Regular"},
               },
+              "\$at": 3,
             },
             "shortcut": {
               "\$el": "KeyCap",
               "props": {"variant": "hint"},
               "children": ["⌘D"],
+              "\$at": 4,
             },
           },
           {
@@ -45,11 +49,13 @@ const story = Story(
               "props": {
                 "icon": {"\$icon": "Delete20Regular"},
               },
+              "\$at": 5,
             },
             "disabled": true,
           },
         ],
       },
+      "\$at": 0,
     },
   ),
   examples: [
@@ -62,6 +68,7 @@ const story = Story(
             "trigger": {
               "\$el": "Button",
               "children": ["Actions"],
+              "\$at": 1,
             },
             "items": [
               {
@@ -71,6 +78,7 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Edit20Regular"},
                   },
+                  "\$at": 2,
                 },
               },
               {
@@ -80,11 +88,13 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Copy20Regular"},
                   },
+                  "\$at": 3,
                 },
                 "shortcut": {
                   "\$el": "KeyCap",
                   "props": {"variant": "hint"},
                   "children": ["⌘D"],
+                  "\$at": 4,
                 },
               },
               {
@@ -94,11 +104,13 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Delete20Regular"},
                   },
+                  "\$at": 5,
                 },
                 "disabled": true,
               },
             ],
           },
+          "\$at": 0,
         },
       ),
     ),
@@ -116,6 +128,7 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Edit20Regular"},
                   },
+                  "\$at": 1,
                 },
               },
               {
@@ -125,11 +138,13 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Copy20Regular"},
                   },
+                  "\$at": 2,
                 },
                 "shortcut": {
                   "\$el": "KeyCap",
                   "props": {"variant": "hint"},
                   "children": ["⌘D"],
+                  "\$at": 3,
                 },
               },
               {
@@ -139,6 +154,7 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Delete20Regular"},
                   },
+                  "\$at": 4,
                 },
                 "disabled": true,
               },
@@ -153,10 +169,12 @@ const story = Story(
                   "\$el": "Card",
                   "props": {"variant": "outlined"},
                   "children": ["Right-click this card"],
+                  "\$at": 5,
                 },
               ],
             },
           ],
+          "\$at": 0,
         },
       ),
     ),
@@ -177,6 +195,7 @@ const story = Story(
                       "props": {
                         "icon": {"\$icon": "Edit20Regular"},
                       },
+                      "\$at": 1,
                     },
                   },
                   {
@@ -186,11 +205,13 @@ const story = Story(
                       "props": {
                         "icon": {"\$icon": "Copy20Regular"},
                       },
+                      "\$at": 2,
                     },
                     "shortcut": {
                       "\$el": "KeyCap",
                       "props": {"variant": "hint"},
                       "children": ["⌘D"],
+                      "\$at": 3,
                     },
                   },
                   {
@@ -200,6 +221,7 @@ const story = Story(
                       "props": {
                         "icon": {"\$icon": "Delete20Regular"},
                       },
+                      "\$at": 4,
                     },
                     "disabled": true,
                   },
@@ -221,6 +243,7 @@ const story = Story(
               },
             ],
           },
+          "\$at": 0,
         },
       ),
     ),

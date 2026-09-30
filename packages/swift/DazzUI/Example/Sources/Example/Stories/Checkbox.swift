@@ -19,13 +19,15 @@ extension Stories {
               },
               "children": [
                 "Send me the digest"
-              ]
+              ],
+              "$at": 0
             },
             {
               "$el": "Checkbox",
               "children": [
                 "Include archived projects"
-              ]
+              ],
+              "$at": 1
             }
           ]
         }
@@ -41,7 +43,8 @@ extension Stories {
                   "$el": "Checkbox",
                   "children": [
                     "Unchecked"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Checkbox",
@@ -50,7 +53,8 @@ extension Stories {
                   },
                   "children": [
                     "Checked"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "Checkbox",
@@ -59,7 +63,8 @@ extension Stories {
                   },
                   "children": [
                     "Indeterminate"
-                  ]
+                  ],
+                  "$at": 2
                 },
                 {
                   "$el": "Checkbox",
@@ -69,7 +74,8 @@ extension Stories {
                   },
                   "children": [
                     "Disabled"
-                  ]
+                  ],
+                  "$at": 3
                 }
               ]
             }
@@ -86,7 +92,8 @@ extension Stories {
               },
               "children": [
                 "Send me the digest"
-              ]
+              ],
+              "$at": 0
             }
           }
         },
@@ -107,7 +114,8 @@ extension Stories {
                   },
                   "children": [
                     "primary"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Checkbox",
@@ -117,7 +125,8 @@ extension Stories {
                   },
                   "children": [
                     "neutral"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "Checkbox",
@@ -127,7 +136,8 @@ extension Stories {
                   },
                   "children": [
                     "info"
-                  ]
+                  ],
+                  "$at": 2
                 },
                 {
                   "$el": "Checkbox",
@@ -137,7 +147,8 @@ extension Stories {
                   },
                   "children": [
                     "success"
-                  ]
+                  ],
+                  "$at": 3
                 },
                 {
                   "$el": "Checkbox",
@@ -147,7 +158,8 @@ extension Stories {
                   },
                   "children": [
                     "warning"
-                  ]
+                  ],
+                  "$at": 4
                 },
                 {
                   "$el": "Checkbox",
@@ -157,7 +169,8 @@ extension Stories {
                   },
                   "children": [
                     "danger"
-                  ]
+                  ],
+                  "$at": 5
                 }
               ]
             }

@@ -49,7 +49,8 @@ static partial class Stories
                         }
                       ]
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }
@@ -77,7 +78,8 @@ static partial class Stories
                           },
                           "children": [
                             "raised"
-                          ]
+                          ],
+                          "$at": 0
                         }
                       ]
                     },
@@ -94,7 +96,8 @@ static partial class Stories
                           },
                           "children": [
                             "outlined"
-                          ]
+                          ],
+                          "$at": 1
                         }
                       ]
                     },
@@ -111,7 +114,8 @@ static partial class Stories
                           },
                           "children": [
                             "sunken"
-                          ]
+                          ],
+                          "$at": 2
                         }
                       ]
                     },
@@ -128,7 +132,8 @@ static partial class Stories
                           },
                           "children": [
                             "tinted"
-                          ]
+                          ],
+                          "$at": 3
                         }
                       ]
                     }
@@ -158,7 +163,8 @@ static partial class Stories
                           },
                           "children": [
                             "small"
-                          ]
+                          ],
+                          "$at": 0
                         }
                       ]
                     },
@@ -175,7 +181,8 @@ static partial class Stories
                           },
                           "children": [
                             "medium"
-                          ]
+                          ],
+                          "$at": 1
                         }
                       ]
                     },
@@ -192,7 +199,8 @@ static partial class Stories
                           },
                           "children": [
                             "large"
-                          ]
+                          ],
+                          "$at": 2
                         }
                       ]
                     }

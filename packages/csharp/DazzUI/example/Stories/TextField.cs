@@ -25,7 +25,8 @@ static partial class Stories
                   "props": {
                     "placeholder": "you@example.com",
                     "aria-label": "Email"
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             }
@@ -46,7 +47,8 @@ static partial class Stories
                         "size": "small",
                         "placeholder": "Small",
                         "aria-label": "Small"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "TextField",
@@ -54,7 +56,8 @@ static partial class Stories
                         "size": "medium",
                         "placeholder": "Medium",
                         "aria-label": "Medium"
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "TextField",
@@ -62,7 +65,8 @@ static partial class Stories
                         "size": "large",
                         "placeholder": "Large",
                         "aria-label": "Large"
-                      }
+                      },
+                      "$at": 2
                     }
                   ]
                 }
@@ -82,7 +86,8 @@ static partial class Stories
                       "props": {
                         "defaultValue": "Filled in",
                         "aria-label": "Filled"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "TextField",
@@ -90,7 +95,8 @@ static partial class Stories
                         "state": "error",
                         "defaultValue": "not-an-email",
                         "aria-label": "Error"
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "TextField",
@@ -98,7 +104,8 @@ static partial class Stories
                         "disabled": true,
                         "defaultValue": "Disabled",
                         "aria-label": "Disabled"
-                      }
+                      },
+                      "$at": 2
                     },
                     {
                       "$el": "TextField",
@@ -106,7 +113,8 @@ static partial class Stories
                         "mono": true,
                         "defaultValue": "sk-4f9a…c21e",
                         "aria-label": "Key"
-                      }
+                      },
+                      "$at": 3
                     }
                   ]
                 }
@@ -128,7 +136,8 @@ static partial class Stories
                         "rows": 3,
                         "placeholder": "Anything the reviewer should know",
                         "aria-label": "Notes"
-                      }
+                      },
+                      "$at": 0
                     }
                   ]
                 }

@@ -22,6 +22,7 @@ const story = Story(
             {
               "\$el": "Switch",
               "props": {"defaultChecked": true, "aria-label": "Notifications"},
+              "\$at": 0,
             },
           ],
         },
@@ -39,6 +40,7 @@ const story = Story(
                 "defaultChecked": false,
                 "aria-label": "Sync over cellular",
               },
+              "\$at": 1,
             },
           ],
         },
@@ -60,6 +62,7 @@ const story = Story(
                 "defaultChecked": true,
                 "aria-label": "Small",
               },
+              "\$at": 0,
             },
             {
               "\$el": "Switch",
@@ -68,6 +71,7 @@ const story = Story(
                 "defaultChecked": true,
                 "aria-label": "Medium",
               },
+              "\$at": 1,
             },
             {
               "\$el": "Switch",
@@ -76,6 +80,7 @@ const story = Story(
                 "defaultChecked": true,
                 "aria-label": "Large",
               },
+              "\$at": 2,
             },
           ],
         },
@@ -95,6 +100,7 @@ const story = Story(
                 "defaultChecked": true,
                 "aria-label": "primary",
               },
+              "\$at": 0,
             },
             {
               "\$el": "Switch",
@@ -103,6 +109,7 @@ const story = Story(
                 "defaultChecked": true,
                 "aria-label": "neutral",
               },
+              "\$at": 1,
             },
             {
               "\$el": "Switch",
@@ -111,6 +118,7 @@ const story = Story(
                 "defaultChecked": true,
                 "aria-label": "info",
               },
+              "\$at": 2,
             },
             {
               "\$el": "Switch",
@@ -119,6 +127,7 @@ const story = Story(
                 "defaultChecked": true,
                 "aria-label": "success",
               },
+              "\$at": 3,
             },
             {
               "\$el": "Switch",
@@ -127,6 +136,7 @@ const story = Story(
                 "defaultChecked": true,
                 "aria-label": "warning",
               },
+              "\$at": 4,
             },
             {
               "\$el": "Switch",
@@ -135,6 +145,7 @@ const story = Story(
                 "defaultChecked": true,
                 "aria-label": "danger",
               },
+              "\$at": 5,
             },
           ],
         },
@@ -150,6 +161,7 @@ const story = Story(
             {
               "\$el": "Switch",
               "props": {"disabled": true, "aria-label": "Off"},
+              "\$at": 0,
             },
             {
               "\$el": "Switch",
@@ -158,6 +170,7 @@ const story = Story(
                 "defaultChecked": true,
                 "aria-label": "On",
               },
+              "\$at": 1,
             },
           ],
         },

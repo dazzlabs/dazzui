@@ -19,27 +19,32 @@ extension Stories {
               "$el": "Avatar",
               "props": {
                 "name": "Ada Lovelace"
-              }
+              },
+              "$at": 1
             },
             {
               "$el": "Avatar",
               "props": {
                 "name": "Grace Hopper"
-              }
+              },
+              "$at": 2
             },
             {
               "$el": "Avatar",
               "props": {
                 "name": "Alan Turing"
-              }
+              },
+              "$at": 3
             },
             {
               "$el": "Avatar",
               "props": {
                 "name": "Edsger Dijkstra"
-              }
+              },
+              "$at": 4
             }
-          ]
+          ],
+          "$at": 0
         }
       },
       "examples": [
@@ -54,21 +59,24 @@ extension Stories {
                   "props": {
                     "size": "small",
                     "name": "Ada Lovelace"
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "Avatar",
                   "props": {
                     "size": "medium",
                     "name": "Ada Lovelace"
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "Avatar",
                   "props": {
                     "size": "large",
                     "name": "Ada Lovelace"
-                  }
+                  },
+                  "$at": 2
                 },
                 {
                   "$el": "Avatar",
@@ -76,7 +84,8 @@ extension Stories {
                     "size": "large",
                     "shape": "square",
                     "name": "Ada Lovelace"
-                  }
+                  },
+                  "$at": 3
                 }
               ]
             }
@@ -95,27 +104,32 @@ extension Stories {
                   "$el": "Avatar",
                   "props": {
                     "name": "Ada Lovelace"
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "Avatar",
                   "props": {
                     "name": "Grace Hopper"
-                  }
+                  },
+                  "$at": 2
                 },
                 {
                   "$el": "Avatar",
                   "props": {
                     "name": "Alan Turing"
-                  }
+                  },
+                  "$at": 3
                 },
                 {
                   "$el": "Avatar",
                   "props": {
                     "name": "Edsger Dijkstra"
-                  }
+                  },
+                  "$at": 4
                 }
-              ]
+              ],
+              "$at": 0
             }
           }
         }

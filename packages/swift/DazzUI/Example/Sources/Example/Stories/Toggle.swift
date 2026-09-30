@@ -26,7 +26,8 @@ extension Stories {
                     "icon": {
                       "$icon": "TextBold20Regular"
                     }
-                  }
+                  },
+                  "$at": 1
                 },
                 "hint": "Bold"
               },
@@ -38,7 +39,8 @@ extension Stories {
                     "icon": {
                       "$icon": "TextItalic20Regular"
                     }
-                  }
+                  },
+                  "$at": 2
                 },
                 "hint": "Italic"
               },
@@ -50,7 +52,8 @@ extension Stories {
                     "icon": {
                       "$icon": "TextUnderline20Regular"
                     }
-                  }
+                  },
+                  "$at": 3
                 },
                 "hint": "Underline"
               }
@@ -71,7 +74,8 @@ extension Stories {
             "multiple": true,
             "size": "small",
             "aria-label": "Text style"
-          }
+          },
+          "$at": 0
         }
       },
       "examples": [
@@ -95,9 +99,11 @@ extension Stories {
                         "icon": {
                           "$icon": "TextBold20Regular"
                         }
-                      }
+                      },
+                      "$at": 1
                     }
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Toggle",
@@ -112,9 +118,11 @@ extension Stories {
                         "icon": {
                           "$icon": "TextItalic20Regular"
                         }
-                      }
+                      },
+                      "$at": 3
                     }
-                  ]
+                  ],
+                  "$at": 2
                 },
                 {
                   "$el": "Toggle",
@@ -124,7 +132,8 @@ extension Stories {
                   },
                   "children": [
                     "Wrap lines"
-                  ]
+                  ],
+                  "$at": 4
                 }
               ]
             }
@@ -150,7 +159,8 @@ extension Stories {
                         "icon": {
                           "$icon": "TextBold20Regular"
                         }
-                      }
+                      },
+                      "$at": 1
                     },
                     "hint": "Bold"
                   },
@@ -162,7 +172,8 @@ extension Stories {
                         "icon": {
                           "$icon": "TextItalic20Regular"
                         }
-                      }
+                      },
+                      "$at": 2
                     },
                     "hint": "Italic"
                   },
@@ -174,7 +185,8 @@ extension Stories {
                         "icon": {
                           "$icon": "TextUnderline20Regular"
                         }
-                      }
+                      },
+                      "$at": 3
                     },
                     "hint": "Underline"
                   }
@@ -195,7 +207,8 @@ extension Stories {
                 "multiple": true,
                 "size": "small",
                 "aria-label": "Text style"
-              }
+              },
+              "$at": 0
             }
           }
         },
@@ -219,7 +232,8 @@ extension Stories {
                         "icon": {
                           "$icon": "TextBold20Regular"
                         }
-                      }
+                      },
+                      "$at": 1
                     },
                     "hint": "Bold"
                   },
@@ -231,7 +245,8 @@ extension Stories {
                         "icon": {
                           "$icon": "TextItalic20Regular"
                         }
-                      }
+                      },
+                      "$at": 2
                     },
                     "hint": "Italic"
                   },
@@ -243,7 +258,8 @@ extension Stories {
                         "icon": {
                           "$icon": "TextUnderline20Regular"
                         }
-                      }
+                      },
+                      "$at": 3
                     },
                     "hint": "Underline"
                   }
@@ -264,7 +280,8 @@ extension Stories {
                 "multiple": false,
                 "size": "small",
                 "aria-label": "Text style"
-              }
+              },
+              "$at": 0
             }
           }
         }

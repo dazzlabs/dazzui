@@ -14,6 +14,7 @@ const story = Story(
         {
           "\$el": "NumberField",
           "props": {"defaultValue": 12, "unit": "px", "aria-label": "Size"},
+          "\$at": 0,
         },
       ],
     },
@@ -36,6 +37,7 @@ const story = Story(
                     "unit": "px",
                     "aria-label": "Size",
                   },
+                  "\$at": 0,
                 },
               ],
             },
@@ -53,6 +55,7 @@ const story = Story(
                     "unit": "%",
                     "aria-label": "Opacity",
                   },
+                  "\$at": 1,
                 },
               ],
             },

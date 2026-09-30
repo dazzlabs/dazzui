@@ -39,9 +39,11 @@ static partial class Stories
                           "props": {
                             "type": "email",
                             "placeholder": "you@example.com"
-                          }
+                          },
+                          "$at": 2
                         }
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "Button",
@@ -52,9 +54,11 @@ static partial class Stories
                       },
                       "children": [
                         "Subscribe"
-                      ]
+                      ],
+                      "$at": 3
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }
@@ -88,9 +92,11 @@ static partial class Stories
                               "props": {
                                 "required": true,
                                 "placeholder": "Ada Lovelace"
-                              }
+                              },
+                              "$at": 2
                             }
-                          ]
+                          ],
+                          "$at": 1
                         },
                         {
                           "$el": "FormField",
@@ -105,9 +111,11 @@ static partial class Stories
                                 "type": "email",
                                 "required": true,
                                 "placeholder": "you@example.com"
-                              }
+                              },
+                              "$at": 4
                             }
-                          ]
+                          ],
+                          "$at": 3
                         },
                         {
                           "$el": "ActionBar",
@@ -120,7 +128,8 @@ static partial class Stories
                               },
                               "children": [
                                 "Clear"
-                              ]
+                              ],
+                              "$at": 6
                             },
                             {
                               "$el": "Button",
@@ -130,11 +139,14 @@ static partial class Stories
                               },
                               "children": [
                                 "Create account"
-                              ]
+                              ],
+                              "$at": 7
                             }
-                          ]
+                          ],
+                          "$at": 5
                         }
-                      ]
+                      ],
+                      "$at": 0
                     }
                   ]
                 }
@@ -162,7 +174,8 @@ static partial class Stories
                           },
                           "children": [
                             "Mentions"
-                          ]
+                          ],
+                          "$at": 1
                         },
                         {
                           "$el": "Checkbox",
@@ -171,15 +184,18 @@ static partial class Stories
                           },
                           "children": [
                             "Replies"
-                          ]
+                          ],
+                          "$at": 2
                         },
                         {
                           "$el": "Checkbox",
                           "children": [
                             "Everything else"
-                          ]
+                          ],
+                          "$at": 3
                         }
-                      ]
+                      ],
+                      "$at": 0
                     }
                   ]
                 }

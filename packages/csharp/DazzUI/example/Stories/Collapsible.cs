@@ -28,7 +28,8 @@ static partial class Stories
                   },
                   "children": [
                     "Options most people never change."
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }
@@ -51,7 +52,8 @@ static partial class Stories
                       },
                       "children": [
                         "Compiled 214 modules in 1.8 seconds."
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "Collapsible",
@@ -60,7 +62,8 @@ static partial class Stories
                       },
                       "children": [
                         "All 37 tests passed."
-                      ]
+                      ],
+                      "$at": 1
                     }
                   ]
                 }
@@ -86,13 +89,15 @@ static partial class Stories
                           },
                           "children": [
                             "3"
-                          ]
+                          ],
+                          "$at": 1
                         },
                         "defaultOpen": true
                       },
                       "children": [
                         "Three imports are unused."
-                      ]
+                      ],
+                      "$at": 0
                     }
                   ]
                 }

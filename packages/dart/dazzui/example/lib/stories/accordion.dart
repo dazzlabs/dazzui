@@ -26,6 +26,7 @@ const story = Story(
               "children": [
                 "Every colour, length and face is a token. A component reads the variable; it never writes a value of its own.",
               ],
+              "\$at": 1,
             },
             {
               "\$el": "AccordionItem",
@@ -36,8 +37,10 @@ const story = Story(
               "children": [
                 "Six drawn families in light and dark, and the imported ones beside them.",
               ],
+              "\$at": 2,
             },
           ],
+          "\$at": 0,
         },
       ],
     },
@@ -66,6 +69,7 @@ const story = Story(
                   "children": [
                     "Every colour, length and face is a token. A component reads the variable; it never writes a value of its own.",
                   ],
+                  "\$at": 1,
                 },
                 {
                   "\$el": "AccordionItem",
@@ -76,6 +80,7 @@ const story = Story(
                   "children": [
                     "Six drawn families in light and dark, and the imported ones beside them.",
                   ],
+                  "\$at": 2,
                 },
                 {
                   "\$el": "AccordionItem",
@@ -86,8 +91,10 @@ const story = Story(
                   "children": [
                     "One design, measured in the browser, that every port is held to.",
                   ],
+                  "\$at": 3,
                 },
               ],
+              "\$at": 0,
             },
           ],
         },
@@ -116,6 +123,7 @@ const story = Story(
                   "children": [
                     "Every colour, length and face is a token. A component reads the variable; it never writes a value of its own.",
                   ],
+                  "\$at": 1,
                 },
                 {
                   "\$el": "AccordionItem",
@@ -126,6 +134,7 @@ const story = Story(
                   "children": [
                     "Six drawn families in light and dark, and the imported ones beside them.",
                   ],
+                  "\$at": 2,
                 },
                 {
                   "\$el": "AccordionItem",
@@ -136,8 +145,10 @@ const story = Story(
                   "children": [
                     "One design, measured in the browser, that every port is held to.",
                   ],
+                  "\$at": 3,
                 },
               ],
+              "\$at": 0,
             },
           ],
         },
@@ -166,6 +177,7 @@ const story = Story(
                   "children": [
                     "Every colour, length and face is a token. A component reads the variable; it never writes a value of its own.",
                   ],
+                  "\$at": 1,
                 },
                 {
                   "\$el": "AccordionItem",
@@ -176,6 +188,7 @@ const story = Story(
                   "children": [
                     "Six drawn families in light and dark, and the imported ones beside them.",
                   ],
+                  "\$at": 2,
                 },
                 {
                   "\$el": "AccordionItem",
@@ -186,8 +199,10 @@ const story = Story(
                   "children": [
                     "One design, measured in the browser, that every port is held to.",
                   ],
+                  "\$at": 3,
                 },
               ],
+              "\$at": 0,
             },
           ],
         },

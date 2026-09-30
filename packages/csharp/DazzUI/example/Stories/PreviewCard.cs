@@ -29,7 +29,8 @@ static partial class Stories
                       },
                       "children": [
                         "@ada"
-                      ]
+                      ],
+                      "$at": 1
                     }
                   },
                   "children": [
@@ -40,7 +41,8 @@ static partial class Stories
                           "$el": "Avatar",
                           "props": {
                             "name": "Ada Lovelace"
-                          }
+                          },
+                          "$at": 2
                         },
                         {
                           "$el": "Col",
@@ -70,7 +72,8 @@ static partial class Stories
                         }
                       ]
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }
@@ -94,7 +97,8 @@ static partial class Stories
                           },
                           "children": [
                             "@ada"
-                          ]
+                          ],
+                          "$at": 1
                         }
                       },
                       "children": [
@@ -105,7 +109,8 @@ static partial class Stories
                               "$el": "Avatar",
                               "props": {
                                 "name": "Ada Lovelace"
-                              }
+                              },
+                              "$at": 2
                             },
                             {
                               "$el": "Col",
@@ -135,7 +140,8 @@ static partial class Stories
                             }
                           ]
                         }
-                      ]
+                      ],
+                      "$at": 0
                     },
                     " ",
                     "three days ago."
@@ -157,7 +163,8 @@ static partial class Stories
                       },
                       "children": [
                         "dazzlabs/dazzui"
-                      ]
+                      ],
+                      "$at": 1
                     }
                   },
                   "children": [
@@ -187,7 +194,8 @@ static partial class Stories
                               },
                               "children": [
                                 "public"
-                              ]
+                              ],
+                              "$at": 2
                             }
                           ]
                         },
@@ -202,7 +210,8 @@ static partial class Stories
                         }
                       ]
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               }
             }

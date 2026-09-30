@@ -36,7 +36,8 @@ extension Stories {
                 },
                 "placeholder": "Search components",
                 "aria-label": "Search"
-              }
+              },
+              "$at": 0
             }
           ]
         }
@@ -72,7 +73,8 @@ extension Stories {
                     },
                     "placeholder": "Search components",
                     "aria-label": "Search"
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             }

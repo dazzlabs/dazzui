@@ -41,7 +41,8 @@ extension Stories {
                   }
                 ],
                 "defaultValue": "jp"
-              }
+              },
+              "$at": 0
             }
           ]
         }
@@ -83,7 +84,8 @@ extension Stories {
                     ],
                     "placeholder": "Choose a country",
                     "empty": "No country by that name"
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             }
@@ -127,7 +129,8 @@ extension Stories {
                     ],
                     "defaultValue": "cn",
                     "clearable": true
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             }
@@ -153,7 +156,8 @@ extension Stories {
                       "Source Serif"
                     ],
                     "placeholder": "Font family"
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             }

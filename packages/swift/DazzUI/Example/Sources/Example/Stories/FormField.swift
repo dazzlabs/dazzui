@@ -26,9 +26,11 @@ extension Stories {
                   "$el": "TextField",
                   "props": {
                     "defaultValue": "Quarterly report"
-                  }
+                  },
+                  "$at": 1
                 }
-              ]
+              ],
+              "$at": 0
             }
           ]
         }
@@ -55,9 +57,11 @@ extension Stories {
                       "props": {
                         "type": "email",
                         "placeholder": "you@example.com"
-                      }
+                      },
+                      "$at": 1
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }
@@ -85,9 +89,11 @@ extension Stories {
                       "props": {
                         "state": "error",
                         "defaultValue": "ada@"
-                      }
+                      },
+                      "$at": 1
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }
@@ -122,9 +128,11 @@ extension Stories {
                             "label": "Chinese"
                           }
                         ]
-                      }
+                      },
+                      "$at": 1
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }

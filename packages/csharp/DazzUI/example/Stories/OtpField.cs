@@ -19,7 +19,8 @@ static partial class Stories
               "props": {
                 "length": 6,
                 "aria-label": "Code"
-              }
+              },
+              "$at": 0
             }
           },
           "examples": [
@@ -31,7 +32,8 @@ static partial class Stories
                   "props": {
                     "length": 6,
                     "aria-label": "Code"
-                  }
+                  },
+                  "$at": 0
                 }
               }
             },
@@ -44,7 +46,8 @@ static partial class Stories
                     "length": 6,
                     "groupAfter": 3,
                     "aria-label": "Code"
-                  }
+                  },
+                  "$at": 0
                 }
               }
             },
@@ -64,7 +67,8 @@ static partial class Stories
                         "length": 4,
                         "size": "small",
                         "aria-label": "Small"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "OtpField",
@@ -72,7 +76,8 @@ static partial class Stories
                         "length": 4,
                         "size": "large",
                         "aria-label": "Large"
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "OtpField",
@@ -80,7 +85,8 @@ static partial class Stories
                         "length": 4,
                         "state": "error",
                         "aria-label": "Error"
-                      }
+                      },
+                      "$at": 2
                     }
                   ]
                 }

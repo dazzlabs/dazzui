@@ -25,7 +25,8 @@ extension Stories {
                   },
                   "children": [
                     "Cancel"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "Button",
@@ -34,9 +35,11 @@ extension Stories {
                   },
                   "children": [
                     "Save"
-                  ]
+                  ],
+                  "$at": 2
                 }
-              ]
+              ],
+              "$at": 0
             }
           ]
         }
@@ -65,7 +68,8 @@ extension Stories {
                       },
                       "children": [
                         "start"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "Button",
@@ -74,9 +78,11 @@ extension Stories {
                       },
                       "children": [
                         "Save"
-                      ]
+                      ],
+                      "$at": 2
                     }
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "ActionBar",
@@ -91,7 +97,8 @@ extension Stories {
                       },
                       "children": [
                         "end"
-                      ]
+                      ],
+                      "$at": 4
                     },
                     {
                       "$el": "Button",
@@ -100,9 +107,11 @@ extension Stories {
                       },
                       "children": [
                         "Save"
-                      ]
+                      ],
+                      "$at": 5
                     }
-                  ]
+                  ],
+                  "$at": 3
                 },
                 {
                   "$el": "ActionBar",
@@ -117,7 +126,8 @@ extension Stories {
                       },
                       "children": [
                         "between"
-                      ]
+                      ],
+                      "$at": 7
                     },
                     {
                       "$el": "Button",
@@ -126,9 +136,11 @@ extension Stories {
                       },
                       "children": [
                         "Save"
-                      ]
+                      ],
+                      "$at": 8
                     }
-                  ]
+                  ],
+                  "$at": 6
                 }
               ]
             }
@@ -156,7 +168,8 @@ extension Stories {
                       },
                       "children": [
                         "⌘↵ to send"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "Button",
@@ -165,9 +178,11 @@ extension Stories {
                       },
                       "children": [
                         "Send"
-                      ]
+                      ],
+                      "$at": 2
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }

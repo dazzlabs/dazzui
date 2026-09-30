@@ -38,7 +38,8 @@ static partial class Stories
                       "props": {
                         "defaultChecked": true,
                         "aria-label": "Notifications"
-                      }
+                      },
+                      "$at": 0
                     }
                   ]
                 },
@@ -60,7 +61,8 @@ static partial class Stories
                       "props": {
                         "defaultChecked": false,
                         "aria-label": "Sync over cellular"
-                      }
+                      },
+                      "$at": 1
                     }
                   ]
                 }
@@ -83,7 +85,8 @@ static partial class Stories
                         "size": "small",
                         "defaultChecked": true,
                         "aria-label": "Small"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "Switch",
@@ -91,7 +94,8 @@ static partial class Stories
                         "size": "medium",
                         "defaultChecked": true,
                         "aria-label": "Medium"
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "Switch",
@@ -99,7 +103,8 @@ static partial class Stories
                         "size": "large",
                         "defaultChecked": true,
                         "aria-label": "Large"
-                      }
+                      },
+                      "$at": 2
                     }
                   ]
                 }
@@ -120,7 +125,8 @@ static partial class Stories
                         "tint": "primary",
                         "defaultChecked": true,
                         "aria-label": "primary"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "Switch",
@@ -128,7 +134,8 @@ static partial class Stories
                         "tint": "neutral",
                         "defaultChecked": true,
                         "aria-label": "neutral"
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "Switch",
@@ -136,7 +143,8 @@ static partial class Stories
                         "tint": "info",
                         "defaultChecked": true,
                         "aria-label": "info"
-                      }
+                      },
+                      "$at": 2
                     },
                     {
                       "$el": "Switch",
@@ -144,7 +152,8 @@ static partial class Stories
                         "tint": "success",
                         "defaultChecked": true,
                         "aria-label": "success"
-                      }
+                      },
+                      "$at": 3
                     },
                     {
                       "$el": "Switch",
@@ -152,7 +161,8 @@ static partial class Stories
                         "tint": "warning",
                         "defaultChecked": true,
                         "aria-label": "warning"
-                      }
+                      },
+                      "$at": 4
                     },
                     {
                       "$el": "Switch",
@@ -160,7 +170,8 @@ static partial class Stories
                         "tint": "danger",
                         "defaultChecked": true,
                         "aria-label": "danger"
-                      }
+                      },
+                      "$at": 5
                     }
                   ]
                 }
@@ -180,7 +191,8 @@ static partial class Stories
                       "props": {
                         "disabled": true,
                         "aria-label": "Off"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "Switch",
@@ -188,7 +200,8 @@ static partial class Stories
                         "disabled": true,
                         "defaultChecked": true,
                         "aria-label": "On"
-                      }
+                      },
+                      "$at": 1
                     }
                   ]
                 }

@@ -24,7 +24,8 @@ extension Stories {
                   },
                   "children": [
                     "@ada"
-                  ]
+                  ],
+                  "$at": 1
                 }
               },
               "children": [
@@ -35,7 +36,8 @@ extension Stories {
                       "$el": "Avatar",
                       "props": {
                         "name": "Ada Lovelace"
-                      }
+                      },
+                      "$at": 2
                     },
                     {
                       "$el": "Col",
@@ -65,7 +67,8 @@ extension Stories {
                     }
                   ]
                 }
-              ]
+              ],
+              "$at": 0
             }
           ]
         }
@@ -89,7 +92,8 @@ extension Stories {
                       },
                       "children": [
                         "@ada"
-                      ]
+                      ],
+                      "$at": 1
                     }
                   },
                   "children": [
@@ -100,7 +104,8 @@ extension Stories {
                           "$el": "Avatar",
                           "props": {
                             "name": "Ada Lovelace"
-                          }
+                          },
+                          "$at": 2
                         },
                         {
                           "$el": "Col",
@@ -130,7 +135,8 @@ extension Stories {
                         }
                       ]
                     }
-                  ]
+                  ],
+                  "$at": 0
                 },
                 " ",
                 "three days ago."
@@ -152,7 +158,8 @@ extension Stories {
                   },
                   "children": [
                     "dazzlabs/dazzui"
-                  ]
+                  ],
+                  "$at": 1
                 }
               },
               "children": [
@@ -182,7 +189,8 @@ extension Stories {
                           },
                           "children": [
                             "public"
-                          ]
+                          ],
+                          "$at": 2
                         }
                       ]
                     },
@@ -197,7 +205,8 @@ extension Stories {
                     }
                   ]
                 }
-              ]
+              ],
+              "$at": 0
             }
           }
         }

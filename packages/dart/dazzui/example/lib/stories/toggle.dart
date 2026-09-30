@@ -21,6 +21,7 @@ const story = Story(
               "props": {
                 "icon": {"\$icon": "TextBold20Regular"},
               },
+              "\$at": 1,
             },
             "hint": "Bold",
           },
@@ -31,6 +32,7 @@ const story = Story(
               "props": {
                 "icon": {"\$icon": "TextItalic20Regular"},
               },
+              "\$at": 2,
             },
             "hint": "Italic",
           },
@@ -41,6 +43,7 @@ const story = Story(
               "props": {
                 "icon": {"\$icon": "TextUnderline20Regular"},
               },
+              "\$at": 3,
             },
             "hint": "Underline",
           },
@@ -58,6 +61,7 @@ const story = Story(
         "size": "small",
         "aria-label": "Text style",
       },
+      "\$at": 0,
     },
   ),
   examples: [
@@ -80,8 +84,10 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "TextBold20Regular"},
                   },
+                  "\$at": 1,
                 },
               ],
+              "\$at": 0,
             },
             {
               "\$el": "Toggle",
@@ -92,13 +98,16 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "TextItalic20Regular"},
                   },
+                  "\$at": 3,
                 },
               ],
+              "\$at": 2,
             },
             {
               "\$el": "Toggle",
               "props": {"size": "small", "variant": "outlined"},
               "children": ["Wrap lines"],
+              "\$at": 4,
             },
           ],
         },
@@ -121,6 +130,7 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "TextBold20Regular"},
                   },
+                  "\$at": 1,
                 },
                 "hint": "Bold",
               },
@@ -131,6 +141,7 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "TextItalic20Regular"},
                   },
+                  "\$at": 2,
                 },
                 "hint": "Italic",
               },
@@ -141,6 +152,7 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "TextUnderline20Regular"},
                   },
+                  "\$at": 3,
                 },
                 "hint": "Underline",
               },
@@ -158,6 +170,7 @@ const story = Story(
             "size": "small",
             "aria-label": "Text style",
           },
+          "\$at": 0,
         },
       ),
     ),
@@ -178,6 +191,7 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "TextBold20Regular"},
                   },
+                  "\$at": 1,
                 },
                 "hint": "Bold",
               },
@@ -188,6 +202,7 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "TextItalic20Regular"},
                   },
+                  "\$at": 2,
                 },
                 "hint": "Italic",
               },
@@ -198,6 +213,7 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "TextUnderline20Regular"},
                   },
+                  "\$at": 3,
                 },
                 "hint": "Underline",
               },
@@ -215,6 +231,7 @@ const story = Story(
             "size": "small",
             "aria-label": "Text style",
           },
+          "\$at": 0,
         },
       ),
     ),

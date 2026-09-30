@@ -27,7 +27,8 @@ static partial class Stories
                   ]
                 },
                 {
-                  "$el": "Divider"
+                  "$el": "Divider",
+                  "$at": 0
                 },
                 {
                   "$el": "Text",
@@ -50,13 +51,15 @@ static partial class Stories
                   },
                   "children": [
                     {
-                      "$el": "Divider"
+                      "$el": "Divider",
+                      "$at": 0
                     },
                     {
                       "$el": "Divider",
                       "props": {
                         "tone": "muted"
-                      }
+                      },
+                      "$at": 1
                     }
                   ]
                 }
@@ -81,7 +84,8 @@ static partial class Stories
                       "$el": "Divider",
                       "props": {
                         "orientation": "vertical"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "Text",
@@ -93,7 +97,8 @@ static partial class Stories
                       "$el": "Divider",
                       "props": {
                         "orientation": "vertical"
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "Text",

@@ -22,7 +22,8 @@ static partial class Stories
                   "$el": "Code",
                   "children": [
                     "pnpm install"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 " first."
               ]
@@ -40,7 +41,8 @@ static partial class Stories
                       "$el": "Code",
                       "children": [
                         "data-theme"
-                      ]
+                      ],
+                      "$at": 0
                     },
                     " on the root, or remove it for the default."
                   ]
@@ -62,7 +64,8 @@ static partial class Stories
                         "code": "import { Button } from '@dazzlabs/dazzui-react'\n\nexport function Save() {\n  return <Button variant=\"filled\">Save changes</Button>\n}",
                         "title": "save.tsx",
                         "language": "tsx"
-                      }
+                      },
+                      "$at": 0
                     }
                   ]
                 }
@@ -83,7 +86,8 @@ static partial class Stories
                         "code": "import { Button } from '@dazzlabs/dazzui-react'\n\nexport function Save() {\n  return <Button variant=\"filled\">Save changes</Button>\n}",
                         "lineNumbers": true,
                         "copyable": true
-                      }
+                      },
+                      "$at": 0
                     }
                   ]
                 }

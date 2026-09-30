@@ -18,6 +18,7 @@ const story = Story(
         "defaultValue": "all",
         "aria-label": "Inbox",
       },
+      "\$at": 0,
     },
   ),
   examples: [
@@ -35,6 +36,7 @@ const story = Story(
             "defaultValue": "unread",
             "aria-label": "Inbox",
           },
+          "\$at": 0,
         },
       ),
     ),

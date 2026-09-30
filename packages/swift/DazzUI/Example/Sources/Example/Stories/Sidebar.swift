@@ -40,7 +40,8 @@ extension Stories {
                             "Workspace"
                           ]
                         }
-                      ]
+                      ],
+                      "$at": 2
                     },
                     {
                       "$el": "SidebarContent",
@@ -52,7 +53,8 @@ extension Stories {
                               "$el": "SidebarGroupLabel",
                               "children": [
                                 "Library"
-                              ]
+                              ],
+                              "$at": 5
                             },
                             {
                               "$el": "SidebarGroupContent",
@@ -72,7 +74,8 @@ extension Stories {
                                                 "icon": {
                                                   "$icon": "Document20Regular"
                                                 }
-                                              }
+                                              },
+                                              "$at": 10
                                             },
                                             "tooltip": "Documents",
                                             "active": {
@@ -94,15 +97,18 @@ extension Stories {
                                           },
                                           "children": [
                                             "Documents"
-                                          ]
+                                          ],
+                                          "$at": 9
                                         },
                                         {
                                           "$el": "SidebarMenuBadge",
                                           "children": [
                                             "12"
-                                          ]
+                                          ],
+                                          "$at": 11
                                         }
-                                      ]
+                                      ],
+                                      "$at": 8
                                     },
                                     {
                                       "$el": "SidebarMenuItem",
@@ -116,7 +122,8 @@ extension Stories {
                                                 "icon": {
                                                   "$icon": "Book20Regular"
                                                 }
-                                              }
+                                              },
+                                              "$at": 14
                                             },
                                             "tooltip": "Glossaries",
                                             "active": {
@@ -138,9 +145,11 @@ extension Stories {
                                           },
                                           "children": [
                                             "Glossaries"
-                                          ]
+                                          ],
+                                          "$at": 13
                                         }
-                                      ]
+                                      ],
+                                      "$at": 12
                                     },
                                     {
                                       "$el": "SidebarMenuItem",
@@ -154,7 +163,8 @@ extension Stories {
                                                 "icon": {
                                                   "$icon": "Settings20Regular"
                                                 }
-                                              }
+                                              },
+                                              "$at": 17
                                             },
                                             "tooltip": "Settings",
                                             "active": {
@@ -176,19 +186,26 @@ extension Stories {
                                           },
                                           "children": [
                                             "Settings"
-                                          ]
+                                          ],
+                                          "$at": 16
                                         }
-                                      ]
+                                      ],
+                                      "$at": 15
                                     }
-                                  ]
+                                  ],
+                                  "$at": 7
                                 }
-                              ]
+                              ],
+                              "$at": 6
                             }
-                          ]
+                          ],
+                          "$at": 4
                         }
-                      ]
+                      ],
+                      "$at": 3
                     }
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "SidebarInset",
@@ -215,11 +232,14 @@ extension Stories {
                             }
                           ]
                         }
-                      ]
+                      ],
+                      "$at": 19
                     }
-                  ]
+                  ],
+                  "$at": 18
                 }
-              ]
+              ],
+              "$at": 0
             }
           ]
         }
@@ -253,7 +273,8 @@ extension Stories {
                                 "Workspace"
                               ]
                             }
-                          ]
+                          ],
+                          "$at": 2
                         },
                         {
                           "$el": "SidebarContent",
@@ -265,7 +286,8 @@ extension Stories {
                                   "$el": "SidebarGroupLabel",
                                   "children": [
                                     "Library"
-                                  ]
+                                  ],
+                                  "$at": 5
                                 },
                                 {
                                   "$el": "SidebarGroupContent",
@@ -285,7 +307,8 @@ extension Stories {
                                                     "icon": {
                                                       "$icon": "Document20Regular"
                                                     }
-                                                  }
+                                                  },
+                                                  "$at": 10
                                                 },
                                                 "tooltip": "Documents",
                                                 "active": {
@@ -307,15 +330,18 @@ extension Stories {
                                               },
                                               "children": [
                                                 "Documents"
-                                              ]
+                                              ],
+                                              "$at": 9
                                             },
                                             {
                                               "$el": "SidebarMenuBadge",
                                               "children": [
                                                 "12"
-                                              ]
+                                              ],
+                                              "$at": 11
                                             }
-                                          ]
+                                          ],
+                                          "$at": 8
                                         },
                                         {
                                           "$el": "SidebarMenuItem",
@@ -329,7 +355,8 @@ extension Stories {
                                                     "icon": {
                                                       "$icon": "Book20Regular"
                                                     }
-                                                  }
+                                                  },
+                                                  "$at": 14
                                                 },
                                                 "tooltip": "Glossaries",
                                                 "active": {
@@ -351,9 +378,11 @@ extension Stories {
                                               },
                                               "children": [
                                                 "Glossaries"
-                                              ]
+                                              ],
+                                              "$at": 13
                                             }
-                                          ]
+                                          ],
+                                          "$at": 12
                                         },
                                         {
                                           "$el": "SidebarMenuItem",
@@ -367,7 +396,8 @@ extension Stories {
                                                     "icon": {
                                                       "$icon": "Settings20Regular"
                                                     }
-                                                  }
+                                                  },
+                                                  "$at": 17
                                                 },
                                                 "tooltip": "Settings",
                                                 "active": {
@@ -389,19 +419,26 @@ extension Stories {
                                               },
                                               "children": [
                                                 "Settings"
-                                              ]
+                                              ],
+                                              "$at": 16
                                             }
-                                          ]
+                                          ],
+                                          "$at": 15
                                         }
-                                      ]
+                                      ],
+                                      "$at": 7
                                     }
-                                  ]
+                                  ],
+                                  "$at": 6
                                 }
-                              ]
+                              ],
+                              "$at": 4
                             }
-                          ]
+                          ],
+                          "$at": 3
                         }
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "SidebarInset",
@@ -416,7 +453,8 @@ extension Stories {
                               },
                               "children": [
                                 {
-                                  "$el": "SidebarTrigger"
+                                  "$el": "SidebarTrigger",
+                                  "$at": 20
                                 },
                                 {
                                   "$el": "Text",
@@ -431,11 +469,14 @@ extension Stories {
                                 }
                               ]
                             }
-                          ]
+                          ],
+                          "$at": 19
                         }
-                      ]
+                      ],
+                      "$at": 18
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }
@@ -471,7 +512,8 @@ extension Stories {
                                 "Workspace"
                               ]
                             }
-                          ]
+                          ],
+                          "$at": 2
                         },
                         {
                           "$el": "SidebarContent",
@@ -483,7 +525,8 @@ extension Stories {
                                   "$el": "SidebarGroupLabel",
                                   "children": [
                                     "Library"
-                                  ]
+                                  ],
+                                  "$at": 5
                                 },
                                 {
                                   "$el": "SidebarGroupContent",
@@ -503,7 +546,8 @@ extension Stories {
                                                     "icon": {
                                                       "$icon": "Document20Regular"
                                                     }
-                                                  }
+                                                  },
+                                                  "$at": 10
                                                 },
                                                 "tooltip": "Documents",
                                                 "active": {
@@ -525,15 +569,18 @@ extension Stories {
                                               },
                                               "children": [
                                                 "Documents"
-                                              ]
+                                              ],
+                                              "$at": 9
                                             },
                                             {
                                               "$el": "SidebarMenuBadge",
                                               "children": [
                                                 "12"
-                                              ]
+                                              ],
+                                              "$at": 11
                                             }
-                                          ]
+                                          ],
+                                          "$at": 8
                                         },
                                         {
                                           "$el": "SidebarMenuItem",
@@ -547,7 +594,8 @@ extension Stories {
                                                     "icon": {
                                                       "$icon": "Book20Regular"
                                                     }
-                                                  }
+                                                  },
+                                                  "$at": 14
                                                 },
                                                 "tooltip": "Glossaries",
                                                 "active": {
@@ -569,9 +617,11 @@ extension Stories {
                                               },
                                               "children": [
                                                 "Glossaries"
-                                              ]
+                                              ],
+                                              "$at": 13
                                             }
-                                          ]
+                                          ],
+                                          "$at": 12
                                         },
                                         {
                                           "$el": "SidebarMenuItem",
@@ -585,7 +635,8 @@ extension Stories {
                                                     "icon": {
                                                       "$icon": "Settings20Regular"
                                                     }
-                                                  }
+                                                  },
+                                                  "$at": 17
                                                 },
                                                 "tooltip": "Settings",
                                                 "active": {
@@ -607,19 +658,26 @@ extension Stories {
                                               },
                                               "children": [
                                                 "Settings"
-                                              ]
+                                              ],
+                                              "$at": 16
                                             }
-                                          ]
+                                          ],
+                                          "$at": 15
                                         }
-                                      ]
+                                      ],
+                                      "$at": 7
                                     }
-                                  ]
+                                  ],
+                                  "$at": 6
                                 }
-                              ]
+                              ],
+                              "$at": 4
                             }
-                          ]
+                          ],
+                          "$at": 3
                         }
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "SidebarInset",
@@ -634,7 +692,8 @@ extension Stories {
                               },
                               "children": [
                                 {
-                                  "$el": "SidebarTrigger"
+                                  "$el": "SidebarTrigger",
+                                  "$at": 20
                                 },
                                 {
                                   "$el": "Text",
@@ -649,11 +708,14 @@ extension Stories {
                                 }
                               ]
                             }
-                          ]
+                          ],
+                          "$at": 19
                         }
-                      ]
+                      ],
+                      "$at": 18
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }
@@ -696,7 +758,8 @@ extension Stories {
                                     "Workspace"
                                   ]
                                 }
-                              ]
+                              ],
+                              "$at": 2
                             },
                             {
                               "$el": "SidebarContent",
@@ -708,7 +771,8 @@ extension Stories {
                                       "$el": "SidebarGroupLabel",
                                       "children": [
                                         "Library"
-                                      ]
+                                      ],
+                                      "$at": 5
                                     },
                                     {
                                       "$el": "SidebarGroupContent",
@@ -728,7 +792,8 @@ extension Stories {
                                                         "icon": {
                                                           "$icon": "Document20Regular"
                                                         }
-                                                      }
+                                                      },
+                                                      "$at": 10
                                                     },
                                                     "tooltip": "Documents",
                                                     "active": {
@@ -750,15 +815,18 @@ extension Stories {
                                                   },
                                                   "children": [
                                                     "Documents"
-                                                  ]
+                                                  ],
+                                                  "$at": 9
                                                 },
                                                 {
                                                   "$el": "SidebarMenuBadge",
                                                   "children": [
                                                     "12"
-                                                  ]
+                                                  ],
+                                                  "$at": 11
                                                 }
-                                              ]
+                                              ],
+                                              "$at": 8
                                             },
                                             {
                                               "$el": "SidebarMenuItem",
@@ -772,7 +840,8 @@ extension Stories {
                                                         "icon": {
                                                           "$icon": "Book20Regular"
                                                         }
-                                                      }
+                                                      },
+                                                      "$at": 14
                                                     },
                                                     "tooltip": "Glossaries",
                                                     "active": {
@@ -794,9 +863,11 @@ extension Stories {
                                                   },
                                                   "children": [
                                                     "Glossaries"
-                                                  ]
+                                                  ],
+                                                  "$at": 13
                                                 }
-                                              ]
+                                              ],
+                                              "$at": 12
                                             },
                                             {
                                               "$el": "SidebarMenuItem",
@@ -810,7 +881,8 @@ extension Stories {
                                                         "icon": {
                                                           "$icon": "Settings20Regular"
                                                         }
-                                                      }
+                                                      },
+                                                      "$at": 17
                                                     },
                                                     "tooltip": "Settings",
                                                     "active": {
@@ -832,19 +904,26 @@ extension Stories {
                                                   },
                                                   "children": [
                                                     "Settings"
-                                                  ]
+                                                  ],
+                                                  "$at": 16
                                                 }
-                                              ]
+                                              ],
+                                              "$at": 15
                                             }
-                                          ]
+                                          ],
+                                          "$at": 7
                                         }
-                                      ]
+                                      ],
+                                      "$at": 6
                                     }
-                                  ]
+                                  ],
+                                  "$at": 4
                                 }
-                              ]
+                              ],
+                              "$at": 3
                             }
-                          ]
+                          ],
+                          "$at": 1
                         },
                         {
                           "$el": "SidebarInset",
@@ -859,7 +938,8 @@ extension Stories {
                                   },
                                   "children": [
                                     {
-                                      "$el": "SidebarTrigger"
+                                      "$el": "SidebarTrigger",
+                                      "$at": 20
                                     },
                                     {
                                       "$el": "Text",
@@ -874,11 +954,14 @@ extension Stories {
                                     }
                                   ]
                                 }
-                              ]
+                              ],
+                              "$at": 19
                             }
-                          ]
+                          ],
+                          "$at": 18
                         }
-                      ]
+                      ],
+                      "$at": 0
                     }
                   ]
                 },
@@ -906,7 +989,8 @@ extension Stories {
                                     "Workspace"
                                   ]
                                 }
-                              ]
+                              ],
+                              "$at": 23
                             },
                             {
                               "$el": "SidebarContent",
@@ -918,7 +1002,8 @@ extension Stories {
                                       "$el": "SidebarGroupLabel",
                                       "children": [
                                         "Library"
-                                      ]
+                                      ],
+                                      "$at": 26
                                     },
                                     {
                                       "$el": "SidebarGroupContent",
@@ -938,7 +1023,8 @@ extension Stories {
                                                         "icon": {
                                                           "$icon": "Document20Regular"
                                                         }
-                                                      }
+                                                      },
+                                                      "$at": 31
                                                     },
                                                     "tooltip": "Documents",
                                                     "active": {
@@ -960,15 +1046,18 @@ extension Stories {
                                                   },
                                                   "children": [
                                                     "Documents"
-                                                  ]
+                                                  ],
+                                                  "$at": 30
                                                 },
                                                 {
                                                   "$el": "SidebarMenuBadge",
                                                   "children": [
                                                     "12"
-                                                  ]
+                                                  ],
+                                                  "$at": 32
                                                 }
-                                              ]
+                                              ],
+                                              "$at": 29
                                             },
                                             {
                                               "$el": "SidebarMenuItem",
@@ -982,7 +1071,8 @@ extension Stories {
                                                         "icon": {
                                                           "$icon": "Book20Regular"
                                                         }
-                                                      }
+                                                      },
+                                                      "$at": 35
                                                     },
                                                     "tooltip": "Glossaries",
                                                     "active": {
@@ -1004,9 +1094,11 @@ extension Stories {
                                                   },
                                                   "children": [
                                                     "Glossaries"
-                                                  ]
+                                                  ],
+                                                  "$at": 34
                                                 }
-                                              ]
+                                              ],
+                                              "$at": 33
                                             },
                                             {
                                               "$el": "SidebarMenuItem",
@@ -1020,7 +1112,8 @@ extension Stories {
                                                         "icon": {
                                                           "$icon": "Settings20Regular"
                                                         }
-                                                      }
+                                                      },
+                                                      "$at": 38
                                                     },
                                                     "tooltip": "Settings",
                                                     "active": {
@@ -1042,19 +1135,26 @@ extension Stories {
                                                   },
                                                   "children": [
                                                     "Settings"
-                                                  ]
+                                                  ],
+                                                  "$at": 37
                                                 }
-                                              ]
+                                              ],
+                                              "$at": 36
                                             }
-                                          ]
+                                          ],
+                                          "$at": 28
                                         }
-                                      ]
+                                      ],
+                                      "$at": 27
                                     }
-                                  ]
+                                  ],
+                                  "$at": 25
                                 }
-                              ]
+                              ],
+                              "$at": 24
                             }
-                          ]
+                          ],
+                          "$at": 22
                         },
                         {
                           "$el": "SidebarInset",
@@ -1069,7 +1169,8 @@ extension Stories {
                                   },
                                   "children": [
                                     {
-                                      "$el": "SidebarTrigger"
+                                      "$el": "SidebarTrigger",
+                                      "$at": 41
                                     },
                                     {
                                       "$el": "Text",
@@ -1084,11 +1185,14 @@ extension Stories {
                                     }
                                   ]
                                 }
-                              ]
+                              ],
+                              "$at": 40
                             }
-                          ]
+                          ],
+                          "$at": 39
                         }
-                      ]
+                      ],
+                      "$at": 21
                     }
                   ]
                 }

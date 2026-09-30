@@ -43,7 +43,8 @@ extension Stories {
                         }
                       ]
                     }
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "SplitterPanel",
@@ -69,9 +70,11 @@ extension Stories {
                         }
                       ]
                     }
-                  ]
+                  ],
+                  "$at": 2
                 }
-              ]
+              ],
+              "$at": 0
             }
           ]
         }
@@ -113,7 +116,8 @@ extension Stories {
                             }
                           ]
                         }
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "SplitterPanel",
@@ -140,7 +144,8 @@ extension Stories {
                             }
                           ]
                         }
-                      ]
+                      ],
+                      "$at": 2
                     },
                     {
                       "$el": "SplitterPanel",
@@ -168,9 +173,11 @@ extension Stories {
                             }
                           ]
                         }
-                      ]
+                      ],
+                      "$at": 3
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }
@@ -212,7 +219,8 @@ extension Stories {
                             }
                           ]
                         }
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "SplitterPanel",
@@ -238,9 +246,11 @@ extension Stories {
                             }
                           ]
                         }
-                      ]
+                      ],
+                      "$at": 2
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }

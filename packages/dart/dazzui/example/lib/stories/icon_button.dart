@@ -19,8 +19,10 @@ const story = Story(
               "props": {
                 "icon": {"\$icon": "Add20Regular"},
               },
+              "\$at": 1,
             },
           ],
+          "\$at": 0,
         },
         {
           "\$el": "IconButton",
@@ -31,8 +33,10 @@ const story = Story(
               "props": {
                 "icon": {"\$icon": "Settings20Regular"},
               },
+              "\$at": 3,
             },
           ],
+          "\$at": 2,
         },
         {
           "\$el": "IconButton",
@@ -43,8 +47,10 @@ const story = Story(
               "props": {
                 "icon": {"\$icon": "Delete20Regular"},
               },
+              "\$at": 5,
             },
           ],
+          "\$at": 4,
         },
       ],
     },
@@ -65,8 +71,10 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Settings20Regular"},
                   },
+                  "\$at": 1,
                 },
               ],
+              "\$at": 0,
             },
             {
               "\$el": "IconButton",
@@ -77,8 +85,10 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Settings20Regular"},
                   },
+                  "\$at": 3,
                 },
               ],
+              "\$at": 2,
             },
             {
               "\$el": "IconButton",
@@ -89,8 +99,10 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Settings20Regular"},
                   },
+                  "\$at": 5,
                 },
               ],
+              "\$at": 4,
             },
             {
               "\$el": "IconButton",
@@ -101,8 +113,10 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Settings20Regular"},
                   },
+                  "\$at": 7,
                 },
               ],
+              "\$at": 6,
             },
             {
               "\$el": "IconButton",
@@ -113,8 +127,10 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Settings20Regular"},
                   },
+                  "\$at": 9,
                 },
               ],
+              "\$at": 8,
             },
             {
               "\$el": "IconButton",
@@ -125,8 +141,10 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Settings20Regular"},
                   },
+                  "\$at": 11,
                 },
               ],
+              "\$at": 10,
             },
           ],
         },
@@ -147,8 +165,10 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Add20Regular"},
                   },
+                  "\$at": 1,
                 },
               ],
+              "\$at": 0,
             },
             {
               "\$el": "IconButton",
@@ -159,8 +179,10 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Add20Regular"},
                   },
+                  "\$at": 3,
                 },
               ],
+              "\$at": 2,
             },
             {
               "\$el": "IconButton",
@@ -171,8 +193,10 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Add20Regular"},
                   },
+                  "\$at": 5,
                 },
               ],
+              "\$at": 4,
             },
             {
               "\$el": "IconButton",
@@ -183,8 +207,10 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Add20Regular"},
                   },
+                  "\$at": 7,
                 },
               ],
+              "\$at": 6,
             },
           ],
         },

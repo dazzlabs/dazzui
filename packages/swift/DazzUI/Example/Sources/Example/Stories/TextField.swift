@@ -20,7 +20,8 @@ extension Stories {
               "props": {
                 "placeholder": "you@example.com",
                 "aria-label": "Email"
-              }
+              },
+              "$at": 0
             }
           ]
         }
@@ -41,7 +42,8 @@ extension Stories {
                     "size": "small",
                     "placeholder": "Small",
                     "aria-label": "Small"
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "TextField",
@@ -49,7 +51,8 @@ extension Stories {
                     "size": "medium",
                     "placeholder": "Medium",
                     "aria-label": "Medium"
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "TextField",
@@ -57,7 +60,8 @@ extension Stories {
                     "size": "large",
                     "placeholder": "Large",
                     "aria-label": "Large"
-                  }
+                  },
+                  "$at": 2
                 }
               ]
             }
@@ -77,7 +81,8 @@ extension Stories {
                   "props": {
                     "defaultValue": "Filled in",
                     "aria-label": "Filled"
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "TextField",
@@ -85,7 +90,8 @@ extension Stories {
                     "state": "error",
                     "defaultValue": "not-an-email",
                     "aria-label": "Error"
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "TextField",
@@ -93,7 +99,8 @@ extension Stories {
                     "disabled": true,
                     "defaultValue": "Disabled",
                     "aria-label": "Disabled"
-                  }
+                  },
+                  "$at": 2
                 },
                 {
                   "$el": "TextField",
@@ -101,7 +108,8 @@ extension Stories {
                     "mono": true,
                     "defaultValue": "sk-4f9a…c21e",
                     "aria-label": "Key"
-                  }
+                  },
+                  "$at": 3
                 }
               ]
             }
@@ -123,7 +131,8 @@ extension Stories {
                     "rows": 3,
                     "placeholder": "Anything the reviewer should know",
                     "aria-label": "Notes"
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             }

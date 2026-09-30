@@ -27,6 +27,7 @@ const story = Story(
         },
         "aria-label": "View",
       },
+      "\$at": 0,
     },
   ),
   examples: [
@@ -58,6 +59,7 @@ const story = Story(
                 "size": "small",
                 "aria-label": "View",
               },
+              "\$at": 0,
             },
             {
               "\$el": "SegmentedControl",
@@ -79,6 +81,7 @@ const story = Story(
                 "size": "medium",
                 "aria-label": "View",
               },
+              "\$at": 1,
             },
             {
               "\$el": "SegmentedControl",
@@ -100,6 +103,7 @@ const story = Story(
                 "size": "large",
                 "aria-label": "View",
               },
+              "\$at": 2,
             },
           ],
         },

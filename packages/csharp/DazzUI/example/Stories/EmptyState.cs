@@ -18,7 +18,8 @@ static partial class Stories
               "$el": "EmptyState",
               "props": {
                 "title": "No projects yet"
-              }
+              },
+              "$at": 0
             }
           },
           "examples": [
@@ -35,7 +36,8 @@ static partial class Stories
                       "$el": "EmptyState",
                       "props": {
                         "title": "Nothing matches that search"
-                      }
+                      },
+                      "$at": 0
                     }
                   ]
                 }
@@ -61,9 +63,11 @@ static partial class Stories
                           },
                           "children": [
                             "New project"
-                          ]
+                          ],
+                          "$at": 1
                         }
-                      }
+                      },
+                      "$at": 0
                     }
                   ]
                 }

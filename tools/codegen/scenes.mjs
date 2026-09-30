@@ -7,7 +7,8 @@
  * each platform's collector draws. The walk is pre-order: an element, then
  * the elements among its props in the order they were written (into lists
  * and objects, as deep as they go), then its children. A collector finds its
- * own specimens by the same walk, so the order here is the contract.
+ * own specimens by the same walk, or reads the `$at` it leaves on each
+ * specimen's node — so the order here is the contract.
  */
 
 /** The stage arranges; it is never a specimen. */
@@ -81,6 +82,12 @@ function scene(storyId, id, title, compiled) {
     const before = specimens.length
     let specimen
     if (!STAGE.has(node.$el)) {
+      // The compiled scene carries its own addresses, so a port that cannot
+      // repeat this walk — SwiftUI keeps no order among an element's props —
+      // still knows which specimen each component is.
+      if ('$at' in node)
+        throw new Error(`${address}: one element is drawn in two places`)
+      node.$at = specimens.length
       specimen = {
         address: `${address}/${specimens.length}`,
         component: kebab(node.$el),
@@ -109,7 +116,10 @@ function scene(storyId, id, title, compiled) {
   return { id: address, title, specimens }
 }
 
-/** `tools/conformance/scenes.json`. */
+/**
+ * `tools/conformance/scenes.json`. It also writes each specimen's index into
+ * its node as `$at`, so it runs before the platforms' sources are emitted.
+ */
 export function scenesJson(stories) {
   return (
     JSON.stringify(

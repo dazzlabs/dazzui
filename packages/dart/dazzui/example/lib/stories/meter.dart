@@ -14,6 +14,7 @@ const story = Story(
         {
           "\$el": "Meter",
           "props": {"value": 62, "label": "Storage", "showValue": true},
+          "\$at": 0,
         },
       ],
     },
@@ -29,6 +30,7 @@ const story = Story(
             {
               "\$el": "Meter",
               "props": {"value": 62, "label": "Storage", "showValue": true},
+              "\$at": 0,
             },
           ],
         },
@@ -44,14 +46,17 @@ const story = Story(
             {
               "\$el": "Meter",
               "props": {"size": "small", "value": 48, "aria-label": "small"},
+              "\$at": 0,
             },
             {
               "\$el": "Meter",
               "props": {"size": "medium", "value": 48, "aria-label": "medium"},
+              "\$at": 1,
             },
             {
               "\$el": "Meter",
               "props": {"size": "large", "value": 48, "aria-label": "large"},
+              "\$at": 2,
             },
           ],
         },
@@ -72,6 +77,7 @@ const story = Story(
                 "label": "Memory",
                 "showValue": true,
               },
+              "\$at": 0,
             },
             {
               "\$el": "Meter",
@@ -81,6 +87,7 @@ const story = Story(
                 "label": "Disk",
                 "showValue": true,
               },
+              "\$at": 1,
             },
             {
               "\$el": "Meter",
@@ -90,6 +97,7 @@ const story = Story(
                 "label": "Quota",
                 "showValue": true,
               },
+              "\$at": 2,
             },
           ],
         },

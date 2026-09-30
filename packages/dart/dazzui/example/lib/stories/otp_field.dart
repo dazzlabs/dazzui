@@ -10,6 +10,7 @@ const story = Story(
     content: {
       "\$el": "OtpField",
       "props": {"length": 6, "aria-label": "Code"},
+      "\$at": 0,
     },
   ),
   examples: [
@@ -19,6 +20,7 @@ const story = Story(
         content: {
           "\$el": "OtpField",
           "props": {"length": 6, "aria-label": "Code"},
+          "\$at": 0,
         },
       ),
     ),
@@ -28,6 +30,7 @@ const story = Story(
         content: {
           "\$el": "OtpField",
           "props": {"length": 6, "groupAfter": 3, "aria-label": "Code"},
+          "\$at": 0,
         },
       ),
     ),
@@ -41,14 +44,17 @@ const story = Story(
             {
               "\$el": "OtpField",
               "props": {"length": 4, "size": "small", "aria-label": "Small"},
+              "\$at": 0,
             },
             {
               "\$el": "OtpField",
               "props": {"length": 4, "size": "large", "aria-label": "Large"},
+              "\$at": 1,
             },
             {
               "\$el": "OtpField",
               "props": {"length": 4, "state": "error", "aria-label": "Error"},
+              "\$at": 2,
             },
           ],
         },

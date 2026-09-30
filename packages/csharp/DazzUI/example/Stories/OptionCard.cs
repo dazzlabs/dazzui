@@ -45,7 +45,8 @@ static partial class Stories
                         }
                       ]
                     }
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "OptionCard",
@@ -68,7 +69,8 @@ static partial class Stories
                         }
                       ]
                     }
-                  }
+                  },
+                  "$at": 1
                 }
               ]
             }
@@ -108,7 +110,8 @@ static partial class Stories
                             }
                           ]
                         }
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "OptionCard",
@@ -131,7 +134,8 @@ static partial class Stories
                             }
                           ]
                         }
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "OptionCard",
@@ -154,7 +158,8 @@ static partial class Stories
                             }
                           ]
                         }
-                      }
+                      },
+                      "$at": 2
                     }
                   ]
                 }
@@ -175,7 +180,8 @@ static partial class Stories
                         "title": "Enterprise",
                         "description": "Talk to us.",
                         "disabled": true
-                      }
+                      },
+                      "$at": 0
                     }
                   ]
                 }

@@ -44,7 +44,8 @@ static partial class Stories
                   },
                   "children": [
                     "Design"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Tag",
@@ -65,7 +66,8 @@ static partial class Stories
                   },
                   "children": [
                     "Engineering"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "Tag",
@@ -86,7 +88,8 @@ static partial class Stories
                   },
                   "children": [
                     "Research"
-                  ]
+                  ],
+                  "$at": 2
                 }
               ]
             }
@@ -125,7 +128,8 @@ static partial class Stories
                       },
                       "children": [
                         "Design"
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "Tag",
@@ -146,7 +150,8 @@ static partial class Stories
                       },
                       "children": [
                         "Engineering"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "Tag",
@@ -167,7 +172,8 @@ static partial class Stories
                       },
                       "children": [
                         "Research"
-                      ]
+                      ],
+                      "$at": 2
                     }
                   ]
                 }
@@ -191,7 +197,8 @@ static partial class Stories
                       },
                       "children": [
                         "alice@example.com"
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "Tag",
@@ -203,7 +210,8 @@ static partial class Stories
                       },
                       "children": [
                         "bob@example.com"
-                      ]
+                      ],
+                      "$at": 1
                     }
                   ]
                 }

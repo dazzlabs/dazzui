@@ -30,7 +30,8 @@ static partial class Stories
                       },
                       "children": [
                         "Cancel"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "Button",
@@ -39,9 +40,11 @@ static partial class Stories
                       },
                       "children": [
                         "Save"
-                      ]
+                      ],
+                      "$at": 2
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }
@@ -70,7 +73,8 @@ static partial class Stories
                           },
                           "children": [
                             "start"
-                          ]
+                          ],
+                          "$at": 1
                         },
                         {
                           "$el": "Button",
@@ -79,9 +83,11 @@ static partial class Stories
                           },
                           "children": [
                             "Save"
-                          ]
+                          ],
+                          "$at": 2
                         }
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "ActionBar",
@@ -96,7 +102,8 @@ static partial class Stories
                           },
                           "children": [
                             "end"
-                          ]
+                          ],
+                          "$at": 4
                         },
                         {
                           "$el": "Button",
@@ -105,9 +112,11 @@ static partial class Stories
                           },
                           "children": [
                             "Save"
-                          ]
+                          ],
+                          "$at": 5
                         }
-                      ]
+                      ],
+                      "$at": 3
                     },
                     {
                       "$el": "ActionBar",
@@ -122,7 +131,8 @@ static partial class Stories
                           },
                           "children": [
                             "between"
-                          ]
+                          ],
+                          "$at": 7
                         },
                         {
                           "$el": "Button",
@@ -131,9 +141,11 @@ static partial class Stories
                           },
                           "children": [
                             "Save"
-                          ]
+                          ],
+                          "$at": 8
                         }
-                      ]
+                      ],
+                      "$at": 6
                     }
                   ]
                 }
@@ -161,7 +173,8 @@ static partial class Stories
                           },
                           "children": [
                             "⌘↵ to send"
-                          ]
+                          ],
+                          "$at": 1
                         },
                         {
                           "$el": "Button",
@@ -170,9 +183,11 @@ static partial class Stories
                           },
                           "children": [
                             "Send"
-                          ]
+                          ],
+                          "$at": 2
                         }
-                      ]
+                      ],
+                      "$at": 0
                     }
                   ]
                 }

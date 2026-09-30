@@ -32,12 +32,15 @@ static partial class Stories
                   },
                   "children": [
                     "Save"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
-                  "$el": "ToastViewport"
+                  "$el": "ToastViewport",
+                  "$at": 2
                 }
-              ]
+              ],
+              "$at": 0
             }
           },
           "examples": [
@@ -68,7 +71,8 @@ static partial class Stories
                           },
                           "children": [
                             "primary"
-                          ]
+                          ],
+                          "$at": 1
                         },
                         {
                           "$el": "Button",
@@ -88,7 +92,8 @@ static partial class Stories
                           },
                           "children": [
                             "neutral"
-                          ]
+                          ],
+                          "$at": 2
                         },
                         {
                           "$el": "Button",
@@ -108,7 +113,8 @@ static partial class Stories
                           },
                           "children": [
                             "info"
-                          ]
+                          ],
+                          "$at": 3
                         },
                         {
                           "$el": "Button",
@@ -128,7 +134,8 @@ static partial class Stories
                           },
                           "children": [
                             "success"
-                          ]
+                          ],
+                          "$at": 4
                         },
                         {
                           "$el": "Button",
@@ -148,7 +155,8 @@ static partial class Stories
                           },
                           "children": [
                             "warning"
-                          ]
+                          ],
+                          "$at": 5
                         },
                         {
                           "$el": "Button",
@@ -168,14 +176,17 @@ static partial class Stories
                           },
                           "children": [
                             "danger"
-                          ]
+                          ],
+                          "$at": 6
                         }
                       ]
                     },
                     {
-                      "$el": "ToastViewport"
+                      "$el": "ToastViewport",
+                      "$at": 7
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               }
             },
@@ -206,12 +217,15 @@ static partial class Stories
                       },
                       "children": [
                         "Archive"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
-                      "$el": "ToastViewport"
+                      "$el": "ToastViewport",
+                      "$at": 2
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               }
             },
@@ -236,15 +250,18 @@ static partial class Stories
                       },
                       "children": [
                         "Save"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "ToastViewport",
                       "props": {
                         "placement": "top"
-                      }
+                      },
+                      "$at": 2
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               }
             }

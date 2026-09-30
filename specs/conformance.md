@@ -81,6 +81,12 @@ The walk is fixed, because every collector repeats it
 - A helper component the story defines is followed into what it returns,
   as codegen inlines it.
 
+Codegen also writes each specimen's index into its node in the compiled
+scene, as `"$at": 5`, so a port needn't repeat the walk: SwiftUI's
+interpreter, whose JSON keeps no order among an element's props, reads the
+address straight off the node it draws. Flutter's and WinUI's collectors
+repeat the walk as well, and refuse a scene where the two disagree.
+
 A specimen that draws nothing of its own — a provider, a `Tooltip` lending
 its trigger a behaviour — has no reading either: its trigger is a specimen
 of its own.
@@ -282,7 +288,7 @@ copies `scenes.json` and `tolerances.json` beside the readings, so `data/` is
 a complete measurement on its own. Collectors take the drawn twelve themes
 by default; `--themes all` is every theme the example carries.
 
-Three collectors are written:
+Four collectors are written:
 
 - **React** — described above.
 - **Flutter** — `packages/dart/dazzui/example/tool/conformance.sh`, which
@@ -300,6 +306,17 @@ Three collectors are written:
   it, as a list item carries a key, and is found by that instead. A glyph
   a kit widget takes as `IconData` and draws inside itself has no widget of
   its own, and is missing.
+- **SwiftUI** — `packages/swift/DazzUI/Example/tool/conformance.sh`, which
+  runs `Tests/ExampleTests/ConformanceCollector.swift` with `xcodebuild
+  test`, its settings passed with Xcode's `TEST_RUNNER_` prefix. Each scene
+  is drawn in an `NSHostingView` inside a window, so layout lands on half
+  points as React's page does at 2x, and every component drawn from a node
+  with an `$at` reports its frame as a preference while collecting. A view
+  is a value that cannot say what it painted, so this reads the box and
+  nothing else: every other property is unread, and the scenes are for
+  eyes. A container exactly its one child's size is common, so a wrapper
+  that draws nothing is not told apart here; its reading is one the
+  reference has none for, and nothing holds it.
 - **WinUI** — `packages/csharp/DazzUI/scripts/conformance.sh`, which runs
   the example with `--conformance` (`example/Conformance/`) in a real
   window. From a Mac it copies the package and the contract to the Windows

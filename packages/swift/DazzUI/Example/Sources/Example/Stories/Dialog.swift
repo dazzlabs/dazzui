@@ -20,7 +20,8 @@ extension Stories {
                   "$el": "Button",
                   "children": [
                     "Rename…"
-                  ]
+                  ],
+                  "$at": 1
                 }
               },
               "children": [
@@ -29,7 +30,8 @@ extension Stories {
                   "props": {
                     "title": "Rename project",
                     "subtitle": "Links to it keep working."
-                  }
+                  },
+                  "$at": 2
                 },
                 {
                   "$el": "DialogBody",
@@ -39,9 +41,11 @@ extension Stories {
                       "props": {
                         "defaultValue": "Quarterly report",
                         "aria-label": "Name"
-                      }
+                      },
+                      "$at": 4
                     }
-                  ]
+                  ],
+                  "$at": 3
                 },
                 {
                   "$el": "DialogFooter",
@@ -56,9 +60,11 @@ extension Stories {
                           },
                           "children": [
                             "Cancel"
-                          ]
+                          ],
+                          "$at": 7
                         }
-                      }
+                      },
+                      "$at": 6
                     },
                     {
                       "$el": "DialogClose",
@@ -70,13 +76,17 @@ extension Stories {
                           },
                           "children": [
                             "Rename"
-                          ]
+                          ],
+                          "$at": 9
                         }
-                      }
+                      },
+                      "$at": 8
                     }
-                  ]
+                  ],
+                  "$at": 5
                 }
-              ]
+              ],
+              "$at": 0
             }
           ]
         }
@@ -93,7 +103,8 @@ extension Stories {
                   "$el": "Button",
                   "children": [
                     "Rename…"
-                  ]
+                  ],
+                  "$at": 1
                 }
               },
               "children": [
@@ -102,7 +113,8 @@ extension Stories {
                   "props": {
                     "title": "Rename project",
                     "subtitle": "Links to it keep working."
-                  }
+                  },
+                  "$at": 2
                 },
                 {
                   "$el": "DialogBody",
@@ -112,9 +124,11 @@ extension Stories {
                       "props": {
                         "defaultValue": "Quarterly report",
                         "aria-label": "Name"
-                      }
+                      },
+                      "$at": 4
                     }
-                  ]
+                  ],
+                  "$at": 3
                 },
                 {
                   "$el": "DialogFooter",
@@ -129,9 +143,11 @@ extension Stories {
                           },
                           "children": [
                             "Cancel"
-                          ]
+                          ],
+                          "$at": 7
                         }
-                      }
+                      },
+                      "$at": 6
                     },
                     {
                       "$el": "DialogClose",
@@ -143,13 +159,17 @@ extension Stories {
                           },
                           "children": [
                             "Rename"
-                          ]
+                          ],
+                          "$at": 9
                         }
-                      }
+                      },
+                      "$at": 8
                     }
-                  ]
+                  ],
+                  "$at": 5
                 }
-              ]
+              ],
+              "$at": 0
             }
           }
         },
@@ -170,7 +190,8 @@ extension Stories {
                   },
                   "children": [
                     "Delete…"
-                  ]
+                  ],
+                  "$at": 1
                 }
               },
               "children": [
@@ -179,7 +200,8 @@ extension Stories {
                   "props": {
                     "title": "Delete this project?",
                     "subtitle": "Its files go with it. This cannot be undone."
-                  }
+                  },
+                  "$at": 2
                 },
                 {
                   "$el": "DialogFooter",
@@ -194,9 +216,11 @@ extension Stories {
                           },
                           "children": [
                             "Keep it"
-                          ]
+                          ],
+                          "$at": 5
                         }
-                      }
+                      },
+                      "$at": 4
                     },
                     {
                       "$el": "DialogClose",
@@ -209,13 +233,17 @@ extension Stories {
                           },
                           "children": [
                             "Delete"
-                          ]
+                          ],
+                          "$at": 7
                         }
-                      }
+                      },
+                      "$at": 6
                     }
-                  ]
+                  ],
+                  "$at": 3
                 }
-              ]
+              ],
+              "$at": 0
             }
           }
         }

@@ -31,9 +31,11 @@ static partial class Stories
                       "$el": "TextField",
                       "props": {
                         "defaultValue": "Quarterly report"
-                      }
+                      },
+                      "$at": 1
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }
@@ -60,9 +62,11 @@ static partial class Stories
                           "props": {
                             "type": "email",
                             "placeholder": "you@example.com"
-                          }
+                          },
+                          "$at": 1
                         }
-                      ]
+                      ],
+                      "$at": 0
                     }
                   ]
                 }
@@ -90,9 +94,11 @@ static partial class Stories
                           "props": {
                             "state": "error",
                             "defaultValue": "ada@"
-                          }
+                          },
+                          "$at": 1
                         }
-                      ]
+                      ],
+                      "$at": 0
                     }
                   ]
                 }
@@ -127,9 +133,11 @@ static partial class Stories
                                 "label": "Chinese"
                               }
                             ]
-                          }
+                          },
+                          "$at": 1
                         }
-                      ]
+                      ],
+                      "$at": 0
                     }
                   ]
                 }

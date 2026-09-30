@@ -147,7 +147,7 @@ pnpm example            # build both, then serve the React example on :6006
 ```
 
 ```bash
-pnpm conformance       # collect readings into tools/conformance/data/ — React, Flutter, and WinUI over SSH
+pnpm conformance       # collect readings into tools/conformance/data/ — React, Flutter, SwiftUI, and WinUI over SSH
 ```
 
 ```bash
@@ -178,7 +178,7 @@ before making it:
 - [`specs/tokens.md`](specs/tokens.md) — How a value is decided: the token pipeline, the three layers, and the colour system's washes, grades and recipes.
 - [`specs/themes.md`](specs/themes.md) — The twelve drawn themes, the imported ones, and how each platform carries a theme.
 - [`specs/components.md`](specs/components.md) — How the React package is built and how a component is drawn — the model every port follows.
-- [`specs/conformance.md`](specs/conformance.md) — How an implementation is shown to draw what React draws: scenes and addresses, readings, tolerances, expectations and the viewer. React's, Flutter's and WinUI's collectors are written; SwiftUI's is not yet.
+- [`specs/conformance.md`](specs/conformance.md) — How an implementation is shown to draw what React draws: scenes and addresses, readings, tolerances, expectations and the viewer. Every desktop implementation has a collector.
 - [`specs/playgrounds.md`](specs/playgrounds.md) — How a story is written once, in the React example, and compiled into the other platforms' examples.
 
 ## Code style

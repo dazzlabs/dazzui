@@ -38,6 +38,12 @@ const COLLECTORS = [
     cwd: join(repo, 'packages/dart/dazzui/example'),
   },
   {
+    platform: 'swiftui',
+    command: 'tool/conformance.sh',
+    args: [],
+    cwd: join(repo, 'packages/swift/DazzUI/Example'),
+  },
+  {
     // Runs on a Windows machine over SSH, or is skipped without one.
     platform: 'winui',
     command: 'scripts/conformance.sh',

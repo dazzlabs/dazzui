@@ -18,6 +18,7 @@ const story = Story(
         "defaultValue": "team",
         "aria-label": "Plan",
       },
+      "\$at": 0,
     },
   ),
   examples: [
@@ -35,6 +36,7 @@ const story = Story(
             "defaultValue": "free",
             "aria-label": "Plan",
           },
+          "\$at": 0,
         },
       ),
     ),
@@ -57,6 +59,7 @@ const story = Story(
                 "defaultValue": "team",
                 "aria-label": "small",
               },
+              "\$at": 0,
             },
             {
               "\$el": "RadioGroup",
@@ -70,6 +73,7 @@ const story = Story(
                 "defaultValue": "team",
                 "aria-label": "medium",
               },
+              "\$at": 1,
             },
             {
               "\$el": "RadioGroup",
@@ -83,6 +87,7 @@ const story = Story(
                 "defaultValue": "team",
                 "aria-label": "large",
               },
+              "\$at": 2,
             },
           ],
         },

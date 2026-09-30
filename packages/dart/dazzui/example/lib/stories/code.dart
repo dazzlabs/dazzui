@@ -14,6 +14,7 @@ const story = Story(
         {
           "\$el": "Code",
           "children": ["pnpm install"],
+          "\$at": 0,
         },
         " first.",
       ],
@@ -30,6 +31,7 @@ const story = Story(
             {
               "\$el": "Code",
               "children": ["data-theme"],
+              "\$at": 0,
             },
             " on the root, or remove it for the default.",
           ],
@@ -50,6 +52,7 @@ const story = Story(
                 "title": "save.tsx",
                 "language": "tsx",
               },
+              "\$at": 0,
             },
           ],
         },
@@ -69,6 +72,7 @@ const story = Story(
                 "lineNumbers": true,
                 "copyable": true,
               },
+              "\$at": 0,
             },
           ],
         },

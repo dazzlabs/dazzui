@@ -22,7 +22,8 @@ extension Stories {
               },
               "children": [
                 "Live"
-              ]
+              ],
+              "$at": 0
             },
             {
               "$el": "Badge",
@@ -31,7 +32,8 @@ extension Stories {
               },
               "children": [
                 "Draft"
-              ]
+              ],
+              "$at": 1
             },
             {
               "$el": "Badge",
@@ -40,7 +42,8 @@ extension Stories {
               },
               "children": [
                 "12"
-              ]
+              ],
+              "$at": 2
             }
           ]
         }
@@ -62,7 +65,8 @@ extension Stories {
                   },
                   "children": [
                     "filled"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Badge",
@@ -71,7 +75,8 @@ extension Stories {
                   },
                   "children": [
                     "tinted"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "Badge",
@@ -80,7 +85,8 @@ extension Stories {
                   },
                   "children": [
                     "outlined"
-                  ]
+                  ],
+                  "$at": 2
                 },
                 {
                   "$el": "Badge",
@@ -89,7 +95,8 @@ extension Stories {
                   },
                   "children": [
                     "raised"
-                  ]
+                  ],
+                  "$at": 3
                 }
               ]
             }
@@ -111,7 +118,8 @@ extension Stories {
                   },
                   "children": [
                     "primary"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Badge",
@@ -120,7 +128,8 @@ extension Stories {
                   },
                   "children": [
                     "neutral"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "Badge",
@@ -129,7 +138,8 @@ extension Stories {
                   },
                   "children": [
                     "info"
-                  ]
+                  ],
+                  "$at": 2
                 },
                 {
                   "$el": "Badge",
@@ -138,7 +148,8 @@ extension Stories {
                   },
                   "children": [
                     "success"
-                  ]
+                  ],
+                  "$at": 3
                 },
                 {
                   "$el": "Badge",
@@ -147,7 +158,8 @@ extension Stories {
                   },
                   "children": [
                     "warning"
-                  ]
+                  ],
+                  "$at": 4
                 },
                 {
                   "$el": "Badge",
@@ -156,7 +168,8 @@ extension Stories {
                   },
                   "children": [
                     "danger"
-                  ]
+                  ],
+                  "$at": 5
                 }
               ]
             }

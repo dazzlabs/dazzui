@@ -28,7 +28,8 @@ extension Stories {
             ],
             "defaultValue": "team",
             "aria-label": "Plan"
-          }
+          },
+          "$at": 0
         }
       },
       "examples": [
@@ -54,7 +55,8 @@ extension Stories {
                 ],
                 "defaultValue": "free",
                 "aria-label": "Plan"
-              }
+              },
+              "$at": 0
             }
           }
         },
@@ -88,7 +90,8 @@ extension Stories {
                     ],
                     "defaultValue": "team",
                     "aria-label": "small"
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "RadioGroup",
@@ -110,7 +113,8 @@ extension Stories {
                     ],
                     "defaultValue": "team",
                     "aria-label": "medium"
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "RadioGroup",
@@ -132,7 +136,8 @@ extension Stories {
                     ],
                     "defaultValue": "team",
                     "aria-label": "large"
-                  }
+                  },
+                  "$at": 2
                 }
               ]
             }

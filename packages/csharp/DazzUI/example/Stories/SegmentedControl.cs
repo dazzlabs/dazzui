@@ -48,7 +48,8 @@ static partial class Stories
                   ]
                 },
                 "aria-label": "View"
-              }
+              },
+              "$at": 0
             }
           },
           "examples": [
@@ -98,7 +99,8 @@ static partial class Stories
                         },
                         "size": "small",
                         "aria-label": "View"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "SegmentedControl",
@@ -132,7 +134,8 @@ static partial class Stories
                         },
                         "size": "medium",
                         "aria-label": "View"
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "SegmentedControl",
@@ -166,7 +169,8 @@ static partial class Stories
                         },
                         "size": "large",
                         "aria-label": "View"
-                      }
+                      },
+                      "$at": 2
                     }
                   ]
                 }

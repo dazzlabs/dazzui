@@ -21,7 +21,8 @@ extension Stories {
                 "value": 62,
                 "label": "Storage",
                 "showValue": true
-              }
+              },
+              "$at": 0
             }
           ]
         }
@@ -42,7 +43,8 @@ extension Stories {
                     "value": 62,
                     "label": "Storage",
                     "showValue": true
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             }
@@ -64,7 +66,8 @@ extension Stories {
                     "size": "small",
                     "value": 48,
                     "aria-label": "small"
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "Meter",
@@ -72,7 +75,8 @@ extension Stories {
                     "size": "medium",
                     "value": 48,
                     "aria-label": "medium"
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "Meter",
@@ -80,7 +84,8 @@ extension Stories {
                     "size": "large",
                     "value": 48,
                     "aria-label": "large"
-                  }
+                  },
+                  "$at": 2
                 }
               ]
             }
@@ -103,7 +108,8 @@ extension Stories {
                     "tint": "success",
                     "label": "Memory",
                     "showValue": true
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "Meter",
@@ -112,7 +118,8 @@ extension Stories {
                     "tint": "warning",
                     "label": "Disk",
                     "showValue": true
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "Meter",
@@ -121,7 +128,8 @@ extension Stories {
                     "tint": "danger",
                     "label": "Quota",
                     "showValue": true
-                  }
+                  },
+                  "$at": 2
                 }
               ]
             }

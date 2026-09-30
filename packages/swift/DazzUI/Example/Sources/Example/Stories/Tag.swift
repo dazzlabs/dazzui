@@ -39,7 +39,8 @@ extension Stories {
               },
               "children": [
                 "Design"
-              ]
+              ],
+              "$at": 0
             },
             {
               "$el": "Tag",
@@ -60,7 +61,8 @@ extension Stories {
               },
               "children": [
                 "Engineering"
-              ]
+              ],
+              "$at": 1
             },
             {
               "$el": "Tag",
@@ -81,7 +83,8 @@ extension Stories {
               },
               "children": [
                 "Research"
-              ]
+              ],
+              "$at": 2
             }
           ]
         }
@@ -120,7 +123,8 @@ extension Stories {
                   },
                   "children": [
                     "Design"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Tag",
@@ -141,7 +145,8 @@ extension Stories {
                   },
                   "children": [
                     "Engineering"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "Tag",
@@ -162,7 +167,8 @@ extension Stories {
                   },
                   "children": [
                     "Research"
-                  ]
+                  ],
+                  "$at": 2
                 }
               ]
             }
@@ -186,7 +192,8 @@ extension Stories {
                   },
                   "children": [
                     "alice@example.com"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Tag",
@@ -198,7 +205,8 @@ extension Stories {
                   },
                   "children": [
                     "bob@example.com"
-                  ]
+                  ],
+                  "$at": 1
                 }
               ]
             }

@@ -16,30 +16,35 @@ const story = Story(
           "props": {
             "icon": {"\$icon": "Home20Regular"},
           },
+          "\$at": 0,
         },
         {
           "\$el": "Icon",
           "props": {
             "icon": {"\$icon": "Search20Regular"},
           },
+          "\$at": 1,
         },
         {
           "\$el": "Icon",
           "props": {
             "icon": {"\$icon": "Folder20Regular"},
           },
+          "\$at": 2,
         },
         {
           "\$el": "Icon",
           "props": {
             "icon": {"\$icon": "Document20Regular"},
           },
+          "\$at": 3,
         },
         {
           "\$el": "Icon",
           "props": {
             "icon": {"\$icon": "Add20Regular"},
           },
+          "\$at": 4,
         },
       ],
     },
@@ -57,42 +62,49 @@ const story = Story(
               "props": {
                 "icon": {"\$icon": "Home20Regular"},
               },
+              "\$at": 0,
             },
             {
               "\$el": "Icon",
               "props": {
                 "icon": {"\$icon": "Search20Regular"},
               },
+              "\$at": 1,
             },
             {
               "\$el": "Icon",
               "props": {
                 "icon": {"\$icon": "Folder20Regular"},
               },
+              "\$at": 2,
             },
             {
               "\$el": "Icon",
               "props": {
                 "icon": {"\$icon": "Document20Regular"},
               },
+              "\$at": 3,
             },
             {
               "\$el": "Icon",
               "props": {
                 "icon": {"\$icon": "Add20Regular"},
               },
+              "\$at": 4,
             },
             {
               "\$el": "Icon",
               "props": {
                 "icon": {"\$icon": "Settings20Regular"},
               },
+              "\$at": 5,
             },
             {
               "\$el": "Icon",
               "props": {
                 "icon": {"\$icon": "Delete20Regular"},
               },
+              "\$at": 6,
             },
           ],
         },
@@ -111,6 +123,7 @@ const story = Story(
                 "icon": {"\$icon": "Settings20Regular"},
                 "size": 12,
               },
+              "\$at": 0,
             },
             {
               "\$el": "Icon",
@@ -118,6 +131,7 @@ const story = Story(
                 "icon": {"\$icon": "Settings20Regular"},
                 "size": 16,
               },
+              "\$at": 1,
             },
             {
               "\$el": "Icon",
@@ -125,6 +139,7 @@ const story = Story(
                 "icon": {"\$icon": "Settings20Regular"},
                 "size": 20,
               },
+              "\$at": 2,
             },
             {
               "\$el": "Icon",
@@ -132,6 +147,7 @@ const story = Story(
                 "icon": {"\$icon": "Settings20Regular"},
                 "size": 24,
               },
+              "\$at": 3,
             },
             {
               "\$el": "Icon",
@@ -139,6 +155,7 @@ const story = Story(
                 "icon": {"\$icon": "Settings20Regular"},
                 "size": 32,
               },
+              "\$at": 4,
             },
           ],
         },
@@ -160,6 +177,7 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Folder20Regular"},
                   },
+                  "\$at": 0,
                 },
               ],
             },
@@ -172,6 +190,7 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Folder20Regular"},
                   },
+                  "\$at": 1,
                 },
               ],
             },
@@ -184,6 +203,7 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Folder20Regular"},
                   },
+                  "\$at": 2,
                 },
               ],
             },
@@ -196,6 +216,7 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Folder20Regular"},
                   },
+                  "\$at": 3,
                 },
               ],
             },

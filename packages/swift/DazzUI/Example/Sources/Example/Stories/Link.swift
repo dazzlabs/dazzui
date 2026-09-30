@@ -19,7 +19,8 @@ extension Stories {
               },
               "children": [
                 "Read the guide"
-              ]
+              ],
+              "$at": 0
             },
             {
               "$el": "Link",
@@ -29,7 +30,8 @@ extension Stories {
               },
               "children": [
                 "Open the repository"
-              ]
+              ],
+              "$at": 1
             }
           ]
         }
@@ -52,7 +54,8 @@ extension Stories {
                   },
                   "children": [
                     "On hover"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Link",
@@ -62,7 +65,8 @@ extension Stories {
                   },
                   "children": [
                     "Always"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "Link",
@@ -72,7 +76,8 @@ extension Stories {
                   },
                   "children": [
                     "Never"
-                  ]
+                  ],
+                  "$at": 2
                 }
               ]
             }
@@ -95,7 +100,8 @@ extension Stories {
                   },
                   "children": [
                     "primary"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Link",
@@ -105,7 +111,8 @@ extension Stories {
                   },
                   "children": [
                     "neutral"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "Link",
@@ -115,7 +122,8 @@ extension Stories {
                   },
                   "children": [
                     "info"
-                  ]
+                  ],
+                  "$at": 2
                 },
                 {
                   "$el": "Link",
@@ -125,7 +133,8 @@ extension Stories {
                   },
                   "children": [
                     "success"
-                  ]
+                  ],
+                  "$at": 3
                 },
                 {
                   "$el": "Link",
@@ -135,7 +144,8 @@ extension Stories {
                   },
                   "children": [
                     "warning"
-                  ]
+                  ],
+                  "$at": 4
                 },
                 {
                   "$el": "Link",
@@ -145,7 +155,8 @@ extension Stories {
                   },
                   "children": [
                     "danger"
-                  ]
+                  ],
+                  "$at": 5
                 }
               ]
             }

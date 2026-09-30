@@ -19,19 +19,22 @@ extension Stories {
               "$el": "Spinner",
               "props": {
                 "size": "small"
-              }
+              },
+              "$at": 0
             },
             {
               "$el": "Spinner",
               "props": {
                 "size": "medium"
-              }
+              },
+              "$at": 1
             },
             {
               "$el": "Spinner",
               "props": {
                 "size": "large"
-              }
+              },
+              "$at": 2
             }
           ]
         }
@@ -50,19 +53,22 @@ extension Stories {
                   "$el": "Spinner",
                   "props": {
                     "size": "small"
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "Spinner",
                   "props": {
                     "size": "medium"
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "Spinner",
                   "props": {
                     "size": "large"
-                  }
+                  },
+                  "$at": 2
                 }
               ]
             }
@@ -83,10 +89,12 @@ extension Stories {
                   "props": {
                     "size": "small",
                     "onAccent": true
-                  }
+                  },
+                  "$at": 1
                 },
                 "Saving"
-              ]
+              ],
+              "$at": 0
             }
           }
         }

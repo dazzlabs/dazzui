@@ -33,7 +33,8 @@ static partial class Stories
                           },
                           "children": [
                             "Service"
-                          ]
+                          ],
+                          "$at": 2
                         },
                         {
                           "$el": "TableCell",
@@ -42,7 +43,8 @@ static partial class Stories
                           },
                           "children": [
                             "Region"
-                          ]
+                          ],
+                          "$at": 3
                         },
                         {
                           "$el": "TableCell",
@@ -52,9 +54,11 @@ static partial class Stories
                           },
                           "children": [
                             "Status"
-                          ]
+                          ],
+                          "$at": 4
                         }
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "TableRow",
@@ -63,13 +67,15 @@ static partial class Stories
                           "$el": "TableCell",
                           "children": [
                             "web"
-                          ]
+                          ],
+                          "$at": 6
                         },
                         {
                           "$el": "TableCell",
                           "children": [
                             "Frankfurt"
-                          ]
+                          ],
+                          "$at": 7
                         },
                         {
                           "$el": "TableCell",
@@ -84,11 +90,14 @@ static partial class Stories
                               },
                               "children": [
                                 "Live"
-                              ]
+                              ],
+                              "$at": 9
                             }
-                          ]
+                          ],
+                          "$at": 8
                         }
-                      ]
+                      ],
+                      "$at": 5
                     },
                     {
                       "$el": "TableRow",
@@ -97,13 +106,15 @@ static partial class Stories
                           "$el": "TableCell",
                           "children": [
                             "api"
-                          ]
+                          ],
+                          "$at": 11
                         },
                         {
                           "$el": "TableCell",
                           "children": [
                             "Virginia"
-                          ]
+                          ],
+                          "$at": 12
                         },
                         {
                           "$el": "TableCell",
@@ -118,11 +129,14 @@ static partial class Stories
                               },
                               "children": [
                                 "Building"
-                              ]
+                              ],
+                              "$at": 14
                             }
-                          ]
+                          ],
+                          "$at": 13
                         }
-                      ]
+                      ],
+                      "$at": 10
                     },
                     {
                       "$el": "TableRow",
@@ -131,13 +145,15 @@ static partial class Stories
                           "$el": "TableCell",
                           "children": [
                             "docs"
-                          ]
+                          ],
+                          "$at": 16
                         },
                         {
                           "$el": "TableCell",
                           "children": [
                             "Tokyo"
-                          ]
+                          ],
+                          "$at": 17
                         },
                         {
                           "$el": "TableCell",
@@ -152,13 +168,17 @@ static partial class Stories
                               },
                               "children": [
                                 "Failed"
-                              ]
+                              ],
+                              "$at": 19
                             }
-                          ]
+                          ],
+                          "$at": 18
                         }
-                      ]
+                      ],
+                      "$at": 15
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }
@@ -186,7 +206,8 @@ static partial class Stories
                               },
                               "children": [
                                 "Service"
-                              ]
+                              ],
+                              "$at": 2
                             },
                             {
                               "$el": "TableCell",
@@ -195,7 +216,8 @@ static partial class Stories
                               },
                               "children": [
                                 "Region"
-                              ]
+                              ],
+                              "$at": 3
                             },
                             {
                               "$el": "TableCell",
@@ -205,9 +227,11 @@ static partial class Stories
                               },
                               "children": [
                                 "Status"
-                              ]
+                              ],
+                              "$at": 4
                             }
-                          ]
+                          ],
+                          "$at": 1
                         },
                         {
                           "$el": "TableRow",
@@ -216,13 +240,15 @@ static partial class Stories
                               "$el": "TableCell",
                               "children": [
                                 "web"
-                              ]
+                              ],
+                              "$at": 6
                             },
                             {
                               "$el": "TableCell",
                               "children": [
                                 "Frankfurt"
-                              ]
+                              ],
+                              "$at": 7
                             },
                             {
                               "$el": "TableCell",
@@ -237,11 +263,14 @@ static partial class Stories
                                   },
                                   "children": [
                                     "Live"
-                                  ]
+                                  ],
+                                  "$at": 9
                                 }
-                              ]
+                              ],
+                              "$at": 8
                             }
-                          ]
+                          ],
+                          "$at": 5
                         },
                         {
                           "$el": "TableRow",
@@ -250,13 +279,15 @@ static partial class Stories
                               "$el": "TableCell",
                               "children": [
                                 "api"
-                              ]
+                              ],
+                              "$at": 11
                             },
                             {
                               "$el": "TableCell",
                               "children": [
                                 "Virginia"
-                              ]
+                              ],
+                              "$at": 12
                             },
                             {
                               "$el": "TableCell",
@@ -271,11 +302,14 @@ static partial class Stories
                                   },
                                   "children": [
                                     "Building"
-                                  ]
+                                  ],
+                                  "$at": 14
                                 }
-                              ]
+                              ],
+                              "$at": 13
                             }
-                          ]
+                          ],
+                          "$at": 10
                         },
                         {
                           "$el": "TableRow",
@@ -284,13 +318,15 @@ static partial class Stories
                               "$el": "TableCell",
                               "children": [
                                 "docs"
-                              ]
+                              ],
+                              "$at": 16
                             },
                             {
                               "$el": "TableCell",
                               "children": [
                                 "Tokyo"
-                              ]
+                              ],
+                              "$at": 17
                             },
                             {
                               "$el": "TableCell",
@@ -305,13 +341,17 @@ static partial class Stories
                                   },
                                   "children": [
                                     "Failed"
-                                  ]
+                                  ],
+                                  "$at": 19
                                 }
-                              ]
+                              ],
+                              "$at": 18
                             }
-                          ]
+                          ],
+                          "$at": 15
                         }
-                      ]
+                      ],
+                      "$at": 0
                     }
                   ]
                 }

@@ -23,7 +23,8 @@ extension Stories {
               },
               "children": [
                 "Options most people never change."
-              ]
+              ],
+              "$at": 0
             }
           ]
         }
@@ -46,7 +47,8 @@ extension Stories {
                   },
                   "children": [
                     "Compiled 214 modules in 1.8 seconds."
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Collapsible",
@@ -55,7 +57,8 @@ extension Stories {
                   },
                   "children": [
                     "All 37 tests passed."
-                  ]
+                  ],
+                  "$at": 1
                 }
               ]
             }
@@ -81,13 +84,15 @@ extension Stories {
                       },
                       "children": [
                         "3"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     "defaultOpen": true
                   },
                   "children": [
                     "Three imports are unused."
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }

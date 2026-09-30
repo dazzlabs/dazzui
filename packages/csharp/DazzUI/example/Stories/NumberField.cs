@@ -26,7 +26,8 @@ static partial class Stories
                     "defaultValue": 12,
                     "unit": "px",
                     "aria-label": "Size"
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             }
@@ -50,7 +51,8 @@ static partial class Stories
                             "defaultValue": 12,
                             "unit": "px",
                             "aria-label": "Size"
-                          }
+                          },
+                          "$at": 0
                         }
                       ]
                     },
@@ -69,7 +71,8 @@ static partial class Stories
                             "step": 5,
                             "unit": "%",
                             "aria-label": "Opacity"
-                          }
+                          },
+                          "$at": 1
                         }
                       ]
                     }

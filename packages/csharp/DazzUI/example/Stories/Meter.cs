@@ -26,7 +26,8 @@ static partial class Stories
                     "value": 62,
                     "label": "Storage",
                     "showValue": true
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             }
@@ -47,7 +48,8 @@ static partial class Stories
                         "value": 62,
                         "label": "Storage",
                         "showValue": true
-                      }
+                      },
+                      "$at": 0
                     }
                   ]
                 }
@@ -69,7 +71,8 @@ static partial class Stories
                         "size": "small",
                         "value": 48,
                         "aria-label": "small"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "Meter",
@@ -77,7 +80,8 @@ static partial class Stories
                         "size": "medium",
                         "value": 48,
                         "aria-label": "medium"
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "Meter",
@@ -85,7 +89,8 @@ static partial class Stories
                         "size": "large",
                         "value": 48,
                         "aria-label": "large"
-                      }
+                      },
+                      "$at": 2
                     }
                   ]
                 }
@@ -108,7 +113,8 @@ static partial class Stories
                         "tint": "success",
                         "label": "Memory",
                         "showValue": true
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "Meter",
@@ -117,7 +123,8 @@ static partial class Stories
                         "tint": "warning",
                         "label": "Disk",
                         "showValue": true
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "Meter",
@@ -126,7 +133,8 @@ static partial class Stories
                         "tint": "danger",
                         "label": "Quota",
                         "showValue": true
-                      }
+                      },
+                      "$at": 2
                     }
                   ]
                 }

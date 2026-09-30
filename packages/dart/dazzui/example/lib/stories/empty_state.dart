@@ -10,6 +10,7 @@ const story = Story(
     content: {
       "\$el": "EmptyState",
       "props": {"title": "No projects yet"},
+      "\$at": 0,
     },
   ),
   examples: [
@@ -23,6 +24,7 @@ const story = Story(
             {
               "\$el": "EmptyState",
               "props": {"title": "Nothing matches that search"},
+              "\$at": 0,
             },
           ],
         },
@@ -43,8 +45,10 @@ const story = Story(
                   "\$el": "Button",
                   "props": {"variant": "filled"},
                   "children": ["New project"],
+                  "\$at": 1,
                 },
               },
+              "\$at": 0,
             },
           ],
         },

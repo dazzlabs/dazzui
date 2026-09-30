@@ -18,7 +18,8 @@ extension Stories {
               "$el": "Button",
               "children": [
                 "Open filters"
-              ]
+              ],
+              "$at": 1
             },
             "footer": {
               "$el": "DrawerClose",
@@ -30,9 +31,11 @@ extension Stories {
                   },
                   "children": [
                     "Done"
-                  ]
+                  ],
+                  "$at": 3
                 }
-              }
+              },
+              "$at": 2
             }
           },
           "children": [
@@ -58,7 +61,8 @@ extension Stories {
                       "$el": "Switch",
                       "props": {
                         "aria-label": "Archived projects"
-                      }
+                      },
+                      "$at": 4
                     }
                   ]
                 },
@@ -79,13 +83,15 @@ extension Stories {
                       "props": {
                         "defaultChecked": true,
                         "aria-label": "Shared with me"
-                      }
+                      },
+                      "$at": 5
                     }
                   ]
                 }
               ]
             }
-          ]
+          ],
+          "$at": 0
         }
       },
       "examples": [
@@ -101,7 +107,8 @@ extension Stories {
                   "$el": "Button",
                   "children": [
                     "Open filters"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 "footer": {
                   "$el": "DrawerClose",
@@ -113,9 +120,11 @@ extension Stories {
                       },
                       "children": [
                         "Done"
-                      ]
+                      ],
+                      "$at": 3
                     }
-                  }
+                  },
+                  "$at": 2
                 }
               },
               "children": [
@@ -141,7 +150,8 @@ extension Stories {
                           "$el": "Switch",
                           "props": {
                             "aria-label": "Archived projects"
-                          }
+                          },
+                          "$at": 4
                         }
                       ]
                     },
@@ -162,13 +172,15 @@ extension Stories {
                           "props": {
                             "defaultChecked": true,
                             "aria-label": "Shared with me"
-                          }
+                          },
+                          "$at": 5
                         }
                       ]
                     }
                   ]
                 }
-              ]
+              ],
+              "$at": 0
             }
           }
         },
@@ -188,7 +200,8 @@ extension Stories {
                       "$el": "Button",
                       "children": [
                         "left"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     "footer": {
                       "$el": "DrawerClose",
@@ -200,9 +213,11 @@ extension Stories {
                           },
                           "children": [
                             "Done"
-                          ]
+                          ],
+                          "$at": 3
                         }
-                      }
+                      },
+                      "$at": 2
                     }
                   },
                   "children": [
@@ -228,7 +243,8 @@ extension Stories {
                               "$el": "Switch",
                               "props": {
                                 "aria-label": "Archived projects"
-                              }
+                              },
+                              "$at": 4
                             }
                           ]
                         },
@@ -249,13 +265,15 @@ extension Stories {
                               "props": {
                                 "defaultChecked": true,
                                 "aria-label": "Shared with me"
-                              }
+                              },
+                              "$at": 5
                             }
                           ]
                         }
                       ]
                     }
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Drawer",
@@ -267,7 +285,8 @@ extension Stories {
                       "$el": "Button",
                       "children": [
                         "right"
-                      ]
+                      ],
+                      "$at": 7
                     },
                     "footer": {
                       "$el": "DrawerClose",
@@ -279,9 +298,11 @@ extension Stories {
                           },
                           "children": [
                             "Done"
-                          ]
+                          ],
+                          "$at": 9
                         }
-                      }
+                      },
+                      "$at": 8
                     }
                   },
                   "children": [
@@ -307,7 +328,8 @@ extension Stories {
                               "$el": "Switch",
                               "props": {
                                 "aria-label": "Archived projects"
-                              }
+                              },
+                              "$at": 10
                             }
                           ]
                         },
@@ -328,13 +350,15 @@ extension Stories {
                               "props": {
                                 "defaultChecked": true,
                                 "aria-label": "Shared with me"
-                              }
+                              },
+                              "$at": 11
                             }
                           ]
                         }
                       ]
                     }
-                  ]
+                  ],
+                  "$at": 6
                 },
                 {
                   "$el": "Drawer",
@@ -346,7 +370,8 @@ extension Stories {
                       "$el": "Button",
                       "children": [
                         "top"
-                      ]
+                      ],
+                      "$at": 13
                     },
                     "footer": {
                       "$el": "DrawerClose",
@@ -358,9 +383,11 @@ extension Stories {
                           },
                           "children": [
                             "Done"
-                          ]
+                          ],
+                          "$at": 15
                         }
-                      }
+                      },
+                      "$at": 14
                     }
                   },
                   "children": [
@@ -386,7 +413,8 @@ extension Stories {
                               "$el": "Switch",
                               "props": {
                                 "aria-label": "Archived projects"
-                              }
+                              },
+                              "$at": 16
                             }
                           ]
                         },
@@ -407,13 +435,15 @@ extension Stories {
                               "props": {
                                 "defaultChecked": true,
                                 "aria-label": "Shared with me"
-                              }
+                              },
+                              "$at": 17
                             }
                           ]
                         }
                       ]
                     }
-                  ]
+                  ],
+                  "$at": 12
                 },
                 {
                   "$el": "Drawer",
@@ -425,7 +455,8 @@ extension Stories {
                       "$el": "Button",
                       "children": [
                         "bottom"
-                      ]
+                      ],
+                      "$at": 19
                     },
                     "footer": {
                       "$el": "DrawerClose",
@@ -437,9 +468,11 @@ extension Stories {
                           },
                           "children": [
                             "Done"
-                          ]
+                          ],
+                          "$at": 21
                         }
-                      }
+                      },
+                      "$at": 20
                     }
                   },
                   "children": [
@@ -465,7 +498,8 @@ extension Stories {
                               "$el": "Switch",
                               "props": {
                                 "aria-label": "Archived projects"
-                              }
+                              },
+                              "$at": 22
                             }
                           ]
                         },
@@ -486,13 +520,15 @@ extension Stories {
                               "props": {
                                 "defaultChecked": true,
                                 "aria-label": "Shared with me"
-                              }
+                              },
+                              "$at": 23
                             }
                           ]
                         }
                       ]
                     }
-                  ]
+                  ],
+                  "$at": 18
                 }
               ]
             }

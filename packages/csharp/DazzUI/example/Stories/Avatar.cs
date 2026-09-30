@@ -24,27 +24,32 @@ static partial class Stories
                   "$el": "Avatar",
                   "props": {
                     "name": "Ada Lovelace"
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "Avatar",
                   "props": {
                     "name": "Grace Hopper"
-                  }
+                  },
+                  "$at": 2
                 },
                 {
                   "$el": "Avatar",
                   "props": {
                     "name": "Alan Turing"
-                  }
+                  },
+                  "$at": 3
                 },
                 {
                   "$el": "Avatar",
                   "props": {
                     "name": "Edsger Dijkstra"
-                  }
+                  },
+                  "$at": 4
                 }
-              ]
+              ],
+              "$at": 0
             }
           },
           "examples": [
@@ -59,21 +64,24 @@ static partial class Stories
                       "props": {
                         "size": "small",
                         "name": "Ada Lovelace"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "Avatar",
                       "props": {
                         "size": "medium",
                         "name": "Ada Lovelace"
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "Avatar",
                       "props": {
                         "size": "large",
                         "name": "Ada Lovelace"
-                      }
+                      },
+                      "$at": 2
                     },
                     {
                       "$el": "Avatar",
@@ -81,7 +89,8 @@ static partial class Stories
                         "size": "large",
                         "shape": "square",
                         "name": "Ada Lovelace"
-                      }
+                      },
+                      "$at": 3
                     }
                   ]
                 }
@@ -100,27 +109,32 @@ static partial class Stories
                       "$el": "Avatar",
                       "props": {
                         "name": "Ada Lovelace"
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "Avatar",
                       "props": {
                         "name": "Grace Hopper"
-                      }
+                      },
+                      "$at": 2
                     },
                     {
                       "$el": "Avatar",
                       "props": {
                         "name": "Alan Turing"
-                      }
+                      },
+                      "$at": 3
                     },
                     {
                       "$el": "Avatar",
                       "props": {
                         "name": "Edsger Dijkstra"
-                      }
+                      },
+                      "$at": 4
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               }
             }

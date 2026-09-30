@@ -15,6 +15,7 @@ const story = Story(
         "trigger": {
           "\$el": "Button",
           "children": ["Open filters"],
+          "\$at": 1,
         },
         "footer": {
           "\$el": "DrawerClose",
@@ -23,8 +24,10 @@ const story = Story(
               "\$el": "Button",
               "props": {"variant": "filled"},
               "children": ["Done"],
+              "\$at": 3,
             },
           },
+          "\$at": 2,
         },
       },
       "children": [
@@ -43,6 +46,7 @@ const story = Story(
                 {
                   "\$el": "Switch",
                   "props": {"aria-label": "Archived projects"},
+                  "\$at": 4,
                 },
               ],
             },
@@ -60,12 +64,14 @@ const story = Story(
                     "defaultChecked": true,
                     "aria-label": "Shared with me",
                   },
+                  "\$at": 5,
                 },
               ],
             },
           ],
         },
       ],
+      "\$at": 0,
     },
   ),
   examples: [
@@ -80,6 +86,7 @@ const story = Story(
             "trigger": {
               "\$el": "Button",
               "children": ["Open filters"],
+              "\$at": 1,
             },
             "footer": {
               "\$el": "DrawerClose",
@@ -88,8 +95,10 @@ const story = Story(
                   "\$el": "Button",
                   "props": {"variant": "filled"},
                   "children": ["Done"],
+                  "\$at": 3,
                 },
               },
+              "\$at": 2,
             },
           },
           "children": [
@@ -108,6 +117,7 @@ const story = Story(
                     {
                       "\$el": "Switch",
                       "props": {"aria-label": "Archived projects"},
+                      "\$at": 4,
                     },
                   ],
                 },
@@ -125,12 +135,14 @@ const story = Story(
                         "defaultChecked": true,
                         "aria-label": "Shared with me",
                       },
+                      "\$at": 5,
                     },
                   ],
                 },
               ],
             },
           ],
+          "\$at": 0,
         },
       ),
     ),
@@ -149,6 +161,7 @@ const story = Story(
                 "trigger": {
                   "\$el": "Button",
                   "children": ["left"],
+                  "\$at": 1,
                 },
                 "footer": {
                   "\$el": "DrawerClose",
@@ -157,8 +170,10 @@ const story = Story(
                       "\$el": "Button",
                       "props": {"variant": "filled"},
                       "children": ["Done"],
+                      "\$at": 3,
                     },
                   },
+                  "\$at": 2,
                 },
               },
               "children": [
@@ -177,6 +192,7 @@ const story = Story(
                         {
                           "\$el": "Switch",
                           "props": {"aria-label": "Archived projects"},
+                          "\$at": 4,
                         },
                       ],
                     },
@@ -194,12 +210,14 @@ const story = Story(
                             "defaultChecked": true,
                             "aria-label": "Shared with me",
                           },
+                          "\$at": 5,
                         },
                       ],
                     },
                   ],
                 },
               ],
+              "\$at": 0,
             },
             {
               "\$el": "Drawer",
@@ -210,6 +228,7 @@ const story = Story(
                 "trigger": {
                   "\$el": "Button",
                   "children": ["right"],
+                  "\$at": 7,
                 },
                 "footer": {
                   "\$el": "DrawerClose",
@@ -218,8 +237,10 @@ const story = Story(
                       "\$el": "Button",
                       "props": {"variant": "filled"},
                       "children": ["Done"],
+                      "\$at": 9,
                     },
                   },
+                  "\$at": 8,
                 },
               },
               "children": [
@@ -238,6 +259,7 @@ const story = Story(
                         {
                           "\$el": "Switch",
                           "props": {"aria-label": "Archived projects"},
+                          "\$at": 10,
                         },
                       ],
                     },
@@ -255,12 +277,14 @@ const story = Story(
                             "defaultChecked": true,
                             "aria-label": "Shared with me",
                           },
+                          "\$at": 11,
                         },
                       ],
                     },
                   ],
                 },
               ],
+              "\$at": 6,
             },
             {
               "\$el": "Drawer",
@@ -271,6 +295,7 @@ const story = Story(
                 "trigger": {
                   "\$el": "Button",
                   "children": ["top"],
+                  "\$at": 13,
                 },
                 "footer": {
                   "\$el": "DrawerClose",
@@ -279,8 +304,10 @@ const story = Story(
                       "\$el": "Button",
                       "props": {"variant": "filled"},
                       "children": ["Done"],
+                      "\$at": 15,
                     },
                   },
+                  "\$at": 14,
                 },
               },
               "children": [
@@ -299,6 +326,7 @@ const story = Story(
                         {
                           "\$el": "Switch",
                           "props": {"aria-label": "Archived projects"},
+                          "\$at": 16,
                         },
                       ],
                     },
@@ -316,12 +344,14 @@ const story = Story(
                             "defaultChecked": true,
                             "aria-label": "Shared with me",
                           },
+                          "\$at": 17,
                         },
                       ],
                     },
                   ],
                 },
               ],
+              "\$at": 12,
             },
             {
               "\$el": "Drawer",
@@ -332,6 +362,7 @@ const story = Story(
                 "trigger": {
                   "\$el": "Button",
                   "children": ["bottom"],
+                  "\$at": 19,
                 },
                 "footer": {
                   "\$el": "DrawerClose",
@@ -340,8 +371,10 @@ const story = Story(
                       "\$el": "Button",
                       "props": {"variant": "filled"},
                       "children": ["Done"],
+                      "\$at": 21,
                     },
                   },
+                  "\$at": 20,
                 },
               },
               "children": [
@@ -360,6 +393,7 @@ const story = Story(
                         {
                           "\$el": "Switch",
                           "props": {"aria-label": "Archived projects"},
+                          "\$at": 22,
                         },
                       ],
                     },
@@ -377,12 +411,14 @@ const story = Story(
                             "defaultChecked": true,
                             "aria-label": "Shared with me",
                           },
+                          "\$at": 23,
                         },
                       ],
                     },
                   ],
                 },
               ],
+              "\$at": 18,
             },
           ],
         },

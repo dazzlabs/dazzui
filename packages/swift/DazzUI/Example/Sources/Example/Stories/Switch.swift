@@ -33,7 +33,8 @@ extension Stories {
                   "props": {
                     "defaultChecked": true,
                     "aria-label": "Notifications"
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             },
@@ -55,7 +56,8 @@ extension Stories {
                   "props": {
                     "defaultChecked": false,
                     "aria-label": "Sync over cellular"
-                  }
+                  },
+                  "$at": 1
                 }
               ]
             }
@@ -78,7 +80,8 @@ extension Stories {
                     "size": "small",
                     "defaultChecked": true,
                     "aria-label": "Small"
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "Switch",
@@ -86,7 +89,8 @@ extension Stories {
                     "size": "medium",
                     "defaultChecked": true,
                     "aria-label": "Medium"
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "Switch",
@@ -94,7 +98,8 @@ extension Stories {
                     "size": "large",
                     "defaultChecked": true,
                     "aria-label": "Large"
-                  }
+                  },
+                  "$at": 2
                 }
               ]
             }
@@ -115,7 +120,8 @@ extension Stories {
                     "tint": "primary",
                     "defaultChecked": true,
                     "aria-label": "primary"
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "Switch",
@@ -123,7 +129,8 @@ extension Stories {
                     "tint": "neutral",
                     "defaultChecked": true,
                     "aria-label": "neutral"
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "Switch",
@@ -131,7 +138,8 @@ extension Stories {
                     "tint": "info",
                     "defaultChecked": true,
                     "aria-label": "info"
-                  }
+                  },
+                  "$at": 2
                 },
                 {
                   "$el": "Switch",
@@ -139,7 +147,8 @@ extension Stories {
                     "tint": "success",
                     "defaultChecked": true,
                     "aria-label": "success"
-                  }
+                  },
+                  "$at": 3
                 },
                 {
                   "$el": "Switch",
@@ -147,7 +156,8 @@ extension Stories {
                     "tint": "warning",
                     "defaultChecked": true,
                     "aria-label": "warning"
-                  }
+                  },
+                  "$at": 4
                 },
                 {
                   "$el": "Switch",
@@ -155,7 +165,8 @@ extension Stories {
                     "tint": "danger",
                     "defaultChecked": true,
                     "aria-label": "danger"
-                  }
+                  },
+                  "$at": 5
                 }
               ]
             }
@@ -175,7 +186,8 @@ extension Stories {
                   "props": {
                     "disabled": true,
                     "aria-label": "Off"
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "Switch",
@@ -183,7 +195,8 @@ extension Stories {
                     "disabled": true,
                     "defaultChecked": true,
                     "aria-label": "On"
-                  }
+                  },
+                  "$at": 1
                 }
               ]
             }

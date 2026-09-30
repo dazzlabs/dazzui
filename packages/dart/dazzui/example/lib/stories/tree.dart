@@ -24,6 +24,7 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Folder20Regular"},
                   },
+                  "\$at": 1,
                 },
                 "children": [
                   {
@@ -34,6 +35,7 @@ const story = Story(
                       "props": {
                         "icon": {"\$icon": "Folder20Regular"},
                       },
+                      "\$at": 2,
                     },
                     "children": [
                       {
@@ -44,6 +46,7 @@ const story = Story(
                           "props": {
                             "icon": {"\$icon": "Document20Regular"},
                           },
+                          "\$at": 3,
                         },
                       },
                       {
@@ -54,6 +57,7 @@ const story = Story(
                           "props": {
                             "icon": {"\$icon": "Document20Regular"},
                           },
+                          "\$at": 4,
                         },
                       },
                     ],
@@ -66,6 +70,7 @@ const story = Story(
                       "props": {
                         "icon": {"\$icon": "Folder20Regular"},
                       },
+                      "\$at": 5,
                     },
                     "children": [
                       {
@@ -76,6 +81,7 @@ const story = Story(
                           "props": {
                             "icon": {"\$icon": "Document20Regular"},
                           },
+                          "\$at": 6,
                         },
                       },
                     ],
@@ -88,6 +94,7 @@ const story = Story(
                       "props": {
                         "icon": {"\$icon": "Document20Regular"},
                       },
+                      "\$at": 7,
                     },
                   },
                 ],
@@ -100,6 +107,7 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Document20Regular"},
                   },
+                  "\$at": 8,
                 },
               },
               {
@@ -110,6 +118,7 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Document20Regular"},
                   },
+                  "\$at": 9,
                 },
               },
             ],
@@ -126,6 +135,7 @@ const story = Story(
             },
             "aria-label": "Files",
           },
+          "\$at": 0,
         },
       ],
     },
@@ -152,6 +162,7 @@ const story = Story(
                       "props": {
                         "icon": {"\$icon": "Folder20Regular"},
                       },
+                      "\$at": 1,
                     },
                     "children": [
                       {
@@ -162,6 +173,7 @@ const story = Story(
                           "props": {
                             "icon": {"\$icon": "Folder20Regular"},
                           },
+                          "\$at": 2,
                         },
                         "children": [
                           {
@@ -172,6 +184,7 @@ const story = Story(
                               "props": {
                                 "icon": {"\$icon": "Document20Regular"},
                               },
+                              "\$at": 3,
                             },
                           },
                           {
@@ -182,6 +195,7 @@ const story = Story(
                               "props": {
                                 "icon": {"\$icon": "Document20Regular"},
                               },
+                              "\$at": 4,
                             },
                           },
                         ],
@@ -194,6 +208,7 @@ const story = Story(
                           "props": {
                             "icon": {"\$icon": "Folder20Regular"},
                           },
+                          "\$at": 5,
                         },
                         "children": [
                           {
@@ -204,6 +219,7 @@ const story = Story(
                               "props": {
                                 "icon": {"\$icon": "Document20Regular"},
                               },
+                              "\$at": 6,
                             },
                           },
                         ],
@@ -216,6 +232,7 @@ const story = Story(
                           "props": {
                             "icon": {"\$icon": "Document20Regular"},
                           },
+                          "\$at": 7,
                         },
                       },
                     ],
@@ -228,6 +245,7 @@ const story = Story(
                       "props": {
                         "icon": {"\$icon": "Document20Regular"},
                       },
+                      "\$at": 8,
                     },
                   },
                   {
@@ -238,6 +256,7 @@ const story = Story(
                       "props": {
                         "icon": {"\$icon": "Document20Regular"},
                       },
+                      "\$at": 9,
                     },
                   },
                 ],
@@ -253,6 +272,7 @@ const story = Story(
                 },
                 "aria-label": "Files",
               },
+              "\$at": 0,
             },
           ],
         },
@@ -278,6 +298,7 @@ const story = Story(
                       "props": {
                         "icon": {"\$icon": "Folder20Regular"},
                       },
+                      "\$at": 1,
                     },
                     "children": [
                       {
@@ -288,11 +309,13 @@ const story = Story(
                           "props": {
                             "icon": {"\$icon": "Document20Regular"},
                           },
+                          "\$at": 2,
                         },
                         "meta": {
                           "\$el": "Badge",
                           "props": {"size": "small"},
                           "children": ["M"],
+                          "\$at": 3,
                         },
                       },
                       {
@@ -303,11 +326,13 @@ const story = Story(
                           "props": {
                             "icon": {"\$icon": "Document20Regular"},
                           },
+                          "\$at": 4,
                         },
                         "meta": {
                           "\$el": "Badge",
                           "props": {"size": "small", "tint": "success"},
                           "children": ["A"],
+                          "\$at": 5,
                         },
                       },
                     ],
@@ -320,6 +345,7 @@ const story = Story(
                       "props": {
                         "icon": {"\$icon": "Document20Regular"},
                       },
+                      "\$at": 6,
                     },
                     "disabled": true,
                     "meta": "locked",
@@ -337,6 +363,7 @@ const story = Story(
                 },
                 "aria-label": "Files",
               },
+              "\$at": 0,
             },
           ],
         },

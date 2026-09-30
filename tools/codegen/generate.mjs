@@ -42,6 +42,12 @@ if (gaps.length)
   throw new Error(
     `A platform cannot draw what these stories ask for:\n${gaps.join('\n')}`
   )
+/*
+ * The conformance contract: every scene and the addresses in it. First,
+ * because it writes each specimen's address into the scenes the platforms
+ * are emitted from.
+ */
+const scenes = scenesJson(stories)
 const themes = await readThemes(root)
 const variables = await fs.readFile(
   path.join(
@@ -109,8 +115,7 @@ outputs.set(`${csharp}/Stories/Index.cs`, winui.storiesIndexCs(stories))
 outputs.set(`${csharp}/Lib/Glyphs.cs`, winui.glyphsCs(stories))
 outputs.set(`${csharp}/Lib/Themes.cs`, winui.themesCs(themes, tokens))
 
-/* The conformance contract: every scene and the addresses in it. */
-outputs.set('tools/conformance/scenes.json', scenesJson(stories))
+outputs.set('tools/conformance/scenes.json', scenes)
 formatOutputs(outputs)
 
 /*

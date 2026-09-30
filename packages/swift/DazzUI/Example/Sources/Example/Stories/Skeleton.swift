@@ -21,7 +21,8 @@ extension Stories {
                 "shape": "circle",
                 "width": 36,
                 "height": 36
-              }
+              },
+              "$at": 0
             },
             {
               "$el": "Col",
@@ -34,13 +35,15 @@ extension Stories {
                   "$el": "Skeleton",
                   "props": {
                     "width": "80%"
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "Skeleton",
                   "props": {
                     "width": "50%"
-                  }
+                  },
+                  "$at": 2
                 }
               ]
             }
@@ -62,7 +65,8 @@ extension Stories {
                   "props": {
                     "shape": "text",
                     "width": 120
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "Skeleton",
@@ -70,7 +74,8 @@ extension Stories {
                     "shape": "circle",
                     "width": 40,
                     "height": 40
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "Skeleton",
@@ -78,7 +83,8 @@ extension Stories {
                     "shape": "rect",
                     "width": 120,
                     "height": 64
-                  }
+                  },
+                  "$at": 2
                 }
               ]
             }
@@ -97,7 +103,8 @@ extension Stories {
                   "$el": "SkeletonText",
                   "props": {
                     "lines": 4
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             }
@@ -124,7 +131,8 @@ extension Stories {
                             "shape": "circle",
                             "width": 36,
                             "height": 36
-                          }
+                          },
+                          "$at": 1
                         },
                         {
                           "$el": "Col",
@@ -137,19 +145,22 @@ extension Stories {
                               "$el": "Skeleton",
                               "props": {
                                 "width": "70%"
-                              }
+                              },
+                              "$at": 2
                             },
                             {
                               "$el": "Skeleton",
                               "props": {
                                 "width": "40%"
-                              }
+                              },
+                              "$at": 3
                             }
                           ]
                         }
                       ]
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }

@@ -31,7 +31,8 @@ static partial class Stories
                         "icon": {
                           "$icon": "TextBold20Regular"
                         }
-                      }
+                      },
+                      "$at": 1
                     },
                     "hint": "Bold"
                   },
@@ -43,7 +44,8 @@ static partial class Stories
                         "icon": {
                           "$icon": "TextItalic20Regular"
                         }
-                      }
+                      },
+                      "$at": 2
                     },
                     "hint": "Italic"
                   },
@@ -55,7 +57,8 @@ static partial class Stories
                         "icon": {
                           "$icon": "TextUnderline20Regular"
                         }
-                      }
+                      },
+                      "$at": 3
                     },
                     "hint": "Underline"
                   }
@@ -76,7 +79,8 @@ static partial class Stories
                 "multiple": true,
                 "size": "small",
                 "aria-label": "Text style"
-              }
+              },
+              "$at": 0
             }
           },
           "examples": [
@@ -100,9 +104,11 @@ static partial class Stories
                             "icon": {
                               "$icon": "TextBold20Regular"
                             }
-                          }
+                          },
+                          "$at": 1
                         }
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "Toggle",
@@ -117,9 +123,11 @@ static partial class Stories
                             "icon": {
                               "$icon": "TextItalic20Regular"
                             }
-                          }
+                          },
+                          "$at": 3
                         }
-                      ]
+                      ],
+                      "$at": 2
                     },
                     {
                       "$el": "Toggle",
@@ -129,7 +137,8 @@ static partial class Stories
                       },
                       "children": [
                         "Wrap lines"
-                      ]
+                      ],
+                      "$at": 4
                     }
                   ]
                 }
@@ -155,7 +164,8 @@ static partial class Stories
                             "icon": {
                               "$icon": "TextBold20Regular"
                             }
-                          }
+                          },
+                          "$at": 1
                         },
                         "hint": "Bold"
                       },
@@ -167,7 +177,8 @@ static partial class Stories
                             "icon": {
                               "$icon": "TextItalic20Regular"
                             }
-                          }
+                          },
+                          "$at": 2
                         },
                         "hint": "Italic"
                       },
@@ -179,7 +190,8 @@ static partial class Stories
                             "icon": {
                               "$icon": "TextUnderline20Regular"
                             }
-                          }
+                          },
+                          "$at": 3
                         },
                         "hint": "Underline"
                       }
@@ -200,7 +212,8 @@ static partial class Stories
                     "multiple": true,
                     "size": "small",
                     "aria-label": "Text style"
-                  }
+                  },
+                  "$at": 0
                 }
               }
             },
@@ -224,7 +237,8 @@ static partial class Stories
                             "icon": {
                               "$icon": "TextBold20Regular"
                             }
-                          }
+                          },
+                          "$at": 1
                         },
                         "hint": "Bold"
                       },
@@ -236,7 +250,8 @@ static partial class Stories
                             "icon": {
                               "$icon": "TextItalic20Regular"
                             }
-                          }
+                          },
+                          "$at": 2
                         },
                         "hint": "Italic"
                       },
@@ -248,7 +263,8 @@ static partial class Stories
                             "icon": {
                               "$icon": "TextUnderline20Regular"
                             }
-                          }
+                          },
+                          "$at": 3
                         },
                         "hint": "Underline"
                       }
@@ -269,7 +285,8 @@ static partial class Stories
                     "multiple": false,
                     "size": "small",
                     "aria-label": "Text style"
-                  }
+                  },
+                  "$at": 0
                 }
               }
             }

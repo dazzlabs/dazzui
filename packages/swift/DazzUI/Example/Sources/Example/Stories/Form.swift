@@ -34,9 +34,11 @@ extension Stories {
                       "props": {
                         "type": "email",
                         "placeholder": "you@example.com"
-                      }
+                      },
+                      "$at": 2
                     }
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "Button",
@@ -47,9 +49,11 @@ extension Stories {
                   },
                   "children": [
                     "Subscribe"
-                  ]
+                  ],
+                  "$at": 3
                 }
-              ]
+              ],
+              "$at": 0
             }
           ]
         }
@@ -83,9 +87,11 @@ extension Stories {
                           "props": {
                             "required": true,
                             "placeholder": "Ada Lovelace"
-                          }
+                          },
+                          "$at": 2
                         }
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "FormField",
@@ -100,9 +106,11 @@ extension Stories {
                             "type": "email",
                             "required": true,
                             "placeholder": "you@example.com"
-                          }
+                          },
+                          "$at": 4
                         }
-                      ]
+                      ],
+                      "$at": 3
                     },
                     {
                       "$el": "ActionBar",
@@ -115,7 +123,8 @@ extension Stories {
                           },
                           "children": [
                             "Clear"
-                          ]
+                          ],
+                          "$at": 6
                         },
                         {
                           "$el": "Button",
@@ -125,11 +134,14 @@ extension Stories {
                           },
                           "children": [
                             "Create account"
-                          ]
+                          ],
+                          "$at": 7
                         }
-                      ]
+                      ],
+                      "$at": 5
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }
@@ -157,7 +169,8 @@ extension Stories {
                       },
                       "children": [
                         "Mentions"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "Checkbox",
@@ -166,15 +179,18 @@ extension Stories {
                       },
                       "children": [
                         "Replies"
-                      ]
+                      ],
+                      "$at": 2
                     },
                     {
                       "$el": "Checkbox",
                       "children": [
                         "Everything else"
-                      ]
+                      ],
+                      "$at": 3
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }

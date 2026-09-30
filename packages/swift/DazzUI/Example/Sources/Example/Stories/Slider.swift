@@ -20,7 +20,8 @@ extension Stories {
               "props": {
                 "defaultValue": 60,
                 "aria-label": "Volume"
-              }
+              },
+              "$at": 0
             }
           ]
         }
@@ -42,7 +43,8 @@ extension Stories {
                     "size": "small",
                     "defaultValue": 40,
                     "aria-label": "small"
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "Slider",
@@ -50,7 +52,8 @@ extension Stories {
                     "size": "medium",
                     "defaultValue": 40,
                     "aria-label": "medium"
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "Slider",
@@ -58,7 +61,8 @@ extension Stories {
                     "size": "large",
                     "defaultValue": 40,
                     "aria-label": "large"
-                  }
+                  },
+                  "$at": 2
                 }
               ]
             }
@@ -80,7 +84,8 @@ extension Stories {
                     "defaultValue": 72,
                     "showValue": true,
                     "aria-label": "Quality"
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "Slider",
@@ -91,7 +96,8 @@ extension Stories {
                     ],
                     "showValue": true,
                     "aria-label": "Range"
-                  }
+                  },
+                  "$at": 1
                 }
               ]
             }

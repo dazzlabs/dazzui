@@ -21,7 +21,8 @@ static partial class Stories
                   "$el": "Button",
                   "children": [
                     "Share"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 "title": "Share this project",
                 "description": "Anyone with the link can read it.",
@@ -38,7 +39,8 @@ static partial class Stories
                         "mono": true,
                         "defaultValue": "https://dazz.example/p/4f9a",
                         "aria-label": "Link"
-                      }
+                      },
+                      "$at": 2
                     },
                     {
                       "$el": "PopoverClose",
@@ -50,13 +52,16 @@ static partial class Stories
                           },
                           "children": [
                             "Done"
-                          ]
+                          ],
+                          "$at": 4
                         }
-                      }
+                      },
+                      "$at": 3
                     }
                   ]
                 }
-              ]
+              ],
+              "$at": 0
             }
           },
           "examples": [
@@ -70,7 +75,8 @@ static partial class Stories
                       "$el": "Button",
                       "children": [
                         "Share"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     "title": "Share this project",
                     "description": "Anyone with the link can read it.",
@@ -87,7 +93,8 @@ static partial class Stories
                             "mono": true,
                             "defaultValue": "https://dazz.example/p/4f9a",
                             "aria-label": "Link"
-                          }
+                          },
+                          "$at": 2
                         },
                         {
                           "$el": "PopoverClose",
@@ -99,13 +106,16 @@ static partial class Stories
                               },
                               "children": [
                                 "Done"
-                              ]
+                              ],
+                              "$at": 4
                             }
-                          }
+                          },
+                          "$at": 3
                         }
                       ]
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               }
             },
@@ -123,10 +133,12 @@ static partial class Stories
                           "$el": "Button",
                           "children": [
                             "top"
-                          ]
+                          ],
+                          "$at": 1
                         },
                         "title": "Opens to the top"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "Popover",
@@ -136,10 +148,12 @@ static partial class Stories
                           "$el": "Button",
                           "children": [
                             "bottom"
-                          ]
+                          ],
+                          "$at": 3
                         },
                         "title": "Opens to the bottom"
-                      }
+                      },
+                      "$at": 2
                     },
                     {
                       "$el": "Popover",
@@ -149,10 +163,12 @@ static partial class Stories
                           "$el": "Button",
                           "children": [
                             "left"
-                          ]
+                          ],
+                          "$at": 5
                         },
                         "title": "Opens to the left"
-                      }
+                      },
+                      "$at": 4
                     },
                     {
                       "$el": "Popover",
@@ -162,10 +178,12 @@ static partial class Stories
                           "$el": "Button",
                           "children": [
                             "right"
-                          ]
+                          ],
+                          "$at": 7
                         },
                         "title": "Opens to the right"
-                      }
+                      },
+                      "$at": 6
                     }
                   ]
                 }

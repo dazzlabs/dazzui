@@ -40,9 +40,11 @@ static partial class Stories
                               "props": {
                                 "defaultChecked": true,
                                 "aria-label": "Launch at login"
-                              }
+                              },
+                              "$at": 3
                             }
-                          ]
+                          ],
+                          "$at": 2
                         },
                         {
                           "$el": "PreferenceRow",
@@ -54,13 +56,17 @@ static partial class Stories
                               "$el": "Switch",
                               "props": {
                                 "aria-label": "Send crash reports"
-                              }
+                              },
+                              "$at": 5
                             }
-                          ]
+                          ],
+                          "$at": 4
                         }
-                      ]
+                      ],
+                      "$at": 1
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }
@@ -107,9 +113,11 @@ static partial class Stories
                                     ],
                                     "defaultValue": "en",
                                     "aria-label": "Language"
-                                  }
+                                  },
+                                  "$at": 3
                                 }
-                              ]
+                              ],
+                              "$at": 2
                             },
                             {
                               "$el": "PreferenceRow",
@@ -122,9 +130,11 @@ static partial class Stories
                                   "props": {
                                     "defaultChecked": true,
                                     "aria-label": "Launch at login"
-                                  }
+                                  },
+                                  "$at": 5
                                 }
-                              ]
+                              ],
+                              "$at": 4
                             },
                             {
                               "$el": "PreferenceRow",
@@ -139,13 +149,17 @@ static partial class Stories
                                   },
                                   "children": [
                                     "Check now"
-                                  ]
+                                  ],
+                                  "$at": 7
                                 }
-                              ]
+                              ],
+                              "$at": 6
                             }
-                          ]
+                          ],
+                          "$at": 1
                         }
-                      ]
+                      ],
+                      "$at": 0
                     }
                   ]
                 }
@@ -199,9 +213,11 @@ static partial class Stories
                                         ],
                                         "defaultValue": "en",
                                         "aria-label": "Language"
-                                      }
+                                      },
+                                      "$at": 4
                                     }
-                                  ]
+                                  ],
+                                  "$at": 3
                                 },
                                 {
                                   "$el": "PreferenceRow",
@@ -214,9 +230,11 @@ static partial class Stories
                                       "props": {
                                         "defaultChecked": true,
                                         "aria-label": "Launch at login"
-                                      }
+                                      },
+                                      "$at": 6
                                     }
-                                  ]
+                                  ],
+                                  "$at": 5
                                 },
                                 {
                                   "$el": "PreferenceRow",
@@ -231,11 +249,14 @@ static partial class Stories
                                       },
                                       "children": [
                                         "Check now"
-                                      ]
+                                      ],
+                                      "$at": 8
                                     }
-                                  ]
+                                  ],
+                                  "$at": 7
                                 }
-                              ]
+                              ],
+                              "$at": 2
                             },
                             {
                               "$el": "PreferenceSection",
@@ -254,15 +275,20 @@ static partial class Stories
                                       "$el": "Switch",
                                       "props": {
                                         "aria-label": "Send crash reports"
-                                      }
+                                      },
+                                      "$at": 11
                                     }
-                                  ]
+                                  ],
+                                  "$at": 10
                                 }
-                              ]
+                              ],
+                              "$at": 9
                             }
-                          ]
+                          ],
+                          "$at": 1
                         }
-                      ]
+                      ],
+                      "$at": 0
                     }
                   ]
                 }
@@ -294,7 +320,8 @@ static partial class Stories
                                 "onOpen": {
                                   "$do": []
                                 }
-                              }
+                              },
+                              "$at": 2
                             },
                             {
                               "$el": "PreferenceRow",
@@ -303,11 +330,14 @@ static partial class Stories
                                 "onOpen": {
                                   "$do": []
                                 }
-                              }
+                              },
+                              "$at": 3
                             }
-                          ]
+                          ],
+                          "$at": 1
                         }
-                      ]
+                      ],
+                      "$at": 0
                     }
                   ]
                 }

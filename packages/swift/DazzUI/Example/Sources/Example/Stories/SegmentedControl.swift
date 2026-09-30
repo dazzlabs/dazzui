@@ -43,7 +43,8 @@ extension Stories {
               ]
             },
             "aria-label": "View"
-          }
+          },
+          "$at": 0
         }
       },
       "examples": [
@@ -93,7 +94,8 @@ extension Stories {
                     },
                     "size": "small",
                     "aria-label": "View"
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "SegmentedControl",
@@ -127,7 +129,8 @@ extension Stories {
                     },
                     "size": "medium",
                     "aria-label": "View"
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "SegmentedControl",
@@ -161,7 +164,8 @@ extension Stories {
                     },
                     "size": "large",
                     "aria-label": "View"
-                  }
+                  },
+                  "$at": 2
                 }
               ]
             }

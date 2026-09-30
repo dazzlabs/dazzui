@@ -37,7 +37,8 @@ extension Stories {
               ]
             },
             "aria-label": "Shortcut"
-          }
+          },
+          "$at": 0
         }
       },
       "examples": [
@@ -80,7 +81,8 @@ extension Stories {
                       ]
                     },
                     "aria-label": "Shortcut"
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "ShortcutRecorder",
@@ -107,7 +109,8 @@ extension Stories {
                       ]
                     },
                     "aria-label": "Shortcut"
-                  }
+                  },
+                  "$at": 1
                 }
               ]
             }
@@ -131,7 +134,8 @@ extension Stories {
                       "$do": []
                     },
                     "aria-label": "Taken"
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "ShortcutRecorder",
@@ -142,7 +146,8 @@ extension Stories {
                       "$do": []
                     },
                     "aria-label": "Disabled"
-                  }
+                  },
+                  "$at": 1
                 }
               ]
             }

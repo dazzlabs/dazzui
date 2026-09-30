@@ -21,7 +21,8 @@ extension Stories {
                 "defaultValue": 12,
                 "unit": "px",
                 "aria-label": "Size"
-              }
+              },
+              "$at": 0
             }
           ]
         }
@@ -45,7 +46,8 @@ extension Stories {
                         "defaultValue": 12,
                         "unit": "px",
                         "aria-label": "Size"
-                      }
+                      },
+                      "$at": 0
                     }
                   ]
                 },
@@ -64,7 +66,8 @@ extension Stories {
                         "step": 5,
                         "unit": "%",
                         "aria-label": "Opacity"
-                      }
+                      },
+                      "$at": 1
                     }
                   ]
                 }

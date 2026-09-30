@@ -27,12 +27,15 @@ extension Stories {
               },
               "children": [
                 "Save"
-              ]
+              ],
+              "$at": 1
             },
             {
-              "$el": "ToastViewport"
+              "$el": "ToastViewport",
+              "$at": 2
             }
-          ]
+          ],
+          "$at": 0
         }
       },
       "examples": [
@@ -63,7 +66,8 @@ extension Stories {
                       },
                       "children": [
                         "primary"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "Button",
@@ -83,7 +87,8 @@ extension Stories {
                       },
                       "children": [
                         "neutral"
-                      ]
+                      ],
+                      "$at": 2
                     },
                     {
                       "$el": "Button",
@@ -103,7 +108,8 @@ extension Stories {
                       },
                       "children": [
                         "info"
-                      ]
+                      ],
+                      "$at": 3
                     },
                     {
                       "$el": "Button",
@@ -123,7 +129,8 @@ extension Stories {
                       },
                       "children": [
                         "success"
-                      ]
+                      ],
+                      "$at": 4
                     },
                     {
                       "$el": "Button",
@@ -143,7 +150,8 @@ extension Stories {
                       },
                       "children": [
                         "warning"
-                      ]
+                      ],
+                      "$at": 5
                     },
                     {
                       "$el": "Button",
@@ -163,14 +171,17 @@ extension Stories {
                       },
                       "children": [
                         "danger"
-                      ]
+                      ],
+                      "$at": 6
                     }
                   ]
                 },
                 {
-                  "$el": "ToastViewport"
+                  "$el": "ToastViewport",
+                  "$at": 7
                 }
-              ]
+              ],
+              "$at": 0
             }
           }
         },
@@ -201,12 +212,15 @@ extension Stories {
                   },
                   "children": [
                     "Archive"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
-                  "$el": "ToastViewport"
+                  "$el": "ToastViewport",
+                  "$at": 2
                 }
-              ]
+              ],
+              "$at": 0
             }
           }
         },
@@ -231,15 +245,18 @@ extension Stories {
                   },
                   "children": [
                     "Save"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "ToastViewport",
                   "props": {
                     "placement": "top"
-                  }
+                  },
+                  "$at": 2
                 }
-              ]
+              ],
+              "$at": 0
             }
           }
         }

@@ -26,7 +26,8 @@ static partial class Stories
                     "icon": {
                       "$icon": "Home20Regular"
                     }
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "Icon",
@@ -34,7 +35,8 @@ static partial class Stories
                     "icon": {
                       "$icon": "Search20Regular"
                     }
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "Icon",
@@ -42,7 +44,8 @@ static partial class Stories
                     "icon": {
                       "$icon": "Folder20Regular"
                     }
-                  }
+                  },
+                  "$at": 2
                 },
                 {
                   "$el": "Icon",
@@ -50,7 +53,8 @@ static partial class Stories
                     "icon": {
                       "$icon": "Document20Regular"
                     }
-                  }
+                  },
+                  "$at": 3
                 },
                 {
                   "$el": "Icon",
@@ -58,7 +62,8 @@ static partial class Stories
                     "icon": {
                       "$icon": "Add20Regular"
                     }
-                  }
+                  },
+                  "$at": 4
                 }
               ]
             }
@@ -79,7 +84,8 @@ static partial class Stories
                         "icon": {
                           "$icon": "Home20Regular"
                         }
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "Icon",
@@ -87,7 +93,8 @@ static partial class Stories
                         "icon": {
                           "$icon": "Search20Regular"
                         }
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "Icon",
@@ -95,7 +102,8 @@ static partial class Stories
                         "icon": {
                           "$icon": "Folder20Regular"
                         }
-                      }
+                      },
+                      "$at": 2
                     },
                     {
                       "$el": "Icon",
@@ -103,7 +111,8 @@ static partial class Stories
                         "icon": {
                           "$icon": "Document20Regular"
                         }
-                      }
+                      },
+                      "$at": 3
                     },
                     {
                       "$el": "Icon",
@@ -111,7 +120,8 @@ static partial class Stories
                         "icon": {
                           "$icon": "Add20Regular"
                         }
-                      }
+                      },
+                      "$at": 4
                     },
                     {
                       "$el": "Icon",
@@ -119,7 +129,8 @@ static partial class Stories
                         "icon": {
                           "$icon": "Settings20Regular"
                         }
-                      }
+                      },
+                      "$at": 5
                     },
                     {
                       "$el": "Icon",
@@ -127,7 +138,8 @@ static partial class Stories
                         "icon": {
                           "$icon": "Delete20Regular"
                         }
-                      }
+                      },
+                      "$at": 6
                     }
                   ]
                 }
@@ -149,7 +161,8 @@ static partial class Stories
                           "$icon": "Settings20Regular"
                         },
                         "size": 12
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "Icon",
@@ -158,7 +171,8 @@ static partial class Stories
                           "$icon": "Settings20Regular"
                         },
                         "size": 16
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "Icon",
@@ -167,7 +181,8 @@ static partial class Stories
                           "$icon": "Settings20Regular"
                         },
                         "size": 20
-                      }
+                      },
+                      "$at": 2
                     },
                     {
                       "$el": "Icon",
@@ -176,7 +191,8 @@ static partial class Stories
                           "$icon": "Settings20Regular"
                         },
                         "size": 24
-                      }
+                      },
+                      "$at": 3
                     },
                     {
                       "$el": "Icon",
@@ -185,7 +201,8 @@ static partial class Stories
                           "$icon": "Settings20Regular"
                         },
                         "size": 32
-                      }
+                      },
+                      "$at": 4
                     }
                   ]
                 }
@@ -212,7 +229,8 @@ static partial class Stories
                             "icon": {
                               "$icon": "Folder20Regular"
                             }
-                          }
+                          },
+                          "$at": 0
                         }
                       ]
                     },
@@ -228,7 +246,8 @@ static partial class Stories
                             "icon": {
                               "$icon": "Folder20Regular"
                             }
-                          }
+                          },
+                          "$at": 1
                         }
                       ]
                     },
@@ -244,7 +263,8 @@ static partial class Stories
                             "icon": {
                               "$icon": "Folder20Regular"
                             }
-                          }
+                          },
+                          "$at": 2
                         }
                       ]
                     },
@@ -260,7 +280,8 @@ static partial class Stories
                             "icon": {
                               "$icon": "Folder20Regular"
                             }
-                          }
+                          },
+                          "$at": 3
                         }
                       ]
                     }

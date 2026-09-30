@@ -20,10 +20,13 @@ const story = Story(
               "props": {
                 "icon": {"\$icon": "Settings20Regular"},
               },
+              "\$at": 2,
             },
           ],
+          "\$at": 1,
         },
       ],
+      "\$at": 0,
     },
   ),
   examples: [
@@ -43,10 +46,13 @@ const story = Story(
                   "props": {
                     "icon": {"\$icon": "Settings20Regular"},
                   },
+                  "\$at": 2,
                 },
               ],
+              "\$at": 1,
             },
           ],
+          "\$at": 0,
         },
       ),
     ),
@@ -63,8 +69,10 @@ const story = Story(
                 {
                   "\$el": "Button",
                   "children": ["top"],
+                  "\$at": 1,
                 },
               ],
+              "\$at": 0,
             },
             {
               "\$el": "Tooltip",
@@ -73,8 +81,10 @@ const story = Story(
                 {
                   "\$el": "Button",
                   "children": ["bottom"],
+                  "\$at": 3,
                 },
               ],
+              "\$at": 2,
             },
             {
               "\$el": "Tooltip",
@@ -83,8 +93,10 @@ const story = Story(
                 {
                   "\$el": "Button",
                   "children": ["left"],
+                  "\$at": 5,
                 },
               ],
+              "\$at": 4,
             },
             {
               "\$el": "Tooltip",
@@ -93,8 +105,10 @@ const story = Story(
                 {
                   "\$el": "Button",
                   "children": ["right"],
+                  "\$at": 7,
                 },
               ],
+              "\$at": 6,
             },
           ],
         },

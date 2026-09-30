@@ -19,7 +19,8 @@ extension Stories {
               "$el": "SectionLabel",
               "children": [
                 "Recent"
-              ]
+              ],
+              "$at": 0
             },
             {
               "$el": "Text",
@@ -50,7 +51,8 @@ extension Stories {
                   "$el": "SectionLabel",
                   "children": [
                     "Recent"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "SectionLabel",
@@ -59,7 +61,8 @@ extension Stories {
                   },
                   "children": [
                     "Archived"
-                  ]
+                  ],
+                  "$at": 1
                 }
               ]
             }
@@ -81,7 +84,8 @@ extension Stories {
                   },
                   "children": [
                     "primary"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "SectionLabel",
@@ -90,7 +94,8 @@ extension Stories {
                   },
                   "children": [
                     "neutral"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "SectionLabel",
@@ -99,7 +104,8 @@ extension Stories {
                   },
                   "children": [
                     "info"
-                  ]
+                  ],
+                  "$at": 2
                 },
                 {
                   "$el": "SectionLabel",
@@ -108,7 +114,8 @@ extension Stories {
                   },
                   "children": [
                     "success"
-                  ]
+                  ],
+                  "$at": 3
                 },
                 {
                   "$el": "SectionLabel",
@@ -117,7 +124,8 @@ extension Stories {
                   },
                   "children": [
                     "warning"
-                  ]
+                  ],
+                  "$at": 4
                 },
                 {
                   "$el": "SectionLabel",
@@ -126,7 +134,8 @@ extension Stories {
                   },
                   "children": [
                     "danger"
-                  ]
+                  ],
+                  "$at": 5
                 }
               ]
             }

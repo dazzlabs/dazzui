@@ -36,7 +36,8 @@ static partial class Stories
                             "icon": {
                               "$icon": "Folder20Regular"
                             }
-                          }
+                          },
+                          "$at": 1
                         },
                         "children": [
                           {
@@ -48,7 +49,8 @@ static partial class Stories
                                 "icon": {
                                   "$icon": "Folder20Regular"
                                 }
-                              }
+                              },
+                              "$at": 2
                             },
                             "children": [
                               {
@@ -60,7 +62,8 @@ static partial class Stories
                                     "icon": {
                                       "$icon": "Document20Regular"
                                     }
-                                  }
+                                  },
+                                  "$at": 3
                                 }
                               },
                               {
@@ -72,7 +75,8 @@ static partial class Stories
                                     "icon": {
                                       "$icon": "Document20Regular"
                                     }
-                                  }
+                                  },
+                                  "$at": 4
                                 }
                               }
                             ]
@@ -86,7 +90,8 @@ static partial class Stories
                                 "icon": {
                                   "$icon": "Folder20Regular"
                                 }
-                              }
+                              },
+                              "$at": 5
                             },
                             "children": [
                               {
@@ -98,7 +103,8 @@ static partial class Stories
                                     "icon": {
                                       "$icon": "Document20Regular"
                                     }
-                                  }
+                                  },
+                                  "$at": 6
                                 }
                               }
                             ]
@@ -112,7 +118,8 @@ static partial class Stories
                                 "icon": {
                                   "$icon": "Document20Regular"
                                 }
-                              }
+                              },
+                              "$at": 7
                             }
                           }
                         ]
@@ -126,7 +133,8 @@ static partial class Stories
                             "icon": {
                               "$icon": "Document20Regular"
                             }
-                          }
+                          },
+                          "$at": 8
                         }
                       },
                       {
@@ -138,7 +146,8 @@ static partial class Stories
                             "icon": {
                               "$icon": "Document20Regular"
                             }
-                          }
+                          },
+                          "$at": 9
                         }
                       }
                     ],
@@ -162,7 +171,8 @@ static partial class Stories
                       ]
                     },
                     "aria-label": "Files"
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             }
@@ -194,7 +204,8 @@ static partial class Stories
                                 "icon": {
                                   "$icon": "Folder20Regular"
                                 }
-                              }
+                              },
+                              "$at": 1
                             },
                             "children": [
                               {
@@ -206,7 +217,8 @@ static partial class Stories
                                     "icon": {
                                       "$icon": "Folder20Regular"
                                     }
-                                  }
+                                  },
+                                  "$at": 2
                                 },
                                 "children": [
                                   {
@@ -218,7 +230,8 @@ static partial class Stories
                                         "icon": {
                                           "$icon": "Document20Regular"
                                         }
-                                      }
+                                      },
+                                      "$at": 3
                                     }
                                   },
                                   {
@@ -230,7 +243,8 @@ static partial class Stories
                                         "icon": {
                                           "$icon": "Document20Regular"
                                         }
-                                      }
+                                      },
+                                      "$at": 4
                                     }
                                   }
                                 ]
@@ -244,7 +258,8 @@ static partial class Stories
                                     "icon": {
                                       "$icon": "Folder20Regular"
                                     }
-                                  }
+                                  },
+                                  "$at": 5
                                 },
                                 "children": [
                                   {
@@ -256,7 +271,8 @@ static partial class Stories
                                         "icon": {
                                           "$icon": "Document20Regular"
                                         }
-                                      }
+                                      },
+                                      "$at": 6
                                     }
                                   }
                                 ]
@@ -270,7 +286,8 @@ static partial class Stories
                                     "icon": {
                                       "$icon": "Document20Regular"
                                     }
-                                  }
+                                  },
+                                  "$at": 7
                                 }
                               }
                             ]
@@ -284,7 +301,8 @@ static partial class Stories
                                 "icon": {
                                   "$icon": "Document20Regular"
                                 }
-                              }
+                              },
+                              "$at": 8
                             }
                           },
                           {
@@ -296,7 +314,8 @@ static partial class Stories
                                 "icon": {
                                   "$icon": "Document20Regular"
                                 }
-                              }
+                              },
+                              "$at": 9
                             }
                           }
                         ],
@@ -319,7 +338,8 @@ static partial class Stories
                           ]
                         },
                         "aria-label": "Files"
-                      }
+                      },
+                      "$at": 0
                     }
                   ]
                 }
@@ -350,7 +370,8 @@ static partial class Stories
                                 "icon": {
                                   "$icon": "Folder20Regular"
                                 }
-                              }
+                              },
+                              "$at": 1
                             },
                             "children": [
                               {
@@ -362,7 +383,8 @@ static partial class Stories
                                     "icon": {
                                       "$icon": "Document20Regular"
                                     }
-                                  }
+                                  },
+                                  "$at": 2
                                 },
                                 "meta": {
                                   "$el": "Badge",
@@ -371,7 +393,8 @@ static partial class Stories
                                   },
                                   "children": [
                                     "M"
-                                  ]
+                                  ],
+                                  "$at": 3
                                 }
                               },
                               {
@@ -383,7 +406,8 @@ static partial class Stories
                                     "icon": {
                                       "$icon": "Document20Regular"
                                     }
-                                  }
+                                  },
+                                  "$at": 4
                                 },
                                 "meta": {
                                   "$el": "Badge",
@@ -393,7 +417,8 @@ static partial class Stories
                                   },
                                   "children": [
                                     "A"
-                                  ]
+                                  ],
+                                  "$at": 5
                                 }
                               }
                             ]
@@ -407,7 +432,8 @@ static partial class Stories
                                 "icon": {
                                   "$icon": "Document20Regular"
                                 }
-                              }
+                              },
+                              "$at": 6
                             },
                             "disabled": true,
                             "meta": "locked"
@@ -432,7 +458,8 @@ static partial class Stories
                           ]
                         },
                         "aria-label": "Files"
-                      }
+                      },
+                      "$at": 0
                     }
                   ]
                 }

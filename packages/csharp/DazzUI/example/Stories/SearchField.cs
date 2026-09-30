@@ -41,7 +41,8 @@ static partial class Stories
                     },
                     "placeholder": "Search components",
                     "aria-label": "Search"
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             }
@@ -77,7 +78,8 @@ static partial class Stories
                         },
                         "placeholder": "Search components",
                         "aria-label": "Search"
-                      }
+                      },
+                      "$at": 0
                     }
                   ]
                 }

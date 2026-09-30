@@ -22,7 +22,8 @@ extension Stories {
               },
               "children": [
                 "⌘"
-              ]
+              ],
+              "$at": 0
             },
             {
               "$el": "KeyCap",
@@ -31,7 +32,8 @@ extension Stories {
               },
               "children": [
                 "⇧"
-              ]
+              ],
+              "$at": 1
             },
             {
               "$el": "KeyCap",
@@ -40,7 +42,8 @@ extension Stories {
               },
               "children": [
                 "P"
-              ]
+              ],
+              "$at": 2
             }
           ]
         }
@@ -59,7 +62,8 @@ extension Stories {
                   },
                   "children": [
                     "⌘K"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "KeyCap",
@@ -68,7 +72,8 @@ extension Stories {
                   },
                   "children": [
                     "⌘K"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "KeyCap",
@@ -77,7 +82,8 @@ extension Stories {
                   },
                   "children": [
                     "⌘K"
-                  ]
+                  ],
+                  "$at": 2
                 }
               ]
             }
@@ -96,7 +102,8 @@ extension Stories {
                   },
                   "children": [
                     "Esc"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "KeyCap",
@@ -105,7 +112,8 @@ extension Stories {
                   },
                   "children": [
                     "Esc"
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "KeyCap",
@@ -114,7 +122,8 @@ extension Stories {
                   },
                   "children": [
                     "Esc"
-                  ]
+                  ],
+                  "$at": 2
                 }
               ]
             }

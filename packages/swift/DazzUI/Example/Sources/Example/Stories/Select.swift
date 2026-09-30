@@ -38,7 +38,8 @@ extension Stories {
                 ],
                 "defaultValue": "en",
                 "aria-label": "Language"
-              }
+              },
+              "$at": 0
             }
           ]
         }
@@ -77,7 +78,8 @@ extension Stories {
                     ],
                     "defaultValue": "zh",
                     "aria-label": "small"
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "Select",
@@ -103,7 +105,8 @@ extension Stories {
                     ],
                     "defaultValue": "zh",
                     "aria-label": "medium"
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "Select",
@@ -129,7 +132,8 @@ extension Stories {
                     ],
                     "defaultValue": "zh",
                     "aria-label": "large"
-                  }
+                  },
+                  "$at": 2
                 }
               ]
             }
@@ -167,7 +171,8 @@ extension Stories {
                     ],
                     "placeholder": "Choose a language",
                     "aria-label": "Language"
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "Select",
@@ -193,7 +198,8 @@ extension Stories {
                     "defaultValue": "ja",
                     "disabled": true,
                     "aria-label": "Disabled"
-                  }
+                  },
+                  "$at": 1
                 }
               ]
             }

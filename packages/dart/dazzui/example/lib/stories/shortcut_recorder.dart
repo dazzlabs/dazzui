@@ -27,6 +27,7 @@ const story = Story(
         },
         "aria-label": "Shortcut",
       },
+      "\$at": 0,
     },
   ),
   examples: [
@@ -58,6 +59,7 @@ const story = Story(
                 },
                 "aria-label": "Shortcut",
               },
+              "\$at": 0,
             },
             {
               "\$el": "ShortcutRecorder",
@@ -78,6 +80,7 @@ const story = Story(
                 },
                 "aria-label": "Shortcut",
               },
+              "\$at": 1,
             },
           ],
         },
@@ -98,6 +101,7 @@ const story = Story(
                 "onValueChange": {"\$do": []},
                 "aria-label": "Taken",
               },
+              "\$at": 0,
             },
             {
               "\$el": "ShortcutRecorder",
@@ -107,6 +111,7 @@ const story = Story(
                 "onValueChange": {"\$do": []},
                 "aria-label": "Disabled",
               },
+              "\$at": 1,
             },
           ],
         },

@@ -13,16 +13,20 @@ const story = Story(
         {
           "\$el": "Step",
           "props": {"status": "done", "label": "Build", "meta": "42s"},
+          "\$at": 1,
         },
         {
           "\$el": "Step",
           "props": {"status": "active", "label": "Test"},
+          "\$at": 2,
         },
         {
           "\$el": "Step",
           "props": {"status": "idle", "label": "Deploy"},
+          "\$at": 3,
         },
       ],
+      "\$at": 0,
     },
   ),
   examples: [
@@ -43,20 +47,25 @@ const story = Story(
                     "label": "Install dependencies",
                     "meta": "12s",
                   },
+                  "\$at": 1,
                 },
                 {
                   "\$el": "Step",
                   "props": {"status": "done", "label": "Build", "meta": "42s"},
+                  "\$at": 2,
                 },
                 {
                   "\$el": "Step",
                   "props": {"status": "active", "label": "Run tests"},
+                  "\$at": 3,
                 },
                 {
                   "\$el": "Step",
                   "props": {"status": "idle", "label": "Deploy"},
+                  "\$at": 4,
                 },
               ],
+              "\$at": 0,
             },
           ],
         },

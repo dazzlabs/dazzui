@@ -24,7 +24,8 @@ static partial class Stories
                   "$el": "SectionLabel",
                   "children": [
                     "Recent"
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Text",
@@ -55,7 +56,8 @@ static partial class Stories
                       "$el": "SectionLabel",
                       "children": [
                         "Recent"
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "SectionLabel",
@@ -64,7 +66,8 @@ static partial class Stories
                       },
                       "children": [
                         "Archived"
-                      ]
+                      ],
+                      "$at": 1
                     }
                   ]
                 }
@@ -86,7 +89,8 @@ static partial class Stories
                       },
                       "children": [
                         "primary"
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "SectionLabel",
@@ -95,7 +99,8 @@ static partial class Stories
                       },
                       "children": [
                         "neutral"
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "SectionLabel",
@@ -104,7 +109,8 @@ static partial class Stories
                       },
                       "children": [
                         "info"
-                      ]
+                      ],
+                      "$at": 2
                     },
                     {
                       "$el": "SectionLabel",
@@ -113,7 +119,8 @@ static partial class Stories
                       },
                       "children": [
                         "success"
-                      ]
+                      ],
+                      "$at": 3
                     },
                     {
                       "$el": "SectionLabel",
@@ -122,7 +129,8 @@ static partial class Stories
                       },
                       "children": [
                         "warning"
-                      ]
+                      ],
+                      "$at": 4
                     },
                     {
                       "$el": "SectionLabel",
@@ -131,7 +139,8 @@ static partial class Stories
                       },
                       "children": [
                         "danger"
-                      ]
+                      ],
+                      "$at": 5
                     }
                   ]
                 }

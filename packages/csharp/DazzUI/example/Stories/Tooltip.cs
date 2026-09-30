@@ -32,11 +32,14 @@ static partial class Stories
                         "icon": {
                           "$icon": "Settings20Regular"
                         }
-                      }
+                      },
+                      "$at": 2
                     }
-                  ]
+                  ],
+                  "$at": 1
                 }
-              ]
+              ],
+              "$at": 0
             }
           },
           "examples": [
@@ -61,11 +64,14 @@ static partial class Stories
                             "icon": {
                               "$icon": "Settings20Regular"
                             }
-                          }
+                          },
+                          "$at": 2
                         }
-                      ]
+                      ],
+                      "$at": 1
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               }
             },
@@ -86,9 +92,11 @@ static partial class Stories
                           "$el": "Button",
                           "children": [
                             "top"
-                          ]
+                          ],
+                          "$at": 1
                         }
-                      ]
+                      ],
+                      "$at": 0
                     },
                     {
                       "$el": "Tooltip",
@@ -101,9 +109,11 @@ static partial class Stories
                           "$el": "Button",
                           "children": [
                             "bottom"
-                          ]
+                          ],
+                          "$at": 3
                         }
-                      ]
+                      ],
+                      "$at": 2
                     },
                     {
                       "$el": "Tooltip",
@@ -116,9 +126,11 @@ static partial class Stories
                           "$el": "Button",
                           "children": [
                             "left"
-                          ]
+                          ],
+                          "$at": 5
                         }
-                      ]
+                      ],
+                      "$at": 4
                     },
                     {
                       "$el": "Tooltip",
@@ -131,9 +143,11 @@ static partial class Stories
                           "$el": "Button",
                           "children": [
                             "right"
-                          ]
+                          ],
+                          "$at": 7
                         }
-                      ]
+                      ],
+                      "$at": 6
                     }
                   ]
                 }

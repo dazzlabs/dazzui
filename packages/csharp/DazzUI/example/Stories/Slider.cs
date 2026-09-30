@@ -25,7 +25,8 @@ static partial class Stories
                   "props": {
                     "defaultValue": 60,
                     "aria-label": "Volume"
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             }
@@ -47,7 +48,8 @@ static partial class Stories
                         "size": "small",
                         "defaultValue": 40,
                         "aria-label": "small"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "Slider",
@@ -55,7 +57,8 @@ static partial class Stories
                         "size": "medium",
                         "defaultValue": 40,
                         "aria-label": "medium"
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "Slider",
@@ -63,7 +66,8 @@ static partial class Stories
                         "size": "large",
                         "defaultValue": 40,
                         "aria-label": "large"
-                      }
+                      },
+                      "$at": 2
                     }
                   ]
                 }
@@ -85,7 +89,8 @@ static partial class Stories
                         "defaultValue": 72,
                         "showValue": true,
                         "aria-label": "Quality"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "Slider",
@@ -96,7 +101,8 @@ static partial class Stories
                         ],
                         "showValue": true,
                         "aria-label": "Range"
-                      }
+                      },
+                      "$at": 1
                     }
                   ]
                 }

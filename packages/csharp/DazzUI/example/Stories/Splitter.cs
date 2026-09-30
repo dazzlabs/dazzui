@@ -48,7 +48,8 @@ static partial class Stories
                             }
                           ]
                         }
-                      ]
+                      ],
+                      "$at": 1
                     },
                     {
                       "$el": "SplitterPanel",
@@ -74,9 +75,11 @@ static partial class Stories
                             }
                           ]
                         }
-                      ]
+                      ],
+                      "$at": 2
                     }
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }
@@ -118,7 +121,8 @@ static partial class Stories
                                 }
                               ]
                             }
-                          ]
+                          ],
+                          "$at": 1
                         },
                         {
                           "$el": "SplitterPanel",
@@ -145,7 +149,8 @@ static partial class Stories
                                 }
                               ]
                             }
-                          ]
+                          ],
+                          "$at": 2
                         },
                         {
                           "$el": "SplitterPanel",
@@ -173,9 +178,11 @@ static partial class Stories
                                 }
                               ]
                             }
-                          ]
+                          ],
+                          "$at": 3
                         }
-                      ]
+                      ],
+                      "$at": 0
                     }
                   ]
                 }
@@ -217,7 +224,8 @@ static partial class Stories
                                 }
                               ]
                             }
-                          ]
+                          ],
+                          "$at": 1
                         },
                         {
                           "$el": "SplitterPanel",
@@ -243,9 +251,11 @@ static partial class Stories
                                 }
                               ]
                             }
-                          ]
+                          ],
+                          "$at": 2
                         }
-                      ]
+                      ],
+                      "$at": 0
                     }
                   ]
                 }

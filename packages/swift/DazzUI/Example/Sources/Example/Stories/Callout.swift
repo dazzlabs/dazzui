@@ -23,7 +23,8 @@ extension Stories {
               },
               "children": [
                 "Restart to finish updating."
-              ]
+              ],
+              "$at": 0
             }
           ]
         }
@@ -46,7 +47,8 @@ extension Stories {
                   },
                   "children": [
                     "What happened, and what to do about it."
-                  ]
+                  ],
+                  "$at": 0
                 },
                 {
                   "$el": "Callout",
@@ -56,7 +58,8 @@ extension Stories {
                   },
                   "children": [
                     "What happened, and what to do about it."
-                  ]
+                  ],
+                  "$at": 1
                 },
                 {
                   "$el": "Callout",
@@ -66,7 +69,8 @@ extension Stories {
                   },
                   "children": [
                     "What happened, and what to do about it."
-                  ]
+                  ],
+                  "$at": 2
                 },
                 {
                   "$el": "Callout",
@@ -76,7 +80,8 @@ extension Stories {
                   },
                   "children": [
                     "What happened, and what to do about it."
-                  ]
+                  ],
+                  "$at": 3
                 },
                 {
                   "$el": "Callout",
@@ -86,7 +91,8 @@ extension Stories {
                   },
                   "children": [
                     "What happened, and what to do about it."
-                  ]
+                  ],
+                  "$at": 4
                 },
                 {
                   "$el": "Callout",
@@ -96,7 +102,8 @@ extension Stories {
                   },
                   "children": [
                     "What happened, and what to do about it."
-                  ]
+                  ],
+                  "$at": 5
                 }
               ]
             }
@@ -125,12 +132,14 @@ extension Stories {
                       },
                       "children": [
                         "Upgrade"
-                      ]
+                      ],
+                      "$at": 1
                     }
                   },
                   "children": [
                     "Projects stay readable after it does."
-                  ]
+                  ],
+                  "$at": 0
                 }
               ]
             }

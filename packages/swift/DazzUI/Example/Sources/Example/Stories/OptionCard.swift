@@ -40,7 +40,8 @@ extension Stories {
                     }
                   ]
                 }
-              }
+              },
+              "$at": 0
             },
             {
               "$el": "OptionCard",
@@ -63,7 +64,8 @@ extension Stories {
                     }
                   ]
                 }
-              }
+              },
+              "$at": 1
             }
           ]
         }
@@ -103,7 +105,8 @@ extension Stories {
                         }
                       ]
                     }
-                  }
+                  },
+                  "$at": 0
                 },
                 {
                   "$el": "OptionCard",
@@ -126,7 +129,8 @@ extension Stories {
                         }
                       ]
                     }
-                  }
+                  },
+                  "$at": 1
                 },
                 {
                   "$el": "OptionCard",
@@ -149,7 +153,8 @@ extension Stories {
                         }
                       ]
                     }
-                  }
+                  },
+                  "$at": 2
                 }
               ]
             }
@@ -170,7 +175,8 @@ extension Stories {
                     "title": "Enterprise",
                     "description": "Talk to us.",
                     "disabled": true
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             }

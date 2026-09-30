@@ -14,6 +14,7 @@ const story = Story(
         {
           "\$el": "SectionLabel",
           "children": ["Recent"],
+          "\$at": 0,
         },
         {
           "\$el": "Text",
@@ -37,11 +38,13 @@ const story = Story(
             {
               "\$el": "SectionLabel",
               "children": ["Recent"],
+              "\$at": 0,
             },
             {
               "\$el": "SectionLabel",
               "props": {"faint": true},
               "children": ["Archived"],
+              "\$at": 1,
             },
           ],
         },
@@ -58,31 +61,37 @@ const story = Story(
               "\$el": "SectionLabel",
               "props": {"tint": "primary"},
               "children": ["primary"],
+              "\$at": 0,
             },
             {
               "\$el": "SectionLabel",
               "props": {"tint": "neutral"},
               "children": ["neutral"],
+              "\$at": 1,
             },
             {
               "\$el": "SectionLabel",
               "props": {"tint": "info"},
               "children": ["info"],
+              "\$at": 2,
             },
             {
               "\$el": "SectionLabel",
               "props": {"tint": "success"},
               "children": ["success"],
+              "\$at": 3,
             },
             {
               "\$el": "SectionLabel",
               "props": {"tint": "warning"},
               "children": ["warning"],
+              "\$at": 4,
             },
             {
               "\$el": "SectionLabel",
               "props": {"tint": "danger"},
               "children": ["danger"],
+              "\$at": 5,
             },
           ],
         },

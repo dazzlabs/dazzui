@@ -44,7 +44,8 @@ extension Stories {
                     }
                   ]
                 }
-              ]
+              ],
+              "$at": 0
             }
           ]
         }
@@ -72,7 +73,8 @@ extension Stories {
                       },
                       "children": [
                         "raised"
-                      ]
+                      ],
+                      "$at": 0
                     }
                   ]
                 },
@@ -89,7 +91,8 @@ extension Stories {
                       },
                       "children": [
                         "outlined"
-                      ]
+                      ],
+                      "$at": 1
                     }
                   ]
                 },
@@ -106,7 +109,8 @@ extension Stories {
                       },
                       "children": [
                         "sunken"
-                      ]
+                      ],
+                      "$at": 2
                     }
                   ]
                 },
@@ -123,7 +127,8 @@ extension Stories {
                       },
                       "children": [
                         "tinted"
-                      ]
+                      ],
+                      "$at": 3
                     }
                   ]
                 }
@@ -153,7 +158,8 @@ extension Stories {
                       },
                       "children": [
                         "small"
-                      ]
+                      ],
+                      "$at": 0
                     }
                   ]
                 },
@@ -170,7 +176,8 @@ extension Stories {
                       },
                       "children": [
                         "medium"
-                      ]
+                      ],
+                      "$at": 1
                     }
                   ]
                 },
@@ -187,7 +194,8 @@ extension Stories {
                       },
                       "children": [
                         "large"
-                      ]
+                      ],
+                      "$at": 2
                     }
                   ]
                 }

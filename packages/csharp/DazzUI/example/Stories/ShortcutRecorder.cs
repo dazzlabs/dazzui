@@ -42,7 +42,8 @@ static partial class Stories
                   ]
                 },
                 "aria-label": "Shortcut"
-              }
+              },
+              "$at": 0
             }
           },
           "examples": [
@@ -85,7 +86,8 @@ static partial class Stories
                           ]
                         },
                         "aria-label": "Shortcut"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "ShortcutRecorder",
@@ -112,7 +114,8 @@ static partial class Stories
                           ]
                         },
                         "aria-label": "Shortcut"
-                      }
+                      },
+                      "$at": 1
                     }
                   ]
                 }
@@ -136,7 +139,8 @@ static partial class Stories
                           "$do": []
                         },
                         "aria-label": "Taken"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "ShortcutRecorder",
@@ -147,7 +151,8 @@ static partial class Stories
                           "$do": []
                         },
                         "aria-label": "Disabled"
-                      }
+                      },
+                      "$at": 1
                     }
                   ]
                 }

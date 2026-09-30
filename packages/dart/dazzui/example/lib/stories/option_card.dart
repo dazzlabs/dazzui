@@ -29,6 +29,7 @@ const story = Story(
               ],
             },
           },
+          "\$at": 0,
         },
         {
           "\$el": "OptionCard",
@@ -47,6 +48,7 @@ const story = Story(
               ],
             },
           },
+          "\$at": 1,
         },
       ],
     },
@@ -77,6 +79,7 @@ const story = Story(
                   ],
                 },
               },
+              "\$at": 0,
             },
             {
               "\$el": "OptionCard",
@@ -95,6 +98,7 @@ const story = Story(
                   ],
                 },
               },
+              "\$at": 1,
             },
             {
               "\$el": "OptionCard",
@@ -113,6 +117,7 @@ const story = Story(
                   ],
                 },
               },
+              "\$at": 2,
             },
           ],
         },
@@ -132,6 +137,7 @@ const story = Story(
                 "description": "Talk to us.",
                 "disabled": true,
               },
+              "\$at": 0,
             },
           ],
         },

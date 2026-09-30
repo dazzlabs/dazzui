@@ -15,7 +15,7 @@ const story = Story(
           "\$el": "Text",
           "children": ["Account"],
         },
-        {"\$el": "Divider"},
+        {"\$el": "Divider", "\$at": 0},
         {
           "\$el": "Text",
           "children": ["Billing"],
@@ -31,10 +31,11 @@ const story = Story(
           "\$el": "Col",
           "props": {"width": "24rem", "gap": "5"},
           "children": [
-            {"\$el": "Divider"},
+            {"\$el": "Divider", "\$at": 0},
             {
               "\$el": "Divider",
               "props": {"tone": "muted"},
+              "\$at": 1,
             },
           ],
         },
@@ -54,6 +55,7 @@ const story = Story(
             {
               "\$el": "Divider",
               "props": {"orientation": "vertical"},
+              "\$at": 0,
             },
             {
               "\$el": "Text",
@@ -62,6 +64,7 @@ const story = Story(
             {
               "\$el": "Divider",
               "props": {"orientation": "vertical"},
+              "\$at": 1,
             },
             {
               "\$el": "Text",

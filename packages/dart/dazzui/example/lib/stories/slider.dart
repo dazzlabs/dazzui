@@ -15,6 +15,7 @@ const story = Story(
         {
           "\$el": "Slider",
           "props": {"defaultValue": 60, "aria-label": "Volume"},
+          "\$at": 0,
         },
       ],
     },
@@ -34,6 +35,7 @@ const story = Story(
                 "defaultValue": 40,
                 "aria-label": "small",
               },
+              "\$at": 0,
             },
             {
               "\$el": "Slider",
@@ -42,6 +44,7 @@ const story = Story(
                 "defaultValue": 40,
                 "aria-label": "medium",
               },
+              "\$at": 1,
             },
             {
               "\$el": "Slider",
@@ -50,6 +53,7 @@ const story = Story(
                 "defaultValue": 40,
                 "aria-label": "large",
               },
+              "\$at": 2,
             },
           ],
         },
@@ -69,6 +73,7 @@ const story = Story(
                 "showValue": true,
                 "aria-label": "Quality",
               },
+              "\$at": 0,
             },
             {
               "\$el": "Slider",
@@ -77,6 +82,7 @@ const story = Story(
                 "showValue": true,
                 "aria-label": "Range",
               },
+              "\$at": 1,
             },
           ],
         },

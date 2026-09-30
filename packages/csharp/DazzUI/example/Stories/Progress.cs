@@ -25,7 +25,8 @@ static partial class Stories
                   "props": {
                     "value": 64,
                     "aria-label": "Uploading"
-                  }
+                  },
+                  "$at": 0
                 }
               ]
             }
@@ -47,7 +48,8 @@ static partial class Stories
                         "size": "small",
                         "value": 48,
                         "aria-label": "small"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "Progress",
@@ -55,7 +57,8 @@ static partial class Stories
                         "size": "medium",
                         "value": 48,
                         "aria-label": "medium"
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "Progress",
@@ -63,7 +66,8 @@ static partial class Stories
                         "size": "large",
                         "value": 48,
                         "aria-label": "large"
-                      }
+                      },
+                      "$at": 2
                     }
                   ]
                 }
@@ -85,7 +89,8 @@ static partial class Stories
                         "value": 80,
                         "tint": "success",
                         "aria-label": "Success"
-                      }
+                      },
+                      "$at": 0
                     },
                     {
                       "$el": "Progress",
@@ -93,7 +98,8 @@ static partial class Stories
                         "value": 55,
                         "tint": "warning",
                         "aria-label": "Warning"
-                      }
+                      },
+                      "$at": 1
                     },
                     {
                       "$el": "Progress",
@@ -101,7 +107,8 @@ static partial class Stories
                         "value": 30,
                         "tint": "danger",
                         "aria-label": "Danger"
-                      }
+                      },
+                      "$at": 2
                     },
                     {
                       "$el": "Progress",
@@ -109,7 +116,8 @@ static partial class Stories
                         "value": 70,
                         "gradient": true,
                         "aria-label": "Gradient"
-                      }
+                      },
+                      "$at": 3
                     }
                   ]
                 }
