@@ -1,0 +1,89 @@
+.dzm-page-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--dzm-page-control-height);
+  padding: 0 var(--dzm-page-control-pad);
+  border-radius: 9999px;
+}
+
+/* Each dot's button is its tap target: the dot and the gap around it. */
+.dzm-page-control__dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--dzm-page-control-dot) + var(--dzm-page-control-gap));
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+  transition: width var(--dzm-page-control-motion);
+}
+
+.dzm-page-control__dot::before {
+  content: '';
+  width: var(--dzm-page-control-dot);
+  height: var(--dzm-page-control-dot);
+  border-radius: 9999px;
+  background: var(--dzm-page-control-ink);
+  transition:
+    width var(--dzm-page-control-motion),
+    background-color var(--dzm-page-control-motion);
+}
+
+.dzm-page-control__dot[data-current] {
+  width: calc(var(--dzm-page-control-current) + var(--dzm-page-control-gap));
+}
+
+.dzm-page-control__dot[data-current]::before {
+  width: var(--dzm-page-control-current);
+  background: var(--dzm-page-control-active);
+}
+
+.dzm-page-control__dot:focus-visible::before {
+  outline: 2px solid var(--dzm-page-control-focus);
+  outline-offset: 2px;
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+/* UIPageControl: 7pt dots on a 16pt pitch in a 26pt row, the current page
+   in the label colour and the rest in the tertiary label (UIKit's default
+   indicator tint, the label at 30%). The prominent background puts the
+   row in a glass capsule. */
+.dzm-page-control[data-platform='ios'] {
+  --dzm-page-control-height: 26px;
+  --dzm-page-control-pad: 0;
+  --dzm-page-control-dot: 7px;
+  --dzm-page-control-current: 7px;
+  --dzm-page-control-gap: 9px;
+  --dzm-page-control-ink: var(--ios-label-tertiary);
+  --dzm-page-control-active: var(--ios-label);
+  --dzm-page-control-focus: var(--ios-tint);
+  --dzm-page-control-motion: var(--ios-duration-fast) var(--ios-ease);
+}
+
+.dzm-page-control[data-platform='ios'][data-background] {
+  --dzm-page-control-pad: 6px;
+}
+
+/* Android --------------------------------------------------------------- */
+
+/* Material has no page indicator. Google's apps draw 8dp dots on a 16dp
+   pitch in the outline variant, the current page stretched to a 24dp pill
+   in the primary colour; the stretch rides the default spatial spring. */
+.dzm-page-control[data-platform='android'] {
+  --dzm-page-control-height: 24px;
+  --dzm-page-control-pad: 0;
+  --dzm-page-control-dot: 8px;
+  --dzm-page-control-current: 24px;
+  --dzm-page-control-gap: 8px;
+  --dzm-page-control-ink: var(--m3-outline-variant);
+  --dzm-page-control-active: var(--m3-primary);
+  --dzm-page-control-focus: var(--m3-primary);
+  --dzm-page-control-motion: var(--m3-duration-medium)
+    var(--m3-spring-default);
+}

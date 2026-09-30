@@ -1,0 +1,114 @@
+/*
+ * The context menu's own parts: the pressed element, the backdrop it lifts
+ * over and the copy that lifts. The menu is `menu.css`'s drawing, the
+ * popup and its rows unchanged.
+ */
+.dzm-context-menu-trigger {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* The original steps aside while its copy is lifted over it. */
+.dzm-context-menu-trigger[data-popup-open]:not([data-preview]) {
+  visibility: var(--dzm-context-menu-source-visibility, visible);
+}
+
+.dzm-context-menu-backdrop {
+  z-index: var(--dzm-layer-popup);
+  background: var(--dzm-context-menu-dim);
+  -webkit-backdrop-filter: var(--dzm-context-menu-blur);
+  backdrop-filter: var(--dzm-context-menu-blur);
+  transition:
+    background var(--dzm-context-menu-fade),
+    -webkit-backdrop-filter var(--dzm-context-menu-fade),
+    backdrop-filter var(--dzm-context-menu-fade);
+}
+
+.dzm-context-menu-backdrop[data-starting-style],
+.dzm-context-menu-backdrop[data-ending-style] {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.dzm-context-menu__lift {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  transform: scale(var(--dzm-context-menu-lift-scale));
+  filter: drop-shadow(var(--dzm-context-menu-lift-shadow));
+  transition:
+    transform var(--dzm-context-menu-motion),
+    filter var(--dzm-context-menu-motion),
+    opacity var(--dzm-context-menu-motion);
+}
+
+/* The copy fills the original's box whatever its own sizing said —
+   inline sizing included, which a percentage of a parent it no longer has
+   would otherwise turn into a narrower box. */
+.dzm-context-menu__lift:not([data-preview]) > * {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 !important;
+}
+
+.dzm-context-menu-backdrop[data-starting-style]
+  .dzm-context-menu__lift:not([data-preview]),
+.dzm-context-menu-backdrop[data-ending-style]
+  .dzm-context-menu__lift:not([data-preview]) {
+  transform: none;
+  filter: drop-shadow(0 0 0 transparent);
+}
+
+.dzm-context-menu__lift[data-preview] {
+  max-width: calc(100% - 2 * var(--dzm-context-menu-margin));
+  border-radius: var(--dzm-context-menu-platter-radius);
+  background: var(--dzm-context-menu-platter-fill);
+  overflow: hidden;
+  transform: none;
+  filter: none;
+  box-shadow: var(--dzm-context-menu-platter-edge);
+}
+
+.dzm-context-menu-backdrop[data-starting-style]
+  .dzm-context-menu__lift[data-preview],
+.dzm-context-menu-backdrop[data-ending-style]
+  .dzm-context-menu__lift[data-preview] {
+  opacity: 0;
+  transform: scale(var(--dzm-context-menu-platter-from));
+}
+
+/* iOS: UIContextMenuInteraction. The screen behind blurs through the
+   glass's own blur, fading on the plain curve, and dims under the shadow
+   black the sheet and the alert dim with. The element springs a little
+   off the page with the glass's shadow under it — UIKit publishes no
+   figure for the lift, so this is its look rather than its number — or a
+   preview grows in on a platter at the menu's 22pt corner, from the scale
+   the menu grows from. The menu hangs 8pt from it, as the pull-down hangs
+   from its button. */
+.dzm-context-menu-trigger[data-platform='ios'] {
+  --dzm-context-menu-source-visibility: hidden;
+}
+
+.dzm-context-menu-backdrop[data-platform='ios'] {
+  --dzm-context-menu-fade: var(--ios-duration) var(--ios-ease);
+  --dzm-context-menu-motion: var(--ios-duration) var(--ios-spring);
+  --dzm-context-menu-dim: rgb(0 0 0 / 0.2);
+  --dzm-context-menu-blur: var(--ios-glass-blur);
+  --dzm-context-menu-margin: var(--ios-inset);
+  --dzm-context-menu-lift-scale: 1.03;
+  --dzm-context-menu-lift-shadow: 0 10px 30px var(--ios-glass-shadow);
+  --dzm-context-menu-platter-radius: var(--ios-menu-radius);
+  --dzm-context-menu-platter-fill: var(--color-surface);
+  --dzm-context-menu-platter-edge: 0 10px 30px -6px var(--ios-glass-shadow);
+  --dzm-context-menu-platter-from: 0.85;
+}
+
+/* Android: a long press opens Material's dropdown menu where the finger
+   is, over no backdrop and with nothing lifted — `menu.css`'s drawing
+   alone, so there is nothing to set here. */

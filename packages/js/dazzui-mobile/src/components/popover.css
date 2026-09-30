@@ -1,0 +1,124 @@
+.dzm-popover-positioner {
+  z-index: var(--dzm-layer-popup);
+  outline: none;
+}
+
+.dzm-popover {
+  display: flex;
+  flex-direction: column;
+  max-width: min(var(--available-width), var(--dzm-popover-max-width));
+  max-height: var(--available-height);
+  padding: 0 var(--dzm-popover-pad-x);
+  border-radius: var(--dzm-popover-radius);
+  background: var(--dzm-popover-fill);
+  color: var(--dzm-popover-ink);
+  box-shadow: var(--dzm-popover-edge);
+  outline: none;
+  overflow: auto;
+  transform-origin: var(--transform-origin);
+  transition:
+    transform var(--dzm-popover-motion),
+    opacity var(--dzm-popover-motion);
+}
+
+.dzm-popover[data-starting-style],
+.dzm-popover[data-ending-style] {
+  opacity: 0;
+  transform: scale(var(--dzm-popover-from));
+}
+
+.dzm-popover[data-ending-style] {
+  transition-duration: var(--dzm-popover-exit, var(--dzm-popover-duration));
+}
+
+.dzm-popover__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dzm-popover-gap);
+  padding: var(--dzm-popover-pad-y) 0;
+}
+
+.dzm-popover__title {
+  margin: 0;
+  color: var(--dzm-popover-title-ink);
+  font: var(--dzm-popover-title-font);
+  letter-spacing: var(--dzm-popover-title-tracking, normal);
+}
+
+.dzm-popover__body {
+  color: var(--dzm-popover-body-ink);
+  font: var(--dzm-popover-body-font);
+  letter-spacing: var(--dzm-popover-body-tracking, normal);
+}
+
+.dzm-popover__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--dzm-popover-actions-gap);
+  min-height: var(--dzm-popover-actions-height);
+  padding-bottom: var(--dzm-popover-actions-pad);
+  box-shadow: var(--dzm-popover-actions-edge);
+}
+
+/* iOS: thick glass at the menu's 22pt corner, no arrow, no wider than
+   UIKit's default popover content, 320pt. The content as TipKit sets a
+   popover tip: the title in the headline weight, the message in the
+   subheadline in the secondary label, 16pt in from the edge, and the
+   actions below a hairline. It grows from its trigger on the spring the
+   menu grows on. */
+.dzm-popover[data-platform='ios'] {
+  --dzm-popover-duration: var(--ios-duration);
+  --dzm-popover-motion: var(--ios-duration) var(--ios-spring);
+  --dzm-popover-from: 0.85;
+  --dzm-popover-max-width: 320px;
+  --dzm-popover-pad-x: var(--ios-inset);
+  --dzm-popover-pad-y: var(--ios-inset);
+  --dzm-popover-radius: var(--ios-menu-radius);
+  --dzm-popover-fill: var(--ios-glass-fill-thick);
+  --dzm-popover-ink: var(--ios-label);
+  --dzm-popover-edge: var(--ios-glass-edge);
+  --dzm-popover-gap: 2px;
+  --dzm-popover-title-ink: var(--ios-label);
+  --dzm-popover-title-font: var(--ios-headline);
+  --dzm-popover-title-tracking: -0.41px;
+  --dzm-popover-body-ink: var(--ios-label-secondary);
+  --dzm-popover-body-font: var(--ios-subheadline);
+  --dzm-popover-body-tracking: -0.24px;
+  --dzm-popover-actions-gap: 16px;
+  --dzm-popover-actions-height: var(--ios-row);
+  --dzm-popover-actions-pad: 0;
+  --dzm-popover-actions-edge: inset 0 var(--ios-hairline) 0 0
+    var(--ios-separator);
+}
+
+/* Android: the rich tooltip. The surface container at the 12dp corner at
+   elevation 2, at most 320dp wide with 16dp at either side; the subhead
+   in title-small and the supporting text in body-medium, both on
+   on-surface-variant, 12dp from the top and the bottom; the actions a
+   36dp row with 8dp beneath. It scales in from 80% as Compose's tooltip
+   does, over 150ms and out over 75ms, on LinearOutSlowIn. */
+.dzm-popover[data-platform='android'] {
+  --dzm-popover-duration: 150ms;
+  --dzm-popover-exit: 75ms;
+  --dzm-popover-motion: 150ms cubic-bezier(0, 0, 0.2, 1);
+  --dzm-popover-from: 0.8;
+  --dzm-popover-max-width: 320px;
+  --dzm-popover-pad-x: 16px;
+  --dzm-popover-pad-y: 12px;
+  --dzm-popover-radius: var(--m3-corner-md);
+  --dzm-popover-fill: var(--m3-surface-container);
+  --dzm-popover-ink: var(--m3-on-surface-variant);
+  --dzm-popover-edge: var(--m3-elevation-2);
+  --dzm-popover-gap: 4px;
+  --dzm-popover-title-ink: var(--m3-on-surface-variant);
+  --dzm-popover-title-font: var(--m3-title-small);
+  --dzm-popover-title-tracking: var(--m3-title-small-tracking);
+  --dzm-popover-body-ink: var(--m3-on-surface-variant);
+  --dzm-popover-body-font: var(--m3-body-medium);
+  --dzm-popover-body-tracking: var(--m3-body-medium-tracking);
+  --dzm-popover-actions-gap: 8px;
+  --dzm-popover-actions-height: 36px;
+  --dzm-popover-actions-pad: 8px;
+  --dzm-popover-actions-edge: none;
+}

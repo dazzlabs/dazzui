@@ -1,0 +1,184 @@
+/*
+ * The row is a `ListItem`'s — it wears `dzm-list-item`, so it takes the
+ * list's type, height, padding and press — and this sheet adds only what
+ * a disclosure has that a row does not: the turning chevron, the panel
+ * whose height animates, the step each level of revealed rows is
+ * indented by, and the hairlines between a disclosure and its neighbours.
+ */
+.dzm-disclosure {
+  display: flex;
+  flex-direction: column;
+}
+
+.dzm-disclosure__chevron {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--dzm-disclosure-chevron);
+  transform: rotate(var(--dzm-disclosure-turn));
+  transition: transform var(--dzm-disclosure-duration)
+    var(--dzm-disclosure-ease);
+}
+
+.dzm-disclosure__chevron > svg {
+  width: var(--dzm-disclosure-chevron-size);
+  height: var(--dzm-disclosure-chevron-size);
+  stroke-width: var(--dzm-disclosure-chevron-weight);
+}
+
+.dzm-disclosure__row[data-panel-open] > .dzm-disclosure__chevron {
+  --dzm-disclosure-turn: var(--dzm-disclosure-turn-open);
+}
+
+/* Base UI measures the panel; the height runs from nothing to that. */
+.dzm-disclosure__panel {
+  height: var(--collapsible-panel-height);
+  overflow: hidden;
+  transition: height var(--dzm-disclosure-duration) var(--dzm-disclosure-ease);
+}
+
+.dzm-disclosure__panel[data-starting-style],
+.dzm-disclosure__panel[data-ending-style] {
+  height: 0;
+}
+
+.dzm-disclosure__panel[hidden]:not([hidden='until-found']) {
+  display: none;
+}
+
+.dzm-disclosure__content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Each level of revealed rows starts a step further in: the row of a
+   nested disclosure by its own depth, a revealed `ListItem` by its
+   panel's. */
+.dzm-disclosure > .dzm-disclosure__row,
+.dzm-disclosure__content > .dzm-list-item {
+  --dzm-disclosure-inset: calc(
+    var(--dzm-disclosure-start) + var(--dzm-disclosure-depth, 0) *
+      var(--dzm-disclosure-step)
+  );
+  padding-inline-start: var(--dzm-disclosure-inset);
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+/*
+ * SwiftUI's `DisclosureGroup` in an inset grouped list: the row is the
+ * list's 44pt row, and at its trailing edge a chevron in the tint —
+ * `chevron.right` at the weight of the list's own disclosure indicator —
+ * turns a quarter to point down as the group opens. The revealed rows are
+ * cells of the same group, indented a 20pt step per level, with the
+ * hairline between every pair starting where each row's text does. The
+ * panel opens on UIKit's spring.
+ */
+.dzm-disclosure[data-platform='ios'] {
+  --dzm-disclosure-start: 20px;
+  --dzm-disclosure-step: 20px;
+  --dzm-disclosure-chevron: var(--ios-tint);
+  --dzm-disclosure-chevron-size: 14px;
+  --dzm-disclosure-chevron-weight: 3;
+  --dzm-disclosure-turn: 0deg;
+  --dzm-disclosure-turn-open: 90deg;
+  --dzm-disclosure-duration: var(--ios-duration);
+  --dzm-disclosure-ease: var(--ios-ease);
+}
+
+/* Where a row's hairline starts: its text, past the glyph tile if any. */
+.dzm-disclosure[data-platform='ios'] > .dzm-disclosure__row,
+.dzm-disclosure[data-platform='ios']
+  > .dzm-disclosure__panel
+  > .dzm-disclosure__content
+  > .dzm-list-item[data-platform='ios'] {
+  --dzm-list-separator-inset: var(--dzm-disclosure-inset);
+}
+
+/* Revealed rows go past their own tile; at the top level, as in the
+   list, a row goes past it only when the row above has one too. */
+.dzm-disclosure__content
+  > .dzm-disclosure[data-platform='ios']
+  > .dzm-disclosure__row:has(.dzm-list-item__icon),
+:is(
+    .dzm-list-item:has(.dzm-list-item__icon),
+    .dzm-disclosure:has(> .dzm-disclosure__row .dzm-list-item__icon)
+  )
+  + .dzm-disclosure[data-platform='ios']
+  > .dzm-disclosure__row:has(.dzm-list-item__icon),
+.dzm-disclosure[data-platform='ios']
+  > .dzm-disclosure__panel
+  > .dzm-disclosure__content
+  > .dzm-list-item[data-platform='ios']:has(.dzm-list-item__icon) {
+  --dzm-list-separator-inset: calc(
+    var(--dzm-disclosure-inset) + var(--dzm-list-icon) +
+      var(--dzm-list-item-gap)
+  );
+}
+
+/* The hairlines `list.css` cannot see: above a disclosure's row, above
+   the row after a disclosure, and above the first row it reveals. Those
+   between the revealed rows are the list's own. */
+.dzm-list-item[data-platform='ios']
+  + .dzm-disclosure[data-platform='ios']
+  > .dzm-disclosure__row::before,
+.dzm-disclosure[data-platform='ios']
+  + .dzm-disclosure[data-platform='ios']
+  > .dzm-disclosure__row::before,
+.dzm-disclosure[data-platform='ios'] + .dzm-list-item[data-platform='ios']::before,
+.dzm-disclosure[data-platform='ios']
+  > .dzm-disclosure__panel
+  > .dzm-disclosure__content
+  > .dzm-list-item[data-platform='ios']:first-child::before,
+.dzm-disclosure[data-platform='ios']
+  > .dzm-disclosure__panel
+  > .dzm-disclosure__content
+  > .dzm-disclosure[data-platform='ios']:first-child
+  > .dzm-disclosure__row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: var(--dzm-list-separator-inset, 20px);
+  height: var(--ios-hairline);
+  background: var(--ios-separator);
+}
+
+/* At the top level, a row after a disclosure keeps the list's rule: past
+   the tile only when both rows have one. */
+.dzm-list-section__group
+  > .dzm-disclosure[data-platform='ios']:has(
+    > .dzm-disclosure__row .dzm-list-item__icon
+  )
+  + .dzm-list-item[data-platform='ios']:has(.dzm-list-item__icon) {
+  --dzm-list-separator-inset: 62px;
+}
+
+/* Android ---------------------------------------------------------------- */
+
+/*
+ * Material's expandable list item: the list's 56dp row with its state
+ * layer, and at the trailing edge the 24dp expand arrow in the surface
+ * variant ink, pointing down while closed and turned over to point up
+ * while open. The content opens beneath on the emphasized curve at the
+ * medium duration, each level a 16dp step in — the list's own inset.
+ * Material's list draws no dividers, so neither does this.
+ */
+.dzm-disclosure[data-platform='android'] {
+  --dzm-disclosure-start: 16px;
+  --dzm-disclosure-step: 16px;
+  --dzm-disclosure-chevron: var(--m3-on-surface-variant);
+  --dzm-disclosure-chevron-size: 24px;
+  --dzm-disclosure-chevron-weight: 2;
+  --dzm-disclosure-turn: 90deg;
+  --dzm-disclosure-turn-open: 270deg;
+  --dzm-disclosure-duration: var(--m3-duration-medium);
+  --dzm-disclosure-ease: var(--m3-ease-emphasized);
+}
+
+.dzm-disclosure[data-platform='android'] > .dzm-disclosure__row:disabled {
+  --dzm-disclosure-chevron: var(--m3-disabled-content);
+}
+
+.dzm-disclosure[data-platform='ios'] > .dzm-disclosure__row:disabled {
+  --dzm-disclosure-chevron: var(--ios-label-tertiary);
+}

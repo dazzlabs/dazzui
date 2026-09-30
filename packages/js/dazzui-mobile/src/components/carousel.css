@@ -1,0 +1,113 @@
+.dzm-carousel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--dzm-carousel-pages-gap);
+  min-width: 0;
+}
+
+/* Positioned, so an item's offset is measured from the strip. */
+.dzm-carousel__track {
+  position: relative;
+  display: flex;
+  gap: var(--dzm-carousel-gap);
+  padding: 0 var(--dzm-carousel-edge);
+  scroll-padding: 0 var(--dzm-carousel-edge);
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  outline: none;
+}
+
+.dzm-carousel__track::-webkit-scrollbar {
+  display: none;
+}
+
+.dzm-carousel__track:focus-visible {
+  outline: 2px solid var(--dzm-carousel-focus);
+  outline-offset: -2px;
+}
+
+.dzm-carousel__item {
+  flex: 0 0 var(--dzm-carousel-item);
+  min-width: 0;
+  padding: 0 var(--dzm-carousel-item-inset);
+  scroll-snap-align: start;
+  scroll-snap-stop: var(--dzm-carousel-stop);
+}
+
+.dzm-carousel__card {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--dzm-carousel-radius);
+}
+
+.dzm-carousel__card > img,
+.dzm-carousel__card > video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*
+ * The label sits on a scrim that darkens the item's foot. The scrim black
+ * and the white over it are the image's, not the theme's: text laid on a
+ * photograph is drawn this way on either OS whatever the appearance.
+ */
+.dzm-carousel__label {
+  position: absolute;
+  inset: auto 0 0;
+  padding: var(--dzm-carousel-label-pad);
+  background: linear-gradient(to top, rgb(0 0 0 / 0.55), rgb(0 0 0 / 0));
+  color: #fff;
+  font: var(--dzm-carousel-label-font);
+  letter-spacing: var(--dzm-carousel-label-tracking, normal);
+  pointer-events: none;
+}
+
+.dzm-carousel__pages {
+  align-self: center;
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+/* A paging UIScrollView: every page the full width and stopped at one by
+   one, its card inset 16pt at the 26pt grouped corner, a caption in the
+   headline style, and the page control 8pt beneath. */
+.dzm-carousel[data-platform='ios'] {
+  --dzm-carousel-pages-gap: 8px;
+  --dzm-carousel-gap: 0;
+  --dzm-carousel-edge: 0;
+  --dzm-carousel-item: 100%;
+  --dzm-carousel-item-inset: var(--ios-group-margin);
+  --dzm-carousel-stop: always;
+  --dzm-carousel-radius: var(--ios-group-radius);
+  --dzm-carousel-focus: var(--ios-tint);
+  --dzm-carousel-label-pad: 32px 16px 14px;
+  --dzm-carousel-label-font: var(--ios-headline);
+  --dzm-carousel-label-tracking: -0.43px;
+}
+
+/* Android --------------------------------------------------------------- */
+
+/* Material's carousel, hero arrangement: items at the 28dp corner and 8dp
+   apart, snapping to a 16dp leading edge, each as wide as leaves 56dp of
+   the next — the largest small item the arrangement allows — peeking in
+   at the trailing edge. A label on an item is title-medium, 16dp in. */
+.dzm-carousel[data-platform='android'] {
+  --dzm-carousel-pages-gap: 12px;
+  --dzm-carousel-gap: 8px;
+  --dzm-carousel-edge: 16px;
+  --dzm-carousel-item: calc(100% - 48px);
+  --dzm-carousel-item-inset: 0;
+  --dzm-carousel-stop: normal;
+  --dzm-carousel-radius: var(--m3-corner-xl);
+  --dzm-carousel-focus: var(--m3-primary);
+  --dzm-carousel-label-pad: 32px 16px 16px;
+  --dzm-carousel-label-font: var(--m3-title-medium);
+  --dzm-carousel-label-tracking: var(--m3-title-medium-tracking);
+}

@@ -1,0 +1,100 @@
+.dzm-content-unavailable {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--dzm-unavailable-gap);
+  padding: var(--dzm-unavailable-pad);
+  text-align: center;
+}
+
+.dzm-content-unavailable[data-fill] {
+  flex: 1;
+  min-height: 100%;
+}
+
+.dzm-content-unavailable__icon {
+  display: inline-flex;
+  color: var(--dzm-unavailable-icon-ink);
+}
+
+.dzm-content-unavailable__icon > svg {
+  width: var(--dzm-unavailable-icon);
+  height: var(--dzm-unavailable-icon);
+}
+
+.dzm-content-unavailable__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dzm-unavailable-text-gap);
+  max-width: 100%;
+}
+
+.dzm-content-unavailable__title {
+  color: var(--dzm-unavailable-title);
+  font: var(--dzm-unavailable-title-font);
+  letter-spacing: var(--dzm-unavailable-title-tracking, normal);
+}
+
+.dzm-content-unavailable__description {
+  color: var(--dzm-unavailable-description);
+  font: var(--dzm-unavailable-description-font);
+  letter-spacing: var(--dzm-unavailable-description-tracking, normal);
+}
+
+.dzm-content-unavailable__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--dzm-unavailable-actions-gap);
+  margin-top: var(--dzm-unavailable-actions-margin);
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+/*
+ * UIContentUnavailableConfiguration's empty state, which SwiftUI's view
+ * draws: the symbol at the large title's size scaled large, in the
+ * secondary label; the title in title2 bold in the label; the secondary
+ * text in the callout, in the secondary label; the buttons stacked
+ * beneath. Everything centred, with the readable margins of a 20pt inset.
+ */
+.dzm-content-unavailable[data-platform='ios'] {
+  --dzm-unavailable-gap: 16px;
+  --dzm-unavailable-pad: 32px 20px;
+  --dzm-unavailable-icon: 48px;
+  --dzm-unavailable-icon-ink: var(--ios-label-secondary);
+  --dzm-unavailable-text-gap: 6px;
+  --dzm-unavailable-title: var(--ios-label);
+  --dzm-unavailable-title-font: var(--ios-title2);
+  --dzm-unavailable-title-tracking: 0.35px;
+  --dzm-unavailable-description: var(--ios-label-secondary);
+  --dzm-unavailable-description-font: var(--ios-callout);
+  --dzm-unavailable-description-tracking: -0.32px;
+  --dzm-unavailable-actions-gap: 8px;
+  --dzm-unavailable-actions-margin: 4px;
+}
+
+/* Android ---------------------------------------------------------------- */
+
+/*
+ * The empty state of Google's own apps — Gmail's empty folder, Files'
+ * empty search: a 48dp glyph in on-surface-variant, the title in
+ * headline-small on the surface's ink, the supporting text in body-medium
+ * in on-surface-variant, and the buttons 24dp beneath, all on the 24dp
+ * margins of a dialog's content.
+ */
+.dzm-content-unavailable[data-platform='android'] {
+  --dzm-unavailable-gap: 16px;
+  --dzm-unavailable-pad: 32px 24px;
+  --dzm-unavailable-icon: 48px;
+  --dzm-unavailable-icon-ink: var(--m3-on-surface-variant);
+  --dzm-unavailable-text-gap: 8px;
+  --dzm-unavailable-title: var(--m3-on-surface);
+  --dzm-unavailable-title-font: var(--m3-headline-small);
+  --dzm-unavailable-description: var(--m3-on-surface-variant);
+  --dzm-unavailable-description-font: var(--m3-body-medium);
+  --dzm-unavailable-description-tracking: var(--m3-body-medium-tracking);
+  --dzm-unavailable-actions-gap: 8px;
+  --dzm-unavailable-actions-margin: 8px;
+}

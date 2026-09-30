@@ -25,6 +25,7 @@
 @import '../components/button.css';
 @import '../components/icon-button.css';
 @import '../components/badge.css';
+@import '../components/avatar.css';
 @import '../components/chip.css';
 @import '../components/switch.css';
 @import '../components/checkbox.css';
@@ -36,15 +37,24 @@
 @import '../components/search-field.css';
 @import '../components/divider.css';
 @import '../components/list.css';
+/* After the list: a disclosure's row is a list row with more to say. */
+@import '../components/disclosure.css';
 @import '../components/card.css';
+@import '../components/content-unavailable.css';
+@import '../components/page-control.css';
+@import '../components/carousel.css';
+@import '../components/date-picker.css';
 @import '../components/progress.css';
 @import '../components/spinner.css';
 @import '../components/screen.css';
 @import '../components/navigation-bar.css';
 @import '../components/tab-bar.css';
+@import '../components/toolbar.css';
 @import '../components/fab.css';
 /* The menu before the select: the select's list wears the menu's drawing. */
 @import '../components/menu.css';
+@import '../components/context-menu.css';
+@import '../components/popover.css';
 @import '../components/select.css';
 @import '../components/sheet.css';
 @import '../components/alert.css';

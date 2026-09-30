@@ -1,0 +1,443 @@
+.dzm-date-picker {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: var(--dzm-date-picker-pad);
+  border-radius: var(--dzm-date-picker-radius, 0);
+  background: var(--dzm-date-picker-fill, transparent);
+  color: var(--dzm-date-picker-ink);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.dzm-date-picker__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--dzm-date-picker-header-height);
+  padding: var(--dzm-date-picker-header-pad);
+}
+
+.dzm-date-picker__title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--dzm-date-picker-title-gap);
+  min-height: var(--dzm-date-picker-title-height);
+  padding: var(--dzm-date-picker-title-pad);
+  border: 0;
+  border-radius: var(--dzm-date-picker-title-radius);
+  background: none;
+  color: var(--dzm-date-picker-title-ink);
+  font: var(--dzm-date-picker-title-font);
+  letter-spacing: var(--dzm-date-picker-title-tracking, normal);
+  white-space: nowrap;
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+}
+
+.dzm-date-picker__disclosure {
+  display: inline-flex;
+  color: var(--dzm-date-picker-disclosure-ink);
+  transition: transform var(--dzm-date-picker-motion);
+}
+
+.dzm-date-picker__disclosure > svg {
+  width: var(--dzm-date-picker-disclosure-size);
+  height: var(--dzm-date-picker-disclosure-size);
+}
+
+.dzm-date-picker[data-mode='months'] .dzm-date-picker__disclosure {
+  transform: rotate(var(--dzm-date-picker-disclosure-turn));
+}
+
+.dzm-date-picker__steps {
+  display: flex;
+  align-items: center;
+  gap: var(--dzm-date-picker-steps-gap);
+}
+
+.dzm-date-picker__step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--dzm-date-picker-step-size);
+  height: var(--dzm-date-picker-step-size);
+  padding: 0;
+  border: 0;
+  border-radius: var(--dzm-date-picker-step-radius);
+  background: none;
+  color: var(--dzm-date-picker-step-ink);
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+}
+
+.dzm-date-picker__step > svg {
+  width: var(--dzm-date-picker-step-glyph);
+  height: var(--dzm-date-picker-step-glyph);
+}
+
+.dzm-date-picker__step > svg:dir(rtl) {
+  transform: scaleX(-1);
+}
+
+.dzm-date-picker__step:disabled {
+  cursor: default;
+}
+
+/* The body keeps the height of six weeks, so neither a short month nor the
+   month grid moves what is beneath the picker. */
+.dzm-date-picker__body {
+  min-height: calc(
+    var(--dzm-date-picker-weekday-height) + 6 * var(--dzm-date-picker-cell)
+  );
+}
+
+.dzm-date-picker__grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.dzm-date-picker__row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.dzm-date-picker__weekday {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--dzm-date-picker-weekday-height);
+  color: var(--dzm-date-picker-weekday-ink);
+  font: var(--dzm-date-picker-weekday-font);
+  letter-spacing: var(--dzm-date-picker-weekday-tracking, normal);
+  text-transform: var(--dzm-date-picker-weekday-case, none);
+}
+
+.dzm-date-picker__cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--dzm-date-picker-cell);
+}
+
+.dzm-date-picker__day {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--dzm-date-picker-circle);
+  height: var(--dzm-date-picker-circle);
+  padding: 0;
+  border: 0;
+  border-radius: var(--dzm-date-picker-circle-radius);
+  background: var(--dzm-date-picker-day-fill, transparent);
+  box-shadow: var(--dzm-date-picker-day-ring, none);
+  color: var(--dzm-date-picker-day-ink);
+  font: var(--dzm-date-picker-day-font);
+  letter-spacing: var(--dzm-date-picker-day-tracking, normal);
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+}
+
+.dzm-date-picker__day[data-disabled] {
+  cursor: default;
+}
+
+/* A month turns with a short slide the way it was stepped, standing in for
+   the page swipe both OSes animate between months. */
+.dzm-date-picker__weeks[data-direction='next'] {
+  animation: dzm-date-picker-next var(--dzm-date-picker-motion) both;
+}
+
+.dzm-date-picker__weeks[data-direction='previous'] {
+  animation: dzm-date-picker-previous var(--dzm-date-picker-motion) both;
+}
+
+@keyframes dzm-date-picker-next {
+  from {
+    opacity: 0;
+    transform: translateX(var(--dzm-date-picker-shift));
+  }
+}
+
+@keyframes dzm-date-picker-previous {
+  from {
+    opacity: 0;
+    transform: translateX(calc(-1 * var(--dzm-date-picker-shift)));
+  }
+}
+
+.dzm-date-picker__weeks:dir(rtl) {
+  --dzm-date-picker-shift: calc(-1 * var(--dzm-date-picker-travel));
+}
+
+.dzm-date-picker__months {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  align-items: center;
+  justify-items: center;
+  padding: var(--dzm-date-picker-months-pad);
+}
+
+.dzm-date-picker__body:has(> .dzm-date-picker__months) {
+  display: grid;
+}
+
+.dzm-date-picker__month {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--dzm-date-picker-month-width);
+  height: var(--dzm-date-picker-month-height);
+  padding: 0 var(--dzm-date-picker-month-inline);
+  border: 0;
+  border-radius: var(--dzm-date-picker-circle-radius);
+  background: var(--dzm-date-picker-day-fill, transparent);
+  box-shadow: var(--dzm-date-picker-day-ring, none);
+  color: var(--dzm-date-picker-day-ink);
+  font: var(--dzm-date-picker-month-font);
+  letter-spacing: var(--dzm-date-picker-month-tracking, normal);
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+}
+
+.dzm-date-picker__month:disabled {
+  cursor: default;
+}
+
+.dzm-date-picker__title:focus-visible,
+.dzm-date-picker__step:focus-visible,
+.dzm-date-picker__day:focus-visible,
+.dzm-date-picker__month:focus-visible {
+  outline: 2px solid var(--dzm-date-picker-focus);
+  outline-offset: 2px;
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+/*
+ * UIDatePicker's inline style. A 44pt header: the month and year in the
+ * headline weight, a small tint chevron after them that turns down while
+ * the month and year are being chosen, and the month arrows in the tint at
+ * the trailing edge. The weekdays in the footnote size, semibold, in
+ * capitals and the tertiary label. Days in the regular 20pt of title 3 on
+ * 44pt rows; today in the tint; the chosen day on a circle of the tint
+ * wash, its number in the tint and semibold — or, when it is today, the
+ * circle in the tint and the number on it. A day that cannot be chosen is
+ * in the tertiary label, and a press scales what it lands on.
+ */
+.dzm-date-picker[data-platform='ios'] {
+  --dzm-date-picker-pad: 0;
+  --dzm-date-picker-ink: var(--ios-label);
+  --dzm-date-picker-motion: var(--ios-duration) var(--ios-ease);
+  --dzm-date-picker-travel: 24px;
+  --dzm-date-picker-shift: var(--dzm-date-picker-travel);
+  --dzm-date-picker-focus: var(--ios-tint);
+  --dzm-date-picker-header-height: var(--ios-row);
+  --dzm-date-picker-header-pad: 0;
+  --dzm-date-picker-title-height: var(--ios-touch);
+  --dzm-date-picker-title-pad: 0 4px;
+  --dzm-date-picker-title-gap: 6px;
+  --dzm-date-picker-title-radius: var(--ios-control-radius);
+  --dzm-date-picker-title-ink: var(--ios-label);
+  --dzm-date-picker-title-font: var(--ios-headline);
+  --dzm-date-picker-title-tracking: -0.41px;
+  --dzm-date-picker-disclosure-ink: var(--ios-tint);
+  --dzm-date-picker-disclosure-size: 14px;
+  --dzm-date-picker-disclosure-turn: 90deg;
+  --dzm-date-picker-steps-gap: 0;
+  --dzm-date-picker-step-size: var(--ios-touch);
+  --dzm-date-picker-step-radius: var(--ios-control-radius);
+  --dzm-date-picker-step-glyph: 20px;
+  --dzm-date-picker-step-ink: var(--ios-tint);
+  --dzm-date-picker-weekday-height: 24px;
+  --dzm-date-picker-weekday-ink: var(--ios-label-tertiary);
+  --dzm-date-picker-weekday-font: 600 13px/18px var(--dzm-font);
+  --dzm-date-picker-weekday-tracking: -0.08px;
+  --dzm-date-picker-weekday-case: uppercase;
+  --dzm-date-picker-cell: var(--ios-row);
+  --dzm-date-picker-circle: 40px;
+  --dzm-date-picker-circle-radius: var(--ios-control-radius);
+  --dzm-date-picker-day-ink: var(--ios-label);
+  /* Title 3's size and leading at the regular weight. */
+  --dzm-date-picker-day-font: 400 20px/25px var(--dzm-font);
+  --dzm-date-picker-day-tracking: 0.38px;
+  --dzm-date-picker-months-pad: 8px 0;
+  --dzm-date-picker-month-width: 0;
+  --dzm-date-picker-month-height: 40px;
+  --dzm-date-picker-month-inline: 16px;
+  --dzm-date-picker-month-font: var(--ios-body);
+  --dzm-date-picker-month-tracking: -0.41px;
+}
+
+.dzm-date-picker[data-platform='ios'][data-mode='months'] {
+  --dzm-date-picker-title-ink: var(--ios-tint);
+}
+
+.dzm-date-picker[data-platform='ios'][data-mode='days']
+  .dzm-date-picker__disclosure:dir(rtl) {
+  transform: scaleX(-1);
+}
+
+.dzm-date-picker[data-platform='ios'] .dzm-date-picker__disclosure > svg {
+  stroke-width: 3;
+}
+
+.dzm-date-picker[data-platform='ios'] .dzm-date-picker__title,
+.dzm-date-picker[data-platform='ios'] .dzm-date-picker__step,
+.dzm-date-picker[data-platform='ios'] .dzm-date-picker__day,
+.dzm-date-picker[data-platform='ios'] .dzm-date-picker__month {
+  transition:
+    transform var(--ios-duration-fast) var(--ios-ease),
+    background-color var(--ios-duration-fast) var(--ios-ease),
+    color var(--ios-duration-fast) var(--ios-ease);
+}
+
+.dzm-date-picker[data-platform='ios'] .dzm-date-picker__title:active,
+.dzm-date-picker[data-platform='ios'] .dzm-date-picker__step:active:not(:disabled),
+.dzm-date-picker[data-platform='ios'] .dzm-date-picker__day:active:not([data-disabled]),
+.dzm-date-picker[data-platform='ios'] .dzm-date-picker__month:active:not(:disabled) {
+  transform: scale(var(--ios-press-scale));
+}
+
+.dzm-date-picker[data-platform='ios'] .dzm-date-picker__step:disabled {
+  --dzm-date-picker-step-ink: var(--ios-label-tertiary);
+}
+
+.dzm-date-picker[data-platform='ios'] .dzm-date-picker__day[data-today],
+.dzm-date-picker[data-platform='ios'] .dzm-date-picker__month[data-current] {
+  --dzm-date-picker-day-ink: var(--ios-tint);
+}
+
+.dzm-date-picker[data-platform='ios'] .dzm-date-picker__day[data-selected],
+.dzm-date-picker[data-platform='ios'] .dzm-date-picker__month[data-selected] {
+  --dzm-date-picker-day-fill: var(--ios-tint-wash);
+  --dzm-date-picker-day-ink: var(--ios-tint);
+  font-weight: 600;
+}
+
+.dzm-date-picker[data-platform='ios']
+  .dzm-date-picker__day[data-selected][data-today] {
+  --dzm-date-picker-day-fill: var(--ios-tint);
+  --dzm-date-picker-day-ink: var(--ios-on-tint);
+}
+
+.dzm-date-picker[data-platform='ios'] .dzm-date-picker__day[data-disabled],
+.dzm-date-picker[data-platform='ios'] .dzm-date-picker__month:disabled {
+  --dzm-date-picker-day-ink: var(--ios-label-tertiary);
+}
+
+/* Android ---------------------------------------------------------------- */
+
+/*
+ * Material's date picker calendar, as Compose's `DatePicker` lays it out:
+ * 12dp in from either side and a 56dp header row, the month and year in
+ * label-large and the on-surface variant with an 18dp drop-down arrow at
+ * the leading side that turns over while the month is being chosen, and
+ * the previous and next arrows as 40dp icon buttons at the trailing side.
+ * Weekday initials and dates in body-large on-surface, each date a 40dp
+ * circle in a 48dp target; the chosen date in the primary with the
+ * on-primary, today ringed with a 1dp primary line and in the primary, a
+ * date that cannot be chosen at 38% of the on-surface. With `surface` the
+ * whole picker sits on the high surface container at the 28dp corner.
+ */
+.dzm-date-picker[data-platform='android'] {
+  --dzm-date-picker-pad: 0 12px;
+  --dzm-date-picker-ink: var(--m3-on-surface);
+  --dzm-date-picker-motion: var(--m3-duration-medium)
+    var(--m3-ease-emphasized-decelerate);
+  --dzm-date-picker-travel: 24px;
+  --dzm-date-picker-shift: var(--dzm-date-picker-travel);
+  --dzm-date-picker-focus: var(--m3-primary);
+  --dzm-date-picker-header-height: 56px;
+  --dzm-date-picker-header-pad: 0;
+  --dzm-date-picker-title-height: 40px;
+  --dzm-date-picker-title-pad: 0 8px 0 12px;
+  --dzm-date-picker-title-gap: 8px;
+  --dzm-date-picker-title-radius: var(--m3-corner-full);
+  --dzm-date-picker-title-ink: var(--m3-on-surface-variant);
+  --dzm-date-picker-title-font: var(--m3-label-large);
+  --dzm-date-picker-title-tracking: var(--m3-label-large-tracking);
+  --dzm-date-picker-disclosure-ink: var(--m3-on-surface-variant);
+  --dzm-date-picker-disclosure-size: 18px;
+  --dzm-date-picker-disclosure-turn: 180deg;
+  --dzm-date-picker-steps-gap: 0;
+  --dzm-date-picker-step-size: 40px;
+  --dzm-date-picker-step-radius: var(--m3-corner-full);
+  --dzm-date-picker-step-glyph: 24px;
+  --dzm-date-picker-step-ink: var(--m3-on-surface-variant);
+  --dzm-date-picker-weekday-height: 48px;
+  --dzm-date-picker-weekday-ink: var(--m3-on-surface);
+  --dzm-date-picker-weekday-font: var(--m3-body-large);
+  --dzm-date-picker-weekday-tracking: var(--m3-body-large-tracking);
+  --dzm-date-picker-cell: 48px;
+  --dzm-date-picker-circle: 40px;
+  --dzm-date-picker-circle-radius: var(--m3-corner-full);
+  --dzm-date-picker-day-ink: var(--m3-on-surface);
+  --dzm-date-picker-day-font: var(--m3-body-large);
+  --dzm-date-picker-day-tracking: var(--m3-body-large-tracking);
+  /* The year picker's 72 by 36dp pills, holding months. */
+  --dzm-date-picker-months-pad: 8px 0;
+  --dzm-date-picker-month-width: 72px;
+  --dzm-date-picker-month-height: 36px;
+  --dzm-date-picker-month-inline: 12px;
+  --dzm-date-picker-month-font: var(--m3-body-large);
+  --dzm-date-picker-month-tracking: var(--m3-body-large-tracking);
+}
+
+.dzm-date-picker[data-platform='android'][data-surface] {
+  --dzm-date-picker-pad: 0 12px 12px;
+  --dzm-date-picker-fill: var(--m3-surface-container-high);
+  --dzm-date-picker-radius: var(--m3-corner-xl);
+}
+
+.dzm-date-picker[data-platform='android'] .dzm-date-picker__title {
+  --m3-layer: var(--m3-on-surface-variant);
+}
+
+.dzm-date-picker[data-platform='android'] .dzm-date-picker__step {
+  --m3-layer: var(--dzm-date-picker-step-ink);
+}
+
+.dzm-date-picker[data-platform='android'] .dzm-date-picker__step:disabled {
+  --dzm-date-picker-step-ink: var(--m3-disabled-content);
+}
+
+.dzm-date-picker[data-platform='android'] .dzm-date-picker__day,
+.dzm-date-picker[data-platform='android'] .dzm-date-picker__month {
+  --m3-layer: var(--dzm-date-picker-day-ink);
+  transition:
+    background-color var(--m3-duration-short) var(--m3-ease-standard),
+    color var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-date-picker[data-platform='android'] .dzm-date-picker__month {
+  --dzm-date-picker-day-ink: var(--m3-on-surface-variant);
+}
+
+.dzm-date-picker[data-platform='android'] .dzm-date-picker__day[data-today],
+.dzm-date-picker[data-platform='android'] .dzm-date-picker__month[data-current] {
+  --dzm-date-picker-day-ink: var(--m3-primary);
+  --dzm-date-picker-day-ring: inset 0 0 0 1px var(--m3-primary);
+}
+
+.dzm-date-picker[data-platform='android'] .dzm-date-picker__day[data-selected],
+.dzm-date-picker[data-platform='android'] .dzm-date-picker__month[data-selected] {
+  --dzm-date-picker-day-fill: var(--m3-primary);
+  --dzm-date-picker-day-ink: var(--m3-on-primary);
+  --dzm-date-picker-day-ring: none;
+}
+
+.dzm-date-picker[data-platform='android'] .dzm-date-picker__day[data-disabled],
+.dzm-date-picker[data-platform='android'] .dzm-date-picker__month:disabled {
+  --dzm-date-picker-day-ink: var(--m3-disabled-content);
+}
+
+.dzm-date-picker[data-platform='android']
+  .dzm-date-picker__day[data-disabled][data-today] {
+  --dzm-date-picker-day-ring: inset 0 0 0 1px var(--m3-disabled-content);
+}

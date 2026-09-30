@@ -1,0 +1,126 @@
+.dzm-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: var(--dzm-toolbar-align);
+  gap: var(--dzm-toolbar-fab-gap);
+  flex-shrink: 0;
+  padding: var(--dzm-toolbar-pad);
+  pointer-events: none;
+}
+
+.dzm-toolbar[data-position='sticky'] {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--dzm-layer-bar);
+}
+
+.dzm-toolbar[data-position='static'] {
+  --dzm-toolbar-pad: 0;
+}
+
+.dzm-toolbar__bar {
+  display: flex;
+  flex: var(--dzm-toolbar-flex);
+  align-items: center;
+  gap: var(--dzm-toolbar-gap);
+  min-width: 0;
+  height: var(--dzm-toolbar-height);
+  padding: var(--dzm-toolbar-bar-pad);
+  border-radius: 9999px;
+  background: var(--dzm-toolbar-fill);
+  box-shadow: var(--dzm-toolbar-edge);
+  pointer-events: auto;
+}
+
+.dzm-toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: var(--dzm-toolbar-item-gap);
+  flex-shrink: 0;
+  padding: var(--dzm-toolbar-group-pad);
+  border-radius: 9999px;
+}
+
+.dzm-toolbar__spacer {
+  flex: var(--dzm-toolbar-spacer);
+}
+
+.dzm-toolbar__fab {
+  display: flex;
+  flex-shrink: 0;
+  pointer-events: auto;
+}
+
+/* The toolbar's glyphs are its ink, not the tint: a plain icon button
+   inside takes the bar's colour. A filled one keeps its own. */
+.dzm-toolbar[data-platform] .dzm-icon-button[data-variant='plain'] {
+  --dzm-icon-button-ink: var(--dzm-toolbar-ink);
+}
+
+.dzm-toolbar[data-platform]
+  .dzm-icon-button[data-variant='plain'][data-tone='destructive'] {
+  --dzm-icon-button-ink: var(--dzm-toolbar-destructive);
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+/* UIToolbar in Liquid Glass: no bar of its own, only its items, gathered
+   into glass capsules 16pt off the edges and clear of the home indicator
+   as the tab bar is. Each item is a 44pt glyph in the label colour; a
+   flexible space pushes the groups apart, and without one they stand
+   10pt from each other. */
+.dzm-toolbar[data-platform='ios'] {
+  --dzm-toolbar-align: stretch;
+  --dzm-toolbar-fab-gap: 0;
+  --dzm-toolbar-pad: 8px 16px calc(8px + var(--dzm-inset-bottom));
+  --dzm-toolbar-flex: 1;
+  --dzm-toolbar-gap: 10px;
+  --dzm-toolbar-height: auto;
+  --dzm-toolbar-bar-pad: 0;
+  --dzm-toolbar-fill: none;
+  --dzm-toolbar-edge: none;
+  --dzm-toolbar-item-gap: 0;
+  --dzm-toolbar-group-pad: 2px;
+  --dzm-toolbar-spacer: 1;
+  --dzm-toolbar-ink: var(--ios-label);
+  --dzm-toolbar-destructive: var(--ios-destructive);
+}
+
+/* The bar spans the width but only its capsules take a touch; between
+   them, the content beneath does. */
+.dzm-toolbar[data-platform='ios'] .dzm-toolbar__bar {
+  pointer-events: none;
+}
+
+.dzm-toolbar[data-platform='ios'] .dzm-toolbar__group {
+  pointer-events: auto;
+}
+
+/* Android --------------------------------------------------------------- */
+
+/* Material Expressive's floating toolbar: a 64dp capsule at elevation 3,
+   8dp in from its ends, centred 16dp above the foot, its icon buttons in
+   the on-surface variant — or, vibrant, on the primary container in its
+   own ink. A FAB stands 8dp beside it. Groups run on inside the one
+   capsule; a spacer is an 8dp gap. */
+.dzm-toolbar[data-platform='android'] {
+  --dzm-toolbar-align: center;
+  --dzm-toolbar-fab-gap: 8px;
+  --dzm-toolbar-pad: 16px 16px calc(16px + var(--dzm-inset-bottom));
+  --dzm-toolbar-flex: 0 1 auto;
+  --dzm-toolbar-gap: 4px;
+  --dzm-toolbar-height: 64px;
+  --dzm-toolbar-bar-pad: 0 8px;
+  --dzm-toolbar-fill: var(--m3-surface-container);
+  --dzm-toolbar-edge: var(--m3-elevation-3);
+  --dzm-toolbar-item-gap: 4px;
+  --dzm-toolbar-group-pad: 0;
+  --dzm-toolbar-spacer: 0 0 8px;
+  --dzm-toolbar-ink: var(--m3-on-surface-variant);
+  --dzm-toolbar-destructive: var(--m3-error);
+}
+
+.dzm-toolbar[data-platform='android'][data-variant='vibrant'] {
+  --dzm-toolbar-fill: var(--m3-primary-container);
+  --dzm-toolbar-ink: var(--m3-on-primary-container);
+}

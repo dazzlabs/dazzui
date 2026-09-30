@@ -3,7 +3,7 @@ import { mergeProps } from '@base-ui/react/merge-props'
 import { cloneElement, type ReactElement, type ReactNode } from 'react'
 
 import { cx } from '../lib/cx'
-import { Check } from '../lib/glyphs'
+import { hasChecks, MenuItems } from '../lib/menu-items'
 import { usePlatform, useThemeContainer } from '../lib/theme'
 
 export interface MenuItem {
@@ -51,7 +51,7 @@ export function Menu({
 }: MenuProps) {
   const platform = usePlatform()
   const container = useThemeContainer()
-  const hasChecks = items.some(item => item?.checked !== undefined)
+  const checks = hasChecks(items)
   return (
     <Base.Root onOpenChange={onOpenChange} {...root}>
       <Base.Trigger
@@ -74,39 +74,14 @@ export function Menu({
         >
           <Base.Popup
             data-platform={platform}
-            data-checks={hasChecks || undefined}
+            data-checks={checks || undefined}
             className={cx(
               'dzm-menu',
               platform === 'ios' && 'dzm-glass dzm-glass--thick',
               className
             )}
           >
-            {items.map((item, index) =>
-              item === null ? (
-                <Base.Separator key={index} className="dzm-menu__separator" />
-              ) : (
-                <Base.Item
-                  key={index}
-                  disabled={item.disabled}
-                  data-role={item.role ?? 'default'}
-                  className="dzm-menu__item"
-                  onClick={item.onSelect}
-                >
-                  {hasChecks ? (
-                    <span
-                      className="dzm-menu__check"
-                      data-checked={item.checked || undefined}
-                    >
-                      <Check />
-                    </span>
-                  ) : null}
-                  <span className="dzm-menu__label">{item.label}</span>
-                  {item.icon ? (
-                    <span className="dzm-menu__icon">{item.icon}</span>
-                  ) : null}
-                </Base.Item>
-              )
-            )}
+            <MenuItems items={items} checks={checks} />
           </Base.Popup>
         </Base.Positioner>
       </Base.Portal>

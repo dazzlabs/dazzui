@@ -1,0 +1,163 @@
+.dzm-avatar {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--dzm-avatar-size);
+  height: var(--dzm-avatar-size);
+  border-radius: 9999px;
+  overflow: hidden;
+  vertical-align: middle;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.dzm-avatar__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dzm-avatar__fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: var(--dzm-avatar-fill);
+  color: var(--dzm-avatar-ink);
+}
+
+.dzm-avatar__initials {
+  font: var(--dzm-avatar-font);
+  letter-spacing: var(--dzm-avatar-tracking, normal);
+  white-space: nowrap;
+}
+
+.dzm-avatar__icon {
+  display: inline-flex;
+}
+
+.dzm-avatar__icon > svg {
+  width: var(--dzm-avatar-glyph);
+  height: var(--dzm-avatar-glyph);
+}
+
+.dzm-avatar__person {
+  width: var(--dzm-avatar-person);
+  height: var(--dzm-avatar-person);
+}
+
+/* The group: each avatar after the first tucks under the one before it,
+   and a ring of the ground the row stands on cuts the overlap. */
+.dzm-avatar-group {
+  display: inline-flex;
+  align-items: center;
+}
+
+.dzm-avatar-group > .dzm-avatar {
+  box-shadow: 0 0 0 var(--dzm-avatar-ring-width) var(--dzm-avatar-ring);
+}
+
+.dzm-avatar-group > .dzm-avatar + .dzm-avatar {
+  margin-inline-start: var(--dzm-avatar-overlap);
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+/*
+ * CNAvatarView's monogram: the initials in SF Pro Rounded, white, at
+ * about two-fifths of the circle, on a grey gradient that is lighter at
+ * the top — here the quaternary label over the tertiary, laid on the
+ * surface so a translucent ladder still paints an opaque disc, and
+ * swapped in the dark half so the light end stays on top. With nothing
+ * to spell, `person.crop.circle.fill` fills the disc. The sizes are a bar
+ * item's 32pt, the 40pt a Messages or Mail row leads with, and the 80pt
+ * of a contact card's header.
+ */
+.dzm-avatar[data-platform='ios'] {
+  --dzm-avatar-fill:
+    linear-gradient(
+      light-dark(var(--ios-label-quaternary), var(--ios-label-tertiary)),
+      light-dark(var(--ios-label-tertiary), var(--ios-label-quaternary))
+    ),
+    var(--color-surface);
+  /* The monogram's white is the glyph's own, not a theme's. */
+  --dzm-avatar-ink: #fff;
+  --dzm-avatar-font: 600 calc(var(--dzm-avatar-size) * 0.4) / 1
+    var(--dzm-font-rounded);
+  --dzm-avatar-glyph: calc(var(--dzm-avatar-size) * 0.5);
+  --dzm-avatar-person: 100%;
+  --dzm-avatar-ring: var(--dzm-background);
+  --dzm-avatar-ring-width: 2px;
+  --dzm-avatar-overlap: calc(var(--dzm-avatar-size) * -0.25);
+}
+
+.dzm-avatar[data-platform='ios'][data-size='small'] {
+  --dzm-avatar-size: 32px;
+}
+
+.dzm-avatar[data-platform='ios'][data-size='medium'] {
+  --dzm-avatar-size: 40px;
+}
+
+.dzm-avatar[data-platform='ios'][data-size='large'] {
+  --dzm-avatar-size: 80px;
+}
+
+/* In an inset group the row stands on the cell, not the canvas. */
+.dzm-list-section__group .dzm-avatar-group[data-platform='ios'] > .dzm-avatar,
+.dzm-card[data-platform='ios'] .dzm-avatar-group > .dzm-avatar {
+  --dzm-avatar-ring: var(--ios-grouped-cell);
+}
+
+/* Android ---------------------------------------------------------------- */
+
+/*
+ * Material's avatar: a circle on the primary container, the initials in
+ * its ink. The 40dp list avatar sets them in title-medium; the 32dp one
+ * a top app bar carries steps down to label-large, and the 56dp header
+ * avatar up to title-large. With nothing to spell, the `person` glyph at
+ * three-fifths of the circle — 24dp in the 40dp avatar.
+ */
+.dzm-avatar[data-platform='android'] {
+  --dzm-avatar-fill: var(--m3-primary-container);
+  --dzm-avatar-ink: var(--m3-on-primary-container);
+  --dzm-avatar-glyph: calc(var(--dzm-avatar-size) * 0.6);
+  --dzm-avatar-person: calc(var(--dzm-avatar-size) * 0.6);
+  --dzm-avatar-ring: var(--dzm-background);
+  --dzm-avatar-ring-width: 2px;
+  --dzm-avatar-overlap: calc(var(--dzm-avatar-size) * -0.25);
+}
+
+.dzm-avatar[data-platform='android'][data-size='small'] {
+  --dzm-avatar-size: 32px;
+  --dzm-avatar-font: var(--m3-label-large);
+  --dzm-avatar-tracking: var(--m3-label-large-tracking);
+}
+
+.dzm-avatar[data-platform='android'][data-size='medium'] {
+  --dzm-avatar-size: 40px;
+  --dzm-avatar-font: var(--m3-title-medium);
+  --dzm-avatar-tracking: var(--m3-title-medium-tracking);
+}
+
+.dzm-avatar[data-platform='android'][data-size='large'] {
+  --dzm-avatar-size: 56px;
+  --dzm-avatar-font: var(--m3-title-large);
+}
+
+.dzm-card[data-platform='android'][data-variant='elevated']
+  .dzm-avatar-group
+  > .dzm-avatar {
+  --dzm-avatar-ring: var(--m3-surface-container-low);
+}
+
+.dzm-card[data-platform='android'][data-variant='filled']
+  .dzm-avatar-group
+  > .dzm-avatar {
+  --dzm-avatar-ring: var(--m3-surface-container-highest);
+}
