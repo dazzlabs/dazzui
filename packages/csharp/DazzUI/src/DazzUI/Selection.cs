@@ -36,7 +36,7 @@ public class Checkbox : CheckBox
             var ink = Theme.Recipe(ControlVariant.Filled, Tint, "content", IsEnabled ? "normal" : "disabled");
             box.Child = !marked ? null : IsChecked is null
                 ? new Border { Background = ink, Width = box.Width - Theme.Number("spacing.2"), Height = Theme.Number("stroke.control"), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center }
-                : new Icon { Glyph = IconGlyph.Checkmark, GlyphSize = box.Width - Theme.Number("spacing.1"), Foreground = ink, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+                : new Icon { Glyph = FluentIcons.Common.Icon.Checkmark, GlyphSize = box.Width - Theme.Number("spacing.1"), Foreground = ink, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
         }
     }
 }
@@ -117,6 +117,8 @@ public class Toggle : ToggleButton
     protected virtual void Apply()
     {
         Skin.Control(this, Theme, Size); Height = Theme.Number($"control.{Theme.Key(Size)}.size");
+        // A glyph alone is a square control: the inline padding is for a label.
+        if (Content is Icon && this is not NavItem) { Padding = new Thickness(0); Width = Height; }
         var variant = IsChecked == true ? ControlVariant.Tinted : Variant;
         var state = RecipeState;
         Background = Theme.Recipe(variant, Tint, "surface", state);

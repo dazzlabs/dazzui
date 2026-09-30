@@ -3,6 +3,7 @@ import { test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { SUPPORT, unsupported } from '../flutter.mjs'
 import * as swiftui from '../swiftui.mjs'
+import * as winui from '../winui.mjs'
 import { readStories, StoryCompiler } from '../stories.mjs'
 
 const root = fileURLToPath(new URL('../../../', import.meta.url))
@@ -36,6 +37,7 @@ test('every React story compiles, and Flutter draws all of it', async () => {
   assert.ok(stories.length > 0)
   assert.deepEqual(unsupported(stories), [])
   assert.deepEqual(swiftui.unsupported(stories), [])
+  assert.deepEqual(winui.unsupported(stories), [])
   for (const { id, name, examples } of stories) {
     assert.match(id, /^[a-z][a-z0-9-]*$/)
     assert.ok(name && examples.length, id)
@@ -179,4 +181,32 @@ test('a SwiftUI story member that is a keyword is fenced, and its JSON is raw', 
   )
   assert.equal(swiftui.storyFile('icon-button'), 'IconButton.swift')
   assert.match(swiftui.storiesIndexSwift([story]), /    `switch`,/)
+})
+
+test('a WinUI story is a lazy member whose JSON sits in a raw string', () => {
+  const story = {
+    id: 'icon-button',
+    name: 'IconButton',
+    summary: 'Says """quoted""" things.',
+    preview: { content: 'x' },
+    examples: [],
+  }
+  const cs = winui.storyCs(story)
+  assert.match(
+    cs,
+    /public static Story IconButton => iconButtonStory \?\?= Story\.Parse\(/
+  )
+  // JSON escapes every quote in a string, so the shortest fence holds.
+  assert.match(cs, /\n {8}"""\n/)
+  assert.ok(cs.includes('\\"\\"\\"quoted'))
+  assert.equal(winui.storyFile('icon-button'), 'IconButton.cs')
+  assert.match(winui.storiesIndexCs([story]), / {8}IconButton,/)
+  const glyphs = winui.glyphsCs([
+    { preview: { content: { $icon: 'TextBold20Filled' } } },
+  ])
+  assert.match(
+    glyphs,
+    /\["TextBold20Filled"\] = \(Glyph\.TextBold, IconVariant\.Filled\),/
+  )
+  assert.throws(() => winui.glyphOf('Settings24Regular'), /20px grid/)
 })

@@ -5,7 +5,8 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 namespace DazzUI;
 
 public sealed record MenuItem(string Label, Action? Action = null, bool Disabled = false,
-    bool? Checked = null, IReadOnlyList<MenuItem>? Children = null, string? Shortcut = null, bool Separator = false);
+    bool? Checked = null, IReadOnlyList<MenuItem>? Children = null, string? Shortcut = null, bool Separator = false,
+    Glyph? Glyph = null);
 
 public class Menu
 {
@@ -42,6 +43,7 @@ public class Menu
             toggle.Click += (_, _) => item.Action?.Invoke(); return toggle;
         }
         var result = new MenuFlyoutItem { CornerRadius = new CornerRadius(theme.Number("radius.small")), Text = item.Label, IsEnabled = !item.Disabled, KeyboardAcceleratorTextOverride = item.Shortcut ?? "", Foreground = theme.Brush("color.content") };
+        if (item.Glyph is Glyph glyph) result.Icon = Icon.Element(glyph);
         Skin.RoundCorners(result);
         result.Click += (_, _) => item.Action?.Invoke(); return result;
     }
@@ -115,6 +117,8 @@ public class Dialog
     public string PrimaryText { get => Native.PrimaryButtonText; set => Native.PrimaryButtonText = value; }
     public string CloseText { get => Native.CloseButtonText; set => Native.CloseButtonText = value; }
     public bool Danger { get; set; }
+    /// <summary>The inset around the content; <c>spacing.6</c> when unset. Zero lets content that draws its own header and footer run to the edge.</summary>
+    public Thickness? Padding { get; set; }
     protected Theme ActiveTheme { get; private set; } = Theme.Default;
     public Dialog()
     {
@@ -169,7 +173,7 @@ public class Dialog
         Native.Resources["ContentDialogMaxWidth"] = theme.Number("dialog.width");
         Native.Resources["ContentDialogBorderBrush"] = theme.Brush("color.border-strong");
         Native.Resources["ContentDialogSmokeFill"] = theme.Alpha("dialog.scrim.color", theme.Number("dialog.scrim.alpha"));
-        Native.Resources["ContentDialogPadding"] = new Thickness(theme.Number("spacing.6"));
+        Native.Resources["ContentDialogPadding"] = Padding ?? new Thickness(theme.Number("spacing.6"));
         Native.Resources["ContentDialogCornerRadius"] = new CornerRadius(theme.Number("frame.window.radius"));
         Native.Resources["AccentButtonBackground"] = theme.Recipe(ControlVariant.Filled, Danger ? WidgetTint.Danger : WidgetTint.Primary, "surface");
         if (Content is not null) Appearance.SetTheme(Content, theme);

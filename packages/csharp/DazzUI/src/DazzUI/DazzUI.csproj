@@ -6,6 +6,10 @@
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="Generated/tokens.json" />
-    <EmbeddedResource Include="Assets/icon-paths.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The Fluent System Icons React draws, by name. -->
+    <PackageReference Include="FluentIcons.WinUI" Version="2.2.343" />
+    <Using Include="FluentIcons.Common.Icon" Alias="Glyph" />
   </ItemGroup>
 </Project>

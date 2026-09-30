@@ -49,7 +49,7 @@ Browse them at <http://localhost:6006>:
 pnpm playground
 ```
 
-The WinUI 3 playground runs on Windows with the .NET 8 SDK or later:
+The WinUI 3 example runs on Windows with the .NET 8 SDK or later:
 
 ```powershell
 pnpm winui3

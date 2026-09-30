@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>Example</AssemblyName>
+    <RootNamespace>DazzUI.Example</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../src/DazzUI/DazzUI.csproj" />
+    <Using Include="FluentIcons.Common.Icon" Alias="Glyph" />
+  </ItemGroup>
+</Project>

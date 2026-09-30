@@ -1,44 +1,59 @@
-using System.Text.Json;
+using FluentIcons.Common;
+using FluentIcons.WinUI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Markup;
-using Microsoft.UI.Xaml.Media;
 
 namespace DazzUI;
 
-public enum IconGlyph { Add, Search, Dismiss, Settings, Folder, Document, Checkmark, ChevronRight, ChevronDown, ArrowDownload, MoreHorizontal, Info, Warning, ErrorCircle, Person, ArrowClockwise, Copy, Delete, ArrowLeft, ArrowRight, Eye, EyeOff, TextBold, TextItalic, Star }
+/// <summary>
+/// A Fluent System Icon, from the same set React draws — by name
+/// (<see cref="Glyph"/>, <c>FluentIcons.Common.Icon</c>) and <see cref="GlyphVariant"/> — on the
+/// resizable 20px grid, at <see cref="GlyphSize"/> or the size the control's
+/// <c>Size</c> gives it. It takes its ink from the control it stands in.
+/// </summary>
 public sealed class Icon : Surface
 {
-    private static readonly Dictionary<string, string> Paths = Load();
-    public IconGlyph Glyph { get; set; }
+    public Glyph Glyph { get; set; }
+    public IconVariant GlyphVariant { get; set; } = IconVariant.Regular;
     public double? GlyphSize { get; set; }
-    private static Dictionary<string, string> Load()
-    {
-        using var stream = typeof(Icon).Assembly.GetManifestResourceStream("DazzUI.Assets.icon-paths.json")!;
-        return JsonSerializer.Deserialize<Dictionary<string, string>>(stream)!;
-    }
     protected override void RefreshAppearance()
     {
-        var shape = (Microsoft.UI.Xaml.Shapes.Path)XamlReader.Load($"<Path xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' Data='{Paths[Glyph.ToString()]}' Stretch='Uniform' />");
-        shape.SetBinding(Microsoft.UI.Xaml.Shapes.Shape.FillProperty, new Microsoft.UI.Xaml.Data.Binding { Source = this, Path = new PropertyPath(nameof(Foreground)) });
         Width = Height = GlyphSize ?? Theme.Number(Size == ControlSize.Small ? "spacing.3" : Size == ControlSize.Large ? "spacing.5" : "spacing.4");
-        Content = shape;
+        var glyph = Element(Glyph, GlyphVariant);
+        glyph.FontSize = Width;
+        glyph.SetBinding(IconElement.ForegroundProperty, new Microsoft.UI.Xaml.Data.Binding { Source = this, Path = new PropertyPath(nameof(Foreground)) });
+        Content = glyph;
     }
+    /// <summary>A glyph as an icon element, for a menu row or anywhere WinUI asks for one.</summary>
+    public static FluentIcon Element(Glyph glyph, IconVariant variant = IconVariant.Regular) =>
+        new() { Icon = glyph, IconVariant = variant, IconSize = IconSize.Resizable };
 }
 public sealed class IconButton : Button
 {
-    public IconGlyph Glyph { get; set; }
+    public Glyph Glyph { get; set; }
+    public IconVariant GlyphVariant { get; set; } = IconVariant.Regular;
     public string Label { get; set; } = "Action";
     public IconButton()
     {
         Size = ControlSize.Tiny;
         Loaded += (_, _) =>
         {
-            Content = new Icon { Glyph = Glyph, GlyphSize = Theme.Number($"control.{Theme.Key(Size)}.size") - Theme.Number("spacing.3") };
-            Width = Height; Padding = new Thickness(0);
+            Content = new Icon { Glyph = Glyph, GlyphVariant = GlyphVariant };
+            Square();
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(this, Label);
             Tooltip.Set(this, Label);
         };
+        // A theme change re-applies the button's label padding and height;
+        // keep the glyph's button square and unpadded through it.
+        RegisterPropertyChangedCallback(PaddingProperty, (_, _) => { if (IsLoaded && Padding != new Thickness(0)) Padding = new Thickness(0); });
+        RegisterPropertyChangedCallback(HeightProperty, (_, _) => { if (IsLoaded) Square(); });
+    }
+    private void Square()
+    {
+        Width = Height; Padding = new Thickness(0);
+        if (Content is not Icon icon) return;
+        icon.GlyphSize = Theme.Number($"control.{Theme.Key(Size)}.size") - Theme.Number("spacing.3");
+        Appearance.Refresh(icon);
     }
 }
 public sealed class Link : HyperlinkButton

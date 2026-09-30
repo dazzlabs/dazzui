@@ -9,7 +9,7 @@
     "tokens": "pnpm --filter @dazzlabs/dazzui-ds build",
     "components": "pnpm --filter @dazzlabs/dazzui-react build",
     "winui3": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File packages/csharp/DazzUI/scripts/run.ps1",
-    "winui3:build": "dotnet build packages/csharp/DazzUI/example/Playground.csproj",
+    "winui3:build": "dotnet build packages/csharp/DazzUI/example/Example.csproj",
     "winui3:test": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File packages/csharp/DazzUI/scripts/run.ps1 -SmokeTest",
     "parity": "pnpm --filter @dazzlabs/dazzui-react-playground parity",
     "parity:view": "pnpm --filter @dazzlabs/dazzui-parity dev",

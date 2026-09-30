@@ -54,7 +54,7 @@ public sealed class SearchField : TextField
         base.OnApplyTemplate();
         if (GetTemplateChild("ContentElement") is FrameworkElement editor && editor.Parent is Grid grid)
         {
-            searchIcon = new Icon { Glyph = IconGlyph.Search, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Center, IsHitTestVisible = false };
+            searchIcon = new Icon { Glyph = FluentIcons.Common.Icon.Search, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Center, IsHitTestVisible = false };
             Grid.SetRow(searchIcon, Grid.GetRow(editor)); grid.Children.Add(searchIcon);
             hint = new KeyCap(Hint ?? "") { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center, IsHitTestVisible = false, Visibility = Text.Length == 0 ? Visibility.Visible : Visibility.Collapsed };
             Grid.SetRow(hint, Grid.GetRow(editor)); grid.Children.Add(hint);

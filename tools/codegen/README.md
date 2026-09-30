@@ -1,6 +1,7 @@
 # Codegen
 
-Compiles the React example's stories into the Flutter and SwiftUI examples.
+Compiles the React example's stories into the Flutter, SwiftUI and WinUI
+examples.
 The rules are in [`specs/playgrounds.md`](../../specs/playgrounds.md).
 
 - `stories.mjs` reads `packages/js/dazzui-react/example/src/stories/*.tsx`
@@ -12,6 +13,9 @@ The rules are in [`specs/playgrounds.md`](../../specs/playgrounds.md).
   a file per story, the index, the themes, the glyphs.
 - `swiftui.mjs` is the SwiftUI side, the same four emitters and its own
   `SUPPORT`.
+- `winui.mjs` is the WinUI side, the same four emitters and its own
+  `SUPPORT`; its glyphs name FluentIcons.WinUI's icons, as SwiftUI's name
+  the FluentIcons package's.
 - `support.mjs` finds what a story sets that a platform's `SUPPORT` does not
   name.
 - `generate.mjs` writes the outputs, or with `--check` fails on drift, and

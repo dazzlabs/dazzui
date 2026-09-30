@@ -7,14 +7,14 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $packageRoot = Split-Path $PSScriptRoot -Parent
-$projectPath = Join-Path $packageRoot 'example/Playground.csproj'
+$projectPath = Join-Path $packageRoot 'example/Example.csproj'
 if (-not $NoBuild) {
     & dotnet build $projectPath -c $Configuration "-p:Platform=$Platform"
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
 $rid = if ($Platform -eq 'ARM64') { 'win-arm64' } else { 'win-x64' }
-$executable = Join-Path $packageRoot "example/bin/$Platform/$Configuration/net8.0-windows10.0.19041.0/$rid/Playground.exe"
+$executable = Join-Path $packageRoot "example/bin/$Platform/$Configuration/net8.0-windows10.0.19041.0/$rid/Example.exe"
 if (-not (Test-Path -LiteralPath $executable)) { throw "Build output not found: $executable" }
 
 if ($SmokeTest) {
@@ -39,14 +39,10 @@ if ($SmokeTest) {
         if (Test-Path -LiteralPath $resultPath) { Get-Content -LiteralPath $resultPath -Encoding UTF8 }
         if ($appProcess.ExitCode -ne 0) { throw "WinUI smoke test failed. See $outputDirectory" }
         if (-not (Test-Path -LiteralPath $resultPath)) { throw "Smoke test produced no result: $outputDirectory" }
-        if ((Get-Command node -ErrorAction SilentlyContinue) -and (Test-Path (Join-Path $packageRoot '../../swift/DazzUI/Example'))) {
-            & node (Join-Path $PSScriptRoot 'sync-stories.mjs') --check (Join-Path $outputDirectory 'stories.json')
-            if ($LASTEXITCODE -ne 0) { throw 'The runtime story registry does not match the native playground catalog.' }
-        }
         Write-Output "Screenshots and results: $outputDirectory"
     }
     finally { $env:DAZZUI_SMOKE_OUTPUT = $previousOutput }
 } else {
-    # This is the interactive playground the caller requested to open.
+    # This is the interactive example the caller requested to open.
     Start-Process -FilePath $executable
 }

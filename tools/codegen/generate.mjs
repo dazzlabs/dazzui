@@ -12,6 +12,7 @@ import {
 } from './flutter.mjs'
 import { formatOutputs } from './format.mjs'
 import * as swiftui from './swiftui.mjs'
+import * as winui from './winui.mjs'
 import { readStories, readThemes } from './stories.mjs'
 
 const root = fileURLToPath(new URL('../../', import.meta.url))
@@ -28,6 +29,12 @@ const gaps = [
     .map(
       gap =>
         `${gap} — map it in packages/swift/DazzUI/Example/Sources/Example/Lib/Mapping.swift and list it in tools/codegen/swiftui.mjs`
+    ),
+  ...winui
+    .unsupported(stories)
+    .map(
+      gap =>
+        `${gap} — map it in packages/csharp/DazzUI/example/Lib/Mapping.cs and list it in tools/codegen/winui.mjs`
     ),
 ]
 if (gaps.length)
@@ -78,6 +85,28 @@ outputs.set(
   `${swift}/Lib/Themes.swift`,
   swiftui.themesSwift(themes, themeNames)
 )
+
+/* The WinUI 3 example, laid out the same way. */
+const csharp = 'packages/csharp/DazzUI/example'
+const tokens = Object.keys(
+  JSON.parse(
+    await fs.readFile(
+      path.join(
+        root,
+        'packages/csharp/DazzUI/src/DazzUI/Generated/tokens.json'
+      ),
+      'utf8'
+    )
+  )
+)
+for (const story of stories)
+  outputs.set(
+    `${csharp}/Stories/${winui.storyFile(story.id)}`,
+    winui.storyCs(story)
+  )
+outputs.set(`${csharp}/Stories/Index.cs`, winui.storiesIndexCs(stories))
+outputs.set(`${csharp}/Lib/Glyphs.cs`, winui.glyphsCs(stories))
+outputs.set(`${csharp}/Lib/Themes.cs`, winui.themesCs(themes, tokens))
 formatOutputs(outputs)
 
 /*

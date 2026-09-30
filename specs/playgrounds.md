@@ -26,7 +26,7 @@ other platforms' examples.
     `className`;
   - an event handler only calls a setter, raises a toast, or does nothing.
 - **Every platform draws what the story asks for, or generation fails.**
-  `tools/codegen/flutter.mjs` and `swiftui.mjs` each list the components
+  `tools/codegen/flutter.mjs`, `swiftui.mjs` and `winui.mjs` each list the components
   and props their example maps; a story that sets one missing from a list
   fails `pnpm codegen`, naming it and the platform. The list and the
   mapping change together.
@@ -35,15 +35,19 @@ other platforms' examples.
   `lib/lib/` holds the story type, the scene interpreter and its component
   mapping, the generated themes and glyphs; `lib/widgets/` is the window —
   React's `components/`. On SwiftUI the same under `Sources/Example/`:
-  `Stories/`, `Lib/`, and `Views/` for the window. The window is written by
-  hand to the same columns, widths and tokens as React's; only the stories
-  are generated. A story is JSON inside the generated file — on SwiftUI a
-  raw string decoded at launch, which the type checker never has to read.
+  `Stories/`, `Lib/`, and `Views/` for the window. On WinUI the same under
+  `example/`: `Stories/`, `Lib/`, and `Controls/` for the window. Every
+  platform names a glyph from its own Fluent icon package — Flutter's
+  `fluentui_system_icons`, SwiftUI's and WinUI's `FluentIcons` — by the
+  React name the story wrote. The window is written by hand to the same columns,
+  widths and tokens as React's; only the stories are generated. A story is
+  JSON inside the generated file — on SwiftUI and WinUI a raw string parsed
+  at launch, which the compiler never has to read.
 - **Never hand-edit a generated file.** `tools/codegen/outputs.json` records
   what codegen owns and the hash it wrote; `pnpm codegen:check` fails on any
   drift, and a file codegen stops writing is deleted only while it still
   matches that hash. Generation needs Dart to format its output.
-- **Flutter and SwiftUI are compiled today.** The iOS, Android and WinUI
+- **Flutter, SwiftUI and WinUI are compiled today.** The iOS and Android
   examples keep the generated sources the previous pipeline wrote, frozen:
   codegen no longer owns or rewrites them. Each is brought back by giving it
   a mapping and a support list of its own.
@@ -51,4 +55,5 @@ other platforms' examples.
   `pnpm codegen:test` for the compiler's own tests. The Flutter example's
   `test/stories_test.dart` and the SwiftUI example's `StoriesTests.swift`
   draw every story's preview and every example in light and dark, and
-  drive the interactions the interpreters carry.
+  drive the interactions the interpreters carry; the WinUI example's
+  `--smoke-test` draws every page in every theme in a real window.

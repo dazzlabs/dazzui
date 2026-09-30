@@ -116,19 +116,32 @@ public sealed class Preferences : Surface
 public class NavItem : Toggle
 {
     public string? Count { get; set; }
-    public IconGlyph Glyph { get; set; } = IconGlyph.Folder;
+    /// <summary>The leading glyph, or none.</summary>
+    public Glyph? Glyph { get; set; } = FluentIcons.Common.Icon.Folder;
     public bool IsIconOnly { get; set; }
     public NavItem() { DefaultStyleKey = typeof(NavItem); Size = ControlSize.Medium; HorizontalContentAlignment = HorizontalAlignment.Left; HorizontalAlignment = HorizontalAlignment.Stretch; Variant = ControlVariant.Normal; }
     protected override void OnApplyTemplate() { base.OnApplyTemplate(); Apply(); }
     protected override void Apply()
     {
         base.Apply();
+        // A row rests transparent in the navigation ink; the page it is on is
+        // filled, and the pointer previews that in the plain wash.
+        var onPage = IsChecked == true;
+        var state = RecipeState;
+        Background = onPage ? Theme.Recipe(ControlVariant.Filled, Tint, "surface", IsEnabled ? "normal" : "disabled")
+            : state is "hovered" or "pressed" ? Theme.Recipe(ControlVariant.Plain, Tint, "surface", "hovered")
+            : new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent);
+        Foreground = onPage ? Theme.Recipe(ControlVariant.Filled, Tint, "content", IsEnabled ? "normal" : "disabled")
+            : Theme.Brush(!IsEnabled ? "color.content-faint" : state is "hovered" or "pressed" ? "color.content" : "color.content-nav");
+        BorderThickness = new Thickness(0);
+        Skin.SetCorner(this, Theme.Number("radius.small"));
         Theme.Typography(this, IsChecked == true ? "labelMedium" : "labelQuiet");
         if (GetTemplateChild("Label") is ContentPresenter label) label.Visibility = IsIconOnly ? Visibility.Collapsed : Visibility.Visible;
         if (GetTemplateChild("Leading") is ContentControl leading)
         {
-            if (leading.Content is not Icon) leading.Content = new Icon { Glyph = Glyph };
-            leading.Margin = new Thickness(0, 0, IsIconOnly ? 0 : Theme.Number("spacing.2"), 0);
+            if (Glyph is Glyph glyph) { if (leading.Content is not Icon current || current.Glyph != glyph) leading.Content = new Icon { Glyph = glyph }; }
+            else leading.Content = null;
+            leading.Margin = new Thickness(0, 0, IsIconOnly || leading.Content is null ? 0 : Theme.Number("spacing.2"), 0);
         }
         if (GetTemplateChild("Count") is TextBlock count)
         {

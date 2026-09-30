@@ -21,9 +21,14 @@ public sealed class SectionLabel : Surface
 {
     public SectionLabel() { }
     public SectionLabel(string text) => Content = text;
+    /// <summary>Set in a tint's ink rather than the subtle one.</summary>
+    public WidgetTint? Accent { get; set; }
+    /// <summary>Quieter still: the faint ink.</summary>
+    public bool Faint { get; set; }
     protected override void RefreshAppearance()
     {
-        Foreground = Theme.Brush("color.content-subtle");
+        Foreground = Accent is WidgetTint accent ? Theme.Recipe(ControlVariant.Plain, accent, "content")
+            : Theme.Brush(Faint ? "color.content-faint" : "color.content-subtle");
         Theme.Typography(this, "labelSmall");
         Padding = new Thickness(Theme.Number("spacing.3"), Theme.Number("spacing.2"), 0, Theme.Number("spacing.1"));
     }
