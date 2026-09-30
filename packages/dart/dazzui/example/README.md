@@ -33,7 +33,6 @@ lib/
     themes.dart  generated — the theme list, as React groups it
     glyphs.dart  generated — the Fluent glyphs the stories name
     location.dart the page and theme an address names
-  parity/        the parity specimens, which are not stories
 ```
 
 A story is changed in the React example and regenerated. A component or

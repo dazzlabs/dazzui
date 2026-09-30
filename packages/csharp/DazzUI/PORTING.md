@@ -17,8 +17,8 @@ Implemented areas:
 Where the kit has no counterpart for a React prop, the mapping composes one
 from kit parts (a meter's label, a sidebar's collapsing column) or leaves it
 to the kit's native look (a tree row's glyph, a splitter panel's percentage
-limits). Matching stories is not a pixel-parity assertion; the React reference
-measurement and pixel-parity viewer integration remain a separate task.
+limits). Matching stories is not a conformance assertion; the WinUI
+conformance collector remains a separate task.
 
 Validation outputs belong under ignored `artifacts/`, not in the source tree.
 Keep design decisions in ds. Keep editing, selection, focus and popup behavior

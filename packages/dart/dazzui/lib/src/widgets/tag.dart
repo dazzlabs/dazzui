@@ -46,7 +46,7 @@ enum TagVariant with WidgetVariant {
 ///
 /// The capsule's pads and type mirror `badge.dart` — the same box at the same
 /// three densities. React shares them in one stylesheet; here they are written
-/// twice, and the parity reference test is what holds the two together.
+/// twice, and the reference test is what holds the two together.
 class Tag extends StatelessWidget {
   const Tag({
     super.key,

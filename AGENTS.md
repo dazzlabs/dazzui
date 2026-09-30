@@ -13,7 +13,7 @@ ds/                          the design system — the only place a value is dec
 packages/<language>/<name>/  an implementation, named as it is published
   js/dazzui-react            swift/DazzUI · swift/DazzMobileUI
   dart/dazzui                csharp/DazzUI · kotlin/dazzui-mobile
-tools/                       playground generator, parity viewer
+tools/                       playground generator, conformance viewer
 ```
 
 A package is grouped by language because a language is a toolchain: one
@@ -57,7 +57,7 @@ of having no `package.json`. A package's own playground is its `example/`
   with this package, whose stories `pnpm codegen` compiles from the React
   ones — see `specs/playgrounds.md`.
 - `packages/swift/DazzUI` (`DazzUI`) — the macOS SwiftUI implementation,
-  drawn to the same geometry as React and held to it by the parity suite.
+  drawn to the same geometry as React.
   `Sources/DazzUI/Generated/` is committed output from ds; `Example/` is the
   SwiftUI example: the React example's window, drawn with this package,
   whose stories `pnpm codegen` compiles from the React ones.
@@ -69,9 +69,8 @@ of having no `package.json`. A package's own playground is its `example/`
   library and committed. Controls delegate behavior to native WinUI and draw
   the shared recipes through `Themes/Generic.xaml`. `example/` is the WinUI
   example: the React example's window, drawn with this package, whose
-  stories `pnpm codegen` compiles from the React ones. It is not yet part of
-  the React pixel/reference parity suites; its own smoke suite renders every
-  page in the twelve drawn themes and the overview in the rest. See its
+  stories `pnpm codegen` compiles from the React ones. Its own smoke suite
+  renders every page in the twelve drawn themes and the overview in the rest. See its
   README for the standalone .NET commands.
 - `packages/swift/DazzMobileUI` (`DazzMobileUI`) — native SwiftUI for
   mobile. This package uses ds colours and entirely system components; it
@@ -88,7 +87,8 @@ of having no `package.json`. A package's own playground is its `example/`
   all-theme rendering and shared non-timed interaction checkpoints.
 - `packages/kotlin/dazzui-mobile` is an independent Android Gradle library with
   an `example` app. It uses only stock AndroidX Compose Material 3 components
-  and ds colors; desktop geometry and React component parity do not apply. Its
+  and ds colors; desktop geometry and React component conformance do not
+  apply. Its
   `DazzTheme` changes only `MaterialTheme.colorScheme`. Do not add custom
   control drawing or wrappers. `ds/plugins/compose.mjs` generates its
   committed `src/main/kotlin/dev/dazzlabs/dazzui/mobile/generated/` file with
@@ -116,7 +116,7 @@ Flutter) — `packages/rust/dazzui` and `packages/rust/dazzui_inset` in this
 layout — live on that branch
 with everything they need: their own generated sources, the `ds` plugins that
 write them (`gpui.mjs`, `inset.mjs` and the `rust.mjs` token compiler the two
-share), their parity target, and the playground adapters that compile the
+share), their conformance target, and the playground adapters that compile the
 shared scenes into Rust. A token or scene change that has to reach them is
 merged into that branch rather than carried here.
 
@@ -147,15 +147,7 @@ pnpm example            # build both, then serve the React example on :6006
 ```
 
 ```bash
-pnpm parity            # build the React playground, then extract the React reference and distribute it
-```
-
-```bash
-pnpm parity:view       # the drift viewer on :5182 — what each platform measured beside React
-```
-
-```bash
-pnpm parity:flutter    # draw the Flutter specimens in a real window, where the glyphs are real
+pnpm conformance:view  # the conformance viewer on :5183, over tools/conformance/data/ or its fixtures
 ```
 
 ```bash
@@ -178,7 +170,7 @@ before making it:
 - [`specs/tokens.md`](specs/tokens.md) — How a value is decided: the token pipeline, the three layers, and the colour system's washes, grades and recipes.
 - [`specs/themes.md`](specs/themes.md) — The twelve drawn themes, the imported ones, and how each platform carries a theme.
 - [`specs/components.md`](specs/components.md) — How the React package is built and how a component is drawn — the model every port follows.
-- [`specs/parity.md`](specs/parity.md) — How the ports are held to React: the extracted reference, the registry and reference tests, and the drift lists.
+- [`specs/conformance.md`](specs/conformance.md) — How an implementation is shown to draw what React draws: scenes and addresses, readings, tolerances, expectations and the viewer. The collectors are not yet written.
 - [`specs/playgrounds.md`](specs/playgrounds.md) — How a story is written once, in the React example, and compiled into the other platforms' examples.
 
 ## Code style

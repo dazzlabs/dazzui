@@ -187,7 +187,7 @@ class _SelectState<T> extends State<Select<T>> {
   /// The face wraps the whole stack rather than the value alone.
   /// `Visibility(maintainState:)` keeps a hidden label in the tree, and a
   /// `RichText` with no style of its own is what a reader of the tree — the
-  /// canvas, a parity probe — finds first; leaving one at the ambient body
+  /// canvas, a conformance probe — finds first; leaving one at the ambient body
   /// size would say the select is set in a face it never chose.
   Widget _value(ThemeVariables vars, SelectOption<T>? chosen) {
     return DefaultTextStyle.merge(

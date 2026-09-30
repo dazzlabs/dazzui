@@ -5,7 +5,7 @@ import '../../host.dart';
 
 /// `Select` — the field-shaped trigger and the list it drops.
 ///
-/// The geometry the React stylesheet decides is held by the parity suite; what
+/// The geometry the React stylesheet decides is held by the reference test; what
 /// is here is what only this port can get wrong: the trigger reading the
 /// field's own box, the list being at least as wide as the trigger, and the
 /// options being rows rather than a second drawing.

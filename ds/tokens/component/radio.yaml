@@ -1,5 +1,5 @@
 # Ring and dot are both even on every size — 14/6, 16/8, 20/10 — so the
-# margin around the dot is a whole number of pixels. That parity is the point:
+# margin around the dot is a whole number of pixels. That evenness is the point:
 # a 7px dot in a 16px ring leaves 4.5px a side, and a browser on a 1× display
 # snaps it to one side or the other, off-centre by a pixel and visibly so at
 # this scale. The dot then sits at half the ring, which is what keeps it

@@ -130,7 +130,7 @@ each theme off the generated `themeVariablesByName` map — every theme by
 its `data-theme` name — rather than a case per theme; a test holds that
 list to the map both ways, and draws the control pages under every imported
 theme. The imported styles stay out of `THEMES` and `PlaygroundTheme`, and
-so out of the parity reference, the golden suite and the every-story test:
+so out of the conformance reference, the golden suite and the every-story test:
 the ports are held to the drawn families.
 
 Studio Light sets **no attribute at all** — selecting it means removing
@@ -164,6 +164,6 @@ theme re-picks cannot be baked into a computed member, so each such shade is
 a stored member of its own — `controlColorTintedContentNormalShade`,
 `control_color_filled_surface_normal_shade` — which the theme instance
 re-points and the computed descriptor reads. Only shades that carry a mode
-get one; the rest stay literal. This is what the parity tests caught first:
+get one; the rest stay literal. This is what the reference tests caught first:
 every dark-theme control colour on Swift and in the Rust port was one step
 off.

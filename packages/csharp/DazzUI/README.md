@@ -135,5 +135,5 @@ Reports, the runtime story list, and PNG captures are written to a unique
 ignored `artifacts/smoke-*` directory.
 
 Story/catalog alignment and native rendering tests are separate from React
-pixel parity. WinUI is not yet integrated into the repository's React reference
-measurement/viewer pipeline; these tests do not assert pixel-identical output.
+conformance. WinUI has no conformance collector yet; these tests do not
+assert pixel-identical output.

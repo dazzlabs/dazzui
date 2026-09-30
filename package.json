@@ -11,9 +11,7 @@
     "winui3": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File packages/csharp/DazzUI/scripts/run.ps1",
     "winui3:build": "dotnet build packages/csharp/DazzUI/example/Example.csproj",
     "winui3:test": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File packages/csharp/DazzUI/scripts/run.ps1 -SmokeTest",
-    "parity": "pnpm --filter @dazzlabs/dazzui-react-playground parity",
-    "parity:view": "pnpm --filter @dazzlabs/dazzui-parity dev",
-    "parity:flutter": "packages/dart/dazzui/example/tool/render.sh",
+    "conformance:view": "pnpm --filter @dazzlabs/dazzui-conformance fixtures && pnpm --filter @dazzlabs/dazzui-conformance dev",
     "typecheck": "pnpm -r typecheck",
     "lint": "oxlint ./",
     "lint:fix": "oxlint ./ --fix",
@@ -23,10 +21,7 @@
     "example:build": "pnpm --filter @dazzlabs/dazzui-react-example build",
     "codegen": "pnpm --filter @dazzlabs/dazzui-codegen generate",
     "codegen:check": "pnpm --filter @dazzlabs/dazzui-codegen check",
-    "codegen:test": "pnpm --filter @dazzlabs/dazzui-codegen test",
-    "playground:test": "pnpm --filter @dazzlabs/dazzui-react-playground test",
-    "playground:golden": "pnpm --filter @dazzlabs/dazzui-react-playground golden",
-    "playground:golden:pilot": "pnpm --filter @dazzlabs/dazzui-react-playground golden:pilot"
+    "codegen:test": "pnpm --filter @dazzlabs/dazzui-codegen test"
   },
   "devDependencies": {
     "oxfmt": "^0.16.0",

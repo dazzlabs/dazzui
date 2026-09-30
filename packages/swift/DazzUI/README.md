@@ -118,7 +118,7 @@ hairline as separators.
 Remaining visual work includes multiline text metrics, independent shadow
 layers, and shared popup presentation: Menu and Tooltip use overlays without
 collision avoidance. These need side-by-side rendering checks across every
-theme; a successful build is not a visual parity check.
+theme; a successful build is not a visual conformance check.
 
 | What | Why |
 | --- | --- |
@@ -129,8 +129,8 @@ theme; a successful build is not a visual parity check.
 ## Icons
 
 The set is Fluent — Microsoft's official Swift package, the same set
-`packages/js/dazzui-react` pulls from `@fluentui/react-icons`. That parity is the
-point: the React components name specific glyphs, so a port drawing its own
+`packages/js/dazzui-react` pulls from `@fluentui/react-icons`. That sameness is
+the point: the React components name specific glyphs, so a port drawing its own
 checkmark would be a different mark at a different weight in the same box.
 
 | React component | Glyph |

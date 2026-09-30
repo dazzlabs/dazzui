@@ -60,7 +60,7 @@ swift test
 xcodebuild -scheme DazzMobileUI -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
 ```
 
-React geometry parity does not apply: native component rendering is deliberately
+React geometry conformance does not apply: native component rendering is deliberately
 owned by the OS.
 
 ## Example

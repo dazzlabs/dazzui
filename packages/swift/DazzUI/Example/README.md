@@ -56,18 +56,11 @@ Sources/Example/
     Location.swift  the page and theme the app was launched on
 Tests/ExampleTests/
   StoriesTests.swift    every preview and example, in light and dark
-  ReferenceTests.swift  measures each component against what React drew
-Parity/             what the parity extractor distributed, and what the suite
-                    drew (neither is committed)
 ```
 
 A story is changed in the React example and regenerated. A component or
 prop a story uses that SwiftUI does not map fails generation; map it in
 `Lib/Mapping.swift` and list it in `tools/codegen/swiftui.mjs`.
-
-`Parity/` sits beside the sources rather than inside them because Xcode's
-synchronised folder takes everything under `Tests/` as a resource to copy
-into the bundle, and every theme's drawings share their file names.
 
 The tests run from the same scheme:
 

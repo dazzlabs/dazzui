@@ -20,7 +20,7 @@ published. Each package carries its own playground in `example/`.
 | `packages/csharp/DazzUI`      | `DazzUI`                            | The WinUI 3 implementation. See its [README](packages/csharp/DazzUI/README.md).                              |
 | `packages/kotlin/dazzui-mobile` | `dazzui-mobile`                   | Android: stock Compose Material 3 with ds colours. See its [README](packages/kotlin/dazzui-mobile/README.md). |
 | `tools/codegen`               | `@dazzlabs/dazzui-codegen`          | Generates every playground's stories from the React declarations.                                           |
-| `tools/parity`                | `@dazzlabs/dazzui-parity`           | The drift viewer: what each platform measured beside React.                                                 |
+| `tools/conformance`           | `@dazzlabs/dazzui-conformance`      | The conformance viewer: how closely each implementation draws what React draws.                             |
 
 Only `ds` decides what a value is, and it hands each package its own
 generated sources rather than being installed alongside them: a package

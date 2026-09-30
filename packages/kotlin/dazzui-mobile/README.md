@@ -8,7 +8,7 @@ other controls directly from `androidx.compose.material3`.
 Material owns typography, shapes, dimensions, touch targets, ripple, animation,
 accessibility, and interaction. These are the official Compose components,
 not wrappers around Android View widgets. Desktop component geometry and
-React visual parity do not apply to this package.
+React visual conformance do not apply to this package.
 
 A future React-based Android prototyping package would sit under
 `packages/js/`; this package remains the native Android implementation.
@@ -106,7 +106,7 @@ Mobile uses Material typography, shapes, colors, states and touch targets. Deskt
 control metrics and recipes do not override those defaults. Grids adapt to the
 mobile viewport, cards/callouts use Material Card, steps use native selection
 indicators, and Dialog uses AlertDialog. This is shared semantic content and
-interaction coverage, not desktop pixel parity.
+interaction coverage, not desktop pixel conformance.
 
 Run on a connected emulator or device:
 

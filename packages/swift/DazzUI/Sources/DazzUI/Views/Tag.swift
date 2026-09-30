@@ -26,7 +26,7 @@ public enum TagVariant: String, CaseIterable, Sendable {
 ///
 /// The capsule's pads and type mirror ``Badge`` — the same box at the same three
 /// densities. React shares them in one stylesheet; here they are written twice,
-/// and the parity reference test is what holds the two together.
+/// and the reference test is what holds the two together.
 public struct Tag: View {
   public var title: String
   public var size: BadgeSize
