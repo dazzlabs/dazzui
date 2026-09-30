@@ -77,6 +77,11 @@ const TARGETS = [
     files: ['flutter/colors.dart', 'flutter/theme_variables.dart'],
   },
   {
+    package: 'dazzui (GPUI)',
+    dir: path.join('..', 'packages', 'rust', 'dazzui', 'src', 'generated'),
+    files: ['gpui/theme_tokens.rs'],
+  },
+  {
     package: 'DazzUI',
     dir: path.join(
       '..',
@@ -220,6 +225,20 @@ function formatDart(files) {
   console.warn('dart not found; the generated Dart files are unformatted.')
 }
 
+/**
+ * The Rust source is committed formatted for the same reason. `rustfmt` is
+ * looked for on PATH; without it the file is left as the plugin wrote it.
+ */
+function formatRust(files) {
+  try {
+    execSync(`rustfmt --edition 2024 ${files.map(f => `"${f}"`).join(' ')}`, {
+      stdio: 'pipe',
+    })
+  } catch {
+    console.warn('rustfmt not found; the generated Rust file is unformatted.')
+  }
+}
+
 async function main() {
   await generate()
   await distribute()
@@ -230,6 +249,13 @@ async function main() {
       .map(file => path.join(process.cwd(), target.dir, path.basename(file)))
   )
   if (dartFiles.length > 0) formatDart(dartFiles)
+
+  const rustFiles = TARGETS.flatMap(target =>
+    target.files
+      .filter(file => file.endsWith('.rs'))
+      .map(file => path.join(process.cwd(), target.dir, path.basename(file)))
+  )
+  if (rustFiles.length > 0) formatRust(rustFiles)
 }
 
 main().catch(err => {

@@ -19,6 +19,8 @@ system's washes, grades and recipes.
      sources, from `plugins/flutter.mjs`
    - `swiftui/Colors.swift` + `swiftui/ThemeVariables.swift` — the Swift token
      sources, from `plugins/swiftui.mjs`
+   - `gpui/theme_tokens.rs` — every theme as a Rust `const`, from
+     `plugins/gpui.mjs`
 
    `plugins/contrast.mjs` runs alongside and emits nothing: it holds the ink
    ladder to WCAG contrast in every theme and fails the build when a
@@ -30,8 +32,8 @@ system's washes, grades and recipes.
    into `packages/dart/dazzui/lib/src/generated/`, and so on for Swift and
    Rust. The `TARGETS` list is where a new platform package is added. The
    Dart copies are then run through `dart format` (PATH first, fvm's stable
-   as fallback), because the committed files are formatted and a rebuild
-   must not dirty them.
+   as fallback), and the Rust through `rustfmt`, because the committed files
+   are formatted and a rebuild must not dirty them.
 
 Nothing writes a token file: every source, `_base.yaml` included, is
 hand-authored. (The Tailwind sync that used to write `_base.yaml` is gone —

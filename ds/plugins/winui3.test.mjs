@@ -86,9 +86,9 @@ test('exports sRGB alpha and converts OKLCH without treating it as sRGB', () => 
 })
 
 test('fails on missing aliases and cycles instead of silently emitting a value', () => {
-  assert.throws(() => generate({ a: { aliasOf: 'missing' } }), /Missing WinUI/)
+  assert.throws(() => generate({ a: { aliasOf: 'missing' } }), /Missing token/)
   assert.throws(
     () => generate({ a: { aliasOf: 'b' }, b: { aliasOf: 'a' } }),
-    /Circular WinUI/
+    /Circular token/
   )
 })

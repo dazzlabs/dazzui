@@ -150,10 +150,14 @@ Flutter has no cascade, so `plugins/flutter.mjs` collapses each theme's mode
 chain into a whole `ThemeVariables` instance — `themeVariablesStudioDark`,
 `themeVariablesBrightLight`, `themeVariablesBrightDark` — beside the default
 `themeVariables`. It reads the themes back out of the same `modeSelectors`,
-so adding a theme reaches Dart without the plugin being touched. Swift and
-Rust do the same thing in their own idiom: an initialiser with defaults and
-computed properties there, a `ThemeSeed` with `..STUDIO_LIGHT_SEED` and a
-`const fn` here.
+so adding a theme reaches Dart without the plugin being touched. Swift does
+the same thing in its own idiom, an initialiser with defaults and computed
+properties. Rust has struct update syntax in a `const`, so
+`plugins/gpui.mjs` resolves every theme whole — by the walk WinUI's snapshot
+takes, shared in `plugins/resolve.mjs` — and writes each as the fields that
+differ from Studio Light's over `..STUDIO_LIGHT`. Only the tint is left
+open: a recipe cell that picks a shade off the control's ramp stays a
+`Paint::Shade`, resolved where it is drawn.
 
 The Dart class also carries a generated `copyWith` over every stored field,
 and each type *face* is one of those fields — `fontUi`, `fontDisplay`, built
@@ -173,5 +177,5 @@ a stored member of its own — `controlColorTintedContentNormalShade`,
 `control_color_filled_surface_normal_shade` — which the theme instance
 re-points and the computed descriptor reads. Only shades that carry a mode
 get one; the rest stay literal. This is what the reference tests caught first:
-every dark-theme control colour on Swift and in the Rust port was one step
-off.
+every dark-theme control colour on Swift and in the first Rust port was one
+step off.
