@@ -1,0 +1,21 @@
+{
+  "length": 0.5,
+  "colour": 0.02,
+  "image": 0.98,
+  "kinds": {
+    "width": "length",
+    "height": "length",
+    "corner": "length",
+    "stroke": "length",
+    "paddingX": "length",
+    "paddingY": "length",
+    "gap": "length",
+    "fontSize": "length",
+    "lineHeight": "length",
+    "fill": "colour",
+    "ink": "colour",
+    "strokeColor": "colour",
+    "fontWeight": "discrete",
+    "shadow": "discrete"
+  }
+}
