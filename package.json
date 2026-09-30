@@ -12,6 +12,7 @@
     "winui3:build": "dotnet build packages/csharp/DazzUI/example/Example.csproj",
     "winui3:test": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File packages/csharp/DazzUI/scripts/run.ps1 -SmokeTest",
     "conformance": "pnpm run packages && node tools/conformance/scripts/collect.mjs",
+    "conformance:check": "pnpm --filter @dazzlabs/dazzui-conformance check",
     "conformance:view": "pnpm --filter @dazzlabs/dazzui-conformance fixtures && pnpm --filter @dazzlabs/dazzui-conformance dev",
     "typecheck": "pnpm -r typecheck",
     "lint": "oxlint ./",

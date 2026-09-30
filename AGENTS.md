@@ -151,6 +151,10 @@ pnpm conformance       # collect readings into tools/conformance/data/ — React
 ```
 
 ```bash
+pnpm conformance:check # hold that run to tools/conformance/expectations/
+```
+
+```bash
 pnpm conformance:view  # the conformance viewer on :5183, over tools/conformance/data/ or its fixtures
 ```
 

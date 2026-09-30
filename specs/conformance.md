@@ -196,25 +196,44 @@ as a whole, and counts against every property it should have had.
 ## Expectations
 
 `expectations/<platform>.txt` lists the checks a platform fails today, one
-per line, `theme address property`, sorted, with a blank line and a `#`
-comment allowed:
+per line, `theme address property`, sorted in the order a story reads, with
+blank lines and `#` comments allowed. Two shorthands keep it an account a
+person can read rather than ten thousand lines: `*` for the theme is every
+theme a run measures — which is what nearly every structural difference
+is — and `*` for the property is a specimen missing as a whole.
 
 ```
 # Segmented control: the raised item's shadow is not yet drawn on Flutter
-studio-dark  segmented-control/1/2  shadow
-studio-light segmented-control/1/2  shadow
+*             segmented-control/1/2  shadow
+studio-dark   segmented-control/1/3  ink
+*             accordion/0/1          *
 ```
 
-`pnpm conformance:check` reads the run and the expectations and fails on two
-things: a check that is *off* or *missing* and not listed, and a line that is
-listed and now passes. The second is what makes the file a ratchet — a fix
-has to delete its lines in the same change, and the file is always an honest
-account of what is left. Never add a line to make the check pass; a collector
-that reads the wrong thing is fixed in the collector.
+`pnpm conformance:check` reads the run and the expectations
+(`src/lib/expectations.ts`, over the same `verdict.ts` the viewer uses) and
+fails on two things: a check that is *off* or *missing* and not listed, and
+a line that is listed and now passes — a `*` line that passes in any theme
+the run measured. The second is what makes the file a ratchet — a fix has to
+delete its lines in the same change, and the file is always an honest
+account of what is left. `--prune` deletes them: a line that passes goes, a
+`*` line that passes in some themes becomes one line per theme it still
+fails in, and comments stay where they stand. A line about a theme or a
+scene the run did not measure is neither held nor stale, so a run narrowed
+with `--themes` or `--scenes` checks only what it drew; a platform missing
+from the run — WinUI with no Windows machine — is not held at all.
+
+Never add a line to make the check pass; a collector that reads the wrong
+thing is fixed in the collector. Two changes add lines, and a review reads
+them as such: a platform's first file, which `--baseline <platform>` writes
+from the run and refuses to write over a file that lists anything; and a
+specimen that stops being missing, whose `*` line gives way to the
+properties it is now read to be off in.
 
 The file is committed. It is the one place the state of a port is written
 down where a review can see it, and it is what a CI gate has to compare
-against.
+against. Readings are only as stable as the machine they are taken on — the
+face a platform sets type in, the display scale of the Windows machine — so
+the baseline and a check are taken on the same machines.
 
 ## The viewer
 
@@ -250,7 +269,7 @@ link is a complete description of what it shows.
 ```bash
 pnpm conformance          # collect every platform's readings into tools/conformance/data/
                           #   --themes drawn|all|<id,…>  --scenes <story,…>  --no-images
-pnpm conformance:check    # derive verdicts and hold them to expectations/
+pnpm conformance:check    # derive verdicts and hold them to expectations/  (--prune, --baseline <platform>)
 pnpm conformance:view     # the viewer on :5183 — over data/ when it exists, fixtures/ otherwise
 ```
 
