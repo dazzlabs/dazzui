@@ -1,0 +1,204 @@
+.dzm-tab-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--dzm-layer-bar);
+  display: flex;
+  align-items: center;
+  gap: var(--dzm-tab-bar-gap);
+  flex-shrink: 0;
+  padding: var(--dzm-tab-bar-pad);
+  pointer-events: none;
+}
+
+.dzm-tab-bar__list {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+  height: var(--dzm-tab-bar-height);
+  padding: var(--dzm-tab-bar-list-pad);
+  border-radius: var(--dzm-tab-bar-radius);
+  background: var(--dzm-tab-bar-fill);
+  pointer-events: auto;
+}
+
+.dzm-tab-bar__tab {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--dzm-tab-bar-tab-gap);
+  padding: 0;
+  border: 0;
+  border-radius: var(--dzm-tab-bar-tab-radius);
+  background: none;
+  color: var(--dzm-tab-bar-ink);
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-user-select: none;
+  user-select: none;
+  z-index: 1;
+}
+
+.dzm-tab-bar__tab:focus-visible {
+  outline: 2px solid var(--dzm-tab-bar-focus);
+  outline-offset: -4px;
+}
+
+.dzm-tab-bar__tab[data-active] {
+  color: var(--dzm-tab-bar-active);
+}
+
+.dzm-tab-bar__icon {
+  position: relative;
+  display: inline-flex;
+}
+
+.dzm-tab-bar__icon > svg {
+  width: var(--dzm-tab-bar-glyph);
+  height: var(--dzm-tab-bar-glyph);
+}
+
+.dzm-tab-bar__badge {
+  position: absolute;
+  top: -4px;
+  left: calc(100% - 8px);
+}
+
+.dzm-tab-bar__label {
+  font: var(--dzm-tab-bar-font);
+  letter-spacing: var(--dzm-tab-bar-tracking, normal);
+  white-space: nowrap;
+}
+
+/* Base UI positions the indicator over the active tab; the drawing is the
+   OS's — a glass lens on iOS, a pill behind the icon on Android. */
+.dzm-tab-bar__lens {
+  position: absolute;
+  top: var(--dzm-tab-bar-lens-top);
+  left: var(--active-tab-left);
+  width: var(--active-tab-width);
+  height: var(--dzm-tab-bar-lens-height);
+  border-radius: 9999px;
+  background: var(--dzm-tab-bar-lens);
+  transition:
+    left var(--dzm-tab-bar-motion),
+    width var(--dzm-tab-bar-motion);
+}
+
+.dzm-tab-bar__search {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--dzm-tab-bar-height);
+  height: var(--dzm-tab-bar-height);
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  color: var(--dzm-tab-bar-ink);
+  cursor: pointer;
+  pointer-events: auto;
+  appearance: none;
+  outline: none;
+}
+
+.dzm-tab-bar__search > svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+/* Liquid Glass: a floating capsule 16pt off the edges, 64pt tall, the
+   tabs' glyphs at 24pt over 10pt semibold labels, a lens over the chosen
+   tab and the tint on it, search in its own circle. */
+.dzm-tab-bar[data-platform='ios'] {
+  --dzm-tab-bar-gap: 10px;
+  --dzm-tab-bar-pad: 8px 16px calc(8px + var(--dzm-inset-bottom));
+  --dzm-tab-bar-height: 64px;
+  --dzm-tab-bar-list-pad: 5px;
+  --dzm-tab-bar-radius: 9999px;
+  --dzm-tab-bar-fill: var(--ios-glass-fill);
+  --dzm-tab-bar-tab-gap: 3px;
+  --dzm-tab-bar-tab-radius: 9999px;
+  --dzm-tab-bar-ink: var(--ios-label-secondary);
+  --dzm-tab-bar-active: var(--ios-tint);
+  --dzm-tab-bar-focus: var(--ios-tint);
+  --dzm-tab-bar-glyph: 24px;
+  --dzm-tab-bar-font: 600 10px/12px var(--dzm-font);
+  --dzm-tab-bar-lens: var(--ios-lens-fill);
+  --dzm-tab-bar-lens-top: 5px;
+  --dzm-tab-bar-lens-height: calc(100% - 10px);
+  --dzm-tab-bar-motion: var(--ios-duration) var(--ios-spring);
+}
+
+.dzm-tab-bar[data-platform='ios'] .dzm-tab-bar__lens {
+  box-shadow:
+    inset 0 1px 0 0 var(--ios-glass-highlight),
+    0 3px 10px rgb(0 0 0 / 0.12),
+    0 1px 2px rgb(0 0 0 / 0.06);
+}
+
+.dzm-tab-bar[data-platform='ios'] .dzm-tab-bar__tab:active {
+  transform: scale(var(--ios-press-scale));
+}
+
+.dzm-tab-bar[data-platform='ios'] .dzm-tab-bar__search:active {
+  transform: scale(var(--ios-press-scale));
+}
+
+/* Android ---------------------------------------------------------------- */
+
+/* Material's navigation bar: 80dp on the surface container, 24dp glyphs
+   over label-medium, the chosen glyph on a 64 by 32 pill in the secondary
+   container and its label on the surface. */
+.dzm-tab-bar[data-platform='android'] {
+  --dzm-tab-bar-gap: 0;
+  --dzm-tab-bar-pad: 0;
+  --dzm-tab-bar-height: 80px;
+  --dzm-tab-bar-list-pad: 12px 8px 16px;
+  padding-bottom: var(--dzm-inset-bottom);
+  background: var(--m3-surface-container);
+  --dzm-tab-bar-radius: 0;
+  --dzm-tab-bar-fill: var(--m3-surface-container);
+  --dzm-tab-bar-tab-gap: 4px;
+  --dzm-tab-bar-tab-radius: var(--m3-corner-lg);
+  --dzm-tab-bar-ink: var(--m3-on-surface-variant);
+  --dzm-tab-bar-active: var(--m3-on-surface);
+  --dzm-tab-bar-focus: var(--m3-primary);
+  --dzm-tab-bar-glyph: 24px;
+  --dzm-tab-bar-font: var(--m3-label-medium);
+  --dzm-tab-bar-tracking: var(--m3-label-medium-tracking);
+  --dzm-tab-bar-lens: var(--m3-secondary-container);
+  --dzm-tab-bar-lens-top: 12px;
+  --dzm-tab-bar-lens-height: 32px;
+  --dzm-tab-bar-motion: var(--m3-duration-medium) var(--m3-spring-default);
+  --m3-layer: var(--m3-on-surface);
+}
+
+.dzm-tab-bar[data-platform='android'] .dzm-tab-bar__lens {
+  left: calc(var(--active-tab-left) + (var(--active-tab-width) - 64px) / 2);
+  width: 64px;
+}
+
+.dzm-tab-bar[data-platform='android'] .dzm-tab-bar__tab {
+  justify-content: flex-start;
+  padding-top: 4px;
+}
+
+.dzm-tab-bar[data-platform='android'] .dzm-tab-bar__tab[data-active] .dzm-tab-bar__icon {
+  color: var(--m3-on-secondary-container);
+}
+
+.dzm-tab-bar[data-platform='android'] .dzm-tab-bar__icon {
+  height: 24px;
+}
+
+.dzm-tab-bar[data-platform='android'] .dzm-tab-bar__badge {
+  left: calc(100% - 6px);
+  top: -2px;
+}

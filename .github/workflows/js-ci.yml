@@ -60,3 +60,5 @@ jobs:
       - run: pnpm format:check
       - name: Build the React example from committed token sources
         run: pnpm example:build
+      - name: Build the mobile example the same way
+        run: pnpm mobile:build

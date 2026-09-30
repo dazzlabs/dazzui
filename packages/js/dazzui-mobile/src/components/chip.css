@@ -1,0 +1,146 @@
+.dzm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--dzm-chip-gap);
+  height: var(--dzm-chip-height);
+  padding: 0 var(--dzm-chip-inline);
+  border: 0;
+  border-radius: var(--dzm-chip-radius);
+  background: var(--dzm-chip-fill);
+  color: var(--dzm-chip-ink);
+  font: var(--dzm-chip-font);
+  letter-spacing: var(--dzm-chip-tracking, normal);
+  white-space: nowrap;
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.dzm-chip__check,
+.dzm-chip__icon,
+.dzm-chip__remove {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.dzm-chip__check > svg,
+.dzm-chip__icon > svg,
+.dzm-chip__remove > svg {
+  width: var(--dzm-chip-glyph);
+  height: var(--dzm-chip-glyph);
+}
+
+.dzm-chip__check {
+  display: none;
+}
+
+.dzm-chip[data-pressed] .dzm-chip__check {
+  display: inline-flex;
+}
+
+.dzm-chip[data-pressed] .dzm-chip__check + .dzm-chip__icon {
+  display: none;
+}
+
+.dzm-chip__remove {
+  margin-inline-end: -4px;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+
+.dzm-chip:focus-visible {
+  outline: 2px solid var(--dzm-chip-focus);
+  outline-offset: 2px;
+}
+
+/* iOS: a 36pt glass capsule in the subheadline weight; chosen, it fills
+   with the tint and goes semibold. */
+.dzm-chip[data-platform='ios'] {
+  --dzm-chip-gap: 6px;
+  --dzm-chip-height: 36px;
+  --dzm-chip-inline: 14px;
+  --dzm-chip-radius: var(--ios-control-radius);
+  --dzm-chip-fill: var(--ios-glass-fill);
+  --dzm-chip-ink: var(--ios-label);
+  --dzm-chip-font: 500 15px/20px var(--dzm-font);
+  --dzm-chip-tracking: -0.23px;
+  --dzm-chip-glyph: 16px;
+  --dzm-chip-focus: var(--ios-tint);
+  transition:
+    transform var(--ios-duration-fast) var(--ios-ease),
+    background-color var(--ios-duration-fast) var(--ios-ease);
+}
+
+.dzm-chip[data-platform='ios'][data-pressed] {
+  --dzm-chip-fill: var(--ios-tint);
+  --dzm-chip-ink: var(--ios-on-tint);
+  font-weight: 600;
+}
+
+.dzm-chip[data-platform='ios']:active {
+  transform: scale(var(--ios-press-scale));
+}
+
+.dzm-chip[data-platform='ios']:disabled {
+  cursor: default;
+  opacity: var(--ios-disabled-opacity);
+}
+
+/* Android: Material's 32dp chip at the 8dp corner with a 1dp outline; a
+   chosen filter drops the outline for the secondary container. */
+.dzm-chip[data-platform='android'] {
+  --dzm-chip-gap: 8px;
+  --dzm-chip-height: 32px;
+  --dzm-chip-inline: 16px;
+  --dzm-chip-radius: var(--m3-corner-sm);
+  --dzm-chip-fill: transparent;
+  --dzm-chip-ink: var(--m3-on-surface-variant);
+  --dzm-chip-font: var(--m3-label-large);
+  --dzm-chip-tracking: var(--m3-label-large-tracking);
+  --dzm-chip-glyph: 18px;
+  --dzm-chip-focus: var(--m3-primary);
+  --m3-layer: var(--dzm-chip-ink);
+  box-shadow: inset 0 0 0 1px var(--m3-outline-variant);
+  transition:
+    background-color var(--m3-duration-short) var(--m3-ease-standard),
+    box-shadow var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-chip[data-platform='android'] .dzm-chip__icon,
+.dzm-chip[data-platform='android'] .dzm-chip__check {
+  margin-inline-start: -8px;
+  color: var(--m3-primary);
+}
+
+.dzm-chip[data-platform='android'] .dzm-chip__label {
+  color: var(--m3-on-surface);
+}
+
+.dzm-chip[data-platform='android'][data-elevated] {
+  --dzm-chip-fill: var(--m3-surface-container-low);
+  box-shadow: var(--m3-elevation-1);
+}
+
+.dzm-chip[data-platform='android'][data-pressed] {
+  --dzm-chip-fill: var(--m3-secondary-container);
+  --dzm-chip-ink: var(--m3-on-secondary-container);
+  box-shadow: none;
+}
+
+.dzm-chip[data-platform='android'][data-pressed] .dzm-chip__label,
+.dzm-chip[data-platform='android'][data-pressed] .dzm-chip__check,
+.dzm-chip[data-platform='android'][data-pressed] .dzm-chip__icon {
+  color: var(--m3-on-secondary-container);
+}
+
+.dzm-chip[data-platform='android']:disabled {
+  cursor: default;
+  --dzm-chip-ink: var(--m3-disabled-content);
+  box-shadow: inset 0 0 0 1px var(--m3-disabled-container);
+}
+
+.dzm-chip[data-platform='android']:disabled .dzm-chip__label {
+  color: var(--m3-disabled-content);
+}

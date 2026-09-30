@@ -1,0 +1,264 @@
+.dzm-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--dzm-button-gap);
+  min-height: var(--dzm-button-height);
+  padding: 0 var(--dzm-button-inline);
+  border: 0;
+  border-radius: var(--dzm-button-radius);
+  background: var(--dzm-button-fill);
+  color: var(--dzm-button-ink);
+  font: var(--dzm-button-font);
+  letter-spacing: var(--dzm-button-tracking, normal);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  appearance: none;
+  outline: none;
+}
+
+.dzm-button[data-full-width] {
+  width: 100%;
+}
+
+.dzm-button__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.dzm-button__icon > svg {
+  width: var(--dzm-button-icon);
+  height: var(--dzm-button-icon);
+}
+
+.dzm-button:focus-visible {
+  outline: 2px solid var(--dzm-button-focus);
+  outline-offset: 2px;
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+/*
+ * A capsule at every size. A press scales the whole control down and
+ * dims it, which is what UIKit does to a glass button; a disabled one
+ * fades to the tertiary label rather than turning grey.
+ */
+.dzm-button[data-platform='ios'] {
+  --dzm-button-radius: var(--ios-control-radius);
+  --dzm-button-gap: 6px;
+  --dzm-button-focus: var(--ios-tint);
+  --dzm-button-accent: var(--ios-tint);
+  --dzm-button-on-accent: var(--ios-on-tint);
+  --dzm-button-wash: var(--ios-tint-wash);
+  transition:
+    transform var(--ios-duration-fast) var(--ios-ease),
+    opacity var(--ios-duration-fast) var(--ios-ease),
+    background-color var(--ios-duration-fast) var(--ios-ease);
+}
+
+.dzm-button[data-platform='ios'][data-tone='destructive'] {
+  --dzm-button-accent: var(--ios-destructive);
+  --dzm-button-wash: var(--ios-destructive-wash);
+}
+
+.dzm-button[data-platform='ios'][data-size='small'] {
+  --dzm-button-height: 28px;
+  --dzm-button-inline: 12px;
+  --dzm-button-font: 500 15px/20px var(--dzm-font);
+  --dzm-button-tracking: -0.23px;
+  --dzm-button-icon: 16px;
+}
+
+.dzm-button[data-platform='ios'][data-size='medium'] {
+  --dzm-button-height: 36px;
+  --dzm-button-inline: 16px;
+  --dzm-button-font: 500 17px/22px var(--dzm-font);
+  --dzm-button-tracking: -0.41px;
+  --dzm-button-icon: 18px;
+}
+
+.dzm-button[data-platform='ios'][data-size='large'] {
+  --dzm-button-height: 50px;
+  --dzm-button-inline: 20px;
+  --dzm-button-font: 600 17px/22px var(--dzm-font);
+  --dzm-button-tracking: -0.41px;
+  --dzm-button-icon: 20px;
+}
+
+.dzm-button[data-platform='ios'][data-variant='filled'] {
+  --dzm-button-fill: var(--dzm-button-accent);
+  --dzm-button-ink: var(--dzm-button-on-accent);
+  box-shadow:
+    inset 0 1px 0 0 var(--ios-glass-highlight),
+    0 8px 20px -6px color-mix(in srgb, var(--dzm-button-accent) 55%, transparent);
+}
+
+.dzm-button[data-platform='ios'][data-variant='tonal'] {
+  --dzm-button-fill: var(--dzm-button-wash);
+  --dzm-button-ink: var(--dzm-button-accent);
+}
+
+.dzm-button[data-platform='ios'][data-variant='outlined'] {
+  --dzm-button-fill: transparent;
+  --dzm-button-ink: var(--dzm-button-accent);
+  box-shadow: inset 0 0 0 1px var(--dzm-button-accent);
+}
+
+.dzm-button[data-platform='ios'][data-variant='plain'] {
+  --dzm-button-fill: transparent;
+  --dzm-button-ink: var(--dzm-button-accent);
+  --dzm-button-inline: 4px;
+}
+
+.dzm-button[data-platform='ios'][data-variant='glass'] {
+  --dzm-button-fill: var(--ios-glass-fill);
+  --dzm-button-ink: var(--ios-label);
+}
+
+.dzm-button[data-platform='ios'][data-variant='glass'][data-tone='destructive'] {
+  --dzm-button-ink: var(--ios-destructive);
+}
+
+.dzm-button[data-platform='ios']:active {
+  transform: scale(var(--ios-press-scale));
+  opacity: 0.7;
+}
+
+.dzm-button[data-platform='ios'][data-variant='glass']:active {
+  opacity: 1;
+  background: var(--ios-lens-fill);
+}
+
+.dzm-button[data-platform='ios']:disabled {
+  cursor: default;
+  opacity: var(--ios-disabled-opacity);
+  transform: none;
+  box-shadow: none;
+}
+
+/* Android ---------------------------------------------------------------- */
+
+/*
+ * Material Expressive's five styles at three of its five sizes: small is
+ * the 40dp button every form uses, medium the 56dp one, large the 96dp
+ * hero. The label steps up with the size — label-large, title-medium,
+ * headline-small — and the round shape family is the capsule, the square
+ * one the rounded rectangle at the size's own corner. A pressed round
+ * button morphs toward the square corner, which is the Expressive tell.
+ */
+.dzm-button[data-platform='android'] {
+  --dzm-button-focus: var(--m3-primary);
+  --dzm-button-accent: var(--m3-primary);
+  --dzm-button-on-accent: var(--m3-on-primary);
+  --dzm-button-tonal: var(--m3-secondary-container);
+  --dzm-button-on-tonal: var(--m3-on-secondary-container);
+  --dzm-button-outline: var(--m3-outline-variant);
+  --m3-layer: var(--dzm-button-ink);
+  transition:
+    border-radius var(--m3-duration-medium) var(--m3-spring-default),
+    background-color var(--m3-duration-short) var(--m3-ease-standard),
+    box-shadow var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-button[data-platform='android'][data-tone='destructive'] {
+  --dzm-button-accent: var(--m3-error);
+  --dzm-button-on-accent: var(--m3-on-error);
+  --dzm-button-tonal: var(--m3-error-container);
+  --dzm-button-on-tonal: var(--m3-on-error-container);
+  --dzm-button-outline: var(--m3-error);
+}
+
+.dzm-button[data-platform='android'][data-size='small'] {
+  --dzm-button-height: 40px;
+  --dzm-button-inline: 16px;
+  --dzm-button-gap: 8px;
+  --dzm-button-font: var(--m3-label-large);
+  --dzm-button-tracking: var(--m3-label-large-tracking);
+  --dzm-button-icon: 20px;
+  --dzm-button-square: var(--m3-corner-md);
+}
+
+.dzm-button[data-platform='android'][data-size='medium'] {
+  --dzm-button-height: 56px;
+  --dzm-button-inline: 24px;
+  --dzm-button-gap: 8px;
+  --dzm-button-font: var(--m3-title-medium);
+  --dzm-button-tracking: var(--m3-title-medium-tracking);
+  --dzm-button-icon: 24px;
+  --dzm-button-square: var(--m3-corner-lg);
+}
+
+.dzm-button[data-platform='android'][data-size='large'] {
+  --dzm-button-height: 96px;
+  --dzm-button-inline: 48px;
+  --dzm-button-gap: 12px;
+  --dzm-button-font: var(--m3-headline-small);
+  --dzm-button-icon: 32px;
+  --dzm-button-square: var(--m3-corner-xl);
+}
+
+.dzm-button[data-platform='android'][data-shape='round'] {
+  --dzm-button-radius: var(--m3-corner-full);
+}
+
+.dzm-button[data-platform='android'][data-shape='square'] {
+  --dzm-button-radius: var(--dzm-button-square);
+}
+
+.dzm-button[data-platform='android'][data-shape='round']:active {
+  --dzm-button-radius: var(--dzm-button-square);
+}
+
+.dzm-button[data-platform='android'][data-shape='square']:active {
+  --dzm-button-radius: var(--m3-corner-full);
+}
+
+.dzm-button[data-platform='android'][data-variant='filled'] {
+  --dzm-button-fill: var(--dzm-button-accent);
+  --dzm-button-ink: var(--dzm-button-on-accent);
+}
+
+.dzm-button[data-platform='android'][data-variant='tonal'] {
+  --dzm-button-fill: var(--dzm-button-tonal);
+  --dzm-button-ink: var(--dzm-button-on-tonal);
+}
+
+.dzm-button[data-platform='android'][data-variant='outlined'] {
+  --dzm-button-fill: transparent;
+  --dzm-button-ink: var(--dzm-button-accent);
+  box-shadow: inset 0 0 0 1px var(--dzm-button-outline);
+}
+
+.dzm-button[data-platform='android'][data-variant='plain'] {
+  --dzm-button-fill: transparent;
+  --dzm-button-ink: var(--dzm-button-accent);
+  --dzm-button-inline: 12px;
+}
+
+.dzm-button[data-platform='android'][data-variant='glass'] {
+  --dzm-button-fill: var(--m3-surface-container-low);
+  --dzm-button-ink: var(--dzm-button-accent);
+  box-shadow: var(--m3-elevation-1);
+}
+
+.dzm-button[data-platform='android'][data-variant='glass']:hover {
+  box-shadow: var(--m3-elevation-2);
+}
+
+.dzm-button[data-platform='android']:disabled {
+  cursor: default;
+  --dzm-button-fill: var(--m3-disabled-container);
+  --dzm-button-ink: var(--m3-disabled-content);
+  box-shadow: none;
+}
+
+.dzm-button[data-platform='android'][data-variant='plain']:disabled,
+.dzm-button[data-platform='android'][data-variant='outlined']:disabled {
+  --dzm-button-fill: transparent;
+}
+
+.dzm-button[data-platform='android'][data-variant='outlined']:disabled {
+  box-shadow: inset 0 0 0 1px var(--m3-disabled-container);
+}

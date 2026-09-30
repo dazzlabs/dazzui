@@ -1,0 +1,47 @@
+.dzm-card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--dzm-card-pad);
+  border-radius: var(--dzm-card-radius);
+  background: var(--dzm-card-fill);
+  box-shadow: var(--dzm-card-edge);
+  color: var(--dzm-card-ink);
+  overflow: hidden;
+}
+
+.dzm-card[data-flush] {
+  padding: 0;
+}
+
+.dzm-card[data-platform='ios'] {
+  --dzm-card-pad: 16px 20px;
+  --dzm-card-radius: var(--ios-group-radius);
+  --dzm-card-fill: var(--ios-grouped-cell);
+  --dzm-card-edge: none;
+  --dzm-card-ink: var(--ios-label);
+}
+
+.dzm-card[data-platform='ios'][data-variant='outlined'] {
+  --dzm-card-edge: inset 0 0 0 var(--ios-hairline) var(--ios-separator);
+}
+
+.dzm-card[data-platform='android'] {
+  --dzm-card-pad: 16px;
+  --dzm-card-radius: var(--m3-corner-md);
+  --dzm-card-ink: var(--m3-on-surface);
+}
+
+.dzm-card[data-platform='android'][data-variant='elevated'] {
+  --dzm-card-fill: var(--m3-surface-container-low);
+  --dzm-card-edge: var(--m3-elevation-1);
+}
+
+.dzm-card[data-platform='android'][data-variant='filled'] {
+  --dzm-card-fill: var(--m3-surface-container-highest);
+  --dzm-card-edge: none;
+}
+
+.dzm-card[data-platform='android'][data-variant='outlined'] {
+  --dzm-card-fill: var(--m3-surface);
+  --dzm-card-edge: inset 0 0 0 1px var(--m3-outline-variant);
+}

@@ -1,0 +1,51 @@
+.dzm-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--dzm-badge-size);
+  height: var(--dzm-badge-size);
+  padding: 0 var(--dzm-badge-inline);
+  border-radius: 9999px;
+  background: var(--dzm-badge-fill);
+  color: var(--dzm-badge-ink);
+  font: var(--dzm-badge-font);
+  letter-spacing: var(--dzm-badge-tracking, normal);
+  white-space: nowrap;
+}
+
+.dzm-badge[data-dot] {
+  min-width: var(--dzm-badge-dot);
+  width: var(--dzm-badge-dot);
+  height: var(--dzm-badge-dot);
+  padding: 0;
+}
+
+.dzm-badge[data-platform='ios'] {
+  --dzm-badge-size: 18px;
+  --dzm-badge-dot: 10px;
+  --dzm-badge-inline: 5px;
+  --dzm-badge-fill: var(--ios-destructive);
+  --dzm-badge-ink: #fff;
+  --dzm-badge-font: 400 13px/18px var(--dzm-font);
+  --dzm-badge-tracking: -0.08px;
+}
+
+.dzm-badge[data-platform='ios'][data-tone='tint'] {
+  --dzm-badge-fill: var(--ios-tint);
+  --dzm-badge-ink: var(--ios-on-tint);
+}
+
+.dzm-badge[data-platform='android'] {
+  --dzm-badge-size: 16px;
+  --dzm-badge-dot: 6px;
+  --dzm-badge-inline: 4px;
+  --dzm-badge-fill: var(--m3-error);
+  --dzm-badge-ink: var(--m3-on-error);
+  --dzm-badge-font: var(--m3-label-small);
+  --dzm-badge-tracking: var(--m3-label-small-tracking);
+}
+
+.dzm-badge[data-platform='android'][data-tone='tint'] {
+  --dzm-badge-fill: var(--m3-primary);
+  --dzm-badge-ink: var(--m3-on-primary);
+}

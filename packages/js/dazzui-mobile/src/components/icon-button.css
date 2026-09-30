@@ -1,0 +1,189 @@
+.dzm-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--dzm-icon-button-size);
+  height: var(--dzm-icon-button-size);
+  padding: 0;
+  border: 0;
+  border-radius: var(--dzm-icon-button-radius);
+  background: var(--dzm-icon-button-fill);
+  color: var(--dzm-icon-button-ink);
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.dzm-icon-button > svg {
+  width: var(--dzm-icon-button-glyph);
+  height: var(--dzm-icon-button-glyph);
+}
+
+.dzm-icon-button:focus-visible {
+  outline: 2px solid var(--dzm-icon-button-focus);
+  outline-offset: 2px;
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+.dzm-icon-button[data-platform='ios'] {
+  --dzm-icon-button-radius: var(--ios-control-radius);
+  --dzm-icon-button-focus: var(--ios-tint);
+  --dzm-icon-button-accent: var(--ios-tint);
+  --dzm-icon-button-on-accent: var(--ios-on-tint);
+  --dzm-icon-button-wash: var(--ios-tint-wash);
+  transition:
+    transform var(--ios-duration-fast) var(--ios-ease),
+    opacity var(--ios-duration-fast) var(--ios-ease);
+}
+
+.dzm-icon-button[data-platform='ios'][data-tone='destructive'] {
+  --dzm-icon-button-accent: var(--ios-destructive);
+  --dzm-icon-button-wash: var(--ios-destructive-wash);
+}
+
+.dzm-icon-button[data-platform='ios'][data-size='small'] {
+  --dzm-icon-button-size: 28px;
+  --dzm-icon-button-glyph: 16px;
+}
+
+.dzm-icon-button[data-platform='ios'][data-size='medium'] {
+  --dzm-icon-button-size: 44px;
+  --dzm-icon-button-glyph: 22px;
+}
+
+.dzm-icon-button[data-platform='ios'][data-size='large'] {
+  --dzm-icon-button-size: 56px;
+  --dzm-icon-button-glyph: 26px;
+}
+
+.dzm-icon-button[data-platform='ios'][data-variant='glass'] {
+  --dzm-icon-button-fill: var(--ios-glass-fill);
+  --dzm-icon-button-ink: var(--ios-label);
+}
+
+.dzm-icon-button[data-platform='ios'][data-variant='glass'][data-tone='destructive'] {
+  --dzm-icon-button-ink: var(--ios-destructive);
+}
+
+.dzm-icon-button[data-platform='ios'][data-variant='plain'] {
+  --dzm-icon-button-fill: transparent;
+  --dzm-icon-button-ink: var(--dzm-icon-button-accent);
+}
+
+.dzm-icon-button[data-platform='ios'][data-variant='filled'] {
+  --dzm-icon-button-fill: var(--dzm-icon-button-accent);
+  --dzm-icon-button-ink: var(--dzm-icon-button-on-accent);
+}
+
+.dzm-icon-button[data-platform='ios'][data-variant='tonal'] {
+  --dzm-icon-button-fill: var(--dzm-icon-button-wash);
+  --dzm-icon-button-ink: var(--dzm-icon-button-accent);
+}
+
+.dzm-icon-button[data-platform='ios'][data-variant='outlined'] {
+  --dzm-icon-button-fill: transparent;
+  --dzm-icon-button-ink: var(--dzm-icon-button-accent);
+  box-shadow: inset 0 0 0 1px var(--dzm-icon-button-accent);
+}
+
+.dzm-icon-button[data-platform='ios']:active {
+  transform: scale(var(--ios-press-scale));
+  opacity: 0.7;
+}
+
+.dzm-icon-button[data-platform='ios']:disabled {
+  cursor: default;
+  opacity: var(--ios-disabled-opacity);
+  transform: none;
+}
+
+/* Android ---------------------------------------------------------------- */
+
+/* Material's icon buttons at the Expressive small, medium and large stops:
+   a 40dp target with a 24dp glyph, then 56 and 96. */
+.dzm-icon-button[data-platform='android'] {
+  --dzm-icon-button-focus: var(--m3-primary);
+  --dzm-icon-button-accent: var(--m3-primary);
+  --dzm-icon-button-on-accent: var(--m3-on-primary);
+  --dzm-icon-button-tonal: var(--m3-secondary-container);
+  --dzm-icon-button-on-tonal: var(--m3-on-secondary-container);
+  --m3-layer: var(--dzm-icon-button-ink);
+  transition: border-radius var(--m3-duration-medium) var(--m3-spring-default);
+}
+
+.dzm-icon-button[data-platform='android'][data-tone='destructive'] {
+  --dzm-icon-button-accent: var(--m3-error);
+  --dzm-icon-button-on-accent: var(--m3-on-error);
+  --dzm-icon-button-tonal: var(--m3-error-container);
+  --dzm-icon-button-on-tonal: var(--m3-on-error-container);
+}
+
+.dzm-icon-button[data-platform='android'][data-size='small'] {
+  --dzm-icon-button-size: 40px;
+  --dzm-icon-button-glyph: 24px;
+  --dzm-icon-button-square: var(--m3-corner-md);
+}
+
+.dzm-icon-button[data-platform='android'][data-size='medium'] {
+  --dzm-icon-button-size: 56px;
+  --dzm-icon-button-glyph: 24px;
+  --dzm-icon-button-square: var(--m3-corner-lg);
+}
+
+.dzm-icon-button[data-platform='android'][data-size='large'] {
+  --dzm-icon-button-size: 96px;
+  --dzm-icon-button-glyph: 32px;
+  --dzm-icon-button-square: var(--m3-corner-xl);
+}
+
+.dzm-icon-button[data-platform='android'][data-shape='round'] {
+  --dzm-icon-button-radius: var(--m3-corner-full);
+}
+
+.dzm-icon-button[data-platform='android'][data-shape='square'] {
+  --dzm-icon-button-radius: var(--dzm-icon-button-square);
+}
+
+.dzm-icon-button[data-platform='android'][data-shape='round']:active {
+  --dzm-icon-button-radius: var(--dzm-icon-button-square);
+}
+
+.dzm-icon-button[data-platform='android'][data-variant='glass'],
+.dzm-icon-button[data-platform='android'][data-variant='plain'] {
+  --dzm-icon-button-fill: transparent;
+  --dzm-icon-button-ink: var(--m3-on-surface-variant);
+}
+
+.dzm-icon-button[data-platform='android'][data-variant='plain'] {
+  --dzm-icon-button-ink: var(--dzm-icon-button-accent);
+}
+
+.dzm-icon-button[data-platform='android'][data-variant='filled'] {
+  --dzm-icon-button-fill: var(--dzm-icon-button-accent);
+  --dzm-icon-button-ink: var(--dzm-icon-button-on-accent);
+}
+
+.dzm-icon-button[data-platform='android'][data-variant='tonal'] {
+  --dzm-icon-button-fill: var(--dzm-icon-button-tonal);
+  --dzm-icon-button-ink: var(--dzm-icon-button-on-tonal);
+}
+
+.dzm-icon-button[data-platform='android'][data-variant='outlined'] {
+  --dzm-icon-button-fill: transparent;
+  --dzm-icon-button-ink: var(--m3-on-surface-variant);
+  box-shadow: inset 0 0 0 1px var(--m3-outline-variant);
+}
+
+.dzm-icon-button[data-platform='android']:disabled {
+  cursor: default;
+  --dzm-icon-button-ink: var(--m3-disabled-content);
+}
+
+.dzm-icon-button[data-platform='android'][data-variant='filled']:disabled,
+.dzm-icon-button[data-platform='android'][data-variant='tonal']:disabled {
+  --dzm-icon-button-fill: var(--m3-disabled-container);
+}

@@ -1,0 +1,193 @@
+.dzm-slider {
+  display: flex;
+  align-items: center;
+  gap: var(--dzm-slider-gap);
+  width: 100%;
+  touch-action: none;
+}
+
+.dzm-slider__end {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--dzm-slider-end);
+}
+
+.dzm-slider__end > svg {
+  width: var(--dzm-slider-end-glyph);
+  height: var(--dzm-slider-end-glyph);
+}
+
+.dzm-slider__control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  height: var(--dzm-slider-hit);
+  cursor: pointer;
+}
+
+.dzm-slider__track {
+  position: relative;
+  width: 100%;
+  height: var(--dzm-slider-track);
+  border-radius: 9999px;
+  background: var(--dzm-slider-groove);
+}
+
+.dzm-slider__indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 9999px;
+  background: var(--dzm-slider-fill);
+}
+
+.dzm-slider__thumb {
+  position: absolute;
+  top: 50%;
+  width: var(--dzm-slider-thumb-w);
+  height: var(--dzm-slider-thumb-h);
+  border-radius: 9999px;
+  background: var(--dzm-slider-thumb);
+  transform: translate(-50%, -50%);
+  outline: none;
+}
+
+.dzm-slider__thumb:focus-visible {
+  outline: 2px solid var(--dzm-slider-focus);
+  outline-offset: 3px;
+}
+
+.dzm-slider__stop {
+  display: none;
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+/* A 4pt groove in the secondary fill, the tint to the thumb, and a 27pt
+   white thumb with UISlider's shadow. While the finger is down the groove
+   swells and the thumb stretches along it, as it does on iOS 26 and after. */
+.dzm-slider[data-platform='ios'] {
+  --dzm-slider-gap: 12px;
+  --dzm-slider-hit: 44px;
+  --dzm-slider-track: 4px;
+  --dzm-slider-groove: var(--ios-fill-secondary);
+  --dzm-slider-fill: var(--ios-tint);
+  --dzm-slider-thumb: #fff;
+  --dzm-slider-thumb-w: 27px;
+  --dzm-slider-thumb-h: 27px;
+  --dzm-slider-focus: var(--ios-tint);
+  --dzm-slider-end: var(--ios-label-secondary);
+  --dzm-slider-end-glyph: 20px;
+}
+
+.dzm-slider[data-platform='ios'] .dzm-slider__track {
+  transition: height var(--ios-duration-fast) var(--ios-ease);
+}
+
+.dzm-slider[data-platform='ios'] .dzm-slider__thumb {
+  box-shadow:
+    0 3px 8px rgb(0 0 0 / 0.15),
+    0 3px 1px rgb(0 0 0 / 0.06),
+    inset 0 0 0 0.5px rgb(0 0 0 / 0.04);
+  transition:
+    width var(--ios-duration-fast) var(--ios-spring),
+    height var(--ios-duration-fast) var(--ios-spring);
+}
+
+.dzm-slider[data-platform='ios'][data-dragging] .dzm-slider__track {
+  height: 8px;
+}
+
+.dzm-slider[data-platform='ios'][data-dragging] .dzm-slider__thumb {
+  width: 34px;
+  height: 30px;
+}
+
+.dzm-slider[data-platform='ios'][data-disabled] {
+  opacity: var(--ios-disabled-opacity);
+}
+
+/* Android ---------------------------------------------------------------- */
+
+/* Expressive: a 16dp track, the active part in the primary and the rest in
+   the primary container, a 4 by 44dp handle bar with a 6dp gap on each
+   side, and a 4dp stop dot at the inactive end. The active end of the
+   track is capped at the full corner, its inner corner at 2dp. */
+.dzm-slider[data-platform='android'] {
+  --dzm-slider-gap: 8px;
+  --dzm-slider-hit: 48px;
+  --dzm-slider-track: 16px;
+  --dzm-slider-groove: var(--m3-secondary-container);
+  --dzm-slider-fill: var(--m3-primary);
+  --dzm-slider-thumb: var(--m3-primary);
+  --dzm-slider-thumb-w: 4px;
+  --dzm-slider-thumb-h: 44px;
+  --dzm-slider-focus: var(--m3-primary);
+  --dzm-slider-end: var(--m3-on-surface-variant);
+  --dzm-slider-end-glyph: 24px;
+}
+
+.dzm-slider[data-platform='android'] .dzm-slider__indicator {
+  border-radius: 9999px 2px 2px 9999px;
+}
+
+/*
+ * Base UI positions the thumb; the drawing hangs off it. `::before` is the
+ * gap — the ground showing through the track for 6dp either side of the
+ * handle — and `::after` the handle bar itself, so the bar paints over the
+ * gap and both move with the value.
+ */
+.dzm-slider[data-platform='android'] .dzm-slider__thumb {
+  background: transparent;
+}
+
+.dzm-slider[data-platform='android'] .dzm-slider__thumb::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 20px;
+  background: var(--dzm-slider-ground, var(--dzm-background));
+  transform: translate(-50%, -50%);
+}
+
+.dzm-slider[data-platform='android'] .dzm-slider__thumb::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--dzm-slider-thumb-w);
+  height: var(--dzm-slider-thumb-h);
+  border-radius: 9999px;
+  background: var(--dzm-slider-thumb);
+  transform: translate(-50%, -50%);
+  transition: width var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-slider[data-platform='android'][data-dragging] .dzm-slider__thumb::after {
+  width: 2px;
+}
+
+.dzm-slider[data-platform='android'] .dzm-slider__stop {
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--m3-primary);
+  transform: translateY(-50%);
+}
+
+.dzm-slider[data-platform='android'][data-disabled] {
+  --dzm-slider-groove: var(--m3-disabled-container);
+  --dzm-slider-fill: var(--m3-disabled-content);
+  --dzm-slider-thumb: var(--m3-disabled-content);
+}
+
+.dzm-slider[data-platform='android'][data-disabled] .dzm-slider__stop {
+  background: var(--m3-disabled-content);
+}

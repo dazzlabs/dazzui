@@ -1,0 +1,26 @@
+{
+  "name": "@dazzlabs/dazzui-mobile-example",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The mobile example: every component, on an iPhone and a Pixel side by side, in every family",
+  "scripts": {
+    "dev": "pnpm -w run packages && vite --host 127.0.0.1 --port 6007",
+    "build": "pnpm -w run packages && vite build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@dazzlabs/dazzui-mobile": "workspace:*",
+    "@dazzlabs/dazzui": "workspace:*",
+    "@fluentui/react-icons": "^2.0.339",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "typescript": "~6.0.3",
+    "vite": "^8.1.5"
+  }
+}

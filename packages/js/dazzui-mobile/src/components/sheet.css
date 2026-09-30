@@ -1,0 +1,166 @@
+.dzm-sheet-scrim {
+  z-index: var(--dzm-layer-sheet);
+  background: var(--dzm-sheet-scrim);
+  transition: opacity var(--dzm-sheet-motion);
+}
+
+.dzm-sheet-scrim[data-starting-style],
+.dzm-sheet-scrim[data-ending-style] {
+  opacity: 0;
+}
+
+.dzm-sheet-viewport {
+  z-index: var(--dzm-layer-sheet);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.dzm-sheet {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 640px;
+  max-height: calc(100% - var(--dzm-sheet-top-gap));
+  border-radius: var(--dzm-sheet-radius) var(--dzm-sheet-radius) 0 0;
+  background: var(--dzm-sheet-fill);
+  color: var(--dzm-sheet-ink);
+  box-shadow: var(--dzm-sheet-edge);
+  outline: none;
+  pointer-events: auto;
+  overflow: hidden;
+  transition: transform var(--dzm-sheet-motion);
+}
+
+.dzm-sheet[data-starting-style],
+.dzm-sheet[data-ending-style] {
+  transform: translateY(100%);
+}
+
+.dzm-sheet[data-detent='medium'] {
+  height: 50%;
+}
+
+.dzm-sheet[data-detent='large'] {
+  height: calc(100% - var(--dzm-sheet-top-gap));
+}
+
+.dzm-sheet__grabber {
+  align-self: center;
+  flex-shrink: 0;
+  width: var(--dzm-sheet-grabber-w);
+  height: var(--dzm-sheet-grabber-h);
+  margin: var(--dzm-sheet-grabber-margin);
+  border-radius: 9999px;
+  background: var(--dzm-sheet-grabber);
+}
+
+.dzm-sheet__bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  flex-shrink: 0;
+  min-height: var(--dzm-sheet-bar-height);
+  padding: var(--dzm-sheet-bar-pad);
+}
+
+.dzm-sheet__title {
+  grid-column: 2;
+  margin: 0;
+  font: var(--dzm-sheet-title-font);
+  letter-spacing: var(--dzm-sheet-title-tracking, normal);
+  text-align: center;
+}
+
+.dzm-sheet__close {
+  grid-column: 3;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--ios-fill-tertiary);
+  color: var(--ios-label-secondary);
+  cursor: pointer;
+  appearance: none;
+}
+
+.dzm-sheet__close > svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 3;
+}
+
+.dzm-sheet__body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--dzm-sheet-body-pad);
+}
+
+/* iOS: the surface at the 38pt corner, a 36 by 5 grabber, a 56pt bar
+   with the title in the headline weight and a grey circle to close. */
+.dzm-sheet-scrim[data-platform='ios'] {
+  --dzm-sheet-scrim: rgb(0 0 0 / 0.2);
+  --dzm-sheet-motion: var(--ios-duration) var(--ios-ease);
+}
+
+.dzm-sheet-viewport[data-platform='ios'] {
+  --dzm-sheet-motion: var(--ios-duration) var(--ios-ease);
+}
+
+.dzm-sheet[data-platform='ios'] {
+  --dzm-sheet-motion: 420ms var(--ios-spring);
+  --dzm-sheet-top-gap: 24px;
+  --dzm-sheet-radius: var(--ios-sheet-radius);
+  --dzm-sheet-fill: var(--color-surface);
+  --dzm-sheet-ink: var(--ios-label);
+  --dzm-sheet-edge: 0 -1px 0 0 var(--ios-glass-highlight);
+  --dzm-sheet-grabber-w: 36px;
+  --dzm-sheet-grabber-h: 5px;
+  --dzm-sheet-grabber-margin: 5px 0 0;
+  --dzm-sheet-grabber: var(--ios-fill);
+  --dzm-sheet-bar-height: 56px;
+  --dzm-sheet-bar-pad: 0 16px;
+  --dzm-sheet-title-font: var(--ios-headline);
+  --dzm-sheet-title-tracking: -0.41px;
+  --dzm-sheet-body-pad: 0 0 24px;
+}
+
+/* Android: the low surface container at the 28dp corner, a 32 by 4
+   handle at 40% of the outline, the title in title-large at 16dp. */
+.dzm-sheet-scrim[data-platform='android'] {
+  --dzm-sheet-scrim: var(--m3-scrim);
+  --dzm-sheet-motion: var(--m3-duration-medium) var(--m3-ease-standard);
+}
+
+.dzm-sheet[data-platform='android'] {
+  --dzm-sheet-motion: var(--m3-duration-long) var(--m3-ease-emphasized-decelerate);
+  --dzm-sheet-top-gap: 72px;
+  --dzm-sheet-radius: var(--m3-corner-xl);
+  --dzm-sheet-fill: var(--m3-surface-container-low);
+  --dzm-sheet-ink: var(--m3-on-surface);
+  --dzm-sheet-edge: var(--m3-elevation-1);
+  --dzm-sheet-grabber-w: 32px;
+  --dzm-sheet-grabber-h: 4px;
+  --dzm-sheet-grabber-margin: 22px 0;
+  --dzm-sheet-grabber: color-mix(in srgb, var(--m3-on-surface-variant) 40%, transparent);
+  --dzm-sheet-bar-height: 48px;
+  --dzm-sheet-bar-pad: 0 16px;
+  --dzm-sheet-title-font: var(--m3-title-large);
+  --dzm-sheet-body-pad: 0 0 24px;
+}
+
+.dzm-sheet[data-platform='android'] .dzm-sheet__bar {
+  grid-template-columns: 1fr;
+}
+
+.dzm-sheet[data-platform='android'] .dzm-sheet__title {
+  grid-column: 1;
+  text-align: start;
+}

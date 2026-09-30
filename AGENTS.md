@@ -12,7 +12,8 @@ toolkit. The layout follows [nativeapi](https://github.com/libnativeapi/nativeap
 ds/                          the design system — the only place a value is decided
 packages/<language>/<name>/  an implementation, named as it is published
   js/dazzui            swift/DazzUI · swift/DazzMobileUI
-  dart/dazzui                csharp/DazzUI · kotlin/dazzui-mobile
+  js/dazzui-mobile           csharp/DazzUI · kotlin/dazzui-mobile
+  dart/dazzui
 tools/                       playground generator, conformance viewer
 ```
 
@@ -37,6 +38,30 @@ of having no `package.json`. A package's own playground is its `example/`
   wrong for years: focus traps, roving arrow keys, type-ahead, collision-aware
   positioning, the hidden inputs a form needs. This package is what is drawn
   on top.
+- `packages/js/dazzui-mobile` (`@dazzlabs/dazzui-mobile`) — the React
+  mobile implementation: the web counterpart of `DazzMobileUI` and
+  `dazzui-mobile`. Those hand the OS a ds family and let it draw the
+  controls; this one has no OS to hand anything to, so it draws them
+  itself — Liquid Glass as iOS 27 draws it, Material 3 Expressive as
+  Android does — and takes only colour from ds. `src/generated/mobile.css`
+  is what `ds/plugins/mobile-css.mjs` wrote and is committed: the semantic
+  roles, the six accents, and the Material roles the Compose plugin derives,
+  under the same mapping, so an Android control drawn on the web is the
+  colour the Kotlin package makes it. Geometry, type and motion are the
+  platforms' own, transcribed into `src/styles/ios.css` and
+  `src/styles/android.css`; nothing there is a decision of DazzUI's.
+  `MobileTheme` installs a family, an appearance that follows the OS by
+  default, and a `platform` read off the user agent; every component reads
+  it from context and carries it as `data-platform`, which is all the
+  stylesheets select on. Behaviour is Base UI's, as in `@dazzlabs/dazzui`.
+  `example/` is the mobile example: the React example's window — list,
+  toolbar, theme panel — drawn with `@dazzlabs/dazzui`, with an iPhone and a
+  Pixel on the desk in the middle running the same story under the family
+  the panel chose; the window follows the same theme. It serves on `:6007`
+  (`pnpm mobile`). The mobile sheet writes nothing on `:root`, which is how
+  the two token sheets share that page. Its stories are its own;
+  `pnpm codegen` does not read them, and desktop geometry conformance does
+  not apply.
 - `packages/dart/dazzui` (`dazzui`) — the Flutter implementation,
   migrated from `dazzui-flutter`. A plain Dart/Flutter package, invisible to pnpm:
   run `flutter analyze` / `flutter test` from inside the package. Like the
@@ -139,11 +164,15 @@ pnpm tokens            # build ds into its dist/
 ```
 
 ```bash
-pnpm components        # build packages/js/dazzui into its dist/
+pnpm components        # build packages/js/dazzui and dazzui-mobile into their dist/
 ```
 
 ```bash
 pnpm example            # build both, then serve the React example on :6006
+```
+
+```bash
+pnpm mobile             # build the tokens and the mobile package, then serve the mobile example on :6007
 ```
 
 ```bash

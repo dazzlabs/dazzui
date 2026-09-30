@@ -1,0 +1,152 @@
+.dzm-progress {
+  display: block;
+  width: 100%;
+}
+
+.dzm-progress[data-circular] {
+  width: var(--dzm-progress-ring);
+  height: var(--dzm-progress-ring);
+}
+
+.dzm-progress[data-size='small'] {
+  --dzm-progress-ring: 24px;
+}
+
+.dzm-progress[data-size='medium'] {
+  --dzm-progress-ring: 40px;
+}
+
+.dzm-progress[data-size='large'] {
+  --dzm-progress-ring: 48px;
+}
+
+.dzm-progress__track {
+  position: relative;
+  width: 100%;
+  height: var(--dzm-progress-height);
+  border-radius: 9999px;
+  background: var(--dzm-progress-groove);
+  overflow: hidden;
+}
+
+.dzm-progress__fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 9999px;
+  background: var(--dzm-progress-fill);
+  transition: width var(--dzm-progress-motion);
+}
+
+.dzm-progress[data-indeterminate] .dzm-progress__fill {
+  width: 40%;
+  animation: dzm-progress-sweep 1.4s infinite var(--dzm-progress-ease);
+}
+
+@keyframes dzm-progress-sweep {
+  from {
+    left: -40%;
+  }
+  to {
+    left: 100%;
+  }
+}
+
+.dzm-progress__stop {
+  display: none;
+}
+
+.dzm-progress__ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.dzm-progress__ring-track,
+.dzm-progress__ring-fill {
+  fill: none;
+  stroke-width: var(--dzm-progress-stroke);
+  stroke-linecap: round;
+}
+
+.dzm-progress__ring-track {
+  stroke: var(--dzm-progress-groove);
+}
+
+.dzm-progress__ring-fill {
+  stroke: var(--dzm-progress-fill);
+  stroke-dasharray: 131.95;
+  stroke-dashoffset: calc(131.95 * (1 - var(--dzm-progress-fraction, 0)));
+  transition: stroke-dashoffset var(--dzm-progress-motion);
+}
+
+.dzm-progress[data-indeterminate] .dzm-progress__ring {
+  animation: dzm-progress-spin 1.4s linear infinite;
+}
+
+.dzm-progress[data-indeterminate] .dzm-progress__ring-fill {
+  stroke-dashoffset: 0;
+  animation: dzm-progress-arc 1.4s infinite var(--dzm-progress-ease);
+}
+
+@keyframes dzm-progress-spin {
+  to {
+    transform: rotate(270deg);
+  }
+}
+
+@keyframes dzm-progress-arc {
+  0% {
+    stroke-dasharray: 4 132;
+  }
+  50% {
+    stroke-dasharray: 100 132;
+  }
+  100% {
+    stroke-dasharray: 4 132;
+    stroke-dashoffset: -128;
+  }
+}
+
+/* iOS: a 4pt groove in the secondary fill and the tint to the value; the
+   ring the same at a 3pt stroke. */
+.dzm-progress[data-platform='ios'] {
+  --dzm-progress-height: 4px;
+  --dzm-progress-groove: var(--ios-fill-secondary);
+  --dzm-progress-fill: var(--ios-tint);
+  --dzm-progress-stroke: 3;
+  --dzm-progress-motion: var(--ios-duration) var(--ios-ease);
+  --dzm-progress-ease: var(--ios-ease);
+}
+
+/* Android Expressive: a 4dp track in the primary container with a 4dp gap
+   before the value and a 4dp stop dot at the end; the ring at a 4dp
+   stroke with the same gap. */
+.dzm-progress[data-platform='android'] {
+  --dzm-progress-height: 4px;
+  --dzm-progress-groove: var(--m3-secondary-container);
+  --dzm-progress-fill: var(--m3-primary);
+  --dzm-progress-stroke: 4;
+  --dzm-progress-motion: var(--m3-duration-medium) var(--m3-ease-standard);
+  --dzm-progress-ease: var(--m3-ease-emphasized);
+}
+
+.dzm-progress[data-platform='android'] .dzm-progress__fill {
+  box-shadow: 4px 0 0 0 var(--dzm-background);
+}
+
+.dzm-progress[data-platform='android']:not([data-indeterminate]) .dzm-progress__stop {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--m3-primary);
+}
+
+.dzm-progress[data-platform='android'] .dzm-progress__ring-track {
+  stroke: var(--m3-secondary-container);
+}

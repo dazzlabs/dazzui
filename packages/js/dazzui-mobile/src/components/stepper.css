@@ -1,0 +1,134 @@
+.dzm-stepper {
+  display: inline-flex;
+}
+
+.dzm-stepper__group {
+  display: inline-flex;
+  align-items: stretch;
+  gap: var(--dzm-stepper-gap);
+  height: var(--dzm-stepper-height);
+  border-radius: var(--dzm-stepper-radius);
+  background: var(--dzm-stepper-track);
+}
+
+.dzm-stepper__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--dzm-stepper-button);
+  padding: 0;
+  border: 0;
+  border-radius: var(--dzm-stepper-button-radius);
+  background: var(--dzm-stepper-fill);
+  color: var(--dzm-stepper-ink);
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+}
+
+.dzm-stepper__button > svg {
+  width: var(--dzm-stepper-glyph);
+  height: var(--dzm-stepper-glyph);
+}
+
+.dzm-stepper__button:focus-visible {
+  outline: 2px solid var(--dzm-stepper-focus);
+  outline-offset: 2px;
+}
+
+.dzm-stepper__button:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+/* The value is what the row beside the stepper shows on iOS, so the input
+   only takes room when asked to. */
+.dzm-stepper__input {
+  width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--dzm-stepper-ink);
+  font: var(--dzm-stepper-font);
+  text-align: center;
+  outline: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dzm-stepper__input[data-shown] {
+  width: var(--dzm-stepper-value);
+  opacity: 1;
+}
+
+/* iOS: a 32pt capsule in the tertiary fill, two 47pt halves divided by a
+   hairline, and the symbols in the label colour. */
+.dzm-stepper[data-platform='ios'] {
+  --dzm-stepper-gap: 0;
+  --dzm-stepper-height: 32px;
+  --dzm-stepper-radius: var(--ios-control-radius);
+  --dzm-stepper-track: var(--ios-fill-tertiary);
+  --dzm-stepper-button: 47px;
+  --dzm-stepper-button-radius: var(--ios-control-radius);
+  --dzm-stepper-fill: transparent;
+  --dzm-stepper-ink: var(--ios-label);
+  --dzm-stepper-glyph: 16px;
+  --dzm-stepper-value: 40px;
+  --dzm-stepper-font: 400 17px/22px var(--dzm-font);
+  --dzm-stepper-focus: var(--ios-tint);
+}
+
+.dzm-stepper[data-platform='ios'] .dzm-stepper__button:active {
+  background: var(--ios-fill-secondary);
+}
+
+.dzm-stepper[data-platform='ios'] .dzm-stepper__input:not([data-shown]) {
+  position: relative;
+  width: 1px;
+  opacity: 1;
+  background: var(--ios-separator);
+  margin: 8px 0;
+  color: transparent;
+}
+
+/* Android: two 40dp outlined icon buttons, connected at 2dp with small
+   inner corners, as an Expressive button group. */
+.dzm-stepper[data-platform='android'] {
+  --dzm-stepper-gap: 2px;
+  --dzm-stepper-height: 40px;
+  --dzm-stepper-radius: 0;
+  --dzm-stepper-track: transparent;
+  --dzm-stepper-button: 48px;
+  --dzm-stepper-button-radius: var(--m3-corner-sm);
+  --dzm-stepper-fill: var(--m3-secondary-container);
+  --dzm-stepper-ink: var(--m3-on-secondary-container);
+  --dzm-stepper-glyph: 20px;
+  --dzm-stepper-value: 40px;
+  --dzm-stepper-font: var(--m3-title-medium);
+  --dzm-stepper-focus: var(--m3-primary);
+  --m3-layer: var(--m3-on-secondary-container);
+}
+
+.dzm-stepper[data-platform='android'] .dzm-stepper__button {
+  transition: border-radius var(--m3-duration-medium) var(--m3-spring-default);
+}
+
+.dzm-stepper[data-platform='android'] .dzm-stepper__button:first-child {
+  border-start-start-radius: var(--m3-corner-full);
+  border-end-start-radius: var(--m3-corner-full);
+}
+
+.dzm-stepper[data-platform='android'] .dzm-stepper__button:last-child {
+  border-start-end-radius: var(--m3-corner-full);
+  border-end-end-radius: var(--m3-corner-full);
+}
+
+.dzm-stepper[data-platform='android'] .dzm-stepper__button:active {
+  border-radius: var(--m3-corner-full);
+}
+
+.dzm-stepper[data-platform='android'] .dzm-stepper__button:disabled {
+  opacity: 1;
+  background: var(--m3-disabled-container);
+  color: var(--m3-disabled-content);
+}

@@ -1,0 +1,89 @@
+.dzm-search {
+  display: flex;
+  align-items: center;
+  gap: var(--dzm-search-gap);
+  width: 100%;
+  min-height: var(--dzm-search-height);
+  padding: 0 var(--dzm-search-inline);
+  border-radius: 9999px;
+  background: var(--dzm-search-fill);
+  color: var(--dzm-search-ink);
+}
+
+.dzm-search__glyph,
+.dzm-search__trailing,
+.dzm-search__clear {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--dzm-search-glyph);
+}
+
+.dzm-search__glyph > svg,
+.dzm-search__trailing > svg,
+.dzm-search__clear > svg {
+  width: var(--dzm-search-glyph-size);
+  height: var(--dzm-search-glyph-size);
+}
+
+.dzm-search__clear {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.dzm-search__input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: var(--dzm-search-font);
+  letter-spacing: var(--dzm-search-tracking, normal);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.dzm-search__input::-webkit-search-decoration,
+.dzm-search__input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.dzm-search__input::placeholder {
+  color: var(--dzm-search-placeholder);
+}
+
+/* iOS: a 44pt glass capsule with the magnifier in the secondary label. */
+.dzm-search[data-platform='ios'] {
+  --dzm-search-gap: 6px;
+  --dzm-search-height: 44px;
+  --dzm-search-inline: 12px;
+  --dzm-search-fill: var(--ios-glass-fill);
+  --dzm-search-ink: var(--ios-label);
+  --dzm-search-glyph: var(--ios-label-secondary);
+  --dzm-search-glyph-size: 20px;
+  --dzm-search-placeholder: var(--ios-label-tertiary);
+  --dzm-search-font: var(--ios-body);
+  --dzm-search-tracking: -0.41px;
+}
+
+.dzm-search[data-platform='ios'] .dzm-search__clear {
+  --dzm-search-glyph: var(--ios-label-tertiary);
+  --dzm-search-glyph-size: 18px;
+}
+
+/* Android: Material's 56dp search bar on the high surface container. */
+.dzm-search[data-platform='android'] {
+  --dzm-search-gap: 16px;
+  --dzm-search-height: 56px;
+  --dzm-search-inline: 16px;
+  --dzm-search-fill: var(--m3-surface-container-high);
+  --dzm-search-ink: var(--m3-on-surface);
+  --dzm-search-glyph: var(--m3-on-surface-variant);
+  --dzm-search-glyph-size: 24px;
+  --dzm-search-placeholder: var(--m3-on-surface-variant);
+  --dzm-search-font: var(--m3-body-large);
+  --dzm-search-tracking: var(--m3-body-large-tracking);
+}

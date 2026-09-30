@@ -121,6 +121,14 @@ when a themed length aliases a themed token; such a role is stated against
 The mobile packages carry only themes that come in `-light`/`-dark` pairs —
 they hand a host a family and let the OS pick its half — which every theme
 now does, so the desktops and Omarchy reach them as families. The React
+mobile package is the third of them and carries a theme the web's way:
+`plugins/mobile-css.mjs` writes each family's two halves as
+`[data-family]` blocks, the dark one both under `[data-appearance='dark']`
+and under a `prefers-color-scheme: dark` media rule fenced to
+`:not([data-appearance='light'])`, so `MobileTheme` follows the OS unless
+told otherwise, exactly as `mobileTheme` and `DazzTheme` do. Each block
+also sets `color-scheme`, which is what lets the glass material pick its
+highlight with `light-dark()` rather than carry a dark block of its own. The React
 playground picks a theme in two steps, *style* then *mode*
 (`THEME_STYLES`, `splitTheme` and `joinTheme` in `themes.ts`; the URL still
 carries one `theme`), and a style that lacks a mode has it disabled. The

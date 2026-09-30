@@ -1,0 +1,79 @@
+/*
+ * The ground every component stands on. Scoped to `dzm-` classes so the
+ * package stays embeddable: nothing here reaches a host page's own markup.
+ */
+
+[class^='dzm-'],
+[class*=' dzm-'],
+[class^='dzm-'] *,
+[class*=' dzm-'] *,
+[class^='dzm-'] *::before,
+[class*=' dzm-'] *::after {
+  box-sizing: border-box;
+}
+
+/*
+ * The theme element is the screen: it paints the platform's ground, sets the
+ * platform's face, and is what every floating part portals into. It is a
+ * stacking context of its own so a sheet inside one device frame cannot
+ * paint over the frame beside it.
+ */
+.dzm-theme {
+  position: relative;
+  isolation: isolate;
+  min-height: 100%;
+  background: var(--dzm-background);
+  color: var(--dzm-ink);
+  font-family: var(--dzm-font);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  text-rendering: optimizeLegibility;
+}
+
+/*
+ * Stacking, written once. A menu outranks a sheet because it opens from
+ * one; a toast reports on what the sheet just did. Not tokens: the native
+ * packages draw in tree order and have nothing to give the number to.
+ */
+.dzm-theme {
+  /* The status bar's and the home indicator's insets, which the bars at
+     either edge clear. A device frame in a gallery sets them to the
+     device's; a real page gets the browser's. */
+  --dzm-inset-top: env(safe-area-inset-top, 0px);
+  --dzm-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --dzm-layer-bar: 5;
+  --dzm-layer-sheet: 10;
+  --dzm-layer-popup: 20;
+  --dzm-layer-toast: 30;
+}
+
+/* A floating part covers the viewport, or the theme when it is contained.
+   A contained theme clips rather than hides its overflow, so a focus
+   landing in a sheet still off its bottom edge cannot scroll it. */
+.dzm-scrim,
+.dzm-overlay {
+  position: fixed;
+  inset: 0;
+}
+
+.dzm-theme[data-contained] {
+  overflow: clip;
+}
+
+.dzm-theme[data-contained] .dzm-scrim,
+.dzm-theme[data-contained] .dzm-overlay {
+  position: absolute;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [class^='dzm-'],
+  [class*=' dzm-'],
+  [class^='dzm-'] *,
+  [class*=' dzm-'] *,
+  [class^='dzm-'] *::before,
+  [class*=' dzm-'] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,164 @@
+.dzm-checkbox {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--dzm-checkbox-size);
+  height: var(--dzm-checkbox-size);
+  padding: 0;
+  border: 0;
+  border-radius: var(--dzm-checkbox-radius);
+  background: var(--dzm-checkbox-fill);
+  box-shadow: inset 0 0 0 var(--dzm-checkbox-stroke) var(--dzm-checkbox-edge);
+  color: var(--dzm-checkbox-mark);
+  cursor: pointer;
+  outline: none;
+}
+
+.dzm-checkbox__indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dzm-checkbox__check,
+.dzm-checkbox__dash {
+  display: none;
+  width: var(--dzm-checkbox-glyph);
+  height: var(--dzm-checkbox-glyph);
+}
+
+.dzm-checkbox[data-checked] .dzm-checkbox__check {
+  display: block;
+}
+
+.dzm-checkbox[data-indeterminate] .dzm-checkbox__dash {
+  display: block;
+}
+
+.dzm-checkbox:focus-visible {
+  outline: 2px solid var(--dzm-checkbox-focus);
+  outline-offset: 2px;
+}
+
+.dzm-checkbox-row {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--dzm-checkbox-gap);
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.dzm-checkbox-row__label {
+  font: var(--dzm-checkbox-font);
+  letter-spacing: var(--dzm-checkbox-tracking, normal);
+  color: var(--dzm-checkbox-label);
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+/* A 22pt circle: a tertiary-label ring while off, the tint filled with a
+   white check while on, as a list row's selection mark. */
+.dzm-checkbox[data-platform='ios'] {
+  --dzm-checkbox-size: 22px;
+  --dzm-checkbox-radius: 9999px;
+  --dzm-checkbox-stroke: 1.5px;
+  --dzm-checkbox-edge: var(--ios-label-tertiary);
+  --dzm-checkbox-fill: transparent;
+  --dzm-checkbox-mark: var(--ios-on-tint);
+  --dzm-checkbox-glyph: 14px;
+  --dzm-checkbox-focus: var(--ios-tint);
+  transition:
+    background-color var(--ios-duration-fast) var(--ios-ease),
+    box-shadow var(--ios-duration-fast) var(--ios-ease);
+}
+
+.dzm-checkbox[data-platform='ios'][data-checked],
+.dzm-checkbox[data-platform='ios'][data-indeterminate] {
+  --dzm-checkbox-fill: var(--ios-tint);
+  --dzm-checkbox-stroke: 0;
+}
+
+.dzm-checkbox[data-platform='ios'] .dzm-checkbox__check {
+  stroke-width: 3;
+}
+
+.dzm-checkbox[data-platform='ios'][data-disabled] {
+  cursor: default;
+  opacity: var(--ios-disabled-opacity);
+}
+
+.dzm-checkbox-row[data-platform='ios'] {
+  --dzm-checkbox-gap: 12px;
+  --dzm-checkbox-font: var(--ios-body);
+  --dzm-checkbox-tracking: -0.41px;
+  --dzm-checkbox-label: var(--ios-label);
+}
+
+/* Android ---------------------------------------------------------------- */
+
+/* An 18dp box at a 2dp corner with a 2dp outline, in a 48dp target. */
+.dzm-checkbox[data-platform='android'] {
+  --dzm-checkbox-size: 18px;
+  --dzm-checkbox-radius: 2px;
+  --dzm-checkbox-stroke: 2px;
+  --dzm-checkbox-edge: var(--m3-on-surface-variant);
+  --dzm-checkbox-fill: transparent;
+  --dzm-checkbox-mark: var(--m3-on-primary);
+  --dzm-checkbox-glyph: 14px;
+  --dzm-checkbox-focus: var(--m3-primary);
+  margin: 15px;
+  transition:
+    background-color var(--m3-duration-short) var(--m3-ease-standard),
+    box-shadow var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+/* The state layer is the 48dp target around the 18dp box. */
+.dzm-checkbox[data-platform='android']::before {
+  content: '';
+  position: absolute;
+  inset: -15px;
+  border-radius: 9999px;
+  background: var(--dzm-checkbox-edge);
+  opacity: 0;
+  transition: opacity var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-checkbox[data-platform='android']:hover::before {
+  opacity: var(--m3-state-hover);
+}
+
+.dzm-checkbox[data-platform='android']:active::before {
+  opacity: var(--m3-state-pressed);
+}
+
+.dzm-checkbox[data-platform='android'][data-checked],
+.dzm-checkbox[data-platform='android'][data-indeterminate] {
+  --dzm-checkbox-fill: var(--m3-primary);
+  --dzm-checkbox-edge: var(--m3-primary);
+  --dzm-checkbox-stroke: 0;
+}
+
+.dzm-checkbox[data-platform='android'] .dzm-checkbox__check,
+.dzm-checkbox[data-platform='android'] .dzm-checkbox__dash {
+  stroke-width: 3;
+}
+
+.dzm-checkbox[data-platform='android'][data-disabled] {
+  cursor: default;
+  --dzm-checkbox-edge: var(--m3-disabled-content);
+}
+
+.dzm-checkbox[data-platform='android'][data-checked][data-disabled] {
+  --dzm-checkbox-fill: var(--m3-disabled-content);
+  --dzm-checkbox-mark: var(--m3-surface);
+}
+
+.dzm-checkbox-row[data-platform='android'] {
+  --dzm-checkbox-gap: 0;
+  --dzm-checkbox-font: var(--m3-body-large);
+  --dzm-checkbox-tracking: var(--m3-body-large-tracking);
+  --dzm-checkbox-label: var(--m3-on-surface);
+}

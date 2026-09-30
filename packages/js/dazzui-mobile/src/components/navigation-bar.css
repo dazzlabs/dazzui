@@ -1,0 +1,159 @@
+.dzm-nav {
+  position: sticky;
+  top: 0;
+  z-index: var(--dzm-layer-bar);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  padding-top: var(--dzm-inset-top);
+  background: var(--dzm-nav-fill);
+  color: var(--dzm-nav-ink);
+}
+
+.dzm-nav__bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  min-height: var(--dzm-nav-height);
+  padding: var(--dzm-nav-pad);
+  gap: 8px;
+}
+
+.dzm-nav__leading,
+.dzm-nav__trailing {
+  display: flex;
+  align-items: center;
+  gap: var(--dzm-nav-gap);
+  min-width: 0;
+}
+
+.dzm-nav__trailing {
+  justify-content: flex-end;
+}
+
+.dzm-nav__title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: var(--dzm-nav-title-font);
+  letter-spacing: var(--dzm-nav-title-tracking, normal);
+}
+
+.dzm-nav__large-title {
+  margin: 0;
+  padding: var(--dzm-nav-large-pad);
+  font: var(--dzm-nav-large-font);
+  letter-spacing: var(--dzm-nav-large-tracking, normal);
+}
+
+.dzm-nav__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-width: var(--dzm-nav-back-size);
+  height: var(--dzm-nav-back-size);
+  padding: var(--dzm-nav-back-pad);
+  border: 0;
+  border-radius: 9999px;
+  background: var(--dzm-nav-back-fill);
+  color: var(--dzm-nav-back-ink);
+  font: var(--dzm-nav-back-font);
+  letter-spacing: var(--dzm-nav-back-tracking, normal);
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+}
+
+.dzm-nav__back:focus-visible {
+  outline: 2px solid var(--dzm-nav-back-ink);
+  outline-offset: 2px;
+}
+
+.dzm-nav__back-glyph {
+  width: var(--dzm-nav-back-glyph);
+  height: var(--dzm-nav-back-glyph);
+  stroke-width: 2.6;
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+/* Compact: a 44pt glass bar, the title in the headline weight centred,
+   the controls 44pt glass circles the tint glyph sits in. Large: the bar
+   is clear and the title sets in the large-title weight, 16pt in. */
+.dzm-nav[data-platform='ios'] {
+  --dzm-nav-height: 44px;
+  --dzm-nav-pad: 6px 8px;
+  --dzm-nav-gap: 8px;
+  --dzm-nav-fill: var(--ios-glass-fill);
+  --dzm-nav-ink: var(--ios-label);
+  --dzm-nav-title-font: var(--ios-headline);
+  --dzm-nav-title-tracking: -0.41px;
+  --dzm-nav-large-font: var(--ios-large-title);
+  --dzm-nav-large-tracking: 0.4px;
+  --dzm-nav-large-pad: 4px 16px 8px;
+  --dzm-nav-back-size: 44px;
+  --dzm-nav-back-pad: 0 14px 0 10px;
+  --dzm-nav-back-fill: var(--ios-glass-fill);
+  --dzm-nav-back-ink: var(--ios-tint);
+  --dzm-nav-back-font: var(--ios-body);
+  --dzm-nav-back-tracking: -0.41px;
+  --dzm-nav-back-glyph: 20px;
+}
+
+.dzm-nav[data-platform='ios'][data-large] {
+  --dzm-nav-fill: transparent;
+  position: static;
+}
+
+.dzm-nav[data-platform='ios'] .dzm-nav__back:not(:has(.dzm-nav__back-label)) {
+  padding: 0;
+  justify-content: center;
+}
+
+.dzm-nav[data-platform='ios'] .dzm-nav__back:active {
+  transform: scale(var(--ios-press-scale));
+  opacity: 0.7;
+}
+
+/* Android ---------------------------------------------------------------- */
+
+/* A 64dp bar on the surface with the title in title-large at the leading
+   edge, the navigation icon a 48dp target 4dp in; the large bar adds a
+   row and sets the title in headline-medium, 16dp in and 28dp up. */
+.dzm-nav[data-platform='android'] {
+  --dzm-nav-height: 64px;
+  --dzm-nav-pad: 8px 4px;
+  --dzm-nav-gap: 0;
+  --dzm-nav-fill: var(--m3-surface);
+  --dzm-nav-ink: var(--m3-on-surface);
+  --dzm-nav-title-font: var(--m3-title-large);
+  --dzm-nav-large-font: var(--m3-headline-medium);
+  --dzm-nav-large-pad: 0 16px 28px;
+  --dzm-nav-back-size: 48px;
+  --dzm-nav-back-pad: 0;
+  --dzm-nav-back-fill: transparent;
+  --dzm-nav-back-ink: var(--m3-on-surface);
+  --dzm-nav-back-glyph: 24px;
+  --m3-layer: var(--m3-on-surface);
+}
+
+.dzm-nav[data-platform='android'] .dzm-nav__bar {
+  grid-template-columns: auto 1fr auto;
+}
+
+.dzm-nav[data-platform='android'] .dzm-nav__title {
+  padding-inline-start: 12px;
+}
+
+.dzm-nav[data-platform='android'] .dzm-nav__leading:empty + .dzm-nav__title {
+  padding-inline-start: 12px;
+}
+
+.dzm-nav[data-platform='android'] .dzm-nav__back {
+  justify-content: center;
+}
+
+.dzm-nav[data-platform='android'][data-large] {
+  --dzm-nav-fill: var(--m3-surface);
+}

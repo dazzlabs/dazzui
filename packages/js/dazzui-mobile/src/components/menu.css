@@ -1,0 +1,196 @@
+/*
+ * The menu and the select's list are one drawing: the popup, the row,
+ * the check column and the separator. `select.css` adds only the
+ * trigger.
+ */
+.dzm-menu-positioner {
+  z-index: var(--dzm-layer-popup);
+  outline: none;
+}
+
+.dzm-menu {
+  display: flex;
+  flex-direction: column;
+  min-width: var(--dzm-menu-min-width);
+  max-width: var(--dzm-menu-max-width);
+  max-height: var(--available-height);
+  padding: var(--dzm-menu-pad);
+  border-radius: var(--dzm-menu-radius);
+  background: var(--dzm-menu-fill);
+  color: var(--dzm-menu-ink);
+  box-shadow: var(--dzm-menu-edge);
+  outline: none;
+  overflow: auto;
+  transform-origin: var(--transform-origin);
+  transition:
+    transform var(--dzm-menu-motion),
+    opacity var(--dzm-menu-motion);
+}
+
+.dzm-menu[data-starting-style],
+.dzm-menu[data-ending-style] {
+  opacity: 0;
+  transform: scale(0.85);
+}
+
+.dzm-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--dzm-menu-gap);
+  min-height: var(--dzm-menu-row);
+  padding: var(--dzm-menu-row-pad);
+  border-radius: var(--dzm-menu-row-radius);
+  color: var(--dzm-menu-ink);
+  font: var(--dzm-menu-font);
+  letter-spacing: var(--dzm-menu-tracking, normal);
+  cursor: pointer;
+  outline: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.dzm-menu__item[data-highlighted] {
+  background: var(--dzm-menu-highlight);
+}
+
+.dzm-menu__item[data-disabled] {
+  cursor: default;
+  color: var(--dzm-menu-disabled);
+}
+
+.dzm-menu__item[data-role='destructive'] {
+  color: var(--dzm-menu-destructive);
+}
+
+.dzm-menu__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dzm-menu__icon,
+.dzm-menu__check {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--dzm-menu-glyph);
+}
+
+.dzm-menu__item[data-role='destructive'] .dzm-menu__icon {
+  color: inherit;
+}
+
+.dzm-menu__icon > svg,
+.dzm-menu__check > svg {
+  width: var(--dzm-menu-glyph-size);
+  height: var(--dzm-menu-glyph-size);
+}
+
+.dzm-menu__check {
+  width: var(--dzm-menu-check-column);
+  visibility: hidden;
+}
+
+.dzm-menu__check[data-checked] {
+  visibility: visible;
+}
+
+.dzm-menu__separator {
+  height: var(--dzm-menu-separator);
+  margin: var(--dzm-menu-separator-margin);
+  background: var(--dzm-menu-separator-color);
+}
+
+/* iOS: 250pt of thick glass at the 22pt corner, 44pt rows in the body
+   size with hairlines between and the glyph at the trailing edge, a
+   pressed row in the quaternary fill, the check at the leading edge. */
+.dzm-menu-positioner[data-platform='ios'] {
+  --dzm-menu-motion: var(--ios-duration) var(--ios-spring);
+}
+
+.dzm-menu[data-platform='ios'] {
+  --dzm-menu-motion: var(--ios-duration) var(--ios-spring);
+  --dzm-menu-min-width: 250px;
+  --dzm-menu-max-width: 250px;
+  --dzm-menu-pad: 0;
+  --dzm-menu-radius: var(--ios-menu-radius);
+  --dzm-menu-fill: var(--ios-glass-fill-thick);
+  --dzm-menu-ink: var(--ios-label);
+  --dzm-menu-edge: var(--ios-glass-edge);
+  --dzm-menu-gap: 8px;
+  --dzm-menu-row: 44px;
+  --dzm-menu-row-pad: 0 16px;
+  --dzm-menu-row-radius: 0;
+  --dzm-menu-font: var(--ios-body);
+  --dzm-menu-tracking: -0.41px;
+  --dzm-menu-highlight: var(--ios-fill-quaternary);
+  --dzm-menu-disabled: var(--ios-label-tertiary);
+  --dzm-menu-destructive: var(--ios-destructive);
+  --dzm-menu-glyph: var(--ios-label);
+  --dzm-menu-glyph-size: 20px;
+  --dzm-menu-check-column: 16px;
+  --dzm-menu-separator: var(--ios-hairline);
+  --dzm-menu-separator-margin: 0;
+  --dzm-menu-separator-color: var(--ios-separator);
+}
+
+.dzm-menu[data-platform='ios'] .dzm-menu__item + .dzm-menu__item {
+  box-shadow: inset 0 var(--ios-hairline) 0 0 var(--ios-separator);
+}
+
+.dzm-menu[data-platform='ios'] .dzm-menu__check > svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 3;
+}
+
+/* A section break in an iOS menu is a thick band, not a line. */
+.dzm-menu[data-platform='ios'] .dzm-menu__separator {
+  height: 8px;
+  background: var(--ios-fill-quaternary);
+}
+
+/* Android: the surface container at the 4dp corner at elevation 2, 112
+   to 280dp wide, 48dp rows in body-large with the glyph leading. */
+.dzm-menu-positioner[data-platform='android'] {
+  --dzm-menu-motion: var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-menu[data-platform='android'] {
+  --dzm-menu-motion: var(--m3-duration-short) var(--m3-ease-standard);
+  --dzm-menu-min-width: 112px;
+  --dzm-menu-max-width: 280px;
+  --dzm-menu-pad: 8px 0;
+  --dzm-menu-radius: var(--m3-corner-xs);
+  --dzm-menu-fill: var(--m3-surface-container);
+  --dzm-menu-ink: var(--m3-on-surface);
+  --dzm-menu-edge: var(--m3-elevation-2);
+  --dzm-menu-gap: 12px;
+  --dzm-menu-row: 48px;
+  --dzm-menu-row-pad: 0 12px;
+  --dzm-menu-row-radius: 0;
+  --dzm-menu-font: var(--m3-body-large);
+  --dzm-menu-tracking: var(--m3-body-large-tracking);
+  --dzm-menu-highlight: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-hover), transparent);
+  --dzm-menu-disabled: var(--m3-disabled-content);
+  --dzm-menu-destructive: var(--m3-error);
+  --dzm-menu-glyph: var(--m3-on-surface-variant);
+  --dzm-menu-glyph-size: 24px;
+  --dzm-menu-check-column: 24px;
+  --dzm-menu-separator: 1px;
+  --dzm-menu-separator-margin: 8px 0;
+  --dzm-menu-separator-color: var(--m3-outline-variant);
+}
+
+.dzm-menu[data-platform='android'] .dzm-menu__item {
+  flex-direction: row-reverse;
+}
+
+.dzm-menu[data-platform='android'] .dzm-menu__item .dzm-menu__label {
+  text-align: start;
+}
+
+.dzm-menu[data-platform='android'] .dzm-menu__check {
+  order: 1;
+}

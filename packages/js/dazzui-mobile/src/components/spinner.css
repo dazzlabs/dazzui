@@ -1,0 +1,88 @@
+.dzm-spinner {
+  display: inline-flex;
+  width: var(--dzm-spinner-size);
+  height: var(--dzm-spinner-size);
+  color: var(--dzm-spinner-ink);
+}
+
+.dzm-spinner > svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* iOS: eight spokes in the secondary label, each fading in turn — 20pt
+   for medium, 37pt for large. */
+.dzm-spinner[data-platform='ios'] {
+  --dzm-spinner-ink: var(--ios-label-secondary);
+}
+
+.dzm-spinner[data-platform='ios'][data-size='small'] {
+  --dzm-spinner-size: 20px;
+}
+
+.dzm-spinner[data-platform='ios'][data-size='large'] {
+  --dzm-spinner-size: 37px;
+}
+
+.dzm-spinner__spoke {
+  fill: currentColor;
+  animation: dzm-spinner-fade 0.8s linear infinite;
+}
+
+@keyframes dzm-spinner-fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.15;
+  }
+}
+
+/* Android: Material's indeterminate circular indicator, a 4dp arc in the
+   primary that grows and shrinks as it turns — 24dp small, 48dp large. */
+.dzm-spinner[data-platform='android'] {
+  --dzm-spinner-ink: var(--m3-primary);
+}
+
+.dzm-spinner[data-platform='android'][data-size='small'] {
+  --dzm-spinner-size: 24px;
+}
+
+.dzm-spinner[data-platform='android'][data-size='large'] {
+  --dzm-spinner-size: 48px;
+}
+
+.dzm-spinner__arc {
+  animation: dzm-spinner-rotate 1.6s linear infinite;
+}
+
+.dzm-spinner__arc > circle {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 1 200;
+  stroke-dashoffset: 0;
+  animation: dzm-spinner-arc 1.4s ease-in-out infinite;
+}
+
+@keyframes dzm-spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dzm-spinner-arc {
+  0% {
+    stroke-dasharray: 1 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90 200;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90 200;
+    stroke-dashoffset: -125;
+  }
+}

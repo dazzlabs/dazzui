@@ -34,7 +34,8 @@ are committed.
 | ---------------- | -------------------------------------------------------------- | ---------------------------------- |
 | `style.css`      | Every token as a CSS custom property. The contract for the web. | `packages/js/dazzui/src/generated/`          |
 | `control.css`    | The ramp bindings and the resolved interactive colour recipes.  | `packages/js/dazzui/src/generated/`          |
-| `flutter/*.dart` | Dart sources for the Flutter package.                           | nowhere yet — awaiting `packages/dart/dazzui` |
+| `flutter/*.dart` | Dart sources for the Flutter package.                           | `packages/dart/dazzui/lib/src/generated/` |
+| `mobile/mobile.css`, `mobile/families.ts` | The colour sheet for the React mobile package: the roles, the accents and the Material roles, per family, following the OS appearance. | `packages/js/dazzui-mobile/src/generated/` |
 
 Adding a platform means adding an entry to `TARGETS` in `scripts/build.mjs`.
 

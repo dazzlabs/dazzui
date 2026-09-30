@@ -1,0 +1,194 @@
+.dzm-alert-scrim {
+  z-index: var(--dzm-layer-sheet);
+  background: var(--dzm-alert-scrim);
+  transition: opacity var(--dzm-alert-motion);
+}
+
+.dzm-alert-scrim[data-starting-style],
+.dzm-alert-scrim[data-ending-style] {
+  opacity: 0;
+}
+
+.dzm-alert-viewport {
+  z-index: var(--dzm-layer-sheet);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  pointer-events: none;
+}
+
+.dzm-alert {
+  display: flex;
+  flex-direction: column;
+  width: var(--dzm-alert-width);
+  min-width: var(--dzm-alert-min-width);
+  max-width: 100%;
+  border-radius: var(--dzm-alert-radius);
+  background: var(--dzm-alert-fill);
+  color: var(--dzm-alert-ink);
+  box-shadow: var(--dzm-alert-edge);
+  outline: none;
+  overflow: hidden;
+  pointer-events: auto;
+  transition:
+    transform var(--dzm-alert-motion),
+    opacity var(--dzm-alert-motion);
+}
+
+.dzm-alert[data-starting-style],
+.dzm-alert[data-ending-style] {
+  opacity: 0;
+  transform: scale(var(--dzm-alert-scale));
+}
+
+.dzm-alert__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dzm-alert-content-gap);
+  padding: var(--dzm-alert-content-pad);
+  text-align: var(--dzm-alert-align);
+}
+
+.dzm-alert__icon {
+  display: inline-flex;
+  align-self: center;
+  color: var(--m3-secondary);
+}
+
+.dzm-alert__icon > svg {
+  width: 24px;
+  height: 24px;
+}
+
+.dzm-alert__title {
+  margin: 0;
+  font: var(--dzm-alert-title-font);
+  letter-spacing: var(--dzm-alert-title-tracking, normal);
+}
+
+.dzm-alert__message {
+  margin: 0;
+  color: var(--dzm-alert-message-ink);
+  font: var(--dzm-alert-message-font);
+  letter-spacing: var(--dzm-alert-message-tracking, normal);
+}
+
+.dzm-alert__actions {
+  display: flex;
+  gap: var(--dzm-alert-actions-gap);
+  padding: var(--dzm-alert-actions-pad);
+}
+
+/* iOS: 270pt of thick glass at the 26pt corner, the title in the headline
+   weight and the message in the footnote, both centred; the actions 44pt
+   rows in the body size divided by hairlines, two side by side, three or
+   more stacked, cancel in the semibold weight and destructive in red. */
+.dzm-alert-scrim[data-platform='ios'] {
+  --dzm-alert-scrim: rgb(0 0 0 / 0.2);
+  --dzm-alert-motion: var(--ios-duration-fast) var(--ios-ease);
+}
+
+.dzm-alert[data-platform='ios'] {
+  --dzm-alert-motion: var(--ios-duration) var(--ios-spring);
+  --dzm-alert-scale: 1.15;
+  --dzm-alert-width: 270px;
+  --dzm-alert-min-width: 0;
+  --dzm-alert-radius: var(--ios-alert-radius);
+  --dzm-alert-fill: var(--ios-glass-fill-thick);
+  --dzm-alert-ink: var(--ios-label);
+  --dzm-alert-edge: var(--ios-glass-edge);
+  --dzm-alert-content-gap: 4px;
+  --dzm-alert-content-pad: 20px 16px 18px;
+  --dzm-alert-align: center;
+  --dzm-alert-title-font: var(--ios-headline);
+  --dzm-alert-title-tracking: -0.41px;
+  --dzm-alert-message-ink: var(--ios-label);
+  --dzm-alert-message-font: var(--ios-footnote);
+  --dzm-alert-message-tracking: -0.08px;
+  --dzm-alert-actions-gap: 0;
+  --dzm-alert-actions-pad: 0;
+}
+
+.dzm-alert[data-platform='ios'] .dzm-alert__actions {
+  box-shadow: inset 0 var(--ios-hairline) 0 0 var(--ios-separator);
+}
+
+.dzm-alert[data-platform='ios'][data-stacked] .dzm-alert__actions {
+  flex-direction: column;
+}
+
+.dzm-alert[data-platform='ios'] .dzm-alert__action {
+  flex: 1;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  background: none;
+  color: var(--ios-tint);
+  font: var(--ios-body);
+  letter-spacing: -0.41px;
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+}
+
+.dzm-alert[data-platform='ios'] .dzm-alert__action:focus-visible {
+  background: var(--ios-fill-quaternary);
+}
+
+.dzm-alert[data-platform='ios'] .dzm-alert__action:active {
+  background: var(--ios-fill-quaternary);
+}
+
+.dzm-alert[data-platform='ios'] .dzm-alert__action + .dzm-alert__action {
+  box-shadow: inset var(--ios-hairline) 0 0 0 var(--ios-separator);
+}
+
+.dzm-alert[data-platform='ios'][data-stacked] .dzm-alert__action + .dzm-alert__action {
+  box-shadow: inset 0 var(--ios-hairline) 0 0 var(--ios-separator);
+}
+
+.dzm-alert[data-platform='ios'] .dzm-alert__action[data-role='cancel'] {
+  font-weight: 600;
+}
+
+.dzm-alert[data-platform='ios'] .dzm-alert__action[data-role='destructive'] {
+  color: var(--ios-destructive);
+}
+
+/* Android: 280 to 560dp on the high surface container at the 28dp corner
+   with 24dp of padding, the headline in headline-small, the supporting
+   text in body-medium, the actions text buttons at the trailing edge. */
+.dzm-alert-scrim[data-platform='android'] {
+  --dzm-alert-scrim: var(--m3-scrim);
+  --dzm-alert-motion: var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-alert[data-platform='android'] {
+  --dzm-alert-motion: var(--m3-duration-medium) var(--m3-ease-emphasized-decelerate);
+  --dzm-alert-scale: 0.9;
+  --dzm-alert-width: auto;
+  --dzm-alert-min-width: 280px;
+  --dzm-alert-radius: var(--m3-corner-xl);
+  --dzm-alert-fill: var(--m3-surface-container-high);
+  --dzm-alert-ink: var(--m3-on-surface);
+  --dzm-alert-edge: var(--m3-elevation-3);
+  --dzm-alert-content-gap: 16px;
+  --dzm-alert-content-pad: 24px 24px 0;
+  --dzm-alert-align: start;
+  --dzm-alert-title-font: var(--m3-headline-small);
+  --dzm-alert-message-ink: var(--m3-on-surface-variant);
+  --dzm-alert-message-font: var(--m3-body-medium);
+  --dzm-alert-message-tracking: var(--m3-body-medium-tracking);
+  --dzm-alert-actions-gap: 8px;
+  --dzm-alert-actions-pad: 24px 24px 24px;
+  max-width: 560px;
+}
+
+.dzm-alert[data-platform='android'] .dzm-alert__actions {
+  justify-content: flex-end;
+}
+
+.dzm-alert[data-platform='android']:has(.dzm-alert__icon) .dzm-alert__content {
+  text-align: center;
+}

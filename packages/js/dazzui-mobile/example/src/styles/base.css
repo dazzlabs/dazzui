@@ -1,0 +1,133 @@
+/*
+ * The example's own ground. The window reads the desktop tokens, so a
+ * theme change redraws the window along with the phones in it.
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-surface);
+  color: var(--color-content);
+  font-family: var(--body-medium-font-family);
+  font-size: var(--body-medium-font-size);
+  font-weight: var(--body-medium-font-weight);
+  line-height: var(--body-medium-line-height);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+.g-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-family: var(--title-small-font-family);
+  font-size: var(--title-small-font-size);
+  font-weight: var(--title-small-font-weight);
+  line-height: var(--title-small-line-height);
+  color: inherit;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.g-brand__mark {
+  width: var(--spacing-5);
+  height: var(--spacing-5);
+  border-radius: var(--radius-small);
+  background: var(--color-primary-500);
+}
+
+/*
+ * A theme in miniature: a phone's canvas with a card on it. Every colour
+ * is the theme's own, asked for by the `data-family` and `data-appearance`
+ * the preview carries, read off the mobile sheet.
+ */
+.g-preview {
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+  height: var(--spacing-14);
+  border: var(--stroke-hairline) solid var(--color-border-strong);
+  border-radius: var(--spacing-1-5);
+  background: var(--color-canvas);
+}
+
+.g-preview__paper {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  margin: var(--spacing-1-5);
+  padding: var(--spacing-2);
+  border-radius: var(--spacing-2);
+  background: var(--color-surface);
+}
+
+.g-preview__ink {
+  height: var(--spacing-0-5);
+  border-radius: var(--spacing-px);
+  background: var(--color-content);
+}
+
+.g-preview__ink + .g-preview__ink {
+  width: 60%;
+  opacity: 0.4;
+}
+
+.g-preview__accent {
+  width: var(--spacing-6);
+  height: var(--spacing-2-5);
+  margin-block-start: auto;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+}
+
+/* The stage a story lays its specimens on, inside a phone ------------- */
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 8px 20px 40px;
+}
+
+.stage__group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stage__caption {
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.stage__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.stage__row[data-between] {
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.stage__col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

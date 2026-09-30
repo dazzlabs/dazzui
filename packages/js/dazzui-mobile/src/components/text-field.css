@@ -1,0 +1,226 @@
+.dzm-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dzm-field-gap);
+  width: 100%;
+}
+
+.dzm-field__box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--dzm-field-height);
+  padding: 0 var(--dzm-field-inline);
+  border-radius: var(--dzm-field-radius);
+  background: var(--dzm-field-fill);
+  box-shadow: var(--dzm-field-edge);
+}
+
+.dzm-field__input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--dzm-field-ink);
+  font: var(--dzm-field-font);
+  letter-spacing: var(--dzm-field-tracking, normal);
+  outline: none;
+}
+
+.dzm-field__input::placeholder {
+  color: var(--dzm-field-placeholder);
+}
+
+.dzm-field__leading,
+.dzm-field__trailing {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--dzm-field-glyph);
+}
+
+.dzm-field__leading > svg,
+.dzm-field__trailing > svg,
+.dzm-field__clear > svg {
+  width: var(--dzm-field-glyph-size);
+  height: var(--dzm-field-glyph-size);
+}
+
+.dzm-field__clear {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--dzm-field-glyph);
+  cursor: pointer;
+}
+
+.dzm-field__supporting {
+  font: var(--dzm-field-supporting-font);
+  letter-spacing: var(--dzm-field-supporting-tracking, normal);
+  color: var(--dzm-field-supporting);
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+/* A 44pt rounded rectangle on the surface with a hairline edge, the label
+   above it in the footnote style, the clear button at the trailing edge in
+   the tertiary label — `xmark.circle.fill`. Focus does not redraw the box;
+   an invalid one takes the destructive colour on its edge. */
+.dzm-field[data-platform='ios'] {
+  --dzm-field-gap: 6px;
+  --dzm-field-height: 44px;
+  --dzm-field-inline: 14px;
+  --dzm-field-radius: var(--ios-field-radius);
+  --dzm-field-fill: var(--ios-grouped-cell);
+  --dzm-field-edge: inset 0 0 0 var(--ios-hairline) var(--ios-separator);
+  --dzm-field-ink: var(--ios-label);
+  --dzm-field-placeholder: var(--ios-label-tertiary);
+  --dzm-field-glyph: var(--ios-label-tertiary);
+  --dzm-field-glyph-size: 20px;
+  --dzm-field-font: var(--ios-body);
+  --dzm-field-tracking: -0.41px;
+  --dzm-field-supporting-font: var(--ios-footnote);
+  --dzm-field-supporting: var(--ios-label-secondary);
+}
+
+.dzm-field[data-platform='ios'] .dzm-field__label {
+  padding: 0 4px;
+  font: var(--ios-footnote);
+  color: var(--ios-label-secondary);
+}
+
+.dzm-field[data-platform='ios'] .dzm-field__clear {
+  --dzm-field-glyph-size: 18px;
+}
+
+.dzm-field[data-platform='ios'][data-invalid] {
+  --dzm-field-edge: inset 0 0 0 1px var(--ios-destructive);
+  --dzm-field-supporting: var(--ios-destructive);
+}
+
+.dzm-field[data-platform='ios'][data-disabled] {
+  opacity: var(--ios-disabled-opacity);
+}
+
+/* Android ---------------------------------------------------------------- */
+
+/* Material's outlined field: 56dp, a 1dp outline at the 4dp corner that
+   becomes 2dp of primary on focus, the label floating from body-large in
+   the box to body-small on its edge. The filled field trades the outline
+   for the highest surface container and an underline. */
+.dzm-field[data-platform='android'] {
+  --dzm-field-gap: 4px;
+  --dzm-field-height: 56px;
+  --dzm-field-inline: 16px;
+  --dzm-field-radius: var(--m3-corner-xs);
+  --dzm-field-fill: transparent;
+  --dzm-field-outline: var(--m3-outline);
+  --dzm-field-outline-width: 1px;
+  --dzm-field-edge: inset 0 0 0 var(--dzm-field-outline-width) var(--dzm-field-outline);
+  --dzm-field-ink: var(--m3-on-surface);
+  --dzm-field-placeholder: var(--m3-on-surface-variant);
+  --dzm-field-glyph: var(--m3-on-surface-variant);
+  --dzm-field-glyph-size: 24px;
+  --dzm-field-font: var(--m3-body-large);
+  --dzm-field-tracking: var(--m3-body-large-tracking);
+  --dzm-field-supporting-font: var(--m3-body-small);
+  --dzm-field-supporting-tracking: var(--m3-body-small-tracking);
+  --dzm-field-supporting: var(--m3-on-surface-variant);
+  --dzm-field-label: var(--m3-on-surface-variant);
+}
+
+.dzm-field[data-platform='android'] .dzm-field__box {
+  transition: box-shadow var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-field[data-platform='android'] .dzm-field__supporting {
+  padding: 0 16px;
+}
+
+.dzm-field[data-platform='android'] .dzm-field__label {
+  position: absolute;
+  top: 50%;
+  left: var(--dzm-field-inline);
+  padding: 0 4px;
+  margin-left: -4px;
+  background: var(--dzm-field-label-ground, var(--m3-surface));
+  color: var(--dzm-field-label);
+  font: var(--m3-body-large);
+  letter-spacing: var(--m3-body-large-tracking);
+  transform: translateY(-50%);
+  transform-origin: left center;
+  pointer-events: none;
+  transition:
+    transform var(--m3-duration-short) var(--m3-ease-standard),
+    top var(--m3-duration-short) var(--m3-ease-standard),
+    color var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-field[data-platform='android'][data-leading] .dzm-field__label {
+  left: calc(var(--dzm-field-inline) + 24px + 8px);
+}
+
+.dzm-field[data-platform='android'][data-filled] .dzm-field__label,
+.dzm-field[data-platform='android']:has(.dzm-field__input:focus) .dzm-field__label {
+  top: 0;
+  left: var(--dzm-field-inline);
+  transform: translateY(-50%) scale(0.75);
+}
+
+.dzm-field[data-platform='android']:has(.dzm-field__input:focus) {
+  --dzm-field-outline: var(--m3-primary);
+  --dzm-field-outline-width: 2px;
+  --dzm-field-label: var(--m3-primary);
+}
+
+.dzm-field[data-platform='android'][data-variant='filled'] {
+  --dzm-field-fill: var(--m3-surface-container-highest);
+  --dzm-field-label-ground: transparent;
+  --dzm-field-edge: inset 0 calc(-1 * var(--dzm-field-outline-width)) 0 0 var(--dzm-field-outline);
+  --dzm-field-outline: var(--m3-on-surface-variant);
+}
+
+.dzm-field[data-platform='android'][data-variant='filled'] .dzm-field__box {
+  border-radius: var(--m3-corner-xs) var(--m3-corner-xs) 0 0;
+}
+
+.dzm-field[data-platform='android'][data-variant='filled'] .dzm-field__input {
+  padding-top: 16px;
+}
+
+.dzm-field[data-platform='android'][data-variant='filled'][data-filled] .dzm-field__label,
+.dzm-field[data-platform='android'][data-variant='filled']:has(.dzm-field__input:focus)
+  .dzm-field__label {
+  top: 8px;
+  transform: translateY(0) scale(0.75);
+}
+
+.dzm-field[data-platform='android'][data-variant='filled']:has(.dzm-field__input:focus) {
+  --dzm-field-outline: var(--m3-primary);
+}
+
+.dzm-field[data-platform='android'][data-invalid] {
+  --dzm-field-outline: var(--m3-error);
+  --dzm-field-label: var(--m3-error);
+  --dzm-field-supporting: var(--m3-error);
+}
+
+.dzm-field[data-platform='android'][data-invalid] .dzm-field__trailing {
+  color: var(--m3-error);
+}
+
+.dzm-field[data-platform='android'][data-disabled] {
+  --dzm-field-outline: var(--m3-disabled-container);
+  --dzm-field-ink: var(--m3-disabled-content);
+  --dzm-field-label: var(--m3-disabled-content);
+  --dzm-field-supporting: var(--m3-disabled-content);
+  --dzm-field-glyph: var(--m3-disabled-content);
+}
+
+.dzm-field[data-platform='android'][data-variant='filled'][data-disabled] {
+  --dzm-field-fill: color-mix(in srgb, var(--m3-on-surface) 4%, transparent);
+}

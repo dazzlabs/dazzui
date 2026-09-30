@@ -1,0 +1,150 @@
+.dzm-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: var(--dzm-switch-width);
+  height: var(--dzm-switch-height);
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--dzm-switch-track);
+  cursor: pointer;
+  outline: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.dzm-switch__thumb {
+  position: absolute;
+  top: 50%;
+  left: var(--dzm-switch-thumb-x);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--dzm-switch-thumb);
+  height: var(--dzm-switch-thumb);
+  border-radius: 9999px;
+  background: var(--dzm-switch-thumb-fill);
+  transform: translateY(-50%);
+}
+
+.dzm-switch__check {
+  width: 16px;
+  height: 16px;
+  color: var(--dzm-switch-check);
+}
+
+.dzm-switch:focus-visible {
+  outline: 2px solid var(--dzm-switch-focus);
+  outline-offset: 2px;
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+/*
+ * UISwitch: 51 by 31, a 27pt white thumb with a soft shadow, the track
+ * the secondary fill while off and the tint while on. The thumb widens a
+ * little under the finger, as it does on the device.
+ */
+.dzm-switch[data-platform='ios'] {
+  --dzm-switch-width: 51px;
+  --dzm-switch-height: 31px;
+  --dzm-switch-thumb: 27px;
+  --dzm-switch-thumb-x: 2px;
+  --dzm-switch-track: var(--ios-fill-secondary);
+  --dzm-switch-thumb-fill: #fff;
+  --dzm-switch-focus: var(--ios-tint);
+  transition: background-color var(--ios-duration) var(--ios-ease);
+}
+
+.dzm-switch[data-platform='ios'] .dzm-switch__thumb {
+  box-shadow:
+    0 3px 8px rgb(0 0 0 / 0.15),
+    0 3px 1px rgb(0 0 0 / 0.06);
+  transition:
+    left var(--ios-duration) var(--ios-spring),
+    width var(--ios-duration) var(--ios-spring);
+}
+
+.dzm-switch[data-platform='ios'][data-checked] {
+  --dzm-switch-track: var(--ios-tint);
+  --dzm-switch-thumb-x: 22px;
+}
+
+.dzm-switch[data-platform='ios']:active .dzm-switch__thumb {
+  width: 33px;
+}
+
+.dzm-switch[data-platform='ios'][data-checked]:active {
+  --dzm-switch-thumb-x: 16px;
+}
+
+.dzm-switch[data-platform='ios'][data-disabled] {
+  cursor: default;
+  opacity: var(--ios-disabled-opacity);
+}
+
+/* Android ---------------------------------------------------------------- */
+
+/*
+ * Material's switch: a 52 by 32 track with a 2dp outline while off and a
+ * thumb that is 16dp off, 24dp on and 28dp under the finger. With an icon
+ * the off thumb is 24dp as well, so the glyph has room.
+ */
+.dzm-switch[data-platform='android'] {
+  --dzm-switch-width: 52px;
+  --dzm-switch-height: 32px;
+  --dzm-switch-thumb: 16px;
+  --dzm-switch-thumb-x: 7px;
+  --dzm-switch-track: var(--m3-surface-container-highest);
+  --dzm-switch-thumb-fill: var(--m3-outline);
+  --dzm-switch-focus: var(--m3-primary);
+  --dzm-switch-check: var(--m3-on-primary-container);
+  box-shadow: inset 0 0 0 2px var(--m3-outline);
+  transition:
+    background-color var(--m3-duration-short) var(--m3-ease-standard),
+    box-shadow var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-switch[data-platform='android'] .dzm-switch__thumb {
+  transition:
+    left var(--m3-duration-medium) var(--m3-spring-default),
+    width var(--m3-duration-short) var(--m3-ease-standard),
+    height var(--m3-duration-short) var(--m3-ease-standard),
+    background-color var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-switch[data-platform='android'][data-icon] {
+  --dzm-switch-thumb: 24px;
+  --dzm-switch-thumb-x: 4px;
+}
+
+.dzm-switch[data-platform='android'][data-checked] {
+  --dzm-switch-track: var(--m3-primary);
+  --dzm-switch-thumb: 24px;
+  --dzm-switch-thumb-x: 24px;
+  --dzm-switch-thumb-fill: var(--m3-on-primary);
+  box-shadow: none;
+}
+
+.dzm-switch[data-platform='android']:active {
+  --dzm-switch-thumb: 28px;
+  --dzm-switch-thumb-x: 2px;
+}
+
+.dzm-switch[data-platform='android'][data-checked]:active {
+  --dzm-switch-thumb-x: 22px;
+}
+
+.dzm-switch[data-platform='android'][data-disabled] {
+  cursor: default;
+  --dzm-switch-track: var(--m3-disabled-container);
+  --dzm-switch-thumb-fill: var(--m3-disabled-content);
+  box-shadow: inset 0 0 0 2px var(--m3-disabled-container);
+}
+
+.dzm-switch[data-platform='android'][data-checked][data-disabled] {
+  --dzm-switch-thumb-fill: var(--m3-surface);
+  box-shadow: none;
+}

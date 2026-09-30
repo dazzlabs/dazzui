@@ -1,0 +1,152 @@
+.dzm-select {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--dzm-select-gap);
+  min-height: var(--dzm-select-height);
+  padding: var(--dzm-select-pad);
+  border: 0;
+  border-radius: var(--dzm-select-radius);
+  background: var(--dzm-select-fill);
+  box-shadow: var(--dzm-select-edge);
+  color: var(--dzm-select-ink);
+  font: var(--dzm-select-font);
+  letter-spacing: var(--dzm-select-tracking, normal);
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.dzm-select:focus-visible {
+  outline: 2px solid var(--dzm-select-focus);
+  outline-offset: 2px;
+}
+
+.dzm-select[data-disabled] {
+  cursor: default;
+}
+
+.dzm-select__label {
+  color: var(--dzm-select-label);
+}
+
+.dzm-select__value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: start;
+}
+
+.dzm-select__chevron {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--dzm-select-glyph);
+}
+
+.dzm-select__chevron > svg {
+  width: var(--dzm-select-glyph-size);
+  height: var(--dzm-select-glyph-size);
+}
+
+/* The select's list is a menu whose every row keeps the check column. */
+.dzm-menu[data-checks] .dzm-menu__check {
+  visibility: hidden;
+}
+
+.dzm-menu[data-checks] .dzm-menu__check[data-checked],
+.dzm-menu[data-checks] .dzm-menu__item[data-selected] .dzm-menu__check {
+  visibility: visible;
+}
+
+/* iOS: the picker's row — label in the ink, value in the secondary label
+   beside the up-and-down chevron — or, alone, the value in a tint wash. */
+.dzm-select[data-platform='ios'] {
+  --dzm-select-gap: 4px;
+  --dzm-select-height: 36px;
+  --dzm-select-pad: 0 12px 0 14px;
+  --dzm-select-radius: var(--ios-control-radius);
+  --dzm-select-fill: var(--ios-tint-wash);
+  --dzm-select-edge: none;
+  --dzm-select-ink: var(--ios-tint);
+  --dzm-select-label: var(--ios-label);
+  --dzm-select-font: 500 17px/22px var(--dzm-font);
+  --dzm-select-tracking: -0.41px;
+  --dzm-select-glyph: var(--ios-tint);
+  --dzm-select-glyph-size: 16px;
+  --dzm-select-focus: var(--ios-tint);
+}
+
+.dzm-select[data-platform='ios']:has(.dzm-select__label) {
+  --dzm-select-fill: transparent;
+  --dzm-select-ink: var(--ios-label-secondary);
+  --dzm-select-glyph: var(--ios-label-secondary);
+  --dzm-select-font: var(--ios-body);
+  --dzm-select-pad: 0;
+  --dzm-select-gap: 6px;
+  width: 100%;
+}
+
+.dzm-select[data-platform='ios']:has(.dzm-select__label) .dzm-select__label {
+  flex: 1;
+}
+
+.dzm-select[data-platform='ios']:has(.dzm-select__label) .dzm-select__value {
+  flex: 0 1 auto;
+}
+
+.dzm-select[data-platform='ios']:active {
+  opacity: 0.7;
+}
+
+.dzm-select[data-platform='ios'][data-disabled] {
+  opacity: var(--ios-disabled-opacity);
+}
+
+/* Android: the exposed dropdown — an outlined 56dp field at the 4dp corner
+   with the label floated to its edge and the drop-down arrow trailing. */
+.dzm-select[data-platform='android'] {
+  --dzm-select-gap: 12px;
+  --dzm-select-height: 56px;
+  --dzm-select-pad: 0 12px 0 16px;
+  --dzm-select-radius: var(--m3-corner-xs);
+  --dzm-select-fill: transparent;
+  --dzm-select-outline: var(--m3-outline);
+  --dzm-select-edge: inset 0 0 0 1px var(--dzm-select-outline);
+  --dzm-select-ink: var(--m3-on-surface);
+  --dzm-select-label: var(--m3-on-surface-variant);
+  --dzm-select-font: var(--m3-body-large);
+  --dzm-select-tracking: var(--m3-body-large-tracking);
+  --dzm-select-glyph: var(--m3-on-surface-variant);
+  --dzm-select-glyph-size: 24px;
+  --dzm-select-focus: var(--m3-primary);
+  --m3-layer: var(--m3-on-surface);
+  position: relative;
+  width: 100%;
+}
+
+.dzm-select[data-platform='android'] .dzm-select__label {
+  position: absolute;
+  top: 0;
+  left: 12px;
+  padding: 0 4px;
+  background: var(--dzm-background);
+  font: var(--m3-body-small);
+  letter-spacing: var(--m3-body-small-tracking);
+  transform: translateY(-50%);
+}
+
+.dzm-select[data-platform='android'][data-popup-open] {
+  --dzm-select-outline: var(--m3-primary);
+  --dzm-select-edge: inset 0 0 0 2px var(--dzm-select-outline);
+  --dzm-select-label: var(--m3-primary);
+}
+
+.dzm-select[data-platform='android'][data-disabled] {
+  --dzm-select-outline: var(--m3-disabled-container);
+  --dzm-select-ink: var(--m3-disabled-content);
+  --dzm-select-label: var(--m3-disabled-content);
+  --dzm-select-glyph: var(--m3-disabled-content);
+}

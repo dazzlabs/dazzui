@@ -1,0 +1,203 @@
+.dzm-action-sheet-scrim {
+  z-index: var(--dzm-layer-sheet);
+  background: var(--dzm-action-sheet-scrim);
+  transition: opacity var(--dzm-action-sheet-motion);
+}
+
+.dzm-action-sheet-scrim[data-starting-style],
+.dzm-action-sheet-scrim[data-ending-style] {
+  opacity: 0;
+}
+
+.dzm-action-sheet-viewport {
+  z-index: var(--dzm-layer-sheet);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.dzm-action-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dzm-action-sheet-gap);
+  width: 100%;
+  max-width: 640px;
+  max-height: 100%;
+  padding: var(--dzm-action-sheet-pad);
+  outline: none;
+  pointer-events: auto;
+  transition: transform var(--dzm-action-sheet-motion);
+}
+
+.dzm-action-sheet[data-starting-style],
+.dzm-action-sheet[data-ending-style] {
+  transform: translateY(100%);
+}
+
+.dzm-action-sheet__group {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--dzm-action-sheet-radius);
+  background: var(--dzm-action-sheet-fill);
+  color: var(--dzm-action-sheet-ink);
+  box-shadow: var(--dzm-action-sheet-edge);
+  overflow: hidden;
+}
+
+.dzm-action-sheet__header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--dzm-action-sheet-header-pad);
+  text-align: var(--dzm-action-sheet-align);
+}
+
+.dzm-action-sheet__title,
+.dzm-action-sheet__message {
+  margin: 0;
+  color: var(--dzm-action-sheet-caption);
+  font: var(--dzm-action-sheet-caption-font);
+  letter-spacing: var(--dzm-action-sheet-caption-tracking, normal);
+}
+
+.dzm-action-sheet__title {
+  font-weight: 600;
+}
+
+.dzm-action-sheet__action {
+  display: flex;
+  align-items: center;
+  justify-content: var(--dzm-action-sheet-justify);
+  gap: 16px;
+  min-height: var(--dzm-action-sheet-row);
+  padding: var(--dzm-action-sheet-row-pad);
+  border: 0;
+  background: none;
+  color: var(--dzm-action-sheet-action);
+  font: var(--dzm-action-sheet-action-font);
+  letter-spacing: var(--dzm-action-sheet-action-tracking, normal);
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+  text-align: start;
+}
+
+.dzm-action-sheet__action:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.dzm-action-sheet__icon {
+  display: inline-flex;
+  color: var(--dzm-action-sheet-glyph);
+}
+
+.dzm-action-sheet__icon > svg {
+  width: 24px;
+  height: 24px;
+}
+
+.dzm-action-sheet__grabber {
+  display: none;
+}
+
+/* iOS: two glass groups 8pt in from the edges at the 26pt corner, 57pt
+   rows in the 20pt body with hairlines between, the caption in the
+   footnote weight, the cancel group apart and in semibold. */
+.dzm-action-sheet-scrim[data-platform='ios'] {
+  --dzm-action-sheet-scrim: rgb(0 0 0 / 0.2);
+  --dzm-action-sheet-motion: var(--ios-duration) var(--ios-ease);
+}
+
+.dzm-action-sheet[data-platform='ios'] {
+  --dzm-action-sheet-motion: 400ms var(--ios-spring);
+  --dzm-action-sheet-gap: 8px;
+  --dzm-action-sheet-pad: 8px;
+  --dzm-action-sheet-radius: var(--ios-group-radius);
+  --dzm-action-sheet-fill: var(--ios-glass-fill-thick);
+  --dzm-action-sheet-ink: var(--ios-label);
+  --dzm-action-sheet-edge: var(--ios-glass-edge);
+  --dzm-action-sheet-header-pad: 14px 16px;
+  --dzm-action-sheet-align: center;
+  --dzm-action-sheet-caption: var(--ios-label-secondary);
+  --dzm-action-sheet-caption-font: var(--ios-footnote);
+  --dzm-action-sheet-caption-tracking: -0.08px;
+  --dzm-action-sheet-row: 57px;
+  --dzm-action-sheet-row-pad: 0 16px;
+  --dzm-action-sheet-justify: center;
+  --dzm-action-sheet-action: var(--ios-tint);
+  --dzm-action-sheet-action-font: 400 20px/25px var(--dzm-font);
+  --dzm-action-sheet-action-tracking: 0.38px;
+}
+
+.dzm-action-sheet[data-platform='ios'] .dzm-action-sheet__action + .dzm-action-sheet__action,
+.dzm-action-sheet[data-platform='ios'] .dzm-action-sheet__header + .dzm-action-sheet__action {
+  box-shadow: inset 0 var(--ios-hairline) 0 0 var(--ios-separator);
+}
+
+.dzm-action-sheet[data-platform='ios'] .dzm-action-sheet__action:active,
+.dzm-action-sheet[data-platform='ios'] .dzm-action-sheet__action:focus-visible {
+  background: var(--ios-fill-quaternary);
+}
+
+.dzm-action-sheet[data-platform='ios'] .dzm-action-sheet__action[data-role='destructive'] {
+  color: var(--ios-destructive);
+}
+
+.dzm-action-sheet[data-platform='ios'] .dzm-action-sheet__action[data-role='cancel'] {
+  font-weight: 600;
+}
+
+.dzm-action-sheet[data-platform='ios'] .dzm-action-sheet__cancel {
+  --dzm-action-sheet-fill: var(--color-surface);
+}
+
+/* Android: a modal bottom sheet of 56dp list rows with a leading glyph,
+   the title a subheader in title-small. */
+.dzm-action-sheet-scrim[data-platform='android'] {
+  --dzm-action-sheet-scrim: var(--m3-scrim);
+  --dzm-action-sheet-motion: var(--m3-duration-medium) var(--m3-ease-standard);
+}
+
+.dzm-action-sheet[data-platform='android'] {
+  --dzm-action-sheet-motion: var(--m3-duration-long) var(--m3-ease-emphasized-decelerate);
+  --dzm-action-sheet-gap: 0;
+  --dzm-action-sheet-pad: 0;
+  --dzm-action-sheet-radius: var(--m3-corner-xl) var(--m3-corner-xl) 0 0;
+  --dzm-action-sheet-fill: var(--m3-surface-container-low);
+  --dzm-action-sheet-ink: var(--m3-on-surface);
+  --dzm-action-sheet-edge: var(--m3-elevation-1);
+  --dzm-action-sheet-header-pad: 0 16px 8px;
+  --dzm-action-sheet-align: start;
+  --dzm-action-sheet-caption: var(--m3-on-surface-variant);
+  --dzm-action-sheet-caption-font: var(--m3-title-small);
+  --dzm-action-sheet-caption-tracking: var(--m3-title-small-tracking);
+  --dzm-action-sheet-row: 56px;
+  --dzm-action-sheet-row-pad: 0 24px 0 16px;
+  --dzm-action-sheet-justify: flex-start;
+  --dzm-action-sheet-action: var(--m3-on-surface);
+  --dzm-action-sheet-action-font: var(--m3-body-large);
+  --dzm-action-sheet-action-tracking: var(--m3-body-large-tracking);
+  --dzm-action-sheet-glyph: var(--m3-on-surface-variant);
+  --m3-layer: var(--m3-on-surface);
+}
+
+.dzm-action-sheet[data-platform='android'] .dzm-action-sheet__group {
+  padding-bottom: 16px;
+}
+
+.dzm-action-sheet[data-platform='android'] .dzm-action-sheet__grabber {
+  display: block;
+  align-self: center;
+  width: 32px;
+  height: 4px;
+  margin: 22px 0;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--m3-on-surface-variant) 40%, transparent);
+}
+
+.dzm-action-sheet[data-platform='android'] .dzm-action-sheet__action[data-role='destructive'] {
+  --dzm-action-sheet-action: var(--m3-error);
+  --dzm-action-sheet-glyph: var(--m3-error);
+}

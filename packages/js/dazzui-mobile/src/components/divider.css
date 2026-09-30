@@ -1,0 +1,29 @@
+.dzm-divider {
+  flex-shrink: 0;
+  height: var(--dzm-divider-weight);
+  margin: 0;
+  border: 0;
+  background: var(--dzm-divider-color);
+}
+
+.dzm-divider[data-orientation='vertical'] {
+  width: var(--dzm-divider-weight);
+  height: auto;
+  align-self: stretch;
+}
+
+.dzm-divider[data-inset] {
+  margin-inline-start: var(--dzm-divider-inset);
+}
+
+.dzm-divider[data-platform='ios'] {
+  --dzm-divider-weight: var(--ios-hairline);
+  --dzm-divider-color: var(--ios-separator);
+  --dzm-divider-inset: 20px;
+}
+
+.dzm-divider[data-platform='android'] {
+  --dzm-divider-weight: 1px;
+  --dzm-divider-color: var(--m3-outline-variant);
+  --dzm-divider-inset: 16px;
+}

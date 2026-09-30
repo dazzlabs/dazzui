@@ -1,0 +1,290 @@
+.dzm-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dzm-list-gap);
+  padding: var(--dzm-list-pad);
+}
+
+.dzm-list-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.dzm-list-section__group {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--dzm-list-radius);
+  background: var(--dzm-list-group);
+  overflow: hidden;
+}
+
+.dzm-list-section__header,
+.dzm-list-section__footer {
+  padding: var(--dzm-list-caption-pad);
+  color: var(--dzm-list-caption);
+  font: var(--dzm-list-caption-font);
+  letter-spacing: var(--dzm-list-caption-tracking, normal);
+}
+
+.dzm-list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--dzm-list-item-gap);
+  width: 100%;
+  min-height: var(--dzm-list-item-height);
+  padding: var(--dzm-list-item-pad);
+  border: 0;
+  background: none;
+  color: var(--dzm-list-title);
+  font: var(--dzm-list-title-font);
+  letter-spacing: var(--dzm-list-title-tracking, normal);
+  text-align: start;
+  text-decoration: none;
+  outline: none;
+}
+
+.dzm-list-item[data-interactive] {
+  cursor: pointer;
+}
+
+.dzm-list-item:disabled,
+.dzm-list-item[aria-disabled='true'] {
+  cursor: default;
+}
+
+.dzm-list-item:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--dzm-list-focus);
+}
+
+.dzm-list-item__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--dzm-list-icon);
+  height: var(--dzm-list-icon);
+  border-radius: var(--dzm-list-icon-radius);
+  background: var(--dzm-list-icon-tile);
+  color: var(--dzm-list-icon-ink);
+}
+
+.dzm-list-item__icon > svg {
+  width: var(--dzm-list-icon-glyph);
+  height: var(--dzm-list-icon-glyph);
+}
+
+.dzm-list-item__text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: var(--dzm-list-text-gap);
+}
+
+.dzm-list-item__title,
+.dzm-list-item__subtitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A row whose title is a control — a `Select` — must not clip the label
+   Material floats above the box. */
+.dzm-list-item__title:has(.dzm-select) {
+  overflow: visible;
+}
+
+.dzm-list-item__subtitle {
+  color: var(--dzm-list-subtitle);
+  font: var(--dzm-list-subtitle-font);
+  letter-spacing: var(--dzm-list-subtitle-tracking, normal);
+}
+
+.dzm-list-item__value {
+  flex-shrink: 0;
+  color: var(--dzm-list-value);
+  font: var(--dzm-list-value-font);
+  letter-spacing: var(--dzm-list-value-tracking, normal);
+}
+
+.dzm-list-item__trailing {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.dzm-list-item__chevron {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--dzm-list-chevron);
+}
+
+.dzm-list-item__chevron > svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 3;
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+/* Inset grouped: sections 16pt in from the edges and 35pt apart, cells on
+   the surface at the 26pt corner, 44pt rows with a hairline between them
+   that starts where the text does, uppercase footnote headers. */
+.dzm-list[data-platform='ios'] {
+  --dzm-list-gap: 24px;
+  --dzm-list-pad: 8px var(--ios-group-margin) 24px;
+}
+
+.dzm-list-section[data-platform='ios'] {
+  --dzm-list-radius: var(--ios-group-radius);
+  --dzm-list-group: var(--ios-grouped-cell);
+  --dzm-list-caption: var(--ios-label-secondary);
+  --dzm-list-caption-font: var(--ios-footnote);
+  --dzm-list-caption-tracking: -0.08px;
+  --dzm-list-caption-pad: 6px 20px 8px;
+}
+
+.dzm-list-section[data-platform='ios'] .dzm-list-section__header {
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.dzm-list-section[data-platform='ios'] .dzm-list-section__footer {
+  padding-top: 8px;
+}
+
+.dzm-list-item[data-platform='ios'] {
+  --dzm-list-item-gap: 12px;
+  --dzm-list-item-height: var(--ios-row);
+  --dzm-list-item-pad: 9px 16px 9px 20px;
+  --dzm-list-title: var(--ios-label);
+  --dzm-list-title-font: var(--ios-body);
+  --dzm-list-title-tracking: -0.41px;
+  --dzm-list-subtitle: var(--ios-label-secondary);
+  --dzm-list-subtitle-font: var(--ios-footnote);
+  --dzm-list-subtitle-tracking: -0.08px;
+  --dzm-list-text-gap: 2px;
+  --dzm-list-value: var(--ios-label-secondary);
+  --dzm-list-value-font: var(--ios-body);
+  --dzm-list-value-tracking: -0.41px;
+  --dzm-list-chevron: var(--ios-label-quaternary);
+  --dzm-list-icon: 30px;
+  --dzm-list-icon-glyph: 18px;
+  --dzm-list-icon-radius: 8px;
+  --dzm-list-icon-ink: var(--ios-on-tint);
+  --dzm-list-focus: var(--ios-tint);
+  position: relative;
+}
+
+/* Settings paints each glyph white on a coloured tile; `iconColor` is the
+   tile, and the tint when the row gives none. */
+.dzm-list-item[data-platform='ios'] .dzm-list-item__icon {
+  --dzm-list-icon-tile: var(--dzm-list-icon-fill, var(--ios-tint));
+}
+
+.dzm-list-item[data-platform='ios'] + .dzm-list-item[data-platform='ios']::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: var(--dzm-list-separator-inset, 20px);
+  height: var(--ios-hairline);
+  background: var(--ios-separator);
+}
+
+.dzm-list-item[data-platform='ios']:has(.dzm-list-item__icon)
+  + .dzm-list-item[data-platform='ios']:has(.dzm-list-item__icon) {
+  --dzm-list-separator-inset: 62px;
+}
+
+.dzm-list-item[data-platform='ios'][data-interactive]:active {
+  background: var(--ios-fill-quaternary);
+}
+
+.dzm-list-item[data-platform='ios'][data-tone='destructive'] {
+  --dzm-list-title: var(--ios-destructive);
+}
+
+.dzm-list-item[data-platform='ios'][data-tone='destructive'] .dzm-list-item__icon {
+  --dzm-list-icon-tile: var(--dzm-list-icon-fill, var(--ios-destructive));
+}
+
+.dzm-list-item[data-platform='ios']:disabled,
+.dzm-list-item[data-platform='ios'][aria-disabled='true'] {
+  --dzm-list-title: var(--ios-label-tertiary);
+}
+
+/* Android ---------------------------------------------------------------- */
+
+/* Material's list: 56dp one-line and 72dp two-line items at 16dp, the
+   headline in body-large and the supporting text in body-medium, a
+   subheader in title-small, and the state layer on a pressed row. */
+.dzm-list[data-platform='android'] {
+  --dzm-list-gap: 8px;
+  --dzm-list-pad: 8px 0 16px;
+}
+
+.dzm-list-section[data-platform='android'] {
+  --dzm-list-radius: 0;
+  --dzm-list-group: transparent;
+  --dzm-list-caption: var(--m3-on-surface-variant);
+  --dzm-list-caption-font: var(--m3-title-small);
+  --dzm-list-caption-tracking: var(--m3-title-small-tracking);
+  --dzm-list-caption-pad: 8px 16px;
+}
+
+.dzm-list-section[data-platform='android'] .dzm-list-section__footer {
+  font: var(--m3-body-small);
+  letter-spacing: var(--m3-body-small-tracking);
+}
+
+.dzm-list-item[data-platform='android'] {
+  --dzm-list-item-gap: 16px;
+  --dzm-list-item-height: 56px;
+  --dzm-list-item-pad: 8px 24px 8px 16px;
+  --dzm-list-title: var(--m3-on-surface);
+  --dzm-list-title-font: var(--m3-body-large);
+  --dzm-list-title-tracking: var(--m3-body-large-tracking);
+  --dzm-list-subtitle: var(--m3-on-surface-variant);
+  --dzm-list-subtitle-font: var(--m3-body-medium);
+  --dzm-list-subtitle-tracking: var(--m3-body-medium-tracking);
+  --dzm-list-text-gap: 0;
+  --dzm-list-value: var(--m3-on-surface-variant);
+  --dzm-list-value-font: var(--m3-label-small);
+  --dzm-list-value-tracking: var(--m3-label-small-tracking);
+  --dzm-list-icon: 24px;
+  --dzm-list-icon-glyph: 24px;
+  --dzm-list-icon-radius: 0;
+  --dzm-list-focus: var(--m3-primary);
+  --m3-layer: var(--m3-on-surface);
+}
+
+/* Material draws the glyph alone, in the surface variant ink — or in the
+   colour the row gives, as Android's own Settings does. */
+.dzm-list-item[data-platform='android'] .dzm-list-item__icon {
+  --dzm-list-icon-tile: transparent;
+  --dzm-list-icon-ink: var(--dzm-list-icon-fill, var(--m3-on-surface-variant));
+}
+
+.dzm-list-item[data-platform='android'][data-two-line] {
+  --dzm-list-item-height: 72px;
+}
+
+.dzm-list-item[data-platform='android'][data-tone='destructive'] {
+  --dzm-list-title: var(--m3-error);
+}
+
+.dzm-list-item[data-platform='android'][data-tone='destructive'] .dzm-list-item__icon {
+  --dzm-list-icon-ink: var(--m3-error);
+}
+
+.dzm-list-item[data-platform='android']:disabled,
+.dzm-list-item[data-platform='android'][aria-disabled='true'] {
+  --dzm-list-title: var(--m3-disabled-content);
+  --dzm-list-subtitle: var(--m3-disabled-content);
+}
+
+.dzm-list-item[data-platform='android']:disabled .dzm-list-item__icon,
+.dzm-list-item[data-platform='android'][aria-disabled='true'] .dzm-list-item__icon {
+  --dzm-list-icon-ink: var(--m3-disabled-content);
+}

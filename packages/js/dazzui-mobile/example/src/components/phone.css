@@ -1,0 +1,141 @@
+/*
+ * Two devices, drawn as chrome rather than as the kit. The screen is the
+ * theme; everything inside it is the package's.
+ */
+.phone {
+  --phone-width: 393px;
+  --phone-height: 852px;
+  --phone-radius: 55px;
+  --phone-bezel: 12px;
+  --phone-frame: #1c1c1e;
+  --phone-status-height: 54px;
+  flex-shrink: 0;
+  width: calc(var(--phone-width) + var(--phone-bezel) * 2);
+  height: calc(var(--phone-height) + var(--phone-bezel) * 2);
+  padding: var(--phone-bezel);
+  border-radius: calc(var(--phone-radius) + var(--phone-bezel));
+  background: var(--phone-frame);
+  box-shadow:
+    inset 0 0 0 2px #3a3a3c,
+    0 30px 60px -20px rgb(0 0 0 / 0.5),
+    0 0 0 1px rgb(0 0 0 / 0.4);
+}
+
+.phone[data-platform='android'] {
+  --phone-width: 412px;
+  --phone-height: 915px;
+  --phone-radius: 36px;
+  --phone-bezel: 10px;
+  --phone-frame: #202124;
+  --phone-status-height: 48px;
+}
+
+.phone__screen {
+  width: var(--phone-width);
+  height: var(--phone-height);
+  border-radius: var(--phone-radius);
+  overflow: clip;
+  background: #000;
+}
+
+.phone .phone__theme {
+  --dzm-inset-top: var(--phone-status-height);
+  --dzm-inset-bottom: 34px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.phone[data-platform='android'] .phone__theme {
+  --dzm-inset-bottom: 24px;
+}
+
+.phone__content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.phone__content > * {
+  flex: 1;
+  min-height: 0;
+}
+
+.phone__status {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  height: var(--phone-status-height);
+  padding: 8px 28px 0;
+  color: var(--dzm-ink);
+  pointer-events: none;
+}
+
+.phone[data-platform='android'] .phone__status {
+  padding: 4px 24px 0;
+}
+
+.phone__time {
+  font: 600 17px/22px var(--dzm-font);
+  letter-spacing: -0.4px;
+  min-width: 56px;
+}
+
+.phone[data-platform='android'] .phone__time {
+  font: 500 14px/20px var(--dzm-font);
+}
+
+.phone__signals {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.phone__island {
+  position: absolute;
+  top: 11px;
+  left: 50%;
+  width: 125px;
+  height: 37px;
+  border-radius: 9999px;
+  background: #000;
+  transform: translateX(-50%);
+}
+
+.phone__hole {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: #000;
+  transform: translateX(-50%);
+}
+
+.phone__home {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  z-index: 40;
+  width: 140px;
+  height: 5px;
+  border-radius: 9999px;
+  background: var(--dzm-ink);
+  opacity: 0.9;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.phone__home[data-platform='android'] {
+  width: 108px;
+  height: 4px;
+  bottom: 10px;
+}

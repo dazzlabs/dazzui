@@ -1,0 +1,161 @@
+.dzm-radio-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.dzm-radio {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.dzm-radio__control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.dzm-radio__indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dzm-radio__control:focus-visible {
+  outline: 2px solid var(--dzm-radio-focus);
+  outline-offset: 2px;
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+/*
+ * A choice in a list: the label leads and the chosen row carries a
+ * checkmark in the tint at its trailing edge, as a Settings picker does.
+ * The rows are cells, so they take the row height and the inset.
+ */
+.dzm-radio-group[data-platform='ios'] {
+  background: var(--ios-grouped-cell);
+  border-radius: var(--ios-group-radius);
+  overflow: hidden;
+}
+
+.dzm-radio[data-platform='ios'] {
+  --dzm-radio-focus: var(--ios-tint);
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  min-height: var(--ios-row);
+  padding: 0 var(--ios-inset);
+  font: var(--ios-body);
+  letter-spacing: -0.41px;
+  color: var(--ios-label);
+}
+
+.dzm-radio[data-platform='ios'] + .dzm-radio[data-platform='ios'] {
+  box-shadow: inset 0 var(--ios-hairline) 0 0 var(--ios-separator);
+}
+
+.dzm-radio[data-platform='ios']:active {
+  background: var(--ios-fill-quaternary);
+}
+
+.dzm-radio[data-platform='ios'] .dzm-radio__control {
+  width: 22px;
+  height: 22px;
+  color: var(--ios-tint);
+}
+
+.dzm-radio[data-platform='ios'] .dzm-radio__check {
+  display: none;
+  width: 22px;
+  height: 22px;
+  stroke-width: 3;
+}
+
+.dzm-radio[data-platform='ios'] .dzm-radio__control[data-checked] .dzm-radio__check {
+  display: block;
+}
+
+.dzm-radio[data-platform='ios']:has(.dzm-radio__control[data-disabled]) {
+  cursor: default;
+  color: var(--ios-label-tertiary);
+}
+
+/* Android ---------------------------------------------------------------- */
+
+/* A 20dp ring at 2dp, filling a 10dp dot in the primary when chosen, in a
+   48dp target with Material's state layer. */
+.dzm-radio[data-platform='android'] {
+  --dzm-radio-focus: var(--m3-primary);
+  gap: 0;
+  font: var(--m3-body-large);
+  letter-spacing: var(--m3-body-large-tracking);
+  color: var(--m3-on-surface);
+}
+
+.dzm-radio[data-platform='android'] .dzm-radio__control {
+  --dzm-radio-ink: var(--m3-on-surface-variant);
+  width: 20px;
+  height: 20px;
+  margin: 14px;
+  border-radius: 9999px;
+  box-shadow: inset 0 0 0 2px var(--dzm-radio-ink);
+  transition: box-shadow var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-radio[data-platform='android'] .dzm-radio__control::before {
+  content: '';
+  position: absolute;
+  inset: -14px;
+  border-radius: 9999px;
+  background: var(--dzm-radio-ink);
+  opacity: 0;
+  transition: opacity var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-radio[data-platform='android']:hover .dzm-radio__control::before {
+  opacity: var(--m3-state-hover);
+}
+
+.dzm-radio[data-platform='android']:active .dzm-radio__control::before {
+  opacity: var(--m3-state-pressed);
+}
+
+.dzm-radio[data-platform='android'] .dzm-radio__indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: var(--m3-primary);
+  transform: scale(0);
+  transition: transform var(--m3-duration-short) var(--m3-spring-default);
+}
+
+.dzm-radio[data-platform='android'] .dzm-radio__control[data-checked] {
+  --dzm-radio-ink: var(--m3-primary);
+}
+
+.dzm-radio[data-platform='android'] .dzm-radio__control[data-checked] .dzm-radio__indicator {
+  transform: scale(1);
+}
+
+.dzm-radio[data-platform='android'] .dzm-radio__control[data-disabled] {
+  --dzm-radio-ink: var(--m3-disabled-content);
+  cursor: default;
+}
+
+.dzm-radio[data-platform='android'] .dzm-radio__control[data-disabled] .dzm-radio__indicator {
+  background: var(--m3-disabled-content);
+}
+
+.dzm-radio[data-platform='android']:has(.dzm-radio__control[data-disabled]) {
+  cursor: default;
+  color: var(--m3-disabled-content);
+}

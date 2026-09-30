@@ -34,6 +34,21 @@
       ],
       "port": 5183,
       "autoPort": true
+    },
+    {
+      "name": "mobile-example",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@dazzlabs/dazzui-mobile-example",
+        "exec",
+        "vite",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "6007"
+      ],
+      "port": 6007
     }
   ]
 }

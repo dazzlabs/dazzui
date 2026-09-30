@@ -1,0 +1,122 @@
+.dzm-toast-viewport {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: var(--dzm-layer-toast);
+  display: flex;
+  flex-direction: column;
+  align-items: var(--dzm-toast-align);
+  gap: 8px;
+  padding: var(--dzm-toast-viewport-pad);
+  pointer-events: none;
+}
+
+.dzm-theme[data-contained] .dzm-toast-viewport {
+  position: absolute;
+}
+
+.dzm-toast {
+  display: flex;
+  align-items: center;
+  gap: var(--dzm-toast-gap);
+  min-height: var(--dzm-toast-height);
+  max-width: 100%;
+  padding: var(--dzm-toast-pad);
+  border-radius: var(--dzm-toast-radius);
+  background: var(--dzm-toast-fill);
+  color: var(--dzm-toast-ink);
+  box-shadow: var(--dzm-toast-edge);
+  font: var(--dzm-toast-font);
+  letter-spacing: var(--dzm-toast-tracking, normal);
+  pointer-events: auto;
+  transition:
+    transform var(--dzm-toast-motion),
+    opacity var(--dzm-toast-motion);
+}
+
+.dzm-toast[data-starting-style],
+.dzm-toast[data-ending-style] {
+  opacity: 0;
+  transform: translateY(var(--dzm-toast-offset));
+}
+
+.dzm-toast__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--dzm-toast-glyph);
+}
+
+.dzm-toast__icon > svg {
+  width: var(--dzm-toast-glyph-size);
+  height: var(--dzm-toast-glyph-size);
+}
+
+.dzm-toast__title {
+  flex: 1;
+  min-width: 0;
+}
+
+.dzm-toast__action {
+  flex-shrink: 0;
+  min-height: 40px;
+  padding: 0 8px;
+  margin: 0 -8px 0 0;
+  border: 0;
+  border-radius: var(--m3-corner-full, 9999px);
+  background: none;
+  color: var(--dzm-toast-action);
+  font: var(--m3-label-large, inherit);
+  cursor: pointer;
+  appearance: none;
+}
+
+/* iOS: a thick glass capsule that drops from the top, the message in the
+   subheadline semibold beside its glyph in the tint. */
+.dzm-toast-viewport[data-platform='ios'] {
+  --dzm-toast-align: center;
+  --dzm-toast-viewport-pad: calc(8px + var(--dzm-inset-top)) 16px 12px;
+  top: 0;
+}
+
+.dzm-toast[data-platform='ios'] {
+  --dzm-toast-motion: 450ms var(--ios-spring);
+  --dzm-toast-offset: -150%;
+  --dzm-toast-gap: 8px;
+  --dzm-toast-height: 44px;
+  --dzm-toast-pad: 0 18px 0 14px;
+  --dzm-toast-radius: 9999px;
+  --dzm-toast-fill: var(--ios-glass-fill-thick);
+  --dzm-toast-ink: var(--ios-label);
+  --dzm-toast-edge: var(--ios-glass-edge);
+  --dzm-toast-font: 600 15px/20px var(--dzm-font);
+  --dzm-toast-tracking: -0.23px;
+  --dzm-toast-glyph: var(--ios-tint);
+  --dzm-toast-glyph-size: 20px;
+  --dzm-toast-action: var(--ios-tint);
+}
+
+/* Android: the snackbar — 48dp on the inverse surface at the 4dp corner,
+   16dp off the edges, body-medium and a label-large action in the inverse
+   primary. */
+.dzm-toast-viewport[data-platform='android'] {
+  --dzm-toast-align: stretch;
+  --dzm-toast-viewport-pad: 16px 16px calc(16px + var(--dzm-inset-bottom));
+  bottom: 0;
+}
+
+.dzm-toast[data-platform='android'] {
+  --dzm-toast-motion: var(--m3-duration-medium) var(--m3-ease-emphasized-decelerate);
+  --dzm-toast-offset: 100%;
+  --dzm-toast-gap: 8px;
+  --dzm-toast-height: 48px;
+  --dzm-toast-pad: 0 16px;
+  --dzm-toast-radius: var(--m3-corner-xs);
+  --dzm-toast-fill: var(--m3-inverse-surface);
+  --dzm-toast-ink: var(--m3-inverse-on-surface);
+  --dzm-toast-edge: var(--m3-elevation-3);
+  --dzm-toast-font: var(--m3-body-medium);
+  --dzm-toast-tracking: var(--m3-body-medium-tracking);
+  --dzm-toast-glyph: var(--m3-inverse-on-surface);
+  --dzm-toast-glyph-size: 20px;
+  --dzm-toast-action: var(--m3-inverse-primary);
+}

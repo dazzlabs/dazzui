@@ -1,0 +1,123 @@
+.dzm-fab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: var(--dzm-fab-size);
+  height: var(--dzm-fab-size);
+  padding: 0;
+  border: 0;
+  border-radius: var(--dzm-fab-radius);
+  background: var(--dzm-fab-fill);
+  color: var(--dzm-fab-ink);
+  box-shadow: var(--dzm-fab-edge);
+  font: var(--dzm-fab-font);
+  letter-spacing: var(--dzm-fab-tracking, normal);
+  white-space: nowrap;
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.dzm-fab[data-extended] {
+  padding: 0 var(--dzm-fab-inline);
+}
+
+.dzm-fab__icon {
+  display: inline-flex;
+}
+
+.dzm-fab__icon > svg {
+  width: var(--dzm-fab-glyph);
+  height: var(--dzm-fab-glyph);
+}
+
+.dzm-fab:focus-visible {
+  outline: 2px solid var(--dzm-fab-focus);
+  outline-offset: 2px;
+}
+
+/* iOS: the floating glass circle, 56pt with the tint glyph. */
+.dzm-fab[data-platform='ios'] {
+  --dzm-fab-radius: 9999px;
+  --dzm-fab-fill: var(--ios-glass-fill);
+  --dzm-fab-ink: var(--ios-tint);
+  --dzm-fab-edge: var(--ios-glass-edge);
+  --dzm-fab-font: 600 17px/22px var(--dzm-font);
+  --dzm-fab-tracking: -0.41px;
+  --dzm-fab-inline: 20px;
+  --dzm-fab-focus: var(--ios-tint);
+  transition: transform var(--ios-duration-fast) var(--ios-ease);
+}
+
+.dzm-fab[data-platform='ios'][data-size='small'] {
+  --dzm-fab-size: 44px;
+  --dzm-fab-glyph: 20px;
+}
+
+.dzm-fab[data-platform='ios'][data-size='medium'] {
+  --dzm-fab-size: 56px;
+  --dzm-fab-glyph: 24px;
+}
+
+.dzm-fab[data-platform='ios'][data-size='large'] {
+  --dzm-fab-size: 72px;
+  --dzm-fab-glyph: 32px;
+}
+
+.dzm-fab[data-platform='ios']:active {
+  transform: scale(var(--ios-press-scale));
+}
+
+/* Android: 40, 56 and 96dp at the 12, 16 and 28dp corners on the primary
+   container at elevation 3; extended, label-large at 16dp. */
+.dzm-fab[data-platform='android'] {
+  --dzm-fab-fill: var(--m3-primary-container);
+  --dzm-fab-ink: var(--m3-on-primary-container);
+  --dzm-fab-edge: var(--m3-elevation-3);
+  --dzm-fab-font: var(--m3-label-large);
+  --dzm-fab-tracking: var(--m3-label-large-tracking);
+  --dzm-fab-inline: 16px;
+  --dzm-fab-focus: var(--m3-primary);
+  --m3-layer: var(--dzm-fab-ink);
+  transition: box-shadow var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-fab[data-platform='android']:hover {
+  --dzm-fab-edge: var(--m3-elevation-3), var(--m3-elevation-1);
+}
+
+.dzm-fab[data-platform='android'][data-tone='secondary'] {
+  --dzm-fab-fill: var(--m3-secondary-container);
+  --dzm-fab-ink: var(--m3-on-secondary-container);
+}
+
+.dzm-fab[data-platform='android'][data-tone='tertiary'] {
+  --dzm-fab-fill: var(--m3-tertiary-container);
+  --dzm-fab-ink: var(--m3-on-tertiary-container);
+}
+
+.dzm-fab[data-platform='android'][data-tone='surface'] {
+  --dzm-fab-fill: var(--m3-surface-container-high);
+  --dzm-fab-ink: var(--m3-primary);
+}
+
+.dzm-fab[data-platform='android'][data-size='small'] {
+  --dzm-fab-size: 40px;
+  --dzm-fab-radius: var(--m3-corner-md);
+  --dzm-fab-glyph: 24px;
+}
+
+.dzm-fab[data-platform='android'][data-size='medium'] {
+  --dzm-fab-size: 56px;
+  --dzm-fab-radius: var(--m3-corner-lg);
+  --dzm-fab-glyph: 24px;
+}
+
+.dzm-fab[data-platform='android'][data-size='large'] {
+  --dzm-fab-size: 96px;
+  --dzm-fab-radius: var(--m3-corner-xl);
+  --dzm-fab-glyph: 36px;
+}

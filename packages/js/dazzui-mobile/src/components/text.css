@@ -1,0 +1,142 @@
+.dzm-text {
+  margin: 0;
+  color: var(--dzm-text-color);
+}
+
+.dzm-text[data-truncate] {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+.dzm-text[data-platform='ios'] {
+  --dzm-text-color: var(--ios-label);
+}
+
+.dzm-text[data-platform='ios'][data-tone='secondary'] {
+  --dzm-text-color: var(--ios-label-secondary);
+}
+
+.dzm-text[data-platform='ios'][data-tone='tertiary'] {
+  --dzm-text-color: var(--ios-label-tertiary);
+}
+
+.dzm-text[data-platform='ios'][data-tone='tint'] {
+  --dzm-text-color: var(--ios-tint);
+}
+
+.dzm-text[data-platform='ios'][data-role='largeTitle'] {
+  font: var(--ios-large-title);
+  letter-spacing: 0.4px;
+}
+
+.dzm-text[data-platform='ios'][data-role='title'] {
+  font: var(--ios-title1);
+  letter-spacing: 0.36px;
+}
+
+.dzm-text[data-platform='ios'][data-role='title2'] {
+  font: var(--ios-title2);
+  letter-spacing: 0.35px;
+}
+
+.dzm-text[data-platform='ios'][data-role='title3'] {
+  font: var(--ios-title3);
+  letter-spacing: 0.38px;
+}
+
+.dzm-text[data-platform='ios'][data-role='headline'] {
+  font: var(--ios-headline);
+  letter-spacing: -0.41px;
+}
+
+.dzm-text[data-platform='ios'][data-role='body'] {
+  font: var(--ios-body);
+  letter-spacing: -0.41px;
+}
+
+.dzm-text[data-platform='ios'][data-role='callout'] {
+  font: var(--ios-callout);
+  letter-spacing: -0.32px;
+}
+
+.dzm-text[data-platform='ios'][data-role='subheadline'] {
+  font: var(--ios-subheadline);
+  letter-spacing: -0.24px;
+}
+
+.dzm-text[data-platform='ios'][data-role='footnote'] {
+  font: var(--ios-footnote);
+  letter-spacing: -0.08px;
+}
+
+.dzm-text[data-platform='ios'][data-role='caption'] {
+  font: var(--ios-caption1);
+}
+
+/* Android ---------------------------------------------------------------- */
+
+.dzm-text[data-platform='android'] {
+  --dzm-text-color: var(--m3-on-surface);
+}
+
+.dzm-text[data-platform='android'][data-tone='secondary'] {
+  --dzm-text-color: var(--m3-on-surface-variant);
+}
+
+.dzm-text[data-platform='android'][data-tone='tertiary'] {
+  --dzm-text-color: var(--m3-outline);
+}
+
+.dzm-text[data-platform='android'][data-tone='tint'] {
+  --dzm-text-color: var(--m3-primary);
+}
+
+.dzm-text[data-platform='android'][data-role='largeTitle'] {
+  font: var(--m3-headline-large);
+}
+
+.dzm-text[data-platform='android'][data-role='title'] {
+  font: var(--m3-headline-medium);
+}
+
+.dzm-text[data-platform='android'][data-role='title2'] {
+  font: var(--m3-title-large);
+}
+
+.dzm-text[data-platform='android'][data-role='title3'] {
+  font: var(--m3-title-large);
+}
+
+.dzm-text[data-platform='android'][data-role='headline'] {
+  font: var(--m3-title-medium);
+  letter-spacing: var(--m3-title-medium-tracking);
+}
+
+.dzm-text[data-platform='android'][data-role='body'] {
+  font: var(--m3-body-large);
+  letter-spacing: var(--m3-body-large-tracking);
+}
+
+.dzm-text[data-platform='android'][data-role='callout'] {
+  font: var(--m3-body-large);
+  letter-spacing: var(--m3-body-large-tracking);
+}
+
+.dzm-text[data-platform='android'][data-role='subheadline'] {
+  font: var(--m3-body-medium);
+  letter-spacing: var(--m3-body-medium-tracking);
+}
+
+.dzm-text[data-platform='android'][data-role='footnote'] {
+  font: var(--m3-body-small);
+  letter-spacing: var(--m3-body-small-tracking);
+}
+
+.dzm-text[data-platform='android'][data-role='caption'] {
+  font: var(--m3-label-small);
+  letter-spacing: var(--m3-label-small-tracking);
+}

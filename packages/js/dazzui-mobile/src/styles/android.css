@@ -1,0 +1,130 @@
+/*
+ * Android, as Material 3 Expressive draws it. As with `ios.css`, nothing
+ * here is DazzUI's decision: the colour roles are the Compose plugin's
+ * mapping, read from `generated/mobile.css` as `--m3-*`, and every length,
+ * face and curve is Material's own, transcribed from m3.material.io. The
+ * Kotlin package gets these from `androidx.compose.material3`; the web
+ * writes them down.
+ */
+.dzm-theme[data-platform='android'] {
+  --dzm-font:
+    Roboto, 'Google Sans Flex', 'Google Sans', 'Helvetica Neue', Arial,
+    system-ui, sans-serif;
+  --dzm-background: var(--m3-surface);
+  --dzm-ink: var(--m3-on-surface);
+  --dzm-glyph-contrast: var(--m3-surface);
+
+  /* The type scale: size, leading, weight, and the tracking it carries. */
+  --m3-display-large: 400 57px/64px var(--dzm-font);
+  --m3-display-medium: 400 45px/52px var(--dzm-font);
+  --m3-display-small: 400 36px/44px var(--dzm-font);
+  --m3-headline-large: 400 32px/40px var(--dzm-font);
+  --m3-headline-medium: 400 28px/36px var(--dzm-font);
+  --m3-headline-small: 400 24px/32px var(--dzm-font);
+  --m3-title-large: 400 22px/28px var(--dzm-font);
+  --m3-title-medium: 500 16px/24px var(--dzm-font);
+  --m3-title-medium-tracking: 0.15px;
+  --m3-title-small: 500 14px/20px var(--dzm-font);
+  --m3-title-small-tracking: 0.1px;
+  --m3-body-large: 400 16px/24px var(--dzm-font);
+  --m3-body-large-tracking: 0.5px;
+  --m3-body-medium: 400 14px/20px var(--dzm-font);
+  --m3-body-medium-tracking: 0.25px;
+  --m3-body-small: 400 12px/16px var(--dzm-font);
+  --m3-body-small-tracking: 0.4px;
+  --m3-label-large: 500 14px/20px var(--dzm-font);
+  --m3-label-large-tracking: 0.1px;
+  --m3-label-medium: 500 12px/16px var(--dzm-font);
+  --m3-label-medium-tracking: 0.5px;
+  --m3-label-small: 500 11px/16px var(--dzm-font);
+  --m3-label-small-tracking: 0.5px;
+
+  /* The shape scale, with Expressive's added stops. */
+  --m3-corner-xs: 4px;
+  --m3-corner-sm: 8px;
+  --m3-corner-md: 12px;
+  --m3-corner-lg: 16px;
+  --m3-corner-lg-increased: 20px;
+  --m3-corner-xl: 28px;
+  --m3-corner-xl-increased: 32px;
+  --m3-corner-xxl: 48px;
+  --m3-corner-full: 9999px;
+
+  /* State layers: the content colour at Material's opacities. */
+  --m3-state-hover: 8%;
+  --m3-state-focus: 10%;
+  --m3-state-pressed: 10%;
+  --m3-state-dragged: 16%;
+  --m3-disabled-container: color-mix(
+    in srgb,
+    var(--m3-on-surface) 12%,
+    transparent
+  );
+  --m3-disabled-content: color-mix(
+    in srgb,
+    var(--m3-on-surface) 38%,
+    transparent
+  );
+
+  /* Elevation, as the two shadows Material composes each level from. */
+  --m3-elevation-1:
+    0 1px 2px 0 rgb(0 0 0 / 0.3), 0 1px 3px 1px rgb(0 0 0 / 0.15);
+  --m3-elevation-2:
+    0 1px 2px 0 rgb(0 0 0 / 0.3), 0 2px 6px 2px rgb(0 0 0 / 0.15);
+  --m3-elevation-3:
+    0 1px 3px 0 rgb(0 0 0 / 0.3), 0 4px 8px 3px rgb(0 0 0 / 0.15);
+  --m3-scrim: rgb(0 0 0 / 0.32);
+
+  /* Geometry. */
+  --m3-touch: 48px;
+  --m3-list-inset: 16px;
+
+  /* Motion: the standard and emphasized curves, and Expressive's springs. */
+  --m3-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --m3-ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --m3-ease-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --m3-ease-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --m3-spring-fast: cubic-bezier(0.42, 1.67, 0.21, 0.9);
+  --m3-spring-default: cubic-bezier(0.38, 1.21, 0.22, 1);
+  --m3-duration-short: 200ms;
+  --m3-duration-medium: 350ms;
+  --m3-duration-long: 500ms;
+}
+
+/*
+ * The state layer, written once. A part that wants Material's hover and
+ * press puts `--m3-layer` to its content colour and wears this rule.
+ */
+.dzm-theme[data-platform='android'] .dzm-m3-layer {
+  position: relative;
+  overflow: hidden;
+}
+
+.dzm-theme[data-platform='android'] .dzm-m3-layer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--m3-layer, currentColor);
+  opacity: 0;
+  transition: opacity var(--m3-duration-short) var(--m3-ease-standard);
+  pointer-events: none;
+}
+
+.dzm-theme[data-platform='android'] .dzm-m3-layer:hover::before {
+  opacity: var(--m3-state-hover);
+}
+
+.dzm-theme[data-platform='android'] .dzm-m3-layer:focus-visible::before {
+  opacity: var(--m3-state-focus);
+}
+
+.dzm-theme[data-platform='android'] .dzm-m3-layer:active::before,
+.dzm-theme[data-platform='android'] .dzm-m3-layer[data-pressed]::before {
+  opacity: var(--m3-state-pressed);
+}
+
+.dzm-theme[data-platform='android'] .dzm-m3-layer:disabled::before,
+.dzm-theme[data-platform='android'] .dzm-m3-layer[data-disabled]::before {
+  opacity: 0;
+}

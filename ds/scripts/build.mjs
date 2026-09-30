@@ -59,6 +59,11 @@ const TARGETS = [
     files: ['style.css', 'control.css'],
   },
   {
+    package: '@dazzlabs/dazzui-mobile',
+    dir: path.join('..', 'packages', 'js', 'dazzui-mobile', 'src', 'generated'),
+    files: ['mobile/mobile.css', 'mobile/families.ts'],
+  },
+  {
     package: 'dazzui',
     dir: path.join(
       '..',

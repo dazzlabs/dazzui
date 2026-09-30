@@ -1,0 +1,128 @@
+/*
+ * iOS, as iOS 27 draws it: Liquid Glass. Nothing here is a design decision
+ * of DazzUI's — every colour is read from `generated/mobile.css`, and every
+ * length, face and curve below is the OS's own, transcribed from the Human
+ * Interface Guidelines and UIKit's defaults at the Large Dynamic Type size.
+ * `DazzMobileUI` gets these from SwiftUI for free; the web has to write
+ * them down.
+ *
+ * Glass is one material: a translucent fill of the theme's surface, blurred
+ * and saturated from what is behind it, with a specular highlight along the
+ * top edge and a soft shadow beneath. Every glass part — a button, the tab
+ * bar, a menu, an alert — sets those three properties from the same
+ * variables, so the material cannot drift between components. The two
+ * literals it needs — the specular white and the shadow black — are the
+ * material's, not a theme's, and `light-dark()` picks their strength off
+ * the `color-scheme` the colour sheet sets on the theme.
+ */
+.dzm-theme[data-platform='ios'] {
+  --dzm-font:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro',
+    'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
+  --dzm-font-rounded:
+    ui-rounded, 'SF Pro Rounded', -apple-system, BlinkMacSystemFont,
+    system-ui, sans-serif;
+  --dzm-background: var(--color-canvas);
+  --dzm-ink: var(--color-content);
+  --dzm-glyph-contrast: var(--color-surface);
+
+  /* The tint: the ds accent, applied where SwiftUI's `.tint` would go. */
+  --ios-tint: var(--color-accent);
+  --ios-on-tint: var(--color-on-accent);
+  --ios-destructive: var(--color-accent-danger);
+
+  /* UIColor's label ladder and fills, on the theme's ink. */
+  --ios-label: var(--color-content);
+  --ios-label-secondary: var(--color-content-muted);
+  --ios-label-tertiary: var(--color-content-subtle);
+  --ios-label-quaternary: var(--color-content-faint);
+  --ios-fill: color-mix(in srgb, var(--color-content) 20%, transparent);
+  --ios-fill-secondary: color-mix(
+    in srgb,
+    var(--color-content) 16%,
+    transparent
+  );
+  --ios-fill-tertiary: color-mix(in srgb, var(--color-content) 12%, transparent);
+  --ios-fill-quaternary: color-mix(
+    in srgb,
+    var(--color-content) 8%,
+    transparent
+  );
+  --ios-separator: color-mix(in srgb, var(--color-content) 22%, transparent);
+  --ios-tint-wash: color-mix(in srgb, var(--ios-tint) 15%, transparent);
+  --ios-destructive-wash: color-mix(
+    in srgb,
+    var(--ios-destructive) 15%,
+    transparent
+  );
+
+  /* Grouped content: the canvas behind, the surface as each cell. */
+  --ios-grouped-background: var(--color-canvas);
+  --ios-grouped-cell: var(--color-surface);
+
+  /* The Dynamic Type styles at Large: size, leading, weight. */
+  --ios-large-title: 700 34px/41px var(--dzm-font);
+  --ios-title1: 700 28px/34px var(--dzm-font);
+  --ios-title2: 700 22px/28px var(--dzm-font);
+  --ios-title3: 600 20px/25px var(--dzm-font);
+  --ios-headline: 600 17px/22px var(--dzm-font);
+  --ios-body: 400 17px/22px var(--dzm-font);
+  --ios-callout: 400 16px/21px var(--dzm-font);
+  --ios-subheadline: 400 15px/20px var(--dzm-font);
+  --ios-footnote: 400 13px/18px var(--dzm-font);
+  --ios-caption1: 400 12px/16px var(--dzm-font);
+  --ios-caption2: 400 11px/13px var(--dzm-font);
+
+  /* Geometry. */
+  --ios-row: 44px;
+  --ios-inset: 16px;
+  --ios-group-radius: 26px;
+  --ios-group-margin: 16px;
+  --ios-control-radius: 9999px;
+  --ios-field-radius: 12px;
+  --ios-sheet-radius: 38px;
+  --ios-alert-radius: 26px;
+  --ios-menu-radius: 22px;
+  --ios-hairline: 0.5px;
+  --ios-touch: 44px;
+
+  /* Liquid Glass. */
+  --ios-glass-fill: color-mix(in srgb, var(--color-surface) 58%, transparent);
+  --ios-glass-fill-thick: color-mix(
+    in srgb,
+    var(--color-surface) 82%,
+    transparent
+  );
+  --ios-glass-blur: blur(22px) saturate(1.8);
+  --ios-glass-highlight: light-dark(
+    rgb(255 255 255 / 0.55),
+    rgb(255 255 255 / 0.18)
+  );
+  --ios-glass-shadow: light-dark(rgb(0 0 0 / 0.14), rgb(0 0 0 / 0.5));
+  --ios-glass-edge:
+    inset 0 1px 0 0 var(--ios-glass-highlight),
+    inset 0 0 0 0.5px color-mix(in srgb, var(--color-surface) 45%, transparent),
+    0 10px 30px -6px var(--ios-glass-shadow),
+    0 1px 3px 0 rgb(0 0 0 / 0.06);
+  --ios-lens-fill: color-mix(in srgb, var(--color-surface) 92%, transparent);
+
+  /* Motion: iOS springs, and the press scale a glass control takes. */
+  --ios-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ios-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --ios-duration: 320ms;
+  --ios-duration-fast: 160ms;
+  --ios-press-scale: 0.96;
+  --ios-disabled-opacity: 0.35;
+}
+
+/* The material, worn by any part that asks for it. */
+.dzm-theme[data-platform='ios'] .dzm-glass {
+  background: var(--ios-glass-fill);
+  -webkit-backdrop-filter: var(--ios-glass-blur);
+  backdrop-filter: var(--ios-glass-blur);
+  box-shadow: var(--ios-glass-edge);
+}
+
+.dzm-theme[data-platform='ios'] .dzm-glass--thick {
+  background: var(--ios-glass-fill-thick);
+}

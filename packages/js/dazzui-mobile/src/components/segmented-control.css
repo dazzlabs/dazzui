@@ -1,0 +1,139 @@
+.dzm-segmented {
+  display: inline-flex;
+  align-items: stretch;
+  gap: var(--dzm-segmented-gap);
+  padding: var(--dzm-segmented-pad);
+  border-radius: var(--dzm-segmented-radius);
+  background: var(--dzm-segmented-track);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.dzm-segmented__segment {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: var(--dzm-segmented-height);
+  padding: 0 var(--dzm-segmented-inline);
+  border: 0;
+  border-radius: var(--dzm-segmented-segment-radius);
+  background: var(--dzm-segmented-fill);
+  color: var(--dzm-segmented-ink);
+  font: var(--dzm-segmented-font);
+  letter-spacing: var(--dzm-segmented-tracking, normal);
+  white-space: nowrap;
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+}
+
+.dzm-segmented__segment:focus-visible {
+  outline: 2px solid var(--dzm-segmented-focus);
+  outline-offset: 2px;
+}
+
+.dzm-segmented__segment:disabled,
+.dzm-segmented[data-disabled] .dzm-segmented__segment {
+  cursor: default;
+}
+
+/* iOS ------------------------------------------------------------------- */
+
+/* A capsule track in the tertiary fill; the chosen segment is a raised
+   glass lens, the surface with a shadow, and its label goes semibold. The
+   hairline that used to divide segments is gone with the glass. */
+.dzm-segmented[data-platform='ios'] {
+  --dzm-segmented-gap: 0;
+  --dzm-segmented-pad: 2px;
+  --dzm-segmented-radius: var(--ios-control-radius);
+  --dzm-segmented-track: var(--ios-fill-tertiary);
+  --dzm-segmented-height: 32px;
+  --dzm-segmented-inline: 12px;
+  --dzm-segmented-segment-radius: var(--ios-control-radius);
+  --dzm-segmented-fill: transparent;
+  --dzm-segmented-ink: var(--ios-label);
+  --dzm-segmented-font: 500 13px/18px var(--dzm-font);
+  --dzm-segmented-tracking: -0.08px;
+  --dzm-segmented-focus: var(--ios-tint);
+}
+
+.dzm-segmented[data-platform='ios'] .dzm-segmented__segment {
+  transition:
+    background-color var(--ios-duration) var(--ios-spring),
+    box-shadow var(--ios-duration) var(--ios-spring),
+    transform var(--ios-duration-fast) var(--ios-ease);
+}
+
+.dzm-segmented[data-platform='ios'] .dzm-segmented__segment[data-pressed] {
+  --dzm-segmented-fill: var(--ios-lens-fill);
+  font-weight: 600;
+  box-shadow:
+    inset 0 1px 0 0 var(--ios-glass-highlight),
+    0 3px 8px rgb(0 0 0 / 0.12),
+    0 3px 1px rgb(0 0 0 / 0.04);
+}
+
+.dzm-segmented[data-platform='ios'] .dzm-segmented__segment:active:not([data-pressed]) {
+  opacity: 0.5;
+}
+
+.dzm-segmented[data-platform='ios'] .dzm-segmented__segment[data-pressed]:active {
+  transform: scale(0.97);
+}
+
+.dzm-segmented[data-platform='ios'] .dzm-segmented__segment:disabled {
+  opacity: var(--ios-disabled-opacity);
+}
+
+/* Android ---------------------------------------------------------------- */
+
+/* Expressive's connected button group: 40dp tonal buttons two dp apart,
+   full corners on the outer edges and small ones between, and the chosen
+   one filled in the primary at the full corner all round. */
+.dzm-segmented[data-platform='android'] {
+  --dzm-segmented-gap: 2px;
+  --dzm-segmented-pad: 0;
+  --dzm-segmented-radius: 0;
+  --dzm-segmented-track: transparent;
+  --dzm-segmented-height: 40px;
+  --dzm-segmented-inline: 16px;
+  --dzm-segmented-segment-radius: var(--m3-corner-sm);
+  --dzm-segmented-fill: var(--m3-secondary-container);
+  --dzm-segmented-ink: var(--m3-on-secondary-container);
+  --dzm-segmented-font: var(--m3-label-large);
+  --dzm-segmented-tracking: var(--m3-label-large-tracking);
+  --dzm-segmented-focus: var(--m3-primary);
+}
+
+.dzm-segmented[data-platform='android'] .dzm-segmented__segment {
+  transition:
+    border-radius var(--m3-duration-medium) var(--m3-spring-default),
+    background-color var(--m3-duration-short) var(--m3-ease-standard),
+    color var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-segmented[data-platform='android'] .dzm-segmented__segment:first-child {
+  border-start-start-radius: var(--m3-corner-full);
+  border-end-start-radius: var(--m3-corner-full);
+}
+
+.dzm-segmented[data-platform='android'] .dzm-segmented__segment:last-child {
+  border-start-end-radius: var(--m3-corner-full);
+  border-end-end-radius: var(--m3-corner-full);
+}
+
+.dzm-segmented[data-platform='android'] .dzm-segmented__segment[data-pressed] {
+  --dzm-segmented-fill: var(--m3-primary);
+  --dzm-segmented-ink: var(--m3-on-primary);
+  border-radius: var(--m3-corner-full);
+}
+
+.dzm-segmented[data-platform='android'] .dzm-segmented__segment:active {
+  border-radius: var(--m3-corner-md);
+}
+
+.dzm-segmented[data-platform='android'] .dzm-segmented__segment:disabled {
+  --dzm-segmented-fill: var(--m3-disabled-container);
+  --dzm-segmented-ink: var(--m3-disabled-content);
+}
