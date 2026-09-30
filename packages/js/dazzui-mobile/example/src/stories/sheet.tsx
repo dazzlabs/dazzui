@@ -13,6 +13,18 @@ import {
 import { Col, Group, Stage } from '../components/stage'
 import type { Story } from '../lib/story'
 
+const PLACES = [
+  'Coffee Collective',
+  'The Book Room',
+  'Harbour Market',
+  'North Park',
+  'City Library',
+  'Glasshouse Café',
+  'Riverside Gym',
+  'Old Town Bakery',
+  'Museum of Light',
+]
+
 function Demo() {
   return (
     <Screen bar={<NavigationBar title="Sheet" />}>
@@ -47,14 +59,47 @@ function Demo() {
             </Sheet>
             <Sheet
               trigger={<Button variant="glass">Large</Button>}
-              title="Editor"
+              title="New Event"
               detent="large"
+              onConfirm={() => {}}
+              confirmLabel="Add"
             >
-              <Stage>
-                <Text>All the way up, a little short of the top edge.</Text>
-              </Stage>
+              <List>
+                <ListSection>
+                  <ListItem title="Title" value="Design review" />
+                  <ListItem title="Location" value="Studio" />
+                </ListSection>
+                <ListSection footer="The screen behind recedes on iOS.">
+                  <ListItem title="Starts" value="Oct 1, 10:00" />
+                  <ListItem title="Ends" value="Oct 1, 11:00" />
+                </ListSection>
+              </List>
             </Sheet>
           </Col>
+        </Group>
+        <Group title="Resizable">
+          <Sheet
+            trigger={<Button variant="outlined">Medium and large</Button>}
+            title="Places"
+            detents={['medium', 'large']}
+          >
+            <List>
+              <ListSection header="Nearby">
+                {PLACES.map(place => (
+                  <ListItem
+                    key={place}
+                    title={place}
+                    subtitle="Open until 22:00"
+                    onClick={() => {}}
+                  />
+                ))}
+              </ListSection>
+            </List>
+          </Sheet>
+          <Text role="footnote" tone="secondary">
+            Drag the grabber between the two detents, or fling the sheet down to
+            dismiss it.
+          </Text>
         </Group>
       </Stage>
     </Screen>
@@ -65,7 +110,7 @@ const story: Story = {
   id: 'sheet',
   name: 'Sheet',
   summary:
-    'A sheet from the bottom edge, with a grabber and the big corner; Material’s modal bottom sheet.',
+    'A sheet that drags between detents and flings away: floating glass on iOS, Material’s modal bottom sheet.',
   Demo,
 }
 

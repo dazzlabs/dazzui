@@ -89,6 +89,10 @@
   --m3-duration-short: 200ms;
   --m3-duration-medium: 350ms;
   --m3-duration-long: 500ms;
+  /* The ripple's growth and its fade after release, from Compose's
+     `RippleAnimation`. */
+  --m3-ripple-grow: 450ms;
+  --m3-ripple-fade: 150ms;
 }
 
 /*
@@ -119,9 +123,50 @@
   opacity: var(--m3-state-focus);
 }
 
-.dzm-theme[data-platform='android'] .dzm-m3-layer:active::before,
+.dzm-theme[data-platform='android'] .dzm-m3-layer:active:not([data-ripple])::before,
 .dzm-theme[data-platform='android'] .dzm-m3-layer[data-pressed]::before {
   opacity: var(--m3-state-pressed);
+}
+
+/*
+ * The ripple: a circle of the content colour at the pressed opacity that
+ * grows from the press to the farthest corner, and fades once the finger
+ * lifts — while it is still growing, if the press was short. The theme
+ * starts it and sets where; this is only the drawing.
+ */
+.dzm-theme[data-platform='android'] .dzm-m3-layer::after {
+  content: '';
+  position: absolute;
+  top: calc(var(--dzm-ripple-y, 50%) - var(--dzm-ripple-size, 0px) / 2);
+  left: calc(var(--dzm-ripple-x, 50%) - var(--dzm-ripple-size, 0px) / 2);
+  width: var(--dzm-ripple-size, 0px);
+  height: var(--dzm-ripple-size, 0px);
+  border-radius: 50%;
+  background: var(--m3-layer, currentColor);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dzm-theme[data-platform='android'] .dzm-m3-layer[data-ripple]::after {
+  animation: dzm-ripple var(--m3-ripple-grow) var(--m3-ease-standard) both;
+}
+
+.dzm-theme[data-platform='android'] .dzm-m3-layer[data-ripple='down']::after {
+  opacity: var(--m3-state-pressed);
+}
+
+.dzm-theme[data-platform='android'] .dzm-m3-layer[data-ripple='up']::after {
+  opacity: 0;
+  transition: opacity var(--m3-ripple-fade) linear;
+}
+
+@keyframes dzm-ripple {
+  from {
+    transform: scale(0.2);
+  }
+  to {
+    transform: scale(1);
+  }
 }
 
 .dzm-theme[data-platform='android'] .dzm-m3-layer:disabled::before,

@@ -288,3 +288,182 @@
 .dzm-list-item[data-platform='android'][aria-disabled='true'] .dzm-list-item__icon {
   --dzm-list-icon-ink: var(--m3-disabled-content);
 }
+
+/* Swipe actions ---------------------------------------------------------- */
+
+/*
+ * A row with swipe actions sits in a wrapper that holds the actions behind
+ * it. The row slides; while a finger holds it the slide follows exactly,
+ * and on release it settles with the platform's curve.
+ */
+.dzm-list-swipe {
+  position: relative;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.dzm-list-swipe__row {
+  position: relative;
+  z-index: 1;
+  background: var(--dzm-swipe-row);
+  transition: transform var(--dzm-swipe-motion);
+}
+
+.dzm-list-swipe[data-dragging] .dzm-list-swipe__row,
+.dzm-list-swipe[data-dragging] .dzm-list-swipe__actions {
+  transition: none;
+}
+
+.dzm-list-swipe__actions {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  overflow: hidden;
+  transition: width var(--dzm-swipe-motion);
+}
+
+.dzm-list-swipe__actions[data-side='leading'] {
+  left: 0;
+}
+
+.dzm-list-swipe__actions[data-side='trailing'] {
+  right: 0;
+}
+
+.dzm-list-swipe__action {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 0 8px;
+  border: 0;
+  background: var(--dzm-swipe-fill);
+  color: var(--dzm-swipe-ink);
+  font: var(--dzm-swipe-font);
+  letter-spacing: var(--dzm-swipe-tracking, normal);
+  white-space: nowrap;
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+  transition: flex-grow var(--dzm-swipe-motion);
+}
+
+.dzm-list-swipe__icon {
+  display: inline-flex;
+}
+
+.dzm-list-swipe__icon > svg {
+  width: var(--dzm-swipe-glyph);
+  height: var(--dzm-swipe-glyph);
+}
+
+/* iOS: full-height buttons, white on the action's colour, uncovered as the
+   row slides; past the commit point the outermost stretches across the
+   whole row. Hairlines run on between wrapped and bare rows. */
+.dzm-list-swipe[data-platform='ios'] {
+  --dzm-swipe-row: var(--ios-grouped-cell);
+  --dzm-swipe-motion: var(--ios-duration) var(--ios-ease);
+  --dzm-swipe-ink: var(--ios-on-tint);
+  --dzm-swipe-font: 500 15px/20px var(--dzm-font);
+  --dzm-swipe-tracking: -0.23px;
+  --dzm-swipe-glyph: 20px;
+}
+
+.dzm-list-swipe[data-platform='ios'] .dzm-list-swipe__action {
+  --dzm-swipe-fill: var(--color-accent-neutral);
+}
+
+.dzm-list-swipe[data-platform='ios'] .dzm-list-swipe__action[data-tone='accent'] {
+  --dzm-swipe-fill: var(--ios-tint);
+}
+
+.dzm-list-swipe[data-platform='ios']
+  .dzm-list-swipe__action[data-tone='destructive'] {
+  --dzm-swipe-fill: var(--ios-destructive);
+}
+
+.dzm-list-swipe[data-platform='ios'][data-armed]
+  .dzm-list-swipe__action[data-outermost] {
+  flex-grow: 1000;
+}
+
+.dzm-list-swipe[data-platform='ios'][data-armed] .dzm-list-swipe__label {
+  overflow: hidden;
+}
+
+.dzm-list-item[data-platform='ios'] + .dzm-list-swipe .dzm-list-item::before,
+.dzm-list-swipe[data-platform='ios'] + .dzm-list-item[data-platform='ios']::before,
+.dzm-list-swipe[data-platform='ios'] + .dzm-list-swipe .dzm-list-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: var(--dzm-list-separator-inset, 20px);
+  height: var(--ios-hairline);
+  background: var(--ios-separator);
+}
+
+/* Android: the row slides over a background in the surface container with
+   the action's glyph at the edge it leaves; once the swipe would perform
+   the action, the background takes the action's colour. */
+.dzm-list-swipe[data-platform='android'] {
+  --dzm-swipe-row: var(--m3-surface);
+  --dzm-swipe-motion: var(--m3-duration-medium) var(--m3-ease-emphasized);
+  --dzm-swipe-font: var(--m3-label-large);
+  --dzm-swipe-tracking: var(--m3-label-large-tracking);
+  --dzm-swipe-glyph: 24px;
+}
+
+.dzm-list-swipe[data-platform='android'] .dzm-list-swipe__actions {
+  width: 100% !important;
+  background: var(--m3-surface-container-highest);
+  transition: background-color var(--m3-duration-short) var(--m3-ease-standard);
+}
+
+.dzm-list-swipe[data-platform='android'] .dzm-list-swipe__action {
+  display: none;
+  flex-direction: row;
+  flex: 0 0 auto;
+  padding: 0 24px;
+  background: transparent;
+  color: var(--m3-on-surface-variant);
+}
+
+.dzm-list-swipe[data-platform='android'] .dzm-list-swipe__action[data-outermost] {
+  display: flex;
+}
+
+.dzm-list-swipe[data-platform='android']
+  .dzm-list-swipe__actions[data-side='trailing'] {
+  justify-content: flex-end;
+}
+
+.dzm-list-swipe[data-platform='android'] .dzm-list-swipe__label {
+  display: none;
+}
+
+.dzm-list-swipe[data-platform='android'][data-armed] .dzm-list-swipe__actions {
+  background: var(--dzm-swipe-fill, var(--m3-secondary-container));
+}
+
+.dzm-list-swipe[data-platform='android'][data-armed] .dzm-list-swipe__action {
+  color: var(--dzm-swipe-ink, var(--m3-on-secondary-container));
+}
+
+.dzm-list-swipe[data-platform='android'][data-armed]:has(
+    [data-outermost][data-tone='accent']
+  ) {
+  --dzm-swipe-fill: var(--m3-primary-container);
+  --dzm-swipe-ink: var(--m3-on-primary-container);
+}
+
+.dzm-list-swipe[data-platform='android'][data-armed]:has(
+    [data-outermost][data-tone='destructive']
+  ) {
+  --dzm-swipe-fill: var(--m3-error-container);
+  --dzm-swipe-ink: var(--m3-on-error-container);
+}

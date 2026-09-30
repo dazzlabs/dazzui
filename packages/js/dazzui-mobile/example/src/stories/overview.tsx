@@ -29,6 +29,7 @@ function Demo() {
   return (
     <Screen
       bar={<NavigationBar title="Settings" large />}
+      onRefresh={() => new Promise(resolve => setTimeout(resolve, 1500))}
       tabBar={
         <TabBar
           value={tab}
@@ -131,7 +132,7 @@ const story: Story = {
   id: 'overview',
   name: 'Overview',
   summary:
-    'A Settings screen: a large title, a search field, grouped rows and a tab bar.',
+    'A Settings screen: a large title that scrolls into the bar, a search field, grouped rows, pull to refresh and a tab bar.',
   Demo,
 }
 

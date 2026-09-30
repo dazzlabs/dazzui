@@ -8,9 +8,17 @@ export interface SpinnerProps extends ComponentProps<'span'> {
   size?: 'small' | 'large'
   /** Announced to a screen reader. */
   label?: string
+  /**
+   * Draws it still and partly there, from 0 to 1 — what a pull to refresh
+   * shows before it lets go: UIRefreshControl lays its spokes down one by
+   * one, Material's indicator draws out its arc. Leave it unset to spin.
+   */
+  progress?: number
 }
 
 const SPOKES = Array.from({ length: 8 }, (_, i) => i)
+/** The arc's circumference, at the 20 radius it is drawn at. */
+const ARC = 2 * Math.PI * 20
 
 /**
  * Work in flight with no end in sight: UIActivityIndicator's eight fading
@@ -19,16 +27,20 @@ const SPOKES = Array.from({ length: 8 }, (_, i) => i)
 export function Spinner({
   size = 'small',
   label = 'Loading',
+  progress,
   className,
   ...props
 }: SpinnerProps) {
   const platform = usePlatform()
+  const still = progress !== undefined
+  const amount = Math.max(0, Math.min(1, progress ?? 0))
   return (
     <span
       role="status"
       aria-label={label}
       data-platform={platform}
       data-size={size}
+      data-still={still || undefined}
       className={cx('dzm-spinner', className)}
       {...props}
     >
@@ -44,13 +56,33 @@ export function Spinner({
               height="6"
               rx="1"
               transform={`rotate(${i * 45} 12 12)`}
-              style={{ animationDelay: `${(i - 8) * 0.1}s` }}
+              style={
+                still
+                  ? { opacity: i < Math.ceil(amount * 8) ? 1 : 0 }
+                  : { animationDelay: `${(i - 8) * 0.1}s` }
+              }
             />
           ))}
         </svg>
       ) : (
-        <svg viewBox="0 0 48 48" aria-hidden className="dzm-spinner__arc">
-          <circle cx="24" cy="24" r="20" />
+        <svg
+          viewBox="0 0 48 48"
+          aria-hidden
+          className="dzm-spinner__arc"
+          style={
+            still ? { transform: `rotate(${amount * 270 - 90}deg)` } : undefined
+          }
+        >
+          <circle
+            cx="24"
+            cy="24"
+            r="20"
+            style={
+              still
+                ? { strokeDasharray: `${amount * 0.8 * ARC} ${ARC}` }
+                : undefined
+            }
+          />
         </svg>
       )}
     </span>

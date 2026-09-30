@@ -86,3 +86,10 @@
     stroke-dashoffset: -125;
   }
 }
+
+/* Held still at a progress: no motion, the drawing set by the component. */
+.dzm-spinner[data-still] .dzm-spinner__spoke,
+.dzm-spinner[data-still] .dzm-spinner__arc,
+.dzm-spinner[data-still] .dzm-spinner__arc > circle {
+  animation: none;
+}

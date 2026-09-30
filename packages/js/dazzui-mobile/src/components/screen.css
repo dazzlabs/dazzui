@@ -28,3 +28,75 @@
 .dzm-screen__content:first-child {
   padding-top: var(--dzm-inset-top);
 }
+
+.dzm-screen__scroll[data-pulling] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/*
+ * Pull to refresh. The screen tracks the pull and hands it over as
+ * `--dzm-refresh-pull`; while a finger holds it the drawing follows
+ * exactly, and on release it settles with the platform's curve.
+ */
+.dzm-refresh {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.dzm-refresh__indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* iOS: UIRefreshControl opens a gap above the content as it comes down,
+   the spinner laying its spokes down in the gap, and holds 60pt open
+   while it spins. */
+.dzm-refresh[data-platform='ios'] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--dzm-refresh-pull);
+  overflow: hidden;
+  transition: height var(--ios-duration) var(--ios-ease);
+}
+
+/* Android: the content stays put and Material's indicator — the arc on a
+   40dp circle of the high surface container — drops out from under the
+   bar, and holds 80dp down while it spins. */
+.dzm-refresh[data-platform='android'] {
+  height: 0;
+}
+
+/* It slides out from under whatever heads the content — the large title
+   too — and over the rows. */
+.dzm-screen[data-platform='android'] .dzm-nav-large {
+  position: relative;
+  z-index: 3;
+}
+
+.dzm-refresh[data-platform='android'] .dzm-refresh__indicator {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 20px);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--m3-corner-full);
+  background: var(--m3-surface-container-high);
+  box-shadow: var(--m3-elevation-1);
+  z-index: 2;
+  transform: translateY(calc(var(--dzm-refresh-pull) - 48px));
+  transition:
+    transform var(--m3-duration-medium) var(--m3-ease-emphasized),
+    visibility 0s var(--m3-duration-medium);
+}
+
+.dzm-refresh[data-platform='android'][data-idle] .dzm-refresh__indicator {
+  visibility: hidden;
+}
+
+.dzm-refresh[data-pulling],
+.dzm-refresh[data-pulling] .dzm-refresh__indicator {
+  transition: none;
+}

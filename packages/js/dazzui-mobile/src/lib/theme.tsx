@@ -79,6 +79,8 @@ export function MobileTheme({
     container,
   }
 
+  useRipple(container, value.platform === 'android')
+
   return (
     <ThemeContext.Provider value={value}>
       <div
@@ -108,4 +110,65 @@ export function useThemeContainer():
   | RefObject<HTMLDivElement | null>
   | undefined {
   return useContext(ThemeContext)?.container
+}
+
+/**
+ * Material's ripple, for every part under the theme that wears the state
+ * layer. One listener on the theme's element starts it where the pointer
+ * lands and lets it go on release; the drawing is the part's `::after`,
+ * placed by three custom properties, so nothing is added to a tree React
+ * owns. A nested theme draws its own, and a disabled part none.
+ */
+function useRipple(
+  container: RefObject<HTMLDivElement | null>,
+  enabled: boolean
+) {
+  useEffect(() => {
+    const root = container.current
+    if (!root || !enabled) return
+    const release = (target: HTMLElement) => {
+      if (target.dataset.ripple !== 'down') return
+      target.dataset.ripple = 'up'
+      // Once it has faded, the part is back to its keyboard press.
+      window.setTimeout(() => {
+        if (target.dataset.ripple === 'up') delete target.dataset.ripple
+      }, 600)
+    }
+    const onDown = (event: PointerEvent) => {
+      if (event.button !== 0) return
+      const target = (event.target as Element | null)?.closest<HTMLElement>(
+        '.dzm-m3-layer'
+      )
+      if (!target || target.closest('.dzm-theme') !== root) return
+      if (
+        target.matches(':disabled, [data-disabled], [aria-disabled="true"]')
+      ) {
+        return
+      }
+      const box = target.getBoundingClientRect()
+      const x = event.clientX - box.left
+      const y = event.clientY - box.top
+      // The radius reaches the farthest corner, so the wave fills the part.
+      const radius = Math.hypot(
+        Math.max(x, box.width - x),
+        Math.max(y, box.height - y)
+      )
+      target.style.setProperty('--dzm-ripple-x', `${x}px`)
+      target.style.setProperty('--dzm-ripple-y', `${y}px`)
+      target.style.setProperty('--dzm-ripple-size', `${radius * 2}px`)
+      delete target.dataset.ripple
+      // A second press restarts the wave rather than joining the first.
+      void target.offsetWidth
+      target.dataset.ripple = 'down'
+      const up = () => {
+        release(target)
+        window.removeEventListener('pointerup', up)
+        window.removeEventListener('pointercancel', up)
+      }
+      window.addEventListener('pointerup', up)
+      window.addEventListener('pointercancel', up)
+    }
+    root.addEventListener('pointerdown', onDown)
+    return () => root.removeEventListener('pointerdown', onDown)
+  }, [container, enabled])
 }

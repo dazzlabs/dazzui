@@ -1,7 +1,14 @@
 .dzm-sheet-scrim {
   z-index: var(--dzm-layer-sheet);
   background: var(--dzm-sheet-scrim);
-  transition: opacity var(--dzm-sheet-motion);
+  opacity: calc(1 - var(--drawer-swipe-progress, 0));
+  transition: opacity var(--dzm-sheet-duration) var(--dzm-sheet-ease);
+}
+
+/* The drawer reports a resizable sheet's lower detent as swiped most of
+   the way, so its scrim holds rather than tracking the drag. */
+.dzm-sheet-scrim[data-resizable] {
+  opacity: 1;
 }
 
 .dzm-sheet-scrim[data-starting-style],
@@ -15,35 +22,70 @@
   align-items: flex-end;
   justify-content: center;
   pointer-events: none;
+  touch-action: none;
 }
 
+/*
+ * The drawer hands over where a drag has taken the sheet and where its
+ * detent sits; the sheet adds them. A resizable sheet is always as tall as
+ * its large detent and slides down to show less, so its content keeps a
+ * bottom padding of however far it has slid.
+ */
 .dzm-sheet {
+  --dzm-sheet-shift: calc(
+    var(--drawer-snap-point-offset, 0px) + var(--drawer-swipe-movement-y, 0px)
+  );
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: calc(100% - var(--dzm-sheet-inset) * 2);
   max-width: 640px;
   max-height: calc(100% - var(--dzm-sheet-top-gap));
-  border-radius: var(--dzm-sheet-radius) var(--dzm-sheet-radius) 0 0;
+  margin-bottom: var(--dzm-sheet-inset);
+  border-radius: var(--dzm-sheet-radius);
   background: var(--dzm-sheet-fill);
   color: var(--dzm-sheet-ink);
   box-shadow: var(--dzm-sheet-edge);
   outline: none;
   pointer-events: auto;
   overflow: hidden;
-  transition: transform var(--dzm-sheet-motion);
+  touch-action: none;
+  transform: translateY(var(--dzm-sheet-shift));
+  transition:
+    transform var(--dzm-sheet-duration) var(--dzm-sheet-ease),
+    width var(--dzm-sheet-duration) var(--dzm-sheet-ease),
+    margin var(--dzm-sheet-duration) var(--dzm-sheet-ease),
+    border-radius var(--dzm-sheet-duration) var(--dzm-sheet-ease),
+    background-color var(--dzm-sheet-duration) var(--dzm-sheet-ease);
+  will-change: transform;
+}
+
+.dzm-sheet[data-swiping] {
+  transition-duration: 0ms;
 }
 
 .dzm-sheet[data-starting-style],
 .dzm-sheet[data-ending-style] {
-  transform: translateY(100%);
+  transform: translateY(calc(100% + var(--dzm-sheet-inset) + 2px));
 }
 
-.dzm-sheet[data-detent='medium'] {
+/* A flung sheet leaves as fast as it was thrown. */
+.dzm-sheet[data-ending-style] {
+  transition-duration: calc(
+    var(--drawer-swipe-strength, 1) * var(--dzm-sheet-duration)
+  );
+}
+
+.dzm-sheet[data-detent='medium']:not([data-resizable]) {
   height: 50%;
 }
 
-.dzm-sheet[data-detent='large'] {
+.dzm-sheet[data-detent='large'],
+.dzm-sheet[data-resizable] {
   height: calc(100% - var(--dzm-sheet-top-gap));
+}
+
+.dzm-sheet[data-resizable] {
+  padding-bottom: max(0px, var(--dzm-sheet-shift));
 }
 
 .dzm-sheet__grabber {
@@ -63,6 +105,8 @@
   flex-shrink: 0;
   min-height: var(--dzm-sheet-bar-height);
   padding: var(--dzm-sheet-bar-pad);
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .dzm-sheet__title {
@@ -73,94 +117,202 @@
   text-align: center;
 }
 
-.dzm-sheet__close {
-  grid-column: 3;
-  justify-self: end;
+.dzm-sheet__action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  padding: 0;
+  min-width: var(--dzm-sheet-action-size);
+  height: var(--dzm-sheet-action-size);
+  padding: var(--dzm-sheet-action-pad);
   border: 0;
   border-radius: 9999px;
-  background: var(--ios-fill-tertiary);
-  color: var(--ios-label-secondary);
+  background: var(--dzm-sheet-action-fill);
+  color: var(--dzm-sheet-action-ink);
+  font: var(--dzm-sheet-action-font);
+  letter-spacing: var(--dzm-sheet-action-tracking, normal);
   cursor: pointer;
+  outline: none;
   appearance: none;
 }
 
-.dzm-sheet__close > svg {
-  width: 14px;
-  height: 14px;
-  stroke-width: 3;
+.dzm-sheet__action:not([data-confirm]) {
+  grid-column: 1;
+  justify-self: start;
+}
+
+.dzm-sheet__action[data-confirm] {
+  grid-column: 3;
+  justify-self: end;
+}
+
+.dzm-sheet__action:focus-visible {
+  outline: 2px solid var(--dzm-sheet-focus);
+  outline-offset: 2px;
+}
+
+.dzm-sheet__action > svg {
+  width: var(--dzm-sheet-action-glyph);
+  height: var(--dzm-sheet-action-glyph);
 }
 
 .dzm-sheet__body {
   flex: 1;
   min-height: 0;
   overflow: auto;
+  overscroll-behavior: contain;
   padding: var(--dzm-sheet-body-pad);
+  touch-action: auto;
 }
 
-/* iOS: the surface at the 38pt corner, a 36 by 5 grabber, a 56pt bar
-   with the title in the headline weight and a grey circle to close. */
+/* iOS ------------------------------------------------------------------- */
+
+/*
+ * A partial sheet floats in thick glass 8pt in from the screen's edges,
+ * the 38pt corner on all four. At its large detent it is the surface,
+ * edge to edge with the corner only on top, and the screen it covers
+ * shrinks back behind it. The grabber is 36 by 5 in the fill; the bar is
+ * 44pt glass controls — an xmark to cancel, a checkmark in the tint to
+ * confirm — either side of the headline.
+ */
+.dzm-sheet-scrim[data-platform='ios'],
+.dzm-sheet-viewport[data-platform='ios'],
+.dzm-sheet[data-platform='ios'] {
+  --dzm-sheet-duration: 480ms;
+  --dzm-sheet-ease: var(--ios-ease);
+}
+
 .dzm-sheet-scrim[data-platform='ios'] {
   --dzm-sheet-scrim: rgb(0 0 0 / 0.2);
-  --dzm-sheet-motion: var(--ios-duration) var(--ios-ease);
-}
-
-.dzm-sheet-viewport[data-platform='ios'] {
-  --dzm-sheet-motion: var(--ios-duration) var(--ios-ease);
 }
 
 .dzm-sheet[data-platform='ios'] {
-  --dzm-sheet-motion: 420ms var(--ios-spring);
-  --dzm-sheet-top-gap: 24px;
+  --dzm-sheet-top-gap: calc(var(--dzm-inset-top) + 10px);
+  --dzm-sheet-inset: 8px;
   --dzm-sheet-radius: var(--ios-sheet-radius);
   --dzm-sheet-fill: var(--color-surface);
   --dzm-sheet-ink: var(--ios-label);
-  --dzm-sheet-edge: 0 -1px 0 0 var(--ios-glass-highlight);
+  --dzm-sheet-edge: none;
   --dzm-sheet-grabber-w: 36px;
   --dzm-sheet-grabber-h: 5px;
   --dzm-sheet-grabber-margin: 5px 0 0;
   --dzm-sheet-grabber: var(--ios-fill);
-  --dzm-sheet-bar-height: 56px;
-  --dzm-sheet-bar-pad: 0 16px;
+  --dzm-sheet-bar-height: 60px;
+  --dzm-sheet-bar-pad: 8px 16px 4px;
   --dzm-sheet-title-font: var(--ios-headline);
   --dzm-sheet-title-tracking: -0.41px;
-  --dzm-sheet-body-pad: 0 0 24px;
+  --dzm-sheet-action-size: 44px;
+  --dzm-sheet-action-pad: 0;
+  --dzm-sheet-action-fill: var(--ios-glass-fill);
+  --dzm-sheet-action-ink: var(--ios-label);
+  --dzm-sheet-action-glyph: 18px;
+  --dzm-sheet-focus: var(--ios-tint);
+  --dzm-sheet-body-pad: 0 0 calc(24px + var(--dzm-inset-bottom));
 }
 
-/* Android: the low surface container at the 28dp corner, a 32 by 4
-   handle at 40% of the outline, the title in title-large at 16dp. */
+.dzm-sheet[data-platform='ios'].dzm-glass {
+  background: var(--ios-glass-fill-thick);
+}
+
+.dzm-sheet[data-platform='ios'][data-detent='large'] {
+  --dzm-sheet-inset: 0px;
+  --dzm-sheet-radius: var(--ios-sheet-radius) var(--ios-sheet-radius) 0 0;
+  --dzm-sheet-edge: 0 -1px 0 0 var(--ios-glass-highlight);
+}
+
+.dzm-sheet[data-platform='ios'] .dzm-sheet__action > svg {
+  stroke-width: 2.6;
+}
+
+.dzm-sheet[data-platform='ios'] .dzm-sheet__action[data-confirm] {
+  --dzm-sheet-action-fill: var(--ios-tint);
+  --dzm-sheet-action-ink: var(--ios-on-tint);
+}
+
+.dzm-sheet[data-platform='ios'] .dzm-sheet__action:active {
+  transform: scale(var(--ios-press-scale));
+}
+
+/* The screen a large sheet covers recedes: smaller, its corners rounded,
+   drawn back from the status bar. */
+.dzm-theme[data-platform='ios'] .dzm-screen:not(.dzm-sheet .dzm-screen) {
+  transform-origin: 50% 0;
+  transition:
+    transform 480ms var(--ios-ease),
+    border-radius 480ms var(--ios-ease);
+}
+
+.dzm-theme[data-platform='ios']:has(
+    .dzm-sheet[data-platform='ios'][data-detent='large'][data-open]:not(
+        [data-ending-style]
+      )
+  )
+  .dzm-screen:not(.dzm-sheet .dzm-screen) {
+  overflow: hidden;
+  border-radius: 12px;
+  transform: translateY(calc(var(--dzm-inset-top) * 0.2)) scale(0.92);
+}
+
+/* Android ---------------------------------------------------------------- */
+
+/*
+ * Material's modal bottom sheet: the low surface container on the bottom
+ * edge at the 28dp corner, 640dp at most, a 32 by 4 drag handle at 40% of
+ * the surface variant ink, the title in title-large at 16dp and a text
+ * button to confirm. Emphasized decelerate in, accelerate out.
+ */
+.dzm-sheet-scrim[data-platform='android'],
+.dzm-sheet-viewport[data-platform='android'],
+.dzm-sheet[data-platform='android'] {
+  --dzm-sheet-duration: var(--m3-duration-long);
+  --dzm-sheet-ease: var(--m3-ease-emphasized-decelerate);
+}
+
 .dzm-sheet-scrim[data-platform='android'] {
   --dzm-sheet-scrim: var(--m3-scrim);
-  --dzm-sheet-motion: var(--m3-duration-medium) var(--m3-ease-standard);
 }
 
 .dzm-sheet[data-platform='android'] {
-  --dzm-sheet-motion: var(--m3-duration-long) var(--m3-ease-emphasized-decelerate);
   --dzm-sheet-top-gap: 72px;
-  --dzm-sheet-radius: var(--m3-corner-xl);
+  --dzm-sheet-inset: 0px;
+  --dzm-sheet-radius: var(--m3-corner-xl) var(--m3-corner-xl) 0 0;
   --dzm-sheet-fill: var(--m3-surface-container-low);
   --dzm-sheet-ink: var(--m3-on-surface);
   --dzm-sheet-edge: var(--m3-elevation-1);
   --dzm-sheet-grabber-w: 32px;
   --dzm-sheet-grabber-h: 4px;
   --dzm-sheet-grabber-margin: 22px 0;
-  --dzm-sheet-grabber: color-mix(in srgb, var(--m3-on-surface-variant) 40%, transparent);
+  --dzm-sheet-grabber: color-mix(
+    in srgb,
+    var(--m3-on-surface-variant) 40%,
+    transparent
+  );
   --dzm-sheet-bar-height: 48px;
-  --dzm-sheet-bar-pad: 0 16px;
+  --dzm-sheet-bar-pad: 0 12px 0 24px;
   --dzm-sheet-title-font: var(--m3-title-large);
-  --dzm-sheet-body-pad: 0 0 24px;
+  --dzm-sheet-action-size: 40px;
+  --dzm-sheet-action-pad: 0 12px;
+  --dzm-sheet-action-fill: transparent;
+  --dzm-sheet-action-ink: var(--m3-primary);
+  --dzm-sheet-action-font: var(--m3-label-large);
+  --dzm-sheet-action-tracking: var(--m3-label-large-tracking);
+  --dzm-sheet-focus: var(--m3-primary);
+  --dzm-sheet-body-pad: 0 0 calc(24px + var(--dzm-inset-bottom));
+  --m3-layer: var(--m3-primary);
+}
+
+.dzm-sheet[data-platform='android'][data-ending-style] {
+  --dzm-sheet-ease: var(--m3-ease-emphasized-accelerate);
 }
 
 .dzm-sheet[data-platform='android'] .dzm-sheet__bar {
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr auto;
 }
 
 .dzm-sheet[data-platform='android'] .dzm-sheet__title {
   grid-column: 1;
   text-align: start;
+}
+
+.dzm-sheet[data-platform='android'] .dzm-sheet__action[data-confirm] {
+  grid-column: 2;
 }

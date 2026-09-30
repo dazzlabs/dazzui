@@ -8,6 +8,7 @@
   padding-top: var(--dzm-inset-top);
   background: var(--dzm-nav-fill);
   color: var(--dzm-nav-ink);
+  transition: background-color var(--dzm-nav-motion);
 }
 
 .dzm-nav__bar {
@@ -32,19 +33,39 @@
 }
 
 .dzm-nav__title {
+  display: flex;
+  flex-direction: column;
+  align-items: var(--dzm-nav-title-align);
   min-width: 0;
+  transition:
+    opacity var(--dzm-nav-motion),
+    transform var(--dzm-nav-motion);
+}
+
+.dzm-nav__title-text,
+.dzm-nav__subtitle {
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.dzm-nav__title-text {
   font: var(--dzm-nav-title-font);
   letter-spacing: var(--dzm-nav-title-tracking, normal);
 }
 
-.dzm-nav__large-title {
-  margin: 0;
-  padding: var(--dzm-nav-large-pad);
-  font: var(--dzm-nav-large-font);
-  letter-spacing: var(--dzm-nav-large-tracking, normal);
+.dzm-nav__subtitle {
+  color: var(--dzm-nav-subtitle);
+  font: var(--dzm-nav-subtitle-font);
+  letter-spacing: var(--dzm-nav-subtitle-tracking, normal);
+}
+
+/* A large bar keeps the title out of the bar until the large one has
+   scrolled under it. */
+.dzm-nav[data-large]:not([data-collapsed]) .dzm-nav__title {
+  opacity: 0;
+  transform: translateY(var(--dzm-nav-title-rise, 0));
 }
 
 .dzm-nav__back {
@@ -76,34 +97,85 @@
   stroke-width: 2.6;
 }
 
+/* The large title: in the content, under the bar, scrolling away. */
+.dzm-nav-large {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  padding: var(--dzm-nav-large-pad);
+  background: var(--dzm-nav-large-fill);
+  color: var(--dzm-nav-large-ink);
+}
+
+.dzm-nav-large__title {
+  margin: 0;
+  font: var(--dzm-nav-large-font);
+  letter-spacing: var(--dzm-nav-large-tracking, normal);
+}
+
+.dzm-nav-large__subtitle {
+  margin: 0;
+  color: var(--dzm-nav-large-subtitle);
+  font: var(--dzm-nav-large-subtitle-font);
+  letter-spacing: var(--dzm-nav-large-subtitle-tracking, normal);
+}
+
 /* iOS ------------------------------------------------------------------- */
 
-/* Compact: a 44pt glass bar, the title in the headline weight centred,
-   the controls 44pt glass circles the tint glyph sits in. Large: the bar
-   is clear and the title sets in the large-title weight, 16pt in. */
+/*
+ * iOS 26's bar is clear. Its controls are 44pt glass circles, and two or
+ * more side by side share one glass capsule, as a `ToolbarItemGroup`
+ * does. The title is the headline, centred, with the subtitle in the
+ * footnote beneath; the large title is the large-title style 16pt in, the
+ * subtitle in the subheadline under it.
+ *
+ * Once content scrolls under the bar, the scroll-edge effect comes up: a
+ * blur of what passes beneath, washed with the ground and masked to fade
+ * out below the bar, so nothing draws a line across the screen.
+ */
 .dzm-nav[data-platform='ios'] {
   --dzm-nav-height: 44px;
-  --dzm-nav-pad: 6px 8px;
+  --dzm-nav-pad: 6px 16px;
   --dzm-nav-gap: 8px;
-  --dzm-nav-fill: var(--ios-glass-fill);
+  --dzm-nav-fill: transparent;
   --dzm-nav-ink: var(--ios-label);
+  --dzm-nav-motion: var(--ios-duration-fast) var(--ios-ease);
+  --dzm-nav-title-align: center;
   --dzm-nav-title-font: var(--ios-headline);
   --dzm-nav-title-tracking: -0.41px;
-  --dzm-nav-large-font: var(--ios-large-title);
-  --dzm-nav-large-tracking: 0.4px;
-  --dzm-nav-large-pad: 4px 16px 8px;
+  --dzm-nav-title-rise: 4px;
+  --dzm-nav-subtitle: var(--ios-label-secondary);
+  --dzm-nav-subtitle-font: var(--ios-caption1);
   --dzm-nav-back-size: 44px;
   --dzm-nav-back-pad: 0 14px 0 10px;
   --dzm-nav-back-fill: var(--ios-glass-fill);
-  --dzm-nav-back-ink: var(--ios-tint);
+  --dzm-nav-back-ink: var(--ios-label);
   --dzm-nav-back-font: var(--ios-body);
   --dzm-nav-back-tracking: -0.41px;
   --dzm-nav-back-glyph: 20px;
 }
 
-.dzm-nav[data-platform='ios'][data-large] {
-  --dzm-nav-fill: transparent;
-  position: static;
+.dzm-nav[data-platform='ios']::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 -20px;
+  z-index: -1;
+  background: linear-gradient(
+    to bottom,
+    var(--dzm-background) 30%,
+    color-mix(in srgb, var(--dzm-background) 60%, transparent)
+  );
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent);
+  mask-image: linear-gradient(to bottom, #000 60%, transparent);
+  opacity: 0;
+  transition: opacity var(--ios-duration) var(--ios-ease);
+  pointer-events: none;
+}
+
+.dzm-nav[data-platform='ios'][data-scrolled]::before {
+  opacity: 1;
 }
 
 .dzm-nav[data-platform='ios'] .dzm-nav__back:not(:has(.dzm-nav__back-label)) {
@@ -113,29 +185,84 @@
 
 .dzm-nav[data-platform='ios'] .dzm-nav__back:active {
   transform: scale(var(--ios-press-scale));
-  opacity: 0.7;
+}
+
+/* Glass controls side by side merge into one capsule; each keeps its own
+   press, drawn as the lens rather than a second pane of glass. */
+.dzm-nav[data-platform='ios']
+  :is(.dzm-nav__leading, .dzm-nav__trailing):has(
+    > .dzm-icon-button[data-variant='glass'] + .dzm-icon-button[data-variant='glass']
+  ) {
+  gap: 0;
+  padding: 0 2px;
+  border-radius: 9999px;
+  background: var(--ios-glass-fill);
+  -webkit-backdrop-filter: var(--ios-glass-blur);
+  backdrop-filter: var(--ios-glass-blur);
+  box-shadow: var(--ios-glass-edge);
+}
+
+.dzm-nav[data-platform='ios']
+  :is(.dzm-nav__leading, .dzm-nav__trailing):has(
+    > .dzm-icon-button[data-variant='glass'] + .dzm-icon-button[data-variant='glass']
+  )
+  > .dzm-icon-button[data-variant='glass'] {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+.dzm-nav[data-platform='ios']
+  :is(.dzm-nav__leading, .dzm-nav__trailing)
+  > .dzm-icon-button[data-variant='glass']:active {
+  background: var(--ios-fill-quaternary);
+}
+
+.dzm-nav-large[data-platform='ios'] {
+  --dzm-nav-large-pad: 2px 16px 10px;
+  --dzm-nav-large-fill: transparent;
+  --dzm-nav-large-ink: var(--ios-label);
+  --dzm-nav-large-font: var(--ios-large-title);
+  --dzm-nav-large-tracking: 0.4px;
+  --dzm-nav-large-subtitle: var(--ios-label-secondary);
+  --dzm-nav-large-subtitle-font: var(--ios-subheadline);
+  --dzm-nav-large-subtitle-tracking: -0.24px;
 }
 
 /* Android ---------------------------------------------------------------- */
 
-/* A 64dp bar on the surface with the title in title-large at the leading
-   edge, the navigation icon a 48dp target 4dp in; the large bar adds a
-   row and sets the title in headline-medium, 16dp in and 28dp up. */
+/*
+ * A 64dp bar on the surface with the title in title-large at the leading
+ * edge and the subtitle in label-medium under it, the navigation icon a
+ * 48dp target 4dp in. Anything scrolling beneath turns it to the surface
+ * container. The large bar adds a row under it with the title in
+ * headline-medium and the subtitle in title-medium, 16dp in and 28dp up,
+ * and collapses into the small bar as that row scrolls away.
+ */
 .dzm-nav[data-platform='android'] {
   --dzm-nav-height: 64px;
   --dzm-nav-pad: 8px 4px;
   --dzm-nav-gap: 0;
   --dzm-nav-fill: var(--m3-surface);
   --dzm-nav-ink: var(--m3-on-surface);
+  --dzm-nav-motion: var(--m3-duration-short) var(--m3-ease-standard);
+  --dzm-nav-title-align: flex-start;
   --dzm-nav-title-font: var(--m3-title-large);
-  --dzm-nav-large-font: var(--m3-headline-medium);
-  --dzm-nav-large-pad: 0 16px 28px;
+  --dzm-nav-subtitle: var(--m3-on-surface-variant);
+  --dzm-nav-subtitle-font: var(--m3-label-medium);
+  --dzm-nav-subtitle-tracking: var(--m3-label-medium-tracking);
   --dzm-nav-back-size: 48px;
   --dzm-nav-back-pad: 0;
   --dzm-nav-back-fill: transparent;
   --dzm-nav-back-ink: var(--m3-on-surface);
   --dzm-nav-back-glyph: 24px;
   --m3-layer: var(--m3-on-surface);
+}
+
+.dzm-nav[data-platform='android'][data-scrolled]:not([data-large]),
+.dzm-nav[data-platform='android'][data-large][data-collapsed] {
+  --dzm-nav-fill: var(--m3-surface-container);
 }
 
 .dzm-nav[data-platform='android'] .dzm-nav__bar {
@@ -146,14 +273,16 @@
   padding-inline-start: 12px;
 }
 
-.dzm-nav[data-platform='android'] .dzm-nav__leading:empty + .dzm-nav__title {
-  padding-inline-start: 12px;
-}
-
 .dzm-nav[data-platform='android'] .dzm-nav__back {
   justify-content: center;
 }
 
-.dzm-nav[data-platform='android'][data-large] {
-  --dzm-nav-fill: var(--m3-surface);
+.dzm-nav-large[data-platform='android'] {
+  --dzm-nav-large-pad: 0 16px 28px;
+  --dzm-nav-large-fill: var(--m3-surface);
+  --dzm-nav-large-ink: var(--m3-on-surface);
+  --dzm-nav-large-font: var(--m3-headline-medium);
+  --dzm-nav-large-subtitle: var(--m3-on-surface-variant);
+  --dzm-nav-large-subtitle-font: var(--m3-title-medium);
+  --dzm-nav-large-subtitle-tracking: var(--m3-title-medium-tracking);
 }
