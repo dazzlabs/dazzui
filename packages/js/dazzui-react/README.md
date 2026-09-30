@@ -33,6 +33,12 @@ renders an `<svg>`.
 pnpm build
 ```
 
+`dist/` is not committed. `prepare` runs the same build, so installing the
+package from git — pnpm, for example, with
+`github:dazzlabs/dazzui#<commit>&path:/packages/js/dazzui-react` — builds it
+on install; pnpm runs that script only for a git dependency listed in the
+consumer's `allowBuilds`.
+
 After editing a token, regenerate first — from the workspace root, `pnpm
 packages` does both in order.
 
