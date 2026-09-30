@@ -75,8 +75,18 @@ public class Button : Microsoft.UI.Xaml.Controls.Button
         FocusVisualPrimaryThickness = new Thickness(Theme.Number("focus.width"));
         FocusVisualSecondaryThickness = new Thickness(0);
         FocusVisualMargin = new Thickness(0);
+        Tailor();
     }
 
+    /// <summary>Where a button that departs from the shared recipes repaints its state brushes, after every theme pass.</summary>
+    protected virtual void Tailor() { }
+    /// <summary>Repaints one state brush in place, so an active visual state follows.</summary>
+    protected void Repaint(string key, Windows.UI.Color color)
+    {
+        if (stateBrushes.TryGetValue(key, out var brush)) brush.Color = color;
+        if (key == "ButtonForeground") Foreground = stateBrushes[key];
+        if (key == "ButtonBackground") Background = stateBrushes[key];
+    }
     private void SetBrush(string key, Microsoft.UI.Xaml.Media.SolidColorBrush brush)
     {
         // Keep the resource object alive so an active visual state follows changes.

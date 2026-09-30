@@ -32,7 +32,7 @@ internal static class CornerTests
             await Task.Delay(80); shell.UpdateLayout(); await new RenderTargetBitmap().RenderAsync(shell);
             foreach (var (control, token) in new (Control, string)[] {
                 (button, "radius.small"), (single, "control.field.radius"), (multiline, "radius.large"), (option, "radius.large"),
-                (small, "radius.medium"), (medium, "radius.large"), (large, "radius.large"),
+                (small, "control.container.radius"), (medium, "radius.large"), (large, "radius.large"),
                 (skeleton, "radius.tiny"), (card, "radius.large"), (badge, "radius.tiny") })
             {
                 var expected = new CornerRadius(Math.Min(theme.Number(token), Math.Min(control.ActualWidth, control.ActualHeight) / 2));
@@ -42,11 +42,11 @@ internal static class CornerTests
                 if (control is UI.Surface && border is not null && border.CornerRadius != expected)
                     throw new InvalidOperationException($"{name}: {control.GetType().Name} template did not receive its corner radius.");
             }
-            var item = (ListBoxItem)segments.ContainerFromIndex(0);
-            var segmentBorder = Descendants(segments).OfType<Border>().First(border => border.Name == "LayoutRoot");
-            if (segmentBorder.CornerRadius != segments.CornerRadius) throw new InvalidOperationException($"{name}: segmented background ignored the control corner.");
-            var inner = Math.Max(0, theme.Number("control.medium.radius") - theme.Number("segmented-control.inset"));
-            if (item.CornerRadius != new CornerRadius(Math.Min(inner, Math.Min(item.ActualWidth, item.ActualHeight) / 2))) throw new InvalidOperationException($"{name}: segmented inner corner mismatch.");
+            var item = segments.Segments[0];
+            var track = Math.Min(theme.Number("radius.medium"), segments.ActualHeight / 2);
+            if (segments.CornerRadius != new CornerRadius(track)) throw new InvalidOperationException($"{name}: segmented track ignored the container corner.");
+            var inner = Math.Max(0, track - theme.Number("segmented-control.inset"));
+            if (item.CornerRadius != new CornerRadius(inner)) throw new InvalidOperationException($"{name}: segmented inner corner mismatch.");
             if (name.StartsWith("bright-")) await SmokeTest.SaveAsync(shell, output, name + "-corners.png");
             if (name.StartsWith("bright-"))
             {

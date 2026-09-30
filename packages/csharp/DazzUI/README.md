@@ -52,7 +52,10 @@ when copying the app. ARM64 is configured but requires validation on ARM64 hardw
 - Overlays: Menu, ContextMenu, Menubar, Popover, PreviewCard, Tooltip,
   Dialog and Drawer.
 
-Native WinUI primitives own editing, selection, focus and popup behavior.
+Controls are drawn to React's geometry and recipes — a Tree, a
+SegmentedControl, PillTabs or a Collapsible draws its own rows and segments
+rather than restyling a native list — while native WinUI primitives own
+editing, selection, focus and popup behavior.
 Controls that WinUI does not support subclassing are composed and expose their
 native input through `Input`, `Indicator`, `View` or `Native`. RangeSlider and
 Splitter implement their extra drag and keyboard behavior with native Thumb
@@ -120,7 +123,10 @@ The smoke suite needs an interactive Windows desktop. It runs in a temporary
 real WinUI window, renders every component's page in each of the twelve
 themes DazzUI draws and the overview in every imported theme, and checks button geometry, state recipes and a scene's live state.
 `DAZZUI_SMOKE_THEMES=studio-light,studio-dark` narrows the themes, and
-`DAZZUI_SMOKE_SHOTS=all` keeps a picture of every page. Interaction checks cover
+`DAZZUI_SMOKE_SHOTS=all` keeps a picture of every page,
+`DAZZUI_SMOKE_EXAMPLES=1` a picture of each example on its own, beside which
+React's can be set, `DAZZUI_SMOKE_PAGES=a,b` narrows the pages and
+`DAZZUI_SMOKE_EVERY_PAGE=1` renders every page in every theme it runs. Interaction checks cover
 checkbox/radio automation, form validation and submission, OTP paste and
 masking, range constraints, inherited themes without resetting input, menu
 actions, popovers, dialog results and all four drawer edges.

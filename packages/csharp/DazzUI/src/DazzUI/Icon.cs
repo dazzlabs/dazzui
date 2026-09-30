@@ -48,6 +48,18 @@ public sealed class IconButton : Button
         RegisterPropertyChangedCallback(PaddingProperty, (_, _) => { if (IsLoaded && Padding != new Thickness(0)) Padding = new Thickness(0); });
         RegisterPropertyChangedCallback(HeightProperty, (_, _) => { if (IsLoaded) Square(); });
     }
+    /// <summary>
+    /// The default posture — plain and neutral — is quiet chrome: a subtle-ink
+    /// glyph that washes grey and darkens to full ink under the pointer.
+    /// </summary>
+    protected override void Tailor()
+    {
+        if (Variant != ControlVariant.Plain || Tint != WidgetTint.Neutral) return;
+        Repaint("ButtonForeground", Theme.Color("color.content-subtle"));
+        Repaint("ButtonForegroundPointerOver", Theme.Color("color.content"));
+        Repaint("ButtonForegroundPressed", Theme.Color("color.content"));
+        Repaint("ButtonBackgroundPointerOver", Theme.Color("color.surface-subtle"));
+    }
     private void Square()
     {
         Width = Height; Padding = new Thickness(0);
@@ -56,12 +68,25 @@ public sealed class IconButton : Button
         Appearance.Refresh(icon);
     }
 }
+public enum LinkUnderline { Hover, Always, None }
 public sealed class Link : HyperlinkButton
 {
+    private bool hovered;
     public Theme Theme { get => Appearance.GetTheme(this); set => Appearance.SetTheme(this, value); }
     public WidgetTint Tint { get => Appearance.GetTint(this); set => Appearance.SetTint(this, value); }
+    /// <summary>When the underline shows: under the pointer by default, always, or never.</summary>
+    public LinkUnderline Underline { get; set; }
     public Link()
     {
-        Appearance.Bind(this, () => { Theme.Typography(this, "bodyMedium"); Foreground = Theme.Recipe(ControlVariant.Plain, Tint, "content"); Padding = new Thickness(0); Skin.Focus(this, Theme); });
+        Appearance.Bind(this, Apply);
+        PointerEntered += (_, _) => { hovered = true; Apply(); };
+        PointerExited += (_, _) => { hovered = false; Apply(); };
+    }
+    private void Apply()
+    {
+        Theme.Typography(this, "bodyMedium"); Foreground = Theme.Recipe(ControlVariant.Plain, Tint, "content"); Padding = new Thickness(0); Skin.Focus(this, Theme);
+        if (Content is string text) Content = new TextBlock { Text = text };
+        if (Content is TextBlock words)
+            words.TextDecorations = Underline == LinkUnderline.Always || Underline == LinkUnderline.Hover && hovered ? Windows.UI.Text.TextDecorations.Underline : Windows.UI.Text.TextDecorations.None;
     }
 }

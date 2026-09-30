@@ -25,7 +25,8 @@ public class TextField : TextBox
         Skin.Input(this, Theme, Size, Invalid);
         if (Mono) FontFamily = new FontFamily("Cascadia Mono, Consolas");
         if (!AcceptsReturn) Height = Theme.Number($"control.{Theme.Key(Size)}.size");
-        else { Height = double.NaN; TextWrapping = TextWrapping.Wrap; }
+        // A multiline field grows from a floor rather than sitting at a height.
+        else { Height = double.NaN; MinHeight = Theme.Number("spacing.20"); TextWrapping = TextWrapping.Wrap; }
         // Native editors lay text out from the top. Derive the inset from the
         // platform font metrics rather than assuming a CSS line box or a fixed
         // Windows font height; the same padding also positions the placeholder.
@@ -115,6 +116,7 @@ public class Select : ComboBox
 public class Autocomplete : Surface
 {
     private Style? nativeTextBoxStyle;
+    private bool painted;
     public AutoSuggestBox Input { get; } = new();
     public string Text { get => Input.Text; set => Input.Text = value; }
     public string PlaceholderText { get => Input.PlaceholderText; set => Input.PlaceholderText = value; }
@@ -129,6 +131,9 @@ public class Autocomplete : Surface
     {
         Content = Input;
         Input.Loaded += (_, _) => RefreshAppearance();
+        Input.GotFocus += (_, _) => PaintPlaceholder();
+        Input.LostFocus += (_, _) => PaintPlaceholder();
+        Input.LayoutUpdated += (_, _) => { if (!painted && IsLoaded) { painted = true; PaintPlaceholder(); } };
         Input.TextChanged += (_, args) =>
         {
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
@@ -137,6 +142,25 @@ public class Autocomplete : Surface
         };
         Input.SuggestionChosen += (_, args) => Choose(args.SelectedItem);
         Input.QuerySubmitted += (_, args) => { if (args.ChosenSuggestion is not null) Choose(args.ChosenSuggestion); };
+    }
+    /// <summary>
+    /// The query box is the native control's own part, templated before a theme
+    /// is known: its placeholder presenter takes the faint ink directly.
+    /// </summary>
+    private void PaintPlaceholder()
+    {
+        var faint = Theme.Brush("color.content-faint");
+        foreach (var box in Parts<TextBox>(Input)) box.PlaceholderForeground = faint;
+        foreach (var words in Parts<TextBlock>(Input).Where(part => part.Name == "PlaceholderTextContentPresenter")) words.Foreground = faint;
+    }
+    private static IEnumerable<T> Parts<T>(DependencyObject root) where T : DependencyObject
+    {
+        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
+        {
+            var child = VisualTreeHelper.GetChild(root, i);
+            if (child is T part) yield return part;
+            foreach (var deeper in Parts<T>(child)) yield return deeper;
+        }
     }
     private void Choose(object item)
     {
@@ -163,6 +187,7 @@ public class Autocomplete : Surface
     {
         Skin.Input(Input, Theme, Size, Invalid);
         if (Mono) Input.FontFamily = new FontFamily("Cascadia Mono, Consolas");
+        PaintPlaceholder();
         Skin.InputPadding(Input, Theme, Size);
         nativeTextBoxStyle ??= Input.TextBoxStyle;
         if (nativeTextBoxStyle is not null)
@@ -170,6 +195,7 @@ public class Autocomplete : Surface
             // Keep the native query/clear buttons and suggestion behavior.
             var style = new Style(typeof(TextBox)) { BasedOn = nativeTextBoxStyle };
             style.Setters.Add(new Setter(Control.PaddingProperty, Input.Padding));
+            style.Setters.Add(new Setter(TextBox.PlaceholderForegroundProperty, Theme.Brush("color.content-faint")));
             style.Setters.Add(new Setter(FrameworkElement.MinHeightProperty, Input.MinHeight));
             style.Setters.Add(new Setter(FrameworkElement.HeightProperty, Input.MinHeight));
             Input.TextBoxStyle = style;
@@ -180,39 +206,134 @@ public sealed class Combobox : Autocomplete
 {
     public Combobox()
     {
-        Input.QueryIcon = new SymbolIcon(Symbol.Find);
+        // The list drops from a chevron at the trailing edge, as a Select's does.
+        var chevron = Icon.Element(FluentIcons.Common.Icon.ChevronDown);
+        chevron.FontSize = 12;
+        Input.QueryIcon = chevron;
         GotFocus += (_, _) => { RefreshSuggestions(""); IsSuggestionListOpen = true; };
     }
 }
+/// <summary>
+/// A number in the text controls' box, with its unit and a stepper inside it
+/// at the trailing edge: two half-height steps in one column, hairlined off
+/// the value. Up and Down step it too; the value is clamped to its range.
+/// </summary>
 public sealed class NumberField : Surface
 {
-    public NumberBox Input { get; } = new();
-    public double Value { get => Input.Value; set => Input.Value = value; }
-    public double Minimum { get => Input.Minimum; set => Input.Minimum = value; }
-    public double Maximum { get => Input.Maximum; set => Input.Maximum = value; }
-    public double SmallChange { get => Input.SmallChange; set => Input.SmallChange = value; }
-    public double LargeChange { get => Input.LargeChange; set => Input.LargeChange = value; }
-    public string PlaceholderText { get => Input.PlaceholderText; set => Input.PlaceholderText = value; }
-    public event Windows.Foundation.TypedEventHandler<NumberBox, NumberBoxValueChangedEventArgs> ValueChanged { add => Input.ValueChanged += value; remove => Input.ValueChanged -= value; }
+    private readonly Border box = new();
+    private readonly TextBox editor = new() { BorderThickness = new Thickness(0), VerticalAlignment = VerticalAlignment.Center };
+    private readonly TextBlock unit = new() { VerticalAlignment = VerticalAlignment.Center };
+    private readonly Border stepper = new();
+    private readonly Microsoft.UI.Xaml.Controls.Button up = Step(FluentIcons.Common.Icon.ChevronUp);
+    private readonly Microsoft.UI.Xaml.Controls.Button down = Step(FluentIcons.Common.Icon.ChevronDown);
+    private double value = double.NaN;
+    private bool focused;
+    /// <summary>The native editor that holds the typed value.</summary>
+    public TextBox Input => editor;
+    public double Value { get => value; set { this.value = double.IsNaN(value) ? value : Math.Clamp(value, Minimum, Maximum); Show(); } }
+    public double Minimum { get; set; } = double.MinValue;
+    public double Maximum { get; set; } = double.MaxValue;
+    public double SmallChange { get; set; } = 1;
+    public double LargeChange { get; set; } = 10;
+    public string PlaceholderText { get => editor.PlaceholderText; set => editor.PlaceholderText = value; }
+    public event EventHandler<double>? ValueChanged;
     public bool Invalid { get; set; }
     public string? Unit { get; set; }
     public NumberField()
     {
-        Content = Input;
-        Input.SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline;
-        Input.ValidationMode = NumberBoxValidationMode.InvalidInputOverwritten;
-        Input.Loaded += (_, _) => SizeEditor(Input);
-    }
-    private void SizeEditor(DependencyObject root)
-    {
-        if (root is TextBox editor)
+        var row = new Grid();
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        Grid.SetColumn(unit, 1);
+        Grid.SetColumn(stepper, 2);
+        stepper.Child = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Children = { up, down } };
+        row.Children.Add(editor);
+        row.Children.Add(unit);
+        row.Children.Add(stepper);
+        box.Child = row;
+        Content = box;
+        up.Click += (_, _) => Commit(Read() + SmallChange);
+        down.Click += (_, _) => Commit(Read() - SmallChange);
+        editor.GotFocus += (_, _) => { focused = true; RefreshAppearance(); };
+        editor.LostFocus += (_, _) => { focused = false; Commit(Read()); RefreshAppearance(); };
+        editor.KeyDown += (_, args) =>
         {
-            editor.MinHeight = editor.Height = Theme.Number($"control.{Theme.Key(Size)}.size");
-            return;
-        }
-        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++) SizeEditor(VisualTreeHelper.GetChild(root, i));
+            var step = args.Key switch
+            {
+                Windows.System.VirtualKey.Up => SmallChange,
+                Windows.System.VirtualKey.Down => -SmallChange,
+                Windows.System.VirtualKey.PageUp => LargeChange,
+                Windows.System.VirtualKey.PageDown => -LargeChange,
+                _ => 0,
+            };
+            if (args.Key == Windows.System.VirtualKey.Enter) { Commit(Read()); args.Handled = true; }
+            else if (step != 0) { Commit(Read() + step); args.Handled = true; }
+        };
     }
-    protected override void RefreshAppearance() { Skin.Input(Input, Theme, Size, Invalid); Input.Description = Unit; SizeEditor(Input); }
+    private static Microsoft.UI.Xaml.Controls.Button Step(FluentIcons.Common.Icon glyph) => new()
+    {
+        Content = new Icon { Glyph = glyph },
+        Padding = new Thickness(0),
+        MinWidth = 0,
+        MinHeight = 0,
+        BorderThickness = new Thickness(0),
+        IsTabStop = false,
+    };
+    private double Read() =>
+        double.TryParse(editor.Text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.CurrentCulture, out var typed)
+            ? typed
+            : double.IsNaN(value) ? Math.Max(Minimum, Math.Min(0, Maximum)) : value;
+    private void Commit(double next)
+    {
+        var previous = value;
+        Value = next;
+        if (!Equals(previous, value)) ValueChanged?.Invoke(this, value);
+    }
+    private void Show() => editor.Text = double.IsNaN(value) ? "" : value.ToString(System.Globalization.CultureInfo.CurrentCulture);
+    protected override void RefreshAppearance()
+    {
+        var height = Theme.Number($"control.{Theme.Key(Size)}.size");
+        Skin.Input(editor, Theme, Size, Invalid);
+        // The box draws; the editor disappears into it.
+        box.Background = focused && !Invalid ? Theme.Brush("color.surface") : editor.Background;
+        box.BorderBrush = focused || Invalid ? Theme.Brush($"color.{(Invalid ? "danger" : Theme.Key(Tint))}.600") : editor.BorderBrush;
+        box.BorderThickness = new Thickness(Theme.Number("stroke.hairline"));
+        box.CornerRadius = new CornerRadius(Math.Min(Theme.Number("control.field.radius"), height / 2));
+        box.Height = height;
+        box.Padding = new Thickness(0, 0, Theme.Number("spacing.1"), 0);
+        var clear = new SolidColorBrush(Microsoft.UI.Colors.Transparent);
+        editor.Background = clear;
+        editor.BorderThickness = new Thickness(0);
+        foreach (var key in new[] { "TextControlBackground", "TextControlBackgroundPointerOver", "TextControlBackgroundFocused", "TextControlBorderBrush", "TextControlBorderBrushPointerOver", "TextControlBorderBrushFocused" })
+            editor.Resources[key] = clear;
+        editor.Height = height - 2 * Theme.Number("stroke.hairline");
+        editor.Padding = new Thickness(Theme.Number("spacing.3"), editor.Padding.Top, Theme.Number("spacing.1"), editor.Padding.Bottom);
+        Skin.InputPadding(editor, Theme, Size);
+        unit.Text = Unit ?? "";
+        unit.Visibility = Unit is null ? Visibility.Collapsed : Visibility.Visible;
+        unit.Foreground = Theme.Brush("color.content-faint");
+        unit.FontSize = Theme.Text("", "labelSmall").FontSize;
+        unit.Margin = new Thickness(0, 0, Theme.Number("spacing.1"), 0);
+        stepper.BorderBrush = Theme.Brush("color.border");
+        stepper.BorderThickness = new Thickness(Theme.Number("stroke.hairline"), 0, 0, 0);
+        stepper.Margin = new Thickness(0, Theme.Number("spacing.1"), 0, Theme.Number("spacing.1"));
+        stepper.Padding = new Thickness(Theme.Number("spacing.1"), 0, 0, 0);
+        foreach (var step in new[] { up, down })
+        {
+            step.Width = Theme.Number("spacing.4");
+            step.Height = Theme.Number("spacing.3");
+            step.CornerRadius = new CornerRadius(Theme.Number("radius.tiny"));
+            step.Background = clear;
+            step.Foreground = Theme.Brush("color.content-subtle");
+            step.Resources["ButtonBackgroundPointerOver"] = Theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "surface", "hovered");
+            step.Resources["ButtonBackgroundPressed"] = Theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "surface", "pressed");
+            step.Resources["ButtonBorderBrushPointerOver"] = clear;
+            step.Resources["ButtonBorderBrushPressed"] = clear;
+            if (step.Content is Icon glyph) glyph.GlyphSize = Math.Min(Theme.Number("icon.small"), Theme.Number("spacing.3"));
+        }
+        Show();
+    }
 }
 public sealed class FormField : Surface
 {
@@ -223,32 +344,46 @@ public sealed class FormField : Surface
     public UIElement? Field { get; set; }
     protected override void RefreshAppearance()
     {
-        var label = Theme.Text(Label + (Required ? " *" : ""), "labelMedium");
-        var body = Skin.Column(Theme, label);
-        body.Spacing = Theme.Number("spacing.1.5");
+        var subtle = Theme.Brush("color.content-subtle");
+        var danger = Theme.Brush("color.danger.700");
+        var label = Theme.Text(Label + (Required ? " *" : ""), "labelSmall");
+        label.Foreground = Error is null ? subtle : danger;
+        var body = new StackPanel { Spacing = Theme.Number("spacing.1.5") };
+        body.Children.Add(label);
         if (Field is not null)
         {
             // Reusing the input keeps editing state intact when a validation message changes.
-            if (Field is FrameworkElement element && element.Parent is Panel previous) previous.Children.Remove(Field);
+            Skin.Detach(Field);
             body.Children.Add(Field);
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetLabeledBy(Field, label);
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetIsRequiredForForm(Field, Required);
         }
         if ((Error ?? Hint) is string note)
         {
-            var message = Theme.Text(note, "bodySmall");
-            if (Error is not null) message.Foreground = Theme.Recipe(ControlVariant.Plain, WidgetTint.Danger, "content");
+            var message = Theme.Text(note, "labelQuiet");
+            message.LineHeight = message.FontSize * 1.6;
+            message.Foreground = Error is null ? subtle : danger;
             body.Children.Add(message);
         }
         Content = body;
     }
     public void SetError(string? error) { Error = error; RefreshAppearance(); }
 }
+/// <summary>Fields that belong together under a legend in the caption face; no border, only the air around it.</summary>
 public sealed class Fieldset : Surface
 {
     public string Legend { get; set; } = "";
     public IList<UIElement> Fields { get; } = new List<UIElement>();
-    protected override void RefreshAppearance() { Content = Skin.Column(Theme, new UIElement[] { Theme.Text(Legend, "titleSmall") }.Concat(Fields).ToArray()); }
+    protected override void RefreshAppearance()
+    {
+        var legend = Theme.Text(Legend, "captionSmall");
+        legend.FontWeight = Theme.Text("", "labelSmall").FontWeight;
+        legend.Foreground = Theme.Brush("color.content-subtle");
+        var body = new StackPanel { Spacing = Theme.Number("spacing.3") };
+        body.Children.Add(legend);
+        foreach (var field in Fields) { Skin.Detach(field); body.Children.Add(field); }
+        Content = body;
+    }
 }
 public sealed class Form : Surface
 {

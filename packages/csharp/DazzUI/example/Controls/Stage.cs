@@ -140,7 +140,9 @@ public sealed class StagePanel : Panel
         {
             if (!arrange) child.Measure(new Size(room, double.PositiveInfinity));
             var w = child.DesiredSize.Width;
-            if (x > 0 && x + w > room) { lines.Add([]); x = 0; }
+            // Layout rounding can arrange a hair narrower than it measured;
+            // that must not push the last child onto a line of its own.
+            if (x > 0 && x + w > room + 0.5) { lines.Add([]); x = 0; }
             lines[^1].Add(child);
             x += w + gap;
         }
@@ -163,6 +165,13 @@ public sealed class StagePanel : Panel
             }
             used = Math.Max(used, at - gap);
             y += tall + gap;
+            // An option card is `flex: 1` on the web: a line of them shares the room.
+            if (arrange && lines.Count == 1 && line.Count > 0 && line.All(child => child is OptionCard))
+            {
+                var share = (room - gap * (line.Count - 1)) / line.Count;
+                double left = 0;
+                foreach (var child in line) { child.Arrange(new Rect(left, 0, share, tall)); left += share + gap; }
+            }
         }
         return new Size(width is null ? Math.Min(Math.Max(0, used), room) : room, Math.Max(0, y - gap));
     }

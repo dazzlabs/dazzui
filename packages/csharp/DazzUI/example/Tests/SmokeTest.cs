@@ -37,12 +37,15 @@ internal static class SmokeTest
                 .Where(theme => only is null || only.Contains(theme.Id)).ToArray();
             // Every page in the twelve themes DazzUI draws; the overview, which
             // holds every component, in each theme imported from elsewhere.
-            var drawn = Halves(Themes.Groups[0].Families);
-            var imported = Halves(Themes.Groups.Skip(1).SelectMany(group => group.Families));
+            // DAZZUI_SMOKE_EVERY_PAGE=1 renders every page in every theme it runs.
+            var everyPage = Environment.GetEnvironmentVariable("DAZZUI_SMOKE_EVERY_PAGE") == "1";
+            var drawn = Halves(everyPage ? Themes.Groups.SelectMany(group => group.Families) : Themes.Groups[0].Families);
+            var imported = everyPage ? [] : Halves(Themes.Groups.Skip(1).SelectMany(group => group.Families));
             var themes = drawn.Concat(imported).ToArray();
             var total = drawn.Length * pages.Length + imported.Length;
             // DAZZUI_SMOKE_SHOTS=all keeps a picture of every page in the first theme.
             var shots = Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SHOTS") == "all";
+            var examples = Environment.GetEnvironmentVariable("DAZZUI_SMOKE_EXAMPLES") == "1";
             var renders = 0;
             foreach (var choice in themes)
             {
@@ -70,6 +73,10 @@ internal static class SmokeTest
                     CheckButtons(shell, choice.Id, page);
                     if (shots && choice == themes[0] || page is null or "button" && choice.Family == "studio")
                         await SaveAsync(shell, output, $"{choice.Id}-{page ?? "overview"}.png");
+                    // DAZZUI_SMOKE_EXAMPLES=1 keeps each example's stage on its own, as React's are captured.
+                    if (examples && choice == themes[0] && shell.CurrentPage is Document document)
+                        for (var i = 0; i < document.Stages.Count; i++)
+                            await SaveAsync(document.Stages[i], output, $"{page}-{i}.png");
                     renders++;
                 }
             }

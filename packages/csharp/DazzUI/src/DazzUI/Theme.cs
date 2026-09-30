@@ -94,3 +94,15 @@ public sealed class Theme
 
     internal static string Key<T>(T value) where T : Enum => value.ToString().ToLowerInvariant();
 }
+
+internal static class TextStyle
+{
+    /// <summary>Gives <paramref name="target"/> the face this styled text has, keeping its words and ink.</summary>
+    public static void CopyTo(this TextBlock source, TextBlock target)
+    {
+        target.FontSize = source.FontSize;
+        target.FontWeight = source.FontWeight;
+        target.LineHeight = source.LineHeight;
+        target.LineStackingStrategy = source.LineStackingStrategy;
+    }
+}

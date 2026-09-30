@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Automation.Provider;
@@ -12,6 +13,7 @@ public sealed class Splitter : Surface
 {
     public IList<SplitterPanel> Panels { get; } = new List<SplitterPanel>();
     public Orientation Orientation { get; set; }
+    public Splitter() { HorizontalContentAlignment = HorizontalAlignment.Stretch; VerticalContentAlignment = VerticalAlignment.Stretch; }
     protected override void RefreshAppearance()
     {
         var previous = Content as Grid;
@@ -28,8 +30,9 @@ public sealed class Splitter : Surface
             if (i + 1 == Panels.Count) continue;
             if (Orientation == Orientation.Horizontal) grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             else grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            var grip = new SplitterGrip { Background = Theme.Brush("color.border"), IsTabStop = true, MinimumValue = panel.Minimum, MaximumValue = panel.Maximum };
-            if (Orientation == Orientation.Horizontal) grip.Width = Theme.Number("spacing.1"); else grip.Height = Theme.Number("spacing.1");
+            // A hit target a step wide with a hairline rule centred in it.
+            var grip = new SplitterGrip { Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent), Rule = Theme.Brush("color.border"), Hairline = Theme.Number("stroke.hairline"), IsTabStop = true, MinimumValue = panel.Minimum, MaximumValue = panel.Maximum };
+            if (Orientation == Orientation.Horizontal) grip.Width = Theme.Number("spacing.2"); else grip.Height = Theme.Number("spacing.2");
             Skin.Focus(grip, Theme);
             grip.ReadValue = () => Orientation == Orientation.Horizontal ? grid.ColumnDefinitions[index].ActualWidth : grid.RowDefinitions[index].ActualHeight;
             grip.ReadMaximum = () => Orientation == Orientation.Horizontal ? Math.Min(panel.Maximum, grid.ColumnDefinitions[index].ActualWidth + grid.ColumnDefinitions[index + 2].ActualWidth - grid.ColumnDefinitions[index + 2].MinWidth) : Math.Min(panel.Maximum, grid.RowDefinitions[index].ActualHeight + grid.RowDefinitions[index + 2].ActualHeight - grid.RowDefinitions[index + 2].MinHeight);
@@ -65,9 +68,25 @@ public sealed class Splitter : Surface
 }
 internal sealed class SplitterGrip : Surface
 {
+    private readonly Border rule = new();
     internal Thumb Handle { get; } = new();
-    public SplitterGrip() { Content = Handle; Handle.IsTabStop = false; }
-    protected override void RefreshAppearance() { Handle.Background = Background; }
+    internal Brush? Rule { get; set; }
+    internal double Hairline { get; set; } = 1;
+    public SplitterGrip()
+    {
+        Handle.IsTabStop = false;
+        Handle.Opacity = 0;
+        Content = new Grid { Children = { rule, Handle } };
+        HorizontalContentAlignment = HorizontalAlignment.Stretch;
+        VerticalContentAlignment = VerticalAlignment.Stretch;
+    }
+    protected override void RefreshAppearance()
+    {
+        rule.Background = Rule;
+        var across = double.IsNaN(Height);
+        rule.Width = across ? Hairline : double.NaN;
+        rule.Height = across ? double.NaN : Hairline;
+    }
     internal Action<double> Move { get; set; } = _ => { };
     internal Func<double> ReadValue { get; set; } = () => 0;
     internal Func<double> ReadMaximum { get; set; } = () => 0;

@@ -57,10 +57,11 @@ public sealed class Menubar : Surface
     public IList<(string Label, Menu Menu)> Menus { get; } = new List<(string, Menu)>();
     protected override void RefreshAppearance()
     {
-        var row = new MenuBar { Background = Theme.Brush("color.surface"), Foreground = Theme.Brush("color.content") };
+        var row = new MenuBar { Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent), Foreground = Theme.Brush("color.content") };
         foreach (var (label, menu) in Menus)
         {
-            var trigger = new MenuBarItem { Title = label, AccessKey = label[..1] };
+            var trigger = new MenuBarItem { Title = label, AccessKey = label[..1], Height = Theme.Number("control.small.size"), Padding = new Thickness(Theme.Number("spacing.2"), 0, Theme.Number("spacing.2"), 0) };
+            Theme.Typography(trigger, "labelMedium");
             foreach (var item in menu.Items) trigger.Items.Add(Menu.BuildItem(item, Theme));
             row.Items.Add(trigger);
         }

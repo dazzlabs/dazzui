@@ -61,19 +61,10 @@ public static class Mapping
             ["AvatarGroup"] = n =>
             {
                 var max = (int?)n.Number("max") ?? n.Children.Count;
-                var size = n.Option("size", ControlSize.Medium);
-                var group = new AvatarGroup { Size = size };
+                var group = new AvatarGroup { Size = n.Option("size", ControlSize.Medium), Overflow = Math.Max(0, n.Children.Count - max) };
                 foreach (var avatar in n.Children.Take(max).Select(child => Nodes.Build(child, n.Context)).OfType<Avatar>())
-                {
-                    avatar.Size = size;
                     group.Avatars.Add(avatar);
-                }
-                var overflow = n.Children.Count - max;
-                if (overflow <= 0) return group;
-                var line = new Stack(Orientation.Horizontal, "spacing.2") { VerticalContentAlignment = VerticalAlignment.Center };
-                line.Add(group);
-                line.Add(new Styled($"+{overflow}", "labelMedium", "color.content-muted") { VerticalAlignment = VerticalAlignment.Center });
-                return line;
+                return group;
             },
             ["Badge"] = n => new Badge
             {
@@ -117,7 +108,8 @@ public static class Mapping
             {
                 var box = new Checkbox
                 {
-                    Content = n.String("note") is string note ? Labelled(n.Text, note) : (object)n.Text,
+                    Content = n.Text,
+                    Note = n.String("note"),
                     IsChecked = n.Flag("indeterminate") ? null : n.Flag("defaultChecked"),
                     IsThreeState = n.Flag("indeterminate"),
                     IsEnabled = !n.Flag("disabled"),
@@ -131,21 +123,16 @@ public static class Mapping
             {
                 Text = n.String("code") ?? "",
                 Title = n.String("title"),
+                Syntax = n.String("language"),
                 LineNumbers = n.Flag("lineNumbers"),
                 Copyable = n.Flag("copyable"),
             },
-            ["Collapsible"] = n =>
+            ["Collapsible"] = n => new Collapsible
             {
-                object header = n.String("title") ?? "";
-                if (n.Element("meta") is UIElement meta)
-                {
-                    var line = new Grid { ColumnDefinitions = { new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }, new ColumnDefinition { Width = GridLength.Auto } } };
-                    line.Children.Add(Stage.Words(n.String("title") ?? ""));
-                    Grid.SetColumn((FrameworkElement)meta, 1);
-                    line.Children.Add(meta);
-                    header = line;
-                }
-                return new Collapsible { Header = header, Body = Block(n), IsExpanded = n.Flag("defaultOpen") };
+                Header = n.String("title") ?? "",
+                Meta = n.Element("meta"),
+                Body = Block(n),
+                IsExpanded = n.Flag("defaultOpen"),
             },
             ["Combobox"] = n =>
             {
@@ -236,6 +223,7 @@ public static class Mapping
                 {
                     Content = n.Flag("external") ? n.Text + " ↗" : n.Text,
                     Tint = n.Option("tint", WidgetTint.Primary),
+                    Underline = n.Option("underline", LinkUnderline.Hover),
                 };
                 var press = n.Press();
                 link.Click += (_, _) => press();
@@ -262,10 +250,16 @@ public static class Mapping
             },
             ["Meter"] = n =>
             {
-                var value = n.Number("value") ?? 0;
-                var meter = new Meter { Value = value, Tint = n.Option("tint", WidgetTint.Primary), Size = n.Option("size", ControlSize.Medium) };
+                var meter = new Meter
+                {
+                    Value = n.Number("value") ?? 0,
+                    Label = n.String("label"),
+                    ShowValue = n.Flag("showValue"),
+                    Tint = n.Option("tint", WidgetTint.Primary),
+                    Size = n.Option("size", ControlSize.Medium),
+                };
                 Name(meter, n.String("aria-label") ?? n.String("label"));
-                return Measured(meter, n.String("label"), n.Flag("showValue") ? $"{Math.Round(value)}%" : null);
+                return meter;
             },
             ["NumberField"] = n =>
             {
@@ -336,40 +330,33 @@ public static class Mapping
             ["PopoverClose"] = n => n.Element("render", n.Context with { Press = n.Context.Close }),
             ["PreferenceGroup"] = n =>
             {
-                var group = new Stack(Orientation.Vertical, "preferences.group-gap");
-                var heading = new Stack(Orientation.Vertical, "preferences.title-gap");
-                heading.Add(new Styled(n.String("title") ?? "", "titleSmall"));
-                if (n.String("description") is string description) heading.Add(new Styled(description, "bodySmall", "color.content-secondary"));
-                group.Add(heading);
-                foreach (var kid in n.Kids()) group.Add(kid);
+                var titles = new Stack(Orientation.Vertical, "spacing.0.5");
+                titles.Add(new Styled(n.String("title") ?? "", "titleMedium"));
+                if (n.String("description") is string description) titles.Add(new Styled(description, "captionSmall", "color.content-subtle"));
+                var sections = new Stack(Orientation.Vertical, "preferences.section-gap");
+                foreach (var kid in n.Kids()) sections.Add(kid);
+                var group = new Stack(Orientation.Vertical, "preferences.title-gap");
+                group.Add(titles);
+                group.Add(sections);
                 return group;
             },
             ["PreferenceRow"] = n =>
             {
-                UIElement? control = n.Children.Count == 0 ? null : Kid(n);
-                if (n.Action("onOpen") is Action open)
-                {
-                    var chevron = new IconButton { Glyph = Glyph.ChevronRight, Label = $"Open {n.String("title")}" };
-                    chevron.Click += (_, _) => open();
-                    control = control is null ? chevron : Line(control, chevron);
-                }
-                return new PreferenceRow { Label = n.String("title") ?? "", Description = n.String("subtitle"), Control = control };
+                var row = new PreferenceRow { Label = n.String("title") ?? "", Description = n.String("subtitle"), Control = n.Children.Count == 0 ? null : Kid(n) };
+                if (n.Action("onOpen") is Action open) row.Opened += (_, _) => open();
+                return row;
             },
             ["PreferenceSection"] = n =>
             {
                 var rows = new PreferenceGroup();
                 foreach (var row in n.Kids().OfType<PreferenceRow>()) rows.Rows.Add(row);
-                var section = new Stack(Orientation.Vertical, "preferences.heading-gap");
-                if (n.String("label") is string label) section.Add(new SectionLabel(label));
-                section.Add(rows);
-                if (n.String("footer") is string footer) section.Add(new Styled(footer, "bodySmall", "color.content-secondary"));
-                return section;
+                return new PreferenceSection { Title = n.String("label") ?? "", Body = rows, Footer = n.String("footer") };
             },
             ["Preferences"] = n =>
             {
-                var sections = new Stack(Orientation.Vertical, "preferences.section-gap");
-                foreach (var kid in n.Kids()) sections.Add(kid);
-                return sections;
+                var column = new Preferences();
+                foreach (var kid in n.Kids()) column.Sections.Add(kid);
+                return column;
             },
             ["PreviewCard"] = n =>
             {
@@ -447,7 +434,7 @@ public static class Mapping
             },
             ["ShortcutRecorder"] = n =>
             {
-                var recorder = new ShortcutRecorder { IsEnabled = !n.Flag("disabled") };
+                var recorder = new ShortcutRecorder { IsEnabled = !n.Flag("disabled"), Invalid = n.String("state") == "error" };
                 var changed = n.Handler("onValueChange");
                 var cleared = n.Action("onClear");
                 recorder.ShortcutChanged += (_, value) =>
@@ -481,6 +468,7 @@ public static class Mapping
             ["SidebarGroupLabel"] = n =>
             {
                 var label = new SectionLabel(n.Text);
+                label.Loaded += (_, _) => label.Margin = new Thickness(Appearance.GetTheme(label).Number("spacing.2.5"), Appearance.GetTheme(label).Number("spacing.1"), 0, Appearance.GetTheme(label).Number("spacing.1"));
                 n.Context.Sidebar?.Follow(label, sidebar => label.Visibility = sidebar.ShowsLabels ? Visibility.Visible : Visibility.Collapsed);
                 return label;
             },
@@ -547,28 +535,28 @@ public static class Mapping
                     range.Upper.Value = pair.Count > 1 ? pair[1].Number() ?? 100 : 100;
                     Name(range, n.String("aria-label"));
                     if (!n.Flag("showValue")) return range;
-                    var shown = new Styled("", "labelSmall", "color.content-secondary");
+                    var shown = Reading();
                     void Show() => shown.Text = $"{Math.Round(range.Lower.Value)} – {Math.Round(range.Upper.Value)}";
                     range.ValueChanged += (_, _) => Show();
                     Show();
-                    return Measured(range, null, shown);
+                    return Beside(range, shown);
                 }
                 var slider = new Slider { Value = start.Number() ?? 0, Size = size };
                 Name(slider, n.String("aria-label"));
                 if (!n.Flag("showValue")) return slider;
-                var value = new Styled("", "labelSmall", "color.content-secondary");
+                var value = Reading();
                 slider.ValueChanged += (_, _) => value.Text = $"{Math.Round(slider.Value)}";
                 value.Text = $"{Math.Round(slider.Value)}";
-                return Measured(slider, null, value);
+                return Beside(slider, value);
             },
-            ["Spinner"] = n => new Spinner { Size = n.Option("size", ControlSize.Medium) },
+            ["Spinner"] = n => new Spinner { Size = n.Option("size", ControlSize.Medium), OnAccent = n.Flag("onAccent") },
             ["Splitter"] = n =>
             {
                 var splitter = new Splitter { Orientation = n.String("orientation") == "vertical" ? Orientation.Vertical : Orientation.Horizontal };
                 foreach (var child in n.Children)
                 {
                     var panel = new Node(child!, n.Context);
-                    var body = new Stack(Orientation.Vertical, "spacing.2", theme => new Thickness(theme.Number("spacing.3")));
+                    var body = new Stack(Orientation.Vertical, "spacing.2");
                     foreach (var kid in panel.Kids()) body.Add(kid);
                     splitter.Panels.Add(new SplitterPanel(body, panel.Number("defaultSize") ?? 1));
                 }
@@ -581,7 +569,7 @@ public static class Mapping
                 Status = n.String("status") switch
                 {
                     "active" => StepStatus.Active,
-                    "complete" => StepStatus.Complete,
+                    "done" => StepStatus.Complete,
                     "error" => StepStatus.Error,
                     _ => StepStatus.Pending,
                 },
@@ -656,8 +644,6 @@ public static class Mapping
                     IsEnabled = !n.Flag("disabled"),
                     AcceptsReturn = n.Flag("multiline"),
                 };
-                if (n.Flag("multiline"))
-                    field.MinHeight = ((int?)n.Number("rows") ?? 3) * 20 + 20;
                 Name(field, n.String("aria-label"));
                 return field;
             },
@@ -681,6 +667,7 @@ public static class Mapping
                     IsChecked = n.Flag("defaultPressed"),
                     Variant = n.Option("variant", ControlVariant.Plain),
                     Size = n.Option("size", ControlSize.Tiny),
+                    Tint = WidgetTint.Neutral,
                 };
                 if (n.String("label") is string label)
                 {
@@ -783,14 +770,6 @@ public static class Mapping
     private static string KeyText(JsonNode? value) =>
         value.String() ?? string.Concat(value?["children"].Items().Select(Json.Text) ?? []);
 
-    private static UIElement Labelled(string label, string note)
-    {
-        var both = new Stack(Orientation.Vertical, "spacing.0.5");
-        both.Add(Stage.Words(label));
-        both.Add(new Styled(note, "bodySmall", "color.content-secondary"));
-        return both;
-    }
-
     /// <summary>Two things on a line, the second at its end.</summary>
     private static UIElement Line(UIElement first, UIElement second)
     {
@@ -800,22 +779,25 @@ public static class Mapping
         return line;
     }
 
-    /// <summary>A bar with its label above it, and its value across from the label.</summary>
-    private static UIElement Measured(UIElement bar, string? label, object? value)
+    /// <summary>A slider's reading: after the track, in the code face, right-aligned in a column of its own.</summary>
+    private static TextBlock Reading() => new()
     {
-        if (label is null && value is null) return bar;
-        var head = new Grid { ColumnDefinitions = { new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }, new ColumnDefinition { Width = GridLength.Auto } } };
-        if (label is not null) head.Children.Add(new Styled(label, "labelSmall"));
-        if (value is not null)
-        {
-            var shown = value as UIElement ?? new Styled(value.ToString() ?? "", "labelSmall", "color.content-secondary");
-            Grid.SetColumn((FrameworkElement)shown, 1);
-            head.Children.Add(shown);
-        }
-        var stack = new Stack(Orientation.Vertical, "spacing.1.5");
-        stack.Add(head);
-        stack.Add(bar);
-        return stack;
+        FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Cascadia Mono, Consolas"),
+        FontSize = 11,
+        TextAlignment = TextAlignment.Right,
+        MinWidth = 40,
+        VerticalAlignment = VerticalAlignment.Center,
+        Opacity = 0.7,
+    };
+
+    private static UIElement Beside(FrameworkElement track, TextBlock value)
+    {
+        var row = new Grid { ColumnSpacing = 12, ColumnDefinitions = { new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }, new ColumnDefinition { Width = GridLength.Auto } } };
+        track.VerticalAlignment = VerticalAlignment.Center;
+        row.Children.Add(track);
+        Grid.SetColumn(value, 1);
+        row.Children.Add(value);
+        return row;
     }
 
     private static Thickness Inset(Theme theme, string block, string inline) =>
@@ -969,34 +951,16 @@ public static class Mapping
             item?["id"].Text() ?? "",
             item?["label"].Text() ?? "",
             item?["children"] is JsonArray children ? children.Select(Item).ToArray() : null,
-            item?["meta"] is JsonNode meta ? KeyText(meta) : null,
+            item?["meta"] is JsonNode meta && meta.Element() is null ? meta.Text() : null,
             Expanded: expanded.Contains(item?["id"].Text()),
-            Disabled: item?["disabled"].Truthy() ?? false);
+            Disabled: item?["disabled"].Truthy() ?? false,
+            Icon: Nodes.GlyphOf(item?["icon"]) is string glyph ? Glyphs.All[glyph].Glyph : null,
+            MetaView: item?["meta"] is JsonNode view && view.Element() is not null ? () => Nodes.Build(view, n.Context)! : null);
         var tree = new Tree { Size = n.Option("size", ControlSize.Medium) };
         foreach (var item in n["items"].Items()) tree.Nodes.Add(Item(item));
         var changed = n.Handler("onSelectedChange");
-        var syncing = false;
-        tree.Selected += (_, node) => { if (!syncing) changed?.Invoke(JsonValue.Create(node.Id)); };
-        void Sync()
-        {
-            var id = n.String("selected");
-            TreeViewNode? Find(IEnumerable<TreeViewNode> nodes)
-            {
-                foreach (var node in nodes)
-                {
-                    if (node.Content is TreeNode model && model.Id == id) return node;
-                    if (Find(node.Children) is TreeViewNode match) return match;
-                }
-                return null;
-            }
-            var found = Find(tree.View.RootNodes);
-            if (found is null || tree.View.SelectedNode == found) return;
-            syncing = true;
-            tree.View.SelectedNode = found;
-            syncing = false;
-        }
-        tree.View.Loaded += (_, _) => Sync();
-        n.Live(tree, Sync);
+        tree.Selected += (_, node) => changed?.Invoke(JsonValue.Create(node.Id));
+        n.Live(tree, () => tree.SelectedId = n.String("selected"));
         Name(tree, n.String("aria-label"));
         return tree;
     }

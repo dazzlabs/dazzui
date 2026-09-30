@@ -75,12 +75,15 @@ internal static class Skin
     private sealed class CornerState(Control control)
     {
         internal double Requested;
+        /// <summary>Which ends keep their corners: a control joined to a neighbour squares the edge it shares.</summary>
+        internal bool Start = true, End = true;
         internal void Update()
         {
             var width = control.ActualWidth;
             var height = control.ActualHeight;
             if (width <= 0 || height <= 0) return;
-            var radius = new CornerRadius(Math.Min(Requested, Math.Min(width, height) / 2));
+            var r = Math.Min(Requested, Math.Min(width, height) / 2);
+            var radius = new CornerRadius(Start ? r : 0, End ? r : 0, End ? r : 0, Start ? r : 0);
             if (control.CornerRadius != radius) control.CornerRadius = radius;
         }
     }
@@ -98,6 +101,15 @@ internal static class Skin
         state.Requested = radius;
         if (control.ActualWidth > 0 && control.ActualHeight > 0) state.Update();
         else control.CornerRadius = new CornerRadius(radius);
+    }
+    /// <summary>Squares the corners on the ends a control shares with its neighbours.</summary>
+    internal static void Join(Control control, bool start, bool end)
+    {
+        if (!Corners.TryGetValue(control, out var state)) return;
+        state.Start = start;
+        state.End = end;
+        state.Update();
+        if (control.ActualWidth <= 0) control.CornerRadius = new CornerRadius(start ? state.Requested : 0, end ? state.Requested : 0, end ? state.Requested : 0, start ? state.Requested : 0);
     }
     internal static void RoundCorners(Control control) => SetCorner(control, control.CornerRadius.TopLeft);
     public static string SizeKey(ControlSize size) => Theme.Key(size == ControlSize.Tiny ? ControlSize.Small : size);
@@ -126,23 +138,30 @@ internal static class Skin
         Control(control, theme, size);
         SetCorner(control, theme.Number("control.field.radius"));
         control.BorderThickness = new Thickness(theme.Number("stroke.hairline"));
-        control.BorderBrush = invalid ? theme.Recipe(ControlVariant.Outlined, WidgetTint.Danger, "border") : theme.Brush("color.border-strong");
-        control.Background = theme.Brush(control.IsEnabled ? "color.surface-muted" : "color.surface-sunken");
-        control.Foreground = theme.Brush(control.IsEnabled ? "color.content" : "color.content-faint");
+        // In error the whole field is re-tinted to danger: edge, wash and ink together.
+        control.BorderBrush = invalid ? theme.Brush("color.danger.600") : theme.Brush("color.border-strong");
+        control.Background = !control.IsEnabled ? theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "surface", "disabled")
+            : invalid ? theme.Brush("color.danger.50") : theme.Brush("color.surface-muted");
+        control.Foreground = !control.IsEnabled ? theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "content", "disabled")
+            : invalid ? theme.Brush("color.danger.800") : theme.Brush("color.content");
         control.FontWeight = new Windows.UI.Text.FontWeight { Weight = (ushort)theme.Token("bodySmall").GetProperty("fontWeight").GetInt32() };
         foreach (var prefix in new[] { "TextControl", "ComboBox" })
         {
             control.Resources[prefix + "Background"] = control.Background;
             control.Resources[prefix + "BackgroundPointerOver"] = control.Background;
             control.Resources[prefix + "BackgroundFocused"] = theme.Brush("color.surface");
-            control.Resources[prefix + "BackgroundDisabled"] = theme.Brush("color.surface-sunken");
+            control.Resources[prefix + "BackgroundDisabled"] = theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "surface", "disabled");
             control.Resources[prefix + "BorderBrush"] = control.BorderBrush;
             control.Resources[prefix + "BorderBrushPointerOver"] = control.BorderBrush;
             control.Resources[prefix + "BorderBrushFocused"] = theme.Recipe(ControlVariant.Outlined, invalid ? WidgetTint.Danger : Appearance.GetTint(control), "border");
             control.Resources[prefix + "Foreground"] = control.Foreground;
             control.Resources[prefix + "ForegroundDisabled"] = theme.Brush("color.content-faint");
         }
-        control.Resources["TextControlPlaceholderForeground"] = theme.Brush("color.content-faint");
+        var faint = theme.Brush("color.content-faint");
+        foreach (var state in new[] { "", "PointerOver", "Focused", "Disabled" })
+            control.Resources["TextControlPlaceholderForeground" + state] = faint;
+        if (control is TextBox text) text.PlaceholderForeground = faint;
+        if (control is ComboBox choice) choice.PlaceholderForeground = faint;
         control.Resources["TextControlBorderThemeThickness"] = control.BorderThickness;
         control.Resources["TextControlBorderThemeThicknessFocused"] = control.BorderThickness;
         control.Resources["TextControlThemeMinHeight"] = theme.Number($"control.{Theme.Key(size)}.size");

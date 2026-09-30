@@ -199,7 +199,9 @@ internal sealed class ComponentList : Surface
         homeGroup.Add(home);
         body.Add(homeGroup);
         var group = new Stack(Orientation.Vertical, "frame.nav-gap", theme => Inset(theme, "spacing.1.5", "spacing.2.5"));
-        group.Add(new SectionLabel("Components"));
+        var label = new SectionLabel("Components");
+        label.Loaded += (_, _) => label.Margin = new Thickness(Appearance.GetTheme(label).Number("spacing.2.5"), Appearance.GetTheme(label).Number("spacing.1"), 0, Appearance.GetTheme(label).Number("spacing.1"));
+        group.Add(label);
         group.Add(items);
         body.Add(group);
 
@@ -393,6 +395,9 @@ internal sealed class TileGrid : Panel
 /// <summary>One component: what it is for, then each example on a stage of its own.</summary>
 internal sealed class Document : Grid
 {
+    /// <summary>Each example's stage, in order.</summary>
+    public List<Card> Stages { get; } = [];
+
     public Document(Story story)
     {
         var body = new Stack(Orientation.Vertical, "spacing.6", PageInset.Of);
@@ -401,7 +406,10 @@ internal sealed class Document : Grid
         {
             var section = new Stack(Orientation.Vertical, "spacing.2");
             section.Add(new SectionLabel(example.Title));
-            section.Add(new Card { Content = new SceneStage(example.Demo, 10 * 16), Variant = CardVariant.Outlined, Size = ControlSize.Large });
+            // The web's `min-height: 10rem` is the card's own, its padding inside it.
+            var stage = new Card { Content = new SceneStage(example.Demo, 0), Variant = CardVariant.Outlined, Size = ControlSize.Large, MinHeight = 10 * 16, VerticalContentAlignment = VerticalAlignment.Stretch };
+            Stages.Add(stage);
+            section.Add(stage);
             if (example.Note is string note) section.Add(new Styled(note, "captionLarge", "color.content-secondary"));
             body.Add(section);
         }
