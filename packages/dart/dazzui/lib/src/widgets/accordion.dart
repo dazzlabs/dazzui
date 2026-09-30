@@ -15,6 +15,7 @@ class AccordionItem {
     this.icon,
     this.meta,
     this.enabled = true,
+    this.key,
   });
 
   /// Identifies the section. It is what [Accordion.open] holds, so it survives
@@ -30,6 +31,9 @@ class AccordionItem {
   final Widget? meta;
 
   final bool enabled;
+
+  /// Carried by the widget the section is drawn as, as a list item's key is.
+  final Key? key;
 }
 
 /// Several disclosures that know about each other.
@@ -105,6 +109,7 @@ class _AccordionState extends State<Accordion> {
       children: [
         for (int index = 0; index < widget.items.length; index += 1)
           Builder(
+            key: widget.items[index].key,
             builder: (context) {
               final AccordionItem item = widget.items[index];
               final bool isOpen = open.contains(item.value);

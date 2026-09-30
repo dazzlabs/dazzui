@@ -31,12 +31,12 @@ public static class Mapping
                 foreach (var child in n.Children)
                 {
                     var item = new Node(child!, n.Context);
-                    accordion.Items.Add(new AccordionItem
+                    accordion.Items.Add(Nodes.Drawn(child!, new AccordionItem
                     {
                         Header = item.String("title") ?? "",
                         Body = Block(item),
                         IsExpanded = open.Contains(item.String("value")),
-                    });
+                    }));
                 }
                 return accordion;
             },
@@ -497,7 +497,7 @@ public static class Mapping
                 var count = badge is null ? null : new Node(badge, n.Context).Text;
                 var item = new Stack(Orientation.Vertical, "spacing.0");
                 foreach (var child in n.Children.Where(child => child.Element() != "SidebarMenuBadge"))
-                    if ((child.Element() == "SidebarMenuButton" ? SidebarRow(new Node(child!, n.Context), count) : Nodes.Build(child, n.Context)) is UIElement row)
+                    if ((child.Element() == "SidebarMenuButton" ? Nodes.Drawn(child!, SidebarRow(new Node(child!, n.Context), count)) : Nodes.Build(child, n.Context)) is UIElement row)
                         item.Add(row);
                 return item;
             },
@@ -558,7 +558,7 @@ public static class Mapping
                     var panel = new Node(child!, n.Context);
                     var body = new Stack(Orientation.Vertical, "spacing.2");
                     foreach (var kid in panel.Kids()) body.Add(kid);
-                    splitter.Panels.Add(new SplitterPanel(body, panel.Number("defaultSize") ?? 1));
+                    splitter.Panels.Add(new SplitterPanel(Nodes.Drawn(child!, body), panel.Number("defaultSize") ?? 1));
                 }
                 return splitter;
             },

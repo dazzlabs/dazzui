@@ -26,9 +26,13 @@ class SplitterPanel {
     this.defaultSize = 1,
     this.minSize = 0,
     this.maxSize = 100,
+    this.key,
   });
 
   final Widget child;
+
+  /// Carried by the widget the panel is drawn as, as a list item's key is.
+  final Key? key;
 
   /// Share of the run at rest. The shares are normalised, so three panels
   /// written `50`, `25`, `25` and three written `2`, `1`, `1` lay out
@@ -154,7 +158,10 @@ class _SplitterState extends State<Splitter> {
               // Flex is an integer, so a share is carried at a thousandth of
               // a percent — finer than a pointer can ask for.
               flex: (_sizes[index] * 1000).round().clamp(1, 1 << 30),
-              child: ClipRect(child: widget.panels[index].child),
+              child: ClipRect(
+                key: widget.panels[index].key,
+                child: widget.panels[index].child,
+              ),
             ),
           );
           if (index < seams) {

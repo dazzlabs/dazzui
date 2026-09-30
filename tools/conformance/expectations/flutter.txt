@@ -2,18 +2,13 @@
 # Written from the run at 6486660 over studio-light, studio-dark, bright-light, bright-dark, frost-light, frost-dark, graphite-light, graphite-dark, ember-light, ember-dark, nocturne-light, nocturne-dark.
 # `*` for the theme is every theme a run measures; for the property, a specimen missing as a whole.
 
-*              accordion/0/1                *
-*              accordion/0/2                *
-*              accordion/0/3                *
-*              accordion/1/1                *
-*              accordion/1/2                *
-*              accordion/1/3                *
+*              accordion/0/2                corner
+*              accordion/0/3                corner
+*              accordion/1/3                corner
 *              accordion/2/0                height
-*              accordion/2/1                *
-*              accordion/2/2                *
-*              accordion/2/3                *
-*              accordion/preview/1          *
-*              accordion/preview/2          *
+*              accordion/2/2                height
+*              accordion/2/3                height
+*              accordion/preview/2          corner
 *              action-bar/0/1               paddingX
 *              action-bar/0/1               paddingY
 *              action-bar/0/1               width
@@ -657,17 +652,22 @@ bright-light   sidebar/preview/9            corner
 *              spinner/preview/2            strokeColor
 *              splitter/0/0                 height
 *              splitter/0/0                 width
-*              splitter/0/1                 *
-*              splitter/0/2                 *
-*              splitter/0/3                 *
+*              splitter/0/1                 height
+*              splitter/0/2                 height
+*              splitter/0/2                 width
+*              splitter/0/3                 height
 *              splitter/1/0                 height
 *              splitter/1/0                 width
-*              splitter/1/1                 *
-*              splitter/1/2                 *
+*              splitter/1/1                 height
+*              splitter/1/1                 width
+*              splitter/1/2                 height
+*              splitter/1/2                 width
 *              splitter/preview/0           height
 *              splitter/preview/0           width
-*              splitter/preview/1           *
-*              splitter/preview/2           *
+*              splitter/preview/1           height
+*              splitter/preview/1           width
+*              splitter/preview/2           height
+*              splitter/preview/2           width
 *              step-list/0/0                height
 *              step-list/0/1                height
 *              step-list/preview/0          width

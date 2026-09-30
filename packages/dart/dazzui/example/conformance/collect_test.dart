@@ -226,11 +226,20 @@ void main() {
         // Each node leads to the components built from it, in tree order.
         final Map<Map<Object?, Object?>, Queue<Element>> built =
             LinkedHashMap.identity();
+        // A node the kit is handed as data is found by its key instead.
         for (final Element element
-            in find.byType(SceneComponent, skipOffstage: false).evaluate()) {
+            in find
+                .byWidgetPredicate(
+                  (w) => w is SceneComponent || w.key is NodeKey,
+                  skipOffstage: false,
+                )
+                .evaluate()) {
+          final Widget widget = element.widget;
           built
               .putIfAbsent(
-                (element.widget as SceneComponent).json,
+                widget is SceneComponent
+                    ? widget.json
+                    : (widget.key! as NodeKey).json,
                 Queue.new,
               )
               .add(element);

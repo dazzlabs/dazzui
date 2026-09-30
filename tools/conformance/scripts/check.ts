@@ -24,6 +24,7 @@ import {
   measure,
   type Measured,
   parse,
+  replacing,
 } from '../src/lib/expectations.ts'
 import type { Readings, Run, Tolerances } from '../src/lib/model.ts'
 
@@ -133,8 +134,9 @@ if (failed) process.exitCode = 1
 
 /**
  * The file with what now passes taken out, in place: comments stay where
- * they stand, a line that passes goes, and a `*` line that passes in some
- * themes becomes a line for each theme it still fails in.
+ * they stand, and a line that passes gives way to what `replacing` says —
+ * nothing, the themes a `*` line still fails in, or the properties a
+ * specimen that stopped being missing is now off in.
  */
 function pruned(text: string, measured: Measured): string {
   const out: string[] = []
@@ -144,15 +146,17 @@ function pruned(text: string, measured: Measured): string {
       out.push(raw)
       continue
     }
-    const { stale } = hold([line], measured)
-    if (!stale.length) {
+    const lines = replacing(line, measured)
+    if (lines.length === 1 && lines[0] === line) {
       out.push(raw)
       continue
     }
-    if (line.theme === EVERY)
-      for (const theme of measured.themes)
-        if (!stale[0]!.passes.includes(theme))
-          out.push(raw.replace(/^\*/, theme))
+    // Keep the file's columns: each field as wide as it stands in this line.
+    const [, theme = '', address = ''] = /^(\S+\s+)(\S+\s+)/.exec(raw) ?? []
+    for (const next of lines)
+      out.push(
+        `${next.theme.padEnd(theme.length - 1)} ${next.address.padEnd(address.length - 1)} ${next.property}`
+      )
   }
   return out.join('\n')
 }

@@ -184,12 +184,15 @@ class TriggerPress extends InheritedWidget {
 
 /// A component in the tree, read the way its builder needs it.
 class Node {
-  Node(this.context, Map<Object?, Object?> json)
+  Node(this.context, this.json)
     : component = json[r'$el'] as String,
       props = (json['props'] as Map<Object?, Object?>?) ?? const {},
       children = (json['children'] as List<Object?>?) ?? const [];
 
   final BuildContext context;
+
+  /// The node itself, as the story holds it.
+  final Map<Object?, Object?> json;
   final String component;
   final Map<Object?, Object?> props;
   final List<Object?> children;
@@ -283,6 +286,22 @@ class SceneComponent extends StatelessWidget {
     }
     return build(node);
   }
+}
+
+/// Names the widget a kit draws for a node the mapping hands it as data —
+/// an accordion's item, a splitter's panel — which no [SceneComponent] can
+/// stand around. It is that node's, by identity, as a [SceneComponent] is.
+class NodeKey extends LocalKey {
+  const NodeKey(this.json);
+
+  final Map<Object?, Object?> json;
+
+  @override
+  bool operator ==(Object other) =>
+      other is NodeKey && identical(other.json, json);
+
+  @override
+  int get hashCode => identityHashCode(json);
 }
 
 /// The glyph a `$icon` names.

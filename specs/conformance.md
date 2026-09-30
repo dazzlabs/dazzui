@@ -295,9 +295,11 @@ Three collectors are written:
   `CustomPainter` is written `null`. The test binding has no system fonts,
   so it loads the Mac's own SF files by name to set type as React does;
   elsewhere it falls back to the layout face and text widths will show it.
-  A component the example's mapping draws without building a
-  `SceneComponent` for it — reading a child's JSON directly — has no
-  reading, and counts as missing until the mapping builds it.
+  A node the mapping hands a kit widget as data — an accordion's item, a
+  splitter's panel — carries a `NodeKey` on the widget the kit draws for
+  it, as a list item carries a key, and is found by that instead. A glyph
+  a kit widget takes as `IconData` and draws inside itself has no widget of
+  its own, and is missing.
 - **WinUI** — `packages/csharp/DazzUI/scripts/conformance.sh`, which runs
   the example with `--conformance` (`example/Conformance/`) in a real
   window. From a Mac it copies the package and the contract to the Windows

@@ -675,6 +675,7 @@ List<TreeNode<String>> _treeNodes(Node n, Object? items) => [
 ];
 
 SplitterPanel _panel(Node n) => SplitterPanel(
+  key: NodeKey(n.json),
   defaultSize: n.number('defaultSize') ?? 1,
   minSize: n.number('minSize') ?? 0,
   maxSize: n.number('maxSize') ?? 100,
@@ -711,6 +712,7 @@ Widget _accordion(Node n) => Accordion(
 );
 
 AccordionItem _accordionItem(Node n) => AccordionItem(
+  key: NodeKey(n.json),
   value: n.string('value')!,
   title: Text(n.string('title')!),
   child: Text(n.text),

@@ -120,18 +120,51 @@ export function baseline(measured: Measured): Line[] {
   return sort(lines)
 }
 
-/** The lines left once what now passes is taken out: a `*` line that passes somewhere keeps the themes it still fails in. */
+/**
+ * What a line that now passes gives way to. Usually nothing; but a
+ * specimen that stops being missing is now read, and its `*` line gives way
+ * to the properties it is read to be off in, in the themes it is now read
+ * in — the one way a pruned file gains lines, and one a review reads as
+ * such. A `*`-theme line that still fails in some themes keeps a line for
+ * each of them.
+ */
+export function replacing(line: Line, measured: Measured): Line[] {
+  const [held] = hold([line], measured).stale
+  if (!held) return [line]
+  const still =
+    line.theme === EVERY
+      ? measured.themes
+          .filter(theme => measured.held.get(theme)?.has(line.address))
+          .filter(theme => !held.passes.includes(theme))
+          .map(theme => ({ ...line, theme }))
+      : []
+  if (line.property !== EVERY) return still
+  const found: Line[] = []
+  const failingIn = new Map<string, string[]>()
+  for (const theme of held.passes)
+    for (const failure of measured.failing) {
+      const [t, address, property] = failure.split(' ')
+      if (t !== theme || address !== line.address || property === EVERY)
+        continue
+      failingIn.set(property!, [...(failingIn.get(property!) ?? []), theme])
+    }
+  for (const [property, themes] of failingIn) {
+    const everywhere =
+      line.theme === EVERY &&
+      measured.themes.length > 1 &&
+      themes.length === measured.themes.length
+    if (everywhere)
+      found.push({ theme: EVERY, address: line.address, property })
+    else
+      for (const theme of themes)
+        found.push({ theme, address: line.address, property })
+  }
+  return [...still, ...sort(found)]
+}
+
+/** The lines left once what now passes is taken out. */
 export function prune(lines: readonly Line[], measured: Measured): Line[] {
-  const { stale } = hold(lines, measured)
-  const passing = new Map(stale.map(({ line, passes }) => [key(line), passes]))
-  return lines.flatMap(line => {
-    const passes = passing.get(key(line))
-    if (!passes) return [line]
-    if (line.theme !== EVERY) return []
-    return measured.themes
-      .filter(theme => !passes.includes(theme))
-      .map(theme => ({ ...line, theme }))
-  })
+  return lines.flatMap(line => replacing(line, measured))
 }
 
 /** Addresses in the order a story reads — `button/2/10` after `button/2/9`. */

@@ -116,3 +116,21 @@ test('the file reads back as it was written', () => {
     { theme: '*', address: 'a/0/10', property: 'corner' },
   ])
 })
+
+test('a specimen that stops being missing gives way to what it is off in', () => {
+  const measured = measure(
+    reference,
+    readings('implementation', {
+      light: { 'a/0/0': reading(6), 'a/0/1': reading(8) },
+      dark: { 'a/0/0': reading(6), 'a/0/1': reading(8) },
+    }),
+    tolerances
+  )
+  assert.deepEqual(prune(parse('* a/0/1 *\n'), measured), [
+    { theme: '*', address: 'a/0/1', property: 'corner' },
+  ])
+  assert.deepEqual(hold(prune(parse('* a/0/1 *\n'), measured), measured), {
+    unexpected: [],
+    stale: [],
+  })
+})
