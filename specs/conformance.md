@@ -120,6 +120,20 @@ centred, as the example's document column centres a story.
 }
 ```
 
+What each property means, so two collectors reading two different trees
+read the same thing:
+
+| Property | What is read |
+| --- | --- |
+| `width`, `height` | the specimen's own box |
+| `corner` | its top-left radius, no more than half its short side |
+| `stroke`, `strokeColor` | its top edge's width, and colour when there is one |
+| `fill` | its surface colour; clear is `#00000000` |
+| `shadow` | the shadow token its surface carries (`2xs` … `2xl`), or `none` |
+| `ink`, `fontSize`, `fontWeight`, `lineHeight` | the first run of text the specimen draws itself — not one inside a specimen nested in it; with no text, a glyph's colour for `ink` and nothing for the rest |
+| `paddingX`, `paddingY` | the inset from its box's edge to its content, less the stroke — CSS's padding |
+| `gap` | the spacing of the first row or column it lays out |
+
 Three rules:
 
 - **One vocabulary.** The property names are the conformance tool's, not
@@ -247,6 +261,38 @@ WinUI — that `pnpm conformance` invokes in turn
 is the file it writes, into the `--out` directory it is handed. The run
 copies `scenes.json` and `tolerances.json` beside the readings, so `data/` is
 a complete measurement on its own. Collectors take the drawn twelve themes
-by default; `--themes all` is every theme the example carries. React's is
-the only collector written so far. Adding a platform is a collector and an expectations
+by default; `--themes all` is every theme the example carries.
+
+Three collectors are written:
+
+- **React** — described above.
+- **Flutter** — `packages/dart/dazzui/example/tool/conformance.sh`, which
+  runs `conformance/collect_test.dart` with `flutter test`. It draws the
+  compiled scenes through the example's own interpreter, repeats the walk
+  over the scene's JSON, and finds each specimen as the `SceneComponent`
+  built from that very map. What it reads is the part of the render tree the
+  component's own box is: the decorations and paddings down to its content,
+  its first paragraph, its first flex. A surface painted by a
+  `CustomPainter` is written `null`. The test binding has no system fonts,
+  so it loads the Mac's own SF files by name to set type as React does;
+  elsewhere it falls back to the layout face and text widths will show it.
+  A component the example's mapping draws without building a
+  `SceneComponent` for it — reading a child's JSON directly — has no
+  reading, and counts as missing until the mapping builds it.
+- **WinUI** — `packages/csharp/DazzUI/scripts/conformance.sh`, which runs
+  the example with `--conformance` (`example/Conformance/`) in a real
+  window. From a Mac it copies the package and the contract to the Windows
+  machine `DAZZUI_WINDOWS_HOST` names (default `windows-laptop`), builds into
+  `bin-conformance/` so an example left open does not lock the build, runs
+  it in the signed-in desktop through `scripts/desktop.ps1`, and copies the
+  readings back; with no such machine it is skipped. The example reports
+  every element it builds for a node through `Nodes.Built` — a mapping that
+  draws a child node itself calls `Nodes.Drawn` — and the collector reads
+  the template primitives the size of the control, never the control's own
+  brushes, which its template only passes on. Type is set in Windows' own
+  face, so widths of text differ from React's for a reason that is not the
+  component's. A glyph a kit control takes as a `Glyph` value and draws
+  inside itself — an `IconButton`'s, a `NavItem`'s — has no element of its
+  own, and is missing.
+ Adding a platform is a collector and an expectations
 file; the viewer and the check learn of it from `run.json`.

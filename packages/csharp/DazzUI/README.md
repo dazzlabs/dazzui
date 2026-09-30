@@ -35,6 +35,14 @@ App SDK dependencies, so no MSIX registration, signing certificate or separate
 Windows App Runtime installation is needed. Keep the entire output directory
 when copying the app. ARM64 is configured but requires validation on ARM64 hardware.
 
+## Conformance
+
+`scripts/conformance.sh --out <dir>` is the WinUI collector `pnpm conformance`
+runs: from a Mac it builds and runs `example.exe --conformance` on a Windows
+machine over SSH and copies back the readings of every scene in
+`tools/conformance/scenes.json` — see
+[`specs/conformance.md`](../../../specs/conformance.md).
+
 ## Components
 
 - Actions and presentation: Button, IconButton, Toggle, ToggleGroup, Link,

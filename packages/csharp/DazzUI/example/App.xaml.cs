@@ -22,6 +22,27 @@ public partial class App : Application
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         var arguments = Environment.GetCommandLineArgs().Skip(1).ToArray();
+        if (arguments.Contains("--conformance"))
+        {
+            // The collector draws scenes on their own, not in the window's shell.
+            var host = new Microsoft.UI.Xaml.Controls.ContentControl
+            {
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                HorizontalContentAlignment = HorizontalAlignment.Left,
+                VerticalContentAlignment = VerticalAlignment.Top,
+            };
+            window = new Window { Title = "DazzUI — conformance", Content = host };
+            host.Loaded += async (_, _) =>
+            {
+                var scale = host.XamlRoot.RasterizationScale;
+                var work = DisplayArea.GetFromWindowId(window.AppWindow.Id, DisplayAreaFallback.Primary).WorkArea;
+                window.AppWindow.Resize(new Windows.Graphics.SizeInt32(Math.Min((int)(1024 * scale), work.Width), work.Height));
+                await Collector.RunAsync(window, host);
+            };
+            window.Activate();
+            return;
+        }
         var (page, theme) = Location.Read(arguments);
         window = new Window { Title = "DazzUI — WinUI 3 example" };
         var shell = new Shell(page, theme);

@@ -15,6 +15,13 @@ flutter analyze
 flutter test
 ```
 
+## Conformance
+
+`tool/conformance.sh --out <dir>` is the Flutter collector `pnpm conformance`
+runs: `conformance/` draws every scene of `tools/conformance/scenes.json` and
+writes its readings — see [`specs/conformance.md`](../../../../specs/conformance.md).
+Plain `flutter test` leaves it out.
+
 ## Layout
 
 The React example's, file for file:
@@ -33,6 +40,8 @@ lib/
     themes.dart  generated — the theme list, as React groups it
     glyphs.dart  generated — the Fluent glyphs the stories name
     location.dart the page and theme an address names
+conformance/     the conformance collector: the address walk, the measure
+tool/            conformance.sh, its front door
 ```
 
 A story is changed in the React example and regenerated. A component or

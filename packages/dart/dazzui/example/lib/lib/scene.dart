@@ -252,7 +252,7 @@ class Node {
 Widget buildNode(BuildContext context, Object? node) {
   if (node is String) return Text(node);
   if (node is Map && node.containsKey(r'$icon')) return Icon(glyphOf(node));
-  if (node is Map && node.containsKey(r'$el')) return _Component(node);
+  if (node is Map && node.containsKey(r'$el')) return SceneComponent(node);
   if (_live(node)) {
     return Builder(
       builder: (context) {
@@ -266,8 +266,11 @@ Widget buildNode(BuildContext context, Object? node) {
   return const SizedBox.shrink();
 }
 
-class _Component extends StatelessWidget {
-  const _Component(this.json);
+/// One component of a scene, standing for the node it was built from — the
+/// very map in the story, which is how the conformance collector finds the
+/// component a scene address names.
+class SceneComponent extends StatelessWidget {
+  const SceneComponent(this.json, {super.key});
 
   final Map<Object?, Object?> json;
 

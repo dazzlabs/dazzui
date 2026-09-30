@@ -74,11 +74,13 @@ async function show(scene: string, theme: string): Promise<Drawn> {
   await frame()
   await frame()
   const stageNode = container.querySelector<HTMLElement>('.c-scene')!
+  const found = walk(container, Demo)
+  const nested = new Set<Element>(found.flatMap(({ node }) => node ?? []))
   return {
     rect: box(stageNode.getBoundingClientRect()),
-    specimens: walk(container, Demo).map(({ component, node }) => ({
+    specimens: found.map(({ component, node }) => ({
       component,
-      reading: node ? measure(node) : null,
+      reading: node ? measure(node, nested) : null,
       rect: node ? box(node.getBoundingClientRect()) : null,
     })),
   }

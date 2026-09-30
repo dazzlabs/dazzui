@@ -3,3 +3,4 @@
 .vs/
 artifacts/
 !DazzUI.sln
+bin-conformance/

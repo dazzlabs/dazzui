@@ -69,14 +69,47 @@ function shadow(value: string) {
   return shadowNames().get(value) ?? value
 }
 
-export function measure(node: HTMLElement): Reading {
+/**
+ * The first run of text a specimen draws itself — not one inside a
+ * specimen nested in it, which is read on its own — and failing that, a
+ * glyph it draws, which has an ink but no type.
+ */
+function firstText(node: HTMLElement, nested: ReadonlySet<Element>) {
+  const walker = document.createTreeWalker(
+    node,
+    NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
+    {
+      acceptNode: current =>
+        current !== node && nested.has(current as Element)
+          ? NodeFilter.FILTER_REJECT
+          : NodeFilter.FILTER_ACCEPT,
+    }
+  )
+  let glyph: Element | undefined
+  for (let current = walker.nextNode(); current; current = walker.nextNode()) {
+    if (current.nodeType === Node.TEXT_NODE) {
+      if (current.textContent?.trim() && current.parentElement)
+        return { text: getComputedStyle(current.parentElement), glyph }
+    } else if (!glyph && current instanceof SVGSVGElement) glyph = current
+  }
+  return { text: undefined, glyph }
+}
+
+export function measure(
+  node: HTMLElement,
+  nested: ReadonlySet<Element>
+): Reading {
   const rect = node.getBoundingClientRect()
   const style = getComputedStyle(node)
+  const { text, glyph } = firstText(node, nested)
+  const ink = text?.color ?? (glyph && getComputedStyle(glyph).color)
   const stroke =
     style.borderTopStyle === 'none' ? 0 : (px(style.borderTopWidth) ?? 0)
-  const corner = style.borderTopLeftRadius.endsWith('%')
-    ? round((parseFloat(style.borderTopLeftRadius) / 100) * rect.width)
-    : px(style.borderTopLeftRadius)
+  // A radius past half the short side draws a capsule either way.
+  const radius = style.borderTopLeftRadius.endsWith('%')
+    ? (parseFloat(style.borderTopLeftRadius) / 100) * rect.width
+    : parseFloat(style.borderTopLeftRadius) || 0
+  const corner = round(Math.min(radius, Math.min(rect.width, rect.height) / 2))
   const flex = /flex|grid/.test(style.display)
   return {
     box: { width: round(rect.width), height: round(rect.height) },
@@ -85,10 +118,11 @@ export function measure(node: HTMLElement): Reading {
       stroke,
       strokeColor: stroke ? hex(style.borderTopColor) : null,
       fill: hex(style.backgroundColor),
-      ink: hex(style.color),
-      fontSize: px(style.fontSize),
-      fontWeight: Number(style.fontWeight),
-      lineHeight: style.lineHeight === 'normal' ? null : px(style.lineHeight),
+      ink: ink ? hex(ink) : null,
+      fontSize: text ? px(text.fontSize) : null,
+      fontWeight: text ? Number(text.fontWeight) : null,
+      lineHeight:
+        !text || text.lineHeight === 'normal' ? null : px(text.lineHeight),
       paddingX: px(style.paddingLeft),
       paddingY: px(style.paddingTop),
       gap: flex ? (px(style.columnGap) ?? 0) : null,

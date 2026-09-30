@@ -60,6 +60,24 @@ public static class Nodes
 {
     private static readonly string[] LiveKeys = ["$state", "$eq", "$not", "$if", "$concat", "$arg"];
 
+    /// <summary>
+    /// Raised with each component and the node it was built from — the very
+    /// object in the story's JSON, which is how the conformance collector
+    /// finds the element a scene address names.
+    /// </summary>
+    public static event Action<JsonNode, UIElement>? Built;
+
+    /// <summary>
+    /// Reports <paramref name="element"/> as drawn for <paramref name="node"/>
+    /// — what <see cref="Build"/> does for every component, and what a
+    /// mapping that draws a child node itself does in its place.
+    /// </summary>
+    public static T Drawn<T>(JsonNode node, T element) where T : UIElement?
+    {
+        if (element is not null) Built?.Invoke(node, element);
+        return element;
+    }
+
     /// <summary>Whether a value is only known while the scene runs.</summary>
     public static bool IsLive(JsonNode? value) =>
         value is JsonObject item && LiveKeys.Any(item.ContainsKey);
@@ -83,7 +101,7 @@ public static class Nodes
         {
             if (!Mapping.Components.TryGetValue(component, out var build))
                 throw new NotSupportedException($"No WinUI mapping for <{component}>");
-            return build(new Node(node!, context));
+            return Drawn(node!, build(new Node(node!, context)));
         }
         if (IsLive(node))
         {

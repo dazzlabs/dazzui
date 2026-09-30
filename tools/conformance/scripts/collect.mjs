@@ -31,6 +31,19 @@ const COLLECTORS = [
     args: ['scripts/conformance.mjs'],
     cwd: join(repo, 'packages/js/dazzui-react/example'),
   },
+  {
+    platform: 'flutter',
+    command: 'tool/conformance.sh',
+    args: [],
+    cwd: join(repo, 'packages/dart/dazzui/example'),
+  },
+  {
+    // Runs on a Windows machine over SSH, or is skipped without one.
+    platform: 'winui',
+    command: 'scripts/conformance.sh',
+    args: [],
+    cwd: join(repo, 'packages/csharp/DazzUI'),
+  },
 ]
 
 rmSync(data, { recursive: true, force: true })

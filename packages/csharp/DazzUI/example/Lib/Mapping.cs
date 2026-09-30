@@ -751,18 +751,18 @@ public static class Mapping
         if (shortcut is null && n.Children.Count == 1 && n.Children[0].String() is string only) return only;
         // A glyph alone is the control's whole face.
         if (shortcut is null && n.Children.Count == 1 && n.Children[0].Element() == "Icon")
-            return Glyphs.Draw(Nodes.GlyphOf(n.Children[0]) ?? "", 16);
+            return Nodes.Drawn(n.Children[0]!, Glyphs.Draw(Nodes.GlyphOf(n.Children[0]) ?? "", 16));
         var line = new Stack(Orientation.Horizontal, "spacing.1.5") { VerticalContentAlignment = VerticalAlignment.Center };
         foreach (var child in n.Children)
         {
             var element = child.Element() == "Icon"
-                ? Glyphs.Draw(Nodes.GlyphOf(child) ?? "", 16)
+                ? Nodes.Drawn(child!, Glyphs.Draw(Nodes.GlyphOf(child) ?? "", 16))
                 : Nodes.Build(child, n.Context);
             if (element is FrameworkElement framed) framed.VerticalAlignment = VerticalAlignment.Center;
             if (element is not null) line.Add(element);
         }
         if (shortcut is not null)
-            line.Add(new KeyCap(KeyText(shortcut)) { Variant = KeyCapVariant.Hint, VerticalAlignment = VerticalAlignment.Center });
+            line.Add(Nodes.Drawn(shortcut, new KeyCap(KeyText(shortcut)) { Variant = KeyCapVariant.Hint, VerticalAlignment = VerticalAlignment.Center }));
         return line;
     }
 
