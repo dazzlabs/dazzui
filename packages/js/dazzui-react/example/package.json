@@ -8,7 +8,8 @@
     "dev": "pnpm -w run packages && vite --host 127.0.0.1 --port 6006",
     "dev:preview": "pnpm -w run packages && vite --host 0.0.0.0 --port $PORT",
     "build": "pnpm -w run packages && vite build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "conformance": "node scripts/conformance.mjs"
   },
   "dependencies": {
     "@dazzlabs/dazzui-react": "workspace:*",
@@ -20,6 +21,7 @@
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "playwright": "1.63.0",
     "typescript": "~6.0.3",
     "vite": "^8.1.5"
   }

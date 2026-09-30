@@ -61,15 +61,37 @@ element React drew. A specimen also carries its `component`, its `axes` (the
 props that pick a recipe — `size`, `variant`, `tint`, `state`) and its text,
 so the viewer can name it and a reader can find it.
 
-Elements that hold other kit elements — a `Card` around a heading, a `Row` —
-are addressed too, but only their box is compared: what is inside them is
-the story's, and belongs to the specimens inside.
+Elements that hold other kit elements — a `Card` around a heading, a
+`Button` with a glyph in it — are addressed too and marked `container`, but
+only their box is compared: what is inside them is the story's, and belongs
+to the specimens inside. The stage — `Row`, `Col`, `Frame`, `Text` — is
+never a specimen.
+
+The walk is fixed, because every collector repeats it
+(`tools/codegen/scenes.mjs` is the definition):
+
+- **Pre-order**: an element, then the elements among its props in the order
+  the story wrote them — into lists and objects, as deep as they go — then
+  its children. `<Button shortcut={<KeyCap>⌘S</KeyCap>}>Save</Button>` is
+  the button, then the key cap.
+- **As first drawn**: every `useState` at its initial value and every
+  conditional taken the way that value takes it. What a popup holds before
+  it opens is addressed all the same; a collector that cannot see it writes
+  no reading, and it is not compared.
+- A helper component the story defines is followed into what it returns,
+  as codegen inlines it.
+
+A specimen that draws nothing of its own — a provider, a `Tooltip` lending
+its trigger a behaviour — has no reading either: its trigger is a specimen
+of its own.
 
 ## Readings
 
 Each platform runs its own **collector** over its own example, draws every
 scene in every theme it carries at a fixed scale (2x) with motion off, and
-writes `readings.json`:
+writes `readings.json`. A scene is drawn alone, in one frame every platform
+repeats: 40rem wide, `spacing-6` of padding on `color-surface`, its content
+centred, as the example's document column centres a story.
 
 ```jsonc
 {
@@ -108,8 +130,13 @@ Three rules:
   painted. A property a platform cannot expose is written `null` and scored
   as *unread* — outside the denominator, never a failure. The picture still
   gets compared.
-- **The reference is a reading too.** React's collector reads the example in
-  headless Chromium and writes the same file. Nothing about the reference is
+- **The reference is a reading too.** React's collector
+  (`packages/js/dazzui-react/example/scripts/conformance.mjs`) draws the
+  example's own story components on a page of their own, `conformance.html`,
+  in headless Chromium, finds each specimen by following the elements the
+  story wrote into React's tree, and writes the same file. It refuses a scene
+  whose specimens do not line up, component for component, with
+  `scenes.json`. Nothing about the reference is
   special except its `role`; that is what lets a second standard — a Figma
   export, say — be dropped in later as another `reference`.
 
@@ -141,7 +168,9 @@ reference and an implementation are compared and the result is one of:
   difference of exactly half a pixel is *off*, because a half step is a
   decision in this system (`spacing.0-5`), not noise.
 - **colour** — a distance in OKLab, `0.02`, under which two colours cannot
-  be told apart on a calibrated display.
+  be told apart on a calibrated display. A colour that is not opaque is
+  written `#rrggbbaa`; its distance is weighted by how much of it shows,
+  plus the difference in alpha, so two clear colours are the same colour.
 - **discrete** — `fontWeight`, `shadow`: equal or off.
 - **image** — a perceptual score over the specimen crop, `0.98`, compared
   only when both readings name the same `font`.
@@ -206,12 +235,18 @@ link is a complete description of what it shows.
 
 ```bash
 pnpm conformance          # collect every platform's readings into tools/conformance/data/
+                          #   --themes drawn|all|<id,…>  --scenes <story,…>  --no-images
 pnpm conformance:check    # derive verdicts and hold them to expectations/
 pnpm conformance:view     # the viewer on :5183 — over data/ when it exists, fixtures/ otherwise
 ```
 
 A platform's collector is a script beside its example — `flutter test` for
 Flutter, an `xcodebuild test` scheme for SwiftUI, the smoke-test switch for
-WinUI — that `pnpm conformance` invokes in turn and whose only contract is
-the file it writes. Adding a platform is a collector and an expectations
+WinUI — that `pnpm conformance` invokes in turn
+(`tools/conformance/scripts/collect.mjs` lists them) and whose only contract
+is the file it writes, into the `--out` directory it is handed. The run
+copies `scenes.json` and `tolerances.json` beside the readings, so `data/` is
+a complete measurement on its own. Collectors take the drawn twelve themes
+by default; `--themes all` is every theme the example carries. React's is
+the only collector written so far. Adding a platform is a collector and an expectations
 file; the viewer and the check learn of it from `run.json`.

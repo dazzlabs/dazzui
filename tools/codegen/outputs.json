@@ -160,5 +160,6 @@
   "packages/csharp/DazzUI/example/Stories/Tree.cs": "59e9df8ce1afb538c7fa0ee589cb55e4f1e032d849d6e59103042e093e6f29b6",
   "packages/csharp/DazzUI/example/Stories/Index.cs": "164e5c1d516a5a3425ca5174208f9c8c7afe9d494f1ed690718b987ce64ca256",
   "packages/csharp/DazzUI/example/Lib/Glyphs.cs": "cc69f67cd6191a419a3c798d15da204d79ca3631bf4fa3f9d31b5a6a8b48bc8c",
-  "packages/csharp/DazzUI/example/Lib/Themes.cs": "a9947b91d8e54247ffc2cb80fefbe047b4d35640ce3e83350a7c3a6be4f9f3e3"
+  "packages/csharp/DazzUI/example/Lib/Themes.cs": "a9947b91d8e54247ffc2cb80fefbe047b4d35640ce3e83350a7c3a6be4f9f3e3",
+  "tools/conformance/scenes.json": "8da162ee6d5a742b63d401c6b29373fa93b1d2bf096ff2830fb9afef2a404aa7"
 }

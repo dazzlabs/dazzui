@@ -1,7 +1,7 @@
 # Codegen
 
 Compiles the React example's stories into the Flutter, SwiftUI and WinUI
-examples.
+examples, and into the scenes the conformance tool holds them to.
 The rules are in [`specs/playgrounds.md`](../../specs/playgrounds.md).
 
 - `stories.mjs` reads `packages/js/dazzui-react/example/src/stories/*.tsx`
@@ -16,6 +16,9 @@ The rules are in [`specs/playgrounds.md`](../../specs/playgrounds.md).
 - `winui.mjs` is the WinUI side, the same four emitters and its own
   `SUPPORT`; its glyphs name FluentIcons.WinUI's icons, as SwiftUI's name
   the FluentIcons package's.
+- `scenes.mjs` writes `tools/conformance/scenes.json`, the conformance
+  contract: every scene and every kit element in it, at its address — see
+  [`specs/conformance.md`](../../specs/conformance.md).
 - `support.mjs` finds what a story sets that a platform's `SUPPORT` does not
   name.
 - `generate.mjs` writes the outputs, or with `--check` fails on drift, and

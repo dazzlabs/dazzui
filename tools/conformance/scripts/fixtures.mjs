@@ -1,24 +1,17 @@
 /*
- * A made-up run for the viewer to be developed against. The stories, their
- * names and their example titles are real — read off the React example — and
+ * A made-up run for the viewer to be developed against. The scenes and their
+ * addresses are real — the contract codegen writes, `scenes.json` — and
  * everything measured is invented, deterministically, so the viewer has
- * something to show before a single collector exists. Nothing here says
- * anything about any platform.
+ * something to show for every platform whether or not its collector exists.
+ * Nothing here says anything about any platform.
  */
-import {
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from 'node:fs'
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const here = fileURLToPath(new URL('.', import.meta.url))
 const root = join(here, '..')
 const out = join(root, 'fixtures')
-const stories = join(root, '../../packages/js/dazzui-react/example/src/stories')
 
 /* A small deterministic generator, seeded per address so a rerun is stable. */
 function rng(seed) {
@@ -70,77 +63,10 @@ const THEMES = {
   },
 }
 
-const SIZES = ['tiny', 'small', 'medium', 'large']
-const VARIANTS = ['filled', 'tinted', 'outlined', 'normal', 'recessed', 'plain']
-const TINTS = ['primary', 'neutral', 'info', 'success', 'warning', 'danger']
-
-/* Read the real stories: id, name, summary, and each example's title. */
-function readStories() {
-  return readdirSync(stories)
-    .filter(f => f.endsWith('.tsx'))
-    .map(file => {
-      const src = readFileSync(join(stories, file), 'utf8')
-      const get = key =>
-        src.match(new RegExp(`^\\s*${key}: '([^']*)'`, 'm'))?.[1]
-      const titles = [...src.matchAll(/^\s{6}title: '([^']*)'/gm)].map(
-        m => m[1]
-      )
-      return {
-        id: get('id'),
-        name: get('name'),
-        summary: get('summary') ?? '',
-        titles,
-      }
-    })
-    .filter(s => s.id && s.name)
-    .sort((a, b) => a.name.localeCompare(b.name))
-}
-
-/* The kit's own words for the parts a component draws with. */
-function specimensFor(story, sceneId, r) {
-  const count = sceneId.endsWith('/preview')
-    ? 2 + Math.floor(r() * 2)
-    : 3 + Math.floor(r() * 6)
-  const list = []
-  for (let i = 0; i < count; i++) {
-    const axes = { size: pick(r, SIZES) }
-    if (
-      [
-        'button',
-        'badge',
-        'tag',
-        'card',
-        'key-cap',
-        'toggle',
-        'icon-button',
-      ].includes(story.id)
-    ) {
-      axes.variant = pick(r, VARIANTS)
-    }
-    if (r() > 0.4) axes.tint = pick(r, TINTS)
-    list.push({
-      address: `${sceneId}/${i}`,
-      component: story.id,
-      axes,
-      text: pick(r, [
-        'Save',
-        'Cancel',
-        'Export',
-        'Label',
-        'primary',
-        'Small',
-        'Continue',
-        'Delete',
-      ]),
-    })
-  }
-  return list
-}
-
 function referenceReading(specimen, theme, r) {
   const t = THEMES[theme]
   const size = { tiny: 20, small: 24, medium: 28, large: 32 }[
-    specimen.axes.size
+    specimen.axes.size ?? pick(r, ['small', 'medium'])
   ]
   const filled =
     specimen.axes.variant === 'filled' || (!specimen.axes.variant && r() > 0.7)
@@ -251,23 +177,7 @@ function sceneSvg(theme, readings) {
 rmSync(out, { recursive: true, force: true })
 mkdirSync(out, { recursive: true })
 
-const list = readStories()
-const scenes = {
-  stories: list.map(story => {
-    const r = rng(story.id)
-    const ids = ['preview', ...story.titles.map((_, i) => String(i))]
-    return {
-      id: story.id,
-      name: story.name,
-      summary: story.summary,
-      scenes: ids.map((sid, i) => ({
-        id: `${story.id}/${sid}`,
-        title: sid === 'preview' ? 'Preview' : story.titles[i - 1],
-        specimens: specimensFor(story, `${story.id}/${sid}`, r),
-      })),
-    }
-  }),
-}
+const scenes = JSON.parse(readFileSync(join(root, 'scenes.json'), 'utf8'))
 writeFileSync(join(out, 'scenes.json'), JSON.stringify(scenes, null, 2))
 
 const collected = '2026-09-30T09:41:00Z'

@@ -1,0 +1,26 @@
+/*
+ * A scene, alone: the width of the example's document column, on the
+ * surface a story's card is, with room around it for a shadow to land.
+ * Every platform's collector draws its scenes in the same frame.
+ */
+body {
+  width: max-content;
+}
+
+.c-scene {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40rem;
+  padding: var(--spacing-6);
+  background: var(--color-surface);
+}
+
+/* Motion off: what is read is where a thing comes to rest. */
+*,
+*::before,
+*::after {
+  transition: none !important;
+  animation-play-state: paused !important;
+  caret-color: transparent !important;
+}

@@ -147,6 +147,10 @@ pnpm example            # build both, then serve the React example on :6006
 ```
 
 ```bash
+pnpm conformance       # collect readings into tools/conformance/data/ — React's collector so far
+```
+
+```bash
 pnpm conformance:view  # the conformance viewer on :5183, over tools/conformance/data/ or its fixtures
 ```
 
@@ -170,7 +174,7 @@ before making it:
 - [`specs/tokens.md`](specs/tokens.md) — How a value is decided: the token pipeline, the three layers, and the colour system's washes, grades and recipes.
 - [`specs/themes.md`](specs/themes.md) — The twelve drawn themes, the imported ones, and how each platform carries a theme.
 - [`specs/components.md`](specs/components.md) — How the React package is built and how a component is drawn — the model every port follows.
-- [`specs/conformance.md`](specs/conformance.md) — How an implementation is shown to draw what React draws: scenes and addresses, readings, tolerances, expectations and the viewer. The collectors are not yet written.
+- [`specs/conformance.md`](specs/conformance.md) — How an implementation is shown to draw what React draws: scenes and addresses, readings, tolerances, expectations and the viewer. React's collector is written; the platforms' are not yet.
 - [`specs/playgrounds.md`](specs/playgrounds.md) — How a story is written once, in the React example, and compiled into the other platforms' examples.
 
 ## Code style

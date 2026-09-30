@@ -14,6 +14,7 @@ import { formatOutputs } from './format.mjs'
 import * as swiftui from './swiftui.mjs'
 import * as winui from './winui.mjs'
 import { readStories, readThemes } from './stories.mjs'
+import { scenesJson } from './scenes.mjs'
 
 const root = fileURLToPath(new URL('../../', import.meta.url))
 const check = process.argv.includes('--check')
@@ -107,6 +108,9 @@ for (const story of stories)
 outputs.set(`${csharp}/Stories/Index.cs`, winui.storiesIndexCs(stories))
 outputs.set(`${csharp}/Lib/Glyphs.cs`, winui.glyphsCs(stories))
 outputs.set(`${csharp}/Lib/Themes.cs`, winui.themesCs(themes, tokens))
+
+/* The conformance contract: every scene and the addresses in it. */
+outputs.set('tools/conformance/scenes.json', scenesJson(stories))
 formatOutputs(outputs)
 
 /*

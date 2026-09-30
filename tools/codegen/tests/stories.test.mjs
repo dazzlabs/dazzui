@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { SUPPORT, unsupported } from '../flutter.mjs'
 import * as swiftui from '../swiftui.mjs'
 import * as winui from '../winui.mjs'
+import { scenesJson } from '../scenes.mjs'
 import { readStories, StoryCompiler } from '../stories.mjs'
 
 const root = fileURLToPath(new URL('../../../', import.meta.url))
@@ -209,4 +210,39 @@ test('a WinUI story is a lazy member whose JSON sits in a raw string', () => {
     /\["TextBold20Filled"\] = \(Glyph\.TextBold, IconVariant\.Filled\),/
   )
   assert.throws(() => winui.glyphOf('Settings24Regular'), /20px grid/)
+})
+
+test('scenes are addressed pre-order, at their initial state', () => {
+  const compiled = compile(`
+const story: Story = {
+  id: 'probe',
+  name: 'Probe',
+  summary: 'A probe.',
+  Preview: () => {
+    const [on, setOn] = useState(false)
+    return (
+      <Row>
+        <Button tint="danger" shortcut={<Tag>S</Tag>}>
+          <Settings20Regular />
+          Save
+        </Button>
+        {on ? <Tag>On</Tag> : <Switch checked={on} onCheckedChange={setOn} />}
+      </Row>
+    )
+  },
+  examples: [],
+}`)
+  const [scene] = JSON.parse(scenesJson([compiled])).stories[0].scenes
+  assert.equal(scene.id, 'probe/preview')
+  assert.deepEqual(scene.specimens, [
+    {
+      address: 'probe/preview/0',
+      component: 'button',
+      axes: { tint: 'danger' },
+      text: 'Save',
+      container: true,
+    },
+    { address: 'probe/preview/1', component: 'tag', axes: {}, text: 'S' },
+    { address: 'probe/preview/2', component: 'switch', axes: {} },
+  ])
 })

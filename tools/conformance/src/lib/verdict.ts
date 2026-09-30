@@ -18,11 +18,12 @@ function valueOf(reading: Reading, property: string) {
   return reading.values[property] ?? null
 }
 
-/** sRGB hex to OKLab, for a distance that means something to an eye. */
-function oklab(hex: string): [number, number, number] | null {
-  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim())
+/** sRGB hex, `#rrggbb` or `#rrggbbaa`, to OKLab and an alpha. */
+function oklab(hex: string): [number, number, number, number] | null {
+  const m = /^#?([0-9a-f]{6})([0-9a-f]{2})?$/i.exec(hex.trim())
   if (!m) return null
   const n = parseInt(m[1]!, 16)
+  const alpha = m[2] ? parseInt(m[2], 16) / 255 : 1
   const lin = (c: number) => {
     const v = c / 255
     return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
@@ -37,14 +38,24 @@ function oklab(hex: string): [number, number, number] | null {
     0.2104542553 * l + 0.793617785 * m_ - 0.0040720468 * s,
     1.9779984951 * l - 2.428592205 * m_ + 0.4505937099 * s,
     0.0259040371 * l + 0.7827717662 * m_ - 0.808675766 * s,
+    alpha,
   ]
 }
 
+/**
+ * How far apart two colours are: the OKLab distance, weighted by how much
+ * of each shows, plus the difference in how much shows. Two fully clear
+ * colours are the same colour whatever their channels say.
+ */
 export function colourDistance(a: string, b: string): number | null {
   const x = oklab(a)
   const y = oklab(b)
   if (!x || !y) return null
-  return Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2])
+  const shown = Math.min(x[3], y[3])
+  return (
+    Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2]) * shown +
+    Math.abs(x[3] - y[3])
+  )
 }
 
 export function compareValues(

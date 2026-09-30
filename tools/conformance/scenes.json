@@ -1,0 +1,6016 @@
+{
+  "stories": [
+    {
+      "id": "accordion",
+      "name": "Accordion",
+      "summary": "Several disclosures that know about each other.",
+      "scenes": [
+        {
+          "id": "accordion/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "accordion/preview/0",
+              "component": "accordion",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "accordion/preview/1",
+              "component": "accordion-item",
+              "axes": {},
+              "text": "Every colour, length and face is a token. A component reads the variable; it never writes a value of its own."
+            },
+            {
+              "address": "accordion/preview/2",
+              "component": "accordion-item",
+              "axes": {},
+              "text": "Six drawn families in light and dark, and the imported ones beside them."
+            }
+          ]
+        },
+        {
+          "id": "accordion/0",
+          "title": "One at a time",
+          "specimens": [
+            {
+              "address": "accordion/0/0",
+              "component": "accordion",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "accordion/0/1",
+              "component": "accordion-item",
+              "axes": {},
+              "text": "Every colour, length and face is a token. A component reads the variable; it never writes a value of its own."
+            },
+            {
+              "address": "accordion/0/2",
+              "component": "accordion-item",
+              "axes": {},
+              "text": "Six drawn families in light and dark, and the imported ones beside them."
+            },
+            {
+              "address": "accordion/0/3",
+              "component": "accordion-item",
+              "axes": {},
+              "text": "One design, measured in the browser, that every port is held to."
+            }
+          ]
+        },
+        {
+          "id": "accordion/1",
+          "title": "Several at once",
+          "specimens": [
+            {
+              "address": "accordion/1/0",
+              "component": "accordion",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "accordion/1/1",
+              "component": "accordion-item",
+              "axes": {},
+              "text": "Every colour, length and face is a token. A component reads the variable; it never writes a value of its own."
+            },
+            {
+              "address": "accordion/1/2",
+              "component": "accordion-item",
+              "axes": {},
+              "text": "Six drawn families in light and dark, and the imported ones beside them."
+            },
+            {
+              "address": "accordion/1/3",
+              "component": "accordion-item",
+              "axes": {},
+              "text": "One design, measured in the browser, that every port is held to."
+            }
+          ]
+        },
+        {
+          "id": "accordion/2",
+          "title": "Divided",
+          "specimens": [
+            {
+              "address": "accordion/2/0",
+              "component": "accordion",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "accordion/2/1",
+              "component": "accordion-item",
+              "axes": {},
+              "text": "Every colour, length and face is a token. A component reads the variable; it never writes a value of its own."
+            },
+            {
+              "address": "accordion/2/2",
+              "component": "accordion-item",
+              "axes": {},
+              "text": "Six drawn families in light and dark, and the imported ones beside them."
+            },
+            {
+              "address": "accordion/2/3",
+              "component": "accordion-item",
+              "axes": {},
+              "text": "One design, measured in the browser, that every port is held to."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "action-bar",
+      "name": "ActionBar",
+      "summary": "The row of actions a view ends on.",
+      "scenes": [
+        {
+          "id": "action-bar/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "action-bar/preview/0",
+              "component": "action-bar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "action-bar/preview/1",
+              "component": "button",
+              "axes": {
+                "variant": "outlined"
+              },
+              "text": "Cancel"
+            },
+            {
+              "address": "action-bar/preview/2",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Save"
+            }
+          ]
+        },
+        {
+          "id": "action-bar/0",
+          "title": "Alignment",
+          "specimens": [
+            {
+              "address": "action-bar/0/0",
+              "component": "action-bar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "action-bar/0/1",
+              "component": "button",
+              "axes": {
+                "variant": "plain"
+              },
+              "text": "start"
+            },
+            {
+              "address": "action-bar/0/2",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Save"
+            },
+            {
+              "address": "action-bar/0/3",
+              "component": "action-bar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "action-bar/0/4",
+              "component": "button",
+              "axes": {
+                "variant": "plain"
+              },
+              "text": "end"
+            },
+            {
+              "address": "action-bar/0/5",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Save"
+            },
+            {
+              "address": "action-bar/0/6",
+              "component": "action-bar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "action-bar/0/7",
+              "component": "button",
+              "axes": {
+                "variant": "plain"
+              },
+              "text": "between"
+            },
+            {
+              "address": "action-bar/0/8",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Save"
+            }
+          ]
+        },
+        {
+          "id": "action-bar/1",
+          "title": "With a key hint",
+          "specimens": [
+            {
+              "address": "action-bar/1/0",
+              "component": "action-bar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "action-bar/1/1",
+              "component": "key-cap",
+              "axes": {
+                "variant": "hint"
+              },
+              "text": "⌘↵ to send"
+            },
+            {
+              "address": "action-bar/1/2",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Send"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "avatar",
+      "name": "Avatar",
+      "summary": "A person, by their picture or by their initials.",
+      "scenes": [
+        {
+          "id": "avatar/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "avatar/preview/0",
+              "component": "avatar-group",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "avatar/preview/1",
+              "component": "avatar",
+              "axes": {}
+            },
+            {
+              "address": "avatar/preview/2",
+              "component": "avatar",
+              "axes": {}
+            },
+            {
+              "address": "avatar/preview/3",
+              "component": "avatar",
+              "axes": {}
+            },
+            {
+              "address": "avatar/preview/4",
+              "component": "avatar",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "avatar/0",
+          "title": "Sizes and shapes",
+          "specimens": [
+            {
+              "address": "avatar/0/0",
+              "component": "avatar",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "avatar/0/1",
+              "component": "avatar",
+              "axes": {
+                "size": "medium"
+              }
+            },
+            {
+              "address": "avatar/0/2",
+              "component": "avatar",
+              "axes": {
+                "size": "large"
+              }
+            },
+            {
+              "address": "avatar/0/3",
+              "component": "avatar",
+              "axes": {
+                "size": "large",
+                "shape": "square"
+              }
+            }
+          ]
+        },
+        {
+          "id": "avatar/1",
+          "title": "A group",
+          "specimens": [
+            {
+              "address": "avatar/1/0",
+              "component": "avatar-group",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "avatar/1/1",
+              "component": "avatar",
+              "axes": {}
+            },
+            {
+              "address": "avatar/1/2",
+              "component": "avatar",
+              "axes": {}
+            },
+            {
+              "address": "avatar/1/3",
+              "component": "avatar",
+              "axes": {}
+            },
+            {
+              "address": "avatar/1/4",
+              "component": "avatar",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "badge",
+      "name": "Badge",
+      "summary": "A status or a count, read at a glance and never pressed.",
+      "scenes": [
+        {
+          "id": "badge/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "badge/preview/0",
+              "component": "badge",
+              "axes": {
+                "tint": "success"
+              },
+              "text": "Live"
+            },
+            {
+              "address": "badge/preview/1",
+              "component": "badge",
+              "axes": {
+                "tint": "warning"
+              },
+              "text": "Draft"
+            },
+            {
+              "address": "badge/preview/2",
+              "component": "badge",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "12"
+            }
+          ]
+        },
+        {
+          "id": "badge/0",
+          "title": "Variants",
+          "specimens": [
+            {
+              "address": "badge/0/0",
+              "component": "badge",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "filled"
+            },
+            {
+              "address": "badge/0/1",
+              "component": "badge",
+              "axes": {
+                "variant": "tinted"
+              },
+              "text": "tinted"
+            },
+            {
+              "address": "badge/0/2",
+              "component": "badge",
+              "axes": {
+                "variant": "outlined"
+              },
+              "text": "outlined"
+            },
+            {
+              "address": "badge/0/3",
+              "component": "badge",
+              "axes": {
+                "variant": "raised"
+              },
+              "text": "raised"
+            }
+          ]
+        },
+        {
+          "id": "badge/1",
+          "title": "Tints",
+          "specimens": [
+            {
+              "address": "badge/1/0",
+              "component": "badge",
+              "axes": {
+                "tint": "primary"
+              },
+              "text": "primary"
+            },
+            {
+              "address": "badge/1/1",
+              "component": "badge",
+              "axes": {
+                "tint": "neutral"
+              },
+              "text": "neutral"
+            },
+            {
+              "address": "badge/1/2",
+              "component": "badge",
+              "axes": {
+                "tint": "info"
+              },
+              "text": "info"
+            },
+            {
+              "address": "badge/1/3",
+              "component": "badge",
+              "axes": {
+                "tint": "success"
+              },
+              "text": "success"
+            },
+            {
+              "address": "badge/1/4",
+              "component": "badge",
+              "axes": {
+                "tint": "warning"
+              },
+              "text": "warning"
+            },
+            {
+              "address": "badge/1/5",
+              "component": "badge",
+              "axes": {
+                "tint": "danger"
+              },
+              "text": "danger"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "button",
+      "name": "Button",
+      "summary": "The thing a person presses to make something happen.",
+      "scenes": [
+        {
+          "id": "button/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "button/preview/0",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Save changes"
+            },
+            {
+              "address": "button/preview/1",
+              "component": "button",
+              "axes": {
+                "variant": "outlined"
+              },
+              "text": "Cancel"
+            }
+          ]
+        },
+        {
+          "id": "button/0",
+          "title": "Variants",
+          "specimens": [
+            {
+              "address": "button/0/0",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "filled"
+            },
+            {
+              "address": "button/0/1",
+              "component": "button",
+              "axes": {
+                "variant": "tinted"
+              },
+              "text": "tinted"
+            },
+            {
+              "address": "button/0/2",
+              "component": "button",
+              "axes": {
+                "variant": "outlined"
+              },
+              "text": "outlined"
+            },
+            {
+              "address": "button/0/3",
+              "component": "button",
+              "axes": {
+                "variant": "normal"
+              },
+              "text": "normal"
+            },
+            {
+              "address": "button/0/4",
+              "component": "button",
+              "axes": {
+                "variant": "recessed"
+              },
+              "text": "recessed"
+            },
+            {
+              "address": "button/0/5",
+              "component": "button",
+              "axes": {
+                "variant": "plain"
+              },
+              "text": "plain"
+            }
+          ]
+        },
+        {
+          "id": "button/1",
+          "title": "Tints",
+          "specimens": [
+            {
+              "address": "button/1/0",
+              "component": "button",
+              "axes": {
+                "variant": "filled",
+                "tint": "primary"
+              },
+              "text": "primary"
+            },
+            {
+              "address": "button/1/1",
+              "component": "button",
+              "axes": {
+                "variant": "filled",
+                "tint": "neutral"
+              },
+              "text": "neutral"
+            },
+            {
+              "address": "button/1/2",
+              "component": "button",
+              "axes": {
+                "variant": "filled",
+                "tint": "info"
+              },
+              "text": "info"
+            },
+            {
+              "address": "button/1/3",
+              "component": "button",
+              "axes": {
+                "variant": "filled",
+                "tint": "success"
+              },
+              "text": "success"
+            },
+            {
+              "address": "button/1/4",
+              "component": "button",
+              "axes": {
+                "variant": "filled",
+                "tint": "warning"
+              },
+              "text": "warning"
+            },
+            {
+              "address": "button/1/5",
+              "component": "button",
+              "axes": {
+                "variant": "filled",
+                "tint": "danger"
+              },
+              "text": "danger"
+            },
+            {
+              "address": "button/1/6",
+              "component": "button",
+              "axes": {
+                "variant": "tinted",
+                "tint": "primary"
+              },
+              "text": "primary"
+            },
+            {
+              "address": "button/1/7",
+              "component": "button",
+              "axes": {
+                "variant": "tinted",
+                "tint": "neutral"
+              },
+              "text": "neutral"
+            },
+            {
+              "address": "button/1/8",
+              "component": "button",
+              "axes": {
+                "variant": "tinted",
+                "tint": "info"
+              },
+              "text": "info"
+            },
+            {
+              "address": "button/1/9",
+              "component": "button",
+              "axes": {
+                "variant": "tinted",
+                "tint": "success"
+              },
+              "text": "success"
+            },
+            {
+              "address": "button/1/10",
+              "component": "button",
+              "axes": {
+                "variant": "tinted",
+                "tint": "warning"
+              },
+              "text": "warning"
+            },
+            {
+              "address": "button/1/11",
+              "component": "button",
+              "axes": {
+                "variant": "tinted",
+                "tint": "danger"
+              },
+              "text": "danger"
+            }
+          ]
+        },
+        {
+          "id": "button/2",
+          "title": "Sizes",
+          "specimens": [
+            {
+              "address": "button/2/0",
+              "component": "button",
+              "axes": {
+                "size": "tiny"
+              },
+              "text": "Tiny"
+            },
+            {
+              "address": "button/2/1",
+              "component": "button",
+              "axes": {
+                "size": "small"
+              },
+              "text": "Small"
+            },
+            {
+              "address": "button/2/2",
+              "component": "button",
+              "axes": {
+                "size": "medium"
+              },
+              "text": "Medium"
+            },
+            {
+              "address": "button/2/3",
+              "component": "button",
+              "axes": {
+                "size": "large"
+              },
+              "text": "Large"
+            }
+          ]
+        },
+        {
+          "id": "button/3",
+          "title": "With an icon or a shortcut",
+          "specimens": [
+            {
+              "address": "button/3/0",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Export",
+              "container": true
+            },
+            {
+              "address": "button/3/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "button/3/2",
+              "component": "button",
+              "axes": {},
+              "text": "Save",
+              "container": true
+            },
+            {
+              "address": "button/3/3",
+              "component": "key-cap",
+              "axes": {},
+              "text": "⌘S"
+            },
+            {
+              "address": "button/3/4",
+              "component": "button",
+              "axes": {
+                "disabled": "true"
+              },
+              "text": "Disabled"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "callout",
+      "name": "Callout",
+      "summary": "Something the reader should know before they go on.",
+      "scenes": [
+        {
+          "id": "callout/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "callout/preview/0",
+              "component": "callout",
+              "axes": {
+                "tint": "info"
+              },
+              "text": "Restart to finish updating."
+            }
+          ]
+        },
+        {
+          "id": "callout/0",
+          "title": "Tints",
+          "specimens": [
+            {
+              "address": "callout/0/0",
+              "component": "callout",
+              "axes": {
+                "tint": "primary"
+              },
+              "text": "What happened, and what to do about it."
+            },
+            {
+              "address": "callout/0/1",
+              "component": "callout",
+              "axes": {
+                "tint": "neutral"
+              },
+              "text": "What happened, and what to do about it."
+            },
+            {
+              "address": "callout/0/2",
+              "component": "callout",
+              "axes": {
+                "tint": "info"
+              },
+              "text": "What happened, and what to do about it."
+            },
+            {
+              "address": "callout/0/3",
+              "component": "callout",
+              "axes": {
+                "tint": "success"
+              },
+              "text": "What happened, and what to do about it."
+            },
+            {
+              "address": "callout/0/4",
+              "component": "callout",
+              "axes": {
+                "tint": "warning"
+              },
+              "text": "What happened, and what to do about it."
+            },
+            {
+              "address": "callout/0/5",
+              "component": "callout",
+              "axes": {
+                "tint": "danger"
+              },
+              "text": "What happened, and what to do about it."
+            }
+          ]
+        },
+        {
+          "id": "callout/1",
+          "title": "With an action",
+          "specimens": [
+            {
+              "address": "callout/1/0",
+              "component": "callout",
+              "axes": {
+                "tint": "warning"
+              },
+              "text": "Projects stay readable after it does.",
+              "container": true
+            },
+            {
+              "address": "callout/1/1",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "tinted",
+                "tint": "warning"
+              },
+              "text": "Upgrade"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "card",
+      "name": "Card",
+      "summary": "A surface that holds one thing apart from what is around it.",
+      "scenes": [
+        {
+          "id": "card/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "card/preview/0",
+              "component": "card",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "card/0",
+          "title": "Variants",
+          "specimens": [
+            {
+              "address": "card/0/0",
+              "component": "card",
+              "axes": {
+                "variant": "raised"
+              },
+              "text": "raised"
+            },
+            {
+              "address": "card/0/1",
+              "component": "card",
+              "axes": {
+                "variant": "outlined"
+              },
+              "text": "outlined"
+            },
+            {
+              "address": "card/0/2",
+              "component": "card",
+              "axes": {
+                "variant": "sunken"
+              },
+              "text": "sunken"
+            },
+            {
+              "address": "card/0/3",
+              "component": "card",
+              "axes": {
+                "variant": "tinted"
+              },
+              "text": "tinted"
+            }
+          ]
+        },
+        {
+          "id": "card/1",
+          "title": "Sizes",
+          "specimens": [
+            {
+              "address": "card/1/0",
+              "component": "card",
+              "axes": {
+                "size": "small"
+              },
+              "text": "small"
+            },
+            {
+              "address": "card/1/1",
+              "component": "card",
+              "axes": {
+                "size": "medium"
+              },
+              "text": "medium"
+            },
+            {
+              "address": "card/1/2",
+              "component": "card",
+              "axes": {
+                "size": "large"
+              },
+              "text": "large"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "checkbox",
+      "name": "Checkbox",
+      "summary": "A choice that stands on its own, or one of several that may all hold.",
+      "scenes": [
+        {
+          "id": "checkbox/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "checkbox/preview/0",
+              "component": "checkbox",
+              "axes": {
+                "defaultChecked": "true"
+              },
+              "text": "Send me the digest"
+            },
+            {
+              "address": "checkbox/preview/1",
+              "component": "checkbox",
+              "axes": {},
+              "text": "Include archived projects"
+            }
+          ]
+        },
+        {
+          "id": "checkbox/0",
+          "title": "States",
+          "specimens": [
+            {
+              "address": "checkbox/0/0",
+              "component": "checkbox",
+              "axes": {},
+              "text": "Unchecked"
+            },
+            {
+              "address": "checkbox/0/1",
+              "component": "checkbox",
+              "axes": {
+                "defaultChecked": "true"
+              },
+              "text": "Checked"
+            },
+            {
+              "address": "checkbox/0/2",
+              "component": "checkbox",
+              "axes": {},
+              "text": "Indeterminate"
+            },
+            {
+              "address": "checkbox/0/3",
+              "component": "checkbox",
+              "axes": {
+                "disabled": "true",
+                "defaultChecked": "true"
+              },
+              "text": "Disabled"
+            }
+          ]
+        },
+        {
+          "id": "checkbox/1",
+          "title": "With a note",
+          "specimens": [
+            {
+              "address": "checkbox/1/0",
+              "component": "checkbox",
+              "axes": {
+                "defaultChecked": "true"
+              },
+              "text": "Send me the digest"
+            }
+          ]
+        },
+        {
+          "id": "checkbox/2",
+          "title": "Tints",
+          "specimens": [
+            {
+              "address": "checkbox/2/0",
+              "component": "checkbox",
+              "axes": {
+                "tint": "primary",
+                "defaultChecked": "true"
+              },
+              "text": "primary"
+            },
+            {
+              "address": "checkbox/2/1",
+              "component": "checkbox",
+              "axes": {
+                "tint": "neutral",
+                "defaultChecked": "true"
+              },
+              "text": "neutral"
+            },
+            {
+              "address": "checkbox/2/2",
+              "component": "checkbox",
+              "axes": {
+                "tint": "info",
+                "defaultChecked": "true"
+              },
+              "text": "info"
+            },
+            {
+              "address": "checkbox/2/3",
+              "component": "checkbox",
+              "axes": {
+                "tint": "success",
+                "defaultChecked": "true"
+              },
+              "text": "success"
+            },
+            {
+              "address": "checkbox/2/4",
+              "component": "checkbox",
+              "axes": {
+                "tint": "warning",
+                "defaultChecked": "true"
+              },
+              "text": "warning"
+            },
+            {
+              "address": "checkbox/2/5",
+              "component": "checkbox",
+              "axes": {
+                "tint": "danger",
+                "defaultChecked": "true"
+              },
+              "text": "danger"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "code",
+      "name": "Code",
+      "summary": "Something to be typed exactly, in a line or as a block.",
+      "scenes": [
+        {
+          "id": "code/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "code/preview/0",
+              "component": "code",
+              "axes": {},
+              "text": "pnpm install"
+            }
+          ]
+        },
+        {
+          "id": "code/0",
+          "title": "In a line",
+          "specimens": [
+            {
+              "address": "code/0/0",
+              "component": "code",
+              "axes": {},
+              "text": "data-theme"
+            }
+          ]
+        },
+        {
+          "id": "code/1",
+          "title": "A block",
+          "specimens": [
+            {
+              "address": "code/1/0",
+              "component": "code-block",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "code/2",
+          "title": "With line numbers",
+          "specimens": [
+            {
+              "address": "code/2/0",
+              "component": "code-block",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "collapsible",
+      "name": "Collapsible",
+      "summary": "One section that can be put away.",
+      "scenes": [
+        {
+          "id": "collapsible/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "collapsible/preview/0",
+              "component": "collapsible",
+              "axes": {},
+              "text": "Options most people never change."
+            }
+          ]
+        },
+        {
+          "id": "collapsible/0",
+          "title": "Open and closed",
+          "specimens": [
+            {
+              "address": "collapsible/0/0",
+              "component": "collapsible",
+              "axes": {},
+              "text": "Compiled 214 modules in 1.8 seconds."
+            },
+            {
+              "address": "collapsible/0/1",
+              "component": "collapsible",
+              "axes": {},
+              "text": "All 37 tests passed."
+            }
+          ]
+        },
+        {
+          "id": "collapsible/1",
+          "title": "With something beside the title",
+          "specimens": [
+            {
+              "address": "collapsible/1/0",
+              "component": "collapsible",
+              "axes": {},
+              "text": "Three imports are unused.",
+              "container": true
+            },
+            {
+              "address": "collapsible/1/1",
+              "component": "badge",
+              "axes": {
+                "tint": "warning"
+              },
+              "text": "3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "combobox",
+      "name": "Combobox",
+      "summary": "One value out of a list long enough to be searched.",
+      "scenes": [
+        {
+          "id": "combobox/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "combobox/preview/0",
+              "component": "combobox",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "combobox/0",
+          "title": "Searching a list",
+          "specimens": [
+            {
+              "address": "combobox/0/0",
+              "component": "combobox",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "combobox/1",
+          "title": "Grouped, and clearable",
+          "specimens": [
+            {
+              "address": "combobox/1/0",
+              "component": "combobox",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "combobox/2",
+          "title": "Autocomplete",
+          "specimens": [
+            {
+              "address": "combobox/2/0",
+              "component": "autocomplete",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dialog",
+      "name": "Dialog",
+      "summary": "A question the rest of the window waits on.",
+      "scenes": [
+        {
+          "id": "dialog/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "dialog/preview/0",
+              "component": "dialog",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "dialog/preview/1",
+              "component": "button",
+              "axes": {},
+              "text": "Rename…"
+            },
+            {
+              "address": "dialog/preview/2",
+              "component": "dialog-header",
+              "axes": {}
+            },
+            {
+              "address": "dialog/preview/3",
+              "component": "dialog-body",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "dialog/preview/4",
+              "component": "text-field",
+              "axes": {}
+            },
+            {
+              "address": "dialog/preview/5",
+              "component": "dialog-footer",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "dialog/preview/6",
+              "component": "dialog-close",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "dialog/preview/7",
+              "component": "button",
+              "axes": {
+                "variant": "outlined"
+              },
+              "text": "Cancel"
+            },
+            {
+              "address": "dialog/preview/8",
+              "component": "dialog-close",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "dialog/preview/9",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Rename"
+            }
+          ]
+        },
+        {
+          "id": "dialog/0",
+          "title": "A form",
+          "specimens": [
+            {
+              "address": "dialog/0/0",
+              "component": "dialog",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "dialog/0/1",
+              "component": "button",
+              "axes": {},
+              "text": "Rename…"
+            },
+            {
+              "address": "dialog/0/2",
+              "component": "dialog-header",
+              "axes": {}
+            },
+            {
+              "address": "dialog/0/3",
+              "component": "dialog-body",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "dialog/0/4",
+              "component": "text-field",
+              "axes": {}
+            },
+            {
+              "address": "dialog/0/5",
+              "component": "dialog-footer",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "dialog/0/6",
+              "component": "dialog-close",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "dialog/0/7",
+              "component": "button",
+              "axes": {
+                "variant": "outlined"
+              },
+              "text": "Cancel"
+            },
+            {
+              "address": "dialog/0/8",
+              "component": "dialog-close",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "dialog/0/9",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Rename"
+            }
+          ]
+        },
+        {
+          "id": "dialog/1",
+          "title": "A confirmation",
+          "specimens": [
+            {
+              "address": "dialog/1/0",
+              "component": "dialog",
+              "axes": {
+                "tone": "danger"
+              },
+              "container": true
+            },
+            {
+              "address": "dialog/1/1",
+              "component": "button",
+              "axes": {
+                "variant": "tinted",
+                "tint": "danger"
+              },
+              "text": "Delete…"
+            },
+            {
+              "address": "dialog/1/2",
+              "component": "dialog-header",
+              "axes": {}
+            },
+            {
+              "address": "dialog/1/3",
+              "component": "dialog-footer",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "dialog/1/4",
+              "component": "dialog-close",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "dialog/1/5",
+              "component": "button",
+              "axes": {
+                "variant": "outlined"
+              },
+              "text": "Keep it"
+            },
+            {
+              "address": "dialog/1/6",
+              "component": "dialog-close",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "dialog/1/7",
+              "component": "button",
+              "axes": {
+                "variant": "filled",
+                "tint": "danger"
+              },
+              "text": "Delete"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "divider",
+      "name": "Divider",
+      "summary": "A rule between two things that are not the same thing.",
+      "scenes": [
+        {
+          "id": "divider/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "divider/preview/0",
+              "component": "divider",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "divider/0",
+          "title": "Tones",
+          "specimens": [
+            {
+              "address": "divider/0/0",
+              "component": "divider",
+              "axes": {}
+            },
+            {
+              "address": "divider/0/1",
+              "component": "divider",
+              "axes": {
+                "tone": "muted"
+              }
+            }
+          ]
+        },
+        {
+          "id": "divider/1",
+          "title": "Vertical",
+          "specimens": [
+            {
+              "address": "divider/1/0",
+              "component": "divider",
+              "axes": {
+                "orientation": "vertical"
+              }
+            },
+            {
+              "address": "divider/1/1",
+              "component": "divider",
+              "axes": {
+                "orientation": "vertical"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drawer",
+      "name": "Drawer",
+      "summary": "A panel that comes in from an edge and leaves by it.",
+      "scenes": [
+        {
+          "id": "drawer/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "drawer/preview/0",
+              "component": "drawer",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "drawer/preview/1",
+              "component": "button",
+              "axes": {},
+              "text": "Open filters"
+            },
+            {
+              "address": "drawer/preview/2",
+              "component": "drawer-close",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "drawer/preview/3",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Done"
+            },
+            {
+              "address": "drawer/preview/4",
+              "component": "switch",
+              "axes": {}
+            },
+            {
+              "address": "drawer/preview/5",
+              "component": "switch",
+              "axes": {
+                "defaultChecked": "true"
+              }
+            }
+          ]
+        },
+        {
+          "id": "drawer/0",
+          "title": "From the right",
+          "specimens": [
+            {
+              "address": "drawer/0/0",
+              "component": "drawer",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "drawer/0/1",
+              "component": "button",
+              "axes": {},
+              "text": "Open filters"
+            },
+            {
+              "address": "drawer/0/2",
+              "component": "drawer-close",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "drawer/0/3",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Done"
+            },
+            {
+              "address": "drawer/0/4",
+              "component": "switch",
+              "axes": {}
+            },
+            {
+              "address": "drawer/0/5",
+              "component": "switch",
+              "axes": {
+                "defaultChecked": "true"
+              }
+            }
+          ]
+        },
+        {
+          "id": "drawer/1",
+          "title": "Sides",
+          "specimens": [
+            {
+              "address": "drawer/1/0",
+              "component": "drawer",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "drawer/1/1",
+              "component": "button",
+              "axes": {},
+              "text": "left"
+            },
+            {
+              "address": "drawer/1/2",
+              "component": "drawer-close",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "drawer/1/3",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Done"
+            },
+            {
+              "address": "drawer/1/4",
+              "component": "switch",
+              "axes": {}
+            },
+            {
+              "address": "drawer/1/5",
+              "component": "switch",
+              "axes": {
+                "defaultChecked": "true"
+              }
+            },
+            {
+              "address": "drawer/1/6",
+              "component": "drawer",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "drawer/1/7",
+              "component": "button",
+              "axes": {},
+              "text": "right"
+            },
+            {
+              "address": "drawer/1/8",
+              "component": "drawer-close",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "drawer/1/9",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Done"
+            },
+            {
+              "address": "drawer/1/10",
+              "component": "switch",
+              "axes": {}
+            },
+            {
+              "address": "drawer/1/11",
+              "component": "switch",
+              "axes": {
+                "defaultChecked": "true"
+              }
+            },
+            {
+              "address": "drawer/1/12",
+              "component": "drawer",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "drawer/1/13",
+              "component": "button",
+              "axes": {},
+              "text": "top"
+            },
+            {
+              "address": "drawer/1/14",
+              "component": "drawer-close",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "drawer/1/15",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Done"
+            },
+            {
+              "address": "drawer/1/16",
+              "component": "switch",
+              "axes": {}
+            },
+            {
+              "address": "drawer/1/17",
+              "component": "switch",
+              "axes": {
+                "defaultChecked": "true"
+              }
+            },
+            {
+              "address": "drawer/1/18",
+              "component": "drawer",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "drawer/1/19",
+              "component": "button",
+              "axes": {},
+              "text": "bottom"
+            },
+            {
+              "address": "drawer/1/20",
+              "component": "drawer-close",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "drawer/1/21",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Done"
+            },
+            {
+              "address": "drawer/1/22",
+              "component": "switch",
+              "axes": {}
+            },
+            {
+              "address": "drawer/1/23",
+              "component": "switch",
+              "axes": {
+                "defaultChecked": "true"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "empty-state",
+      "name": "EmptyState",
+      "summary": "What a list says when there is nothing in it.",
+      "scenes": [
+        {
+          "id": "empty-state/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "empty-state/preview/0",
+              "component": "empty-state",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "empty-state/0",
+          "title": "On its own",
+          "specimens": [
+            {
+              "address": "empty-state/0/0",
+              "component": "empty-state",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "empty-state/1",
+          "title": "With a way out",
+          "specimens": [
+            {
+              "address": "empty-state/1/0",
+              "component": "empty-state",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "empty-state/1/1",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "New project"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "form",
+      "name": "Form",
+      "summary": "Fields that are sent together, and checked before they are.",
+      "scenes": [
+        {
+          "id": "form/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "form/preview/0",
+              "component": "form",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "form/preview/1",
+              "component": "form-field",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "form/preview/2",
+              "component": "text-field",
+              "axes": {}
+            },
+            {
+              "address": "form/preview/3",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Subscribe"
+            }
+          ]
+        },
+        {
+          "id": "form/0",
+          "title": "A sign-up",
+          "specimens": [
+            {
+              "address": "form/0/0",
+              "component": "form",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "form/0/1",
+              "component": "form-field",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "form/0/2",
+              "component": "text-field",
+              "axes": {}
+            },
+            {
+              "address": "form/0/3",
+              "component": "form-field",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "form/0/4",
+              "component": "text-field",
+              "axes": {}
+            },
+            {
+              "address": "form/0/5",
+              "component": "action-bar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "form/0/6",
+              "component": "button",
+              "axes": {
+                "variant": "outlined"
+              },
+              "text": "Clear"
+            },
+            {
+              "address": "form/0/7",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Create account"
+            }
+          ]
+        },
+        {
+          "id": "form/1",
+          "title": "A fieldset",
+          "specimens": [
+            {
+              "address": "form/1/0",
+              "component": "fieldset",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "form/1/1",
+              "component": "checkbox",
+              "axes": {
+                "defaultChecked": "true"
+              },
+              "text": "Mentions"
+            },
+            {
+              "address": "form/1/2",
+              "component": "checkbox",
+              "axes": {
+                "defaultChecked": "true"
+              },
+              "text": "Replies"
+            },
+            {
+              "address": "form/1/3",
+              "component": "checkbox",
+              "axes": {},
+              "text": "Everything else"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "form-field",
+      "name": "FormField",
+      "summary": "A control with the label that names it and the hint under it.",
+      "scenes": [
+        {
+          "id": "form-field/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "form-field/preview/0",
+              "component": "form-field",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "form-field/preview/1",
+              "component": "text-field",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "form-field/0",
+          "title": "With a hint",
+          "specimens": [
+            {
+              "address": "form-field/0/0",
+              "component": "form-field",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "form-field/0/1",
+              "component": "text-field",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "form-field/1",
+          "title": "In error",
+          "specimens": [
+            {
+              "address": "form-field/1/0",
+              "component": "form-field",
+              "axes": {
+                "state": "error"
+              },
+              "container": true
+            },
+            {
+              "address": "form-field/1/1",
+              "component": "text-field",
+              "axes": {
+                "state": "error"
+              }
+            }
+          ]
+        },
+        {
+          "id": "form-field/2",
+          "title": "Over any control",
+          "specimens": [
+            {
+              "address": "form-field/2/0",
+              "component": "form-field",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "form-field/2/1",
+              "component": "select",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "icon",
+      "name": "Icon",
+      "summary": "A glyph, set at the size and in the colour of the text beside it.",
+      "scenes": [
+        {
+          "id": "icon/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "icon/preview/0",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon/preview/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon/preview/2",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon/preview/3",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon/preview/4",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "icon/0",
+          "title": "Glyphs",
+          "specimens": [
+            {
+              "address": "icon/0/0",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon/0/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon/0/2",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon/0/3",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon/0/4",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon/0/5",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon/0/6",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "icon/1",
+          "title": "Sizes",
+          "specimens": [
+            {
+              "address": "icon/1/0",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon/1/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon/1/2",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon/1/3",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon/1/4",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "icon/2",
+          "title": "In the colour of its text",
+          "specimens": [
+            {
+              "address": "icon/2/0",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon/2/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon/2/2",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon/2/3",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "icon-button",
+      "name": "IconButton",
+      "summary": "A button that is only its glyph, with the label kept for a reader.",
+      "scenes": [
+        {
+          "id": "icon-button/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "icon-button/preview/0",
+              "component": "icon-button",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "icon-button/preview/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon-button/preview/2",
+              "component": "icon-button",
+              "axes": {
+                "variant": "tinted"
+              },
+              "container": true
+            },
+            {
+              "address": "icon-button/preview/3",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon-button/preview/4",
+              "component": "icon-button",
+              "axes": {
+                "variant": "filled",
+                "tint": "danger"
+              },
+              "container": true
+            },
+            {
+              "address": "icon-button/preview/5",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "icon-button/0",
+          "title": "Variants",
+          "specimens": [
+            {
+              "address": "icon-button/0/0",
+              "component": "icon-button",
+              "axes": {
+                "variant": "filled"
+              },
+              "container": true
+            },
+            {
+              "address": "icon-button/0/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon-button/0/2",
+              "component": "icon-button",
+              "axes": {
+                "variant": "tinted"
+              },
+              "container": true
+            },
+            {
+              "address": "icon-button/0/3",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon-button/0/4",
+              "component": "icon-button",
+              "axes": {
+                "variant": "outlined"
+              },
+              "container": true
+            },
+            {
+              "address": "icon-button/0/5",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon-button/0/6",
+              "component": "icon-button",
+              "axes": {
+                "variant": "normal"
+              },
+              "container": true
+            },
+            {
+              "address": "icon-button/0/7",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon-button/0/8",
+              "component": "icon-button",
+              "axes": {
+                "variant": "recessed"
+              },
+              "container": true
+            },
+            {
+              "address": "icon-button/0/9",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon-button/0/10",
+              "component": "icon-button",
+              "axes": {
+                "variant": "plain"
+              },
+              "container": true
+            },
+            {
+              "address": "icon-button/0/11",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "icon-button/1",
+          "title": "Sizes",
+          "specimens": [
+            {
+              "address": "icon-button/1/0",
+              "component": "icon-button",
+              "axes": {
+                "size": "tiny"
+              },
+              "container": true
+            },
+            {
+              "address": "icon-button/1/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon-button/1/2",
+              "component": "icon-button",
+              "axes": {
+                "size": "small"
+              },
+              "container": true
+            },
+            {
+              "address": "icon-button/1/3",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon-button/1/4",
+              "component": "icon-button",
+              "axes": {
+                "size": "medium"
+              },
+              "container": true
+            },
+            {
+              "address": "icon-button/1/5",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "icon-button/1/6",
+              "component": "icon-button",
+              "axes": {
+                "size": "large"
+              },
+              "container": true
+            },
+            {
+              "address": "icon-button/1/7",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "key-cap",
+      "name": "KeyCap",
+      "summary": "A key, drawn the way the keyboard shows it.",
+      "scenes": [
+        {
+          "id": "key-cap/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "key-cap/preview/0",
+              "component": "key-cap",
+              "axes": {
+                "variant": "key"
+              },
+              "text": "⌘"
+            },
+            {
+              "address": "key-cap/preview/1",
+              "component": "key-cap",
+              "axes": {
+                "variant": "key"
+              },
+              "text": "⇧"
+            },
+            {
+              "address": "key-cap/preview/2",
+              "component": "key-cap",
+              "axes": {
+                "variant": "key"
+              },
+              "text": "P"
+            }
+          ]
+        },
+        {
+          "id": "key-cap/0",
+          "title": "Variants",
+          "specimens": [
+            {
+              "address": "key-cap/0/0",
+              "component": "key-cap",
+              "axes": {
+                "variant": "hint"
+              },
+              "text": "⌘K"
+            },
+            {
+              "address": "key-cap/0/1",
+              "component": "key-cap",
+              "axes": {
+                "variant": "strong"
+              },
+              "text": "⌘K"
+            },
+            {
+              "address": "key-cap/0/2",
+              "component": "key-cap",
+              "axes": {
+                "variant": "key"
+              },
+              "text": "⌘K"
+            }
+          ]
+        },
+        {
+          "id": "key-cap/1",
+          "title": "Sizes",
+          "specimens": [
+            {
+              "address": "key-cap/1/0",
+              "component": "key-cap",
+              "axes": {
+                "size": "small"
+              },
+              "text": "Esc"
+            },
+            {
+              "address": "key-cap/1/1",
+              "component": "key-cap",
+              "axes": {
+                "size": "medium"
+              },
+              "text": "Esc"
+            },
+            {
+              "address": "key-cap/1/2",
+              "component": "key-cap",
+              "axes": {
+                "size": "large"
+              },
+              "text": "Esc"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "link",
+      "name": "Link",
+      "summary": "Somewhere to go, set in the line it is read in.",
+      "scenes": [
+        {
+          "id": "link/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "link/preview/0",
+              "component": "link",
+              "axes": {},
+              "text": "Read the guide"
+            },
+            {
+              "address": "link/preview/1",
+              "component": "link",
+              "axes": {},
+              "text": "Open the repository"
+            }
+          ]
+        },
+        {
+          "id": "link/0",
+          "title": "Underline",
+          "specimens": [
+            {
+              "address": "link/0/0",
+              "component": "link",
+              "axes": {},
+              "text": "On hover"
+            },
+            {
+              "address": "link/0/1",
+              "component": "link",
+              "axes": {},
+              "text": "Always"
+            },
+            {
+              "address": "link/0/2",
+              "component": "link",
+              "axes": {},
+              "text": "Never"
+            }
+          ]
+        },
+        {
+          "id": "link/1",
+          "title": "Tints",
+          "specimens": [
+            {
+              "address": "link/1/0",
+              "component": "link",
+              "axes": {
+                "tint": "primary"
+              },
+              "text": "primary"
+            },
+            {
+              "address": "link/1/1",
+              "component": "link",
+              "axes": {
+                "tint": "neutral"
+              },
+              "text": "neutral"
+            },
+            {
+              "address": "link/1/2",
+              "component": "link",
+              "axes": {
+                "tint": "info"
+              },
+              "text": "info"
+            },
+            {
+              "address": "link/1/3",
+              "component": "link",
+              "axes": {
+                "tint": "success"
+              },
+              "text": "success"
+            },
+            {
+              "address": "link/1/4",
+              "component": "link",
+              "axes": {
+                "tint": "warning"
+              },
+              "text": "warning"
+            },
+            {
+              "address": "link/1/5",
+              "component": "link",
+              "axes": {
+                "tint": "danger"
+              },
+              "text": "danger"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "menu",
+      "name": "Menu",
+      "summary": "Actions kept out of the way until they are asked for.",
+      "scenes": [
+        {
+          "id": "menu/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "menu/preview/0",
+              "component": "menu",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "menu/preview/1",
+              "component": "button",
+              "axes": {},
+              "text": "Actions"
+            },
+            {
+              "address": "menu/preview/2",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/preview/3",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/preview/4",
+              "component": "key-cap",
+              "axes": {
+                "variant": "hint"
+              },
+              "text": "⌘D"
+            },
+            {
+              "address": "menu/preview/5",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "menu/0",
+          "title": "From a button",
+          "specimens": [
+            {
+              "address": "menu/0/0",
+              "component": "menu",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "menu/0/1",
+              "component": "button",
+              "axes": {},
+              "text": "Actions"
+            },
+            {
+              "address": "menu/0/2",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/0/3",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/0/4",
+              "component": "key-cap",
+              "axes": {
+                "variant": "hint"
+              },
+              "text": "⌘D"
+            },
+            {
+              "address": "menu/0/5",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "menu/1",
+          "title": "From a right click",
+          "specimens": [
+            {
+              "address": "menu/1/0",
+              "component": "context-menu",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "menu/1/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/1/2",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/1/3",
+              "component": "key-cap",
+              "axes": {
+                "variant": "hint"
+              },
+              "text": "⌘D"
+            },
+            {
+              "address": "menu/1/4",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/1/5",
+              "component": "card",
+              "axes": {
+                "variant": "outlined"
+              },
+              "text": "Right-click this card"
+            }
+          ]
+        },
+        {
+          "id": "menu/2",
+          "title": "A menubar",
+          "specimens": [
+            {
+              "address": "menu/2/0",
+              "component": "menubar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "menu/2/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/2/2",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "menu/2/3",
+              "component": "key-cap",
+              "axes": {
+                "variant": "hint"
+              },
+              "text": "⌘D"
+            },
+            {
+              "address": "menu/2/4",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "meter",
+      "name": "Meter",
+      "summary": "How much of something there is, against how much there could be.",
+      "scenes": [
+        {
+          "id": "meter/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "meter/preview/0",
+              "component": "meter",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "meter/0",
+          "title": "With its label and value",
+          "specimens": [
+            {
+              "address": "meter/0/0",
+              "component": "meter",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "meter/1",
+          "title": "Sizes",
+          "specimens": [
+            {
+              "address": "meter/1/0",
+              "component": "meter",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "meter/1/1",
+              "component": "meter",
+              "axes": {
+                "size": "medium"
+              }
+            },
+            {
+              "address": "meter/1/2",
+              "component": "meter",
+              "axes": {
+                "size": "large"
+              }
+            }
+          ]
+        },
+        {
+          "id": "meter/2",
+          "title": "Tints",
+          "specimens": [
+            {
+              "address": "meter/2/0",
+              "component": "meter",
+              "axes": {
+                "tint": "success"
+              }
+            },
+            {
+              "address": "meter/2/1",
+              "component": "meter",
+              "axes": {
+                "tint": "warning"
+              }
+            },
+            {
+              "address": "meter/2/2",
+              "component": "meter",
+              "axes": {
+                "tint": "danger"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "number-field",
+      "name": "NumberField",
+      "summary": "A number, stepped or typed, with the unit it is counted in.",
+      "scenes": [
+        {
+          "id": "number-field/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "number-field/preview/0",
+              "component": "number-field",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "number-field/0",
+          "title": "With a unit and bounds",
+          "specimens": [
+            {
+              "address": "number-field/0/0",
+              "component": "number-field",
+              "axes": {}
+            },
+            {
+              "address": "number-field/0/1",
+              "component": "number-field",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "option-card",
+      "name": "OptionCard",
+      "summary": "One of a few, where each needs a sentence to be chosen by.",
+      "scenes": [
+        {
+          "id": "option-card/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "option-card/preview/0",
+              "component": "option-card",
+              "axes": {}
+            },
+            {
+              "address": "option-card/preview/1",
+              "component": "option-card",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "option-card/0",
+          "title": "Choosing one",
+          "specimens": [
+            {
+              "address": "option-card/0/0",
+              "component": "option-card",
+              "axes": {}
+            },
+            {
+              "address": "option-card/0/1",
+              "component": "option-card",
+              "axes": {}
+            },
+            {
+              "address": "option-card/0/2",
+              "component": "option-card",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "option-card/1",
+          "title": "Disabled",
+          "specimens": [
+            {
+              "address": "option-card/1/0",
+              "component": "option-card",
+              "axes": {
+                "disabled": "true"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "otp-field",
+      "name": "OtpField",
+      "summary": "A code, a character to a box.",
+      "scenes": [
+        {
+          "id": "otp-field/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "otp-field/preview/0",
+              "component": "otp-field",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "otp-field/0",
+          "title": "Six digits",
+          "specimens": [
+            {
+              "address": "otp-field/0/0",
+              "component": "otp-field",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "otp-field/1",
+          "title": "In two groups",
+          "specimens": [
+            {
+              "address": "otp-field/1/0",
+              "component": "otp-field",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "otp-field/2",
+          "title": "Sizes and error",
+          "specimens": [
+            {
+              "address": "otp-field/2/0",
+              "component": "otp-field",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "otp-field/2/1",
+              "component": "otp-field",
+              "axes": {
+                "size": "large"
+              }
+            },
+            {
+              "address": "otp-field/2/2",
+              "component": "otp-field",
+              "axes": {
+                "state": "error"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pill-tabs",
+      "name": "PillTabs",
+      "summary": "Tabs that carry a count, for a list cut several ways.",
+      "scenes": [
+        {
+          "id": "pill-tabs/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "pill-tabs/preview/0",
+              "component": "pill-tabs",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "pill-tabs/0",
+          "title": "With counts",
+          "specimens": [
+            {
+              "address": "pill-tabs/0/0",
+              "component": "pill-tabs",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "popover",
+      "name": "Popover",
+      "summary": "A small panel that stays with the thing it was opened from.",
+      "scenes": [
+        {
+          "id": "popover/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "popover/preview/0",
+              "component": "popover",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "popover/preview/1",
+              "component": "button",
+              "axes": {},
+              "text": "Share"
+            },
+            {
+              "address": "popover/preview/2",
+              "component": "text-field",
+              "axes": {}
+            },
+            {
+              "address": "popover/preview/3",
+              "component": "popover-close",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "popover/preview/4",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Done"
+            }
+          ]
+        },
+        {
+          "id": "popover/0",
+          "title": "With a title and content",
+          "specimens": [
+            {
+              "address": "popover/0/0",
+              "component": "popover",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "popover/0/1",
+              "component": "button",
+              "axes": {},
+              "text": "Share"
+            },
+            {
+              "address": "popover/0/2",
+              "component": "text-field",
+              "axes": {}
+            },
+            {
+              "address": "popover/0/3",
+              "component": "popover-close",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "popover/0/4",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Done"
+            }
+          ]
+        },
+        {
+          "id": "popover/1",
+          "title": "Sides",
+          "specimens": [
+            {
+              "address": "popover/1/0",
+              "component": "popover",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "popover/1/1",
+              "component": "button",
+              "axes": {},
+              "text": "top"
+            },
+            {
+              "address": "popover/1/2",
+              "component": "popover",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "popover/1/3",
+              "component": "button",
+              "axes": {},
+              "text": "bottom"
+            },
+            {
+              "address": "popover/1/4",
+              "component": "popover",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "popover/1/5",
+              "component": "button",
+              "axes": {},
+              "text": "left"
+            },
+            {
+              "address": "popover/1/6",
+              "component": "popover",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "popover/1/7",
+              "component": "button",
+              "axes": {},
+              "text": "right"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "preferences",
+      "name": "Preferences",
+      "summary": "Settings, a row to each, in the sections they belong to.",
+      "scenes": [
+        {
+          "id": "preferences/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "preferences/preview/0",
+              "component": "preferences",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/preview/1",
+              "component": "preference-section",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/preview/2",
+              "component": "preference-row",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/preview/3",
+              "component": "switch",
+              "axes": {
+                "defaultChecked": "true"
+              }
+            },
+            {
+              "address": "preferences/preview/4",
+              "component": "preference-row",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/preview/5",
+              "component": "switch",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "preferences/0",
+          "title": "A section",
+          "specimens": [
+            {
+              "address": "preferences/0/0",
+              "component": "preferences",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/0/1",
+              "component": "preference-section",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/0/2",
+              "component": "preference-row",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/0/3",
+              "component": "select",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "preferences/0/4",
+              "component": "preference-row",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/0/5",
+              "component": "switch",
+              "axes": {
+                "defaultChecked": "true"
+              }
+            },
+            {
+              "address": "preferences/0/6",
+              "component": "preference-row",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/0/7",
+              "component": "button",
+              "axes": {
+                "size": "small"
+              },
+              "text": "Check now"
+            }
+          ]
+        },
+        {
+          "id": "preferences/1",
+          "title": "A group of sections",
+          "specimens": [
+            {
+              "address": "preferences/1/0",
+              "component": "preferences",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/1/1",
+              "component": "preference-group",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/1/2",
+              "component": "preference-section",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/1/3",
+              "component": "preference-row",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/1/4",
+              "component": "select",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "preferences/1/5",
+              "component": "preference-row",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/1/6",
+              "component": "switch",
+              "axes": {
+                "defaultChecked": "true"
+              }
+            },
+            {
+              "address": "preferences/1/7",
+              "component": "preference-row",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/1/8",
+              "component": "button",
+              "axes": {
+                "size": "small"
+              },
+              "text": "Check now"
+            },
+            {
+              "address": "preferences/1/9",
+              "component": "preference-section",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/1/10",
+              "component": "preference-row",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/1/11",
+              "component": "switch",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "preferences/2",
+          "title": "Rows that open something",
+          "specimens": [
+            {
+              "address": "preferences/2/0",
+              "component": "preferences",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/2/1",
+              "component": "preference-section",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/2/2",
+              "component": "preference-row",
+              "axes": {}
+            },
+            {
+              "address": "preferences/2/3",
+              "component": "preference-row",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "preview-card",
+      "name": "PreviewCard",
+      "summary": "What a link leads to, shown before it is followed.",
+      "scenes": [
+        {
+          "id": "preview-card/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "preview-card/preview/0",
+              "component": "preview-card",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preview-card/preview/1",
+              "component": "link",
+              "axes": {},
+              "text": "@ada"
+            },
+            {
+              "address": "preview-card/preview/2",
+              "component": "avatar",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "preview-card/0",
+          "title": "Over a link",
+          "specimens": [
+            {
+              "address": "preview-card/0/0",
+              "component": "preview-card",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preview-card/0/1",
+              "component": "link",
+              "axes": {},
+              "text": "@ada"
+            },
+            {
+              "address": "preview-card/0/2",
+              "component": "avatar",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "preview-card/1",
+          "title": "Over a button",
+          "specimens": [
+            {
+              "address": "preview-card/1/0",
+              "component": "preview-card",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preview-card/1/1",
+              "component": "button",
+              "axes": {
+                "size": "small"
+              },
+              "text": "dazzlabs/dazzui"
+            },
+            {
+              "address": "preview-card/1/2",
+              "component": "badge",
+              "axes": {
+                "size": "small",
+                "tint": "neutral"
+              },
+              "text": "public"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "progress",
+      "name": "Progress",
+      "summary": "How far along something is, or that it is under way at all.",
+      "scenes": [
+        {
+          "id": "progress/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "progress/preview/0",
+              "component": "progress",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "progress/0",
+          "title": "Sizes",
+          "specimens": [
+            {
+              "address": "progress/0/0",
+              "component": "progress",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "progress/0/1",
+              "component": "progress",
+              "axes": {
+                "size": "medium"
+              }
+            },
+            {
+              "address": "progress/0/2",
+              "component": "progress",
+              "axes": {
+                "size": "large"
+              }
+            }
+          ]
+        },
+        {
+          "id": "progress/1",
+          "title": "Tints and gradient",
+          "specimens": [
+            {
+              "address": "progress/1/0",
+              "component": "progress",
+              "axes": {
+                "tint": "success"
+              }
+            },
+            {
+              "address": "progress/1/1",
+              "component": "progress",
+              "axes": {
+                "tint": "warning"
+              }
+            },
+            {
+              "address": "progress/1/2",
+              "component": "progress",
+              "axes": {
+                "tint": "danger"
+              }
+            },
+            {
+              "address": "progress/1/3",
+              "component": "progress",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "radio",
+      "name": "Radio",
+      "summary": "One of a few, with every option in view.",
+      "scenes": [
+        {
+          "id": "radio/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "radio/preview/0",
+              "component": "radio-group",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "radio/0",
+          "title": "A group",
+          "specimens": [
+            {
+              "address": "radio/0/0",
+              "component": "radio-group",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "radio/1",
+          "title": "Sizes",
+          "specimens": [
+            {
+              "address": "radio/1/0",
+              "component": "radio-group",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "radio/1/1",
+              "component": "radio-group",
+              "axes": {
+                "size": "medium"
+              }
+            },
+            {
+              "address": "radio/1/2",
+              "component": "radio-group",
+              "axes": {
+                "size": "large"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "search-field",
+      "name": "SearchField",
+      "summary": "A field that filters what is already on screen.",
+      "scenes": [
+        {
+          "id": "search-field/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "search-field/preview/0",
+              "component": "search-field",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "search-field/0",
+          "title": "Default",
+          "specimens": [
+            {
+              "address": "search-field/0/0",
+              "component": "search-field",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "section-label",
+      "name": "SectionLabel",
+      "summary": "The small heading over a group of things.",
+      "scenes": [
+        {
+          "id": "section-label/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "section-label/preview/0",
+              "component": "section-label",
+              "axes": {},
+              "text": "Recent"
+            }
+          ]
+        },
+        {
+          "id": "section-label/0",
+          "title": "Default and faint",
+          "specimens": [
+            {
+              "address": "section-label/0/0",
+              "component": "section-label",
+              "axes": {},
+              "text": "Recent"
+            },
+            {
+              "address": "section-label/0/1",
+              "component": "section-label",
+              "axes": {},
+              "text": "Archived"
+            }
+          ]
+        },
+        {
+          "id": "section-label/1",
+          "title": "Tints",
+          "specimens": [
+            {
+              "address": "section-label/1/0",
+              "component": "section-label",
+              "axes": {
+                "tint": "primary"
+              },
+              "text": "primary"
+            },
+            {
+              "address": "section-label/1/1",
+              "component": "section-label",
+              "axes": {
+                "tint": "neutral"
+              },
+              "text": "neutral"
+            },
+            {
+              "address": "section-label/1/2",
+              "component": "section-label",
+              "axes": {
+                "tint": "info"
+              },
+              "text": "info"
+            },
+            {
+              "address": "section-label/1/3",
+              "component": "section-label",
+              "axes": {
+                "tint": "success"
+              },
+              "text": "success"
+            },
+            {
+              "address": "section-label/1/4",
+              "component": "section-label",
+              "axes": {
+                "tint": "warning"
+              },
+              "text": "warning"
+            },
+            {
+              "address": "section-label/1/5",
+              "component": "section-label",
+              "axes": {
+                "tint": "danger"
+              },
+              "text": "danger"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "segmented-control",
+      "name": "SegmentedControl",
+      "summary": "A few views of one thing, and the one being looked at.",
+      "scenes": [
+        {
+          "id": "segmented-control/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "segmented-control/preview/0",
+              "component": "segmented-control",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "segmented-control/0",
+          "title": "Sizes",
+          "specimens": [
+            {
+              "address": "segmented-control/0/0",
+              "component": "segmented-control",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "segmented-control/0/1",
+              "component": "segmented-control",
+              "axes": {
+                "size": "medium"
+              }
+            },
+            {
+              "address": "segmented-control/0/2",
+              "component": "segmented-control",
+              "axes": {
+                "size": "large"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "select",
+      "name": "Select",
+      "summary": "One value out of a list that is too long to lay out.",
+      "scenes": [
+        {
+          "id": "select/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "select/preview/0",
+              "component": "select",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "select/0",
+          "title": "Sizes",
+          "specimens": [
+            {
+              "address": "select/0/0",
+              "component": "select",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "select/0/1",
+              "component": "select",
+              "axes": {
+                "size": "medium"
+              }
+            },
+            {
+              "address": "select/0/2",
+              "component": "select",
+              "axes": {
+                "size": "large"
+              }
+            }
+          ]
+        },
+        {
+          "id": "select/1",
+          "title": "Placeholder and disabled",
+          "specimens": [
+            {
+              "address": "select/1/0",
+              "component": "select",
+              "axes": {}
+            },
+            {
+              "address": "select/1/1",
+              "component": "select",
+              "axes": {
+                "disabled": "true"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shortcut-recorder",
+      "name": "ShortcutRecorder",
+      "summary": "A field that takes the keys pressed in it as its value.",
+      "scenes": [
+        {
+          "id": "shortcut-recorder/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "shortcut-recorder/preview/0",
+              "component": "shortcut-recorder",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "shortcut-recorder/0",
+          "title": "Empty and set",
+          "specimens": [
+            {
+              "address": "shortcut-recorder/0/0",
+              "component": "shortcut-recorder",
+              "axes": {}
+            },
+            {
+              "address": "shortcut-recorder/0/1",
+              "component": "shortcut-recorder",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "shortcut-recorder/1",
+          "title": "In error and disabled",
+          "specimens": [
+            {
+              "address": "shortcut-recorder/1/0",
+              "component": "shortcut-recorder",
+              "axes": {
+                "state": "error"
+              }
+            },
+            {
+              "address": "shortcut-recorder/1/1",
+              "component": "shortcut-recorder",
+              "axes": {
+                "disabled": "true"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sidebar",
+      "name": "Sidebar",
+      "summary": "The column a window is navigated from.",
+      "scenes": [
+        {
+          "id": "sidebar/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "sidebar/preview/0",
+              "component": "sidebar-provider",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/preview/1",
+              "component": "sidebar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/preview/2",
+              "component": "sidebar-header",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/preview/3",
+              "component": "sidebar-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/preview/4",
+              "component": "sidebar-group",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/preview/5",
+              "component": "sidebar-group-label",
+              "axes": {},
+              "text": "Library"
+            },
+            {
+              "address": "sidebar/preview/6",
+              "component": "sidebar-group-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/preview/7",
+              "component": "sidebar-menu",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/preview/8",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/preview/9",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Documents",
+              "container": true
+            },
+            {
+              "address": "sidebar/preview/10",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/preview/11",
+              "component": "sidebar-menu-badge",
+              "axes": {},
+              "text": "12"
+            },
+            {
+              "address": "sidebar/preview/12",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/preview/13",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Glossaries",
+              "container": true
+            },
+            {
+              "address": "sidebar/preview/14",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/preview/15",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/preview/16",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Settings",
+              "container": true
+            },
+            {
+              "address": "sidebar/preview/17",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/preview/18",
+              "component": "sidebar-inset",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/preview/19",
+              "component": "sidebar-header",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "sidebar/0",
+          "title": "Beside the content",
+          "specimens": [
+            {
+              "address": "sidebar/0/0",
+              "component": "sidebar-provider",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/0/1",
+              "component": "sidebar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/0/2",
+              "component": "sidebar-header",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/0/3",
+              "component": "sidebar-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/0/4",
+              "component": "sidebar-group",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/0/5",
+              "component": "sidebar-group-label",
+              "axes": {},
+              "text": "Library"
+            },
+            {
+              "address": "sidebar/0/6",
+              "component": "sidebar-group-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/0/7",
+              "component": "sidebar-menu",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/0/8",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/0/9",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Documents",
+              "container": true
+            },
+            {
+              "address": "sidebar/0/10",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/0/11",
+              "component": "sidebar-menu-badge",
+              "axes": {},
+              "text": "12"
+            },
+            {
+              "address": "sidebar/0/12",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/0/13",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Glossaries",
+              "container": true
+            },
+            {
+              "address": "sidebar/0/14",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/0/15",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/0/16",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Settings",
+              "container": true
+            },
+            {
+              "address": "sidebar/0/17",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/0/18",
+              "component": "sidebar-inset",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/0/19",
+              "component": "sidebar-header",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/0/20",
+              "component": "sidebar-trigger",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "sidebar/1",
+          "title": "Collapsing to its icons",
+          "specimens": [
+            {
+              "address": "sidebar/1/0",
+              "component": "sidebar-provider",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/1/1",
+              "component": "sidebar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/1/2",
+              "component": "sidebar-header",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/1/3",
+              "component": "sidebar-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/1/4",
+              "component": "sidebar-group",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/1/5",
+              "component": "sidebar-group-label",
+              "axes": {},
+              "text": "Library"
+            },
+            {
+              "address": "sidebar/1/6",
+              "component": "sidebar-group-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/1/7",
+              "component": "sidebar-menu",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/1/8",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/1/9",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Documents",
+              "container": true
+            },
+            {
+              "address": "sidebar/1/10",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/1/11",
+              "component": "sidebar-menu-badge",
+              "axes": {},
+              "text": "12"
+            },
+            {
+              "address": "sidebar/1/12",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/1/13",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Glossaries",
+              "container": true
+            },
+            {
+              "address": "sidebar/1/14",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/1/15",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/1/16",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Settings",
+              "container": true
+            },
+            {
+              "address": "sidebar/1/17",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/1/18",
+              "component": "sidebar-inset",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/1/19",
+              "component": "sidebar-header",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/1/20",
+              "component": "sidebar-trigger",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "sidebar/2",
+          "title": "Floating and inset",
+          "specimens": [
+            {
+              "address": "sidebar/2/0",
+              "component": "sidebar-provider",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/1",
+              "component": "sidebar",
+              "axes": {
+                "variant": "floating"
+              },
+              "container": true
+            },
+            {
+              "address": "sidebar/2/2",
+              "component": "sidebar-header",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/2/3",
+              "component": "sidebar-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/4",
+              "component": "sidebar-group",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/5",
+              "component": "sidebar-group-label",
+              "axes": {},
+              "text": "Library"
+            },
+            {
+              "address": "sidebar/2/6",
+              "component": "sidebar-group-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/7",
+              "component": "sidebar-menu",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/8",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/9",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Documents",
+              "container": true
+            },
+            {
+              "address": "sidebar/2/10",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/2/11",
+              "component": "sidebar-menu-badge",
+              "axes": {},
+              "text": "12"
+            },
+            {
+              "address": "sidebar/2/12",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/13",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Glossaries",
+              "container": true
+            },
+            {
+              "address": "sidebar/2/14",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/2/15",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/16",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Settings",
+              "container": true
+            },
+            {
+              "address": "sidebar/2/17",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/2/18",
+              "component": "sidebar-inset",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/19",
+              "component": "sidebar-header",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/20",
+              "component": "sidebar-trigger",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/2/21",
+              "component": "sidebar-provider",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/22",
+              "component": "sidebar",
+              "axes": {
+                "variant": "inset"
+              },
+              "container": true
+            },
+            {
+              "address": "sidebar/2/23",
+              "component": "sidebar-header",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/2/24",
+              "component": "sidebar-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/25",
+              "component": "sidebar-group",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/26",
+              "component": "sidebar-group-label",
+              "axes": {},
+              "text": "Library"
+            },
+            {
+              "address": "sidebar/2/27",
+              "component": "sidebar-group-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/28",
+              "component": "sidebar-menu",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/29",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/30",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Documents",
+              "container": true
+            },
+            {
+              "address": "sidebar/2/31",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/2/32",
+              "component": "sidebar-menu-badge",
+              "axes": {},
+              "text": "12"
+            },
+            {
+              "address": "sidebar/2/33",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/34",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Glossaries",
+              "container": true
+            },
+            {
+              "address": "sidebar/2/35",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/2/36",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/37",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Settings",
+              "container": true
+            },
+            {
+              "address": "sidebar/2/38",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/2/39",
+              "component": "sidebar-inset",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/40",
+              "component": "sidebar-header",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/2/41",
+              "component": "sidebar-trigger",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skeleton",
+      "name": "Skeleton",
+      "summary": "The shape of what is coming, while it is on its way.",
+      "scenes": [
+        {
+          "id": "skeleton/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "skeleton/preview/0",
+              "component": "skeleton",
+              "axes": {
+                "shape": "circle"
+              }
+            },
+            {
+              "address": "skeleton/preview/1",
+              "component": "skeleton",
+              "axes": {}
+            },
+            {
+              "address": "skeleton/preview/2",
+              "component": "skeleton",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "skeleton/0",
+          "title": "Shapes",
+          "specimens": [
+            {
+              "address": "skeleton/0/0",
+              "component": "skeleton",
+              "axes": {
+                "shape": "text"
+              }
+            },
+            {
+              "address": "skeleton/0/1",
+              "component": "skeleton",
+              "axes": {
+                "shape": "circle"
+              }
+            },
+            {
+              "address": "skeleton/0/2",
+              "component": "skeleton",
+              "axes": {
+                "shape": "rect"
+              }
+            }
+          ]
+        },
+        {
+          "id": "skeleton/1",
+          "title": "A paragraph",
+          "specimens": [
+            {
+              "address": "skeleton/1/0",
+              "component": "skeleton-text",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "skeleton/2",
+          "title": "In a card",
+          "specimens": [
+            {
+              "address": "skeleton/2/0",
+              "component": "card",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "skeleton/2/1",
+              "component": "skeleton",
+              "axes": {
+                "shape": "circle"
+              }
+            },
+            {
+              "address": "skeleton/2/2",
+              "component": "skeleton",
+              "axes": {}
+            },
+            {
+              "address": "skeleton/2/3",
+              "component": "skeleton",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "slider",
+      "name": "Slider",
+      "summary": "A value along a range, where the feel matters more than the figure.",
+      "scenes": [
+        {
+          "id": "slider/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "slider/preview/0",
+              "component": "slider",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "slider/0",
+          "title": "Sizes",
+          "specimens": [
+            {
+              "address": "slider/0/0",
+              "component": "slider",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "slider/0/1",
+              "component": "slider",
+              "axes": {
+                "size": "medium"
+              }
+            },
+            {
+              "address": "slider/0/2",
+              "component": "slider",
+              "axes": {
+                "size": "large"
+              }
+            }
+          ]
+        },
+        {
+          "id": "slider/1",
+          "title": "With its value, and a range",
+          "specimens": [
+            {
+              "address": "slider/1/0",
+              "component": "slider",
+              "axes": {}
+            },
+            {
+              "address": "slider/1/1",
+              "component": "slider",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spinner",
+      "name": "Spinner",
+      "summary": "Work in progress that has no length to report.",
+      "scenes": [
+        {
+          "id": "spinner/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "spinner/preview/0",
+              "component": "spinner",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "spinner/preview/1",
+              "component": "spinner",
+              "axes": {
+                "size": "medium"
+              }
+            },
+            {
+              "address": "spinner/preview/2",
+              "component": "spinner",
+              "axes": {
+                "size": "large"
+              }
+            }
+          ]
+        },
+        {
+          "id": "spinner/0",
+          "title": "Sizes",
+          "specimens": [
+            {
+              "address": "spinner/0/0",
+              "component": "spinner",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "spinner/0/1",
+              "component": "spinner",
+              "axes": {
+                "size": "medium"
+              }
+            },
+            {
+              "address": "spinner/0/2",
+              "component": "spinner",
+              "axes": {
+                "size": "large"
+              }
+            }
+          ]
+        },
+        {
+          "id": "spinner/1",
+          "title": "In a button",
+          "specimens": [
+            {
+              "address": "spinner/1/0",
+              "component": "button",
+              "axes": {
+                "variant": "filled",
+                "disabled": "true"
+              },
+              "text": "Saving",
+              "container": true
+            },
+            {
+              "address": "spinner/1/1",
+              "component": "spinner",
+              "axes": {
+                "size": "small"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "splitter",
+      "name": "Splitter",
+      "summary": "Panes that share a window, and the seam between them.",
+      "scenes": [
+        {
+          "id": "splitter/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "splitter/preview/0",
+              "component": "splitter",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "splitter/preview/1",
+              "component": "splitter-panel",
+              "axes": {}
+            },
+            {
+              "address": "splitter/preview/2",
+              "component": "splitter-panel",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "splitter/0",
+          "title": "Three panes",
+          "specimens": [
+            {
+              "address": "splitter/0/0",
+              "component": "splitter",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "splitter/0/1",
+              "component": "splitter-panel",
+              "axes": {}
+            },
+            {
+              "address": "splitter/0/2",
+              "component": "splitter-panel",
+              "axes": {}
+            },
+            {
+              "address": "splitter/0/3",
+              "component": "splitter-panel",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "splitter/1",
+          "title": "Stacked",
+          "specimens": [
+            {
+              "address": "splitter/1/0",
+              "component": "splitter",
+              "axes": {
+                "orientation": "vertical"
+              },
+              "container": true
+            },
+            {
+              "address": "splitter/1/1",
+              "component": "splitter-panel",
+              "axes": {}
+            },
+            {
+              "address": "splitter/1/2",
+              "component": "splitter-panel",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "step-list",
+      "name": "StepList",
+      "summary": "A job in stages, and the stage it has reached.",
+      "scenes": [
+        {
+          "id": "step-list/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "step-list/preview/0",
+              "component": "step-list",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "step-list/preview/1",
+              "component": "step",
+              "axes": {
+                "status": "done"
+              }
+            },
+            {
+              "address": "step-list/preview/2",
+              "component": "step",
+              "axes": {
+                "status": "active"
+              }
+            },
+            {
+              "address": "step-list/preview/3",
+              "component": "step",
+              "axes": {
+                "status": "idle"
+              }
+            }
+          ]
+        },
+        {
+          "id": "step-list/0",
+          "title": "Advancing",
+          "specimens": [
+            {
+              "address": "step-list/0/0",
+              "component": "step-list",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "step-list/0/1",
+              "component": "step",
+              "axes": {
+                "status": "done"
+              }
+            },
+            {
+              "address": "step-list/0/2",
+              "component": "step",
+              "axes": {
+                "status": "done"
+              }
+            },
+            {
+              "address": "step-list/0/3",
+              "component": "step",
+              "axes": {
+                "status": "active"
+              }
+            },
+            {
+              "address": "step-list/0/4",
+              "component": "step",
+              "axes": {
+                "status": "idle"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "switch",
+      "name": "Switch",
+      "summary": "A setting that takes effect the moment it is flipped.",
+      "scenes": [
+        {
+          "id": "switch/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "switch/preview/0",
+              "component": "switch",
+              "axes": {
+                "defaultChecked": "true"
+              }
+            },
+            {
+              "address": "switch/preview/1",
+              "component": "switch",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "switch/0",
+          "title": "Sizes",
+          "specimens": [
+            {
+              "address": "switch/0/0",
+              "component": "switch",
+              "axes": {
+                "size": "small",
+                "defaultChecked": "true"
+              }
+            },
+            {
+              "address": "switch/0/1",
+              "component": "switch",
+              "axes": {
+                "size": "medium",
+                "defaultChecked": "true"
+              }
+            },
+            {
+              "address": "switch/0/2",
+              "component": "switch",
+              "axes": {
+                "size": "large",
+                "defaultChecked": "true"
+              }
+            }
+          ]
+        },
+        {
+          "id": "switch/1",
+          "title": "Tints",
+          "specimens": [
+            {
+              "address": "switch/1/0",
+              "component": "switch",
+              "axes": {
+                "tint": "primary",
+                "defaultChecked": "true"
+              }
+            },
+            {
+              "address": "switch/1/1",
+              "component": "switch",
+              "axes": {
+                "tint": "neutral",
+                "defaultChecked": "true"
+              }
+            },
+            {
+              "address": "switch/1/2",
+              "component": "switch",
+              "axes": {
+                "tint": "info",
+                "defaultChecked": "true"
+              }
+            },
+            {
+              "address": "switch/1/3",
+              "component": "switch",
+              "axes": {
+                "tint": "success",
+                "defaultChecked": "true"
+              }
+            },
+            {
+              "address": "switch/1/4",
+              "component": "switch",
+              "axes": {
+                "tint": "warning",
+                "defaultChecked": "true"
+              }
+            },
+            {
+              "address": "switch/1/5",
+              "component": "switch",
+              "axes": {
+                "tint": "danger",
+                "defaultChecked": "true"
+              }
+            }
+          ]
+        },
+        {
+          "id": "switch/2",
+          "title": "Disabled",
+          "specimens": [
+            {
+              "address": "switch/2/0",
+              "component": "switch",
+              "axes": {
+                "disabled": "true"
+              }
+            },
+            {
+              "address": "switch/2/1",
+              "component": "switch",
+              "axes": {
+                "disabled": "true",
+                "defaultChecked": "true"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "table",
+      "name": "Table",
+      "summary": "Rows of the same kind of thing, lined up to be compared.",
+      "scenes": [
+        {
+          "id": "table/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "table/preview/0",
+              "component": "table",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "table/preview/1",
+              "component": "table-head",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "table/preview/2",
+              "component": "table-cell",
+              "axes": {},
+              "text": "Service"
+            },
+            {
+              "address": "table/preview/3",
+              "component": "table-cell",
+              "axes": {},
+              "text": "Region"
+            },
+            {
+              "address": "table/preview/4",
+              "component": "table-cell",
+              "axes": {},
+              "text": "Status"
+            },
+            {
+              "address": "table/preview/5",
+              "component": "table-row",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "table/preview/6",
+              "component": "table-cell",
+              "axes": {},
+              "text": "web"
+            },
+            {
+              "address": "table/preview/7",
+              "component": "table-cell",
+              "axes": {},
+              "text": "Frankfurt"
+            },
+            {
+              "address": "table/preview/8",
+              "component": "table-cell",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "table/preview/9",
+              "component": "badge",
+              "axes": {
+                "tint": "success"
+              },
+              "text": "Live"
+            },
+            {
+              "address": "table/preview/10",
+              "component": "table-row",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "table/preview/11",
+              "component": "table-cell",
+              "axes": {},
+              "text": "api"
+            },
+            {
+              "address": "table/preview/12",
+              "component": "table-cell",
+              "axes": {},
+              "text": "Virginia"
+            },
+            {
+              "address": "table/preview/13",
+              "component": "table-cell",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "table/preview/14",
+              "component": "badge",
+              "axes": {
+                "tint": "info"
+              },
+              "text": "Building"
+            },
+            {
+              "address": "table/preview/15",
+              "component": "table-row",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "table/preview/16",
+              "component": "table-cell",
+              "axes": {},
+              "text": "docs"
+            },
+            {
+              "address": "table/preview/17",
+              "component": "table-cell",
+              "axes": {},
+              "text": "Tokyo"
+            },
+            {
+              "address": "table/preview/18",
+              "component": "table-cell",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "table/preview/19",
+              "component": "badge",
+              "axes": {
+                "tint": "danger"
+              },
+              "text": "Failed"
+            }
+          ]
+        },
+        {
+          "id": "table/0",
+          "title": "Default",
+          "specimens": [
+            {
+              "address": "table/0/0",
+              "component": "table",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "table/0/1",
+              "component": "table-head",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "table/0/2",
+              "component": "table-cell",
+              "axes": {},
+              "text": "Service"
+            },
+            {
+              "address": "table/0/3",
+              "component": "table-cell",
+              "axes": {},
+              "text": "Region"
+            },
+            {
+              "address": "table/0/4",
+              "component": "table-cell",
+              "axes": {},
+              "text": "Status"
+            },
+            {
+              "address": "table/0/5",
+              "component": "table-row",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "table/0/6",
+              "component": "table-cell",
+              "axes": {},
+              "text": "web"
+            },
+            {
+              "address": "table/0/7",
+              "component": "table-cell",
+              "axes": {},
+              "text": "Frankfurt"
+            },
+            {
+              "address": "table/0/8",
+              "component": "table-cell",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "table/0/9",
+              "component": "badge",
+              "axes": {
+                "tint": "success"
+              },
+              "text": "Live"
+            },
+            {
+              "address": "table/0/10",
+              "component": "table-row",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "table/0/11",
+              "component": "table-cell",
+              "axes": {},
+              "text": "api"
+            },
+            {
+              "address": "table/0/12",
+              "component": "table-cell",
+              "axes": {},
+              "text": "Virginia"
+            },
+            {
+              "address": "table/0/13",
+              "component": "table-cell",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "table/0/14",
+              "component": "badge",
+              "axes": {
+                "tint": "info"
+              },
+              "text": "Building"
+            },
+            {
+              "address": "table/0/15",
+              "component": "table-row",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "table/0/16",
+              "component": "table-cell",
+              "axes": {},
+              "text": "docs"
+            },
+            {
+              "address": "table/0/17",
+              "component": "table-cell",
+              "axes": {},
+              "text": "Tokyo"
+            },
+            {
+              "address": "table/0/18",
+              "component": "table-cell",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "table/0/19",
+              "component": "badge",
+              "axes": {
+                "tint": "danger"
+              },
+              "text": "Failed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tag",
+      "name": "Tag",
+      "summary": "A label a person can pick, or take away.",
+      "scenes": [
+        {
+          "id": "tag/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "tag/preview/0",
+              "component": "tag",
+              "axes": {},
+              "text": "Design"
+            },
+            {
+              "address": "tag/preview/1",
+              "component": "tag",
+              "axes": {},
+              "text": "Engineering"
+            },
+            {
+              "address": "tag/preview/2",
+              "component": "tag",
+              "axes": {},
+              "text": "Research"
+            }
+          ]
+        },
+        {
+          "id": "tag/0",
+          "title": "Selectable",
+          "specimens": [
+            {
+              "address": "tag/0/0",
+              "component": "tag",
+              "axes": {},
+              "text": "Design"
+            },
+            {
+              "address": "tag/0/1",
+              "component": "tag",
+              "axes": {},
+              "text": "Engineering"
+            },
+            {
+              "address": "tag/0/2",
+              "component": "tag",
+              "axes": {},
+              "text": "Research"
+            }
+          ]
+        },
+        {
+          "id": "tag/1",
+          "title": "Removable",
+          "specimens": [
+            {
+              "address": "tag/1/0",
+              "component": "tag",
+              "axes": {},
+              "text": "alice@example.com"
+            },
+            {
+              "address": "tag/1/1",
+              "component": "tag",
+              "axes": {
+                "tint": "info"
+              },
+              "text": "bob@example.com"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "text-field",
+      "name": "TextField",
+      "summary": "A line of text, or several, that a person writes.",
+      "scenes": [
+        {
+          "id": "text-field/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "text-field/preview/0",
+              "component": "text-field",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "text-field/0",
+          "title": "Sizes",
+          "specimens": [
+            {
+              "address": "text-field/0/0",
+              "component": "text-field",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "text-field/0/1",
+              "component": "text-field",
+              "axes": {
+                "size": "medium"
+              }
+            },
+            {
+              "address": "text-field/0/2",
+              "component": "text-field",
+              "axes": {
+                "size": "large"
+              }
+            }
+          ]
+        },
+        {
+          "id": "text-field/1",
+          "title": "States",
+          "specimens": [
+            {
+              "address": "text-field/1/0",
+              "component": "text-field",
+              "axes": {}
+            },
+            {
+              "address": "text-field/1/1",
+              "component": "text-field",
+              "axes": {
+                "state": "error"
+              }
+            },
+            {
+              "address": "text-field/1/2",
+              "component": "text-field",
+              "axes": {
+                "disabled": "true"
+              }
+            },
+            {
+              "address": "text-field/1/3",
+              "component": "text-field",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "text-field/2",
+          "title": "Multiline",
+          "specimens": [
+            {
+              "address": "text-field/2/0",
+              "component": "text-field",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "toast",
+      "name": "Toast",
+      "summary": "What just happened, said once and then gone.",
+      "scenes": [
+        {
+          "id": "toast/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "toast/preview/0",
+              "component": "toast-provider",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "toast/preview/1",
+              "component": "button",
+              "axes": {},
+              "text": "Save"
+            },
+            {
+              "address": "toast/preview/2",
+              "component": "toast-viewport",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "toast/0",
+          "title": "Tints",
+          "specimens": [
+            {
+              "address": "toast/0/0",
+              "component": "toast-provider",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "toast/0/1",
+              "component": "button",
+              "axes": {
+                "variant": "tinted",
+                "tint": "primary"
+              },
+              "text": "primary"
+            },
+            {
+              "address": "toast/0/2",
+              "component": "button",
+              "axes": {
+                "variant": "tinted",
+                "tint": "neutral"
+              },
+              "text": "neutral"
+            },
+            {
+              "address": "toast/0/3",
+              "component": "button",
+              "axes": {
+                "variant": "tinted",
+                "tint": "info"
+              },
+              "text": "info"
+            },
+            {
+              "address": "toast/0/4",
+              "component": "button",
+              "axes": {
+                "variant": "tinted",
+                "tint": "success"
+              },
+              "text": "success"
+            },
+            {
+              "address": "toast/0/5",
+              "component": "button",
+              "axes": {
+                "variant": "tinted",
+                "tint": "warning"
+              },
+              "text": "warning"
+            },
+            {
+              "address": "toast/0/6",
+              "component": "button",
+              "axes": {
+                "variant": "tinted",
+                "tint": "danger"
+              },
+              "text": "danger"
+            },
+            {
+              "address": "toast/0/7",
+              "component": "toast-viewport",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "toast/1",
+          "title": "With an action",
+          "specimens": [
+            {
+              "address": "toast/1/0",
+              "component": "toast-provider",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "toast/1/1",
+              "component": "button",
+              "axes": {},
+              "text": "Archive"
+            },
+            {
+              "address": "toast/1/2",
+              "component": "toast-viewport",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "toast/2",
+          "title": "From the top",
+          "specimens": [
+            {
+              "address": "toast/2/0",
+              "component": "toast-provider",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "toast/2/1",
+              "component": "button",
+              "axes": {},
+              "text": "Save"
+            },
+            {
+              "address": "toast/2/2",
+              "component": "toast-viewport",
+              "axes": {
+                "placement": "top"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "toggle",
+      "name": "Toggle",
+      "summary": "A button that stays pressed.",
+      "scenes": [
+        {
+          "id": "toggle/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "toggle/preview/0",
+              "component": "toggle-group",
+              "axes": {
+                "size": "small"
+              },
+              "container": true
+            },
+            {
+              "address": "toggle/preview/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "toggle/preview/2",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "toggle/preview/3",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "toggle/0",
+          "title": "On its own",
+          "specimens": [
+            {
+              "address": "toggle/0/0",
+              "component": "toggle",
+              "axes": {
+                "size": "small"
+              },
+              "container": true
+            },
+            {
+              "address": "toggle/0/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "toggle/0/2",
+              "component": "toggle",
+              "axes": {
+                "size": "small"
+              },
+              "container": true
+            },
+            {
+              "address": "toggle/0/3",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "toggle/0/4",
+              "component": "toggle",
+              "axes": {
+                "size": "small",
+                "variant": "outlined"
+              },
+              "text": "Wrap lines"
+            }
+          ]
+        },
+        {
+          "id": "toggle/1",
+          "title": "A group, several at once",
+          "specimens": [
+            {
+              "address": "toggle/1/0",
+              "component": "toggle-group",
+              "axes": {
+                "size": "small"
+              },
+              "container": true
+            },
+            {
+              "address": "toggle/1/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "toggle/1/2",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "toggle/1/3",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "toggle/2",
+          "title": "A group, one at a time",
+          "specimens": [
+            {
+              "address": "toggle/2/0",
+              "component": "toggle-group",
+              "axes": {
+                "size": "small"
+              },
+              "container": true
+            },
+            {
+              "address": "toggle/2/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "toggle/2/2",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "toggle/2/3",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tooltip",
+      "name": "Tooltip",
+      "summary": "The name of a thing that has no room to say it.",
+      "scenes": [
+        {
+          "id": "tooltip/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "tooltip/preview/0",
+              "component": "tooltip",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "tooltip/preview/1",
+              "component": "icon-button",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "tooltip/preview/2",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "tooltip/0",
+          "title": "Over an icon button",
+          "specimens": [
+            {
+              "address": "tooltip/0/0",
+              "component": "tooltip",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "tooltip/0/1",
+              "component": "icon-button",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "tooltip/0/2",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "tooltip/1",
+          "title": "Sides",
+          "specimens": [
+            {
+              "address": "tooltip/1/0",
+              "component": "tooltip",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "tooltip/1/1",
+              "component": "button",
+              "axes": {},
+              "text": "top"
+            },
+            {
+              "address": "tooltip/1/2",
+              "component": "tooltip",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "tooltip/1/3",
+              "component": "button",
+              "axes": {},
+              "text": "bottom"
+            },
+            {
+              "address": "tooltip/1/4",
+              "component": "tooltip",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "tooltip/1/5",
+              "component": "button",
+              "axes": {},
+              "text": "left"
+            },
+            {
+              "address": "tooltip/1/6",
+              "component": "tooltip",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "tooltip/1/7",
+              "component": "button",
+              "axes": {},
+              "text": "right"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tree",
+      "name": "Tree",
+      "summary": "Things inside things, opened a level at a time.",
+      "scenes": [
+        {
+          "id": "tree/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "tree/preview/0",
+              "component": "tree",
+              "axes": {
+                "size": "small"
+              },
+              "container": true
+            },
+            {
+              "address": "tree/preview/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/preview/2",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/preview/3",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/preview/4",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/preview/5",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/preview/6",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/preview/7",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/preview/8",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/preview/9",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "tree/0",
+          "title": "Files",
+          "specimens": [
+            {
+              "address": "tree/0/0",
+              "component": "tree",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "tree/0/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/0/2",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/0/3",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/0/4",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/0/5",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/0/6",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/0/7",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/0/8",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/0/9",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "tree/1",
+          "title": "With something beside each row",
+          "specimens": [
+            {
+              "address": "tree/1/0",
+              "component": "tree",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "tree/1/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/1/2",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/1/3",
+              "component": "badge",
+              "axes": {
+                "size": "small"
+              },
+              "text": "M"
+            },
+            {
+              "address": "tree/1/4",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "tree/1/5",
+              "component": "badge",
+              "axes": {
+                "size": "small",
+                "tint": "success"
+              },
+              "text": "A"
+            },
+            {
+              "address": "tree/1/6",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
