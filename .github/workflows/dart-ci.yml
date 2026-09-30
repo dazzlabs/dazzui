@@ -34,3 +34,8 @@ jobs:
       - name: Every story, in light and dark, and its interactions
         working-directory: packages/dart/dazzui/example
         run: flutter test test/stories_test.dart
+      # What `dart-release.yml` would upload, validated on every change so a
+      # release tag finds nothing new to complain about.
+      - name: The archive pub.dev would receive
+        working-directory: packages/dart/dazzui
+        run: flutter pub publish --dry-run

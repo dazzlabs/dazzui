@@ -1,0 +1,54 @@
+name: Dart release
+
+# Publishes packages/dart/dazzui to pub.dev when a `dart-dazzui-v<version>`
+# tag is pushed. pub.dev trusts the tag through GitHub's OIDC token, so the
+# repository holds no pub credential: the package's admin page names this
+# repository, the tag pattern `dart-dazzui-v{{version}}` and the `pub.dev`
+# environment, and a token from anywhere else is refused.
+on:
+  push:
+    tags:
+      - "dart-dazzui-v[0-9]+.[0-9]+.[0-9]+*"
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: pub.dev
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: packages/dart/dazzui
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      # Installs nothing the job uses; it is here for the pub.dev token it
+      # writes from the OIDC one, which `flutter pub publish` reads from the
+      # same config directory.
+      - uses: dart-lang/setup-dart@6afc89df92d6eb3834022f73cd65adc8cdfcb92d # v1
+      - name: Install the pinned Flutter runtime
+        shell: bash
+        working-directory: .
+        run: |
+          git init "$RUNNER_TEMP/flutter"
+          git -C "$RUNNER_TEMP/flutter" remote add origin https://github.com/flutter/flutter.git
+          git -C "$RUNNER_TEMP/flutter" fetch --depth 1 origin c8c5e3bd7542962ee8b09a12ac469d7d1ff823e0
+          git -C "$RUNNER_TEMP/flutter" checkout --detach FETCH_HEAD
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+      - name: The tag names the version pubspec.yaml carries
+        shell: bash
+        run: |
+          version=$(sed -n 's/^version: *//p' pubspec.yaml)
+          if [ "$GITHUB_REF_NAME" != "dart-dazzui-v$version" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match pubspec.yaml version $version"
+            exit 1
+          fi
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+      - run: flutter pub publish --dry-run
+      - run: flutter pub publish --force

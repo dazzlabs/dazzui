@@ -1,0 +1,17 @@
+# A .pubignore replaces the .gitignore for `pub publish`, so what that file
+# keeps out is repeated here, then what the archive has no use for: the
+# example's conformance collector and its tests read files that only exist
+# in this repository.
+.DS_Store
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+*.iml
+.idea/
+/pubspec.lock
+
+example/pubspec.lock
+example/conformance/
+example/tool/
+example/test/

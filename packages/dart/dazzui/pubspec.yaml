@@ -1,7 +1,14 @@
 name: dazzui
-description: "The Flutter implementation of the DazzUI design system."
-publish_to: "none"
+description: "The Flutter implementation of the DazzUI design system: the same tokens, themes and components as @dazzlabs/dazzui, drawn without Material."
 version: 0.1.0
+homepage: https://github.com/dazzlabs/dazzui
+repository: https://github.com/dazzlabs/dazzui/tree/main/packages/dart/dazzui
+issue_tracker: https://github.com/dazzlabs/dazzui/issues
+topics:
+  - design-system
+  - ui
+  - widget
+  - theme
 
 environment:
   sdk: ">=3.9.2 <4.0.0"
