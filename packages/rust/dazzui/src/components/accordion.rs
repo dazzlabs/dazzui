@@ -90,6 +90,7 @@ pub struct AccordionItem {
     meta: Option<AnyElement>,
     disabled: bool,
     children: Vec<AnyElement>,
+    wrap: Option<Box<dyn FnOnce(AnyElement) -> AnyElement>>,
 }
 
 impl AccordionItem {
@@ -101,7 +102,16 @@ impl AccordionItem {
             meta: None,
             disabled: false,
             children: Vec::new(),
+            wrap: None,
         }
+    }
+
+    /// Hands the section drawn for this item to `wrap`, which returns what
+    /// is drawn in its place — how a host that passed the item as data
+    /// marks or measures the box it became.
+    pub fn wrap_with(mut self, wrap: impl FnOnce(AnyElement) -> AnyElement + 'static) -> Self {
+        self.wrap = Some(Box::new(wrap));
+        self
     }
 
     pub fn icon(mut self, icon: impl IntoElement) -> Self {
@@ -224,7 +234,10 @@ impl RenderOnce for Accordion {
                 .when(is_open, |this| {
                     this.child(disclosure_panel(item.children, cx))
                 });
-            root = root.child(section);
+            root = root.child(match item.wrap {
+                Some(wrap) => wrap(section.into_any_element()),
+                None => section.into_any_element(),
+            });
         }
         root
     }

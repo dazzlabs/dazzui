@@ -294,10 +294,13 @@ impl RenderOnce for AvatarGroup {
             .chain(rest)
             .enumerate()
             .map(move |(index, child)| {
+                // Shrinkable, though it never shrinks: taffy 0.9 sizes a row
+                // whose items pull back with a negative margin to nothing
+                // unless their shrink factor is 1.
                 div()
                     .flex()
                     .flex_none()
-                    .when(index > 0, |this| this.ml(px(-overlap)))
+                    .when(index > 0, |this| this.flex_shrink().ml(px(-overlap)))
                     .child(child)
             });
         provide(

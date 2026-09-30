@@ -10,9 +10,9 @@ use std::rc::Rc;
 use std::time::Duration;
 
 use gpui::{
-    AnchoredPositionMode, AnyElement, App, AppContext, Entity, InteractiveElement, IntoElement,
-    ParentElement, RenderOnce, SharedString, StatefulInteractiveElement, Styled, Window, anchored,
-    deferred, div, point, prelude::FluentBuilder, px,
+    AnchoredPositionMode, AnyElement, App, AppContext, Corner, Entity, InteractiveElement,
+    IntoElement, ParentElement, RenderOnce, SharedString, StatefulInteractiveElement, Styled,
+    Window, anchored, deferred, div, point, prelude::FluentBuilder, px,
 };
 
 use crate::components::button::Button;
@@ -237,9 +237,6 @@ impl RenderOnce for ToastViewport {
             return div().into_any_element();
         };
         let queue = toaster.0.read(cx);
-        if queue.toasts.is_empty() {
-            return div().into_any_element();
-        }
         let t = cx.theme();
         let viewport = window.viewport_size();
         // Newest nearest the edge the stack hangs from.
@@ -256,25 +253,27 @@ impl RenderOnce for ToastViewport {
             .map(|(id, options)| toast(&toaster, id, options, cx))
             .collect();
 
+        // The window's width and its toasts' height, padded, pinned to one
+        // edge — an empty viewport is still that strip, as React's is.
         let stack = div()
             .w(viewport.width)
-            .h(viewport.height)
             .flex()
             .flex_col()
             .items_center()
-            .map(|this| match self.placement {
-                ToastPlacement::Bottom => this.justify_end(),
-                ToastPlacement::Top => this.justify_start(),
-            })
             .gap(px(t.spacing_2))
             .p(px(t.spacing_4))
             .type_style(t.body_medium)
             .text_color(t.color_content.hsla())
             .children(toasts);
+        let (corner, origin) = match self.placement {
+            ToastPlacement::Bottom => (Corner::BottomLeft, point(px(0.), viewport.height)),
+            ToastPlacement::Top => (Corner::TopLeft, point(px(0.), px(0.))),
+        };
         deferred(
             anchored()
                 .position_mode(AnchoredPositionMode::Window)
-                .position(point(px(0.), px(0.)))
+                .anchor(corner)
+                .position(origin)
                 .child(stack),
         )
         .with_priority(2)

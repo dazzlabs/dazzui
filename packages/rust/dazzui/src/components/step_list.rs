@@ -124,7 +124,7 @@ impl RenderOnce for Step {
                                 .text_color(success.hsla())
                                 .child(Icon::new(glyphs::CHECKMARK_12_FILLED)),
                             _ => this
-                                .border(px(t.stroke_control))
+                                .border(px(crate::foundation::border_width(t.stroke_control)))
                                 .border_color(t.color_border_muted.hsla()),
                         }),
                 )

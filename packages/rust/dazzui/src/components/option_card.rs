@@ -117,7 +117,7 @@ impl RenderOnce for OptionCard {
             .rounded(px(t.radius_large))
             .map(|this| {
                 if self.selected {
-                    this.border(px(t.stroke_control))
+                    this.border(px(crate::foundation::border_width(t.stroke_control)))
                         .border_color(
                             ControlColors::resolve(t, Variant::Outlined, self.tint, State::Normal)
                                 .border,

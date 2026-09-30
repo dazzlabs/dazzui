@@ -65,6 +65,15 @@ fn child<'a>(node: &Node<'a>, index: usize, json: &'a Value) -> Node<'a> {
     }
 }
 
+/// A node the mapping hands a kit component as data has no element of its
+/// own until the kit draws it: this records the box the kit drew for it at
+/// the node's address.
+fn recorded(node: &Node) -> impl FnOnce(AnyElement) -> AnyElement + 'static {
+    let at = node.json.get("$at").cloned();
+    let path = node.path.clone();
+    move |element| crate::lib::specimen::wrap(at.as_ref(), element, &path)
+}
+
 fn strings(value: &Value) -> Vec<SharedString> {
     value
         .as_array()
@@ -84,7 +93,8 @@ fn accordion(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
     for (index, json) in node.children().iter().enumerate() {
         let item = child(node, index, json);
         if item.component() == "AccordionItem" {
-            accordion = accordion.item(accordion_item_of(&item, window, cx));
+            accordion =
+                accordion.item(accordion_item_of(&item, window, cx).wrap_with(recorded(&item)));
         }
     }
     accordion.into_any_element()
@@ -201,7 +211,8 @@ fn splitter(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
     for (index, json) in node.children().iter().enumerate() {
         let panel = child(node, index, json);
         if panel.component() == "SplitterPanel" {
-            splitter = splitter.panel(splitter_panel_of(&panel, window, cx));
+            splitter =
+                splitter.panel(splitter_panel_of(&panel, window, cx).wrap_with(recorded(&panel)));
         }
     }
     splitter.into_any_element()
@@ -273,7 +284,8 @@ fn sidebar_menu_item(node: &Node, window: &mut Window, cx: &mut App) -> AnyEleme
     for (index, json) in node.children().iter().enumerate() {
         let part = child(node, index, json);
         if part.component() == "SidebarMenuBadge" {
-            item = item.badge(sidebar_menu_badge_of(&part, window, cx));
+            let badge = sidebar_menu_badge_of(&part, window, cx);
+            item = item.badge(recorded(&part)(badge.into_any_element()));
         } else {
             item = item.child(crate::lib::scene::draw(
                 json, &node.ctx, &part.path, window, cx,

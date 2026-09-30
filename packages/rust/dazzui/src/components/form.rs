@@ -116,15 +116,15 @@ impl RenderOnce for Fieldset {
                 .line_height(px(caption.size))
                 .child(legend)
         });
-        // A browser lays a rendered legend outside the fieldset's content
-        // box, which is the flex container — so the run's gap is between the
-        // fields, not between the legend and the first of them.
-        div().flex().flex_col().min_w_0().children(legend).child(
-            div()
-                .flex()
-                .flex_col()
-                .gap(px(t.spacing_3))
-                .children(self.children),
-        )
+        // The legend stands one gap above the first field, as the fields
+        // stand from each other: Chromium's fieldset reads `gap` across its
+        // rendered legend and its content alike.
+        div()
+            .flex()
+            .flex_col()
+            .min_w_0()
+            .gap(px(t.spacing_3))
+            .children(legend)
+            .children(self.children)
     }
 }

@@ -46,6 +46,7 @@ pub struct SplitterPanel {
     min_size: Option<f32>,
     max_size: Option<f32>,
     children: Vec<AnyElement>,
+    wrap: Option<Box<dyn FnOnce(AnyElement) -> AnyElement>>,
 }
 
 impl SplitterPanel {
@@ -55,7 +56,16 @@ impl SplitterPanel {
             min_size: None,
             max_size: None,
             children: Vec::new(),
+            wrap: None,
         }
+    }
+
+    /// Hands the pane drawn for this panel to `wrap`, which returns what is
+    /// drawn in its place — how a host that passed the panel as data marks
+    /// or measures the box it became.
+    pub fn wrap_with(mut self, wrap: impl FnOnce(AnyElement) -> AnyElement + 'static) -> Self {
+        self.wrap = Some(Box::new(wrap));
+        self
     }
 
     pub fn default_size(mut self, size: f32) -> Self {
@@ -299,7 +309,10 @@ impl RenderOnce for Splitter {
                 .children(panel.children);
             pane.style().flex_grow = Some(share);
             pane.style().flex_shrink = Some(1.0);
-            root = root.child(pane);
+            root = root.child(match panel.wrap {
+                Some(wrap) => wrap(pane.into_any_element()),
+                None => pane.into_any_element(),
+            });
 
             if index + 1 == count {
                 continue;

@@ -36,11 +36,15 @@ impl ParentElement for Code {
 }
 
 impl RenderOnce for Code {
-    fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let t = cx.theme();
         // A step under the prose it sits in: a monospace face at the same
         // nominal size always reads larger.
         let style = t.caption_small;
+        // An inline chip, as React's `<code>` is a span in a line: its box
+        // is the face's own height plus the half-step inset, never the
+        // line's leading, which it would push around.
+        let line = crate::foundation::content_area(Face::Mono, style.size, window);
         div()
             .flex()
             .flex_none()
@@ -51,7 +55,7 @@ impl RenderOnce for Code {
             .text_color(t.color_content.hsla())
             .font_family(Face::Mono.family())
             .text_size(px(style.size))
-            .line_height(px(style.line_height))
+            .line_height(px(line))
             .whitespace_nowrap()
             .children(self.children)
     }

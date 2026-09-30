@@ -4,7 +4,39 @@ use gpui::{Div, Hsla, InteractiveElement, Stateful, StatefulInteractiveElement, 
 
 use crate::foundation::axes::{ControlColors, Profile, State, Tint, Variant};
 use crate::generated::ThemeTokens;
-use crate::tokens::TypeStyle;
+use crate::tokens::{Face, TypeStyle};
+
+/// The height of an inline box set in `face` at `size`: the face's ascent
+/// and descent, each whole, as a browser sizes a `<span>` in a line — the
+/// box a run of type has when it is not a block with a line height of its
+/// own.
+pub fn content_area(face: Face, size: f32, window: &gpui::Window) -> f32 {
+    let text = window.text_system();
+    let id = text.resolve_font(&gpui::font(face.family()));
+    let size = px(size);
+    let ascent = f32::from(text.ascent(id, size)).abs().round();
+    let descent = f32::from(text.descent(id, size)).abs().round();
+    ascent + descent
+}
+
+/// A border's width as a browser draws it: one of a pixel or more is
+/// floored to whole pixels, so `--stroke-control`'s 1.5 is a 1px edge on
+/// the web, and a box it bounds is no wider than a hairline's.
+pub fn border_width(width: f32) -> f32 {
+    if width >= 1.0 { width.floor() } else { width }
+}
+
+/// Where the baseline of type set in `face` at `size` falls in a line
+/// `line_height` tall, from its top: half the leading, then the ascent —
+/// what a browser aligns when a row says `align-items: baseline`, and GPUI
+/// does not measure.
+pub fn baseline(face: Face, size: f32, line_height: f32, window: &gpui::Window) -> f32 {
+    let text = window.text_system();
+    let id = text.resolve_font(&gpui::font(face.family()));
+    let ascent = f32::from(text.ascent(id, px(size))).abs().round();
+    let descent = f32::from(text.descent(id, px(size))).abs().round();
+    ((line_height - ascent - descent) / 2.0).floor() + ascent
+}
 
 /// Styling a box from tokens rather than from numbers.
 pub trait StyledExt: Styled + Sized {

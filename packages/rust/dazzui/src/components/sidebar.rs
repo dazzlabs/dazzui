@@ -391,27 +391,38 @@ impl RenderOnce for SidebarInset {
     fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
         let t = cx.theme();
         let column = SidebarContext::current(cx).and_then(|context| context.column.get());
-        let main = div()
-            .relative()
-            .flex()
-            .flex_1()
-            .flex_col()
-            .min_w_0()
-            .bg(t.color_surface.hsla());
+        let main = div().relative().flex().flex_1().flex_col().min_w_0();
         match column {
-            Some((SidebarVariant::Inset, collapsed)) => div()
-                .flex()
-                .flex_1()
-                .min_w_0()
-                .bg(t.color_surface_column.hsla())
-                .p(px(t.spacing_2))
-                .when(!collapsed, |this| this.pl(px(0.)))
-                .child(
-                    main.rounded(px(t.radius_large))
-                        .shadow(shadows(t.shadow_sm))
-                        .children(self.children),
-                ),
-            _ => main.children(self.children),
+            // The raised sheet, set in by the sidebar's step and sharing its
+            // edge: its box is the sheet's, as React's margin leaves it. The
+            // ground the step shows is the column's, drawn under the sheet
+            // out to the edges the margin keeps clear, since the provider
+            // cannot know the variant before the sidebar draws.
+            Some((SidebarVariant::Inset, collapsed)) => {
+                let step = t.spacing_2;
+                let lead = if collapsed { step } else { 0.0 };
+                main.m(px(step))
+                    .ml(px(lead))
+                    .child(
+                        div()
+                            .absolute()
+                            .top(px(-step))
+                            .bottom(px(-step))
+                            .right(px(-step))
+                            .left(px(-lead))
+                            .bg(t.color_surface_column.hsla()),
+                    )
+                    .child(
+                        div()
+                            .absolute()
+                            .inset_0()
+                            .rounded(px(t.radius_large))
+                            .shadow(shadows(t.shadow_sm))
+                            .bg(t.color_surface.hsla()),
+                    )
+                    .children(self.children)
+            }
+            _ => main.bg(t.color_surface.hsla()).children(self.children),
         }
     }
 }
@@ -693,7 +704,7 @@ const ITEM_GROUP: &str = "dz-sidebar-menu-item";
 /// One entry of a menu: a row, and anything on its trailing edge.
 #[derive(IntoElement, Default)]
 pub struct SidebarMenuItem {
-    badge: Option<SidebarMenuBadge>,
+    badge: Option<AnyElement>,
     children: Vec<AnyElement>,
 }
 
@@ -703,9 +714,10 @@ impl SidebarMenuItem {
     }
 
     /// A count on the row's trailing edge. The row keeps its label clear of
-    /// it, and the count takes the row's ink when the row is selected.
-    pub fn badge(mut self, badge: SidebarMenuBadge) -> Self {
-        self.badge = Some(badge);
+    /// it, and the count takes the row's ink when the row is selected. The
+    /// item places it; a [`SidebarMenuBadge`] draws only the count's box.
+    pub fn badge(mut self, badge: impl IntoElement) -> Self {
+        self.badge = Some(badge.into_any_element());
         self
     }
 }
@@ -717,7 +729,8 @@ impl ParentElement for SidebarMenuItem {
 }
 
 impl RenderOnce for SidebarMenuItem {
-    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+    fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
+        let t = cx.theme();
         let slot = ItemSlot {
             mark: Rc::new(Cell::new(None)),
             has_badge: self.badge.is_some(),
@@ -728,7 +741,16 @@ impl RenderOnce for SidebarMenuItem {
                 .relative()
                 .group(ITEM_GROUP)
                 .children(self.children)
-                .children(self.badge),
+                .children(self.badge.map(|badge| {
+                    div()
+                        .absolute()
+                        .top_0()
+                        .bottom_0()
+                        .right(px(t.spacing_1))
+                        .flex()
+                        .items_center()
+                        .child(badge)
+                })),
         )
     }
 }
@@ -1112,33 +1134,24 @@ impl RenderOnce for SidebarMenuBadge {
         });
         let ink = t.color_content.hsla();
         div()
-            .absolute()
-            .top_0()
-            .bottom_0()
-            .right(px(t.spacing_1))
             .flex()
             .items_center()
-            .child(
-                div()
-                    .flex()
-                    .items_center()
-                    .justify_center()
-                    .h(px(t.spacing_5))
-                    .min_w(px(t.spacing_5))
-                    .px(px(t.spacing_1))
-                    .rounded(px(t.radius_small))
-                    .font_family(t.caption_small.face.family())
-                    .text_size(px(t.caption_small.size))
-                    .line_height(px(t.caption_small.line_height))
-                    .font_weight(t.label_medium.font_weight())
-                    .map(|this| match selected_ink {
-                        Some(color) => this.text_color(color),
-                        None => this
-                            .text_color(t.color_content_nav.hsla())
-                            .group_hover(ITEM_GROUP, move |style| style.text_color(ink)),
-                    })
-                    .children(self.children),
-            )
+            .justify_center()
+            .h(px(t.spacing_5))
+            .min_w(px(t.spacing_5))
+            .px(px(t.spacing_1))
+            .rounded(px(t.radius_small))
+            .font_family(t.caption_small.face.family())
+            .text_size(px(t.caption_small.size))
+            .line_height(px(t.caption_small.line_height))
+            .font_weight(t.label_medium.font_weight())
+            .map(|this| match selected_ink {
+                Some(color) => this.text_color(color),
+                None => this
+                    .text_color(t.color_content_nav.hsla())
+                    .group_hover(ITEM_GROUP, move |style| style.text_color(ink)),
+            })
+            .children(self.children)
             .into_any_element()
     }
 }

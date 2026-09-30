@@ -14,7 +14,9 @@ pub mod tokens;
 
 pub use assets::Assets;
 pub use components::*;
-pub use foundation::{Length, Profile, Size, State, StyledExt, Tint, Variant};
+pub use foundation::{
+    Length, Profile, Size, State, StyledExt, Tint, Variant, baseline, content_area,
+};
 pub use generated::{THEMES, ThemeTokens};
 pub use theme::{ActiveTheme, Theme, themed};
 

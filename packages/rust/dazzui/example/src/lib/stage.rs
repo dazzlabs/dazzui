@@ -95,16 +95,46 @@ pub fn text(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
         }
         None => None,
     };
+    // A component in the run is an inline box, whose height on the web is
+    // its face's own rather than the line's leading: what it inherits here
+    // is that height, so a link in a sentence is as tall as its type. GPUI
+    // aligns no baselines, so the box is lowered by what the line's leading
+    // puts above the run's own, and the two baselines meet.
+    let body = t.body_medium;
+    let inline = dazzui::content_area(body.face, body.size, window);
+    let drop = dazzui::baseline(body.face, body.size, body.line_height, window)
+        - dazzui::baseline(body.face, body.size, inline, window);
+    let kids = node
+        .children()
+        .iter()
+        .zip(node.kids(window, cx))
+        .map(|(json, kid)| {
+            if json.is_object() && (json.get("$el").is_some() || json.get("$icon").is_some()) {
+                div()
+                    .flex()
+                    .mt(px(drop))
+                    .line_height(px(inline))
+                    .child(kid)
+                    .into_any_element()
+            } else {
+                // A run of words is free to narrow to the line it is given
+                // and wrap there, as the web's inline text does: GPUI
+                // measures text's min-content as its whole line, so a flex
+                // item holding it would otherwise never shrink.
+                div().min_w_0().child(kid).into_any_element()
+            }
+        })
+        .collect::<Vec<_>>();
     div()
         .flex()
         .flex_row()
         .flex_wrap()
-        .items_baseline()
+        .items_start()
         .when_some(color, |this, color| this.text_color(color))
         .when(node.flag("strong"), |this| {
             this.font_weight(t.label_strong.font_weight())
         })
-        .children(node.kids(window, cx))
+        .children(kids)
         .into_any_element()
 }
 

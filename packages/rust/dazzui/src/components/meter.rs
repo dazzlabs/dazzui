@@ -5,7 +5,7 @@ use gpui::{
 };
 
 use crate::components::progress::{fill_bar, groove_height};
-use crate::foundation::{Size, Tint};
+use crate::foundation::{Size, Tint, baseline};
 use crate::theme::ActiveTheme;
 use crate::tokens::Face;
 
@@ -68,7 +68,7 @@ impl Meter {
 }
 
 impl RenderOnce for Meter {
-    fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let t = cx.theme();
         let span = (self.max - self.min).max(f32::EPSILON);
         let fraction = ((self.value - self.min) / span).clamp(0.0, 1.0);
@@ -85,6 +85,12 @@ impl RenderOnce for Meter {
                     .line_height(px(label_size))
                     .child(label)
             });
+            // The two runs share a baseline, and two faces set solid put it
+            // at different heights: the one whose baseline sits higher is
+            // lowered to meet the other, as `align-items: baseline` does.
+            let label_base = baseline(t.label_quiet.face, label_size, label_size, window);
+            let value_base = baseline(Face::Mono, label_size, label_size, window);
+            let label = label.map(|label| label.mt(px((value_base - label_base).max(0.0))));
             // A reading: the mono face, so a column of meters keeps its
             // numbers on one line.
             let value = self.show_value.then(|| {
@@ -93,6 +99,7 @@ impl RenderOnce for Meter {
                     .font_family(Face::Mono.family())
                     .text_size(px(label_size))
                     .line_height(px(label_size))
+                    .mt(px((label_base - value_base).max(0.0)))
                     .child(SharedString::from(format!(
                         "{}%",
                         (fraction * 100.0).round() as i64
@@ -100,7 +107,7 @@ impl RenderOnce for Meter {
             });
             div()
                 .flex()
-                .items_baseline()
+                .items_start()
                 .justify_between()
                 .gap(px(t.spacing_3))
                 .children(label)

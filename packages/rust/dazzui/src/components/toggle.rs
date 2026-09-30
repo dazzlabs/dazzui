@@ -160,7 +160,12 @@ impl RenderOnce for Toggle {
         if let Some((first, last)) = self.grouped {
             toggle = toggle
                 .when(!first, |this| {
-                    this.ml(px(-t.spacing_px))
+                    // Shrinkable, though it never shrinks: taffy 0.9 sizes a
+                    // row whose items pull back with a negative margin to
+                    // nothing unless their shrink factor is 1 (its intrinsic
+                    // pass scales the margin by the basis when it is 0).
+                    this.flex_shrink()
+                        .ml(px(-t.spacing_px))
                         .rounded_tl_none()
                         .rounded_bl_none()
                 })

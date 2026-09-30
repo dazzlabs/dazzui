@@ -338,7 +338,11 @@ Five collectors are written:
   of its own at the display's scale, sized to the scene, and captured with
   `screencapture` by the window's number. Every node codegen addressed is
   drawn through `lib/specimen.rs`, which while collecting records the bounds
-  its element laid out at — the box, and only the box: what GPUI painted
+  its element laid out at. A node the mapping hands a kit component as
+  data — an accordion's item, a splitter's panel, a sidebar row's count —
+  is recorded on the element the kit draws for it, which the kit hands back
+  through the item's `wrap_with` (or takes as an element) for the purpose.
+  It reads the box, and only the box: what GPUI painted
   goes into a scene an app cannot read back, so every other property is
   unread and the pictures carry the rest. GPUI lays out on whole logical
   pixels (taffy's rounding), so a width set by text lands up to a pixel
