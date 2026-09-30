@@ -29,7 +29,7 @@ const COLLECTORS = [
     platform: 'react',
     command: 'node',
     args: ['scripts/conformance.mjs'],
-    cwd: join(repo, 'packages/js/dazzui-react/example'),
+    cwd: join(repo, 'packages/js/dazzui/example'),
   },
   {
     platform: 'flutter',

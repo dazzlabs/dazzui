@@ -11,7 +11,7 @@ toolkit. The layout follows [nativeapi](https://github.com/libnativeapi/nativeap
 ```
 ds/                          the design system — the only place a value is decided
 packages/<language>/<name>/  an implementation, named as it is published
-  js/dazzui-react            swift/DazzUI · swift/DazzMobileUI
+  js/dazzui            swift/DazzUI · swift/DazzMobileUI
   dart/dazzui                csharp/DazzUI · kotlin/dazzui-mobile
 tools/                       playground generator, conformance viewer
 ```
@@ -29,7 +29,7 @@ of having no `package.json`. A package's own playground is its `example/`
   only place a value is decided, and it is a **generator rather than a
   dependency**: its build writes into the platform packages, which nothing
   imports it from.
-- `packages/js/dazzui-react` (`@dazzlabs/dazzui-react`) — the React implementation.
+- `packages/js/dazzui` (`@dazzlabs/dazzui`) — the React implementation.
   `src/generated/` holds what `ds` wrote and is committed, so the package
   builds and ships on its own. Its behaviour comes from
   [Base UI](https://base-ui.com) — headless primitives that own the parts a
@@ -50,7 +50,7 @@ of having no `package.json`. A package's own playground is its `example/`
   style) is small enough to replace outright: the base class is
   `src/foundation/theme_extension.dart`, the ambient style is the package's
   own `Theme`, and the three glyphs the kit draws itself come from
-  `fluentui_system_icons` — the same set `dazzui-react` takes them from. A host
+  `fluentui_system_icons` — the same set `@dazzlabs/dazzui` takes them from. A host
   supplies the app plumbing with `WidgetsApp`; see `example/lib/host.dart`
   and `test/host.dart`. `example/` is the Flutter example (`flutter run`
   from that directory, macOS and web): the React example's window, drawn
@@ -101,7 +101,7 @@ of having no `package.json`. A package's own playground is its `example/`
   contain no story-specific fixtures. Run `:example:connectedDebugAndroidTest`
   on a connected device to exercise shared checkpoints and all-theme native
   rendering.
-- `packages/js/dazzui-react/example` (`@dazzlabs/dazzui-react-example`) — the
+- `packages/js/dazzui/example` (`@dazzlabs/dazzui-example`) — the
   React example: every component, live, in every theme, in a desktop
   window. Its `src/stories/` are the source codegen compiles into the other
   platforms' examples.
@@ -139,7 +139,7 @@ pnpm tokens            # build ds into its dist/
 ```
 
 ```bash
-pnpm components        # build packages/js/dazzui-react into its dist/
+pnpm components        # build packages/js/dazzui into its dist/
 ```
 
 ```bash

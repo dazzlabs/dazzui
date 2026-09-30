@@ -26,7 +26,7 @@ system's washes, grades and recipes.
    do this — 0.10 lints each token file with only that file's tokens.)
 2. `distribute()` in `scripts/build.mjs` then copies each platform's files out
    of that staging directory into the platform package itself — the two
-   stylesheets into `packages/js/dazzui-react/src/generated/`, the two Dart files
+   stylesheets into `packages/js/dazzui/src/generated/`, the two Dart files
    into `packages/dart/dazzui/lib/src/generated/`, and so on for Swift and
    Rust. The `TARGETS` list is where a new platform package is added. The
    Dart copies are then run through `dart format` (PATH first, fvm's stable
@@ -115,7 +115,7 @@ The colour system reads in washes and grades:
   (1px) draws separators, on every platform and at every display scale — it
   used to halve on Retina to land on one device pixel, and against the
   mockups the system is drawn to a halved rule read as too thin to be a
-  decision. `dazzui-react`'s `src/styles/base.css` carries the box-sizing and
+  decision. `@dazzlabs/dazzui`'s `src/styles/base.css` carries the box-sizing and
   reduced-motion ground rules.
 - **A separator is ink at 13% over paper, 16% over a dark ground** —
   `color.border`, the same two numbers in every family, since the ink each

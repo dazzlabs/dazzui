@@ -1,7 +1,7 @@
 import SwiftUI
 
 // The axes a component varies along. Each is the Swift spelling of a
-// `data-*` attribute in `packages/js/dazzui-react`, and the vocabulary is the ds
+// `data-*` attribute in `packages/js/dazzui`, and the vocabulary is the ds
 // one: the colour axis is `tint`, never `kind` or `secondary`.
 
 /// The ramps a control can be tinted with — one per semantic role in

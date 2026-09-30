@@ -1,4 +1,4 @@
-import { Badge } from '@dazzlabs/dazzui-react'
+import { Badge } from '@dazzlabs/dazzui'
 
 /** The name, and what this window is for. */
 export function Brand({ onClick }: { onClick: () => void }) {

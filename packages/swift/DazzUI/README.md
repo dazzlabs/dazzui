@@ -1,10 +1,10 @@
 # DazzUI
 
 The DazzUI design system for SwiftUI — the platform sibling of
-`packages/js/dazzui-react` and `packages/dart/dazzui`. Same tokens, same themes,
+`packages/js/dazzui` and `packages/dart/dazzui`. Same tokens, same themes,
 same components.
 
-**`packages/js/dazzui-react` is the standard.** Every name, prop and metric here is
+**`packages/js/dazzui` is the standard.** Every name, prop and metric here is
 read off the React source; where the two disagree, the React file wins.
 
 ## Using it
@@ -129,7 +129,7 @@ theme; a successful build is not a visual conformance check.
 ## Icons
 
 The set is Fluent — Microsoft's official Swift package, the same set
-`packages/js/dazzui-react` pulls from `@fluentui/react-icons`. That sameness is
+`packages/js/dazzui` pulls from `@fluentui/react-icons`. That sameness is
 the point: the React components name specific glyphs, so a port drawing its own
 checkmark would be a different mark at a different weight in the same box.
 

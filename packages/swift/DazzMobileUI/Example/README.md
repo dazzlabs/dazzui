@@ -41,7 +41,7 @@ device UUID from `xcrun simctl list devices booted`.
 `PlaygroundApp.swift` provides the App entry point. `NativeControls.swift`
 contains the searchable story directory and family/appearance selection.
 `GeneratedStories.swift` is generated from the same scene declarations as React
-under `packages/js/dazzui-react/example/stories/`; never edit it by hand. Run
+under `packages/js/dazzui/example/stories/`; never edit it by hand. Run
 `pnpm codegen` from the repository root after source changes.
 
 The catalog currently includes all 143 declared scenes. The remaining 345 React

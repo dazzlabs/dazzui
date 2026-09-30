@@ -1,4 +1,4 @@
-import { useSidebar } from '@dazzlabs/dazzui-react'
+import { useSidebar } from '@dazzlabs/dazzui'
 import { type PointerEvent, useRef, useState } from 'react'
 
 export interface Column {

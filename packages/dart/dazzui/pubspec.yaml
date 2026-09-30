@@ -12,7 +12,7 @@ dependencies:
   # its dismiss, and the menu's tick. An icon set is the one thing a product
   # replaces wholesale, so every other glyph is a prop; these three are the
   # component rather than its content, and they come from the same set
-  # `dazzui-react` takes them from (`@fluentui/react-icons`) so the two ports
+  # `@dazzlabs/dazzui` takes them from (`@fluentui/react-icons`) so the two ports
   # draw one drawing.
   fluentui_system_icons: ^1.1.255
   flutter:

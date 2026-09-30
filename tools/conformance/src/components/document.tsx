@@ -1,4 +1,4 @@
-import { Card, SectionLabel } from '@dazzlabs/dazzui-react'
+import { Card, SectionLabel } from '@dazzlabs/dazzui'
 
 import { plural } from '../lib/format'
 import { type Index, across } from '../lib/index'

@@ -1,4 +1,4 @@
-import { EmptyState, Spinner, TooltipProvider } from '@dazzlabs/dazzui-react'
+import { EmptyState, Spinner, TooltipProvider } from '@dazzlabs/dazzui'
 import { useEffect } from 'react'
 
 import { Shell } from './components/shell'

@@ -4,7 +4,7 @@ Compiles the React example's stories into the Flutter, SwiftUI and WinUI
 examples, and into the scenes the conformance tool holds them to.
 The rules are in [`specs/playgrounds.md`](../../specs/playgrounds.md).
 
-- `stories.mjs` reads `packages/js/dazzui-react/example/src/stories/*.tsx`
+- `stories.mjs` reads `packages/js/dazzui/example/src/stories/*.tsx`
   and evaluates each ahead of time into data: a tree of components, the
   slots it keeps live, and the actions its events make. It also reads the
   React example's theme list.

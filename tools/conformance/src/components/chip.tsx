@@ -1,4 +1,4 @@
-import { Badge, type Tint } from '@dazzlabs/dazzui-react'
+import { Badge, type Tint } from '@dazzlabs/dazzui'
 
 import { type Tally, type Verdict, summarize } from '../lib/verdict'
 

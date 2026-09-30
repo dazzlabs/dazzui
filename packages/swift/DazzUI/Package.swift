@@ -1,11 +1,11 @@
 // swift-tools-version: 5.9
 //
 // The DazzUI design system for SwiftUI — the platform sibling of
-// `packages/js/dazzui-react` and `packages/dart/dazzui`. Same tokens, same four
+// `packages/js/dazzui` and `packages/dart/dazzui`. Same tokens, same four
 // themes, same components.
 //
 // The icon set is Microsoft's official Swift package, which is the same set
-// `packages/js/dazzui-react` pulls from `@fluentui/react-icons`: the React
+// `packages/js/dazzui` pulls from `@fluentui/react-icons`: the React
 // components name specific glyphs, so a port that drew its own would be a
 // different mark at a different weight in the same box.
 //

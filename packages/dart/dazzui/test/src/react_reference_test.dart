@@ -9,7 +9,7 @@ import '../host.dart' as app;
 /// screenshot that can be checked without a screen — the geometry a size
 /// resolves to, and the recipe a variant paints with.
 ///
-/// See packages/js/dazzui-react/src/components/*.css for the rules each group
+/// See packages/js/dazzui/src/components/*.css for the rules each group
 /// mirrors.
 void main() {
   Widget host(Widget child, {ThemeData? theme}) {

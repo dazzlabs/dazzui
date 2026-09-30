@@ -16,7 +16,7 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   Toggle,
-} from '@dazzlabs/dazzui-react'
+} from '@dazzlabs/dazzui'
 import { type CSSProperties, type ReactNode } from 'react'
 
 import { percent } from '../lib/format'

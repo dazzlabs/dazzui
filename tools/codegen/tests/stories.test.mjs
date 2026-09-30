@@ -14,7 +14,7 @@ const context = { kitValues: { TINTS: ['primary', 'danger'] } }
 const compile = body =>
   new StoryCompiler(
     'stories/probe.tsx',
-    `import { Button, Switch, Tag, TINTS, useToast } from '@dazzlabs/dazzui-react'
+    `import { Button, Switch, Tag, TINTS, useToast } from '@dazzlabs/dazzui'
 import { Settings20Regular } from '@fluentui/react-icons'
 import { useState } from 'react'
 import { Col, Row, Text } from '../components/stage'

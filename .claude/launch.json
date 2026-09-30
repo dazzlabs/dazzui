@@ -6,7 +6,7 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": [
         "--filter",
-        "@dazzlabs/dazzui-react-example",
+        "@dazzlabs/dazzui-example",
         "dev:preview"
       ],
       "port": 6006,

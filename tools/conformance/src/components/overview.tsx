@@ -1,4 +1,4 @@
-import { Button, Card, Meter } from '@dazzlabs/dazzui-react'
+import { Button, Card, Meter } from '@dazzlabs/dazzui'
 
 import { imageOf } from '../lib/data'
 import { percent } from '../lib/format'

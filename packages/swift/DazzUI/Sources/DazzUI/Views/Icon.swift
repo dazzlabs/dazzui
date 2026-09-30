@@ -3,7 +3,7 @@ import SwiftUI
 
 /// Draws a glyph at a given size, inheriting the surrounding text colour.
 ///
-/// The set is Fluent, the same one `packages/js/dazzui-react` pulls from
+/// The set is Fluent, the same one `packages/js/dazzui` pulls from
 /// `@fluentui/react-icons` — its components name specific glyphs
 /// (`Checkmark12Filled`, `ChevronDown12Regular`), so the port names the same
 /// ones rather than substituting a system symbol at a different weight.

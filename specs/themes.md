@@ -136,7 +136,7 @@ the ports are held to the drawn families.
 Studio Light sets **no attribute at all** — selecting it means removing
 `data-theme`, not writing `studio-light`. Writing it would leave the page
 looking right for the wrong reason, since none of the theme blocks would
-match. The React playground does exactly this; see `packages/js/dazzui-react/example/src/lib/themes.ts`.
+match. The React playground does exactly this; see `packages/js/dazzui/example/src/lib/themes.ts`.
 
 Flutter has no cascade, so `plugins/flutter.mjs` collapses each theme's mode
 chain into a whole `ThemeVariables` instance — `themeVariablesStudioDark`,

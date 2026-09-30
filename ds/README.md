@@ -6,7 +6,7 @@ with [Terrazzo](https://terrazzo.app/).
 
 This package holds no components, and nothing imports it at runtime. It is a
 **generator**: the build writes each platform's sources into that platform's
-own package — `@dazzlabs/dazzui-react` today, `packages/dart/dazzui` and the others as
+own package — `@dazzlabs/dazzui` today, `packages/dart/dazzui` and the others as
 they land — so a platform package builds and ships without the design system
 installed beside it.
 
@@ -32,8 +32,8 @@ are committed.
 
 | File             | What it is                                                     | Goes to                            |
 | ---------------- | -------------------------------------------------------------- | ---------------------------------- |
-| `style.css`      | Every token as a CSS custom property. The contract for the web. | `packages/js/dazzui-react/src/generated/`          |
-| `control.css`    | The ramp bindings and the resolved interactive colour recipes.  | `packages/js/dazzui-react/src/generated/`          |
+| `style.css`      | Every token as a CSS custom property. The contract for the web. | `packages/js/dazzui/src/generated/`          |
+| `control.css`    | The ramp bindings and the resolved interactive colour recipes.  | `packages/js/dazzui/src/generated/`          |
 | `flutter/*.dart` | Dart sources for the Flutter package.                           | nowhere yet — awaiting `packages/dart/dazzui` |
 
 Adding a platform means adding an entry to `TARGETS` in `scripts/build.mjs`.

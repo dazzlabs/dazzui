@@ -20,7 +20,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
   Tooltip,
-} from '@dazzlabs/dazzui-react'
+} from '@dazzlabs/dazzui'
 import { type CSSProperties, useState } from 'react'
 
 import { plural } from '../lib/format'

@@ -1,4 +1,4 @@
-import { Badge } from '@dazzlabs/dazzui-react'
+import { Badge } from '@dazzlabs/dazzui'
 
 import { imageOf } from '../lib/data'
 import type { Index } from '../lib/index'

@@ -3,7 +3,7 @@
 How an implementation is shown to draw what React draws: the scenes, the
 addresses, the readings, the tolerances, the expectations and the viewer.
 
-`packages/js/dazzui-react` is the standard. A port is not asked to *resemble*
+`packages/js/dazzui` is the standard. A port is not asked to *resemble*
 it; it is asked to produce, for every component instance the React example
 draws, the same box, the same decoration, the same type and the same colours,
 in every theme — and where it cannot yet, to say so in a file that only
@@ -151,7 +151,7 @@ Three rules:
   as *unread* — outside the denominator, never a failure. The picture still
   gets compared.
 - **The reference is a reading too.** React's collector
-  (`packages/js/dazzui-react/example/scripts/conformance.mjs`) draws the
+  (`packages/js/dazzui/example/scripts/conformance.mjs`) draws the
   example's own story components on a page of their own, `conformance.html`,
   in headless Chromium, finds each specimen by following the elements the
   story wrote into React's tree, and writes the same file. It refuses a scene

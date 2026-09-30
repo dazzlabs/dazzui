@@ -4,7 +4,7 @@ How a story is written once, in the React example, and compiled into the
 other platforms' examples.
 
 - **The React example is the source.** Every story is a file in
-  `packages/js/dazzui-react/example/src/stories/`, named as the kit names the
+  `packages/js/dazzui/example/src/stories/`, named as the kit names the
   component (`icon-button.tsx`), whose default export is one `Story`: an
   `id` matching the file, a `name`, a `summary`, a `Preview` — the one scene
   that stands for the component on the overview — and `examples`, each a

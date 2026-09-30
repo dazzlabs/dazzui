@@ -54,8 +54,8 @@ const TARGETS = [
     files: ['compose/DazzColorSchemes.kt'],
   },
   {
-    package: '@dazzlabs/dazzui-react',
-    dir: path.join('..', 'packages', 'js', 'dazzui-react', 'src', 'generated'),
+    package: '@dazzlabs/dazzui',
+    dir: path.join('..', 'packages', 'js', 'dazzui', 'src', 'generated'),
     files: ['style.css', 'control.css'],
   },
   {

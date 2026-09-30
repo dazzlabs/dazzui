@@ -13,7 +13,7 @@ published. Each package carries its own playground in `example/`.
 | Path                          | Package                             | What it is                                                                                                  |
 | ----------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | `ds`                          | `@dazzlabs/dazzui-ds`               | The design system itself: tokens built with [Terrazzo](https://terrazzo.app/). A generator, not a dependency. |
-| `packages/js/dazzui-react`    | `@dazzlabs/dazzui-react`            | The React implementation, and the standard the others are held to. Plain CSS over the tokens.               |
+| `packages/js/dazzui`    | `@dazzlabs/dazzui`            | The React implementation, and the standard the others are held to. Plain CSS over the tokens.               |
 | `packages/dart/dazzui`        | `dazzui`                            | The Flutter implementation.                                                                                 |
 | `packages/swift/DazzUI`       | `DazzUI`                            | The macOS SwiftUI implementation.                                                                           |
 | `packages/swift/DazzMobileUI` | `DazzMobileUI`                      | iOS: system SwiftUI controls with ds colours.                                                               |
@@ -64,10 +64,10 @@ smoke tests. It can also build without pnpm; see
 | Script                 | What it does                                            |
 | ---------------------- | ------------------------------------------------------- |
 | `pnpm tokens`          | Build `ds`, generating into the platform packages |
-| `pnpm components`      | Build `packages/js/dazzui-react` into its `dist/`              |
+| `pnpm components`      | Build `packages/js/dazzui` into its `dist/`              |
 | `pnpm packages`        | Both of the above, in order                             |
 | `pnpm playground`       | Build both packages, then start Storybook on port 6006  |
-| `pnpm playground:build` | Build a static Storybook into `packages/js/dazzui-react/example/dist`     |
+| `pnpm playground:build` | Build a static Storybook into `packages/js/dazzui/example/dist`     |
 | `pnpm build`           | Build everything and the static Storybook               |
 | `pnpm typecheck`       | Run `tsc` across the workspace                          |
 | `pnpm lint`            | Lint the workspace with [oxlint](https://oxc.rs/)       |

@@ -19,7 +19,7 @@ import ts from 'typescript'
  */
 
 /** The only modules a story may take values from. */
-const KIT = '@dazzlabs/dazzui-react'
+const KIT = '@dazzlabs/dazzui'
 const ICONS = '@fluentui/react-icons'
 const STAGE = '../components/stage'
 const REACT = 'react'
@@ -774,9 +774,9 @@ export function evaluateModule(file, source) {
 }
 
 export async function readStories(root) {
-  const example = path.join(root, 'packages/js/dazzui-react/example/src')
+  const example = path.join(root, 'packages/js/dazzui/example/src')
   const tints = await fs.readFile(
-    path.join(root, 'packages/js/dazzui-react/src/lib/tint.ts'),
+    path.join(root, 'packages/js/dazzui/src/lib/tint.ts'),
     'utf8'
   )
   const context = {
@@ -800,7 +800,7 @@ export async function readStories(root) {
 }
 
 export async function readThemes(root) {
-  const file = 'packages/js/dazzui-react/example/src/lib/themes.ts'
+  const file = 'packages/js/dazzui/example/src/lib/themes.ts'
   const read = evaluateModule(
     file,
     await fs.readFile(path.join(root, file), 'utf8')

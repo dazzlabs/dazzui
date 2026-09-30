@@ -36,7 +36,7 @@ xcuserdata/
 **/test-results/
 
 # Golden screenshot baselines are local to each machine
-packages/js/dazzui-react/example/tests/goldens/
+packages/js/dazzui/example/tests/goldens/
 
 # Conformance: a run is a measurement, fixtures are generated
 /tools/conformance/data/

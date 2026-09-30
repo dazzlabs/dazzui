@@ -1,4 +1,4 @@
-import { Table, TableCell, TableHead, TableRow } from '@dazzlabs/dazzui-react'
+import { Table, TableCell, TableHead, TableRow } from '@dazzlabs/dazzui'
 import { useState } from 'react'
 
 import { axesOf, formatValue } from '../lib/format'

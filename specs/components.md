@@ -5,7 +5,7 @@ port follows.
 
 ## The pipeline
 
-`vite build` bundles `packages/js/dazzui-react/src/` into that package's own `dist/`:
+`vite build` bundles `packages/js/dazzui/src/` into that package's own `dist/`:
 
 - `index.js` + `*.d.ts` — the components; React and Base UI stay external
 - `components.css` — every component stylesheet, via the `styles.ts` entry
