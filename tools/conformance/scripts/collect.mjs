@@ -44,6 +44,12 @@ const COLLECTORS = [
     cwd: join(repo, 'packages/swift/DazzUI/Example'),
   },
   {
+    platform: 'gpui',
+    command: 'example/tool/conformance.sh',
+    args: [],
+    cwd: join(repo, 'packages/rust/dazzui'),
+  },
+  {
     // Runs on a Windows machine over SSH, or is skipped without one.
     platform: 'winui',
     command: 'scripts/conformance.sh',

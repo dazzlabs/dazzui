@@ -288,7 +288,7 @@ copies `scenes.json` and `tolerances.json` beside the readings, so `data/` is
 a complete measurement on its own. Collectors take the drawn twelve themes
 by default; `--themes all` is every theme the example carries.
 
-Four collectors are written:
+Five collectors are written:
 
 - **React** — described above.
 - **Flutter** — `packages/dart/dazzui/example/tool/conformance.sh`, which
@@ -332,5 +332,16 @@ Four collectors are written:
   component's. A glyph a kit control takes as a `Glyph` value and draws
   inside itself — an `IconButton`'s, a `NavItem`'s — has no element of its
   own, and is missing.
+- **GPUI** — `packages/rust/dazzui/example/tool/conformance.sh`, which
+  builds the example and runs it with `--conformance`
+  (`example/src/conformance.rs`). Each scene is drawn in a borderless window
+  of its own at the display's scale, sized to the scene, and captured with
+  `screencapture` by the window's number. Every node codegen addressed is
+  drawn through `lib/specimen.rs`, which while collecting records the bounds
+  its element laid out at — the box, and only the box: what GPUI painted
+  goes into a scene an app cannot read back, so every other property is
+  unread and the pictures carry the rest. GPUI lays out on whole logical
+  pixels (taffy's rounding), so a width set by text lands up to a pixel
+  wider than React's fractional one.
  Adding a platform is a collector and an expectations
 file; the viewer and the check learn of it from `run.json`.

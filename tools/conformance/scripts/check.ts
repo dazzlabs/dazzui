@@ -126,7 +126,7 @@ for (const implementation of readings) {
   }
 }
 
-for (const platform of ['flutter', 'swiftui', 'winui'])
+for (const platform of ['flutter', 'swiftui', 'winui', 'gpui'])
   if (!args.baseline && !run.platforms.includes(platform))
     console.log(`${platform}: not in this run — not held`)
 
