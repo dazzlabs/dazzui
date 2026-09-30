@@ -160,8 +160,26 @@ pub fn run(options: Options, cx: &mut App) {
 
 async fn frame(cx: &mut AsyncApp) {
     cx.background_executor()
-        .timer(Duration::from_millis(120))
+        .timer(Duration::from_millis(60))
         .await;
+}
+
+/// Waits until a scene has been drawn and what it records has stopped
+/// changing. A fixed wait is not enough: a busy machine can hold a frame
+/// back long enough that a scene reads as having drawn nothing.
+async fn settle(cx: &mut AsyncApp) {
+    let mut previous = None;
+    for _ in 0..25 {
+        frame(cx).await;
+        let frames = specimen::frames();
+        if !frames.contains_key(&FRAME) {
+            continue;
+        }
+        if previous.as_ref() == Some(&frames) {
+            return;
+        }
+        previous = Some(frames);
+    }
 }
 
 async fn collect(
@@ -256,7 +274,7 @@ async fn collect(
                     cx.notify();
                 })
                 .map_err(|e| e.to_string())?;
-            frame(cx).await;
+            settle(cx).await;
             let height = specimen::frames()
                 .get(&FRAME)
                 .map(|b| f32::from(b.size.height))
@@ -268,7 +286,7 @@ async fn collect(
                     cx.notify();
                 })
                 .map_err(|e| e.to_string())?;
-            frame(cx).await;
+            settle(cx).await;
             let frames = specimen::frames();
 
             let file = id.replace('/', "-");
