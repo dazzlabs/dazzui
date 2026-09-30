@@ -105,6 +105,25 @@ text steps a recipe reads are pushed to 4.5:1 on the paper. The contrast
 guard then holds every imported theme exactly as it holds a drawn one.
 The face stays the design's own; the scale is the platform's.
 
+**Flutter also reads the Omarchy theme a machine is wearing now, at run
+time.** The twenty-two in `omarchy.yaml` are the built-in ones; a user's own
+theme, or one installed from a repository, is known only to the machine. So
+`packages/dart/dazzui/lib/src/omarchy/derive.dart` transcribes `derive` and
+`bothModes` step for step. It lays the derived colours over a generated
+Omarchy instance of the same scheme, because everything that is not a colour
+is the same for every Omarchy theme of one scheme. `test/src/omarchy_test.dart`
+checks it against every generated `omarchy-*` instance in both halves, to the
+digit, so a change to `scripts/themes.mjs` that is not carried into the Dart
+file fails that test. `OmarchyPalette` reads `background`, `foreground`,
+`accent` and `mode` out of `colors.toml`. `readOmarchyPalette` finds the file
+under `$XDG_STATE_HOME/omarchy/current/theme/`, or under the older
+`~/.config/omarchy/current/theme/`. `watchOmarchyPalette` watches that
+`current/` directory, which `omarchy theme set` swaps whole, and emits again
+on every switch. `OmarchyTheme` is a widget that does both and falls back to
+a given theme off Omarchy. On the web these return nothing. The Flutter
+example wears the machine's theme by default when there is one, offered as
+the first tile under *This machine*, until another tile is picked.
+
 Two things a theme re-sizes needed the native generators to store what they
 used to compute, following the rule a re-picked recipe shade already had: a
 type style that carries a mode keeps `<style>FontSize` and
