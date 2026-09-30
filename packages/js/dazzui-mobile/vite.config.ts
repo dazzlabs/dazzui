@@ -18,6 +18,11 @@ export default defineConfig({
       cssFileName: 'components',
     },
     cssCodeSplit: false,
+    // The glass reads `light-dark()` off the `color-scheme` the colour
+    // sheet sets. Lowered, it would wait on variables only a `color-scheme`
+    // in this same build defines — and the colour sheet ships beside it,
+    // uncompiled — so the stylesheet targets the browsers that have it.
+    cssTarget: ['chrome123', 'edge123', 'firefox120', 'safari17.5'],
     // React and Base UI stay external for the reason the desktop package
     // keeps them so: the host owns one copy of each, and Base UI holds the
     // open popup and the toast queue in React context.
