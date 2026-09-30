@@ -1,18 +1,17 @@
 import 'package:dazzui/dazzui.dart';
 
-import 'package:dazzui_example/lib/themes.dart';
-
 /// A theme in miniature: a window of its own, drawn in that theme's colours
 /// — the column, the paper, two lines of its ink, a button in its accent.
 class ThemePreview extends StatelessWidget {
   const ThemePreview({
     super.key,
-    required this.theme,
+    required this.vars,
     this.height,
     this.framed = true,
   });
 
-  final ThemeChoice theme;
+  /// The theme to draw in miniature.
+  final ThemeVariables vars;
   final double? height;
 
   /// A framed preview has its own border and corner; an unframed one runs
@@ -22,7 +21,6 @@ class ThemePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeVariables page = Theme.of(context).vars;
-    final ThemeVariables vars = themeVariablesOf(theme.id);
     final BorderSide rule = BorderSide(
       color: framed ? vars.colorBorderStrong : page.colorBorder,
       width: context.hairlineWidth,

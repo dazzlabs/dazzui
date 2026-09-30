@@ -30,6 +30,9 @@ class Shell extends StatefulWidget {
     required this.open,
     required this.theme,
     required this.setTheme,
+    this.omarchy,
+    this.followingOmarchy = false,
+    this.setFollowingOmarchy,
   });
 
   /// The component being read, or null on the overview.
@@ -37,6 +40,12 @@ class Shell extends StatefulWidget {
   final ValueChanged<String?> open;
   final ThemeChoice theme;
   final ValueChanged<ThemeChoice> setTheme;
+
+  /// The theme the Omarchy machine this runs on is wearing, if it is one;
+  /// and whether the window is drawn in it rather than in [theme].
+  final OmarchyPalette? omarchy;
+  final bool followingOmarchy;
+  final ValueChanged<bool>? setFollowingOmarchy;
 
   @override
   State<Shell> createState() => _ShellState();
@@ -68,7 +77,10 @@ class _ShellState extends State<Shell> {
           child: DefaultTextStyle(
             style: vars.bodyMedium.copyWith(color: vars.colorContent),
             child: IconTheme(
-              data: IconThemeData(color: vars.colorContent, size: vars.iconMedium),
+              data: IconThemeData(
+                color: vars.colorContent,
+                size: vars.iconMedium,
+              ),
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final double list = _listOpen ? _listWidth : 0;
@@ -118,6 +130,9 @@ class _ShellState extends State<Shell> {
                               theme: widget.theme,
                               width: themes,
                               onChanged: widget.setTheme,
+                              omarchy: widget.omarchy,
+                              followingOmarchy: widget.followingOmarchy,
+                              onFollowOmarchy: widget.setFollowingOmarchy,
                             ),
                         ],
                       ),
