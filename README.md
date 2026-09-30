@@ -19,6 +19,7 @@ published. Each package carries its own playground in `example/`.
 | `packages/swift/DazzMobileUI` | `DazzMobileUI`                      | iOS: system SwiftUI controls with ds colours.                                                               |
 | `packages/csharp/DazzUI`      | `DazzUI`                            | The WinUI 3 implementation. See its [README](packages/csharp/DazzUI/README.md).                              |
 | `packages/kotlin/dazzui-mobile` | `dazzui-mobile`                   | Android: stock Compose Material 3 with ds colours. See its [README](packages/kotlin/dazzui-mobile/README.md). |
+| `packages/rust/dazzui`        | `dazzui`                            | The GPUI implementation. See its [README](packages/rust/dazzui/README.md).                                   |
 | `tools/codegen`               | `@dazzlabs/dazzui-codegen`          | Generates every playground's stories from the React declarations.                                           |
 | `tools/conformance`           | `@dazzlabs/dazzui-conformance`      | The conformance viewer: how closely each implementation draws what React draws.                             |
 
@@ -26,10 +27,8 @@ Only `ds` decides what a value is, and it hands each package its own
 generated sources rather than being installed alongside them: a package
 builds, ships and is consumed on its own.
 
-The two Rust ports — `packages/rust/dazzui` and `packages/rust/dazzui_inset` — are
-maintained on the `platform/gpui` branch rather than here. Everything they
-need is on it: their own generated sources, the `ds` plugins that write them,
-and the playground adapters that compile the shared scenes into Rust.
+The Inset port, a Rust port of the Flutter package, is maintained on the
+`platform/gpui` branch rather than here, with the `ds` plugins it needs.
 
 ## Getting started
 

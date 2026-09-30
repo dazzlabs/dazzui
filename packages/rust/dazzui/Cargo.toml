@@ -1,0 +1,28 @@
+# The GPUI implementation of the DazzUI design system.
+#
+# The example is a package of its own rather than an `[[example]]` target,
+# for the reason the Flutter and SwiftUI examples are separate apps: the
+# library carries no entry point, no window and no dependency only the
+# example needs. It is a workspace member so the two share one lockfile and
+# one `target/`.
+[package]
+name = "dazzui"
+version = "0.1.0"
+edition = "2024"
+description = "The GPUI implementation of the DazzUI design system."
+license = "MIT"
+publish = false
+
+[workspace]
+members = ["example"]
+
+[dependencies]
+gpui = "0.2.2"
+
+[dev-dependencies]
+gpui = { version = "0.2.2", features = ["test-support"] }
+
+[features]
+# GPUI compiles its Metal shaders in a build script, which needs the Metal
+# toolchain. Without it, this switches GPUI to compiling them at launch.
+runtime-shaders = ["gpui/runtime_shaders"]

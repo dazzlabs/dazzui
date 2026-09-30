@@ -11,6 +11,7 @@ import {
   unsupported,
 } from './flutter.mjs'
 import { formatOutputs } from './format.mjs'
+import * as gpui from './gpui.mjs'
 import * as swiftui from './swiftui.mjs'
 import * as winui from './winui.mjs'
 import { readStories, readThemes } from './stories.mjs'
@@ -36,6 +37,12 @@ const gaps = [
     .map(
       gap =>
         `${gap} — map it in packages/csharp/DazzUI/example/Lib/Mapping.cs and list it in tools/codegen/winui.mjs`
+    ),
+  ...gpui
+    .unsupported(stories)
+    .map(
+      gap =>
+        `${gap} — map it in packages/rust/dazzui/example/src/lib/mapping/ and list it in tools/codegen/gpui.mjs`
     ),
 ]
 if (gaps.length)
@@ -114,6 +121,30 @@ for (const story of stories)
 outputs.set(`${csharp}/Stories/Index.cs`, winui.storiesIndexCs(stories))
 outputs.set(`${csharp}/Lib/Glyphs.cs`, winui.glyphsCs(stories))
 outputs.set(`${csharp}/Lib/Themes.cs`, winui.themesCs(themes, tokens))
+
+/*
+ * The GPUI example, laid out the same way, and the one file codegen writes
+ * into the kit itself: the glyphs its components import.
+ */
+const rust = 'packages/rust/dazzui/example/src'
+for (const story of stories)
+  outputs.set(
+    `${rust}/stories/${gpui.storyFile(story.id)}`,
+    gpui.storyRs(story)
+  )
+outputs.set(`${rust}/stories/mod.rs`, gpui.storiesIndexRs(stories))
+outputs.set(`${rust}/lib/glyphs.rs`, gpui.glyphsRs(root, stories))
+outputs.set(
+  `${rust}/lib/themes.rs`,
+  gpui.themesRs(
+    themes,
+    await fs.readFile(
+      path.join(root, 'packages/rust/dazzui/src/generated/theme_tokens.rs'),
+      'utf8'
+    )
+  )
+)
+outputs.set('packages/rust/dazzui/src/glyphs.rs', gpui.kitGlyphsRs(root))
 
 outputs.set('tools/conformance/scenes.json', scenes)
 formatOutputs(outputs)

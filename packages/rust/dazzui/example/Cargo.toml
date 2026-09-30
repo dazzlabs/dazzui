@@ -1,0 +1,33 @@
+# The GPUI example: the React example's window, drawn with this package,
+# whose stories `pnpm codegen` compiles from the React ones.
+[package]
+name = "dazzui-example"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[[bin]]
+name = "dazzui-example"
+path = "src/main.rs"
+
+[dependencies]
+dazzui = { path = ".." }
+gpui = "0.2.2"
+serde_json = "1"
+# The conformance collector crops its captures.
+image = { version = "0.25", default-features = false, features = ["png"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+# The collector names its window to `screencapture` by its AppKit number.
+objc = "0.2"
+raw-window-handle = "0.6"
+
+[dev-dependencies]
+gpui = { version = "0.2.2", features = ["test-support"] }
+
+[features]
+runtime-shaders = ["dazzui/runtime-shaders"]
+
+[lints.rust]
+# `objc`'s `msg_send!` asks for a cfg Cargo does not declare.
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(feature, values("cargo-clippy"))'] }

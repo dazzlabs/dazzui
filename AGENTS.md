@@ -13,7 +13,7 @@ ds/                          the design system — the only place a value is dec
 packages/<language>/<name>/  an implementation, named as it is published
   js/dazzui            swift/DazzUI · swift/DazzMobileUI
   js/dazzui-mobile           csharp/DazzUI · kotlin/dazzui-mobile
-  dart/dazzui
+  dart/dazzui                rust/dazzui
 tools/                       playground generator, conformance viewer
 ```
 
@@ -135,15 +135,25 @@ The split is the point: anything a platform package needs but cannot express
 belongs in `ds`, so the platforms stay implementations of one design
 rather than four designs that resemble each other.
 
-**The two Rust ports are maintained on `platform/gpui`, not here.**
-The [GPUI](https://gpui.rs) implementation and the Inset one (ported from
-Flutter) — `packages/rust/dazzui` and `packages/rust/dazzui_inset` in this
-layout — live on that branch
-with everything they need: their own generated sources, the `ds` plugins that
-write them (`gpui.mjs`, `inset.mjs` and the `rust.mjs` token compiler the two
-share), their conformance target, and the playground adapters that compile the
-shared scenes into Rust. A token or scene change that has to reach them is
-merged into that branch rather than carried here.
+- `packages/rust/dazzui` (`dazzui`) — the [GPUI](https://gpui.rs)
+  implementation, drawn to the same geometry as React. A Cargo workspace,
+  invisible to pnpm: run `cargo build` / `cargo test` from inside the
+  package, with `--features runtime-shaders` on a Mac without the Metal
+  toolchain. `src/generated/theme_tokens.rs` is what `ds/plugins/gpui.mjs`
+  wrote and is committed: every theme a `const` naming only what differs
+  from Studio Light's, over `..STUDIO_LIGHT`. `src/glyphs.rs` — the Fluent
+  glyphs the kit draws, rendered from the icons React imports — is written
+  by `pnpm codegen`. A theme is a global the app sets and a subtree may
+  override with `themed`; a component reads it with `cx.theme()`.
+  `example/` is the GPUI example (`cargo run -p dazzui-example`): the React
+  example's window, drawn with this package, whose stories `pnpm codegen`
+  compiles from the React ones.
+
+The split is the point, and it holds for Rust as for the rest.
+**The Inset port (ported from Flutter) is maintained on `platform/gpui`,
+not here** — `packages/ui_inset` in that branch's older layout — with the
+`inset.mjs` and `rust.mjs` token plugins it needs. A token change that has to
+reach it is merged into that branch rather than carried here.
 
 Every domain-free component from `beyondtranslate/packages/ui` has been
 migrated. What is left there is the desktop shell — WindowFrame, Sidebar,

@@ -1,0 +1,85 @@
+# dazzui (GPUI)
+
+The DazzUI design system for [GPUI](https://gpui.rs): the same tokens, the
+same seventy themes and the same components as `@dazzlabs/dazzui`, drawn to
+its geometry.
+
+**`packages/js/dazzui` is the standard.** Every name, prop and length here is
+read off the React source; where the two disagree, React wins, and
+`pnpm conformance` measures by how much.
+
+## Using it
+
+```rust
+use dazzui::{Button, Theme, Variant};
+use gpui::{App, Application};
+
+fn main() {
+    Application::new()
+        .with_assets(dazzui::Assets)
+        .run(|cx: &mut App| {
+            dazzui::init(cx);
+            Theme::set("studio-dark", cx);
+            // … open a window whose views build with the components:
+            // Button::new("save").variant(Variant::Filled).child("Save")
+        });
+}
+```
+
+`dazzui::init` installs the theme and the key bindings the kit's controls
+answer to. `dazzui::Assets` serves the glyphs the kit draws; an app with
+glyphs of its own serves them and falls through to it, as the example's
+`lib/assets.rs` does.
+
+A component is a builder named as React exports it: `Button::new(id)` then
+`.variant(…)`, `.tint(…)`, `.size(…)`, `.on_click(…)`, and `.child(…)` where
+React takes children. The id is GPUI's — an element that answers the
+pointer needs one to keep its state between frames. A prop React leaves to
+the component (`defaultValue`, `defaultChecked`) is held by the component;
+`value` with its change handler makes it the caller's.
+
+## Themes
+
+`Theme::set(name, cx)` sets the app's theme by the name React selects it with
+(`data-theme`); `themed(entry, child)` draws a subtree in another, the way
+`data-theme` on an element does. A component reads the theme in force with
+`cx.theme()`, a `&'static ThemeTokens` whose fields are the CSS custom
+properties by name: `--control-medium-size` is `t.control_medium_size`.
+
+`src/generated/theme_tokens.rs` is what `ds/plugins/gpui.mjs` wrote. Every
+theme is a `const` naming only what differs from Studio Light's, over
+`..STUDIO_LIGHT`, so nothing is derived at run time except the tint: a
+recipe cell that picks a shade off the control's ramp stays a
+`Paint::Shade`, resolved against the ramp where the control is drawn.
+`src/glyphs.rs` is written by `pnpm codegen` from the Fluent icons the
+React components import. **Never hand-edit either.**
+
+## Building
+
+```bash
+cargo build --features runtime-shaders
+```
+
+```bash
+cargo test --workspace --features runtime-shaders
+```
+
+GPUI compiles its Metal shaders in a build script, which needs the Metal
+toolchain (`xcodebuild -downloadComponent MetalToolchain`). Without it,
+`runtime-shaders` compiles them at launch instead; what is drawn is the
+same.
+
+## The example
+
+`example/` is the React example's window, drawn with this package: the
+component list, the document, the theme panel. Its stories are compiled from
+the React ones by `pnpm codegen` into `example/src/stories/`; see
+[`specs/playgrounds.md`](../../../specs/playgrounds.md).
+
+```bash
+cargo run -p dazzui-example --features runtime-shaders
+```
+
+`--story <id>` opens on a component, `--theme <name>` in a theme.
+`example/tool/conformance.sh` is its conformance collector; see
+[`specs/conformance.md`](../../../specs/conformance.md).

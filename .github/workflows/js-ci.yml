@@ -2,7 +2,8 @@ name: JS CI
 
 # The design system and everything pnpm builds: ds, the React package and
 # its example, and the tools. Flutter is installed because
-# codegen formats the Dart it writes. It runs on a change
+# codegen formats the Dart it writes, and rustfmt (on the runner already)
+# formats the Rust. It runs on a change
 # to any package, since `codegen:check` holds the generated files of
 # every one of them.
 on:

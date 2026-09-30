@@ -25,5 +25,10 @@ export function formatOutputs(outputs) {
           content
         )
       )
+    else if (file.endsWith('.rs'))
+      outputs.set(
+        file,
+        run(process.env.RUSTFMT ?? 'rustfmt', ['--edition', '2024'], content)
+      )
   }
 }
