@@ -843,8 +843,8 @@
   --base-corner-xl-bright: 0.875rem;
   --base-corner-xs: 0.4375rem;
   --base-font-code: ui-monospace, "SF Mono", "Menlo", monospace;
-  --base-font-display: -apple-system, "SF Pro Display", system-ui, "PingFang SC", sans-serif;
-  --base-font-ui: -apple-system, "SF Pro Text", system-ui, "PingFang SC", sans-serif;
+  --base-font-display: -apple-system, "SF Pro Display", system-ui, "PingFang SC", "Noto Sans CJK SC", sans-serif;
+  --base-font-ui: -apple-system, "SF Pro Text", system-ui, "PingFang SC", "Noto Sans CJK SC", sans-serif;
   --base-font-weight-black: 900;
   --base-font-weight-bold: 700;
   --base-font-weight-extrabold: 800;

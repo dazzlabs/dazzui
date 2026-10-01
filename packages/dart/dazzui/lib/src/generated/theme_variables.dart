@@ -247,9 +247,11 @@ class ThemeVariables {
     this.toastMaxWidth = 420,
     this.fontCode = const FontFace(family: 'SF Mono', fallback: ['Menlo']),
     this.fontDisplay = const FontFace(
-      fallback: ['SF Pro Display', 'PingFang SC'],
+      fallback: ['SF Pro Display', 'PingFang SC', 'Noto Sans CJK SC'],
     ),
-    this.fontUi = const FontFace(fallback: ['SF Pro Text', 'PingFang SC']),
+    this.fontUi = const FontFace(
+      fallback: ['SF Pro Text', 'PingFang SC', 'Noto Sans CJK SC'],
+    ),
   });
 
   // #region Global
@@ -358,7 +360,7 @@ class ThemeVariables {
 
   // Typography
   TextStyle get headlineSmall => TextStyle(
-    fontFamily: fontDisplay.family,
+    fontFamily: fontDisplay.resolvedFamily,
     fontFamilyFallback: fontDisplay.fallback,
     fontSize: 20,
     fontWeight: FontWeight.w600,
@@ -366,7 +368,7 @@ class ThemeVariables {
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get headlineMedium => TextStyle(
-    fontFamily: fontDisplay.family,
+    fontFamily: fontDisplay.resolvedFamily,
     fontFamilyFallback: fontDisplay.fallback,
     fontSize: 24,
     fontWeight: FontWeight.w600,
@@ -374,7 +376,7 @@ class ThemeVariables {
     leadingDistribution: TextLeadingDistribution.even,
   );
   TextStyle get headlineLarge => TextStyle(
-    fontFamily: fontDisplay.family,
+    fontFamily: fontDisplay.resolvedFamily,
     fontFamilyFallback: fontDisplay.fallback,
     fontSize: 28,
     fontWeight: FontWeight.w600,
@@ -388,7 +390,7 @@ class ThemeVariables {
   /// The line height `titleSmall` is set at; a theme re-points it.
   final double titleSmallLineHeight;
   TextStyle get titleSmall => TextStyle(
-    fontFamily: fontUi.family,
+    fontFamily: fontUi.resolvedFamily,
     fontFamilyFallback: fontUi.fallback,
     fontSize: titleSmallFontSize,
     fontWeight: FontWeight.w600,
@@ -402,7 +404,7 @@ class ThemeVariables {
   /// The line height `titleMedium` is set at; a theme re-points it.
   final double titleMediumLineHeight;
   TextStyle get titleMedium => TextStyle(
-    fontFamily: fontUi.family,
+    fontFamily: fontUi.resolvedFamily,
     fontFamilyFallback: fontUi.fallback,
     fontSize: titleMediumFontSize,
     fontWeight: FontWeight.w600,
@@ -416,7 +418,7 @@ class ThemeVariables {
   /// The line height `titleLarge` is set at; a theme re-points it.
   final double titleLargeLineHeight;
   TextStyle get titleLarge => TextStyle(
-    fontFamily: fontUi.family,
+    fontFamily: fontUi.resolvedFamily,
     fontFamilyFallback: fontUi.fallback,
     fontSize: titleLargeFontSize,
     fontWeight: FontWeight.w600,
@@ -430,7 +432,7 @@ class ThemeVariables {
   /// The line height `bodySmall` is set at; a theme re-points it.
   final double bodySmallLineHeight;
   TextStyle get bodySmall => TextStyle(
-    fontFamily: fontUi.family,
+    fontFamily: fontUi.resolvedFamily,
     fontFamilyFallback: fontUi.fallback,
     fontSize: bodySmallFontSize,
     fontWeight: FontWeight.w400,
@@ -444,7 +446,7 @@ class ThemeVariables {
   /// The line height `bodyMedium` is set at; a theme re-points it.
   final double bodyMediumLineHeight;
   TextStyle get bodyMedium => TextStyle(
-    fontFamily: fontUi.family,
+    fontFamily: fontUi.resolvedFamily,
     fontFamilyFallback: fontUi.fallback,
     fontSize: bodyMediumFontSize,
     fontWeight: FontWeight.w400,
@@ -458,7 +460,7 @@ class ThemeVariables {
   /// The line height `bodyLarge` is set at; a theme re-points it.
   final double bodyLargeLineHeight;
   TextStyle get bodyLarge => TextStyle(
-    fontFamily: fontUi.family,
+    fontFamily: fontUi.resolvedFamily,
     fontFamilyFallback: fontUi.fallback,
     fontSize: bodyLargeFontSize,
     fontWeight: FontWeight.w400,
@@ -472,7 +474,7 @@ class ThemeVariables {
   /// The line height `labelQuiet` is set at; a theme re-points it.
   final double labelQuietLineHeight;
   TextStyle get labelQuiet => TextStyle(
-    fontFamily: fontUi.family,
+    fontFamily: fontUi.resolvedFamily,
     fontFamilyFallback: fontUi.fallback,
     fontSize: labelQuietFontSize,
     fontWeight: FontWeight.w500,
@@ -486,7 +488,7 @@ class ThemeVariables {
   /// The line height `labelStrong` is set at; a theme re-points it.
   final double labelStrongLineHeight;
   TextStyle get labelStrong => TextStyle(
-    fontFamily: fontDisplay.family,
+    fontFamily: fontDisplay.resolvedFamily,
     fontFamilyFallback: fontDisplay.fallback,
     fontSize: labelStrongFontSize,
     fontWeight: FontWeight.w700,
@@ -500,7 +502,7 @@ class ThemeVariables {
   /// The line height `labelSmall` is set at; a theme re-points it.
   final double labelSmallLineHeight;
   TextStyle get labelSmall => TextStyle(
-    fontFamily: fontUi.family,
+    fontFamily: fontUi.resolvedFamily,
     fontFamilyFallback: fontUi.fallback,
     fontSize: labelSmallFontSize,
     fontWeight: FontWeight.w600,
@@ -514,7 +516,7 @@ class ThemeVariables {
   /// The line height `labelMedium` is set at; a theme re-points it.
   final double labelMediumLineHeight;
   TextStyle get labelMedium => TextStyle(
-    fontFamily: fontUi.family,
+    fontFamily: fontUi.resolvedFamily,
     fontFamilyFallback: fontUi.fallback,
     fontSize: labelMediumFontSize,
     fontWeight: FontWeight.w600,
@@ -528,7 +530,7 @@ class ThemeVariables {
   /// The line height `labelLarge` is set at; a theme re-points it.
   final double labelLargeLineHeight;
   TextStyle get labelLarge => TextStyle(
-    fontFamily: fontUi.family,
+    fontFamily: fontUi.resolvedFamily,
     fontFamilyFallback: fontUi.fallback,
     fontSize: labelLargeFontSize,
     fontWeight: FontWeight.w600,
@@ -542,7 +544,7 @@ class ThemeVariables {
   /// The line height `captionSmall` is set at; a theme re-points it.
   final double captionSmallLineHeight;
   TextStyle get captionSmall => TextStyle(
-    fontFamily: fontUi.family,
+    fontFamily: fontUi.resolvedFamily,
     fontFamilyFallback: fontUi.fallback,
     fontSize: captionSmallFontSize,
     fontWeight: FontWeight.w400,
@@ -556,7 +558,7 @@ class ThemeVariables {
   /// The line height `captionMedium` is set at; a theme re-points it.
   final double captionMediumLineHeight;
   TextStyle get captionMedium => TextStyle(
-    fontFamily: fontUi.family,
+    fontFamily: fontUi.resolvedFamily,
     fontFamilyFallback: fontUi.fallback,
     fontSize: captionMediumFontSize,
     fontWeight: FontWeight.w400,
@@ -570,7 +572,7 @@ class ThemeVariables {
   /// The line height `captionLarge` is set at; a theme re-points it.
   final double captionLargeLineHeight;
   TextStyle get captionLarge => TextStyle(
-    fontFamily: fontUi.family,
+    fontFamily: fontUi.resolvedFamily,
     fontFamilyFallback: fontUi.fallback,
     fontSize: captionLargeFontSize,
     fontWeight: FontWeight.w400,

@@ -594,7 +594,9 @@ base:
     large:
       $value: 2rem
   # Apple-first stacks. `ui` is the interface face, `display` the tighter cut
-  # for large text, `mono` for keys and code.
+  # for large text, `mono` for keys and code. Noto Sans CJK SC follows
+  # PingFang SC so that Chinese off a Mac — on Linux, where fontconfig would
+  # otherwise reach for a serif CJK face — is still set in a sans.
   font:
     $type: fontFamily
     ui:
@@ -603,6 +605,7 @@ base:
         - SF Pro Text
         - system-ui
         - PingFang SC
+        - Noto Sans CJK SC
         - sans-serif
     display:
       $value:
@@ -610,6 +613,7 @@ base:
         - SF Pro Display
         - system-ui
         - PingFang SC
+        - Noto Sans CJK SC
         - sans-serif
     code:
       $value:

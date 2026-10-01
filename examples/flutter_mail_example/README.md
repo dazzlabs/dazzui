@@ -22,8 +22,8 @@ The status bar at the bottom holds three settings:
   Chinese (Taiwan and Hong Kong), Japanese and English. The same locale picks
   the Simplified, Traditional or Japanese glyph when a font falls back. The
   messages stay as written, since they are the test data. Under the theme's
-  own font (which names PingFang SC) the glyph forms never change; pick
-  **System default** to see them follow the language.
+  own font (which names PingFang SC, then Noto Sans CJK SC) the glyph forms
+  stay Simplified; pick **System default** to see them follow the language.
 - **Font**: the theme's own font, the system default, or a named CJK family.
 - **Appearance**: light, dark, or follow the system.
 

@@ -1,4 +1,6 @@
 import 'package:dazzui/dazzui.dart';
+import 'package:flutter/foundation.dart'
+    show debugDefaultTargetPlatformOverride;
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -83,7 +85,11 @@ void main() {
     test('are one field per face, and copyWith re-points them', () {
       const ThemeVariables vars = themeVariables;
       expect(vars.fontUi.family, isNull);
-      expect(vars.fontUi.fallback, const ['SF Pro Text', 'PingFang SC']);
+      expect(vars.fontUi.fallback, const [
+        'SF Pro Text',
+        'PingFang SC',
+        'Noto Sans CJK SC',
+      ]);
       expect(vars.bodyMedium.fontFamily, isNull);
 
       final ThemeVariables shipped = vars.copyWith(
@@ -101,6 +107,27 @@ void main() {
       // And nothing else moved.
       expect(shipped.bodyMedium.fontSize, vars.bodyMedium.fontSize);
       expect(shipped.colorSurface, vars.colorSurface);
+    });
+
+    test('on Linux the platform face is set in the stack\'s last family', () {
+      // Flutter on Linux never reaches the fallback list for a CJK glyph, so
+      // the face names its portable family outright there.
+      debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+      addTearDown(() => debugDefaultTargetPlatformOverride = null);
+
+      const ThemeVariables vars = themeVariables;
+      expect(vars.fontUi.resolvedFamily, 'Noto Sans CJK SC');
+      expect(vars.bodyMedium.fontFamily, 'Noto Sans CJK SC');
+      expect(vars.headlineSmall.fontFamily, 'Noto Sans CJK SC');
+      expect(vars.bodyMedium.fontFamilyFallback, vars.fontUi.fallback);
+      // A face that names its own family, and the code face, are untouched.
+      expect(const FontFace(family: 'HostSans').resolvedFamily, 'HostSans');
+      expect(vars.fontCode.resolvedFamily, vars.fontCode.family);
+      // Nor is a face that asks for the platform default and nothing else.
+      expect(const FontFace().resolvedFamily, isNull);
+
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      expect(vars.bodyMedium.fontFamily, isNull);
     });
 
     testWidgets('a re-pointed face reaches the widgets', (tester) async {

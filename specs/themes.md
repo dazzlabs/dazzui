@@ -167,7 +167,12 @@ nothing at all on Windows or in a `flutter test`, so a host has to be able to
 say what the kit is set in without re-typing a hundred-parameter constructor.
 The components meet it halfway: every ambient style they set is a
 `DefaultTextStyle.merge`, never a replacement, so a family set above them
-reaches a `Badge`'s label as well as a `Text`'s.
+reaches a `Badge`'s label as well as a `Text`'s. The styles read a face's
+`resolvedFamily` rather than its `family`, because Flutter on Linux never
+consults the fallback list for a glyph the default face lacks: Chinese comes
+out of whatever fontconfig picks, a Japanese or a serif cut. There, a face
+that asks for the platform's own is set in the last family its stack names
+(Noto Sans CJK SC), and its Latin with it.
 
 A recipe that names a semantic role in any state (every variant's
 `disabled` does, through `$defaults`) is a computed member on those three

@@ -2629,7 +2629,7 @@ function convertTypographyValue(value, tokens) {
   // `base.font` alias has no field to read and is split in place.
   const faceRef = faceFieldName(value.fontFamily)
   if (faceRef) {
-    parts.push(`fontFamily: ${faceRef}.family`)
+    parts.push(`fontFamily: ${faceRef}.resolvedFamily`)
     parts.push(`fontFamilyFallback: ${faceRef}.fallback`)
   } else if (value.fontFamily) {
     const { family, fallback } = splitFontStack(

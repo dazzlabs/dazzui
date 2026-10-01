@@ -47,8 +47,8 @@ enum LocaleChoice {
 
 /// The face every text style is set in.
 ///
-/// [theme] keeps the theme's own (SF Pro Text, then PingFang SC — which
-/// only a Mac has), and [system] names nothing at all, so the platform's
+/// [theme] keeps the theme's own (SF Pro Text, then PingFang SC on a Mac and
+/// Noto Sans CJK SC elsewhere), and [system] names nothing at all, so the platform's
 /// fallback decides. The rest name one family outright; a family that is not
 /// installed falls back the same way [system] does.
 enum FontChoice {

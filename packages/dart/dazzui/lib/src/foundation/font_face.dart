@@ -30,6 +30,22 @@ class FontFace {
   /// [family] is null, the ones the platform default falls through to.
   final List<String> fallback;
 
+  /// The family a style is set in on the running platform: [family], except
+  /// where it asks for the platform's own face on Linux.
+  ///
+  /// Flutter on Linux never reaches [fallback] for a glyph the default face
+  /// lacks. Chinese under a null family comes out of whatever fontconfig
+  /// picks for the character — a Japanese cut, or a serif — however the list
+  /// reads, and whatever the locale. Only the primary family is honoured. So
+  /// there the face is set in the last family its stack names, the portable
+  /// one the stack ends on (Noto Sans CJK SC, after the Mac's own), and Latin
+  /// is drawn in that family's Latin.
+  String? get resolvedFamily {
+    if (family != null || fallback.isEmpty) return family;
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.linux) return null;
+    return fallback.last;
+  }
+
   FontFace copyWith({
     String? family,
     List<String>? fallback,
@@ -64,7 +80,7 @@ class FontFace {
 extension FontFaceTextStyle on TextStyle {
   TextStyle inFace(FontFace face) {
     return copyWith(
-      fontFamily: face.family,
+      fontFamily: face.resolvedFamily,
       fontFamilyFallback: face.fallback,
     );
   }
