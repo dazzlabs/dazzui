@@ -679,12 +679,12 @@ function convertTokenValue(token, tokens) {
       if (ref && !ref.startsWith('base.')) {
         const referenced = tokens[ref]
         return {
-          type: isIntToken(ref, referenced?.$value) ? 'Int' : 'CGFloat',
+          type: referenced && isIntToken(referenced) ? 'Int' : 'CGFloat',
           value: tokenIdToVarName(ref),
           references: true,
         }
       }
-      return isIntToken(token.id, token.$value)
+      return isIntToken(token)
         ? { type: 'Int', value: String(token.$value) }
         : { type: 'CGFloat', value: double(token.$value) }
     }
@@ -809,10 +809,16 @@ function double(value) {
   return Number.isInteger(num) ? `${num}.0` : String(num)
 }
 
-/** A shade is an index into a ramp; an alpha named `alpha` never is. */
-function isIntToken(id, value) {
-  if (typeof id === 'string' && id.toLowerCase().includes('alpha')) return false
-  return Number.isInteger(value)
+/**
+ * A shade is an index into a ramp; an alpha named `alpha` never is. A token
+ * is only an `Int` if it is one under every theme: a scale that reads `1` in
+ * the base and `1.15` under Omarchy has to be stored as a `CGFloat`, or the
+ * theme that moves it cannot be written down.
+ */
+function isIntToken(token) {
+  if (typeof token.id === 'string' && token.id.toLowerCase().includes('alpha')) return false
+  const values = [token.$value, ...Object.values(token.mode ?? {}).map(m => m?.$value ?? m)]
+  return values.every(value => value === undefined || Number.isInteger(Number(value)))
 }
 
 function fontWeight(value) {

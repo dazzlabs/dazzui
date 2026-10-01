@@ -131,7 +131,7 @@ public struct ThemeVariables: Sendable {
     sliderThumbInk: Int = 0,
     sliderThumbLift: Int = 1,
     sliderThumbEdgeWidth: CGFloat = 1.0,
-    sliderThumbHotScale: Int = 1,
+    sliderThumbHotScale: CGFloat = 1.0,
     switchMediumWidth: CGFloat = 32.0,
     switchMediumHeight: CGFloat = 18.0,
     switchMediumThumb: CGFloat = 14.0,
@@ -467,7 +467,7 @@ public struct ThemeVariables: Sendable {
   public let sliderThumbInk: Int
   public let sliderThumbLift: Int
   public let sliderThumbEdgeWidth: CGFloat
-  public let sliderThumbHotScale: Int
+  public let sliderThumbHotScale: CGFloat
   public let switchMediumWidth: CGFloat
   public let switchMediumHeight: CGFloat
   public let switchMediumThumb: CGFloat
