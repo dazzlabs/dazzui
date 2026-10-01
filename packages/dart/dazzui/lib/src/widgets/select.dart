@@ -109,6 +109,17 @@ class _SelectState<T> extends State<Select<T>> {
     return null;
   }
 
+  /// How tall the list would draw with nothing to stop it: a row per option
+  /// and per group heading, inside the panel's padding. It only has to be
+  /// close enough to tell whether the list fits below the trigger.
+  double _listHeight(ThemeVariables vars) {
+    final TextStyle face = vars.labelMedium;
+    final double line = (face.fontSize ?? 13) * (face.height ?? 1.25);
+    final double row = line + vars.menuItemPadding * 2;
+    final int rows = _flat.length + widget.groups.length;
+    return rows * row + vars.spacing1 * 2;
+  }
+
   void _toggle() => _open ? _close() : _openList();
 
   void _openList() {
@@ -137,30 +148,38 @@ class _SelectState<T> extends State<Select<T>> {
       link: _link,
       child: OverlayPortal(
         controller: _controller,
-        overlayChildBuilder: (context) => PopoverOverlay(
-          link: _link,
-          side: PopoverSide.bottom,
-          align: PopoverAlign.start,
-          gap: vars.spacing1,
-          onDismiss: _close,
-          maxHeight: popupAvailableHeight(
+        overlayChildBuilder: (context) {
+          final PopoverSide side = popupSide(
             this.context,
-            side: PopoverSide.bottom,
+            preferred: PopoverSide.bottom,
             gap: vars.spacing1,
-          ),
-          // The list is at least as wide as the trigger it dropped from, so a
-          // long label never has to be read in a narrower column than it was
-          // chosen in.
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minWidth: _anchorWidth),
-            child: _SelectList<T>(
-              options: widget.options,
-              groups: widget.groups,
-              selected: widget.value,
-              onChoose: _choose,
+            wanted: _listHeight(vars),
+          );
+          return PopoverOverlay(
+            link: _link,
+            side: side,
+            align: PopoverAlign.start,
+            gap: vars.spacing1,
+            onDismiss: _close,
+            maxHeight: popupAvailableHeight(
+              this.context,
+              side: side,
+              gap: vars.spacing1,
             ),
-          ),
-        ),
+            // The list is at least as wide as the trigger it dropped from, so a
+            // long label never has to be read in a narrower column than it was
+            // chosen in.
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minWidth: _anchorWidth),
+              child: _SelectList<T>(
+                options: widget.options,
+                groups: widget.groups,
+                selected: widget.value,
+                onChoose: _choose,
+              ),
+            ),
+          );
+        },
         child: LayoutBuilder(
           builder: (context, constraints) {
             final bool bounded = constraints.maxWidth.isFinite;

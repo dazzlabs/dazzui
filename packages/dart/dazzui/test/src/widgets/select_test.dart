@@ -318,4 +318,48 @@ void main() {
       expect(find.byType(MenuPanel), findsNothing);
     },
   );
+
+  testWidgets('a select at the foot of the window opens upward', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 300);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      host(
+        Align(
+          alignment: Alignment.bottomLeft,
+          child: SizedBox(
+            width: 240,
+            child: Select<String>(
+              options: languages,
+              value: 'ja',
+              onChanged: (_) {},
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byType(Select<String>));
+    await tester.pumpAndSettle();
+
+    // Base UI's `flip`: with no room below, the list sits above its trigger
+    // at full height rather than being clamped to nothing.
+    expect(tester.takeException(), isNull);
+    final Rect trigger = tester.getRect(find.byType(Select<String>));
+    final Rect panel = tester.getRect(find.byType(MenuPanel));
+    expect(panel.bottom, lessThanOrEqualTo(trigger.top));
+    for (final SelectOption<String> option in languages) {
+      expect(
+        find.descendant(
+          of: find.byType(MenuPanel),
+          matching: find.text(option.label),
+        ),
+        findsOneWidget,
+      );
+    }
+    expect(panel.height, greaterThan(languages.length * 20));
+  });
 }

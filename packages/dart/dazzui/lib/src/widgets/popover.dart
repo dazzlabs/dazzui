@@ -226,6 +226,29 @@ double popupAvailableHeight(
   return math.max(0, available - _popupCollisionPadding);
 }
 
+/// The side a popup opens on: [preferred], unless a popup [wanted] tall
+/// would not fit there and the opposite side has more room — floating-ui's
+/// `flip`, which Base UI's positioner applies to every popup React draws. A
+/// select at the foot of the window opens upward instead of being clamped to
+/// nothing.
+PopoverSide popupSide(
+  BuildContext anchor, {
+  required PopoverSide preferred,
+  required double gap,
+  required double wanted,
+}) {
+  final PopoverSide? opposite = switch (preferred) {
+    PopoverSide.bottom => PopoverSide.top,
+    PopoverSide.top => PopoverSide.bottom,
+    PopoverSide.left || PopoverSide.right => null,
+  };
+  if (opposite == null) return preferred;
+  final double here = popupAvailableHeight(anchor, side: preferred, gap: gap);
+  if (here >= wanted) return preferred;
+  final double there = popupAvailableHeight(anchor, side: opposite, gap: gap);
+  return there > here ? opposite : preferred;
+}
+
 class PopoverOverlay extends StatelessWidget {
   const PopoverOverlay({
     super.key,
