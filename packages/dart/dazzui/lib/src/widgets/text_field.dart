@@ -300,7 +300,8 @@ class TextField extends StatefulWidget {
     this.contextMenuBuilder = _defaultContextMenuBuilder,
     this.spellCheckConfiguration,
     this.magnifierConfiguration,
-  }) : assert(obscuringCharacter.length == 1),
+  }) : _borderless = false,
+       assert(obscuringCharacter.length == 1),
        smartDashesType =
            smartDashesType ??
            (obscureText ? SmartDashesType.disabled : SmartDashesType.enabled),
@@ -437,7 +438,8 @@ class TextField extends StatefulWidget {
     this.contextMenuBuilder = _defaultContextMenuBuilder,
     this.spellCheckConfiguration,
     this.magnifierConfiguration,
-  }) : assert(obscuringCharacter.length == 1),
+  }) : _borderless = true,
+       assert(obscuringCharacter.length == 1),
        smartDashesType =
            smartDashesType ??
            (obscureText ? SmartDashesType.disabled : SmartDashesType.enabled),
@@ -485,9 +487,14 @@ class TextField extends StatefulWidget {
 
   /// Controls the [BoxDecoration] of the box behind the text input.
   ///
-  /// Defaults to having a rounded rectangle grey border and can be null to have
-  /// no box decoration.
+  /// Null draws the design's field box — or, on a [TextField.borderless],
+  /// nothing at all.
   final BoxDecoration? decoration;
+
+  /// Whether this is a [TextField.borderless]: a field set inside a box that
+  /// someone else draws, such as the search field's row, which must not draw
+  /// a second one inside it.
+  final bool _borderless;
 
   /// Padding around the text entry area between the [prefix] and [suffix]
   /// or the clear button when [clearButtonMode] is not never.
@@ -1768,16 +1775,19 @@ class _TextFieldState extends State<TextField>
     }
 
     // A decoration passed in wins; otherwise the design's own box is used,
-    // and a disabled field flattens to the groove.
+    // and a disabled field flattens to the groove. A borderless field draws
+    // none: its box belongs to whatever it is set in.
     final BoxDecoration effectiveDecoration = widget.decoration == null
-        ? (enabled
-              ? designDecoration
-              : fieldBoxDecoration(
-                  context,
-                  ramp: ramp,
-                  enabled: false,
-                  grows: isMultiline,
-                ))
+        ? widget._borderless
+              ? const BoxDecoration()
+              : (enabled
+                    ? designDecoration
+                    : fieldBoxDecoration(
+                        context,
+                        ramp: ramp,
+                        enabled: false,
+                        grows: isMultiline,
+                      ))
         : widget.decoration!.copyWith(
             border: resolvedBorder,
             color: enabled ? decorationColor : disabledColor,

@@ -362,4 +362,34 @@ void main() {
     }
     expect(panel.height, greaterThan(languages.length * 20));
   });
+
+  testWidgets('a wide select holds its chevron at the end edge', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      host(
+        Center(
+          child: SizedBox(
+            width: 480,
+            child: Select<String>(
+              options: languages,
+              value: 'ja',
+              onChanged: (_) {},
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // The box is far wider than its longest label; the chevron still sits
+    // at the end, inside the field's padding, not just past the text.
+    final Rect box = tester.getRect(find.byType(Select<String>));
+    final Rect chevron = tester.getRect(
+      find.descendant(
+        of: find.byType(Select<String>),
+        matching: find.byType(Icon),
+      ),
+    );
+    expect(box.right - chevron.right, lessThanOrEqualTo(16));
+  });
 }

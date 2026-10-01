@@ -11,7 +11,8 @@ import 'section_label.dart';
 /// the titlebar's height, or the separator under the two steps where they
 /// meet.
 ///
-/// The rows inside are [NavItem]s — a sidebar owns the column, not the rows.
+/// The rows inside are [NavItem]s, run in [SidebarGroup]s — a sidebar owns
+/// the column, a group the spacing of its rows.
 class Sidebar extends StatelessWidget {
   const Sidebar({
     super.key,
@@ -54,17 +55,19 @@ class Sidebar extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: vars.spacing4),
               child: header!,
             ),
-          // Only the row list scrolls, so a pinned card stays put.
+          // Only the row list scrolls, so a pinned card stays put. The
+          // groups carry their own block padding, as `.dz-sidebar__group`
+          // does, so two of them stand a full step apart while the column
+          // itself adds only `.dz-sidebar__content`'s.
           Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(
-                vertical: vars.spacing35,
+                vertical: vars.spacing2,
                 horizontal: vars.spacing25,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
-                spacing: vars.frameNavGap,
                 children: children,
               ),
             ),
@@ -89,21 +92,31 @@ class SidebarGroup extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeVariables vars = Theme.of(context).vars;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisSize: MainAxisSize.min,
-      spacing: vars.frameNavGap,
-      children: [
-        if (label != null)
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: vars.spacing25,
-              vertical: vars.spacing1,
+    // `.dz-sidebar__group`'s block padding, which is the gap between two
+    // groups; the label sits on it with only its own padding, and the nav
+    // gap is between rows, never between the label and the first of them.
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: vars.spacing15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (label != null)
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: vars.spacing25,
+                vertical: vars.spacing1,
+              ),
+              child: SectionLabel(label!, tone: SectionLabelTone.faint),
             ),
-            child: SectionLabel(label!, tone: SectionLabelTone.faint),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            spacing: vars.frameNavGap,
+            children: children,
           ),
-        ...children,
-      ],
+        ],
+      ),
     );
   }
 }

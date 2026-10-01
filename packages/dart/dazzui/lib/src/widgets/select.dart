@@ -307,11 +307,14 @@ class _SelectState<T> extends State<Select<T>> {
         // on the width the select was handed. A `Row` whose incoming width is
         // unbounded refuses a flex child outright, so a select dropped into a
         // row that shrink-wraps is measured from the labels rather than told
-        // to fill a space nothing defined; given a width, the value takes what
-        // the chevron leaves and the labels never widen the box past it.
+        // to fill a space nothing defined; given a width, the value takes all
+        // the chevron leaves — `Expanded`, not `Flexible`, so a box wider than
+        // its longest label still holds the chevron at its end edge rather
+        // than just past the text — and the labels never widen the box past
+        // it.
         children: [
           if (bounded)
-            Flexible(child: _value(vars, chosen))
+            Expanded(child: _value(vars, chosen))
           else
             _value(vars, chosen),
           Icon(

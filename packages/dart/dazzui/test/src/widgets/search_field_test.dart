@@ -88,4 +88,29 @@ void main() {
     await tester.pump();
     expect(dismissed, 1);
   });
+
+  testWidgets('the row is the only box: the field inside draws none', (
+    tester,
+  ) async {
+    await tester.pumpWidget(host(const SearchField(placeholder: 'Search')));
+
+    // Every decorated box: the row's own, and anything the field inside it
+    // painted. Only the row may carry an edge or a fill.
+    List<BoxDecoration> boxes(Finder within) => tester
+        .widgetList<DecoratedBox>(
+          find.descendant(of: within, matching: find.byType(DecoratedBox)),
+        )
+        .map((box) => box.decoration)
+        .whereType<BoxDecoration>()
+        .where((d) => d.border != null || d.color != null)
+        .toList();
+
+    expect(boxes(find.byType(TextField)), isEmpty);
+    expect(boxes(find.byType(SearchField)), hasLength(1));
+
+    // Focus lights the row, still without a second box inside it.
+    await tester.tap(find.byType(TextField));
+    await tester.pumpAndSettle();
+    expect(boxes(find.byType(TextField)), isEmpty);
+  });
 }
