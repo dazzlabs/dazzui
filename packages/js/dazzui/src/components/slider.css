@@ -53,24 +53,56 @@
  * lift a `filled` button carries — so it reads as sitting on the groove
  * rather than in it. It takes the accent only on the ring it grows when
  * focused, which is the system's own focus ring rather than a colour of the
- * thumb's.
+ * thumb's. Omarchy draws its knob in the ink instead, ringed in the paper,
+ * flat, and grown under the pointer; `slider.yaml` holds that difference as
+ * weights, which is all this reads.
+ *
+ * Base UI places the thumb itself — `inset-inline-start` at the value, `top`
+ * at the middle and `translate: -50% -50%` to centre it — so nothing here
+ * moves it. A transform of our own would add to that translate rather than
+ * replace it, and the thumb would sit half its size up and back. The hover
+ * growth is `scale`, which composes with Base UI's translate rather than
+ * fighting it.
  */
 .dz-slider__thumb {
-  position: absolute;
-  top: 50%;
   border-radius: var(--radius-full);
-  background-color: var(--color-surface);
-  border: var(--stroke-hairline) solid var(--color-border-strong);
-  box-shadow: var(--shadow-xs);
-  transform: translate(-50%, -50%);
+  background-color: color-mix(
+    in srgb,
+    var(--color-content) calc(var(--slider-thumb-ink) * 100%),
+    var(--color-surface)
+  );
+  border: var(--slider-thumb-edge-width) solid
+    color-mix(
+      in srgb,
+      var(--color-surface) calc(var(--slider-thumb-ink) * 100%),
+      var(--color-border-strong)
+    );
   transition:
-    box-shadow var(--motion-duration) var(--motion-easing),
+    scale var(--motion-duration) var(--motion-easing),
     border-color var(--motion-duration) var(--motion-easing);
+}
+
+/* The lift on a layer of its own, so a weight can fade it: a shadow's colour
+   cannot be reached into from here. It sits on the thumb's outer edge, and
+   an outer shadow never paints over the thumb it is under. */
+.dz-slider__thumb::after {
+  content: '';
+  position: absolute;
+  inset: calc(var(--slider-thumb-edge-width) * -1);
+  border-radius: inherit;
+  box-shadow: var(--shadow-xs);
+  opacity: var(--slider-thumb-lift);
+  pointer-events: none;
 }
 
 .dz-slider__thumb:hover,
 .dz-slider__thumb[data-dragging] {
-  border-color: var(--tint-600);
+  scale: var(--slider-thumb-hot-scale);
+  border-color: color-mix(
+    in srgb,
+    var(--color-surface) calc(var(--slider-thumb-ink) * 100%),
+    var(--tint-600)
+  );
 }
 
 .dz-slider__thumb:focus-visible {
@@ -85,8 +117,12 @@
 }
 
 .dz-slider[data-disabled] .dz-slider__thumb {
+  scale: none;
   background-color: var(--control-color-normal-surface-disabled);
   border-color: var(--color-border);
+}
+
+.dz-slider[data-disabled] .dz-slider__thumb::after {
   box-shadow: none;
 }
 

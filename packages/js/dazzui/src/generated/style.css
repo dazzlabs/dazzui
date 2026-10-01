@@ -1125,6 +1125,10 @@
   --slider-medium-track: var(--spacing-1-5);
   --slider-small-thumb: var(--spacing-3-5);
   --slider-small-track: var(--spacing-1);
+  --slider-thumb-edge-width: var(--stroke-hairline);
+  --slider-thumb-hot-scale: 1;
+  --slider-thumb-ink: 0;
+  --slider-thumb-lift: 1;
   --spacing-0: 0;
   --spacing-0-5: 0.125rem;
   --spacing-1: 0.25rem;
@@ -1499,6 +1503,12 @@
   --radius-medium: 0;
   --radius-small: 0;
   --radius-tiny: 0;
+  --slider-medium-thumb: 14px;
+  --slider-medium-track: 4px;
+  --slider-thumb-edge-width: 2px;
+  --slider-thumb-hot-scale: 1.15;
+  --slider-thumb-ink: 1;
+  --slider-thumb-lift: 0;
   --title-large-font-family: var(--base-font-ui);
   --title-large-font-size: 14px;
   --title-large-font-weight: var(--base-font-weight-semibold);

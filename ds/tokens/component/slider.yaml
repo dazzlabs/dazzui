@@ -26,3 +26,39 @@ slider:
     thumb:
       $type: dimension
       $value: "{spacing.5}"
+  # The thumb's own drawing. Everywhere but Omarchy it is the raised control:
+  # paper, a hairline edge and the small lift a filled button carries.
+  # Omarchy's shell (`shell/Ui/PanelSlider.qml`) draws a knob in the
+  # foreground, cut out of the track by a 2px ring in the background, flat,
+  # and grown by 15% while it is under the pointer or held.
+  #
+  # The colours are weights rather than colours: `ink` is how far the knob
+  # moves from the paper to the ink, and its edge from the hairline to the
+  # paper, and `lift` how much of the shadow it keeps. A colour aliased here
+  # under one family's mode would be re-emitted, with that family's value,
+  # into every dark block the alias target has a value in.
+  thumb:
+    ink:
+      $type: number
+      $value: 0
+      $extensions:
+        mode:
+          omarchy: 1
+    lift:
+      $type: number
+      $value: 1
+      $extensions:
+        mode:
+          omarchy: 0
+    edge-width:
+      $type: dimension
+      $value: "{stroke.hairline}"
+      $extensions:
+        mode:
+          omarchy: 2px
+    hot-scale:
+      $type: number
+      $value: 1
+      $extensions:
+        mode:
+          omarchy: 1.15

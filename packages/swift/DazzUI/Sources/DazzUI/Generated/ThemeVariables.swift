@@ -126,6 +126,12 @@ public struct ThemeVariables: Sendable {
     progressGradientTo: Color = Color(argb: 0xFFA0_8CFF),
     segmentedControlInset: CGFloat = 3.0,
     shortcutRecorderWidth: CGFloat = 132.0,
+    sliderMediumTrack: CGFloat = 6.0,
+    sliderMediumThumb: CGFloat = 16.0,
+    sliderThumbInk: Int = 0,
+    sliderThumbLift: Int = 1,
+    sliderThumbEdgeWidth: CGFloat = 1.0,
+    sliderThumbHotScale: Int = 1,
     switchMediumWidth: CGFloat = 32.0,
     switchMediumHeight: CGFloat = 18.0,
     switchMediumThumb: CGFloat = 14.0,
@@ -305,6 +311,12 @@ public struct ThemeVariables: Sendable {
     self.progressGradientTo = progressGradientTo
     self.segmentedControlInset = segmentedControlInset
     self.shortcutRecorderWidth = shortcutRecorderWidth
+    self.sliderMediumTrack = sliderMediumTrack
+    self.sliderMediumThumb = sliderMediumThumb
+    self.sliderThumbInk = sliderThumbInk
+    self.sliderThumbLift = sliderThumbLift
+    self.sliderThumbEdgeWidth = sliderThumbEdgeWidth
+    self.sliderThumbHotScale = sliderThumbHotScale
     self.switchMediumWidth = switchMediumWidth
     self.switchMediumHeight = switchMediumHeight
     self.switchMediumThumb = switchMediumThumb
@@ -450,6 +462,12 @@ public struct ThemeVariables: Sendable {
   public let progressGradientTo: Color
   public let segmentedControlInset: CGFloat
   public let shortcutRecorderWidth: CGFloat
+  public let sliderMediumTrack: CGFloat
+  public let sliderMediumThumb: CGFloat
+  public let sliderThumbInk: Int
+  public let sliderThumbLift: Int
+  public let sliderThumbEdgeWidth: CGFloat
+  public let sliderThumbHotScale: Int
   public let switchMediumWidth: CGFloat
   public let switchMediumHeight: CGFloat
   public let switchMediumThumb: CGFloat
@@ -529,8 +547,6 @@ public struct ThemeVariables: Sendable {
   public var radioLargeDot: CGFloat { spacing25 }
   public var sliderSmallTrack: CGFloat { spacing1 }
   public var sliderSmallThumb: CGFloat { spacing35 }
-  public var sliderMediumTrack: CGFloat { spacing15 }
-  public var sliderMediumThumb: CGFloat { spacing4 }
   public var sliderLargeTrack: CGFloat { spacing2 }
   public var sliderLargeThumb: CGFloat { spacing5 }
   public var switchSmallWidth: CGFloat { spacing7 }
@@ -1217,7 +1233,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyTokyoNightLight[600],
-    progressGradientTo: Colors.omarchyTokyoNightLight[300]
+    progressGradientTo: Colors.omarchyTokyoNightLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-tokyo-night-dark` counterpart of ``studioLight``.
@@ -1286,6 +1308,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyTokyoNightDark[500],
     progressGradientTo: Colors.omarchyTokyoNightDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -1363,7 +1391,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyCatppuccinLight[600],
-    progressGradientTo: Colors.omarchyCatppuccinLight[300]
+    progressGradientTo: Colors.omarchyCatppuccinLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-catppuccin-dark` counterpart of ``studioLight``.
@@ -1432,6 +1466,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyCatppuccinDark[500],
     progressGradientTo: Colors.omarchyCatppuccinDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -1509,7 +1549,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyCatppuccinLatteLight[600],
-    progressGradientTo: Colors.omarchyCatppuccinLatteLight[300]
+    progressGradientTo: Colors.omarchyCatppuccinLatteLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-catppuccin-latte-dark` counterpart of ``studioLight``.
@@ -1578,6 +1624,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyCatppuccinLatteDark[500],
     progressGradientTo: Colors.omarchyCatppuccinLatteDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -1655,7 +1707,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyEtherealLight[600],
-    progressGradientTo: Colors.omarchyEtherealLight[300]
+    progressGradientTo: Colors.omarchyEtherealLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-ethereal-dark` counterpart of ``studioLight``.
@@ -1724,6 +1782,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyEtherealDark[500],
     progressGradientTo: Colors.omarchyEtherealDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -1801,7 +1865,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyEverforestLight[600],
-    progressGradientTo: Colors.omarchyEverforestLight[300]
+    progressGradientTo: Colors.omarchyEverforestLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-everforest-dark` counterpart of ``studioLight``.
@@ -1870,6 +1940,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyEverforestDark[500],
     progressGradientTo: Colors.omarchyEverforestDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -1947,7 +2023,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyFlexokiLightLight[600],
-    progressGradientTo: Colors.omarchyFlexokiLightLight[300]
+    progressGradientTo: Colors.omarchyFlexokiLightLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-flexoki-light-dark` counterpart of ``studioLight``.
@@ -2016,6 +2098,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyFlexokiLightDark[500],
     progressGradientTo: Colors.omarchyFlexokiLightDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -2093,7 +2181,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyGruvboxLight[600],
-    progressGradientTo: Colors.omarchyGruvboxLight[300]
+    progressGradientTo: Colors.omarchyGruvboxLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-gruvbox-dark` counterpart of ``studioLight``.
@@ -2162,6 +2256,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyGruvboxDark[500],
     progressGradientTo: Colors.omarchyGruvboxDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -2239,7 +2339,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyHackermanLight[600],
-    progressGradientTo: Colors.omarchyHackermanLight[300]
+    progressGradientTo: Colors.omarchyHackermanLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-hackerman-dark` counterpart of ``studioLight``.
@@ -2308,6 +2414,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyHackermanDark[500],
     progressGradientTo: Colors.omarchyHackermanDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -2385,7 +2497,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyKanagawaLight[600],
-    progressGradientTo: Colors.omarchyKanagawaLight[300]
+    progressGradientTo: Colors.omarchyKanagawaLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-kanagawa-dark` counterpart of ``studioLight``.
@@ -2454,6 +2572,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyKanagawaDark[500],
     progressGradientTo: Colors.omarchyKanagawaDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -2531,7 +2655,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyLastHorizonLight[600],
-    progressGradientTo: Colors.omarchyLastHorizonLight[300]
+    progressGradientTo: Colors.omarchyLastHorizonLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-last-horizon-dark` counterpart of ``studioLight``.
@@ -2600,6 +2730,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyLastHorizonDark[500],
     progressGradientTo: Colors.omarchyLastHorizonDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -2677,7 +2813,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyLumonLight[600],
-    progressGradientTo: Colors.omarchyLumonLight[300]
+    progressGradientTo: Colors.omarchyLumonLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-lumon-dark` counterpart of ``studioLight``.
@@ -2746,6 +2888,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyLumonDark[500],
     progressGradientTo: Colors.omarchyLumonDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -2823,7 +2971,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyLupineLight[600],
-    progressGradientTo: Colors.omarchyLupineLight[300]
+    progressGradientTo: Colors.omarchyLupineLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-lupine-dark` counterpart of ``studioLight``.
@@ -2892,6 +3046,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyLupineDark[500],
     progressGradientTo: Colors.omarchyLupineDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -2969,7 +3129,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyMatteBlackLight[600],
-    progressGradientTo: Colors.omarchyMatteBlackLight[300]
+    progressGradientTo: Colors.omarchyMatteBlackLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-matte-black-dark` counterpart of ``studioLight``.
@@ -3038,6 +3204,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyMatteBlackDark[500],
     progressGradientTo: Colors.omarchyMatteBlackDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -3115,7 +3287,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyMiasmaLight[600],
-    progressGradientTo: Colors.omarchyMiasmaLight[300]
+    progressGradientTo: Colors.omarchyMiasmaLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-miasma-dark` counterpart of ``studioLight``.
@@ -3184,6 +3362,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyMiasmaDark[500],
     progressGradientTo: Colors.omarchyMiasmaDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -3261,7 +3445,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyNordLight[600],
-    progressGradientTo: Colors.omarchyNordLight[300]
+    progressGradientTo: Colors.omarchyNordLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-nord-dark` counterpart of ``studioLight``.
@@ -3330,6 +3520,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyNordDark[500],
     progressGradientTo: Colors.omarchyNordDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -3407,7 +3603,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyOsakaJadeLight[600],
-    progressGradientTo: Colors.omarchyOsakaJadeLight[300]
+    progressGradientTo: Colors.omarchyOsakaJadeLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-osaka-jade-dark` counterpart of ``studioLight``.
@@ -3476,6 +3678,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyOsakaJadeDark[500],
     progressGradientTo: Colors.omarchyOsakaJadeDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -3553,7 +3761,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyRetro82Light[600],
-    progressGradientTo: Colors.omarchyRetro82Light[300]
+    progressGradientTo: Colors.omarchyRetro82Light[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-retro-82-dark` counterpart of ``studioLight``.
@@ -3622,6 +3836,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyRetro82Dark[500],
     progressGradientTo: Colors.omarchyRetro82Dark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -3699,7 +3919,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyRistrettoLight[600],
-    progressGradientTo: Colors.omarchyRistrettoLight[300]
+    progressGradientTo: Colors.omarchyRistrettoLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-ristretto-dark` counterpart of ``studioLight``.
@@ -3768,6 +3994,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyRistrettoDark[500],
     progressGradientTo: Colors.omarchyRistrettoDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -3845,7 +4077,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyRosePineLight[600],
-    progressGradientTo: Colors.omarchyRosePineLight[300]
+    progressGradientTo: Colors.omarchyRosePineLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-rose-pine-dark` counterpart of ``studioLight``.
@@ -3914,6 +4152,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyRosePineDark[500],
     progressGradientTo: Colors.omarchyRosePineDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -3991,7 +4235,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchySolitudeLight[600],
-    progressGradientTo: Colors.omarchySolitudeLight[300]
+    progressGradientTo: Colors.omarchySolitudeLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-solitude-dark` counterpart of ``studioLight``.
@@ -4060,6 +4310,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchySolitudeDark[500],
     progressGradientTo: Colors.omarchySolitudeDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -4137,7 +4393,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyVantablackLight[600],
-    progressGradientTo: Colors.omarchyVantablackLight[300]
+    progressGradientTo: Colors.omarchyVantablackLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-vantablack-dark` counterpart of ``studioLight``.
@@ -4206,6 +4468,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyVantablackDark[500],
     progressGradientTo: Colors.omarchyVantablackDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,
@@ -4283,7 +4551,13 @@ public extension ThemeVariables {
     captionLarge: TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 12.0, weight: .regular, lineHeight: 16.0),
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyWhiteLight[600],
-    progressGradientTo: Colors.omarchyWhiteLight[300]
+    progressGradientTo: Colors.omarchyWhiteLight[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15
   )
 
   /// The `omarchy-white-dark` counterpart of ``studioLight``.
@@ -4352,6 +4626,12 @@ public extension ThemeVariables {
     checkboxRadius: 0.0,
     progressGradientFrom: Colors.omarchyWhiteDark[500],
     progressGradientTo: Colors.omarchyWhiteDark[300],
+    sliderMediumTrack: 4.0,
+    sliderMediumThumb: 14.0,
+    sliderThumbInk: 1,
+    sliderThumbLift: 0,
+    sliderThumbEdgeWidth: 2.0,
+    sliderThumbHotScale: 1.15,
     controlColorFilledSurfaceNormalShade: 500,
     controlColorFilledSurfaceHoveredShade: 600,
     controlColorFilledSurfacePressedShade: 600,

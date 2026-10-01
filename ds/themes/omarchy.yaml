@@ -36,6 +36,10 @@ metrics:
     # machine's shell.toml follow at run time.
     control.medium.size: 28px
     control.medium.padding.inline: 10px
+    # The shell's slider at that height (`PanelSlider.qml`): a 4px track and
+    # a 14px knob, which is DazzUI's small step, so the medium one takes it.
+    slider.medium.track: 4px
+    slider.medium.thumb: 14px
     # The shell's own type scale (`shell/Commons/Style.qml`) at its default
     # `[font] base-size = 12`: caption 10, body-small 11, body 12, subtitle
     # 13, title 14 — each `round(base × its multiplier)` — and a button's

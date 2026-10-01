@@ -2130,7 +2130,14 @@ function convertTokenValue(token, allTokens) {
       // Check if token ID contains 'alpha' - if so, always use double
       const hasAlphaInName =
         token.id && token.id.toLowerCase().includes('alpha')
-      const isInt = Number.isInteger(token.$value) && !hasAlphaInName
+      // A number is an int only if it is one in every mode: a scale of 1
+      // that one family sets to 1.15 is a double everywhere.
+      const isInt =
+        !hasAlphaInName &&
+        Object.values(token.mode ?? {})
+          .map(mode => mode.$value)
+          .concat(token.$value)
+          .every(Number.isInteger)
       return {
         type: isInt ? 'int' : 'double',
         value: token.$value.toString(),
