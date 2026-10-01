@@ -106,7 +106,12 @@
   margin-inline-start: calc(var(--spacing-3) * -1);
 }
 
+/* The tinted wash is translucent, so on its own the avatar underneath would
+   show through the overlap — its fill doubling and its initials bleeding
+   into the next. Each avatar is laid on the ground colour first, the same
+   one its ring is cut in, and the wash lands on that. */
 .dz-avatar-group .dz-avatar {
+  background-color: var(--avatar-ring);
   box-shadow: 0 0 0 var(--stroke-control) var(--avatar-ring);
 }
 
@@ -114,6 +119,10 @@
    follows, in the neutral groove rather than a tint: it is a number, not a
    person. */
 .dz-avatar-group__rest {
+  /* Positioned like the avatars it follows. An avatar is `relative`, and a
+     positioned box paints above an unpositioned one whatever their order,
+     so without this the count would sit under the avatar it overlaps. */
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
