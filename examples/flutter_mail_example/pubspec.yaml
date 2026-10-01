@@ -1,0 +1,26 @@
+name: flutter_mail_example
+description: "A mail client drawn with DazzUI, for checking how Chinese is set on each desktop."
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.9.2 <4.0.0"
+
+dependencies:
+  dazzui:
+    path: ../../packages/dart/dazzui
+  fluentui_system_icons: ^1.1.255
+  flutter:
+    sdk: flutter
+  # Chinese labels for the text field's own menu (剪切、拷贝、粘贴), and the
+  # locales the app is switched between.
+  flutter_localizations:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: false

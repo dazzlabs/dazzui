@@ -15,6 +15,7 @@ packages/<language>/<name>/  an implementation, named as it is published
   js/dazzui-mobile           csharp/DazzUI · kotlin/dazzui-mobile
   dart/dazzui                rust/dazzui
 tools/                       playground generator, conformance viewer
+examples/                    apps built on a package, e.g. flutter_mail_example
 ```
 
 A package is grouped by language because a language is a toolchain: one
