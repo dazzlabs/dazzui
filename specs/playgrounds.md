@@ -31,6 +31,12 @@ other platforms' examples.
   and props their example maps; a story that sets one missing from a list
   fails `pnpm codegen`, naming it and the platform. The list and the
   mapping change together.
+- **A component only React has keeps its story in `stories/react/`.**
+  Codegen reads the top level of `stories/` alone, so a story there is
+  listed by the React example and nowhere else, is not a conformance scene,
+  and is not held to the portable subset. `WindowFrame` is the one today:
+  no other platform draws a window inside its own. Moving a story up out of
+  `react/` is the claim that every platform now maps it.
 - **A platform's example mirrors the React one's layout.** On Flutter:
   `lib/stories/` holds a generated file per story and `index.dart`;
   `lib/lib/` holds the story type, the scene interpreter and its component

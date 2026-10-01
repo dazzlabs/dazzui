@@ -227,3 +227,9 @@ export {
 } from './toggle'
 export { Tooltip, type TooltipProps, TooltipProvider } from './tooltip'
 export { Tree, type TreeNode, type TreeProps, type TreeSize } from './tree'
+export {
+  WindowFrame,
+  type WindowFrameControls,
+  type WindowFramePlatform,
+  type WindowFrameProps,
+} from './window-frame'
