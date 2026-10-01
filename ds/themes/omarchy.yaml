@@ -28,6 +28,28 @@ metrics:
     control.container.radius: 0px
     control.field.radius: 0px
     checkbox.radius: 0px
+    # The shell's controls at its default size (`Style.qml`'s `spacing`):
+    # 28px tall, 10px in from each side. Its gap (8) and vertical inset (6)
+    # are already DazzUI's own, so only the height is restated and the side
+    # inset moved. The shell scales every length with `[spacing] scale` —
+    # and with `[font] base-size`, by default — which the ports that read a
+    # machine's shell.toml follow at run time.
+    control.medium.size: 28px
+    control.medium.padding.inline: 10px
+    # The shell's own type scale (`shell/Commons/Style.qml`) at its default
+    # `[font] base-size = 12`: caption 10, body-small 11, body 12, subtitle
+    # 13, title 14 — each `round(base × its multiplier)` — and a button's
+    # label is set at body. The shell leaves leading to Qt's natural line
+    # height and never states one; the leading here is DazzUI's, a third
+    # over the size, rounded. A machine whose shell.toml moves base-size or
+    # pins a step is followed at run time by the ports that read one.
+    type:
+      caption: [10, 13]
+      small: [11, 15]
+      body: [12, 16]
+      emphasis: [13, 17]
+      title: [14, 19]
+      label: 12
 
 defaults:
   metrics: omarchy
