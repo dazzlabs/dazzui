@@ -11,3 +11,4 @@ analyzer:
     - build/**
     - web/**
     - macos/**
+    - linux/**

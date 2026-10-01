@@ -12,11 +12,19 @@ class ThemePanel extends StatelessWidget {
     required this.theme,
     required this.onChanged,
     required this.width,
+    this.omarchy,
+    this.followingOmarchy = false,
+    this.onFollowOmarchy,
   });
 
   final ThemeChoice theme;
   final ValueChanged<ThemeChoice> onChanged;
   final double width;
+
+  /// The machine's own Omarchy theme, offered first when there is one.
+  final OmarchyPalette? omarchy;
+  final bool followingOmarchy;
+  final ValueChanged<bool>? onFollowOmarchy;
 
   @override
   Widget build(BuildContext context) {
@@ -50,44 +58,78 @@ class ThemePanel extends StatelessWidget {
       ),
       headerPadding: EdgeInsets.symmetric(horizontal: vars.spacing4),
       children: [
+        if (omarchy case final omarchy?)
+          _Group(
+            title: 'This machine',
+            children: [
+              _Tile(
+                vars: _half(omarchy, theme.dark).themeVariables,
+                title: omarchy.title ?? 'Omarchy',
+                selected: followingOmarchy,
+                onPressed: () => onFollowOmarchy?.call(true),
+              ),
+            ],
+          ),
         for (final group in themeFamilyGroups)
-          Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: vars.spacing2,
-              horizontal: vars.spacing4,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: vars.spacing2,
-              children: [
-                SizedBox(
-                  height: vars.spacing5,
-                  child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: DefaultTextStyle.merge(
-                      style: const TextStyle(fontSize: 11),
-                      child: SectionLabel(group.title),
-                    ),
+          _Group(
+            title: group.title,
+            children: [
+              for (final family in group.families)
+                _Tile(
+                  vars: themeVariablesOf(
+                    theme.copyWith(family: family.value).id,
                   ),
+                  title: family.title,
+                  selected: !followingOmarchy && family.value == theme.family,
+                  onPressed: () {
+                    onFollowOmarchy?.call(false);
+                    onChanged(theme.copyWith(family: family.value));
+                  },
                 ),
-                _Grid(
-                  columns: 3,
-                  gap: vars.spacing2,
-                  children: [
-                    for (final family in group.families)
-                      _Tile(
-                        choice: theme.copyWith(family: family.value),
-                        title: family.title,
-                        selected: family.value == theme.family,
-                        onPressed: () =>
-                            onChanged(theme.copyWith(family: family.value)),
-                      ),
-                  ],
-                ),
-              ],
-            ),
+            ],
           ),
       ],
+    );
+  }
+}
+
+/// The Omarchy theme in the half asked for: as it ships, or its opposite.
+OmarchyPalette _half(OmarchyPalette palette, bool dark) =>
+    (palette.brightness == Brightness.dark) == dark
+    ? palette
+    : palette.opposite;
+
+class _Group extends StatelessWidget {
+  const _Group({required this.title, required this.children});
+
+  final String title;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeVariables vars = Theme.of(context).vars;
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        vertical: vars.spacing2,
+        horizontal: vars.spacing4,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: vars.spacing2,
+        children: [
+          SizedBox(
+            height: vars.spacing5,
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: DefaultTextStyle.merge(
+                style: const TextStyle(fontSize: 11),
+                child: SectionLabel(title),
+              ),
+            ),
+          ),
+          _Grid(columns: 3, gap: vars.spacing2, children: children),
+        ],
+      ),
     );
   }
 }
@@ -128,20 +170,20 @@ class _Grid extends StatelessWidget {
 
 class _Tile extends StatelessWidget {
   const _Tile({
-    required this.choice,
+    required this.vars,
     required this.title,
     required this.selected,
     required this.onPressed,
   });
 
-  final ThemeChoice choice;
+  final ThemeVariables vars;
   final String title;
   final bool selected;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final ThemeVariables vars = Theme.of(context).vars;
+    final ThemeVariables page = Theme.of(context).vars;
     return OptionCard(
       title: title,
       selected: selected,
@@ -151,11 +193,11 @@ class _Tile extends StatelessWidget {
       titleContent: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ThemePreview(theme: choice, height: vars.spacing10, framed: false),
+          ThemePreview(vars: vars, height: page.spacing10, framed: false),
           SizedBox(
-            height: vars.spacing6,
+            height: page.spacing6,
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: vars.spacing15),
+              padding: EdgeInsets.symmetric(horizontal: page.spacing15),
               child: Center(
                 child: Text(
                   title,
@@ -166,7 +208,7 @@ class _Tile extends StatelessWidget {
                     fontSize: 11,
                     height: 1,
                     fontWeight: FontWeight.w500,
-                    color: vars.colorContent,
+                    color: page.colorContent,
                   ),
                 ),
               ),

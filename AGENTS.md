@@ -79,7 +79,7 @@ of having no `package.json`. A package's own playground is its `example/`
   `fluentui_system_icons` — the same set `@dazzlabs/dazzui` takes them from. A host
   supplies the app plumbing with `WidgetsApp`; see `example/lib/host.dart`
   and `test/host.dart`. `example/` is the Flutter example (`flutter run`
-  from that directory, macOS and web): the React example's window, drawn
+  from that directory, macOS, Linux and web): the React example's window, drawn
   with this package, whose stories `pnpm codegen` compiles from the React
   ones — see `specs/playgrounds.md`.
 - `packages/swift/DazzUI` (`DazzUI`) — the macOS SwiftUI implementation,
