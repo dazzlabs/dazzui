@@ -18,6 +18,7 @@ class OmarchyTheme extends StatefulWidget {
     required this.child,
     this.brightness,
     this.directory,
+    this.config,
   });
 
   /// The theme when there is no Omarchy palette to read.
@@ -29,6 +30,10 @@ class OmarchyTheme extends StatefulWidget {
 
   /// Omarchy's `current` directory, when it is not where Omarchy keeps it.
   final String? directory;
+
+  /// The directory holding the user's own `shell.toml`, when it is not
+  /// `~/.config/omarchy`.
+  final String? config;
 
   final Widget child;
 
@@ -55,7 +60,8 @@ class _OmarchyThemeState extends State<OmarchyTheme> {
   @override
   void didUpdateWidget(OmarchyTheme oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.directory != widget.directory) {
+    if (oldWidget.directory != widget.directory ||
+        oldWidget.config != widget.config) {
       _subscription?.cancel();
       _listen();
     }
@@ -63,12 +69,16 @@ class _OmarchyThemeState extends State<OmarchyTheme> {
   }
 
   void _listen() {
-    _subscription = watchOmarchyPalette(directory: widget.directory).listen(
-      (palette) => setState(() {
-        _palette = palette;
-        _data = _derive(palette);
-      }),
-    );
+    _subscription =
+        watchOmarchyPalette(
+          directory: widget.directory,
+          config: widget.config,
+        ).listen(
+          (palette) => setState(() {
+            _palette = palette;
+            _data = _derive(palette);
+          }),
+        );
   }
 
   ThemeData? _derive(OmarchyPalette? palette) {

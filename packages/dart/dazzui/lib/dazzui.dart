@@ -21,6 +21,7 @@ export 'src/generated/theme_variables.dart';
 export 'src/omarchy/omarchy_palette.dart';
 export 'src/omarchy/omarchy_source.dart';
 export 'src/omarchy/omarchy_theme.dart';
+export 'src/omarchy/shell_style.dart';
 export 'src/theme/theme.dart';
 export 'src/widgets/accordion.dart';
 export 'src/widgets/action_bar.dart';

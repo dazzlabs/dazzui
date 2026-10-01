@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 
 import 'omarchy_palette.dart';
+import 'shell_style.dart';
 
 /// The palette the machine is wearing now, or null when this is not an
 /// Omarchy machine or its current theme has no `colors.toml`.
@@ -14,9 +15,17 @@ import 'omarchy_palette.dart';
 /// that it was `~/.config/omarchy/current/`, whose `theme` is a symlink into
 /// the theme itself. The first of those that holds a readable palette is the
 /// one read. [directory] reads that one directory instead.
-Future<OmarchyPalette?> readOmarchyPalette({String? directory}) async {
+///
+/// The type scale is read the way the shell reads it: the theme's
+/// `shell.toml`, then the user's own in `~/.config/omarchy/` — or in
+/// [config], when [directory] is given — whose keys win.
+Future<OmarchyPalette?> readOmarchyPalette({
+  String? directory,
+  String? config,
+}) async {
+  final String? user = _config(directory, config);
   for (final current in _candidates(directory)) {
-    final palette = await _read(current);
+    final palette = await _read(current, user);
     if (palette != null) return palette;
   }
   return null;
@@ -25,10 +34,14 @@ Future<OmarchyPalette?> readOmarchyPalette({String? directory}) async {
 /// The current palette, and again every time the machine changes theme.
 ///
 /// Omarchy replaces `current/theme` outright and then writes
-/// `current/theme.name`, so what is watched is `current/` itself; a burst of
-/// events is read once, after it settles, and a palette the same as the last
-/// one is not emitted twice.
-Stream<OmarchyPalette?> watchOmarchyPalette({String? directory}) {
+/// `current/theme.name`, so what is watched is `current/` itself, beside the
+/// user's config directory for their own `shell.toml`; a burst of events is
+/// read once, after it settles, and a palette the same as the last one is
+/// not emitted twice.
+Stream<OmarchyPalette?> watchOmarchyPalette({
+  String? directory,
+  String? config,
+}) {
   final subscriptions = <StreamSubscription<FileSystemEvent>>[];
   Timer? settle;
   OmarchyPalette? last;
@@ -36,7 +49,10 @@ Stream<OmarchyPalette?> watchOmarchyPalette({String? directory}) {
   late final StreamController<OmarchyPalette?> controller;
 
   Future<void> refresh() async {
-    final palette = await readOmarchyPalette(directory: directory);
+    final palette = await readOmarchyPalette(
+      directory: directory,
+      config: config,
+    );
     if (controller.isClosed || (emitted && palette == last)) return;
     emitted = true;
     last = palette;
@@ -46,8 +62,11 @@ Stream<OmarchyPalette?> watchOmarchyPalette({String? directory}) {
   controller = StreamController<OmarchyPalette?>(
     onListen: () {
       refresh();
-      for (final current in _candidates(directory)) {
-        final watched = Directory(current);
+      for (final path in [
+        ..._candidates(directory),
+        ?_config(directory, config),
+      ]) {
+        final watched = Directory(path);
         if (!watched.existsSync()) continue;
         subscriptions.add(
           watched.watch().listen(
@@ -86,7 +105,14 @@ Iterable<String> _candidates(String? directory) sync* {
   if (home != null) yield '$home/.config/omarchy/current';
 }
 
-Future<OmarchyPalette?> _read(String current) async {
+String? _config(String? directory, String? config) {
+  if (config != null || directory != null) return config;
+  if (!Platform.isLinux) return null;
+  final home = Platform.environment['HOME'];
+  return home == null ? null : '$home/.config/omarchy';
+}
+
+Future<OmarchyPalette?> _read(String current, String? config) async {
   try {
     final colors = File('$current/theme/colors.toml');
     if (!await colors.exists()) return null;
@@ -95,6 +121,13 @@ Future<OmarchyPalette?> _read(String current) async {
       await colors.readAsString(),
       name: await _name(current),
       brightness: lightMode ? Brightness.light : null,
+      shellStyle: OmarchyShellStyle.fromShellToml([
+        for (final shell in [
+          '$current/theme/shell.toml',
+          if (config != null) '$config/shell.toml',
+        ])
+          if (await File(shell).exists()) await File(shell).readAsString(),
+      ]),
     );
   } on FileSystemException {
     // Caught mid-swap: the next event reads it whole.

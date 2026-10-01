@@ -60,7 +60,7 @@ the source builds a window from — background, foreground (an alpha is
 composited over the background, as AppKit's 85% label is), accent — and,
 where the source says so, `on-accent`. And `metrics`: the geometry a family
 shares, as token path → value, applied under a family mode (`omarchy` —
-Hyprland's square corner; `macos27` — the capsule; `macos15`; `windows11`;
+Hyprland's square corner and the shell's control and type sizes; `macos27` — the capsule; `macos15`; `windows11`;
 `adwaita`, which Debian, Fedora and Ubuntu all wear; `kde`). A desktop's
 metrics are its own control heights (`control.<size>.size`), its button
 inset, and a `type` scale — `[size, leading]` per `base.type` step plus
@@ -117,9 +117,22 @@ digit, so a change to `scripts/themes.mjs` that is not carried into the Dart
 file fails that test. `OmarchyPalette` reads `background`, `foreground`,
 `accent` and `mode` out of `colors.toml`. `readOmarchyPalette` finds the file
 under `$XDG_STATE_HOME/omarchy/current/theme/`, or under the older
-`~/.config/omarchy/current/theme/`. `watchOmarchyPalette` watches that
-`current/` directory, which `omarchy theme set` swaps whole, and emits again
-on every switch. `OmarchyTheme` is a widget that does both and falls back to
+`~/.config/omarchy/current/theme/`. The palette also carries an
+`OmarchyShellStyle`, which holds the sizes the shell sets its text and
+controls at. It is read the way the shell reads it: the `[font]` and
+`[spacing]` sections of the theme's `shell.toml`, then of
+`~/.config/omarchy/shell.toml`, whose keys win. Every type step is
+`round(base-size × multiplier)` unless it is pinned. Every stored length
+(the spacing ladder, which DazzUI derives its paddings, gaps and boxes from,
+plus control heights, a button's side inset, icons, frame and component
+widths) is scaled as the shell's `space(px)` scales one: by `[spacing] scale`,
+and by `base-size / 12` while `scale-with-font` is on. `control-height` and
+`control-padding-x` can be pinned. Corners, strokes and the focus ring stay.
+At the defaults this moves nothing from what `omarchy.yaml` gives the
+generated themes, and a test checks the two against each other.
+`watchOmarchyPalette` watches the `current/` directory, which
+`omarchy theme set` swaps whole, and `~/.config/omarchy/` as well. It emits
+again on every switch and every edit to the user's `shell.toml`. `OmarchyTheme` is a widget that does both and falls back to
 a given theme off Omarchy. On the web these return nothing. The Flutter
 example wears the machine's theme by default when there is one, offered as
 the first tile under *This machine*, until another tile is picked.

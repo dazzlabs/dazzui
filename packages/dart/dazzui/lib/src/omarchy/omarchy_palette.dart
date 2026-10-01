@@ -3,6 +3,8 @@ import 'package:flutter/widgets.dart';
 import '../generated/theme_variables.dart';
 import '../theme/theme.dart';
 import 'derive.dart';
+import 'shell_style.dart';
+import 'toml.dart';
 
 /// An Omarchy theme, as the three colours DazzUI reads it off: the
 /// background, the foreground and the accent of its `colors.toml`, in the
@@ -21,6 +23,7 @@ class OmarchyPalette {
     required this.accent,
     required this.brightness,
     this.name,
+    this.shellStyle = const OmarchyShellStyle(),
   });
 
   /// A palette out of a `colors.toml`.
@@ -35,16 +38,9 @@ class OmarchyPalette {
     String colorsToml, {
     String? name,
     Brightness? brightness,
+    OmarchyShellStyle shellStyle = const OmarchyShellStyle(),
   }) {
-    final values = <String, String>{};
-    for (final raw in colorsToml.split('\n')) {
-      final line = raw.trim();
-      if (line.isEmpty || line.startsWith('#') || line.startsWith('[')) {
-        continue;
-      }
-      final match = _entry.firstMatch(line);
-      if (match != null) values[match[1]!] = match[2] ?? match[3]!;
-    }
+    final values = readOmarchyToml(colorsToml);
     final background = _hex(values['background']);
     final foreground = _hex(values['foreground']);
     final accent = _hex(values['accent']);
@@ -67,6 +63,7 @@ class OmarchyPalette {
               ? Brightness.light
               : Brightness.dark),
       name: name,
+      shellStyle: shellStyle,
     );
   }
 
@@ -79,6 +76,10 @@ class OmarchyPalette {
 
   /// The theme's name as Omarchy stores it (`tokyo-night`), when known.
   final String? name;
+
+  /// The sizes Omarchy's shell sets its text and controls at on this
+  /// machine.
+  final OmarchyShellStyle shellStyle;
 
   /// The same theme in the other appearance, derived from these three
   /// colours the way the generated themes' other halves are. DazzUI's
@@ -98,16 +99,19 @@ class OmarchyPalette {
           ? Brightness.light
           : Brightness.dark,
       name: name,
+      shellStyle: shellStyle,
     );
   }
 
-  /// Every token, with this palette's colours derived into it and Omarchy's
-  /// square geometry.
-  ThemeVariables get themeVariables => deriveOmarchyThemeVariables(
-    background: background,
-    foreground: foreground,
-    accent: accent,
-    dark: brightness == Brightness.dark,
+  /// Every token, with this palette's colours derived into it, Omarchy's
+  /// square geometry, and the shell's sizes.
+  ThemeVariables get themeVariables => shellStyle.applyTo(
+    deriveOmarchyThemeVariables(
+      background: background,
+      foreground: foreground,
+      accent: accent,
+      dark: brightness == Brightness.dark,
+    ),
   );
 
   ThemeData get themeData =>
@@ -127,21 +131,19 @@ class OmarchyPalette {
       other.foreground == foreground &&
       other.accent == accent &&
       other.brightness == brightness &&
-      other.name == name;
+      other.name == name &&
+      other.shellStyle == shellStyle;
 
   @override
   int get hashCode =>
-      Object.hash(background, foreground, accent, brightness, name);
+      Object.hash(background, foreground, accent, brightness, name, shellStyle);
 
   @override
   String toString() =>
       'OmarchyPalette(${name ?? 'unnamed'}, ${brightness.name}, '
-      'background: $background, foreground: $foreground, accent: $accent)';
+      'background: $background, foreground: $foreground, accent: $accent, '
+      '$shellStyle)';
 }
-
-final _entry = RegExp(
-  r'''^([A-Za-z0-9_-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')''',
-);
 
 Color? _hex(String? value) {
   final match = RegExp(

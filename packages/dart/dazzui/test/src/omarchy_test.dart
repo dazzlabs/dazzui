@@ -35,9 +35,93 @@ void main() {
           expected.colorPrimary.toARGB32(),
         );
         expect(actual.radiusMedium, expected.radiusMedium);
+        expect(_type(actual), _type(expected));
       });
     }
   }
+
+  group('the shell style', () {
+    test('at its default, is the one the build gave every Omarchy theme', () {
+      // Laid over a theme that does not carry it, so each face has to be
+      // moved to the step the build moved it to.
+      expect(
+        _type(const OmarchyShellStyle().applyTo(themeVariables)),
+        _type(themeVariablesOmarchyTokyoNightDark),
+      );
+    });
+
+    test('follows base-size as the shell does', () {
+      final scale = OmarchyShellStyle.fromShellToml(['[font]\nbase-size = 15']);
+      expect(
+        [scale.caption, scale.bodySmall, scale.body, scale.subtitle],
+        [12, 14, 15, 16],
+      );
+      final vars = scale.applyTo(themeVariables);
+      expect(vars.bodyMediumFontSize, 15);
+      expect(vars.bodyMediumLineHeight, 20);
+      expect(vars.labelMediumFontSize, 15);
+      expect(vars.labelMediumLineHeight, 15);
+      expect(vars.captionSmallFontSize, 12);
+      // The headlines are not the shell's to move.
+      expect(vars.headlineSmall, themeVariables.headlineSmall);
+    });
+
+    test("takes a pinned step, and the user's file over the theme's", () {
+      final scale = OmarchyShellStyle.fromShellToml([
+        '[font]\nbase-size = 12\ntitle = 20 # big\n[spacing]\nscale = 2',
+        '[font]\nbase-size = 14',
+      ]);
+      expect(scale.fontBaseSize, 14);
+      expect(scale.title, 20);
+      expect(scale.body, 14);
+    });
+
+    test('scales every length with base-size, as the shell does', () {
+      final vars = OmarchyShellStyle.fromShellToml([
+        '[font]\nbase-size = 16',
+      ]).applyTo(themeVariablesOmarchyTokyoNightDark);
+      // 16 / 12 of the shell's own: a 28px control is 37, its 10px inset 13.
+      expect(vars.controlMediumSize, 37);
+      expect(vars.controlMediumPaddingInline, 13);
+      expect(vars.spacing2, 11);
+      expect(vars.controlMediumGap, 11);
+      expect(vars.iconMedium, 21);
+      expect(vars.spacing0, 0);
+      // Not lengths the shell scales.
+      expect(vars.radiusFull, themeVariablesOmarchyTokyoNightDark.radiusFull);
+      expect(vars.strokeControl, 1.5);
+    });
+
+    test('takes [spacing] scale, scale-with-font and pinned controls', () {
+      final style = OmarchyShellStyle.fromShellToml([
+        '[font]\nbase-size = 16\n'
+            '[spacing]\nscale = 1.5\nscale-with-font = false\n'
+            'control-height = 40\n',
+      ]);
+      expect(style.lengthScale, 1.5);
+      final vars = style.applyTo(themeVariablesOmarchyTokyoNightDark);
+      expect(vars.controlMediumSize, 40);
+      expect(vars.controlMediumPaddingInline, 15);
+      expect(vars.spacing4, 24);
+    });
+
+    test('at its default, moves no length', () {
+      final vars = const OmarchyShellStyle().applyTo(
+        themeVariablesOmarchyTokyoNightDark,
+      );
+      expect(vars.controlMediumSize, 28);
+      expect(vars.controlMediumPaddingInline, 10);
+      expect(vars.spacing3, 12);
+      expect(vars.frameSidebarWidth, 172);
+    });
+
+    test('without a [font] section, is the default', () {
+      expect(
+        OmarchyShellStyle.fromShellToml(['[bar]\nsize-horizontal = 26']),
+        const OmarchyShellStyle(),
+      );
+    });
+  });
 
   group('colors.toml', () {
     test('reads the three colours and the mode', () {
@@ -97,6 +181,50 @@ hyprland_active_border = "rgba(8a8588ee) rgba(e2dddcee)"
       final palette = await readOmarchyPalette(directory: current.path);
       expect(palette?.name, 'catppuccin');
       expect(palette?.background, const Color(0xFF1E1E2E));
+      expect(palette?.shellStyle, const OmarchyShellStyle());
+    });
+
+    test(
+      "takes its shell style from the theme's shell.toml and the user's",
+      () async {
+        wear('catppuccin', '#1e1e2e');
+        File(
+          '${current.path}/theme/shell.toml',
+        ).writeAsStringSync('[font]\nbase-size = 13\ncaption = 9\n');
+        final config = Directory('${current.path}/config')..createSync();
+        File(
+          '${config.path}/shell.toml',
+        ).writeAsStringSync('[font]\nbase-size = 16\n');
+        final palette = await readOmarchyPalette(
+          directory: current.path,
+          config: config.path,
+        );
+        expect(
+          palette?.shellStyle,
+          const OmarchyShellStyle(
+            fontBaseSize: 16,
+            fontOverrides: {'caption': 9},
+          ),
+        );
+        expect(palette?.themeVariables.bodyMediumFontSize, 16);
+      },
+    );
+
+    test("is followed when the user's shell.toml changes", () async {
+      wear('catppuccin', '#1e1e2e');
+      final config = Directory('${current.path}/config')..createSync();
+      final seen = <int?>[];
+      final subscription = watchOmarchyPalette(
+        directory: current.path,
+        config: config.path,
+      ).listen((palette) => seen.add(palette?.shellStyle.fontBaseSize));
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      File(
+        '${config.path}/shell.toml',
+      ).writeAsStringSync('[font]\nbase-size = 14\n');
+      await Future<void>.delayed(const Duration(milliseconds: 600));
+      await subscription.cancel();
+      expect(seen, [12, 14]);
     });
 
     test('is null where there is none', () async {
@@ -124,6 +252,37 @@ hyprland_active_border = "rgba(8a8588ee) rgba(e2dddcee)"
     });
   });
 }
+
+List<double> _type(ThemeVariables v) => [
+  v.titleSmallFontSize,
+  v.titleSmallLineHeight,
+  v.titleMediumFontSize,
+  v.titleMediumLineHeight,
+  v.titleLargeFontSize,
+  v.titleLargeLineHeight,
+  v.bodySmallFontSize,
+  v.bodySmallLineHeight,
+  v.bodyMediumFontSize,
+  v.bodyMediumLineHeight,
+  v.bodyLargeFontSize,
+  v.bodyLargeLineHeight,
+  v.labelQuietFontSize,
+  v.labelQuietLineHeight,
+  v.labelStrongFontSize,
+  v.labelStrongLineHeight,
+  v.labelSmallFontSize,
+  v.labelSmallLineHeight,
+  v.labelMediumFontSize,
+  v.labelMediumLineHeight,
+  v.labelLargeFontSize,
+  v.labelLargeLineHeight,
+  v.captionSmallFontSize,
+  v.captionSmallLineHeight,
+  v.captionMediumFontSize,
+  v.captionMediumLineHeight,
+  v.captionLargeFontSize,
+  v.captionLargeLineHeight,
+];
 
 List<Color> _colors(ThemeVariables v) => [
   v.colorCanvas,
