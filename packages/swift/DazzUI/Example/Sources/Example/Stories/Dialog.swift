@@ -174,6 +174,390 @@ extension Stories {
           }
         },
         {
+          "title": "An invitation",
+          "note": "A field, a choice and an option, each with its label above it.",
+          "demo": {
+            "content": {
+              "$el": "Dialog",
+              "props": {
+                "width": "26rem",
+                "trigger": {
+                  "$el": "Button",
+                  "children": [
+                    "Invite…"
+                  ],
+                  "$at": 1
+                }
+              },
+              "children": [
+                {
+                  "$el": "DialogHeader",
+                  "props": {
+                    "title": "Invite a member",
+                    "subtitle": "They will get an email with a link to join."
+                  },
+                  "$at": 2
+                },
+                {
+                  "$el": "DialogBody",
+                  "children": [
+                    {
+                      "$el": "FormField",
+                      "props": {
+                        "label": "Email"
+                      },
+                      "children": [
+                        {
+                          "$el": "TextField",
+                          "props": {
+                            "type": "email",
+                            "required": true,
+                            "placeholder": "name@example.com"
+                          },
+                          "$at": 5
+                        }
+                      ],
+                      "$at": 4
+                    },
+                    {
+                      "$el": "FormField",
+                      "props": {
+                        "label": "Role",
+                        "hint": "Admins can invite others."
+                      },
+                      "children": [
+                        {
+                          "$el": "Select",
+                          "props": {
+                            "options": [
+                              {
+                                "value": "viewer",
+                                "label": "Viewer"
+                              },
+                              {
+                                "value": "editor",
+                                "label": "Editor"
+                              },
+                              {
+                                "value": "admin",
+                                "label": "Admin"
+                              }
+                            ],
+                            "defaultValue": "editor"
+                          },
+                          "$at": 7
+                        }
+                      ],
+                      "$at": 6
+                    },
+                    {
+                      "$el": "Checkbox",
+                      "props": {
+                        "defaultChecked": true
+                      },
+                      "children": [
+                        "Add them to every project"
+                      ],
+                      "$at": 8
+                    }
+                  ],
+                  "$at": 3
+                },
+                {
+                  "$el": "DialogFooter",
+                  "children": [
+                    {
+                      "$el": "DialogClose",
+                      "props": {
+                        "render": {
+                          "$el": "Button",
+                          "props": {
+                            "variant": "outlined"
+                          },
+                          "children": [
+                            "Cancel"
+                          ],
+                          "$at": 11
+                        }
+                      },
+                      "$at": 10
+                    },
+                    {
+                      "$el": "DialogClose",
+                      "props": {
+                        "render": {
+                          "$el": "Button",
+                          "props": {
+                            "variant": "filled"
+                          },
+                          "children": [
+                            "Send invite"
+                          ],
+                          "$at": 13
+                        }
+                      },
+                      "$at": 12
+                    }
+                  ],
+                  "$at": 9
+                }
+              ],
+              "$at": 0
+            }
+          }
+        },
+        {
+          "title": "A longer form",
+          "note": "A description that wraps, and a choice laid out in full.",
+          "demo": {
+            "content": {
+              "$el": "Dialog",
+              "props": {
+                "width": "28rem",
+                "trigger": {
+                  "$el": "Button",
+                  "children": [
+                    "New project…"
+                  ],
+                  "$at": 1
+                }
+              },
+              "children": [
+                {
+                  "$el": "DialogHeader",
+                  "props": {
+                    "title": "New project"
+                  },
+                  "$at": 2
+                },
+                {
+                  "$el": "DialogBody",
+                  "children": [
+                    {
+                      "$el": "FormField",
+                      "props": {
+                        "label": "Name"
+                      },
+                      "children": [
+                        {
+                          "$el": "TextField",
+                          "props": {
+                            "required": true,
+                            "placeholder": "Quarterly report"
+                          },
+                          "$at": 5
+                        }
+                      ],
+                      "$at": 4
+                    },
+                    {
+                      "$el": "FormField",
+                      "props": {
+                        "label": "Description",
+                        "hint": "Optional."
+                      },
+                      "children": [
+                        {
+                          "$el": "TextField",
+                          "props": {
+                            "multiline": true,
+                            "rows": 3,
+                            "placeholder": "What is this project for?"
+                          },
+                          "$at": 7
+                        }
+                      ],
+                      "$at": 6
+                    },
+                    {
+                      "$el": "FormField",
+                      "props": {
+                        "label": "Who can see it"
+                      },
+                      "children": [
+                        {
+                          "$el": "RadioGroup",
+                          "props": {
+                            "options": [
+                              {
+                                "value": "private",
+                                "label": "Only me"
+                              },
+                              {
+                                "value": "team",
+                                "label": "My team"
+                              },
+                              {
+                                "value": "public",
+                                "label": "Anyone with the link"
+                              }
+                            ],
+                            "defaultValue": "team"
+                          },
+                          "$at": 9
+                        }
+                      ],
+                      "$at": 8
+                    }
+                  ],
+                  "$at": 3
+                },
+                {
+                  "$el": "DialogFooter",
+                  "children": [
+                    {
+                      "$el": "DialogClose",
+                      "props": {
+                        "render": {
+                          "$el": "Button",
+                          "props": {
+                            "variant": "outlined"
+                          },
+                          "children": [
+                            "Cancel"
+                          ],
+                          "$at": 12
+                        }
+                      },
+                      "$at": 11
+                    },
+                    {
+                      "$el": "DialogClose",
+                      "props": {
+                        "render": {
+                          "$el": "Button",
+                          "props": {
+                            "variant": "filled"
+                          },
+                          "children": [
+                            "Create"
+                          ],
+                          "$at": 14
+                        }
+                      },
+                      "$at": 13
+                    }
+                  ],
+                  "$at": 10
+                }
+              ],
+              "$at": 0
+            }
+          }
+        },
+        {
+          "title": "A field in error",
+          "note": "The hint turns into the reason, under the field it is about.",
+          "demo": {
+            "content": {
+              "$el": "Dialog",
+              "props": {
+                "width": "24rem",
+                "trigger": {
+                  "$el": "Button",
+                  "children": [
+                    "Change email…"
+                  ],
+                  "$at": 1
+                }
+              },
+              "children": [
+                {
+                  "$el": "DialogHeader",
+                  "props": {
+                    "title": "Change email",
+                    "subtitle": "We will send a code to the new address."
+                  },
+                  "$at": 2
+                },
+                {
+                  "$el": "DialogBody",
+                  "children": [
+                    {
+                      "$el": "FormField",
+                      "props": {
+                        "label": "New email",
+                        "state": "error",
+                        "hint": "That does not look like an address."
+                      },
+                      "children": [
+                        {
+                          "$el": "TextField",
+                          "props": {
+                            "type": "email",
+                            "state": "error",
+                            "defaultValue": "ada@"
+                          },
+                          "$at": 5
+                        }
+                      ],
+                      "$at": 4
+                    },
+                    {
+                      "$el": "FormField",
+                      "props": {
+                        "label": "Password",
+                        "hint": "To confirm it is you."
+                      },
+                      "children": [
+                        {
+                          "$el": "TextField",
+                          "props": {
+                            "type": "password",
+                            "required": true
+                          },
+                          "$at": 7
+                        }
+                      ],
+                      "$at": 6
+                    }
+                  ],
+                  "$at": 3
+                },
+                {
+                  "$el": "DialogFooter",
+                  "children": [
+                    {
+                      "$el": "DialogClose",
+                      "props": {
+                        "render": {
+                          "$el": "Button",
+                          "props": {
+                            "variant": "outlined"
+                          },
+                          "children": [
+                            "Cancel"
+                          ],
+                          "$at": 10
+                        }
+                      },
+                      "$at": 9
+                    },
+                    {
+                      "$el": "DialogClose",
+                      "props": {
+                        "render": {
+                          "$el": "Button",
+                          "props": {
+                            "variant": "filled"
+                          },
+                          "children": [
+                            "Send code"
+                          ],
+                          "$at": 12
+                        }
+                      },
+                      "$at": 11
+                    }
+                  ],
+                  "$at": 8
+                }
+              ],
+              "$at": 0
+            }
+          }
+        },
+        {
           "title": "A confirmation",
           "note": "The danger tone is for what cannot be taken back.",
           "demo": {

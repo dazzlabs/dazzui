@@ -482,7 +482,9 @@ impl ParentElement for DialogFooter {
 
 impl RenderOnce for DialogFooter {
     fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
-        sheet_footer(self.children, cx)
+        // The actions sit at the trailing edge, the confirming one last. A
+        // drawer's footer is one node of its own and keeps the shared start.
+        sheet_footer(self.children, cx).justify_end()
     }
 }
 

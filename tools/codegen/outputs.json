@@ -10,7 +10,7 @@
   "packages/dart/dazzui/example/lib/stories/code.dart": "24df464a5cd2239c9d12308319acb5574fb867fdcbfd6fbaa0b575bc73bdb919",
   "packages/dart/dazzui/example/lib/stories/collapsible.dart": "5f59e41e27273d2b311d876d78519b1e02b74a6cfdca28a904338066390275c7",
   "packages/dart/dazzui/example/lib/stories/combobox.dart": "7b8be99cd49d0a1458acde726e65d5bd34b7e732248ddd7b7ddfbdb0ec65672c",
-  "packages/dart/dazzui/example/lib/stories/dialog.dart": "034ae3dd57fd06904a2d8243cbe3d966ebd53aae4572a64423558304664cb825",
+  "packages/dart/dazzui/example/lib/stories/dialog.dart": "8d97786607d3d6c2260b154adee0dc42cd74884d4053315a1da3efa53db045e7",
   "packages/dart/dazzui/example/lib/stories/divider.dart": "e19f6c03f57bf78856cb311c275e45248e4d55e5e226679d9e0eeb6809140d43",
   "packages/dart/dazzui/example/lib/stories/drawer.dart": "6fd7f5d3873a4ca6d5a3a2d9f02a2037d439925bb5b66ce2a57235d23c724a3a",
   "packages/dart/dazzui/example/lib/stories/empty_state.dart": "c657b548b53c1b5954a6ae251326b8007fd199326b072de6b7ad391abdd3bfc7",
@@ -64,7 +64,7 @@
   "packages/swift/DazzUI/Example/Sources/Example/Stories/Code.swift": "d9b125e77c10d423fe5c882baa4e7ccd96083c9887f45e6502305a5b78ed87ac",
   "packages/swift/DazzUI/Example/Sources/Example/Stories/Collapsible.swift": "a335178c0d4885a0cfd0ca5beab8f92217a2902589366784764af351c4824e84",
   "packages/swift/DazzUI/Example/Sources/Example/Stories/Combobox.swift": "1eed5ab413d1d8981f056313886be9f2fca6087922975c4de73ffbbe513478b1",
-  "packages/swift/DazzUI/Example/Sources/Example/Stories/Dialog.swift": "dbf64ff44ff77d6bc5cd80a0787a2eb244fa06ac4580447d8566fca604ef4a1a",
+  "packages/swift/DazzUI/Example/Sources/Example/Stories/Dialog.swift": "375887c765218617f6dfc3b18d10ac67d62c73754bd19e77e456aacd7bc9a8dc",
   "packages/swift/DazzUI/Example/Sources/Example/Stories/Divider.swift": "8704c4d17d6ebefa247aa69d3ef17d2dcf87ce8fece59b7a9ef3c2379d478db7",
   "packages/swift/DazzUI/Example/Sources/Example/Stories/Drawer.swift": "476c4afd5cb51922f4611bce778bef2632cb5bb8e4aa7232f38e0f33252a00a7",
   "packages/swift/DazzUI/Example/Sources/Example/Stories/EmptyState.swift": "7170e52da913bd570326fe58aa9628be044ac5dfb9a2392eb70ec54ff29e0195",
@@ -118,7 +118,7 @@
   "packages/csharp/DazzUI/example/Stories/Code.cs": "fa5968d70440238235b487743a93c37751cb3c5374601c24299e4d53bcbb23cd",
   "packages/csharp/DazzUI/example/Stories/Collapsible.cs": "d6c9e5e8fde1d1867d24bdd054aa90c446590def612350e34ad650dfe44b10a0",
   "packages/csharp/DazzUI/example/Stories/Combobox.cs": "965cac4d153232efee2c54c930a75db017fa76e62106ea678729b220a6e56c40",
-  "packages/csharp/DazzUI/example/Stories/Dialog.cs": "95e658ed7a8ffbf671802b661327cd39e56d499bc30fd80715cf61699257e800",
+  "packages/csharp/DazzUI/example/Stories/Dialog.cs": "738a1877dc3a4055c88646d52a71b4df7005063d8d9b56083dc5e987efd1dbf4",
   "packages/csharp/DazzUI/example/Stories/Divider.cs": "7eb19912e34a273ad1764cdd8e90ae14644e2b720e73ec8c01d3a94dd82cde6b",
   "packages/csharp/DazzUI/example/Stories/Drawer.cs": "96f296de1413fd98fa00e63461b7eb57685275bbbefc255c9850879d65d53f51",
   "packages/csharp/DazzUI/example/Stories/EmptyState.cs": "5c09ab0274c1c58fd903f2e0b74914153e12aab19bc86f614e7ab2357ae5b923",
@@ -172,7 +172,7 @@
   "packages/rust/dazzui/example/src/stories/code.rs": "02c8208b015a57794d1e69098a6260bc8bd54c654cd74c60a585903f671e7099",
   "packages/rust/dazzui/example/src/stories/collapsible.rs": "027237eb7318e3f01bd8d4805cb6c703498132ccaee35b2bb6934497c20af9c4",
   "packages/rust/dazzui/example/src/stories/combobox.rs": "6633f3c3a78fa97650d78c46d5e5a8b96603b5c9f9ecffd13044591c1765b1ac",
-  "packages/rust/dazzui/example/src/stories/dialog.rs": "91e45664bc9fd72ff9b3b642107754a4d4f0bf206a13194df71624352c56ac02",
+  "packages/rust/dazzui/example/src/stories/dialog.rs": "470ea389781c4299b0c0eaaa8a0107c57a8618f8fb76eae5be016e760413271e",
   "packages/rust/dazzui/example/src/stories/divider.rs": "a0dfe4ebe5b8b24ec060bd30b4e628cfaa539eb51e1d581b0288b93b99b2a718",
   "packages/rust/dazzui/example/src/stories/drawer.rs": "22c8e3bd4f87e4aa57fee8a860a4d7ab4774d087a27df7b055e21601ea3f89a3",
   "packages/rust/dazzui/example/src/stories/empty_state.rs": "776c3270fe7c38a5f15f087754e718c462376a0a276a9c35f73cd03b2ce3bd5b",
@@ -216,5 +216,5 @@
   "packages/rust/dazzui/example/src/lib/glyphs.rs": "b45a6870640963c576b28edafecc06b31bdb505d6dabdfb29afd4395ebd694c3",
   "packages/rust/dazzui/example/src/lib/themes.rs": "66fc49efbda5eb259ebf964f5f3b16f3dac586453aa4520da5625b3691426e8f",
   "packages/rust/dazzui/src/glyphs.rs": "a4870ae12bad3ee8d8d91a7ce2a7a11e8da7f70da31c9adb2d3b23c1ae41d9a1",
-  "tools/conformance/scenes.json": "8da162ee6d5a742b63d401c6b29373fa93b1d2bf096ff2830fb9afef2a404aa7"
+  "tools/conformance/scenes.json": "e816f569e669ec3c74f68887d175a13d3f80d63dac58e2dceefd4d6a5aaf4425"
 }

@@ -71,9 +71,12 @@
   padding-inline: var(--spacing-5);
 }
 
+/* The actions sit at the trailing edge, the confirming one last, as every
+   desktop this kit draws places a dialog's buttons. */
 .dz-dialog__footer {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   flex-shrink: 0;
   gap: var(--spacing-2);
   padding-block: var(--spacing-3);

@@ -159,10 +159,11 @@ public struct DialogFooter<Content: View>: View {
   public var body: some View {
     let vars = theme.vars
 
+    // The actions sit at the trailing edge, the confirming one last.
     HStack(spacing: vars.spacing2) {
       content()
     }
-    .frame(maxWidth: .infinity, alignment: .leading)
+    .frame(maxWidth: .infinity, alignment: .trailing)
     .padding(.vertical, vars.spacing3)
     .padding(.horizontal, vars.spacing5)
     .background(vars.colorSurfaceChrome)

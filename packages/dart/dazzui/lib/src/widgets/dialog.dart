@@ -180,7 +180,12 @@ class DialogFooter extends StatelessWidget {
           ),
         ),
       ),
-      child: Row(spacing: vars.spacing2, children: children),
+      // The actions sit at the trailing edge, the confirming one last.
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        spacing: vars.spacing2,
+        children: children,
+      ),
     );
   }
 }
