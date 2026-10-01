@@ -467,7 +467,7 @@ void main() {
     testWidgets('the chosen card thickens its border as well as colouring it', (
       tester,
     ) async {
-      Future<BoxDecoration> decorationFor({required bool selected}) async {
+      Future<AnimatedContainer> containerFor({required bool selected}) async {
         await tester.pumpWidget(
           host(
             OptionCard(
@@ -477,20 +477,25 @@ void main() {
             ),
           ),
         );
-        return tester
-                .widget<AnimatedContainer>(find.byType(AnimatedContainer))
-                .decoration
-            as BoxDecoration;
+        return tester.widget<AnimatedContainer>(
+          find.byType(AnimatedContainer),
+        );
       }
 
-      final resting = await decorationFor(selected: false);
-      final chosen = await decorationFor(selected: true);
+      final resting = await containerFor(selected: false);
+      final chosen = await containerFor(selected: true);
+      BoxDecoration laid(AnimatedContainer box) =>
+          box.decoration! as BoxDecoration;
+      BoxDecoration over(AnimatedContainer box) =>
+          box.foregroundDecoration! as BoxDecoration;
 
-      // The hairline at rest; the control stroke when chosen.
-      expect(resting.border!.top.width, vars.strokeHairline);
-      expect(chosen.border!.top.width, vars.strokeControl);
+      // The border the layout counts is the hairline either way, so the
+      // content does not move when the card is chosen.
+      expect(laid(resting).border!.top.width, laid(chosen).border!.top.width);
+      // The control stroke is laid over it when chosen, in the accent.
+      expect(over(chosen).border!.top.width, vars.strokeControl);
       expect(
-        chosen.border!.top.color,
+        over(chosen).border!.top.color,
         vars.colorPrimary[vars.controlColorOutlinedBorder.normalShade!],
       );
     });

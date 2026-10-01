@@ -110,9 +110,21 @@ class OptionCard extends StatelessWidget {
                 horizontal: vars.spacing3,
               ),
           clipBehavior: padding == null ? Clip.none : Clip.antiAlias,
+          // The border the layout counts is the hairline in both states;
+          // the thicker stroke is laid over it, so choosing the card does not
+          // move its content in by the difference.
           decoration: BoxDecoration(
             color: surface,
-            border: Border.all(color: border, width: borderWidth),
+            border: Border.all(color: border, width: context.hairlineWidth),
+            borderRadius: radius,
+          ),
+          foregroundDecoration: BoxDecoration(
+            border: Border.all(
+              color: borderWidth > context.hairlineWidth
+                  ? border
+                  : const Color(0x00000000),
+              width: borderWidth,
+            ),
             borderRadius: radius,
           ),
           child: Column(

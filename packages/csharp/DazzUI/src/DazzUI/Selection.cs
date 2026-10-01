@@ -377,7 +377,10 @@ public sealed class OptionCard : Radio
         BorderBrush = chosen ? Theme.Recipe(ControlVariant.Outlined, Tint, "border") : Theme.Brush("color.border");
         BorderThickness = new Thickness(Theme.Number(chosen ? "stroke.control" : "stroke.hairline"));
         Skin.SetCorner(this, Theme.Number("radius.large"));
-        Padding = new Thickness(Theme.Number("spacing.3"), Theme.Number("spacing.3.5"), Theme.Number("spacing.3"), Theme.Number("spacing.3.5"));
+        // The border is inside the box, so the thicker chosen one gives its
+        // difference back out of the padding: the content stays where it was.
+        var give = chosen ? Theme.Number("stroke.control") - Theme.Number("stroke.hairline") : 0;
+        Padding = new Thickness(Theme.Number("spacing.3") - give, Theme.Number("spacing.3.5") - give, Theme.Number("spacing.3") - give, Theme.Number("spacing.3.5") - give);
         var title = Theme.Text(Title, "labelStrong");
         title.Foreground = Theme.Brush("color.content");
         var description = Theme.Text(Description, "labelSmall");

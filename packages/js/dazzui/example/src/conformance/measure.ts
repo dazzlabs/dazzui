@@ -103,8 +103,20 @@ export function measure(
   const style = getComputedStyle(node)
   const { text, glyph } = firstText(node, nested)
   const ink = text?.color ?? (glyph && getComputedStyle(glyph).color)
-  const stroke =
+  const border =
     style.borderTopStyle === 'none' ? 0 : (px(style.borderTopWidth) ?? 0)
+  // A heavier stroke laid over the border on a layer of its own — the way a
+  // chosen OptionCard draws it, so its content does not move — is the stroke
+  // the reader sees, and the one the other platforms draw.
+  const over = getComputedStyle(node, '::after')
+  const laid =
+    over.content !== 'none' &&
+    over.position === 'absolute' &&
+    over.borderTopStyle !== 'none'
+      ? (px(over.borderTopWidth) ?? 0)
+      : 0
+  const stroke = Math.max(border, laid)
+  const strokeStyle = laid > border ? over : style
   // A radius past half the short side draws a capsule either way.
   const radius = style.borderTopLeftRadius.endsWith('%')
     ? (parseFloat(style.borderTopLeftRadius) / 100) * rect.width
@@ -116,7 +128,7 @@ export function measure(
     values: {
       corner,
       stroke,
-      strokeColor: stroke ? hex(style.borderTopColor) : null,
+      strokeColor: stroke ? hex(strokeStyle.borderTopColor) : null,
       fill: hex(style.backgroundColor),
       ink: ink ? hex(ink) : null,
       fontSize: text ? px(text.fontSize) : null,

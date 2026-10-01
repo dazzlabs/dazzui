@@ -9,6 +9,7 @@
  * lines sit closer than anywhere else in the system.
  */
 .dz-option-card {
+  position: relative;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -37,15 +38,29 @@
  * The wash, not the `tinted` recipe's chip fill: a card is a surface, and the
  * chip's 12% fills it rather than tinting it. The border is what says chosen;
  * the fill only has to agree with it.
+ *
+ * The border the layout counts stays the hairline in both states, and the
+ * thicker stroke is laid over it on a layer of its own, the way SwiftUI's
+ * `strokeBorder` overlay draws it. Thickening the border itself would move
+ * the title and description half a pixel in as the card is chosen.
  */
 .dz-option-card[aria-checked='true'] {
-  border-width: var(--stroke-control);
   background-color: color-mix(
     in srgb,
     var(--tint-600) calc(var(--wash-surface) * 100%),
     transparent
   );
   border-color: var(--control-color-outlined-border-normal);
+}
+
+.dz-option-card[aria-checked='true']::after {
+  content: '';
+  position: absolute;
+  inset: calc(var(--stroke-hairline) * -1);
+  border: var(--stroke-control) solid
+    var(--control-color-outlined-border-normal);
+  border-radius: inherit;
+  pointer-events: none;
 }
 
 .dz-option-card[aria-checked='true'] .dz-option-card__description {
