@@ -36,6 +36,9 @@
 :root {
   --layer-sidebar-column: 1;
   --layer-sidebar-rail: 2;
+  /* A window's own controls float over its content — over a sidebar that
+     runs to the window's top edge — and under anything it opens. */
+  --layer-window-chrome: 3;
   --layer-dialog: 10;
   --layer-popup: 20;
   --layer-toast: 30;

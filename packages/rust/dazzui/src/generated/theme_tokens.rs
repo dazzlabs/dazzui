@@ -163,6 +163,7 @@ pub struct ThemeTokens {
     pub frame_sidebar_width: f32,
     pub frame_titlebar_size: f32,
     pub frame_window_radius: f32,
+    pub frame_window_width: f32,
     pub headline_large: TypeStyle,
     pub headline_medium: TypeStyle,
     pub headline_small: TypeStyle,
@@ -540,6 +541,7 @@ pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
     frame_sidebar_width: 172.0,
     frame_titlebar_size: 52.0,
     frame_window_radius: 18.0,
+    frame_window_width: 840.0,
     headline_large: TypeStyle {
         face: Face::Display,
         size: 28.0,

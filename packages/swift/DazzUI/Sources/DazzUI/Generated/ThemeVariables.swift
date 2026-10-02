@@ -53,6 +53,7 @@ public struct ThemeVariables: Sendable {
     focusRingShade: Int = 600,
     focusRingAlpha: CGFloat = 0.45,
     frameWindowRadius: CGFloat = 18.0,
+    frameWindowWidth: CGFloat = 840.0,
     framePopoverRadius: CGFloat = 16.0,
     frameTitlebarSize: CGFloat = 52.0,
     frameSidebarWidth: CGFloat = 172.0,
@@ -238,6 +239,7 @@ public struct ThemeVariables: Sendable {
     self.focusRingShade = focusRingShade
     self.focusRingAlpha = focusRingAlpha
     self.frameWindowRadius = frameWindowRadius
+    self.frameWindowWidth = frameWindowWidth
     self.framePopoverRadius = framePopoverRadius
     self.frameTitlebarSize = frameTitlebarSize
     self.frameSidebarWidth = frameSidebarWidth
@@ -389,6 +391,7 @@ public struct ThemeVariables: Sendable {
   public let focusRingShade: Int
   public let focusRingAlpha: CGFloat
   public let frameWindowRadius: CGFloat
+  public let frameWindowWidth: CGFloat
   public let framePopoverRadius: CGFloat
   public let frameTitlebarSize: CGFloat
   public let frameSidebarWidth: CGFloat

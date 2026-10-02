@@ -96,6 +96,7 @@ class ThemeVariables {
     this.focusRingShade = 600,
     this.focusRingAlpha = 0.45,
     this.frameWindowRadius = 18,
+    this.frameWindowWidth = 840,
     this.framePopoverRadius = 16,
     this.frameTitlebarSize = 52,
     this.frameSidebarWidth = 172,
@@ -311,6 +312,7 @@ class ThemeVariables {
 
   // Frame
   final double frameWindowRadius;
+  final double frameWindowWidth;
   final double framePopoverRadius;
   final double frameTitlebarSize;
   final double frameSidebarWidth;
@@ -906,6 +908,7 @@ class ThemeVariables {
     int? focusRingShade,
     double? focusRingAlpha,
     double? frameWindowRadius,
+    double? frameWindowWidth,
     double? framePopoverRadius,
     double? frameTitlebarSize,
     double? frameSidebarWidth,
@@ -1072,6 +1075,7 @@ class ThemeVariables {
       focusRingShade: focusRingShade ?? this.focusRingShade,
       focusRingAlpha: focusRingAlpha ?? this.focusRingAlpha,
       frameWindowRadius: frameWindowRadius ?? this.frameWindowRadius,
+      frameWindowWidth: frameWindowWidth ?? this.frameWindowWidth,
       framePopoverRadius: framePopoverRadius ?? this.framePopoverRadius,
       frameTitlebarSize: frameTitlebarSize ?? this.frameTitlebarSize,
       frameSidebarWidth: frameSidebarWidth ?? this.frameSidebarWidth,

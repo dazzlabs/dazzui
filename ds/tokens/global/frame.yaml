@@ -12,6 +12,12 @@ frame:
           bright: "{base.corner.xl}"
           graphite: "{base.corner.xl}"
           nocturne: "{base.corner.xl}"
+    # The width a window opens at when the app names no size: a desktop
+    # window is not as wide as its content, and the columns it holds — a
+    # 172px sidebar, a rail, an aside — are what this was drawn around.
+    width:
+      $type: dimension
+      $value: 52.5rem
   popover:
     radius:
       $type: dimension

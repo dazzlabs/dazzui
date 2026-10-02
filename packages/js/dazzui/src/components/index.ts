@@ -228,8 +228,17 @@ export {
 export { Tooltip, type TooltipProps, TooltipProvider } from './tooltip'
 export { Tree, type TreeNode, type TreeProps, type TreeSize } from './tree'
 export {
+  WindowBody,
+  WindowContent,
+  WindowFooter,
   WindowFrame,
+  WindowMain,
+  WindowTitlebar,
+  type WindowControl,
+  type WindowControlState,
   type WindowFrameControls,
   type WindowFramePlatform,
   type WindowFrameProps,
+  type WindowTitlebarProps,
+  type WindowTitlebarSlots,
 } from './window-frame'

@@ -6,15 +6,24 @@
  * from AppKit, WinUI 3, libadwaita, Yaru, Breeze and Hyprland, the way
  * dazzui-mobile transcribes iOS and Android.
  * None of them is a decision of DazzUI's, which is why they are bound here
- * per platform rather than drawn from ds.
+ * per platform rather than drawn from ds — except for a band that carries a
+ * toolbar: that one is the design system's own, and takes the 52px a
+ * `SidebarHeader` is so the two line up.
  */
+
+/* The frame ----------------------------------------------------------------- */
+
 .dz-window-frame {
   position: relative;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  width: var(--dz-window-width, auto);
-  max-width: 100%;
+  width: var(--dz-window-width, var(--frame-window-width));
+  height: var(--dz-window-height, auto);
+  min-width: var(--dz-window-min-width, auto);
+  max-width: var(--dz-window-max-width, 100%);
+  min-height: var(--dz-window-min-height, auto);
+  max-height: var(--dz-window-max-height, none);
   overflow: hidden;
   color: var(--color-content);
   background: var(--color-surface);
@@ -34,25 +43,122 @@
     var(--shadow-md);
 }
 
+/* The content takes what the band leaves. A window with a height owns its
+   layout, so the panes inside it scroll rather than the window growing. */
+.dz-window-frame__content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* The band ------------------------------------------------------------------ */
+
+/* A band inside a pane is DazzUI's own toolbar: 52px, the height of the
+   sidebar's header strip beside it. The frame's own band is the platform's
+   chrome, and these two rules are in this order on purpose. What the band
+   actually measures is `--dz-band-height`, which is also what the controls
+   over it measure themselves against. */
 .dz-window-frame__titlebar {
+  --dz-band-height: var(--frame-titlebar-size);
   position: relative;
+  isolation: isolate;
   display: flex;
   flex: none;
   align-items: center;
-  height: var(--dz-window-titlebar-height);
+  gap: var(--spacing-2);
+  height: var(--dz-band-height);
   background: var(--dz-window-titlebar-background, transparent);
   user-select: none;
 }
 
-.dz-window-frame__title {
-  flex: 1;
+.dz-window-frame > .dz-window-frame__titlebar {
+  --dz-band-height: var(--dz-window-titlebar-height);
+}
+
+/*
+ * The slots. Each end keeps the room its platform leaves there: the lights on
+ * macOS sit over the band rather than in it, so a leading slot starts past
+ * them, and a trailing slot stops inside the headerbar buttons, which are
+ * drawn over the band's trailing edge the same way.
+ */
+.dz-window-frame__leading,
+.dz-window-frame__trailing,
+.dz-window-frame__toolbar,
+.dz-window-frame__accessory {
+  display: flex;
+  align-items: center;
   min-width: 0;
-  overflow: hidden;
-  padding-inline: var(--dz-window-title-inset);
+}
+
+.dz-window-frame__leading {
+  flex: none;
+  gap: var(--spacing-2);
+  margin-inline-start: var(--dz-window-lead-inset, 0);
+}
+
+.dz-window-frame__trailing {
+  flex: none;
+  gap: var(--spacing-2);
+  margin-inline-start: auto;
+  margin-inline-end: var(--dz-window-controls-inset, 0);
+}
+
+.dz-window-frame__toolbar {
+  flex: var(--dz-window-toolbar-flex, 0 1 auto);
+  gap: var(--spacing-3);
+}
+
+/* The band's own centre, where a macOS titlebar accessory view sits. It is
+   out of the row, so it takes no space from the title and the toolbar. */
+.dz-window-frame__accessory {
+  position: absolute;
+  inset-block: 0;
+  inset-inline: 0;
+  z-index: 1;
+  width: fit-content;
+  margin-inline: auto;
+  justify-content: center;
+}
+
+.dz-window-frame__title {
+  display: flex;
+  flex: var(--dz-window-title-flex, 1);
+  align-items: baseline;
+  justify-content: var(--dz-window-title-justify, center);
+  gap: var(--spacing-2);
+  min-width: 0;
   font-family: var(--dz-window-title-font-family);
   font-size: var(--dz-window-title-font-size);
   font-weight: var(--dz-window-title-font-weight);
-  text-align: var(--dz-window-title-align, center);
+}
+
+/* The frame's own band holds the window's controls, so its title keeps clear
+   of them — and it keeps clear of them on both sides, which is what centres
+   it in the band rather than in what is left of it. A band in a pane has no
+   controls over it and needs none of that room. */
+.dz-window-frame > .dz-window-frame__titlebar .dz-window-frame__title {
+  padding-inline: var(--dz-window-title-inset, 0);
+}
+
+/* A title and the context after it both give way to the controls rather than
+   being pushed out by each other. */
+.dz-window-frame__title-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dz-window-frame__subtitle {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-content-subtle);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+  font-weight: var(--caption-small-font-weight);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -61,15 +167,32 @@
   color: var(--color-content-subtle);
 }
 
-.dz-window-frame__content {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  height: var(--dz-window-height, auto);
-  min-height: 0;
+.dz-window-frame__titlebar[data-title-hidden] .dz-window-frame__title {
+  visibility: hidden;
 }
 
-.dz-window-frame__titlebar button {
+/* The controls -------------------------------------------------------------- */
+
+/* No band: the controls are the window's only chrome, at its top edge over
+   the content — which is what a full-size content view leaves. They are above
+   the app's own columns, since they float over them. */
+.dz-window-frame__chrome {
+  --dz-band-height: var(--dz-window-titlebar-height);
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: var(--layer-window-chrome);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  block-size: var(--dz-band-height);
+}
+
+/* Only the controls' own clusters are reset: a button in the band's slots is
+   a DazzUI control and keeps its own drawing. */
+.dz-window-frame__traffic button,
+.dz-window-frame__caption button,
+.dz-window-frame__headerbar button {
   all: unset;
   display: grid;
   place-items: center;
@@ -77,7 +200,9 @@
   cursor: default;
 }
 
-.dz-window-frame__titlebar svg {
+.dz-window-frame__traffic svg,
+.dz-window-frame__caption svg,
+.dz-window-frame__headerbar svg {
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
@@ -86,17 +211,21 @@
 
 /* macOS ------------------------------------------------------------------- */
 
-/* Sonoma through Sequoia: flat lights, the title set at the label's weight. */
+/* Sonoma through Sequoia: flat lights, the title set at the label's weight.
+   Both ends of the band are the lights' room, so the title stays centred and
+   a leading slot starts past them. A light sits the same distance from the
+   window's top edge as from its leading one — whatever the band measures,
+   which is what the lights are centred in — so the two are one number. */
 .dz-window-frame:is([data-platform='macos'], [data-platform='macos15']) {
   --dz-window-radius: 10px;
   --dz-window-titlebar-height: 28px;
+  --dz-window-lead-inset: 80px;
   --dz-window-title-inset: 80px;
   --dz-window-title-font-family: var(--label-large-font-family);
   --dz-window-title-font-size: var(--label-large-font-size);
   --dz-window-title-font-weight: var(--label-large-font-weight);
   --dz-traffic-size: 12px;
   --dz-traffic-gap: 8px;
-  --dz-traffic-inset: 8px;
   --dz-traffic-gloss: linear-gradient(transparent, transparent);
   --dz-traffic-edge: inset 0 0 0 0.5px rgb(0 0 0 / 0.12);
 }
@@ -107,7 +236,6 @@
   --dz-window-titlebar-height: 32px;
   --dz-traffic-size: 14px;
   --dz-traffic-gap: 9px;
-  --dz-traffic-inset: 12px;
   --dz-traffic-gloss: linear-gradient(
     180deg,
     rgb(255 255 255 / 0.22) 0%,
@@ -118,13 +246,18 @@
     inset 0 0 0 0.5px rgb(0 0 0 / 0.12);
 }
 
-.dz-window-frame[data-title-hidden] .dz-window-frame__title {
-  visibility: hidden;
-}
-
+/* The lights take one inset on both axes — half of what the band leaves
+   around a light, which is where they are centred — so they sit square in
+   the corner, and a band that grows moves them right as well as down. It is
+   computed here rather than on the frame because a custom property holding
+   `var()` is substituted where it is declared, and the band is what knows
+   its own height. */
 .dz-window-frame__traffic {
+  --dz-traffic-inset: calc(
+    (var(--dz-band-height) - var(--dz-traffic-size)) / 2
+  );
   position: absolute;
-  inset-block: 0;
+  inset-block-start: var(--dz-traffic-inset);
   inset-inline-start: var(--dz-traffic-inset);
   display: flex;
   align-items: center;
@@ -189,12 +322,17 @@
 
 /* Windows ----------------------------------------------------------------- */
 
-/* The title at the leading edge, the caption buttons at the trailing one. */
+/* The title at the leading edge, the toolbar and the caption buttons at the
+   trailing one, in the order and at the sizes WinUI lays them out. The
+   caption strip is part of the band, so nothing has to clear it. */
 .dz-window-frame[data-platform='windows'] {
   --dz-window-radius: 8px;
   --dz-window-titlebar-height: 32px;
-  --dz-window-title-inset: 16px 8px;
-  --dz-window-title-align: start;
+  --dz-window-lead-inset: var(--spacing-4);
+  --dz-window-title-flex: 0 1 auto;
+  --dz-window-toolbar-flex: 1;
+  --dz-window-title-inset: 0;
+  --dz-window-title-justify: flex-start;
   --dz-window-title-font-family: var(--caption-medium-font-family);
   --dz-window-title-font-size: 12px;
   --dz-window-title-font-weight: var(--caption-medium-font-weight);
@@ -203,6 +341,7 @@
 .dz-window-frame__caption {
   display: flex;
   align-self: stretch;
+  margin-inline-start: auto;
 }
 
 .dz-window-frame__caption > button {
@@ -234,10 +373,13 @@
 
 /* Linux ------------------------------------------------------------------- */
 
-/* libadwaita: a tall headerbar, the title bold and centred, round buttons. */
+/* libadwaita: a tall headerbar, the title bold and centred, round buttons
+   drawn over the band's trailing edge. The title keeps its own room on both
+   sides, and a trailing slot keeps the headerbar's. */
 .dz-window-frame:is([data-platform='gnome'], [data-platform='ubuntu']) {
   --dz-window-radius: 15px;
   --dz-window-titlebar-height: 47px;
+  --dz-window-lead-inset: var(--dz-headerbar-inset);
   --dz-window-title-inset: 96px;
   --dz-window-title-font-family: var(--title-small-font-family);
   --dz-window-title-font-size: var(--title-small-font-size);
@@ -247,6 +389,8 @@
   --dz-headerbar-button-size: 24px;
   --dz-headerbar-button-background: var(--color-surface-subtle);
   --dz-headerbar-button-radius: 50%;
+  /* Three of them, their gaps, and the inset they sit in. */
+  --dz-window-controls-inset: 108px;
 }
 
 /* Breeze: a titlebar in its own band, the title at regular weight, flat
@@ -255,6 +399,7 @@
   --dz-window-radius: 5px;
   --dz-window-titlebar-height: 30px;
   --dz-window-titlebar-background: var(--color-surface-chrome);
+  --dz-window-lead-inset: var(--dz-headerbar-inset);
   --dz-window-title-inset: 96px;
   --dz-window-title-font-family: var(--body-medium-font-family);
   --dz-window-title-font-size: var(--body-medium-font-size);
@@ -264,6 +409,7 @@
   --dz-headerbar-button-size: 18px;
   --dz-headerbar-button-background: transparent;
   --dz-headerbar-button-radius: 50%;
+  --dz-window-controls-inset: 72px;
 }
 
 .dz-window-frame[data-platform='kde'] .dz-window-frame__titlebar {
@@ -315,13 +461,36 @@
   display: block;
 }
 
+/* The design system's own band ---------------------------------------------- */
+
+/*
+ * A band with a toolbar or an accessory in it is not the platform's bare
+ * titlebar any more: it is DazzUI's toolbar, and it is the 52px the sidebar's
+ * header strip is, so the rule under the two is one line. A full-size content
+ * view says the same thing from the other side — the content runs under the
+ * chrome, so the chrome is that whole band, and it floats over the content
+ * rather than taking a row of its own.
+ */
+.dz-window-frame:has(> .dz-window-frame__titlebar[data-toolbar]),
+.dz-window-frame[data-full-size-content] {
+  --dz-window-titlebar-height: var(--frame-titlebar-size);
+}
+
+.dz-window-frame[data-full-size-content] > .dz-window-frame__titlebar {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: var(--layer-window-chrome);
+}
+
 /* Omarchy ----------------------------------------------------------------- */
 
 /*
  * Hyprland draws no titlebar and no buttons: a window is its content inside
  * a square 2px border in the accent, and in a quieter edge once it loses
  * focus. With nothing above it, the content takes the 20px inset it has on
- * every other edge, on top of its height rather than out of it.
+ * every other edge on top of its own box: a window without a band is the
+ * content's, and the height, when the app gives one, is the whole window's.
  */
 .dz-window-frame[data-platform='omarchy'] {
   --dz-window-radius: 0;
@@ -336,4 +505,47 @@
 .dz-window-frame[data-platform='omarchy'] .dz-window-frame__content {
   box-sizing: content-box;
   padding-block-start: 20px;
+}
+
+/* The layout primitives ----------------------------------------------------- */
+
+/*
+ * What a window is built out of: the body, a full-height column and the pane
+ * beside it; the pane, which owns its band and the row under it; and the
+ * strip at the window's or a dialog's foot. They are placement and clipping
+ * only — every surface inside them is a component's own.
+ */
+.dz-window-frame__body {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.dz-window-frame__main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.dz-window-frame__pane {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.dz-window-frame__footer {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding-block: var(--spacing-3);
+  padding-inline: var(--spacing-5);
+  background: var(--color-surface-chrome);
+  border-block-start: var(--stroke-hairline) solid var(--color-border);
 }
