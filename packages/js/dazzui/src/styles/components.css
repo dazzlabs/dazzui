@@ -31,6 +31,7 @@
 /* After badge.css: a tag wears the badge's capsule — the same box at the
    same three densities — and adds only the state machine, the label's hit
    target and the dismiss button. */
+@import '../components/tabs.css';
 @import '../components/tag.css';
 @import '../components/button.css';
 @import '../components/callout.css';

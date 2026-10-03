@@ -1,0 +1,177 @@
+/*
+ * Tabs: names in a row, the one showing over a rule along the row's foot.
+ * No fill and no track — the row is meant to sit in a head beside a title —
+ * so the states are ink and that one rule.
+ *
+ * The root takes the height it is given and its tabs fill it, which is what
+ * puts the rule on the foot of whatever holds the row.
+ */
+.dz-tabs {
+  position: relative;
+  display: flex;
+  flex: 0 1 auto;
+  align-items: stretch;
+  align-self: stretch;
+  /* The floor is written inline: the tab that is showing is never squeezed away. */
+  min-width: 0;
+  min-height: var(--control-small-size);
+  overflow: hidden;
+}
+
+.dz-tabs__list {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.dz-tabs__item {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.dz-tabs__tab {
+  display: inline-flex;
+  align-items: center;
+  align-self: stretch;
+  gap: var(--spacing-1-5);
+  padding-block: 0;
+  padding-inline: var(--spacing-2-5);
+  border: 0;
+  background: none;
+  color: var(--color-content-subtle);
+  font-family: var(--label-medium-font-family);
+  font-size: var(--label-medium-font-size);
+  font-weight: var(--label-medium-font-weight);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--motion-duration) var(--motion-easing);
+}
+
+.dz-tabs__tab:hover:not(:disabled) {
+  color: var(--color-content);
+}
+
+.dz-tabs__tab:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.dz-tabs__tab:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: calc(var(--focus-offset) * -1);
+}
+
+.dz-tabs__item[data-active] > .dz-tabs__tab {
+  color: var(--color-content);
+  font-weight: var(--label-strong-font-weight);
+}
+
+/* The rule under the tab that is showing, on the row's foot and inset to the label. */
+.dz-tabs__item[data-active]::after {
+  content: '';
+  position: absolute;
+  inset-inline: var(--spacing-2-5);
+  inset-block-end: 0;
+  height: var(--stroke-control);
+  border-radius: var(--radius-full);
+  background-color: var(--control-color-filled-surface-normal);
+}
+
+.dz-tabs__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dz-tabs__detail,
+.dz-tabs__count {
+  color: var(--color-content-subtle);
+  font-weight: var(--label-medium-font-weight);
+}
+
+.dz-tabs__count {
+  font-size: var(--caption-small-font-size);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The dot: a state that is there to be seen while another tab is showing. */
+.dz-tabs__status {
+  flex-shrink: 0;
+  width: var(--spacing-1-5);
+  height: var(--spacing-1-5);
+  border-radius: var(--radius-full);
+  background-color: var(--color-border-strong);
+}
+
+.dz-tabs__status[data-status='primary'] {
+  background-color: var(--color-primary-500);
+}
+
+.dz-tabs__status[data-status='success'] {
+  background-color: var(--color-success-500);
+}
+
+.dz-tabs__status[data-status='warning'] {
+  background-color: var(--color-warning-400);
+}
+
+.dz-tabs__status[data-status='danger'] {
+  background-color: var(--color-danger-500);
+}
+
+.dz-tabs__status[data-busy] {
+  animation: dz-tabs-pulse 1.4s var(--motion-easing) infinite;
+}
+
+@keyframes dz-tabs-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/*
+ * Closing is offered on the tab that is showing and under the pointer, never
+ * on every tab at once. The button keeps its place either way, so a tab is
+ * the same width whether or not it shows.
+ */
+.dz-tabs__close {
+  flex-shrink: 0;
+  margin-inline: calc(var(--spacing-1-5) * -1) var(--spacing-1);
+  visibility: hidden;
+}
+
+.dz-tabs__item[data-active] > .dz-tabs__close,
+.dz-tabs__item:hover > .dz-tabs__close,
+.dz-tabs__close:focus-visible {
+  visibility: visible;
+}
+
+.dz-tabs__close--ruler {
+  width: var(--control-tiny-size);
+}
+
+.dz-tabs__more,
+.dz-tabs__trailing {
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.dz-tabs__trailing {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: var(--spacing-1);
+}
+
+/* The ruler takes no room and is never seen; it is only ever measured. */
+.dz-tabs__ruler {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  display: flex;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+}

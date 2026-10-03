@@ -175,7 +175,10 @@
 
 /* No band: the controls are the window's only chrome, at its top edge over
    the content — which is what a full-size content view leaves. They are above
-   the app's own columns, since they float over them. */
+   the app's own columns, since they float over them.
+   The strip is a layer for the controls alone: it spans the window, and the
+   app's own band sits under it, so the box takes no pointer and only the
+   clusters it carries take one back. */
 .dz-window-frame__chrome {
   --dz-band-height: var(--dz-window-titlebar-height);
   position: absolute;
@@ -186,6 +189,11 @@
   align-items: center;
   justify-content: flex-end;
   block-size: var(--dz-band-height);
+  pointer-events: none;
+}
+
+.dz-window-frame__chrome > * {
+  pointer-events: auto;
 }
 
 /* Only the controls' own clusters are reset: a button in the band's slots is

@@ -194,6 +194,7 @@ export {
   TableRow,
   type TableRowProps,
 } from './table'
+export { Tabs, type TabItem, type TabsProps, type TabStatus } from './tabs'
 export { Tag, type TagProps, type TagSize, type TagVariant } from './tag'
 export {
   FieldValue,
