@@ -33,6 +33,9 @@ pub struct CompiledPage {
     pub state: StructDef,
     pub actions: EnumDef,
     pub bridge: Bridge,
+    /// The components it was compiled against, whose mappings the backends
+    /// lower it with.
+    pub registry: Registry,
 }
 
 impl Project {
@@ -117,6 +120,7 @@ impl Project {
                     page,
                     file: file.clone(),
                     bridge,
+                    registry: registry.clone(),
                 }),
                 Err(message) => diagnostics.push(at(message)),
             }

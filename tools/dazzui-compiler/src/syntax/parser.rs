@@ -205,11 +205,16 @@ impl Parse for ValueAst {
                 _ => Err(syn::Error::new(lit.span(), "only an integer can be negated")),
             };
         }
+        // `Name {` or `Name(`, other than `bind(`: a component, for a slot.
+        let fork = input.fork();
+        if let Ok(ident) = fork.parse::<Ident>()
+            && ident != "bind"
+            && (fork.peek(syn::token::Brace) || fork.peek(syn::token::Paren))
+        {
+            return Ok(ValueAst::Component(Box::new(input.parse()?)));
+        }
         let path: Path = input.parse()?;
         if let Some(ident) = path.get_ident() {
-            if input.peek(syn::token::Brace) {
-                return Err(input.error("a component as a prop value is a named slot, which arrives in Phase 4"));
-            }
             if ident == "bind" && input.peek(syn::token::Paren) {
                 let content;
                 parenthesized!(content in input);
@@ -222,9 +227,6 @@ impl Parse for ValueAst {
             }
             if input.peek(Token![.]) && input.peek2(Ident) {
                 return Ok(ValueAst::Dotted(dotted(ident.clone(), input)?));
-            }
-            if input.peek(syn::token::Paren) {
-                return Err(input.error("only an action takes a payload: `Action::Variant(value)`"));
             }
             return Ok(ValueAst::Dotted(DottedAst { segments: vec![ident.clone()] }));
         }
@@ -343,6 +345,22 @@ mod tests {
         let NodeAst::For(each) = &stack.children[1] else { panic!() };
         assert_eq!(each.item, "item");
         assert_eq!(each.key.as_ref().unwrap().segments[1], "uuid");
+    }
+
+    #[test]
+    fn parses_a_slot() {
+        let page = parse(
+            r#"page P(state: S, action: A) {
+                SettingsRow("Launch", trailing: Toggle { value: bind(state.on), on_change: Action::SetOn }) {
+                    subtitle: "At login",
+                    icon: Icon("gear").style(IconStyle::Muted)
+                }
+            }"#,
+        )
+        .unwrap();
+        let NodeAst::Component(row) = page.root else { panic!() };
+        assert!(matches!(&row.args[1], ArgAst::Named(p) if matches!(&p.value, ValueAst::Component(c) if c.name == "Toggle")));
+        assert!(matches!(&row.props[1].value, ValueAst::Component(c) if c.modifiers.len() == 1));
     }
 
     #[test]

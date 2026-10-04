@@ -1,4 +1,4 @@
-use super::{ActionRef, Condition, Expr, LocalPath, SourceLocation, StatePath};
+use super::{ActionRef, ComponentSpec, Condition, Expr, LocalPath, SourceLocation, StatePath};
 
 /// One `ui!` page: a root node, and the Rust types its state and actions
 /// are.
@@ -46,6 +46,7 @@ pub struct Component {
     pub props: Vec<UiProp>,
     pub bindings: Vec<UiBinding>,
     pub events: Vec<UiEvent>,
+    pub slots: Vec<UiSlot>,
     pub children: Vec<UiNode>,
     pub source: SourceLocation,
 }
@@ -62,6 +63,36 @@ impl Component {
     pub fn event(&self, name: &str) -> Option<&ActionRef> {
         self.events.iter().find(|e| e.name == name).map(|e| &e.action)
     }
+
+    pub fn slot(&self, name: &str) -> Option<&UiNode> {
+        self.slots.iter().find(|s| s.name == name).map(|s| &s.node)
+    }
+
+    /// What a prop holds: its value, or, when it is bound, the state it
+    /// reads.
+    pub fn prop_value(&self, prop: &str) -> Option<Expr> {
+        match self.binding(prop) {
+            Some(b) => Some(Expr::State(b.path.clone())),
+            None => self.prop(prop).cloned(),
+        }
+    }
+
+    /// The action an event sends: wired on its own, or as the write-back
+    /// of the binding whose value it carries.
+    pub fn event_action(&self, spec: &ComponentSpec, event: &str) -> Option<&ActionRef> {
+        self.event(event).or_else(|| {
+            let binds = spec.event(event)?.binds.as_deref()?;
+            Some(&self.binding(binds)?.on_change)
+        })
+    }
+}
+
+/// `trailing: Toggle { … }`: a node in a named place.
+#[derive(Clone, Debug, PartialEq)]
+pub struct UiSlot {
+    pub name: String,
+    pub node: UiNode,
+    pub source: SourceLocation,
 }
 
 /// A read-only value given to a prop.

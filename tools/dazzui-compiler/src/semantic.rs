@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::ir::{
     ActionPayload, ActionRef, ChildrenSpec, Component, ComponentId, ComponentSpec, Condition, EventSpec, Expr,
-    LocalPath, Page, PropSpec, PropType, SourceLocation, StatePath, UiBinding, UiEvent, UiNode, UiProp, Value,
+    LocalPath, Page, PropSpec, PropType, SourceLocation, StatePath, UiBinding, UiEvent, UiNode, UiProp, UiSlot, Value,
 };
 use crate::syntax::{ArgAst, ComponentAst, DottedAst, ForAst, IfAst, NodeAst, PageAst, ValueAst, spanned_path};
 use proc_macro2::Span;
@@ -127,6 +127,10 @@ impl Cx<'_> {
         let mut props = Vec::new();
         let mut bound: Vec<(&PropSpec, StatePath, Span)> = Vec::new();
         let mut events: Vec<UiEvent> = Vec::new();
+        let mut slots: Vec<UiSlot> = Vec::new();
+        // Slots written, whether or not their node lowered: one that did
+        // not is already reported, so not reported again as missing.
+        let mut given_slots: Vec<String> = Vec::new();
         for entry in entries {
             let kind = if entry.modifier { "modifier" } else { "property" };
             if let Some(event) = spec.event_by_modifier(&entry.name) {
@@ -140,6 +144,25 @@ impl Cx<'_> {
                 }
                 continue;
             }
+            if let (false, Some(slot)) = (entry.modifier, spec.slot(&entry.name)) {
+                if given_slots.contains(&slot.name) {
+                    self.errors.push(
+                        SemanticError::new(entry.span, format!("slot `{}` is given twice", slot.name))
+                            .label("given again here"),
+                    );
+                } else if let Some(ValueAst::Component(node)) = entry.value {
+                    given_slots.push(slot.name.clone());
+                    if let Some(node) = self.component(node) {
+                        slots.push(UiSlot { name: slot.name.clone(), node: UiNode::Component(node), source: self.loc(entry.span) });
+                    }
+                } else {
+                    self.errors.push(
+                        SemanticError::new(entry.span, format!("slot `{}` on `{name}` takes a component", slot.name))
+                            .help(format!("`{}: Component {{ … }}`", slot.name)),
+                    );
+                }
+                continue;
+            }
             let prop_spec = if entry.modifier { spec.modifier_prop(&entry.name) } else { spec.prop(&entry.name) };
             let Some(prop_spec) = prop_spec else {
                 let candidates: Vec<&str> = if entry.modifier {
@@ -148,7 +171,8 @@ impl Cx<'_> {
                     spec.props.iter().map(|p| p.name.as_str()).collect()
                 };
                 let events = spec.events.iter().map(|e| e.modifier.as_str());
-                let closest = closest(&entry.name, candidates.iter().copied().chain(events));
+                let slot_names = spec.slots.iter().filter(|_| !entry.modifier).map(|s| s.name.as_str());
+                let closest = closest(&entry.name, candidates.iter().copied().chain(events).chain(slot_names));
                 meant.extend(closest.map(str::to_owned));
                 self.errors.push(
                     SemanticError::new(
@@ -239,20 +263,55 @@ impl Cx<'_> {
             }
         }
 
+        for slot in spec.slots.iter().filter(|s| s.required) {
+            if !given_slots.contains(&slot.name) && !meant.contains(&slot.name) {
+                self.errors.push(
+                    SemanticError::new(ast.name.span(), format!("missing required slot `{}` on component `{name}`", slot.name))
+                        .help(format!("add `{}: Component {{ … }}`", slot.name)),
+                );
+            }
+        }
+
         let mut children = Vec::new();
-        if spec.children == ChildrenSpec::None && !ast.children.is_empty() {
-            self.errors.push(
+        match &spec.children {
+            ChildrenSpec::None if !ast.children.is_empty() => self.errors.push(
                 SemanticError::new(ast.children[0].span(), format!("`{name}` takes no children"))
                     .label("child given here"),
-            );
-        } else {
-            children = self.nodes(&ast.children);
+            ),
+            ChildrenSpec::None => {}
+            ChildrenSpec::Many { allow } => {
+                if let Some(allow) = allow {
+                    self.check_allowed(&ast.children, allow, &name);
+                }
+                children = self.nodes(&ast.children);
+            }
         }
 
         if self.errors.len() > errors_before {
             return None;
         }
-        Some(Component { id: ComponentId(name), props, bindings, events, children, source: self.loc(ast.name.span()) })
+        Some(Component { id: ComponentId(name), props, bindings, events, slots, children, source: self.loc(ast.name.span()) })
+    }
+
+    /// Only `allow`ed components as children, directly or in an `if`; a
+    /// `for` cannot promise what it repeats is one.
+    fn check_allowed(&mut self, children: &[NodeAst], allow: &[String], parent: &str) {
+        let list = allow.iter().map(|a| format!("`{a}`")).collect::<Vec<_>>().join(", ");
+        for child in children {
+            match child {
+                NodeAst::Component(c) if allow.iter().any(|a| c.name == a) => {}
+                // Reported as unknown already.
+                NodeAst::Component(c) if self.registry.get(&c.name.to_string()).is_none() => {}
+                NodeAst::If(i) => {
+                    self.check_allowed(&i.then_branch, allow, parent);
+                    self.check_allowed(&i.else_branch, allow, parent);
+                }
+                other => self.errors.push(
+                    SemanticError::new(other.span(), format!("`{parent}` takes only {list} as children"))
+                        .label("not allowed here"),
+                ),
+            }
+        }
     }
 
     /// Every way something was given, in source order: positionally, named
@@ -348,6 +407,7 @@ impl Cx<'_> {
             ValueAst::Lit(_) => "an unsupported literal",
             ValueAst::Path(_) | ValueAst::Call(..) => "an action",
             ValueAst::Bind(_) => "a binding",
+            ValueAst::Component(_) => "a component",
         };
         let mut error = SemanticError::new(
             value.span(),
@@ -988,6 +1048,69 @@ mod tests {
                 "cannot find value `iten`",
                 "a `for` inside a `for` is not supported yet",
                 "cannot find value `item`",
+            ]
+        );
+    }
+
+    const ROWS: &str = r#"
+        [component.Section]
+        children = { allow = ["Row"] }
+        swiftui = { call = "Section", trailing = { children = true } }
+        winui = { element = "Section" }
+
+        [component.Row]
+        positional = ["title"]
+        props.title = { type = "string", required = true }
+        slots.trailing = {}
+        slots.icon = { required = true }
+        swiftui = { call = "Row", args = [{ arg = "title", prop = "title" }, { arg = "trailing", slot = "trailing" }, { arg = "icon", slot = "icon" }] }
+        winui = { element = "Row", slots.trailing = { property = "Control" }, slots.icon = { property = "Icon" } }
+    "#;
+
+    fn lower_with_rows(src: &str) -> Result<Page, Vec<String>> {
+        let registry = Registry::from_tables(&[(crate::registry::BUILTIN, "registry.toml"), (ROWS, "app.toml")]).unwrap();
+        let ast: PageAst = syn::parse_str(src).unwrap();
+        lower(&ast, &registry, Some(&types()), "page.rs").map_err(|errors| errors.into_iter().map(|e| e.message).collect())
+    }
+
+    #[test]
+    fn lowers_slots() {
+        let page = lower_with_rows(
+            r#"page P(state: S, action: A) { Section {
+                Row("On", icon: Text("i"), trailing: Toggle { value: bind(state.on), on_change: Action::SetOn })
+                if state.on { Row { title: "Name", icon: Text(state.name) } }
+            } }"#,
+        )
+        .unwrap();
+        let UiNode::Component(section) = &page.root else { panic!() };
+        let UiNode::Component(row) = &section.children[0] else { panic!() };
+        let Some(UiNode::Component(toggle)) = row.slot("trailing") else { panic!() };
+        assert_eq!(toggle.binding("value").unwrap().on_change.variant, "SetOn");
+        assert!(row.slot("icon").is_some());
+    }
+
+    #[test]
+    fn checks_slots_and_allowed_children() {
+        let errors = lower_with_rows(
+            r#"page P(state: S, action: A) { Section {
+                Row("a", icon: Text("i"), trailing: "x")
+                Row("b", icon: Text("i"), icon: Text("j"))
+                Row("c")
+                Row("d", icon: Text(state.nme))
+                Text("e")
+                for item in state.items { Row(item.title, icon: Text("i")) }
+            } }"#,
+        )
+        .unwrap_err();
+        assert_eq!(
+            errors,
+            [
+                "`Section` takes only `Row` as children",
+                "`Section` takes only `Row` as children",
+                "slot `trailing` on `Row` takes a component",
+                "slot `icon` is given twice",
+                "missing required slot `icon` on component `Row`",
+                "no field `nme` on type `S`",
             ]
         );
     }

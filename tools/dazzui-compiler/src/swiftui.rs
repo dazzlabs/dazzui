@@ -8,8 +8,10 @@
 
 use crate::CompiledPage;
 use crate::bridge::{Bridge, BridgeStruct, FieldType, Scalar};
+use crate::Registry;
 use crate::ir::{
-    ActionPayload, ActionRef, Component, Expr, GeneratedFile, UiNode, Value, camel_case, page_stem,
+    ActionPayload, ActionRef, Component, ComponentSpec, Expr, GeneratedFile, Source, SwiftUIMapping, Trailing, UiNode,
+    Value, camel_case, page_stem,
 };
 use crate::rust_types::{FloatType, IntType};
 
@@ -60,7 +62,7 @@ fn view(compiled: &CompiledPage) -> String {
         w.line("}");
         w.line("");
         w.line("public var body: some View {");
-        w.indent(|w| node(w, &page.root));
+        w.indent(|w| node(w, &compiled.registry, &page.root));
         w.line("}");
     });
     w.line("}");
@@ -78,19 +80,19 @@ fn uses_theme(node: &UiNode) -> bool {
     }
 }
 
-fn node(w: &mut Writer, node: &UiNode) {
+fn node(w: &mut Writer, r: &Registry, node: &UiNode) {
     let c = match node {
         UiNode::Component(c) => c,
         UiNode::If { condition, then_branch, else_branch, source } => {
             w.line(&format!("// source: {}", source.short()));
             let not = if condition.negated { "!" } else { "" };
             w.line(&format!("if {not}{} {{", expr(&condition.value)));
-            w.indent(|w| then_branch.iter().for_each(|n| self::node(w, n)));
+            w.indent(|w| then_branch.iter().for_each(|n| self::node(w, r, n)));
             if else_branch.is_empty() {
                 w.line("}");
             } else {
                 w.line("} else {");
-                w.indent(|w| else_branch.iter().for_each(|n| self::node(w, n)));
+                w.indent(|w| else_branch.iter().for_each(|n| self::node(w, r, n)));
                 w.line("}");
             }
             return;
@@ -99,16 +101,21 @@ fn node(w: &mut Writer, node: &UiNode) {
             w.line(&format!("// source: {}", source.short()));
             let key: Vec<String> = key.segments.iter().map(|s| camel_case(s)).collect();
             w.line(&format!("ForEach({}, id: \\.{}) {{ {item} in", state(&collection.segments), key.join(".")));
-            w.indent(|w| children.iter().for_each(|n| self::node(w, n)));
+            w.indent(|w| children.iter().for_each(|n| self::node(w, r, n)));
             w.line("}");
             return;
         }
     };
     w.line(&format!("// source: {}", c.source.short()));
+    // A mapping wins, so that an app's registry can replace even the
+    // components this backend lowers itself.
+    if let Some((spec, m)) = r.get(c.id.as_str()).and_then(|spec| spec.swiftui.as_ref().map(|m| (spec, m))) {
+        return mapped(w, r, c, spec, m);
+    }
     match c.id.as_str() {
         stack @ ("VStack" | "HStack") => {
             w.line(&format!("{stack}(spacing: {}) {{", int(c, "spacing")));
-            w.indent(|w| c.children.iter().for_each(|child| self::node(w, child)));
+            w.indent(|w| c.children.iter().for_each(|child| self::node(w, r, child)));
             w.line("}");
         }
         "Text" => {
@@ -121,44 +128,85 @@ fn node(w: &mut Writer, node: &UiNode) {
                 });
             }
         }
-        "Button" => {
-            let mut args = Vec::new();
-            // DazzUI's Button is recessed unless told otherwise, as the
-            // semantic default is, so only the other case is written.
-            if case(c.prop("style").expect("style has a default")) == "Primary" {
-                args.push("variant: .filled".to_string());
-            }
-            args.extend(enabled(c));
-            let action = c.event("click").map(closure).unwrap_or_else(|| "{}".into());
-            args.push(format!("action: {action}"));
-            w.line(&format!("DazzUI.Button({}) {{", args.join(", ")));
-            w.indent(|w| w.line(&format!("Text({})", expr(c.prop("title").expect("title is required")))));
-            w.line("}");
-        }
-        "Toggle" => {
-            // DazzUI's Switch takes its value and a change callback rather
-            // than a `Binding`: the change goes to Rust, and the value comes
-            // back in the next snapshot.
-            let (value, change) = match c.binding("value") {
-                Some(b) => (state(&b.path.segments), Some(&b.on_change)),
-                None => (expr(c.prop("value").expect("value is required")), c.event("change")),
-            };
-            let mut args = vec![format!("checked: {value}")];
-            args.extend(change.map(|a| format!("onCheckedChange: {}", closure(a))));
-            args.extend(enabled(c));
-            w.line(&format!("DazzUI.Switch({})", args.join(", ")));
-        }
         other => unreachable!("`{other}` passed the registry but has no SwiftUI lowering"),
     }
 }
 
-/// `enabled: …` for a `disabled` prop, unless it is the literal `false`
-/// that both the registry and DazzUI default to.
-fn enabled(c: &Component) -> Option<String> {
-    match c.prop("disabled").expect("disabled has a default") {
-        Expr::Literal(Value::Bool(false)) => None,
-        Expr::Literal(Value::Bool(true)) => Some("enabled: false".into()),
-        other => Some(format!("enabled: !{}", expr(other))),
+/// A piece of a call's argument list: written inline, or a closure that
+/// holds a node.
+enum Piece<'a> {
+    Inline(String),
+    Closure(&'a str, &'a UiNode),
+}
+
+/// A component its registry mapping lowers: `Call(arg: value, …) { … }`.
+fn mapped(w: &mut Writer, r: &Registry, c: &Component, spec: &ComponentSpec, m: &SwiftUIMapping) {
+    let mut pieces = Vec::new();
+    for arg in &m.args {
+        let piece = match &arg.source {
+            Source::Prop { prop, cases, invert, omit } => c.prop_value(prop)
+                .filter(|e| !e.is_omitted(omit.as_ref()))
+                .map(|e| Piece::Inline(format!("{}: {}", arg.arg, render(&e, cases, *invert)))),
+            Source::Event(event) => c.event_action(spec, event).map(|a| Piece::Inline(format!("{}: {}", arg.arg, closure(a)))),
+            Source::Slot(slot) => c.slot(slot).map(|node| Piece::Closure(&arg.arg, node)),
+        };
+        match (piece, &arg.fallback) {
+            (Some(piece), _) => pieces.push(piece),
+            (None, Some(code)) => pieces.push(Piece::Inline(format!("{}: {code}", arg.arg))),
+            (None, None) => {}
+        }
+    }
+
+    let mut line = m.call.clone();
+    if !pieces.is_empty() || m.trailing.is_none() {
+        line.push('(');
+        for (i, piece) in pieces.iter().enumerate() {
+            if i > 0 {
+                line += ", ";
+            }
+            match piece {
+                Piece::Inline(code) => line += code,
+                Piece::Closure(arg, node) => {
+                    w.line(&format!("{line}{arg}: {{"));
+                    w.indent(|w| self::node(w, r, node));
+                    line = "}".into();
+                }
+            }
+        }
+        line.push(')');
+    }
+    match &m.trailing {
+        None => w.line(&line),
+        Some(trailing) => {
+            w.line(&format!("{line} {{"));
+            w.indent(|w| match trailing {
+                Trailing::Children => c.children.iter().for_each(|child| self::node(w, r, child)),
+                Trailing::Prop { prop, view } => {
+                    if let Some(e) = c.prop_value(prop) {
+                        w.line(&format!("{view}({})", expr(&e)));
+                    }
+                }
+                Trailing::Slot(slot) => {
+                    if let Some(node) = c.slot(slot) {
+                        self::node(w, r, node);
+                    }
+                }
+            });
+            w.line("}");
+        }
+    }
+}
+
+fn render(e: &Expr, cases: &[(String, String)], invert: bool) -> String {
+    match e {
+        Expr::EnumCase { ty, case } => cases
+            .iter()
+            .find(|(c, _)| c == case)
+            .map(|(_, code)| code.clone())
+            .unwrap_or_else(|| panic!("the registry maps no SwiftUI code for `{ty}::{case}`")),
+        Expr::Literal(Value::Bool(b)) if invert => (!b).to_string(),
+        other if invert => format!("!{}", expr(other)),
+        other => expr(other),
     }
 }
 

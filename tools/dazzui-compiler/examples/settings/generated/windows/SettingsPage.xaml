@@ -6,63 +6,85 @@
     xmlns:local="using:Settings"
     xmlns:dazz="using:DazzUI">
     <!-- source: settings.rs:7 -->
-    <StackPanel Spacing="16">
+    <StackPanel Spacing="24">
         <!-- source: settings.rs:8 -->
-        <TextBlock Text="General" x:Name="Text1"/>
-        <!-- source: settings.rs:9 -->
-        <StackPanel Orientation="Horizontal" Spacing="8">
-            <!-- source: settings.rs:10 -->
-            <dazz:Switch IsChecked="{x:Bind ViewModel.State.LaunchAtStartup, Mode=OneWay}" Click="OnSetLaunchAtStartupClick"/>
-            <!-- source: settings.rs:14 -->
-            <TextBlock Text="Launch at startup"/>
+        <dazz:Preferences>
+            <dazz:Preferences.Sections>
+                <!-- source: settings.rs:9 -->
+                <dazz:PreferenceSection Title="General">
+                    <dazz:PreferenceSection.Body>
+                        <dazz:PreferenceGroup>
+                            <dazz:PreferenceGroup.Rows>
+                                <!-- source: settings.rs:10 -->
+                                <dazz:PreferenceRow Label="Launch at startup">
+                                    <dazz:PreferenceRow.Control>
+                                        <!-- source: settings.rs:12 -->
+                                        <dazz:Switch IsChecked="{x:Bind ViewModel.State.LaunchAtStartup, Mode=OneWay}" Click="OnSetLaunchAtStartupClick"/>
+                                    </dazz:PreferenceRow.Control>
+                                </dazz:PreferenceRow>
+                                <!-- source: settings.rs:17 -->
+                                <dazz:PreferenceRow Label="Update automatically" Description="Download new versions in the background">
+                                    <dazz:PreferenceRow.Control>
+                                        <!-- source: settings.rs:20 -->
+                                        <dazz:Switch IsChecked="{x:Bind ViewModel.State.AutoUpdate, Mode=OneWay}" Click="OnSetAutoUpdateClick"/>
+                                    </dazz:PreferenceRow.Control>
+                                </dazz:PreferenceRow>
+                            </dazz:PreferenceGroup.Rows>
+                        </dazz:PreferenceGroup>
+                    </dazz:PreferenceSection.Body>
+                </dazz:PreferenceSection>
+                <!-- source: settings.rs:26 -->
+                <dazz:PreferenceSection Title="Plugins" Footer="Plugins run in a sandbox and can be turned off at any time.">
+                    <dazz:PreferenceSection.Body>
+                        <dazz:PreferenceGroup>
+                            <dazz:PreferenceGroup.Rows>
+                                <!-- source: settings.rs:27 -->
+                                <dazz:PreferenceRow Label="Show disabled plugins">
+                                    <dazz:PreferenceRow.Control>
+                                        <!-- source: settings.rs:29 -->
+                                        <dazz:Switch IsChecked="{x:Bind ViewModel.State.ShowDisabledPlugins, Mode=OneWay}" Click="OnSetShowDisabledPluginsClick"/>
+                                    </dazz:PreferenceRow.Control>
+                                </dazz:PreferenceRow>
+                            </dazz:PreferenceGroup.Rows>
+                        </dazz:PreferenceGroup>
+                    </dazz:PreferenceSection.Body>
+                </dazz:PreferenceSection>
+            </dazz:Preferences.Sections>
+        </dazz:Preferences>
+        <!-- source: settings.rs:37 -->
+        <StackPanel Spacing="8">
+            <!-- source: settings.rs:38 -->
+            <ItemsRepeater ItemsSource="{x:Bind ViewModel.State.VisiblePlugins, Mode=OneWay}">
+                <ItemsRepeater.Layout>
+                    <StackLayout Orientation="Vertical" Spacing="8"/>
+                </ItemsRepeater.Layout>
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate x:DataType="local:Plugin">
+                        <!-- source: settings.rs:39 -->
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <!-- source: settings.rs:40 -->
+                            <TextBlock Text="{x:Bind Name}"/>
+                            <!-- source: settings.rs:41 (if) -->
+                            <!-- source: settings.rs:42 -->
+                            <dazz:Button Content="Disable" Variant="Recessed" Click="OnTogglePluginClick" Visibility="{x:Bind local:SettingsPage.Visible1(Enabled)}"/>
+                            <!-- source: settings.rs:41 (else) -->
+                            <!-- source: settings.rs:44 -->
+                            <dazz:Button Content="Enable" Variant="Filled" Click="OnTogglePluginClick" Visibility="{x:Bind local:SettingsPage.Visible2(Enabled)}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+            <!-- source: settings.rs:50 (if) -->
+            <!-- source: settings.rs:51 -->
+            <TextBlock Text="Disabled plugins are hidden" x:Name="Text1" Visibility="{x:Bind local:SettingsPage.Visible1(ViewModel.State.HasHiddenPlugins), Mode=OneWay}"/>
         </StackPanel>
-        <!-- source: settings.rs:16 -->
+        <!-- source: settings.rs:55 -->
+        <TextBlock Text="{x:Bind ViewModel.State.Status, Mode=OneWay}" x:Name="Text2"/>
+        <!-- source: settings.rs:56 -->
         <StackPanel Orientation="Horizontal" Spacing="8">
-            <!-- source: settings.rs:17 -->
-            <dazz:Switch IsChecked="{x:Bind ViewModel.State.AutoUpdate, Mode=OneWay}" Click="OnSetAutoUpdateClick"/>
-            <!-- source: settings.rs:21 -->
-            <TextBlock Text="Update automatically"/>
-        </StackPanel>
-        <!-- source: settings.rs:24 -->
-        <TextBlock Text="Plugins" x:Name="Text2"/>
-        <!-- source: settings.rs:25 -->
-        <StackPanel Orientation="Horizontal" Spacing="8">
-            <!-- source: settings.rs:26 -->
-            <dazz:Switch IsChecked="{x:Bind ViewModel.State.ShowDisabledPlugins, Mode=OneWay}" Click="OnSetShowDisabledPluginsClick"/>
-            <!-- source: settings.rs:30 -->
-            <TextBlock Text="Show disabled plugins"/>
-        </StackPanel>
-        <!-- source: settings.rs:32 -->
-        <ItemsRepeater ItemsSource="{x:Bind ViewModel.State.VisiblePlugins, Mode=OneWay}">
-            <ItemsRepeater.Layout>
-                <StackLayout Orientation="Vertical" Spacing="16"/>
-            </ItemsRepeater.Layout>
-            <ItemsRepeater.ItemTemplate>
-                <DataTemplate x:DataType="local:Plugin">
-                    <!-- source: settings.rs:33 -->
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <!-- source: settings.rs:34 -->
-                        <TextBlock Text="{x:Bind Name}"/>
-                        <!-- source: settings.rs:35 (if) -->
-                        <!-- source: settings.rs:36 -->
-                        <dazz:Button Content="Disable" Variant="Recessed" Click="OnTogglePluginClick" Visibility="{x:Bind local:SettingsPage.Visible1(Enabled)}"/>
-                        <!-- source: settings.rs:35 (else) -->
-                        <!-- source: settings.rs:38 -->
-                        <dazz:Button Content="Enable" Variant="Filled" Click="OnTogglePluginClick" Visibility="{x:Bind local:SettingsPage.Visible2(Enabled)}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ItemsRepeater.ItemTemplate>
-        </ItemsRepeater>
-        <!-- source: settings.rs:44 (if) -->
-        <!-- source: settings.rs:45 -->
-        <TextBlock Text="Disabled plugins are hidden" x:Name="Text3" Visibility="{x:Bind local:SettingsPage.Visible1(ViewModel.State.HasHiddenPlugins), Mode=OneWay}"/>
-        <!-- source: settings.rs:48 -->
-        <TextBlock Text="{x:Bind ViewModel.State.Status, Mode=OneWay}" x:Name="Text4"/>
-        <!-- source: settings.rs:49 -->
-        <StackPanel Orientation="Horizontal" Spacing="8">
-            <!-- source: settings.rs:50 -->
+            <!-- source: settings.rs:57 -->
             <dazz:Button Content="Save" Variant="Filled" IsEnabled="{x:Bind local:SettingsPage.Not(ViewModel.State.Saved), Mode=OneWay}" Click="OnSaveClick"/>
-            <!-- source: settings.rs:54 -->
+            <!-- source: settings.rs:61 -->
             <dazz:Button Content="Reset to defaults" Variant="Recessed" Click="OnResetClick"/>
         </StackPanel>
     </StackPanel>

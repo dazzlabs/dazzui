@@ -1,0 +1,89 @@
+# The components every page may use, shipped with the compiler. An app's
+# own `dazzui-compiler.toml`, at its crate root, may add components or
+# replace these, in the same format.
+#
+# A component is its semantic interface — props, events, slots, children —
+# and, under `swiftui` and `winui`, how each platform draws it. A default is
+# the registry's, never inherited from a platform: where a platform's own
+# default already draws it, `omit` leaves the argument out; where it does
+# not, the value is written.
+#
+# VStack, HStack and Text have no platform tables: each backend lowers them
+# itself, since a stack's layout and a text's type token are more than an
+# argument mapping can say.
+
+[enum.TextStyle]
+cases = ["Title", "Body", "Caption"]
+
+[enum.ButtonStyle]
+cases = ["Primary", "Secondary"]
+
+[component.VStack]
+children = "many"
+# SwiftUI spaces a stack by about 8 points of its own accord and WinUI by
+# none: the gap is the registry's to decide.
+props.spacing = { type = "int", default = 0 }
+
+[component.HStack]
+children = "many"
+props.spacing = { type = "int", default = 0 }
+
+[component.Text]
+positional = ["text"]
+props.text = { type = "string", required = true }
+# No default: an unstyled text is the platform's own body text, which a
+# style would only restate.
+props.style = { type = "enum:TextStyle", modifier = true }
+
+[component.Button]
+positional = ["title"]
+props.title = { type = "string", required = true }
+props.style = { type = "enum:ButtonStyle", default = "Secondary", modifier = true }
+props.disabled = { type = "bool", default = false, modifier = true }
+events.click = { modifier = "on_click" }
+
+[component.Button.swiftui]
+call = "DazzUI.Button"
+args = [
+  { arg = "variant", prop = "style", enum = { Primary = ".filled", Secondary = ".recessed" }, omit = "Secondary" },
+  { arg = "enabled", prop = "disabled", invert = true, omit = false },
+  { arg = "action", event = "click", fallback = "{}" },
+]
+trailing = { prop = "title", view = "Text" }
+
+[component.Button.winui]
+element = "dazz:Button"
+attrs = [
+  { attr = "Content", prop = "title" },
+  # DazzUI's C# Button defaults to Filled where React and SwiftUI default
+  # to Recessed, so the variant is always written.
+  { attr = "Variant", prop = "style", enum = { Primary = "Filled", Secondary = "Recessed" } },
+  { attr = "IsEnabled", prop = "disabled", invert = true, omit = false },
+]
+events.click = { event = "Click", args = "RoutedEventArgs" }
+
+[component.Toggle]
+props.value = { type = "bool", required = true, bindable = true }
+props.disabled = { type = "bool", default = false, modifier = true }
+events.change = { modifier = "on_change", payload = "bool", binds = "value" }
+
+# DazzUI's Switch takes its value and a change callback rather than a
+# Binding: the change goes to Rust, and the value comes back in the next
+# snapshot.
+[component.Toggle.swiftui]
+call = "DazzUI.Switch"
+args = [
+  { arg = "checked", prop = "value" },
+  { arg = "onCheckedChange", event = "change" },
+  { arg = "enabled", prop = "disabled", invert = true, omit = false },
+]
+
+[component.Toggle.winui]
+element = "dazz:Switch"
+attrs = [
+  { attr = "IsChecked", prop = "value" },
+  { attr = "IsEnabled", prop = "disabled", invert = true, omit = false },
+]
+# A ToggleButton has flipped itself by the time it raises Click; its new
+# state is what the action carries.
+events.change = { event = "Click", args = "RoutedEventArgs", value = "((ToggleButton)sender).IsChecked == true", using = "Microsoft.UI.Xaml.Controls.Primitives" }

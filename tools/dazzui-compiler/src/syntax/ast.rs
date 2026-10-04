@@ -96,6 +96,8 @@ pub enum ValueAst {
     Bind(DottedAst),
     /// `Action::Select(state.current)`
     Call(Path, Box<ValueAst>),
+    /// `trailing: Toggle { … }`: a node for a named slot.
+    Component(Box<ComponentAst>),
 }
 
 /// `a.b.c`: a path of field accesses.
@@ -117,6 +119,7 @@ impl ValueAst {
             ValueAst::Path(path) => spanned_path(path),
             ValueAst::Dotted(path) | ValueAst::Bind(path) => path.span(),
             ValueAst::Call(path, _) => spanned_path(path),
+            ValueAst::Component(c) => c.name.span(),
         }
     }
 }

@@ -18,6 +18,18 @@ pub enum Expr {
     EnumCase { ty: String, case: String },
 }
 
+impl Expr {
+    /// Whether this is `omit`, the value a platform's own default already
+    /// draws, so that a mapping leaves the argument out.
+    pub fn is_omitted(&self, omit: Option<&Value>) -> bool {
+        match (self, omit) {
+            (Expr::Literal(v), Some(omit)) => v == omit,
+            (Expr::EnumCase { case, .. }, Some(Value::String(omit))) => case == omit,
+            _ => false,
+        }
+    }
+}
+
 /// A path into the page's state, without the leading `state`:
 /// `state.user.name` is `["user", "name"]`.
 #[derive(Clone, Debug, PartialEq, Eq)]

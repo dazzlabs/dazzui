@@ -21,11 +21,14 @@ impl Target {
     }
 }
 
-/// Reads and compiles every page under `src`, with paths shown relative to
-/// `base`. On failure, the diagnostics come back rendered.
+/// Reads and compiles every page under `src`, against the built-in
+/// components and those in `base`'s `dazzui-compiler.toml`, with paths
+/// shown relative to `base`. On failure, the diagnostics come back
+/// rendered.
 pub fn compile(src: &Path, base: &Path) -> Result<Vec<CompiledPage>, String> {
+    let registry = Registry::load(base).map_err(|e| format!("error: {e}\n"))?;
     let project = Project::scan(src, base).map_err(|e| format!("error: cannot read {}: {e}\n", src.display()))?;
-    project.compile(&Registry::builtin()).map_err(|diagnostics| {
+    project.compile(&registry).map_err(|diagnostics| {
         let mut out = String::new();
         for d in &diagnostics {
             let text = d.location.as_ref().and_then(|l| project.file(&l.file)).map(|f| f.text.as_str());

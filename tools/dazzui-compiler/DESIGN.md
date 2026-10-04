@@ -236,77 +236,72 @@ pub struct SourceLocation { pub file: String, pub line: u32, pub column: u32 }
 
 格式选 TOML：Cargo 生态的默认格式，有注释，不像 YAML 那样有缩进陷阱。一个
 组件只描述语义接口，再给每个平台一段映射。新增组件只需要改 registry，不需要
-改 compiler：
+改 compiler。内建组件在 `src/registry.toml`，随 compiler 一起编进去；app 在 crate
+根目录的 `dazzui-compiler.toml` 里增加组件，或按名字整个替换内建组件。`ui!` 宏
+经 `CARGO_MANIFEST_DIR` 读同一个文件，并用 `include_bytes!` 让 cargo 在它改动后重编。
 
 ```toml
+[enum.ButtonStyle]
+cases = ["Primary", "Secondary"]
+
 [component.Button]
 positional = ["title"]
-children = "none"                    # none | many | one
+children = "none"                    # "none" | "many" | { allow = ["SettingsRow"] }
+props.title    = { type = "string", required = true }
+props.style    = { type = "enum:ButtonStyle", default = "Secondary", modifier = true }
+props.disabled = { type = "bool", default = false, modifier = true }   # 也能写成 .disabled(…)
+events.click   = { modifier = "on_click" }
 
-[component.Button.props]
-title    = { type = "string", required = true }
-style    = { type = "enum:ButtonStyle", default = "Secondary" }
-disabled = { type = "bool", default = false, modifier = true }   # 也能写成 .disabled(…)
-
-[component.Button.events]
-click = { modifier = "on_click" }    # 无载荷
-
+# SwiftUI：一个调用，参数按初始化器声明的顺序排，外加一个尾随闭包
 [component.Button.swiftui]
-type = "DazzUI.Button"
-template = """
-{type}({props}) {
-  {event.click}
-} label: {
-  Text({prop.title})
-}"""
-props.style    = { arg = "variant", enum = { Primary = ".filled", Secondary = ".recessed" } }
-props.disabled = { arg = "enabled", invert = true }
+call = "DazzUI.Button"
+args = [
+  { arg = "variant", prop = "style", enum = { Primary = ".filled", Secondary = ".recessed" }, omit = "Secondary" },
+  { arg = "enabled", prop = "disabled", invert = true, omit = false },
+  { arg = "action", event = "click", fallback = "{}" },
+]
+trailing = { prop = "title", view = "Text" }   # 或 { children = true } / { slot = "x" }
 
+# WinUI：一个元素、属性、事件，slot 和 children 放进哪个属性
 [component.Button.winui]
-type = "dazz:Button"
-props.title    = { attr = "Content" }
-props.style    = { attr = "Variant", enum = { Primary = "Filled", Secondary = "Recessed" } }
-props.disabled = { attr = "IsEnabled", invert = true }
-events.click   = { event = "Click", args = "RoutedEventArgs" }
+element = "dazz:Button"
+attrs = [
+  { attr = "Content", prop = "title" },
+  { attr = "Variant", prop = "style", enum = { Primary = "Filled", Secondary = "Recessed" } },
+  { attr = "IsEnabled", prop = "disabled", invert = true, omit = false },
+]
+events.click = { event = "Click", args = "RoutedEventArgs" }
 
 [component.Toggle]
-children = "none"
-[component.Toggle.props]
-title = { type = "string" }
-value = { type = "bool", bindable = true, required = true }
-[component.Toggle.events]
-change = { payload = "bool", binds = "value" }   # 它就是 value 的写回通道
-[component.Toggle.swiftui]
-type = "DazzUI.Switch"
-props.value  = { arg = "checked" }
-events.change = { arg = "onCheckedChange" }
+props.value   = { type = "bool", required = true, bindable = true }
+events.change = { modifier = "on_change", payload = "bool", binds = "value" }   # value 的写回通道
 [component.Toggle.winui]
-type = "dazz:Switch"
-props.value  = { attr = "IsChecked" }
-events.change = { event = "Click", value = "IsChecked == true" }
+events.change = { event = "Click", value = "((ToggleButton)sender).IsChecked == true", using = "Microsoft.UI.Xaml.Controls.Primitives" }
 
 [component.SettingsRow]
-children = "none"
-slots = { trailing = { required = false } }
-[component.SettingsRow.props]
-title    = { type = "string", required = true }
-subtitle = { type = "string" }
+slots.trailing = {}                  # { required = true } 时必填
 [component.SettingsRow.swiftui]
-type = "DazzUI.PreferenceRow"
-slots.trailing = { arg = "trailing", closure = true }
+args = [{ arg = "title", prop = "title" }, { arg = "trailing", slot = "trailing" }]   # slot 写成 `trailing: { … }`
 [component.SettingsRow.winui]
-type = "dazz:PreferenceRow"
-props.title    = { attr = "Label" }
-slots.trailing = { property = "Control" }
+slots.trailing = { property = "Control" }        # <dazz:PreferenceRow.Control>…</…>
+
+[component.SettingsSection.winui]
+children = { property = "Body", wrap = "dazz:PreferenceGroup", wrap_property = "Rows" }
 ```
 
-支持的字段：component、props、prop 类型（`string`/`bool`/`int`/`enum:Name`）、
-required/optional、default、children、slots、events（含载荷类型）、bindable、
-可作为 modifier 的 prop、平台类型、属性映射、事件映射、枚举值映射，以及在映射
-表达不了时使用的 `template`。
+一个值从哪里来：`prop`（可带 `enum` 映射、`invert` 取反、`omit`：语义值等于它时平台默认值
+已经画对了，省略这个参数）、`event`（SwiftUI 写成闭包，WinUI 写成事件处理器）、`slot`。
+prop 被 `bind(…)` 时读的是 state，写回走事件里 `binds` 指向它的那个。
 
-内建组件（VStack、HStack、Spacer、Text）也写在同一份 registry 里，只是
-随 compiler 一起发布；用户的 `dazzui-compiler.toml` 可以增加组件，也可以覆盖内建组件。
+`omit` 只写在平台默认值和语义默认值一致的地方：DazzUI 的 Swift Button 默认就是
+recessed，所以省略；C# 的默认是 Filled，所以 WinUI 一侧总是写出 Variant。
+
+VStack、HStack、Text 没有平台表，由各 backend 自己 lower：stack 的布局和 Text
+的字体 token 不是参数映射能说清的。只要 app 给它们写了平台表，映射优先。
+
+registry 加载时就校验：未知的键、未知的类型、映射引用了不存在的 prop/event/slot、
+slot 和 prop 同名、`binds` 指向非 bindable 的 prop、`allow` 里的名字不是组件、
+非 backend 自带的组件缺少 `swiftui` 或 `winui` 表。错误带文件名和组件名。
 
 **registry 的边界：** 平台映射是数据，不是代码。映射写不出来的情况，比如
 WinUI 的 `if` 要生成 `x:Load` 加一个生成的属性，属于 backend 自身的逻辑，不进 registry。
@@ -491,7 +486,7 @@ backend 只读 `ir`（加上 `RustTypes`），互相不引用。
 | **1** ✅ | Text、Button、VStack；字面量 prop；children；click → action；读取 Rust action enum | parser/semantic 单测；对 `generated/` 做 golden test；example crate 能编译（宏的类型检查生效）；生成的 Swift 能和真实的 DazzUI 一起用 xcodebuild 编过 |
 | **2** ✅ | state 表达式、Toggle、HStack、binding、读取 Rust state struct、`.style` / `.disabled` modifier、带载荷的 action、C ABI 桥 | 宿主 app 点开关后 Rust 的 state 发生变化（xcodebuild test 经 C ABI 往返；Rust 侧单测直接调 `extern "C"`）|
 | **3** ✅ | if、for、selector；`Vec<结构体>` 和嵌套结构体过桥 | 宿主 app 渲染 `for` + selector 列表和条件分支；xcodebuild test 验证列表和 selector 经 C ABI 往返 |
-| 4 | TOML registry、自定义组件、SettingsSection/SettingsRow、slot | 完整的 demo SettingsPage |
+| **4** ✅ | TOML registry、自定义组件、SettingsSection/SettingsRow、slot、children 白名单；Button/Toggle 也改为由映射驱动 | 完整的 demo SettingsPage：示例的 `dazzui-compiler.toml` 定义 Settings/SettingsSection/SettingsRow，生成的 SwiftUI 用真实的 DazzUI 偏好设置控件编过并运行 |
 | 5 | rustc 样式的诊断渲染、所有类型的错误、`dazzui-compiler check`、trybuild 测试 compile-fail | — |
 
 MVP 之外（不做）：animation、gesture、复杂导航、runtime diff、Virtual DOM、自绘、layout engine、hot reload、accessibility 抽象。

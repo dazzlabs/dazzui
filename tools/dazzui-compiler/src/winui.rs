@@ -16,8 +16,10 @@
 //! elements sit in that stack as SwiftUI's `ForEach` puts them.
 
 use crate::bridge::{Bridge, BridgeStruct, FieldType, Scalar};
+use crate::Registry;
 use crate::ir::{
-    ActionPayload, ActionRef, Component, Condition, Expr, GeneratedFile, UiNode, Value, page_stem, pascal_case,
+    ActionPayload, ActionRef, Component, ComponentSpec, Condition, Expr, GeneratedFile, Source, UiNode, Value, page_stem,
+    pascal_case,
 };
 use crate::rust_types::{FloatType, IntType};
 use crate::{CompiledPage, Options};
@@ -25,7 +27,17 @@ use crate::{CompiledPage, Options};
 pub fn generate(compiled: &CompiledPage, options: &Options) -> Vec<GeneratedFile> {
     let page = &compiled.page;
     let stem = page_stem(&page.name);
-    let mut cx = Cx { page: page.name.clone(), ..Cx::default() };
+    let mut cx = Cx {
+        page: page.name.clone(),
+        registry: compiled.registry.clone(),
+        handlers: Vec::new(),
+        usings: Vec::new(),
+        styled: Vec::new(),
+        negates: false,
+        visibilities: Vec::new(),
+        conditions: Vec::new(),
+        element: None,
+    };
     let xaml = xaml(compiled, &options.namespace, &mut cx);
     vec![
         GeneratedFile::new(format!("{}.xaml", page.name), xaml),
@@ -36,10 +48,12 @@ pub fn generate(compiled: &CompiledPage, options: &Options) -> Vec<GeneratedFile
 }
 
 /// What the XAML needs from its code-behind, and where the writer is.
-#[derive(Default)]
 struct Cx {
     page: String,
+    registry: Registry,
     handlers: Vec<Handler>,
+    /// Namespaces the handlers' code needs.
+    usings: Vec<String>,
     /// Named texts and the type token each is set in once loaded.
     styled: Vec<(String, &'static str)>,
     /// Whether `Not(…)` is bound to.
@@ -65,7 +79,7 @@ struct Stack {
 /// the action it sends, and the C# that builds the action's value.
 struct Handler {
     name: String,
-    args: &'static str,
+    args: String,
     action: ActionRef,
     payload: String,
 }
@@ -144,6 +158,11 @@ fn node(w: &mut Writer, node: &UiNode, stack: Stack, cx: &mut Cx) {
     };
     w.line(&format!("<!-- source: {} -->", c.source.short()));
     let visible = visibility(cx);
+    // A mapping wins, so that an app's registry can replace even the
+    // components this backend lowers itself.
+    if let Some(spec) = cx.registry.get(c.id.as_str()).filter(|s| s.winui.is_some()).cloned() {
+        return mapped(w, c, &spec, &visible, cx);
+    }
     match c.id.as_str() {
         kind @ ("VStack" | "HStack") => {
             let inner = Stack { horizontal: kind == "HStack", spacing: int(c, "spacing") };
@@ -174,39 +193,6 @@ fn node(w: &mut Writer, node: &UiNode, stack: Stack, cx: &mut Cx) {
             }
             w.line(&(tag + &visible + "/>"));
         }
-        "Button" => {
-            // DazzUI's C# Button defaults to `Filled` where React and SwiftUI
-            // default to `Recessed`. The semantic default is `Recessed`, so
-            // the variant is always written rather than left to the control.
-            let variant = match case(c.prop("style").expect("style has a default")) {
-                "Primary" => "Filled",
-                _ => "Recessed",
-            };
-            let title = value(cx, c.prop("title").expect("title is required"));
-            let mut tag = format!("<dazz:Button Content={title} Variant=\"{variant}\"");
-            tag += &enabled(c, cx);
-            if let Some(action) = c.event("click") {
-                let name = handler(cx, action, "Click", "RoutedEventArgs", None);
-                tag += &format!(" Click=\"{name}\"");
-            }
-            w.line(&(tag + &visible + "/>"));
-        }
-        "Toggle" => {
-            let (checked, change) = match c.binding("value") {
-                Some(b) => (bind(cx, &Expr::State(b.path.clone())), Some(&b.on_change)),
-                None => (value(cx, c.prop("value").expect("value is required")), c.event("change")),
-            };
-            let mut tag = format!("<dazz:Switch IsChecked={checked}");
-            tag += &enabled(c, cx);
-            if let Some(action) = change {
-                // A ToggleButton has flipped itself by the time it raises
-                // Click; its new state is what the action carries.
-                let value = Some("((ToggleButton)sender).IsChecked == true");
-                let name = handler(cx, action, "Click", "RoutedEventArgs", value);
-                tag += &format!(" Click=\"{name}\"");
-            }
-            w.line(&(tag + &visible + "/>"));
-        }
         other => unreachable!("`{other}` passed the registry but has no WinUI lowering"),
     }
 }
@@ -228,23 +214,101 @@ fn visibility(cx: &mut Cx) -> String {
     format!(" Visibility=\"{{x:Bind local:{}.Visible{}({}){}}}\"", cx.page, index + 1, args.join(", "), mode(cx))
 }
 
-/// ` IsEnabled=…` for a `disabled` prop, unless it is the literal `false`
-/// that both the registry and the control default to.
-fn enabled(c: &Component, cx: &mut Cx) -> String {
-    match c.prop("disabled").expect("disabled has a default") {
-        Expr::Literal(Value::Bool(false)) => String::new(),
-        Expr::Literal(Value::Bool(true)) => " IsEnabled=\"False\"".into(),
-        e @ (Expr::State(_) | Expr::Local(_)) => {
-            cx.negates = true;
-            format!(" IsEnabled=\"{{x:Bind local:{}.Not({}){}}}\"", cx.page, path(cx, e), mode(cx))
+/// A component its registry mapping lowers: an element, its attributes and
+/// events, and its slots and children in the properties the mapping names.
+fn mapped(w: &mut Writer, c: &Component, spec: &ComponentSpec, visible: &str, cx: &mut Cx) {
+    let m = spec.winui.as_ref().expect("a WinUI mapping");
+    let mut tag = format!("<{}", m.element);
+    for attr in &m.attrs {
+        if let Source::Prop { prop, cases, invert, omit } = &attr.source
+            && let Some(e) = c.prop_value(prop).filter(|e| !e.is_omitted(omit.as_ref()))
+        {
+            tag += &format!(" {}={}", attr.attr, attr_value(cx, &e, cases, *invert));
         }
-        other => unreachable!("`disabled` is {other:?}"),
+    }
+    for event in &m.events {
+        if let Some(action) = c.event_action(spec, &event.name) {
+            if let Some(using) = &event.using
+                && !cx.usings.contains(using)
+            {
+                cx.usings.push(using.clone());
+            }
+            let name = handler(cx, action, &event.event, &event.args, event.value.as_deref());
+            tag += &format!(" {}=\"{name}\"", event.event);
+        }
+    }
+    tag += visible;
+
+    let slots: Vec<(&str, &UiNode)> =
+        m.slots.iter().filter_map(|(slot, property)| Some((property.as_str(), c.slot(slot)?))).collect();
+    if slots.is_empty() && c.children.is_empty() {
+        return w.line(&(tag + "/>"));
+    }
+    w.line(&(tag + ">"));
+    // The conditions are on the element; what it holds need not repeat them.
+    let conditions = std::mem::take(&mut cx.conditions);
+    let column = Stack { horizontal: false, spacing: 0 };
+    w.indent(|w| {
+        for (property, node) in slots {
+            w.line(&format!("<{}.{property}>", m.element));
+            w.indent(|w| self::node(w, node, column, cx));
+            w.line(&format!("</{}.{property}>", m.element));
+        }
+        if !c.children.is_empty() {
+            let children = |w: &mut Writer, cx: &mut Cx| c.children.iter().for_each(|n| self::node(w, n, column, cx));
+            let wrapped = |w: &mut Writer, cx: &mut Cx| match m.children.as_ref().and_then(|ch| ch.wrap.as_ref()) {
+                Some((wrap, property)) => {
+                    w.line(&format!("<{wrap}>"));
+                    w.indent(|w| match property {
+                        Some(p) => {
+                            w.line(&format!("<{wrap}.{p}>"));
+                            w.indent(|w| children(w, cx));
+                            w.line(&format!("</{wrap}.{p}>"));
+                        }
+                        None => children(w, cx),
+                    });
+                    w.line(&format!("</{wrap}>"));
+                }
+                None => children(w, cx),
+            };
+            match m.children.as_ref().and_then(|ch| ch.property.as_ref()) {
+                Some(p) => {
+                    w.line(&format!("<{}.{p}>", m.element));
+                    w.indent(|w| wrapped(w, cx));
+                    w.line(&format!("</{}.{p}>", m.element));
+                }
+                None => wrapped(w, cx),
+            }
+        }
+    });
+    cx.conditions = conditions;
+    w.line(&format!("</{}>", m.element));
+}
+
+/// A quoted attribute value for `e`: a case's platform code, a flipped
+/// literal, `Not(…)` of a path, or `e` itself.
+fn attr_value(cx: &mut Cx, e: &Expr, cases: &[(String, String)], invert: bool) -> String {
+    match e {
+        Expr::EnumCase { ty, case } => {
+            let code = cases
+                .iter()
+                .find(|(c, _)| c == case)
+                .map(|(_, code)| code.clone())
+                .unwrap_or_else(|| panic!("the registry maps no WinUI code for `{ty}::{case}`"));
+            attr(&code)
+        }
+        Expr::Literal(Value::Bool(b)) if invert => value(cx, &Expr::Literal(Value::Bool(!b))),
+        e @ (Expr::State(_) | Expr::Local(_)) if invert => {
+            cx.negates = true;
+            format!("\"{{x:Bind local:{}.Not({}){}}}\"", cx.page, path(cx, e), mode(cx))
+        }
+        other => value(cx, other),
     }
 }
 
 /// The handler for `action` on `event`, `OnSaveClick`: one per distinct
 /// action and value, however many controls send it.
-fn handler(cx: &mut Cx, action: &ActionRef, event: &str, args: &'static str, event_value: Option<&str>) -> String {
+fn handler(cx: &mut Cx, action: &ActionRef, event: &str, args: &str, event_value: Option<&str>) -> String {
     let payload = match &action.payload {
         ActionPayload::None => String::new(),
         ActionPayload::EventValue => event_value.expect("an event with a value").to_string(),
@@ -260,7 +324,7 @@ fn handler(cx: &mut Cx, action: &ActionRef, event: &str, args: &'static str, eve
         n += 1;
         name = format!("{base}{n}");
     }
-    cx.handlers.push(Handler { name: name.clone(), args, action: action.clone(), payload });
+    cx.handlers.push(Handler { name: name.clone(), args: args.into(), action: action.clone(), payload });
     name
 }
 
@@ -394,8 +458,8 @@ fn code_behind(compiled: &CompiledPage, namespace: &str, cx: &Cx) -> String {
     }
     w.line("using Microsoft.UI.Xaml;");
     w.line("using Microsoft.UI.Xaml.Controls;");
-    if cx.handlers.iter().any(|h| h.payload.contains("ToggleButton")) {
-        w.line("using Microsoft.UI.Xaml.Controls.Primitives;");
+    for using in &cx.usings {
+        w.line(&format!("using {using};"));
     }
     w.line("");
     w.line(&format!("namespace {namespace};"));

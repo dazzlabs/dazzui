@@ -21,6 +21,7 @@ proc-macro2.workspace = true
 quote.workspace = true
 syn.workspace = true
 strsim.workspace = true
+toml.workspace = true
 
 [workspace]
 resolver = "3"
@@ -42,3 +43,4 @@ proc-macro2 = { version = "1", features = ["span-locations"] }
 quote = "1"
 syn = { version = "2", features = ["full", "extra-traits"] }
 strsim = "0.11"
+toml = { version = "0.8", default-features = false, features = ["parse"] }

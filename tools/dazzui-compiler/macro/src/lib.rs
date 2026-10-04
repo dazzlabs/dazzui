@@ -33,7 +33,16 @@ pub fn ui(input: TokenStream) -> TokenStream {
 
 fn expand(input: TokenStream2) -> syn::Result<TokenStream2> {
     let page = parse_page(input)?;
-    let registry = Registry::builtin();
+    let dir = std::env::var("CARGO_MANIFEST_DIR").ok();
+    let registry = match &dir {
+        Some(dir) => Registry::load(Path::new(dir)).map_err(|e| syn::Error::new(page.name.span(), e))?,
+        None => Registry::builtin(),
+    };
+    // Read so that cargo builds again when the app's components change.
+    let track = dir.map(|dir| Path::new(&dir).join(dazzui_compiler::REGISTRY_FILE)).filter(|p| p.exists()).map(|p| {
+        let path = p.to_string_lossy().into_owned();
+        quote!(const _: &[u8] = include_bytes!(#path);)
+    });
     // The type check goes out with the registry's errors rather than
     // instead of them, so one build reports both kinds.
     let errors = match lower(&page, &registry, None, "") {
@@ -41,7 +50,7 @@ fn expand(input: TokenStream2) -> syn::Result<TokenStream2> {
         Err(errors) => errors.iter().map(|e| e.to_syn().to_compile_error()).collect(),
     };
     let check = type_check(&page, &registry);
-    Ok(quote! { #errors #check })
+    Ok(quote! { #errors #check #track })
 }
 
 fn type_check(page: &PageAst, registry: &Registry) -> TokenStream2 {
@@ -89,8 +98,21 @@ impl Check<'_> {
                 if let Some(spec) = self.registry.get(&component.name.to_string()) {
                     self.component(component, spec, &mut out);
                 }
+                // What a slot holds is checked as a child is.
+                let named = component.args.iter().filter_map(|a| match a {
+                    ArgAst::Named(p) => Some(&p.value),
+                    ArgAst::Positional(_) => None,
+                });
+                let slots: Vec<NodeAst> = named
+                    .chain(component.props.iter().map(|p| &p.value))
+                    .filter_map(|v| match v {
+                        ValueAst::Component(c) => Some(NodeAst::Component((**c).clone())),
+                        _ => None,
+                    })
+                    .collect();
+                let slots = slots.iter().map(|n| self.node(n)).collect::<Vec<_>>();
                 let children = component.children.iter().map(|c| self.node(c)).collect::<Vec<_>>();
-                quote!(#(#out)* #(#children)*)
+                quote!(#(#out)* #(#slots)* #(#children)*)
             }
             NodeAst::If(ast) => {
                 let condition = self.access(&ast.condition).map(|(access, _)| {

@@ -17,10 +17,8 @@ public sealed partial class SettingsPage : Page
         InitializeComponent();
         Loaded += (_, _) =>
         {
-            SetFace(Text1, "titleMedium");
-            SetFace(Text2, "titleMedium");
-            SetFace(Text3, "captionMedium");
-            SetFace(Text4, "captionMedium");
+            SetFace(Text1, "captionMedium");
+            SetFace(Text2, "captionMedium");
         };
     }
 
