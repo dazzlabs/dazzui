@@ -1,0 +1,16 @@
+[package]
+name = "dazzui-compiler-macro"
+description = "The ui! proc macro: parses, validates, and leaves rustc a type check."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+dazzui-compiler.workspace = true
+proc-macro2.workspace = true
+quote.workspace = true
+syn.workspace = true

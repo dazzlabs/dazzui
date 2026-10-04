@@ -1,0 +1,21 @@
+<!-- AUTO-GENERATED FILE. DO NOT EDIT. Source: src/views/settings.rs -->
+<Page
+    x:Class="Settings.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dazz="using:DazzUI">
+    <!-- source: settings.rs:7 -->
+    <StackPanel Spacing="16">
+        <!-- source: settings.rs:8 -->
+        <TextBlock Text="General"/>
+        <!-- source: settings.rs:9 -->
+        <TextBlock Text="Changes apply the next time the app starts."/>
+        <!-- source: settings.rs:10 -->
+        <StackPanel Spacing="8">
+            <!-- source: settings.rs:11 -->
+            <dazz:Button Content="Save" Variant="Recessed" Click="OnSaveClick"/>
+            <!-- source: settings.rs:12 -->
+            <dazz:Button Content="Reset to defaults" Variant="Recessed" Click="OnResetClick"/>
+        </StackPanel>
+    </StackPanel>
+</Page>

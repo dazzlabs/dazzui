@@ -1,0 +1,10 @@
+[package]
+name = "settings-example"
+description = "The demo app core: state, actions, update, and the ui! page."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+dazzui-compiler-macro.workspace = true

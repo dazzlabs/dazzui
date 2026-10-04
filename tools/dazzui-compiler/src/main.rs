@@ -1,0 +1,69 @@
+//! `dazzui-compiler check` and `dazzui-compiler generate`.
+
+use std::path::PathBuf;
+use std::process::ExitCode;
+use std::{env, fs};
+
+use dazzui_compiler::{Target, compile, generate};
+
+const USAGE: &str = "\
+usage:
+  dazzui-compiler check    [--src <dir>]
+  dazzui-compiler generate --target swiftui|winui [--src <dir>] [--output <dir>] [--namespace <C# ns>]
+";
+
+fn main() -> ExitCode {
+    match run(env::args().skip(1).collect()) {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(message) => {
+            eprint!("{message}");
+            ExitCode::FAILURE
+        }
+    }
+}
+
+fn run(args: Vec<String>) -> Result<(), String> {
+    let Some((command, rest)) = args.split_first() else {
+        return Err(USAGE.into());
+    };
+    let mut src = PathBuf::from("src");
+    let mut output = PathBuf::from("generated");
+    let mut target = None;
+    let mut namespace = None;
+    let mut rest = rest.iter();
+    while let Some(flag) = rest.next() {
+        let mut value = || rest.next().cloned().ok_or_else(|| format!("error: `{flag}` takes a value\n\n{USAGE}"));
+        match flag.as_str() {
+            "--src" => src = value()?.into(),
+            "--output" => output = value()?.into(),
+            "--namespace" => namespace = Some(value()?),
+            "--target" => {
+                let name = value()?;
+                target = Some(Target::parse(&name).ok_or_else(|| format!("error: unknown target `{name}`\n\n{USAGE}"))?);
+            }
+            other => return Err(format!("error: unknown argument `{other}`\n\n{USAGE}")),
+        }
+    }
+
+    let base = env::current_dir().map_err(|e| e.to_string())?;
+    let pages = compile(&src, &base)?;
+    match command.as_str() {
+        "check" => {
+            eprintln!("checked {} page{}", pages.len(), if pages.len() == 1 { "" } else { "s" });
+            Ok(())
+        }
+        "generate" => {
+            let target = target.ok_or_else(|| format!("error: `generate` needs `--target`\n\n{USAGE}"))?;
+            let namespace = namespace.as_deref().unwrap_or("App");
+            let files = generate(&pages, target, namespace);
+            fs::create_dir_all(&output).map_err(|e| format!("error: {}: {e}\n", output.display()))?;
+            for file in &files {
+                let path = output.join(&file.path);
+                fs::write(&path, &file.contents).map_err(|e| format!("error: {}: {e}\n", path.display()))?;
+                eprintln!("wrote {}", path.display());
+            }
+            Ok(())
+        }
+        other => Err(format!("error: unknown command `{other}`\n\n{USAGE}")),
+    }
+}
