@@ -1,14 +1,18 @@
 // AUTO-GENERATED FILE. DO NOT EDIT. Source: src/views/settings.rs
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Settings;
 
+/// <summary><c>Plugin</c>, from the Rust app core.</summary>
+public sealed record Plugin(uint Id, string Name, bool Enabled);
+
 /// <summary><c>SettingsState</c>, as Rust last handed it over.</summary>
-public sealed record SettingsState(bool LaunchAtStartup, bool AutoUpdate, bool Saved, uint Saves, string Status);
+public sealed record SettingsState(bool LaunchAtStartup, bool AutoUpdate, bool Saved, uint Saves, string Status, bool ShowDisabledPlugins, IReadOnlyList<Plugin> Plugins, IReadOnlyList<Plugin> VisiblePlugins, bool HasHiddenPlugins);
 
 public abstract record SettingsAction
 {
@@ -21,6 +25,10 @@ public abstract record SettingsAction
     public sealed record Save() : SettingsAction;
 
     public sealed record Reset() : SettingsAction;
+
+    public sealed record SetShowDisabledPlugins(bool Value) : SettingsAction;
+
+    public sealed record TogglePlugin(uint Value) : SettingsAction;
 }
 
 /// <summary>Holds the latest snapshot of the Rust state and sends actions to

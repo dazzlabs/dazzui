@@ -23,6 +23,13 @@ pub fn update(state: &mut SettingsState, action: SettingsAction) {
             };
         }
         SettingsAction::Reset => *state = SettingsState::default(),
+        SettingsAction::SetShowDisabledPlugins(on) => state.show_disabled_plugins = on,
+        SettingsAction::TogglePlugin(id) => {
+            if let Some(plugin) = state.plugins.iter_mut().find(|p| p.id == id) {
+                plugin.enabled = !plugin.enabled;
+                changed(state);
+            }
+        }
     }
 }
 
@@ -44,6 +51,19 @@ mod tests {
         assert_eq!((state.saves, state.saved, state.status.as_str()), (1, true, "Saved"));
         update(&mut state, SettingsAction::Reset);
         assert_eq!(state, SettingsState::default());
+    }
+
+    #[test]
+    fn hides_disabled_plugins_until_asked() {
+        let mut state = SettingsState::default();
+        let names = |s: &SettingsState| s.visible_plugins().into_iter().map(|p| p.name).collect::<Vec<_>>();
+        assert_eq!(names(&state), ["Spell check", "Translate"]);
+        assert!(state.has_hidden_plugins());
+        update(&mut state, SettingsAction::SetShowDisabledPlugins(true));
+        assert_eq!(names(&state), ["Spell check", "Grammar", "Translate"]);
+        update(&mut state, SettingsAction::SetShowDisabledPlugins(false));
+        update(&mut state, SettingsAction::TogglePlugin(2));
+        assert!(!state.has_hidden_plugins() && !state.saved);
     }
 
     /// The page's path to Rust: what the native side calls, through the
@@ -68,6 +88,11 @@ mod tests {
             assert_eq!(state.saves, 1);
             let status = core::slice::from_raw_parts(state.status.ptr, state.status.len);
             assert_eq!(status, b"Saved");
+            // A selector crosses as a field, its list owned by Rust until freed.
+            let visible = core::slice::from_raw_parts(state.visible_plugins.ptr, state.visible_plugins.len);
+            let ids: Vec<u32> = visible.iter().map(|p| p.id).collect();
+            assert_eq!(ids, [1, 3]);
+            assert!(state.has_hidden_plugins);
             settings_state_free(state);
             settings_destroy(app);
         }

@@ -14,6 +14,9 @@ pub struct RustTypes {
 #[derive(Clone, Debug, PartialEq)]
 pub struct EnumDef {
     pub name: String,
+    /// `crate::action::SettingsAction`: where it is, so that generated Rust
+    /// can name it from any module.
+    pub path: String,
     pub variants: Vec<Variant>,
 }
 
@@ -36,16 +39,31 @@ pub enum Fields {
     Named(Vec<(String, RustType)>),
 }
 
-/// A struct with named fields.
+/// A struct with named fields, and the selectors defined on it.
 #[derive(Clone, Debug, PartialEq)]
 pub struct StructDef {
     pub name: String,
+    /// `crate::state::Plugin`
+    pub path: String,
     pub fields: Vec<(String, RustType)>,
+    /// `#[selector] fn visible_items(&self) -> Vec<Item>`: values derived
+    /// from the fields, which a page reads as if they were fields.
+    pub selectors: Vec<(String, RustType)>,
 }
 
 impl StructDef {
+    /// A field or a selector, by name.
     pub fn field(&self, name: &str) -> Option<&RustType> {
-        self.fields.iter().find(|(n, _)| n == name).map(|(_, ty)| ty)
+        self.fields.iter().chain(&self.selectors).find(|(n, _)| n == name).map(|(_, ty)| ty)
+    }
+
+    pub fn is_selector(&self, name: &str) -> bool {
+        self.selectors.iter().any(|(n, _)| n == name)
+    }
+
+    /// Every name a page can read: fields, then selectors.
+    pub fn names(&self) -> impl Iterator<Item = &str> {
+        self.fields.iter().chain(&self.selectors).map(|(n, _)| n.as_str())
     }
 }
 
@@ -64,7 +82,9 @@ pub enum RustType {
     String,
     Int(IntType),
     Float(FloatType),
-    /// A type the bridge does not carry yet, by its written name.
+    Vec(Box<RustType>),
+    /// Any other type: a struct by its name, or what the bridge does not
+    /// carry, as written.
     Other(String),
 }
 
@@ -137,6 +157,16 @@ impl RustType {
             "usize" => RustType::Int(IntType::Usize),
             "f32" => RustType::Float(FloatType::F32),
             "f64" => RustType::Float(FloatType::F64),
+            "Vec" => match &last.arguments {
+                syn::PathArguments::AngleBracketed(args) => match args.args.first() {
+                    Some(syn::GenericArgument::Type(elem)) if args.args.len() == 1 => {
+                        RustType::Vec(Box::new(RustType::from_syn(elem)))
+                    }
+                    _ => RustType::Other(quote_type(ty)),
+                },
+                _ => RustType::Other(quote_type(ty)),
+            },
+            name if last.arguments.is_none() => RustType::Other(name.into()),
             _ => RustType::Other(quote_type(ty)),
         }
     }
@@ -148,6 +178,7 @@ impl RustType {
             RustType::String => "String".into(),
             RustType::Int(i) => i.rust().into(),
             RustType::Float(f) => f.rust().into(),
+            RustType::Vec(elem) => format!("Vec<{}>", elem.rust()),
             RustType::Other(name) => name.clone(),
         }
     }
@@ -158,14 +189,16 @@ fn quote_type(ty: &syn::Type) -> String {
 }
 
 impl RustTypes {
-    /// Collects the enums, structs and `#[app]` functions of one parsed
-    /// file, including those in inline modules.
-    pub fn collect(&mut self, items: &[syn::Item]) {
+    /// Collects the enums, structs, selectors and `#[app]` functions of
+    /// one parsed file, including those in inline modules. `module` is the
+    /// file's module path, `crate::state`.
+    pub fn collect(&mut self, items: &[syn::Item], module: &str) {
         for item in items {
             match item {
                 syn::Item::Enum(e) => {
                     let def = EnumDef {
                         name: e.ident.to_string(),
+                        path: format!("{module}::{}", e.ident),
                         variants: e
                             .variants
                             .iter()
@@ -176,17 +209,47 @@ impl RustTypes {
                 }
                 syn::Item::Struct(s) => {
                     if let Fields::Named(fields) = fields(&s.fields) {
-                        self.structs.insert(s.ident.to_string(), StructDef { name: s.ident.to_string(), fields });
+                        let name = s.ident.to_string();
+                        let def = self.structs.entry(name.clone()).or_insert_with(|| StructDef {
+                            name: name.clone(),
+                            path: String::new(),
+                            fields: Vec::new(),
+                            selectors: Vec::new(),
+                        });
+                        def.path = format!("{module}::{name}");
+                        def.fields = fields;
                     }
                 }
-                syn::Item::Fn(f) if f.attrs.iter().any(|a| a.path().segments.last().is_some_and(|s| s.ident == "app")) => {
+                syn::Item::Impl(imp) if imp.trait_.is_none() => {
+                    let syn::Type::Path(self_ty) = &*imp.self_ty else { continue };
+                    let Some(name) = self_ty.path.segments.last().map(|s| s.ident.to_string()) else { continue };
+                    let selectors: Vec<_> = imp
+                        .items
+                        .iter()
+                        .filter_map(|item| match item {
+                            syn::ImplItem::Fn(f) if has_attr(&f.attrs, "selector") => selector(&f.sig).ok(),
+                            _ => None,
+                        })
+                        .collect();
+                    if !selectors.is_empty() {
+                        // An impl may come before its struct, or in another file.
+                        let def = self.structs.entry(name.clone()).or_insert_with(|| StructDef {
+                            name,
+                            path: String::new(),
+                            fields: Vec::new(),
+                            selectors: Vec::new(),
+                        });
+                        def.selectors.extend(selectors);
+                    }
+                }
+                syn::Item::Fn(f) if has_attr(&f.attrs, "app") => {
                     if let Ok(app) = AppDef::from_fn(&f.sig) {
                         self.apps.push(app);
                     }
                 }
                 syn::Item::Mod(m) => {
                     if let Some((_, items)) = &m.content {
-                        self.collect(items);
+                        self.collect(items, &format!("{module}::{}", m.ident));
                     }
                 }
                 _ => {}
@@ -221,6 +284,40 @@ impl AppDef {
         };
         Ok(AppDef { function: sig.ident.to_string(), state: name(&state_ref.elem)?, action: name(&action.ty)? })
     }
+}
+
+fn has_attr(attrs: &[syn::Attribute], name: &str) -> bool {
+    attrs.iter().any(|a| a.path().segments.last().is_some_and(|s| s.ident == name))
+}
+
+/// Reads `fn name(&self) -> T`.
+pub fn selector(sig: &syn::Signature) -> syn::Result<(String, RustType)> {
+    let shape = || syn::Error::new_spanned(sig, "a #[selector] is `fn name(&self) -> T`");
+    let [syn::FnArg::Receiver(receiver)] = sig.inputs.iter().collect::<Vec<_>>().as_slice() else {
+        return Err(shape());
+    };
+    if receiver.reference.is_none() || receiver.mutability.is_some() {
+        return Err(shape());
+    }
+    match &sig.output {
+        syn::ReturnType::Type(_, ty) => Ok((sig.ident.to_string(), RustType::from_syn(ty))),
+        syn::ReturnType::Default => Err(shape()),
+    }
+}
+
+/// `src/state.rs` → `crate::state`; `src/views/mod.rs` → `crate::views`;
+/// `src/lib.rs` and `src/main.rs` → `crate`. `relative` is the file's
+/// path under `src`.
+pub fn module_path(relative: &std::path::Path) -> String {
+    let mut parts: Vec<String> = relative
+        .with_extension("")
+        .components()
+        .map(|c| c.as_os_str().to_string_lossy().into_owned())
+        .collect();
+    if matches!(parts.last().map(String::as_str), Some("mod")) || matches!(parts.as_slice(), [only] if only == "lib" || only == "main") {
+        parts.pop();
+    }
+    std::iter::once("crate".to_string()).chain(parts).collect::<Vec<_>>().join("::")
 }
 
 fn fields(fields: &syn::Fields) -> Fields {

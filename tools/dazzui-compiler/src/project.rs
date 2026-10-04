@@ -7,7 +7,7 @@ use crate::syntax::{PageAst, parse_page};
 use crate::bridge::Bridge;
 use crate::error::{SemanticError, locate};
 use crate::registry::Registry;
-use crate::rust_types::{EnumDef, RustTypes, StructDef};
+use crate::rust_types::{EnumDef, RustTypes, StructDef, module_path};
 use crate::semantic::lower;
 
 /// An app crate's source as the CLI reads it: every `.rs` file under a
@@ -51,7 +51,8 @@ impl Project {
             let index = project.files.len();
             match syn::parse_file(&text) {
                 Ok(file) => {
-                    project.types.collect(&file.items);
+                    let module = module_path(path.strip_prefix(src).unwrap_or(&path));
+                    project.types.collect(&file.items, &module);
                     let mut macros = Vec::new();
                     find_ui_macros(&file.items, &mut macros);
                     for tokens in macros {

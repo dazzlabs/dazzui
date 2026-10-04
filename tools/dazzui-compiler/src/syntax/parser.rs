@@ -50,10 +50,73 @@ fn typed_param(input: ParseStream, expected: &str) -> Result<Path> {
 
 impl Parse for NodeAst {
     fn parse(input: ParseStream) -> Result<Self> {
-        if input.peek(Token![if]) || input.peek(Token![for]) {
-            return Err(input.error("`if` and `for` arrive in Phase 3"));
+        if input.peek(Token![if]) {
+            return Ok(NodeAst::If(input.parse()?));
+        }
+        if input.peek(Token![for]) {
+            return Ok(NodeAst::For(input.parse()?));
         }
         Ok(NodeAst::Component(input.parse()?))
+    }
+}
+
+/// `{ node* }`
+fn nodes(input: ParseStream) -> Result<Vec<NodeAst>> {
+    let content;
+    braced!(content in input);
+    let mut nodes = Vec::new();
+    while !content.is_empty() {
+        nodes.push(content.parse()?);
+    }
+    Ok(nodes)
+}
+
+impl Parse for IfAst {
+    fn parse(input: ParseStream) -> Result<Self> {
+        let keyword = input.parse::<Token![if]>()?.span;
+        let negated = input.peek(Token![!]);
+        if negated {
+            input.parse::<Token![!]>()?;
+        }
+        let first: Ident = input.parse()?;
+        let condition = dotted(first, input)?;
+        if !input.peek(syn::token::Brace) {
+            return Err(input.error("a condition is a path to a bool, `state.flag` or `!state.flag`; compute anything else in Rust"));
+        }
+        let then_branch = nodes(input)?;
+        let mut else_branch = Vec::new();
+        if input.peek(Token![else]) {
+            input.parse::<Token![else]>()?;
+            if input.peek(Token![if]) {
+                else_branch.push(NodeAst::If(input.parse()?));
+            } else {
+                else_branch = nodes(input)?;
+            }
+        }
+        Ok(IfAst { keyword, negated, condition, then_branch, else_branch })
+    }
+}
+
+impl Parse for ForAst {
+    fn parse(input: ParseStream) -> Result<Self> {
+        let keyword = input.parse::<Token![for]>()?.span;
+        let item: Ident = input.parse()?;
+        input.parse::<Token![in]>()?;
+        let first: Ident = input.parse()?;
+        let collection = dotted(first, input)?;
+        let mut key = None;
+        if input.peek(Token![,]) {
+            input.parse::<Token![,]>()?;
+            let name: Ident = input.parse()?;
+            if name != "key" {
+                return Err(syn::Error::new(name.span(), "expected `key: item.field`"));
+            }
+            input.parse::<Token![:]>()?;
+            let first: Ident = input.parse()?;
+            key = Some(dotted(first, input)?);
+        }
+        let children = nodes(input)?;
+        Ok(ForAst { keyword, item, collection, key, children })
     }
 }
 
@@ -211,11 +274,11 @@ mod tests {
         )
         .unwrap();
         assert_eq!(page.name, "SettingsPage");
-        let NodeAst::Component(stack) = page.root;
+        let NodeAst::Component(stack) = page.root else { panic!() };
         assert_eq!(stack.name, "VStack");
         assert!(matches!(&stack.args[0], ArgAst::Named(p) if p.name == "spacing"));
         assert_eq!(stack.children.len(), 2);
-        let NodeAst::Component(button) = &stack.children[1];
+        let NodeAst::Component(button) = &stack.children[1] else { panic!() };
         assert_eq!(button.modifiers[0].name, "on_click");
         assert!(matches!(&button.modifiers[0].args[0], ArgAst::Positional(ValueAst::Path(_))));
     }
@@ -231,7 +294,7 @@ mod tests {
             }"#,
         )
         .unwrap();
-        let NodeAst::Component(button) = page.root;
+        let NodeAst::Component(button) = page.root else { panic!() };
         assert_eq!(button.props.len(), 2);
         assert!(button.children.is_empty());
     }
@@ -248,17 +311,38 @@ mod tests {
             }"#,
         )
         .unwrap();
-        let NodeAst::Component(toggle) = page.root;
+        let NodeAst::Component(toggle) = page.root else { panic!() };
         assert!(matches!(&toggle.props[0].value, ValueAst::Bind(p) if p.segments.len() == 2));
         assert!(matches!(&toggle.props[1].value, ValueAst::Path(_)));
         assert!(matches!(&toggle.modifiers[0].args[0], ArgAst::Positional(ValueAst::Dotted(p)) if p.segments.len() == 3));
 
         let page = parse(r#"page P(state: S, action: A) { Button("a").on_click(Action::Pick(state.id)) }"#).unwrap();
-        let NodeAst::Component(button) = page.root;
+        let NodeAst::Component(button) = page.root else { panic!() };
         assert!(matches!(
             &button.modifiers[0].args[0],
             ArgAst::Positional(ValueAst::Call(_, payload)) if matches!(**payload, ValueAst::Dotted(_))
         ));
+    }
+
+    #[test]
+    fn parses_if_and_for() {
+        let page = parse(
+            r#"page P(state: S, action: A) {
+                VStack {
+                    if !state.signed_in { Text("a") } else if state.busy { Text("b") } else { Text("c") Text("d") }
+                    for item in state.items, key: item.uuid { Text(item.title) }
+                }
+            }"#,
+        )
+        .unwrap();
+        let NodeAst::Component(stack) = page.root else { panic!() };
+        let NodeAst::If(cond) = &stack.children[0] else { panic!() };
+        assert!(cond.negated);
+        let NodeAst::If(nested) = &cond.else_branch[0] else { panic!() };
+        assert_eq!(nested.else_branch.len(), 2);
+        let NodeAst::For(each) = &stack.children[1] else { panic!() };
+        assert_eq!(each.item, "item");
+        assert_eq!(each.key.as_ref().unwrap().segments[1], "uuid");
     }
 
     #[test]

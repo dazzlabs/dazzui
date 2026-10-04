@@ -25,5 +25,7 @@ pub use error::SemanticError;
 pub use generate::{Options, Target, compile, crate_lib_name, generate};
 pub use project::{CompiledPage, Project, SourceFile};
 pub use registry::Registry;
-pub use rust_types::{AppDef, EnumDef, Fields, FloatType, IntType, RustType, RustTypes, StructDef, Variant};
+pub use rust_types::{
+    AppDef, EnumDef, Fields, FloatType, IntType, RustType, RustTypes, StructDef, Variant, selector as read_selector,
+};
 pub use semantic::lower;

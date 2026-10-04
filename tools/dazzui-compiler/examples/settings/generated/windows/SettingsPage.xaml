@@ -3,6 +3,7 @@
     x:Class="Settings.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Settings"
     xmlns:dazz="using:DazzUI">
     <!-- source: settings.rs:7 -->
     <StackPanel Spacing="16">
@@ -22,13 +23,46 @@
             <!-- source: settings.rs:21 -->
             <TextBlock Text="Update automatically"/>
         </StackPanel>
-        <!-- source: settings.rs:23 -->
-        <TextBlock Text="{x:Bind ViewModel.State.Status, Mode=OneWay}" x:Name="Text2"/>
         <!-- source: settings.rs:24 -->
+        <TextBlock Text="Plugins" x:Name="Text2"/>
+        <!-- source: settings.rs:25 -->
         <StackPanel Orientation="Horizontal" Spacing="8">
-            <!-- source: settings.rs:25 -->
-            <dazz:Button Content="Save" Variant="Filled" IsEnabled="{x:Bind Not(ViewModel.State.Saved), Mode=OneWay}" Click="OnSaveClick"/>
-            <!-- source: settings.rs:29 -->
+            <!-- source: settings.rs:26 -->
+            <dazz:Switch IsChecked="{x:Bind ViewModel.State.ShowDisabledPlugins, Mode=OneWay}" Click="OnSetShowDisabledPluginsClick"/>
+            <!-- source: settings.rs:30 -->
+            <TextBlock Text="Show disabled plugins"/>
+        </StackPanel>
+        <!-- source: settings.rs:32 -->
+        <ItemsRepeater ItemsSource="{x:Bind ViewModel.State.VisiblePlugins, Mode=OneWay}">
+            <ItemsRepeater.Layout>
+                <StackLayout Orientation="Vertical" Spacing="16"/>
+            </ItemsRepeater.Layout>
+            <ItemsRepeater.ItemTemplate>
+                <DataTemplate x:DataType="local:Plugin">
+                    <!-- source: settings.rs:33 -->
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <!-- source: settings.rs:34 -->
+                        <TextBlock Text="{x:Bind Name}"/>
+                        <!-- source: settings.rs:35 (if) -->
+                        <!-- source: settings.rs:36 -->
+                        <dazz:Button Content="Disable" Variant="Recessed" Click="OnTogglePluginClick" Visibility="{x:Bind local:SettingsPage.Visible1(Enabled)}"/>
+                        <!-- source: settings.rs:35 (else) -->
+                        <!-- source: settings.rs:38 -->
+                        <dazz:Button Content="Enable" Variant="Filled" Click="OnTogglePluginClick" Visibility="{x:Bind local:SettingsPage.Visible2(Enabled)}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsRepeater.ItemTemplate>
+        </ItemsRepeater>
+        <!-- source: settings.rs:44 (if) -->
+        <!-- source: settings.rs:45 -->
+        <TextBlock Text="Disabled plugins are hidden" x:Name="Text3" Visibility="{x:Bind local:SettingsPage.Visible1(ViewModel.State.HasHiddenPlugins), Mode=OneWay}"/>
+        <!-- source: settings.rs:48 -->
+        <TextBlock Text="{x:Bind ViewModel.State.Status, Mode=OneWay}" x:Name="Text4"/>
+        <!-- source: settings.rs:49 -->
+        <StackPanel Orientation="Horizontal" Spacing="8">
+            <!-- source: settings.rs:50 -->
+            <dazz:Button Content="Save" Variant="Filled" IsEnabled="{x:Bind local:SettingsPage.Not(ViewModel.State.Saved), Mode=OneWay}" Click="OnSaveClick"/>
+            <!-- source: settings.rs:54 -->
             <dazz:Button Content="Reset to defaults" Variant="Recessed" Click="OnResetClick"/>
         </StackPanel>
     </StackPanel>

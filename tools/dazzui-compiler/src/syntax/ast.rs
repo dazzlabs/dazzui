@@ -13,6 +13,40 @@ pub struct PageAst {
 #[derive(Clone, Debug)]
 pub enum NodeAst {
     Component(ComponentAst),
+    If(IfAst),
+    For(ForAst),
+}
+
+impl NodeAst {
+    /// Where the node starts: a component's name, or its keyword.
+    pub fn span(&self) -> Span {
+        match self {
+            NodeAst::Component(c) => c.name.span(),
+            NodeAst::If(i) => i.keyword,
+            NodeAst::For(f) => f.keyword,
+        }
+    }
+}
+
+/// `if [!]path { … } [else { … }]`; `else if` is an `if` alone in the
+/// else branch.
+#[derive(Clone, Debug)]
+pub struct IfAst {
+    pub keyword: Span,
+    pub negated: bool,
+    pub condition: DottedAst,
+    pub then_branch: Vec<NodeAst>,
+    pub else_branch: Vec<NodeAst>,
+}
+
+/// `for item in path [, key: item.field] { … }`
+#[derive(Clone, Debug)]
+pub struct ForAst {
+    pub keyword: Span,
+    pub item: Ident,
+    pub collection: DottedAst,
+    pub key: Option<DottedAst>,
+    pub children: Vec<NodeAst>,
 }
 
 /// `Name(args) { body } .modifier(args)…`

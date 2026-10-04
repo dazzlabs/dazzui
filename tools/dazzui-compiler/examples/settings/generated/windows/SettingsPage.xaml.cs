@@ -18,7 +18,9 @@ public sealed partial class SettingsPage : Page
         Loaded += (_, _) =>
         {
             SetFace(Text1, "titleMedium");
-            SetFace(Text2, "captionMedium");
+            SetFace(Text2, "titleMedium");
+            SetFace(Text3, "captionMedium");
+            SetFace(Text4, "captionMedium");
         };
     }
 
@@ -26,11 +28,19 @@ public sealed partial class SettingsPage : Page
 
     private void OnSetAutoUpdateClick(object sender, RoutedEventArgs e) => ViewModel.Send(new SettingsAction.SetAutoUpdate(((ToggleButton)sender).IsChecked == true));
 
+    private void OnSetShowDisabledPluginsClick(object sender, RoutedEventArgs e) => ViewModel.Send(new SettingsAction.SetShowDisabledPlugins(((ToggleButton)sender).IsChecked == true));
+
+    private void OnTogglePluginClick(object sender, RoutedEventArgs e) => ViewModel.Send(new SettingsAction.TogglePlugin(((Plugin)((FrameworkElement)sender).DataContext).Id));
+
     private void OnSaveClick(object sender, RoutedEventArgs e) => ViewModel.Send(new SettingsAction.Save());
 
     private void OnResetClick(object sender, RoutedEventArgs e) => ViewModel.Send(new SettingsAction.Reset());
 
     public static bool Not(bool value) => !value;
+
+    public static Visibility Visible1(bool c0) => c0 ? Visibility.Visible : Visibility.Collapsed;
+
+    public static Visibility Visible2(bool c0) => !c0 ? Visibility.Visible : Visibility.Collapsed;
 
     private void SetFace(TextBlock text, string token)
     {

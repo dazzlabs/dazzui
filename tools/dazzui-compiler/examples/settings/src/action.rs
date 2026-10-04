@@ -5,4 +5,7 @@ pub enum SettingsAction {
     SetAutoUpdate(bool),
     Save,
     Reset,
+    SetShowDisabledPlugins(bool),
+    /// Turns the plugin with this id on or off.
+    TogglePlugin(u32),
 }

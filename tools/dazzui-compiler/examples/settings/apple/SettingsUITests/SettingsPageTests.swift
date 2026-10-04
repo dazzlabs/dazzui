@@ -7,12 +7,24 @@ import XCTest
 @MainActor
 final class SettingsPageTests: XCTestCase {
   func testTheFirstSnapshotIsRustsDefault() {
+    let state = SettingsViewModel().state
+    XCTAssertEqual(state.saved, true)
+    XCTAssertEqual(state.status, "No changes")
+    XCTAssertEqual(state.plugins.map(\.name), ["Spell check", "Grammar", "Translate"])
+  }
+
+  /// A selector crosses as a field, recomputed in Rust for every snapshot.
+  func testSelectorsAndListsCross() {
     let model = SettingsViewModel()
-    XCTAssertEqual(
-      model.state,
-      SettingsState(
-        launchAtStartup: false, autoUpdate: false, saved: true, saves: 0, status: "No changes")
-    )
+    XCTAssertEqual(model.state.visiblePlugins.map(\.id), [1, 3])
+    XCTAssertTrue(model.state.hasHiddenPlugins)
+
+    model.send(.setShowDisabledPlugins(true))
+    XCTAssertEqual(model.state.visiblePlugins.map(\.name), ["Spell check", "Grammar", "Translate"])
+    XCTAssertFalse(model.state.hasHiddenPlugins)
+
+    model.send(.togglePlugin(2))
+    XCTAssertEqual(model.state.visiblePlugins[1], Plugin(id: 2, name: "Grammar", enabled: true))
   }
 
   /// A toggle sends its new value; Rust's `update` changes the state and

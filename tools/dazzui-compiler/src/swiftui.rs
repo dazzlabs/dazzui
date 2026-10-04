@@ -7,7 +7,7 @@
 //! written `DazzUI.Button`, because DazzUI's names shadow SwiftUI's.
 
 use crate::CompiledPage;
-use crate::bridge::{Bridge, Scalar};
+use crate::bridge::{Bridge, BridgeStruct, FieldType, Scalar};
 use crate::ir::{
     ActionPayload, ActionRef, Component, Expr, GeneratedFile, UiNode, Value, camel_case, page_stem,
 };
@@ -69,12 +69,41 @@ fn view(compiled: &CompiledPage) -> String {
 
 /// Whether anything reads the theme's tokens: a styled text does.
 fn uses_theme(node: &UiNode) -> bool {
-    let UiNode::Component(c) = node;
-    (c.id.as_str() == "Text" && c.prop("style").is_some()) || c.children.iter().any(uses_theme)
+    match node {
+        UiNode::Component(c) => {
+            (c.id.as_str() == "Text" && c.prop("style").is_some()) || c.children.iter().any(uses_theme)
+        }
+        UiNode::If { then_branch, else_branch, .. } => then_branch.iter().chain(else_branch).any(uses_theme),
+        UiNode::ForEach { children, .. } => children.iter().any(uses_theme),
+    }
 }
 
 fn node(w: &mut Writer, node: &UiNode) {
-    let UiNode::Component(c) = node;
+    let c = match node {
+        UiNode::Component(c) => c,
+        UiNode::If { condition, then_branch, else_branch, source } => {
+            w.line(&format!("// source: {}", source.short()));
+            let not = if condition.negated { "!" } else { "" };
+            w.line(&format!("if {not}{} {{", expr(&condition.value)));
+            w.indent(|w| then_branch.iter().for_each(|n| self::node(w, n)));
+            if else_branch.is_empty() {
+                w.line("}");
+            } else {
+                w.line("} else {");
+                w.indent(|w| else_branch.iter().for_each(|n| self::node(w, n)));
+                w.line("}");
+            }
+            return;
+        }
+        UiNode::ForEach { collection, item, key, children, source, .. } => {
+            w.line(&format!("// source: {}", source.short()));
+            let key: Vec<String> = key.segments.iter().map(|s| camel_case(s)).collect();
+            w.line(&format!("ForEach({}, id: \\.{}) {{ {item} in", state(&collection.segments), key.join(".")));
+            w.indent(|w| children.iter().for_each(|n| self::node(w, n)));
+            w.line("}");
+            return;
+        }
+    };
     w.line(&format!("// source: {}", c.source.short()));
     match c.id.as_str() {
         stack @ ("VStack" | "HStack") => {
@@ -166,6 +195,10 @@ fn expr(e: &Expr) -> String {
         Expr::Literal(Value::Bool(b)) => b.to_string(),
         Expr::Literal(Value::Int(n)) => n.to_string(),
         Expr::State(path) => state(&path.segments),
+        Expr::Local(path) => {
+            let segments: Vec<String> = path.segments.iter().map(|s| camel_case(s)).collect();
+            format!("{}.{}", path.local, segments.join("."))
+        }
         Expr::EnumCase { ty, case } => unreachable!("`{ty}::{case}` is lowered by the prop that takes it"),
     }
 }
@@ -219,6 +252,30 @@ fn swift_type(ty: Scalar) -> &'static str {
     }
 }
 
+/// The Swift type a field is.
+fn field_type(ty: &FieldType) -> String {
+    match ty {
+        FieldType::Scalar(scalar) => swift_type(*scalar).into(),
+        FieldType::Struct(name) => name.clone(),
+        FieldType::List(name) => format!("[{name}]"),
+    }
+}
+
+fn swift_struct(w: &mut Writer, bridge: &Bridge, st: &BridgeStruct) {
+    if st.name == bridge.state {
+        w.line(&format!("/// `{}`, as Rust last handed it over.", st.name));
+    } else {
+        w.line(&format!("/// `{}`, from the Rust app core.", st.name));
+    }
+    w.line(&format!("public struct {}: Equatable {{", st.name));
+    w.indent(|w| {
+        for field in &st.fields {
+            w.line(&format!("public let {}: {}", camel_case(&field.name), field_type(&field.ty)));
+        }
+    });
+    w.line("}");
+}
+
 fn view_model(compiled: &CompiledPage) -> String {
     let stem = page_stem(&compiled.page.name);
     let bridge = &compiled.bridge;
@@ -229,15 +286,10 @@ fn view_model(compiled: &CompiledPage) -> String {
     w.line(&format!("import {}", c_module(bridge)));
     w.line("import Combine");
     w.line("");
-    w.line(&format!("/// `{}`, as Rust last handed it over.", bridge.state));
-    w.line(&format!("public struct {}: Equatable {{", bridge.state));
-    w.indent(|w| {
-        for field in &bridge.fields {
-            w.line(&format!("public let {}: {}", camel_case(&field.name), swift_type(field.ty)));
-        }
-    });
-    w.line("}");
-    w.line("");
+    for st in &bridge.structs {
+        swift_struct(&mut w, bridge, st);
+        w.line("");
+    }
     w.line(&format!("public enum {}: Equatable {{", bridge.action));
     w.indent(|w| {
         for v in &bridge.variants {
@@ -312,24 +364,41 @@ fn bridge_glue(compiled: &CompiledPage) -> String {
         w.indent(|w| {
             w.line(&format!("let dto = {}(app)", bridge.function("get_state")));
             w.line(&format!("defer {{ {}(dto) }}", bridge.function("state_free")));
-            w.line("self.init(");
-            w.indent(|w| {
-                let n = bridge.fields.len();
-                for (i, field) in bridge.fields.iter().enumerate() {
-                    let value = match field.ty {
-                        Scalar::Str => format!("decode(dto.{})", field.name),
-                        _ => format!("dto.{}", field.name),
-                    };
-                    let comma = if i + 1 < n { "," } else { "" };
-                    w.line(&format!("{}: {value}{comma}", camel_case(&field.name)));
-                }
-            });
-            w.line(")");
+            w.line("self.init(dto: dto)");
         });
         w.line("}");
     });
     w.line("}");
     w.line("");
+    for st in &bridge.structs {
+        w.line(&format!("extension {} {{", st.name));
+        w.indent(|w| {
+            w.line(&format!("init(dto: {}) {{", bridge.dto(&st.name)));
+            w.indent(|w| {
+                w.line("self.init(");
+                w.indent(|w| {
+                    let n = st.fields.len();
+                    for (i, field) in st.fields.iter().enumerate() {
+                        let value = match &field.ty {
+                            FieldType::Scalar(Scalar::Str) => format!("decode(dto.{})", field.name),
+                            FieldType::Scalar(_) => format!("dto.{}", field.name),
+                            FieldType::Struct(t) => format!("{t}(dto: dto.{})", field.name),
+                            FieldType::List(t) => format!(
+                                "UnsafeBufferPointer(start: dto.{0}.ptr, count: dto.{0}.len).map({t}.init(dto:))",
+                                field.name
+                            ),
+                        };
+                        let comma = if i + 1 < n { "," } else { "" };
+                        w.line(&format!("{}: {value}{comma}", camel_case(&field.name)));
+                    }
+                });
+                w.line(")");
+            });
+            w.line("}");
+        });
+        w.line("}");
+        w.line("");
+    }
     w.line(&format!("extension {} {{", bridge.action));
     w.indent(|w| {
         w.line("/// Lays the action out as Rust reads it, for the length of `body`.");

@@ -7,5 +7,5 @@ pub mod update;
 pub mod views;
 
 pub use action::SettingsAction;
-pub use state::SettingsState;
+pub use state::{Plugin, SettingsState};
 pub use update::update;

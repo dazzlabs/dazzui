@@ -9,9 +9,11 @@
 //!
 //! The data flow is a whole snapshot each time: the native side sends an
 //! action, Rust's `update` runs, every subscriber is called back on the
-//! sending thread, and the native side reads the state again. Strings in
-//! the snapshot are Rust's, handed back with `<prefix>_state_free`; strings
-//! in an action are the caller's, borrowed for the length of the call.
+//! sending thread, and the native side reads the state again. Strings and
+//! lists in the snapshot are Rust's, handed back with `<prefix>_state_free`;
+//! strings in an action are the caller's, borrowed for the length of the
+//! call. A selector crosses as the field it reads as, computed when the
+//! snapshot is taken.
 
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
@@ -28,16 +30,39 @@ pub struct Bridge {
     pub prefix: String,
     pub state: String,
     pub action: String,
+    /// `crate::action::SettingsAction`
+    pub action_path: String,
     pub update: String,
-    pub fields: Vec<BridgeField>,
+    /// Every struct that crosses, each after the structs it holds; the
+    /// state is last.
+    pub structs: Vec<BridgeStruct>,
     pub variants: Vec<BridgeVariant>,
 }
 
-/// A state field as it crosses.
+#[derive(Clone, Debug, PartialEq)]
+pub struct BridgeStruct {
+    pub name: String,
+    /// `crate::state::Plugin`
+    pub path: String,
+    pub fields: Vec<BridgeField>,
+}
+
+/// A field as it crosses.
 #[derive(Clone, Debug, PartialEq)]
 pub struct BridgeField {
     pub name: String,
-    pub ty: Scalar,
+    pub ty: FieldType,
+    /// Read by calling the selector rather than the field.
+    pub selector: bool,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum FieldType {
+    Scalar(Scalar),
+    /// Another struct, held by value.
+    Struct(String),
+    /// A `Vec` of structs, as a pointer and a length.
+    List(String),
 }
 
 /// An action variant: its tag, and the one value it carries, if any.
@@ -55,7 +80,8 @@ impl BridgeVariant {
     }
 }
 
-/// The types that cross. A string crosses as `NuiStr`, bytes and a length.
+/// The scalar types that cross. A string crosses as `NuiStr`, bytes and a
+/// length.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Scalar {
     Bool,
@@ -71,7 +97,7 @@ impl Scalar {
             RustType::String => Some(Scalar::Str),
             RustType::Int(i) => Some(Scalar::Int(*i)),
             RustType::Float(f) => Some(Scalar::Float(*f)),
-            RustType::Other(_) => None,
+            RustType::Vec(_) | RustType::Other(_) => None,
         }
     }
 
@@ -114,24 +140,16 @@ impl Scalar {
 impl Bridge {
     /// The bridge for `app`, checked against the Rust types it names.
     pub fn new(app: &AppDef, types: &RustTypes) -> Result<Self, String> {
-        let state: &StructDef = types
-            .structs
-            .get(&app.state)
-            .ok_or_else(|| format!("cannot find struct `{}`, the state `{}` updates", app.state, app.function))?;
         let action: &EnumDef = types
             .enums
             .get(&app.action)
             .ok_or_else(|| format!("cannot find enum `{}`, the action `{}` takes", app.action, app.function))?;
+        if !types.structs.contains_key(&app.state) {
+            return Err(format!("cannot find struct `{}`, the state `{}` updates", app.state, app.function));
+        }
+        let mut structs = Vec::new();
+        collect_struct(&app.state, types, &mut Vec::new(), &mut structs)?;
 
-        let fields = state
-            .fields
-            .iter()
-            .map(|(name, ty)| {
-                Scalar::from_rust(ty).map(|ty| BridgeField { name: name.clone(), ty }).ok_or_else(|| {
-                    format!("`{}.{name}` is a `{}`, which cannot cross to the native side yet", state.name, ty.rust())
-                })
-            })
-            .collect::<Result<_, _>>()?;
         let variants = action
             .variants
             .iter()
@@ -159,18 +177,29 @@ impl Bridge {
             stem,
             state: app.state.clone(),
             action: app.action.clone(),
+            action_path: action.path.clone(),
             update: app.function.clone(),
-            fields,
+            structs,
             variants,
         })
+    }
+
+    pub fn state_struct(&self) -> &BridgeStruct {
+        self.structs.last().expect("the state crosses")
     }
 
     pub fn has_payloads(&self) -> bool {
         self.variants.iter().any(|v| v.payload.is_some())
     }
 
+    /// Whether a string crosses anywhere in the snapshot.
     pub fn has_strings(&self) -> bool {
-        self.fields.iter().any(|f| f.ty == Scalar::Str)
+        self.structs.iter().flat_map(|s| &s.fields).any(|f| f.ty == FieldType::Scalar(Scalar::Str))
+    }
+
+    /// Whether `name` is the struct some field holds a list of.
+    pub fn is_listed(&self, name: &str) -> bool {
+        self.structs.iter().flat_map(|s| &s.fields).any(|f| f.ty == FieldType::List(name.into()))
     }
 
     /// `settings_send`
@@ -178,38 +207,38 @@ impl Bridge {
         format!("{}_{name}", self.prefix)
     }
 
+    /// The C name of a struct's DTO: `SettingsStateDto` for the state,
+    /// `SettingsPluginDto` for another, prefixed so that two bridges in one
+    /// program cannot collide.
+    pub fn dto(&self, name: &str) -> String {
+        if name == self.state { format!("{}StateDto", self.stem) } else { format!("{}{name}Dto", self.stem) }
+    }
+
+    /// `SettingsPluginList`
+    pub fn list(&self, name: &str) -> String {
+        format!("{}{name}List", self.stem)
+    }
+
     /// The `extern "C"` side, which the `#[app]` macro emits beside the
-    /// update function it marks. It names the state, action and update by
-    /// what they are called there.
+    /// update function it marks. Types are named by their paths, so it
+    /// compiles wherever the update function is.
     pub fn rust(&self) -> TokenStream {
         let module = format_ident!("__dazzui_bridge_{}", self.prefix);
-        let state = format_ident!("{}", self.state);
-        let action = format_ident!("{}", self.action);
+        let path = |p: &str| syn::parse_str::<syn::Path>(p).expect("a Rust path");
+        let state = path(&self.state_struct().path);
+        let action = path(&self.action_path);
         let update = format_ident!("{}", self.update);
         let app = format_ident!("{}App", self.stem);
-        let state_dto = format_ident!("{}StateDto", self.stem);
+        let state_dto = format_ident!("{}", self.dto(&self.state));
         let action_dto = format_ident!("{}ActionDto", self.stem);
         let payload = format_ident!("{}ActionPayload", self.stem);
+        let state_to_dto = format_ident!("dto_{}", snake_case(&self.state));
+        let state_free_dto = format_ident!("free_{}", snake_case(&self.state));
         let f = |name: &str| format_ident!("{}", self.function(name));
         let (create, destroy, get_state, state_free, send, subscribe) =
             (f("create"), f("destroy"), f("get_state"), f("state_free"), f("send"), f("subscribe"));
 
-        let dto_fields = self.fields.iter().map(|field| {
-            let name = format_ident!("{}", field.name);
-            let ty = field.ty.rust_dto();
-            quote!(pub #name: #ty)
-        });
-        let to_dto = self.fields.iter().map(|field| {
-            let name = format_ident!("{}", field.name);
-            match field.ty {
-                Scalar::Str => quote!(#name: NuiStr::owned(&state.#name)),
-                _ => quote!(#name: state.#name),
-            }
-        });
-        let frees = self.fields.iter().filter(|f| f.ty == Scalar::Str).map(|field| {
-            let name = format_ident!("{}", field.name);
-            quote!(unsafe { state.#name.free() };)
-        });
+        let structs = self.structs.iter().map(|s| self.rust_struct(s));
 
         let members = self.variants.iter().filter_map(|v| {
             let member = format_ident!("{}", v.member());
@@ -239,7 +268,6 @@ impl Bridge {
             #[doc(hidden)]
             #[allow(non_camel_case_types, clippy::missing_safety_doc)]
             pub mod #module {
-                use super::*;
                 use ::core::ffi::c_void;
 
                 /// UTF-8 bytes and their length. Rust owns those in a state
@@ -274,8 +302,21 @@ impl Bridge {
                     }
                 }
 
-                #[repr(C)]
-                pub struct #state_dto { #(#dto_fields,)* }
+                /// Hands `items` over as a pointer and a length, which
+                /// `take_list` takes back.
+                #[allow(dead_code)]
+                fn give_list<T>(items: Box<[T]>) -> (*const T, usize) {
+                    let len = items.len();
+                    (Box::into_raw(items) as *const T, len)
+                }
+
+                #[allow(dead_code)]
+                unsafe fn take_list<T>(ptr: *const T, len: usize) -> Vec<T> {
+                    let slice = ::core::ptr::slice_from_raw_parts_mut(ptr as *mut T, len);
+                    unsafe { Box::from_raw(slice) }.into_vec()
+                }
+
+                #(#structs)*
 
                 #payload_type
 
@@ -306,14 +347,12 @@ impl Bridge {
 
                 #[unsafe(no_mangle)]
                 pub unsafe extern "C" fn #get_state(app: *const #app) -> #state_dto {
-                    let state = unsafe { &(*app).state };
-                    #state_dto { #(#to_dto,)* }
+                    #state_to_dto(unsafe { &(*app).state })
                 }
 
                 #[unsafe(no_mangle)]
                 pub unsafe extern "C" fn #state_free(state: #state_dto) {
-                    let _ = &state;
-                    #(#frees)*
+                    unsafe { #state_free_dto(state) }
                 }
 
                 #[unsafe(no_mangle)]
@@ -339,6 +378,99 @@ impl Bridge {
         }
     }
 
+    /// One struct's DTO, its list type if a field holds a list of it, and
+    /// the functions that build and free them.
+    fn rust_struct(&self, s: &BridgeStruct) -> TokenStream {
+        let path = syn::parse_str::<syn::Path>(&s.path).expect("a Rust path");
+        let dto = format_ident!("{}", self.dto(&s.name));
+        let to_dto = format_ident!("dto_{}", snake_case(&s.name));
+        let free = format_ident!("free_{}", snake_case(&s.name));
+        let ident = |n: &str| format_ident!("{}", n);
+        let fields = s.fields.iter().map(|f| {
+            let name = ident(&f.name);
+            let ty = match &f.ty {
+                FieldType::Scalar(scalar) => scalar.rust_dto(),
+                FieldType::Struct(t) => {
+                    let t = ident(&self.dto(t));
+                    quote!(#t)
+                }
+                FieldType::List(t) => {
+                    let t = ident(&self.list(t));
+                    quote!(#t)
+                }
+            };
+            quote!(pub #name: #ty)
+        });
+        let reads = s.fields.iter().map(|f| {
+            let name = ident(&f.name);
+            if f.selector { quote!(let #name = &value.#name();) } else { quote!(let #name = &value.#name;) }
+        });
+        let builds = s.fields.iter().map(|f| {
+            let name = ident(&f.name);
+            match &f.ty {
+                FieldType::Scalar(Scalar::Str) => quote!(#name: NuiStr::owned(#name)),
+                FieldType::Scalar(_) => quote!(#name: *#name),
+                FieldType::Struct(t) => {
+                    let to = format_ident!("dto_{}", snake_case(t));
+                    quote!(#name: #to(#name))
+                }
+                FieldType::List(t) => {
+                    let to = format_ident!("dto_{}", snake_case(t));
+                    let list = ident(&self.list(t));
+                    quote!(#name: {
+                        let (ptr, len) = give_list(#name.iter().map(#to).collect());
+                        #list { ptr, len }
+                    })
+                }
+            }
+        });
+        let frees = s.fields.iter().filter_map(|f| {
+            let name = ident(&f.name);
+            match &f.ty {
+                FieldType::Scalar(Scalar::Str) => Some(quote!(unsafe { dto.#name.free() };)),
+                FieldType::Scalar(_) => None,
+                FieldType::Struct(t) => {
+                    let free = format_ident!("free_{}", snake_case(t));
+                    Some(quote!(unsafe { #free(dto.#name) };))
+                }
+                FieldType::List(t) => {
+                    let free = format_ident!("free_{}", snake_case(t));
+                    Some(quote! {
+                        for item in unsafe { take_list(dto.#name.ptr, dto.#name.len) } {
+                            unsafe { #free(item) };
+                        }
+                    })
+                }
+            }
+        });
+        let list = self.is_listed(&s.name).then(|| {
+            let list = ident(&self.list(&s.name));
+            quote! {
+                #[repr(C)]
+                pub struct #list {
+                    pub ptr: *const #dto,
+                    pub len: usize,
+                }
+            }
+        });
+        quote! {
+            #[repr(C)]
+            pub struct #dto { #(#fields,)* }
+
+            #list
+
+            fn #to_dto(value: &#path) -> #dto {
+                #(#reads)*
+                #dto { #(#builds,)* }
+            }
+
+            #[allow(unused_variables)]
+            unsafe fn #free(dto: #dto) {
+                #(#frees)*
+            }
+        }
+    }
+
     /// The C header the Swift side imports.
     pub fn c_header(&self) -> String {
         let stem = &self.stem;
@@ -353,12 +485,30 @@ impl Bridge {
         h += "typedef void (*NuiStateChanged)(void *context);\n\n";
         h += &format!("typedef struct {stem}App {stem}App;\n\n");
 
-        h += &format!("/// A snapshot of `{}`. Hand it back to `{}`.\n", self.state, self.function("state_free"));
-        h += "typedef struct {\n";
-        for field in &self.fields {
-            h += &format!("  {} {};\n", field.ty.c(), field.name);
+        for s in &self.structs {
+            if s.name == self.state {
+                h += &format!("/// A snapshot of `{}`. Hand it back to `{}`.\n", self.state, self.function("state_free"));
+            } else {
+                h += &format!("/// A `{}`.\n", s.name);
+            }
+            h += "typedef struct {\n";
+            for field in &s.fields {
+                let ty = match &field.ty {
+                    FieldType::Scalar(scalar) => scalar.c().to_string(),
+                    FieldType::Struct(t) => self.dto(t),
+                    FieldType::List(t) => self.list(t),
+                };
+                h += &format!("  {ty} {};\n", field.name);
+            }
+            h += &format!("}} {};\n\n", self.dto(&s.name));
+            if self.is_listed(&s.name) {
+                h += &format!(
+                    "typedef struct {{\n  const {} *ptr;\n  size_t len;\n}} {};\n\n",
+                    self.dto(&s.name),
+                    self.list(&s.name)
+                );
+            }
         }
-        h += &format!("}} {stem}StateDto;\n\n");
 
         for v in &self.variants {
             h += &format!("#define {upper}_ACTION_{} {}u\n", snake_case(&v.name).to_uppercase(), v.tag);
@@ -381,10 +531,11 @@ impl Bridge {
         h += &format!("}} {stem}ActionDto;\n\n");
 
         let f = |name: &str| self.function(name);
+        let state_dto = self.dto(&self.state);
         h += &format!("{stem}App *{}(void);\n", f("create"));
         h += &format!("void {}({stem}App *app);\n", f("destroy"));
-        h += &format!("{stem}StateDto {}(const {stem}App *app);\n", f("get_state"));
-        h += &format!("void {}({stem}StateDto state);\n", f("state_free"));
+        h += &format!("{state_dto} {}(const {stem}App *app);\n", f("get_state"));
+        h += &format!("void {}({state_dto} state);\n", f("state_free"));
         h += &format!("void {}({stem}App *app, {stem}ActionDto action);\n", f("send"));
         h += "/// `callback` runs after every action, on the thread that sent it.\n";
         h += &format!("void {}({stem}App *app, NuiStateChanged callback, void *context);\n", f("subscribe"));
@@ -398,6 +549,55 @@ impl Bridge {
     }
 }
 
+/// Adds `name` and every struct it holds to `out`, those it holds first.
+/// `path` is the chain being collected, to refuse a struct that holds
+/// itself.
+fn collect_struct(
+    name: &str,
+    types: &RustTypes,
+    path: &mut Vec<String>,
+    out: &mut Vec<BridgeStruct>,
+) -> Result<(), String> {
+    if out.iter().any(|s| s.name == name) {
+        return Ok(());
+    }
+    if path.iter().any(|p| p == name) {
+        return Err(format!("`{name}` holds itself, which cannot cross: {} → {name}", path.join(" → ")));
+    }
+    let def: &StructDef = &types.structs[name];
+    if def.path.is_empty() {
+        return Err(format!("`{name}` has selectors but no struct the CLI can read"));
+    }
+    path.push(name.into());
+    let mut fields = Vec::new();
+    let named = def.fields.iter().map(|f| (f, false)).chain(def.selectors.iter().map(|f| (f, true)));
+    for ((field, ty), selector) in named {
+        let what = if selector { "selector" } else { "field" };
+        let struct_name = |ty: &RustType| match ty {
+            RustType::Other(n) if types.structs.contains_key(n) => Some(n.clone()),
+            _ => None,
+        };
+        let ty = if let Some(scalar) = Scalar::from_rust(ty) {
+            FieldType::Scalar(scalar)
+        } else if let Some(n) = struct_name(ty) {
+            collect_struct(&n, types, path, out)?;
+            FieldType::Struct(n)
+        } else if let RustType::Vec(elem) = ty {
+            let n = struct_name(elem).ok_or_else(|| {
+                format!("`{name}.{field}`, a {what}, is a `{}`: a Vec crosses only as a Vec of structs", ty.rust())
+            })?;
+            collect_struct(&n, types, path, out)?;
+            FieldType::List(n)
+        } else {
+            return Err(format!("`{name}.{field}` is a `{}`, which cannot cross to the native side yet", ty.rust()));
+        };
+        fields.push(BridgeField { name: field.clone(), ty, selector });
+    }
+    path.pop();
+    out.push(BridgeStruct { name: name.into(), path: def.path.clone(), fields });
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -405,7 +605,7 @@ mod tests {
     fn bridge(src: &str) -> Result<Bridge, String> {
         let file: syn::File = syn::parse_str(src).unwrap();
         let mut types = RustTypes::default();
-        types.collect(&file.items);
+        types.collect(&file.items, "crate");
         Bridge::new(&types.apps[0].clone(), &types)
     }
 
@@ -418,7 +618,11 @@ mod tests {
         )
         .unwrap();
         assert_eq!(b.prefix, "note");
-        assert_eq!(b.fields.iter().map(|f| f.ty).collect::<Vec<_>>(), [Scalar::Bool, Scalar::Int(IntType::U32), Scalar::Str]);
+        let types: Vec<_> = b.state_struct().fields.iter().map(|f| f.ty.clone()).collect();
+        assert_eq!(
+            types,
+            [FieldType::Scalar(Scalar::Bool), FieldType::Scalar(Scalar::Int(IntType::U32)), FieldType::Scalar(Scalar::Str)]
+        );
         assert_eq!(b.variants[1], BridgeVariant { name: "Rename".into(), tag: 1, payload: Some(Scalar::Str) });
         let header = b.c_header();
         assert!(header.contains("  uint32_t count;\n"));
@@ -428,12 +632,40 @@ mod tests {
     }
 
     #[test]
-    fn rejects_what_cannot_cross() {
-        let err = bridge(
-            "struct S { items: Vec<String> } enum A { Go }
+    fn carries_lists_nested_structs_and_selectors() {
+        let b = bridge(
+            "struct S { items: Vec<Item>, owner: User }
+             struct Item { id: u32, tags: Vec<Tag> }
+             struct Tag { name: String }
+             struct User { name: String }
+             impl S { #[selector] fn first(&self) -> Vec<Item> { todo!() } }
+             enum A { Go }
              #[app] fn update(state: &mut S, action: A) {}",
         )
-        .unwrap_err();
-        assert_eq!(err, "`S.items` is a `Vec<String>`, which cannot cross to the native side yet");
+        .unwrap();
+        let names: Vec<_> = b.structs.iter().map(|s| s.name.as_str()).collect();
+        assert_eq!(names, ["Tag", "Item", "User", "S"]);
+        let first = &b.state_struct().fields[2];
+        assert_eq!((first.name.as_str(), &first.ty, first.selector), ("first", &FieldType::List("Item".into()), true));
+        let header = b.c_header();
+        let tag = header.find("} STagDto;").unwrap();
+        let tag_list = header.find("} STagList;").unwrap();
+        let item = header.find("} SItemDto;").unwrap();
+        assert!(tag < tag_list && tag_list < item, "each C type after the ones it holds");
+        assert!(header.contains("  SItemList items;\n  SUserDto owner;\n  SItemList first;\n"));
+        syn::parse2::<syn::File>(b.rust()).expect("the Rust side parses");
+    }
+
+    #[test]
+    fn rejects_what_cannot_cross() {
+        let err = |src: &str| {
+            bridge(&format!("{src} enum A {{ Go }} #[app] fn update(state: &mut S, action: A) {{}}")).unwrap_err()
+        };
+        assert_eq!(
+            err("struct S { tags: Vec<String> }"),
+            "`S.tags`, a field, is a `Vec<String>`: a Vec crosses only as a Vec of structs"
+        );
+        assert_eq!(err("struct S { at: Instant }"), "`S.at` is a `Instant`, which cannot cross to the native side yet");
+        assert_eq!(err("struct S { child: Vec<S> }"), "`S` holds itself, which cannot cross: S → S");
     }
 }

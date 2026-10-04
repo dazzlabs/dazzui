@@ -7,13 +7,13 @@ pub enum Value {
 }
 
 /// A read-only value a prop is given.
-///
-/// Loop locals join in Phase 3 (see DESIGN.md §3).
 #[derive(Clone, Debug, PartialEq)]
 pub enum Expr {
     Literal(Value),
     /// `state.user.name`
     State(StatePath),
+    /// `item.title`, inside `for item in …`
+    Local(LocalPath),
     /// `TextStyle::Title`
     EnumCase { ty: String, case: String },
 }
@@ -30,6 +30,23 @@ impl StatePath {
     pub fn dotted(&self) -> String {
         self.segments.join(".")
     }
+}
+
+/// A path into a loop's element: `item.owner.name` is `item` and
+/// `["owner", "name"]`.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct LocalPath {
+    pub local: String,
+    pub segments: Vec<String>,
+}
+
+/// What an `if` tests: a bool, read from the state or a loop element, and
+/// whether it is negated.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Condition {
+    pub negated: bool,
+    /// `Expr::State` or `Expr::Local`, of a bool.
+    pub value: Expr,
 }
 
 /// An action an event sends back to Rust: a variant of the page's action

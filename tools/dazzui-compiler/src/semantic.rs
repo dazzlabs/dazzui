@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
 use crate::ir::{
-    ActionPayload, ActionRef, ChildrenSpec, Component, ComponentId, ComponentSpec, EventSpec, Expr, Page,
-    PropSpec, PropType, SourceLocation, StatePath, UiBinding, UiEvent, UiNode, UiProp, Value,
+    ActionPayload, ActionRef, ChildrenSpec, Component, ComponentId, ComponentSpec, Condition, EventSpec, Expr,
+    LocalPath, Page, PropSpec, PropType, SourceLocation, StatePath, UiBinding, UiEvent, UiNode, UiProp, Value,
 };
-use crate::syntax::{ArgAst, ComponentAst, DottedAst, NodeAst, PageAst, ValueAst, spanned_path};
+use crate::syntax::{ArgAst, ComponentAst, DottedAst, ForAst, IfAst, NodeAst, PageAst, ValueAst, spanned_path};
 use proc_macro2::Span;
 use syn::Lit;
 
@@ -25,7 +25,7 @@ pub fn lower(
 ) -> Result<Page, Vec<SemanticError>> {
     let action_type = last_ident(&page.action_ty);
     let state_type = last_ident(&page.state_ty);
-    let mut cx = Cx { registry, file, errors: Vec::new(), types, action_enum: None, state_struct: None };
+    let mut cx = Cx { registry, scopes: Vec::new(), file, errors: Vec::new(), types, action_enum: None, state_struct: None };
 
     if let Some(types) = types {
         match types.enums.get(&action_type) {
@@ -67,8 +67,15 @@ fn last_ident(path: &syn::Path) -> String {
     path.segments.last().map(|s| s.ident.to_string()).unwrap_or_default()
 }
 
+/// A `for` item in scope, and the struct its elements are.
+struct Scope<'a> {
+    name: String,
+    element: Option<&'a StructDef>,
+}
+
 struct Cx<'a> {
     registry: &'a Registry,
+    scopes: Vec<Scope<'a>>,
     file: &'a str,
     errors: Vec<SemanticError>,
     types: Option<&'a RustTypes>,
@@ -93,6 +100,8 @@ impl Cx<'_> {
     fn node(&mut self, node: &NodeAst) -> Option<UiNode> {
         match node {
             NodeAst::Component(c) => self.component(c).map(UiNode::Component),
+            NodeAst::If(i) => self.if_node(i),
+            NodeAst::For(f) => self.for_node(f),
         }
     }
 
@@ -105,9 +114,7 @@ impl Cx<'_> {
                     .help_opt(suggest(&name, self.registry.names())),
             );
             // Its children are still worth checking.
-            for child in &ast.children {
-                self.node(child);
-            }
+            self.nodes(&ast.children);
             return None;
         };
         let errors_before = self.errors.len();
@@ -234,17 +241,12 @@ impl Cx<'_> {
 
         let mut children = Vec::new();
         if spec.children == ChildrenSpec::None && !ast.children.is_empty() {
-            let NodeAst::Component(first) = &ast.children[0];
             self.errors.push(
-                SemanticError::new(first.name.span(), format!("`{name}` takes no children"))
+                SemanticError::new(ast.children[0].span(), format!("`{name}` takes no children"))
                     .label("child given here"),
             );
         } else {
-            for child in &ast.children {
-                if let Some(node) = self.node(child) {
-                    children.push(node);
-                }
-            }
+            children = self.nodes(&ast.children);
         }
 
         if self.errors.len() > errors_before {
@@ -337,7 +339,7 @@ impl Cx<'_> {
                     ));
                     return None;
                 }
-                return self.state_path(path, ty, prop, component).map(Expr::State);
+                return self.path_value(path, ty, prop, component);
             }
             ValueAst::NegInt(_) => "an integer",
             ValueAst::Lit(Lit::Str(_)) => "a string",
@@ -397,39 +399,59 @@ impl Cx<'_> {
         Some(Expr::EnumCase { ty: spec.name.clone(), case: case_name })
     }
 
-    /// `state.a.b`, checked against the state struct when it is at hand.
-    fn state_path(&mut self, path: &DottedAst, ty: &PropType, prop: &str, component: &str) -> Option<StatePath> {
+    /// `state.a.b` or `item.a.b`, resolved against the state struct or the
+    /// loop's element when they are at hand: the value, and the Rust type
+    /// it reads.
+    fn resolve(&mut self, path: &DottedAst) -> Option<(Expr, Option<RustType>)> {
         let (head, rest) = path.segments.split_first().expect("a dotted path has a segment");
-        if head != "state" {
+        let head_name = head.to_string();
+        let (start, local) = if head == "state" {
+            if let Some(scope) = self.scopes.last() {
+                self.errors.push(
+                    SemanticError::new(head.span(), "the state is not read inside a `for`")
+                        .label(format!("read `{}` here", scope.name))
+                        .help("derive what each element needs with a #[selector] that puts it on the element"),
+                );
+                return None;
+            }
+            (self.state_struct, None)
+        } else if let Some(scope) = self.scopes.iter().rev().find(|s| s.name == head_name) {
+            (scope.element, Some(head_name.clone()))
+        } else {
+            let names: Vec<&str> = self.scopes.iter().map(|s| s.name.as_str()).chain(["state"]).collect();
             self.errors.push(
                 SemanticError::new(head.span(), format!("cannot find value `{head}`"))
-                    .label("not a state path")
-                    .help("a value path starts with `state`: `state.field`"),
+                    .label("not the state or a loop item")
+                    .help_opt(suggest(&head_name, names.iter().copied()).or_else(|| {
+                        Some("a value path starts with `state` or a `for` item: `state.field`".into())
+                    })),
             );
             return None;
-        }
+        };
         if rest.is_empty() {
             self.errors.push(
-                SemanticError::new(head.span(), "the whole state is not a value")
-                    .help("name a field: `state.field`"),
+                SemanticError::new(head.span(), format!("the whole `{head}` is not a value"))
+                    .help(format!("name a field: `{head}.field`")),
             );
             return None;
         }
         let segments: Vec<String> = rest.iter().map(ToString::to_string).collect();
+        let expr = match local {
+            Some(local) => Expr::Local(LocalPath { local, segments }),
+            None => Expr::State(StatePath { segments }),
+        };
         let Some(types) = self.types else {
-            return Some(StatePath { segments });
+            return Some((expr, None));
         };
-        let Some(mut current) = self.state_struct else {
-            // Already reported: the state type itself was not found.
-            return None;
-        };
+        // Already reported: the state type, or the loop's element, was not found.
+        let mut current = start?;
         let mut field_ty = None;
         for (i, ident) in rest.iter().enumerate() {
             let name = ident.to_string();
             let Some(found) = current.field(&name) else {
                 self.errors.push(
                     SemanticError::new(ident.span(), format!("no field `{name}` on type `{}`", current.name))
-                        .help_opt(suggest(&name, current.fields.iter().map(|(n, _)| n.as_str()))),
+                        .help_opt(suggest(&name, current.names())),
                 );
                 return None;
             };
@@ -447,21 +469,25 @@ impl Cx<'_> {
                 };
                 current = nested;
             }
-            field_ty = Some(found);
+            field_ty = Some(found.clone());
         }
-        let field_ty = field_ty.expect("a path of at least one field");
-        let fits = matches!(
-            (ty, field_ty),
-            (PropType::Bool, RustType::Bool) | (PropType::String, RustType::String) | (PropType::Int, RustType::Int(_))
-        );
-        if !fits {
+        Some((expr, field_ty))
+    }
+
+    /// A path read as a prop of type `ty`: a state field or a loop item's.
+    fn path_value(&mut self, path: &DottedAst, ty: &PropType, prop: &str, component: &str) -> Option<Expr> {
+        let (expr, field_ty) = self.resolve(path)?;
+        if let Some(field_ty) = field_ty
+            && !fits(ty, &field_ty)
+        {
+            let written: Vec<String> = path.segments.iter().map(ToString::to_string).collect();
             self.errors.push(
                 SemanticError::new(
                     path.span(),
                     format!(
-                        "property `{prop}` on `{component}` expects {}, but `state.{}` is a `{}`",
+                        "property `{prop}` on `{component}` expects {}, but `{}` is a `{}`",
                         ty.name(),
-                        segments.join("."),
+                        written.join("."),
                         field_ty.rust()
                     ),
                 )
@@ -469,7 +495,122 @@ impl Cx<'_> {
             );
             return None;
         }
-        Some(StatePath { segments })
+        Some(expr)
+    }
+
+    /// `bind(state.x)`: only the state can be written back to.
+    fn state_path(&mut self, path: &DottedAst, ty: &PropType, prop: &str, component: &str) -> Option<StatePath> {
+        if path.segments[0] != "state" && self.scopes.iter().any(|s| path.segments[0] == s.name) {
+            self.errors.push(
+                SemanticError::new(path.span(), "only a state field can be bound")
+                    .help("a loop item is a copy of the state's; change it with an action"),
+            );
+            return None;
+        }
+        match self.path_value(path, ty, prop, component)? {
+            Expr::State(path) => Some(path),
+            _ => None,
+        }
+    }
+
+    fn nodes(&mut self, nodes: &[NodeAst]) -> Vec<UiNode> {
+        nodes.iter().filter_map(|n| self.node(n)).collect()
+    }
+
+    fn if_node(&mut self, ast: &IfAst) -> Option<UiNode> {
+        let value = self.path_value(&ast.condition, &PropType::Bool, "condition", "if");
+        let then_branch = self.nodes(&ast.then_branch);
+        let else_branch = self.nodes(&ast.else_branch);
+        Some(UiNode::If {
+            condition: Condition { negated: ast.negated, value: value? },
+            then_branch,
+            else_branch,
+            source: self.loc(ast.keyword),
+        })
+    }
+
+    fn for_node(&mut self, ast: &ForAst) -> Option<UiNode> {
+        let item = ast.item.to_string();
+        if !self.scopes.is_empty() {
+            self.errors.push(
+                SemanticError::new(ast.keyword, "a `for` inside a `for` is not supported yet")
+                    .help("flatten the elements in a #[selector]"),
+            );
+            return None;
+        }
+        if item == "state" {
+            self.errors.push(SemanticError::new(ast.item.span(), "a loop item cannot be called `state`"));
+            return None;
+        }
+        let (collection, collection_ty) = self.resolve(&ast.collection)?;
+        let Expr::State(collection) = collection else { unreachable!("outside a loop, a path is the state's") };
+
+        let element = match (&collection_ty, self.types) {
+            (None, _) => None,
+            (Some(RustType::Vec(elem)), Some(types)) => match &**elem {
+                RustType::Other(name) if types.structs.contains_key(name) => Some(&types.structs[name]),
+                other => {
+                    self.errors.push(
+                        SemanticError::new(
+                            ast.collection.span(),
+                            format!("a `for` runs over a Vec of structs; this is a `Vec<{}>`", other.rust()),
+                        )
+                        .help("wrap each value in a struct with an `id`"),
+                    );
+                    return None;
+                }
+            },
+            (Some(other), _) => {
+                self.errors.push(
+                    SemanticError::new(
+                        ast.collection.span(),
+                        format!("`state.{}` is a `{}`, not a Vec", collection.dotted(), other.rust()),
+                    )
+                    .label("expected a Vec"),
+                );
+                return None;
+            }
+        };
+
+        self.scopes.push(Scope { name: item.clone(), element });
+        let key = self.key(ast, element);
+        let children = self.nodes(&ast.children);
+        self.scopes.pop();
+        Some(UiNode::ForEach {
+            collection,
+            item,
+            element: element.map(|e| e.name.clone()).unwrap_or_default(),
+            key: key?,
+            children,
+            source: self.loc(ast.keyword),
+        })
+    }
+
+    /// The field that tells elements apart: `key: item.field`, or `id`.
+    fn key(&mut self, ast: &ForAst, element: Option<&StructDef>) -> Option<LocalPath> {
+        let item = ast.item.to_string();
+        let Some(key) = &ast.key else {
+            if let Some(element) = element
+                && element.field("id").is_none()
+            {
+                self.errors.push(
+                    SemanticError::new(ast.item.span(), format!("`{}` has no `id` to tell its elements apart", element.name))
+                        .help(format!("name the field that does: `for {item} in …, key: {item}.field`")),
+                );
+                return None;
+            }
+            return Some(LocalPath { local: item, segments: vec!["id".into()] });
+        };
+        if key.segments[0] != item {
+            self.errors.push(
+                SemanticError::new(key.span(), format!("a key is a field of the loop item: `{item}.field`")),
+            );
+            return None;
+        }
+        match self.resolve(key)? {
+            (Expr::Local(path), _) => Some(path),
+            _ => None,
+        }
     }
 
     /// The action an event entry sends: `.on_click(Action::Save)`,
@@ -592,8 +733,8 @@ impl Cx<'_> {
         Some(ActionRef { variant, payload })
     }
 
-    /// The value an action is given, `Action::Pick(state.id)`: a literal or
-    /// a state path of exactly the variant's field type.
+    /// The value an action is given, `Action::Pick(item.id)`: a literal, or
+    /// a path of exactly the variant's field type.
     fn payload_expr(&mut self, value: &ValueAst, field: Option<&RustType>) -> Option<Expr> {
         let ty = match field {
             Some(RustType::Bool) => Some(PropType::Bool),
@@ -609,23 +750,21 @@ impl Cx<'_> {
             None => None,
         };
         match (value, ty) {
-            (ValueAst::Dotted(path), ty) => {
-                let path = match &ty {
-                    Some(ty) => self.state_path(path, ty, "payload", "action")?,
-                    None => self.state_path(path, &PropType::Bool, "payload", "action")?,
-                };
-                // A state field of the right kind but another width —
-                // `u8` for a `u32` — would not convert on every side.
-                if let (Some(field), Some(found)) = (field, self.field_type(&path))
-                    && field != found
+            (ValueAst::Dotted(path), _) => {
+                let (expr, found) = self.resolve(path)?;
+                // A field of the right kind but another width — `u8` for a
+                // `u32` — would not convert on every side.
+                if let (Some(field), Some(found)) = (field, found)
+                    && *field != found
                 {
+                    let written: Vec<String> = path.segments.iter().map(ToString::to_string).collect();
                     self.errors.push(SemanticError::new(
                         value.span(),
-                        format!("the action carries a `{}`, but `state.{}` is a `{}`", field.rust(), path.dotted(), found.rust()),
+                        format!("the action carries a `{}`, but `{}` is a `{}`", field.rust(), written.join("."), found.rust()),
                     ));
                     return None;
                 }
-                Some(Expr::State(path))
+                Some(expr)
             }
             (ValueAst::Lit(Lit::Str(s)), None | Some(PropType::String)) => Some(Expr::Literal(Value::String(s.value()))),
             (ValueAst::Lit(Lit::Bool(b)), None | Some(PropType::Bool)) => Some(Expr::Literal(Value::Bool(b.value))),
@@ -633,28 +772,22 @@ impl Cx<'_> {
                 self.int(value).map(|n| Expr::Literal(Value::Int(n)))
             }
             (_, ty) => {
-                let expected = ty.map(|t| t.name()).unwrap_or_else(|| "a literal or a state path".into());
+                let expected = ty.map(|t| t.name()).unwrap_or_else(|| "a literal or a path".into());
                 self.errors.push(SemanticError::new(
                     value.span(),
-                    format!("an action payload is a literal or a state path; expected {expected}"),
+                    format!("an action payload is a literal or a path; expected {expected}"),
                 ));
                 None
             }
         }
     }
+}
 
-    fn field_type(&self, path: &StatePath) -> Option<&RustType> {
-        let types = self.types?;
-        let mut current = self.state_struct?;
-        let (last, init) = path.segments.split_last()?;
-        for name in init {
-            current = match current.field(name)? {
-                RustType::Other(n) => types.structs.get(n)?,
-                _ => return None,
-            };
-        }
-        current.field(last)
-    }
+fn fits(ty: &PropType, field: &RustType) -> bool {
+    matches!(
+        (ty, field),
+        (PropType::Bool, RustType::Bool) | (PropType::String, RustType::String) | (PropType::Int, RustType::Int(_))
+    )
 }
 
 fn is_action(path: &syn::Path) -> bool {
@@ -669,12 +802,15 @@ mod tests {
     fn types() -> RustTypes {
         let file: syn::File = syn::parse_str(
             "enum A { Save, SetOn(bool), Rename(String), Pick(u32) }
-             struct S { on: bool, name: String, count: u32, small: u8, user: User }
-             struct User { locked: bool }",
+             struct S { on: bool, name: String, count: u32, small: u8, user: User, items: Vec<Item>, tags: Vec<String> }
+             struct User { locked: bool }
+             struct Item { id: u32, title: String, done: bool }
+             struct Row { uuid: String }
+             impl S { #[selector] fn open(&self) -> Vec<Item> { todo!() } #[selector] fn rows(&self) -> Vec<Row> { todo!() } }",
         )
         .unwrap();
         let mut types = RustTypes::default();
-        types.collect(&file.items);
+        types.collect(&file.items, "crate");
         types
     }
 
@@ -687,9 +823,9 @@ mod tests {
     #[test]
     fn lowers_a_page_and_fills_defaults() {
         let page = lower_str(r#"page P(state: S, action: A) { VStack { Button("Save").on_click(Action::Save) } }"#).unwrap();
-        let UiNode::Component(stack) = &page.root;
+        let UiNode::Component(stack) = &page.root else { panic!() };
         assert_eq!(stack.prop("spacing"), Some(&Expr::Literal(Value::Int(0))));
-        let UiNode::Component(button) = &stack.children[0];
+        let UiNode::Component(button) = &stack.children[0] else { panic!() };
         assert_eq!(button.event("click").unwrap().variant, "Save");
         assert_eq!(button.prop("style"), Some(&Expr::EnumCase { ty: "ButtonStyle".into(), case: "Secondary".into() }));
         assert_eq!(button.prop("disabled"), Some(&Expr::Literal(Value::Bool(false))));
@@ -707,7 +843,7 @@ mod tests {
             }"#,
         )
         .unwrap();
-        let UiNode::Component(stack) = &page.root;
+        let UiNode::Component(stack) = &page.root else { panic!() };
         let [UiNode::Component(text), UiNode::Component(toggle), UiNode::Component(button)] = stack.children.as_slice()
         else {
             panic!("three children");
@@ -791,6 +927,67 @@ mod tests {
                 "no field `lockd` on type `User`",
                 "`bind` on `value` needs an action to write the change back",
                 "`Text` takes no children",
+            ]
+        );
+    }
+
+    #[test]
+    fn lowers_if_and_for() {
+        let page = lower_str(
+            r#"page P(state: S, action: A) { VStack {
+                if !state.on { Text("off") } else { Text("on") }
+                for item in state.open {
+                    if item.done { Text(item.title) }
+                    Button("Pick").on_click(Action::Pick(item.id))
+                }
+                for row in state.rows, key: row.uuid { Text(row.uuid) }
+            } }"#,
+        )
+        .unwrap();
+        let UiNode::Component(stack) = &page.root else { panic!() };
+        let UiNode::If { condition, else_branch, .. } = &stack.children[0] else { panic!() };
+        assert!(condition.negated);
+        assert_eq!(condition.value, Expr::State(StatePath { segments: vec!["on".into()] }));
+        assert_eq!(else_branch.len(), 1);
+        let UiNode::ForEach { collection, element, key, children, .. } = &stack.children[1] else { panic!() };
+        assert_eq!((collection.dotted().as_str(), element.as_str()), ("open", "Item"));
+        assert_eq!(key, &LocalPath { local: "item".into(), segments: vec!["id".into()] });
+        let UiNode::If { condition, .. } = &children[0] else { panic!() };
+        assert_eq!(condition.value, Expr::Local(LocalPath { local: "item".into(), segments: vec!["done".into()] }));
+        let UiNode::ForEach { key, .. } = &stack.children[2] else { panic!() };
+        assert_eq!(key.segments, ["uuid"]);
+    }
+
+    #[test]
+    fn checks_if_and_for() {
+        let errors = lower_str(
+            r#"page P(state: S, action: A) { VStack {
+                if state.name { Text("a") }
+                for item in state.count { Text("b") }
+                for tag in state.tags { Text("c") }
+                for row in state.rows { Text("d") }
+                for item in state.items {
+                    Text(state.name)
+                    Text(item.titel)
+                    Text(iten.title)
+                    for other in state.items { Text("e") }
+                }
+                Text(item.title)
+            } }"#,
+        )
+        .unwrap_err();
+        assert_eq!(
+            errors,
+            [
+                "property `condition` on `if` expects Bool, but `state.name` is a `String`",
+                "`state.count` is a `u32`, not a Vec",
+                "a `for` runs over a Vec of structs; this is a `Vec<String>`",
+                "`Row` has no `id` to tell its elements apart",
+                "the state is not read inside a `for`",
+                "no field `titel` on type `Item`",
+                "cannot find value `iten`",
+                "a `for` inside a `for` is not supported yet",
+                "cannot find value `item`",
             ]
         );
     }

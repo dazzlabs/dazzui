@@ -32,17 +32,55 @@ public struct SettingsPage: View {
         // source: settings.rs:21
         Text("Update automatically")
       }
-      // source: settings.rs:23
+      // source: settings.rs:24
+      Text("Plugins")
+        .font(theme.vars.titleMedium.font)
+        .lineSpacing(theme.vars.titleMedium.lineSpacing)
+      // source: settings.rs:25
+      HStack(spacing: 8) {
+        // source: settings.rs:26
+        DazzUI.Switch(checked: model.state.showDisabledPlugins, onCheckedChange: { model.send(.setShowDisabledPlugins($0)) })
+        // source: settings.rs:30
+        Text("Show disabled plugins")
+      }
+      // source: settings.rs:32
+      ForEach(model.state.visiblePlugins, id: \.id) { plugin in
+        // source: settings.rs:33
+        HStack(spacing: 8) {
+          // source: settings.rs:34
+          Text(plugin.name)
+          // source: settings.rs:35
+          if plugin.enabled {
+            // source: settings.rs:36
+            DazzUI.Button(action: { model.send(.togglePlugin(plugin.id)) }) {
+              Text("Disable")
+            }
+          } else {
+            // source: settings.rs:38
+            DazzUI.Button(variant: .filled, action: { model.send(.togglePlugin(plugin.id)) }) {
+              Text("Enable")
+            }
+          }
+        }
+      }
+      // source: settings.rs:44
+      if model.state.hasHiddenPlugins {
+        // source: settings.rs:45
+        Text("Disabled plugins are hidden")
+          .font(theme.vars.captionMedium.font)
+          .lineSpacing(theme.vars.captionMedium.lineSpacing)
+      }
+      // source: settings.rs:48
       Text(model.state.status)
         .font(theme.vars.captionMedium.font)
         .lineSpacing(theme.vars.captionMedium.lineSpacing)
-      // source: settings.rs:24
+      // source: settings.rs:49
       HStack(spacing: 8) {
-        // source: settings.rs:25
+        // source: settings.rs:50
         DazzUI.Button(variant: .filled, enabled: !model.state.saved, action: { model.send(.save) }) {
           Text("Save")
         }
-        // source: settings.rs:29
+        // source: settings.rs:54
         DazzUI.Button(action: { model.send(.reset) }) {
           Text("Reset to defaults")
         }

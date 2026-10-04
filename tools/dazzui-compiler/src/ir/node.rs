@@ -1,4 +1,4 @@
-use super::{ActionRef, Expr, SourceLocation, StatePath};
+use super::{ActionRef, Condition, Expr, LocalPath, SourceLocation, StatePath};
 
 /// One `ui!` page: a root node, and the Rust types its state and actions
 /// are.
@@ -14,6 +14,19 @@ pub struct Page {
 #[derive(Clone, Debug, PartialEq)]
 pub enum UiNode {
     Component(Component),
+    /// Either branch's nodes stand in the parent as if written there.
+    If { condition: Condition, then_branch: Vec<UiNode>, else_branch: Vec<UiNode>, source: SourceLocation },
+    /// The children, once per element, standing in the parent as if written
+    /// there. `element` is the Rust struct each element is; `key` is the
+    /// field that tells one element from another.
+    ForEach {
+        collection: StatePath,
+        item: String,
+        element: String,
+        key: LocalPath,
+        children: Vec<UiNode>,
+        source: SourceLocation,
+    },
 }
 
 /// The semantic name of a component — `VStack`, `Button` — and the key it

@@ -3,6 +3,13 @@
 import CSettings
 import Combine
 
+/// `Plugin`, from the Rust app core.
+public struct Plugin: Equatable {
+  public let id: UInt32
+  public let name: String
+  public let enabled: Bool
+}
+
 /// `SettingsState`, as Rust last handed it over.
 public struct SettingsState: Equatable {
   public let launchAtStartup: Bool
@@ -10,6 +17,10 @@ public struct SettingsState: Equatable {
   public let saved: Bool
   public let saves: UInt32
   public let status: String
+  public let showDisabledPlugins: Bool
+  public let plugins: [Plugin]
+  public let visiblePlugins: [Plugin]
+  public let hasHiddenPlugins: Bool
 }
 
 public enum SettingsAction: Equatable {
@@ -17,6 +28,8 @@ public enum SettingsAction: Equatable {
   case setAutoUpdate(Bool)
   case save
   case reset
+  case setShowDisabledPlugins(Bool)
+  case togglePlugin(UInt32)
 }
 
 /// Holds the latest snapshot of the Rust state and sends actions to

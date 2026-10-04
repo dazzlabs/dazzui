@@ -110,7 +110,17 @@ impl SettingsState {
 // ui! 里：for item in state.visible_items { … }
 ```
 
-`for` 的元素需要身份：元素类型有 `id` 字段时直接用；否则写 `for item in state.items, key: item.uuid`（Phase 3 定稿）。
+`for` 的元素需要身份：元素类型有 `id` 字段时直接用；否则写 `for item in state.items, key: item.uuid`。
+
+**Phase 3 定稿的规则：**
+
+- `for` 只遍历 state 上的 `Vec<结构体>`（字段或 selector）。标量的 Vec 要先包成带 `id` 的结构体。
+  暂不支持 `for` 嵌套 `for`，要嵌套就在 selector 里摊平。
+- 循环体里只读循环变量，不读 `state.`：WinUI 的 DataTemplate 里 x:Bind 够不到页面的 ViewModel，
+  所以每个元素需要的值由 Rust 的 selector 放到元素上。这条对所有平台都一样，页面才能在每个平台都编得过。
+- `if` 的条件是一个 bool 路径（`state.x`、`item.x`），可以取反，可以 `else if`；比较和组合都放到 selector 里。
+- `#[selector]` 标在 `impl` 里的 `fn name(&self) -> T` 上；页面把它当字段读，快照时由 Rust 计算后过桥。
+  `ui!` 宏也读 crate 的 `src/`，只为了知道路径里哪一段是 selector，要写成方法调用。
 
 ---
 
@@ -375,8 +385,8 @@ help: did you mean `title`?
 | `Expr::State(p)` | `{x:Bind ViewModel.State.P, Mode=OneWay}` |
 | `Binding` | DazzUI 控件的 `IsChecked` 等属性是普通 DP，但写回要经过 Rust：用 `OneWay` 绑定读，写回走生成的事件处理器 `ViewModel.Send(new SetX(value))`。不用 `TwoWay`，因为 `TwoWay` 会绕过 Rust 直接改 C# 侧的状态 |
 | `UiEvent` | `Click="OnSaveClick"`，code-behind 里生成 `OnSaveClick`，内容只有一行 `ViewModel.Send(…)` |
-| `If` | `x:Load="{x:Bind ViewModel.State.X, Mode=OneWay}"`；`else` 分支绑定生成的取反属性 `NotX`，或 `x:Bind` 函数 `local:Ui.Not(…)` |
-| `ForEach` | `<ItemsRepeater ItemsSource="{x:Bind ViewModel.State.Items}">` 加上 `<DataTemplate x:DataType="local:ItemDto">` |
+| `If` | 分支里每个节点设 `Visibility="{x:Bind local:Page.VisibleN(…), Mode=OneWay}"`，`VisibleN` 是按条件取反组合生成的静态函数，嵌套的 `if` 合成一个。不用 `x:Load`：它要 `x:Name`，在 DataTemplate 里也不好用 |
+| `ForEach` | `<ItemsRepeater ItemsSource="{x:Bind ViewModel.State.Items, Mode=OneWay}">`，Layout 用和外层 stack 同方向、同间距的 `StackLayout`，加上 `<DataTemplate x:DataType="local:Item">`；模板里多个节点时包一层同方向的 StackPanel。事件处理器从 `sender` 的 `DataContext` 取元素 |
 | modifier | `disabled` → `IsEnabled`，`padding` → `Padding`/`Margin`，`style` → 组件的枚举属性 |
 
 生成的文件：`SettingsPage.xaml`、`SettingsPage.xaml.cs`（`partial class`，
@@ -431,7 +441,7 @@ void settings_subscribe(NuiApp*, NuiStateChanged, void* context);
   没有任何变体带载荷时，DTO 里没有 union。变体最多带一个值。
 - 能过桥的类型：`bool`、各宽度整数（`usize`/`isize` → `uintptr_t`/`intptr_t`）、`f32`/`f64`、
   `String`（`NuiStr`）。快照里的字符串属于 Rust，由 `*_state_free` 归还；action 里的字符串
-  属于调用方，只借到调用结束。Vec 和嵌套 struct 留给 Phase 3。
+  属于调用方，只借到调用结束。Phase 3 起，嵌套结构体按值过桥，`Vec<结构体>` 以 `{ ptr, len }` 的类型化列表过桥，`state_free` 递归归还；selector 当字段过桥。
 - 回调里不持有 app 的借用：先复制订阅者列表再逐个调用，订阅者可以安全地重新 `get_state`。
 - Swift：生成 `CSettings/`（头文件 + module map），宿主的 `Package.swift` 用 `.systemLibrary`
   引入，并按完整路径链接 `libsettings_example.a`（`-l` 会选中旁边的 dylib）。Cargo 不由
@@ -480,7 +490,7 @@ backend 只读 `ir`（加上 `RustTypes`），互相不引用。
 |---|---|---|
 | **1** ✅ | Text、Button、VStack；字面量 prop；children；click → action；读取 Rust action enum | parser/semantic 单测；对 `generated/` 做 golden test；example crate 能编译（宏的类型检查生效）；生成的 Swift 能和真实的 DazzUI 一起用 xcodebuild 编过 |
 | **2** ✅ | state 表达式、Toggle、HStack、binding、读取 Rust state struct、`.style` / `.disabled` modifier、带载荷的 action、C ABI 桥 | 宿主 app 点开关后 Rust 的 state 发生变化（xcodebuild test 经 C ABI 往返；Rust 侧单测直接调 `extern "C"`）|
-| 3 | if、for、selector | — |
+| **3** ✅ | if、for、selector；`Vec<结构体>` 和嵌套结构体过桥 | 宿主 app 渲染 `for` + selector 列表和条件分支；xcodebuild test 验证列表和 selector 经 C ABI 往返 |
 | 4 | TOML registry、自定义组件、SettingsSection/SettingsRow、slot | 完整的 demo SettingsPage |
 | 5 | rustc 样式的诊断渲染、所有类型的错误、`dazzui-compiler check`、trybuild 测试 compile-fail | — |
 

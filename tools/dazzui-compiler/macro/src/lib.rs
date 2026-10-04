@@ -8,14 +8,19 @@
 //! line that wrote it.
 //!
 //! `#[app]` marks the update function and emits, beside it, the `extern "C"`
-//! side of the bridge the native page talks to it through.
+//! side of the bridge the native page talks to it through. `#[selector]`
+//! marks a method on the state whose value the page reads like a field.
+//!
+//! Both `ui!` and `#[app]` read the crate's `src/` as the CLI does: `#[app]`
+//! for the types the bridge carries, `ui!` only to know which names in a
+//! path are selectors, to be called rather than read.
 
 use std::path::Path;
 
 use dazzui_compiler::bridge::Bridge;
 use dazzui_compiler::ir::{ComponentSpec, PropType};
 use dazzui_compiler::syntax::{ArgAst, ComponentAst, DottedAst, NodeAst, PageAst, ValueAst, parse_page};
-use dazzui_compiler::{AppDef, Project, Registry, lower};
+use dazzui_compiler::{AppDef, Project, Registry, RustType, RustTypes, lower, read_selector};
 use proc_macro::TokenStream;
 use proc_macro2::{Span, TokenStream as TokenStream2};
 use quote::{ToTokens, format_ident, quote, quote_spanned};
@@ -42,32 +47,128 @@ fn expand(input: TokenStream2) -> syn::Result<TokenStream2> {
 fn type_check(page: &PageAst, registry: &Registry) -> TokenStream2 {
     let state = &page.state_ty;
     let check = format_ident!("__dazzui_compiler_check_{}", page.name);
-    let mut lets = Vec::new();
-    collect(&page.root, &page.action_ty, registry, &mut lets);
+    let types = crate_types();
+    let state_name = page.state_ty.segments.last().map(|s| s.ident.to_string());
+    let mut cx = Check { registry, action: &page.action_ty, types: types.as_ref(), state: state_name, scopes: Vec::new() };
+    let lets = cx.node(&page.root);
     quote! {
         #[doc(hidden)]
         const _: () = {
             #[allow(dead_code, unused_variables, non_snake_case, clippy::all)]
             fn #check(state: &#state) {
-                #(#lets)*
+                #lets
             }
         };
     }
 }
 
-fn collect(node: &NodeAst, action: &syn::Path, registry: &Registry, out: &mut Vec<TokenStream2>) {
-    let NodeAst::Component(component) = node;
-    // An unknown component is the registry's error, already reported.
-    if let Some(spec) = registry.get(&component.name.to_string()) {
-        check_component(component, spec, action, out);
-    }
-    for child in &component.children {
-        collect(child, action, registry, out);
-    }
+/// The Rust types of the crate being compiled, read from its `src/`.
+fn crate_types() -> Option<RustTypes> {
+    let dir = std::env::var("CARGO_MANIFEST_DIR").ok()?;
+    let src = Path::new(&dir).join("src");
+    Project::scan(&src, Path::new(&dir)).ok().map(|p| p.types)
 }
 
-/// One `let` per state path and action the component names.
-fn check_component(component: &ComponentAst, spec: &ComponentSpec, action: &syn::Path, out: &mut Vec<TokenStream2>) {
+/// What the type check is walking: the page, and the loop items in scope.
+struct Check<'a> {
+    registry: &'a Registry,
+    action: &'a syn::Path,
+    types: Option<&'a RustTypes>,
+    /// The state struct's name.
+    state: Option<String>,
+    /// Each loop item, and the struct its elements are when it is known.
+    scopes: Vec<(String, Option<String>)>,
+}
+
+impl Check<'_> {
+    fn node(&mut self, node: &NodeAst) -> TokenStream2 {
+        match node {
+            NodeAst::Component(component) => {
+                let mut out = Vec::new();
+                // An unknown component is the registry's error, already reported.
+                if let Some(spec) = self.registry.get(&component.name.to_string()) {
+                    self.component(component, spec, &mut out);
+                }
+                let children = component.children.iter().map(|c| self.node(c)).collect::<Vec<_>>();
+                quote!(#(#out)* #(#children)*)
+            }
+            NodeAst::If(ast) => {
+                let condition = self.access(&ast.condition).map(|(access, _)| {
+                    let span = ast.condition.span();
+                    quote_spanned! {span=> let _: bool = #access; }
+                });
+                let then_branch = ast.then_branch.iter().map(|n| self.node(n)).collect::<Vec<_>>();
+                let else_branch = ast.else_branch.iter().map(|n| self.node(n)).collect::<Vec<_>>();
+                quote!(#condition #(#then_branch)* #(#else_branch)*)
+            }
+            NodeAst::For(ast) => {
+                let Some((collection, ty)) = self.access(&ast.collection) else {
+                    return TokenStream2::new();
+                };
+                let element = match ty {
+                    Some(RustType::Vec(elem)) => match *elem {
+                        RustType::Other(name) => Some(name),
+                        _ => None,
+                    },
+                    _ => None,
+                };
+                let item = &ast.item;
+                self.scopes.push((item.to_string(), element));
+                let key = match &ast.key {
+                    Some(key) => self.access(key).map(|(access, _)| {
+                        let span = key.span();
+                        quote_spanned! {span=> let _ = &#access; }
+                    }),
+                    // Without `key:`, the element's `id` is.
+                    None => Some(quote_spanned! {item.span()=> let _ = &#item.id; }),
+                };
+                let children = ast.children.iter().map(|n| self.node(n)).collect::<Vec<_>>();
+                self.scopes.pop();
+                let span = ast.collection.span();
+                quote_spanned! {span=>
+                    for #item in ::core::iter::IntoIterator::into_iter(&#collection) {
+                        #key
+                        #(#children)*
+                    }
+                }
+            }
+        }
+    }
+
+    /// `state.a.b()` for `state.a.b`, with a selector called and a field
+    /// read, each segment keeping its own span; and the Rust type it reads,
+    /// when the crate's types say. `None` for a path the compiler has
+    /// already reported.
+    fn access(&self, path: &DottedAst) -> Option<(TokenStream2, Option<RustType>)> {
+        let (head, rest) = path.segments.split_first()?;
+        if rest.is_empty() {
+            return None;
+        }
+        let mut current = if head == "state" {
+            self.state.clone()
+        } else {
+            self.scopes.iter().rev().find(|(name, _)| head == name)?.1.clone()
+        };
+        let mut tokens = quote!(#head);
+        let mut ty = None;
+        for segment in rest {
+            let def = current.as_ref().and_then(|name| self.types?.structs.get(name));
+            if def.is_some_and(|d| d.is_selector(&segment.to_string())) {
+                tokens = quote_spanned! {segment.span()=> #tokens.#segment() };
+            } else {
+                tokens = quote!(#tokens.#segment);
+            }
+            ty = def.and_then(|d| d.field(&segment.to_string())).cloned();
+            current = match &ty {
+                Some(RustType::Other(name)) => Some(name.clone()),
+                _ => None,
+            };
+        }
+        Some((tokens, ty))
+    }
+
+    /// One `let` per path and action the component names.
+    fn component(&self, component: &ComponentAst, spec: &ComponentSpec, out: &mut Vec<TokenStream2>) {
     let mut entries: Vec<(String, &ValueAst)> = Vec::new();
     let mut positional = spec.positional.iter();
     for arg in &component.args {
@@ -87,42 +188,34 @@ fn check_component(component: &ComponentAst, spec: &ComponentSpec, action: &syn:
         }
     }
 
-    for (name, value) in entries {
-        if let Some(event) = spec.event_by_modifier(&name) {
-            out.extend(action_check(value, action, event.payload.as_ref()));
-        } else if let Some(prop) = spec.prop(&name)
-            && let ValueAst::Dotted(path) | ValueAst::Bind(path) = value
-        {
-            out.extend(state_check(path, &prop.ty));
+        for (name, value) in entries {
+            if let Some(event) = spec.event_by_modifier(&name) {
+                out.extend(self.action_check(value, event.payload.as_ref()));
+            } else if let Some(prop) = spec.prop(&name)
+                && let ValueAst::Dotted(path) | ValueAst::Bind(path) = value
+            {
+                out.extend(self.value_check(path, &prop.ty));
+            }
         }
     }
-}
 
-/// `let _: bool = state.saving;` — or `&str` for a string, which a
-/// `String` field coerces to.
-fn state_check(path: &DottedAst, ty: &PropType) -> Option<TokenStream2> {
-    if path.segments.first()? != "state" || path.segments.len() < 2 {
-        return None;
+    /// `let _: bool = state.saving;` — or `&str` for a string, which a
+    /// `String` field coerces to.
+    fn value_check(&self, path: &DottedAst, ty: &PropType) -> Option<TokenStream2> {
+        let (access, _) = self.access(path)?;
+        let span = path.span();
+        match ty.rust_type()? {
+            "&str" => Some(quote_spanned! {span=> let _: &str = &#access; }),
+            "bool" => Some(quote_spanned! {span=> let _: bool = #access; }),
+            _ => None,
+        }
     }
-    let span = path.span();
-    let access = access(path);
-    match ty.rust_type()? {
-        "&str" => Some(quote_spanned! {span=> let _: &str = &#access; }),
-        "bool" => Some(quote_spanned! {span=> let _: bool = #access; }),
-        _ => None,
-    }
-}
 
-/// `state.a.b`, each segment keeping its own span.
-fn access(path: &DottedAst) -> TokenStream2 {
-    let segments = &path.segments;
-    quote!(#(#segments).*)
-}
-
-/// The check for an action an event sends, with `Action::` rewritten to
-/// the page's action type and re-spanned onto the variant, so rustc
-/// underlines `Action::Sav` and nothing else.
-fn action_check(value: &ValueAst, action: &syn::Path, carried: Option<&PropType>) -> Option<TokenStream2> {
+    /// The check for an action an event sends, with `Action::` rewritten to
+    /// the page's action type and re-spanned onto the variant, so rustc
+    /// underlines `Action::Sav` and nothing else.
+    fn action_check(&self, value: &ValueAst, carried: Option<&PropType>) -> Option<TokenStream2> {
+    let action = self.action;
     let (path, payload) = match value {
         ValueAst::Path(path) => (path, None),
         ValueAst::Call(path, payload) => (path, Some(&**payload)),
@@ -136,7 +229,7 @@ fn action_check(value: &ValueAst, action: &syn::Path, carried: Option<&PropType>
     let ty = respan(action, span);
     Some(match (payload, carried) {
         (Some(payload), _) => {
-            let value = payload_value(payload)?;
+            let value = self.payload_value(payload)?;
             quote_spanned! {span=> let _: #ty = #ty::#variant(#value); }
         }
         (None, Some(carried)) => {
@@ -152,12 +245,12 @@ fn action_check(value: &ValueAst, action: &syn::Path, carried: Option<&PropType>
     })
 }
 
-/// A payload as Rust would build the action with it: an owned clone of a
-/// state field, or a literal.
-fn payload_value(value: &ValueAst) -> Option<TokenStream2> {
+    /// A payload as Rust would build the action with it: an owned clone of
+    /// a field, or a literal.
+    fn payload_value(&self, value: &ValueAst) -> Option<TokenStream2> {
     match value {
-        ValueAst::Dotted(path) if path.segments.first()? == "state" => {
-            let access = access(path);
+        ValueAst::Dotted(path) => {
+            let (access, _) = self.access(path)?;
             let span = path.span();
             Some(quote_spanned! {span=> ::core::clone::Clone::clone(&#access) })
         }
@@ -165,6 +258,7 @@ fn payload_value(value: &ValueAst) -> Option<TokenStream2> {
         ValueAst::Lit(lit) => Some(lit.to_token_stream()),
         ValueAst::NegInt(lit) => Some(quote!(-#lit)),
         _ => None,
+    }
     }
 }
 
@@ -201,6 +295,29 @@ pub fn app(attr: TokenStream, item: TokenStream) -> TokenStream {
     })();
     match result {
         Ok(bridge) => quote!(#item #bridge),
+        Err(error) => {
+            let error = error.to_compile_error();
+            quote!(#item #error)
+        }
+    }
+    .into()
+}
+
+/// Marks `fn name(&self) -> T` on the state, or on a struct in it, as a
+/// value the page reads like a field: `state.visible_items`. It is computed
+/// in Rust each time a snapshot is taken. The method itself is unchanged.
+#[proc_macro_attribute]
+pub fn selector(attr: TokenStream, item: TokenStream) -> TokenStream {
+    let item: TokenStream2 = item.into();
+    let check = (|| {
+        if !attr.is_empty() {
+            return Err(syn::Error::new(Span::call_site(), "#[selector] takes no arguments"));
+        }
+        let method: syn::ImplItemFn = syn::parse2(item.clone())?;
+        read_selector(&method.sig).map(|_| ())
+    })();
+    match check {
+        Ok(()) => item,
         Err(error) => {
             let error = error.to_compile_error();
             quote!(#item #error)

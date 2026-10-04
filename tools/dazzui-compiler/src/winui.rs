@@ -2,17 +2,22 @@
 //!
 //! A page becomes four files: the XAML; its code-behind — a constructor
 //! that takes the view model, and one handler per event, each forwarding an
-//! action; the view model, with the state record and action records derived
-//! from the Rust types; and the C# side of the bridge. DazzUI controls come
-//! from `xmlns:dazz="using:DazzUI"`.
+//! action; the view model, with the state and struct records and action
+//! records derived from the Rust types; and the C# side of the bridge.
+//! DazzUI controls come from `xmlns:dazz="using:DazzUI"`.
 //!
 //! State is read with `{x:Bind …, Mode=OneWay}` and never `TwoWay`: a
 //! change goes to Rust as an action, and the value comes back in the next
 //! snapshot, so the C# copy of the state is never changed on its own.
+//!
+//! An `if` sets `Visibility` on each node of its branches rather than
+//! `x:Load`, which works inside a `DataTemplate` too and needs no `x:Name`.
+//! A `for` is an `ItemsRepeater` laid out as the stack around it is, so its
+//! elements sit in that stack as SwiftUI's `ForEach` puts them.
 
-use crate::bridge::{Bridge, Scalar};
+use crate::bridge::{Bridge, BridgeStruct, FieldType, Scalar};
 use crate::ir::{
-    ActionPayload, ActionRef, Component, Expr, GeneratedFile, UiNode, Value, page_stem, pascal_case,
+    ActionPayload, ActionRef, Component, Condition, Expr, GeneratedFile, UiNode, Value, page_stem, pascal_case,
 };
 use crate::rust_types::{FloatType, IntType};
 use crate::{CompiledPage, Options};
@@ -20,7 +25,7 @@ use crate::{CompiledPage, Options};
 pub fn generate(compiled: &CompiledPage, options: &Options) -> Vec<GeneratedFile> {
     let page = &compiled.page;
     let stem = page_stem(&page.name);
-    let mut cx = Cx::default();
+    let mut cx = Cx { page: page.name.clone(), ..Cx::default() };
     let xaml = xaml(compiled, &options.namespace, &mut cx);
     vec![
         GeneratedFile::new(format!("{}.xaml", page.name), xaml),
@@ -30,23 +35,39 @@ pub fn generate(compiled: &CompiledPage, options: &Options) -> Vec<GeneratedFile
     ]
 }
 
-/// What the XAML needs from its code-behind.
+/// What the XAML needs from its code-behind, and where the writer is.
 #[derive(Default)]
 struct Cx {
+    page: String,
     handlers: Vec<Handler>,
     /// Named texts and the type token each is set in once loaded.
     styled: Vec<(String, &'static str)>,
     /// Whether `Not(…)` is bound to.
     negates: bool,
+    /// The negations of each visibility function, `Visible1(a, b)`, by
+    /// index: `[false, true]` is shown when `a && !b`.
+    visibilities: Vec<Vec<bool>>,
+    /// The `if`s around the node being written, innermost last.
+    conditions: Vec<Condition>,
+    /// Inside a `for`: the struct its elements are, which paths are
+    /// relative to.
+    element: Option<String>,
+}
+
+/// The stack a node is written into: a `for` lays its elements out as it.
+#[derive(Clone, Copy)]
+struct Stack {
+    horizontal: bool,
+    spacing: i64,
 }
 
 /// An event handler in the code-behind: its name, the event args it takes,
-/// the action it sends, and how the event's own value is read.
+/// the action it sends, and the C# that builds the action's value.
 struct Handler {
     name: String,
     args: &'static str,
     action: ActionRef,
-    event_value: Option<&'static str>,
+    payload: String,
 }
 
 fn xaml(compiled: &CompiledPage, namespace: &str, cx: &mut Cx) -> String {
@@ -58,33 +79,100 @@ fn xaml(compiled: &CompiledPage, namespace: &str, cx: &mut Cx) -> String {
         w.line(&format!("x:Class=\"{namespace}.{}\"", page.name));
         w.line("xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"");
         w.line("xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"");
+        w.line(&format!("xmlns:local=\"using:{namespace}\""));
         w.line("xmlns:dazz=\"using:DazzUI\">");
-        node(w, &page.root, cx);
+        node(w, &page.root, Stack { horizontal: false, spacing: 0 }, cx);
     });
     w.line("</Page>");
     w.finish()
 }
 
-fn node(w: &mut Writer, node: &UiNode, cx: &mut Cx) {
-    let UiNode::Component(c) = node;
+fn node(w: &mut Writer, node: &UiNode, stack: Stack, cx: &mut Cx) {
+    let c = match node {
+        UiNode::Component(c) => c,
+        UiNode::If { condition, then_branch, else_branch, source } => {
+            w.line(&format!("<!-- source: {} (if) -->", source.short()));
+            cx.conditions.push(condition.clone());
+            then_branch.iter().for_each(|n| self::node(w, n, stack, cx));
+            cx.conditions.pop();
+            if !else_branch.is_empty() {
+                w.line(&format!("<!-- source: {} (else) -->", source.short()));
+                cx.conditions.push(Condition { negated: !condition.negated, value: condition.value.clone() });
+                else_branch.iter().for_each(|n| self::node(w, n, stack, cx));
+                cx.conditions.pop();
+            }
+            return;
+        }
+        UiNode::ForEach { collection, element, children, source, .. } => {
+            w.line(&format!("<!-- source: {} -->", source.short()));
+            let orientation = if stack.horizontal { "Horizontal" } else { "Vertical" };
+            w.line(&format!(
+                "<ItemsRepeater ItemsSource={}{}>",
+                bind(cx, &Expr::State(collection.clone())),
+                visibility(cx)
+            ));
+            w.indent(|w| {
+                w.line("<ItemsRepeater.Layout>");
+                w.indent(|w| w.line(&format!("<StackLayout Orientation=\"{orientation}\" Spacing=\"{}\"/>", stack.spacing)));
+                w.line("</ItemsRepeater.Layout>");
+                w.line("<ItemsRepeater.ItemTemplate>");
+                w.indent(|w| {
+                    w.line(&format!("<DataTemplate x:DataType=\"local:{element}\">"));
+                    // Paths inside are the element's, and the conditions
+                    // around the loop are on the repeater already.
+                    let conditions = std::mem::take(&mut cx.conditions);
+                    cx.element = Some(element.clone());
+                    w.indent(|w| {
+                        // A template has one root.
+                        if let [only @ UiNode::Component(_)] = children.as_slice() {
+                            self::node(w, only, stack, cx);
+                        } else {
+                            w.line(&format!("<StackPanel Orientation=\"{orientation}\" Spacing=\"{}\">", stack.spacing));
+                            w.indent(|w| children.iter().for_each(|n| self::node(w, n, stack, cx)));
+                            w.line("</StackPanel>");
+                        }
+                    });
+                    cx.element = None;
+                    cx.conditions = conditions;
+                    w.line("</DataTemplate>");
+                });
+                w.line("</ItemsRepeater.ItemTemplate>");
+            });
+            w.line("</ItemsRepeater>");
+            return;
+        }
+    };
     w.line(&format!("<!-- source: {} -->", c.source.short()));
+    let visible = visibility(cx);
     match c.id.as_str() {
-        stack @ ("VStack" | "HStack") => {
-            let orientation = if stack == "HStack" { " Orientation=\"Horizontal\"" } else { "" };
-            w.line(&format!("<StackPanel{orientation} Spacing=\"{}\">", int(c, "spacing")));
-            w.indent(|w| c.children.iter().for_each(|child| self::node(w, child, cx)));
+        kind @ ("VStack" | "HStack") => {
+            let inner = Stack { horizontal: kind == "HStack", spacing: int(c, "spacing") };
+            let orientation = if inner.horizontal { " Orientation=\"Horizontal\"" } else { "" };
+            w.line(&format!("<StackPanel{orientation} Spacing=\"{}\"{visible}>", inner.spacing));
+            // The conditions are on the panel; its children need not repeat them.
+            let conditions = std::mem::take(&mut cx.conditions);
+            w.indent(|w| c.children.iter().for_each(|child| self::node(w, child, inner, cx)));
+            cx.conditions = conditions;
             w.line("</StackPanel>");
         }
         "Text" => {
-            let mut tag = format!("<TextBlock Text={}", value(c.prop("text").expect("text is required")));
+            let mut tag = format!("<TextBlock Text={}", value(cx, c.prop("text").expect("text is required")));
             if let Some(style) = c.prop("style") {
-                // A type token is not a XAML resource, so the code-behind
-                // sets the face once the page knows its theme.
-                let name = format!("Text{}", cx.styled.len() + 1);
-                tag += &format!(" x:Name=\"{name}\"");
-                cx.styled.push((name, text_token(case(style))));
+                let token = text_token(case(style));
+                if cx.element.is_some() {
+                    // A name inside a template is not a field of the page;
+                    // the face is set as the text loads instead.
+                    tag += &format!(" Tag=\"{token}\" Loaded=\"OnStyledTextLoaded\"");
+                    cx.styled.push((String::new(), token));
+                } else {
+                    // A type token is not a XAML resource, so the
+                    // code-behind sets the face once the page knows its theme.
+                    let name = format!("Text{}", cx.styled.iter().filter(|(n, _)| !n.is_empty()).count() + 1);
+                    tag += &format!(" x:Name=\"{name}\"");
+                    cx.styled.push((name, token));
+                }
             }
-            w.line(&(tag + "/>"));
+            w.line(&(tag + &visible + "/>"));
         }
         "Button" => {
             // DazzUI's C# Button defaults to `Filled` where React and SwiftUI
@@ -94,19 +182,19 @@ fn node(w: &mut Writer, node: &UiNode, cx: &mut Cx) {
                 "Primary" => "Filled",
                 _ => "Recessed",
             };
-            let title = value(c.prop("title").expect("title is required"));
+            let title = value(cx, c.prop("title").expect("title is required"));
             let mut tag = format!("<dazz:Button Content={title} Variant=\"{variant}\"");
             tag += &enabled(c, cx);
             if let Some(action) = c.event("click") {
                 let name = handler(cx, action, "Click", "RoutedEventArgs", None);
                 tag += &format!(" Click=\"{name}\"");
             }
-            w.line(&(tag + "/>"));
+            w.line(&(tag + &visible + "/>"));
         }
         "Toggle" => {
             let (checked, change) = match c.binding("value") {
-                Some(b) => (bind(&b.path.segments), Some(&b.on_change)),
-                None => (value(c.prop("value").expect("value is required")), c.event("change")),
+                Some(b) => (bind(cx, &Expr::State(b.path.clone())), Some(&b.on_change)),
+                None => (value(cx, c.prop("value").expect("value is required")), c.event("change")),
             };
             let mut tag = format!("<dazz:Switch IsChecked={checked}");
             tag += &enabled(c, cx);
@@ -117,10 +205,27 @@ fn node(w: &mut Writer, node: &UiNode, cx: &mut Cx) {
                 let name = handler(cx, action, "Click", "RoutedEventArgs", value);
                 tag += &format!(" Click=\"{name}\"");
             }
-            w.line(&(tag + "/>"));
+            w.line(&(tag + &visible + "/>"));
         }
         other => unreachable!("`{other}` passed the registry but has no WinUI lowering"),
     }
+}
+
+/// ` Visibility=…` for the `if`s around the node, if any.
+fn visibility(cx: &mut Cx) -> String {
+    if cx.conditions.is_empty() {
+        return String::new();
+    }
+    let negations: Vec<bool> = cx.conditions.iter().map(|c| c.negated).collect();
+    let index = match cx.visibilities.iter().position(|v| *v == negations) {
+        Some(i) => i,
+        None => {
+            cx.visibilities.push(negations);
+            cx.visibilities.len() - 1
+        }
+    };
+    let args: Vec<String> = cx.conditions.iter().map(|c| path(cx, &c.value)).collect();
+    format!(" Visibility=\"{{x:Bind local:{}.Visible{}({}){}}}\"", cx.page, index + 1, args.join(", "), mode(cx))
 }
 
 /// ` IsEnabled=…` for a `disabled` prop, unless it is the literal `false`
@@ -129,24 +234,23 @@ fn enabled(c: &Component, cx: &mut Cx) -> String {
     match c.prop("disabled").expect("disabled has a default") {
         Expr::Literal(Value::Bool(false)) => String::new(),
         Expr::Literal(Value::Bool(true)) => " IsEnabled=\"False\"".into(),
-        Expr::State(path) => {
+        e @ (Expr::State(_) | Expr::Local(_)) => {
             cx.negates = true;
-            format!(" IsEnabled=\"{{x:Bind Not({}), Mode=OneWay}}\"", state(&path.segments))
+            format!(" IsEnabled=\"{{x:Bind local:{}.Not({}){}}}\"", cx.page, path(cx, e), mode(cx))
         }
         other => unreachable!("`disabled` is {other:?}"),
     }
 }
 
 /// The handler for `action` on `event`, `OnSaveClick`: one per distinct
-/// action, however many controls send it.
-fn handler(
-    cx: &mut Cx,
-    action: &ActionRef,
-    event: &str,
-    args: &'static str,
-    event_value: Option<&'static str>,
-) -> String {
-    if let Some(h) = cx.handlers.iter().find(|h| &h.action == action && h.event_value == event_value) {
+/// action and value, however many controls send it.
+fn handler(cx: &mut Cx, action: &ActionRef, event: &str, args: &'static str, event_value: Option<&str>) -> String {
+    let payload = match &action.payload {
+        ActionPayload::None => String::new(),
+        ActionPayload::EventValue => event_value.expect("an event with a value").to_string(),
+        ActionPayload::Expr(e) => cs_expr(cx, e),
+    };
+    if let Some(h) = cx.handlers.iter().find(|h| &h.action == action && h.payload == payload) {
         return h.name.clone();
     }
     let base = format!("On{}{event}", action.variant);
@@ -156,7 +260,7 @@ fn handler(
         n += 1;
         name = format!("{base}{n}");
     }
-    cx.handlers.push(Handler { name: name.clone(), args, action: action.clone(), event_value });
+    cx.handlers.push(Handler { name: name.clone(), args, action: action.clone(), payload });
     name
 }
 
@@ -176,34 +280,54 @@ fn case(expr: &Expr) -> &str {
     }
 }
 
-/// A quoted attribute value: a literal, or a one-way binding to the state.
-fn value(e: &Expr) -> String {
+/// A quoted attribute value: a literal, or a binding.
+fn value(cx: &Cx, e: &Expr) -> String {
     match e {
         Expr::Literal(Value::String(s)) => attr(s),
         Expr::Literal(Value::Bool(b)) => format!("\"{}\"", if *b { "True" } else { "False" }),
         Expr::Literal(Value::Int(n)) => format!("\"{n}\""),
-        Expr::State(path) => bind(&path.segments),
+        Expr::State(_) | Expr::Local(_) => bind(cx, e),
         Expr::EnumCase { ty, case } => unreachable!("`{ty}::{case}` is lowered by the prop that takes it"),
     }
 }
 
-fn bind(segments: &[String]) -> String {
-    format!("\"{{x:Bind {}, Mode=OneWay}}\"", state(segments))
+/// `"{x:Bind ViewModel.State.Flag, Mode=OneWay}"`, or `"{x:Bind Name}"`
+/// inside a template, whose elements are replaced rather than changed.
+fn bind(cx: &Cx, e: &Expr) -> String {
+    format!("\"{{x:Bind {}{}}}\"", path(cx, e), mode(cx))
 }
 
-/// `ViewModel.State.LaunchAtStartup`
-fn state(segments: &[String]) -> String {
-    let path: Vec<String> = segments.iter().map(|s| pascal_case(s)).collect();
-    format!("ViewModel.State.{}", path.join("."))
+fn mode(cx: &Cx) -> &'static str {
+    if cx.element.is_some() { "" } else { ", Mode=OneWay" }
 }
 
-/// A C# expression for `e`, in the code-behind.
-fn cs_expr(e: &Expr) -> String {
+/// The x:Bind path of a state or element value: `ViewModel.State.Flag`,
+/// or `Owner.Name` inside a template.
+fn path(cx: &Cx, e: &Expr) -> String {
+    let pascal = |segments: &[String]| segments.iter().map(|s| pascal_case(s)).collect::<Vec<_>>().join(".");
+    match e {
+        Expr::State(p) => format!("ViewModel.State.{}", pascal(&p.segments)),
+        Expr::Local(p) => {
+            debug_assert!(cx.element.is_some(), "a loop item outside its loop");
+            pascal(&p.segments)
+        }
+        other => unreachable!("not a path: {other:?}"),
+    }
+}
+
+/// A C# expression for `e`, in a handler.
+fn cs_expr(cx: &Cx, e: &Expr) -> String {
     match e {
         Expr::Literal(Value::String(s)) => cs_string(s),
         Expr::Literal(Value::Bool(b)) => b.to_string(),
         Expr::Literal(Value::Int(n)) => n.to_string(),
-        Expr::State(path) => state(&path.segments),
+        Expr::State(_) => path(cx, e),
+        // The element a control in a template was made for is its
+        // DataContext.
+        Expr::Local(_) => {
+            let element = cx.element.as_deref().expect("a loop item inside its loop");
+            format!("(({element})((FrameworkElement)sender).DataContext).{}", path(cx, e))
+        }
         Expr::EnumCase { ty, case } => unreachable!("`{ty}::{case}` is lowered by the prop that takes it"),
     }
 }
@@ -260,6 +384,8 @@ fn code_behind(compiled: &CompiledPage, namespace: &str, cx: &Cx) -> String {
     let page = &compiled.page;
     let model = format!("{}ViewModel", page_stem(&page.name));
     let action = &compiled.bridge.action;
+    let named: Vec<&(String, &str)> = cx.styled.iter().filter(|(n, _)| !n.is_empty()).collect();
+    let in_templates = cx.styled.iter().any(|(n, _)| n.is_empty());
     let mut w = Writer::default();
     w.raw(&header(&compiled.file));
     w.line("");
@@ -268,7 +394,7 @@ fn code_behind(compiled: &CompiledPage, namespace: &str, cx: &Cx) -> String {
     }
     w.line("using Microsoft.UI.Xaml;");
     w.line("using Microsoft.UI.Xaml.Controls;");
-    if cx.handlers.iter().any(|h| h.event_value.is_some()) {
+    if cx.handlers.iter().any(|h| h.payload.contains("ToggleButton")) {
         w.line("using Microsoft.UI.Xaml.Controls.Primitives;");
     }
     w.line("");
@@ -284,11 +410,11 @@ fn code_behind(compiled: &CompiledPage, namespace: &str, cx: &Cx) -> String {
         w.indent(|w| {
             w.line("ViewModel = viewModel;");
             w.line("InitializeComponent();");
-            if !cx.styled.is_empty() {
+            if !named.is_empty() {
                 w.line("Loaded += (_, _) =>");
                 w.line("{");
                 w.indent(|w| {
-                    for (name, token) in &cx.styled {
+                    for (name, token) in &named {
                         w.line(&format!("SetFace({name}, \"{token}\");"));
                     }
                 });
@@ -297,20 +423,34 @@ fn code_behind(compiled: &CompiledPage, namespace: &str, cx: &Cx) -> String {
         });
         w.line("}");
         for h in &cx.handlers {
-            let payload = match &h.action.payload {
-                ActionPayload::None => String::new(),
-                ActionPayload::EventValue => h.event_value.expect("an event with a value").to_string(),
-                ActionPayload::Expr(e) => cs_expr(e),
-            };
             w.line("");
             w.line(&format!(
-                "private void {}(object sender, {} e) => ViewModel.Send(new {action}.{}({payload}));",
-                h.name, h.args, h.action.variant
+                "private void {}(object sender, {} e) => ViewModel.Send(new {action}.{}({}));",
+                h.name, h.args, h.action.variant, h.payload
             ));
         }
         if cx.negates {
             w.line("");
             w.line("public static bool Not(bool value) => !value;");
+        }
+        for (i, negations) in cx.visibilities.iter().enumerate() {
+            let params: Vec<String> = (0..negations.len()).map(|j| format!("bool c{j}")).collect();
+            let test: Vec<String> =
+                negations.iter().enumerate().map(|(j, n)| format!("{}c{j}", if *n { "!" } else { "" })).collect();
+            w.line("");
+            w.line(&format!(
+                "public static Visibility Visible{}({}) => {} ? Visibility.Visible : Visibility.Collapsed;",
+                i + 1,
+                params.join(", "),
+                test.join(" && ")
+            ));
+        }
+        if in_templates {
+            w.line("");
+            w.line("private void OnStyledTextLoaded(object sender, RoutedEventArgs e)");
+            w.line("{");
+            w.indent(|w| w.line("if (sender is TextBlock text && text.Tag is string token) SetFace(text, token);"));
+            w.line("}");
         }
         if !cx.styled.is_empty() {
             w.line("");
@@ -349,12 +489,28 @@ fn cs_type(ty: Scalar) -> &'static str {
     }
 }
 
-/// The type a DTO holds a scalar in: blittable, so a `bool` is a byte.
-fn dto_type(ty: Scalar) -> &'static str {
+fn field_type(ty: &FieldType) -> String {
     match ty {
-        Scalar::Bool => "byte",
-        Scalar::Str => "NuiStr",
-        other => cs_type(other),
+        FieldType::Scalar(scalar) => cs_type(*scalar).into(),
+        FieldType::Struct(name) => name.clone(),
+        FieldType::List(name) => format!("IReadOnlyList<{name}>"),
+    }
+}
+
+/// The C# name of a struct's DTO inside the native class: `StateDto` for
+/// the state, `PluginDto` for another.
+fn dto(bridge: &Bridge, name: &str) -> String {
+    if name == bridge.state { "StateDto".into() } else { format!("{name}Dto") }
+}
+
+/// The type a DTO holds a field in: blittable, so a `bool` is a byte.
+fn dto_type(bridge: &Bridge, ty: &FieldType) -> String {
+    match ty {
+        FieldType::Scalar(Scalar::Bool) => "byte".into(),
+        FieldType::Scalar(Scalar::Str) => "NuiStr".into(),
+        FieldType::Scalar(other) => cs_type(*other).into(),
+        FieldType::Struct(name) => dto(bridge, name),
+        FieldType::List(name) => format!("{name}List"),
     }
 }
 
@@ -366,17 +522,17 @@ fn view_model(compiled: &CompiledPage, namespace: &str) -> String {
     w.raw(&header(&compiled.file));
     w.line("");
     w.line("using System;");
+    w.line("using System.Collections.Generic;");
     w.line("using System.ComponentModel;");
     w.line("using System.Runtime.CompilerServices;");
     w.line("using System.Runtime.InteropServices;");
     w.line("");
     w.line(&format!("namespace {namespace};"));
     w.line("");
-    w.line(&format!("/// <summary><c>{}</c>, as Rust last handed it over.</summary>", bridge.state));
-    let params: Vec<String> =
-        bridge.fields.iter().map(|f| format!("{} {}", cs_type(f.ty), Bridge::property(&f.name))).collect();
-    w.line(&format!("public sealed record {}({});", bridge.state, params.join(", ")));
-    w.line("");
+    for st in &bridge.structs {
+        record(&mut w, bridge, st);
+        w.line("");
+    }
     action_records(&mut w, bridge);
     w.line("");
     w.line("/// <summary>Holds the latest snapshot of the Rust state and sends actions to");
@@ -431,6 +587,17 @@ fn view_model(compiled: &CompiledPage, namespace: &str) -> String {
     w.finish()
 }
 
+fn record(w: &mut Writer, bridge: &Bridge, st: &BridgeStruct) {
+    if st.name == bridge.state {
+        w.line(&format!("/// <summary><c>{}</c>, as Rust last handed it over.</summary>", st.name));
+    } else {
+        w.line(&format!("/// <summary><c>{}</c>, from the Rust app core.</summary>", st.name));
+    }
+    let params: Vec<String> =
+        st.fields.iter().map(|f| format!("{} {}", field_type(&f.ty), Bridge::property(&f.name))).collect();
+    w.line(&format!("public sealed record {}({});", st.name, params.join(", ")));
+}
+
 fn action_records(w: &mut Writer, bridge: &Bridge) {
     w.line(&format!("public abstract record {}", bridge.action));
     w.line("{");
@@ -458,6 +625,7 @@ fn bridge_glue(compiled: &CompiledPage, options: &Options) -> String {
     w.raw(&header(&compiled.file));
     w.line("");
     w.line("using System;");
+    w.line("using System.Collections.Generic;");
     w.line("using System.Runtime.InteropServices;");
     w.line("using System.Text;");
     w.line("");
@@ -471,16 +639,23 @@ fn bridge_glue(compiled: &CompiledPage, options: &Options) -> String {
         w.line("");
         w.line("[StructLayout(LayoutKind.Sequential)]");
         w.line("internal struct NuiStr { public byte* Ptr; public nuint Len; }");
-        w.line("");
-        w.line("[StructLayout(LayoutKind.Sequential)]");
-        w.line("internal struct StateDto");
-        w.line("{");
-        w.indent(|w| {
-            for field in &bridge.fields {
-                w.line(&format!("public {} {};", dto_type(field.ty), Bridge::property(&field.name)));
+        for st in &bridge.structs {
+            w.line("");
+            w.line("[StructLayout(LayoutKind.Sequential)]");
+            w.line(&format!("internal struct {}", dto(bridge, &st.name)));
+            w.line("{");
+            w.indent(|w| {
+                for field in &st.fields {
+                    w.line(&format!("public {} {};", dto_type(bridge, &field.ty), Bridge::property(&field.name)));
+                }
+            });
+            w.line("}");
+            if bridge.is_listed(&st.name) {
+                w.line("");
+                w.line("[StructLayout(LayoutKind.Sequential)]");
+                w.line(&format!("internal struct {}List {{ public {}* Ptr; public nuint Len; }}", st.name, dto(bridge, &st.name)));
             }
-        });
-        w.line("}");
+        }
         if bridge.has_payloads() {
             w.line("");
             w.line("[StructLayout(LayoutKind.Explicit)]");
@@ -489,7 +664,7 @@ fn bridge_glue(compiled: &CompiledPage, options: &Options) -> String {
             w.indent(|w| {
                 for v in &bridge.variants {
                     if let Some(ty) = v.payload {
-                        w.line(&format!("[FieldOffset(0)] public {} {};", dto_type(ty), v.name));
+                        w.line(&format!("[FieldOffset(0)] public {} {};", dto_type(bridge, &FieldType::Scalar(ty)), v.name));
                     }
                 }
             });
@@ -526,27 +701,44 @@ fn bridge_glue(compiled: &CompiledPage, options: &Options) -> String {
         w.line("{");
         w.indent(|w| {
             w.line(&format!("var dto = {}(app);", f("get_state")));
-            w.line("try");
-            w.line("{");
-            w.indent(|w| {
-                let values: Vec<String> = bridge
-                    .fields
-                    .iter()
-                    .map(|field| {
-                        let p = Bridge::property(&field.name);
-                        match field.ty {
-                            Scalar::Bool => format!("dto.{p} != 0"),
-                            Scalar::Str => format!("Decode(dto.{p})"),
-                            _ => format!("dto.{p}"),
-                        }
-                    })
-                    .collect();
-                w.line(&format!("return new {}({});", bridge.state, values.join(", ")));
-            });
-            w.line("}");
+            w.line("try { return Read(dto); }");
             w.line(&format!("finally {{ {}(dto); }}", f("state_free")));
         });
         w.line("}");
+        for st in &bridge.structs {
+            let values: Vec<String> = st
+                .fields
+                .iter()
+                .map(|field| {
+                    let p = Bridge::property(&field.name);
+                    match &field.ty {
+                        FieldType::Scalar(Scalar::Bool) => format!("dto.{p} != 0"),
+                        FieldType::Scalar(Scalar::Str) => format!("Decode(dto.{p})"),
+                        FieldType::Scalar(_) => format!("dto.{p}"),
+                        FieldType::Struct(_) => format!("Read(dto.{p})"),
+                        FieldType::List(_) => format!("ReadList(dto.{p})"),
+                    }
+                })
+                .collect();
+            w.line("");
+            w.line(&format!(
+                "private static {} Read({} dto) => new({});",
+                st.name,
+                dto(bridge, &st.name),
+                values.join(", ")
+            ));
+            if bridge.is_listed(&st.name) {
+                w.line("");
+                w.line(&format!("private static IReadOnlyList<{0}> ReadList({0}List list)", st.name));
+                w.line("{");
+                w.indent(|w| {
+                    w.line(&format!("var items = new List<{}>(checked((int)list.Len));", st.name));
+                    w.line("for (nuint i = 0; i < list.Len; i++) items.Add(Read(list.Ptr[i]));");
+                    w.line("return items;");
+                });
+                w.line("}");
+            }
+        }
         w.line("");
         w.line(&format!("internal static void Send(IntPtr app, {} action)", bridge.action));
         w.line("{");
