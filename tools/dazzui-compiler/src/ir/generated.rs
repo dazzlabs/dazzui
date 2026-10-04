@@ -18,6 +18,22 @@ pub fn page_stem(page: &str) -> &str {
     page.strip_suffix("Page").filter(|s| !s.is_empty()).unwrap_or(page)
 }
 
+/// `SetAutoUpdate` → `set_auto_update`; `launch_at_startup` stays as it is.
+pub fn snake_case(name: &str) -> String {
+    let mut out = String::new();
+    for (i, ch) in name.chars().enumerate() {
+        if ch.is_uppercase() {
+            if i > 0 {
+                out.push('_');
+            }
+            out.extend(ch.to_lowercase());
+        } else {
+            out.push(ch);
+        }
+    }
+    out
+}
+
 /// `launch_at_startup` → `launchAtStartup`.
 pub fn camel_case(snake: &str) -> String {
     let pascal = pascal_case(snake);

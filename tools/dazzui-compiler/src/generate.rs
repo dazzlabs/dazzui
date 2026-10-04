@@ -38,12 +38,38 @@ pub fn compile(src: &Path, base: &Path) -> Result<Vec<CompiledPage>, String> {
     })
 }
 
-pub fn generate(pages: &[CompiledPage], target: Target, namespace: &str) -> Vec<GeneratedFile> {
+/// What the platform side needs to know that the Rust source does not say.
+#[derive(Clone, Debug)]
+pub struct Options {
+    /// The C# namespace the WinUI files go in.
+    pub namespace: String,
+    /// The native library the bridge loads: the app crate's lib name,
+    /// `settings_example`.
+    pub library: String,
+}
+
+pub fn generate(pages: &[CompiledPage], target: Target, options: &Options) -> Vec<GeneratedFile> {
     pages
         .iter()
         .flat_map(|page| match target {
             Target::SwiftUI => crate::swiftui::generate(page),
-            Target::WinUI => crate::winui::generate(page, namespace),
+            Target::WinUI => crate::winui::generate(page, options),
         })
         .collect()
+}
+
+/// `settings_example`, the lib name of the crate whose `Cargo.toml` is
+/// `manifest`: its `[package]` name with `-` as `_`. Read by hand rather
+/// than with a TOML parser, which this one line does not warrant.
+pub fn crate_lib_name(manifest: &str) -> Option<String> {
+    let mut in_package = false;
+    for line in manifest.lines().map(str::trim) {
+        if line.starts_with('[') {
+            in_package = line == "[package]";
+        } else if in_package && let Some(value) = line.strip_prefix("name").map(str::trim_start) {
+            let value = value.strip_prefix('=')?.trim().trim_matches('"');
+            return Some(value.replace('-', "_"));
+        }
+    }
+    None
 }

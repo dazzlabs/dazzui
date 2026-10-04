@@ -1,22 +1,22 @@
 use std::collections::HashMap;
 
 use crate::ir::{
-    ActionPayload, ActionRef, ChildrenSpec, Component, ComponentId, ComponentSpec, Expr, Page,
-    PropType, SourceLocation, UiEvent, UiNode, UiProp, Value,
+    ActionPayload, ActionRef, ChildrenSpec, Component, ComponentId, ComponentSpec, EventSpec, Expr, Page,
+    PropSpec, PropType, SourceLocation, StatePath, UiBinding, UiEvent, UiNode, UiProp, Value,
 };
-use crate::syntax::{ArgAst, ComponentAst, ModifierAst, NodeAst, PageAst, PropAst, ValueAst, spanned_path};
+use crate::syntax::{ArgAst, ComponentAst, DottedAst, NodeAst, PageAst, ValueAst, spanned_path};
 use proc_macro2::Span;
 use syn::Lit;
 
 use crate::error::{SemanticError, closest, locate, suggest};
 use crate::registry::Registry;
-use crate::rust_types::{EnumDef, Fields, RustTypes};
+use crate::rust_types::{EnumDef, Fields, RustType, RustTypes, StructDef};
 
 /// Lowers a parsed page to IR.
 ///
 /// `file` is the path locations are recorded against. With `types`, every
-/// action is also checked against the page's action enum; without them —
-/// in the macro — that check is rustc's.
+/// state path and action is also checked against the page's state struct
+/// and action enum; without them — in the macro — that check is rustc's.
 pub fn lower(
     page: &PageAst,
     registry: &Registry,
@@ -24,7 +24,8 @@ pub fn lower(
     file: &str,
 ) -> Result<Page, Vec<SemanticError>> {
     let action_type = last_ident(&page.action_ty);
-    let mut cx = Cx { registry, file, errors: Vec::new(), action_enum: None };
+    let state_type = last_ident(&page.state_ty);
+    let mut cx = Cx { registry, file, errors: Vec::new(), types, action_enum: None, state_struct: None };
 
     if let Some(types) = types {
         match types.enums.get(&action_type) {
@@ -37,6 +38,16 @@ pub fn lower(
                 .help("the page's action type must be an enum the CLI can read from `--src`"),
             ),
         }
+        match types.structs.get(&state_type) {
+            Some(def) => cx.state_struct = Some(def),
+            None => cx.errors.push(
+                SemanticError::new(
+                    spanned_path(&page.state_ty),
+                    format!("cannot find struct `{state_type}` in this crate"),
+                )
+                .help("the page's state type must be a struct with named fields the CLI can read from `--src`"),
+            ),
+        }
     }
 
     let root = cx.node(&page.root);
@@ -45,7 +56,7 @@ pub fn lower(
     }
     Ok(Page {
         name: page.name.to_string(),
-        state_type: last_ident(&page.state_ty),
+        state_type,
         action_type,
         root: root.expect("a node with no errors lowers"),
         source: cx.loc(page.name.span()),
@@ -60,7 +71,18 @@ struct Cx<'a> {
     registry: &'a Registry,
     file: &'a str,
     errors: Vec<SemanticError>,
+    types: Option<&'a RustTypes>,
     action_enum: Option<&'a EnumDef>,
+    state_struct: Option<&'a StructDef>,
+}
+
+/// One way a component was given something: `name: value` in parentheses
+/// or the body, a positional argument, or `.name(value)`.
+struct Entry<'v> {
+    name: String,
+    span: Span,
+    value: Option<&'v ValueAst>,
+    modifier: bool,
 }
 
 impl Cx<'_> {
@@ -89,67 +111,95 @@ impl Cx<'_> {
             return None;
         };
         let errors_before = self.errors.len();
-
-        // Every way a prop can be given, in source order: positionally,
-        // named in the parentheses, named in the body.
-        let mut given: Vec<&PropAst> = Vec::new();
-        let mut positional_props: Vec<(String, &ValueAst)> = Vec::new();
-        let mut positional_index = 0;
-        for arg in &ast.args {
-            match arg {
-                ArgAst::Named(prop) => given.push(prop),
-                ArgAst::Positional(value) => {
-                    match spec.positional.get(positional_index) {
-                        Some(prop) => positional_props.push((prop.clone(), value)),
-                        None => self.errors.push(
-                            SemanticError::new(
-                                value.span(),
-                                format!(
-                                    "`{name}` takes {} positional argument{}",
-                                    spec.positional.len(),
-                                    if spec.positional.len() == 1 { "" } else { "s" },
-                                ),
-                            )
-                            .label("unexpected argument")
-                            .help("name it: `prop: value`"),
-                        ),
-                    }
-                    positional_index += 1;
-                }
-            }
-        }
-        given.extend(&ast.props);
+        let entries = self.entries(ast, spec);
 
         let mut seen: HashMap<String, Span> = HashMap::new();
         // Props a misspelling was taken for: already reported, so not
         // reported again as missing.
         let mut meant: Vec<String> = Vec::new();
         let mut props = Vec::new();
-        let named = given.iter().map(|p| (p.name.to_string(), p.name.span(), &p.value));
-        let positional = positional_props.iter().map(|(n, v)| (n.clone(), v.span(), *v));
-        for (prop_name, span, value) in positional.chain(named) {
-            let Some(prop_spec) = spec.prop(&prop_name) else {
-                let candidates = spec.props.iter().map(|p| p.name.as_str());
-                let closest = closest(&prop_name, candidates);
+        let mut bound: Vec<(&PropSpec, StatePath, Span)> = Vec::new();
+        let mut events: Vec<UiEvent> = Vec::new();
+        for entry in entries {
+            let kind = if entry.modifier { "modifier" } else { "property" };
+            if let Some(event) = spec.event_by_modifier(&entry.name) {
+                if events.iter().any(|e| e.name == event.name) {
+                    self.errors.push(
+                        SemanticError::new(entry.span, format!("`{}` is given twice", entry.name))
+                            .label("given again here"),
+                    );
+                } else if let Some(action) = self.event_action(&entry, event) {
+                    events.push(UiEvent { name: event.name.clone(), action, source: self.loc(entry.span) });
+                }
+                continue;
+            }
+            let prop_spec = if entry.modifier { spec.modifier_prop(&entry.name) } else { spec.prop(&entry.name) };
+            let Some(prop_spec) = prop_spec else {
+                let candidates: Vec<&str> = if entry.modifier {
+                    spec.props.iter().filter(|p| p.modifier).map(|p| p.name.as_str()).collect()
+                } else {
+                    spec.props.iter().map(|p| p.name.as_str()).collect()
+                };
+                let events = spec.events.iter().map(|e| e.modifier.as_str());
+                let closest = closest(&entry.name, candidates.iter().copied().chain(events));
                 meant.extend(closest.map(str::to_owned));
                 self.errors.push(
                     SemanticError::new(
-                        span,
-                        format!("property `{prop_name}` does not exist on component `{name}`"),
+                        entry.span,
+                        format!("unknown {kind} `{}` on component `{name}`", entry.name),
                     )
                     .help_opt(closest.map(|c| format!("did you mean `{c}`?"))),
                 );
                 continue;
             };
-            if seen.insert(prop_name.clone(), span).is_some() {
+            if seen.insert(prop_spec.name.clone(), entry.span).is_some() {
                 self.errors.push(
-                    SemanticError::new(span, format!("property `{prop_name}` is given twice"))
+                    SemanticError::new(entry.span, format!("property `{}` is given twice", prop_spec.name))
                         .label("given again here"),
                 );
                 continue;
             }
-            if let Some(expr) = self.value(value, prop_spec.ty, &prop_name, &name) {
-                props.push(UiProp { name: prop_name, value: expr, source: self.loc(span) });
+            let Some(value) = entry.value else {
+                self.errors.push(SemanticError::new(
+                    entry.span,
+                    format!("`.{}(…)` takes one value", entry.name),
+                ));
+                continue;
+            };
+            if let ValueAst::Bind(path) = value {
+                if !prop_spec.bindable {
+                    self.errors.push(
+                        SemanticError::new(path.span(), format!("property `{}` on `{name}` cannot be bound", prop_spec.name))
+                            .help(format!("pass the value itself: `{}: state.…`", prop_spec.name)),
+                    );
+                } else if let Some(path) = self.state_path(path, &prop_spec.ty, &prop_spec.name, &name) {
+                    bound.push((prop_spec, path, entry.span));
+                }
+                continue;
+            }
+            if let Some(expr) = self.expr(value, &prop_spec.ty, &prop_spec.name, &name) {
+                props.push(UiProp { name: prop_spec.name.clone(), value: expr, source: self.loc(entry.span) });
+            }
+        }
+
+        // A binding writes back through the event that carries its new
+        // value, which then belongs to the binding rather than standing on
+        // its own.
+        let mut bindings = Vec::new();
+        for (prop_spec, path, span) in bound {
+            let event = spec.events.iter().find(|e| e.binds.as_deref() == Some(&prop_spec.name));
+            let position = event.and_then(|event| events.iter().position(|e| e.name == event.name));
+            match (event, position) {
+                (_, Some(i)) => {
+                    let on_change = events.remove(i).action;
+                    bindings.push(UiBinding { name: prop_spec.name.clone(), path, on_change, source: self.loc(span) });
+                }
+                (Some(event), None) => self.errors.push(
+                    SemanticError::new(span, format!("`bind` on `{}` needs an action to write the change back", prop_spec.name))
+                        .label("nothing sends the new value to Rust")
+                        .help(format!("add `{}: Action::…`", event.modifier)),
+                ),
+                (None, None) => unreachable!("bindable prop `{}` has no event to write back", prop_spec.name),
             }
         }
 
@@ -157,11 +207,11 @@ impl Cx<'_> {
         // says what is drawn and no platform's own default leaks in.
         for prop_spec in &spec.props {
             if let (false, Some(default)) = (seen.contains_key(&prop_spec.name), &prop_spec.default) {
-                props.push(UiProp {
-                    name: prop_spec.name.clone(),
-                    value: Expr::Literal(default.clone()),
-                    source: self.loc(ast.name.span()),
-                });
+                let value = match (&prop_spec.ty, default) {
+                    (PropType::Enum(e), Value::String(case)) => Expr::EnumCase { ty: e.name.clone(), case: case.clone() },
+                    _ => Expr::Literal(default.clone()),
+                };
+                props.push(UiProp { name: prop_spec.name.clone(), value, source: self.loc(ast.name.span()) });
             }
         }
 
@@ -175,17 +225,12 @@ impl Cx<'_> {
                 self.errors.push(
                     SemanticError::new(
                         ast.name.span(),
-                        format!(
-                            "missing required property `{}` on component `{name}`",
-                            prop_spec.name
-                        ),
+                        format!("missing required property `{}` on component `{name}`", prop_spec.name),
                     )
                     .help(how),
                 );
             }
         }
-
-        let events = self.events(spec, &ast.modifiers);
 
         let mut children = Vec::new();
         if spec.children == ChildrenSpec::None && !ast.children.is_empty() {
@@ -205,46 +250,102 @@ impl Cx<'_> {
         if self.errors.len() > errors_before {
             return None;
         }
-        Some(Component {
-            id: ComponentId(name),
-            props,
-            events,
-            children,
-            source: self.loc(ast.name.span()),
-        })
+        Some(Component { id: ComponentId(name), props, bindings, events, children, source: self.loc(ast.name.span()) })
     }
 
-    fn value(&mut self, value: &ValueAst, ty: PropType, prop: &str, component: &str) -> Option<Expr> {
+    /// Every way something was given, in source order: positionally, named
+    /// in the parentheses, named in the body, then modifiers.
+    fn entries<'v>(&mut self, ast: &'v ComponentAst, spec: &ComponentSpec) -> Vec<Entry<'v>> {
+        let mut positional = Vec::new();
+        let mut named = Vec::new();
+        let mut positional_index = 0;
+        for arg in &ast.args {
+            match arg {
+                ArgAst::Named(prop) => named.push(Entry {
+                    name: prop.name.to_string(),
+                    span: prop.name.span(),
+                    value: Some(&prop.value),
+                    modifier: false,
+                }),
+                ArgAst::Positional(value) => {
+                    match spec.positional.get(positional_index) {
+                        Some(prop) => positional.push(Entry {
+                            name: prop.clone(),
+                            span: value.span(),
+                            value: Some(value),
+                            modifier: false,
+                        }),
+                        None => self.errors.push(
+                            SemanticError::new(
+                                value.span(),
+                                format!(
+                                    "`{}` takes {} positional argument{}",
+                                    spec.name,
+                                    spec.positional.len(),
+                                    if spec.positional.len() == 1 { "" } else { "s" },
+                                ),
+                            )
+                            .label("unexpected argument")
+                            .help("name it: `prop: value`"),
+                        ),
+                    }
+                    positional_index += 1;
+                }
+            }
+        }
+        named.extend(ast.props.iter().map(|prop| Entry {
+            name: prop.name.to_string(),
+            span: prop.name.span(),
+            value: Some(&prop.value),
+            modifier: false,
+        }));
+        let modifiers = ast.modifiers.iter().map(|m| Entry {
+            name: m.name.to_string(),
+            span: m.name.span(),
+            value: match m.args.as_slice() {
+                [ArgAst::Positional(value)] => Some(value),
+                _ => None,
+            },
+            modifier: true,
+        });
+        positional.into_iter().chain(named).chain(modifiers).collect()
+    }
+
+    /// A read-only value for a prop of type `ty`.
+    fn expr(&mut self, value: &ValueAst, ty: &PropType, prop: &str, component: &str) -> Option<Expr> {
         let found = match value {
-            ValueAst::Lit(Lit::Str(s)) if ty == PropType::String => {
+            ValueAst::Lit(Lit::Str(s)) if *ty == PropType::String => {
                 return Some(Expr::Literal(Value::String(s.value())));
             }
-            ValueAst::Lit(Lit::Bool(b)) if ty == PropType::Bool => {
+            ValueAst::Lit(Lit::Bool(b)) if *ty == PropType::Bool => {
                 return Some(Expr::Literal(Value::Bool(b.value)));
             }
-            ValueAst::Lit(Lit::Int(i)) if ty == PropType::Int => match i.base10_parse::<i64>() {
-                Ok(n) => return Some(Expr::Literal(Value::Int(n))),
-                Err(e) => {
-                    self.errors.push(SemanticError::new(i.span(), e.to_string()));
+            ValueAst::Lit(Lit::Int(_)) | ValueAst::NegInt(Lit::Int(_)) if *ty == PropType::Int => {
+                return self.int(value).map(|n| Expr::Literal(Value::Int(n)));
+            }
+            ValueAst::Path(path) if !is_action(path) => {
+                if let PropType::Enum(spec) = ty {
+                    return self.enum_case(path, spec);
+                }
+                "an enum case"
+            }
+            ValueAst::Dotted(path) => {
+                if matches!(ty, PropType::Int | PropType::Enum(_)) {
+                    self.errors.push(SemanticError::new(
+                        path.span(),
+                        format!("property `{prop}` on `{component}` takes a literal for now, not a state value"),
+                    ));
                     return None;
                 }
-            },
-            ValueAst::NegInt(Lit::Int(i)) if ty == PropType::Int => {
-                match format!("-{}", i.base10_digits()).parse::<i64>() {
-                    Ok(n) => return Some(Expr::Literal(Value::Int(n))),
-                    Err(e) => {
-                        self.errors.push(SemanticError::new(i.span(), e.to_string()));
-                        return None;
-                    }
-                }
+                return self.state_path(path, ty, prop, component).map(Expr::State);
             }
             ValueAst::NegInt(_) => "an integer",
             ValueAst::Lit(Lit::Str(_)) => "a string",
             ValueAst::Lit(Lit::Bool(_)) => "a bool",
             ValueAst::Lit(Lit::Int(_)) => "an integer",
             ValueAst::Lit(_) => "an unsupported literal",
-            ValueAst::Path(p) if is_action(p) => "an action",
-            ValueAst::Path(_) => "an enum case",
+            ValueAst::Path(_) | ValueAst::Call(..) => "an action",
+            ValueAst::Bind(_) => "a binding",
         };
         let mut error = SemanticError::new(
             value.span(),
@@ -252,98 +353,307 @@ impl Cx<'_> {
         )
         .label(format!("expected {}", ty.name()));
         if found == "an action" {
-            error = error.help("actions are wired with an event modifier, such as `.on_click(…)`");
+            error = error.help("actions are wired with an event, such as `.on_click(…)`");
         }
         self.errors.push(error);
         None
     }
 
-    fn events(&mut self, spec: &ComponentSpec, modifiers: &[ModifierAst]) -> Vec<UiEvent> {
-        let mut events: Vec<UiEvent> = Vec::new();
-        for modifier in modifiers {
-            let modifier_name = modifier.name.to_string();
-            let Some(event) = spec.event_by_modifier(&modifier_name) else {
-                let candidates = spec.events.iter().map(|e| e.modifier.as_str());
-                self.errors.push(
-                    SemanticError::new(
-                        modifier.name.span(),
-                        format!("unknown modifier `{modifier_name}` on component `{}`", spec.name),
-                    )
-                    .help_opt(suggest(&modifier_name, candidates)),
-                );
-                continue;
-            };
-            if events.iter().any(|e| e.name == event.name) {
-                self.errors.push(
-                    SemanticError::new(
-                        modifier.name.span(),
-                        format!("`{modifier_name}` is given twice"),
-                    )
-                    .label("given again here"),
-                );
-                continue;
-            }
-            let action = match modifier.args.as_slice() {
-                [ArgAst::Positional(ValueAst::Path(path))] if is_action(path) => self.action(path, &event.name),
-                _ => {
-                    self.errors.push(
-                        SemanticError::new(
-                            modifier.name.span(),
-                            format!("`{modifier_name}` takes one action: `{modifier_name}(Action::Variant)`"),
-                        ),
-                    );
-                    None
-                }
-            };
-            if let Some(action) = action {
-                events.push(UiEvent {
-                    name: event.name.clone(),
-                    action,
-                    source: self.loc(modifier.name.span()),
-                });
-            }
-        }
-        events
+    fn int(&mut self, value: &ValueAst) -> Option<i64> {
+        let parsed = match value {
+            ValueAst::Lit(Lit::Int(i)) => i.base10_parse::<i64>().map_err(|e| e.to_string()),
+            ValueAst::NegInt(Lit::Int(i)) => format!("-{}", i.base10_digits()).parse::<i64>().map_err(|e| e.to_string()),
+            _ => unreachable!("not an integer literal"),
+        };
+        parsed.map_err(|e| self.errors.push(SemanticError::new(value.span(), e))).ok()
     }
 
-    fn action(&mut self, path: &syn::Path, event: &str) -> Option<ActionRef> {
-        let segments: Vec<_> = path.segments.iter().collect();
-        if segments.len() != 2 {
+    /// `ButtonStyle::Primary` for a prop of that enum.
+    fn enum_case(&mut self, path: &syn::Path, spec: &crate::ir::EnumSpec) -> Option<Expr> {
+        let segments: Vec<_> = path.segments.iter().map(|s| &s.ident).collect();
+        let [ty, case] = segments.as_slice() else {
             self.errors.push(SemanticError::new(
                 spanned_path(path),
-                "an action is written `Action::Variant`",
+                format!("an enum case is written `{}::Case`", spec.name),
             ));
+            return None;
+        };
+        if *ty != &spec.name {
+            self.errors.push(
+                SemanticError::new(ty.span(), format!("expected a `{}` case, found `{ty}::{case}`", spec.name))
+                    .label(format!("expected {}", spec.name)),
+            );
+            return None;
+        }
+        let case_name = case.to_string();
+        if !spec.cases.contains(&case_name) {
+            self.errors.push(
+                SemanticError::new(case.span(), format!("no case `{case_name}` on `{}`", spec.name))
+                    .help_opt(suggest(&case_name, spec.cases.iter().map(String::as_str)))
+                    .label(format!("cases are {}", spec.cases.join(", "))),
+            );
+            return None;
+        }
+        Some(Expr::EnumCase { ty: spec.name.clone(), case: case_name })
+    }
+
+    /// `state.a.b`, checked against the state struct when it is at hand.
+    fn state_path(&mut self, path: &DottedAst, ty: &PropType, prop: &str, component: &str) -> Option<StatePath> {
+        let (head, rest) = path.segments.split_first().expect("a dotted path has a segment");
+        if head != "state" {
+            self.errors.push(
+                SemanticError::new(head.span(), format!("cannot find value `{head}`"))
+                    .label("not a state path")
+                    .help("a value path starts with `state`: `state.field`"),
+            );
+            return None;
+        }
+        if rest.is_empty() {
+            self.errors.push(
+                SemanticError::new(head.span(), "the whole state is not a value")
+                    .help("name a field: `state.field`"),
+            );
+            return None;
+        }
+        let segments: Vec<String> = rest.iter().map(ToString::to_string).collect();
+        let Some(types) = self.types else {
+            return Some(StatePath { segments });
+        };
+        let Some(mut current) = self.state_struct else {
+            // Already reported: the state type itself was not found.
+            return None;
+        };
+        let mut field_ty = None;
+        for (i, ident) in rest.iter().enumerate() {
+            let name = ident.to_string();
+            let Some(found) = current.field(&name) else {
+                self.errors.push(
+                    SemanticError::new(ident.span(), format!("no field `{name}` on type `{}`", current.name))
+                        .help_opt(suggest(&name, current.fields.iter().map(|(n, _)| n.as_str()))),
+                );
+                return None;
+            };
+            if i + 1 < rest.len() {
+                let nested = match found {
+                    RustType::Other(n) => types.structs.get(n),
+                    _ => None,
+                };
+                let Some(nested) = nested else {
+                    self.errors.push(SemanticError::new(
+                        ident.span(),
+                        format!("`{name}` is a `{}`, which has no fields", found.rust()),
+                    ));
+                    return None;
+                };
+                current = nested;
+            }
+            field_ty = Some(found);
+        }
+        let field_ty = field_ty.expect("a path of at least one field");
+        let fits = matches!(
+            (ty, field_ty),
+            (PropType::Bool, RustType::Bool) | (PropType::String, RustType::String) | (PropType::Int, RustType::Int(_))
+        );
+        if !fits {
+            self.errors.push(
+                SemanticError::new(
+                    path.span(),
+                    format!(
+                        "property `{prop}` on `{component}` expects {}, but `state.{}` is a `{}`",
+                        ty.name(),
+                        segments.join("."),
+                        field_ty.rust()
+                    ),
+                )
+                .label(format!("expected {}", ty.name())),
+            );
+            return None;
+        }
+        Some(StatePath { segments })
+    }
+
+    /// The action an event entry sends: `.on_click(Action::Save)`,
+    /// `on_change: Action::SetOn`, `.on_click(Action::Pick(state.id))`.
+    fn event_action(&mut self, entry: &Entry, event: &EventSpec) -> Option<ActionRef> {
+        let shape = || {
+            SemanticError::new(
+                entry.span,
+                format!("`{}` takes one action: `{}(Action::Variant)`", entry.name, entry.name),
+            )
+        };
+        match entry.value {
+            Some(ValueAst::Path(path)) if is_action(path) => self.action(path, None, event),
+            Some(ValueAst::Call(path, payload)) if is_action(path) => self.action(path, Some(payload), event),
+            _ => {
+                self.errors.push(shape());
+                None
+            }
+        }
+    }
+
+    fn action(&mut self, path: &syn::Path, payload: Option<&ValueAst>, event: &EventSpec) -> Option<ActionRef> {
+        let segments: Vec<_> = path.segments.iter().collect();
+        if segments.len() != 2 {
+            self.errors.push(SemanticError::new(spanned_path(path), "an action is written `Action::Variant`"));
             return None;
         }
         let variant_ident = &segments[1].ident;
         let variant = variant_ident.to_string();
-        if let Some(def) = self.action_enum {
-            match def.variant(&variant) {
-                None => {
-                    let candidates = def.variants.iter().map(|v| v.name.as_str());
+        let Some(def) = self.action_enum else {
+            // In the macro, rustc checks the variant and its payload.
+            let payload = match payload {
+                Some(value) => ActionPayload::Expr(self.payload_expr(value, None)?),
+                None if event.payload.is_some() => ActionPayload::EventValue,
+                None => ActionPayload::None,
+            };
+            return Some(ActionRef { variant, payload });
+        };
+        let Some(v) = def.variant(&variant) else {
+            let candidates = def.variants.iter().map(|v| v.name.as_str());
+            self.errors.push(
+                SemanticError::new(variant_ident.span(), format!("no variant `{variant}` on action enum `{}`", def.name))
+                    .help_opt(suggest(&variant, candidates)),
+            );
+            return None;
+        };
+        let field = match &v.fields {
+            Fields::Unit => None,
+            Fields::Tuple(types) if types.len() == 1 => Some(&types[0]),
+            _ => {
+                self.errors.push(
+                    SemanticError::new(
+                        variant_ident.span(),
+                        format!("`{}::{variant}` carries several values; an action carries one or none", def.name),
+                    )
+                    .help("give the variant one tuple field, or none"),
+                );
+                return None;
+            }
+        };
+        let payload = match (payload, field, &event.payload) {
+            (None, None, None) => ActionPayload::None,
+            // The value an event carries is for the action to take; an
+            // action that drops it would hide a change the event reports.
+            (None, None, Some(carried)) => {
+                self.errors.push(
+                    SemanticError::new(
+                        variant_ident.span(),
+                        format!("`{}::{variant}` carries no value, but `{}` gives it {}", def.name, event.name, carried.name()),
+                    )
+                    .label("expects no payload"),
+                );
+                return None;
+            }
+            (Some(value), Some(field), _) => ActionPayload::Expr(self.payload_expr(value, Some(field))?),
+            (Some(value), None, _) => {
+                self.errors.push(
+                    SemanticError::new(value.span(), format!("`{}::{variant}` carries no value", def.name))
+                        .help(format!("write `Action::{variant}`")),
+                );
+                return None;
+            }
+            (None, Some(field), Some(carried)) => {
+                let fits = matches!(
+                    (carried, field),
+                    (PropType::Bool, RustType::Bool)
+                        | (PropType::String, RustType::String)
+                        | (PropType::Int, RustType::Int(_))
+                );
+                if !fits {
                     self.errors.push(
                         SemanticError::new(
                             variant_ident.span(),
-                            format!("no variant `{variant}` on action enum `{}`", def.name),
+                            format!(
+                                "`{}::{variant}` carries a `{}`, but `{}` gives it {}",
+                                def.name,
+                                field.rust(),
+                                event.name,
+                                carried.name()
+                            ),
                         )
-                        .help_opt(suggest(&variant, candidates)),
+                        .label("payload type differs"),
                     );
                     return None;
                 }
-                Some(v) if v.fields != Fields::Unit => {
-                    self.errors.push(
-                        SemanticError::new(
-                            variant_ident.span(),
-                            format!("`{}::{variant}` carries a value, but `{event}` has none to give it", def.name),
-                        )
-                        .label("expects a payload"),
-                    );
+                ActionPayload::EventValue
+            }
+            (None, Some(field), None) => {
+                self.errors.push(
+                    SemanticError::new(
+                        variant_ident.span(),
+                        format!("`{}::{variant}` carries a value, but `{}` has none to give it", def.name, event.name),
+                    )
+                    .label("expects a payload")
+                    .help(format!("pass one: `Action::{variant}(…)`, a `{}`", field.rust())),
+                );
+                return None;
+            }
+        };
+        Some(ActionRef { variant, payload })
+    }
+
+    /// The value an action is given, `Action::Pick(state.id)`: a literal or
+    /// a state path of exactly the variant's field type.
+    fn payload_expr(&mut self, value: &ValueAst, field: Option<&RustType>) -> Option<Expr> {
+        let ty = match field {
+            Some(RustType::Bool) => Some(PropType::Bool),
+            Some(RustType::String) => Some(PropType::String),
+            Some(RustType::Int(_)) => Some(PropType::Int),
+            Some(other) => {
+                self.errors.push(SemanticError::new(
+                    value.span(),
+                    format!("an action payload of type `{}` cannot cross to the native side yet", other.rust()),
+                ));
+                return None;
+            }
+            None => None,
+        };
+        match (value, ty) {
+            (ValueAst::Dotted(path), ty) => {
+                let path = match &ty {
+                    Some(ty) => self.state_path(path, ty, "payload", "action")?,
+                    None => self.state_path(path, &PropType::Bool, "payload", "action")?,
+                };
+                // A state field of the right kind but another width —
+                // `u8` for a `u32` — would not convert on every side.
+                if let (Some(field), Some(found)) = (field, self.field_type(&path))
+                    && field != found
+                {
+                    self.errors.push(SemanticError::new(
+                        value.span(),
+                        format!("the action carries a `{}`, but `state.{}` is a `{}`", field.rust(), path.dotted(), found.rust()),
+                    ));
                     return None;
                 }
-                Some(_) => {}
+                Some(Expr::State(path))
+            }
+            (ValueAst::Lit(Lit::Str(s)), None | Some(PropType::String)) => Some(Expr::Literal(Value::String(s.value()))),
+            (ValueAst::Lit(Lit::Bool(b)), None | Some(PropType::Bool)) => Some(Expr::Literal(Value::Bool(b.value))),
+            (ValueAst::Lit(Lit::Int(_)) | ValueAst::NegInt(Lit::Int(_)), None | Some(PropType::Int)) => {
+                self.int(value).map(|n| Expr::Literal(Value::Int(n)))
+            }
+            (_, ty) => {
+                let expected = ty.map(|t| t.name()).unwrap_or_else(|| "a literal or a state path".into());
+                self.errors.push(SemanticError::new(
+                    value.span(),
+                    format!("an action payload is a literal or a state path; expected {expected}"),
+                ));
+                None
             }
         }
-        Some(ActionRef { variant, payload: ActionPayload::None })
+    }
+
+    fn field_type(&self, path: &StatePath) -> Option<&RustType> {
+        let types = self.types?;
+        let mut current = self.state_struct?;
+        let (last, init) = path.segments.split_last()?;
+        for name in init {
+            current = match current.field(name)? {
+                RustType::Other(n) => types.structs.get(n)?,
+                _ => return None,
+            };
+        }
+        current.field(last)
     }
 }
 
@@ -357,7 +667,12 @@ mod tests {
     use crate::rust_types::RustTypes;
 
     fn types() -> RustTypes {
-        let file: syn::File = syn::parse_str("enum A { Save, SetOn(bool) }").unwrap();
+        let file: syn::File = syn::parse_str(
+            "enum A { Save, SetOn(bool), Rename(String), Pick(u32) }
+             struct S { on: bool, name: String, count: u32, small: u8, user: User }
+             struct User { locked: bool }",
+        )
+        .unwrap();
         let mut types = RustTypes::default();
         types.collect(&file.items);
         types
@@ -376,6 +691,41 @@ mod tests {
         assert_eq!(stack.prop("spacing"), Some(&Expr::Literal(Value::Int(0))));
         let UiNode::Component(button) = &stack.children[0];
         assert_eq!(button.event("click").unwrap().variant, "Save");
+        assert_eq!(button.prop("style"), Some(&Expr::EnumCase { ty: "ButtonStyle".into(), case: "Secondary".into() }));
+        assert_eq!(button.prop("disabled"), Some(&Expr::Literal(Value::Bool(false))));
+    }
+
+    #[test]
+    fn lowers_state_bindings_and_modifiers() {
+        let page = lower_str(
+            r#"page P(state: S, action: A) {
+                VStack {
+                    Text(state.name).style(TextStyle::Title)
+                    Toggle { value: bind(state.on), on_change: Action::SetOn }.disabled(state.user.locked)
+                    Button("Pick").style(ButtonStyle::Primary).on_click(Action::Pick(state.count))
+                }
+            }"#,
+        )
+        .unwrap();
+        let UiNode::Component(stack) = &page.root;
+        let [UiNode::Component(text), UiNode::Component(toggle), UiNode::Component(button)] = stack.children.as_slice()
+        else {
+            panic!("three children");
+        };
+        assert_eq!(text.prop("text"), Some(&Expr::State(StatePath { segments: vec!["name".into()] })));
+        assert_eq!(text.prop("style"), Some(&Expr::EnumCase { ty: "TextStyle".into(), case: "Title".into() }));
+        let binding = toggle.binding("value").unwrap();
+        assert_eq!(binding.path.segments, ["on"]);
+        assert_eq!(binding.on_change, ActionRef { variant: "SetOn".into(), payload: ActionPayload::EventValue });
+        assert!(toggle.events.is_empty());
+        assert_eq!(
+            toggle.prop("disabled"),
+            Some(&Expr::State(StatePath { segments: vec!["user".into(), "locked".into()] }))
+        );
+        assert_eq!(
+            button.event("click").unwrap().payload,
+            ActionPayload::Expr(Expr::State(StatePath { segments: vec!["count".into()] }))
+        );
     }
 
     #[test]
@@ -389,7 +739,7 @@ mod tests {
             [
                 "unknown component `Buton`",
                 "`Text` takes 1 positional argument",
-                "property `titel` does not exist on component `Button`",
+                "unknown property `titel` on component `Button`",
                 "unknown modifier `on_tap` on component `Button`",
             ]
         );
@@ -398,7 +748,13 @@ mod tests {
     #[test]
     fn checks_actions_against_the_enum() {
         let errors = lower_str(
-            r#"page P(state: S, action: A) { VStack { Button("a").on_click(Action::Sav) Button("b").on_click(Action::SetOn) } }"#,
+            r#"page P(state: S, action: A) { VStack {
+                Button("a").on_click(Action::Sav)
+                Button("b").on_click(Action::SetOn)
+                Button("c").on_click(Action::Save(true))
+                Button("d").on_click(Action::Pick(state.small))
+                Toggle { value: state.on, on_change: Action::Rename }
+            } }"#,
         )
         .unwrap_err();
         assert_eq!(
@@ -406,20 +762,62 @@ mod tests {
             [
                 "no variant `Sav` on action enum `A`",
                 "`A::SetOn` carries a value, but `click` has none to give it",
+                "`A::Save` carries no value",
+                "the action carries a `u32`, but `state.small` is a `u8`",
+                "`A::Rename` carries a `String`, but `change` gives it Bool",
+            ]
+        );
+    }
+
+    #[test]
+    fn checks_state_paths() {
+        let errors = lower_str(
+            r#"page P(state: S, action: A) { VStack {
+                Text(state.nme)
+                Text(state.on)
+                Text(stat.name)
+                Button("x").disabled(state.user.lockd)
+                Toggle { value: bind(state.on) }
+                Text("t") { Text(state.name) }
+            } }"#,
+        )
+        .unwrap_err();
+        assert_eq!(
+            errors,
+            [
+                "no field `nme` on type `S`",
+                "property `text` on `Text` expects String, but `state.on` is a `bool`",
+                "cannot find value `stat`",
+                "no field `lockd` on type `User`",
+                "`bind` on `value` needs an action to write the change back",
+                "`Text` takes no children",
             ]
         );
     }
 
     #[test]
     fn checks_types_and_duplicates() {
-        let errors = lower_str(r#"page P(state: S, action: A) { VStack(spacing: "x") { Button("a", title: "b") Text("t") { Text("u") } } }"#)
-            .unwrap_err();
+        let errors = lower_str(
+            r#"page P(state: S, action: A) { VStack(spacing: "x") {
+                Button("a", title: "b")
+                Button("c").style(TextStyle::Title)
+                Button("d").style(ButtonStyle::Primry)
+                Text("e", style: TextStyle::Body).style(TextStyle::Title)
+                Text("f").disabled(true)
+                Button { title: bind(state.name) }
+            } }"#,
+        )
+        .unwrap_err();
         assert_eq!(
             errors,
             [
                 "property `spacing` on `VStack` expects Integer, found a string",
                 "property `title` is given twice",
-                "`Text` takes no children",
+                "expected a `ButtonStyle` case, found `TextStyle::Title`",
+                "no case `Primry` on `ButtonStyle`",
+                "property `style` is given twice",
+                "unknown modifier `disabled` on component `Text`",
+                "property `title` on `Button` cannot be bound",
             ]
         );
     }

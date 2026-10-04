@@ -4,12 +4,13 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 use std::{env, fs};
 
-use dazzui_compiler::{Target, compile, generate};
+use dazzui_compiler::{Options, Target, compile, crate_lib_name, generate};
 
 const USAGE: &str = "\
 usage:
   dazzui-compiler check    [--src <dir>]
-  dazzui-compiler generate --target swiftui|winui [--src <dir>] [--output <dir>] [--namespace <C# ns>]
+  dazzui-compiler generate --target swiftui|winui [--src <dir>] [--output <dir>]
+                           [--namespace <C# ns>] [--library <lib name>]
 ";
 
 fn main() -> ExitCode {
@@ -30,6 +31,7 @@ fn run(args: Vec<String>) -> Result<(), String> {
     let mut output = PathBuf::from("generated");
     let mut target = None;
     let mut namespace = None;
+    let mut library = None;
     let mut rest = rest.iter();
     while let Some(flag) = rest.next() {
         let mut value = || rest.next().cloned().ok_or_else(|| format!("error: `{flag}` takes a value\n\n{USAGE}"));
@@ -37,6 +39,7 @@ fn run(args: Vec<String>) -> Result<(), String> {
             "--src" => src = value()?.into(),
             "--output" => output = value()?.into(),
             "--namespace" => namespace = Some(value()?),
+            "--library" => library = Some(value()?),
             "--target" => {
                 let name = value()?;
                 target = Some(Target::parse(&name).ok_or_else(|| format!("error: unknown target `{name}`\n\n{USAGE}"))?);
@@ -54,11 +57,20 @@ fn run(args: Vec<String>) -> Result<(), String> {
         }
         "generate" => {
             let target = target.ok_or_else(|| format!("error: `generate` needs `--target`\n\n{USAGE}"))?;
-            let namespace = namespace.as_deref().unwrap_or("App");
-            let files = generate(&pages, target, namespace);
-            fs::create_dir_all(&output).map_err(|e| format!("error: {}: {e}\n", output.display()))?;
+            let library = match library {
+                Some(library) => library,
+                None => fs::read_to_string(base.join("Cargo.toml"))
+                    .ok()
+                    .and_then(|manifest| crate_lib_name(&manifest))
+                    .ok_or("error: no `--library`, and no package name in ./Cargo.toml to take it from\n")?,
+            };
+            let options = Options { namespace: namespace.unwrap_or_else(|| "App".into()), library };
+            let files = generate(&pages, target, &options);
             for file in &files {
                 let path = output.join(&file.path);
+                if let Some(dir) = path.parent() {
+                    fs::create_dir_all(dir).map_err(|e| format!("error: {}: {e}\n", dir.display()))?;
+                }
                 fs::write(&path, &file.contents).map_err(|e| format!("error: {}: {e}\n", path.display()))?;
                 eprintln!("wrote {}", path.display());
             }

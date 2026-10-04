@@ -183,7 +183,10 @@ pub struct Component {
 pub struct ComponentId(pub String);
 
 pub struct UiProp     { pub name: String, pub value: Expr, pub source: SourceLocation }
-pub struct UiBinding  { pub name: String, pub path: StatePath, pub on_change: Option<ActionRef>, pub source: SourceLocation }
+pub struct UiBinding  { pub name: String, pub path: StatePath, pub on_change: ActionRef, pub source: SourceLocation }
+// on_change 必填：写回只能经过 Rust。`bind(state.x)` 没有配 `on_change: Action::…` 是编译错误。
+// 带值的事件（Toggle 的 change）必须接一个带同类型值的变体，不能悄悄丢掉那个值。
+// Integer / 枚举 prop 在 Phase 2 只接字面量；Text 的 style 没有默认值，不写就是平台正文。
 pub struct UiEvent    { pub name: String, pub action: ActionRef, pub source: SourceLocation }
 pub struct UiSlot     { pub name: String, pub node: Box<UiNode>, pub source: SourceLocation }
 pub struct UiModifier { pub name: ModifierId, pub args: Vec<Expr>, pub source: SourceLocation }
@@ -417,6 +420,25 @@ void settings_subscribe(NuiApp*, NuiStateChanged, void* context);
 - Swift 侧通过 module map 引入 C 头文件；C# 侧用 `[LibraryImport]` 加 source-generated marshalling。两边的胶水代码由 CLI 一起生成。
 - Rust 侧：`#[dazzui_compiler_macro::app]` 标在 `update` 上，生成 `extern "C"` 包装；业务逻辑仍然是普通的 `fn update(&mut State, Action)`。
 
+**Phase 2 落地时定下的细节：**
+
+- ABI 只有一份描述：`src/bridge.rs` 的 `Bridge`。`#[app]` 的 Rust 侧（`Bridge::rust`）、
+  C 头文件、Swift 胶水、C# 胶水都从它推出。`#[app]` 和 CLI 一样，经 `CARGO_MANIFEST_DIR`
+  读 crate 的 `src/` 拿 state struct 和 action enum；crate 每次编译都会重跑宏，所以不会读到旧类型。
+- 命名取自 state 类型：`SettingsState` → 前缀 `settings_`、`SettingsApp`、`SettingsStateDto`。
+  CLI 要求每个页面的 state 都有一个 `#[app]`，且它接的 action 就是页面的 action。
+- tag 是 `uint32_t`，按变体声明顺序编号，C 里给 `#define`，不用 C `enum`（大小随编译器）。
+  没有任何变体带载荷时，DTO 里没有 union。变体最多带一个值。
+- 能过桥的类型：`bool`、各宽度整数（`usize`/`isize` → `uintptr_t`/`intptr_t`）、`f32`/`f64`、
+  `String`（`NuiStr`）。快照里的字符串属于 Rust，由 `*_state_free` 归还；action 里的字符串
+  属于调用方，只借到调用结束。Vec 和嵌套 struct 留给 Phase 3。
+- 回调里不持有 app 的借用：先复制订阅者列表再逐个调用，订阅者可以安全地重新 `get_state`。
+- Swift：生成 `CSettings/`（头文件 + module map），宿主的 `Package.swift` 用 `.systemLibrary`
+  引入，并按完整路径链接 `libsettings_example.a`（`-l` 会选中旁边的 dylib）。Cargo 不由
+  SwiftPM 驱动，先 `cargo build -p settings-example`。
+- C#：`[LibraryImport]` 加函数指针回调（`[UnmanagedCallersOnly]` + weak `GCHandle`）；DTO 全部
+  blittable，`bool` 存成 `byte`。CLI 的 `--library` 默认取 `./Cargo.toml` 的包名。
+
 ---
 
 ## 9. Workspace 结构
@@ -457,7 +479,7 @@ backend 只读 `ir`（加上 `RustTypes`），互相不引用。
 | Phase | 内容 | 验证 |
 |---|---|---|
 | **1** ✅ | Text、Button、VStack；字面量 prop；children；click → action；读取 Rust action enum | parser/semantic 单测；对 `generated/` 做 golden test；example crate 能编译（宏的类型检查生效）；生成的 Swift 能和真实的 DazzUI 一起用 xcodebuild 编过 |
-| 2 | state 表达式、Toggle、binding、读取 Rust state struct、`.style` / `.disabled` modifier、C ABI 桥 | 宿主 app 点开关后 Rust 的 state 发生变化 |
+| **2** ✅ | state 表达式、Toggle、HStack、binding、读取 Rust state struct、`.style` / `.disabled` modifier、带载荷的 action、C ABI 桥 | 宿主 app 点开关后 Rust 的 state 发生变化（xcodebuild test 经 C ABI 往返；Rust 侧单测直接调 `extern "C"`）|
 | 3 | if、for、selector | — |
 | 4 | TOML registry、自定义组件、SettingsSection/SettingsRow、slot | 完整的 demo SettingsPage |
 | 5 | rustc 样式的诊断渲染、所有类型的错误、`dazzui-compiler check`、trybuild 测试 compile-fail | — |

@@ -143,14 +143,52 @@ impl Parse for ValueAst {
             };
         }
         let path: Path = input.parse()?;
-        if path.segments.len() == 1 && input.peek(syn::token::Brace) {
-            return Err(input.error("a component as a prop value is a named slot, which arrives in Phase 4"));
+        if let Some(ident) = path.get_ident() {
+            if input.peek(syn::token::Brace) {
+                return Err(input.error("a component as a prop value is a named slot, which arrives in Phase 4"));
+            }
+            if ident == "bind" && input.peek(syn::token::Paren) {
+                let content;
+                parenthesized!(content in input);
+                let first: Ident = content.parse()?;
+                let target = dotted(first, &content)?;
+                if !content.is_empty() {
+                    return Err(content.error("`bind` takes one state path: `bind(state.field)`"));
+                }
+                return Ok(ValueAst::Bind(target));
+            }
+            if input.peek(Token![.]) && input.peek2(Ident) {
+                return Ok(ValueAst::Dotted(dotted(ident.clone(), input)?));
+            }
+            if input.peek(syn::token::Paren) {
+                return Err(input.error("only an action takes a payload: `Action::Variant(value)`"));
+            }
+            return Ok(ValueAst::Dotted(DottedAst { segments: vec![ident.clone()] }));
         }
         if input.peek(syn::token::Paren) {
-            return Err(input.error("an action payload arrives in Phase 2"));
+            let content;
+            parenthesized!(content in input);
+            let payload: ValueAst = content.parse()?;
+            if content.peek(Token![,]) {
+                content.parse::<Token![,]>()?;
+            }
+            if !content.is_empty() {
+                return Err(content.error("an action carries one value"));
+            }
+            return Ok(ValueAst::Call(path, Box::new(payload)));
         }
         Ok(ValueAst::Path(path))
     }
+}
+
+/// The rest of `first.b.c`.
+fn dotted(first: Ident, input: ParseStream) -> Result<DottedAst> {
+    let mut segments = vec![first];
+    while input.peek(Token![.]) && input.peek2(Ident) {
+        input.parse::<Token![.]>()?;
+        segments.push(input.parse()?);
+    }
+    Ok(DottedAst { segments })
 }
 
 #[cfg(test)]
@@ -196,6 +234,31 @@ mod tests {
         let NodeAst::Component(button) = page.root;
         assert_eq!(button.props.len(), 2);
         assert!(button.children.is_empty());
+    }
+
+    #[test]
+    fn parses_state_bindings_and_payloads() {
+        let page = parse(
+            r#"page P(state: S, action: A) {
+                Toggle {
+                    value: bind(state.on),
+                    on_change: Action::SetOn,
+                }
+                .disabled(state.user.locked)
+            }"#,
+        )
+        .unwrap();
+        let NodeAst::Component(toggle) = page.root;
+        assert!(matches!(&toggle.props[0].value, ValueAst::Bind(p) if p.segments.len() == 2));
+        assert!(matches!(&toggle.props[1].value, ValueAst::Path(_)));
+        assert!(matches!(&toggle.modifiers[0].args[0], ArgAst::Positional(ValueAst::Dotted(p)) if p.segments.len() == 3));
+
+        let page = parse(r#"page P(state: S, action: A) { Button("a").on_click(Action::Pick(state.id)) }"#).unwrap();
+        let NodeAst::Component(button) = page.root;
+        assert!(matches!(
+            &button.modifiers[0].args[0],
+            ArgAst::Positional(ValueAst::Call(_, payload)) if matches!(**payload, ValueAst::Dotted(_))
+        ));
     }
 
     #[test]

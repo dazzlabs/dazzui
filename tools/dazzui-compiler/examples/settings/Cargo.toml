@@ -6,5 +6,10 @@ edition.workspace = true
 license.workspace = true
 publish.workspace = true
 
+# `staticlib` is what the Apple host links; `cdylib` is what the WinUI
+# host's `[LibraryImport]` loads.
+[lib]
+crate-type = ["lib", "staticlib", "cdylib"]
+
 [dependencies]
 dazzui-compiler-macro.workspace = true

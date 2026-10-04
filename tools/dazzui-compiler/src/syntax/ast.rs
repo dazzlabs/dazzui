@@ -56,6 +56,24 @@ pub enum ValueAst {
     NegInt(Lit),
     /// `Action::Save`, `TextStyle::Title`
     Path(Path),
+    /// `state.user.name`; `state` alone is a path of one.
+    Dotted(DottedAst),
+    /// `bind(state.x)`
+    Bind(DottedAst),
+    /// `Action::Select(state.current)`
+    Call(Path, Box<ValueAst>),
+}
+
+/// `a.b.c`: a path of field accesses.
+#[derive(Clone, Debug)]
+pub struct DottedAst {
+    pub segments: Vec<Ident>,
+}
+
+impl DottedAst {
+    pub fn span(&self) -> Span {
+        join(self.segments.first().map(Ident::span), self.segments.last().map(Ident::span))
+    }
 }
 
 impl ValueAst {
@@ -63,6 +81,8 @@ impl ValueAst {
         match self {
             ValueAst::Lit(lit) | ValueAst::NegInt(lit) => lit.span(),
             ValueAst::Path(path) => spanned_path(path),
+            ValueAst::Dotted(path) | ValueAst::Bind(path) => path.span(),
+            ValueAst::Call(path, _) => spanned_path(path),
         }
     }
 }
@@ -70,8 +90,10 @@ impl ValueAst {
 /// The span of a whole path, first segment to last, where the compiler can
 /// join them; the first segment's otherwise.
 pub fn spanned_path(path: &Path) -> Span {
-    let first = path.segments.first().map(|s| s.ident.span());
-    let last = path.segments.last().map(|s| s.ident.span());
+    join(path.segments.first().map(|s| s.ident.span()), path.segments.last().map(|s| s.ident.span()))
+}
+
+fn join(first: Option<Span>, last: Option<Span>) -> Span {
     match (first, last) {
         (Some(a), Some(b)) => a.join(b).unwrap_or(a),
         _ => Span::call_site(),

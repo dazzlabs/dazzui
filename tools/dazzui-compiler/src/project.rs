@@ -4,9 +4,10 @@ use std::path::{Path, PathBuf};
 use crate::ir::{Diagnostic, Page};
 use crate::syntax::{PageAst, parse_page};
 
-use crate::error::SemanticError;
+use crate::bridge::Bridge;
+use crate::error::{SemanticError, locate};
 use crate::registry::Registry;
-use crate::rust_types::{EnumDef, RustTypes};
+use crate::rust_types::{EnumDef, RustTypes, StructDef};
 use crate::semantic::lower;
 
 /// An app crate's source as the CLI reads it: every `.rs` file under a
@@ -24,11 +25,14 @@ pub struct SourceFile {
     pub text: String,
 }
 
-/// A page, lowered, with the Rust enum its actions come from.
+/// A page, lowered, with the Rust types its state and actions are, and the
+/// bridge that carries them.
 pub struct CompiledPage {
     pub page: Page,
     pub file: String,
+    pub state: StructDef,
     pub actions: EnumDef,
+    pub bridge: Bridge,
 }
 
 impl Project {
@@ -80,12 +84,40 @@ impl Project {
         let mut pages = Vec::new();
         for (index, ast) in &self.pages {
             let file = &self.files[*index].display;
-            match lower(ast, registry, Some(&self.types), file) {
-                Ok(page) => {
-                    let actions = self.types.enums[&page.action_type].clone();
-                    pages.push(CompiledPage { page, file: file.clone(), actions });
+            let page = match lower(ast, registry, Some(&self.types), file) {
+                Ok(page) => page,
+                Err(errors) => {
+                    diagnostics.extend(errors.iter().map(|e| e.to_diagnostic(file)));
+                    continue;
                 }
-                Err(errors) => diagnostics.extend(errors.iter().map(|e| e.to_diagnostic(file))),
+            };
+            let at = |message: String| {
+                let (location, width) = locate(file, ast.name.span());
+                Diagnostic::error(message).at(location, width)
+            };
+            let Some(app) = self.types.app_for(&page.state_type) else {
+                diagnostics.push(at(format!("no `#[app]` update function for `{}`", page.state_type)).with_help(format!(
+                    "mark `fn update(state: &mut {}, action: {})` with `#[dazzui_compiler_macro::app]`",
+                    page.state_type, page.action_type
+                )));
+                continue;
+            };
+            if app.action != page.action_type {
+                diagnostics.push(at(format!(
+                    "the page sends `{}`, but `{}` takes `{}`",
+                    page.action_type, app.function, app.action
+                )));
+                continue;
+            }
+            match Bridge::new(app, &self.types) {
+                Ok(bridge) => pages.push(CompiledPage {
+                    state: self.types.structs[&page.state_type].clone(),
+                    actions: self.types.enums[&page.action_type].clone(),
+                    page,
+                    file: file.clone(),
+                    bridge,
+                }),
+                Err(message) => diagnostics.push(at(message)),
             }
         }
         if diagnostics.is_empty() { Ok(pages) } else { Err(diagnostics) }

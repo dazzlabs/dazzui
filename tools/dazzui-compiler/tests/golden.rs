@@ -5,12 +5,13 @@
 use std::fs;
 use std::path::Path;
 
-use dazzui_compiler::{Target, compile, generate};
+use dazzui_compiler::{Options, Target, compile, generate};
 
 fn check(target: Target, namespace: &str, dir: &str) {
     let example = Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/settings");
     let pages = compile(&example.join("src"), &example).unwrap_or_else(|e| panic!("{e}"));
-    let files = generate(&pages, target, namespace);
+    let options = Options { namespace: namespace.into(), library: "settings_example".into() };
+    let files = generate(&pages, target, &options);
     assert!(!files.is_empty());
     for file in files {
         let path = example.join(dir).join(&file.path);

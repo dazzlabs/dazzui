@@ -1,4 +1,4 @@
-use super::{ActionRef, Expr, SourceLocation};
+use super::{ActionRef, Expr, SourceLocation, StatePath};
 
 /// One `ui!` page: a root node, and the Rust types its state and actions
 /// are.
@@ -31,6 +31,7 @@ impl ComponentId {
 pub struct Component {
     pub id: ComponentId,
     pub props: Vec<UiProp>,
+    pub bindings: Vec<UiBinding>,
     pub events: Vec<UiEvent>,
     pub children: Vec<UiNode>,
     pub source: SourceLocation,
@@ -39,6 +40,10 @@ pub struct Component {
 impl Component {
     pub fn prop(&self, name: &str) -> Option<&Expr> {
         self.props.iter().find(|p| p.name == name).map(|p| &p.value)
+    }
+
+    pub fn binding(&self, name: &str) -> Option<&UiBinding> {
+        self.bindings.iter().find(|b| b.name == name)
     }
 
     pub fn event(&self, name: &str) -> Option<&ActionRef> {
@@ -51,6 +56,18 @@ impl Component {
 pub struct UiProp {
     pub name: String,
     pub value: Expr,
+    pub source: SourceLocation,
+}
+
+/// `value: bind(state.x)`: a prop that shows a state field and writes a
+/// change back. The write goes through Rust — `on_change` is the action the
+/// new value travels in — so the native side never changes its copy of the
+/// state on its own.
+#[derive(Clone, Debug, PartialEq)]
+pub struct UiBinding {
+    pub name: String,
+    pub path: StatePath,
+    pub on_change: ActionRef,
     pub source: SourceLocation,
 }
 
