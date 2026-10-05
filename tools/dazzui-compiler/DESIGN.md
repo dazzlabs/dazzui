@@ -343,6 +343,28 @@ help: did you mean `title`?
 
 拼写建议用 Jaro-Winkler（strsim），阈值 0.8。
 
+**错误一览（Phase 5 定稿）。** 每一类在 `tests/diagnostics/<类>/` 有一份 CLI 输出的快照
+（`DAZZUI_BLESS=1` 重写），宏一侧在 `macro/tests/ui/` 有 trybuild 用例（`TRYBUILD=overwrite` 重写）：
+
+| 类 | 例子 | 谁报 |
+|---|---|---|
+| 语法 | 少了 `action:`、`bind` 里不是路径、一个 page 两个根 | parser：宏和 CLI 同一条 |
+| 名字 | 未知组件 / prop / modifier / slot，位置参数过多，重复给值 | semantic，带“did you mean” |
+| 类型 | prop 类型不符，枚举 case 不存在或类型不对，Integer/枚举 prop 读 state | semantic |
+| state 路径 | 没有这个字段，根不是 `state` 或循环变量，整个 state 当值 | CLI：semantic；宏：rustc 的 E0609 |
+| action | 没有这个变体，载荷有无或类型不符，事件值和变体载荷类型不符 | CLI：semantic；宏：rustc 的 E0599/E0308 |
+| 绑定 | `bind` 缺 `on_change`，prop 不能绑定，绑定循环变量 | semantic |
+| 控制流 | 条件不是 bool，`for` 不是 Vec<结构体>、元素没有 `id`、嵌套 `for`、循环体读 state | semantic |
+| slot / children | slot 不是组件、重复、必填缺失，子组件不在 `allow` 里 | semantic |
+| 过桥 | 缺 `#[app]`，`#[app]`/`#[selector]` 签名不对，字段或载荷类型过不了桥 | CLI：project + bridge；宏：`#[app]` / `#[selector]` |
+| 项目 | 同名 page，两个 page 共用一个 state | project |
+| registry | TOML 语法错误（指到行列），映射引用不存在的东西，枚举 case 缺平台代码，带值事件缺 `value` | registry 加载时 |
+
+宏在 stable Rust 上不能给错误挂 help，于是 help 写成消息的下一行 `= help: …`，样子和 rustc 自己的一样。
+CLI 的诊断按源码位置排序；终端上用 rustc 的配色（`NO_COLOR` 关掉）。
+生成阶段不再 panic：凡是 backend 会碰到的缺口，都在 registry 加载或 semantic 时报出来；
+`dazzui-compiler check` 也会把两个 backend 跑一遍再丢掉结果，所以 `check` 过了，`generate` 一定能写出来。
+
 ---
 
 ## 6. SwiftUI lowering
@@ -381,7 +403,7 @@ help: did you mean `title`?
 | `Binding` | DazzUI 控件的 `IsChecked` 等属性是普通 DP，但写回要经过 Rust：用 `OneWay` 绑定读，写回走生成的事件处理器 `ViewModel.Send(new SetX(value))`。不用 `TwoWay`，因为 `TwoWay` 会绕过 Rust 直接改 C# 侧的状态 |
 | `UiEvent` | `Click="OnSaveClick"`，code-behind 里生成 `OnSaveClick`，内容只有一行 `ViewModel.Send(…)` |
 | `If` | 分支里每个节点设 `Visibility="{x:Bind local:Page.VisibleN(…), Mode=OneWay}"`，`VisibleN` 是按条件取反组合生成的静态函数，嵌套的 `if` 合成一个。不用 `x:Load`：它要 `x:Name`，在 DataTemplate 里也不好用 |
-| `ForEach` | `<ItemsRepeater ItemsSource="{x:Bind ViewModel.State.Items, Mode=OneWay}">`，Layout 用和外层 stack 同方向、同间距的 `StackLayout`，加上 `<DataTemplate x:DataType="local:Item">`；模板里多个节点时包一层同方向的 StackPanel。事件处理器从 `sender` 的 `DataContext` 取元素 |
+| `ForEach` | `<ItemsRepeater ItemsSource="{x:Bind ViewModel.State.Items, Mode=OneWay}">`，Layout 用和外层 stack 同方向、同间距的 `StackLayout`，加上 `<DataTemplate x:DataType="local:Item">`；模板里多个节点时包一层同方向的 StackPanel。事件处理器从 `sender` 往上找到 ItemsRepeater，用 `GetElementIndex` 取元素（ItemsRepeater 不设 DataContext）|
 | modifier | `disabled` → `IsEnabled`，`padding` → `Padding`/`Margin`，`style` → 组件的枚举属性 |
 
 生成的文件：`SettingsPage.xaml`、`SettingsPage.xaml.cs`（`partial class`，
@@ -470,6 +492,9 @@ tools/dazzui-compiler/
                                         （SwiftPM 的 target 不能出包根，所以它和 Cargo.toml 并排）
     apple/SettingsHost/                 运行生成页面的 macOS app
     apple/SettingsUITests/              xcodebuild test：页面能布局、ViewModel 转发 action
+    windows/SettingsHost/               WinUI 3 宿主：直接编译 generated/windows，引用真实的 DazzUI，带上 Rust 的 cdylib；
+                                        --smoke-test 用真实鼠标点击走完 XAML → 生成的处理器 → C ABI → update → x:Bind
+    windows/smoke.sh                    从 Mac 经 SSH 在 Windows 上同步、构建、在登录的桌面里跑 smoke test，取回结果和截图
 ```
 
 只有两个 crate：proc macro 的 crate 不能导出别的东西，所以 `ui!` 单独在
@@ -487,7 +512,7 @@ backend 只读 `ir`（加上 `RustTypes`），互相不引用。
 | **2** ✅ | state 表达式、Toggle、HStack、binding、读取 Rust state struct、`.style` / `.disabled` modifier、带载荷的 action、C ABI 桥 | 宿主 app 点开关后 Rust 的 state 发生变化（xcodebuild test 经 C ABI 往返；Rust 侧单测直接调 `extern "C"`）|
 | **3** ✅ | if、for、selector；`Vec<结构体>` 和嵌套结构体过桥 | 宿主 app 渲染 `for` + selector 列表和条件分支；xcodebuild test 验证列表和 selector 经 C ABI 往返 |
 | **4** ✅ | TOML registry、自定义组件、SettingsSection/SettingsRow、slot、children 白名单；Button/Toggle 也改为由映射驱动 | 完整的 demo SettingsPage：示例的 `dazzui-compiler.toml` 定义 Settings/SettingsSection/SettingsRow，生成的 SwiftUI 用真实的 DazzUI 偏好设置控件编过并运行 |
-| 5 | rustc 样式的诊断渲染、所有类型的错误、`dazzui-compiler check`、trybuild 测试 compile-fail | — |
+| **5** ✅ | rustc 样式的诊断渲染（配色、tab、TOML 行列）、所有类型的错误、`dazzui-compiler check`、trybuild 测试 compile-fail | 12 类 CLI 诊断快照；7 个 trybuild compile-fail 用例 + 1 个 pass；生成阶段的 panic 都改成了 registry/semantic 诊断 |
 
 MVP 之外（不做）：animation、gesture、复杂导航、runtime diff、Virtual DOM、自绘、layout engine、hot reload、accessibility 抽象。
 

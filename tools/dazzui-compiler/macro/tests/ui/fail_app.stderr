@@ -1,0 +1,11 @@
+error: an #[app] function is `fn update(state: &mut State, action: Action)`
+  --> tests/ui/fail_app.rs:26:5
+   |
+26 | pub fn update(state: S, action: A) {}
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: a #[selector] is `fn name(&self) -> T`
+  --> tests/ui/fail_app.rs:30:9
+   |
+30 |     pub fn count(self) -> u32 {
+   |         ^^^^^^^^^^^^^^^^^^^^^

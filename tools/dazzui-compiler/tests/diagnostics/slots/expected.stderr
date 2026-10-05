@@ -1,0 +1,23 @@
+error: slot `trailing` on `Row` takes a component
+  --> page.rs:32:22
+   |
+32 |             Row("a", trailing: "x")
+   |                      ^^^^^^^^
+   |
+help: `trailing: Component { … }`
+
+error: slot `trailing` is given twice
+  --> page.rs:33:92
+   |
+33 |             Row("b", trailing: Toggle { value: bind(state.on), on_change: Action::SetOn }, trailing: Text("y"))
+   |                                                                                            ^^^^^^^^ given again here
+   |
+
+error: `Section` takes only `Row` as children
+  --> page.rs:34:13
+   |
+34 |             Text("c")
+   |             ^^^^ not allowed here
+   |
+
+error: could not compile due to 3 previous errors

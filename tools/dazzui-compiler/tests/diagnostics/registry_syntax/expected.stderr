@@ -1,0 +1,8 @@
+error: invalid table header; expected `.`, `]`
+ --> dazzui-compiler.toml:2:15
+  |
+2 | [component.Row
+  |               ^
+  |
+
+error: could not compile due to 1 previous error

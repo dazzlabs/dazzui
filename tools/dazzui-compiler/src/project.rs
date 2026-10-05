@@ -39,11 +39,15 @@ pub struct CompiledPage {
 }
 
 impl Project {
-    /// Reads every `.rs` file under `src`. Paths are displayed relative to
-    /// `base`.
+    /// Reads every `.rs` file under `src`, or `src` itself when it is a
+    /// file. Paths are displayed relative to `base`.
     pub fn scan(src: &Path, base: &Path) -> std::io::Result<Self> {
         let mut paths = Vec::new();
-        walk(src, &mut paths)?;
+        if src.is_file() {
+            paths.push(src.to_path_buf());
+        } else {
+            walk(src, &mut paths)?;
+        }
         paths.sort();
 
         let mut project =
@@ -125,6 +129,32 @@ impl Project {
                 Err(message) => diagnostics.push(at(message)),
             }
         }
+        // In source order, as rustc reports.
+        diagnostics.sort_by(|a, b| {
+            let key = |d: &Diagnostic| d.location.as_ref().map(|l| (l.file.clone(), l.line, l.column));
+            key(a).cmp(&key(b))
+        });
+        // A page's files are named from it, and its view model and bridge
+        // from its state: two of either would write over each other.
+        for (i, page) in pages.iter().enumerate() {
+            let earlier = &pages[..i];
+            let at = || page.page.source.clone();
+            if let Some(first) = earlier.iter().find(|p| p.page.name == page.page.name) {
+                diagnostics.push(
+                    Diagnostic::error(format!("page `{}` is defined twice", page.page.name))
+                        .at(at(), page.page.name.len() as u32)
+                        .with_help(format!("the first is at {}:{}", first.page.source.file, first.page.source.line)),
+                );
+            } else if let Some(first) = earlier.iter().find(|p| p.page.state_type == page.page.state_type) {
+                diagnostics.push(
+                    Diagnostic::error(format!(
+                        "pages `{}` and `{}` both show `{}`; a state has one page for now",
+                        first.page.name, page.page.name, page.page.state_type
+                    ))
+                    .at(at(), page.page.name.len() as u32),
+                );
+            }
+        }
         if diagnostics.is_empty() { Ok(pages) } else { Err(diagnostics) }
     }
 }
@@ -132,6 +162,11 @@ impl Project {
 fn walk(dir: &Path, out: &mut Vec<PathBuf>) -> std::io::Result<()> {
     for entry in fs::read_dir(dir)? {
         let path = entry?.path();
+        // A hidden file is never a module rustc compiles — and macOS
+        // leaves `._name.rs` resource forks beside files it copies away.
+        if path.file_name().is_some_and(|n| n.to_string_lossy().starts_with('.')) {
+            continue;
+        }
         if path.is_dir() {
             walk(&path, out)?;
         } else if path.extension().is_some_and(|e| e == "rs") {

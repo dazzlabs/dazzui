@@ -1,0 +1,22 @@
+error[E0609]: no field `nme` on type `&S`
+  --> tests/ui/fail_state_path.rs:24:24
+   |
+24 |             Text(state.nme)
+   |                        ^^^ unknown field
+   |
+help: a field with a similar name exists
+   |
+24 |             Text(state.name)
+   |                         +
+
+error[E0609]: no field `of` on type `&S`
+  --> tests/ui/fail_state_path.rs:25:22
+   |
+25 |             if state.of { Text("a") }
+   |                      ^^ unknown field
+   |
+help: a field with a similar name exists
+   |
+25 -             if state.of { Text("a") }
+25 +             if state.on { Text("a") }
+   |

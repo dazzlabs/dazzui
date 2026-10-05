@@ -1,5 +1,6 @@
 //! `dazzui-compiler check` and `dazzui-compiler generate`.
 
+use std::io::IsTerminal;
 use std::path::PathBuf;
 use std::process::ExitCode;
 use std::{env, fs};
@@ -49,9 +50,17 @@ fn run(args: Vec<String>) -> Result<(), String> {
     }
 
     let base = env::current_dir().map_err(|e| e.to_string())?;
-    let pages = compile(&src, &base)?;
+    // rustc's colours on a terminal, unless NO_COLOR asks otherwise.
+    let color = std::io::stderr().is_terminal() && env::var_os("NO_COLOR").is_none();
+    let pages = compile(&src, &base).map_err(|report| report.render(color))?;
     match command.as_str() {
         "check" => {
+            // Both backends run too, their output dropped, so that a page
+            // `check` passes is one `generate` writes for either target.
+            let options = Options { namespace: "Check".into(), library: "check".into() };
+            for target in [Target::SwiftUI, Target::WinUI] {
+                generate(&pages, target, &options);
+            }
             eprintln!("checked {} page{}", pages.len(), if pages.len() == 1 { "" } else { "s" });
             Ok(())
         }

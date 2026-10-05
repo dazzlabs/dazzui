@@ -1,0 +1,8 @@
+error: expected `action`
+  --> page.rs:30:22
+   |
+30 |     page P(state: S, act: A) {
+   |                      ^^^
+   |
+
+error: could not compile due to 1 previous error

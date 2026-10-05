@@ -1,0 +1,6 @@
+# Badge maps a style it gives no code for.
+
+[component.Badge]
+props.style = { type = "enum:ButtonStyle", default = "Secondary" }
+swiftui = { call = "Badge", args = [{ arg = "style", prop = "style", enum = { Primary = ".p" } }] }
+winui = { element = "Badge" }

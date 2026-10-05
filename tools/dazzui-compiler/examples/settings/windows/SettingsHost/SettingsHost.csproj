@@ -1,0 +1,53 @@
+<!--
+  The WinUI host for the settings example: the XAML and C# that
+  dazzui-compiler generated into generated/windows (target winui),
+  compiled against the real DazzUI, with the Rust app core's DLL beside it.
+
+  The Rust core is a cdylib Cargo builds; MSBuild does not build it. From
+  tools/dazzui-compiler, on Windows:
+
+    cargo build -p settings-example
+    dotnet build examples/settings/windows/SettingsHost/SettingsHost.csproj
+
+  The smoke-test argument clicks through the page and writes result.txt and PNGs to
+  DAZZUI_SMOKE_OUTPUT. It has to run in the signed-in desktop session.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>SettingsHost</AssemblyName>
+    <RootNamespace>Settings</RootNamespace>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>false</EnableMsixTooling>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <SelfContained>true</SelfContained>
+    <Platforms>x64;ARM64</Platforms>
+    <Platform Condition="'$(Platform)' == '' Or '$(Platform)' == 'AnyCPU'">x64</Platform>
+    <RuntimeIdentifier Condition="'$(Platform)' == 'x64'">win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(Platform)' == 'ARM64'">win-arm64</RuntimeIdentifier>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>12</LangVersion>
+    <!-- The generated bridge uses pointers and function pointers. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Generated>$(MSBuildThisFileDirectory)../../generated/windows/</Generated>
+    <RustCore>$(MSBuildThisFileDirectory)../../../../target/debug/settings_example.dll</RustCore>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260804001" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4654" />
+    <ProjectReference Include="../../../../../../packages/csharp/DazzUI/src/DazzUI/DazzUI.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(Generated)*.xaml" Link="Generated/%(Filename)%(Extension)" />
+    <Compile Include="$(Generated)*.cs" Link="Generated/%(Filename)%(Extension)" />
+    <None Include="$(RustCore)" Link="settings_example.dll" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <Target Name="RequireRustCore" BeforeTargets="Build">
+    <Error Condition="!Exists('$(RustCore)')" Text="No Rust core at $(RustCore): run `cargo build -p settings-example` in tools/dazzui-compiler first." />
+  </Target>
+</Project>

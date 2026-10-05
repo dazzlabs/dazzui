@@ -1,0 +1,11 @@
+error[E0609]: no field `titel` on type `&Item`
+  --> tests/ui/fail_loop_item.rs:25:27
+   |
+25 |                 Text(item.titel)
+   |                           ^^^^^ unknown field
+   |
+help: a field with a similar name exists
+   |
+25 -                 Text(item.titel)
+25 +                 Text(item.title)
+   |

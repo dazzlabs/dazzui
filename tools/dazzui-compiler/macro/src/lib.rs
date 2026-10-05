@@ -49,14 +49,13 @@ fn expand(input: TokenStream2) -> syn::Result<TokenStream2> {
         Ok(_) => TokenStream2::new(),
         Err(errors) => errors.iter().map(|e| e.to_syn().to_compile_error()).collect(),
     };
-    let check = type_check(&page, &registry);
+    let check = type_check(&page, &registry, crate_types().map_err(|e| syn::Error::new(page.name.span(), e))?);
     Ok(quote! { #errors #check #track })
 }
 
-fn type_check(page: &PageAst, registry: &Registry) -> TokenStream2 {
+fn type_check(page: &PageAst, registry: &Registry, types: Option<RustTypes>) -> TokenStream2 {
     let state = &page.state_ty;
     let check = format_ident!("__dazzui_compiler_check_{}", page.name);
-    let types = crate_types();
     let state_name = page.state_ty.segments.last().map(|s| s.ident.to_string());
     let mut cx = Check { registry, action: &page.action_ty, types: types.as_ref(), state: state_name, scopes: Vec::new() };
     let lets = cx.node(&page.root);
@@ -71,11 +70,18 @@ fn type_check(page: &PageAst, registry: &Registry) -> TokenStream2 {
     }
 }
 
-/// The Rust types of the crate being compiled, read from its `src/`.
-fn crate_types() -> Option<RustTypes> {
-    let dir = std::env::var("CARGO_MANIFEST_DIR").ok()?;
+/// The Rust types of the crate being compiled, read from its `src/`; none
+/// outside cargo or for a crate with no `src/`. A `src/` that cannot be read
+/// is an error: without its types, a selector would be read as a field.
+fn crate_types() -> syn::Result<Option<RustTypes>> {
+    let Ok(dir) = std::env::var("CARGO_MANIFEST_DIR") else { return Ok(None) };
     let src = Path::new(&dir).join("src");
-    Project::scan(&src, Path::new(&dir)).ok().map(|p| p.types)
+    if !src.is_dir() {
+        return Ok(None);
+    }
+    Project::scan(&src, Path::new(&dir))
+        .map(|p| Some(p.types))
+        .map_err(|e| syn::Error::new(Span::call_site(), format!("cannot read {}: {e}", src.display())))
 }
 
 /// What the type check is walking: the page, and the loop items in scope.
@@ -274,7 +280,9 @@ impl Check<'_> {
         ValueAst::Dotted(path) => {
             let (access, _) = self.access(path)?;
             let span = path.span();
-            Some(quote_spanned! {span=> ::core::clone::Clone::clone(&#access) })
+            // Bound first, so its type is the field's and a mismatch reads
+            // as one, not as an argument to `clone`.
+            Some(quote_spanned! {span=> { let value = ::core::clone::Clone::clone(&#access); value } })
         }
         ValueAst::Lit(Lit::Str(s)) => Some(quote_spanned! {s.span()=> ::core::convert::Into::into(#s) }),
         ValueAst::Lit(lit) => Some(lit.to_token_stream()),

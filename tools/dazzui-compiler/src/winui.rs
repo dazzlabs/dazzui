@@ -386,11 +386,11 @@ fn cs_expr(cx: &Cx, e: &Expr) -> String {
         Expr::Literal(Value::Bool(b)) => b.to_string(),
         Expr::Literal(Value::Int(n)) => n.to_string(),
         Expr::State(_) => path(cx, e),
-        // The element a control in a template was made for is its
-        // DataContext.
+        // An ItemsRepeater does not set a DataContext; the element a
+        // control was made for is found from the repeater it sits in.
         Expr::Local(_) => {
             let element = cx.element.as_deref().expect("a loop item inside its loop");
-            format!("(({element})((FrameworkElement)sender).DataContext).{}", path(cx, e))
+            format!("ItemOf<{element}>(sender).{}", path(cx, e))
         }
         Expr::EnumCase { ty, case } => unreachable!("`{ty}::{case}` is lowered by the prop that takes it"),
     }
@@ -456,8 +456,15 @@ fn code_behind(compiled: &CompiledPage, namespace: &str, cx: &Cx) -> String {
     if !cx.styled.is_empty() {
         w.line("using DazzUI;");
     }
+    let items = cx.handlers.iter().any(|h| h.payload.contains("ItemOf<"));
+    if items {
+        w.line("using System;");
+    }
     w.line("using Microsoft.UI.Xaml;");
     w.line("using Microsoft.UI.Xaml.Controls;");
+    if items {
+        w.line("using Microsoft.UI.Xaml.Media;");
+    }
     for using in &cx.usings {
         w.line(&format!("using {using};"));
     }
@@ -492,6 +499,24 @@ fn code_behind(compiled: &CompiledPage, namespace: &str, cx: &Cx) -> String {
                 "private void {}(object sender, {} e) => ViewModel.Send(new {action}.{}({}));",
                 h.name, h.args, h.action.variant, h.payload
             ));
+        }
+        if cx.handlers.iter().any(|h| h.payload.contains("ItemOf<")) {
+            w.line("");
+            w.line("/// <summary>The element of the ItemsRepeater around <paramref name=\"sender\"/> it was made for.</summary>");
+            w.line("private static T ItemOf<T>(object sender)");
+            w.line("{");
+            w.indent(|w| {
+                w.line("var child = (DependencyObject)sender;");
+                w.line("for (var parent = VisualTreeHelper.GetParent(child); parent is not null; child = parent, parent = VisualTreeHelper.GetParent(parent))");
+                w.line("{");
+                w.indent(|w| {
+                    w.line("if (parent is ItemsRepeater repeater && child is UIElement element)");
+                    w.indent(|w| w.line("return (T)repeater.ItemsSourceView.GetAt(repeater.GetElementIndex(element));"));
+                });
+                w.line("}");
+                w.line("throw new InvalidOperationException(\"not inside an ItemsRepeater\");");
+            });
+            w.line("}");
         }
         if cx.negates {
             w.line("");

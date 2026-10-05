@@ -1,0 +1,16 @@
+error: `S.opened` has type `Instant`, which cannot cross to the native side yet
+  --> page.rs:18:10
+   |
+18 |     page P(state: S, action: A) {
+   |          ^
+   |
+
+error: no `#[app]` update function for `T`
+  --> page.rs:24:10
+   |
+24 |     page Q(state: T, action: A) {
+   |          ^
+   |
+help: mark `fn update(state: &mut T, action: A)` with `#[dazzui_compiler_macro::app]`
+
+error: could not compile due to 2 previous errors

@@ -1,0 +1,32 @@
+error: no field `nme` on type `S`
+  --> page.rs:32:24
+   |
+32 |             Text(state.nme)
+   |                        ^^^
+   |
+help: did you mean `name`?
+
+error: cannot find value `stat`
+  --> page.rs:33:18
+   |
+33 |             Text(stat.name)
+   |                  ^^^^ not the state or a loop item
+   |
+help: did you mean `state`?
+
+error: `name` is a `String`, which has no fields
+  --> page.rs:34:24
+   |
+34 |             Text(state.name.first)
+   |                        ^^^^
+   |
+
+error: the whole `state` is not a value
+  --> page.rs:35:34
+   |
+35 |             Button("a").disabled(state)
+   |                                  ^^^^^
+   |
+help: name a field: `state.field`
+
+error: could not compile due to 4 previous errors

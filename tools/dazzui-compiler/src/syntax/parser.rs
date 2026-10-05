@@ -17,6 +17,12 @@ impl Parse for PageAst {
         let header;
         parenthesized!(header in input);
         let state_ty = typed_param(&header, "state")?;
+        if header.is_empty() {
+            return Err(syn::Error::new(
+                name.span(),
+                "a page takes its state and its action: `page Name(state: State, action: Action)`",
+            ));
+        }
         header.parse::<Token![,]>()?;
         let action_ty = typed_param(&header, "action")?;
         if header.peek(Token![,]) {

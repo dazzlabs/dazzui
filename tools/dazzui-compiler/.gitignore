@@ -2,3 +2,6 @@
 /examples/settings/.build
 /examples/settings/.swiftpm
 *.profraw
+/examples/settings/windows/smoke-output
+/examples/settings/windows/SettingsHost/bin
+/examples/settings/windows/SettingsHost/obj

@@ -44,3 +44,4 @@ quote = "1"
 syn = { version = "2", features = ["full", "extra-traits"] }
 strsim = "0.11"
 toml = { version = "0.8", default-features = false, features = ["parse"] }
+trybuild = "1"

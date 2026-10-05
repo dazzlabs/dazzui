@@ -1,0 +1,17 @@
+error: `bind` on `value` needs an action to write the change back
+  --> page.rs:32:22
+   |
+32 |             Toggle { value: bind(state.on) }
+   |                      ^^^^^ nothing sends the new value to Rust
+   |
+help: add `on_change: Action::…`
+
+error: property `title` on `Button` cannot be bound
+  --> page.rs:33:34
+   |
+33 |             Button { title: bind(state.name) }
+   |                                  ^^^^^^^^^^
+   |
+help: pass the value itself: `title: state.…`
+
+error: could not compile due to 2 previous errors

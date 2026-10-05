@@ -34,7 +34,9 @@ impl SemanticError {
 
     pub fn to_syn(&self) -> syn::Error {
         match &self.help {
-            Some(help) => syn::Error::new(self.span, format!("{}\n\nhelp: {help}", self.message)),
+            // A proc macro cannot attach a help note on stable Rust, so the
+            // help goes on a line of its own, drawn as rustc draws one.
+            Some(help) => syn::Error::new(self.span, format!("{}\n= help: {help}", self.message)),
             None => syn::Error::new(self.span, &self.message),
         }
     }

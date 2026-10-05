@@ -1,0 +1,28 @@
+error[E0599]: no variant, associated function, or constant named `Sav` found for enum `A` in the current scope
+  --> tests/ui/fail_action.rs:24:42
+   |
+14 | pub enum A {
+   | ---------- variant, associated function, or constant `Sav` not found for this enum
+...
+24 |             Button("a").on_click(Action::Sav)
+   |                                          ^^^ variant, associated function, or constant not found in `A`
+   |
+help: there is a variant with a similar name
+   |
+24 |             Button("a").on_click(Action::Save)
+   |                                             +
+
+error[E0308]: mismatched types
+  --> tests/ui/fail_action.rs:25:64
+   |
+25 |             Toggle { value: bind(state.on), on_change: Action::Rename }
+   |                                                                ^^^^^^ expected fn pointer, found enum constructor
+   |
+   = note:    expected fn pointer `fn(bool) -> A`
+           found enum constructor `fn(String) -> A {A::Rename}`
+
+error[E0308]: mismatched types
+  --> tests/ui/fail_action.rs:26:47
+   |
+26 |             Button("b").on_click(Action::Pick(state.name))
+   |                                               ^^^^^ expected `u32`, found `String`

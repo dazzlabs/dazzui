@@ -158,7 +158,7 @@ impl Bridge {
                 let payload = match &v.fields {
                     Fields::Unit => None,
                     Fields::Tuple(types) if types.len() == 1 => Some(Scalar::from_rust(&types[0]).ok_or_else(|| {
-                        format!("`{}::{}` carries a `{}`, which cannot cross yet", action.name, v.name, types[0].rust())
+                        format!("`{}::{}` carries type `{}`, which cannot cross yet", action.name, v.name, types[0].rust())
                     })?),
                     _ => {
                         return Err(format!(
@@ -584,12 +584,12 @@ fn collect_struct(
             FieldType::Struct(n)
         } else if let RustType::Vec(elem) = ty {
             let n = struct_name(elem).ok_or_else(|| {
-                format!("`{name}.{field}`, a {what}, is a `{}`: a Vec crosses only as a Vec of structs", ty.rust())
+                format!("`{name}.{field}`, a {what}, has type `{}`: a Vec crosses only as a Vec of structs", ty.rust())
             })?;
             collect_struct(&n, types, path, out)?;
             FieldType::List(n)
         } else {
-            return Err(format!("`{name}.{field}` is a `{}`, which cannot cross to the native side yet", ty.rust()));
+            return Err(format!("`{name}.{field}` has type `{}`, which cannot cross to the native side yet", ty.rust()));
         };
         fields.push(BridgeField { name: field.clone(), ty, selector });
     }
@@ -663,9 +663,9 @@ mod tests {
         };
         assert_eq!(
             err("struct S { tags: Vec<String> }"),
-            "`S.tags`, a field, is a `Vec<String>`: a Vec crosses only as a Vec of structs"
+            "`S.tags`, a field, has type `Vec<String>`: a Vec crosses only as a Vec of structs"
         );
-        assert_eq!(err("struct S { at: Instant }"), "`S.at` is a `Instant`, which cannot cross to the native side yet");
+        assert_eq!(err("struct S { at: Instant }"), "`S.at` has type `Instant`, which cannot cross to the native side yet");
         assert_eq!(err("struct S { child: Vec<S> }"), "`S` holds itself, which cannot cross: S → S");
     }
 }

@@ -1,0 +1,11 @@
+[component.Section]
+children = { allow = ["Row"] }
+swiftui = { call = "Section", trailing = { children = true } }
+winui = { element = "Section" }
+
+[component.Row]
+positional = ["title"]
+props.title = { type = "string", required = true }
+slots.trailing = {}
+swiftui = { call = "Row", args = [{ arg = "title", prop = "title" }, { arg = "trailing", slot = "trailing" }] }
+winui = { element = "Row", slots.trailing = { property = "Control" } }

@@ -1,0 +1,8 @@
+error: component `Badge`: swiftui: prop `style` maps no code for `ButtonStyle::Secondary`
+ --> dazzui-compiler.toml:3:1
+  |
+3 | [component.Badge]
+  | ^^^^^^^^^^^^^^^^^
+  |
+
+error: could not compile due to 1 previous error

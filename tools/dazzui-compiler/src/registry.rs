@@ -3,7 +3,7 @@ use std::path::Path;
 use toml::{Table, Value as Toml};
 
 use crate::ir::{
-    ChildrenSpec, ComponentSpec, EnumSpec, EventSpec, PropSpec, PropType, SlotSpec, Source, SwiftArg, SwiftUIMapping,
+    ChildrenSpec, Diagnostic, SourceLocation, ComponentSpec, EnumSpec, EventSpec, PropSpec, PropType, SlotSpec, Source, SwiftArg, SwiftUIMapping,
     Trailing, Value, WinAttr, WinChildren, WinEvent, WinUIMapping,
 };
 
@@ -14,6 +14,58 @@ pub(crate) const BUILTIN: &str = include_str!("registry.toml");
 
 /// Components each backend lowers itself rather than from a mapping.
 pub const BACKEND_LOWERED: &[&str] = &["VStack", "HStack", "Text"];
+
+/// A registry file that does not load: what is wrong, in which file, and
+/// where in it when that is known.
+#[derive(Clone, Debug, PartialEq)]
+pub struct RegistryError {
+    pub file: String,
+    /// The component it is about, whose table the diagnostic points at.
+    pub component: Option<String>,
+    pub message: String,
+    /// The byte range a TOML syntax error is at.
+    pub span: Option<std::ops::Range<usize>>,
+}
+
+impl std::fmt::Display for RegistryError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match &self.component {
+            Some(c) => write!(f, "{}: component `{c}`: {}", self.file, self.message),
+            None => write!(f, "{}: {}", self.file, self.message),
+        }
+    }
+}
+
+impl RegistryError {
+    fn new(file: &str, component: Option<&str>, message: impl Into<String>) -> Self {
+        Self { file: file.into(), component: component.map(Into::into), message: message.into(), span: None }
+    }
+
+    /// A rustc-style diagnostic, pointing into `text`, the file's contents:
+    /// at a syntax error, or at the component's table.
+    pub fn to_diagnostic(&self, text: &str) -> Diagnostic {
+        let message = match &self.component {
+            Some(c) => format!("component `{c}`: {}", self.message),
+            None => self.message.clone(),
+        };
+        let range = self.span.clone().or_else(|| {
+            let c = self.component.as_ref()?;
+            [format!("[component.{c}]"), format!("[component.{c}."), format!("component.{c}")]
+                .iter()
+                .find_map(|needle| text.find(needle.as_str()).map(|at| at..at + needle.len()))
+        });
+        let mut d = Diagnostic::error(message);
+        if let Some(range) = range {
+            let before = &text[..range.start.min(text.len())];
+            let line = before.matches('\n').count() as u32 + 1;
+            let column = (range.start - before.rfind('\n').map_or(0, |i| i + 1)) as u32 + 1;
+            let line_end = text[range.start..].find('\n').map_or(text.len(), |i| range.start + i);
+            let width = (range.end.min(line_end).saturating_sub(range.start)) as u32;
+            d = d.at(SourceLocation::new(&self.file, line, column), width);
+        }
+        d
+    }
+}
 
 /// The components a page may use, by semantic name: the built-in ones,
 /// and an app's own from its `dazzui-compiler.toml`, which may also replace
@@ -30,46 +82,51 @@ impl Registry {
     }
 
     /// The built-in registry and, if `dir` has one, its `dazzui-compiler.toml`.
-    pub fn load(dir: &Path) -> Result<Self, String> {
+    pub fn load(dir: &Path) -> Result<Self, RegistryError> {
         let path = dir.join(FILE);
         match std::fs::read_to_string(&path) {
             Ok(text) => Self::from_tables(&[(BUILTIN, "registry.toml"), (&text, FILE)]),
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(Self::builtin()),
-            Err(e) => Err(format!("{}: {e}", path.display())),
+            Err(e) => Err(RegistryError::new(FILE, None, format!("cannot read {}: {e}", path.display()))),
         }
     }
 
     /// Later files add components and enums, and replace those of the same
     /// name.
-    pub(crate) fn from_tables(files: &[(&str, &str)]) -> Result<Self, String> {
+    pub(crate) fn from_tables(files: &[(&str, &str)]) -> Result<Self, RegistryError> {
         let mut enums: Vec<EnumSpec> = Vec::new();
         let mut raw: Vec<(String, Table, &str)> = Vec::new();
         for (text, file) in files {
-            let table: Table = text.parse().map_err(|e| format!("{file}: {e}"))?;
+            let table: Table = text.parse().map_err(|e: toml::de::Error| RegistryError {
+                span: e.span(),
+                ..RegistryError::new(file, None, e.message().trim().replace('\n', "; "))
+            })?;
             for key in table.keys() {
                 if key != "enum" && key != "component" {
-                    return Err(format!("{file}: unknown table `{key}`; expected `enum` or `component`"));
+                    return Err(RegistryError::new(file, None, format!("unknown table `{key}`; expected `enum` or `component`")));
                 }
             }
             for (name, value) in table.get("enum").and_then(Toml::as_table).into_iter().flatten() {
-                let at = format!("{file}: enum `{name}`");
-                let cases = strings(value.get("cases"), &at, "cases")?.ok_or(format!("{at}: needs `cases`"))?;
+                let at = format!("enum `{name}`");
+                let cases = strings(value.get("cases"), &at, "cases")
+                    .and_then(|c| c.ok_or(format!("{at}: needs `cases`")))
+                    .map_err(|e| RegistryError::new(file, None, e))?;
                 enums.retain(|e| &e.name != name);
                 enums.push(EnumSpec { name: name.clone(), cases });
             }
             for (name, value) in table.get("component").and_then(Toml::as_table).into_iter().flatten() {
-                let body = value.as_table().ok_or(format!("{file}: component `{name}` is not a table"))?;
+                let body = value.as_table().ok_or(RegistryError::new(file, Some(name), "is not a table"))?;
                 raw.retain(|(n, _, _)| n != name);
                 raw.push((name.clone(), body.clone(), file));
             }
         }
         let components = raw
             .iter()
-            .map(|(name, body, file)| component(name, body, &enums).map_err(|e| format!("{file}: component `{name}`: {e}")))
+            .map(|(name, body, file)| component(name, body, &enums).map_err(|e| RegistryError::new(file, Some(name), e)))
             .collect::<Result<Vec<_>, _>>()?;
         let registry = Registry { components };
         for (spec, (_, _, file)) in registry.components.iter().zip(&raw) {
-            registry.validate(spec).map_err(|e| format!("{file}: component `{}`: {e}", spec.name))?;
+            registry.validate(spec).map_err(|e| RegistryError::new(file, Some(&spec.name), e))?;
         }
         Ok(registry)
     }
@@ -104,7 +161,50 @@ impl Registry {
                 self.get(name).ok_or(format!("children allow `{name}`, which is not a component"))?;
             }
         }
+        for prop in spec.props.iter().filter(|p| p.bindable) {
+            if !spec.events.iter().any(|e| e.binds.as_deref() == Some(&prop.name)) {
+                return Err(format!("prop `{}` is bindable, but no event `binds` it to write the change back", prop.name));
+            }
+        }
         let backend_lowered = BACKEND_LOWERED.contains(&spec.name.as_str());
+        if backend_lowered && (spec.swiftui.is_some() != spec.winui.is_some()) {
+            return Err(
+                "replaces a component the backends lower themselves, so it needs both a `swiftui` and a `winui` table".into()
+            );
+        }
+        if spec.name == "Text"
+            && spec.swiftui.is_none()
+            && let Some(PropType::Enum(e)) = spec.prop("style").map(|p| &p.ty)
+            && let Some(case) = e.cases.iter().find(|c| !["Title", "Body", "Caption"].contains(&c.as_str()))
+        {
+            return Err(format!(
+                "`TextStyle::{case}` has no type token in the backends; Text without platform tables takes Title, Body and Caption"
+            ));
+        }
+        // Every case of an enum prop a mapping writes needs its platform code.
+        let check_cases = |source: &Source, platform: &str| -> Result<(), String> {
+            if let Source::Prop { prop, cases, .. } = source
+                && let Some(PropType::Enum(e)) = spec.prop(prop).map(|p| &p.ty)
+            {
+                for case in &e.cases {
+                    if !cases.iter().any(|(c, _)| c == case) {
+                        return Err(format!("{platform}: prop `{prop}` maps no code for `{}::{case}`", e.name));
+                    }
+                }
+            }
+            Ok(())
+        };
+        if let Some(m) = &spec.swiftui {
+            m.args.iter().try_for_each(|a| check_cases(&a.source, "swiftui"))?;
+        }
+        if let Some(m) = &spec.winui {
+            m.attrs.iter().try_for_each(|a| check_cases(&a.source, "winui"))?;
+            for e in &m.events {
+                if spec.event(&e.name).is_some_and(|spec| spec.payload.is_some()) && e.value.is_none() {
+                    return Err(format!("winui: event `{}` carries a value, so its mapping needs `value`, the C# that reads it", e.name));
+                }
+            }
+        }
         let check_source = |source: &Source| match source {
             Source::Prop { prop, .. } => spec.prop(prop).map(|_| ()).ok_or(format!("maps prop `{prop}`, which it has not")),
             Source::Event(e) => spec.event(e).map(|_| ()).ok_or(format!("maps event `{e}`, which it has not")),
@@ -441,7 +541,7 @@ mod tests {
 
     #[test]
     fn rejects_what_does_not_line_up() {
-        let err = |app: &str| Registry::from_tables(&[(BUILTIN, "registry.toml"), (app, FILE)]).unwrap_err();
+        let err = |app: &str| Registry::from_tables(&[(BUILTIN, "registry.toml"), (app, FILE)]).unwrap_err().to_string();
         assert_eq!(
             err("[component.X]\nprops.a = { type = \"strng\" }"),
             "dazzui-compiler.toml: component `X`: prop `a`: unknown type `strng`; expected string, bool, int or enum:Name"
@@ -455,5 +555,26 @@ mod tests {
             err("[component.X]\ncolour = 1"),
             "dazzui-compiler.toml: component `X`: unknown key `colour`; expected one of positional, children, props, events, slots, swiftui, winui"
         );
+        assert_eq!(
+            err("[component.X]\nprops.s = { type = \"enum:ButtonStyle\" }\nswiftui = { call = \"X\", args = [{ arg = \"s\", prop = \"s\", enum = { Primary = \".p\" } }] }\nwinui = { element = \"X\" }"),
+            "dazzui-compiler.toml: component `X`: swiftui: prop `s` maps no code for `ButtonStyle::Secondary`"
+        );
+        assert_eq!(
+            err("[component.X]\nprops.v = { type = \"bool\", bindable = true }\nswiftui = { call = \"X\" }\nwinui = { element = \"X\" }"),
+            "dazzui-compiler.toml: component `X`: prop `v` is bindable, but no event `binds` it to write the change back"
+        );
+    }
+
+    #[test]
+    fn points_at_the_component_or_the_syntax_error() {
+        let app = "# mine\n\n[component.X]\ncolour = 1\n";
+        let e = Registry::from_tables(&[(BUILTIN, "registry.toml"), (app, FILE)]).unwrap_err();
+        let d = e.to_diagnostic(app);
+        assert_eq!(d.location, Some(SourceLocation::new(FILE, 3, 1)));
+        assert_eq!(d.width, 13);
+
+        let app = "[component.X]\nprops = {\n";
+        let e = Registry::from_tables(&[(BUILTIN, "registry.toml"), (app, FILE)]).unwrap_err();
+        assert_eq!(e.to_diagnostic(app).location.map(|l| l.line), Some(2));
     }
 }
