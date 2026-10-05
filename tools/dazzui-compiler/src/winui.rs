@@ -490,12 +490,17 @@ fn code_behind(compiled: &CompiledPage, namespace: &str, cx: &Cx) -> String {
             }
         });
         w.line("}");
+        // uniffi-bindgen-cs writes an action with no values as a C# enum,
+        // and one with any as records.
+        let flat = compiled.bridge.variants.iter().all(|v| v.payload.is_none());
         for h in &cx.handlers {
             w.line("");
-            w.line(&format!(
-                "private void {}(object sender, {} e) => ViewModel.Send(new {action}.{}({}));",
-                h.name, h.args, h.action.variant, h.payload
-            ));
+            let action = if flat {
+                format!("{action}.{}", h.action.variant)
+            } else {
+                format!("new {action}.{}({})", h.action.variant, h.payload)
+            };
+            w.line(&format!("private void {}(object sender, {} e) => ViewModel.Send({action});", h.name, h.args));
         }
         if cx.handlers.iter().any(|h| h.payload.contains("ItemOf<")) {
             w.line("");

@@ -196,7 +196,8 @@ pub struct UiProp     { pub name: String, pub value: Expr, pub source: SourceLoc
 pub struct UiBinding  { pub name: String, pub path: StatePath, pub on_change: ActionRef, pub source: SourceLocation }
 // on_change 必填：写回只能经过 Rust。`bind(state.x)` 没有配 `on_change: Action::…` 是编译错误。
 // 带值的事件（Toggle 的 change）必须接一个带同类型值的变体，不能悄悄丢掉那个值。
-// Integer / 枚举 prop 在 Phase 2 只接字面量；Text 的 style 没有默认值，不写就是平台正文。
+// 枚举 prop 只接字面量；Integer prop 在 registry 映射的组件上可以读 state（映射原样传过去），
+// VStack/HStack 的 spacing 由 backend 写进布局，仍只接字面量。Text 的 style 没有默认值，不写就是平台正文。
 pub struct UiEvent    { pub name: String, pub action: ActionRef, pub source: SourceLocation }
 pub struct UiSlot     { pub name: String, pub node: Box<UiNode>, pub source: SourceLocation }
 pub struct UiModifier { pub name: ModifierId, pub args: Vec<Expr>, pub source: SourceLocation }
@@ -350,7 +351,7 @@ help: did you mean `title`?
 |---|---|---|
 | 语法 | 少了 `action:`、`bind` 里不是路径、一个 page 两个根 | parser：宏和 CLI 同一条 |
 | 名字 | 未知组件 / prop / modifier / slot，位置参数过多，重复给值 | semantic，带“did you mean” |
-| 类型 | prop 类型不符，枚举 case 不存在或类型不对，Integer/枚举 prop 读 state | semantic |
+| 类型 | prop 类型不符，枚举 case 不存在或类型不对，枚举 prop 或 stack 的 spacing 读 state | semantic |
 | state 路径 | 没有这个字段，根不是 `state` 或循环变量，整个 state 当值 | CLI：semantic；宏：rustc 的 E0609 |
 | action | 没有这个变体，载荷有无或类型不符，事件值和变体载荷类型不符 | CLI：semantic；宏：rustc 的 E0599/E0308 |
 | 绑定 | `bind` 缺 `on_change`，prop 不能绑定，绑定循环变量 | semantic |

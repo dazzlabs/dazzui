@@ -391,7 +391,12 @@ impl Cx<'_> {
                 "an enum case"
             }
             ValueAst::Dotted(path) => {
-                if matches!(ty, PropType::Int | PropType::Enum(_)) {
+                // A mapping passes an integer on as it is, so a mapped
+                // component's may read the state. VStack's and HStack's
+                // spacing is written into the layout by each backend, and an
+                // enum's case into platform code, so those stay literals.
+                let mapped = self.registry.get(component).is_some_and(|s| s.swiftui.is_some() && s.winui.is_some());
+                if matches!(ty, PropType::Enum(_)) || (*ty == PropType::Int && !mapped) {
                     self.errors.push(SemanticError::new(
                         path.span(),
                         format!("property `{prop}` on `{component}` takes a literal for now, not a state value"),
@@ -1087,6 +1092,33 @@ mod tests {
         let Some(UiNode::Component(toggle)) = row.slot("trailing") else { panic!() };
         assert_eq!(toggle.binding("value").unwrap().on_change.variant, "SetOn");
         assert!(row.slot("icon").is_some());
+    }
+
+    #[test]
+    fn a_mapped_component_reads_an_integer_from_the_state() {
+        const COLUMN: &str = r#"
+            [component.Column]
+            props.width = { type = "int", required = true }
+            swiftui = { call = "Column", args = [{ arg = "width", prop = "width" }] }
+            winui = { element = "Column", attrs = [{ attr = "Width", prop = "width" }] }
+        "#;
+        let registry = Registry::from_tables(&[(crate::registry::BUILTIN, "registry.toml"), (COLUMN, "app.toml")]).unwrap();
+        let lower = |src: &str| {
+            let ast: PageAst = syn::parse_str(src).unwrap();
+            lower(&ast, &registry, Some(&types()), "page.rs").map_err(|errors| errors.into_iter().map(|e| e.message).collect::<Vec<_>>())
+        };
+        let page = lower(r#"page P(state: S, action: A) { VStack { Column(width: state.count) for item in state.items { Column(width: item.id) } } }"#).unwrap();
+        let UiNode::Component(stack) = &page.root else { panic!() };
+        let UiNode::Component(column) = &stack.children[0] else { panic!() };
+        assert!(matches!(column.prop("width"), Some(Expr::State(path)) if path.segments == ["count"]));
+        // A stack's spacing is still a literal, and the type still checked.
+        assert_eq!(
+            lower(r#"page P(state: S, action: A) { HStack(spacing: state.count) { Column(width: state.name) } }"#).unwrap_err(),
+            [
+                "property `spacing` on `HStack` takes a literal for now, not a state value",
+                "property `width` on `Column` expects Integer, but `state.name` is a `String`",
+            ]
+        );
     }
 
     #[test]
