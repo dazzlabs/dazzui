@@ -1,0 +1,87 @@
+# The macOS host for the settings example. SettingsExample.xcodeproj is
+# generated from this file — run `xcodegen` here after changing it — and
+# committed, as DazzMobileUI's Playground is.
+#
+# The app compiles Generated/ (what `dazzui-compiler generate` wrote) with
+# the real DazzUI, and links the Rust core, which a build phase builds with
+# Cargo first.
+name: SettingsExample
+options:
+  deploymentTarget:
+    macOS: '13.0'
+packages:
+  DazzUI:
+    path: ../../../../../packages/swift/DazzUI
+settings:
+  base:
+    SWIFT_VERSION: '5.0'
+    # The C module the generated bridge imports: the app's, and the tests',
+    # which import the app.
+    SWIFT_INCLUDE_PATHS: $(SRCROOT)/Generated/CSettings
+targets:
+  SettingsExample:
+    type: application
+    platform: macOS
+    sources:
+      - path: SettingsExample
+      - path: Generated
+        excludes:
+          - CSettings/**
+    dependencies:
+      - package: DazzUI
+    preBuildScripts:
+      - name: Build the Rust core
+        basedOnDependencyAnalysis: false
+        script: |
+          # Xcode runs scripts without the user's PATH.
+          export PATH="$HOME/.cargo/bin:$PATH"
+          cd "$SRCROOT/../../.."
+          if [ "$CONFIGURATION" = Release ]; then
+            cargo build -p settings-example --release
+          else
+            cargo build -p settings-example
+          fi
+    settings:
+      base:
+        PRODUCT_NAME: Settings
+        PRODUCT_MODULE_NAME: SettingsExample
+        PRODUCT_BUNDLE_IDENTIFIER: dev.dazzlabs.dazzui-compiler.settings-example
+        MARKETING_VERSION: '1.0'
+        CURRENT_PROJECT_VERSION: '1'
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Settings
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: '-'
+        # Cargo writes to the workspace's target/, outside what a sandboxed
+        # script may touch.
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+      configs:
+        # By its full path rather than with -l, which would pick the cdylib
+        # beside it.
+        Debug:
+          OTHER_LDFLAGS: $(SRCROOT)/../../../target/debug/libsettings_example.a
+        Release:
+          OTHER_LDFLAGS: $(SRCROOT)/../../../target/release/libsettings_example.a
+  SettingsExampleTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: SettingsExampleTests
+    dependencies:
+      - target: SettingsExample
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: dev.dazzlabs.dazzui-compiler.settings-example.tests
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/Settings.app/Contents/MacOS/Settings
+        BUNDLE_LOADER: $(TEST_HOST)
+schemes:
+  SettingsExample:
+    build:
+      targets:
+        SettingsExample: all
+    run:
+      config: Debug
+    test:
+      targets:
+        - SettingsExampleTests

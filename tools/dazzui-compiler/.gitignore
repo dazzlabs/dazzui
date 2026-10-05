@@ -1,7 +1,10 @@
 /target
-/examples/settings/.build
-/examples/settings/.swiftpm
 *.profraw
-/examples/settings/windows/smoke-output
-/examples/settings/windows/SettingsHost/bin
-/examples/settings/windows/SettingsHost/obj
+# Build output of the settings example's hosts.
+/examples/settings_example/macos/build
+/examples/settings_example/windows/smoke-output
+/examples/settings_example/windows/SettingsExample/bin
+/examples/settings_example/windows/SettingsExample/obj
+xcuserdata/
+# The root ignores *.sln (a Node template line); this one is meant.
+!/examples/settings_example/windows/SettingsExample.sln

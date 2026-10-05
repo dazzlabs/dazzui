@@ -5,6 +5,11 @@
 # (packages/csharp/DazzUI/scripts/desktop.ps1), and copies the result and the
 # screenshots back to --out (default ./smoke-output).
 #
+# The same, on the Windows machine itself, from tools/dazzui-compiler:
+#   cargo build -p settings-example
+#   dotnet build examples/settings_example/windows/SettingsExample.sln
+#   SettingsExample.exe --smoke-test   (in the signed-in desktop session)
+#
 # DAZZUI_WINDOWS_HOST names the machine (default windows-laptop) and
 # DAZZUI_WINDOWS_DIR the repository there.
 set -euo pipefail
@@ -31,10 +36,10 @@ toolchain='%USERPROFILE%\.rustup\toolchains\stable-x86_64-pc-windows-msvc\bin'
 compiler="$(win "$remote/tools/dazzui-compiler")"
 ssh "$host" "cd /d $compiler && set PATH=$toolchain;%PATH% && cargo build -q -p settings-example" \
   | tr -d '\r'
-ssh "$host" "cd /d $compiler\\examples\\settings\\windows\\SettingsHost && dotnet build SettingsHost.csproj -nologo -v q" \
+ssh "$host" "cd /d $compiler\\examples\\settings_example\\windows && dotnet build SettingsExample.sln -nologo -v q" \
   | tr -d '\r'
 
-exe="$compiler\\examples\\settings\\windows\\SettingsHost\\bin\\x64\\Debug\\net8.0-windows10.0.19041.0\\win-x64\\SettingsHost.exe"
+exe="$compiler\\examples\\settings_example\\windows\\SettingsExample\\bin\\x64\\Debug\\net8.0-windows10.0.19041.0\\win-x64\\SettingsExample.exe"
 result="$(win "$remote")\\settings-smoke"
 ssh "$host" "powershell -NoProfile -ExecutionPolicy Bypass -File $(win "$remote/packages/csharp/DazzUI/scripts/desktop.ps1") -Exe $exe -Arguments --smoke-test -Out $result -TimeoutSeconds 120" \
   | tr -d '\r' | tee /dev/stderr | grep -q '^PASS' && passed=1 || passed=0

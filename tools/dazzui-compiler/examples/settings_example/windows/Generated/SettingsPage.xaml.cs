@@ -7,7 +7,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Controls.Primitives;
 
-namespace Settings;
+namespace SettingsExample;
 
 public sealed partial class SettingsPage : Page
 {

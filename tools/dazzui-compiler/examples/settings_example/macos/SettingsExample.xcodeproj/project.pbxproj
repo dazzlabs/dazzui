@@ -1,0 +1,486 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0DB8D1314C8C99A3FE609E92 /* SettingsPageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C921B58BBCA68B538F8A813B /* SettingsPageTests.swift */; };
+		0F2C6C64B6E49A2EFBCB6D09 /* SettingsExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 316FADCC7714836FA5FC50C1 /* SettingsExampleApp.swift */; };
+		62699ADC677B67196B75BF5C /* DazzUI in Frameworks */ = {isa = PBXBuildFile; productRef = C0EA39C37B74964F6F487F72 /* DazzUI */; };
+		91AC0869553920CC76CDC68C /* SettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA5B0B97E41966CC44BEF0C /* SettingsPage.swift */; };
+		BA82CAB13C93AA43CE4A9964 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A840660790A7D76938B77AEB /* SettingsViewModel.swift */; };
+		D7E8203EE40E0832335811E3 /* SettingsBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D1EC434C03A1798963C044 /* SettingsBridge.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		25819B63B61B716F976E5ECD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 98AD77007039DEEDE899D309 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 30F87207AA184C53BDF526DB;
+			remoteInfo = SettingsExample;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		10754689ADB03F62895FB155 /* SettingsExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SettingsExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		316FADCC7714836FA5FC50C1 /* SettingsExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsExampleApp.swift; sourceTree = "<group>"; };
+		4DC106824D16142F0D45E465 /* SettingsExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SettingsExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		53D1EC434C03A1798963C044 /* SettingsBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBridge.swift; sourceTree = "<group>"; };
+		562401356BDF4AE852C9C0C1 /* DazzUI */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DazzUI; path = ../../../../../packages/swift/DazzUI; sourceTree = SOURCE_ROOT; };
+		A840660790A7D76938B77AEB /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		BCA5B0B97E41966CC44BEF0C /* SettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPage.swift; sourceTree = "<group>"; };
+		C921B58BBCA68B538F8A813B /* SettingsPageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		16C241B1E1DE1CD4FF014C3D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				62699ADC677B67196B75BF5C /* DazzUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0830BF0918E40A7025F175A1 /* SettingsExample */ = {
+			isa = PBXGroup;
+			children = (
+				316FADCC7714836FA5FC50C1 /* SettingsExampleApp.swift */,
+			);
+			path = SettingsExample;
+			sourceTree = "<group>";
+		};
+		4F65C774DFE4964468909279 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				562401356BDF4AE852C9C0C1 /* DazzUI */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		66EDAC802F7B7CCCCDB3C2A4 /* SettingsExampleTests */ = {
+			isa = PBXGroup;
+			children = (
+				C921B58BBCA68B538F8A813B /* SettingsPageTests.swift */,
+			);
+			path = SettingsExampleTests;
+			sourceTree = "<group>";
+		};
+		D9D98F78E932303EAB7547CB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4DC106824D16142F0D45E465 /* SettingsExample.app */,
+				10754689ADB03F62895FB155 /* SettingsExampleTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EAFF2E2EB3BD7235355D0A89 /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				53D1EC434C03A1798963C044 /* SettingsBridge.swift */,
+				BCA5B0B97E41966CC44BEF0C /* SettingsPage.swift */,
+				A840660790A7D76938B77AEB /* SettingsViewModel.swift */,
+			);
+			path = Generated;
+			sourceTree = "<group>";
+		};
+		ED5B162DB090A45AB876945B = {
+			isa = PBXGroup;
+			children = (
+				EAFF2E2EB3BD7235355D0A89 /* Generated */,
+				4F65C774DFE4964468909279 /* Packages */,
+				0830BF0918E40A7025F175A1 /* SettingsExample */,
+				66EDAC802F7B7CCCCDB3C2A4 /* SettingsExampleTests */,
+				D9D98F78E932303EAB7547CB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1220735CEDE92E344693730E /* SettingsExampleTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3F2EBF7CA1B107EB228CC0DE /* Build configuration list for PBXNativeTarget "SettingsExampleTests" */;
+			buildPhases = (
+				D16967B26079C6760B25A7D7 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D25BB3998EA757BA9EFF4495 /* PBXTargetDependency */,
+			);
+			name = SettingsExampleTests;
+			packageProductDependencies = (
+			);
+			productName = SettingsExampleTests;
+			productReference = 10754689ADB03F62895FB155 /* SettingsExampleTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		30F87207AA184C53BDF526DB /* SettingsExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DBB6EE0F3DB1EBD092FAFEAD /* Build configuration list for PBXNativeTarget "SettingsExample" */;
+			buildPhases = (
+				477854ABB57591FA62EE2256 /* Build the Rust core */,
+				C63E3AAB24912836884E8207 /* Sources */,
+				16C241B1E1DE1CD4FF014C3D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SettingsExample;
+			packageProductDependencies = (
+				C0EA39C37B74964F6F487F72 /* DazzUI */,
+			);
+			productName = SettingsExample;
+			productReference = 4DC106824D16142F0D45E465 /* SettingsExample.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		98AD77007039DEEDE899D309 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					30F87207AA184C53BDF526DB = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = F6A23E55BCD4B8F8F1849AFF /* Build configuration list for PBXProject "SettingsExample" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = ED5B162DB090A45AB876945B;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E4B02C6374A0AA0658176CFB /* XCLocalSwiftPackageReference "../../../../../packages/swift/DazzUI" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = D9D98F78E932303EAB7547CB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				30F87207AA184C53BDF526DB /* SettingsExample */,
+				1220735CEDE92E344693730E /* SettingsExampleTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		477854ABB57591FA62EE2256 /* Build the Rust core */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Build the Rust core";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Xcode runs scripts without the user's PATH.\nexport PATH=\"$HOME/.cargo/bin:$PATH\"\ncd \"$SRCROOT/../../..\"\nif [ \"$CONFIGURATION\" = Release ]; then\n  cargo build -p settings-example --release\nelse\n  cargo build -p settings-example\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C63E3AAB24912836884E8207 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D7E8203EE40E0832335811E3 /* SettingsBridge.swift in Sources */,
+				0F2C6C64B6E49A2EFBCB6D09 /* SettingsExampleApp.swift in Sources */,
+				91AC0869553920CC76CDC68C /* SettingsPage.swift in Sources */,
+				BA82CAB13C93AA43CE4A9964 /* SettingsViewModel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D16967B26079C6760B25A7D7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0DB8D1314C8C99A3FE609E92 /* SettingsPageTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D25BB3998EA757BA9EFF4495 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 30F87207AA184C53BDF526DB /* SettingsExample */;
+			targetProxy = 25819B63B61B716F976E5ECD /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		7C2B35FF3EBB3A5DF20CF99A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.dazzlabs.dazzui-compiler.settings-example.tests";
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Settings.app/Contents/MacOS/Settings";
+			};
+			name = Release;
+		};
+		7DC786EBBF44D76F7BB3E2AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Settings;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "$(SRCROOT)/../../../target/release/libsettings_example.a";
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.dazzlabs.dazzui-compiler.settings-example";
+				PRODUCT_MODULE_NAME = SettingsExample;
+				PRODUCT_NAME = Settings;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		8D2B294CBA62DC4BA56163A5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Generated/CSettings";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		98812C12B19D70C788A54972 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Generated/CSettings";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		C58E9DE1EBCE09D4E5EBC71E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.dazzlabs.dazzui-compiler.settings-example.tests";
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Settings.app/Contents/MacOS/Settings";
+			};
+			name = Debug;
+		};
+		E74A40A39EB8E8AA60B0C937 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Settings;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "$(SRCROOT)/../../../target/debug/libsettings_example.a";
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.dazzlabs.dazzui-compiler.settings-example";
+				PRODUCT_MODULE_NAME = SettingsExample;
+				PRODUCT_NAME = Settings;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3F2EBF7CA1B107EB228CC0DE /* Build configuration list for PBXNativeTarget "SettingsExampleTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C58E9DE1EBCE09D4E5EBC71E /* Debug */,
+				7C2B35FF3EBB3A5DF20CF99A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DBB6EE0F3DB1EBD092FAFEAD /* Build configuration list for PBXNativeTarget "SettingsExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E74A40A39EB8E8AA60B0C937 /* Debug */,
+				7DC786EBBF44D76F7BB3E2AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F6A23E55BCD4B8F8F1849AFF /* Build configuration list for PBXProject "SettingsExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				98812C12B19D70C788A54972 /* Debug */,
+				8D2B294CBA62DC4BA56163A5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		E4B02C6374A0AA0658176CFB /* XCLocalSwiftPackageReference "../../../../../packages/swift/DazzUI" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../../../../packages/swift/DazzUI;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C0EA39C37B74964F6F487F72 /* DazzUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DazzUI;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 98AD77007039DEEDE899D309 /* Project object */;
+}

@@ -25,10 +25,10 @@ toml.workspace = true
 
 [workspace]
 resolver = "3"
-members = [".", "macro", "examples/settings"]
+members = [".", "macro", "examples/settings_example"]
 # So that `cargo test` and `cargo build` at the root cover all of them,
 # not only the root package.
-default-members = [".", "macro", "examples/settings"]
+default-members = [".", "macro", "examples/settings_example"]
 
 [workspace.package]
 version = "0.1.0"

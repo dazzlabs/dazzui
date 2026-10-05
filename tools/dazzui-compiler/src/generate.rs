@@ -12,6 +12,24 @@ pub enum Target {
 }
 
 impl Target {
+    pub const ALL: [Target; 2] = [Target::SwiftUI, Target::WinUI];
+
+    /// The platform folder of an app whose host this target writes for,
+    /// as a Flutter app has one per platform: `macos`, `windows`.
+    pub fn platform(self) -> &'static str {
+        match self {
+            Target::SwiftUI => "macos",
+            Target::WinUI => "windows",
+        }
+    }
+
+    pub fn name(self) -> &'static str {
+        match self {
+            Target::SwiftUI => "swiftui",
+            Target::WinUI => "winui",
+        }
+    }
+
     pub fn parse(name: &str) -> Option<Self> {
         match name {
             "swiftui" => Some(Target::SwiftUI),

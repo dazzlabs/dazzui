@@ -460,9 +460,9 @@ void settings_subscribe(NuiApp*, NuiStateChanged, void* context);
   `String`（`NuiStr`）。快照里的字符串属于 Rust，由 `*_state_free` 归还；action 里的字符串
   属于调用方，只借到调用结束。Phase 3 起，嵌套结构体按值过桥，`Vec<结构体>` 以 `{ ptr, len }` 的类型化列表过桥，`state_free` 递归归还；selector 当字段过桥。
 - 回调里不持有 app 的借用：先复制订阅者列表再逐个调用，订阅者可以安全地重新 `get_state`。
-- Swift：生成 `CSettings/`（头文件 + module map），宿主的 `Package.swift` 用 `.systemLibrary`
-  引入，并按完整路径链接 `libsettings_example.a`（`-l` 会选中旁边的 dylib）。Cargo 不由
-  SwiftPM 驱动，先 `cargo build -p settings-example`。
+- Swift：生成 `CSettings/`（头文件 + module map），宿主的 Xcode 工程用 `SWIFT_INCLUDE_PATHS`
+  引入，并按完整路径链接 `libsettings_example.a`（`-l` 会选中旁边的 dylib）；构建前的脚本阶段
+  先跑 `cargo build -p settings-example`，所以在 Xcode 里一次 build 就够。
 - C#：`[LibraryImport]` 加函数指针回调（`[UnmanagedCallersOnly]` + weak `GCHandle`）；DTO 全部
   blittable，`bool` 存成 `byte`。CLI 的 `--library` 默认取 `./Cargo.toml` 的包名。
 
@@ -482,19 +482,28 @@ tools/dazzui-compiler/
     winui.rs                 IR → .xaml / .xaml.cs / .cs
     generate.rs main.rs      CLI：check / generate
   macro/                     dazzui-compiler-macro：proc macro ui!，以后还有 #[selector]、#[app]
-  tests/golden.rs            对 examples/settings/generated 做 golden test
-  examples/settings/
-    src/state.rs action.rs update.rs    app core：纯 Rust，不依赖任何 UI
+  tests/golden.rs            对示例的 macos/Generated、windows/Generated 做 golden test
+  tests/diagnostics/         每类错误一份 CLI 输出快照
+  examples/settings_example/           一个示例是一个工程，像 Flutter 的 example/：共享的部分在根上，平台是子目录
+    Cargo.toml                         settings-example：app core（相当于 Flutter 的 lib/）
+    dazzui-compiler.toml               这个示例自己的组件
+    src/state.rs action.rs update.rs   纯 Rust，不依赖任何 UI
     src/views/settings.rs              ui! 页面
-    generated/apple/                    CLI 输出，提交进仓库；golden test 核对它
-    generated/windows/
-    Package.swift                       SwiftPM 宿主：target `SettingsUI` 直接指向 generated/apple
-                                        （SwiftPM 的 target 不能出包根，所以它和 Cargo.toml 并排）
-    apple/SettingsHost/                 运行生成页面的 macOS app
-    apple/SettingsUITests/              xcodebuild test：页面能布局、ViewModel 转发 action
-    windows/SettingsHost/               WinUI 3 宿主：直接编译 generated/windows，引用真实的 DazzUI，带上 Rust 的 cdylib；
-                                        --smoke-test 用真实鼠标点击走完 XAML → 生成的处理器 → C ABI → update → x:Bind
-    windows/smoke.sh                    从 Mac 经 SSH 在 Windows 上同步、构建、在登录的桌面里跑 smoke test，取回结果和截图
+    macos/
+      project.yml                      XcodeGen 的输入；SettingsExample.xcodeproj 由它生成并提交
+      Generated/                       `generate --target swiftui` 的输出（含 C 模块 CSettings/），提交；golden test 核对它
+      SettingsExample/                 app：编译 Generated/，链接 Rust 静态库；构建前的脚本阶段先跑 cargo
+      SettingsExampleTests/            页面能布局、action 经 C ABI 改变 Rust 的 state
+    windows/
+      SettingsExample.sln
+      Generated/                       `generate --target winui` 的输出，提交；golden test 核对它
+      SettingsExample/                 WinUI 3 app：编译 ../Generated，引用真实的 DazzUI，带上 Rust 的 cdylib；
+                                       --smoke-test 用真实鼠标点击走完 XAML → 生成的处理器 → C ABI → update → x:Bind
+      smoke.sh                         从 Mac 经 SSH 在 Windows 上同步、构建、在登录的桌面里跑 smoke test，取回结果和截图
+
+生成的代码放在用它的平台目录里，和 Flutter 把插件注册代码放进 `macos/`、`windows/` 一样。
+`dazzui-compiler generate` 不带 `--target` 时，给存在的每个平台目录各生成一份；
+C# namespace 默认取包名（`settings-example` → `SettingsExample`）。以后加 iOS / Android，就是加 `ios/`、`android/`。
 ```
 
 只有两个 crate：proc macro 的 crate 不能导出别的东西，所以 `ui!` 单独在

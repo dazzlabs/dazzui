@@ -1,6 +1,7 @@
-//! The settings example's committed `generated/` is what the CLI writes
-//! today. Regenerate it with `dazzui-compiler generate` from that directory when a
-//! change to a backend is meant.
+//! The settings example's committed `macos/Generated` and
+//! `windows/Generated` are what the CLI writes today. Regenerate them with
+//! `dazzui-compiler generate` from that directory when a change to a backend
+//! is meant.
 
 use std::fs;
 use std::path::Path;
@@ -8,7 +9,7 @@ use std::path::Path;
 use dazzui_compiler::{Options, Target, compile, generate};
 
 fn check(target: Target, namespace: &str, dir: &str) {
-    let example = Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/settings");
+    let example = Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/settings_example");
     let pages = compile(&example.join("src"), &example).unwrap_or_else(|e| panic!("{e}"));
     let options = Options { namespace: namespace.into(), library: "settings_example".into() };
     let files = generate(&pages, target, &options);
@@ -22,10 +23,10 @@ fn check(target: Target, namespace: &str, dir: &str) {
 
 #[test]
 fn swiftui_matches_the_committed_output() {
-    check(Target::SwiftUI, "Settings", "generated/apple");
+    check(Target::SwiftUI, "SettingsExample", "macos/Generated");
 }
 
 #[test]
 fn winui_matches_the_committed_output() {
-    check(Target::WinUI, "Settings", "generated/windows");
+    check(Target::WinUI, "SettingsExample", "windows/Generated");
 }

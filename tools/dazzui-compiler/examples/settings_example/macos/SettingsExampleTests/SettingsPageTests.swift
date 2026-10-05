@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 import XCTest
 
-@testable import SettingsUI
+@testable import SettingsExample
 
 @MainActor
 final class SettingsPageTests: XCTestCase {

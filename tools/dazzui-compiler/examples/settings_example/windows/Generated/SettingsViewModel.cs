@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Settings;
+namespace SettingsExample;
 
 /// <summary><c>Plugin</c>, from the Rust app core.</summary>
 public sealed record Plugin(uint Id, string Name, bool Enabled);

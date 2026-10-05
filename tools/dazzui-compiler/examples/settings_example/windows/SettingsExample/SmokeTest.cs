@@ -7,7 +7,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 
-namespace Settings;
+namespace SettingsExample;
 
 /// <summary>Clicks through the generated page with real mouse input — so
 /// the XAML's Click wiring, the generated handler, the C ABI, Rust's update
@@ -16,7 +16,7 @@ namespace Settings;
 internal static class SmokeTest
 {
     internal static string Output => Environment.GetEnvironmentVariable("DAZZUI_SMOKE_OUTPUT")
-        ?? Path.Combine(Path.GetTempPath(), "SettingsHost");
+        ?? Path.Combine(Path.GetTempPath(), "SettingsExample");
 
     private static readonly List<string> log = [];
 

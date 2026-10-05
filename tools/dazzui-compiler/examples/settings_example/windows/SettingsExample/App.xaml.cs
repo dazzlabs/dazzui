@@ -2,7 +2,7 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace Settings;
+namespace SettingsExample;
 
 /// <summary>Runs the generated page against the Rust app core. Each snapshot
 /// the page gets is printed, so a change can be seen to have come from Rust.</summary>

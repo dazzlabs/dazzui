@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Settings;
+namespace SettingsExample;
 
 /// <summary>The C ABI of <c>settings_example</c>, from the Rust app core.</summary>
 internal static unsafe partial class SettingsNative
