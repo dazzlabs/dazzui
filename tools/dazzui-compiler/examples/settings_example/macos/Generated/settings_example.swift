@@ -507,162 +507,8 @@ fileprivate struct FfiConverterString: FfiConverter {
 
 
 /**
- * The app: its state, and those to tell when it changes.
- */
-public protocol SettingsAppProtocol: AnyObject, Sendable {
-    
-    func send(action: SettingsAction) 
-    
-    /**
-     * A snapshot of the state, selectors computed.
-     */
-    func state()  -> SettingsState
-    
-    func subscribe(listener: SettingsListener) 
-    
-}
-/**
- * The app: its state, and those to tell when it changes.
- */
-open class SettingsApp: SettingsAppProtocol, @unchecked Sendable {
-    fileprivate let handle: UInt64
-
-    /// Used to instantiate a [FFIObject] without an actual handle, for fakes in tests, mostly.
-#if swift(>=5.8)
-    @_documentation(visibility: private)
-#endif
-    public struct NoHandle {
-        public init() {}
-    }
-
-    // TODO: We'd like this to be `private` but for Swifty reasons,
-    // we can't implement `FfiConverter` without making this `required` and we can't
-    // make it `required` without making it `public`.
-#if swift(>=5.8)
-    @_documentation(visibility: private)
-#endif
-    required public init(unsafeFromHandle handle: UInt64) {
-        self.handle = handle
-    }
-
-    // This constructor can be used to instantiate a fake object.
-    // - Parameter noHandle: Placeholder value so we can have a constructor separate from the default empty one that may be implemented for classes extending [FFIObject].
-    //
-    // - Warning:
-    //     Any object instantiated with this constructor cannot be passed to an actual Rust-backed object. Since there isn't a backing handle the FFI lower functions will crash.
-#if swift(>=5.8)
-    @_documentation(visibility: private)
-#endif
-    public init(noHandle: NoHandle) {
-        self.handle = 0
-    }
-
-#if swift(>=5.8)
-    @_documentation(visibility: private)
-#endif
-    public func uniffiCloneHandle() -> UInt64 {
-        return try! rustCall { uniffi_settings_example_fn_clone_settingsapp(self.handle, $0) }
-    }
-public convenience init() {
-    let handle =
-        try! rustCall() {
-    uniffi_settings_example_fn_constructor_settingsapp_new($0
-    )
-}
-    self.init(unsafeFromHandle: handle)
-}
-
-    deinit {
-        if handle == 0 {
-            // Mock objects have handle=0 don't try to free them
-            return
-        }
-
-        try! rustCall { uniffi_settings_example_fn_free_settingsapp(handle, $0) }
-    }
-
-    
-
-    
-open func send(action: SettingsAction)  {try! rustCall() {
-    uniffi_settings_example_fn_method_settingsapp_send(
-            self.uniffiCloneHandle(),
-        FfiConverterTypeSettingsAction_lower(action),$0
-    )
-}
-}
-    
-    /**
-     * A snapshot of the state, selectors computed.
-     */
-open func state() -> SettingsState  {
-    return try!  FfiConverterTypeSettingsState_lift(try! rustCall() {
-    uniffi_settings_example_fn_method_settingsapp_state(
-            self.uniffiCloneHandle(),$0
-    )
-})
-}
-    
-open func subscribe(listener: SettingsListener)  {try! rustCall() {
-    uniffi_settings_example_fn_method_settingsapp_subscribe(
-            self.uniffiCloneHandle(),
-        FfiConverterTypeSettingsListener_lower(listener),$0
-    )
-}
-}
-    
-
-    
-}
-
-
-#if swift(>=5.8)
-@_documentation(visibility: private)
-#endif
-public struct FfiConverterTypeSettingsApp: FfiConverter {
-    typealias FfiType = UInt64
-    typealias SwiftType = SettingsApp
-
-    public static func lift(_ handle: UInt64) throws -> SettingsApp {
-        return SettingsApp(unsafeFromHandle: handle)
-    }
-
-    public static func lower(_ value: SettingsApp) -> UInt64 {
-        return value.uniffiCloneHandle()
-    }
-
-    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> SettingsApp {
-        let handle: UInt64 = try readInt(&buf)
-        return try lift(handle)
-    }
-
-    public static func write(_ value: SettingsApp, into buf: inout [UInt8]) {
-        writeInt(&buf, lower(value))
-    }
-}
-
-
-#if swift(>=5.8)
-@_documentation(visibility: private)
-#endif
-public func FfiConverterTypeSettingsApp_lift(_ handle: UInt64) throws -> SettingsApp {
-    return try FfiConverterTypeSettingsApp.lift(handle)
-}
-
-#if swift(>=5.8)
-@_documentation(visibility: private)
-#endif
-public func FfiConverterTypeSettingsApp_lower(_ value: SettingsApp) -> UInt64 {
-    return FfiConverterTypeSettingsApp.lower(value)
-}
-
-
-
-
-
-
-/**
- * Called back after every action, on the thread that sent it.
+ * Called back when the model's state changes, on whichever
+ * thread changed it.
  */
 public protocol SettingsListener: AnyObject, Sendable {
     
@@ -670,7 +516,8 @@ public protocol SettingsListener: AnyObject, Sendable {
     
 }
 /**
- * Called back after every action, on the thread that sent it.
+ * Called back when the model's state changes, on whichever
+ * thread changed it.
  */
 open class SettingsListenerImpl: SettingsListener, @unchecked Sendable {
     fileprivate let handle: UInt64
@@ -855,6 +702,164 @@ public func FfiConverterTypeSettingsListener_lower(_ value: SettingsListener) ->
 
 
 
+
+
+/**
+ * The app's model, as the native side holds it.
+ */
+public protocol SettingsSourceProtocol: AnyObject, Sendable {
+    
+    func send(action: SettingsAction) 
+    
+    /**
+     * A snapshot of the state, selectors computed.
+     */
+    func state()  -> SettingsState
+    
+    func subscribe(listener: SettingsListener) 
+    
+}
+/**
+ * The app's model, as the native side holds it.
+ */
+open class SettingsSource: SettingsSourceProtocol, @unchecked Sendable {
+    fileprivate let handle: UInt64
+
+    /// Used to instantiate a [FFIObject] without an actual handle, for fakes in tests, mostly.
+#if swift(>=5.8)
+    @_documentation(visibility: private)
+#endif
+    public struct NoHandle {
+        public init() {}
+    }
+
+    // TODO: We'd like this to be `private` but for Swifty reasons,
+    // we can't implement `FfiConverter` without making this `required` and we can't
+    // make it `required` without making it `public`.
+#if swift(>=5.8)
+    @_documentation(visibility: private)
+#endif
+    required public init(unsafeFromHandle handle: UInt64) {
+        self.handle = handle
+    }
+
+    // This constructor can be used to instantiate a fake object.
+    // - Parameter noHandle: Placeholder value so we can have a constructor separate from the default empty one that may be implemented for classes extending [FFIObject].
+    //
+    // - Warning:
+    //     Any object instantiated with this constructor cannot be passed to an actual Rust-backed object. Since there isn't a backing handle the FFI lower functions will crash.
+#if swift(>=5.8)
+    @_documentation(visibility: private)
+#endif
+    public init(noHandle: NoHandle) {
+        self.handle = 0
+    }
+
+#if swift(>=5.8)
+    @_documentation(visibility: private)
+#endif
+    public func uniffiCloneHandle() -> UInt64 {
+        return try! rustCall { uniffi_settings_example_fn_clone_settingssource(self.handle, $0) }
+    }
+    /**
+     * A source over the model the marked function makes.
+     */
+public convenience init() {
+    let handle =
+        try! rustCall() {
+    uniffi_settings_example_fn_constructor_settingssource_new($0
+    )
+}
+    self.init(unsafeFromHandle: handle)
+}
+
+    deinit {
+        if handle == 0 {
+            // Mock objects have handle=0 don't try to free them
+            return
+        }
+
+        try! rustCall { uniffi_settings_example_fn_free_settingssource(handle, $0) }
+    }
+
+    
+
+    
+open func send(action: SettingsAction)  {try! rustCall() {
+    uniffi_settings_example_fn_method_settingssource_send(
+            self.uniffiCloneHandle(),
+        FfiConverterTypeSettingsAction_lower(action),$0
+    )
+}
+}
+    
+    /**
+     * A snapshot of the state, selectors computed.
+     */
+open func state() -> SettingsState  {
+    return try!  FfiConverterTypeSettingsState_lift(try! rustCall() {
+    uniffi_settings_example_fn_method_settingssource_state(
+            self.uniffiCloneHandle(),$0
+    )
+})
+}
+    
+open func subscribe(listener: SettingsListener)  {try! rustCall() {
+    uniffi_settings_example_fn_method_settingssource_subscribe(
+            self.uniffiCloneHandle(),
+        FfiConverterTypeSettingsListener_lower(listener),$0
+    )
+}
+}
+    
+
+    
+}
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public struct FfiConverterTypeSettingsSource: FfiConverter {
+    typealias FfiType = UInt64
+    typealias SwiftType = SettingsSource
+
+    public static func lift(_ handle: UInt64) throws -> SettingsSource {
+        return SettingsSource(unsafeFromHandle: handle)
+    }
+
+    public static func lower(_ value: SettingsSource) -> UInt64 {
+        return value.uniffiCloneHandle()
+    }
+
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> SettingsSource {
+        let handle: UInt64 = try readInt(&buf)
+        return try lift(handle)
+    }
+
+    public static func write(_ value: SettingsSource, into buf: inout [UInt8]) {
+        writeInt(&buf, lower(value))
+    }
+}
+
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeSettingsSource_lift(_ handle: UInt64) throws -> SettingsSource {
+    return try FfiConverterTypeSettingsSource.lift(handle)
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
+public func FfiConverterTypeSettingsSource_lower(_ value: SettingsSource) -> UInt64 {
+    return FfiConverterTypeSettingsSource.lower(value)
+}
+
+
+
+
 public struct Plugin: Equatable, Hashable {
     public var id: UInt32
     public var name: String
@@ -917,24 +922,28 @@ public struct SettingsState: Equatable, Hashable {
     public var launchAtStartup: Bool
     public var autoUpdate: Bool
     public var saved: Bool
+    public var saving: Bool
     public var saves: UInt32
     public var status: String
     public var showDisabledPlugins: Bool
     public var plugins: [Plugin]
     public var visiblePlugins: [Plugin]
+    public var saveDisabled: Bool
     public var hasHiddenPlugins: Bool
 
     // Default memberwise initializers are never public by default, so we
     // declare one manually.
-    public init(launchAtStartup: Bool, autoUpdate: Bool, saved: Bool, saves: UInt32, status: String, showDisabledPlugins: Bool, plugins: [Plugin], visiblePlugins: [Plugin], hasHiddenPlugins: Bool) {
+    public init(launchAtStartup: Bool, autoUpdate: Bool, saved: Bool, saving: Bool, saves: UInt32, status: String, showDisabledPlugins: Bool, plugins: [Plugin], visiblePlugins: [Plugin], saveDisabled: Bool, hasHiddenPlugins: Bool) {
         self.launchAtStartup = launchAtStartup
         self.autoUpdate = autoUpdate
         self.saved = saved
+        self.saving = saving
         self.saves = saves
         self.status = status
         self.showDisabledPlugins = showDisabledPlugins
         self.plugins = plugins
         self.visiblePlugins = visiblePlugins
+        self.saveDisabled = saveDisabled
         self.hasHiddenPlugins = hasHiddenPlugins
     }
 
@@ -957,11 +966,13 @@ public struct FfiConverterTypeSettingsState: FfiConverterRustBuffer {
                 launchAtStartup: FfiConverterBool.read(from: &buf), 
                 autoUpdate: FfiConverterBool.read(from: &buf), 
                 saved: FfiConverterBool.read(from: &buf), 
+                saving: FfiConverterBool.read(from: &buf), 
                 saves: FfiConverterUInt32.read(from: &buf), 
                 status: FfiConverterString.read(from: &buf), 
                 showDisabledPlugins: FfiConverterBool.read(from: &buf), 
                 plugins: FfiConverterSequenceTypePlugin.read(from: &buf), 
                 visiblePlugins: FfiConverterSequenceTypePlugin.read(from: &buf), 
+                saveDisabled: FfiConverterBool.read(from: &buf), 
                 hasHiddenPlugins: FfiConverterBool.read(from: &buf)
         )
     }
@@ -970,11 +981,13 @@ public struct FfiConverterTypeSettingsState: FfiConverterRustBuffer {
         FfiConverterBool.write(value.launchAtStartup, into: &buf)
         FfiConverterBool.write(value.autoUpdate, into: &buf)
         FfiConverterBool.write(value.saved, into: &buf)
+        FfiConverterBool.write(value.saving, into: &buf)
         FfiConverterUInt32.write(value.saves, into: &buf)
         FfiConverterString.write(value.status, into: &buf)
         FfiConverterBool.write(value.showDisabledPlugins, into: &buf)
         FfiConverterSequenceTypePlugin.write(value.plugins, into: &buf)
         FfiConverterSequenceTypePlugin.write(value.visiblePlugins, into: &buf)
+        FfiConverterBool.write(value.saveDisabled, into: &buf)
         FfiConverterBool.write(value.hasHiddenPlugins, into: &buf)
     }
 }
@@ -1141,19 +1154,19 @@ private let initializationResult: InitializationResult = {
     if bindings_contract_version != scaffolding_contract_version {
         return InitializationResult.contractVersionMismatch
     }
-    if (uniffi_settings_example_checksum_method_settingsapp_send() != 40292) {
+    if (uniffi_settings_example_checksum_method_settingslistener_state_changed() != 7042) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_settings_example_checksum_method_settingsapp_state() != 16691) {
+    if (uniffi_settings_example_checksum_method_settingssource_send() != 13796) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_settings_example_checksum_method_settingsapp_subscribe() != 16730) {
+    if (uniffi_settings_example_checksum_method_settingssource_state() != 61957) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_settings_example_checksum_method_settingslistener_state_changed() != 28508) {
+    if (uniffi_settings_example_checksum_method_settingssource_subscribe() != 12353) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_settings_example_checksum_constructor_settingsapp_new() != 17760) {
+    if (uniffi_settings_example_checksum_constructor_settingssource_new() != 27133) {
         return InitializationResult.apiChecksumMismatch
     }
 

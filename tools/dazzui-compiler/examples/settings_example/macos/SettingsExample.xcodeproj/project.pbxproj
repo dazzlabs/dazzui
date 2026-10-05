@@ -12,7 +12,7 @@
 		38AD5D9980BA04FAC5336078 /* settings_example.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50FD59A4C3DB0BF2A21E921 /* settings_example.swift */; };
 		62699ADC677B67196B75BF5C /* DazzUI in Frameworks */ = {isa = PBXBuildFile; productRef = C0EA39C37B74964F6F487F72 /* DazzUI */; };
 		91AC0869553920CC76CDC68C /* SettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA5B0B97E41966CC44BEF0C /* SettingsPage.swift */; };
-		BA82CAB13C93AA43CE4A9964 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A840660790A7D76938B77AEB /* SettingsViewModel.swift */; };
+		E0A16FDF3E8A8D30129C4E08 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9C611811D227B4750DB484 /* SettingsStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,10 +30,10 @@
 		316FADCC7714836FA5FC50C1 /* SettingsExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsExampleApp.swift; sourceTree = "<group>"; };
 		4DC106824D16142F0D45E465 /* SettingsExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SettingsExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		562401356BDF4AE852C9C0C1 /* DazzUI */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DazzUI; path = ../../../../../packages/swift/DazzUI; sourceTree = SOURCE_ROOT; };
-		A840660790A7D76938B77AEB /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		BCA5B0B97E41966CC44BEF0C /* SettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPage.swift; sourceTree = "<group>"; };
 		C50FD59A4C3DB0BF2A21E921 /* settings_example.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settings_example.swift; sourceTree = "<group>"; };
 		C921B58BBCA68B538F8A813B /* SettingsPageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageTests.swift; sourceTree = "<group>"; };
+		CD9C611811D227B4750DB484 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,7 +86,7 @@
 			children = (
 				C50FD59A4C3DB0BF2A21E921 /* settings_example.swift */,
 				BCA5B0B97E41966CC44BEF0C /* SettingsPage.swift */,
-				A840660790A7D76938B77AEB /* SettingsViewModel.swift */,
+				CD9C611811D227B4750DB484 /* SettingsStore.swift */,
 			);
 			path = Generated;
 			sourceTree = "<group>";
@@ -209,7 +209,7 @@
 			files = (
 				0F2C6C64B6E49A2EFBCB6D09 /* SettingsExampleApp.swift in Sources */,
 				91AC0869553920CC76CDC68C /* SettingsPage.swift in Sources */,
-				BA82CAB13C93AA43CE4A9964 /* SettingsViewModel.swift in Sources */,
+				E0A16FDF3E8A8D30129C4E08 /* SettingsStore.swift in Sources */,
 				38AD5D9980BA04FAC5336078 /* settings_example.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

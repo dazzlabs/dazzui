@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 import SwiftUI
 import XCTest
 
@@ -7,7 +8,7 @@ import XCTest
 @MainActor
 final class SettingsPageTests: XCTestCase {
   func testTheFirstSnapshotIsRustsDefault() {
-    let state = SettingsViewModel().state
+    let state = SettingsStore().state
     XCTAssertEqual(state.saved, true)
     XCTAssertEqual(state.status, "No changes")
     XCTAssertEqual(state.plugins.map(\.name), ["Spell check", "Grammar", "Translate"])
@@ -15,41 +16,70 @@ final class SettingsPageTests: XCTestCase {
 
   /// A selector crosses as a field, recomputed in Rust for every snapshot.
   func testSelectorsAndListsCross() {
-    let model = SettingsViewModel()
-    XCTAssertEqual(model.state.visiblePlugins.map(\.id), [1, 3])
-    XCTAssertTrue(model.state.hasHiddenPlugins)
+    let store = SettingsStore()
+    XCTAssertEqual(store.state.visiblePlugins.map(\.id), [1, 3])
+    XCTAssertTrue(store.state.hasHiddenPlugins)
 
-    model.send(.setShowDisabledPlugins(true))
-    XCTAssertEqual(model.state.visiblePlugins.map(\.name), ["Spell check", "Grammar", "Translate"])
-    XCTAssertFalse(model.state.hasHiddenPlugins)
+    store.send(.setShowDisabledPlugins(true))
+    XCTAssertEqual(store.state.visiblePlugins.map(\.name), ["Spell check", "Grammar", "Translate"])
+    XCTAssertFalse(store.state.hasHiddenPlugins)
 
-    model.send(.togglePlugin(2))
-    XCTAssertEqual(model.state.visiblePlugins[1], Plugin(id: 2, name: "Grammar", enabled: true))
+    store.send(.togglePlugin(2))
+    XCTAssertEqual(store.state.visiblePlugins[1], Plugin(id: 2, name: "Grammar", enabled: true))
   }
 
-  /// A toggle sends its new value; Rust's `update` changes the state and
-  /// calls back; the next snapshot is what the page shows.
+  /// A toggle sends its new value; the model changes the state as it takes
+  /// it and calls back on this thread, so the store shows it at once.
   func testAnActionChangesTheRustState() {
-    let model = SettingsViewModel()
-    model.send(.setAutoUpdate(true))
-    XCTAssertTrue(model.state.autoUpdate)
-    XCTAssertFalse(model.state.saved)
-    XCTAssertEqual(model.state.status, "Unsaved changes")
+    let store = SettingsStore()
+    store.send(.setAutoUpdate(true))
+    XCTAssertTrue(store.state.autoUpdate)
+    XCTAssertFalse(store.state.saved)
+    XCTAssertEqual(store.state.status, "Unsaved changes")
 
-    model.send(.save)
-    model.send(.save)
-    XCTAssertEqual(model.state.saves, 2)
-    XCTAssertEqual(model.state.status, "Saved 2 times")
+    store.send(.reset)
+    XCTAssertFalse(store.state.autoUpdate)
+    XCTAssertTrue(store.state.saved)
+  }
 
-    model.send(.reset)
-    XCTAssertFalse(model.state.autoUpdate)
-    XCTAssertEqual(model.state.saves, 0)
+  /// A save finishes on a Rust thread of its own; the store hears of it
+  /// there and reads the state again on the main one.
+  func testAChangeFromAnotherThreadReachesTheStore() {
+    let store = SettingsStore()
+    store.send(.setAutoUpdate(true))
+    store.send(.save)
+    XCTAssertTrue(store.state.saving)
+    XCTAssertTrue(store.state.saveDisabled)
+
+    let saved = expectation(description: "the save finished")
+    let watching = store.$state.sink { state in
+      if state.saved {
+        XCTAssertTrue(Thread.isMainThread)
+        saved.fulfill()
+      }
+    }
+    wait(for: [saved], timeout: 5)
+    watching.cancel()
+    XCTAssertEqual(store.state.saves, 1)
+    XCTAssertEqual(store.state.status, "Saved")
+    XCTAssertFalse(store.state.saving)
   }
 
   func testThePageLaysOut() {
-    let host = NSHostingView(rootView: SettingsPage(model: SettingsViewModel()))
+    let store = SettingsStore()
+    let host = NSHostingView(rootView: SettingsPage(state: store.state, send: store.send))
     host.frame = NSRect(x: 0, y: 0, width: 360, height: 240)
     host.layoutSubtreeIfNeeded()
     XCTAssertGreaterThan(host.fittingSize.height, 0)
+  }
+
+  /// The page holds nothing: a state made in Swift, and a closure that
+  /// collects what it sends, are all it needs.
+  func testThePageNeedsNoModel() {
+    var sent: [SettingsAction] = []
+    let state = SettingsStore().state
+    let page = SettingsPage(state: state, send: { sent.append($0) })
+    page.send(.save)
+    XCTAssertEqual(sent, [.save])
   }
 }

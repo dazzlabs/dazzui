@@ -23,9 +23,6 @@ pub enum A {
     Pick(u32),
 }
 
-#[app]
-pub fn update(state: &mut S, action: A) {}
-
 ui! {
     page P(state: S, action: A) {
         Text("a")

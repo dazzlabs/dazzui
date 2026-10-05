@@ -7,8 +7,11 @@ use std::collections::BTreeMap;
 pub struct RustTypes {
     pub enums: BTreeMap<String, EnumDef>,
     pub structs: BTreeMap<String, StructDef>,
-    /// Functions marked `#[app]`: the update functions the bridge wraps.
-    pub apps: Vec<AppDef>,
+    /// Functions marked `#[page_model]`: what the bridge carries to the
+    /// native side.
+    pub models: Vec<ModelDef>,
+    /// `impl PageModel for T`: each `T`, and its `State` and `Action`.
+    pub page_model_impls: BTreeMap<String, (String, String)>,
     /// Whether the crate's root calls `uniffi::setup_scaffolding!()`, which
     /// the bridge's UniFFI exports need.
     pub scaffolding: bool,
@@ -57,7 +60,11 @@ pub struct StructDef {
 impl StructDef {
     /// A field or a selector, by name.
     pub fn field(&self, name: &str) -> Option<&RustType> {
-        self.fields.iter().chain(&self.selectors).find(|(n, _)| n == name).map(|(_, ty)| ty)
+        self.fields
+            .iter()
+            .chain(&self.selectors)
+            .find(|(n, _)| n == name)
+            .map(|(_, ty)| ty)
     }
 
     pub fn is_selector(&self, name: &str) -> bool {
@@ -66,16 +73,34 @@ impl StructDef {
 
     /// Every name a page can read: fields, then selectors.
     pub fn names(&self) -> impl Iterator<Item = &str> {
-        self.fields.iter().chain(&self.selectors).map(|(n, _)| n.as_str())
+        self.fields
+            .iter()
+            .chain(&self.selectors)
+            .map(|(n, _)| n.as_str())
     }
 }
 
-/// `#[app] fn update(state: &mut State, action: Action)`.
+/// `#[page_model] fn settings() -> Model`: a function that makes the model
+/// a page's state comes from and its actions go to.
 #[derive(Clone, Debug, PartialEq)]
-pub struct AppDef {
+pub struct ModelDef {
     pub function: String,
-    pub state: String,
-    pub action: String,
+    pub model: ModelType,
+    /// Where the function's name is, for a diagnostic: the file, as the
+    /// project displays it, and the line, column and width.
+    pub file: String,
+    pub line: u32,
+    pub column: u32,
+    pub width: u32,
+}
+
+/// What a `#[page_model]` function returns.
+#[derive(Clone, Debug, PartialEq)]
+pub enum ModelType {
+    /// `Reducer<State, Action>`, whose types are its own.
+    Reducer { state: String, action: String },
+    /// Any other type, whose `impl PageModel` names them.
+    Named(String),
 }
 
 /// The Rust types that cross to the native side.
@@ -188,11 +213,14 @@ impl RustType {
 }
 
 fn quote_type(ty: &syn::Type) -> String {
-    quote::ToTokens::to_token_stream(ty).to_string().replace(' ', "")
+    quote::ToTokens::to_token_stream(ty)
+        .to_string()
+        .replace(' ', "")
 }
 
 impl RustTypes {
-    /// Collects the enums, structs, selectors and `#[app]` functions of
+    /// Collects the enums, structs, selectors, `#[page_model]` functions
+    /// and `impl PageModel`s of
     /// one parsed file, including those in inline modules. `module` is the
     /// file's module path, `crate::state`.
     pub fn collect(&mut self, items: &[syn::Item], module: &str) {
@@ -205,7 +233,10 @@ impl RustTypes {
                         variants: e
                             .variants
                             .iter()
-                            .map(|v| Variant { name: v.ident.to_string(), fields: fields(&v.fields) })
+                            .map(|v| Variant {
+                                name: v.ident.to_string(),
+                                fields: fields(&v.fields),
+                            })
                             .collect(),
                     };
                     self.enums.insert(def.name.clone(), def);
@@ -213,45 +244,73 @@ impl RustTypes {
                 syn::Item::Struct(s) => {
                     if let Fields::Named(fields) = fields(&s.fields) {
                         let name = s.ident.to_string();
-                        let def = self.structs.entry(name.clone()).or_insert_with(|| StructDef {
-                            name: name.clone(),
-                            path: String::new(),
-                            fields: Vec::new(),
-                            selectors: Vec::new(),
-                        });
+                        let def = self
+                            .structs
+                            .entry(name.clone())
+                            .or_insert_with(|| StructDef {
+                                name: name.clone(),
+                                path: String::new(),
+                                fields: Vec::new(),
+                                selectors: Vec::new(),
+                            });
                         def.path = format!("{module}::{name}");
                         def.fields = fields;
                     }
                 }
                 syn::Item::Impl(imp) if imp.trait_.is_none() => {
-                    let syn::Type::Path(self_ty) = &*imp.self_ty else { continue };
-                    let Some(name) = self_ty.path.segments.last().map(|s| s.ident.to_string()) else { continue };
+                    let syn::Type::Path(self_ty) = &*imp.self_ty else {
+                        continue;
+                    };
+                    let Some(name) = self_ty.path.segments.last().map(|s| s.ident.to_string())
+                    else {
+                        continue;
+                    };
                     let selectors: Vec<_> = imp
                         .items
                         .iter()
                         .filter_map(|item| match item {
-                            syn::ImplItem::Fn(f) if has_attr(&f.attrs, "selector") => selector(&f.sig).ok(),
+                            syn::ImplItem::Fn(f) if has_attr(&f.attrs, "selector") => {
+                                selector(&f.sig).ok()
+                            }
                             _ => None,
                         })
                         .collect();
                     if !selectors.is_empty() {
                         // An impl may come before its struct, or in another file.
-                        let def = self.structs.entry(name.clone()).or_insert_with(|| StructDef {
-                            name,
-                            path: String::new(),
-                            fields: Vec::new(),
-                            selectors: Vec::new(),
-                        });
+                        let def = self
+                            .structs
+                            .entry(name.clone())
+                            .or_insert_with(|| StructDef {
+                                name,
+                                path: String::new(),
+                                fields: Vec::new(),
+                                selectors: Vec::new(),
+                            });
                         def.selectors.extend(selectors);
                     }
                 }
-                syn::Item::Fn(f) if has_attr(&f.attrs, "app") => {
-                    if let Ok(app) = AppDef::from_fn(&f.sig) {
-                        self.apps.push(app);
+                syn::Item::Impl(imp) if is_page_model_impl(imp) => {
+                    let (Some(name), Some(state), Some(action)) = (
+                        type_name(&imp.self_ty),
+                        associated(imp, "State"),
+                        associated(imp, "Action"),
+                    ) else {
+                        continue;
+                    };
+                    self.page_model_impls.insert(name, (state, action));
+                }
+                syn::Item::Fn(f) if has_attr(&f.attrs, "page_model") => {
+                    if let Ok(model) = ModelDef::from_fn(&f.sig) {
+                        self.models.push(model);
                     }
                 }
                 syn::Item::Macro(m)
-                    if module == "crate" && m.mac.path.segments.last().is_some_and(|s| s.ident == "setup_scaffolding") =>
+                    if module == "crate"
+                        && m.mac
+                            .path
+                            .segments
+                            .last()
+                            .is_some_and(|s| s.ident == "setup_scaffolding") =>
                 {
                     self.scaffolding = true;
                 }
@@ -265,37 +324,100 @@ impl RustTypes {
         }
     }
 
-    pub fn app_for(&self, state: &str) -> Option<&AppDef> {
-        self.apps.iter().find(|a| a.state == state)
+    /// The state and action a model's pages show and send, or why they
+    /// cannot be told.
+    pub fn model_types(&self, model: &ModelDef) -> Result<(String, String), String> {
+        match &model.model {
+            ModelType::Reducer { state, action } => Ok((state.clone(), action.clone())),
+            ModelType::Named(name) => self.page_model_impls.get(name).cloned().ok_or_else(|| {
+                format!(
+                    "`{}` returns `{name}`, and there is no `impl PageModel for {name}` naming its `State` and `Action`",
+                    model.function
+                )
+            }),
+        }
     }
 }
 
-impl AppDef {
-    /// Reads `fn name(state: &mut State, action: Action)`.
+impl ModelDef {
+    /// Reads `fn name() -> Model`.
     pub fn from_fn(sig: &syn::Signature) -> syn::Result<Self> {
         let shape = || {
-            syn::Error::new_spanned(sig, "an #[app] function is `fn update(state: &mut State, action: Action)`")
+            syn::Error::new_spanned(
+                sig,
+                "a #[page_model] function is `fn name() -> Model`, where `Model: PageModel`",
+            )
         };
-        let args: Vec<_> = sig.inputs.iter().collect();
-        let [syn::FnArg::Typed(state), syn::FnArg::Typed(action)] = args.as_slice() else {
-            return Err(shape());
-        };
-        let syn::Type::Reference(state_ref) = &*state.ty else {
-            return Err(shape());
-        };
-        if state_ref.mutability.is_none() || sig.output != syn::ReturnType::Default {
+        if !sig.inputs.is_empty() || !sig.generics.params.is_empty() || sig.asyncness.is_some() {
             return Err(shape());
         }
-        let name = |ty: &syn::Type| match ty {
-            syn::Type::Path(p) => p.path.segments.last().map(|s| s.ident.to_string()).ok_or_else(shape),
-            _ => Err(shape()),
+        let syn::ReturnType::Type(_, ty) = &sig.output else {
+            return Err(shape());
         };
-        Ok(AppDef { function: sig.ident.to_string(), state: name(&state_ref.elem)?, action: name(&action.ty)? })
+        let syn::Type::Path(path) = &**ty else {
+            return Err(shape());
+        };
+        let last = path.path.segments.last().ok_or_else(shape)?;
+        let model = match &last.arguments {
+            syn::PathArguments::AngleBracketed(args) if last.ident == "Reducer" => {
+                let names: Vec<_> = args
+                    .args
+                    .iter()
+                    .filter_map(|a| match a {
+                        syn::GenericArgument::Type(t) => type_name(t),
+                        _ => None,
+                    })
+                    .collect();
+                let [state, action] = names.as_slice() else {
+                    return Err(shape());
+                };
+                ModelType::Reducer {
+                    state: state.clone(),
+                    action: action.clone(),
+                }
+            }
+            _ => ModelType::Named(last.ident.to_string()),
+        };
+        let span = sig.ident.span();
+        let (start, end) = (span.start(), span.end());
+        Ok(ModelDef {
+            function: sig.ident.to_string(),
+            model,
+            file: String::new(),
+            line: start.line as u32,
+            column: start.column as u32 + 1,
+            width: end.column.saturating_sub(start.column) as u32,
+        })
     }
+}
+
+/// `Name` for a path type `a::b::Name`.
+fn type_name(ty: &syn::Type) -> Option<String> {
+    match ty {
+        syn::Type::Path(p) => p.path.segments.last().map(|s| s.ident.to_string()),
+        _ => None,
+    }
+}
+
+fn is_page_model_impl(imp: &syn::ItemImpl) -> bool {
+    imp.trait_
+        .as_ref()
+        .and_then(|(_, path, _)| path.segments.last())
+        .is_some_and(|s| s.ident == "PageModel")
+}
+
+/// The type an impl's `type Name = …;` names.
+fn associated(imp: &syn::ItemImpl, name: &str) -> Option<String> {
+    imp.items.iter().find_map(|item| match item {
+        syn::ImplItem::Type(t) if t.ident == name => type_name(&t.ty),
+        _ => None,
+    })
 }
 
 fn has_attr(attrs: &[syn::Attribute], name: &str) -> bool {
-    attrs.iter().any(|a| a.path().segments.last().is_some_and(|s| s.ident == name))
+    attrs
+        .iter()
+        .any(|a| a.path().segments.last().is_some_and(|s| s.ident == name))
 }
 
 /// Reads `fn name(&self) -> T`.
@@ -322,22 +444,35 @@ pub fn module_path(relative: &std::path::Path) -> String {
         .components()
         .map(|c| c.as_os_str().to_string_lossy().into_owned())
         .collect();
-    if matches!(parts.last().map(String::as_str), Some("mod")) || matches!(parts.as_slice(), [only] if only == "lib" || only == "main") {
+    if matches!(parts.last().map(String::as_str), Some("mod"))
+        || matches!(parts.as_slice(), [only] if only == "lib" || only == "main")
+    {
         parts.pop();
     }
-    std::iter::once("crate".to_string()).chain(parts).collect::<Vec<_>>().join("::")
+    std::iter::once("crate".to_string())
+        .chain(parts)
+        .collect::<Vec<_>>()
+        .join("::")
 }
 
 fn fields(fields: &syn::Fields) -> Fields {
     match fields {
         syn::Fields::Unit => Fields::Unit,
-        syn::Fields::Unnamed(f) => {
-            Fields::Tuple(f.unnamed.iter().map(|f| RustType::from_syn(&f.ty)).collect())
-        }
+        syn::Fields::Unnamed(f) => Fields::Tuple(
+            f.unnamed
+                .iter()
+                .map(|f| RustType::from_syn(&f.ty))
+                .collect(),
+        ),
         syn::Fields::Named(f) => Fields::Named(
             f.named
                 .iter()
-                .map(|f| (f.ident.as_ref().unwrap().to_string(), RustType::from_syn(&f.ty)))
+                .map(|f| {
+                    (
+                        f.ident.as_ref().unwrap().to_string(),
+                        RustType::from_syn(&f.ty),
+                    )
+                })
                 .collect(),
         ),
     }

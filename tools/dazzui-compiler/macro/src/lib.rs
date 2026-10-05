@@ -1,4 +1,6 @@
-//! The `ui!` and `#[app]` proc macros.
+//! The `ui!`, `#[page_model]` and `#[selector]` proc macros. An app takes
+//! them from `dazzui-runtime`, which re-exports them beside the
+//! `PageModel` trait the bridge names.
 //!
 //! `ui!` parses the page, validates it against the built-in registry, and
 //! expands to a function that is never called: a list of `let` bindings
@@ -7,20 +9,23 @@
 //! Each binding carries the DSL's span, so rustc's own error lands on the
 //! line that wrote it.
 //!
-//! `#[app]` marks the update function and emits, beside it, the UniFFI
-//! exports the native page talks to it through. `#[selector]`
-//! marks a method on the state whose value the page reads like a field.
+//! `#[page_model]` marks the function that makes a page model and emits,
+//! beside it, the UniFFI exports the native side reaches the model through.
+//! `#[selector]` marks a method on the state whose value the page reads
+//! like a field.
 //!
-//! Both `ui!` and `#[app]` read the crate's `src/` as the CLI does: `#[app]`
-//! for the types the bridge carries, `ui!` only to know which names in a
-//! path are selectors, to be called rather than read.
+//! Both `ui!` and `#[page_model]` read the crate's `src/` as the CLI does:
+//! `#[page_model]` for the types the bridge carries, `ui!` only to know which
+//! names in a path are selectors, to be called rather than read.
 
 use std::path::Path;
 
 use dazzui_compiler::bridge::Bridge;
 use dazzui_compiler::ir::{ComponentSpec, PropType};
-use dazzui_compiler::syntax::{ArgAst, ComponentAst, DottedAst, NodeAst, PageAst, ValueAst, parse_page};
-use dazzui_compiler::{AppDef, Project, Registry, RustType, RustTypes, lower, read_selector};
+use dazzui_compiler::syntax::{
+    ArgAst, ComponentAst, DottedAst, NodeAst, PageAst, ValueAst, parse_page,
+};
+use dazzui_compiler::{ModelDef, Project, Registry, RustType, RustTypes, lower, read_selector};
 use proc_macro::TokenStream;
 use proc_macro2::{Span, TokenStream as TokenStream2};
 use quote::{ToTokens, format_ident, quote, quote_spanned};
@@ -28,28 +33,44 @@ use syn::Lit;
 
 #[proc_macro]
 pub fn ui(input: TokenStream) -> TokenStream {
-    expand(input.into()).unwrap_or_else(|e| e.to_compile_error()).into()
+    expand(input.into())
+        .unwrap_or_else(|e| e.to_compile_error())
+        .into()
 }
 
 fn expand(input: TokenStream2) -> syn::Result<TokenStream2> {
     let page = parse_page(input)?;
     let dir = std::env::var("CARGO_MANIFEST_DIR").ok();
     let registry = match &dir {
-        Some(dir) => Registry::load(Path::new(dir)).map_err(|e| syn::Error::new(page.name.span(), e))?,
+        Some(dir) => {
+            Registry::load(Path::new(dir)).map_err(|e| syn::Error::new(page.name.span(), e))?
+        }
         None => Registry::builtin(),
     };
     // Read so that cargo builds again when the app's components change.
-    let track = dir.map(|dir| Path::new(&dir).join(dazzui_compiler::REGISTRY_FILE)).filter(|p| p.exists()).map(|p| {
-        let path = p.to_string_lossy().into_owned();
-        quote!(const _: &[u8] = include_bytes!(#path);)
-    });
+    let track = dir
+        .map(|dir| Path::new(&dir).join(dazzui_compiler::REGISTRY_FILE))
+        .filter(|p| p.exists())
+        .map(|p| {
+            let path = p.to_string_lossy().into_owned();
+            quote!(
+                const _: &[u8] = include_bytes!(#path);
+            )
+        });
     // The type check goes out with the registry's errors rather than
     // instead of them, so one build reports both kinds.
     let errors = match lower(&page, &registry, None, "") {
         Ok(_) => TokenStream2::new(),
-        Err(errors) => errors.iter().map(|e| e.to_syn().to_compile_error()).collect(),
+        Err(errors) => errors
+            .iter()
+            .map(|e| e.to_syn().to_compile_error())
+            .collect(),
     };
-    let check = type_check(&page, &registry, crate_types().map_err(|e| syn::Error::new(page.name.span(), e))?);
+    let check = type_check(
+        &page,
+        &registry,
+        crate_types().map_err(|e| syn::Error::new(page.name.span(), e))?,
+    );
     Ok(quote! { #errors #check #track })
 }
 
@@ -57,7 +78,13 @@ fn type_check(page: &PageAst, registry: &Registry, types: Option<RustTypes>) -> 
     let state = &page.state_ty;
     let check = format_ident!("__dazzui_compiler_check_{}", page.name);
     let state_name = page.state_ty.segments.last().map(|s| s.ident.to_string());
-    let mut cx = Check { registry, action: &page.action_ty, types: types.as_ref(), state: state_name, scopes: Vec::new() };
+    let mut cx = Check {
+        registry,
+        action: &page.action_ty,
+        types: types.as_ref(),
+        state: state_name,
+        scopes: Vec::new(),
+    };
     let lets = cx.node(&page.root);
     quote! {
         #[doc(hidden)]
@@ -74,14 +101,21 @@ fn type_check(page: &PageAst, registry: &Registry, types: Option<RustTypes>) -> 
 /// outside cargo or for a crate with no `src/`. A `src/` that cannot be read
 /// is an error: without its types, a selector would be read as a field.
 fn crate_types() -> syn::Result<Option<RustTypes>> {
-    let Ok(dir) = std::env::var("CARGO_MANIFEST_DIR") else { return Ok(None) };
+    let Ok(dir) = std::env::var("CARGO_MANIFEST_DIR") else {
+        return Ok(None);
+    };
     let src = Path::new(&dir).join("src");
     if !src.is_dir() {
         return Ok(None);
     }
     Project::scan(&src, Path::new(&dir))
         .map(|p| Some(p.types))
-        .map_err(|e| syn::Error::new(Span::call_site(), format!("cannot read {}: {e}", src.display())))
+        .map_err(|e| {
+            syn::Error::new(
+                Span::call_site(),
+                format!("cannot read {}: {e}", src.display()),
+            )
+        })
 }
 
 /// What the type check is walking: the page, and the loop items in scope.
@@ -117,7 +151,11 @@ impl Check<'_> {
                     })
                     .collect();
                 let slots = slots.iter().map(|n| self.node(n)).collect::<Vec<_>>();
-                let children = component.children.iter().map(|c| self.node(c)).collect::<Vec<_>>();
+                let children = component
+                    .children
+                    .iter()
+                    .map(|c| self.node(c))
+                    .collect::<Vec<_>>();
                 quote!(#(#out)* #(#slots)* #(#children)*)
             }
             NodeAst::If(ast) => {
@@ -125,8 +163,16 @@ impl Check<'_> {
                     let span = ast.condition.span();
                     quote_spanned! {span=> let _: bool = #access; }
                 });
-                let then_branch = ast.then_branch.iter().map(|n| self.node(n)).collect::<Vec<_>>();
-                let else_branch = ast.else_branch.iter().map(|n| self.node(n)).collect::<Vec<_>>();
+                let then_branch = ast
+                    .then_branch
+                    .iter()
+                    .map(|n| self.node(n))
+                    .collect::<Vec<_>>();
+                let else_branch = ast
+                    .else_branch
+                    .iter()
+                    .map(|n| self.node(n))
+                    .collect::<Vec<_>>();
                 quote!(#condition #(#then_branch)* #(#else_branch)*)
             }
             NodeAst::For(ast) => {
@@ -150,7 +196,11 @@ impl Check<'_> {
                     // Without `key:`, the element's `id` is.
                     None => Some(quote_spanned! {item.span()=> let _ = &#item.id; }),
                 };
-                let children = ast.children.iter().map(|n| self.node(n)).collect::<Vec<_>>();
+                let children = ast
+                    .children
+                    .iter()
+                    .map(|n| self.node(n))
+                    .collect::<Vec<_>>();
                 self.scopes.pop();
                 let span = ast.collection.span();
                 quote_spanned! {span=>
@@ -175,12 +225,19 @@ impl Check<'_> {
         let mut current = if head == "state" {
             self.state.clone()
         } else {
-            self.scopes.iter().rev().find(|(name, _)| head == name)?.1.clone()
+            self.scopes
+                .iter()
+                .rev()
+                .find(|(name, _)| head == name)?
+                .1
+                .clone()
         };
         let mut tokens = quote!(#head);
         let mut ty = None;
         for segment in rest {
-            let def = current.as_ref().and_then(|name| self.types?.structs.get(name));
+            let def = current
+                .as_ref()
+                .and_then(|name| self.types?.structs.get(name));
             if def.is_some_and(|d| d.is_selector(&segment.to_string())) {
                 tokens = quote_spanned! {segment.span()=> #tokens.#segment() };
             } else {
@@ -196,25 +253,35 @@ impl Check<'_> {
     }
 
     /// One `let` per path and action the component names.
-    fn component(&self, component: &ComponentAst, spec: &ComponentSpec, out: &mut Vec<TokenStream2>) {
-    let mut entries: Vec<(String, &ValueAst)> = Vec::new();
-    let mut positional = spec.positional.iter();
-    for arg in &component.args {
-        match arg {
-            ArgAst::Named(prop) => entries.push((prop.name.to_string(), &prop.value)),
-            ArgAst::Positional(value) => {
-                if let Some(name) = positional.next() {
-                    entries.push((name.clone(), value));
+    fn component(
+        &self,
+        component: &ComponentAst,
+        spec: &ComponentSpec,
+        out: &mut Vec<TokenStream2>,
+    ) {
+        let mut entries: Vec<(String, &ValueAst)> = Vec::new();
+        let mut positional = spec.positional.iter();
+        for arg in &component.args {
+            match arg {
+                ArgAst::Named(prop) => entries.push((prop.name.to_string(), &prop.value)),
+                ArgAst::Positional(value) => {
+                    if let Some(name) = positional.next() {
+                        entries.push((name.clone(), value));
+                    }
                 }
             }
         }
-    }
-    entries.extend(component.props.iter().map(|p| (p.name.to_string(), &p.value)));
-    for modifier in &component.modifiers {
-        if let [ArgAst::Positional(value)] = modifier.args.as_slice() {
-            entries.push((modifier.name.to_string(), value));
+        entries.extend(
+            component
+                .props
+                .iter()
+                .map(|p| (p.name.to_string(), &p.value)),
+        );
+        for modifier in &component.modifiers {
+            if let [ArgAst::Positional(value)] = modifier.args.as_slice() {
+                entries.push((modifier.name.to_string(), value));
+            }
         }
-    }
 
         for (name, value) in entries {
             if let Some(event) = spec.event_by_modifier(&name) {
@@ -243,52 +310,56 @@ impl Check<'_> {
     /// the page's action type and re-spanned onto the variant, so rustc
     /// underlines `Action::Sav` and nothing else.
     fn action_check(&self, value: &ValueAst, carried: Option<&PropType>) -> Option<TokenStream2> {
-    let action = self.action;
-    let (path, payload) = match value {
-        ValueAst::Path(path) => (path, None),
-        ValueAst::Call(path, payload) => (path, Some(&**payload)),
-        _ => return None,
-    };
-    if path.segments.first()?.ident != "Action" || path.segments.len() != 2 {
-        return None;
+        let action = self.action;
+        let (path, payload) = match value {
+            ValueAst::Path(path) => (path, None),
+            ValueAst::Call(path, payload) => (path, Some(&**payload)),
+            _ => return None,
+        };
+        if path.segments.first()?.ident != "Action" || path.segments.len() != 2 {
+            return None;
+        }
+        let variant = &path.segments[1].ident;
+        let span = variant.span();
+        let ty = respan(action, span);
+        Some(match (payload, carried) {
+            (Some(payload), _) => {
+                let value = self.payload_value(payload)?;
+                quote_spanned! {span=> let _: #ty = #ty::#variant(#value); }
+            }
+            (None, Some(carried)) => {
+                let carried: TokenStream2 = match carried {
+                    PropType::Bool => quote!(bool),
+                    PropType::String => quote!(::std::string::String),
+                    PropType::Int => quote!(i64),
+                    PropType::Enum(_) => return None,
+                };
+                quote_spanned! {span=> let _: fn(#carried) -> #ty = #ty::#variant; }
+            }
+            (None, None) => quote_spanned! {span=> let _: #ty = #ty::#variant; },
+        })
     }
-    let variant = &path.segments[1].ident;
-    let span = variant.span();
-    let ty = respan(action, span);
-    Some(match (payload, carried) {
-        (Some(payload), _) => {
-            let value = self.payload_value(payload)?;
-            quote_spanned! {span=> let _: #ty = #ty::#variant(#value); }
-        }
-        (None, Some(carried)) => {
-            let carried: TokenStream2 = match carried {
-                PropType::Bool => quote!(bool),
-                PropType::String => quote!(::std::string::String),
-                PropType::Int => quote!(i64),
-                PropType::Enum(_) => return None,
-            };
-            quote_spanned! {span=> let _: fn(#carried) -> #ty = #ty::#variant; }
-        }
-        (None, None) => quote_spanned! {span=> let _: #ty = #ty::#variant; },
-    })
-}
 
     /// A payload as Rust would build the action with it: an owned clone of
     /// a field, or a literal.
     fn payload_value(&self, value: &ValueAst) -> Option<TokenStream2> {
-    match value {
-        ValueAst::Dotted(path) => {
-            let (access, _) = self.access(path)?;
-            let span = path.span();
-            // Bound first, so its type is the field's and a mismatch reads
-            // as one, not as an argument to `clone`.
-            Some(quote_spanned! {span=> { let value = ::core::clone::Clone::clone(&#access); value } })
+        match value {
+            ValueAst::Dotted(path) => {
+                let (access, _) = self.access(path)?;
+                let span = path.span();
+                // Bound first, so its type is the field's and a mismatch reads
+                // as one, not as an argument to `clone`.
+                Some(
+                    quote_spanned! {span=> { let value = ::core::clone::Clone::clone(&#access); value } },
+                )
+            }
+            ValueAst::Lit(Lit::Str(s)) => {
+                Some(quote_spanned! {s.span()=> ::core::convert::Into::into(#s) })
+            }
+            ValueAst::Lit(lit) => Some(lit.to_token_stream()),
+            ValueAst::NegInt(lit) => Some(quote!(-#lit)),
+            _ => None,
         }
-        ValueAst::Lit(Lit::Str(s)) => Some(quote_spanned! {s.span()=> ::core::convert::Into::into(#s) }),
-        ValueAst::Lit(lit) => Some(lit.to_token_stream()),
-        ValueAst::NegInt(lit) => Some(quote!(-#lit)),
-        _ => None,
-    }
     }
 }
 
@@ -302,31 +373,39 @@ fn respan(path: &syn::Path, span: Span) -> TokenStream2 {
         .collect()
 }
 
-/// Marks `fn update(state: &mut State, action: Action)` as the app's update
-/// function and emits the UniFFI exports the native page reaches it through.
+/// Marks `fn name() -> Model`, where `Model: PageModel`, as what drives the
+/// pages of the model's state, and emits the UniFFI exports the native side
+/// reaches the model through: the native side makes one by calling it.
 ///
 /// The macro reads the crate's `src/` for the state struct and action enum,
-/// as the CLI does, so both derive the ABI from the same Rust types.
+/// as the CLI does, so both derive the ABI from the same Rust types: from
+/// `Reducer<State, Action>`, or from the `impl PageModel` of the type the
+/// function returns.
 #[proc_macro_attribute]
-pub fn app(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn page_model(attr: TokenStream, item: TokenStream) -> TokenStream {
     let item: TokenStream2 = item.into();
     let result = (|| {
         if !attr.is_empty() {
-            return Err(syn::Error::new(Span::call_site(), "#[app] takes no arguments"));
+            return Err(syn::Error::new(
+                Span::call_site(),
+                "#[page_model] takes no arguments",
+            ));
         }
         let function: syn::ItemFn = syn::parse2(item.clone())?;
-        let app = AppDef::from_fn(&function.sig)?;
+        let model = ModelDef::from_fn(&function.sig)?;
         let at = |message: String| syn::Error::new(function.sig.ident.span(), message);
-        let dir = std::env::var("CARGO_MANIFEST_DIR").map_err(|_| at("CARGO_MANIFEST_DIR is not set".into()))?;
+        let dir = std::env::var("CARGO_MANIFEST_DIR")
+            .map_err(|_| at("CARGO_MANIFEST_DIR is not set".into()))?;
         let src = Path::new(&dir).join("src");
-        let project = Project::scan(&src, Path::new(&dir)).map_err(|e| at(format!("cannot read {}: {e}", src.display())))?;
+        let project = Project::scan(&src, Path::new(&dir))
+            .map_err(|e| at(format!("cannot read {}: {e}", src.display())))?;
         if !project.types.scaffolding {
             return Err(at(
                 "the bridge is UniFFI's, which needs `uniffi::setup_scaffolding!();` at the crate's root, in src/lib.rs"
                     .into(),
             ));
         }
-        let bridge = Bridge::new(&app, &project.types).map_err(at)?;
+        let bridge = Bridge::new(&model, &project.types).map_err(at)?;
         Ok(bridge.rust())
     })();
     match result {
@@ -347,7 +426,10 @@ pub fn selector(attr: TokenStream, item: TokenStream) -> TokenStream {
     let item: TokenStream2 = item.into();
     let check = (|| {
         if !attr.is_empty() {
-            return Err(syn::Error::new(Span::call_site(), "#[selector] takes no arguments"));
+            return Err(syn::Error::new(
+                Span::call_site(),
+                "#[selector] takes no arguments",
+            ));
         }
         let method: syn::ImplItemFn = syn::parse2(item.clone())?;
         read_selector(&method.sig).map(|_| ())

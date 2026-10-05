@@ -1,4 +1,4 @@
-use dazzui_compiler_macro::selector;
+use dazzui_runtime::selector;
 
 /// Everything the settings page shows.
 #[derive(Clone, Debug, PartialEq)]
@@ -7,6 +7,8 @@ pub struct SettingsState {
     pub auto_update: bool,
     /// Whether what is shown is what was last saved.
     pub saved: bool,
+    /// Whether a save is under way.
+    pub saving: bool,
     pub saves: u32,
     pub status: String,
     pub show_disabled_plugins: bool,
@@ -25,7 +27,17 @@ impl SettingsState {
     /// when asked for.
     #[selector]
     pub fn visible_plugins(&self) -> Vec<Plugin> {
-        self.plugins.iter().filter(|p| p.enabled || self.show_disabled_plugins).cloned().collect()
+        self.plugins
+            .iter()
+            .filter(|p| p.enabled || self.show_disabled_plugins)
+            .cloned()
+            .collect()
+    }
+
+    /// Nothing to save, or a save already under way.
+    #[selector]
+    pub fn save_disabled(&self) -> bool {
+        self.saved || self.saving
     }
 
     #[selector]
@@ -36,15 +48,24 @@ impl SettingsState {
 
 impl Default for SettingsState {
     fn default() -> Self {
-        let plugin = |id, name: &str, enabled| Plugin { id, name: name.into(), enabled };
+        let plugin = |id, name: &str, enabled| Plugin {
+            id,
+            name: name.into(),
+            enabled,
+        };
         Self {
             launch_at_startup: false,
             auto_update: false,
             saved: true,
+            saving: false,
             saves: 0,
             status: "No changes".into(),
             show_disabled_plugins: false,
-            plugins: vec![plugin(1, "Spell check", true), plugin(2, "Grammar", false), plugin(3, "Translate", true)],
+            plugins: vec![
+                plugin(1, "Spell check", true),
+                plugin(2, "Grammar", false),
+                plugin(3, "Translate", true),
+            ],
         }
     }
 }

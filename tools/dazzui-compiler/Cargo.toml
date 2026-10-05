@@ -3,7 +3,8 @@
 # DESIGN.md.
 #
 # One crate holds the compiler and the CLI. The `ui!` macro is a second
-# only because a proc-macro crate can export nothing else.
+# only because a proc-macro crate can export nothing else; `runtime` is what
+# an app links, the page-model seam and the macros re-exported.
 [package]
 name = "dazzui-compiler"
 description = "Compiles Rust ui! pages to SwiftUI and WinUI source."
@@ -33,10 +34,10 @@ bindgen = ["dep:uniffi_bindgen", "dep:camino"]
 
 [workspace]
 resolver = "3"
-members = [".", "macro", "examples/settings_example"]
+members = [".", "macro", "runtime", "examples/settings_example", "examples/counter_example"]
 # So that `cargo test` and `cargo build` at the root cover all of them,
 # not only the root package.
-default-members = [".", "macro", "examples/settings_example"]
+default-members = [".", "macro", "runtime", "examples/settings_example", "examples/counter_example"]
 
 [workspace.package]
 version = "0.1.0"
@@ -47,6 +48,7 @@ publish = false
 [workspace.dependencies]
 dazzui-compiler = { path = ".", default-features = false }
 dazzui-compiler-macro = { path = "macro" }
+dazzui-runtime = { path = "runtime" }
 proc-macro2 = { version = "1", features = ["span-locations"] }
 quote = "1"
 syn = { version = "2", features = ["full", "extra-traits"] }

@@ -1,16 +1,23 @@
 error: `S.opened` has type `Instant`, which cannot cross to the native side yet
-  --> page.rs:18:10
+  --> page.rs:11:8
    |
-18 |     page P(state: S, action: A) {
-   |          ^
+11 | pub fn model() -> Reducer<S, A> {
+   |        ^^^^^
    |
 
-error: no `#[app]` update function for `T`
-  --> page.rs:24:10
+error: `other` returns `M`, and there is no `impl PageModel for M` naming its `State` and `Action`
+  --> page.rs:18:8
    |
-24 |     page Q(state: T, action: A) {
-   |          ^
+18 | pub fn other() -> M {
+   |        ^^^^^
    |
-help: mark `fn update(state: &mut T, action: A)` with `#[dazzui_compiler_macro::app]`
 
-error: could not compile due to 2 previous errors
+error: `first` and `second` both make a model of `U`; a state has one page model
+  --> page.rs:32:8
+   |
+32 | pub fn second() -> Reducer<U, A> {
+   |        ^^^^^^
+   |
+help: the first is in page.rs
+
+error: could not compile due to 3 previous errors

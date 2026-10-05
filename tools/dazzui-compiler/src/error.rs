@@ -14,7 +14,12 @@ pub struct SemanticError {
 
 impl SemanticError {
     pub fn new(span: Span, message: impl Into<String>) -> Self {
-        Self { span, message: message.into(), label: None, help: None }
+        Self {
+            span,
+            message: message.into(),
+            label: None,
+            help: None,
+        }
     }
 
     pub fn label(mut self, label: impl Into<String>) -> Self {
@@ -61,8 +66,15 @@ impl From<syn::Error> for SemanticError {
 pub fn locate(file: &str, span: Span) -> (SourceLocation, u32) {
     let start = span.start();
     let end = span.end();
-    let width = if end.line == start.line { end.column.saturating_sub(start.column) } else { 1 };
-    (SourceLocation::new(file, start.line as u32, start.column as u32 + 1), width as u32)
+    let width = if end.line == start.line {
+        end.column.saturating_sub(start.column)
+    } else {
+        1
+    };
+    (
+        SourceLocation::new(file, start.line as u32, start.column as u32 + 1),
+        width as u32,
+    )
 }
 
 /// The candidate closest to `name`, if any is close enough to be a typo.

@@ -1,10 +1,13 @@
 use std::collections::HashMap;
 
 use crate::ir::{
-    ActionPayload, ActionRef, ChildrenSpec, Component, ComponentId, ComponentSpec, Condition, EventSpec, Expr,
-    LocalPath, Page, PropSpec, PropType, SourceLocation, StatePath, UiBinding, UiEvent, UiNode, UiProp, UiSlot, Value,
+    ActionPayload, ActionRef, ChildrenSpec, Component, ComponentId, ComponentSpec, Condition,
+    EventSpec, Expr, LocalPath, Page, PropSpec, PropType, SourceLocation, StatePath, UiBinding,
+    UiEvent, UiNode, UiProp, UiSlot, Value,
 };
-use crate::syntax::{ArgAst, ComponentAst, DottedAst, ForAst, IfAst, NodeAst, PageAst, ValueAst, spanned_path};
+use crate::syntax::{
+    ArgAst, ComponentAst, DottedAst, ForAst, IfAst, NodeAst, PageAst, ValueAst, spanned_path,
+};
 use proc_macro2::Span;
 use syn::Lit;
 
@@ -25,7 +28,15 @@ pub fn lower(
 ) -> Result<Page, Vec<SemanticError>> {
     let action_type = last_ident(&page.action_ty);
     let state_type = last_ident(&page.state_ty);
-    let mut cx = Cx { registry, scopes: Vec::new(), file, errors: Vec::new(), types, action_enum: None, state_struct: None };
+    let mut cx = Cx {
+        registry,
+        scopes: Vec::new(),
+        file,
+        errors: Vec::new(),
+        types,
+        action_enum: None,
+        state_struct: None,
+    };
 
     if let Some(types) = types {
         match types.enums.get(&action_type) {
@@ -64,7 +75,10 @@ pub fn lower(
 }
 
 fn last_ident(path: &syn::Path) -> String {
-    path.segments.last().map(|s| s.ident.to_string()).unwrap_or_default()
+    path.segments
+        .last()
+        .map(|s| s.ident.to_string())
+        .unwrap_or_default()
 }
 
 /// A `for` item in scope, and the struct its elements are.
@@ -132,7 +146,11 @@ impl Cx<'_> {
         // not is already reported, so not reported again as missing.
         let mut given_slots: Vec<String> = Vec::new();
         for entry in entries {
-            let kind = if entry.modifier { "modifier" } else { "property" };
+            let kind = if entry.modifier {
+                "modifier"
+            } else {
+                "property"
+            };
             if let Some(event) = spec.event_by_modifier(&entry.name) {
                 if events.iter().any(|e| e.name == event.name) {
                     self.errors.push(
@@ -140,39 +158,68 @@ impl Cx<'_> {
                             .label("given again here"),
                     );
                 } else if let Some(action) = self.event_action(&entry, event) {
-                    events.push(UiEvent { name: event.name.clone(), action, source: self.loc(entry.span) });
+                    events.push(UiEvent {
+                        name: event.name.clone(),
+                        action,
+                        source: self.loc(entry.span),
+                    });
                 }
                 continue;
             }
             if let (false, Some(slot)) = (entry.modifier, spec.slot(&entry.name)) {
                 if given_slots.contains(&slot.name) {
                     self.errors.push(
-                        SemanticError::new(entry.span, format!("slot `{}` is given twice", slot.name))
-                            .label("given again here"),
+                        SemanticError::new(
+                            entry.span,
+                            format!("slot `{}` is given twice", slot.name),
+                        )
+                        .label("given again here"),
                     );
                 } else if let Some(ValueAst::Component(node)) = entry.value {
                     given_slots.push(slot.name.clone());
                     if let Some(node) = self.component(node) {
-                        slots.push(UiSlot { name: slot.name.clone(), node: UiNode::Component(node), source: self.loc(entry.span) });
+                        slots.push(UiSlot {
+                            name: slot.name.clone(),
+                            node: UiNode::Component(node),
+                            source: self.loc(entry.span),
+                        });
                     }
                 } else {
                     self.errors.push(
-                        SemanticError::new(entry.span, format!("slot `{}` on `{name}` takes a component", slot.name))
-                            .help(format!("`{}: Component {{ … }}`", slot.name)),
+                        SemanticError::new(
+                            entry.span,
+                            format!("slot `{}` on `{name}` takes a component", slot.name),
+                        )
+                        .help(format!("`{}: Component {{ … }}`", slot.name)),
                     );
                 }
                 continue;
             }
-            let prop_spec = if entry.modifier { spec.modifier_prop(&entry.name) } else { spec.prop(&entry.name) };
+            let prop_spec = if entry.modifier {
+                spec.modifier_prop(&entry.name)
+            } else {
+                spec.prop(&entry.name)
+            };
             let Some(prop_spec) = prop_spec else {
                 let candidates: Vec<&str> = if entry.modifier {
-                    spec.props.iter().filter(|p| p.modifier).map(|p| p.name.as_str()).collect()
+                    spec.props
+                        .iter()
+                        .filter(|p| p.modifier)
+                        .map(|p| p.name.as_str())
+                        .collect()
                 } else {
                     spec.props.iter().map(|p| p.name.as_str()).collect()
                 };
                 let events = spec.events.iter().map(|e| e.modifier.as_str());
-                let slot_names = spec.slots.iter().filter(|_| !entry.modifier).map(|s| s.name.as_str());
-                let closest = closest(&entry.name, candidates.iter().copied().chain(events).chain(slot_names));
+                let slot_names = spec
+                    .slots
+                    .iter()
+                    .filter(|_| !entry.modifier)
+                    .map(|s| s.name.as_str());
+                let closest = closest(
+                    &entry.name,
+                    candidates.iter().copied().chain(events).chain(slot_names),
+                );
                 meant.extend(closest.map(str::to_owned));
                 self.errors.push(
                     SemanticError::new(
@@ -185,8 +232,11 @@ impl Cx<'_> {
             };
             if seen.insert(prop_spec.name.clone(), entry.span).is_some() {
                 self.errors.push(
-                    SemanticError::new(entry.span, format!("property `{}` is given twice", prop_spec.name))
-                        .label("given again here"),
+                    SemanticError::new(
+                        entry.span,
+                        format!("property `{}` is given twice", prop_spec.name),
+                    )
+                    .label("given again here"),
                 );
                 continue;
             }
@@ -200,16 +250,28 @@ impl Cx<'_> {
             if let ValueAst::Bind(path) = value {
                 if !prop_spec.bindable {
                     self.errors.push(
-                        SemanticError::new(path.span(), format!("property `{}` on `{name}` cannot be bound", prop_spec.name))
-                            .help(format!("pass the value itself: `{}: state.…`", prop_spec.name)),
+                        SemanticError::new(
+                            path.span(),
+                            format!("property `{}` on `{name}` cannot be bound", prop_spec.name),
+                        )
+                        .help(format!(
+                            "pass the value itself: `{}: state.…`",
+                            prop_spec.name
+                        )),
                     );
-                } else if let Some(path) = self.state_path(path, &prop_spec.ty, &prop_spec.name, &name) {
+                } else if let Some(path) =
+                    self.state_path(path, &prop_spec.ty, &prop_spec.name, &name)
+                {
                     bound.push((prop_spec, path, entry.span));
                 }
                 continue;
             }
             if let Some(expr) = self.expr(value, &prop_spec.ty, &prop_spec.name, &name) {
-                props.push(UiProp { name: prop_spec.name.clone(), value: expr, source: self.loc(entry.span) });
+                props.push(UiProp {
+                    name: prop_spec.name.clone(),
+                    value: expr,
+                    source: self.loc(entry.span),
+                });
             }
         }
 
@@ -218,45 +280,76 @@ impl Cx<'_> {
         // its own.
         let mut bindings = Vec::new();
         for (prop_spec, path, span) in bound {
-            let event = spec.events.iter().find(|e| e.binds.as_deref() == Some(&prop_spec.name));
+            let event = spec
+                .events
+                .iter()
+                .find(|e| e.binds.as_deref() == Some(&prop_spec.name));
             let position = event.and_then(|event| events.iter().position(|e| e.name == event.name));
             match (event, position) {
                 (_, Some(i)) => {
                     let on_change = events.remove(i).action;
-                    bindings.push(UiBinding { name: prop_spec.name.clone(), path, on_change, source: self.loc(span) });
+                    bindings.push(UiBinding {
+                        name: prop_spec.name.clone(),
+                        path,
+                        on_change,
+                        source: self.loc(span),
+                    });
                 }
                 (Some(event), None) => self.errors.push(
-                    SemanticError::new(span, format!("`bind` on `{}` needs an action to write the change back", prop_spec.name))
-                        .label("nothing sends the new value to Rust")
-                        .help(format!("add `{}: Action::…`", event.modifier)),
+                    SemanticError::new(
+                        span,
+                        format!(
+                            "`bind` on `{}` needs an action to write the change back",
+                            prop_spec.name
+                        ),
+                    )
+                    .label("nothing sends the new value to Rust")
+                    .help(format!("add `{}: Action::…`", event.modifier)),
                 ),
-                (None, None) => unreachable!("bindable prop `{}` has no event to write back", prop_spec.name),
+                (None, None) => unreachable!(
+                    "bindable prop `{}` has no event to write back",
+                    prop_spec.name
+                ),
             }
         }
 
         // A default is resolved here rather than by each backend, so the IR
         // says what is drawn and no platform's own default leaks in.
         for prop_spec in &spec.props {
-            if let (false, Some(default)) = (seen.contains_key(&prop_spec.name), &prop_spec.default) {
+            if let (false, Some(default)) = (seen.contains_key(&prop_spec.name), &prop_spec.default)
+            {
                 let value = match (&prop_spec.ty, default) {
-                    (PropType::Enum(e), Value::String(case)) => Expr::EnumCase { ty: e.name.clone(), case: case.clone() },
+                    (PropType::Enum(e), Value::String(case)) => Expr::EnumCase {
+                        ty: e.name.clone(),
+                        case: case.clone(),
+                    },
                     _ => Expr::Literal(default.clone()),
                 };
-                props.push(UiProp { name: prop_spec.name.clone(), value, source: self.loc(ast.name.span()) });
+                props.push(UiProp {
+                    name: prop_spec.name.clone(),
+                    value,
+                    source: self.loc(ast.name.span()),
+                });
             }
         }
 
         for prop_spec in spec.props.iter().filter(|p| p.required) {
             if !seen.contains_key(&prop_spec.name) && !meant.contains(&prop_spec.name) {
                 let how = if spec.positional.first() == Some(&prop_spec.name) {
-                    format!("pass it first: `{name}(…)`, or name it: `{}: …`", prop_spec.name)
+                    format!(
+                        "pass it first: `{name}(…)`, or name it: `{}: …`",
+                        prop_spec.name
+                    )
                 } else {
                     format!("add `{}: …`", prop_spec.name)
                 };
                 self.errors.push(
                     SemanticError::new(
                         ast.name.span(),
-                        format!("missing required property `{}` on component `{name}`", prop_spec.name),
+                        format!(
+                            "missing required property `{}` on component `{name}`",
+                            prop_spec.name
+                        ),
                     )
                     .help(how),
                 );
@@ -266,8 +359,14 @@ impl Cx<'_> {
         for slot in spec.slots.iter().filter(|s| s.required) {
             if !given_slots.contains(&slot.name) && !meant.contains(&slot.name) {
                 self.errors.push(
-                    SemanticError::new(ast.name.span(), format!("missing required slot `{}` on component `{name}`", slot.name))
-                        .help(format!("add `{}: Component {{ … }}`", slot.name)),
+                    SemanticError::new(
+                        ast.name.span(),
+                        format!(
+                            "missing required slot `{}` on component `{name}`",
+                            slot.name
+                        ),
+                    )
+                    .help(format!("add `{}: Component {{ … }}`", slot.name)),
                 );
             }
         }
@@ -275,8 +374,11 @@ impl Cx<'_> {
         let mut children = Vec::new();
         match &spec.children {
             ChildrenSpec::None if !ast.children.is_empty() => self.errors.push(
-                SemanticError::new(ast.children[0].span(), format!("`{name}` takes no children"))
-                    .label("child given here"),
+                SemanticError::new(
+                    ast.children[0].span(),
+                    format!("`{name}` takes no children"),
+                )
+                .label("child given here"),
             ),
             ChildrenSpec::None => {}
             ChildrenSpec::Many { allow } => {
@@ -290,13 +392,25 @@ impl Cx<'_> {
         if self.errors.len() > errors_before {
             return None;
         }
-        Some(Component { id: ComponentId(name), props, bindings, events, slots, children, source: self.loc(ast.name.span()) })
+        Some(Component {
+            id: ComponentId(name),
+            props,
+            bindings,
+            events,
+            slots,
+            children,
+            source: self.loc(ast.name.span()),
+        })
     }
 
     /// Only `allow`ed components as children, directly or in an `if`; a
     /// `for` cannot promise what it repeats is one.
     fn check_allowed(&mut self, children: &[NodeAst], allow: &[String], parent: &str) {
-        let list = allow.iter().map(|a| format!("`{a}`")).collect::<Vec<_>>().join(", ");
+        let list = allow
+            .iter()
+            .map(|a| format!("`{a}`"))
+            .collect::<Vec<_>>()
+            .join(", ");
         for child in children {
             match child {
                 NodeAst::Component(c) if allow.iter().any(|a| c.name == a) => {}
@@ -307,8 +421,11 @@ impl Cx<'_> {
                     self.check_allowed(&i.else_branch, allow, parent);
                 }
                 other => self.errors.push(
-                    SemanticError::new(other.span(), format!("`{parent}` takes only {list} as children"))
-                        .label("not allowed here"),
+                    SemanticError::new(
+                        other.span(),
+                        format!("`{parent}` takes only {list} as children"),
+                    )
+                    .label("not allowed here"),
                 ),
             }
         }
@@ -369,11 +486,21 @@ impl Cx<'_> {
             },
             modifier: true,
         });
-        positional.into_iter().chain(named).chain(modifiers).collect()
+        positional
+            .into_iter()
+            .chain(named)
+            .chain(modifiers)
+            .collect()
     }
 
     /// A read-only value for a prop of type `ty`.
-    fn expr(&mut self, value: &ValueAst, ty: &PropType, prop: &str, component: &str) -> Option<Expr> {
+    fn expr(
+        &mut self,
+        value: &ValueAst,
+        ty: &PropType,
+        prop: &str,
+        component: &str,
+    ) -> Option<Expr> {
         let found = match value {
             ValueAst::Lit(Lit::Str(s)) if *ty == PropType::String => {
                 return Some(Expr::Literal(Value::String(s.value())));
@@ -395,7 +522,10 @@ impl Cx<'_> {
                 // component's may read the state. VStack's and HStack's
                 // spacing is written into the layout by each backend, and an
                 // enum's case into platform code, so those stay literals.
-                let mapped = self.registry.get(component).is_some_and(|s| s.swiftui.is_some() && s.winui.is_some());
+                let mapped = self
+                    .registry
+                    .get(component)
+                    .is_some_and(|s| s.swiftui.is_some() && s.winui.is_some());
                 if matches!(ty, PropType::Enum(_)) || (*ty == PropType::Int && !mapped) {
                     self.errors.push(SemanticError::new(
                         path.span(),
@@ -416,7 +546,10 @@ impl Cx<'_> {
         };
         let mut error = SemanticError::new(
             value.span(),
-            format!("property `{prop}` on `{component}` expects {}, found {found}", ty.name()),
+            format!(
+                "property `{prop}` on `{component}` expects {}, found {found}",
+                ty.name()
+            ),
         )
         .label(format!("expected {}", ty.name()));
         if found == "an action" {
@@ -429,10 +562,14 @@ impl Cx<'_> {
     fn int(&mut self, value: &ValueAst) -> Option<i64> {
         let parsed = match value {
             ValueAst::Lit(Lit::Int(i)) => i.base10_parse::<i64>().map_err(|e| e.to_string()),
-            ValueAst::NegInt(Lit::Int(i)) => format!("-{}", i.base10_digits()).parse::<i64>().map_err(|e| e.to_string()),
+            ValueAst::NegInt(Lit::Int(i)) => format!("-{}", i.base10_digits())
+                .parse::<i64>()
+                .map_err(|e| e.to_string()),
             _ => unreachable!("not an integer literal"),
         };
-        parsed.map_err(|e| self.errors.push(SemanticError::new(value.span(), e))).ok()
+        parsed
+            .map_err(|e| self.errors.push(SemanticError::new(value.span(), e)))
+            .ok()
     }
 
     /// `ButtonStyle::Primary` for a prop of that enum.
@@ -447,28 +584,40 @@ impl Cx<'_> {
         };
         if *ty != &spec.name {
             self.errors.push(
-                SemanticError::new(ty.span(), format!("expected a `{}` case, found `{ty}::{case}`", spec.name))
-                    .label(format!("expected {}", spec.name)),
+                SemanticError::new(
+                    ty.span(),
+                    format!("expected a `{}` case, found `{ty}::{case}`", spec.name),
+                )
+                .label(format!("expected {}", spec.name)),
             );
             return None;
         }
         let case_name = case.to_string();
         if !spec.cases.contains(&case_name) {
             self.errors.push(
-                SemanticError::new(case.span(), format!("no case `{case_name}` on `{}`", spec.name))
-                    .help_opt(suggest(&case_name, spec.cases.iter().map(String::as_str)))
-                    .label(format!("cases are {}", spec.cases.join(", "))),
+                SemanticError::new(
+                    case.span(),
+                    format!("no case `{case_name}` on `{}`", spec.name),
+                )
+                .help_opt(suggest(&case_name, spec.cases.iter().map(String::as_str)))
+                .label(format!("cases are {}", spec.cases.join(", "))),
             );
             return None;
         }
-        Some(Expr::EnumCase { ty: spec.name.clone(), case: case_name })
+        Some(Expr::EnumCase {
+            ty: spec.name.clone(),
+            case: case_name,
+        })
     }
 
     /// `state.a.b` or `item.a.b`, resolved against the state struct or the
     /// loop's element when they are at hand: the value, and the Rust type
     /// it reads.
     fn resolve(&mut self, path: &DottedAst) -> Option<(Expr, Option<RustType>)> {
-        let (head, rest) = path.segments.split_first().expect("a dotted path has a segment");
+        let (head, rest) = path
+            .segments
+            .split_first()
+            .expect("a dotted path has a segment");
         let head_name = head.to_string();
         let (start, local) = if head == "state" {
             if let Some(scope) = self.scopes.last() {
@@ -483,12 +632,20 @@ impl Cx<'_> {
         } else if let Some(scope) = self.scopes.iter().rev().find(|s| s.name == head_name) {
             (scope.element, Some(head_name.clone()))
         } else {
-            let names: Vec<&str> = self.scopes.iter().map(|s| s.name.as_str()).chain(["state"]).collect();
+            let names: Vec<&str> = self
+                .scopes
+                .iter()
+                .map(|s| s.name.as_str())
+                .chain(["state"])
+                .collect();
             self.errors.push(
                 SemanticError::new(head.span(), format!("cannot find value `{head}`"))
                     .label("not the state or a loop item")
                     .help_opt(suggest(&head_name, names.iter().copied()).or_else(|| {
-                        Some("a value path starts with `state` or a `for` item: `state.field`".into())
+                        Some(
+                            "a value path starts with `state` or a `for` item: `state.field`"
+                                .into(),
+                        )
                     })),
             );
             return None;
@@ -515,8 +672,11 @@ impl Cx<'_> {
             let name = ident.to_string();
             let Some(found) = current.field(&name) else {
                 self.errors.push(
-                    SemanticError::new(ident.span(), format!("no field `{name}` on type `{}`", current.name))
-                        .help_opt(suggest(&name, current.names())),
+                    SemanticError::new(
+                        ident.span(),
+                        format!("no field `{name}` on type `{}`", current.name),
+                    )
+                    .help_opt(suggest(&name, current.names())),
                 );
                 return None;
             };
@@ -540,7 +700,13 @@ impl Cx<'_> {
     }
 
     /// A path read as a prop of type `ty`: a state field or a loop item's.
-    fn path_value(&mut self, path: &DottedAst, ty: &PropType, prop: &str, component: &str) -> Option<Expr> {
+    fn path_value(
+        &mut self,
+        path: &DottedAst,
+        ty: &PropType,
+        prop: &str,
+        component: &str,
+    ) -> Option<Expr> {
         let (expr, field_ty) = self.resolve(path)?;
         if let Some(field_ty) = field_ty
             && !fits(ty, &field_ty)
@@ -564,7 +730,13 @@ impl Cx<'_> {
     }
 
     /// `bind(state.x)`: only the state can be written back to.
-    fn state_path(&mut self, path: &DottedAst, ty: &PropType, prop: &str, component: &str) -> Option<StatePath> {
+    fn state_path(
+        &mut self,
+        path: &DottedAst,
+        ty: &PropType,
+        prop: &str,
+        component: &str,
+    ) -> Option<StatePath> {
         if path.segments[0] != "state" && self.scopes.iter().any(|s| path.segments[0] == s.name) {
             self.errors.push(
                 SemanticError::new(path.span(), "only a state field can be bound")
@@ -587,7 +759,10 @@ impl Cx<'_> {
         let then_branch = self.nodes(&ast.then_branch);
         let else_branch = self.nodes(&ast.else_branch);
         Some(UiNode::If {
-            condition: Condition { negated: ast.negated, value: value? },
+            condition: Condition {
+                negated: ast.negated,
+                value: value?,
+            },
             then_branch,
             else_branch,
             source: self.loc(ast.keyword),
@@ -604,21 +779,31 @@ impl Cx<'_> {
             return None;
         }
         if item == "state" {
-            self.errors.push(SemanticError::new(ast.item.span(), "a loop item cannot be called `state`"));
+            self.errors.push(SemanticError::new(
+                ast.item.span(),
+                "a loop item cannot be called `state`",
+            ));
             return None;
         }
         let (collection, collection_ty) = self.resolve(&ast.collection)?;
-        let Expr::State(collection) = collection else { unreachable!("outside a loop, a path is the state's") };
+        let Expr::State(collection) = collection else {
+            unreachable!("outside a loop, a path is the state's")
+        };
 
         let element = match (&collection_ty, self.types) {
             (None, _) => None,
             (Some(RustType::Vec(elem)), Some(types)) => match &**elem {
-                RustType::Other(name) if types.structs.contains_key(name) => Some(&types.structs[name]),
+                RustType::Other(name) if types.structs.contains_key(name) => {
+                    Some(&types.structs[name])
+                }
                 other => {
                     self.errors.push(
                         SemanticError::new(
                             ast.collection.span(),
-                            format!("a `for` runs over a Vec of structs; this is a `Vec<{}>`", other.rust()),
+                            format!(
+                                "a `for` runs over a Vec of structs; this is a `Vec<{}>`",
+                                other.rust()
+                            ),
                         )
                         .help("wrap each value in a struct with an `id`"),
                     );
@@ -629,7 +814,11 @@ impl Cx<'_> {
                 self.errors.push(
                     SemanticError::new(
                         ast.collection.span(),
-                        format!("`state.{}` is a `{}`, not a Vec", collection.dotted(), other.rust()),
+                        format!(
+                            "`state.{}` is a `{}`, not a Vec",
+                            collection.dotted(),
+                            other.rust()
+                        ),
                     )
                     .label("expected a Vec"),
                 );
@@ -637,7 +826,10 @@ impl Cx<'_> {
             }
         };
 
-        self.scopes.push(Scope { name: item.clone(), element });
+        self.scopes.push(Scope {
+            name: item.clone(),
+            element,
+        });
         let key = self.key(ast, element);
         let children = self.nodes(&ast.children);
         self.scopes.pop();
@@ -659,17 +851,26 @@ impl Cx<'_> {
                 && element.field("id").is_none()
             {
                 self.errors.push(
-                    SemanticError::new(ast.item.span(), format!("`{}` has no `id` to tell its elements apart", element.name))
-                        .help(format!("name the field that does: `for {item} in …, key: {item}.field`")),
+                    SemanticError::new(
+                        ast.item.span(),
+                        format!("`{}` has no `id` to tell its elements apart", element.name),
+                    )
+                    .help(format!(
+                        "name the field that does: `for {item} in …, key: {item}.field`"
+                    )),
                 );
                 return None;
             }
-            return Some(LocalPath { local: item, segments: vec!["id".into()] });
+            return Some(LocalPath {
+                local: item,
+                segments: vec!["id".into()],
+            });
         };
         if key.segments[0] != item {
-            self.errors.push(
-                SemanticError::new(key.span(), format!("a key is a field of the loop item: `{item}.field`")),
-            );
+            self.errors.push(SemanticError::new(
+                key.span(),
+                format!("a key is a field of the loop item: `{item}.field`"),
+            ));
             return None;
         }
         match self.resolve(key)? {
@@ -684,12 +885,17 @@ impl Cx<'_> {
         let shape = || {
             SemanticError::new(
                 entry.span,
-                format!("`{}` takes one action: `{}(Action::Variant)`", entry.name, entry.name),
+                format!(
+                    "`{}` takes one action: `{}(Action::Variant)`",
+                    entry.name, entry.name
+                ),
             )
         };
         match entry.value {
             Some(ValueAst::Path(path)) if is_action(path) => self.action(path, None, event),
-            Some(ValueAst::Call(path, payload)) if is_action(path) => self.action(path, Some(payload), event),
+            Some(ValueAst::Call(path, payload)) if is_action(path) => {
+                self.action(path, Some(payload), event)
+            }
             _ => {
                 self.errors.push(shape());
                 None
@@ -697,10 +903,18 @@ impl Cx<'_> {
         }
     }
 
-    fn action(&mut self, path: &syn::Path, payload: Option<&ValueAst>, event: &EventSpec) -> Option<ActionRef> {
+    fn action(
+        &mut self,
+        path: &syn::Path,
+        payload: Option<&ValueAst>,
+        event: &EventSpec,
+    ) -> Option<ActionRef> {
         let segments: Vec<_> = path.segments.iter().collect();
         if segments.len() != 2 {
-            self.errors.push(SemanticError::new(spanned_path(path), "an action is written `Action::Variant`"));
+            self.errors.push(SemanticError::new(
+                spanned_path(path),
+                "an action is written `Action::Variant`",
+            ));
             return None;
         }
         let variant_ident = &segments[1].ident;
@@ -717,8 +931,11 @@ impl Cx<'_> {
         let Some(v) = def.variant(&variant) else {
             let candidates = def.variants.iter().map(|v| v.name.as_str());
             self.errors.push(
-                SemanticError::new(variant_ident.span(), format!("no variant `{variant}` on action enum `{}`", def.name))
-                    .help_opt(suggest(&variant, candidates)),
+                SemanticError::new(
+                    variant_ident.span(),
+                    format!("no variant `{variant}` on action enum `{}`", def.name),
+                )
+                .help_opt(suggest(&variant, candidates)),
             );
             return None;
         };
@@ -729,7 +946,10 @@ impl Cx<'_> {
                 self.errors.push(
                     SemanticError::new(
                         variant_ident.span(),
-                        format!("`{}::{variant}` carries several values; an action carries one or none", def.name),
+                        format!(
+                            "`{}::{variant}` carries several values; an action carries one or none",
+                            def.name
+                        ),
                     )
                     .help("give the variant one tuple field, or none"),
                 );
@@ -744,17 +964,27 @@ impl Cx<'_> {
                 self.errors.push(
                     SemanticError::new(
                         variant_ident.span(),
-                        format!("`{}::{variant}` carries no value, but `{}` gives it {}", def.name, event.name, carried.name()),
+                        format!(
+                            "`{}::{variant}` carries no value, but `{}` gives it {}",
+                            def.name,
+                            event.name,
+                            carried.name()
+                        ),
                     )
                     .label("expects no payload"),
                 );
                 return None;
             }
-            (Some(value), Some(field), _) => ActionPayload::Expr(self.payload_expr(value, Some(field))?),
+            (Some(value), Some(field), _) => {
+                ActionPayload::Expr(self.payload_expr(value, Some(field))?)
+            }
             (Some(value), None, _) => {
                 self.errors.push(
-                    SemanticError::new(value.span(), format!("`{}::{variant}` carries no value", def.name))
-                        .help(format!("write `Action::{variant}`")),
+                    SemanticError::new(
+                        value.span(),
+                        format!("`{}::{variant}` carries no value", def.name),
+                    )
+                    .help(format!("write `Action::{variant}`")),
                 );
                 return None;
             }
@@ -787,10 +1017,16 @@ impl Cx<'_> {
                 self.errors.push(
                     SemanticError::new(
                         variant_ident.span(),
-                        format!("`{}::{variant}` carries a value, but `{}` has none to give it", def.name, event.name),
+                        format!(
+                            "`{}::{variant}` carries a value, but `{}` has none to give it",
+                            def.name, event.name
+                        ),
                     )
                     .label("expects a payload")
-                    .help(format!("pass one: `Action::{variant}(…)`, a `{}`", field.rust())),
+                    .help(format!(
+                        "pass one: `Action::{variant}(…)`, a `{}`",
+                        field.rust()
+                    )),
                 );
                 return None;
             }
@@ -808,7 +1044,10 @@ impl Cx<'_> {
             Some(other) => {
                 self.errors.push(SemanticError::new(
                     value.span(),
-                    format!("an action payload of type `{}` cannot cross to the native side yet", other.rust()),
+                    format!(
+                        "an action payload of type `{}` cannot cross to the native side yet",
+                        other.rust()
+                    ),
                 ));
                 return None;
             }
@@ -822,22 +1061,35 @@ impl Cx<'_> {
                 if let (Some(field), Some(found)) = (field, found)
                     && *field != found
                 {
-                    let written: Vec<String> = path.segments.iter().map(ToString::to_string).collect();
+                    let written: Vec<String> =
+                        path.segments.iter().map(ToString::to_string).collect();
                     self.errors.push(SemanticError::new(
                         value.span(),
-                        format!("the action carries a `{}`, but `{}` is a `{}`", field.rust(), written.join("."), found.rust()),
+                        format!(
+                            "the action carries a `{}`, but `{}` is a `{}`",
+                            field.rust(),
+                            written.join("."),
+                            found.rust()
+                        ),
                     ));
                     return None;
                 }
                 Some(expr)
             }
-            (ValueAst::Lit(Lit::Str(s)), None | Some(PropType::String)) => Some(Expr::Literal(Value::String(s.value()))),
-            (ValueAst::Lit(Lit::Bool(b)), None | Some(PropType::Bool)) => Some(Expr::Literal(Value::Bool(b.value))),
-            (ValueAst::Lit(Lit::Int(_)) | ValueAst::NegInt(Lit::Int(_)), None | Some(PropType::Int)) => {
-                self.int(value).map(|n| Expr::Literal(Value::Int(n)))
+            (ValueAst::Lit(Lit::Str(s)), None | Some(PropType::String)) => {
+                Some(Expr::Literal(Value::String(s.value())))
             }
+            (ValueAst::Lit(Lit::Bool(b)), None | Some(PropType::Bool)) => {
+                Some(Expr::Literal(Value::Bool(b.value)))
+            }
+            (
+                ValueAst::Lit(Lit::Int(_)) | ValueAst::NegInt(Lit::Int(_)),
+                None | Some(PropType::Int),
+            ) => self.int(value).map(|n| Expr::Literal(Value::Int(n))),
             (_, ty) => {
-                let expected = ty.map(|t| t.name()).unwrap_or_else(|| "a literal or a path".into());
+                let expected = ty
+                    .map(|t| t.name())
+                    .unwrap_or_else(|| "a literal or a path".into());
                 self.errors.push(SemanticError::new(
                     value.span(),
                     format!("an action payload is a literal or a path; expected {expected}"),
@@ -851,7 +1103,9 @@ impl Cx<'_> {
 fn fits(ty: &PropType, field: &RustType) -> bool {
     matches!(
         (ty, field),
-        (PropType::Bool, RustType::Bool) | (PropType::String, RustType::String) | (PropType::Int, RustType::Int(_))
+        (PropType::Bool, RustType::Bool)
+            | (PropType::String, RustType::String)
+            | (PropType::Int, RustType::Int(_))
     )
 }
 
@@ -887,13 +1141,29 @@ mod tests {
 
     #[test]
     fn lowers_a_page_and_fills_defaults() {
-        let page = lower_str(r#"page P(state: S, action: A) { VStack { Button("Save").on_click(Action::Save) } }"#).unwrap();
-        let UiNode::Component(stack) = &page.root else { panic!() };
+        let page = lower_str(
+            r#"page P(state: S, action: A) { VStack { Button("Save").on_click(Action::Save) } }"#,
+        )
+        .unwrap();
+        let UiNode::Component(stack) = &page.root else {
+            panic!()
+        };
         assert_eq!(stack.prop("spacing"), Some(&Expr::Literal(Value::Int(0))));
-        let UiNode::Component(button) = &stack.children[0] else { panic!() };
+        let UiNode::Component(button) = &stack.children[0] else {
+            panic!()
+        };
         assert_eq!(button.event("click").unwrap().variant, "Save");
-        assert_eq!(button.prop("style"), Some(&Expr::EnumCase { ty: "ButtonStyle".into(), case: "Secondary".into() }));
-        assert_eq!(button.prop("disabled"), Some(&Expr::Literal(Value::Bool(false))));
+        assert_eq!(
+            button.prop("style"),
+            Some(&Expr::EnumCase {
+                ty: "ButtonStyle".into(),
+                case: "Secondary".into()
+            })
+        );
+        assert_eq!(
+            button.prop("disabled"),
+            Some(&Expr::Literal(Value::Bool(false)))
+        );
     }
 
     #[test]
@@ -908,24 +1178,51 @@ mod tests {
             }"#,
         )
         .unwrap();
-        let UiNode::Component(stack) = &page.root else { panic!() };
-        let [UiNode::Component(text), UiNode::Component(toggle), UiNode::Component(button)] = stack.children.as_slice()
+        let UiNode::Component(stack) = &page.root else {
+            panic!()
+        };
+        let [
+            UiNode::Component(text),
+            UiNode::Component(toggle),
+            UiNode::Component(button),
+        ] = stack.children.as_slice()
         else {
             panic!("three children");
         };
-        assert_eq!(text.prop("text"), Some(&Expr::State(StatePath { segments: vec!["name".into()] })));
-        assert_eq!(text.prop("style"), Some(&Expr::EnumCase { ty: "TextStyle".into(), case: "Title".into() }));
+        assert_eq!(
+            text.prop("text"),
+            Some(&Expr::State(StatePath {
+                segments: vec!["name".into()]
+            }))
+        );
+        assert_eq!(
+            text.prop("style"),
+            Some(&Expr::EnumCase {
+                ty: "TextStyle".into(),
+                case: "Title".into()
+            })
+        );
         let binding = toggle.binding("value").unwrap();
         assert_eq!(binding.path.segments, ["on"]);
-        assert_eq!(binding.on_change, ActionRef { variant: "SetOn".into(), payload: ActionPayload::EventValue });
+        assert_eq!(
+            binding.on_change,
+            ActionRef {
+                variant: "SetOn".into(),
+                payload: ActionPayload::EventValue
+            }
+        );
         assert!(toggle.events.is_empty());
         assert_eq!(
             toggle.prop("disabled"),
-            Some(&Expr::State(StatePath { segments: vec!["user".into(), "locked".into()] }))
+            Some(&Expr::State(StatePath {
+                segments: vec!["user".into(), "locked".into()]
+            }))
         );
         assert_eq!(
             button.event("click").unwrap().payload,
-            ActionPayload::Expr(Expr::State(StatePath { segments: vec!["count".into()] }))
+            ActionPayload::Expr(Expr::State(StatePath {
+                segments: vec!["count".into()]
+            }))
         );
     }
 
@@ -1009,17 +1306,59 @@ mod tests {
             } }"#,
         )
         .unwrap();
-        let UiNode::Component(stack) = &page.root else { panic!() };
-        let UiNode::If { condition, else_branch, .. } = &stack.children[0] else { panic!() };
+        let UiNode::Component(stack) = &page.root else {
+            panic!()
+        };
+        let UiNode::If {
+            condition,
+            else_branch,
+            ..
+        } = &stack.children[0]
+        else {
+            panic!()
+        };
         assert!(condition.negated);
-        assert_eq!(condition.value, Expr::State(StatePath { segments: vec!["on".into()] }));
+        assert_eq!(
+            condition.value,
+            Expr::State(StatePath {
+                segments: vec!["on".into()]
+            })
+        );
         assert_eq!(else_branch.len(), 1);
-        let UiNode::ForEach { collection, element, key, children, .. } = &stack.children[1] else { panic!() };
-        assert_eq!((collection.dotted().as_str(), element.as_str()), ("open", "Item"));
-        assert_eq!(key, &LocalPath { local: "item".into(), segments: vec!["id".into()] });
-        let UiNode::If { condition, .. } = &children[0] else { panic!() };
-        assert_eq!(condition.value, Expr::Local(LocalPath { local: "item".into(), segments: vec!["done".into()] }));
-        let UiNode::ForEach { key, .. } = &stack.children[2] else { panic!() };
+        let UiNode::ForEach {
+            collection,
+            element,
+            key,
+            children,
+            ..
+        } = &stack.children[1]
+        else {
+            panic!()
+        };
+        assert_eq!(
+            (collection.dotted().as_str(), element.as_str()),
+            ("open", "Item")
+        );
+        assert_eq!(
+            key,
+            &LocalPath {
+                local: "item".into(),
+                segments: vec!["id".into()]
+            }
+        );
+        let UiNode::If { condition, .. } = &children[0] else {
+            panic!()
+        };
+        assert_eq!(
+            condition.value,
+            Expr::Local(LocalPath {
+                local: "item".into(),
+                segments: vec!["done".into()]
+            })
+        );
+        let UiNode::ForEach { key, .. } = &stack.children[2] else {
+            panic!()
+        };
         assert_eq!(key.segments, ["uuid"]);
     }
 
@@ -1073,9 +1412,14 @@ mod tests {
     "#;
 
     fn lower_with_rows(src: &str) -> Result<Page, Vec<String>> {
-        let registry = Registry::from_tables(&[(crate::registry::BUILTIN, "registry.toml"), (ROWS, "app.toml")]).unwrap();
+        let registry = Registry::from_tables(&[
+            (crate::registry::BUILTIN, "registry.toml"),
+            (ROWS, "app.toml"),
+        ])
+        .unwrap();
         let ast: PageAst = syn::parse_str(src).unwrap();
-        lower(&ast, &registry, Some(&types()), "page.rs").map_err(|errors| errors.into_iter().map(|e| e.message).collect())
+        lower(&ast, &registry, Some(&types()), "page.rs")
+            .map_err(|errors| errors.into_iter().map(|e| e.message).collect())
     }
 
     #[test]
@@ -1087,9 +1431,15 @@ mod tests {
             } }"#,
         )
         .unwrap();
-        let UiNode::Component(section) = &page.root else { panic!() };
-        let UiNode::Component(row) = &section.children[0] else { panic!() };
-        let Some(UiNode::Component(toggle)) = row.slot("trailing") else { panic!() };
+        let UiNode::Component(section) = &page.root else {
+            panic!()
+        };
+        let UiNode::Component(row) = &section.children[0] else {
+            panic!()
+        };
+        let Some(UiNode::Component(toggle)) = row.slot("trailing") else {
+            panic!()
+        };
         assert_eq!(toggle.binding("value").unwrap().on_change.variant, "SetOn");
         assert!(row.slot("icon").is_some());
     }
@@ -1102,15 +1452,26 @@ mod tests {
             swiftui = { call = "Column", args = [{ arg = "width", prop = "width" }] }
             winui = { element = "Column", attrs = [{ attr = "Width", prop = "width" }] }
         "#;
-        let registry = Registry::from_tables(&[(crate::registry::BUILTIN, "registry.toml"), (COLUMN, "app.toml")]).unwrap();
+        let registry = Registry::from_tables(&[
+            (crate::registry::BUILTIN, "registry.toml"),
+            (COLUMN, "app.toml"),
+        ])
+        .unwrap();
         let lower = |src: &str| {
             let ast: PageAst = syn::parse_str(src).unwrap();
-            lower(&ast, &registry, Some(&types()), "page.rs").map_err(|errors| errors.into_iter().map(|e| e.message).collect::<Vec<_>>())
+            lower(&ast, &registry, Some(&types()), "page.rs")
+                .map_err(|errors| errors.into_iter().map(|e| e.message).collect::<Vec<_>>())
         };
         let page = lower(r#"page P(state: S, action: A) { VStack { Column(width: state.count) for item in state.items { Column(width: item.id) } } }"#).unwrap();
-        let UiNode::Component(stack) = &page.root else { panic!() };
-        let UiNode::Component(column) = &stack.children[0] else { panic!() };
-        assert!(matches!(column.prop("width"), Some(Expr::State(path)) if path.segments == ["count"]));
+        let UiNode::Component(stack) = &page.root else {
+            panic!()
+        };
+        let UiNode::Component(column) = &stack.children[0] else {
+            panic!()
+        };
+        assert!(
+            matches!(column.prop("width"), Some(Expr::State(path)) if path.segments == ["count"])
+        );
         // A stack's spacing is still a literal, and the type still checked.
         assert_eq!(
             lower(r#"page P(state: S, action: A) { HStack(spacing: state.count) { Column(width: state.name) } }"#).unwrap_err(),

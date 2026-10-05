@@ -113,7 +113,9 @@ pub struct SlotSpec {
 pub enum ChildrenSpec {
     None,
     /// Any number of children; only these components, when `allow` says.
-    Many { allow: Option<Vec<String>> },
+    Many {
+        allow: Option<Vec<String>>,
+    },
 }
 
 /// How SwiftUI draws a component: a call, its arguments in the order the
@@ -141,7 +143,10 @@ pub enum Trailing {
     /// The component's children.
     Children,
     /// A prop wrapped in a view: `{ Text(title) }`.
-    Prop { prop: String, view: String },
+    Prop {
+        prop: String,
+        view: String,
+    },
     Slot(String),
 }
 

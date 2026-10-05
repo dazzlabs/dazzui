@@ -15,7 +15,12 @@ pub struct Page {
 pub enum UiNode {
     Component(Component),
     /// Either branch's nodes stand in the parent as if written there.
-    If { condition: Condition, then_branch: Vec<UiNode>, else_branch: Vec<UiNode>, source: SourceLocation },
+    If {
+        condition: Condition,
+        then_branch: Vec<UiNode>,
+        else_branch: Vec<UiNode>,
+        source: SourceLocation,
+    },
     /// The children, once per element, standing in the parent as if written
     /// there. `element` is the Rust struct each element is; `key` is the
     /// field that tells one element from another.
@@ -61,7 +66,10 @@ impl Component {
     }
 
     pub fn event(&self, name: &str) -> Option<&ActionRef> {
-        self.events.iter().find(|e| e.name == name).map(|e| &e.action)
+        self.events
+            .iter()
+            .find(|e| e.name == name)
+            .map(|e| &e.action)
     }
 
     pub fn slot(&self, name: &str) -> Option<&UiNode> {

@@ -1,6 +1,6 @@
 <!--
   The WinUI host for the settings example: ../Generated — the page, its
-  view model, and uniffi-bindgen-cs's C# for the bridge — compiled against
+  store, and uniffi-bindgen-cs's C# for the bridge — compiled against
   the real DazzUI, with the Rust app core's DLL beside it.
 
   Before each build, `dazzui-compiler generate (target winui)` builds the

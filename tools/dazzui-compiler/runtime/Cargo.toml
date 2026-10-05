@@ -1,0 +1,10 @@
+[package]
+name = "dazzui-runtime"
+description = "What an app links: the page-model seam, the macros, and an optional reducer."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+dazzui-compiler-macro.workspace = true

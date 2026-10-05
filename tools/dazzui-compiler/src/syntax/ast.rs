@@ -108,7 +108,10 @@ pub struct DottedAst {
 
 impl DottedAst {
     pub fn span(&self) -> Span {
-        join(self.segments.first().map(Ident::span), self.segments.last().map(Ident::span))
+        join(
+            self.segments.first().map(Ident::span),
+            self.segments.last().map(Ident::span),
+        )
     }
 }
 
@@ -127,7 +130,10 @@ impl ValueAst {
 /// The span of a whole path, first segment to last, where the compiler can
 /// join them; the first segment's otherwise.
 pub fn spanned_path(path: &Path) -> Span {
-    join(path.segments.first().map(|s| s.ident.span()), path.segments.last().map(|s| s.ident.span()))
+    join(
+        path.segments.first().map(|s| s.ident.span()),
+        path.segments.last().map(|s| s.ident.span()),
+    )
 }
 
 fn join(first: Option<Span>, last: Option<Span>) -> Span {

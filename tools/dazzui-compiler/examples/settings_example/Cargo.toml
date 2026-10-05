@@ -1,6 +1,6 @@
 [package]
 name = "settings-example"
-description = "The demo app core: state, actions, update, and the ui! page."
+description = "The demo app core: state, actions, the model that drives them, and the ui! page."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -12,5 +12,5 @@ publish.workspace = true
 crate-type = ["lib", "staticlib", "cdylib"]
 
 [dependencies]
-dazzui-compiler-macro.workspace = true
+dazzui-runtime.workspace = true
 uniffi.workspace = true

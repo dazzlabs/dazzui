@@ -20,10 +20,12 @@ pub enum A {
     Pick(u32),
 }
 
-use dazzui_compiler_macro::{app, selector};
+use dazzui_compiler_macro::{page_model, selector};
 
-#[app]
-pub fn update(state: S, action: A) {}
+#[page_model]
+pub fn model(state: S) -> u32 {
+    0
+}
 
 impl S {
     #[selector]

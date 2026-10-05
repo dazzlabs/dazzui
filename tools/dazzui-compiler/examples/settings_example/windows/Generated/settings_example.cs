@@ -784,72 +784,6 @@ static class _UniFFILib {
     [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
     public static extern
 #endif
-     ulong uniffi_settings_example_fn_clone_settingsapp(ulong @handle,ref UniffiRustCallStatus _uniffi_out_err
-    );
-
-    #if NET8_0_OR_GREATER
-    [LibraryImport("settings_example")]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
-    public static partial
-#else
-    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
-    public static extern
-#endif
-     void uniffi_settings_example_fn_free_settingsapp(ulong @handle,ref UniffiRustCallStatus _uniffi_out_err
-    );
-
-    #if NET8_0_OR_GREATER
-    [LibraryImport("settings_example")]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
-    public static partial
-#else
-    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
-    public static extern
-#endif
-     ulong uniffi_settings_example_fn_constructor_settingsapp_new(ref UniffiRustCallStatus _uniffi_out_err
-    );
-
-    #if NET8_0_OR_GREATER
-    [LibraryImport("settings_example")]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
-    public static partial
-#else
-    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
-    public static extern
-#endif
-     void uniffi_settings_example_fn_method_settingsapp_send(ulong @ptr,RustBuffer @action,ref UniffiRustCallStatus _uniffi_out_err
-    );
-
-    #if NET8_0_OR_GREATER
-    [LibraryImport("settings_example")]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
-    public static partial
-#else
-    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
-    public static extern
-#endif
-     RustBuffer uniffi_settings_example_fn_method_settingsapp_state(ulong @ptr,ref UniffiRustCallStatus _uniffi_out_err
-    );
-
-    #if NET8_0_OR_GREATER
-    [LibraryImport("settings_example")]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
-    public static partial
-#else
-    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
-    public static extern
-#endif
-     void uniffi_settings_example_fn_method_settingsapp_subscribe(ulong @ptr,ulong @listener,ref UniffiRustCallStatus _uniffi_out_err
-    );
-
-    #if NET8_0_OR_GREATER
-    [LibraryImport("settings_example")]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
-    public static partial
-#else
-    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
-    public static extern
-#endif
      ulong uniffi_settings_example_fn_clone_settingslistener(ulong @handle,ref UniffiRustCallStatus _uniffi_out_err
     );
 
@@ -884,6 +818,72 @@ static class _UniFFILib {
     public static extern
 #endif
      void uniffi_settings_example_fn_method_settingslistener_state_changed(ulong @ptr,ref UniffiRustCallStatus _uniffi_out_err
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     ulong uniffi_settings_example_fn_clone_settingssource(ulong @handle,ref UniffiRustCallStatus _uniffi_out_err
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     void uniffi_settings_example_fn_free_settingssource(ulong @handle,ref UniffiRustCallStatus _uniffi_out_err
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     ulong uniffi_settings_example_fn_constructor_settingssource_new(ref UniffiRustCallStatus _uniffi_out_err
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     void uniffi_settings_example_fn_method_settingssource_send(ulong @ptr,RustBuffer @action,ref UniffiRustCallStatus _uniffi_out_err
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     RustBuffer uniffi_settings_example_fn_method_settingssource_state(ulong @ptr,ref UniffiRustCallStatus _uniffi_out_err
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     void uniffi_settings_example_fn_method_settingssource_subscribe(ulong @ptr,ulong @listener,ref UniffiRustCallStatus _uniffi_out_err
     );
 
     #if NET8_0_OR_GREATER
@@ -1466,39 +1466,6 @@ static class _UniFFILib {
     [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
     public static extern
 #endif
-     ushort uniffi_settings_example_checksum_method_settingsapp_send(
-    );
-
-    #if NET8_0_OR_GREATER
-    [LibraryImport("settings_example")]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
-    public static partial
-#else
-    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
-    public static extern
-#endif
-     ushort uniffi_settings_example_checksum_method_settingsapp_state(
-    );
-
-    #if NET8_0_OR_GREATER
-    [LibraryImport("settings_example")]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
-    public static partial
-#else
-    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
-    public static extern
-#endif
-     ushort uniffi_settings_example_checksum_method_settingsapp_subscribe(
-    );
-
-    #if NET8_0_OR_GREATER
-    [LibraryImport("settings_example")]
-    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
-    public static partial
-#else
-    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
-    public static extern
-#endif
      ushort uniffi_settings_example_checksum_method_settingslistener_state_changed(
     );
 
@@ -1510,7 +1477,40 @@ static class _UniFFILib {
     [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
     public static extern
 #endif
-     ushort uniffi_settings_example_checksum_constructor_settingsapp_new(
+     ushort uniffi_settings_example_checksum_method_settingssource_send(
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     ushort uniffi_settings_example_checksum_method_settingssource_state(
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     ushort uniffi_settings_example_checksum_method_settingssource_subscribe(
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     ushort uniffi_settings_example_checksum_constructor_settingssource_new(
     );
 
     #if NET8_0_OR_GREATER
@@ -1534,33 +1534,33 @@ static class _UniFFILib {
     }
     static void uniffiCheckApiChecksums() {
         {
-            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingsapp_send();
-            if (checksum != 40292) {
-                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingsapp_send` checksum `40292`, library returned `{checksum}`");
-            }
-        }
-        {
-            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingsapp_state();
-            if (checksum != 16691) {
-                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingsapp_state` checksum `16691`, library returned `{checksum}`");
-            }
-        }
-        {
-            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingsapp_subscribe();
-            if (checksum != 16730) {
-                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingsapp_subscribe` checksum `16730`, library returned `{checksum}`");
-            }
-        }
-        {
             var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingslistener_state_changed();
-            if (checksum != 28508) {
-                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingslistener_state_changed` checksum `28508`, library returned `{checksum}`");
+            if (checksum != 7042) {
+                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingslistener_state_changed` checksum `7042`, library returned `{checksum}`");
             }
         }
         {
-            var checksum = _UniFFILib.uniffi_settings_example_checksum_constructor_settingsapp_new();
-            if (checksum != 17760) {
-                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_constructor_settingsapp_new` checksum `17760`, library returned `{checksum}`");
+            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingssource_send();
+            if (checksum != 13796) {
+                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingssource_send` checksum `13796`, library returned `{checksum}`");
+            }
+        }
+        {
+            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingssource_state();
+            if (checksum != 61957) {
+                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingssource_state` checksum `61957`, library returned `{checksum}`");
+            }
+        }
+        {
+            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingssource_subscribe();
+            if (checksum != 12353) {
+                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingssource_subscribe` checksum `12353`, library returned `{checksum}`");
+            }
+        }
+        {
+            var checksum = _UniFFILib.uniffi_settings_example_checksum_constructor_settingssource_new();
+            if (checksum != 27133) {
+                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_constructor_settingssource_new` checksum `27133`, library returned `{checksum}`");
             }
         }
     }
@@ -1673,180 +1673,15 @@ class FfiConverterString: FfiConverter<string, RustBuffer> {
 
 
 /// <summary>
-/// The app: its state, and those to tell when it changes.
-/// </summary>
-public interface ISettingsApp {
-    void Send(SettingsAction @action);
-    /// <summary>
-    /// A snapshot of the state, selectors computed.
-    /// </summary>
-    SettingsState State();
-    void Subscribe(SettingsListener @listener);
-}
-/// <summary>
-/// The app: its state, and those to tell when it changes.
-/// </summary>
-public class SettingsApp : ISettingsApp, IDisposable {
-    protected ulong pointer;
-    private int _wasDestroyed = 0;
-    private long _callCounter = 1;
-
-    public SettingsApp(ulong pointer) {
-        this.pointer = pointer;
-    }
-
-    ~SettingsApp() {
-        Destroy();
-    }
-    public SettingsApp() :
-        this(
-    _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
-    _UniFFILib.uniffi_settings_example_fn_constructor_settingsapp_new( ref _status)
-)) {}
-
-    protected void FreeRustArcPtr() {
-        _UniffiHelpers.RustCall((ref UniffiRustCallStatus status) => {
-            _UniFFILib.uniffi_settings_example_fn_free_settingsapp(this.pointer, ref status);
-        });
-    }
-
-    protected ulong CloneRustArcPtr() {
-        return _UniffiHelpers.RustCall((ref UniffiRustCallStatus status) => {
-            return _UniFFILib.uniffi_settings_example_fn_clone_settingsapp(this.pointer, ref status);
-        });
-    }
-
-    public void Destroy()
-    {
-        // Only allow a single call to this method.
-        if (Interlocked.CompareExchange(ref _wasDestroyed, 1, 0) == 0)
-        {
-            // This decrement always matches the initial count of 1 given at creation time.
-            if (Interlocked.Decrement(ref _callCounter) == 0)
-            {
-                FreeRustArcPtr();
-            }
-        }
-    }
-
-    public void Dispose()
-    {
-        Destroy();
-        GC.SuppressFinalize(this); // Suppress finalization to avoid unnecessary GC overhead.
-    }
-
-    private void IncrementCallCounter() 
-    {
-        // Check and increment the call counter, to keep the object alive.
-        // This needs a compare-and-set retry loop in case of concurrent updates.
-        long count;
-        do
-        {
-            count = Interlocked.Read(ref _callCounter);
-            if (count == 0L) throw new System.ObjectDisposedException(String.Format("'{0}' object has already been destroyed", this.GetType().Name));
-            if (count == long.MaxValue) throw new System.OverflowException(String.Format("'{0}' call counter would overflow", this.GetType().Name));
-
-        } while (Interlocked.CompareExchange(ref _callCounter, count + 1, count) != count);
-    }
-
-    private void DecrementCallCounter() 
-    {
-        // This decrement always matches the increment we performed above.
-        if (Interlocked.Decrement(ref _callCounter) == 0) {
-            FreeRustArcPtr();
-        }
-    }
-
-    internal void CallWithPointer(Action<ulong> action)
-    {
-        IncrementCallCounter();
-        try {
-            action(CloneRustArcPtr());
-        }
-        finally {
-            DecrementCallCounter();
-        }
-    }
-
-    internal T CallWithPointer<T>(Func<ulong, T> func)
-    {   
-        IncrementCallCounter();
-        try {
-            return func(CloneRustArcPtr());
-        }
-        finally {
-            DecrementCallCounter();
-        }
-    }
-
-    
-    public void Send(SettingsAction @action) {
-        CallWithPointer(thisPtr =>
-    _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
-    _UniFFILib.uniffi_settings_example_fn_method_settingsapp_send(thisPtr, FfiConverterTypeSettingsAction.INSTANCE.Lower(@action), ref _status)
-));
-    }
-    
-    
-    
-    /// <summary>
-    /// A snapshot of the state, selectors computed.
-    /// </summary>
-    public SettingsState State() {
-        return CallWithPointer(thisPtr => FfiConverterTypeSettingsState.INSTANCE.Lift(
-    _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
-    _UniFFILib.uniffi_settings_example_fn_method_settingsapp_state(thisPtr,  ref _status)
-)));
-    }
-    
-    
-    public void Subscribe(SettingsListener @listener) {
-        CallWithPointer(thisPtr =>
-    _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
-    _UniFFILib.uniffi_settings_example_fn_method_settingsapp_subscribe(thisPtr, FfiConverterTypeSettingsListener.INSTANCE.Lower(@listener), ref _status)
-));
-    }
-    
-    
-    
-
-    
-}
-class FfiConverterTypeSettingsApp: FfiConverter<SettingsApp, ulong> {
-    public static FfiConverterTypeSettingsApp INSTANCE = new FfiConverterTypeSettingsApp();
-
-
-    public override ulong Lower(SettingsApp value) {
-        return value.CallWithPointer(thisPtr => thisPtr);
-    }
-
-    public override SettingsApp Lift(ulong value) {
-        return new SettingsApp(value);
-    }
-
-    public override SettingsApp Read(BigEndianStream stream) {
-        return Lift(stream.ReadULong());
-    }
-
-    public override int AllocationSize(SettingsApp value) {
-        return 8;
-    }
-
-    public override void Write(SettingsApp value, BigEndianStream stream) {
-        stream.WriteULong(Lower(value));
-    }
-}
-
-
-
-/// <summary>
-/// Called back after every action, on the thread that sent it.
+/// Called back when the model's state changes, on whichever
+/// thread changed it.
 /// </summary>
 public interface SettingsListener {
     void StateChanged();
 }
 /// <summary>
-/// Called back after every action, on the thread that sent it.
+/// Called back when the model's state changes, on whichever
+/// thread changed it.
 /// </summary>
 public class SettingsListenerImpl : SettingsListener, IDisposable {
     protected ulong pointer;
@@ -2099,6 +1934,176 @@ class FfiConverterTypeSettingsListener: FfiConverter<SettingsListener, ulong> {
 
 
 
+/// <summary>
+/// The app's model, as the native side holds it.
+/// </summary>
+public interface ISettingsSource {
+    void Send(SettingsAction @action);
+    /// <summary>
+    /// A snapshot of the state, selectors computed.
+    /// </summary>
+    SettingsState State();
+    void Subscribe(SettingsListener @listener);
+}
+/// <summary>
+/// The app's model, as the native side holds it.
+/// </summary>
+public class SettingsSource : ISettingsSource, IDisposable {
+    protected ulong pointer;
+    private int _wasDestroyed = 0;
+    private long _callCounter = 1;
+
+    public SettingsSource(ulong pointer) {
+        this.pointer = pointer;
+    }
+
+    ~SettingsSource() {
+        Destroy();
+    }
+    /// <summary>
+    /// A source over the model the marked function makes.
+    /// </summary>
+    public SettingsSource() :
+        this(
+    _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
+    _UniFFILib.uniffi_settings_example_fn_constructor_settingssource_new( ref _status)
+)) {}
+
+    protected void FreeRustArcPtr() {
+        _UniffiHelpers.RustCall((ref UniffiRustCallStatus status) => {
+            _UniFFILib.uniffi_settings_example_fn_free_settingssource(this.pointer, ref status);
+        });
+    }
+
+    protected ulong CloneRustArcPtr() {
+        return _UniffiHelpers.RustCall((ref UniffiRustCallStatus status) => {
+            return _UniFFILib.uniffi_settings_example_fn_clone_settingssource(this.pointer, ref status);
+        });
+    }
+
+    public void Destroy()
+    {
+        // Only allow a single call to this method.
+        if (Interlocked.CompareExchange(ref _wasDestroyed, 1, 0) == 0)
+        {
+            // This decrement always matches the initial count of 1 given at creation time.
+            if (Interlocked.Decrement(ref _callCounter) == 0)
+            {
+                FreeRustArcPtr();
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        Destroy();
+        GC.SuppressFinalize(this); // Suppress finalization to avoid unnecessary GC overhead.
+    }
+
+    private void IncrementCallCounter() 
+    {
+        // Check and increment the call counter, to keep the object alive.
+        // This needs a compare-and-set retry loop in case of concurrent updates.
+        long count;
+        do
+        {
+            count = Interlocked.Read(ref _callCounter);
+            if (count == 0L) throw new System.ObjectDisposedException(String.Format("'{0}' object has already been destroyed", this.GetType().Name));
+            if (count == long.MaxValue) throw new System.OverflowException(String.Format("'{0}' call counter would overflow", this.GetType().Name));
+
+        } while (Interlocked.CompareExchange(ref _callCounter, count + 1, count) != count);
+    }
+
+    private void DecrementCallCounter() 
+    {
+        // This decrement always matches the increment we performed above.
+        if (Interlocked.Decrement(ref _callCounter) == 0) {
+            FreeRustArcPtr();
+        }
+    }
+
+    internal void CallWithPointer(Action<ulong> action)
+    {
+        IncrementCallCounter();
+        try {
+            action(CloneRustArcPtr());
+        }
+        finally {
+            DecrementCallCounter();
+        }
+    }
+
+    internal T CallWithPointer<T>(Func<ulong, T> func)
+    {   
+        IncrementCallCounter();
+        try {
+            return func(CloneRustArcPtr());
+        }
+        finally {
+            DecrementCallCounter();
+        }
+    }
+
+    
+    public void Send(SettingsAction @action) {
+        CallWithPointer(thisPtr =>
+    _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
+    _UniFFILib.uniffi_settings_example_fn_method_settingssource_send(thisPtr, FfiConverterTypeSettingsAction.INSTANCE.Lower(@action), ref _status)
+));
+    }
+    
+    
+    
+    /// <summary>
+    /// A snapshot of the state, selectors computed.
+    /// </summary>
+    public SettingsState State() {
+        return CallWithPointer(thisPtr => FfiConverterTypeSettingsState.INSTANCE.Lift(
+    _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
+    _UniFFILib.uniffi_settings_example_fn_method_settingssource_state(thisPtr,  ref _status)
+)));
+    }
+    
+    
+    public void Subscribe(SettingsListener @listener) {
+        CallWithPointer(thisPtr =>
+    _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
+    _UniFFILib.uniffi_settings_example_fn_method_settingssource_subscribe(thisPtr, FfiConverterTypeSettingsListener.INSTANCE.Lower(@listener), ref _status)
+));
+    }
+    
+    
+    
+
+    
+}
+class FfiConverterTypeSettingsSource: FfiConverter<SettingsSource, ulong> {
+    public static FfiConverterTypeSettingsSource INSTANCE = new FfiConverterTypeSettingsSource();
+
+
+    public override ulong Lower(SettingsSource value) {
+        return value.CallWithPointer(thisPtr => thisPtr);
+    }
+
+    public override SettingsSource Lift(ulong value) {
+        return new SettingsSource(value);
+    }
+
+    public override SettingsSource Read(BigEndianStream stream) {
+        return Lift(stream.ReadULong());
+    }
+
+    public override int AllocationSize(SettingsSource value) {
+        return 8;
+    }
+
+    public override void Write(SettingsSource value, BigEndianStream stream) {
+        stream.WriteULong(Lower(value));
+    }
+}
+
+
+
 public record Plugin (
     uint Id, 
     string Name, 
@@ -2137,11 +2142,13 @@ public record SettingsState (
     bool LaunchAtStartup, 
     bool AutoUpdate, 
     bool Saved, 
+    bool Saving, 
     uint Saves, 
     string Status, 
     bool ShowDisabledPlugins, 
     Plugin[] Plugins, 
     Plugin[] VisiblePlugins, 
+    bool SaveDisabled, 
     bool HasHiddenPlugins
 ) {
 }
@@ -2154,11 +2161,13 @@ class FfiConverterTypeSettingsState: FfiConverterRustBuffer<SettingsState> {
             LaunchAtStartup: FfiConverterBoolean.INSTANCE.Read(stream),
             AutoUpdate: FfiConverterBoolean.INSTANCE.Read(stream),
             Saved: FfiConverterBoolean.INSTANCE.Read(stream),
+            Saving: FfiConverterBoolean.INSTANCE.Read(stream),
             Saves: FfiConverterUInt32.INSTANCE.Read(stream),
             Status: FfiConverterString.INSTANCE.Read(stream),
             ShowDisabledPlugins: FfiConverterBoolean.INSTANCE.Read(stream),
             Plugins: FfiConverterSequenceTypePlugin.INSTANCE.Read(stream),
             VisiblePlugins: FfiConverterSequenceTypePlugin.INSTANCE.Read(stream),
+            SaveDisabled: FfiConverterBoolean.INSTANCE.Read(stream),
             HasHiddenPlugins: FfiConverterBoolean.INSTANCE.Read(stream)
         );
     }
@@ -2168,11 +2177,13 @@ class FfiConverterTypeSettingsState: FfiConverterRustBuffer<SettingsState> {
             + FfiConverterBoolean.INSTANCE.AllocationSize(value.LaunchAtStartup)
             + FfiConverterBoolean.INSTANCE.AllocationSize(value.AutoUpdate)
             + FfiConverterBoolean.INSTANCE.AllocationSize(value.Saved)
+            + FfiConverterBoolean.INSTANCE.AllocationSize(value.Saving)
             + FfiConverterUInt32.INSTANCE.AllocationSize(value.Saves)
             + FfiConverterString.INSTANCE.AllocationSize(value.Status)
             + FfiConverterBoolean.INSTANCE.AllocationSize(value.ShowDisabledPlugins)
             + FfiConverterSequenceTypePlugin.INSTANCE.AllocationSize(value.Plugins)
             + FfiConverterSequenceTypePlugin.INSTANCE.AllocationSize(value.VisiblePlugins)
+            + FfiConverterBoolean.INSTANCE.AllocationSize(value.SaveDisabled)
             + FfiConverterBoolean.INSTANCE.AllocationSize(value.HasHiddenPlugins);
     }
 
@@ -2180,11 +2191,13 @@ class FfiConverterTypeSettingsState: FfiConverterRustBuffer<SettingsState> {
             FfiConverterBoolean.INSTANCE.Write(value.LaunchAtStartup, stream);
             FfiConverterBoolean.INSTANCE.Write(value.AutoUpdate, stream);
             FfiConverterBoolean.INSTANCE.Write(value.Saved, stream);
+            FfiConverterBoolean.INSTANCE.Write(value.Saving, stream);
             FfiConverterUInt32.INSTANCE.Write(value.Saves, stream);
             FfiConverterString.INSTANCE.Write(value.Status, stream);
             FfiConverterBoolean.INSTANCE.Write(value.ShowDisabledPlugins, stream);
             FfiConverterSequenceTypePlugin.INSTANCE.Write(value.Plugins, stream);
             FfiConverterSequenceTypePlugin.INSTANCE.Write(value.VisiblePlugins, stream);
+            FfiConverterBoolean.INSTANCE.Write(value.SaveDisabled, stream);
             FfiConverterBoolean.INSTANCE.Write(value.HasHiddenPlugins, stream);
     }
 }

@@ -41,14 +41,22 @@ impl Parse for PageAst {
         if !input.is_empty() {
             return Err(input.error("one page per ui! block"));
         }
-        Ok(PageAst { name, state_ty, action_ty, root })
+        Ok(PageAst {
+            name,
+            state_ty,
+            action_ty,
+            root,
+        })
     }
 }
 
 fn typed_param(input: ParseStream, expected: &str) -> Result<Path> {
     let name: Ident = input.parse()?;
     if name != expected {
-        return Err(syn::Error::new(name.span(), format!("expected `{expected}`")));
+        return Err(syn::Error::new(
+            name.span(),
+            format!("expected `{expected}`"),
+        ));
     }
     input.parse::<Token![:]>()?;
     input.parse()
@@ -99,7 +107,13 @@ impl Parse for IfAst {
                 else_branch = nodes(input)?;
             }
         }
-        Ok(IfAst { keyword, negated, condition, then_branch, else_branch })
+        Ok(IfAst {
+            keyword,
+            negated,
+            condition,
+            then_branch,
+            else_branch,
+        })
     }
 }
 
@@ -122,7 +136,13 @@ impl Parse for ForAst {
             key = Some(dotted(first, input)?);
         }
         let children = nodes(input)?;
-        Ok(ForAst { keyword, item, collection, key, children })
+        Ok(ForAst {
+            keyword,
+            item,
+            collection,
+            key,
+            children,
+        })
     }
 }
 
@@ -161,10 +181,19 @@ impl Parse for ComponentAst {
             let name: Ident = input.parse()?;
             let content;
             parenthesized!(content in input);
-            modifiers.push(ModifierAst { name, args: parse_args(&content)? });
+            modifiers.push(ModifierAst {
+                name,
+                args: parse_args(&content)?,
+            });
         }
 
-        Ok(ComponentAst { name, args, props, children, modifiers })
+        Ok(ComponentAst {
+            name,
+            args,
+            props,
+            children,
+            modifiers,
+        })
     }
 }
 
@@ -194,7 +223,10 @@ impl Parse for PropAst {
     fn parse(input: ParseStream) -> Result<Self> {
         let name: Ident = input.parse()?;
         input.parse::<Token![:]>()?;
-        Ok(PropAst { name, value: input.parse()? })
+        Ok(PropAst {
+            name,
+            value: input.parse()?,
+        })
     }
 }
 
@@ -208,7 +240,10 @@ impl Parse for ValueAst {
             let lit: Lit = input.parse()?;
             return match lit {
                 Lit::Int(_) => Ok(ValueAst::NegInt(lit)),
-                _ => Err(syn::Error::new(lit.span(), "only an integer can be negated")),
+                _ => Err(syn::Error::new(
+                    lit.span(),
+                    "only an integer can be negated",
+                )),
             };
         }
         // `Name {` or `Name(`, other than `bind(`: a component, for a slot.
@@ -234,7 +269,9 @@ impl Parse for ValueAst {
             if input.peek(Token![.]) && input.peek2(Ident) {
                 return Ok(ValueAst::Dotted(dotted(ident.clone(), input)?));
             }
-            return Ok(ValueAst::Dotted(DottedAst { segments: vec![ident.clone()] }));
+            return Ok(ValueAst::Dotted(DottedAst {
+                segments: vec![ident.clone()],
+            }));
         }
         if input.peek(syn::token::Paren) {
             let content;
@@ -282,13 +319,20 @@ mod tests {
         )
         .unwrap();
         assert_eq!(page.name, "SettingsPage");
-        let NodeAst::Component(stack) = page.root else { panic!() };
+        let NodeAst::Component(stack) = page.root else {
+            panic!()
+        };
         assert_eq!(stack.name, "VStack");
         assert!(matches!(&stack.args[0], ArgAst::Named(p) if p.name == "spacing"));
         assert_eq!(stack.children.len(), 2);
-        let NodeAst::Component(button) = &stack.children[1] else { panic!() };
+        let NodeAst::Component(button) = &stack.children[1] else {
+            panic!()
+        };
         assert_eq!(button.modifiers[0].name, "on_click");
-        assert!(matches!(&button.modifiers[0].args[0], ArgAst::Positional(ValueAst::Path(_))));
+        assert!(matches!(
+            &button.modifiers[0].args[0],
+            ArgAst::Positional(ValueAst::Path(_))
+        ));
     }
 
     #[test]
@@ -302,7 +346,9 @@ mod tests {
             }"#,
         )
         .unwrap();
-        let NodeAst::Component(button) = page.root else { panic!() };
+        let NodeAst::Component(button) = page.root else {
+            panic!()
+        };
         assert_eq!(button.props.len(), 2);
         assert!(button.children.is_empty());
     }
@@ -319,13 +365,22 @@ mod tests {
             }"#,
         )
         .unwrap();
-        let NodeAst::Component(toggle) = page.root else { panic!() };
+        let NodeAst::Component(toggle) = page.root else {
+            panic!()
+        };
         assert!(matches!(&toggle.props[0].value, ValueAst::Bind(p) if p.segments.len() == 2));
         assert!(matches!(&toggle.props[1].value, ValueAst::Path(_)));
-        assert!(matches!(&toggle.modifiers[0].args[0], ArgAst::Positional(ValueAst::Dotted(p)) if p.segments.len() == 3));
+        assert!(
+            matches!(&toggle.modifiers[0].args[0], ArgAst::Positional(ValueAst::Dotted(p)) if p.segments.len() == 3)
+        );
 
-        let page = parse(r#"page P(state: S, action: A) { Button("a").on_click(Action::Pick(state.id)) }"#).unwrap();
-        let NodeAst::Component(button) = page.root else { panic!() };
+        let page = parse(
+            r#"page P(state: S, action: A) { Button("a").on_click(Action::Pick(state.id)) }"#,
+        )
+        .unwrap();
+        let NodeAst::Component(button) = page.root else {
+            panic!()
+        };
         assert!(matches!(
             &button.modifiers[0].args[0],
             ArgAst::Positional(ValueAst::Call(_, payload)) if matches!(**payload, ValueAst::Dotted(_))
@@ -343,12 +398,20 @@ mod tests {
             }"#,
         )
         .unwrap();
-        let NodeAst::Component(stack) = page.root else { panic!() };
-        let NodeAst::If(cond) = &stack.children[0] else { panic!() };
+        let NodeAst::Component(stack) = page.root else {
+            panic!()
+        };
+        let NodeAst::If(cond) = &stack.children[0] else {
+            panic!()
+        };
         assert!(cond.negated);
-        let NodeAst::If(nested) = &cond.else_branch[0] else { panic!() };
+        let NodeAst::If(nested) = &cond.else_branch[0] else {
+            panic!()
+        };
         assert_eq!(nested.else_branch.len(), 2);
-        let NodeAst::For(each) = &stack.children[1] else { panic!() };
+        let NodeAst::For(each) = &stack.children[1] else {
+            panic!()
+        };
         assert_eq!(each.item, "item");
         assert_eq!(each.key.as_ref().unwrap().segments[1], "uuid");
     }
@@ -364,8 +427,12 @@ mod tests {
             }"#,
         )
         .unwrap();
-        let NodeAst::Component(row) = page.root else { panic!() };
-        assert!(matches!(&row.args[1], ArgAst::Named(p) if matches!(&p.value, ValueAst::Component(c) if c.name == "Toggle")));
+        let NodeAst::Component(row) = page.root else {
+            panic!()
+        };
+        assert!(
+            matches!(&row.args[1], ArgAst::Named(p) if matches!(&p.value, ValueAst::Component(c) if c.name == "Toggle"))
+        );
         assert!(matches!(&row.props[1].value, ValueAst::Component(c) if c.modifiers.len() == 1));
     }
 

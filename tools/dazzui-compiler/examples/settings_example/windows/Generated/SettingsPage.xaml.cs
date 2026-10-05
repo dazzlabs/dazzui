@@ -11,11 +11,20 @@ namespace SettingsExample;
 
 public sealed partial class SettingsPage : Page
 {
-    public SettingsViewModel ViewModel { get; }
+    public static readonly DependencyProperty StateProperty = DependencyProperty.Register(nameof(State), typeof(SettingsState), typeof(SettingsPage), new PropertyMetadata(null));
 
-    public SettingsPage(SettingsViewModel viewModel)
+    /// <summary>What the page shows: set a new snapshot to show it.</summary>
+    public SettingsState State
     {
-        ViewModel = viewModel;
+        get => (SettingsState)GetValue(StateProperty);
+        set => SetValue(StateProperty, value);
+    }
+
+    /// <summary>Where the page's actions go.</summary>
+    public Action<SettingsAction>? Send { get; set; }
+
+    public SettingsPage()
+    {
         InitializeComponent();
         Loaded += (_, _) =>
         {
@@ -24,17 +33,17 @@ public sealed partial class SettingsPage : Page
         };
     }
 
-    private void OnSetLaunchAtStartupClick(object sender, RoutedEventArgs e) => ViewModel.Send(new SettingsAction.SetLaunchAtStartup(((ToggleButton)sender).IsChecked == true));
+    private void OnSetLaunchAtStartupClick(object sender, RoutedEventArgs e) => Send?.Invoke(new SettingsAction.SetLaunchAtStartup(((ToggleButton)sender).IsChecked == true));
 
-    private void OnSetAutoUpdateClick(object sender, RoutedEventArgs e) => ViewModel.Send(new SettingsAction.SetAutoUpdate(((ToggleButton)sender).IsChecked == true));
+    private void OnSetAutoUpdateClick(object sender, RoutedEventArgs e) => Send?.Invoke(new SettingsAction.SetAutoUpdate(((ToggleButton)sender).IsChecked == true));
 
-    private void OnSetShowDisabledPluginsClick(object sender, RoutedEventArgs e) => ViewModel.Send(new SettingsAction.SetShowDisabledPlugins(((ToggleButton)sender).IsChecked == true));
+    private void OnSetShowDisabledPluginsClick(object sender, RoutedEventArgs e) => Send?.Invoke(new SettingsAction.SetShowDisabledPlugins(((ToggleButton)sender).IsChecked == true));
 
-    private void OnTogglePluginClick(object sender, RoutedEventArgs e) => ViewModel.Send(new SettingsAction.TogglePlugin(ItemOf<Plugin>(sender).Id));
+    private void OnTogglePluginClick(object sender, RoutedEventArgs e) => Send?.Invoke(new SettingsAction.TogglePlugin(ItemOf<Plugin>(sender).Id));
 
-    private void OnSaveClick(object sender, RoutedEventArgs e) => ViewModel.Send(new SettingsAction.Save());
+    private void OnSaveClick(object sender, RoutedEventArgs e) => Send?.Invoke(new SettingsAction.Save());
 
-    private void OnResetClick(object sender, RoutedEventArgs e) => ViewModel.Send(new SettingsAction.Reset());
+    private void OnResetClick(object sender, RoutedEventArgs e) => Send?.Invoke(new SettingsAction.Reset());
 
     /// <summary>The element of the ItemsRepeater around <paramref name="sender"/> it was made for.</summary>
     private static T ItemOf<T>(object sender)

@@ -3,8 +3,9 @@ use std::path::Path;
 use toml::{Table, Value as Toml};
 
 use crate::ir::{
-    ChildrenSpec, Diagnostic, SourceLocation, ComponentSpec, EnumSpec, EventSpec, PropSpec, PropType, SlotSpec, Source, SwiftArg, SwiftUIMapping,
-    Trailing, Value, WinAttr, WinChildren, WinEvent, WinUIMapping,
+    ChildrenSpec, ComponentSpec, Diagnostic, EnumSpec, EventSpec, PropSpec, PropType, SlotSpec,
+    Source, SourceLocation, SwiftArg, SwiftUIMapping, Trailing, Value, WinAttr, WinChildren,
+    WinEvent, WinUIMapping,
 };
 
 /// The file an app's own components are in, at its crate root.
@@ -38,7 +39,12 @@ impl std::fmt::Display for RegistryError {
 
 impl RegistryError {
     fn new(file: &str, component: Option<&str>, message: impl Into<String>) -> Self {
-        Self { file: file.into(), component: component.map(Into::into), message: message.into(), span: None }
+        Self {
+            file: file.into(),
+            component: component.map(Into::into),
+            message: message.into(),
+            span: None,
+        }
     }
 
     /// A rustc-style diagnostic, pointing into `text`, the file's contents:
@@ -50,16 +56,22 @@ impl RegistryError {
         };
         let range = self.span.clone().or_else(|| {
             let c = self.component.as_ref()?;
-            [format!("[component.{c}]"), format!("[component.{c}."), format!("component.{c}")]
-                .iter()
-                .find_map(|needle| text.find(needle.as_str()).map(|at| at..at + needle.len()))
+            [
+                format!("[component.{c}]"),
+                format!("[component.{c}."),
+                format!("component.{c}"),
+            ]
+            .iter()
+            .find_map(|needle| text.find(needle.as_str()).map(|at| at..at + needle.len()))
         });
         let mut d = Diagnostic::error(message);
         if let Some(range) = range {
             let before = &text[..range.start.min(text.len())];
             let line = before.matches('\n').count() as u32 + 1;
             let column = (range.start - before.rfind('\n').map_or(0, |i| i + 1)) as u32 + 1;
-            let line_end = text[range.start..].find('\n').map_or(text.len(), |i| range.start + i);
+            let line_end = text[range.start..]
+                .find('\n')
+                .map_or(text.len(), |i| range.start + i);
             let width = (range.end.min(line_end).saturating_sub(range.start)) as u32;
             d = d.at(SourceLocation::new(&self.file, line, column), width);
         }
@@ -87,7 +99,11 @@ impl Registry {
         match std::fs::read_to_string(&path) {
             Ok(text) => Self::from_tables(&[(BUILTIN, "registry.toml"), (&text, FILE)]),
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(Self::builtin()),
-            Err(e) => Err(RegistryError::new(FILE, None, format!("cannot read {}: {e}", path.display()))),
+            Err(e) => Err(RegistryError::new(
+                FILE,
+                None,
+                format!("cannot read {}: {e}", path.display()),
+            )),
         }
     }
 
@@ -103,30 +119,55 @@ impl Registry {
             })?;
             for key in table.keys() {
                 if key != "enum" && key != "component" {
-                    return Err(RegistryError::new(file, None, format!("unknown table `{key}`; expected `enum` or `component`")));
+                    return Err(RegistryError::new(
+                        file,
+                        None,
+                        format!("unknown table `{key}`; expected `enum` or `component`"),
+                    ));
                 }
             }
-            for (name, value) in table.get("enum").and_then(Toml::as_table).into_iter().flatten() {
+            for (name, value) in table
+                .get("enum")
+                .and_then(Toml::as_table)
+                .into_iter()
+                .flatten()
+            {
                 let at = format!("enum `{name}`");
                 let cases = strings(value.get("cases"), &at, "cases")
                     .and_then(|c| c.ok_or(format!("{at}: needs `cases`")))
                     .map_err(|e| RegistryError::new(file, None, e))?;
                 enums.retain(|e| &e.name != name);
-                enums.push(EnumSpec { name: name.clone(), cases });
+                enums.push(EnumSpec {
+                    name: name.clone(),
+                    cases,
+                });
             }
-            for (name, value) in table.get("component").and_then(Toml::as_table).into_iter().flatten() {
-                let body = value.as_table().ok_or(RegistryError::new(file, Some(name), "is not a table"))?;
+            for (name, value) in table
+                .get("component")
+                .and_then(Toml::as_table)
+                .into_iter()
+                .flatten()
+            {
+                let body = value.as_table().ok_or(RegistryError::new(
+                    file,
+                    Some(name),
+                    "is not a table",
+                ))?;
                 raw.retain(|(n, _, _)| n != name);
                 raw.push((name.clone(), body.clone(), file));
             }
         }
         let components = raw
             .iter()
-            .map(|(name, body, file)| component(name, body, &enums).map_err(|e| RegistryError::new(file, Some(name), e)))
+            .map(|(name, body, file)| {
+                component(name, body, &enums).map_err(|e| RegistryError::new(file, Some(name), e))
+            })
             .collect::<Result<Vec<_>, _>>()?;
         let registry = Registry { components };
         for (spec, (_, _, file)) in registry.components.iter().zip(&raw) {
-            registry.validate(spec).map_err(|e| RegistryError::new(file, Some(&spec.name), e))?;
+            registry
+                .validate(spec)
+                .map_err(|e| RegistryError::new(file, Some(&spec.name), e))?;
         }
         Ok(registry)
     }
@@ -142,7 +183,8 @@ impl Registry {
     /// What a spec's mappings and lists name must exist on it.
     fn validate(&self, spec: &ComponentSpec) -> Result<(), String> {
         for name in &spec.positional {
-            spec.prop(name).ok_or(format!("positional `{name}` is not a prop"))?;
+            spec.prop(name)
+                .ok_or(format!("positional `{name}` is not a prop"))?;
         }
         for slot in &spec.slots {
             if spec.prop(&slot.name).is_some() {
@@ -153,17 +195,28 @@ impl Registry {
             if let Some(binds) = &event.binds
                 && !spec.prop(binds).is_some_and(|p| p.bindable)
             {
-                return Err(format!("event `{}` binds `{binds}`, which is not a bindable prop", event.name));
+                return Err(format!(
+                    "event `{}` binds `{binds}`, which is not a bindable prop",
+                    event.name
+                ));
             }
         }
         if let ChildrenSpec::Many { allow: Some(allow) } = &spec.children {
             for name in allow {
-                self.get(name).ok_or(format!("children allow `{name}`, which is not a component"))?;
+                self.get(name)
+                    .ok_or(format!("children allow `{name}`, which is not a component"))?;
             }
         }
         for prop in spec.props.iter().filter(|p| p.bindable) {
-            if !spec.events.iter().any(|e| e.binds.as_deref() == Some(&prop.name)) {
-                return Err(format!("prop `{}` is bindable, but no event `binds` it to write the change back", prop.name));
+            if !spec
+                .events
+                .iter()
+                .any(|e| e.binds.as_deref() == Some(&prop.name))
+            {
+                return Err(format!(
+                    "prop `{}` is bindable, but no event `binds` it to write the change back",
+                    prop.name
+                ));
             }
         }
         let backend_lowered = BACKEND_LOWERED.contains(&spec.name.as_str());
@@ -175,7 +228,10 @@ impl Registry {
         if spec.name == "Text"
             && spec.swiftui.is_none()
             && let Some(PropType::Enum(e)) = spec.prop("style").map(|p| &p.ty)
-            && let Some(case) = e.cases.iter().find(|c| !["Title", "Body", "Caption"].contains(&c.as_str()))
+            && let Some(case) = e
+                .cases
+                .iter()
+                .find(|c| !["Title", "Body", "Caption"].contains(&c.as_str()))
         {
             return Err(format!(
                 "`TextStyle::{case}` has no type token in the backends; Text without platform tables takes Title, Body and Caption"
@@ -188,27 +244,50 @@ impl Registry {
             {
                 for case in &e.cases {
                     if !cases.iter().any(|(c, _)| c == case) {
-                        return Err(format!("{platform}: prop `{prop}` maps no code for `{}::{case}`", e.name));
+                        return Err(format!(
+                            "{platform}: prop `{prop}` maps no code for `{}::{case}`",
+                            e.name
+                        ));
                     }
                 }
             }
             Ok(())
         };
         if let Some(m) = &spec.swiftui {
-            m.args.iter().try_for_each(|a| check_cases(&a.source, "swiftui"))?;
+            m.args
+                .iter()
+                .try_for_each(|a| check_cases(&a.source, "swiftui"))?;
         }
         if let Some(m) = &spec.winui {
-            m.attrs.iter().try_for_each(|a| check_cases(&a.source, "winui"))?;
+            m.attrs
+                .iter()
+                .try_for_each(|a| check_cases(&a.source, "winui"))?;
             for e in &m.events {
-                if spec.event(&e.name).is_some_and(|spec| spec.payload.is_some()) && e.value.is_none() {
-                    return Err(format!("winui: event `{}` carries a value, so its mapping needs `value`, the C# that reads it", e.name));
+                if spec
+                    .event(&e.name)
+                    .is_some_and(|spec| spec.payload.is_some())
+                    && e.value.is_none()
+                {
+                    return Err(format!(
+                        "winui: event `{}` carries a value, so its mapping needs `value`, the C# that reads it",
+                        e.name
+                    ));
                 }
             }
         }
         let check_source = |source: &Source| match source {
-            Source::Prop { prop, .. } => spec.prop(prop).map(|_| ()).ok_or(format!("maps prop `{prop}`, which it has not")),
-            Source::Event(e) => spec.event(e).map(|_| ()).ok_or(format!("maps event `{e}`, which it has not")),
-            Source::Slot(s) => spec.slot(s).map(|_| ()).ok_or(format!("maps slot `{s}`, which it has not")),
+            Source::Prop { prop, .. } => spec
+                .prop(prop)
+                .map(|_| ())
+                .ok_or(format!("maps prop `{prop}`, which it has not")),
+            Source::Event(e) => spec
+                .event(e)
+                .map(|_| ())
+                .ok_or(format!("maps event `{e}`, which it has not")),
+            Source::Slot(s) => spec
+                .slot(s)
+                .map(|_| ())
+                .ok_or(format!("maps slot `{s}`, which it has not")),
         };
         match &spec.swiftui {
             Some(m) => {
@@ -245,7 +324,19 @@ impl Registry {
 }
 
 fn component(name: &str, body: &Table, enums: &[EnumSpec]) -> Result<ComponentSpec, String> {
-    known(body, &["positional", "children", "props", "events", "slots", "swiftui", "winui"], "")?;
+    known(
+        body,
+        &[
+            "positional",
+            "children",
+            "props",
+            "events",
+            "slots",
+            "swiftui",
+            "winui",
+        ],
+        "",
+    )?;
     let props = entries(body.get("props"), "props")?
         .into_iter()
         .map(|(name, t)| prop(&name, t, enums).map_err(|e| format!("prop `{name}`: {e}")))
@@ -253,10 +344,17 @@ fn component(name: &str, body: &Table, enums: &[EnumSpec]) -> Result<ComponentSp
     let events = entries(body.get("events"), "events")?
         .into_iter()
         .map(|(name, t)| {
-            known(t, &["modifier", "payload", "binds"], &format!("event `{name}`: "))?;
-            let payload = string(t.get("payload"), "payload")?.map(|ty| prop_type(&ty, enums)).transpose()?;
+            known(
+                t,
+                &["modifier", "payload", "binds"],
+                &format!("event `{name}`: "),
+            )?;
+            let payload = string(t.get("payload"), "payload")?
+                .map(|ty| prop_type(&ty, enums))
+                .transpose()?;
             Ok(EventSpec {
-                modifier: string(t.get("modifier"), "modifier")?.ok_or(format!("event `{name}` needs `modifier`"))?,
+                modifier: string(t.get("modifier"), "modifier")?
+                    .ok_or(format!("event `{name}` needs `modifier`"))?,
                 payload,
                 binds: string(t.get("binds"), "binds")?,
                 name,
@@ -267,7 +365,10 @@ fn component(name: &str, body: &Table, enums: &[EnumSpec]) -> Result<ComponentSp
         .into_iter()
         .map(|(name, t)| {
             known(t, &["required"], &format!("slot `{name}`: "))?;
-            Ok(SlotSpec { required: boolean(t.get("required"), "required")?.unwrap_or(false), name })
+            Ok(SlotSpec {
+                required: boolean(t.get("required"), "required")?.unwrap_or(false),
+                name,
+            })
         })
         .collect::<Result<Vec<_>, String>>()?;
     let children = match body.get("children") {
@@ -276,7 +377,9 @@ fn component(name: &str, body: &Table, enums: &[EnumSpec]) -> Result<ComponentSp
         Some(Toml::String(s)) if s == "many" => ChildrenSpec::Many { allow: None },
         Some(Toml::Table(t)) => {
             known(t, &["allow"], "children: ")?;
-            ChildrenSpec::Many { allow: strings(t.get("allow"), "children", "allow")? }
+            ChildrenSpec::Many {
+                allow: strings(t.get("allow"), "children", "allow")?,
+            }
         }
         Some(_) => return Err("`children` is \"none\", \"many\" or { allow = [...] }".into()),
     };
@@ -287,14 +390,29 @@ fn component(name: &str, body: &Table, enums: &[EnumSpec]) -> Result<ComponentSp
         events,
         slots,
         children,
-        swiftui: body.get("swiftui").map(swiftui).transpose().map_err(|e| format!("swiftui: {e}"))?,
-        winui: body.get("winui").map(winui).transpose().map_err(|e| format!("winui: {e}"))?,
+        swiftui: body
+            .get("swiftui")
+            .map(swiftui)
+            .transpose()
+            .map_err(|e| format!("swiftui: {e}"))?,
+        winui: body
+            .get("winui")
+            .map(winui)
+            .transpose()
+            .map_err(|e| format!("winui: {e}"))?,
     })
 }
 
 fn prop(name: &str, t: &Table, enums: &[EnumSpec]) -> Result<PropSpec, String> {
-    known(t, &["type", "required", "default", "modifier", "bindable"], "")?;
-    let ty = prop_type(&string(t.get("type"), "type")?.ok_or("needs `type`")?, enums)?;
+    known(
+        t,
+        &["type", "required", "default", "modifier", "bindable"],
+        "",
+    )?;
+    let ty = prop_type(
+        &string(t.get("type"), "type")?.ok_or("needs `type`")?,
+        enums,
+    )?;
     let default = t.get("default").map(|v| value(v, &ty)).transpose()?;
     Ok(PropSpec {
         name: name.into(),
@@ -318,7 +436,9 @@ fn prop_type(name: &str, enums: &[EnumSpec]) -> Result<PropType, String> {
                 .cloned()
                 .map(PropType::Enum)
                 .ok_or(format!("no enum `{e}`; declare it under [enum.{e}]")),
-            None => Err(format!("unknown type `{name}`; expected string, bool, int or enum:Name")),
+            None => Err(format!(
+                "unknown type `{name}`; expected string, bool, int or enum:Name"
+            )),
         },
     }
 }
@@ -343,7 +463,13 @@ fn swiftui(v: &Toml) -> Result<SwiftUIMapping, String> {
             .iter()
             .map(|item| {
                 let a = item.as_table().ok_or("an arg is a table")?;
-                known(a, &["arg", "prop", "event", "slot", "enum", "invert", "omit", "fallback"], "arg: ")?;
+                known(
+                    a,
+                    &[
+                        "arg", "prop", "event", "slot", "enum", "invert", "omit", "fallback",
+                    ],
+                    "arg: ",
+                )?;
                 Ok(SwiftArg {
                     arg: string(a.get("arg"), "arg")?.ok_or("an arg needs `arg`")?,
                     source: source(a)?,
@@ -363,14 +489,19 @@ fn swiftui(v: &Toml) -> Result<SwiftUIMapping, String> {
                 Trailing::Slot(slot)
             } else {
                 Trailing::Prop {
-                    prop: string(tr.get("prop"), "prop")?.ok_or("`trailing` takes children, slot or prop")?,
+                    prop: string(tr.get("prop"), "prop")?
+                        .ok_or("`trailing` takes children, slot or prop")?,
                     view: string(tr.get("view"), "view")?.unwrap_or_else(|| "Text".into()),
                 }
             })
         }
         Some(_) => return Err("`trailing` is a table".into()),
     };
-    Ok(SwiftUIMapping { call: string(t.get("call"), "call")?.ok_or("needs `call`")?, args, trailing })
+    Ok(SwiftUIMapping {
+        call: string(t.get("call"), "call")?.ok_or("needs `call`")?,
+        args,
+        trailing,
+    })
 }
 
 fn winui(v: &Toml) -> Result<WinUIMapping, String> {
@@ -382,8 +513,15 @@ fn winui(v: &Toml) -> Result<WinUIMapping, String> {
             .iter()
             .map(|item| {
                 let a = item.as_table().ok_or("an attr is a table")?;
-                known(a, &["attr", "prop", "event", "slot", "enum", "invert", "omit"], "attr: ")?;
-                Ok(WinAttr { attr: string(a.get("attr"), "attr")?.ok_or("an attr needs `attr`")?, source: source(a)? })
+                known(
+                    a,
+                    &["attr", "prop", "event", "slot", "enum", "invert", "omit"],
+                    "attr: ",
+                )?;
+                Ok(WinAttr {
+                    attr: string(a.get("attr"), "attr")?.ok_or("an attr needs `attr`")?,
+                    source: source(a)?,
+                })
             })
             .collect::<Result<_, String>>()?,
         Some(_) => return Err("`attrs` is an array".into()),
@@ -391,9 +529,14 @@ fn winui(v: &Toml) -> Result<WinUIMapping, String> {
     let events = entries(t.get("events"), "events")?
         .into_iter()
         .map(|(name, e)| {
-            known(e, &["event", "args", "value", "using"], &format!("event `{name}`: "))?;
+            known(
+                e,
+                &["event", "args", "value", "using"],
+                &format!("event `{name}`: "),
+            )?;
             Ok(WinEvent {
-                event: string(e.get("event"), "event")?.ok_or(format!("event `{name}` needs `event`"))?,
+                event: string(e.get("event"), "event")?
+                    .ok_or(format!("event `{name}` needs `event`"))?,
                 args: string(e.get("args"), "args")?.unwrap_or_else(|| "RoutedEventArgs".into()),
                 value: string(e.get("value"), "value")?,
                 using: string(e.get("using"), "using")?,
@@ -405,7 +548,11 @@ fn winui(v: &Toml) -> Result<WinUIMapping, String> {
         .into_iter()
         .map(|(name, s)| {
             known(s, &["property"], &format!("slot `{name}`: "))?;
-            Ok((name.clone(), string(s.get("property"), "property")?.ok_or(format!("slot `{name}` needs `property`"))?))
+            Ok((
+                name.clone(),
+                string(s.get("property"), "property")?
+                    .ok_or(format!("slot `{name}` needs `property`"))?,
+            ))
         })
         .collect::<Result<_, String>>()?;
     let children = match t.get("children") {
@@ -415,7 +562,9 @@ fn winui(v: &Toml) -> Result<WinUIMapping, String> {
             let wrap = string(c.get("wrap"), "wrap")?;
             Some(WinChildren {
                 property: string(c.get("property"), "property")?,
-                wrap: wrap.map(|w| Ok::<_, String>((w, string(c.get("wrap_property"), "wrap_property")?))).transpose()?,
+                wrap: wrap
+                    .map(|w| Ok::<_, String>((w, string(c.get("wrap_property"), "wrap_property")?)))
+                    .transpose()?,
             })
         }
         Some(_) => return Err("`children` is a table".into()),
@@ -443,7 +592,14 @@ fn source(t: &Table) -> Result<Source, String> {
         None => Vec::new(),
         Some(Toml::Table(cases)) => cases
             .iter()
-            .map(|(k, v)| Ok((k.clone(), v.as_str().ok_or("an enum case maps to a string")?.to_string())))
+            .map(|(k, v)| {
+                Ok((
+                    k.clone(),
+                    v.as_str()
+                        .ok_or("an enum case maps to a string")?
+                        .to_string(),
+                ))
+            })
             .collect::<Result<_, String>>()?,
         Some(_) => return Err("`enum` is a table of case = code".into()),
     };
@@ -454,7 +610,12 @@ fn source(t: &Table) -> Result<Source, String> {
         Some(Toml::Integer(n)) => Some(Value::Int(*n)),
         Some(_) => return Err("`omit` is a string, bool or integer".into()),
     };
-    Ok(Source::Prop { prop, cases, invert: boolean(t.get("invert"), "invert")?.unwrap_or(false), omit })
+    Ok(Source::Prop {
+        prop,
+        cases,
+        invert: boolean(t.get("invert"), "invert")?.unwrap_or(false),
+        omit,
+    })
 }
 
 /// The tables under `props`, `events` or `slots`, by name, in file order.
@@ -462,13 +623,21 @@ fn entries<'a>(v: Option<&'a Toml>, what: &str) -> Result<Vec<(String, &'a Table
     let Some(v) = v else { return Ok(Vec::new()) };
     let t = v.as_table().ok_or(format!("`{what}` is a table"))?;
     t.iter()
-        .map(|(k, v)| Ok((k.clone(), v.as_table().ok_or(format!("`{what}.{k}` is a table"))?)))
+        .map(|(k, v)| {
+            Ok((
+                k.clone(),
+                v.as_table().ok_or(format!("`{what}.{k}` is a table"))?,
+            ))
+        })
         .collect()
 }
 
 fn known(t: &Table, keys: &[&str], at: &str) -> Result<(), String> {
     match t.keys().find(|k| !keys.contains(&k.as_str())) {
-        Some(k) => Err(format!("{at}unknown key `{k}`; expected one of {}", keys.join(", "))),
+        Some(k) => Err(format!(
+            "{at}unknown key `{k}`; expected one of {}",
+            keys.join(", ")
+        )),
         None => Ok(()),
     }
 }
@@ -494,7 +663,11 @@ fn strings(v: Option<&Toml>, at: &str, key: &str) -> Result<Option<Vec<String>>,
         None => Ok(None),
         Some(Toml::Array(items)) => items
             .iter()
-            .map(|i| i.as_str().map(str::to_owned).ok_or(format!("{at}: `{key}` holds strings")))
+            .map(|i| {
+                i.as_str()
+                    .map(str::to_owned)
+                    .ok_or(format!("{at}: `{key}` holds strings"))
+            })
             .collect::<Result<_, _>>()
             .map(Some),
         Some(_) => Err(format!("{at}: `{key}` is an array of strings")),
@@ -510,10 +683,16 @@ mod tests {
         let r = Registry::builtin();
         let button = r.get("Button").unwrap();
         assert_eq!(button.positional, ["title"]);
-        assert_eq!(button.prop("style").unwrap().default, Some(Value::String("Secondary".into())));
+        assert_eq!(
+            button.prop("style").unwrap().default,
+            Some(Value::String("Secondary".into()))
+        );
         assert_eq!(button.swiftui.as_ref().unwrap().args[0].arg, "variant");
         let toggle = r.get("Toggle").unwrap();
-        assert_eq!(toggle.event("change").unwrap().binds.as_deref(), Some("value"));
+        assert_eq!(
+            toggle.event("change").unwrap().binds.as_deref(),
+            Some("value")
+        );
         assert!(r.get("VStack").unwrap().swiftui.is_none());
     }
 
@@ -535,20 +714,32 @@ mod tests {
         "#;
         let r = Registry::from_tables(&[(BUILTIN, "registry.toml"), (app, FILE)]).unwrap();
         assert_eq!(r.get("Row").unwrap().slots[0].name, "trailing");
-        assert_eq!(r.get("Text").unwrap().swiftui.as_ref().unwrap().call, "Label");
+        assert_eq!(
+            r.get("Text").unwrap().swiftui.as_ref().unwrap().call,
+            "Label"
+        );
         assert!(r.get("Button").is_some());
     }
 
     #[test]
     fn rejects_what_does_not_line_up() {
-        let err = |app: &str| Registry::from_tables(&[(BUILTIN, "registry.toml"), (app, FILE)]).unwrap_err().to_string();
+        let err = |app: &str| {
+            Registry::from_tables(&[(BUILTIN, "registry.toml"), (app, FILE)])
+                .unwrap_err()
+                .to_string()
+        };
         assert_eq!(
             err("[component.X]\nprops.a = { type = \"strng\" }"),
             "dazzui-compiler.toml: component `X`: prop `a`: unknown type `strng`; expected string, bool, int or enum:Name"
         );
-        assert_eq!(err("[component.X]\nprops.a = { type = \"string\" }"), "dazzui-compiler.toml: component `X`: has no `swiftui` table");
         assert_eq!(
-            err("[component.X]\nswiftui = { call = \"X\", args = [{ arg = \"a\", prop = \"b\" }] }\nwinui = { element = \"X\" }"),
+            err("[component.X]\nprops.a = { type = \"string\" }"),
+            "dazzui-compiler.toml: component `X`: has no `swiftui` table"
+        );
+        assert_eq!(
+            err(
+                "[component.X]\nswiftui = { call = \"X\", args = [{ arg = \"a\", prop = \"b\" }] }\nwinui = { element = \"X\" }"
+            ),
             "dazzui-compiler.toml: component `X`: maps prop `b`, which it has not"
         );
         assert_eq!(
@@ -556,11 +747,15 @@ mod tests {
             "dazzui-compiler.toml: component `X`: unknown key `colour`; expected one of positional, children, props, events, slots, swiftui, winui"
         );
         assert_eq!(
-            err("[component.X]\nprops.s = { type = \"enum:ButtonStyle\" }\nswiftui = { call = \"X\", args = [{ arg = \"s\", prop = \"s\", enum = { Primary = \".p\" } }] }\nwinui = { element = \"X\" }"),
+            err(
+                "[component.X]\nprops.s = { type = \"enum:ButtonStyle\" }\nswiftui = { call = \"X\", args = [{ arg = \"s\", prop = \"s\", enum = { Primary = \".p\" } }] }\nwinui = { element = \"X\" }"
+            ),
             "dazzui-compiler.toml: component `X`: swiftui: prop `s` maps no code for `ButtonStyle::Secondary`"
         );
         assert_eq!(
-            err("[component.X]\nprops.v = { type = \"bool\", bindable = true }\nswiftui = { call = \"X\" }\nwinui = { element = \"X\" }"),
+            err(
+                "[component.X]\nprops.v = { type = \"bool\", bindable = true }\nswiftui = { call = \"X\" }\nwinui = { element = \"X\" }"
+            ),
             "dazzui-compiler.toml: component `X`: prop `v` is bindable, but no event `binds` it to write the change back"
         );
     }

@@ -2,7 +2,7 @@
 # generated from this file — run `xcodegen` here after changing it — and
 # committed, as DazzMobileUI's Playground is.
 #
-# The app compiles Generated/ — the page, its view model, and UniFFI's Swift
+# The app compiles Generated/ — the page, its store, and UniFFI's Swift
 # for the bridge — with the real DazzUI, and links the Rust core. A build
 # phase runs `dazzui-compiler generate` first, which builds the core and
 # writes Generated/ afresh, so the bindings never lag the library.

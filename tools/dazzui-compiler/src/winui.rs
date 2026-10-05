@@ -1,14 +1,16 @@
 //! Lowers a page to WinUI 3, in XAML and C#.
 //!
-//! A page becomes three files: the XAML; its code-behind — a constructor
-//! that takes the view model, and one handler per event, each forwarding an
-//! action; and the view model, thin over the UniFFI object whose C# — the
-//! state, the actions, the app — uniffi-bindgen-cs writes beside it.
+//! A page becomes two files: the XAML, and its code-behind — a `State` to
+//! show, a `Send` for actions, and one handler per event, each sending one.
+//! It holds nothing else, and knows nothing of where either comes from. A
+//! Rust page model becomes a store, thin over the UniFFI object whose C# —
+//! the state, the actions, the source — uniffi-bindgen-cs writes beside it,
+//! which is one way for a host to feed a page.
 //! DazzUI controls come from `xmlns:dazz="using:DazzUI"`.
 //!
 //! State is read with `{x:Bind …, Mode=OneWay}` and never `TwoWay`: a
-//! change goes to Rust as an action, and the value comes back in the next
-//! snapshot, so the C# copy of the state is never changed on its own.
+//! change goes out as an action, and the value comes back in the next
+//! snapshot, so the page's copy of the state is never changed on its own.
 //!
 //! An `if` sets `Visibility` on each node of its branches rather than
 //! `x:Load`, which works inside a `DataTemplate` too and needs no `x:Name`.
@@ -17,14 +19,14 @@
 
 use crate::Registry;
 use crate::ir::{
-    ActionPayload, ActionRef, Component, ComponentSpec, Condition, Expr, GeneratedFile, Source, UiNode, Value, page_stem,
-    pascal_case,
+    ActionPayload, ActionRef, Component, ComponentSpec, Condition, Expr, GeneratedFile, Source,
+    UiNode, Value, pascal_case,
 };
-use crate::{CompiledPage, Options};
+use crate::rust_types::Fields;
+use crate::{CompiledModel, CompiledPage, Options};
 
 pub fn generate(compiled: &CompiledPage, options: &Options) -> Vec<GeneratedFile> {
     let page = &compiled.page;
-    let stem = page_stem(&page.name);
     let mut cx = Cx {
         page: page.name.clone(),
         registry: compiled.registry.clone(),
@@ -39,8 +41,10 @@ pub fn generate(compiled: &CompiledPage, options: &Options) -> Vec<GeneratedFile
     let xaml = xaml(compiled, &options.namespace, &mut cx);
     vec![
         GeneratedFile::new(format!("{}.xaml", page.name), xaml),
-        GeneratedFile::new(format!("{}.xaml.cs", page.name), code_behind(compiled, &options.namespace, &cx)),
-        GeneratedFile::new(format!("{stem}ViewModel.cs"), view_model(compiled, &options.namespace)),
+        GeneratedFile::new(
+            format!("{}.xaml.cs", page.name),
+            code_behind(compiled, &options.namespace, &cx),
+        ),
     ]
 }
 
@@ -84,7 +88,10 @@ struct Handler {
 fn xaml(compiled: &CompiledPage, namespace: &str, cx: &mut Cx) -> String {
     let page = &compiled.page;
     let mut w = Writer::default();
-    w.line(&format!("<!-- AUTO-GENERATED FILE. DO NOT EDIT. Source: {} -->", compiled.file));
+    w.line(&format!(
+        "<!-- AUTO-GENERATED FILE. DO NOT EDIT. Source: {} -->",
+        compiled.file
+    ));
     w.line("<Page");
     w.indent(|w| {
         w.line(&format!("x:Class=\"{namespace}.{}\"", page.name));
@@ -92,7 +99,15 @@ fn xaml(compiled: &CompiledPage, namespace: &str, cx: &mut Cx) -> String {
         w.line("xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"");
         w.line(&format!("xmlns:local=\"using:{namespace}\""));
         w.line("xmlns:dazz=\"using:DazzUI\">");
-        node(w, &page.root, Stack { horizontal: false, spacing: 0 }, cx);
+        node(
+            w,
+            &page.root,
+            Stack {
+                horizontal: false,
+                spacing: 0,
+            },
+            cx,
+        );
     });
     w.line("</Page>");
     w.finish()
@@ -101,22 +116,40 @@ fn xaml(compiled: &CompiledPage, namespace: &str, cx: &mut Cx) -> String {
 fn node(w: &mut Writer, node: &UiNode, stack: Stack, cx: &mut Cx) {
     let c = match node {
         UiNode::Component(c) => c,
-        UiNode::If { condition, then_branch, else_branch, source } => {
+        UiNode::If {
+            condition,
+            then_branch,
+            else_branch,
+            source,
+        } => {
             w.line(&format!("<!-- source: {} (if) -->", source.short()));
             cx.conditions.push(condition.clone());
             then_branch.iter().for_each(|n| self::node(w, n, stack, cx));
             cx.conditions.pop();
             if !else_branch.is_empty() {
                 w.line(&format!("<!-- source: {} (else) -->", source.short()));
-                cx.conditions.push(Condition { negated: !condition.negated, value: condition.value.clone() });
+                cx.conditions.push(Condition {
+                    negated: !condition.negated,
+                    value: condition.value.clone(),
+                });
                 else_branch.iter().for_each(|n| self::node(w, n, stack, cx));
                 cx.conditions.pop();
             }
             return;
         }
-        UiNode::ForEach { collection, element, children, source, .. } => {
+        UiNode::ForEach {
+            collection,
+            element,
+            children,
+            source,
+            ..
+        } => {
             w.line(&format!("<!-- source: {} -->", source.short()));
-            let orientation = if stack.horizontal { "Horizontal" } else { "Vertical" };
+            let orientation = if stack.horizontal {
+                "Horizontal"
+            } else {
+                "Vertical"
+            };
             w.line(&format!(
                 "<ItemsRepeater ItemsSource={}{}>",
                 bind(cx, &Expr::State(collection.clone())),
@@ -124,7 +157,12 @@ fn node(w: &mut Writer, node: &UiNode, stack: Stack, cx: &mut Cx) {
             ));
             w.indent(|w| {
                 w.line("<ItemsRepeater.Layout>");
-                w.indent(|w| w.line(&format!("<StackLayout Orientation=\"{orientation}\" Spacing=\"{}\"/>", stack.spacing)));
+                w.indent(|w| {
+                    w.line(&format!(
+                        "<StackLayout Orientation=\"{orientation}\" Spacing=\"{}\"/>",
+                        stack.spacing
+                    ))
+                });
                 w.line("</ItemsRepeater.Layout>");
                 w.line("<ItemsRepeater.ItemTemplate>");
                 w.indent(|w| {
@@ -138,7 +176,10 @@ fn node(w: &mut Writer, node: &UiNode, stack: Stack, cx: &mut Cx) {
                         if let [only @ UiNode::Component(_)] = children.as_slice() {
                             self::node(w, only, stack, cx);
                         } else {
-                            w.line(&format!("<StackPanel Orientation=\"{orientation}\" Spacing=\"{}\">", stack.spacing));
+                            w.line(&format!(
+                                "<StackPanel Orientation=\"{orientation}\" Spacing=\"{}\">",
+                                stack.spacing
+                            ));
                             w.indent(|w| children.iter().for_each(|n| self::node(w, n, stack, cx)));
                             w.line("</StackPanel>");
                         }
@@ -157,22 +198,44 @@ fn node(w: &mut Writer, node: &UiNode, stack: Stack, cx: &mut Cx) {
     let visible = visibility(cx);
     // A mapping wins, so that an app's registry can replace even the
     // components this backend lowers itself.
-    if let Some(spec) = cx.registry.get(c.id.as_str()).filter(|s| s.winui.is_some()).cloned() {
+    if let Some(spec) = cx
+        .registry
+        .get(c.id.as_str())
+        .filter(|s| s.winui.is_some())
+        .cloned()
+    {
         return mapped(w, c, &spec, &visible, cx);
     }
     match c.id.as_str() {
         kind @ ("VStack" | "HStack") => {
-            let inner = Stack { horizontal: kind == "HStack", spacing: int(c, "spacing") };
-            let orientation = if inner.horizontal { " Orientation=\"Horizontal\"" } else { "" };
-            w.line(&format!("<StackPanel{orientation} Spacing=\"{}\"{visible}>", inner.spacing));
+            let inner = Stack {
+                horizontal: kind == "HStack",
+                spacing: int(c, "spacing"),
+            };
+            let orientation = if inner.horizontal {
+                " Orientation=\"Horizontal\""
+            } else {
+                ""
+            };
+            w.line(&format!(
+                "<StackPanel{orientation} Spacing=\"{}\"{visible}>",
+                inner.spacing
+            ));
             // The conditions are on the panel; its children need not repeat them.
             let conditions = std::mem::take(&mut cx.conditions);
-            w.indent(|w| c.children.iter().for_each(|child| self::node(w, child, inner, cx)));
+            w.indent(|w| {
+                c.children
+                    .iter()
+                    .for_each(|child| self::node(w, child, inner, cx))
+            });
             cx.conditions = conditions;
             w.line("</StackPanel>");
         }
         "Text" => {
-            let mut tag = format!("<TextBlock Text={}", value(cx, c.prop("text").expect("text is required")));
+            let mut tag = format!(
+                "<TextBlock Text={}",
+                value(cx, c.prop("text").expect("text is required"))
+            );
             if let Some(style) = c.prop("style") {
                 let token = text_token(case(style));
                 if cx.element.is_some() {
@@ -183,7 +246,10 @@ fn node(w: &mut Writer, node: &UiNode, stack: Stack, cx: &mut Cx) {
                 } else {
                     // A type token is not a XAML resource, so the
                     // code-behind sets the face once the page knows its theme.
-                    let name = format!("Text{}", cx.styled.iter().filter(|(n, _)| !n.is_empty()).count() + 1);
+                    let name = format!(
+                        "Text{}",
+                        cx.styled.iter().filter(|(n, _)| !n.is_empty()).count() + 1
+                    );
                     tag += &format!(" x:Name=\"{name}\"");
                     cx.styled.push((name, token));
                 }
@@ -208,7 +274,13 @@ fn visibility(cx: &mut Cx) -> String {
         }
     };
     let args: Vec<String> = cx.conditions.iter().map(|c| path(cx, &c.value)).collect();
-    format!(" Visibility=\"{{x:Bind local:{}.Visible{}({}){}}}\"", cx.page, index + 1, args.join(", "), mode(cx))
+    format!(
+        " Visibility=\"{{x:Bind local:{}.Visible{}({}){}}}\"",
+        cx.page,
+        index + 1,
+        args.join(", "),
+        mode(cx)
+    )
 }
 
 /// A component its registry mapping lowers: an element, its attributes and
@@ -217,7 +289,12 @@ fn mapped(w: &mut Writer, c: &Component, spec: &ComponentSpec, visible: &str, cx
     let m = spec.winui.as_ref().expect("a WinUI mapping");
     let mut tag = format!("<{}", m.element);
     for attr in &m.attrs {
-        if let Source::Prop { prop, cases, invert, omit } = &attr.source
+        if let Source::Prop {
+            prop,
+            cases,
+            invert,
+            omit,
+        } = &attr.source
             && let Some(e) = c.prop_value(prop).filter(|e| !e.is_omitted(omit.as_ref()))
         {
             tag += &format!(" {}={}", attr.attr, attr_value(cx, &e, cases, *invert));
@@ -230,21 +307,33 @@ fn mapped(w: &mut Writer, c: &Component, spec: &ComponentSpec, visible: &str, cx
             {
                 cx.usings.push(using.clone());
             }
-            let name = handler(cx, action, &event.event, &event.args, event.value.as_deref());
+            let name = handler(
+                cx,
+                action,
+                &event.event,
+                &event.args,
+                event.value.as_deref(),
+            );
             tag += &format!(" {}=\"{name}\"", event.event);
         }
     }
     tag += visible;
 
-    let slots: Vec<(&str, &UiNode)> =
-        m.slots.iter().filter_map(|(slot, property)| Some((property.as_str(), c.slot(slot)?))).collect();
+    let slots: Vec<(&str, &UiNode)> = m
+        .slots
+        .iter()
+        .filter_map(|(slot, property)| Some((property.as_str(), c.slot(slot)?)))
+        .collect();
     if slots.is_empty() && c.children.is_empty() {
         return w.line(&(tag + "/>"));
     }
     w.line(&(tag + ">"));
     // The conditions are on the element; what it holds need not repeat them.
     let conditions = std::mem::take(&mut cx.conditions);
-    let column = Stack { horizontal: false, spacing: 0 };
+    let column = Stack {
+        horizontal: false,
+        spacing: 0,
+    };
     w.indent(|w| {
         for (property, node) in slots {
             w.line(&format!("<{}.{property}>", m.element));
@@ -252,8 +341,14 @@ fn mapped(w: &mut Writer, c: &Component, spec: &ComponentSpec, visible: &str, cx
             w.line(&format!("</{}.{property}>", m.element));
         }
         if !c.children.is_empty() {
-            let children = |w: &mut Writer, cx: &mut Cx| c.children.iter().for_each(|n| self::node(w, n, column, cx));
-            let wrapped = |w: &mut Writer, cx: &mut Cx| match m.children.as_ref().and_then(|ch| ch.wrap.as_ref()) {
+            let children = |w: &mut Writer, cx: &mut Cx| {
+                c.children.iter().for_each(|n| self::node(w, n, column, cx))
+            };
+            let wrapped = |w: &mut Writer, cx: &mut Cx| match m
+                .children
+                .as_ref()
+                .and_then(|ch| ch.wrap.as_ref())
+            {
                 Some((wrap, property)) => {
                     w.line(&format!("<{wrap}>"));
                     w.indent(|w| match property {
@@ -297,7 +392,12 @@ fn attr_value(cx: &mut Cx, e: &Expr, cases: &[(String, String)], invert: bool) -
         Expr::Literal(Value::Bool(b)) if invert => value(cx, &Expr::Literal(Value::Bool(!b))),
         e @ (Expr::State(_) | Expr::Local(_)) if invert => {
             cx.negates = true;
-            format!("\"{{x:Bind local:{}.Not({}){}}}\"", cx.page, path(cx, e), mode(cx))
+            format!(
+                "\"{{x:Bind local:{}.Not({}){}}}\"",
+                cx.page,
+                path(cx, e),
+                mode(cx)
+            )
         }
         other => value(cx, other),
     }
@@ -305,13 +405,23 @@ fn attr_value(cx: &mut Cx, e: &Expr, cases: &[(String, String)], invert: bool) -
 
 /// The handler for `action` on `event`, `OnSaveClick`: one per distinct
 /// action and value, however many controls send it.
-fn handler(cx: &mut Cx, action: &ActionRef, event: &str, args: &str, event_value: Option<&str>) -> String {
+fn handler(
+    cx: &mut Cx,
+    action: &ActionRef,
+    event: &str,
+    args: &str,
+    event_value: Option<&str>,
+) -> String {
     let payload = match &action.payload {
         ActionPayload::None => String::new(),
         ActionPayload::EventValue => event_value.expect("an event with a value").to_string(),
         ActionPayload::Expr(e) => cs_expr(cx, e),
     };
-    if let Some(h) = cx.handlers.iter().find(|h| &h.action == action && h.payload == payload) {
+    if let Some(h) = cx
+        .handlers
+        .iter()
+        .find(|h| &h.action == action && h.payload == payload)
+    {
         return h.name.clone();
     }
     let base = format!("On{}{event}", action.variant);
@@ -321,7 +431,12 @@ fn handler(cx: &mut Cx, action: &ActionRef, event: &str, args: &str, event_value
         n += 1;
         name = format!("{base}{n}");
     }
-    cx.handlers.push(Handler { name: name.clone(), args: args.into(), action: action.clone(), payload });
+    cx.handlers.push(Handler {
+        name: name.clone(),
+        args: args.into(),
+        action: action.clone(),
+        payload,
+    });
     name
 }
 
@@ -348,26 +463,38 @@ fn value(cx: &Cx, e: &Expr) -> String {
         Expr::Literal(Value::Bool(b)) => format!("\"{}\"", if *b { "True" } else { "False" }),
         Expr::Literal(Value::Int(n)) => format!("\"{n}\""),
         Expr::State(_) | Expr::Local(_) => bind(cx, e),
-        Expr::EnumCase { ty, case } => unreachable!("`{ty}::{case}` is lowered by the prop that takes it"),
+        Expr::EnumCase { ty, case } => {
+            unreachable!("`{ty}::{case}` is lowered by the prop that takes it")
+        }
     }
 }
 
-/// `"{x:Bind ViewModel.State.Flag, Mode=OneWay}"`, or `"{x:Bind Name}"`
+/// `"{x:Bind State.Flag, Mode=OneWay}"`, or `"{x:Bind Name}"`
 /// inside a template, whose elements are replaced rather than changed.
 fn bind(cx: &Cx, e: &Expr) -> String {
     format!("\"{{x:Bind {}{}}}\"", path(cx, e), mode(cx))
 }
 
 fn mode(cx: &Cx) -> &'static str {
-    if cx.element.is_some() { "" } else { ", Mode=OneWay" }
+    if cx.element.is_some() {
+        ""
+    } else {
+        ", Mode=OneWay"
+    }
 }
 
-/// The x:Bind path of a state or element value: `ViewModel.State.Flag`,
+/// The x:Bind path of a state or element value: `State.Flag`,
 /// or `Owner.Name` inside a template.
 fn path(cx: &Cx, e: &Expr) -> String {
-    let pascal = |segments: &[String]| segments.iter().map(|s| pascal_case(s)).collect::<Vec<_>>().join(".");
+    let pascal = |segments: &[String]| {
+        segments
+            .iter()
+            .map(|s| pascal_case(s))
+            .collect::<Vec<_>>()
+            .join(".")
+    };
     match e {
-        Expr::State(p) => format!("ViewModel.State.{}", pascal(&p.segments)),
+        Expr::State(p) => format!("State.{}", pascal(&p.segments)),
         Expr::Local(p) => {
             debug_assert!(cx.element.is_some(), "a loop item outside its loop");
             pascal(&p.segments)
@@ -389,7 +516,9 @@ fn cs_expr(cx: &Cx, e: &Expr) -> String {
             let element = cx.element.as_deref().expect("a loop item inside its loop");
             format!("ItemOf<{element}>(sender).{}", path(cx, e))
         }
-        Expr::EnumCase { ty, case } => unreachable!("`{ty}::{case}` is lowered by the prop that takes it"),
+        Expr::EnumCase { ty, case } => {
+            unreachable!("`{ty}::{case}` is lowered by the prop that takes it")
+        }
     }
 }
 
@@ -443,8 +572,7 @@ fn header(source: &str) -> String {
 
 fn code_behind(compiled: &CompiledPage, namespace: &str, cx: &Cx) -> String {
     let page = &compiled.page;
-    let model = format!("{}ViewModel", page_stem(&page.name));
-    let action = &compiled.bridge.action;
+    let (state, action) = (&page.state_type, &page.action_type);
     let named: Vec<&(String, &str)> = cx.styled.iter().filter(|(n, _)| !n.is_empty()).collect();
     let in_templates = cx.styled.iter().any(|(n, _)| n.is_empty());
     let mut w = Writer::default();
@@ -454,9 +582,7 @@ fn code_behind(compiled: &CompiledPage, namespace: &str, cx: &Cx) -> String {
         w.line("using DazzUI;");
     }
     let items = cx.handlers.iter().any(|h| h.payload.contains("ItemOf<"));
-    if items {
-        w.line("using System;");
-    }
+    w.line("using System;");
     w.line("using Microsoft.UI.Xaml;");
     w.line("using Microsoft.UI.Xaml.Controls;");
     if items {
@@ -471,12 +597,26 @@ fn code_behind(compiled: &CompiledPage, namespace: &str, cx: &Cx) -> String {
     w.line(&format!("public sealed partial class {} : Page", page.name));
     w.line("{");
     w.indent(|w| {
-        w.line(&format!("public {model} ViewModel {{ get; }}"));
+        w.line(&format!(
+            "public static readonly DependencyProperty StateProperty = DependencyProperty.Register(nameof(State), typeof({state}), typeof({}), new PropertyMetadata(null));",
+            page.name
+        ));
         w.line("");
-        w.line(&format!("public {}({model} viewModel)", page.name));
+        w.line("/// <summary>What the page shows: set a new snapshot to show it.</summary>");
+        w.line(&format!("public {state} State"));
         w.line("{");
         w.indent(|w| {
-            w.line("ViewModel = viewModel;");
+            w.line(&format!("get => ({state})GetValue(StateProperty);"));
+            w.line("set => SetValue(StateProperty, value);");
+        });
+        w.line("}");
+        w.line("");
+        w.line("/// <summary>Where the page's actions go.</summary>");
+        w.line(&format!("public Action<{action}>? Send {{ get; set; }}"));
+        w.line("");
+        w.line(&format!("public {}()", page.name));
+        w.line("{");
+        w.indent(|w| {
             w.line("InitializeComponent();");
             if !named.is_empty() {
                 w.line("Loaded += (_, _) =>");
@@ -492,7 +632,11 @@ fn code_behind(compiled: &CompiledPage, namespace: &str, cx: &Cx) -> String {
         w.line("}");
         // uniffi-bindgen-cs writes an action with no values as a C# enum,
         // and one with any as records.
-        let flat = compiled.bridge.variants.iter().all(|v| v.payload.is_none());
+        let flat = compiled
+            .actions
+            .variants
+            .iter()
+            .all(|v| v.fields == Fields::Unit);
         for h in &cx.handlers {
             w.line("");
             let action = if flat {
@@ -500,7 +644,7 @@ fn code_behind(compiled: &CompiledPage, namespace: &str, cx: &Cx) -> String {
             } else {
                 format!("new {action}.{}({})", h.action.variant, h.payload)
             };
-            w.line(&format!("private void {}(object sender, {} e) => ViewModel.Send({action});", h.name, h.args));
+            w.line(&format!("private void {}(object sender, {} e) => Send?.Invoke({action});", h.name, h.args));
         }
         if cx.handlers.iter().any(|h| h.payload.contains("ItemOf<")) {
             w.line("");
@@ -561,62 +705,95 @@ fn code_behind(compiled: &CompiledPage, namespace: &str, cx: &Cx) -> String {
     w.finish()
 }
 
-fn view_model(compiled: &CompiledPage, namespace: &str) -> String {
-    let stem = page_stem(&compiled.page.name);
-    let bridge = &compiled.bridge;
-    let (state, action, app, listener) = (&bridge.state, &bridge.action, bridge.app(), bridge.listener());
+/// `SettingsStore.cs`: the state of a Rust page model, observable, and its
+/// `Send`, for a host to hand a page.
+pub fn store(model: &CompiledModel, options: &Options) -> GeneratedFile {
+    let bridge = &model.bridge;
+    let (state, action, source, listener, store) = (
+        &bridge.state,
+        &bridge.action,
+        bridge.source(),
+        bridge.listener(),
+        bridge.store(),
+    );
     let mut w = Writer::default();
-    w.raw(&header(&compiled.file));
+    w.raw(&header(&model.file));
     w.line("");
     w.line("using System;");
     w.line("using System.ComponentModel;");
+    w.line("using Microsoft.UI.Dispatching;");
     w.line("");
-    w.line(&format!("namespace {namespace};"));
+    w.line(&format!("namespace {};", options.namespace));
     w.line("");
-    w.line("/// <summary>Holds the latest snapshot of the Rust state and sends actions to");
     w.line(&format!(
-        "/// Rust's <c>{}</c>, which runs on the calling thread before <c>Send</c> returns.</summary>",
-        bridge.update
+        "/// <summary>The latest snapshot of the model <c>{}</c> makes, and a way to",
+        bridge.function
     ));
-    w.line(&format!("public sealed class {stem}ViewModel : INotifyPropertyChanged, IDisposable"));
+    w.line("/// send it actions: what a page takes. Whatever thread the model changes on,");
+    w.line("/// the snapshot is read again on the thread that made the store.</summary>");
+    w.line(&format!(
+        "public sealed class {store} : INotifyPropertyChanged, IDisposable"
+    ));
     w.line("{");
     w.indent(|w| {
-        w.line(&format!("private readonly {app} app = new();"));
+        w.line(&format!("private readonly {source} source;"));
+        w.line(
+            "private readonly DispatcherQueue? dispatcher = DispatcherQueue.GetForCurrentThread();",
+        );
         w.line("");
         w.line(&format!("public {state} State {{ get; private set; }}"));
         w.line("");
         w.line("public event PropertyChangedEventHandler? PropertyChanged;");
         w.line("");
-        w.line(&format!("public {stem}ViewModel()"));
+        w.line(&format!("public {store}() : this(new {source}()) {{ }}"));
+        w.line("");
+        w.line(&format!("public {store}({source} source)"));
         w.line("{");
         w.indent(|w| {
-            w.line("State = app.State();");
-            w.line(&format!("app.Subscribe(new Listener(new WeakReference<{stem}ViewModel>(this)));"));
+            w.line("this.source = source;");
+            w.line("State = source.State();");
+            w.line(&format!(
+                "source.Subscribe(new Listener(new WeakReference<{store}>(this)));"
+            ));
         });
         w.line("}");
         w.line("");
-        w.line(&format!("public void Send({action} action) => app.Send(action);"));
+        w.line(&format!(
+            "public void Send({action} action) => source.Send(action);"
+        ));
         w.line("");
-        w.line("public void Dispose() => app.Dispose();");
+        w.line("public void Dispose() => source.Dispose();");
         w.line("");
-        w.line("/// <summary>Rust calls this back on the thread that sent the action. It holds");
-        w.line("/// the model weakly: Rust holds it.</summary>");
-        w.line(&format!("private sealed class Listener(WeakReference<{stem}ViewModel> model) : {listener}"));
+        w.line("private void Refresh()");
+        w.line("{");
+        w.indent(|w| {
+            w.line("State = source.State();");
+            w.line("PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(State)));");
+        });
+        w.line("}");
+        w.line("");
+        w.line("/// <summary>Rust calls this back on the thread that changed the state. On the");
+        w.line("/// store's own, it reads it at once, so a model that changes as it takes an");
+        w.line("/// action is shown changed when <c>Send</c> returns; from any other, it reads it");
+        w.line("/// there next. It holds the store weakly: Rust holds it.</summary>");
+        w.line(&format!(
+            "private sealed class Listener(WeakReference<{store}> store) : {listener}"
+        ));
         w.line("{");
         w.indent(|w| {
             w.line("public void StateChanged()");
             w.line("{");
             w.indent(|w| {
-                w.line("if (!model.TryGetTarget(out var m)) return;");
-                w.line("m.State = m.app.State();");
-                w.line("m.PropertyChanged?.Invoke(m, new PropertyChangedEventArgs(nameof(State)));");
+                w.line("if (!store.TryGetTarget(out var s)) return;");
+                w.line("if (s.dispatcher is null || s.dispatcher.HasThreadAccess) s.Refresh();");
+                w.line("else s.dispatcher.TryEnqueue(s.Refresh);");
             });
             w.line("}");
         });
         w.line("}");
     });
     w.line("}");
-    w.finish()
+    GeneratedFile::new(format!("{store}.cs"), w.finish())
 }
 
 #[derive(Default)]

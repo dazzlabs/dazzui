@@ -10,7 +10,11 @@ pub struct SourceLocation {
 
 impl SourceLocation {
     pub fn new(file: impl Into<String>, line: u32, column: u32) -> Self {
-        Self { file: file.into(), line, column }
+        Self {
+            file: file.into(),
+            line,
+            column,
+        }
     }
 
     /// `settings.rs:23` — the file's own name rather than its path, which is

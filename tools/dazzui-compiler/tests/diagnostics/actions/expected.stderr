@@ -1,38 +1,38 @@
 error: no variant `Sav` on action enum `A`
-  --> page.rs:32:42
+  --> page.rs:29:42
    |
-32 |             Button("a").on_click(Action::Sav)
+29 |             Button("a").on_click(Action::Sav)
    |                                          ^^^
    |
 help: did you mean `Save`?
 
 error: `A::SetOn` carries a value, but `click` has none to give it
-  --> page.rs:33:42
+  --> page.rs:30:42
    |
-33 |             Button("b").on_click(Action::SetOn)
+30 |             Button("b").on_click(Action::SetOn)
    |                                          ^^^^^ expects a payload
    |
 help: pass one: `Action::SetOn(…)`, a `bool`
 
 error: `A::Save` carries no value
-  --> page.rs:34:47
+  --> page.rs:31:47
    |
-34 |             Button("c").on_click(Action::Save(true))
+31 |             Button("c").on_click(Action::Save(true))
    |                                               ^^^^
    |
 help: write `Action::Save`
 
 error: the action carries a `u32`, but `state.name` is a `String`
-  --> page.rs:35:47
+  --> page.rs:32:47
    |
-35 |             Button("d").on_click(Action::Pick(state.name))
+32 |             Button("d").on_click(Action::Pick(state.name))
    |                                               ^^^^^^^^^^
    |
 
 error: `A::Rename` carries a `String`, but `change` gives it Bool
-  --> page.rs:36:58
+  --> page.rs:33:58
    |
-36 |             Toggle { value: state.on, on_change: Action::Rename }
+33 |             Toggle { value: state.on, on_change: Action::Rename }
    |                                                          ^^^^^^ payload type differs
    |
 

@@ -1,36 +1,36 @@
 error: property `spacing` on `VStack` expects Integer, found a string
-  --> page.rs:31:25
+  --> page.rs:28:25
    |
-31 |         VStack(spacing: "wide") {
+28 |         VStack(spacing: "wide") {
    |                         ^^^^^^ expected Integer
    |
 
 error: property `text` on `Text` expects String, but `state.on` is a `bool`
-  --> page.rs:32:18
+  --> page.rs:29:18
    |
-32 |             Text(state.on)
+29 |             Text(state.on)
    |                  ^^^^^^^^ expected String
    |
 
 error: no case `Primry` on `ButtonStyle`
-  --> page.rs:33:44
+  --> page.rs:30:44
    |
-33 |             Button("a").style(ButtonStyle::Primry)
+30 |             Button("a").style(ButtonStyle::Primry)
    |                                            ^^^^^^ cases are Primary, Secondary
    |
 help: did you mean `Primary`?
 
 error: expected a `ButtonStyle` case, found `TextStyle::Title`
-  --> page.rs:34:31
+  --> page.rs:31:31
    |
-34 |             Button("b").style(TextStyle::Title)
+31 |             Button("b").style(TextStyle::Title)
    |                               ^^^^^^^^^ expected ButtonStyle
    |
 
 error: property `spacing` on `HStack` takes a literal for now, not a state value
-  --> page.rs:35:29
+  --> page.rs:32:29
    |
-35 |             HStack(spacing: state.count) { Text("c") }
+32 |             HStack(spacing: state.count) { Text("c") }
    |                             ^^^^^^^^^^^
    |
 

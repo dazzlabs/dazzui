@@ -43,7 +43,11 @@ fn run(args: Vec<String>) -> Result<(), String> {
     let mut library = None;
     let mut rest = rest.iter();
     while let Some(flag) = rest.next() {
-        let mut value = || rest.next().cloned().ok_or_else(|| format!("error: `{flag}` takes a value\n\n{USAGE}"));
+        let mut value = || {
+            rest.next()
+                .cloned()
+                .ok_or_else(|| format!("error: `{flag}` takes a value\n\n{USAGE}"))
+        };
         match flag.as_str() {
             "--src" => src = value()?.into(),
             "--output" => output = Some(value()?.into()),
@@ -51,7 +55,10 @@ fn run(args: Vec<String>) -> Result<(), String> {
             "--library" => library = Some(value()?),
             "--target" => {
                 let name = value()?;
-                target = Some(Target::parse(&name).ok_or_else(|| format!("error: unknown target `{name}`\n\n{USAGE}"))?);
+                target = Some(
+                    Target::parse(&name)
+                        .ok_or_else(|| format!("error: unknown target `{name}`\n\n{USAGE}"))?,
+                );
             }
             other => return Err(format!("error: unknown argument `{other}`\n\n{USAGE}")),
         }
@@ -60,49 +67,79 @@ fn run(args: Vec<String>) -> Result<(), String> {
     let base = env::current_dir().map_err(|e| e.to_string())?;
     // rustc's colours on a terminal, unless NO_COLOR asks otherwise.
     let color = std::io::stderr().is_terminal() && env::var_os("NO_COLOR").is_none();
-    let pages = compile(&src, &base).map_err(|report| report.render(color))?;
+    let compiled = compile(&src, &base).map_err(|report| report.render(color))?;
     match command.as_str() {
         "check" => {
             // Both backends run too, their output dropped, so that a page
             // `check` passes is one `generate` writes for either target.
-            let options = Options { namespace: "Check".into(), library: "check".into() };
+            let options = Options {
+                namespace: "Check".into(),
+                library: "check".into(),
+            };
             for target in Target::ALL {
-                generate(&pages, target, &options);
+                generate(&compiled, target, &options);
             }
-            eprintln!("checked {} page{}", pages.len(), if pages.len() == 1 { "" } else { "s" });
+            let plural = |n: usize| if n == 1 { "" } else { "s" };
+            let (pages, models) = (compiled.pages.len(), compiled.models.len());
+            eprintln!(
+                "checked {pages} page{} and {models} page model{}",
+                plural(pages),
+                plural(models)
+            );
             Ok(())
         }
         "generate" => {
-            let package = fs::read_to_string(base.join("Cargo.toml")).ok().and_then(|m| crate_lib_name(&m));
-            let library = library
-                .or_else(|| package.clone())
-                .ok_or("error: no `--library`, and no package name in ./Cargo.toml to take it from\n")?;
+            let package = fs::read_to_string(base.join("Cargo.toml"))
+                .ok()
+                .and_then(|m| crate_lib_name(&m));
+            let library = library.or_else(|| package.clone()).ok_or(
+                "error: no `--library`, and no package name in ./Cargo.toml to take it from\n",
+            )?;
             // `settings_example` → `SettingsExample`
-            let namespace = namespace.or_else(|| package.map(|p| pascal_case(&p))).unwrap_or_else(|| "App".into());
+            let namespace = namespace
+                .or_else(|| package.map(|p| pascal_case(&p)))
+                .unwrap_or_else(|| "App".into());
             let options = Options { namespace, library };
             let targets: Vec<Target> = match target {
                 Some(target) => vec![target],
-                None if output.is_some() => return Err(format!("error: `--output` takes one `--target`\n\n{USAGE}")),
+                None if output.is_some() => {
+                    return Err(format!("error: `--output` takes one `--target`\n\n{USAGE}"));
+                }
                 None => {
-                    let found: Vec<Target> = Target::ALL.into_iter().filter(|t| base.join(t.platform()).is_dir()).collect();
+                    let found: Vec<Target> = Target::ALL
+                        .into_iter()
+                        .filter(|t| base.join(t.platform()).is_dir())
+                        .collect();
                     if found.is_empty() {
-                        return Err(format!("error: no `macos/` or `windows/` here to generate into; pass `--target`\n\n{USAGE}"));
+                        return Err(format!(
+                            "error: no `macos/` or `windows/` here to generate into; pass `--target`\n\n{USAGE}"
+                        ));
                     }
                     found
                 }
             };
             for target in targets {
-                let dir = output.clone().unwrap_or_else(|| Path::new(target.platform()).join("Generated"));
-                // The pages and their view models, then UniFFI's bindings for
-                // the bridge they talk to, from the freshly built library.
-                let mut files = generate(&pages, target, &options);
-                files.extend(dazzui_compiler::bindgen::bindings(&base, target, &options).map_err(|e| format!("error: {e}\n"))?);
+                let dir = output
+                    .clone()
+                    .unwrap_or_else(|| Path::new(target.platform()).join("Generated"));
+                // The pages and the page models' stores, then UniFFI's
+                // bindings for the bridge the stores talk to, from the freshly
+                // built library. Pages with no Rust model need no bindings.
+                let mut files = generate(&compiled, target, &options);
+                if !compiled.models.is_empty() {
+                    files.extend(
+                        dazzui_compiler::bindgen::bindings(&base, target, &options)
+                            .map_err(|e| format!("error: {e}\n"))?,
+                    );
+                }
                 for file in files {
                     let path = dir.join(&file.path);
                     if let Some(parent) = path.parent() {
-                        fs::create_dir_all(parent).map_err(|e| format!("error: {}: {e}\n", parent.display()))?;
+                        fs::create_dir_all(parent)
+                            .map_err(|e| format!("error: {}: {e}\n", parent.display()))?;
                     }
-                    fs::write(&path, &file.contents).map_err(|e| format!("error: {}: {e}\n", path.display()))?;
+                    fs::write(&path, &file.contents)
+                        .map_err(|e| format!("error: {}: {e}\n", path.display()))?;
                     eprintln!("wrote {}", path.display());
                 }
             }

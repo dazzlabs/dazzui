@@ -7,15 +7,11 @@ pub struct GeneratedFile {
 
 impl GeneratedFile {
     pub fn new(path: impl Into<String>, contents: impl Into<String>) -> Self {
-        Self { path: path.into(), contents: contents.into() }
+        Self {
+            path: path.into(),
+            contents: contents.into(),
+        }
     }
-}
-
-/// `SettingsPage` → `Settings`: the stem a page's companion types are named
-/// from, so that its view model is `SettingsViewModel` rather than
-/// `SettingsPageViewModel`.
-pub fn page_stem(page: &str) -> &str {
-    page.strip_suffix("Page").filter(|s| !s.is_empty()).unwrap_or(page)
 }
 
 /// `SetAutoUpdate` → `set_auto_update`; `launch_at_startup` stays as it is.

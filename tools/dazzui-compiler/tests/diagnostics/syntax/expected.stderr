@@ -1,7 +1,7 @@
 error: expected `action`
-  --> page.rs:30:22
+  --> page.rs:27:22
    |
-30 |     page P(state: S, act: A) {
+27 |     page P(state: S, act: A) {
    |                      ^^^
    |
 

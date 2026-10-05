@@ -1,9 +1,9 @@
 error: page `P` is defined twice
-  --> page.rs:36:10
+  --> page.rs:33:10
    |
-36 |     page P(state: S, action: A) {
+33 |     page P(state: S, action: A) {
    |          ^
    |
-help: the first is at page.rs:30
+help: the first is at page.rs:27
 
 error: could not compile due to 1 previous error

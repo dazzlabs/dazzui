@@ -7,21 +7,35 @@ pub enum A {
     Save,
 }
 
-#[app]
-pub fn update(state: &mut S, action: A) {}
+#[page_model]
+pub fn model() -> Reducer<S, A> {
+    todo!()
+}
 
-pub struct T {
+pub struct M;
+
+#[page_model]
+pub fn other() -> M {
+    M
+}
+
+pub struct U {
     pub on: bool,
 }
 
-ui! {
-    page P(state: S, action: A) {
-        Text("a")
-    }
+#[page_model]
+pub fn first() -> Reducer<U, A> {
+    todo!()
 }
 
+#[page_model]
+pub fn second() -> Reducer<U, A> {
+    todo!()
+}
+
+// A page needs no model: a view of a state is a page whoever holds it.
 ui! {
-    page Q(state: T, action: A) {
-        Text("b")
+    page P(state: U, action: A) {
+        Text("a")
     }
 }

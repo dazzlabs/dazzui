@@ -10,7 +10,9 @@ use std::path::Path;
 use dazzui_compiler::compile;
 
 fn check(case: &str) {
-    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/diagnostics").join(case);
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/diagnostics")
+        .join(case);
     let report = match compile(&dir.join("page.rs"), &dir) {
         Ok(_) => panic!("{case} compiled; it is meant to fail"),
         Err(report) => report.render(false),
@@ -20,8 +22,12 @@ fn check(case: &str) {
         fs::write(&expected, &report).unwrap();
         return;
     }
-    let committed = fs::read_to_string(&expected).unwrap_or_else(|e| panic!("{}: {e}", expected.display()));
-    assert_eq!(committed, report, "{case}: the diagnostics differ from expected.stderr");
+    let committed =
+        fs::read_to_string(&expected).unwrap_or_else(|e| panic!("{}: {e}", expected.display()));
+    assert_eq!(
+        committed, report,
+        "{case}: the diagnostics differ from expected.stderr"
+    );
 }
 
 macro_rules! cases {

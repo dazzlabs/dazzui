@@ -1,39 +1,39 @@
 error: unknown component `Buton`
-  --> page.rs:32:13
+  --> page.rs:29:13
    |
-32 |             Buton("Save")
+29 |             Buton("Save")
    |             ^^^^^ not in the component registry
    |
 help: did you mean `Button`?
 
 error: `Text` takes 1 positional argument
-  --> page.rs:33:23
+  --> page.rs:30:23
    |
-33 |             Text("a", "b")
+30 |             Text("a", "b")
    |                       ^^^ unexpected argument
    |
 help: name it: `prop: value`
 
 error: unknown property `titel` on component `Button`
-  --> page.rs:34:22
+  --> page.rs:31:22
    |
-34 |             Button { titel: "Save" }.on_clik(Action::Save)
+31 |             Button { titel: "Save" }.on_clik(Action::Save)
    |                      ^^^^^
    |
 help: did you mean `title`?
 
 error: unknown modifier `on_clik` on component `Button`
-  --> page.rs:34:38
+  --> page.rs:31:38
    |
-34 |             Button { titel: "Save" }.on_clik(Action::Save)
+31 |             Button { titel: "Save" }.on_clik(Action::Save)
    |                                      ^^^^^^^
    |
 help: did you mean `on_click`?
 
 error: property `title` is given twice
-  --> page.rs:35:25
+  --> page.rs:32:25
    |
-35 |             Button("c", title: "d")
+32 |             Button("c", title: "d")
    |                         ^^^^^ given again here
    |
 

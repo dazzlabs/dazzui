@@ -1,11 +1,11 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use crate::ir::{Diagnostic, Page};
+use crate::ir::{Diagnostic, Page, SourceLocation};
 use crate::syntax::{PageAst, parse_page};
 
 use crate::bridge::Bridge;
-use crate::error::{SemanticError, locate};
+use crate::error::SemanticError;
 use crate::registry::Registry;
 use crate::rust_types::{EnumDef, RustTypes, StructDef, module_path};
 use crate::semantic::lower;
@@ -25,17 +25,30 @@ pub struct SourceFile {
     pub text: String,
 }
 
-/// A page, lowered, with the Rust types its state and actions are, and the
-/// bridge that carries them.
+/// Everything a project compiles to: its pages, and the page models the
+/// bridge carries to the native side. Neither needs the other: a page is a
+/// view of a state, whoever holds it.
+pub struct Compiled {
+    pub pages: Vec<CompiledPage>,
+    pub models: Vec<CompiledModel>,
+}
+
+/// A page, lowered, with the Rust types its state and actions are.
 pub struct CompiledPage {
     pub page: Page,
     pub file: String,
     pub state: StructDef,
     pub actions: EnumDef,
-    pub bridge: Bridge,
     /// The components it was compiled against, whose mappings the backends
     /// lower it with.
     pub registry: Registry,
+}
+
+/// A `#[page_model]` function, and the bridge that carries its model.
+pub struct CompiledModel {
+    pub bridge: Bridge,
+    /// The file the function is in, as generated headers print it.
+    pub file: String,
 }
 
 impl Project {
@@ -50,16 +63,28 @@ impl Project {
         }
         paths.sort();
 
-        let mut project =
-            Project { files: Vec::new(), types: RustTypes::default(), pages: Vec::new(), diagnostics: Vec::new() };
+        let mut project = Project {
+            files: Vec::new(),
+            types: RustTypes::default(),
+            pages: Vec::new(),
+            diagnostics: Vec::new(),
+        };
         for path in paths {
             let text = fs::read_to_string(&path)?;
-            let display = path.strip_prefix(base).unwrap_or(&path).to_string_lossy().replace('\\', "/");
+            let display = path
+                .strip_prefix(base)
+                .unwrap_or(&path)
+                .to_string_lossy()
+                .replace('\\', "/");
             let index = project.files.len();
             match syn::parse_file(&text) {
                 Ok(file) => {
                     let module = module_path(path.strip_prefix(src).unwrap_or(&path));
+                    let known = project.types.models.len();
                     project.types.collect(&file.items, &module);
+                    for model in &mut project.types.models[known..] {
+                        model.file = display.clone();
+                    }
                     let mut macros = Vec::new();
                     find_ui_macros(&file.items, &mut macros);
                     for tokens in macros {
@@ -78,7 +103,8 @@ impl Project {
 
     fn push_syn(&mut self, file: &str, error: syn::Error) {
         for e in error {
-            self.diagnostics.push(SemanticError::from(e).to_diagnostic(file));
+            self.diagnostics
+                .push(SemanticError::from(e).to_diagnostic(file));
         }
     }
 
@@ -86,8 +112,9 @@ impl Project {
         self.files.iter().find(|f| f.display == display)
     }
 
-    /// Parses, resolves and type-checks every page. Generates nothing.
-    pub fn compile(&self, registry: &Registry) -> Result<Vec<CompiledPage>, Vec<Diagnostic>> {
+    /// Parses, resolves and type-checks every page, and checks every page
+    /// model's types can cross. Generates nothing.
+    pub fn compile(&self, registry: &Registry) -> Result<Compiled, Vec<Diagnostic>> {
         let mut diagnostics = self.diagnostics.clone();
         let mut pages = Vec::new();
         for (index, ast) in &self.pages {
@@ -99,43 +126,56 @@ impl Project {
                     continue;
                 }
             };
+            pages.push(CompiledPage {
+                state: self.types.structs[&page.state_type].clone(),
+                actions: self.types.enums[&page.action_type].clone(),
+                page,
+                file: file.clone(),
+                registry: registry.clone(),
+            });
+        }
+        let mut models: Vec<CompiledModel> = Vec::new();
+        for model in &self.types.models {
             let at = |message: String| {
-                let (location, width) = locate(file, ast.name.span());
-                Diagnostic::error(message).at(location, width)
+                Diagnostic::error(message).at(
+                    SourceLocation::new(&model.file, model.line, model.column),
+                    model.width,
+                )
             };
-            let Some(app) = self.types.app_for(&page.state_type) else {
-                diagnostics.push(at(format!("no `#[app]` update function for `{}`", page.state_type)).with_help(format!(
-                    "mark `fn update(state: &mut {}, action: {})` with `#[dazzui_compiler_macro::app]`",
-                    page.state_type, page.action_type
-                )));
-                continue;
+            let bridge = match Bridge::new(model, &self.types) {
+                Ok(bridge) => bridge,
+                Err(message) => {
+                    diagnostics.push(at(message));
+                    continue;
+                }
             };
-            if app.action != page.action_type {
-                diagnostics.push(at(format!(
-                    "the page sends `{}`, but `{}` takes `{}`",
-                    page.action_type, app.function, app.action
-                )));
+            // The bridge's types are named from the state: two models of one
+            // state would export the same names.
+            if let Some(first) = models.iter().find(|m| m.bridge.state == bridge.state) {
+                diagnostics.push(
+                    at(format!(
+                        "`{}` and `{}` both make a model of `{}`; a state has one page model",
+                        first.bridge.function, bridge.function, bridge.state
+                    ))
+                    .with_help(format!("the first is in {}", first.file)),
+                );
                 continue;
             }
-            match Bridge::new(app, &self.types) {
-                Ok(bridge) => pages.push(CompiledPage {
-                    state: self.types.structs[&page.state_type].clone(),
-                    actions: self.types.enums[&page.action_type].clone(),
-                    page,
-                    file: file.clone(),
-                    bridge,
-                    registry: registry.clone(),
-                }),
-                Err(message) => diagnostics.push(at(message)),
-            }
+            models.push(CompiledModel {
+                bridge,
+                file: model.file.clone(),
+            });
         }
         // In source order, as rustc reports.
         diagnostics.sort_by(|a, b| {
-            let key = |d: &Diagnostic| d.location.as_ref().map(|l| (l.file.clone(), l.line, l.column));
+            let key = |d: &Diagnostic| {
+                d.location
+                    .as_ref()
+                    .map(|l| (l.file.clone(), l.line, l.column))
+            };
             key(a).cmp(&key(b))
         });
-        // A page's files are named from it, and its view model and bridge
-        // from its state: two of either would write over each other.
+        // A page's files are named from it: two would write over each other.
         for (i, page) in pages.iter().enumerate() {
             let earlier = &pages[..i];
             let at = || page.page.source.clone();
@@ -143,19 +183,18 @@ impl Project {
                 diagnostics.push(
                     Diagnostic::error(format!("page `{}` is defined twice", page.page.name))
                         .at(at(), page.page.name.len() as u32)
-                        .with_help(format!("the first is at {}:{}", first.page.source.file, first.page.source.line)),
-                );
-            } else if let Some(first) = earlier.iter().find(|p| p.page.state_type == page.page.state_type) {
-                diagnostics.push(
-                    Diagnostic::error(format!(
-                        "pages `{}` and `{}` both show `{}`; a state has one page for now",
-                        first.page.name, page.page.name, page.page.state_type
-                    ))
-                    .at(at(), page.page.name.len() as u32),
+                        .with_help(format!(
+                            "the first is at {}:{}",
+                            first.page.source.file, first.page.source.line
+                        )),
                 );
             }
         }
-        if diagnostics.is_empty() { Ok(pages) } else { Err(diagnostics) }
+        if diagnostics.is_empty() {
+            Ok(Compiled { pages, models })
+        } else {
+            Err(diagnostics)
+        }
     }
 }
 
@@ -164,7 +203,10 @@ fn walk(dir: &Path, out: &mut Vec<PathBuf>) -> std::io::Result<()> {
         let path = entry?.path();
         // A hidden file is never a module rustc compiles — and macOS
         // leaves `._name.rs` resource forks beside files it copies away.
-        if path.file_name().is_some_and(|n| n.to_string_lossy().starts_with('.')) {
+        if path
+            .file_name()
+            .is_some_and(|n| n.to_string_lossy().starts_with('.'))
+        {
             continue;
         }
         if path.is_dir() {

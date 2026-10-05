@@ -3,7 +3,7 @@
 use std::path::Path;
 
 use crate::ir::{Diagnostic, GeneratedFile};
-use crate::{CompiledPage, Project, REGISTRY_FILE, Registry};
+use crate::{Compiled, Project, REGISTRY_FILE, Registry};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Target {
@@ -49,7 +49,10 @@ pub struct Report {
 
 impl Report {
     fn source(&self, file: &str) -> Option<&str> {
-        self.sources.iter().find(|(f, _)| f == file).map(|(_, t)| t.as_str())
+        self.sources
+            .iter()
+            .find(|(f, _)| f == file)
+            .map(|(_, t)| t.as_str())
     }
 
     /// Every diagnostic rustc-style, then rustc's closing line.
@@ -61,7 +64,10 @@ impl Report {
             out.push('\n');
         }
         let n = self.diagnostics.len();
-        let closing = format!("could not compile due to {n} previous error{}", if n == 1 { "" } else { "s" });
+        let closing = format!(
+            "could not compile due to {n} previous error{}",
+            if n == 1 { "" } else { "s" }
+        );
         out += &Diagnostic::error(closing).render_styled(None, color);
         out
     }
@@ -76,22 +82,32 @@ impl std::fmt::Display for Report {
 /// Reads and compiles every page under `src` — a directory, or one file —
 /// against the built-in components and those in `base`'s
 /// `dazzui-compiler.toml`, with paths shown relative to `base`.
-pub fn compile(src: &Path, base: &Path) -> Result<Vec<CompiledPage>, Report> {
+pub fn compile(src: &Path, base: &Path) -> Result<Compiled, Report> {
     let registry = match Registry::load(base) {
         Ok(registry) => registry,
         Err(e) => {
             let text = std::fs::read_to_string(base.join(REGISTRY_FILE)).unwrap_or_default();
             let diagnostic = e.to_diagnostic(&text);
-            return Err(Report { diagnostics: vec![diagnostic], sources: vec![(e.file.clone(), text)] });
+            return Err(Report {
+                diagnostics: vec![diagnostic],
+                sources: vec![(e.file.clone(), text)],
+            });
         }
     };
     let project = Project::scan(src, base).map_err(|e| Report {
-        diagnostics: vec![Diagnostic::error(format!("cannot read {}: {e}", src.display()))],
+        diagnostics: vec![Diagnostic::error(format!(
+            "cannot read {}: {e}",
+            src.display()
+        ))],
         sources: Vec::new(),
     })?;
     project.compile(&registry).map_err(|diagnostics| Report {
         diagnostics,
-        sources: project.files.iter().map(|f| (f.display.clone(), f.text.clone())).collect(),
+        sources: project
+            .files
+            .iter()
+            .map(|f| (f.display.clone(), f.text.clone()))
+            .collect(),
     })
 }
 
@@ -105,14 +121,17 @@ pub struct Options {
     pub library: String,
 }
 
-pub fn generate(pages: &[CompiledPage], target: Target, options: &Options) -> Vec<GeneratedFile> {
-    pages
-        .iter()
-        .flat_map(|page| match target {
-            Target::SwiftUI => crate::swiftui::generate(page),
-            Target::WinUI => crate::winui::generate(page, options),
-        })
-        .collect()
+/// Every page's view, then every page model's store.
+pub fn generate(compiled: &Compiled, target: Target, options: &Options) -> Vec<GeneratedFile> {
+    let pages = compiled.pages.iter().flat_map(|page| match target {
+        Target::SwiftUI => crate::swiftui::generate(page),
+        Target::WinUI => crate::winui::generate(page, options),
+    });
+    let stores = compiled.models.iter().map(|model| match target {
+        Target::SwiftUI => crate::swiftui::store(model),
+        Target::WinUI => crate::winui::store(model, options),
+    });
+    pages.chain(stores).collect()
 }
 
 /// `settings_example`, the lib name of the crate whose `Cargo.toml` is

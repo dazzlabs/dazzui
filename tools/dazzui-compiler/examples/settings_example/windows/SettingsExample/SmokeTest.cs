@@ -10,9 +10,11 @@ using Windows.Storage.Streams;
 namespace SettingsExample;
 
 /// <summary>Clicks through the generated page with real mouse input — so
-/// the XAML's Click wiring, the generated handler, the C ABI, Rust's update
-/// and the x:Bind that shows the next snapshot are all on the path — and
-/// checks the state Rust hands back after each click.</summary>
+/// the XAML's Click wiring, the generated handler, the page's Send, the
+/// store, the UniFFI bridge, the Rust model and the x:Bind that shows the
+/// next snapshot are all on the path — and checks the state Rust hands back
+/// after each click. A save finishes on a Rust thread, so its check is also
+/// of the store's move back to the UI thread.</summary>
 internal static class SmokeTest
 {
     internal static string Output => Environment.GetEnvironmentVariable("DAZZUI_SMOKE_OUTPUT")
@@ -20,7 +22,7 @@ internal static class SmokeTest
 
     private static readonly List<string> log = [];
 
-    public static async Task RunAsync(Window window, FrameworkElement root, SettingsViewModel model)
+    public static async Task RunAsync(Window window, FrameworkElement root, SettingsStore model)
     {
         Directory.CreateDirectory(Output);
         try
@@ -40,7 +42,9 @@ internal static class SmokeTest
             Check(Texts(root).Contains("Unsaved changes"), "the status text follows the snapshot");
 
             await Click(window, Button(root, "Save"));
-            Check(model.State.Saves == 1 && model.State.Status == "Saved", "Save reached Rust");
+            await Until(() => model.State.Saved);
+            Check(model.State.Saves == 1 && model.State.Status == "Saved", "Save finished on a Rust thread and reached the page");
+            Check(Texts(root).Contains("Saved"), "the status text shows the save");
             Check(!Button(root, "Save").IsEnabled, "Save is disabled again once saved");
 
             await Click(window, switches[2]);
@@ -92,6 +96,12 @@ internal static class SmokeTest
 
     private static Microsoft.UI.Xaml.Controls.Button Button(FrameworkElement root, string content) =>
         Descendants<Microsoft.UI.Xaml.Controls.Button>(root).First(b => Equals(b.Content, content) && Shown(b));
+
+    /// <summary>Waits, up to five seconds, for what another thread will do.</summary>
+    private static async Task Until(Func<bool> done)
+    {
+        for (var i = 0; i < 50 && !done(); i++) await Task.Delay(100);
+    }
 
     private static async Task Settle()
     {

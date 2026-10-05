@@ -15,7 +15,10 @@ pub enum Expr {
     /// `item.title`, inside `for item in …`
     Local(LocalPath),
     /// `TextStyle::Title`
-    EnumCase { ty: String, case: String },
+    EnumCase {
+        ty: String,
+        case: String,
+    },
 }
 
 impl Expr {

@@ -1,0 +1,15 @@
+# The smallest app a Reducer drives: state, actions, an update function and
+# a page, and nothing else. It has no hosts; it is here so that the bridge
+# over a `Reducer` is compiled and driven by its tests, as the settings
+# example's hand-written model is by its own.
+[package]
+name = "counter-example"
+description = "A ui! page driven by the runtime's Reducer."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+dazzui-runtime.workspace = true
+uniffi.workspace = true

@@ -1,4 +1,4 @@
-use dazzui_compiler_macro::ui;
+use dazzui_runtime::ui;
 
 use crate::{SettingsAction, SettingsState};
 
@@ -56,7 +56,7 @@ ui! {
             HStack(spacing: 8) {
                 Button("Save")
                     .style(ButtonStyle::Primary)
-                    .disabled(state.saved)
+                    .disabled(state.save_disabled)
                     .on_click(Action::Save)
                 Button { title: "Reset to defaults" }
                     .on_click(Action::Reset)
