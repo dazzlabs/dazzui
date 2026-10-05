@@ -398,8 +398,16 @@ const story: Story = {
     },
     {
       title: 'Application window',
-      note: 'A full-size content view: the sidebar reaches the top edge, the controls sit over its head, and a band with a toolbar in it takes the 52px a SidebarHeader is.',
-      Demo: () => <Workspace platform="macos" />,
+      note: 'A full-size content view: the sidebar reaches the top edge and a band with a toolbar in it takes the 52px a SidebarHeader is. The pane’s band is laid out alike everywhere — the title leads, the toolbar trails, inset as the footer is. The lights sit over the sidebar’s head on macOS; elsewhere the window’s controls are at the trailing edge, so the pane’s band carries them.',
+      Demo: () => (
+        <Col gap="6">
+          {(['macos', 'windows', 'gnome', 'kde', 'omarchy'] as const).map(
+            platform => (
+              <Workspace key={platform} platform={platform} />
+            )
+          )}
+        </Col>
+      ),
     },
     {
       title: 'Content only',

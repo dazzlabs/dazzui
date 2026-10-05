@@ -227,8 +227,9 @@
 .dz-window-frame:is([data-platform='macos'], [data-platform='macos15']) {
   --dz-window-radius: 10px;
   --dz-window-titlebar-height: 28px;
-  --dz-window-lead-inset: 80px;
-  --dz-window-title-inset: 80px;
+  --dz-traffic-room: 80px;
+  --dz-window-lead-inset: var(--dz-traffic-room);
+  --dz-window-title-inset: var(--dz-traffic-room);
   --dz-window-title-font-family: var(--label-large-font-family);
   --dz-window-title-font-size: var(--label-large-font-size);
   --dz-window-title-font-weight: var(--label-large-font-weight);
@@ -336,7 +337,6 @@
 .dz-window-frame[data-platform='windows'] {
   --dz-window-radius: 8px;
   --dz-window-titlebar-height: 32px;
-  --dz-window-lead-inset: var(--spacing-4);
   --dz-window-title-flex: 0 1 auto;
   --dz-window-toolbar-flex: 1;
   --dz-window-title-inset: 0;
@@ -344,6 +344,13 @@
   --dz-window-title-font-family: var(--caption-medium-font-family);
   --dz-window-title-font-size: 12px;
   --dz-window-title-font-weight: var(--caption-medium-font-weight);
+}
+
+/* The band starts on WinUI's inset, whether a leading control or the title
+   comes first; the caption buttons run to the corner. */
+.dz-window-frame[data-platform='windows'] > .dz-window-frame__titlebar {
+  --dz-window-lead-inset: 0;
+  padding-inline-start: var(--spacing-4);
 }
 
 .dz-window-frame__caption {
@@ -499,6 +506,8 @@
  * focus. With nothing above it, the content takes the 20px inset it has on
  * every other edge on top of its own box: a window without a band is the
  * content's, and the height, when the app gives one, is the whole window's.
+ * An application window is the exception: its sidebar and its pane's band
+ * reach the top edge themselves, as they do everywhere else.
  */
 .dz-window-frame[data-platform='omarchy'] {
   --dz-window-radius: 0;
@@ -510,9 +519,82 @@
   border-color: var(--color-border-muted);
 }
 
-.dz-window-frame[data-platform='omarchy'] .dz-window-frame__content {
+.dz-window-frame[data-platform='omarchy']
+  .dz-window-frame__content:not(:has(> .dz-window-frame__body)) {
   box-sizing: content-box;
   padding-block-start: 20px;
+}
+
+/* The pane's band ------------------------------------------------------------ */
+
+/*
+ * A band in a `WindowMain` is the pane's toolbar, not the platform's
+ * titlebar, so it is laid out the same on every desktop: the title leads and
+ * takes the room the toolbar leaves, as a unified toolbar's does beside a
+ * sidebar since Big Sur, and the toolbar and the trailing slot keep their own
+ * width at the far end. It is inset as the footer under it is, and the
+ * window's controls, when it carries them, keep their own edge: WinUI's
+ * caption buttons run to the window's corner, and the headerbar's buttons
+ * keep the inset they have in the platform's own band.
+ */
+.dz-window-frame__main > .dz-window-frame__titlebar {
+  --dz-window-lead-inset: 0;
+  --dz-window-controls-inset: 0;
+  --dz-window-title-justify: flex-start;
+  --dz-window-title-flex: 1;
+  --dz-window-toolbar-flex: 0 1 auto;
+  padding-inline: var(--spacing-5);
+}
+
+.dz-window-frame__main
+  > .dz-window-frame__titlebar:has(> .dz-window-frame__caption) {
+  padding-inline-end: 0;
+}
+
+/* In a pane's band the headerbar takes its place in the row rather than
+   floating over its end, so the toolbar stops where the buttons start
+   however many of them the window carries. */
+.dz-window-frame__main
+  > .dz-window-frame__titlebar:has(> .dz-window-frame__headerbar) {
+  padding-inline-end: var(--dz-headerbar-inset);
+}
+
+.dz-window-frame__main
+  > .dz-window-frame__titlebar
+  > .dz-window-frame__headerbar {
+  position: static;
+  margin-inline-start: var(--spacing-2);
+}
+
+/* The band carries the window's controls, so the floating ones step aside. */
+.dz-window-frame:has(
+    .dz-window-frame__main > .dz-window-frame__titlebar > :is(.dz-window-frame__caption, .dz-window-frame__headerbar)
+  )
+  > .dz-window-frame__chrome {
+  display: none;
+}
+
+/* On macOS the lights float over the sidebar's head; once the sidebar
+   collapses they are over the pane's band, and its leading edge clears them. */
+.dz-window-frame:is([data-platform='macos'], [data-platform='macos15']):has(
+    > .dz-window-frame__chrome
+  )
+  .dz-sidebar-wrapper:has(> .dz-sidebar[data-collapsible='offcanvas'])
+  > .dz-window-frame__main
+  > .dz-window-frame__titlebar {
+  padding-inline-start: var(--dz-traffic-room);
+}
+
+.dz-window-frame:is([data-platform='macos'], [data-platform='macos15']):has(
+    > .dz-window-frame__chrome
+  )
+  .dz-sidebar-wrapper:has(> .dz-sidebar[data-collapsible='icon'])
+  > .dz-window-frame__main
+  > .dz-window-frame__titlebar {
+  padding-inline-start: max(
+    var(--spacing-5),
+    calc(var(--dz-traffic-room) - var(--sidebar-width-icon))
+  );
 }
 
 /* The layout primitives ----------------------------------------------------- */

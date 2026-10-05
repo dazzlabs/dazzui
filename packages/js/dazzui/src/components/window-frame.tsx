@@ -137,6 +137,17 @@ interface FrameContextValue {
   platform: WindowFramePlatform
   /** Whether the frame draws the window's controls itself. */
   controls: boolean
+  /**
+   * The controls a pane's band takes over. Without a band of its own the
+   * frame floats its controls over the content; on macOS they sit over the
+   * sidebar's head, but everywhere else they are at the trailing edge, over
+   * the pane's band — so that band carries them in its own row instead, and
+   * the floating ones step aside (see the stylesheet).
+   */
+  handoff: WindowFrameControls | false
+  onClose?: () => void
+  onMinimize?: () => void
+  onMaximize?: () => void
 }
 
 const FrameContext = createContext<FrameContextValue | null>(null)
@@ -187,8 +198,14 @@ export function WindowFrame({
   // controls already — in its own band, or floating over the content when it
   // draws no band — and a window with neither has none.
   const draws = resolved !== false && (band !== null || platform !== 'omarchy')
+  const handoff =
+    draws && band === null && platform !== 'macos' && platform !== 'macos15'
+      ? resolved
+      : false
   return (
-    <FrameContext.Provider value={{ platform, controls: draws }}>
+    <FrameContext.Provider
+      value={{ platform, controls: draws, handoff, ...handlers }}
+    >
       <div
         role="group"
         aria-label={typeof title === 'string' ? title : undefined}
@@ -252,7 +269,9 @@ export interface WindowTitlebarProps extends Omit<
   /**
    * Which window controls the band carries. A band inside a `WindowMain` is
    * the pane's toolbar, and the frame has the window's controls already, so
-   * it carries none unless the frame was told to draw none itself.
+   * it carries none unless the frame was told to draw none itself — or, off
+   * macOS, unless the frame has no band of its own: its controls would float
+   * over this one at the trailing edge, so this band carries them instead.
    */
   controls?: WindowFrameControls | false
   onClose?: () => void
@@ -283,7 +302,14 @@ export function WindowTitlebar({
 }: WindowTitlebarProps) {
   const frame = useContext(FrameContext)
   const platform = frame?.platform ?? 'macos'
-  const carrying = controls ?? (frame?.controls ? false : ALL)
+  // Told nothing, a band in a pane carries the controls the frame hands it,
+  // and otherwise none if the frame has them already — or on Omarchy, where
+  // Hyprland draws no buttons at all.
+  const handed = controls === undefined && frame?.handoff ? frame : null
+  const carrying =
+    controls ??
+    (handed?.handoff ||
+      (frame?.controls || platform === 'omarchy' ? false : ALL))
   const resolved = carrying === false ? false : controlsOf(platform, carrying)
   return (
     <div
@@ -316,9 +342,9 @@ export function WindowTitlebar({
         <Controls
           platform={platform}
           controls={resolved}
-          onClose={onClose}
-          onMinimize={onMinimize}
-          onMaximize={onMaximize}
+          onClose={onClose ?? handed?.onClose}
+          onMinimize={onMinimize ?? handed?.onMinimize}
+          onMaximize={onMaximize ?? handed?.onMaximize}
         />
       )}
     </div>
