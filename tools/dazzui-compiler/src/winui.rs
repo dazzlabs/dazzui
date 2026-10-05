@@ -1,9 +1,9 @@
 //! Lowers a page to WinUI 3, in XAML and C#.
 //!
-//! A page becomes four files: the XAML; its code-behind — a constructor
+//! A page becomes three files: the XAML; its code-behind — a constructor
 //! that takes the view model, and one handler per event, each forwarding an
-//! action; the view model, with the state and struct records and action
-//! records derived from the Rust types; and the C# side of the bridge.
+//! action; and the view model, thin over the UniFFI object whose C# — the
+//! state, the actions, the app — uniffi-bindgen-cs writes beside it.
 //! DazzUI controls come from `xmlns:dazz="using:DazzUI"`.
 //!
 //! State is read with `{x:Bind …, Mode=OneWay}` and never `TwoWay`: a
@@ -15,13 +15,11 @@
 //! A `for` is an `ItemsRepeater` laid out as the stack around it is, so its
 //! elements sit in that stack as SwiftUI's `ForEach` puts them.
 
-use crate::bridge::{Bridge, BridgeStruct, FieldType, Scalar};
 use crate::Registry;
 use crate::ir::{
     ActionPayload, ActionRef, Component, ComponentSpec, Condition, Expr, GeneratedFile, Source, UiNode, Value, page_stem,
     pascal_case,
 };
-use crate::rust_types::{FloatType, IntType};
 use crate::{CompiledPage, Options};
 
 pub fn generate(compiled: &CompiledPage, options: &Options) -> Vec<GeneratedFile> {
@@ -43,7 +41,6 @@ pub fn generate(compiled: &CompiledPage, options: &Options) -> Vec<GeneratedFile
         GeneratedFile::new(format!("{}.xaml", page.name), xaml),
         GeneratedFile::new(format!("{}.xaml.cs", page.name), code_behind(compiled, &options.namespace, &cx)),
         GeneratedFile::new(format!("{stem}ViewModel.cs"), view_model(compiled, &options.namespace)),
-        GeneratedFile::new(format!("{}Bridge.cs", compiled.bridge.stem), bridge_glue(compiled, options)),
     ]
 }
 
@@ -559,335 +556,59 @@ fn code_behind(compiled: &CompiledPage, namespace: &str, cx: &Cx) -> String {
     w.finish()
 }
 
-fn cs_type(ty: Scalar) -> &'static str {
-    match ty {
-        Scalar::Bool => "bool",
-        Scalar::Int(IntType::I8) => "sbyte",
-        Scalar::Int(IntType::I16) => "short",
-        Scalar::Int(IntType::I32) => "int",
-        Scalar::Int(IntType::I64) => "long",
-        Scalar::Int(IntType::U8) => "byte",
-        Scalar::Int(IntType::U16) => "ushort",
-        Scalar::Int(IntType::U32) => "uint",
-        Scalar::Int(IntType::U64) => "ulong",
-        Scalar::Int(IntType::Isize) => "nint",
-        Scalar::Int(IntType::Usize) => "nuint",
-        Scalar::Float(FloatType::F32) => "float",
-        Scalar::Float(FloatType::F64) => "double",
-        Scalar::Str => "string",
-    }
-}
-
-fn field_type(ty: &FieldType) -> String {
-    match ty {
-        FieldType::Scalar(scalar) => cs_type(*scalar).into(),
-        FieldType::Struct(name) => name.clone(),
-        FieldType::List(name) => format!("IReadOnlyList<{name}>"),
-    }
-}
-
-/// The C# name of a struct's DTO inside the native class: `StateDto` for
-/// the state, `PluginDto` for another.
-fn dto(bridge: &Bridge, name: &str) -> String {
-    if name == bridge.state { "StateDto".into() } else { format!("{name}Dto") }
-}
-
-/// The type a DTO holds a field in: blittable, so a `bool` is a byte.
-fn dto_type(bridge: &Bridge, ty: &FieldType) -> String {
-    match ty {
-        FieldType::Scalar(Scalar::Bool) => "byte".into(),
-        FieldType::Scalar(Scalar::Str) => "NuiStr".into(),
-        FieldType::Scalar(other) => cs_type(*other).into(),
-        FieldType::Struct(name) => dto(bridge, name),
-        FieldType::List(name) => format!("{name}List"),
-    }
-}
-
 fn view_model(compiled: &CompiledPage, namespace: &str) -> String {
     let stem = page_stem(&compiled.page.name);
     let bridge = &compiled.bridge;
-    let native = native_class(bridge);
+    let (state, action, app, listener) = (&bridge.state, &bridge.action, bridge.app(), bridge.listener());
     let mut w = Writer::default();
     w.raw(&header(&compiled.file));
     w.line("");
     w.line("using System;");
-    w.line("using System.Collections.Generic;");
     w.line("using System.ComponentModel;");
-    w.line("using System.Runtime.CompilerServices;");
-    w.line("using System.Runtime.InteropServices;");
     w.line("");
     w.line(&format!("namespace {namespace};"));
-    w.line("");
-    for st in &bridge.structs {
-        record(&mut w, bridge, st);
-        w.line("");
-    }
-    action_records(&mut w, bridge);
     w.line("");
     w.line("/// <summary>Holds the latest snapshot of the Rust state and sends actions to");
     w.line(&format!(
         "/// Rust's <c>{}</c>, which runs on the calling thread before <c>Send</c> returns.</summary>",
         bridge.update
     ));
-    w.line(&format!("public sealed unsafe class {stem}ViewModel : INotifyPropertyChanged, IDisposable"));
+    w.line(&format!("public sealed class {stem}ViewModel : INotifyPropertyChanged, IDisposable"));
     w.line("{");
     w.indent(|w| {
-        w.line("private IntPtr app;");
-        w.line("private GCHandle self;");
+        w.line(&format!("private readonly {app} app = new();"));
         w.line("");
-        w.line(&format!("public {} State {{ get; private set; }}", bridge.state));
+        w.line(&format!("public {state} State {{ get; private set; }}"));
         w.line("");
         w.line("public event PropertyChangedEventHandler? PropertyChanged;");
         w.line("");
         w.line(&format!("public {stem}ViewModel()"));
         w.line("{");
         w.indent(|w| {
-            w.line(&format!("app = {native}.{}();", bridge.function("create")));
-            w.line("self = GCHandle.Alloc(this, GCHandleType.Weak);");
-            w.line(&format!("{native}.{}(app, &OnStateChanged, GCHandle.ToIntPtr(self));", bridge.function("subscribe")));
-            w.line(&format!("State = {native}.ReadState(app);"));
+            w.line("State = app.State();");
+            w.line(&format!("app.Subscribe(new Listener(new WeakReference<{stem}ViewModel>(this)));"));
         });
         w.line("}");
         w.line("");
-        w.line(&format!("public void Send({} action) => {native}.Send(app, action);", bridge.action));
+        w.line(&format!("public void Send({action} action) => app.Send(action);"));
         w.line("");
-        w.line("public void Dispose()");
+        w.line("public void Dispose() => app.Dispose();");
+        w.line("");
+        w.line("/// <summary>Rust calls this back on the thread that sent the action. It holds");
+        w.line("/// the model weakly: Rust holds it.</summary>");
+        w.line(&format!("private sealed class Listener(WeakReference<{stem}ViewModel> model) : {listener}"));
         w.line("{");
         w.indent(|w| {
-            w.line("if (app == IntPtr.Zero) return;");
-            w.line(&format!("{native}.{}(app);", bridge.function("destroy")));
-            w.line("app = IntPtr.Zero;");
-            w.line("self.Free();");
-        });
-        w.line("}");
-        w.line("");
-        w.line("/// <summary>Rust calls this back on the thread that sent the action.</summary>");
-        w.line("[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]");
-        w.line("private static void OnStateChanged(IntPtr context)");
-        w.line("{");
-        w.indent(|w| {
-            w.line(&format!("if (GCHandle.FromIntPtr(context).Target is not {stem}ViewModel model) return;"));
-            w.line(&format!("model.State = {native}.ReadState(model.app);"));
-            w.line("model.PropertyChanged?.Invoke(model, new PropertyChangedEventArgs(nameof(State)));");
-        });
-        w.line("}");
-    });
-    w.line("}");
-    w.finish()
-}
-
-fn record(w: &mut Writer, bridge: &Bridge, st: &BridgeStruct) {
-    if st.name == bridge.state {
-        w.line(&format!("/// <summary><c>{}</c>, as Rust last handed it over.</summary>", st.name));
-    } else {
-        w.line(&format!("/// <summary><c>{}</c>, from the Rust app core.</summary>", st.name));
-    }
-    let params: Vec<String> =
-        st.fields.iter().map(|f| format!("{} {}", field_type(&f.ty), Bridge::property(&f.name))).collect();
-    w.line(&format!("public sealed record {}({});", st.name, params.join(", ")));
-}
-
-fn action_records(w: &mut Writer, bridge: &Bridge) {
-    w.line(&format!("public abstract record {}", bridge.action));
-    w.line("{");
-    w.indent(|w| {
-        w.line(&format!("private {}() {{ }}", bridge.action));
-        for v in &bridge.variants {
-            let params = v.payload.map(|ty| format!("{} Value", cs_type(ty))).unwrap_or_default();
-            w.line("");
-            w.line(&format!("public sealed record {}({params}) : {};", v.name, bridge.action));
-        }
-    });
-    w.line("}");
-}
-
-/// `SettingsNative`: the class the bridge's imports are on.
-fn native_class(bridge: &Bridge) -> String {
-    format!("{}Native", bridge.stem)
-}
-
-fn bridge_glue(compiled: &CompiledPage, options: &Options) -> String {
-    let bridge = &compiled.bridge;
-    let native = native_class(bridge);
-    let f = |name: &str| bridge.function(name);
-    let mut w = Writer::default();
-    w.raw(&header(&compiled.file));
-    w.line("");
-    w.line("using System;");
-    w.line("using System.Collections.Generic;");
-    w.line("using System.Runtime.InteropServices;");
-    w.line("using System.Text;");
-    w.line("");
-    w.line(&format!("namespace {};", options.namespace));
-    w.line("");
-    w.line(&format!("/// <summary>The C ABI of <c>{}</c>, from the Rust app core.</summary>", options.library));
-    w.line(&format!("internal static unsafe partial class {native}"));
-    w.line("{");
-    w.indent(|w| {
-        w.line(&format!("private const string Library = \"{}\";", options.library));
-        w.line("");
-        w.line("[StructLayout(LayoutKind.Sequential)]");
-        w.line("internal struct NuiStr { public byte* Ptr; public nuint Len; }");
-        for st in &bridge.structs {
-            w.line("");
-            w.line("[StructLayout(LayoutKind.Sequential)]");
-            w.line(&format!("internal struct {}", dto(bridge, &st.name)));
+            w.line("public void StateChanged()");
             w.line("{");
             w.indent(|w| {
-                for field in &st.fields {
-                    w.line(&format!("public {} {};", dto_type(bridge, &field.ty), Bridge::property(&field.name)));
-                }
-            });
-            w.line("}");
-            if bridge.is_listed(&st.name) {
-                w.line("");
-                w.line("[StructLayout(LayoutKind.Sequential)]");
-                w.line(&format!("internal struct {}List {{ public {}* Ptr; public nuint Len; }}", st.name, dto(bridge, &st.name)));
-            }
-        }
-        if bridge.has_payloads() {
-            w.line("");
-            w.line("[StructLayout(LayoutKind.Explicit)]");
-            w.line("internal struct ActionPayload");
-            w.line("{");
-            w.indent(|w| {
-                for v in &bridge.variants {
-                    if let Some(ty) = v.payload {
-                        w.line(&format!("[FieldOffset(0)] public {} {};", dto_type(bridge, &FieldType::Scalar(ty)), v.name));
-                    }
-                }
-            });
-            w.line("}");
-        }
-        w.line("");
-        w.line("[StructLayout(LayoutKind.Sequential)]");
-        w.line("internal struct ActionDto");
-        w.line("{");
-        w.indent(|w| {
-            w.line("public uint Tag;");
-            if bridge.has_payloads() {
-                w.line("public ActionPayload Payload;");
-            }
-        });
-        w.line("}");
-        w.line("");
-        for (ret, name, params) in [
-            ("IntPtr", f("create"), "".to_string()),
-            ("void", f("destroy"), "IntPtr app".to_string()),
-            ("StateDto", f("get_state"), "IntPtr app".to_string()),
-            ("void", f("state_free"), "StateDto state".to_string()),
-            ("void", f("send"), "IntPtr app, ActionDto action".to_string()),
-            (
-                "void",
-                f("subscribe"),
-                "IntPtr app, delegate* unmanaged[Cdecl]<IntPtr, void> callback, IntPtr context".to_string(),
-            ),
-        ] {
-            w.line(&format!("[LibraryImport(Library)] internal static partial {ret} {name}({params});"));
-        }
-        w.line("");
-        w.line(&format!("internal static {} ReadState(IntPtr app)", bridge.state));
-        w.line("{");
-        w.indent(|w| {
-            w.line(&format!("var dto = {}(app);", f("get_state")));
-            w.line("try { return Read(dto); }");
-            w.line(&format!("finally {{ {}(dto); }}", f("state_free")));
-        });
-        w.line("}");
-        for st in &bridge.structs {
-            let values: Vec<String> = st
-                .fields
-                .iter()
-                .map(|field| {
-                    let p = Bridge::property(&field.name);
-                    match &field.ty {
-                        FieldType::Scalar(Scalar::Bool) => format!("dto.{p} != 0"),
-                        FieldType::Scalar(Scalar::Str) => format!("Decode(dto.{p})"),
-                        FieldType::Scalar(_) => format!("dto.{p}"),
-                        FieldType::Struct(_) => format!("Read(dto.{p})"),
-                        FieldType::List(_) => format!("ReadList(dto.{p})"),
-                    }
-                })
-                .collect();
-            w.line("");
-            w.line(&format!(
-                "private static {} Read({} dto) => new({});",
-                st.name,
-                dto(bridge, &st.name),
-                values.join(", ")
-            ));
-            if bridge.is_listed(&st.name) {
-                w.line("");
-                w.line(&format!("private static IReadOnlyList<{0}> ReadList({0}List list)", st.name));
-                w.line("{");
-                w.indent(|w| {
-                    w.line(&format!("var items = new List<{}>(checked((int)list.Len));", st.name));
-                    w.line("for (nuint i = 0; i < list.Len; i++) items.Add(Read(list.Ptr[i]));");
-                    w.line("return items;");
-                });
-                w.line("}");
-            }
-        }
-        w.line("");
-        w.line(&format!("internal static void Send(IntPtr app, {} action)", bridge.action));
-        w.line("{");
-        w.indent(|w| {
-            w.line("switch (action)");
-            w.line("{");
-            w.indent(|w| {
-                for v in &bridge.variants {
-                    let record = format!("{}.{}", bridge.action, v.name);
-                    match v.payload {
-                        None => {
-                            w.line(&format!("case {record}:"));
-                            w.indent(|w| {
-                                w.line(&format!("{}(app, new ActionDto {{ Tag = {} }});", f("send"), v.tag));
-                                w.line("break;");
-                            });
-                        }
-                        Some(Scalar::Str) => {
-                            w.line(&format!("case {record} a:"));
-                            w.line("{");
-                            w.indent(|w| {
-                                w.line("var bytes = Encoding.UTF8.GetBytes(a.Value);");
-                                w.line("fixed (byte* ptr = bytes)");
-                                w.line("{");
-                                w.indent(|w| {
-                                    w.line(&format!("var dto = new ActionDto {{ Tag = {} }};", v.tag));
-                                    w.line(&format!(
-                                        "dto.Payload.{} = new NuiStr {{ Ptr = ptr, Len = (nuint)bytes.Length }};",
-                                        v.name
-                                    ));
-                                    w.line(&format!("{}(app, dto);", f("send")));
-                                });
-                                w.line("}");
-                                w.line("break;");
-                            });
-                            w.line("}");
-                        }
-                        Some(ty) => {
-                            let value = if ty == Scalar::Bool { "a.Value ? (byte)1 : (byte)0" } else { "a.Value" };
-                            w.line(&format!("case {record} a:"));
-                            w.line("{");
-                            w.indent(|w| {
-                                w.line(&format!("var dto = new ActionDto {{ Tag = {} }};", v.tag));
-                                w.line(&format!("dto.Payload.{} = {value};", v.name));
-                                w.line(&format!("{}(app, dto);", f("send")));
-                                w.line("break;");
-                            });
-                            w.line("}");
-                        }
-                    }
-                }
+                w.line("if (!model.TryGetTarget(out var m)) return;");
+                w.line("m.State = m.app.State();");
+                w.line("m.PropertyChanged?.Invoke(m, new PropertyChangedEventArgs(nameof(State)));");
             });
             w.line("}");
         });
         w.line("}");
-        if bridge.has_strings() {
-            w.line("");
-            w.line("private static string Decode(NuiStr text) =>");
-            w.indent(|w| w.line("text.Len == 0 ? \"\" : Encoding.UTF8.GetString(text.Ptr, checked((int)text.Len));"));
-        }
     });
     w.line("}");
     w.finish()

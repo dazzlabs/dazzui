@@ -17,7 +17,9 @@ usage:
 `generate` writes each target into its platform folder's Generated/ —
 macos/Generated for swiftui, windows/Generated for winui — and, without
 --target, writes every target whose platform folder is there. --output
-takes one --target.
+takes one --target. It builds the crate first: UniFFI reads the bridge's
+bindings from the built library (C# through uniffi-bindgen-cs, on PATH or
+in DAZZUI_UNIFFI_BINDGEN_CS).
 ";
 
 fn main() -> ExitCode {
@@ -91,7 +93,11 @@ fn run(args: Vec<String>) -> Result<(), String> {
             };
             for target in targets {
                 let dir = output.clone().unwrap_or_else(|| Path::new(target.platform()).join("Generated"));
-                for file in generate(&pages, target, &options) {
+                // The pages and their view models, then UniFFI's bindings for
+                // the bridge they talk to, from the freshly built library.
+                let mut files = generate(&pages, target, &options);
+                files.extend(dazzui_compiler::bindgen::bindings(&base, target, &options).map_err(|e| format!("error: {e}\n"))?);
+                for file in files {
                     let path = dir.join(&file.path);
                     if let Some(parent) = path.parent() {
                         fs::create_dir_all(parent).map_err(|e| format!("error: {}: {e}\n", parent.display()))?;

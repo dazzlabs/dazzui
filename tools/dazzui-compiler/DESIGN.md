@@ -1,8 +1,8 @@
 # dazzui-compiler：Rust-first 原生 UI 代码生成器
 
 Rust 是 UI 的源语言，SwiftUI 和 WinUI 3 是编译目标。构建时把 `ui!` 写的
-页面编译成可读的平台源码；运行时只有真正的 SwiftUI / WinUI 3，加一条窄的
-C ABI 回到 Rust。没有运行时 renderer、没有 Virtual DOM、没有自绘控件、没有
+页面编译成可读的平台源码；运行时只有真正的 SwiftUI / WinUI 3，加一条 UniFFI
+生成的桥回到 Rust（Phase 2–5 时是一条手写的 C ABI，见 §8）。没有运行时 renderer、没有 Virtual DOM、没有自绘控件、没有
 layout engine。
 
 ```
@@ -23,7 +23,7 @@ ui! { … }  ──parse──▶ AST ──semantic──▶ Semantic IR ──
 | 解析器是 `dazzui-compiler` 里的 `syntax` 模块，proc macro 和 CLI 共用 | CLI 在构建时要从 `.rs` 文件里读出同一份 DSL，必须和宏用同一个 parser，否则两边语法会慢慢分叉。宏本身只是一层薄壳。 |
 | `ui!` 页面声明 state 和 action 类型：`page SettingsPage(state: SettingsState, action: SettingsAction) { … }` | 宏需要知道 `state.x` 和 `Action::X` 指向哪里，才能生成类型检查代码；CLI 需要据此找到 Rust 类型定义。DSL 里的 `Action::` 是这个类型的别名。 |
 | 宏展开成**只在编译期存在的类型检查代码**，运行时零产物 | 交给 rustc 去检查 `state.saving` 是不是 `bool`、`Action::SetAutoUpdate` 能不能接 `bool`，错误直接标在 DSL 上，rust-analyzer 也能看到。见 §2。 |
-| CLI 用 syn 从 Rust 源码里读 state struct 和 action enum | Rust 是唯一的源头：Swift 的 `SettingsAction`、C# 的 record、C ABI 的 DTO 都由 Rust 类型推出来，不需要手写第二份。 |
+| CLI 用 syn 从 Rust 源码里读 state struct 和 action enum | Rust 是唯一的源头：桥的镜像类型、UniFFI 生成的 Swift / C# 都由 Rust 类型推出来，不需要手写第二份。 |
 | 位置：先放在 `tools/dazzui-compiler/`，是一个独立 Cargo workspace，pnpm 看不到它 | 它是 DazzUI 组件库的消费者，和 `tools/codegen` 地位相近。以后要拆成独立仓库，整个目录搬走即可。 |
 
 ---
@@ -420,51 +420,51 @@ CLI 的诊断按源码位置排序；终端上用 rustc 的配色（`NO_COLOR` �
 
 ## 8. Rust ↔ native 状态桥
 
-一条窄的 C ABI，不暴露 Rust ABI。由 CLI 根据 Rust 类型生成，Phase 2 起接入：
+桥是 UniFFI 的（uniffi 0.31.1，C# 用 uniffi-bindgen-cs v0.11.0+v0.31.0，两者必须配对）。
+`#[app]` 生成 UniFFI 导出，UniFFI 写出 Swift 和 C#，backend 只在上面加一层薄 ViewModel。
 
-```c
-typedef struct NuiApp NuiApp;                    // opaque handle
-
-NuiApp* settings_create(void);
-void    settings_destroy(NuiApp*);
-
-// 快照：Rust 拥有内存，用 free 归还
-typedef struct { bool launch_at_startup; bool auto_update; bool saving; } SettingsStateDto;
-SettingsStateDto settings_get_state(const NuiApp*);
-
-// action：tag + 联合体载荷
-typedef enum { SETTINGS_ACTION_SET_LAUNCH_AT_STARTUP, SETTINGS_ACTION_SET_AUTO_UPDATE, SETTINGS_ACTION_SAVE } SettingsActionTag;
-typedef struct { SettingsActionTag tag; union { bool set_launch_at_startup; bool set_auto_update; }; } SettingsActionDto;
-void settings_send(NuiApp*, SettingsActionDto);
-
-// 订阅：state 变化后回调，在调用 settings_send 的线程上触发
-typedef void (*NuiStateChanged)(void* context);
-void settings_subscribe(NuiApp*, NuiStateChanged, void* context);
+```rust
+// #[app] 标在 update 上，在旁边生成（示例里的形状）：
+#[derive(uniffi::Record)] pub struct Plugin { pub id: u32, pub name: String, pub enabled: bool }
+#[derive(uniffi::Record)] pub struct SettingsState {      // 快照：字段 + selector
+    pub launch_at_startup: bool, /* … */ pub visible_plugins: Vec<Plugin>, pub has_hidden_plugins: bool,
+}
+#[derive(uniffi::Enum)] pub enum SettingsAction { SetLaunchAtStartup(bool), Save, /* … */ }
+#[uniffi::export(with_foreign)] pub trait SettingsListener: Send + Sync { fn state_changed(&self); }
+#[derive(uniffi::Object)] pub struct SettingsApp { /* Mutex<core::SettingsState>, listeners */ }
+#[uniffi::export] impl SettingsApp {
+    #[uniffi::constructor] pub fn new() -> Arc<Self>;
+    pub fn state(&self) -> SettingsState;               // selector 在这里算
+    pub fn send(&self, action: SettingsAction);         // update，然后逐个回调
+    pub fn subscribe(&self, listener: Arc<dyn SettingsListener>);
+}
 ```
 
-- 字符串和 Vec 用 `{ const uint8_t* ptr; size_t len; }` 返回，内存属于 Rust，配一个 `settings_state_free`。
-- 第一版的数据流：`send` → Rust `update` → 回调 → ViewModel 调 `get_state` 取整份快照 → `@Published` / `PropertyChanged` → 平台框架自己做 diff。不做细粒度响应式。
-- Swift 侧通过 module map 引入 C 头文件；C# 侧用 `[LibraryImport]` 加 source-generated marshalling。两边的胶水代码由 CLI 一起生成。
-- Rust 侧：`#[dazzui_compiler_macro::app]` 标在 `update` 上，生成 `extern "C"` 包装；业务逻辑仍然是普通的 `fn update(&mut State, Action)`。
+- **镜像类型。** app core 的类型不派生任何 UniFFI 的东西，`#[app]` 为它们生成同名的镜像
+  并只导出镜像，所以原生侧看到的名字和 Rust 里一样，core 仍然是不认识任何 UI 的纯 Rust。
+  镜像引用 core 类型时用完整路径（`crate::state::Plugin`），在哪个模块展开都能编过。
+- **crate 根上要有 `uniffi::setup_scaffolding!();`**（宏不能替你写到那里）；缺了，`#[app]` 直接报错。
+- 数据流不变：`send` → `update` → 在发送 action 的线程上回调每个 listener → ViewModel 再取一份快照 →
+  `@Published` / `PropertyChanged`。listener 弱引用 ViewModel，因为 Rust 持有 listener。
+- 能过桥的类型暂时还是：`bool`、各宽度整数、`f32`/`f64`、`String`、嵌套结构体、`Vec<结构体>`；
+  action 最多带一个值。UniFFI 本身支持 `Option`、带数据的枚举、`Result`、`HashMap`，以后放开只需改
+  `bridge.rs` 的检查和镜像生成。
+- **生成。** `dazzui-compiler generate` 先 `cargo build` 出 cdylib，再从库里读出导出：Swift 在进程内调用
+  `uniffi_bindgen`，写出 `<lib>.swift` 和 C 模块 `<lib>FFI/`；C# 调用 `uniffi-bindgen-cs`，写出 `<lib>.cs`，
+  namespace 和库名由 CLI 传入，和页面一致。`ui!` 宏依赖编译器时关掉 `bindgen` feature，不编译 bindgen。
+- **每次构建都重新生成。** Xcode 的构建前脚本、MSBuild 的 `GenerateBridge` target 都先跑 `generate`。
+  这是必须的：UniFFI 的校验和只覆盖函数签名，不覆盖 record 的字段。原型里实测，Rust 里交换两个
+  bool 字段的顺序而不重新生成绑定，旧的 Swift 会悄悄把两个值读反；加一个字段则在解码时
+  `bufferOverflow` 崩溃。只有构建时重新生成，才能保证绑定和库来自同一份 Rust。
+- **panic** 在边界上被 UniFFI 捕获，变成宿主语言的错误；不抛错的函数在 Swift 侧是 `try!`，会带着 panic
+  信息崩溃，而不是未定义行为。
+- golden test 只核对编译器自己写的文件（页面和 ViewModel），UniFFI 的输出由上一条保证新鲜。
 
-**Phase 2 落地时定下的细节：**
-
-- ABI 只有一份描述：`src/bridge.rs` 的 `Bridge`。`#[app]` 的 Rust 侧（`Bridge::rust`）、
-  C 头文件、Swift 胶水、C# 胶水都从它推出。`#[app]` 和 CLI 一样，经 `CARGO_MANIFEST_DIR`
-  读 crate 的 `src/` 拿 state struct 和 action enum；crate 每次编译都会重跑宏，所以不会读到旧类型。
-- 命名取自 state 类型：`SettingsState` → 前缀 `settings_`、`SettingsApp`、`SettingsStateDto`。
-  CLI 要求每个页面的 state 都有一个 `#[app]`，且它接的 action 就是页面的 action。
-- tag 是 `uint32_t`，按变体声明顺序编号，C 里给 `#define`，不用 C `enum`（大小随编译器）。
-  没有任何变体带载荷时，DTO 里没有 union。变体最多带一个值。
-- 能过桥的类型：`bool`、各宽度整数（`usize`/`isize` → `uintptr_t`/`intptr_t`）、`f32`/`f64`、
-  `String`（`NuiStr`）。快照里的字符串属于 Rust，由 `*_state_free` 归还；action 里的字符串
-  属于调用方，只借到调用结束。Phase 3 起，嵌套结构体按值过桥，`Vec<结构体>` 以 `{ ptr, len }` 的类型化列表过桥，`state_free` 递归归还；selector 当字段过桥。
-- 回调里不持有 app 的借用：先复制订阅者列表再逐个调用，订阅者可以安全地重新 `get_state`。
-- Swift：生成 `CSettings/`（头文件 + module map），宿主的 Xcode 工程用 `SWIFT_INCLUDE_PATHS`
-  引入，并按完整路径链接 `libsettings_example.a`（`-l` 会选中旁边的 dylib）；构建前的脚本阶段
-  先跑 `cargo build -p settings-example`，所以在 Xcode 里一次 build 就够。
-- C#：`[LibraryImport]` 加函数指针回调（`[UnmanagedCallersOnly]` + weak `GCHandle`）；DTO 全部
-  blittable，`bool` 存成 `byte`。CLI 的 `--library` 默认取 `./Cargo.toml` 的包名。
+**历史。** Phase 2–5 用的是一条手写的 C ABI（`#[repr(C)]` DTO、`NuiStr`、C 头文件、`LibraryImport`）。
+2026-10-05 用原型验证后迁到 UniFFI：现有生成的页面一行不改就能跑在 UniFFI 的类型上（WinUI smoke test
+13/13），换来 `Option`/枚举/`Result`/async 的类型覆盖、Android 的 Kotlin 绑定、panic 处理，并和
+dazzcal、dazzclock、beyondtranslate 用同一套桥。代价是生成的绑定大一个数量级，C# 依赖第三方生成器，
+复合类型多一次序列化。
 
 ---
 
@@ -491,14 +491,14 @@ tools/dazzui-compiler/
     src/views/settings.rs              ui! 页面
     macos/
       project.yml                      XcodeGen 的输入；SettingsExample.xcodeproj 由它生成并提交
-      Generated/                       `generate --target swiftui` 的输出（含 C 模块 CSettings/），提交；golden test 核对它
-      SettingsExample/                 app：编译 Generated/，链接 Rust 静态库；构建前的脚本阶段先跑 cargo
-      SettingsExampleTests/            页面能布局、action 经 C ABI 改变 Rust 的 state
+      Generated/                       `generate --target swiftui` 的输出：页面、ViewModel、UniFFI 的 Swift 和 C 模块，提交
+      SettingsExample/                 app：编译 Generated/，链接 Rust 静态库；构建前的脚本阶段先跑 generate
+      SettingsExampleTests/            页面能布局、action 经 UniFFI 改变 Rust 的 state
     windows/
       SettingsExample.sln
-      Generated/                       `generate --target winui` 的输出，提交；golden test 核对它
-      SettingsExample/                 WinUI 3 app：编译 ../Generated，引用真实的 DazzUI，带上 Rust 的 cdylib；
-                                       --smoke-test 用真实鼠标点击走完 XAML → 生成的处理器 → C ABI → update → x:Bind
+      Generated/                       `generate --target winui` 的输出：页面、ViewModel、uniffi-bindgen-cs 的 C#，提交
+      SettingsExample/                 WinUI 3 app：构建前先跑 generate，编译 ../Generated，引用真实的 DazzUI，带上 Rust 的 cdylib；
+                                       --smoke-test 用真实鼠标点击走完 XAML → 生成的处理器 → UniFFI → update → x:Bind
       smoke.sh                         从 Mac 经 SSH 在 Windows 上同步、构建、在登录的桌面里跑 smoke test，取回结果和截图
 
 生成的代码放在用它的平台目录里，和 Flutter 把插件注册代码放进 `macos/`、`windows/` 一样。

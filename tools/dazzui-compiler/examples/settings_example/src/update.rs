@@ -66,36 +66,33 @@ mod tests {
         assert!(!state.has_hidden_plugins() && !state.saved);
     }
 
-    /// The page's path to Rust: what the native side calls, through the
-    /// ABI `#[app]` emitted.
+    /// The page's path to Rust: the UniFFI object `#[app]` emitted, as the
+    /// native side drives it.
     #[test]
     fn the_bridge_runs_update_and_calls_back() {
+        use std::sync::Arc;
+        use std::sync::atomic::{AtomicU32, Ordering};
+
         use crate::update::__dazzui_bridge_settings::*;
 
-        unsafe extern "C" fn count(context: *mut core::ffi::c_void) {
-            unsafe { *(context as *mut u32) += 1 };
+        struct Count(AtomicU32);
+        impl SettingsListener for Count {
+            fn state_changed(&self) {
+                self.0.fetch_add(1, Ordering::SeqCst);
+            }
         }
 
-        let mut calls = 0u32;
-        unsafe {
-            let app = settings_create();
-            settings_subscribe(app, count, &mut calls as *mut u32 as *mut _);
-            let set = SettingsActionDto { tag: 1, payload: SettingsActionPayload { set_auto_update: true } };
-            settings_send(app, set);
-            settings_send(app, SettingsActionDto { tag: 2, payload: SettingsActionPayload { set_auto_update: false } });
-            let state = settings_get_state(app);
-            assert!(state.auto_update && state.saved);
-            assert_eq!(state.saves, 1);
-            let status = core::slice::from_raw_parts(state.status.ptr, state.status.len);
-            assert_eq!(status, b"Saved");
-            // A selector crosses as a field, its list owned by Rust until freed.
-            let visible = core::slice::from_raw_parts(state.visible_plugins.ptr, state.visible_plugins.len);
-            let ids: Vec<u32> = visible.iter().map(|p| p.id).collect();
-            assert_eq!(ids, [1, 3]);
-            assert!(state.has_hidden_plugins);
-            settings_state_free(state);
-            settings_destroy(app);
-        }
-        assert_eq!(calls, 2);
+        let app = SettingsApp::new();
+        let count = Arc::new(Count(AtomicU32::new(0)));
+        app.subscribe(count.clone());
+        app.send(SettingsAction::SetAutoUpdate(true));
+        app.send(SettingsAction::Save);
+        let state = app.state();
+        assert!(state.auto_update && state.saved);
+        assert_eq!((state.saves, state.status.as_str()), (1, "Saved"));
+        // A selector crosses as a field of the snapshot.
+        assert_eq!(state.visible_plugins.iter().map(|p| p.id).collect::<Vec<_>>(), [1, 3]);
+        assert!(state.has_hidden_plugins);
+        assert_eq!(count.0.load(Ordering::SeqCst), 2);
     }
 }

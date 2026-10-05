@@ -22,6 +22,14 @@ quote.workspace = true
 syn.workspace = true
 strsim.workspace = true
 toml.workspace = true
+uniffi_bindgen = { workspace = true, optional = true }
+camino = { workspace = true, optional = true }
+
+[features]
+default = ["bindgen"]
+# Generates the UniFFI bindings `generate` writes beside the pages: Swift in
+# process, C# through uniffi-bindgen-cs. The ui! macro builds without it.
+bindgen = ["dep:uniffi_bindgen", "dep:camino"]
 
 [workspace]
 resolver = "3"
@@ -37,7 +45,7 @@ license = "MIT"
 publish = false
 
 [workspace.dependencies]
-dazzui-compiler = { path = "." }
+dazzui-compiler = { path = ".", default-features = false }
 dazzui-compiler-macro = { path = "macro" }
 proc-macro2 = { version = "1", features = ["span-locations"] }
 quote = "1"
@@ -45,3 +53,8 @@ syn = { version = "2", features = ["full", "extra-traits"] }
 strsim = "0.11"
 toml = { version = "0.8", default-features = false, features = ["parse"] }
 trybuild = "1"
+# The bridge is UniFFI's. Pinned, because uniffi-bindgen-cs is built against
+# one UniFFI version: v0.11.0+v0.31.0 here.
+uniffi = "=0.31.1"
+uniffi_bindgen = "=0.31.1"
+camino = "1"

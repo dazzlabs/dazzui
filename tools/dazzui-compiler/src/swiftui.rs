@@ -1,40 +1,25 @@
 //! Lowers a page to SwiftUI.
 //!
-//! A page becomes the view; the view model it reads from and sends actions
-//! through, with the state struct and action enum derived from the Rust
-//! ones; the Swift side of the bridge; and the C module that bridge imports.
+//! A page becomes the view, and the view model it reads from and sends
+//! actions through: a thin `ObservableObject` over the UniFFI object, whose
+//! Swift — the state, the actions, the app — UniFFI writes beside it.
 //! SwiftUI's own layout views stay SwiftUI's; a DazzUI component is always
 //! written `DazzUI.Button`, because DazzUI's names shadow SwiftUI's.
 
 use crate::CompiledPage;
-use crate::bridge::{Bridge, BridgeStruct, FieldType, Scalar};
 use crate::Registry;
 use crate::ir::{
     ActionPayload, ActionRef, Component, ComponentSpec, Expr, GeneratedFile, Source, SwiftUIMapping, Trailing, UiNode,
     Value, camel_case, page_stem,
 };
-use crate::rust_types::{FloatType, IntType};
 
 pub fn generate(compiled: &CompiledPage) -> Vec<GeneratedFile> {
     let page = &compiled.page;
     let stem = page_stem(&page.name);
-    let bridge = &compiled.bridge;
-    let module = c_module(bridge);
     vec![
         GeneratedFile::new(format!("{}.swift", page.name), view(compiled)),
         GeneratedFile::new(format!("{stem}ViewModel.swift"), view_model(compiled)),
-        GeneratedFile::new(format!("{}Bridge.swift", bridge.stem), bridge_glue(compiled)),
-        GeneratedFile::new(format!("{module}/{}.h", bridge.prefix), bridge.c_header()),
-        GeneratedFile::new(
-            format!("{module}/module.modulemap"),
-            format!("module {module} {{\n  header \"{}.h\"\n  export *\n}}\n", bridge.prefix),
-        ),
     ]
-}
-
-/// `CSettings`: the Clang module the bridge's header is imported as.
-pub fn c_module(bridge: &Bridge) -> String {
-    format!("C{}", bridge.stem)
 }
 
 fn header(source: &str) -> String {
@@ -279,229 +264,55 @@ fn swift_string(s: &str) -> String {
     out
 }
 
-/// The Swift type a scalar is, which is also what Swift imports its C type
-/// as.
-fn swift_type(ty: Scalar) -> &'static str {
-    match ty {
-        Scalar::Bool => "Bool",
-        Scalar::Int(IntType::I8) => "Int8",
-        Scalar::Int(IntType::I16) => "Int16",
-        Scalar::Int(IntType::I32) => "Int32",
-        Scalar::Int(IntType::I64) => "Int64",
-        Scalar::Int(IntType::U8) => "UInt8",
-        Scalar::Int(IntType::U16) => "UInt16",
-        Scalar::Int(IntType::U32) => "UInt32",
-        Scalar::Int(IntType::U64) => "UInt64",
-        Scalar::Int(IntType::Isize) => "Int",
-        Scalar::Int(IntType::Usize) => "UInt",
-        Scalar::Float(FloatType::F32) => "Float",
-        Scalar::Float(FloatType::F64) => "Double",
-        Scalar::Str => "String",
-    }
-}
-
-/// The Swift type a field is.
-fn field_type(ty: &FieldType) -> String {
-    match ty {
-        FieldType::Scalar(scalar) => swift_type(*scalar).into(),
-        FieldType::Struct(name) => name.clone(),
-        FieldType::List(name) => format!("[{name}]"),
-    }
-}
-
-fn swift_struct(w: &mut Writer, bridge: &Bridge, st: &BridgeStruct) {
-    if st.name == bridge.state {
-        w.line(&format!("/// `{}`, as Rust last handed it over.", st.name));
-    } else {
-        w.line(&format!("/// `{}`, from the Rust app core.", st.name));
-    }
-    w.line(&format!("public struct {}: Equatable {{", st.name));
-    w.indent(|w| {
-        for field in &st.fields {
-            w.line(&format!("public let {}: {}", camel_case(&field.name), field_type(&field.ty)));
-        }
-    });
-    w.line("}");
-}
-
 fn view_model(compiled: &CompiledPage) -> String {
     let stem = page_stem(&compiled.page.name);
     let bridge = &compiled.bridge;
-    let f = |name: &str| bridge.function(name);
+    let (state, action, app, listener) = (&bridge.state, &bridge.action, bridge.app(), bridge.listener());
     let mut w = Writer::default();
     w.raw(&header(&compiled.file));
     w.line("");
-    w.line(&format!("import {}", c_module(bridge)));
     w.line("import Combine");
     w.line("");
-    for st in &bridge.structs {
-        swift_struct(&mut w, bridge, st);
-        w.line("");
-    }
-    w.line(&format!("public enum {}: Equatable {{", bridge.action));
-    w.indent(|w| {
-        for v in &bridge.variants {
-            let payload = v.payload.map(|ty| format!("({})", swift_type(ty))).unwrap_or_default();
-            w.line(&format!("case {}{payload}", camel_case(&v.name)));
-        }
-    });
-    w.line("}");
-    w.line("");
-    w.line("/// Holds the latest snapshot of the Rust state and sends actions to");
-    w.line(&format!("/// Rust's `{}`, which runs on the calling thread before `send` returns.", bridge.update));
+    w.line("/// Holds the latest snapshot of the Rust state and sends actions to Rust's");
+    w.line(&format!("/// `{}`, which runs on the calling thread before `send` returns.", bridge.update));
     w.line("@MainActor");
     w.line(&format!("public final class {stem}ViewModel: ObservableObject {{"));
     w.indent(|w| {
-        w.line(&format!("@Published public private(set) var state: {}", bridge.state));
-        w.line("private let app: OpaquePointer");
+        w.line(&format!("@Published public private(set) var state: {state}"));
+        w.line(&format!("private let app = {app}()"));
         w.line("");
         w.line("public init() {");
         w.indent(|w| {
-            w.line(&format!("let app: OpaquePointer = {}()", f("create")));
-            w.line("self.app = app");
-            w.line(&format!("state = {}(reading: app)", bridge.state));
-            w.line(&format!(
-                "{}(app, {}StateChanged, Unmanaged.passUnretained(self).toOpaque())",
-                f("subscribe"),
-                bridge.prefix
-            ));
+            w.line("state = app.state()");
+            w.line("app.subscribe(listener: Listener(model: self))");
         });
         w.line("}");
         w.line("");
-        w.line("deinit {");
-        w.indent(|w| w.line(&format!("{}(app)", f("destroy"))));
-        w.line("}");
-        w.line("");
-        w.line(&format!("public func send(_ action: {}) {{", bridge.action));
-        w.indent(|w| w.line(&format!("action.withDto {{ {}(app, $0) }}", f("send"))));
+        w.line(&format!("public func send(_ action: {action}) {{"));
+        w.indent(|w| w.line("app.send(action: action)"));
         w.line("}");
         w.line("");
         w.line("fileprivate func refresh() {");
-        w.indent(|w| w.line(&format!("state = {}(reading: app)", bridge.state)));
+        w.indent(|w| w.line("state = app.state()"));
         w.line("}");
     });
     w.line("}");
     w.line("");
     w.line("/// Rust calls this back on the thread that sent the action, which for a");
-    w.line("/// view model is the main one.");
-    w.line(&format!(
-        "private let {}StateChanged: @convention(c) (UnsafeMutableRawPointer?) -> Void = {{ context in",
-        bridge.prefix
-    ));
+    w.line("/// view model is the main one. It holds the model weakly: Rust holds it.");
+    w.line(&format!("private final class Listener: {listener}, @unchecked Sendable {{"));
     w.indent(|w| {
-        w.line("guard let context else { return }");
-        w.line(&format!("let model = Unmanaged<{stem}ViewModel>.fromOpaque(context).takeUnretainedValue()"));
-        w.line("MainActor.assumeIsolated { model.refresh() }");
-    });
-    w.line("}");
-    w.finish()
-}
-
-fn bridge_glue(compiled: &CompiledPage) -> String {
-    let bridge = &compiled.bridge;
-    let stem = &bridge.stem;
-    let mut w = Writer::default();
-    w.raw(&header(&compiled.file));
-    w.line("");
-    w.line(&format!("import {}", c_module(bridge)));
-    w.line("");
-    w.line(&format!("extension {} {{", bridge.state));
-    w.indent(|w| {
-        w.line("/// Reads a snapshot from Rust and hands its memory back.");
-        w.line("init(reading app: OpaquePointer) {");
-        w.indent(|w| {
-            w.line(&format!("let dto = {}(app)", bridge.function("get_state")));
-            w.line(&format!("defer {{ {}(dto) }}", bridge.function("state_free")));
-            w.line("self.init(dto: dto)");
-        });
-        w.line("}");
-    });
-    w.line("}");
-    w.line("");
-    for st in &bridge.structs {
-        w.line(&format!("extension {} {{", st.name));
-        w.indent(|w| {
-            w.line(&format!("init(dto: {}) {{", bridge.dto(&st.name)));
-            w.indent(|w| {
-                w.line("self.init(");
-                w.indent(|w| {
-                    let n = st.fields.len();
-                    for (i, field) in st.fields.iter().enumerate() {
-                        let value = match &field.ty {
-                            FieldType::Scalar(Scalar::Str) => format!("decode(dto.{})", field.name),
-                            FieldType::Scalar(_) => format!("dto.{}", field.name),
-                            FieldType::Struct(t) => format!("{t}(dto: dto.{})", field.name),
-                            FieldType::List(t) => format!(
-                                "UnsafeBufferPointer(start: dto.{0}.ptr, count: dto.{0}.len).map({t}.init(dto:))",
-                                field.name
-                            ),
-                        };
-                        let comma = if i + 1 < n { "," } else { "" };
-                        w.line(&format!("{}: {value}{comma}", camel_case(&field.name)));
-                    }
-                });
-                w.line(")");
-            });
-            w.line("}");
-        });
+        w.line(&format!("weak var model: {stem}ViewModel?"));
+        w.line("");
+        w.line(&format!("init(model: {stem}ViewModel) {{"));
+        w.indent(|w| w.line("self.model = model"));
         w.line("}");
         w.line("");
-    }
-    w.line(&format!("extension {} {{", bridge.action));
-    w.indent(|w| {
-        w.line("/// Lays the action out as Rust reads it, for the length of `body`.");
-        w.line(&format!("func withDto(_ body: ({stem}ActionDto) -> Void) {{"));
-        w.indent(|w| {
-            w.line("switch self {");
-            for v in &bridge.variants {
-                let case = camel_case(&v.name);
-                let dto = |payload: Option<String>| match (bridge.has_payloads(), payload) {
-                    (false, _) => format!("{stem}ActionDto(tag: {})", v.tag),
-                    (true, None) => format!("{stem}ActionDto(tag: {}, payload: {stem}ActionPayload())", v.tag),
-                    (true, Some(p)) => format!(
-                        "{stem}ActionDto(tag: {}, payload: {stem}ActionPayload({}: {p}))",
-                        v.tag,
-                        v.member()
-                    ),
-                };
-                match v.payload {
-                    None => {
-                        w.line(&format!("case .{case}:"));
-                        w.indent(|w| w.line(&format!("body({})", dto(None))));
-                    }
-                    Some(Scalar::Str) => {
-                        w.line(&format!("case .{case}(var value):"));
-                        w.indent(|w| {
-                            w.line("value.withUTF8 { bytes in");
-                            w.indent(|w| {
-                                w.line(&format!(
-                                    "body({})",
-                                    dto(Some("NuiStr(ptr: bytes.baseAddress, len: bytes.count)".into()))
-                                ))
-                            });
-                            w.line("}");
-                        });
-                    }
-                    Some(_) => {
-                        w.line(&format!("case .{case}(let value):"));
-                        w.indent(|w| w.line(&format!("body({})", dto(Some("value".into())))));
-                    }
-                }
-            }
-            w.line("}");
-        });
+        w.line("func stateChanged() {");
+        w.indent(|w| w.line("MainActor.assumeIsolated { model?.refresh() }"));
         w.line("}");
     });
     w.line("}");
-    if bridge.has_strings() {
-        w.line("");
-        w.line("private func decode(_ text: NuiStr) -> String {");
-        w.indent(|w| {
-            w.line("guard let ptr = text.ptr, text.len > 0 else { return \"\" }");
-            w.line("return String(decoding: UnsafeBufferPointer(start: ptr, count: text.len), as: UTF8.self)");
-        });
-        w.line("}");
-    }
     w.finish()
 }
 

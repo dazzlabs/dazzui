@@ -7,8 +7,8 @@
 //! Each binding carries the DSL's span, so rustc's own error lands on the
 //! line that wrote it.
 //!
-//! `#[app]` marks the update function and emits, beside it, the `extern "C"`
-//! side of the bridge the native page talks to it through. `#[selector]`
+//! `#[app]` marks the update function and emits, beside it, the UniFFI
+//! exports the native page talks to it through. `#[selector]`
 //! marks a method on the state whose value the page reads like a field.
 //!
 //! Both `ui!` and `#[app]` read the crate's `src/` as the CLI does: `#[app]`
@@ -303,7 +303,7 @@ fn respan(path: &syn::Path, span: Span) -> TokenStream2 {
 }
 
 /// Marks `fn update(state: &mut State, action: Action)` as the app's update
-/// function and emits the C ABI the native page reaches it through.
+/// function and emits the UniFFI exports the native page reaches it through.
 ///
 /// The macro reads the crate's `src/` for the state struct and action enum,
 /// as the CLI does, so both derive the ABI from the same Rust types.
@@ -320,6 +320,12 @@ pub fn app(attr: TokenStream, item: TokenStream) -> TokenStream {
         let dir = std::env::var("CARGO_MANIFEST_DIR").map_err(|_| at("CARGO_MANIFEST_DIR is not set".into()))?;
         let src = Path::new(&dir).join("src");
         let project = Project::scan(&src, Path::new(&dir)).map_err(|e| at(format!("cannot read {}: {e}", src.display())))?;
+        if !project.types.scaffolding {
+            return Err(at(
+                "the bridge is UniFFI's, which needs `uniffi::setup_scaffolding!();` at the crate's root, in src/lib.rs"
+                    .into(),
+            ));
+        }
         let bridge = Bridge::new(&app, &project.types).map_err(at)?;
         Ok(bridge.rust())
     })();

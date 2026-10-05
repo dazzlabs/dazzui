@@ -1,19 +1,20 @@
-//! The C ABI between the Rust app core and the native page (DESIGN.md §8).
+//! The bridge between the Rust app core and the native page (DESIGN.md §8):
+//! UniFFI's.
 //!
-//! [`Bridge`] is the one description of that ABI — which state fields cross,
-//! in what C type, and what tag each action carries — and every side is
-//! derived from it: the `#[app]` macro's `extern "C"` functions
-//! ([`Bridge::rust`]), the C header Swift imports ([`Bridge::c_header`]),
-//! and the Swift and C# glue the backends write. One description is what
-//! keeps the four in step.
+//! [`Bridge`] describes what crosses — the state's fields and selectors,
+//! the structs they hold, the actions — and [`Bridge::rust`] is what the
+//! `#[app]` macro emits from it: UniFFI records that mirror the state as the
+//! page reads it, the action enum, an object that owns the state and runs
+//! `update`, and a listener trait the native side implements. UniFFI then
+//! writes the Swift and C# for those; the backends add only a thin view model
+//! over them.
 //!
-//! The data flow is a whole snapshot each time: the native side sends an
-//! action, Rust's `update` runs, every subscriber is called back on the
-//! sending thread, and the native side reads the state again. Strings and
-//! lists in the snapshot are Rust's, handed back with `<prefix>_state_free`;
-//! strings in an action are the caller's, borrowed for the length of the
-//! call. A selector crosses as the field it reads as, computed when the
-//! snapshot is taken.
+//! The mirrors keep the app core free of UniFFI: its own types derive
+//! nothing, and the exported ones take their names. The data flow is a
+//! whole snapshot each time: the native side sends an action, `update` runs,
+//! every listener is called back on the sending thread, and the native side
+//! reads the state again. A selector is a field of the snapshot, computed
+//! when it is taken.
 
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
@@ -26,7 +27,7 @@ pub struct Bridge {
     /// `Settings`, from `SettingsState`: what the bridge's types are named
     /// from.
     pub stem: String,
-    /// `settings`: what its C functions are named from.
+    /// `settings`: what its hidden module is named from.
     pub prefix: String,
     pub state: String,
     pub action: String,
@@ -61,27 +62,18 @@ pub enum FieldType {
     Scalar(Scalar),
     /// Another struct, held by value.
     Struct(String),
-    /// A `Vec` of structs, as a pointer and a length.
+    /// A `Vec` of structs.
     List(String),
 }
 
-/// An action variant: its tag, and the one value it carries, if any.
+/// An action variant, and the one value it carries, if any.
 #[derive(Clone, Debug, PartialEq)]
 pub struct BridgeVariant {
     pub name: String,
-    pub tag: u32,
     pub payload: Option<Scalar>,
 }
 
-impl BridgeVariant {
-    /// `set_auto_update`: its member of the payload union.
-    pub fn member(&self) -> String {
-        snake_case(&self.name)
-    }
-}
-
-/// The scalar types that cross. A string crosses as `NuiStr`, bytes and a
-/// length.
+/// The scalar types that cross.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Scalar {
     Bool,
@@ -101,27 +93,8 @@ impl Scalar {
         }
     }
 
-    pub fn c(self) -> &'static str {
-        match self {
-            Scalar::Bool => "bool",
-            Scalar::Int(IntType::I8) => "int8_t",
-            Scalar::Int(IntType::I16) => "int16_t",
-            Scalar::Int(IntType::I32) => "int32_t",
-            Scalar::Int(IntType::I64) => "int64_t",
-            Scalar::Int(IntType::U8) => "uint8_t",
-            Scalar::Int(IntType::U16) => "uint16_t",
-            Scalar::Int(IntType::U32) => "uint32_t",
-            Scalar::Int(IntType::U64) => "uint64_t",
-            Scalar::Int(IntType::Isize) => "intptr_t",
-            Scalar::Int(IntType::Usize) => "uintptr_t",
-            Scalar::Float(FloatType::F32) => "float",
-            Scalar::Float(FloatType::F64) => "double",
-            Scalar::Str => "NuiStr",
-        }
-    }
-
-    /// The type a Rust DTO holds it in.
-    fn rust_dto(self) -> TokenStream {
+    /// The type a mirror holds it in.
+    fn rust(self) -> TokenStream {
         match self {
             Scalar::Bool => quote!(bool),
             Scalar::Int(i) => {
@@ -132,7 +105,7 @@ impl Scalar {
                 let ident = format_ident!("{}", f.rust());
                 quote!(#ident)
             }
-            Scalar::Str => quote!(NuiStr),
+            Scalar::Str => quote!(::std::string::String),
         }
     }
 }
@@ -153,8 +126,7 @@ impl Bridge {
         let variants = action
             .variants
             .iter()
-            .enumerate()
-            .map(|(tag, v)| {
+            .map(|v| {
                 let payload = match &v.fields {
                     Fields::Unit => None,
                     Fields::Tuple(types) if types.len() == 1 => Some(Scalar::from_rust(&types[0]).ok_or_else(|| {
@@ -167,7 +139,7 @@ impl Bridge {
                         ));
                     }
                 };
-                Ok(BridgeVariant { name: v.name.clone(), tag: tag as u32, payload })
+                Ok(BridgeVariant { name: v.name.clone(), payload })
             })
             .collect::<Result<_, _>>()?;
 
@@ -188,360 +160,162 @@ impl Bridge {
         self.structs.last().expect("the state crosses")
     }
 
-    pub fn has_payloads(&self) -> bool {
-        self.variants.iter().any(|v| v.payload.is_some())
+    /// `SettingsApp`: the object the native side holds.
+    pub fn app(&self) -> String {
+        format!("{}App", self.stem)
     }
 
-    /// Whether a string crosses anywhere in the snapshot.
-    pub fn has_strings(&self) -> bool {
-        self.structs.iter().flat_map(|s| &s.fields).any(|f| f.ty == FieldType::Scalar(Scalar::Str))
+    /// `SettingsListener`: the trait the native side implements to hear of
+    /// a new state.
+    pub fn listener(&self) -> String {
+        format!("{}Listener", self.stem)
     }
 
-    /// Whether `name` is the struct some field holds a list of.
-    pub fn is_listed(&self, name: &str) -> bool {
-        self.structs.iter().flat_map(|s| &s.fields).any(|f| f.ty == FieldType::List(name.into()))
-    }
-
-    /// `settings_send`
-    pub fn function(&self, name: &str) -> String {
-        format!("{}_{name}", self.prefix)
-    }
-
-    /// The C name of a struct's DTO: `SettingsStateDto` for the state,
-    /// `SettingsPluginDto` for another, prefixed so that two bridges in one
-    /// program cannot collide.
-    pub fn dto(&self, name: &str) -> String {
-        if name == self.state { format!("{}StateDto", self.stem) } else { format!("{}{name}Dto", self.stem) }
-    }
-
-    /// `SettingsPluginList`
-    pub fn list(&self, name: &str) -> String {
-        format!("{}{name}List", self.stem)
-    }
-
-    /// The `extern "C"` side, which the `#[app]` macro emits beside the
-    /// update function it marks. Types are named by their paths, so it
-    /// compiles wherever the update function is.
+    /// The UniFFI exports, which the `#[app]` macro emits beside the update
+    /// function it marks. The core's types are named by their paths, so it
+    /// compiles wherever the update function is; the crate's root must hold
+    /// `uniffi::setup_scaffolding!()`.
     pub fn rust(&self) -> TokenStream {
         let module = format_ident!("__dazzui_bridge_{}", self.prefix);
         let path = |p: &str| syn::parse_str::<syn::Path>(p).expect("a Rust path");
-        let state = path(&self.state_struct().path);
-        let action = path(&self.action_path);
+        let core_state = path(&self.state_struct().path);
+        let core_action = path(&self.action_path);
         let update = format_ident!("{}", self.update);
-        let app = format_ident!("{}App", self.stem);
-        let state_dto = format_ident!("{}", self.dto(&self.state));
-        let action_dto = format_ident!("{}ActionDto", self.stem);
-        let payload = format_ident!("{}ActionPayload", self.stem);
-        let state_to_dto = format_ident!("dto_{}", snake_case(&self.state));
-        let state_free_dto = format_ident!("free_{}", snake_case(&self.state));
-        let f = |name: &str| format_ident!("{}", self.function(name));
-        let (create, destroy, get_state, state_free, send, subscribe) =
-            (f("create"), f("destroy"), f("get_state"), f("state_free"), f("send"), f("subscribe"));
+        let state = format_ident!("{}", self.state);
+        let action = format_ident!("{}", self.action);
+        let app = format_ident!("{}", self.app());
+        let listener = format_ident!("{}", self.listener());
+        let to_snapshot = format_ident!("mirror_{}", snake_case(&self.state));
 
-        let structs = self.structs.iter().map(|s| self.rust_struct(s));
-
-        let members = self.variants.iter().filter_map(|v| {
-            let member = format_ident!("{}", v.member());
-            let ty = v.payload?.rust_dto();
-            Some(quote!(pub #member: #ty))
-        });
-        let payload_type = self.has_payloads().then(|| {
-            quote! {
-                #[repr(C)]
-                #[derive(Clone, Copy)]
-                pub union #payload { #(#members,)* }
+        let structs = self.structs.iter().map(|s| self.mirror(s));
+        let variants = self.variants.iter().map(|v| {
+            let name = format_ident!("{}", v.name);
+            match v.payload {
+                Some(ty) => {
+                    let ty = ty.rust();
+                    quote!(#name(#ty))
+                }
+                None => quote!(#name),
             }
         });
-        let payload_field = self.has_payloads().then(|| quote!(pub payload: #payload,));
         let arms = self.variants.iter().map(|v| {
-            let tag = v.tag;
-            let variant = format_ident!("{}", v.name);
-            let member = format_ident!("{}", v.member());
+            let name = format_ident!("{}", v.name);
             match v.payload {
-                None => quote!(#tag => #action::#variant,),
-                Some(Scalar::Str) => quote!(#tag => #action::#variant(unsafe { action.payload.#member.borrowed() }),),
-                Some(_) => quote!(#tag => #action::#variant(unsafe { action.payload.#member }),),
+                Some(_) => quote!(#action::#name(value) => #core_action::#name(value)),
+                None => quote!(#action::#name => #core_action::#name),
             }
         });
 
         quote! {
             #[doc(hidden)]
-            #[allow(non_camel_case_types, clippy::missing_safety_doc)]
+            #[allow(clippy::all)]
             pub mod #module {
-                use ::core::ffi::c_void;
-
-                /// UTF-8 bytes and their length. Rust owns those in a state
-                /// snapshot; the caller owns those in an action.
-                #[repr(C)]
-                #[derive(Clone, Copy)]
-                pub struct NuiStr {
-                    pub ptr: *const u8,
-                    pub len: usize,
-                }
-
-                impl NuiStr {
-                    fn owned(text: &str) -> Self {
-                        let bytes: Box<[u8]> = text.as_bytes().into();
-                        let len = bytes.len();
-                        NuiStr { ptr: Box::into_raw(bytes) as *const u8, len }
-                    }
-
-                    unsafe fn free(self) {
-                        if !self.ptr.is_null() {
-                            let slice = ::core::ptr::slice_from_raw_parts_mut(self.ptr as *mut u8, self.len);
-                            drop(unsafe { Box::from_raw(slice) });
-                        }
-                    }
-
-                    unsafe fn borrowed(self) -> String {
-                        if self.ptr.is_null() || self.len == 0 {
-                            return String::new();
-                        }
-                        let bytes = unsafe { ::core::slice::from_raw_parts(self.ptr, self.len) };
-                        String::from_utf8_lossy(bytes).into_owned()
-                    }
-                }
-
-                /// Hands `items` over as a pointer and a length, which
-                /// `take_list` takes back.
-                #[allow(dead_code)]
-                fn give_list<T>(items: Box<[T]>) -> (*const T, usize) {
-                    let len = items.len();
-                    (Box::into_raw(items) as *const T, len)
-                }
-
-                #[allow(dead_code)]
-                unsafe fn take_list<T>(ptr: *const T, len: usize) -> Vec<T> {
-                    let slice = ::core::ptr::slice_from_raw_parts_mut(ptr as *mut T, len);
-                    unsafe { Box::from_raw(slice) }.into_vec()
-                }
+                use ::std::sync::{Arc, Mutex};
 
                 #(#structs)*
 
-                #payload_type
+                #[derive(::uniffi::Enum, Clone, Debug, PartialEq)]
+                pub enum #action { #(#variants,)* }
 
-                #[repr(C)]
-                pub struct #action_dto {
-                    pub tag: u32,
-                    #payload_field
+                impl From<#action> for #core_action {
+                    fn from(action: #action) -> Self {
+                        match action { #(#arms,)* }
+                    }
                 }
 
-                pub type NuiStateChanged = unsafe extern "C" fn(context: *mut c_void);
+                /// Called back after every action, on the thread that sent it.
+                #[::uniffi::export(with_foreign)]
+                pub trait #listener: Send + Sync {
+                    fn state_changed(&self);
+                }
 
+                /// The app: its state, and those to tell when it changes.
+                #[derive(::uniffi::Object)]
                 pub struct #app {
-                    state: #state,
-                    subscribers: Vec<(NuiStateChanged, *mut c_void)>,
+                    state: Mutex<#core_state>,
+                    listeners: Mutex<Vec<Arc<dyn #listener>>>,
                 }
 
-                #[unsafe(no_mangle)]
-                pub extern "C" fn #create() -> *mut #app {
-                    Box::into_raw(Box::new(#app { state: <#state as Default>::default(), subscribers: Vec::new() }))
-                }
-
-                #[unsafe(no_mangle)]
-                pub unsafe extern "C" fn #destroy(app: *mut #app) {
-                    if !app.is_null() {
-                        drop(unsafe { Box::from_raw(app) });
+                #[::uniffi::export]
+                impl #app {
+                    #[uniffi::constructor]
+                    pub fn new() -> Arc<Self> {
+                        Arc::new(Self {
+                            state: Mutex::new(<#core_state as Default>::default()),
+                            listeners: Mutex::new(Vec::new()),
+                        })
                     }
-                }
 
-                #[unsafe(no_mangle)]
-                pub unsafe extern "C" fn #get_state(app: *const #app) -> #state_dto {
-                    #state_to_dto(unsafe { &(*app).state })
-                }
-
-                #[unsafe(no_mangle)]
-                pub unsafe extern "C" fn #state_free(state: #state_dto) {
-                    unsafe { #state_free_dto(state) }
-                }
-
-                #[unsafe(no_mangle)]
-                pub unsafe extern "C" fn #send(app: *mut #app, action: #action_dto) {
-                    let action = match action.tag {
-                        #(#arms)*
-                        _ => return,
-                    };
-                    unsafe { super::#update(&mut (*app).state, action) };
-                    // Copied out, so that no borrow of the app is live while a
-                    // subscriber reads the state again.
-                    let subscribers = unsafe { (*app).subscribers.clone() };
-                    for (callback, context) in subscribers {
-                        unsafe { callback(context) };
+                    /// A snapshot of the state, selectors computed.
+                    pub fn state(&self) -> #state {
+                        #to_snapshot(&self.state.lock().unwrap())
                     }
-                }
 
-                #[unsafe(no_mangle)]
-                pub unsafe extern "C" fn #subscribe(app: *mut #app, callback: NuiStateChanged, context: *mut c_void) {
-                    unsafe { (*app).subscribers.push((callback, context)) };
+                    pub fn send(&self, action: #action) {
+                        super::#update(&mut self.state.lock().unwrap(), action.into());
+                        // Copied out, so that no lock is held while a listener
+                        // reads the state again.
+                        let listeners = self.listeners.lock().unwrap().clone();
+                        for listener in listeners {
+                            listener.state_changed();
+                        }
+                    }
+
+                    pub fn subscribe(&self, listener: Arc<dyn #listener>) {
+                        self.listeners.lock().unwrap().push(listener);
+                    }
                 }
             }
         }
     }
 
-    /// One struct's DTO, its list type if a field holds a list of it, and
-    /// the functions that build and free them.
-    fn rust_struct(&self, s: &BridgeStruct) -> TokenStream {
-        let path = syn::parse_str::<syn::Path>(&s.path).expect("a Rust path");
-        let dto = format_ident!("{}", self.dto(&s.name));
-        let to_dto = format_ident!("dto_{}", snake_case(&s.name));
-        let free = format_ident!("free_{}", snake_case(&s.name));
-        let ident = |n: &str| format_ident!("{}", n);
+    /// A struct's mirror — its fields, then its selectors — and the
+    /// function that fills one from the core's.
+    fn mirror(&self, s: &BridgeStruct) -> TokenStream {
+        let core = syn::parse_str::<syn::Path>(&s.path).expect("a Rust path");
+        let name = format_ident!("{}", s.name);
+        let to_mirror = format_ident!("mirror_{}", snake_case(&s.name));
         let fields = s.fields.iter().map(|f| {
-            let name = ident(&f.name);
+            let field = format_ident!("{}", f.name);
             let ty = match &f.ty {
-                FieldType::Scalar(scalar) => scalar.rust_dto(),
+                FieldType::Scalar(scalar) => scalar.rust(),
                 FieldType::Struct(t) => {
-                    let t = ident(&self.dto(t));
+                    let t = format_ident!("{}", t);
                     quote!(#t)
                 }
                 FieldType::List(t) => {
-                    let t = ident(&self.list(t));
-                    quote!(#t)
+                    let t = format_ident!("{}", t);
+                    quote!(Vec<#t>)
                 }
             };
-            quote!(pub #name: #ty)
+            quote!(pub #field: #ty)
         });
-        let reads = s.fields.iter().map(|f| {
-            let name = ident(&f.name);
-            if f.selector { quote!(let #name = &value.#name();) } else { quote!(let #name = &value.#name;) }
-        });
-        let builds = s.fields.iter().map(|f| {
-            let name = ident(&f.name);
+        let values = s.fields.iter().map(|f| {
+            let field = format_ident!("{}", f.name);
+            let read = if f.selector { quote!(value.#field()) } else { quote!(value.#field) };
             match &f.ty {
-                FieldType::Scalar(Scalar::Str) => quote!(#name: NuiStr::owned(#name)),
-                FieldType::Scalar(_) => quote!(#name: *#name),
+                FieldType::Scalar(Scalar::Str) => quote!(#field: ::std::clone::Clone::clone(&#read)),
+                FieldType::Scalar(_) => quote!(#field: #read),
                 FieldType::Struct(t) => {
-                    let to = format_ident!("dto_{}", snake_case(t));
-                    quote!(#name: #to(#name))
+                    let to = format_ident!("mirror_{}", snake_case(t));
+                    quote!(#field: #to(&#read))
                 }
                 FieldType::List(t) => {
-                    let to = format_ident!("dto_{}", snake_case(t));
-                    let list = ident(&self.list(t));
-                    quote!(#name: {
-                        let (ptr, len) = give_list(#name.iter().map(#to).collect());
-                        #list { ptr, len }
-                    })
-                }
-            }
-        });
-        let frees = s.fields.iter().filter_map(|f| {
-            let name = ident(&f.name);
-            match &f.ty {
-                FieldType::Scalar(Scalar::Str) => Some(quote!(unsafe { dto.#name.free() };)),
-                FieldType::Scalar(_) => None,
-                FieldType::Struct(t) => {
-                    let free = format_ident!("free_{}", snake_case(t));
-                    Some(quote!(unsafe { #free(dto.#name) };))
-                }
-                FieldType::List(t) => {
-                    let free = format_ident!("free_{}", snake_case(t));
-                    Some(quote! {
-                        for item in unsafe { take_list(dto.#name.ptr, dto.#name.len) } {
-                            unsafe { #free(item) };
-                        }
-                    })
-                }
-            }
-        });
-        let list = self.is_listed(&s.name).then(|| {
-            let list = ident(&self.list(&s.name));
-            quote! {
-                #[repr(C)]
-                pub struct #list {
-                    pub ptr: *const #dto,
-                    pub len: usize,
+                    let to = format_ident!("mirror_{}", snake_case(t));
+                    quote!(#field: #read.iter().map(#to).collect())
                 }
             }
         });
         quote! {
-            #[repr(C)]
-            pub struct #dto { #(#fields,)* }
+            #[derive(::uniffi::Record, Clone, Debug, PartialEq)]
+            pub struct #name { #(#fields,)* }
 
-            #list
-
-            fn #to_dto(value: &#path) -> #dto {
-                #(#reads)*
-                #dto { #(#builds,)* }
-            }
-
-            #[allow(unused_variables)]
-            unsafe fn #free(dto: #dto) {
-                #(#frees)*
+            fn #to_mirror(value: &#core) -> #name {
+                #name { #(#values,)* }
             }
         }
     }
 
-    /// The C header the Swift side imports.
-    pub fn c_header(&self) -> String {
-        let stem = &self.stem;
-        let upper = self.prefix.to_uppercase();
-        let mut h = String::new();
-        h += &format!("#ifndef {upper}_BRIDGE_H\n#define {upper}_BRIDGE_H\n\n");
-        h += "#include <stdbool.h>\n#include <stddef.h>\n#include <stdint.h>\n\n";
-        h += "#ifndef NUI_STR_DEFINED\n#define NUI_STR_DEFINED\n";
-        h += "/// UTF-8 bytes and their length. Rust owns those in a state snapshot;\n";
-        h += "/// the caller owns those in an action, for the length of the call.\n";
-        h += "typedef struct {\n  const uint8_t *ptr;\n  size_t len;\n} NuiStr;\n#endif\n\n";
-        h += "typedef void (*NuiStateChanged)(void *context);\n\n";
-        h += &format!("typedef struct {stem}App {stem}App;\n\n");
-
-        for s in &self.structs {
-            if s.name == self.state {
-                h += &format!("/// A snapshot of `{}`. Hand it back to `{}`.\n", self.state, self.function("state_free"));
-            } else {
-                h += &format!("/// A `{}`.\n", s.name);
-            }
-            h += "typedef struct {\n";
-            for field in &s.fields {
-                let ty = match &field.ty {
-                    FieldType::Scalar(scalar) => scalar.c().to_string(),
-                    FieldType::Struct(t) => self.dto(t),
-                    FieldType::List(t) => self.list(t),
-                };
-                h += &format!("  {ty} {};\n", field.name);
-            }
-            h += &format!("}} {};\n\n", self.dto(&s.name));
-            if self.is_listed(&s.name) {
-                h += &format!(
-                    "typedef struct {{\n  const {} *ptr;\n  size_t len;\n}} {};\n\n",
-                    self.dto(&s.name),
-                    self.list(&s.name)
-                );
-            }
-        }
-
-        for v in &self.variants {
-            h += &format!("#define {upper}_ACTION_{} {}u\n", snake_case(&v.name).to_uppercase(), v.tag);
-        }
-        h += "\n";
-        if self.has_payloads() {
-            h += "typedef union {\n";
-            for v in &self.variants {
-                if let Some(ty) = v.payload {
-                    h += &format!("  {} {};\n", ty.c(), v.member());
-                }
-            }
-            h += &format!("}} {stem}ActionPayload;\n\n");
-        }
-        h += &format!("/// A `{}`: a tag, and the value its variant carries.\n", self.action);
-        h += "typedef struct {\n  uint32_t tag;\n";
-        if self.has_payloads() {
-            h += &format!("  {stem}ActionPayload payload;\n");
-        }
-        h += &format!("}} {stem}ActionDto;\n\n");
-
-        let f = |name: &str| self.function(name);
-        let state_dto = self.dto(&self.state);
-        h += &format!("{stem}App *{}(void);\n", f("create"));
-        h += &format!("void {}({stem}App *app);\n", f("destroy"));
-        h += &format!("{state_dto} {}(const {stem}App *app);\n", f("get_state"));
-        h += &format!("void {}({state_dto} state);\n", f("state_free"));
-        h += &format!("void {}({stem}App *app, {stem}ActionDto action);\n", f("send"));
-        h += "/// `callback` runs after every action, on the thread that sent it.\n";
-        h += &format!("void {}({stem}App *app, NuiStateChanged callback, void *context);\n", f("subscribe"));
-        h += "\n#endif\n";
-        h
-    }
 
     /// The C# property a field is: `launch_at_startup` → `LaunchAtStartup`.
     pub fn property(field: &str) -> String {
@@ -610,24 +384,23 @@ mod tests {
     }
 
     #[test]
-    fn lays_out_state_and_actions() {
+    fn mirrors_state_and_actions() {
         let b = bridge(
             "struct NoteState { done: bool, count: u32, title: String }
              enum NoteAction { Toggle, Rename(String), Bump(u32) }
              #[app] fn update(state: &mut NoteState, action: NoteAction) {}",
         )
         .unwrap();
-        assert_eq!(b.prefix, "note");
+        assert_eq!((b.prefix.as_str(), b.app().as_str(), b.listener().as_str()), ("note", "NoteApp", "NoteListener"));
         let types: Vec<_> = b.state_struct().fields.iter().map(|f| f.ty.clone()).collect();
         assert_eq!(
             types,
             [FieldType::Scalar(Scalar::Bool), FieldType::Scalar(Scalar::Int(IntType::U32)), FieldType::Scalar(Scalar::Str)]
         );
-        assert_eq!(b.variants[1], BridgeVariant { name: "Rename".into(), tag: 1, payload: Some(Scalar::Str) });
-        let header = b.c_header();
-        assert!(header.contains("  uint32_t count;\n"));
-        assert!(header.contains("  NuiStr rename;\n"));
-        assert!(header.contains("void note_send(NoteApp *app, NoteActionDto action);"));
+        assert_eq!(b.variants[1], BridgeVariant { name: "Rename".into(), payload: Some(Scalar::Str) });
+        let rust = b.rust().to_string();
+        assert!(rust.contains("uniffi :: Record"), "{rust}");
+        assert!(rust.contains("pub enum NoteAction { Toggle , Rename (:: std :: string :: String) , Bump (u32) , }"), "{rust}");
         syn::parse2::<syn::File>(b.rust()).expect("the Rust side parses");
     }
 
@@ -647,12 +420,8 @@ mod tests {
         assert_eq!(names, ["Tag", "Item", "User", "S"]);
         let first = &b.state_struct().fields[2];
         assert_eq!((first.name.as_str(), &first.ty, first.selector), ("first", &FieldType::List("Item".into()), true));
-        let header = b.c_header();
-        let tag = header.find("} STagDto;").unwrap();
-        let tag_list = header.find("} STagList;").unwrap();
-        let item = header.find("} SItemDto;").unwrap();
-        assert!(tag < tag_list && tag_list < item, "each C type after the ones it holds");
-        assert!(header.contains("  SItemList items;\n  SUserDto owner;\n  SItemList first;\n"));
+        let rust = b.rust().to_string();
+        assert!(rust.contains("first : value . first () . iter () . map (mirror_item) . collect ()"), "{rust}");
         syn::parse2::<syn::File>(b.rust()).expect("the Rust side parses");
     }
 

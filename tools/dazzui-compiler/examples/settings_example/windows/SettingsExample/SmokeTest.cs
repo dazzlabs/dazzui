@@ -44,7 +44,7 @@ internal static class SmokeTest
             Check(!Button(root, "Save").IsEnabled, "Save is disabled again once saved");
 
             await Click(window, switches[2]);
-            Check(model.State.ShowDisabledPlugins && model.State.VisiblePlugins.Count == 3, "the selector recomputed");
+            Check(model.State.ShowDisabledPlugins && model.State.VisiblePlugins.Length == 3, "the selector recomputed");
             Check(Texts(root).Contains("Grammar"), "the for loop shows the disabled plugin");
             Check(!Texts(root).Contains("Disabled plugins are hidden"), "the if hides the note");
 

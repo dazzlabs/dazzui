@@ -2,9 +2,10 @@
 # generated from this file — run `xcodegen` here after changing it — and
 # committed, as DazzMobileUI's Playground is.
 #
-# The app compiles Generated/ (what `dazzui-compiler generate` wrote) with
-# the real DazzUI, and links the Rust core, which a build phase builds with
-# Cargo first.
+# The app compiles Generated/ — the page, its view model, and UniFFI's Swift
+# for the bridge — with the real DazzUI, and links the Rust core. A build
+# phase runs `dazzui-compiler generate` first, which builds the core and
+# writes Generated/ afresh, so the bindings never lag the library.
 name: SettingsExample
 options:
   deploymentTarget:
@@ -15,9 +16,9 @@ packages:
 settings:
   base:
     SWIFT_VERSION: '5.0'
-    # The C module the generated bridge imports: the app's, and the tests',
-    # which import the app.
-    SWIFT_INCLUDE_PATHS: $(SRCROOT)/Generated/CSettings
+    # The C module UniFFI's Swift imports: the app's, and the tests', which
+    # import the app.
+    SWIFT_INCLUDE_PATHS: $(SRCROOT)/Generated/settings_exampleFFI
 targets:
   SettingsExample:
     type: application
@@ -26,20 +27,19 @@ targets:
       - path: SettingsExample
       - path: Generated
         excludes:
-          - CSettings/**
+          - settings_exampleFFI/**
     dependencies:
       - package: DazzUI
     preBuildScripts:
-      - name: Build the Rust core
+      - name: Generate and build the Rust core
         basedOnDependencyAnalysis: false
         script: |
           # Xcode runs scripts without the user's PATH.
           export PATH="$HOME/.cargo/bin:$PATH"
-          cd "$SRCROOT/../../.."
+          cd "$SRCROOT/.."
+          cargo run --quiet -p dazzui-compiler -- generate --target swiftui
           if [ "$CONFIGURATION" = Release ]; then
-            cargo build -p settings-example --release
-          else
-            cargo build -p settings-example
+            cargo build --quiet -p settings-example --release
           fi
     settings:
       base:

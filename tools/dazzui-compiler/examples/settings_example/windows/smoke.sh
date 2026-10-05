@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # Runs the WinUI host's smoke test on a Windows machine over SSH, from a Mac
-# or Linux one: copies the compiler and DazzUI over, builds the Rust core and
-# the host there, clicks through the generated page in the signed-in desktop
+# or Linux one: copies the compiler and DazzUI over, builds the host there —
+# whose build generates the bindings and builds the Rust core first — clicks
+# through the generated page in the signed-in desktop
 # (packages/csharp/DazzUI/scripts/desktop.ps1), and copies the result and the
 # screenshots back to --out (default ./smoke-output).
 #
-# The same, on the Windows machine itself, from tools/dazzui-compiler:
-#   cargo build -p settings-example
+# The same, on the Windows machine itself, with cargo and uniffi-bindgen-cs
+# on PATH, from tools/dazzui-compiler:
 #   dotnet build examples/settings_example/windows/SettingsExample.sln
 #   SettingsExample.exe --smoke-test   (in the signed-in desktop session)
 #
@@ -26,21 +27,25 @@ win() { echo "${1//\//\\}"; }
 # compiler would find among the crate's .rs files. bin-conformance: what the
 # conformance collector builds into, whose copy of Generic.xaml a plain build
 # would pick up as a second page.
+# tar adds and overwrites but never deletes: clear the compiler's copy first,
+# all but its target/ (the build cache), so no file removed here lingers there.
+# And the last run's results, so a failed build cannot pass on old ones.
+compiler="$(win "$remote/tools/dazzui-compiler")"
+result="$(win "$remote")\\settings-smoke"
+ssh "$host" "powershell -NoProfile -Command \"if (Test-Path $compiler) { Get-ChildItem $compiler -Force -Exclude target | Remove-Item -Recurse -Force }; Remove-Item -Recurse -Force $result -ErrorAction SilentlyContinue\""
+
 COPYFILE_DISABLE=1 tar -C "$repo" -czf - --exclude target --exclude .build --exclude .swiftpm \
   --exclude bin --exclude bin-conformance --exclude obj --exclude artifacts --exclude smoke-output \
+  --exclude '*/macos/build' \
   tools/dazzui-compiler packages/csharp/DazzUI | ssh "$host" "tar -xzf - -C $remote"
 
 # cargo.exe is a symlink to rustup.exe, which Windows will not run over SSH;
-# the toolchain's own cargo runs.
+# the toolchain's own cargo runs. The build runs it to generate the bindings.
 toolchain='%USERPROFILE%\.rustup\toolchains\stable-x86_64-pc-windows-msvc\bin'
-compiler="$(win "$remote/tools/dazzui-compiler")"
-ssh "$host" "cd /d $compiler && set PATH=$toolchain;%PATH% && cargo build -q -p settings-example" \
-  | tr -d '\r'
-ssh "$host" "cd /d $compiler\\examples\\settings_example\\windows && dotnet build SettingsExample.sln -nologo -v q" \
+ssh "$host" "cd /d $compiler\\examples\\settings_example\\windows && set PATH=$toolchain;%PATH%&& dotnet build SettingsExample.sln -nologo -v q" \
   | tr -d '\r'
 
 exe="$compiler\\examples\\settings_example\\windows\\SettingsExample\\bin\\x64\\Debug\\net8.0-windows10.0.19041.0\\win-x64\\SettingsExample.exe"
-result="$(win "$remote")\\settings-smoke"
 ssh "$host" "powershell -NoProfile -ExecutionPolicy Bypass -File $(win "$remote/packages/csharp/DazzUI/scripts/desktop.ps1") -Exe $exe -Arguments --smoke-test -Out $result -TimeoutSeconds 120" \
   | tr -d '\r' | tee /dev/stderr | grep -q '^PASS' && passed=1 || passed=0
 

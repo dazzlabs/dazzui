@@ -9,6 +9,9 @@ pub struct RustTypes {
     pub structs: BTreeMap<String, StructDef>,
     /// Functions marked `#[app]`: the update functions the bridge wraps.
     pub apps: Vec<AppDef>,
+    /// Whether the crate's root calls `uniffi::setup_scaffolding!()`, which
+    /// the bridge's UniFFI exports need.
+    pub scaffolding: bool,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -246,6 +249,11 @@ impl RustTypes {
                     if let Ok(app) = AppDef::from_fn(&f.sig) {
                         self.apps.push(app);
                     }
+                }
+                syn::Item::Macro(m)
+                    if module == "crate" && m.mac.path.segments.last().is_some_and(|s| s.ident == "setup_scaffolding") =>
+                {
+                    self.scaffolding = true;
                 }
                 syn::Item::Mod(m) => {
                     if let Some((_, items)) = &m.content {

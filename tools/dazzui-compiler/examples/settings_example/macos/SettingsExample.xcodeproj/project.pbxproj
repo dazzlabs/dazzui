@@ -9,10 +9,10 @@
 /* Begin PBXBuildFile section */
 		0DB8D1314C8C99A3FE609E92 /* SettingsPageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C921B58BBCA68B538F8A813B /* SettingsPageTests.swift */; };
 		0F2C6C64B6E49A2EFBCB6D09 /* SettingsExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 316FADCC7714836FA5FC50C1 /* SettingsExampleApp.swift */; };
+		38AD5D9980BA04FAC5336078 /* settings_example.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50FD59A4C3DB0BF2A21E921 /* settings_example.swift */; };
 		62699ADC677B67196B75BF5C /* DazzUI in Frameworks */ = {isa = PBXBuildFile; productRef = C0EA39C37B74964F6F487F72 /* DazzUI */; };
 		91AC0869553920CC76CDC68C /* SettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA5B0B97E41966CC44BEF0C /* SettingsPage.swift */; };
 		BA82CAB13C93AA43CE4A9964 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A840660790A7D76938B77AEB /* SettingsViewModel.swift */; };
-		D7E8203EE40E0832335811E3 /* SettingsBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53D1EC434C03A1798963C044 /* SettingsBridge.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,10 +29,10 @@
 		10754689ADB03F62895FB155 /* SettingsExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SettingsExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		316FADCC7714836FA5FC50C1 /* SettingsExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsExampleApp.swift; sourceTree = "<group>"; };
 		4DC106824D16142F0D45E465 /* SettingsExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SettingsExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		53D1EC434C03A1798963C044 /* SettingsBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBridge.swift; sourceTree = "<group>"; };
 		562401356BDF4AE852C9C0C1 /* DazzUI */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DazzUI; path = ../../../../../packages/swift/DazzUI; sourceTree = SOURCE_ROOT; };
 		A840660790A7D76938B77AEB /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		BCA5B0B97E41966CC44BEF0C /* SettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPage.swift; sourceTree = "<group>"; };
+		C50FD59A4C3DB0BF2A21E921 /* settings_example.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settings_example.swift; sourceTree = "<group>"; };
 		C921B58BBCA68B538F8A813B /* SettingsPageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPageTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -84,7 +84,7 @@
 		EAFF2E2EB3BD7235355D0A89 /* Generated */ = {
 			isa = PBXGroup;
 			children = (
-				53D1EC434C03A1798963C044 /* SettingsBridge.swift */,
+				C50FD59A4C3DB0BF2A21E921 /* settings_example.swift */,
 				BCA5B0B97E41966CC44BEF0C /* SettingsPage.swift */,
 				A840660790A7D76938B77AEB /* SettingsViewModel.swift */,
 			);
@@ -127,7 +127,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DBB6EE0F3DB1EBD092FAFEAD /* Build configuration list for PBXNativeTarget "SettingsExample" */;
 			buildPhases = (
-				477854ABB57591FA62EE2256 /* Build the Rust core */,
+				72DBED288C12321DD90F6070 /* Generate and build the Rust core */,
 				C63E3AAB24912836884E8207 /* Sources */,
 				16C241B1E1DE1CD4FF014C3D /* Frameworks */,
 			);
@@ -181,7 +181,7 @@
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		477854ABB57591FA62EE2256 /* Build the Rust core */ = {
+		72DBED288C12321DD90F6070 /* Generate and build the Rust core */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -191,14 +191,14 @@
 			);
 			inputPaths = (
 			);
-			name = "Build the Rust core";
+			name = "Generate and build the Rust core";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Xcode runs scripts without the user's PATH.\nexport PATH=\"$HOME/.cargo/bin:$PATH\"\ncd \"$SRCROOT/../../..\"\nif [ \"$CONFIGURATION\" = Release ]; then\n  cargo build -p settings-example --release\nelse\n  cargo build -p settings-example\nfi\n";
+			shellScript = "# Xcode runs scripts without the user's PATH.\nexport PATH=\"$HOME/.cargo/bin:$PATH\"\ncd \"$SRCROOT/..\"\ncargo run --quiet -p dazzui-compiler -- generate --target swiftui\nif [ \"$CONFIGURATION\" = Release ]; then\n  cargo build --quiet -p settings-example --release\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -207,10 +207,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D7E8203EE40E0832335811E3 /* SettingsBridge.swift in Sources */,
 				0F2C6C64B6E49A2EFBCB6D09 /* SettingsExampleApp.swift in Sources */,
 				91AC0869553920CC76CDC68C /* SettingsPage.swift in Sources */,
 				BA82CAB13C93AA43CE4A9964 /* SettingsViewModel.swift in Sources */,
+				38AD5D9980BA04FAC5336078 /* settings_example.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,7 +325,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Generated/CSettings";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Generated/settings_exampleFFI";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
@@ -389,7 +389,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Generated/CSettings";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Generated/settings_exampleFFI";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};

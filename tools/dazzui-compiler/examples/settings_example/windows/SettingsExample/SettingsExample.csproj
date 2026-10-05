@@ -1,12 +1,12 @@
 <!--
-  The WinUI host for the settings example: the XAML and C# that
-  dazzui-compiler generated into ../Generated (target winui), compiled
-  against the real DazzUI, with the Rust app core's DLL beside it.
+  The WinUI host for the settings example: ../Generated — the page, its
+  view model, and uniffi-bindgen-cs's C# for the bridge — compiled against
+  the real DazzUI, with the Rust app core's DLL beside it.
 
-  The Rust core is a cdylib Cargo builds; MSBuild does not build it. From
-  tools/dazzui-compiler, on Windows:
+  Before each build, `dazzui-compiler generate (target winui)` builds the
+  core and writes ../Generated afresh, so the bindings never lag the
+  library. It needs cargo and uniffi-bindgen-cs on PATH:
 
-    cargo build -p settings-example
     dotnet build examples/settings_example/windows/SettingsExample.sln
 
   The smoke-test argument clicks through the page and writes result.txt and PNGs to
@@ -32,7 +32,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>12</LangVersion>
-    <!-- The generated bridge uses pointers and function pointers. -->
+    <!-- uniffi-bindgen-cs writes unsafe code. -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Generated>$(MSBuildThisFileDirectory)../Generated/</Generated>
     <RustCore>$(MSBuildThisFileDirectory)../../../../target/debug/settings_example.dll</RustCore>
@@ -47,7 +47,9 @@
     <Compile Include="$(Generated)*.cs" Link="Generated/%(Filename)%(Extension)" />
     <None Include="$(RustCore)" Link="settings_example.dll" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-  <Target Name="RequireRustCore" BeforeTargets="Build">
-    <Error Condition="!Exists('$(RustCore)')" Text="No Rust core at $(RustCore): run `cargo build -p settings-example` in tools/dazzui-compiler first." />
+  <!-- Before anything reads ../Generated: the file names are fixed, so the
+       globs above still match what this writes. -->
+  <Target Name="GenerateBridge" BeforeTargets="BeforeBuild;MarkupCompilePass1">
+    <Exec Command="cargo run --quiet -p dazzui-compiler -- generate --target winui" WorkingDirectory="$(MSBuildThisFileDirectory)../.." />
   </Target>
 </Project>

@@ -1,4 +1,0 @@
-module CSettings {
-  header "settings.h"
-  export *
-}
