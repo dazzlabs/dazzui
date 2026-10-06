@@ -192,6 +192,19 @@ public extension ThemeVariables {
     return opacity.map { seed.opacity($0) } ?? seed
   }
 
+  /// One part of one recipe, resolved — the Swift half of a single
+  /// `--control-color-<variant>-<part>-<state>` under `[data-tint]`. For an
+  /// app drawing its own control, so its hover, pressed and tinted colours
+  /// come from the same table as the kit's rather than being written out.
+  public func controlColor(
+    _ variant: ControlVariant,
+    _ part: ControlPart,
+    tint: Tint,
+    state: ControlState = .normal
+  ) -> Color {
+    resolve(descriptor(variant, part), tint: tint, state: state)
+  }
+
   /// The three colours a control paints in one state — the Swift half of
   /// `--control-surface` / `--control-content` / `--control-border`.
   func controlColors(
