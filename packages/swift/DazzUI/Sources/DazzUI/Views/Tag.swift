@@ -32,6 +32,8 @@ public struct Tag: View {
   public var size: BadgeSize
   public var variant: TagVariant
   public var tint: Tint
+  /// A glyph before the label — a status dot, an author's avatar.
+  public var icon: AnyView?
   /// Latched. Passing it at all is what makes the label pressable, and a
   /// selected tag is drawn with the `tinted` recipe and the tint's edge
   /// whatever `variant` says.
@@ -49,6 +51,7 @@ public struct Tag: View {
     size: BadgeSize = .medium,
     variant: TagVariant = .tinted,
     tint: Tint = .primary,
+    icon: FluentIcon? = nil,
     selected: Bool? = nil,
     enabled: Bool = true,
     removeLabel: String = "Remove",
@@ -59,11 +62,39 @@ public struct Tag: View {
     self.size = size
     self.variant = variant
     self.tint = tint
+    self.icon = icon.map { AnyView(Icon($0)) }
     self.selected = selected
     self.enabled = enabled
     self.removeLabel = removeLabel
     self.onSelect = onSelect
     self.onRemove = onRemove
+  }
+
+  /// A tag that leads with a view of its own — a dot, an avatar.
+  public init<Leading: View>(
+    _ title: String,
+    size: BadgeSize = .medium,
+    variant: TagVariant = .tinted,
+    tint: Tint = .primary,
+    selected: Bool? = nil,
+    enabled: Bool = true,
+    removeLabel: String = "Remove",
+    onSelect: ((Bool) -> Void)? = nil,
+    onRemove: (() -> Void)? = nil,
+    @ViewBuilder icon: () -> Leading
+  ) {
+    self.init(
+      title,
+      size: size,
+      variant: variant,
+      tint: tint,
+      selected: selected,
+      enabled: enabled,
+      removeLabel: removeLabel,
+      onSelect: onSelect,
+      onRemove: onRemove
+    )
+    self.icon = AnyView(icon())
   }
 
   private var pressable: Bool { selected != nil }
@@ -92,6 +123,11 @@ public struct Tag: View {
     let vars = theme.vars
 
     return HStack(spacing: vars.spacing1) {
+      if let icon {
+        icon
+          .environment(\.dazzIconSize, vars.iconSmall)
+          .accessibilityHidden(true)
+      }
       Text(title)
       if let onRemove {
         Dismiss(label: removeLabel, ink: content(state: state), enabled: enabled, action: onRemove)
