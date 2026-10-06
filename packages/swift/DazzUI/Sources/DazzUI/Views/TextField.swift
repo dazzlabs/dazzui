@@ -145,6 +145,9 @@ public struct TextField: View {
   public var enabled: Bool
   /// Draw as a box that grows rather than as a single line.
   public var multiline: Bool
+  /// Hide what is typed — React's `type="password"`. A secure field is one
+  /// line, so it is not also `multiline`.
+  public var secure: Bool
 
   @Environment(\.theme) private var theme
   @FocusState private var focused: Bool
@@ -157,7 +160,8 @@ public struct TextField: View {
     tint: Tint = .primary,
     mono: Bool = false,
     enabled: Bool = true,
-    multiline: Bool = false
+    multiline: Bool = false,
+    secure: Bool = false
   ) {
     self._text = text
     self.placeholder = placeholder
@@ -167,6 +171,7 @@ public struct TextField: View {
     self.mono = mono
     self.enabled = enabled
     self.multiline = multiline
+    self.secure = secure
   }
 
   public var body: some View {
@@ -178,11 +183,17 @@ public struct TextField: View {
       if text.isEmpty {
         Text(placeholder).foregroundStyle(vars.colorContentFaint)
       }
-      SwiftUI.TextField(
-        "",
-        text: $text,
-        axis: multiline ? .vertical : .horizontal
-      )
+      Group {
+        if secure && !multiline {
+          SwiftUI.SecureField("", text: $text)
+        } else {
+          SwiftUI.TextField(
+            "",
+            text: $text,
+            axis: multiline ? .vertical : .horizontal
+          )
+        }
+      }
       .textFieldStyle(.plain)
       .focused($focused)
       .disabled(!enabled)
@@ -207,6 +218,14 @@ public struct TextField: View {
           // does too.
           .frame(height: metrics.size)
       }
+    }
+    // The whole box is the field's, as a textarea's is: a press anywhere in it
+    // — below a multiline field's last line, in its padding — focuses the
+    // text. Behind the text, so a press on the text itself places the caret.
+    .background {
+      Color.clear
+        .contentShape(Rectangle())
+        .onTapGesture { if enabled { focused = true } }
     }
     .fieldChrome(
       FieldStyle(
