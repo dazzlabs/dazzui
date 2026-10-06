@@ -77,54 +77,69 @@ public struct Tabs<Value: Hashable, Trailing: View>: View {
   public var onValueChange: (Value) -> Void
   /// Closes a `closable` tab.
   public var onClose: ((Value) -> Void)?
+  /// What the row is called — React's `aria-label` on the tab list.
+  public var accessibilityLabel: String?
   /// What follows the last tab and stays put while they give way: the
   /// control that opens another.
   @ViewBuilder public var trailing: () -> Trailing
 
   @Environment(\.theme) private var theme
+  /// What the ruler and the row measured: each tab whole and as its icon,
+  /// what trails, and the room the row was given.
+  @State private var measured = TabsMeasure()
+
+  /// What the more-button takes of the row; reserved once anything has to go
+  /// behind it.
+  private static var moreWidth: CGFloat { 28 }
 
   public init(
     items: [TabItem<Value>],
     value: Value?,
     onValueChange: @escaping (Value) -> Void,
     onClose: ((Value) -> Void)? = nil,
+    accessibilityLabel: String? = nil,
     @ViewBuilder trailing: @escaping () -> Trailing
   ) {
     self.items = items
     self.value = value
     self.onValueChange = onValueChange
     self.onClose = onClose
+    self.accessibilityLabel = accessibilityLabel
     self.trailing = trailing
   }
 
   public var body: some View {
     let vars = theme.vars
-    HStack(spacing: 0) {
-      ViewThatFits(in: .horizontal) {
-        row(items, compact: false, hidden: [])
-        row(items, compact: true, hidden: [])
-        // Past that, the tab that is showing stays whole and the rest go
-        // behind the more-button.
-        row(items.filter { $0.value == value }, compact: true, hidden: items.filter { $0.value != value })
-      }
-      trailing()
-        .padding(.leading, vars.spacing1)
-    }
-    .frame(minHeight: vars.controlSmallSize)
-    .fixedSize(horizontal: false, vertical: false)
-  }
+    let fit = solve()
+    let active = items.firstIndex { $0.value == value }
 
-  private func row(_ shown: [TabItem<Value>], compact: Bool, hidden: [TabItem<Value>]) -> some View {
-    HStack(spacing: 0) {
-      ForEach(shown) { item in
-        TabsTab(
-          item: item,
-          selected: item.value == value,
-          compact: compact && item.value != value && item.icon != nil,
-          select: { onValueChange(item.value) },
-          close: onClose.map { close in { close(item.value) } }
-        )
+    // The tab that is showing is never the one behind the more-button: it
+    // takes the last place in the row.
+    var order = Array(items.indices)
+    if let active, active >= fit.shown, fit.shown > 0 {
+      order.remove(at: active)
+      order.insert(active, at: fit.shown - 1)
+    }
+    let shown = order.prefix(fit.shown).map { items[$0] }
+    let hidden = order.dropFirst(fit.shown).map { items[$0] }
+
+    return HStack(spacing: 0) {
+      HStack(spacing: 0) {
+        ForEach(shown) { item in
+          let selected = item.value == value
+          TabsTab(
+            item: item,
+            selected: selected,
+            compact: fit.compact && !selected,
+            select: { onValueChange(item.value) },
+            close: onClose.map { close in { close(item.value) } }
+          )
+        }
       }
+      .fixedSize(horizontal: true, vertical: false)
+      .accessibilityElement(children: .contain)
+      .modifier(TabsListLabel(label: accessibilityLabel))
+
       if !hidden.isEmpty {
         Menu(
           items: hidden.map { item in
@@ -141,9 +156,107 @@ public struct Tabs<Value: Hashable, Trailing: View>: View {
             Icon(.moreHorizontal20Regular, size: 14)
           }
         }
+        .fixedSize()
+      }
+
+      if Trailing.self != EmptyView.self {
+        trailing()
+          .padding(.leading, vars.spacing1)
+          .fixedSize()
+          .background(TabsMeasureReport(key: .trailing))
       }
     }
-    .fixedSize(horizontal: true, vertical: false)
+    // What the row would take whole: it is that wide when there is room and
+    // gives way, down to the tab that is showing, when there is not.
+    .frame(
+      minWidth: fit.floor > 0 ? fit.floor : nil,
+      idealWidth: fit.basis > 0 ? fit.basis : nil,
+      maxWidth: fit.basis > 0 ? fit.basis : nil,
+      alignment: .leading
+    )
+    .frame(minHeight: vars.controlSmallSize)
+    .background(TabsMeasureReport(key: .room))
+    .clipped()
+    // The ruler: every tab whole, then every tab as its icon, out of sight,
+    // so what fits is arithmetic on widths that do not depend on what is
+    // currently drawn — measuring the visible row would chase itself.
+    .background(alignment: .topLeading) { ruler.frame(width: 0, alignment: .leading).clipped() }
+    .onPreferenceChange(TabsMeasureKey.self) { reading in
+      if reading != measured.widths { measured.widths = reading }
+    }
+  }
+
+  private var ruler: some View {
+    let rulerItems = items.map { item in
+      // A dot that pulses out of sight is work for nothing.
+      var still = item
+      still.busy = false
+      return still
+    }
+    return VStack(alignment: .leading, spacing: 0) {
+      HStack(spacing: 0) {
+        ForEach(Array(rulerItems.enumerated()), id: \.offset) { index, item in
+          // The tab that is showing is measured as it is drawn, in the
+          // heavier weight, so the row it is reserved does not clip it.
+          TabsTab(
+            item: item,
+            selected: item.value == value,
+            compact: false,
+            select: {},
+            close: onClose.map { _ in {} }
+          )
+            .fixedSize()
+            .background(TabsMeasureReport(key: .whole(index)))
+        }
+      }
+      HStack(spacing: 0) {
+        ForEach(Array(rulerItems.enumerated()), id: \.offset) { index, item in
+          TabsTab(item: item, selected: false, compact: true, select: {}, close: onClose.map { _ in {} })
+            .fixedSize()
+            .background(TabsMeasureReport(key: .compact(index)))
+        }
+      }
+    }
+    .fixedSize()
+    .opacity(0)
+    .allowsHitTesting(false)
+    .accessibilityHidden(true)
+  }
+
+  /// `tabs.tsx`'s arithmetic, on what was measured.
+  private func solve() -> TabsFit {
+    let widths = measured.widths
+    let whole = items.indices.compactMap { widths[.whole($0)] }
+    let small = items.indices.compactMap { widths[.compact($0)] }
+    guard whole.count == items.count, small.count == items.count, let room = widths[.room] else {
+      return TabsFit(compact: false, shown: items.count, basis: 0, floor: 0)
+    }
+    let trailingWidth = widths[.trailing] ?? 0
+    let basis = whole.reduce(0, +) + trailingWidth
+    let space = room - trailingWidth
+    let active = items.firstIndex { $0.value == value }
+    // The least the row is ever given: the tab that is showing, whole, the
+    // way to the rest and what trails.
+    let floor = min(
+      basis,
+      whole[active ?? 0] + (items.count > 1 ? Self.moreWidth : 0) + trailingWidth
+    )
+    func sum(_ widths: [CGFloat], _ count: Int) -> CGFloat {
+      widths.prefix(count).reduce(0, +)
+    }
+    // Half a point of slack, so a row that fits to the rounding is not
+    // folded by it.
+    guard sum(whole, items.count) > space + 0.5 else {
+      return TabsFit(compact: false, shown: items.count, basis: basis, floor: floor)
+    }
+    // The tab that is showing keeps its name; the others are their icons.
+    let mixed = small.indices.map { $0 == active ? whole[$0] : small[$0] }
+    var shown = items.count
+    while shown > 1,
+          sum(mixed, shown) + (shown < items.count ? Self.moreWidth : 0) > space + 0.5 {
+      shown -= 1
+    }
+    return TabsFit(compact: true, shown: shown, basis: basis, floor: floor)
   }
 }
 
@@ -152,9 +265,71 @@ public extension Tabs where Trailing == EmptyView {
     items: [TabItem<Value>],
     value: Value?,
     onValueChange: @escaping (Value) -> Void,
-    onClose: ((Value) -> Void)? = nil
+    onClose: ((Value) -> Void)? = nil,
+    accessibilityLabel: String? = nil
   ) {
-    self.init(items: items, value: value, onValueChange: onValueChange, onClose: onClose) { EmptyView() }
+    self.init(
+      items: items,
+      value: value,
+      onValueChange: onValueChange,
+      onClose: onClose,
+      accessibilityLabel: accessibilityLabel
+    ) { EmptyView() }
+  }
+}
+
+/// How the row is drawn: whether the tabs not showing are their icons, and
+/// how many are in the row rather than behind the more-button.
+private struct TabsFit {
+  var compact: Bool
+  var shown: Int
+  /// The row's width whole, and the least it is ever given.
+  var basis: CGFloat
+  var floor: CGFloat
+}
+
+private enum TabsMeasureSlot: Hashable {
+  case whole(Int)
+  case compact(Int)
+  case trailing
+  case room
+}
+
+private struct TabsMeasure {
+  var widths: [TabsMeasureSlot: CGFloat] = [:]
+}
+
+private struct TabsMeasureKey: PreferenceKey {
+  static let defaultValue: [TabsMeasureSlot: CGFloat] = [:]
+
+  static func reduce(
+    value: inout [TabsMeasureSlot: CGFloat],
+    nextValue: () -> [TabsMeasureSlot: CGFloat]
+  ) {
+    value.merge(nextValue()) { _, next in next }
+  }
+}
+
+/// Reports the width of the view it is the background of.
+private struct TabsMeasureReport: View {
+  let key: TabsMeasureSlot
+
+  var body: some View {
+    GeometryReader { proxy in
+      Color.clear.preference(key: TabsMeasureKey.self, value: [key: proxy.size.width])
+    }
+  }
+}
+
+private struct TabsListLabel: ViewModifier {
+  let label: String?
+
+  func body(content: Content) -> some View {
+    if let label {
+      content.accessibilityLabel(label)
+    } else {
+      content
+    }
   }
 }
 
@@ -188,7 +363,7 @@ private struct TabsTab<Value: Hashable>: View {
           if let icon = item.icon {
             Icon(icon, size: 14)
           }
-          if !compact {
+          if !(compact && item.icon != nil) {
             Text(item.label).lineLimit(1).truncationMode(.tail)
             if let detail = item.detail {
               Text(detail).fontWeight(vars.labelMedium.weight).foregroundStyle(vars.colorContentSubtle)
@@ -213,6 +388,8 @@ private struct TabsTab<Value: Hashable>: View {
       .disabled(item.disabled)
       .opacity(item.disabled ? 0.5 : 1)
       .help(item.title ?? (compact ? item.label : ""))
+      // Drawn as its icon alone, the tab is still called by its name.
+      .modifier(TabsListLabel(label: compact && item.icon != nil ? item.label : nil))
       .accessibilityAddTraits(selected ? [.isSelected] : [])
       if item.closable, let close, !compact {
         // Offered on the tab that is showing and under the pointer; it keeps
@@ -222,7 +399,11 @@ private struct TabsTab<Value: Hashable>: View {
         }
         .padding(.leading, -vars.spacing15)
         .padding(.trailing, vars.spacing1)
-        .opacity(selected || hovered ? 1 : 0)
+        // `visibility: hidden`, not only unseen: a close that cannot be seen
+        // cannot be pressed either.
+        .opacity(closeShown ? 1 : 0)
+        .allowsHitTesting(closeShown)
+        .accessibilityHidden(!closeShown)
       }
     }
     .frame(maxHeight: .infinity)
@@ -238,6 +419,8 @@ private struct TabsTab<Value: Hashable>: View {
     .onHover { hovered = $0 }
     .animation(vars.motion, value: hovered)
   }
+
+  private var closeShown: Bool { selected || hovered }
 
   private func dot(_ status: TabStatus, _ vars: ThemeVariables) -> Color {
     switch status {
