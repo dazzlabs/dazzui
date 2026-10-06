@@ -1,4 +1,9 @@
 import SwiftUI
+#if os(macOS)
+  import AppKit
+#elseif canImport(UIKit)
+  import UIKit
+#endif
 
 // The hand-written half of the token vocabulary: the types `Generated/` is
 // written against. Nothing here holds a design value — every value lives in
@@ -119,10 +124,48 @@ public struct TypeStyle: Sendable, Equatable {
     return .custom(first, size: size)
   }
 
+  /// How tall the platform sets one line of this face: its ascender, its
+  /// descender and its own leading — what a `Text` is before any spacing.
+  public var naturalLineHeight: CGFloat {
+    #if os(macOS)
+      let face = family.first.flatMap { name in
+        name.hasPrefix("-apple-system") ? nil : NSFont(name: name, size: size)
+      } ?? NSFont.systemFont(ofSize: size)
+      // A `Text` sets its line on whole points above and below the baseline:
+      // a 13pt system face is 12.6 up and 2.7 down, and a line of it is 16.
+      return face.ascender.rounded(.up) + (-face.descender).rounded(.up) + face.leading
+    #elseif canImport(UIKit)
+      let face = family.first.flatMap { name in
+        name.hasPrefix("-apple-system") ? nil : UIFont(name: name, size: size)
+      } ?? UIFont.systemFont(ofSize: size)
+      return face.ascender.rounded(.up) + (-face.descender).rounded(.up) + face.leading
+    #else
+      return size
+    #endif
+  }
+
   /// SwiftUI spaces lines by the gap between them, where CSS states the whole
-  /// line box. The difference is the face's own size.
+  /// line box. The gap is what the line box has over the face's own line —
+  /// not over its size, which would set every line the face's leading apart
+  /// on top of the design's.
   public var lineSpacing: CGFloat {
-    max(0, lineHeight - size)
+    max(0, lineHeight - naturalLineHeight)
+  }
+
+  /// CSS's half-leading: what a line box puts above and below its line.
+  public var halfLeading: CGFloat {
+    lineSpacing / 2
+  }
+}
+
+public extension View {
+  /// Sets text in `style`'s line box, as CSS does: lines `lineHeight` apart,
+  /// and half the leading above the first and below the last, so one line is
+  /// `lineHeight` tall rather than the face's own height. For a run of text;
+  /// on a row of controls the padding would land on the row.
+  func lineBox(_ style: TypeStyle) -> some View {
+    lineSpacing(style.lineSpacing)
+      .padding(.vertical, style.halfLeading)
   }
 }
 

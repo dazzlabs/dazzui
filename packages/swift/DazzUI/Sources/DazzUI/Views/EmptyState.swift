@@ -23,11 +23,9 @@ public struct EmptyState<Action: View>: View {
     VStack(spacing: vars.spacing3) {
       Text(title)
         .font(vars.bodyMedium.font)
-        .lineSpacing(vars.bodyMedium.lineSpacing)
+        .lineBox(vars.bodyMedium)
         .multilineTextAlignment(.center)
         .foregroundStyle(vars.colorContentSubtle)
-        // CSS's line box: one line is the face's line height, not its size.
-        .frame(minHeight: vars.bodyMedium.lineHeight)
       // A row of controls, so it takes the control gap rather than the block
       // gap.
       if Action.self != EmptyView.self {

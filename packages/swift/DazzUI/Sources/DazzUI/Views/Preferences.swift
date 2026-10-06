@@ -149,7 +149,7 @@ public struct PreferenceGroup<Content: View, Action: View>: View {
           // SectionLabel.
           Text(title)
             .font(vars.titleMedium.font)
-            .lineSpacing(vars.titleMedium.lineSpacing)
+            .lineBox(vars.titleMedium)
             .foregroundStyle(vars.colorContent)
           if let description {
             Text(description)
@@ -268,14 +268,14 @@ public struct PreferenceRow<Icon: View, Trailing: View>: View {
         // it.
         Text(title)
           .font(vars.labelQuiet.font)
-          .lineSpacing(vars.labelQuiet.lineSpacing)
+          .lineBox(vars.labelQuiet)
           .foregroundStyle(vars.colorContent)
           .lineLimit(1)
           .truncationMode(.tail)
         if let subtitle {
           Text(subtitle)
             .font(vars.captionSmall.font)
-            .lineSpacing(vars.captionSmall.lineSpacing)
+            .lineBox(vars.captionSmall)
             .foregroundStyle(vars.colorContentSubtle)
             .lineLimit(1)
             .truncationMode(.tail)

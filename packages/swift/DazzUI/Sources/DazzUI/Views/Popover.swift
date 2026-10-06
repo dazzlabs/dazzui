@@ -166,7 +166,7 @@ public struct Popover<Trigger: View, Content: View>: View {
           if let description {
             Text(description)
               .font(vars.bodySmall.font)
-              .lineSpacing(vars.bodySmall.lineSpacing)
+              .lineBox(vars.bodySmall)
               .foregroundStyle(vars.colorContentSecondary)
               .padding(.top, vars.spacing1)
               .fixedSize(horizontal: false, vertical: true)

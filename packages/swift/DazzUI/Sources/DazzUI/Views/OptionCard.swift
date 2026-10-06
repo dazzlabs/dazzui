@@ -48,7 +48,7 @@ public struct OptionCard<Title: View, Description: View>: View {
       VStack(alignment: .leading, spacing: padding == nil ? vars.spacing15 : 0) {
         title()
           .font(.system(size: vars.labelStrong.size, weight: vars.labelStrong.weight))
-          .lineSpacing(vars.labelStrong.lineSpacing)
+          .lineBox(vars.labelStrong)
           .foregroundStyle(vars.colorContent)
         description()
           .font(.system(size: vars.labelSmall.size, weight: vars.captionSmall.weight))

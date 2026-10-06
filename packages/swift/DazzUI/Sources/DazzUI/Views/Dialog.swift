@@ -95,7 +95,7 @@ public struct DialogHeader<Accessory: View>: View {
       if let subtitle {
         Text(subtitle)
           .font(vars.captionSmall.font)
-          .lineSpacing(vars.captionSmall.lineSpacing)
+          .lineBox(vars.captionSmall)
           .foregroundStyle(vars.colorContentSubtle)
       }
       accessory()
