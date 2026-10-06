@@ -173,7 +173,7 @@ private struct TabsTab<Value: Hashable>: View {
   var body: some View {
     let vars = theme.vars
     HStack(spacing: 0) {
-      Button(action: select) {
+      SwiftUI.Button(action: select) {
         HStack(spacing: vars.spacing15) {
           if let status = item.status {
             Circle()
