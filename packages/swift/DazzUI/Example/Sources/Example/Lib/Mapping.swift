@@ -472,7 +472,13 @@ let components: [String: ComponentBuilder] = [
             defaultSize: panel.number("defaultSize") ?? 1,
             minSize: panel.number("minSize") ?? 0,
             maxSize: panel.number("maxSize") ?? 100
-          ) { panel.kids }
+          ) {
+            // A panel is a box of its own, as React's is: it is the specimen,
+            // and its content takes the room it is given.
+            panel.kids
+              .frame(maxWidth: .infinity, maxHeight: .infinity)
+              .specimen(child["$at"]?.number.map { Int($0) })
+          }
         }
       )
     )

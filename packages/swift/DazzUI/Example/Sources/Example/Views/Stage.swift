@@ -289,6 +289,9 @@ private struct StageFrame: View {
     let shape = RoundedRectangle(cornerRadius: vars.radiusLarge, style: .circular)
     node.kids
       .frame(maxWidth: .infinity, maxHeight: .infinity)
+      // The border is inside the box, as CSS draws it, and the content
+      // inside the border.
+      .padding(hairline)
       .background(vars.colorSurface)
       .clipShape(shape)
       .overlay(shape.strokeBorder(vars.colorBorder, lineWidth: hairline))
