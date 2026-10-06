@@ -228,7 +228,10 @@ public struct Tabs<Value: Hashable, Trailing: View>: View {
     let widths = measured.widths
     let whole = items.indices.compactMap { widths[.whole($0)] }
     let small = items.indices.compactMap { widths[.compact($0)] }
-    guard whole.count == items.count, small.count == items.count, let room = widths[.room] else {
+    // Everything whole until every tab has been measured — on the first
+    // pass, and while a changed set of tabs has not reported yet.
+    guard !items.isEmpty, whole.count == items.count, small.count == items.count,
+          let room = widths[.room] else {
       return TabsFit(compact: false, shown: items.count, basis: 0, floor: 0)
     }
     let trailingWidth = widths[.trailing] ?? 0
@@ -239,7 +242,8 @@ public struct Tabs<Value: Hashable, Trailing: View>: View {
     // way to the rest and what trails.
     let floor = min(
       basis,
-      whole[active ?? 0] + (items.count > 1 ? Self.moreWidth : 0) + trailingWidth
+      (whole.indices.contains(active ?? 0) ? whole[active ?? 0] : 0)
+        + (items.count > 1 ? Self.moreWidth : 0) + trailingWidth
     )
     func sum(_ widths: [CGFloat], _ count: Int) -> CGFloat {
       widths.prefix(count).reduce(0, +)
@@ -250,7 +254,7 @@ public struct Tabs<Value: Hashable, Trailing: View>: View {
       return TabsFit(compact: false, shown: items.count, basis: basis, floor: floor)
     }
     // The tab that is showing keeps its name; the others are their icons.
-    let mixed = small.indices.map { $0 == active ? whole[$0] : small[$0] }
+    let mixed = small.indices.map { $0 == active && whole.indices.contains($0) ? whole[$0] : small[$0] }
     var shown = items.count
     while shown > 1,
           sum(mixed, shown) + (shown < items.count ? Self.moreWidth : 0) > space + 0.5 {
