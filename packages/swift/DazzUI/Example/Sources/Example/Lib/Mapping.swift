@@ -426,7 +426,7 @@ let components: [String: ComponentBuilder] = [
   "SidebarHeader": { n in AnyView(SidebarHeaderNode(node: n)) },
   "SidebarInset": { n in AnyView(SidebarInsetNode(node: n)) },
   "SidebarMenu": { n in AnyView(SidebarMenuNode(node: n)) },
-  "SidebarMenuBadge": { n in AnyView(Text(n.text)) },
+  "SidebarMenuBadge": { n in AnyView(SidebarMenuBadge(n.text)) },
   "SidebarMenuButton": { n in AnyView(SidebarRow(node: n)) },
   "SidebarMenuItem": { n in AnyView(SidebarItem(node: n)) },
   "SidebarProvider": { n in AnyView(SidebarProviderNode(node: n)) },
@@ -876,8 +876,12 @@ private struct SidebarColumn: View {
     var state = sidebar
     state.showsLabels = !icons
 
+    // A plain sidebar's edge is a border, and a border takes its width from
+    // the content box.
+    // A floating card's own hairline is on both sides of it.
+    let edge = variant == "sidebar" ? hairline : variant == "floating" ? hairline * 2 : 0
     let column = VStack(alignment: .leading, spacing: 0) { node.kids }
-      .frame(width: max(0, (icons ? width : full) - pad * 2), alignment: .leading)
+      .frame(width: max(0, (icons ? width : full) - pad * 2 - edge), alignment: .leading)
       .frame(maxHeight: .infinity, alignment: .top)
       .environment(\.sidebar, state)
 
@@ -947,7 +951,7 @@ private struct SidebarHeaderNode: View {
     VStack(alignment: .leading, spacing: vars.spacing2) { node.kids }
       .padding(.vertical, vars.spacing2)
       .padding(.horizontal, vars.spacing25)
-      .frame(minHeight: vars.frameTitlebarSize, alignment: .leading)
+      .frame(maxWidth: .infinity, minHeight: vars.frameTitlebarSize, alignment: .leading)
   }
 }
 
@@ -971,9 +975,14 @@ private struct SidebarLabelNode: View {
 
   var body: some View {
     if sidebar.showsLabels {
-      SectionLabel { Text(node.text) }
-        .padding(.vertical, theme.vars.spacing1)
-        .padding(.horizontal, theme.vars.spacing25)
+      // `SidebarGroupLabel` is the faint section label, stretched to the
+      // group the way a flex row is.
+      HStack(spacing: 0) {
+        SectionLabel(faint: true) { Text(node.text) }
+        Spacer(minLength: 0)
+      }
+      .padding(.vertical, theme.vars.spacing1)
+      .padding(.horizontal, theme.vars.spacing25)
     }
   }
 }
@@ -1011,23 +1020,44 @@ private struct SidebarRow: View {
   @Environment(\.theme) private var theme
 
   var body: some View {
-    let icon = node.props["icon"].flatMap(iconOf)
-    let row = NavItem(active: node.flag("active"), action: node.press()) {
-      if let icon { Icon(icon) }
-    } label: {
-      Text(sidebar.showsLabels ? node.text : "")
-    }
-    .overlay(alignment: .trailing) {
-      if let badge = sidebar.badge {
-        NodeView(badge)
-          .font(theme.vars.labelSmall.font)
-          .padding(.trailing, theme.vars.spacing1)
-      }
-    }
     if let tooltip = node.string("tooltip"), !sidebar.showsLabels {
       Tooltip(side: .right) { Text(tooltip) } content: { row }
     } else {
       row
+    }
+  }
+
+  /// The row, made with only the slots it fills: an absent glyph or count
+  /// takes no room, so they are left out rather than passed empty.
+  private var row: AnyView {
+    let active = node.flag("active")
+    let size = node.string("size").flatMap(SidebarMenuButtonSize.init(rawValue:)) ?? .medium
+    let variant = node.string("variant").flatMap(SidebarMenuButtonVariant.init(rawValue:)) ?? .filled
+    let tint = node.string("tint").flatMap(Tint.init(rawValue:)) ?? .primary
+    let press = node.press()
+    let text = sidebar.showsLabels ? node.text : ""
+    // Drawn through the scene, so the glyph and the count are specimens.
+    switch (node.props["icon"], sidebar.badge) {
+    case (let icon?, let badge?):
+      return AnyView(
+        SidebarMenuButton(active: active, size: size, variant: variant, tint: tint, action: press) {
+          NodeView(icon)
+        } label: { Text(text) } badge: { NodeView(badge) })
+    case (let icon?, nil):
+      return AnyView(
+        SidebarMenuButton(active: active, size: size, variant: variant, tint: tint, action: press) {
+          NodeView(icon)
+        } label: { Text(text) })
+    case (nil, let badge?):
+      return AnyView(
+        SidebarMenuButton(active: active, size: size, variant: variant, tint: tint, action: press) {
+          Text(text)
+        } badge: { NodeView(badge) })
+    case (nil, nil):
+      return AnyView(
+        SidebarMenuButton(active: active, size: size, variant: variant, tint: tint, action: press) {
+          Text(text)
+        })
     }
   }
 }

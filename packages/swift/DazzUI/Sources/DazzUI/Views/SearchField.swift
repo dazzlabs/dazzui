@@ -16,6 +16,11 @@ public struct SearchField<Hint: View>: View {
   public var tint: Tint
   /// Focus on appearance, for a field opened by a shortcut.
   public var autoFocus: Bool
+  /// Focuses the field each time it changes — a shortcut that jumps to a
+  /// field already on screen (⌘K), as a ref's `focus()` does in React.
+  public var focusRequest: Int
+  /// Return in the field: the first match taken, a search run.
+  public var onSubmit: (() -> Void)?
   /// Called on Escape once the field is already empty.
   public var onDismiss: (() -> Void)?
   /// Accessible name of the clear button.
@@ -35,6 +40,8 @@ public struct SearchField<Hint: View>: View {
     size: TextFieldSize = .medium,
     tint: Tint = .primary,
     autoFocus: Bool = false,
+    focusRequest: Int = 0,
+    onSubmit: (() -> Void)? = nil,
     onDismiss: (() -> Void)? = nil,
     clearLabel: String = "Clear search",
     accessibilityLabel: String? = nil,
@@ -46,6 +53,8 @@ public struct SearchField<Hint: View>: View {
     self.size = size
     self.tint = tint
     self.autoFocus = autoFocus
+    self.focusRequest = focusRequest
+    self.onSubmit = onSubmit
     self.onDismiss = onDismiss
     self.clearLabel = clearLabel
     self.accessibilityLabel = accessibilityLabel
@@ -80,6 +89,7 @@ public struct SearchField<Hint: View>: View {
     .frame(height: metrics.size)
     .fieldChrome(style, cornerRadius: vars.radiusMedium, vars: vars)
     .onAppear { if autoFocus { focused = true } }
+    .onChange(of: focusRequest) { _ in focused = true }
   }
 
   private var field: some View {
@@ -94,6 +104,7 @@ public struct SearchField<Hint: View>: View {
         .textFieldStyle(.plain)
         .lineLimit(1)
         .focused($focused)
+        .onSubmit { onSubmit?() }
         .accessibilityLabel(accessibilityLabel ?? placeholder)
         #if os(macOS)
           // Escape clears first and dismisses only once there is nothing

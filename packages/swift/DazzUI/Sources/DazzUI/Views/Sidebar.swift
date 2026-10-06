@@ -129,6 +129,8 @@ public struct Sidebar<Header: View, Content: View>: View {
       }
       rowList(vars: vars)
     }
+    // The edge's hairline is drawn inside the column, as CSS's border is.
+    .padding(.trailing, hairline)
     .frame(width: resolvedWidth)
     .background(vars.colorSurfaceColumn)
     .rule(vars.colorBorder, edge: .trailing, width: hairline)
@@ -137,22 +139,17 @@ public struct Sidebar<Header: View, Content: View>: View {
     }
   }
 
-  /// Only the row list scrolls, so a pinned card stays put.
+  /// Only the row list scrolls, so a pinned card stays put. Groups carry
+  /// their own inset (`.dz-sidebar__group`); the list adds only the content's
+  /// block padding (`.dz-sidebar__content`).
   private func rowList(vars: ThemeVariables) -> some View {
     GeometryReader { proxy in
       ScrollView(.vertical) {
-        VStack(alignment: .leading, spacing: vars.frameNavGap) {
+        VStack(alignment: .leading, spacing: 0) {
           content()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, vars.spacing25)
-        // A group carries its own leading step and CSS zeroes it on the first
-        // one with `:first-child`. SwiftUI has no such selector, so the body
-        // hands that much of its top padding over instead: a first group puts
-        // back exactly what was given up, and every later group adds the step
-        // again on top of the gap.
-        .padding(.top, vars.spacing35 - sidebarGroupStep(vars))
-        .padding(.bottom, vars.spacing35)
+        .padding(.vertical, vars.spacing2)
         // A short list still has to let a pinned card — or a trailing
         // `NavAction` — sink to the foot, which needs a height to sink through.
         .frame(minHeight: proxy.size.height, alignment: .top)
@@ -317,55 +314,96 @@ public extension Sidebar where Header == EmptyView {
   }
 }
 
-/// A labelled run of rows.
+/// A labelled run of rows — `SidebarGroup` with its `SidebarGroupLabel` and
+/// `SidebarGroupAction`.
 ///
-/// A sidebar breaks its rows into groups rather than stacking them; the gap
-/// between groups does most of the work and the label only names it.
-public struct SidebarGroup<Label: View, Content: View>: View {
+/// The first run usually goes unlabelled — it is what the column is already
+/// about — and the gap between groups does most of the work. The label sits on
+/// the rows' own inset, in the faint tone, so it reads as the heading of the
+/// labels under it rather than of the column.
+public struct SidebarGroup<Label: View, Action: View, Content: View>: View {
   public var label: (() -> Label)?
+  public var action: (() -> Action)?
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
 
   public init(
     @ViewBuilder label: @escaping () -> Label,
+    @ViewBuilder action: @escaping () -> Action,
     @ViewBuilder content: @escaping () -> Content
   ) {
-    self.init(labelBuilder: label, content: content)
+    self.init(labelBuilder: label, actionBuilder: action, content: content)
   }
 
-  init(labelBuilder: (() -> Label)?, content: @escaping () -> Content) {
+  init(labelBuilder: (() -> Label)?, actionBuilder: (() -> Action)?, content: @escaping () -> Content) {
     self.label = labelBuilder
+    self.action = actionBuilder
     self.content = content
   }
 
   public var body: some View {
     let vars = theme.vars
 
-    VStack(alignment: .leading, spacing: vars.frameNavGap) {
+    VStack(alignment: .leading, spacing: 0) {
       if let label {
-        SectionLabel { label() }
-          .padding(.vertical, vars.spacing1)
-          .padding(.horizontal, vars.spacing25)
+        HStack(spacing: 0) {
+          SectionLabel(faint: true) { label() }
+          Spacer(minLength: 0)
+        }
+        .padding(.vertical, vars.spacing1)
+        .padding(.horizontal, vars.spacing25)
+        // `.dz-sidebar__group-action`: on the label's trailing edge, a step
+        // down from the group's top.
+        .overlay(alignment: .topTrailing) {
+          if let action {
+            action()
+              .padding(.top, vars.spacing1 - vars.spacing15)
+              .padding(.trailing, vars.spacing25)
+          }
+        }
       }
-      content()
+      VStack(alignment: .leading, spacing: vars.frameNavGap) {
+        content()
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
-    .padding(.top, sidebarGroupStep(vars))
+    .padding(.vertical, vars.spacing15)
+    .padding(.horizontal, vars.spacing25)
+  }
+}
+
+public extension SidebarGroup where Label == Text, Action == EmptyView {
+  /// A group whose label is a plain string.
+  init(_ title: String, @ViewBuilder content: @escaping () -> Content) {
+    self.init(labelBuilder: { Text(title) }, actionBuilder: nil, content: content)
   }
 }
 
 public extension SidebarGroup where Label == Text {
-  /// A group whose label is a plain string.
-  init(_ title: String, @ViewBuilder content: @escaping () -> Content) {
-    self.init(labelBuilder: { Text(title) }, content: content)
+  /// A group whose label is a plain string, with a button on it — "add",
+  /// "collapse".
+  init(
+    _ title: String,
+    @ViewBuilder action: @escaping () -> Action,
+    @ViewBuilder content: @escaping () -> Content
+  ) {
+    self.init(labelBuilder: { Text(title) }, actionBuilder: action, content: content)
   }
 }
 
-public extension SidebarGroup where Label == EmptyView {
+public extension SidebarGroup where Label == EmptyView, Action == EmptyView {
   /// An unnamed run of rows.
   init(@ViewBuilder content: @escaping () -> Content) {
-    self.init(labelBuilder: nil, content: content)
+    self.init(labelBuilder: nil, actionBuilder: nil, content: content)
+  }
+}
+
+public extension SidebarGroup where Action == EmptyView {
+  /// A group with a label of its own making.
+  init(@ViewBuilder label: @escaping () -> Label, @ViewBuilder content: @escaping () -> Content) {
+    self.init(labelBuilder: label, actionBuilder: nil, content: content)
   }
 }
 
@@ -426,7 +464,3 @@ public extension SidebarCard where Label == EmptyView {
   }
 }
 
-/// The step a sidebar group sets itself off by, over and above the body's gap.
-private func sidebarGroupStep(_ vars: ThemeVariables) -> CGFloat {
-  vars.spacing35
-}
