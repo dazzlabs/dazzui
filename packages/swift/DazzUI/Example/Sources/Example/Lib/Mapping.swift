@@ -81,7 +81,21 @@ let components: [String: ComponentBuilder] = [
     )
   },
   "Button": { n in
-    AnyView(
+    // A shortcut written as an element — a `KeyCap` — is drawn as one, in
+    // the button's shortcut slot; a string is the string.
+    if n.props["shortcut"]?["$el"] != nil {
+      return AnyView(
+        Button(
+          size: n.option("size", ControlSize.small),
+          variant: n.option("variant", ControlVariant.recessed),
+          tint: n.option("tint", Tint.primary),
+          fullWidth: n.flag("fullWidth"),
+          enabled: !n.flag("disabled"),
+          action: n.press()
+        ) { InlineKids(node: n) } shortcut: { n.element("shortcut") }
+      )
+    }
+    return AnyView(
       Button(
         size: n.option("size", ControlSize.small),
         variant: n.option("variant", ControlVariant.recessed),

@@ -18,7 +18,6 @@
 *  accordion/preview/1          *
 *  accordion/preview/2          *
 *  button/3/2                   width
-*  button/3/3                   *
 *  callout/0/0                  height
 *  callout/0/1                  height
 *  callout/0/2                  height

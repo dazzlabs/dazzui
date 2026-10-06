@@ -15,6 +15,9 @@ public struct Button<Label: View>: View {
   public var fullWidth: Bool
   /// Trailing hint — the key that also triggers this action.
   public var shortcut: String?
+  /// The same hint as a view, usually a small ``KeyCap`` — React's
+  /// `shortcut` node. Drawn in place of the string when both are given.
+  public var shortcutView: AnyView?
   public var enabled: Bool
   public var action: () -> Void
   @ViewBuilder public var label: () -> Label
@@ -42,6 +45,30 @@ public struct Button<Label: View>: View {
     self.label = label
   }
 
+  /// A button whose shortcut hint is a view — usually
+  /// `KeyCap(size: .small) { Text("⌘↩") }`.
+  public init<Shortcut: View>(
+    size: ControlSize = .small,
+    variant: ControlVariant = .recessed,
+    tint: Tint = .primary,
+    fullWidth: Bool = false,
+    enabled: Bool = true,
+    action: @escaping () -> Void,
+    @ViewBuilder label: @escaping () -> Label,
+    @ViewBuilder shortcut: () -> Shortcut
+  ) {
+    self.init(
+      size: size,
+      variant: variant,
+      tint: tint,
+      fullWidth: fullWidth,
+      enabled: enabled,
+      action: action,
+      label: label
+    )
+    self.shortcutView = AnyView(shortcut())
+  }
+
   public var body: some View {
     let vars = theme.vars
     let metrics = vars.metrics(size)
@@ -56,9 +83,11 @@ public struct Button<Label: View>: View {
       HStack(spacing: metrics.gap) {
         label()
           .environment(\.dazzIconSize, metrics.iconSize)
-        if let shortcut {
-          // A trailing shortcut is a hint, not part of the label — it takes
-          // the display cut and steps back.
+        // A trailing shortcut is a hint, not part of the label — it takes
+        // the display cut and steps back.
+        if let shortcutView {
+          shortcutView.opacity(0.7)
+        } else if let shortcut {
           Text(shortcut).opacity(0.7)
         }
       }
@@ -126,6 +155,31 @@ public extension Button where Label == Text {
       enabled: enabled,
       action: action,
       label: { Text(title) }
+    )
+  }
+}
+
+public extension Button where Label == Text {
+  /// A button whose label is a plain string and whose shortcut hint is a view.
+  init<Shortcut: View>(
+    _ title: String,
+    size: ControlSize = .small,
+    variant: ControlVariant = .recessed,
+    tint: Tint = .primary,
+    fullWidth: Bool = false,
+    enabled: Bool = true,
+    action: @escaping () -> Void,
+    @ViewBuilder shortcut: () -> Shortcut
+  ) {
+    self.init(
+      size: size,
+      variant: variant,
+      tint: tint,
+      fullWidth: fullWidth,
+      enabled: enabled,
+      action: action,
+      label: { Text(title) },
+      shortcut: shortcut
     )
   }
 }
