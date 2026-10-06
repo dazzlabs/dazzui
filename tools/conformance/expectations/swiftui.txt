@@ -55,9 +55,6 @@
 *  collapsible/1/0              height
 *  divider/1/0                  height
 *  divider/1/1                  height
-*  empty-state/0/0              height
-*  empty-state/1/0              height
-*  empty-state/preview/0        height
 *  form-field/0/0               height
 *  form-field/1/0               height
 *  form-field/2/0               height

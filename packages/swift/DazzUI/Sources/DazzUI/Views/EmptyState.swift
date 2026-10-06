@@ -26,6 +26,8 @@ public struct EmptyState<Action: View>: View {
         .lineSpacing(vars.bodyMedium.lineSpacing)
         .multilineTextAlignment(.center)
         .foregroundStyle(vars.colorContentSubtle)
+        // CSS's line box: one line is the face's line height, not its size.
+        .frame(minHeight: vars.bodyMedium.lineHeight)
       // A row of controls, so it takes the control gap rather than the block
       // gap.
       if Action.self != EmptyView.self {
@@ -34,6 +36,8 @@ public struct EmptyState<Action: View>: View {
     }
     .padding(.vertical, vars.spacing14)
     .padding(.horizontal, vars.spacing8)
+    // `flex: 1`: it takes the room its container gives, and with none to
+    // give it is its own height — the padding and one line.
     .frame(maxWidth: .infinity, maxHeight: .infinity)
   }
 }

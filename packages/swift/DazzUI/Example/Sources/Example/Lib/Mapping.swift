@@ -185,7 +185,9 @@ let components: [String: ComponentBuilder] = [
   "Drawer": { n in AnyView(DrawerNode(node: n)) },
   "DrawerClose": { n in AnyView(CloseNode(node: n)) },
   "EmptyState": { n in
-    AnyView(EmptyState(title: n.string("title") ?? "") { n.element("action") })
+    // No action is no row at all, not an empty one with its gap above it.
+    guard n.has("action") else { return AnyView(EmptyState(n.string("title") ?? "")) }
+    return AnyView(EmptyState(title: n.string("title") ?? "") { n.element("action") })
   },
   "Fieldset": { n in AnyView(Fieldset(legend: n.string("legend")) { n.kids }) },
   "Form": { n in AnyView(DazzUI.Form { n.kids }) },
