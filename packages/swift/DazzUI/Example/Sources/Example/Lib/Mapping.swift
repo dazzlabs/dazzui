@@ -703,14 +703,28 @@ private struct DrawerNode: View {
     node.element("trigger")
       .environment(\.triggerPress) { open = true }
       .drawer(isPresented: $open) {
-        Drawer(
-          side: side,
-          title: node.string("title"),
-          description: node.string("description")
-        ) {
-          node.element("footer")
-        } content: {
-          node.kids
+        Group {
+          if node.has("footer") {
+            Drawer(
+              side: side,
+              title: node.string("title"),
+              description: node.string("description"),
+              scrolls: true
+            ) {
+              node.element("footer")
+            } content: {
+              node.kids
+            }
+          } else {
+            Drawer(
+              side: side,
+              title: node.string("title"),
+              description: node.string("description"),
+              scrolls: true
+            ) {
+              node.kids
+            }
+          }
         }
         .modifier(Carried(scene: node.context.scene, toaster: node.context.toaster))
       }

@@ -24,6 +24,9 @@ public struct Drawer<Content: View, Footer: View>: View {
   public var size: CGFloat?
   public var title: String?
   public var description: String?
+  /// Whether the body scrolls. Off, it takes the height the sheet leaves it
+  /// — a list or an editor inside can fill that and scroll itself.
+  public var scrolls: Bool
   @ViewBuilder public var footer: () -> Footer
   @ViewBuilder public var content: () -> Content
 
@@ -35,6 +38,7 @@ public struct Drawer<Content: View, Footer: View>: View {
     size: CGFloat? = nil,
     title: String? = nil,
     description: String? = nil,
+    scrolls: Bool = false,
     @ViewBuilder footer: @escaping () -> Footer,
     @ViewBuilder content: @escaping () -> Content
   ) {
@@ -42,6 +46,7 @@ public struct Drawer<Content: View, Footer: View>: View {
     self.size = size
     self.title = title
     self.description = description
+    self.scrolls = scrolls
     self.footer = footer
     self.content = content
   }
@@ -63,16 +68,18 @@ public struct Drawer<Content: View, Footer: View>: View {
         DialogHeader(title, subtitle: description)
       }
       // Only the body scrolls, so a long panel keeps its heading and its
-      // actions in view.
-      ScrollView {
-        VStack(alignment: .leading, spacing: vars.spacing4) {
-          content()
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, vars.spacing4 + vars.spacing05)
-        .padding(.horizontal, vars.spacing5)
+      // actions in view — and only when asked, since a scroll view offers
+      // its content no height to fill.
+      if scrolls {
+        ScrollView { bodyStack(vars) }
+      } else {
+        bodyStack(vars)
+          .frame(maxHeight: .infinity, alignment: .top)
       }
-      DialogFooter { footer() }
+      // No band unless there is something to put in it.
+      if Footer.self != EmptyView.self {
+        DialogFooter { footer() }
+      }
     }
     .frame(
       maxWidth: horizontal ? extent : .infinity,
@@ -85,6 +92,15 @@ public struct Drawer<Content: View, Footer: View>: View {
     .clipShape(DrawerShape(side: side, corner: vars.frameWindowRadius))
     .rule(vars.colorBorderStrong, edge: flushEdge, width: hairline)
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
+  }
+
+  private func bodyStack(_ vars: ThemeVariables) -> some View {
+    VStack(alignment: .leading, spacing: vars.spacing4) {
+      content()
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .padding(.vertical, vars.spacing4 + vars.spacing05)
+    .padding(.horizontal, vars.spacing5)
   }
 
   private var horizontal: Bool { side == .leading || side == .trailing }
@@ -116,6 +132,7 @@ public extension Drawer where Footer == EmptyView {
     size: CGFloat? = nil,
     title: String? = nil,
     description: String? = nil,
+    scrolls: Bool = false,
     @ViewBuilder content: @escaping () -> Content
   ) {
     self.init(
@@ -123,6 +140,7 @@ public extension Drawer where Footer == EmptyView {
       size: size,
       title: title,
       description: description,
+      scrolls: scrolls,
       footer: { EmptyView() },
       content: content
     )
