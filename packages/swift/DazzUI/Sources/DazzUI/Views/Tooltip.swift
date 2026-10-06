@@ -82,11 +82,20 @@ public struct Tooltip<Label: View, Content: View>: View {
   public var body: some View {
     content()
       .onHover { hovered = $0 }
-      .overlay(alignment: overlayAlignment) {
-        if open {
-          panel
-            .modifier(TooltipPlacement(side: side, gap: theme.vars.spacing1))
-            .transition(.opacity.combined(with: .scale(scale: 0.97)))
+      // Placed by a layout of its own rather than by the overlay's alignment:
+      // the overlay offers the label the anchor's size, and the label is to
+      // take its own, beside the anchor, on whichever side it was asked for.
+      .overlay {
+        TooltipLayout(
+          side: side,
+          align: align,
+          gap: theme.vars.spacing1,
+          maxWidth: theme.vars.toastMaxWidth
+        ) {
+          if open {
+            panel
+              .transition(.opacity.combined(with: .scale(scale: 0.97)))
+          }
         }
       }
       .zIndex(open ? 1 : 0)
@@ -118,8 +127,6 @@ public struct Tooltip<Label: View, Content: View>: View {
       .multilineTextAlignment(.leading)
       .padding(.vertical, vars.spacing1 + vars.spacing05)
       .padding(.horizontal, vars.spacing2)
-      .frame(maxWidth: vars.toastMaxWidth)
-      .fixedSize(horizontal: false, vertical: true)
       .background(vars.colorSurfaceRaised)
       .clipShape(
         RoundedRectangle(cornerRadius: vars.radiusSmall, style: .circular)
@@ -128,23 +135,6 @@ public struct Tooltip<Label: View, Content: View>: View {
       .tokenShadow(vars.shadowSm)
       .allowsHitTesting(false)
       .accessibilityHidden(true)
-  }
-
-  private var overlayAlignment: Alignment {
-    switch (side, align) {
-    case (.top, .start): return .topLeading
-    case (.top, .center): return .top
-    case (.top, .end): return .topTrailing
-    case (.bottom, .start): return .bottomLeading
-    case (.bottom, .center): return .bottom
-    case (.bottom, .end): return .bottomTrailing
-    case (.left, .start): return .topLeading
-    case (.left, .center): return .leading
-    case (.left, .end): return .bottomLeading
-    case (.right, .start): return .topTrailing
-    case (.right, .center): return .trailing
-    case (.right, .end): return .bottomTrailing
-    }
   }
 
   private func wait(_ seconds: TimeInterval) async -> Bool {
@@ -183,29 +173,60 @@ public extension Tooltip where Label == Text {
   }
 }
 
-private struct TooltipPlacement: ViewModifier {
+/// Sizes the label and hangs it off its anchor.
+///
+/// The label is `width: max-content` under `max-width`: its ideal width,
+/// capped, and wrapped at the cap — never the width the anchor happened to
+/// be, which in an icon button's 24 points would set it one letter to a line.
+/// The layout itself is the anchor's size; the label is placed outside it.
+private struct TooltipLayout: Layout {
   let side: TooltipSide
+  let align: TooltipAlignment
   let gap: CGFloat
+  let maxWidth: CGFloat
 
-  func body(content: Content) -> some View {
-    switch side {
-    case .top:
-      content.alignmentGuide(.top) { dimensions in
-        dimensions[.bottom] + gap
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    proposal.replacingUnspecifiedDimensions(by: .zero)
+  }
+
+  func placeSubviews(
+    in bounds: CGRect,
+    proposal: ProposedViewSize,
+    subviews: Subviews,
+    cache: inout ()
+  ) {
+    for subview in subviews {
+      let size = measure(subview)
+      let along: (CGFloat, CGFloat, CGFloat) -> CGFloat = { start, end, extent in
+        switch align {
+        case .start: return start
+        case .center: return (start + end - extent) / 2
+        case .end: return end - extent
+        }
       }
-    case .bottom:
-      content.alignmentGuide(.bottom) { dimensions in
-        dimensions[.top] - gap
+      let origin: CGPoint
+      switch side {
+      case .top:
+        origin = CGPoint(x: along(bounds.minX, bounds.maxX, size.width), y: bounds.minY - gap - size.height)
+      case .bottom:
+        origin = CGPoint(x: along(bounds.minX, bounds.maxX, size.width), y: bounds.maxY + gap)
+      case .left:
+        origin = CGPoint(x: bounds.minX - gap - size.width, y: along(bounds.minY, bounds.maxY, size.height))
+      case .right:
+        origin = CGPoint(x: bounds.maxX + gap, y: along(bounds.minY, bounds.maxY, size.height))
       }
-    case .left:
-      content.alignmentGuide(.leading) { dimensions in
-        dimensions[.trailing] + gap
-      }
-    case .right:
-      content.alignmentGuide(.trailing) { dimensions in
-        dimensions[.leading] - gap
-      }
+      subview.place(
+        at: origin,
+        anchor: .topLeading,
+        proposal: ProposedViewSize(width: size.width, height: size.height)
+      )
     }
+  }
+
+  private func measure(_ subview: LayoutSubview) -> CGSize {
+    let ideal = subview.sizeThatFits(.unspecified)
+    guard ideal.width > maxWidth else { return ideal }
+    return subview.sizeThatFits(ProposedViewSize(width: maxWidth, height: nil))
   }
 }
 
