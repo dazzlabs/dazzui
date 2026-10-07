@@ -53,6 +53,34 @@ const story: Story = {
         </Col>
       ),
     },
+    {
+      title: 'Groups',
+      Demo: () => (
+        <Col width="20rem">
+          <Select
+            options={[
+              { value: 'none', label: 'Unassigned' },
+              {
+                label: 'People',
+                options: [
+                  { value: 'ada', label: 'Ada' },
+                  { value: 'grace', label: 'Grace' },
+                ],
+              },
+              {
+                label: 'Agents',
+                options: [
+                  { value: 'claude', label: 'Claude' },
+                  { value: 'codex', label: 'Codex' },
+                ],
+              },
+            ]}
+            defaultValue="grace"
+            aria-label="Assignee"
+          />
+        </Col>
+      ),
+    },
   ],
 }
 

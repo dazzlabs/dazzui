@@ -202,6 +202,59 @@ pub const STORY: &str = r#"
           ]
         }
       }
+    },
+    {
+      "title": "Groups",
+      "demo": {
+        "content": {
+          "$el": "Col",
+          "props": {
+            "width": "20rem"
+          },
+          "children": [
+            {
+              "$el": "Select",
+              "props": {
+                "options": [
+                  {
+                    "value": "none",
+                    "label": "Unassigned"
+                  },
+                  {
+                    "label": "People",
+                    "options": [
+                      {
+                        "value": "ada",
+                        "label": "Ada"
+                      },
+                      {
+                        "value": "grace",
+                        "label": "Grace"
+                      }
+                    ]
+                  },
+                  {
+                    "label": "Agents",
+                    "options": [
+                      {
+                        "value": "claude",
+                        "label": "Claude"
+                      },
+                      {
+                        "value": "codex",
+                        "label": "Codex"
+                      }
+                    ]
+                  }
+                ],
+                "defaultValue": "grace",
+                "aria-label": "Assignee"
+              },
+              "$at": 0
+            }
+          ]
+        }
+      }
     }
   ]
 }

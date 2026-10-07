@@ -4057,6 +4057,17 @@
               }
             }
           ]
+        },
+        {
+          "id": "select/2",
+          "title": "Groups",
+          "specimens": [
+            {
+              "address": "select/2/0",
+              "component": "select",
+              "axes": {}
+            }
+          ]
         }
       ]
     },

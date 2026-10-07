@@ -201,6 +201,10 @@ struct MenuGroupLabel: View {
     Text(title)
       .font(.system(size: vars.captionSmall.size, weight: vars.labelSmall.weight))
       .foregroundStyle(vars.colorContentSubtle)
+      .lineLimit(1)
+      // `line-height: 1`: the line box is the face's size, and the face's own
+      // taller line overhangs it evenly, as CSS centres it.
+      .frame(height: vars.captionSmall.size)
       .frame(maxWidth: .infinity, alignment: .leading)
       .padding(.top, vars.spacing15)
       .padding(.bottom, vars.spacing1)

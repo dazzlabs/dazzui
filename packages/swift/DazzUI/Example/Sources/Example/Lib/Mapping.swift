@@ -403,8 +403,15 @@ let components: [String: ComponentBuilder] = [
     AnyView(
       Held(n.string("defaultValue") ?? "") { value in
         Select(
-          options: (n["options"].array ?? []).map {
-            SelectOption(value: $0["value"]?.text ?? "", label: $0["label"]?.text ?? "")
+          // An entry with `options` of its own is a group under a heading.
+          options: (n["options"].array ?? []).map { entry -> SelectEntry<String> in
+            let option = { (o: Value) in
+              SelectOption(value: o["value"]?.text ?? "", label: o["label"]?.text ?? "")
+            }
+            if let grouped = entry["options"]?.array {
+              return .group(entry["label"]?.text ?? "", options: grouped.map(option))
+            }
+            return .option(option(entry))
           },
           selection: value,
           placeholder: n.string("placeholder") ?? "Choose…",

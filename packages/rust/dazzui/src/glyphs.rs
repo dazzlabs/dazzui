@@ -10,6 +10,8 @@ pub const CHEVRON_UP_12_REGULAR: &str = "dazzui/ChevronUp12Regular.svg";
 pub const COPY_16_REGULAR: &str = "dazzui/Copy16Regular.svg";
 pub const DISMISS_12_REGULAR: &str = "dazzui/Dismiss12Regular.svg";
 pub const DISMISS_CIRCLE_12_FILLED: &str = "dazzui/DismissCircle12Filled.svg";
+pub const DISMISS_REGULAR: &str = "dazzui/DismissRegular.svg";
+pub const MORE_HORIZONTAL_REGULAR: &str = "dazzui/MoreHorizontalRegular.svg";
 pub const PANEL_LEFT_20_REGULAR: &str = "dazzui/PanelLeft20Regular.svg";
 pub const SEARCH_16_REGULAR: &str = "dazzui/Search16Regular.svg";
 pub const SUBTRACT_12_FILLED: &str = "dazzui/Subtract12Filled.svg";
@@ -51,6 +53,14 @@ pub(crate) static SVGS: &[(&str, &str)] = &[
     (
         DISMISS_CIRCLE_12_FILLED,
         r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12"><path fill="#000" d="M6 11A5 5 0 1 0 6 1a5 5 0 0 0 0 10m1.85-6.85c.2.2.2.5 0 .7L6.71 6l1.14 1.15a.5.5 0 1 1-.7.7L6 6.71 4.85 7.85a.5.5 0 1 1-.7-.7L5.29 6 4.15 4.85a.5.5 0 1 1 .7-.7L6 5.29l1.15-1.14c.2-.2.5-.2.7 0"/></svg>"##,
+    ),
+    (
+        DISMISS_REGULAR,
+        r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="#000" d="m4.09 4.22.06-.07a.5.5 0 0 1 .63-.06l.07.06L10 9.29l5.15-5.14a.5.5 0 0 1 .63-.06l.07.06c.18.17.2.44.06.63l-.06.07L10.71 10l5.14 5.15c.18.17.2.44.06.63l-.06.07a.5.5 0 0 1-.63.06l-.07-.06L10 10.71l-5.15 5.14a.5.5 0 0 1-.63.06l-.07-.06a.5.5 0 0 1-.06-.63l.06-.07L9.29 10 4.15 4.85a.5.5 0 0 1-.06-.63l.06-.07z"/></svg>"##,
+    ),
+    (
+        MORE_HORIZONTAL_REGULAR,
+        r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="#000" d="M6.25 10a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0m5 0a1.25 1.25 0 1 1-2.5 0 1.25 1.25 0 0 1 2.5 0M15 11.25a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5"/></svg>"##,
     ),
     (
         PANEL_LEFT_20_REGULAR,

@@ -264,31 +264,80 @@ public struct SelectOption<Value: Hashable>: Identifiable {
   public var id: Value { value }
 }
 
+/// Options set under a heading, the way `<optgroup>` groups them.
+public struct SelectGroup<Value: Hashable> {
+  public var label: String
+  public var options: [SelectOption<Value>]
+
+  public init(_ label: String, options: [SelectOption<Value>]) {
+    self.label = label
+    self.options = options
+  }
+}
+
+/// What a ``Select``'s list holds: an option, or a group of them under a
+/// heading. React's `options` takes the two mixed, in the order they are
+/// listed — a flat "Unassigned" above a "People" and an "Agents" group.
+public enum SelectEntry<Value: Hashable> {
+  case option(SelectOption<Value>)
+  case group(SelectGroup<Value>)
+
+  /// A flat option.
+  public static func option(value: Value, label: String, enabled: Bool = true) -> Self {
+    .option(SelectOption(value: value, label: label, enabled: enabled))
+  }
+
+  /// Options under a heading.
+  public static func group(_ label: String, options: [SelectOption<Value>]) -> Self {
+    .group(SelectGroup(label, options: options))
+  }
+
+  fileprivate var options: [SelectOption<Value>] {
+    switch self {
+    case .option(let option): return [option]
+    case .group(let group): return group.options
+    }
+  }
+}
+
+/// How wide a ``Select``'s box is.
+public enum SelectWidth: Sendable {
+  /// The width offered, as the stylesheet's `width: 100%` makes it — the
+  /// default, in a form or a column of a set width.
+  case fill
+  /// As wide as the value shown, as `width: auto` makes it — a select in a
+  /// toolbar, beside the controls it filters.
+  case value
+  /// As wide as the longest option, so choosing a shorter one does not make
+  /// it jump — the stylesheet's `min-width` set to the longest choice.
+  case longestOption
+}
+
 /// A dropdown in the shape of a ``TextField``.
 ///
 /// A Select is a TextField with a chevron, so it shares the box outright: the
 /// same height, the same corner, the same border recipe, the same focus lift.
 /// Its list is the ``MenuSheet``, the panel a ``Menu`` and a ``Combobox``
-/// open, with a tick on the chosen row.
+/// open, with a tick on the chosen row and, where the options are grouped,
+/// each group under its heading.
 ///
 /// The trigger is drawn here rather than handed to `SwiftUI.Menu` as a label.
 /// On macOS that menu flattens its label into a native pop-up button — a title
 /// and an image — so the box's height and padding are dropped and the chevron
 /// is moved to the leading edge, whatever the label's own layout says.
 ///
-/// It is as wide as its longest option, so choosing a shorter one does not
-/// make it jump, and it does not take the room a row leaves over. A select
-/// that should fill its column the way a text field does — in a form, or in a
-/// column of a set width — asks for it with `fullWidth`.
+/// It fills the width offered, as the stylesheet's `width: 100%` has it; a
+/// select that should be as wide as what it says, or as its longest choice,
+/// asks with `width`.
 public struct Select<Value: Hashable>: View {
-  public var options: [SelectOption<Value>]
+  public var entries: [SelectEntry<Value>]
   @Binding public var selection: Value
   public var size: TextFieldSize
   public var state: TextFieldState
   public var tint: Tint
   public var enabled: Bool
-  /// Fill the width offered rather than the longest option's.
-  public var fullWidth: Bool
+  /// How wide the box is.
+  public var width: SelectWidth
   /// What the field says while its selection matches no option — React's
   /// `placeholder`, in the faint ink a placeholder is.
   public var placeholder: String
@@ -297,6 +346,28 @@ public struct Select<Value: Hashable>: View {
   @FocusState private var focused: Bool
   @State private var open = false
 
+  /// A list of options and groups of them, in the order they are listed.
+  public init(
+    options: [SelectEntry<Value>],
+    selection: Binding<Value>,
+    placeholder: String = "Choose…",
+    size: TextFieldSize = .medium,
+    state: TextFieldState = .default,
+    tint: Tint = .primary,
+    enabled: Bool = true,
+    width: SelectWidth = .fill
+  ) {
+    self.entries = options
+    self._selection = selection
+    self.placeholder = placeholder
+    self.size = size
+    self.state = state
+    self.tint = tint
+    self.enabled = enabled
+    self.width = width
+  }
+
+  /// A flat list of options.
   public init(
     options: [SelectOption<Value>],
     selection: Binding<Value>,
@@ -305,16 +376,23 @@ public struct Select<Value: Hashable>: View {
     state: TextFieldState = .default,
     tint: Tint = .primary,
     enabled: Bool = true,
-    fullWidth: Bool = false
+    width: SelectWidth = .fill
   ) {
-    self.options = options
-    self._selection = selection
-    self.placeholder = placeholder
-    self.size = size
-    self.state = state
-    self.tint = tint
-    self.enabled = enabled
-    self.fullWidth = fullWidth
+    self.init(
+      options: options.map { SelectEntry.option($0) },
+      selection: selection,
+      placeholder: placeholder,
+      size: size,
+      state: state,
+      tint: tint,
+      enabled: enabled,
+      width: width
+    )
+  }
+
+  /// Every option, out of its group.
+  public var options: [SelectOption<Value>] {
+    entries.flatMap(\.options)
   }
 
   public var body: some View {
@@ -331,6 +409,7 @@ public struct Select<Value: Hashable>: View {
   private var trigger: some View {
     let vars = theme.vars
     let metrics = vars.metrics(size.controlSize)
+    let all = options
 
     return Pressable(
       action: { open.toggle() },
@@ -340,12 +419,14 @@ public struct Select<Value: Hashable>: View {
       // The value takes the room and the chevron sits at the trailing edge.
       HStack(spacing: vars.spacing2) {
         ZStack(alignment: .leading) {
-          // Every label, unseen, so the box is the longest one's width.
-          ForEach(options) { option in
-            Text(option.label).hidden()
+          if width == .longestOption {
+            // Every label, unseen, so the box is the longest one's width.
+            ForEach(all) { option in
+              Text(option.label).hidden()
+            }
+            Text(placeholder).hidden()
           }
-          Text(placeholder).hidden()
-          if let chosen = options.first(where: { $0.value == selection }) {
+          if let chosen = all.first(where: { $0.value == selection }) {
             Text(chosen.label)
           } else {
             Text(placeholder).foregroundStyle(vars.colorContentFaint)
@@ -353,7 +434,7 @@ public struct Select<Value: Hashable>: View {
         }
         .lineLimit(1)
         .truncationMode(.tail)
-        .frame(maxWidth: fullWidth ? .infinity : nil, alignment: .leading)
+        .frame(maxWidth: width == .fill ? .infinity : nil, alignment: .leading)
         Icon(.chevronDown12Regular, size: vars.iconSmall)
           .foregroundStyle(vars.colorContentSubtle)
       }
@@ -378,24 +459,75 @@ public struct Select<Value: Hashable>: View {
     .accessibilityValue(selectedLabel)
   }
 
-  private var list: some View {
-    ForEach(options) { option in
-      MenuRow(
-        item: MenuItem(
-          option.label,
-          checked: option.value == selection,
-          disabled: !option.enabled
-        ),
-        tint: .neutral
-      ) {
-        selection = option.value
-        open = false
+  @ViewBuilder private var list: some View {
+    let vars = theme.vars
+
+    ForEach(Array(entries.enumerated()), id: \.offset) { index, entry in
+      switch entry {
+      case .option(let option):
+        row(option)
+      case .group(let group):
+        VStack(spacing: 0) {
+          MenuGroupLabel(title: group.label)
+          ForEach(group.options) { option in row(option) }
+        }
+        // `.dz-popup__group + .dz-popup__group`: a group that follows a group
+        // stands a step off it.
+        .padding(.top, index > 0 && entries[index - 1].isGroup ? vars.spacing1 : 0)
       }
+    }
+  }
+
+  private func row(_ option: SelectOption<Value>) -> some View {
+    MenuRow(
+      item: MenuItem(
+        option.label,
+        checked: option.value == selection,
+        disabled: !option.enabled
+      ),
+      tint: .neutral
+    ) {
+      selection = option.value
+      open = false
     }
   }
 
   private var selectedLabel: String {
     options.first { $0.value == selection }?.label ?? placeholder
+  }
+}
+
+public extension Select {
+  /// The earlier spelling of `width`: `true` is `.fill`, and `false` the
+  /// longest option's width this select used to take by default.
+  @available(*, deprecated, message: "Use width: — .fill, .value or .longestOption")
+  init(
+    options: [SelectOption<Value>],
+    selection: Binding<Value>,
+    placeholder: String = "Choose…",
+    size: TextFieldSize = .medium,
+    state: TextFieldState = .default,
+    tint: Tint = .primary,
+    enabled: Bool = true,
+    fullWidth: Bool
+  ) {
+    self.init(
+      options: options,
+      selection: selection,
+      placeholder: placeholder,
+      size: size,
+      state: state,
+      tint: tint,
+      enabled: enabled,
+      width: fullWidth ? .fill : .longestOption
+    )
+  }
+}
+
+private extension SelectEntry {
+  var isGroup: Bool {
+    if case .group = self { return true }
+    return false
   }
 }
 

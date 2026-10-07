@@ -126,12 +126,6 @@
 *  segmented-control/0/1        width
 *  segmented-control/0/2        width
 *  segmented-control/preview/0  width
-*  select/0/0                   width
-*  select/0/1                   width
-*  select/0/2                   width
-*  select/1/0                   width
-*  select/1/1                   width
-*  select/preview/0             width
 *  sidebar/2/3                  height
 *  sidebar/2/39                 height
 *  sidebar/2/39                 width
