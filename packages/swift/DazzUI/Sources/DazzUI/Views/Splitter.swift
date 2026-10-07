@@ -26,6 +26,11 @@ public struct SplitterPanel {
   /// Floor and ceiling, as percentages of the whole run.
   public var minSize: CGFloat
   public var maxSize: CGFloat
+  /// Floor and ceiling in points, as CSS's `min-inline-size` and
+  /// `max-inline-size` are: they hold while the run is resized as well as
+  /// while a seam is dragged, the room coming from the other panels.
+  public var minLength: CGFloat?
+  public var maxLength: CGFloat?
   public var content: AnyView
 
   public init<Content: View>(
@@ -33,9 +38,13 @@ public struct SplitterPanel {
     defaultSize: CGFloat = 1,
     minSize: CGFloat = 0,
     maxSize: CGFloat = 100,
+    minLength: CGFloat? = nil,
+    maxLength: CGFloat? = nil,
     @ViewBuilder content: () -> Content
   ) {
     self.key = key
+    self.minLength = minLength
+    self.maxLength = maxLength
     self.defaultSize = defaultSize
     self.minSize = minSize
     self.maxSize = maxSize
@@ -107,7 +116,7 @@ public struct Splitter: View {
       // left, so a share is a share of the panels' run rather than of the box.
       let whole = horizontal ? proxy.size.width : proxy.size.height
       let run = max(whole - CGFloat(seams) * extent, 1)
-      let current = shares.count == panels.count ? shares : normalised()
+      let current = fitted(shares.count == panels.count ? shares : normalised(), run: run)
 
       layout {
         // Known by place, or by key: never by a value made afresh on each
@@ -119,10 +128,10 @@ public struct Splitter: View {
               orientation: orientation,
               extent: extent,
               target: target,
-              onDrag: { delta in resize(index - 1, delta: delta / run * 100) },
+              onDrag: { delta in resize(index - 1, delta: delta / run * 100, run: run) },
               onReset: {
                 let pair = current[index - 1] + current[index]
-                set(index - 1, leading: pair / 2)
+                set(index - 1, leading: pair / 2, run: run)
               }
             )
             // Over the panels beside it, where its target reaches into them.
@@ -162,23 +171,63 @@ public struct Splitter: View {
     return panels.map { $0.defaultSize / sum * 100 }
   }
 
-  private func resize(_ index: Int, delta: CGFloat) {
-    let current = shares.count == panels.count ? shares : normalised()
-    set(index, leading: current[index] + delta)
+  private func resize(_ index: Int, delta: CGFloat, run: CGFloat) {
+    let current = fitted(shares.count == panels.count ? shares : normalised(), run: run)
+    set(index, leading: current[index] + delta, run: run)
+  }
+
+  /// A panel's floor and ceiling as shares of this run: the tighter of its
+  /// percentage and its length.
+  private func bounds(_ panel: SplitterPanel, run: CGFloat) -> (CGFloat, CGFloat) {
+    let low = max(panel.minSize, (panel.minLength ?? 0) / run * 100)
+    let high = min(panel.maxSize, panel.maxLength.map { $0 / run * 100 } ?? 100)
+    return (low, max(low, high))
+  }
+
+  /// The shares, with every panel held inside its bounds for this run: one
+  /// pushed under its floor (the run narrowed) takes the difference from the
+  /// others in proportion to what they have above their own floors.
+  private func fitted(_ wanted: [CGFloat], run: CGFloat) -> [CGFloat] {
+    guard wanted.count == panels.count, run > 1 else { return wanted }
+    var next = wanted
+    let limits = panels.map { bounds($0, run: run) }
+    for _ in 0..<3 {
+      var excess: CGFloat = 0
+      var free: [Int] = []
+      for i in next.indices {
+        if next[i] < limits[i].0 {
+          excess += limits[i].0 - next[i]
+          next[i] = limits[i].0
+        } else if next[i] > limits[i].1 {
+          excess -= next[i] - limits[i].1
+          next[i] = limits[i].1
+        } else {
+          free.append(i)
+        }
+      }
+      if abs(excess) < 0.001 || free.isEmpty { break }
+      let room = free.reduce(CGFloat(0)) { $0 + (excess > 0 ? next[$1] - limits[$1].0 : limits[$1].1 - next[$1]) }
+      guard room > 0 else { break }
+      for i in free {
+        let share = (excess > 0 ? next[i] - limits[i].0 : limits[i].1 - next[i]) / room
+        next[i] -= excess * share
+      }
+    }
+    return next
   }
 
   /// Given the leading panel's new share, the trailing one takes what the pair
   /// has left over. Nothing else in the row moves, which is what stops a drag
   /// at one seam from rippling through the whole window.
-  private func set(_ index: Int, leading wanted: CGFloat) {
-    var next = shares.count == panels.count ? shares : normalised()
+  private func set(_ index: Int, leading wanted: CGFloat, run: CGFloat) {
+    var next = fitted(shares.count == panels.count ? shares : normalised(), run: run)
     guard index + 1 < next.count else { return }
     let pair = next[index] + next[index + 1]
-    let lead = panels[index]
-    let trail = panels[index + 1]
+    let lead = bounds(panels[index], run: run)
+    let trail = bounds(panels[index + 1], run: run)
     let leading = min(
-      max(min(max(wanted, lead.minSize), lead.maxSize), pair - trail.maxSize),
-      pair - trail.minSize
+      max(min(max(wanted, lead.0), lead.1), pair - trail.1),
+      pair - trail.0
     )
     next[index] = leading
     next[index + 1] = pair - leading
