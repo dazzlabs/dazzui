@@ -237,7 +237,11 @@ public struct Sidebar<Header: View, Content: View>: View {
   }
 
   private var drag: some Gesture {
-    DragGesture(minimumDistance: 1)
+    // Measured in the window, not in the handle: the handle rides the edge
+    // it moves, so a translation taken in its own space would lose every
+    // point the previous frame moved it and the sidebar would shudder
+    // between two widths under the pointer.
+    DragGesture(minimumDistance: 1, coordinateSpace: .global)
       .onChanged { value in
         guard !collapsedByThisDrag else { return }
         let from = dragOrigin ?? resolvedWidth
@@ -270,8 +274,26 @@ public struct Sidebar<Header: View, Content: View>: View {
   @ViewBuilder
   private func withResizerFocus<V: View>(_ view: V) -> some View {
     #if os(macOS)
-    let focusable = view
-      .focusable(resizable)
+    if #available(macOS 14.0, *) {
+      // A control, not a field: it takes focus only when the reader tabs to
+      // it with keyboard navigation on, never as the window's first
+      // responder — a divider that lit up on every window the moment it
+      // opened read as already being dragged. The separator already marks
+      // keyboard focus, so the system ring, which would outline the whole
+      // grab area with a blue line on each side, stays off.
+      withResizerMoveCommands(view.focusable(resizable, interactions: .activate))
+        .focusEffectDisabled()
+    } else {
+      withResizerMoveCommands(view.focusable(resizable))
+    }
+    #else
+    view
+    #endif
+  }
+
+  #if os(macOS)
+  private func withResizerMoveCommands<V: View>(_ view: V) -> some View {
+    view
       .focused($resizerFocused)
       .onMoveCommand { direction in
         let step = NSEvent.modifierFlags.contains(.shift) ? coarseKeyStep : keyStep
@@ -281,17 +303,8 @@ public struct Sidebar<Header: View, Content: View>: View {
         default: break
         }
       }
-    if #available(macOS 14.0, *) {
-      // The separator already marks keyboard focus. A system focus ring
-      // would outline the whole grab area, drawing a blue line on each side.
-      focusable.focusEffectDisabled()
-    } else {
-      focusable
-    }
-    #else
-    view
-    #endif
   }
+  #endif
 }
 
 public extension Sidebar where Header == EmptyView {
