@@ -5733,6 +5733,11 @@
               "address": "text-field/2/0",
               "component": "text-field",
               "axes": {}
+            },
+            {
+              "address": "text-field/2/1",
+              "component": "text-field",
+              "axes": {}
             }
           ]
         }

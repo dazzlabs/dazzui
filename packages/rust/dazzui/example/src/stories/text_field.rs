@@ -131,6 +131,16 @@ pub const STORY: &str = r#"
                 "aria-label": "Notes"
               },
               "$at": 0
+            },
+            {
+              "$el": "TextField",
+              "props": {
+                "multiline": true,
+                "rows": 5,
+                "defaultValue": "Rows open the box past its floor: five lines of prose leading, its padding and its border.",
+                "aria-label": "Description"
+              },
+              "$at": 1
             }
           ]
         }

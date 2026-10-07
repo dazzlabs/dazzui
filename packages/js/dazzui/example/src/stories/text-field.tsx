@@ -47,6 +47,12 @@ const story: Story = {
             placeholder="Anything the reviewer should know"
             aria-label="Notes"
           />
+          <TextField
+            multiline
+            rows={5}
+            defaultValue="Rows open the box past its floor: five lines of prose leading, its padding and its border."
+            aria-label="Description"
+          />
         </Col>
       ),
     },

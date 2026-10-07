@@ -561,7 +561,8 @@ let components: [String: ComponentBuilder] = [
           state: n.option("state", TextFieldState.default),
           mono: n.flag("mono"),
           enabled: !n.flag("disabled"),
-          multiline: n.flag("multiline")
+          multiline: n.flag("multiline"),
+          rows: n.number("rows").map { Int($0) } ?? 2
         )
       }
     )

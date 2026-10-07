@@ -45,7 +45,7 @@
   "packages/dart/dazzui/example/lib/stories/switch.dart": "ae39e078782230762df55d90eea2205a17a31d709b5f006f7e134e4e19572ad2",
   "packages/dart/dazzui/example/lib/stories/table.dart": "a549b528c4b22655d9e0a438bac44786cf3ee2c532c289dc4fa1035307f97fab",
   "packages/dart/dazzui/example/lib/stories/tag.dart": "37e0c0da01e21f49e9bafec3ac42454669db020d65cbbd758cbc3eff9c79164a",
-  "packages/dart/dazzui/example/lib/stories/text_field.dart": "3e53f2a885ea2e3940529da3113fbd869f80fb5afb4fe9a7b9a4849ddb4a4f99",
+  "packages/dart/dazzui/example/lib/stories/text_field.dart": "e2f501de3d8008df376749bedea5ee33654bf157c3f3a12f9c85bbfabeee4635",
   "packages/dart/dazzui/example/lib/stories/toast.dart": "bf9fd89b736dae85079d04beacc7d2d71e3aa2b2d24dd06a0bb1776dbdaa78e6",
   "packages/dart/dazzui/example/lib/stories/toggle.dart": "fb9ddd62e643bdb5a8ddda09106644ce6b763eb83914614663d267c694c96164",
   "packages/dart/dazzui/example/lib/stories/tooltip.dart": "2e22203405e4db8f17eb017e9b4651bdb5b1ea9482cefd3f0ba16b4539f6b2ce",
@@ -99,7 +99,7 @@
   "packages/swift/DazzUI/Example/Sources/Example/Stories/Switch.swift": "69986a8cd14c0e0a9fdcb3576c73997ab657f32729f5f60f0f0738b9beebdeb0",
   "packages/swift/DazzUI/Example/Sources/Example/Stories/Table.swift": "61e2f8c8a0cddb32b2c97540486e34917181ef2951dd1989d9d2421d825a13e1",
   "packages/swift/DazzUI/Example/Sources/Example/Stories/Tag.swift": "b2a15ccb6c3e130cb9dae85a14e046b08bcf60df29fcd647a9e85eff8b503805",
-  "packages/swift/DazzUI/Example/Sources/Example/Stories/TextField.swift": "e4dca7d1689c654c61a7b4a14fc842817a3055028f6ca4d703d0ea19307f7cfa",
+  "packages/swift/DazzUI/Example/Sources/Example/Stories/TextField.swift": "b2fbfd8572921b4c34e7158d8f8bcaa28017c74e7cc251182eded36068c05400",
   "packages/swift/DazzUI/Example/Sources/Example/Stories/Toast.swift": "160680f42fa5ae4a0838b94cac6867ff8d4b7f4e223e965217b6fdc5d3cdd5cd",
   "packages/swift/DazzUI/Example/Sources/Example/Stories/Toggle.swift": "9fbd92c996116e39f27ae245be6218e5dd5fe963a02cb894accd04383e92d507",
   "packages/swift/DazzUI/Example/Sources/Example/Stories/Tooltip.swift": "aca57ce29c801c222d72d433355977ad77087a6afe0eab2b3c6011d7940005d3",
@@ -153,7 +153,7 @@
   "packages/csharp/DazzUI/example/Stories/Switch.cs": "7b8b4bef8f5d864db5159afa06fbc71e285767d77673488d0d3d4192961dbd45",
   "packages/csharp/DazzUI/example/Stories/Table.cs": "002a25eb022ee70db661506c304786044985f6d94665819a1d52aac574e810e2",
   "packages/csharp/DazzUI/example/Stories/Tag.cs": "442f6429a56add7ddaeb3d6a6e68c74b301f13a12a944b65393f34947a971600",
-  "packages/csharp/DazzUI/example/Stories/TextField.cs": "a03dc6bed6da0fe4f8df6c2d38e79b0b7a858b2216e1fc87f6b4eebcee84f5cb",
+  "packages/csharp/DazzUI/example/Stories/TextField.cs": "a2e012ff6330e77c879a0ce27360fb5bb69fed743ec98a6e1ec07c1744cc1c20",
   "packages/csharp/DazzUI/example/Stories/Toast.cs": "d8808cc1356ed088cb18ae3b7dd2f2b265b403dfd211dd67e0c29f1e4178c01d",
   "packages/csharp/DazzUI/example/Stories/Toggle.cs": "4e594abab8f92641d73fad26b09b2fedb7ec6961d1f2e6ad2ff25cf5f96bd12a",
   "packages/csharp/DazzUI/example/Stories/Tooltip.cs": "6339921e5090f1d9d440ee94b7e438333eb9634e5e1c4379d4bb042e8438b224",
@@ -207,7 +207,7 @@
   "packages/rust/dazzui/example/src/stories/switch.rs": "a0c85aaca806cf5497a9bdf2635749a2019597628365bf75ca06f35ae5226213",
   "packages/rust/dazzui/example/src/stories/table.rs": "8e22d38ce6f70406f9b702b4234d317e05ee2f7c5ebf8a3c34b8f2c9a120f60e",
   "packages/rust/dazzui/example/src/stories/tag.rs": "cef9a327a4918ad01d26f7c0a04093f4592ac235936983bf580dd90cd4db4265",
-  "packages/rust/dazzui/example/src/stories/text_field.rs": "3f5274abb9d1dfed31cf97f57296ec3651d6410baf9d34e378943e930eb6ea6f",
+  "packages/rust/dazzui/example/src/stories/text_field.rs": "34667e486f73f3c450ddcba94917c237e66e0c3e79130c7041e46d9d33d89be5",
   "packages/rust/dazzui/example/src/stories/toast.rs": "b15fb6611b79a0db215a567e7f9e8428b8d8985cec92c50d1baf9ed3ffc23ed1",
   "packages/rust/dazzui/example/src/stories/toggle.rs": "74346cb08a2a6bbb4b0b9439527396b91d6575a3f3f0c535bd1308b6da0ac14c",
   "packages/rust/dazzui/example/src/stories/tooltip.rs": "d64ee845364054d4428757b5c4fbcceda6737e7c04e118983303449a6b790603",
@@ -216,5 +216,5 @@
   "packages/rust/dazzui/example/src/lib/glyphs.rs": "b45a6870640963c576b28edafecc06b31bdb505d6dabdfb29afd4395ebd694c3",
   "packages/rust/dazzui/example/src/lib/themes.rs": "66fc49efbda5eb259ebf964f5f3b16f3dac586453aa4520da5625b3691426e8f",
   "packages/rust/dazzui/src/glyphs.rs": "e059ddf6ed002d370c6c05e0433881c4393aba851b4b7061069bacc5a2803350",
-  "tools/conformance/scenes.json": "75b094ecda4d4a874536d6d448971efe20b871ef86b21f345ed434781b0f8164"
+  "tools/conformance/scenes.json": "2c7f2347d2b428bb890275a8fdd8c3af9e78d9d67b9db5a01001d4678cc90dda"
 }

@@ -83,6 +83,15 @@ struct FieldStyle: Equatable {
   static func font(size: CGFloat, mono: Bool, vars: ThemeVariables) -> Font {
     .system(size: size, weight: vars.bodySmall.weight, design: mono ? .monospaced : .default)
   }
+
+  /// A face the caller chose, as a host's class sets `font-family`,
+  /// `font-size` and `font-weight` on the field; mono still takes the code
+  /// face, in the chosen size and weight.
+  static func font(_ style: TypeStyle, mono: Bool) -> Font {
+    mono
+      ? .system(size: style.size, weight: style.weight, design: .monospaced)
+      : style.font.weight(style.weight)
+  }
 }
 
 extension View {
@@ -148,8 +157,18 @@ public struct TextField: View {
   /// Hide what is typed — React's `type="password"`. A secure field is one
   /// line, so it is not also `multiline`.
   public var secure: Bool
+  /// The face, size and weight the text is set in — what a host's class
+  /// sets on React's field, a task's title in `titleSmall`, say. `nil` is
+  /// the field's own: the size profile's, at body weight. The line height
+  /// stays the field's, so a single line keeps the control height.
+  public var typeStyle: TypeStyle?
+  /// How many lines a multiline field opens at — the textarea's `rows`, two
+  /// unless set, as a textarea's are. The box is never shorter than its
+  /// floor, `spacing-20`.
+  public var rows: Int
 
   @Environment(\.theme) private var theme
+  @Environment(\.hairline) private var hairline
   @FocusState private var focused: Bool
 
   public init(
@@ -161,7 +180,9 @@ public struct TextField: View {
     mono: Bool = false,
     enabled: Bool = true,
     multiline: Bool = false,
-    secure: Bool = false
+    secure: Bool = false,
+    typeStyle: TypeStyle? = nil,
+    rows: Int = 2
   ) {
     self._text = text
     self.placeholder = placeholder
@@ -172,6 +193,8 @@ public struct TextField: View {
     self.enabled = enabled
     self.multiline = multiline
     self.secure = secure
+    self.typeStyle = typeStyle
+    self.rows = rows
   }
 
   public var body: some View {
@@ -198,16 +221,26 @@ public struct TextField: View {
       .focused($focused)
       .disabled(!enabled)
     }
-    .font(FieldStyle.font(size: metrics.content.size, mono: mono, vars: vars))
+    .font(
+      typeStyle.map { FieldStyle.font($0, mono: mono) }
+        ?? FieldStyle.font(size: metrics.content.size, mono: mono, vars: vars)
+    )
 
     return Group {
       if multiline {
+        let line = proseLine(metrics: metrics)
+        // The textarea's height: `rows` lines, its padding and its border,
+        // and never under the floor its `min-height` sets.
+        let height = max(
+          vars.spacing20,
+          line.lineHeight * CGFloat(max(1, rows)) + vars.spacing25 * 2 + hairline * 2
+        )
         editor
-          .lineSpacing(metrics.content.size * (Self.proseLeading - 1))
+          .lineBox(line)
           .frame(maxWidth: .infinity, alignment: .topLeading)
           .padding(.vertical, vars.spacing25)
           .padding(.horizontal, vars.spacing3)
-          .frame(minHeight: vars.spacing20, alignment: .topLeading)
+          .frame(minHeight: height, alignment: .topLeading)
       } else {
         editor
           .lineLimit(1)
@@ -245,6 +278,24 @@ public struct TextField: View {
   /// `line-height: 1.6` — prose leading, stated as a multiple in the
   /// stylesheet rather than held as a token.
   private static var proseLeading: CGFloat { 1.6 }
+
+  /// The face a multiline field's lines are set in, in its prose line box.
+  private func proseLine(metrics: ControlMetrics) -> TypeStyle {
+    let vars = theme.vars
+    let face = typeStyle
+      ?? TypeStyle(
+        family: vars.bodySmall.family,
+        size: metrics.content.size,
+        weight: vars.bodySmall.weight,
+        lineHeight: 0
+      )
+    return TypeStyle(
+      family: face.family,
+      size: face.size,
+      weight: face.weight,
+      lineHeight: face.size * Self.proseLeading
+    )
+  }
 }
 
 // MARK: - Select
