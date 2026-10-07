@@ -1,19 +1,21 @@
 use proc_macro2::Span;
 use syn::{Ident, Lit, Path};
 
-/// `page SettingsPage(state: SettingsState, action: SettingsAction) { … }`
+/// `page SettingsPage(model: SettingsModel) { … }`: a widget tree that reads
+/// a model's value and calls its methods, as a Flutter `build` does.
 #[derive(Clone, Debug)]
 pub struct PageAst {
     pub name: Ident,
-    pub state_ty: Path,
-    pub action_ty: Path,
+    pub model_ty: Path,
     pub root: NodeAst,
 }
 
 #[derive(Clone, Debug)]
 pub enum NodeAst {
     Component(ComponentAst),
+    /// In a `children: [ … ]` list, as Flutter's collection `if` is.
     If(IfAst),
+    /// In a `children: [ … ]` list, as Flutter's collection `for` is.
     For(ForAst),
 }
 
@@ -28,7 +30,7 @@ impl NodeAst {
     }
 }
 
-/// `if [!]path { … } [else { … }]`; `else if` is an `if` alone in the
+/// `if [!]path { a, b } [else { c }]`; `else if` is an `if` alone in the
 /// else branch.
 #[derive(Clone, Debug)]
 pub struct IfAst {
@@ -39,7 +41,7 @@ pub struct IfAst {
     pub else_branch: Vec<NodeAst>,
 }
 
-/// `for item in path [, key: item.field] { … }`
+/// `for item in path [, key: item.field] { a, b }`
 #[derive(Clone, Debug)]
 pub struct ForAst {
     pub keyword: Span,
@@ -49,54 +51,50 @@ pub struct ForAst {
     pub children: Vec<NodeAst>,
 }
 
-/// `Name(args) { body } .modifier(args)…`
+/// `Name(prop: value, …, child: …)` or `Name(…, children: [ … ])`, as a
+/// Flutter widget is constructed; `Text("…")` takes its text first, as
+/// Flutter's does. The names are React's.
 #[derive(Clone, Debug)]
 pub struct ComponentAst {
     pub name: Ident,
-    pub args: Vec<ArgAst>,
+    /// `Text("Save")`, `Text(model.status)`
+    pub text: Option<ValueAst>,
     pub props: Vec<PropAst>,
+    /// How the children were given, and where: `child:` or `children:`.
+    pub children_arg: Option<(ChildrenArg, Span)>,
     pub children: Vec<NodeAst>,
-    pub modifiers: Vec<ModifierAst>,
 }
 
-/// An argument in parentheses: positional, or named like a body prop.
-#[derive(Clone, Debug)]
-pub enum ArgAst {
-    Positional(ValueAst),
-    Named(PropAst),
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ChildrenArg {
+    /// `child: Widget(…)`
+    One,
+    /// `children: [ … ]`
+    Many,
 }
 
-/// `name: value`, in a body or in parentheses.
+/// `name: value`
 #[derive(Clone, Debug)]
 pub struct PropAst {
     pub name: Ident,
     pub value: ValueAst,
 }
 
-/// `.name(args)`
-#[derive(Clone, Debug)]
-pub struct ModifierAst {
-    pub name: Ident,
-    pub args: Vec<ArgAst>,
-}
-
-/// A value as written. What it means — a literal, an action, an enum case —
-/// is the compiler's to decide.
+/// A value as written. What it means — a literal, a method to call, an
+/// enum case — is the compiler's to decide.
 #[derive(Clone, Debug)]
 pub enum ValueAst {
     /// `"Save"`, `16`, `true`
     Lit(Lit),
     /// `-1`
     NegInt(Lit),
-    /// `Action::Save`, `TextStyle::Title`
+    /// `ButtonVariant::Filled`
     Path(Path),
-    /// `state.user.name`; `state` alone is a path of one.
+    /// `state.user.name`, `model.save`; `state` alone is a path of one.
     Dotted(DottedAst),
-    /// `bind(state.x)`
-    Bind(DottedAst),
-    /// `Action::Select(state.current)`
-    Call(Path, Box<ValueAst>),
-    /// `trailing: Toggle { … }`: a node for a named slot.
+    /// `model.pick(item.id)`
+    Call(DottedAst, Box<ValueAst>),
+    /// `icon: Icon(…)`: a component given to a prop that takes one.
     Component(Box<ComponentAst>),
 }
 
@@ -120,8 +118,7 @@ impl ValueAst {
         match self {
             ValueAst::Lit(lit) | ValueAst::NegInt(lit) => lit.span(),
             ValueAst::Path(path) => spanned_path(path),
-            ValueAst::Dotted(path) | ValueAst::Bind(path) => path.span(),
-            ValueAst::Call(path, _) => spanned_path(path),
+            ValueAst::Dotted(path) | ValueAst::Call(path, _) => path.span(),
             ValueAst::Component(c) => c.name.span(),
         }
     }

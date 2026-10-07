@@ -1,22 +1,22 @@
-error: slot `trailing` on `Row` takes a component
-  --> page.rs:29:22
+error: `icon` on `ListRow` takes a component
+  --> page.rs:43:33
    |
-29 |             Row("a", trailing: "x")
-   |                      ^^^^^^^^
+43 |             ListRow(title: "a", icon: "x"),
+   |                                 ^^^^
    |
-help: `trailing: Component { … }`
+help: `icon: Component(…)`
 
-error: slot `trailing` is given twice
-  --> page.rs:30:92
+error: `ListRow` takes one child: `child: …`, not `children: [ … ]`
+  --> page.rs:44:33
    |
-30 |             Row("b", trailing: Toggle { value: bind(state.on), on_change: Action::SetOn }, trailing: Text("y"))
-   |                                                                                            ^^^^^^^^ given again here
+44 |             ListRow(title: "b", children: [Switch(checked: model.on), Text("y")]),
+   |                                 ^^^^^^^^ a list
    |
 
-error: `Section` takes only `Row` as children
-  --> page.rs:31:13
+error: `List` takes only `ListRow` as children
+  --> page.rs:45:13
    |
-31 |             Text("c")
+45 |             Text("c"),
    |             ^^^^ not allowed here
    |
 

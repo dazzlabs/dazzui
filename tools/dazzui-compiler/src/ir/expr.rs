@@ -14,7 +14,7 @@ pub enum Expr {
     State(StatePath),
     /// `item.title`, inside `for item in …`
     Local(LocalPath),
-    /// `TextStyle::Title`
+    /// `ButtonVariant::Filled`
     EnumCase {
         ty: String,
         case: String,
@@ -64,21 +64,24 @@ pub struct Condition {
     pub value: Expr,
 }
 
-/// An action an event sends back to Rust: a variant of the page's action
-/// enum.
+/// What an event calls: a method of the page's model, `model.save`, and
+/// the one value it is given, if any.
 #[derive(Clone, Debug, PartialEq)]
-pub struct ActionRef {
-    pub variant: String,
-    pub payload: ActionPayload,
+pub struct MethodCall {
+    pub method: String,
+    /// The Rust name of the method's parameter, when it has one: Swift
+    /// labels the argument with it. Known when the model's methods are.
+    pub param: Option<String>,
+    pub argument: Argument,
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub enum ActionPayload {
-    /// `Action::Save`
+pub enum Argument {
+    /// `on_click: model.save`
     None,
-    /// `on_change: Action::SetX` — the value the event carries is the
-    /// payload.
+    /// `on_checked_change: model.set_on` — the value the event carries is
+    /// the argument.
     EventValue,
-    /// `Action::Select(state.current)`
+    /// `on_click: model.pick(item.id)`
     Expr(Expr),
 }

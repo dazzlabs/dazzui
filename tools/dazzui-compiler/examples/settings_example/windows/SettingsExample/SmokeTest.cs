@@ -10,7 +10,7 @@ using Windows.Storage.Streams;
 namespace SettingsExample;
 
 /// <summary>Clicks through the generated page with real mouse input — so
-/// the XAML's Click wiring, the generated handler, the page's Send, the
+/// the XAML's Click wiring, the generated handler, the page's Model, the
 /// store, the UniFFI bridge, the Rust model and the x:Bind that shows the
 /// next snapshot are all on the path — and checks the state Rust hands back
 /// after each click. A save finishes on a Rust thread, so its check is also
@@ -32,6 +32,9 @@ internal static class SmokeTest
             Check(model.State.Saved && model.State.Status == "No changes", "the first snapshot is Rust's default");
             Check(Texts(root).Contains("Spell check") && !Texts(root).Contains("Grammar"), "the for loop shows the visible plugins only");
             Check(Texts(root).Contains("Disabled plugins are hidden"), "the if shows the hidden-plugins note");
+
+            var saveRow = (StackPanel)VisualTreeHelper.GetParent(Button(root, "Save"));
+            Check(saveRow.Spacing == DazzUI.Appearance.GetTheme(root).Number("spacing.2") && saveRow.Spacing > 0, $"a Row's gap is the theme's spacing step ({saveRow.Spacing})");
 
             var switches = Descendants<DazzUI.Switch>(root).ToList();
             Check(switches.Count == 3, $"three switches ({switches.Count})");

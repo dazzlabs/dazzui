@@ -6,7 +6,7 @@
     xmlns:local="using:SettingsExample"
     xmlns:dazz="using:DazzUI">
     <!-- source: settings.rs:7 -->
-    <StackPanel Spacing="24">
+    <StackPanel Loaded="OnGap6Loaded">
         <!-- source: settings.rs:8 -->
         <dazz:Preferences>
             <dazz:Preferences.Sections>
@@ -33,7 +33,7 @@
                         </dazz:PreferenceGroup>
                     </dazz:PreferenceSection.Body>
                 </dazz:PreferenceSection>
-                <!-- source: settings.rs:26 -->
+                <!-- source: settings.rs:23 -->
                 <dazz:PreferenceSection Title="Plugins" Footer="Plugins run in a sandbox and can be turned off at any time.">
                     <dazz:PreferenceSection.Body>
                         <dazz:PreferenceGroup>
@@ -52,40 +52,40 @@
             </dazz:Preferences.Sections>
         </dazz:Preferences>
         <!-- source: settings.rs:37 -->
-        <StackPanel Spacing="8">
+        <StackPanel Loaded="OnGap2Loaded">
             <!-- source: settings.rs:38 -->
-            <ItemsRepeater ItemsSource="{x:Bind State.VisiblePlugins, Mode=OneWay}">
+            <ItemsRepeater ItemsSource="{x:Bind State.VisiblePlugins, Mode=OneWay}" Loaded="OnRepeaterGap2Loaded">
                 <ItemsRepeater.Layout>
-                    <StackLayout Orientation="Vertical" Spacing="8"/>
+                    <StackLayout Orientation="Vertical"/>
                 </ItemsRepeater.Layout>
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate x:DataType="local:Plugin">
                         <!-- source: settings.rs:39 -->
-                        <StackPanel Orientation="Horizontal" Spacing="8">
+                        <StackPanel Orientation="Horizontal" Loaded="OnGap2Loaded">
                             <!-- source: settings.rs:40 -->
-                            <TextBlock Text="{x:Bind Name}"/>
+                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Center" Text="{x:Bind Name}"/>
                             <!-- source: settings.rs:41 (if) -->
                             <!-- source: settings.rs:42 -->
-                            <dazz:Button Content="Disable" Variant="Recessed" Click="OnTogglePluginClick" Visibility="{x:Bind local:SettingsPage.Visible1(Enabled)}"/>
+                            <dazz:Button Variant="Recessed" Content="Disable" Click="OnTogglePluginClick" VerticalAlignment="Center" Visibility="{x:Bind local:SettingsPage.Visible1(Enabled)}"/>
                             <!-- source: settings.rs:41 (else) -->
                             <!-- source: settings.rs:44 -->
-                            <dazz:Button Content="Enable" Variant="Filled" Click="OnTogglePluginClick" Visibility="{x:Bind local:SettingsPage.Visible2(Enabled)}"/>
+                            <dazz:Button Variant="Filled" Content="Enable" Click="OnTogglePluginClick" VerticalAlignment="Center" Visibility="{x:Bind local:SettingsPage.Visible2(Enabled)}"/>
                         </StackPanel>
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>
-            <!-- source: settings.rs:50 (if) -->
-            <!-- source: settings.rs:51 -->
-            <TextBlock Text="Disabled plugins are hidden" x:Name="Text1" Visibility="{x:Bind local:SettingsPage.Visible1(State.HasHiddenPlugins), Mode=OneWay}"/>
+            <!-- source: settings.rs:52 (if) -->
+            <!-- source: settings.rs:53 -->
+            <TextBlock TextWrapping="Wrap" Loaded="OnText1Loaded" Visibility="{x:Bind local:SettingsPage.Visible1(State.HasHiddenPlugins), Mode=OneWay}" Text="Disabled plugins are hidden"/>
         </StackPanel>
-        <!-- source: settings.rs:55 -->
-        <TextBlock Text="{x:Bind State.Status, Mode=OneWay}" x:Name="Text2"/>
         <!-- source: settings.rs:56 -->
-        <StackPanel Orientation="Horizontal" Spacing="8">
-            <!-- source: settings.rs:57 -->
-            <dazz:Button Content="Save" Variant="Filled" IsEnabled="{x:Bind local:SettingsPage.Not(State.SaveDisabled), Mode=OneWay}" Click="OnSaveClick"/>
-            <!-- source: settings.rs:61 -->
-            <dazz:Button Content="Reset to defaults" Variant="Recessed" Click="OnResetClick"/>
+        <TextBlock TextWrapping="Wrap" Loaded="OnText1Loaded" Text="{x:Bind State.Status, Mode=OneWay}"/>
+        <!-- source: settings.rs:57 -->
+        <StackPanel Orientation="Horizontal" Loaded="OnGap2Loaded">
+            <!-- source: settings.rs:58 -->
+            <dazz:Button Variant="Filled" IsEnabled="{x:Bind local:SettingsPage.Not(State.SaveDisabled), Mode=OneWay}" Content="Save" Click="OnSaveClick" VerticalAlignment="Center"/>
+            <!-- source: settings.rs:64 -->
+            <dazz:Button Variant="Recessed" Content="Reset to defaults" Click="OnResetClick" VerticalAlignment="Center"/>
         </StackPanel>
     </StackPanel>
 </Page>

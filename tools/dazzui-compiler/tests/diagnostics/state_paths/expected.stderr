@@ -1,32 +1,32 @@
 error: no field `nme` on type `S`
-  --> page.rs:29:24
+  --> page.rs:43:24
    |
-29 |             Text(state.nme)
+43 |             Text(model.nme),
    |                        ^^^
    |
 help: did you mean `name`?
 
-error: cannot find value `stat`
-  --> page.rs:30:18
+error: cannot find value `modl`
+  --> page.rs:44:18
    |
-30 |             Text(stat.name)
-   |                  ^^^^ not the state or a loop item
+44 |             Text(modl.name),
+   |                  ^^^^ not the model or a loop item
    |
-help: did you mean `state`?
+help: did you mean `model`?
 
 error: `name` is a `String`, which has no fields
-  --> page.rs:31:24
+  --> page.rs:45:24
    |
-31 |             Text(state.name.first)
+45 |             Text(model.name.first),
    |                        ^^^^
    |
 
-error: the whole `state` is not a value
-  --> page.rs:32:34
+error: the whole `model` is not a value
+  --> page.rs:46:29
    |
-32 |             Button("a").disabled(state)
-   |                                  ^^^^^
+46 |             Switch(checked: model),
+   |                             ^^^^^
    |
-help: name a field: `state.field`
+help: name a field: `model.field`
 
 error: could not compile due to 4 previous errors

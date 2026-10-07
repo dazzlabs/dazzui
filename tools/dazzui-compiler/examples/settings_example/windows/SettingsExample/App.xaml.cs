@@ -4,10 +4,12 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace SettingsExample;
 
-/// <summary>Hands the generated page a state and a <c>Send</c>. Here both come
-/// from the Rust model, through the store dazzui-compiler generated over it;
-/// the page itself would take them from anywhere. Each snapshot is printed,
-/// so a change can be seen to have come from Rust.</summary>
+/// <summary>Hands the generated page a state and a model, as a
+/// <c>ListenableBuilder</c> hands a widget its value. Here both come from the
+/// Rust model, through the store dazzui-compiler generated over it; the page
+/// takes the model only as <c>ISettingsActions</c>, which anything may
+/// implement. Each snapshot is printed, so a change can be seen to have come
+/// from Rust.</summary>
 public partial class App : Application
 {
     private Window? window;
@@ -24,7 +26,7 @@ public partial class App : Application
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         var store = new SettingsStore();
-        var page = new SettingsPage { State = store.State, Send = store.Send };
+        var page = new SettingsPage { State = store.State, Model = store.Actions };
         store.PropertyChanged += (_, _) =>
         {
             page.State = store.State;

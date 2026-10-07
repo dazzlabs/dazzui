@@ -16,23 +16,37 @@ pub struct Tag {
     pub label: String,
 }
 
-pub enum A {
-    Save,
-    SetOn(bool),
-    Rename(String),
-    Pick(u32),
+pub struct M;
+
+impl ValueListenable for M {
+    type Value = S;
+}
+
+#[page_model]
+impl M {
+    pub fn new() -> Self {
+        M
+    }
+
+    pub fn save(&self) {}
+
+    pub fn set_on(&self, on: bool) {}
+
+    pub fn rename(&self, name: String) {}
+
+    pub fn pick(&self, id: u32) {}
 }
 
 ui! {
-    page P(state: S, action: A) {
-        VStack {
-            if state.name { Text("a") }
-            for item in state.count { Text("b") }
-            for tag in state.tags { Text(tag.label) }
-            for item in state.items {
-                Text(state.name)
-                for other in state.items { Text("c") }
-            }
-        }
+    page P(model: M) {
+        Col(children: [
+            if model.name { Text("a") },
+            for item in model.count { Text("b") },
+            for tag in model.tags { Text(tag.label) },
+            for item in model.items {
+                Text(model.name),
+                for other in model.items { Text("c") },
+            },
+        ])
     }
 }

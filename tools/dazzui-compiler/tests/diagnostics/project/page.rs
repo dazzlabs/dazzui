@@ -16,21 +16,35 @@ pub struct Tag {
     pub label: String,
 }
 
-pub enum A {
-    Save,
-    SetOn(bool),
-    Rename(String),
-    Pick(u32),
+pub struct M;
+
+impl ValueListenable for M {
+    type Value = S;
+}
+
+#[page_model]
+impl M {
+    pub fn new() -> Self {
+        M
+    }
+
+    pub fn save(&self) {}
+
+    pub fn set_on(&self, on: bool) {}
+
+    pub fn rename(&self, name: String) {}
+
+    pub fn pick(&self, id: u32) {}
 }
 
 ui! {
-    page P(state: S, action: A) {
+    page P(model: M) {
         Text("a")
     }
 }
 
 ui! {
-    page P(state: S, action: A) {
+    page P(model: M) {
         Text("b")
     }
 }

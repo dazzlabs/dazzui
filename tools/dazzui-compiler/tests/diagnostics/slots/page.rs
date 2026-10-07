@@ -16,19 +16,33 @@ pub struct Tag {
     pub label: String,
 }
 
-pub enum A {
-    Save,
-    SetOn(bool),
-    Rename(String),
-    Pick(u32),
+pub struct M;
+
+impl ValueListenable for M {
+    type Value = S;
+}
+
+#[page_model]
+impl M {
+    pub fn new() -> Self {
+        M
+    }
+
+    pub fn save(&self) {}
+
+    pub fn set_on(&self, on: bool) {}
+
+    pub fn rename(&self, name: String) {}
+
+    pub fn pick(&self, id: u32) {}
 }
 
 ui! {
-    page P(state: S, action: A) {
-        Section {
-            Row("a", trailing: "x")
-            Row("b", trailing: Toggle { value: bind(state.on), on_change: Action::SetOn }, trailing: Text("y"))
-            Text("c")
-        }
+    page P(model: M) {
+        List(children: [
+            ListRow(title: "a", icon: "x"),
+            ListRow(title: "b", children: [Switch(checked: model.on), Text("y")]),
+            Text("c"),
+        ])
     }
 }

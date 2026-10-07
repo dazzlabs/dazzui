@@ -35,5 +35,5 @@ macro_rules! cases {
 }
 
 cases! {
-    syntax names types state_paths actions bindings control_flow slots bridge project registry_syntax registry_mapping
+    syntax names types state_paths methods react control_flow slots bridge project registry_syntax registry_mapping
 }

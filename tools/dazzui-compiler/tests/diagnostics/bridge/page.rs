@@ -3,39 +3,73 @@ pub struct S {
     pub opened: std::time::Instant,
 }
 
-pub enum A {
-    Save,
-}
-
-#[page_model]
-pub fn model() -> Reducer<S, A> {
-    todo!()
-}
-
 pub struct M;
 
+impl ValueListenable for M {
+    type Value = S;
+}
+
 #[page_model]
-pub fn other() -> M {
-    M
+impl M {
+    pub fn new() -> Self {
+        M
+    }
+}
+
+pub struct T {
+    pub on: bool,
+}
+
+pub struct N;
+
+#[page_model]
+impl N {
+    pub fn new() -> Self {
+        N
+    }
 }
 
 pub struct U {
     pub on: bool,
 }
 
-#[page_model]
-pub fn first() -> Reducer<U, A> {
-    todo!()
+pub struct O;
+
+impl ValueListenable for O {
+    type Value = U;
 }
 
 #[page_model]
-pub fn second() -> Reducer<U, A> {
-    todo!()
+impl O {
+    pub fn new() -> Self {
+        O
+    }
+
+    pub fn at(&self, when: std::time::Instant) {}
 }
 
-// A page needs no model: a view of a state is a page whoever holds it.
-ui! {
-    page P(state: U, action: A) {
-        Text("a")
+pub struct PModel;
+
+impl ValueListenable for PModel {
+    type Value = U;
+}
+
+#[page_model]
+impl PModel {
+    pub fn new() -> Self {
+        PModel
+    }
+}
+
+pub struct P;
+
+impl ValueListenable for P {
+    type Value = U;
+}
+
+#[page_model]
+impl P {
+    pub fn new() -> Self {
+        P
     }
 }

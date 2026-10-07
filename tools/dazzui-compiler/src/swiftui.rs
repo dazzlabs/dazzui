@@ -1,17 +1,22 @@
 //! Lowers a page to SwiftUI.
 //!
-//! A page becomes a view of a state and a `send` for its actions, which
-//! holds nothing and knows nothing of where either comes from: a host feeds
-//! it from whatever it likes. A Rust page model becomes a store — a thin
-//! `ObservableObject` over the UniFFI object, whose Swift (the state, the
-//! actions, the source) UniFFI writes beside it — which is one such host.
-//! SwiftUI's own layout views stay SwiftUI's; a DazzUI component is always
-//! written `DazzUI.Button`, because DazzUI's names shadow SwiftUI's.
+//! A page becomes a view of a state that calls a model's methods, as a
+//! Flutter widget reads a `ValueListenable` and calls its model: it holds
+//! `state` and `model`, the latter only as the protocol of the methods it
+//! calls, so a host may hand it the Rust model or one of its own. A Rust
+//! model becomes that protocol and a store — a thin `ObservableObject` over
+//! the UniFFI object, whose Swift (the state, the object) UniFFI writes
+//! beside it.
+//!
+//! Row, Col and Text are drawn as the SwiftUI example draws the React
+//! example's stage components, with the theme's spacing and inks. A DazzUI
+//! component is always written `DazzUI.Button`, because DazzUI's names
+//! shadow SwiftUI's.
 
 use crate::Registry;
 use crate::ir::{
-    ActionPayload, ActionRef, Component, ComponentSpec, Expr, GeneratedFile, Source,
-    SwiftUIMapping, Trailing, UiNode, Value, camel_case,
+    Argument, Component, Expr, GeneratedFile, MethodCall, Source, SwiftUIMapping, Trailing, UiNode,
+    Value, camel_case, model_stem,
 };
 use crate::{CompiledModel, CompiledPage};
 
@@ -28,7 +33,8 @@ fn header(source: &str) -> String {
 
 fn view(compiled: &CompiledPage) -> String {
     let page = &compiled.page;
-    let (state, action) = (&page.state_type, &page.action_type);
+    let state = &page.state_type;
+    let actions = format!("{}Actions", model_stem(&page.model_type));
     let mut w = Writer::default();
     w.raw(&header(&compiled.file));
     w.line("");
@@ -38,17 +44,17 @@ fn view(compiled: &CompiledPage) -> String {
     w.line(&format!("public struct {}: View {{", page.name));
     w.indent(|w| {
         w.line(&format!("public let state: {state}"));
-        w.line(&format!("public let send: @MainActor ({action}) -> Void"));
+        w.line(&format!("public let model: any {actions}"));
         if uses_theme(&page.root) {
             w.line("@Environment(\\.theme) private var theme");
         }
         w.line("");
         w.line(&format!(
-            "public init(state: {state}, send: @escaping @MainActor ({action}) -> Void) {{"
+            "public init(state: {state}, model: any {actions}) {{"
         ));
         w.indent(|w| {
             w.line("self.state = state");
-            w.line("self.send = send");
+            w.line("self.model = model");
         });
         w.line("}");
         w.line("");
@@ -60,12 +66,13 @@ fn view(compiled: &CompiledPage) -> String {
     w.finish()
 }
 
-/// Whether anything reads the theme's tokens: a styled text does.
+/// Whether anything reads the theme's tokens: a stage component does.
 fn uses_theme(node: &UiNode) -> bool {
     match node {
         UiNode::Component(c) => {
-            (c.id.as_str() == "Text" && c.prop("style").is_some())
+            matches!(c.id.as_str(), "Row" | "Col" | "Text")
                 || c.children.iter().any(uses_theme)
+                || c.slots.iter().any(|s| uses_theme(&s.node))
         }
         UiNode::If {
             then_branch,
@@ -121,44 +128,90 @@ fn node(w: &mut Writer, r: &Registry, node: &UiNode) {
     w.line(&format!("// source: {}", c.source.short()));
     // A mapping wins, so that an app's registry can replace even the
     // components this backend lowers itself.
-    if let Some((spec, m)) = r
-        .get(c.id.as_str())
-        .and_then(|spec| spec.swiftui.as_ref().map(|m| (spec, m)))
-    {
-        return mapped(w, r, c, spec, m);
+    if let Some(m) = r.get(c.id.as_str()).and_then(|spec| spec.swiftui.as_ref()) {
+        return mapped(w, r, c, m);
     }
     match c.id.as_str() {
-        stack @ ("VStack" | "HStack") => {
-            w.line(&format!("{stack}(spacing: {}) {{", int(c, "spacing")));
+        "Row" => {
+            // A flex row centres its items across by default; HStack does too.
+            let align = match case(c.prop("align")) {
+                "Start" | "Stretch" => "alignment: .top, ",
+                "End" => "alignment: .bottom, ",
+                _ => "",
+            };
+            w.line(&format!("HStack({align}spacing: {}) {{", spacing(c)));
             w.indent(|w| c.children.iter().for_each(|child| self::node(w, r, child)));
             w.line("}");
         }
-        "Text" => {
+        "Col" => {
+            let (align, stretch) = match case(c.prop("align")) {
+                "Center" => (".center", false),
+                "End" => (".trailing", false),
+                "Start" => (".leading", false),
+                _ => (".leading", true),
+            };
             w.line(&format!(
-                "Text({})",
-                expr(c.prop("text").expect("text is required"))
+                "VStack(alignment: {align}, spacing: {}) {{",
+                spacing(c)
             ));
-            if let Some(style) = c.prop("style") {
-                let token = text_token(case(style));
-                w.indent(|w| {
-                    w.line(&format!(".font(theme.vars.{token}.font)"));
-                    w.line(&format!(".lineSpacing(theme.vars.{token}.lineSpacing)"));
-                });
+            w.indent(|w| c.children.iter().for_each(|child| self::node(w, r, child)));
+            w.line("}");
+            // A stretched column is as wide as the room, as a block is on the web.
+            if stretch {
+                w.indent(|w| w.line(".frame(maxWidth: .infinity, alignment: .leading)"));
             }
+        }
+        "Text" => {
+            w.line(&text(&c.text));
+            w.indent(|w| {
+                if c.prop("strong") == Some(&Expr::Literal(Value::Bool(true))) {
+                    w.line(".fontWeight(theme.vars.labelStrong.weight)");
+                }
+                match c.prop("tint") {
+                    Some(tint) => w.line(&format!(
+                        ".foregroundStyle(theme.vars.ramp(.{})[500])",
+                        case(Some(tint)).to_lowercase()
+                    )),
+                    None if case(c.prop("tone")) == "Secondary" => {
+                        w.line(".foregroundStyle(theme.vars.colorContentSecondary)")
+                    }
+                    None => {}
+                }
+            });
         }
         other => unreachable!("`{other}` passed the registry but has no SwiftUI lowering"),
     }
 }
 
+/// `theme.vars.spacing3` for `gap: "3"`; `spacing05` for `"0-5"`.
+fn spacing(c: &Component) -> String {
+    let Some(Expr::Literal(Value::String(step))) = c.prop("gap") else {
+        unreachable!("`gap` on `{}` has a default", c.id.as_str())
+    };
+    let name = match step.as_str() {
+        "px" => "Px".to_string(),
+        step => step.replace('-', ""),
+    };
+    format!("theme.vars.spacing{name}")
+}
+
+/// `Text("Save")`, or runs joined: `Text("Saved ") + Text(state.when)`.
+fn text(runs: &[Expr]) -> String {
+    runs.iter()
+        .map(|run| format!("Text({})", expr(run)))
+        .collect::<Vec<_>>()
+        .join(" + ")
+}
+
 /// A piece of a call's argument list: written inline, or a closure that
-/// holds a node.
+/// holds nodes.
 enum Piece<'a> {
     Inline(String),
-    Closure(&'a str, &'a UiNode),
+    Closure(&'a str, Vec<&'a UiNode>),
 }
 
 /// A component its registry mapping lowers: `Call(arg: value, …) { … }`.
-fn mapped(w: &mut Writer, r: &Registry, c: &Component, spec: &ComponentSpec, m: &SwiftUIMapping) {
+fn mapped(w: &mut Writer, r: &Registry, c: &Component, m: &SwiftUIMapping) {
     let mut pieces = Vec::new();
     for arg in &m.args {
         let piece = match &arg.source {
@@ -168,13 +221,16 @@ fn mapped(w: &mut Writer, r: &Registry, c: &Component, spec: &ComponentSpec, m: 
                 invert,
                 omit,
             } => c
-                .prop_value(prop)
+                .prop(prop)
                 .filter(|e| !e.is_omitted(omit.as_ref()))
-                .map(|e| Piece::Inline(format!("{}: {}", arg.arg, render(&e, cases, *invert)))),
+                .map(|e| Piece::Inline(format!("{}: {}", arg.arg, render(e, cases, *invert)))),
             Source::Event(event) => c
-                .event_action(spec, event)
-                .map(|a| Piece::Inline(format!("{}: {}", arg.arg, closure(a)))),
-            Source::Slot(slot) => c.slot(slot).map(|node| Piece::Closure(&arg.arg, node)),
+                .event(event)
+                .map(|call| Piece::Inline(format!("{}: {}", arg.arg, closure(call)))),
+            Source::Slot(slot) => c
+                .slot(slot)
+                .map(|node| Piece::Closure(&arg.arg, vec![node])),
+            Source::Children => Some(Piece::Closure(&arg.arg, c.children.iter().collect())),
         };
         match (piece, &arg.fallback) {
             (Some(piece), _) => pieces.push(piece),
@@ -192,9 +248,14 @@ fn mapped(w: &mut Writer, r: &Registry, c: &Component, spec: &ComponentSpec, m: 
             }
             match piece {
                 Piece::Inline(code) => line += code,
-                Piece::Closure(arg, node) => {
+                Piece::Closure(arg, nodes) => {
                     w.line(&format!("{line}{arg}: {{"));
-                    w.indent(|w| self::node(w, r, node));
+                    w.indent(|w| {
+                        if nodes.is_empty() {
+                            w.line("EmptyView()");
+                        }
+                        nodes.iter().for_each(|node| self::node(w, r, node));
+                    });
                     line = "}".into();
                 }
             }
@@ -207,9 +268,10 @@ fn mapped(w: &mut Writer, r: &Registry, c: &Component, spec: &ComponentSpec, m: 
             w.line(&format!("{line} {{"));
             w.indent(|w| match trailing {
                 Trailing::Children => c.children.iter().for_each(|child| self::node(w, r, child)),
+                Trailing::Text => w.line(&text(&c.text)),
                 Trailing::Prop { prop, view } => {
-                    if let Some(e) = c.prop_value(prop) {
-                        w.line(&format!("{view}({})", expr(&e)));
+                    if let Some(e) = c.prop(prop) {
+                        w.line(&format!("{view}({})", expr(e)));
                     }
                 }
                 Trailing::Slot(slot) => {
@@ -236,31 +298,30 @@ fn render(e: &Expr, cases: &[(String, String)], invert: bool) -> String {
     }
 }
 
-fn text_token(case: &str) -> &'static str {
-    match case {
-        "Title" => "titleMedium",
-        "Body" => "bodyMedium",
-        "Caption" => "captionMedium",
-        other => unreachable!("TextStyle has no case `{other}`"),
-    }
-}
-
-fn case(expr: &Expr) -> &str {
+/// The case an enum prop holds; `""` for none.
+fn case(expr: Option<&Expr>) -> &str {
     match expr {
-        Expr::EnumCase { case, .. } => case,
-        other => unreachable!("expected an enum case, found {other:?}"),
+        Some(Expr::EnumCase { case, .. }) => case,
+        None => "",
+        Some(other) => unreachable!("expected an enum case, found {other:?}"),
     }
 }
 
-/// `{ send(.save) }`; an event's own value is `$0`.
-fn closure(action: &ActionRef) -> String {
-    let case = camel_case(&action.variant);
-    let payload = match &action.payload {
-        ActionPayload::None => String::new(),
-        ActionPayload::EventValue => "($0)".into(),
-        ActionPayload::Expr(e) => format!("({})", expr(e)),
+/// `{ model.save() }`; an event's own value is `$0`, labelled as UniFFI
+/// labels the method's parameter: `{ model.setOn(on: $0) }`.
+fn closure(call: &MethodCall) -> String {
+    let method = camel_case(&call.method);
+    let label = call
+        .param
+        .as_deref()
+        .map(|p| format!("{}: ", camel_case(p)))
+        .unwrap_or_default();
+    let argument = match &call.argument {
+        Argument::None => String::new(),
+        Argument::EventValue => format!("{label}$0"),
+        Argument::Expr(e) => format!("{label}{}", expr(e)),
     };
-    format!("{{ send(.{case}{payload}) }}")
+    format!("{{ model.{method}({argument}) }}")
 }
 
 fn expr(e: &Expr) -> String {
@@ -284,13 +345,6 @@ fn state(segments: &[String]) -> String {
     format!("state.{}", path.join("."))
 }
 
-fn int(c: &Component, prop: &str) -> i64 {
-    match c.prop(prop) {
-        Some(Expr::Literal(Value::Int(n))) => *n,
-        other => unreachable!("`{prop}` on `{}` is {other:?}", c.id.as_str()),
-    }
-}
-
 fn swift_string(s: &str) -> String {
     let mut out = String::from("\"");
     for ch in s.chars() {
@@ -307,14 +361,44 @@ fn swift_string(s: &str) -> String {
     out
 }
 
-/// `SettingsStore.swift`: the state of a Rust page model, observable, and
-/// its `send`, for a host to hand a page.
-pub fn store(model: &CompiledModel) -> GeneratedFile {
+/// A Rust page model's Swift: `SettingsActions.swift`, the protocol of the
+/// methods a page calls, which a host may implement itself; and
+/// `SettingsStore.swift`, its value observable over the UniFFI object, which
+/// has those methods.
+pub fn model(model: &CompiledModel) -> Vec<GeneratedFile> {
+    vec![actions(model), store(model)]
+}
+
+fn actions(model: &CompiledModel) -> GeneratedFile {
     let bridge = &model.bridge;
-    let (state, action, source, listener, store) = (
+    let mut w = Writer::default();
+    w.raw(&header(&model.file));
+    w.line("");
+    w.line(&format!(
+        "/// The methods of `{}` a page calls. The Rust model's native object has",
+        bridge.model
+    ));
+    w.line("/// them; a host, or a test, may implement them itself.");
+    w.line(&format!("public protocol {} {{", bridge.actions()));
+    w.indent(|w| {
+        for m in &bridge.methods {
+            let param = m
+                .param
+                .as_ref()
+                .map(|(name, ty)| format!("{}: {}", camel_case(name), ty.swift()))
+                .unwrap_or_default();
+            w.line(&format!("func {}({param})", camel_case(&m.name)));
+        }
+    });
+    w.line("}");
+    GeneratedFile::new(format!("{}.swift", bridge.actions()), w.finish())
+}
+
+fn store(model: &CompiledModel) -> GeneratedFile {
+    let bridge = &model.bridge;
+    let (state, object, listener, store) = (
         &bridge.state,
-        &bridge.action,
-        bridge.source(),
+        &bridge.model,
         bridge.listener(),
         bridge.store(),
     );
@@ -324,41 +408,38 @@ pub fn store(model: &CompiledModel) -> GeneratedFile {
     w.line("import Combine");
     w.line("import Foundation");
     w.line("");
+    w.line(&format!("extension {object}: {} {{}}", bridge.actions()));
+    w.line("");
     w.line(&format!(
-        "/// The latest snapshot of the model `{}` makes, and a way to send it",
-        bridge.function
+        "/// The latest value of a `{object}`, observable, and the model itself: what"
     ));
-    w.line("/// actions: what a page takes. Whatever thread the model changes on, the");
-    w.line("/// snapshot is read again on the main one.");
+    w.line("/// a page takes, as `ListenableBuilder` hands a widget. Whatever thread the");
+    w.line("/// model changes on, the value is read again on the main one.");
     w.line("@MainActor");
     w.line(&format!("public final class {store}: ObservableObject {{"));
     w.indent(|w| {
         w.line(&format!(
             "@Published public private(set) var state: {state}"
         ));
-        w.line(&format!("private let source: {source}"));
+        w.line(&format!("public let model: {object}"));
         w.line("");
-        w.line(&format!("public init(source: {source} = {source}()) {{"));
+        w.line(&format!("public init(model: {object} = {object}()) {{"));
         w.indent(|w| {
-            w.line("self.source = source");
-            w.line("state = source.state()");
-            w.line("source.subscribe(listener: Listener(store: self))");
+            w.line("self.model = model");
+            w.line("state = model.value()");
+            w.line("_ = model.addListener(listener: Listener(store: self))");
         });
         w.line("}");
         w.line("");
-        w.line(&format!("public func send(_ action: {action}) {{"));
-        w.indent(|w| w.line("source.send(action: action)"));
-        w.line("}");
-        w.line("");
         w.line("fileprivate func refresh() {");
-        w.indent(|w| w.line("state = source.state()"));
+        w.indent(|w| w.line("state = model.value()"));
         w.line("}");
     });
     w.line("}");
     w.line("");
-    w.line("/// Rust calls this back on the thread that changed the state. On the main");
-    w.line("/// one, the store reads it at once, so a model that changes as it takes an");
-    w.line("/// action is shown changed when `send` returns; from any other, it reads it");
+    w.line("/// Rust calls this back on the thread that changed the value. On the main");
+    w.line("/// one, the store reads it at once, so a model that changes as a method");
+    w.line("/// runs is shown changed when the call returns; from any other, it reads it");
     w.line("/// there next. It holds the store weakly: Rust holds it.");
     w.line(&format!(
         "private final class Listener: {listener}, @unchecked Sendable {{"
@@ -370,7 +451,7 @@ pub fn store(model: &CompiledModel) -> GeneratedFile {
         w.indent(|w| w.line("self.store = store"));
         w.line("}");
         w.line("");
-        w.line("func stateChanged() {");
+        w.line("func changed() {");
         w.indent(|w| {
             w.line("if Thread.isMainThread {");
             w.indent(|w| w.line("MainActor.assumeIsolated { store?.refresh() }"));

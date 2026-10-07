@@ -1,37 +1,37 @@
-error: property `condition` on `if` expects Bool, but `state.name` is a `String`
-  --> page.rs:29:16
+error: property `condition` on `if` expects Bool, but `model.name` is a `String`
+  --> page.rs:43:16
    |
-29 |             if state.name { Text("a") }
+43 |             if model.name { Text("a") },
    |                ^^^^^^^^^^ expected Bool
    |
 
-error: `state.count` is a `u32`, not a Vec
-  --> page.rs:30:25
+error: `model.count` is a `u32`, not a Vec
+  --> page.rs:44:25
    |
-30 |             for item in state.count { Text("b") }
+44 |             for item in model.count { Text("b") },
    |                         ^^^^^^^^^^^ expected a Vec
    |
 
 error: `Tag` has no `id` to tell its elements apart
-  --> page.rs:31:17
+  --> page.rs:45:17
    |
-31 |             for tag in state.tags { Text(tag.label) }
+45 |             for tag in model.tags { Text(tag.label) },
    |                 ^^^
    |
 help: name the field that does: `for tag in …, key: tag.field`
 
-error: the state is not read inside a `for`
-  --> page.rs:33:22
+error: the model is not read inside a `for`
+  --> page.rs:47:22
    |
-33 |                 Text(state.name)
+47 |                 Text(model.name),
    |                      ^^^^^ read `item` here
    |
 help: derive what each element needs with a #[selector] that puts it on the element
 
 error: a `for` inside a `for` is not supported yet
-  --> page.rs:34:17
+  --> page.rs:48:17
    |
-34 |                 for other in state.items { Text("c") }
+48 |                 for other in model.items { Text("c") },
    |                 ^^^
    |
 help: flatten the elements in a #[selector]

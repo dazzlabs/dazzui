@@ -5,12 +5,13 @@
 //! `ui!` parses the page, validates it against the built-in registry, and
 //! expands to a function that is never called: a list of `let` bindings
 //! that make rustc check every state path the page reads against the
-//! page's state struct, and every action it names against its action enum.
-//! Each binding carries the DSL's span, so rustc's own error lands on the
-//! line that wrote it.
+//! page's state struct, and every model method it calls against the
+//! model's impl. Each binding carries the DSL's span, so rustc's own error
+//! lands on the line that wrote it.
 //!
-//! `#[page_model]` marks the function that makes a page model and emits,
-//! beside it, the UniFFI exports the native side reaches the model through.
+//! `#[page_model]` marks a model's impl, whose public methods are what a
+//! page calls, and emits, beside it, the UniFFI exports the native side
+//! reaches the model through.
 //! `#[selector]` marks a method on the state whose value the page reads
 //! like a field.
 //!
@@ -22,9 +23,7 @@ use std::path::Path;
 
 use dazzui_compiler::bridge::Bridge;
 use dazzui_compiler::ir::{ComponentSpec, PropType};
-use dazzui_compiler::syntax::{
-    ArgAst, ComponentAst, DottedAst, NodeAst, PageAst, ValueAst, parse_page,
-};
+use dazzui_compiler::syntax::{ComponentAst, DottedAst, NodeAst, PageAst, ValueAst, parse_page};
 use dazzui_compiler::{ModelDef, Project, Registry, RustType, RustTypes, lower, read_selector};
 use proc_macro::TokenStream;
 use proc_macro2::{Span, TokenStream as TokenStream2};
@@ -75,12 +74,17 @@ fn expand(input: TokenStream2) -> syn::Result<TokenStream2> {
 }
 
 fn type_check(page: &PageAst, registry: &Registry, types: Option<RustTypes>) -> TokenStream2 {
-    let state = &page.state_ty;
+    let model = &page.model_ty;
     let check = format_ident!("__dazzui_compiler_check_{}", page.name);
-    let state_name = page.state_ty.segments.last().map(|s| s.ident.to_string());
+    // The value's struct, to know which names in a path are selectors.
+    let model_name = page.model_ty.segments.last().map(|s| s.ident.to_string());
+    let state_name = types.as_ref().and_then(|t| {
+        let def = t.model(model_name.as_deref()?)?;
+        t.model_state(def).ok()
+    });
     let mut cx = Check {
         registry,
-        action: &page.action_ty,
+        model: &page.model_ty,
         types: types.as_ref(),
         state: state_name,
         scopes: Vec::new(),
@@ -90,7 +94,9 @@ fn type_check(page: &PageAst, registry: &Registry, types: Option<RustTypes>) -> 
         #[doc(hidden)]
         const _: () = {
             #[allow(dead_code, unused_variables, non_snake_case, clippy::all)]
-            fn #check(state: &#state) {
+            fn #check(model: &#model) {
+                // What `model.field` reads: the model's value.
+                let state = <#model as ::dazzui_runtime::ValueListenable>::value(model);
                 #lets
             }
         };
@@ -121,7 +127,7 @@ fn crate_types() -> syn::Result<Option<RustTypes>> {
 /// What the type check is walking: the page, and the loop items in scope.
 struct Check<'a> {
     registry: &'a Registry,
-    action: &'a syn::Path,
+    model: &'a syn::Path,
     types: Option<&'a RustTypes>,
     /// The state struct's name.
     state: Option<String>,
@@ -138,14 +144,11 @@ impl Check<'_> {
                 if let Some(spec) = self.registry.get(&component.name.to_string()) {
                     self.component(component, spec, &mut out);
                 }
-                // What a slot holds is checked as a child is.
-                let named = component.args.iter().filter_map(|a| match a {
-                    ArgAst::Named(p) => Some(&p.value),
-                    ArgAst::Positional(_) => None,
-                });
-                let slots: Vec<NodeAst> = named
-                    .chain(component.props.iter().map(|p| &p.value))
-                    .filter_map(|v| match v {
+                // A component given to a prop is checked as a child is.
+                let slots: Vec<NodeAst> = component
+                    .props
+                    .iter()
+                    .filter_map(|p| match &p.value {
                         ValueAst::Component(c) => Some(NodeAst::Component((**c).clone())),
                         _ => None,
                     })
@@ -222,7 +225,7 @@ impl Check<'_> {
         if rest.is_empty() {
             return None;
         }
-        let mut current = if head == "state" {
+        let mut current = if head == "model" {
             self.state.clone()
         } else {
             self.scopes
@@ -232,7 +235,13 @@ impl Check<'_> {
                 .1
                 .clone()
         };
-        let mut tokens = quote!(#head);
+        // `model.field` reads the value, bound to `state` in the check.
+        let mut tokens = if head == "model" {
+            let state = proc_macro2::Ident::new("state", head.span());
+            quote!(#state)
+        } else {
+            quote!(#head)
+        };
         let mut ty = None;
         for segment in rest {
             let def = current
@@ -252,44 +261,27 @@ impl Check<'_> {
         Some((tokens, ty))
     }
 
-    /// One `let` per path and action the component names.
+    /// One `let` per path and method the component names.
     fn component(
         &self,
         component: &ComponentAst,
         spec: &ComponentSpec,
         out: &mut Vec<TokenStream2>,
     ) {
-        let mut entries: Vec<(String, &ValueAst)> = Vec::new();
-        let mut positional = spec.positional.iter();
-        for arg in &component.args {
-            match arg {
-                ArgAst::Named(prop) => entries.push((prop.name.to_string(), &prop.value)),
-                ArgAst::Positional(value) => {
-                    if let Some(name) = positional.next() {
-                        entries.push((name.clone(), value));
-                    }
-                }
-            }
+        if let Some(ValueAst::Dotted(path)) = &component.text
+            && let Some((access, _)) = self.access(path)
+        {
+            let span = path.span();
+            out.push(quote_spanned! {span=> let _: &str = &#access; });
         }
-        entries.extend(
-            component
-                .props
-                .iter()
-                .map(|p| (p.name.to_string(), &p.value)),
-        );
-        for modifier in &component.modifiers {
-            if let [ArgAst::Positional(value)] = modifier.args.as_slice() {
-                entries.push((modifier.name.to_string(), value));
-            }
-        }
-
-        for (name, value) in entries {
-            if let Some(event) = spec.event_by_modifier(&name) {
-                out.extend(self.action_check(value, event.payload.as_ref()));
-            } else if let Some(prop) = spec.prop(&name)
-                && let ValueAst::Dotted(path) | ValueAst::Bind(path) = value
+        for prop in &component.props {
+            let name = prop.name.to_string();
+            if let Some(event) = spec.event(&name) {
+                out.extend(self.call_check(&prop.value, event.payload.as_ref()));
+            } else if let Some(spec) = spec.prop(&name)
+                && let ValueAst::Dotted(path) = &prop.value
             {
-                out.extend(self.value_check(path, &prop.ty));
+                out.extend(self.value_check(path, &spec.ty));
             }
         }
     }
@@ -306,42 +298,43 @@ impl Check<'_> {
         }
     }
 
-    /// The check for an action an event sends, with `Action::` rewritten to
-    /// the page's action type and re-spanned onto the variant, so rustc
-    /// underlines `Action::Sav` and nothing else.
-    fn action_check(&self, value: &ValueAst, carried: Option<&PropType>) -> Option<TokenStream2> {
-        let action = self.action;
-        let (path, payload) = match value {
-            ValueAst::Path(path) => (path, None),
-            ValueAst::Call(path, payload) => (path, Some(&**payload)),
+    /// The check for a method an event calls, `model.set_on` or
+    /// `model.pick(item.id)`, re-spanned onto the method's name, so rustc
+    /// underlines `sav` in `model.sav` and nothing else.
+    fn call_check(&self, value: &ValueAst, carried: Option<&PropType>) -> Option<TokenStream2> {
+        let (path, argument) = match value {
+            ValueAst::Dotted(path) => (path, None),
+            ValueAst::Call(path, argument) => (path, Some(&**argument)),
             _ => return None,
         };
-        if path.segments.first()?.ident != "Action" || path.segments.len() != 2 {
+        let [head, method] = path.segments.as_slice() else {
+            return None;
+        };
+        if head != "model" {
             return None;
         }
-        let variant = &path.segments[1].ident;
-        let span = variant.span();
-        let ty = respan(action, span);
-        Some(match (payload, carried) {
-            (Some(payload), _) => {
-                let value = self.payload_value(payload)?;
-                quote_spanned! {span=> let _: #ty = #ty::#variant(#value); }
+        let span = method.span();
+        let ty = respan(self.model, span);
+        Some(match (argument, carried) {
+            (Some(argument), _) => {
+                let value = self.payload_value(argument)?;
+                quote_spanned! {span=> let _: () = #ty::#method(model, #value); }
             }
             (None, Some(carried)) => {
                 let carried: TokenStream2 = match carried {
                     PropType::Bool => quote!(bool),
                     PropType::String => quote!(::std::string::String),
                     PropType::Int => quote!(i64),
-                    PropType::Enum(_) => return None,
+                    PropType::Enum(_) | PropType::Spacing => return None,
                 };
-                quote_spanned! {span=> let _: fn(#carried) -> #ty = #ty::#variant; }
+                quote_spanned! {span=> let _: fn(&#ty, #carried) = #ty::#method; }
             }
-            (None, None) => quote_spanned! {span=> let _: #ty = #ty::#variant; },
+            (None, None) => quote_spanned! {span=> let _: fn(&#ty) = #ty::#method; },
         })
     }
 
-    /// A payload as Rust would build the action with it: an owned clone of
-    /// a field, or a literal.
+    /// An argument as Rust would pass it: an owned clone of a field, or a
+    /// literal.
     fn payload_value(&self, value: &ValueAst) -> Option<TokenStream2> {
         match value {
             ValueAst::Dotted(path) => {
@@ -373,14 +366,13 @@ fn respan(path: &syn::Path, span: Span) -> TokenStream2 {
         .collect()
 }
 
-/// Marks `fn name() -> Model`, where `Model: PageModel`, as what drives the
-/// pages of the model's state, and emits the UniFFI exports the native side
-/// reaches the model through: the native side makes one by calling it.
+/// Marks a model's impl: its public methods are what a page calls, and its
+/// `pub fn new() -> Self` what the native side makes it with. Emits the
+/// UniFFI exports the native side reaches the model through.
 ///
-/// The macro reads the crate's `src/` for the state struct and action enum,
-/// as the CLI does, so both derive the ABI from the same Rust types: from
-/// `Reducer<State, Action>`, or from the `impl PageModel` of the type the
-/// function returns.
+/// The macro reads the crate's `src/` for the model's `ValueListenable`
+/// impl and the state struct it names, as the CLI does, so both derive the
+/// ABI from the same Rust types.
 #[proc_macro_attribute]
 pub fn page_model(attr: TokenStream, item: TokenStream) -> TokenStream {
     let item: TokenStream2 = item.into();
@@ -391,9 +383,14 @@ pub fn page_model(attr: TokenStream, item: TokenStream) -> TokenStream {
                 "#[page_model] takes no arguments",
             ));
         }
-        let function: syn::ItemFn = syn::parse2(item.clone())?;
-        let model = ModelDef::from_fn(&function.sig)?;
-        let at = |message: String| syn::Error::new(function.sig.ident.span(), message);
+        let imp: syn::ItemImpl = syn::parse2(item.clone()).map_err(|e| {
+            syn::Error::new(
+                e.span(),
+                "#[page_model] marks a model's impl: `#[page_model] impl SettingsModel { … }`",
+            )
+        })?;
+        let model = ModelDef::from_impl(&imp, "crate")?;
+        let at = |message: String| syn::Error::new_spanned(&imp.self_ty, message);
         let dir = std::env::var("CARGO_MANIFEST_DIR")
             .map_err(|_| at("CARGO_MANIFEST_DIR is not set".into()))?;
         let src = Path::new(&dir).join("src");
@@ -405,6 +402,8 @@ pub fn page_model(attr: TokenStream, item: TokenStream) -> TokenStream {
                     .into(),
             ));
         }
+        // The scan knows where the impl's type is; this one does not.
+        let model = project.types.model(&model.name).cloned().unwrap_or(model);
         let bridge = Bridge::new(&model, &project.types).map_err(at)?;
         Ok(bridge.rust())
     })();

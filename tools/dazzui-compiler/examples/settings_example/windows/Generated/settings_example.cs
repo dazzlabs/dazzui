@@ -698,8 +698,20 @@ static class _UniFFILib {
     {
         public IntPtr @uniffiFree;
         public IntPtr @uniffiClone;
-        public IntPtr @stateChanged;
+        public IntPtr @changed;
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
@@ -817,7 +829,7 @@ static class _UniFFILib {
     [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
     public static extern
 #endif
-     void uniffi_settings_example_fn_method_settingslistener_state_changed(ulong @ptr,ref UniffiRustCallStatus _uniffi_out_err
+     void uniffi_settings_example_fn_method_settingslistener_changed(ulong @ptr,ref UniffiRustCallStatus _uniffi_out_err
     );
 
     #if NET8_0_OR_GREATER
@@ -828,7 +840,7 @@ static class _UniFFILib {
     [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
     public static extern
 #endif
-     ulong uniffi_settings_example_fn_clone_settingssource(ulong @handle,ref UniffiRustCallStatus _uniffi_out_err
+     ulong uniffi_settings_example_fn_clone_settingsmodel(ulong @handle,ref UniffiRustCallStatus _uniffi_out_err
     );
 
     #if NET8_0_OR_GREATER
@@ -839,7 +851,7 @@ static class _UniFFILib {
     [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
     public static extern
 #endif
-     void uniffi_settings_example_fn_free_settingssource(ulong @handle,ref UniffiRustCallStatus _uniffi_out_err
+     void uniffi_settings_example_fn_free_settingsmodel(ulong @handle,ref UniffiRustCallStatus _uniffi_out_err
     );
 
     #if NET8_0_OR_GREATER
@@ -850,7 +862,7 @@ static class _UniFFILib {
     [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
     public static extern
 #endif
-     ulong uniffi_settings_example_fn_constructor_settingssource_new(ref UniffiRustCallStatus _uniffi_out_err
+     ulong uniffi_settings_example_fn_constructor_settingsmodel_new(ref UniffiRustCallStatus _uniffi_out_err
     );
 
     #if NET8_0_OR_GREATER
@@ -861,7 +873,7 @@ static class _UniFFILib {
     [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
     public static extern
 #endif
-     void uniffi_settings_example_fn_method_settingssource_send(ulong @ptr,RustBuffer @action,ref UniffiRustCallStatus _uniffi_out_err
+     ulong uniffi_settings_example_fn_method_settingsmodel_add_listener(ulong @ptr,ulong @listener,ref UniffiRustCallStatus _uniffi_out_err
     );
 
     #if NET8_0_OR_GREATER
@@ -872,7 +884,7 @@ static class _UniFFILib {
     [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
     public static extern
 #endif
-     RustBuffer uniffi_settings_example_fn_method_settingssource_state(ulong @ptr,ref UniffiRustCallStatus _uniffi_out_err
+     void uniffi_settings_example_fn_method_settingsmodel_remove_listener(ulong @ptr,ulong @id,ref UniffiRustCallStatus _uniffi_out_err
     );
 
     #if NET8_0_OR_GREATER
@@ -883,7 +895,73 @@ static class _UniFFILib {
     [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
     public static extern
 #endif
-     void uniffi_settings_example_fn_method_settingssource_subscribe(ulong @ptr,ulong @listener,ref UniffiRustCallStatus _uniffi_out_err
+     void uniffi_settings_example_fn_method_settingsmodel_reset(ulong @ptr,ref UniffiRustCallStatus _uniffi_out_err
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     void uniffi_settings_example_fn_method_settingsmodel_save(ulong @ptr,ref UniffiRustCallStatus _uniffi_out_err
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     void uniffi_settings_example_fn_method_settingsmodel_set_auto_update(ulong @ptr,sbyte @on,ref UniffiRustCallStatus _uniffi_out_err
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     void uniffi_settings_example_fn_method_settingsmodel_set_launch_at_startup(ulong @ptr,sbyte @on,ref UniffiRustCallStatus _uniffi_out_err
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     void uniffi_settings_example_fn_method_settingsmodel_set_show_disabled_plugins(ulong @ptr,sbyte @on,ref UniffiRustCallStatus _uniffi_out_err
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     void uniffi_settings_example_fn_method_settingsmodel_toggle_plugin(ulong @ptr,uint @id,ref UniffiRustCallStatus _uniffi_out_err
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     RustBuffer uniffi_settings_example_fn_method_settingsmodel_value(ulong @ptr,ref UniffiRustCallStatus _uniffi_out_err
     );
 
     #if NET8_0_OR_GREATER
@@ -1466,7 +1544,7 @@ static class _UniFFILib {
     [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
     public static extern
 #endif
-     ushort uniffi_settings_example_checksum_method_settingslistener_state_changed(
+     ushort uniffi_settings_example_checksum_method_settingslistener_changed(
     );
 
     #if NET8_0_OR_GREATER
@@ -1477,7 +1555,7 @@ static class _UniFFILib {
     [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
     public static extern
 #endif
-     ushort uniffi_settings_example_checksum_method_settingssource_send(
+     ushort uniffi_settings_example_checksum_method_settingsmodel_add_listener(
     );
 
     #if NET8_0_OR_GREATER
@@ -1488,7 +1566,7 @@ static class _UniFFILib {
     [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
     public static extern
 #endif
-     ushort uniffi_settings_example_checksum_method_settingssource_state(
+     ushort uniffi_settings_example_checksum_method_settingsmodel_remove_listener(
     );
 
     #if NET8_0_OR_GREATER
@@ -1499,7 +1577,7 @@ static class _UniFFILib {
     [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
     public static extern
 #endif
-     ushort uniffi_settings_example_checksum_method_settingssource_subscribe(
+     ushort uniffi_settings_example_checksum_method_settingsmodel_reset(
     );
 
     #if NET8_0_OR_GREATER
@@ -1510,7 +1588,73 @@ static class _UniFFILib {
     [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
     public static extern
 #endif
-     ushort uniffi_settings_example_checksum_constructor_settingssource_new(
+     ushort uniffi_settings_example_checksum_method_settingsmodel_save(
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     ushort uniffi_settings_example_checksum_method_settingsmodel_set_auto_update(
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     ushort uniffi_settings_example_checksum_method_settingsmodel_set_launch_at_startup(
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     ushort uniffi_settings_example_checksum_method_settingsmodel_set_show_disabled_plugins(
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     ushort uniffi_settings_example_checksum_method_settingsmodel_toggle_plugin(
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     ushort uniffi_settings_example_checksum_method_settingsmodel_value(
+    );
+
+    #if NET8_0_OR_GREATER
+    [LibraryImport("settings_example")]
+    [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static partial
+#else
+    [DllImport("settings_example", CallingConvention = CallingConvention.Cdecl)]
+    public static extern
+#endif
+     ushort uniffi_settings_example_checksum_constructor_settingsmodel_new(
     );
 
     #if NET8_0_OR_GREATER
@@ -1534,33 +1678,69 @@ static class _UniFFILib {
     }
     static void uniffiCheckApiChecksums() {
         {
-            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingslistener_state_changed();
-            if (checksum != 7042) {
-                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingslistener_state_changed` checksum `7042`, library returned `{checksum}`");
+            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingslistener_changed();
+            if (checksum != 21934) {
+                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingslistener_changed` checksum `21934`, library returned `{checksum}`");
             }
         }
         {
-            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingssource_send();
-            if (checksum != 13796) {
-                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingssource_send` checksum `13796`, library returned `{checksum}`");
+            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingsmodel_add_listener();
+            if (checksum != 51336) {
+                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingsmodel_add_listener` checksum `51336`, library returned `{checksum}`");
             }
         }
         {
-            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingssource_state();
-            if (checksum != 61957) {
-                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingssource_state` checksum `61957`, library returned `{checksum}`");
+            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingsmodel_remove_listener();
+            if (checksum != 25916) {
+                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingsmodel_remove_listener` checksum `25916`, library returned `{checksum}`");
             }
         }
         {
-            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingssource_subscribe();
-            if (checksum != 12353) {
-                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingssource_subscribe` checksum `12353`, library returned `{checksum}`");
+            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingsmodel_reset();
+            if (checksum != 56521) {
+                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingsmodel_reset` checksum `56521`, library returned `{checksum}`");
             }
         }
         {
-            var checksum = _UniFFILib.uniffi_settings_example_checksum_constructor_settingssource_new();
-            if (checksum != 27133) {
-                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_constructor_settingssource_new` checksum `27133`, library returned `{checksum}`");
+            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingsmodel_save();
+            if (checksum != 19463) {
+                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingsmodel_save` checksum `19463`, library returned `{checksum}`");
+            }
+        }
+        {
+            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingsmodel_set_auto_update();
+            if (checksum != 902) {
+                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingsmodel_set_auto_update` checksum `902`, library returned `{checksum}`");
+            }
+        }
+        {
+            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingsmodel_set_launch_at_startup();
+            if (checksum != 31672) {
+                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingsmodel_set_launch_at_startup` checksum `31672`, library returned `{checksum}`");
+            }
+        }
+        {
+            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingsmodel_set_show_disabled_plugins();
+            if (checksum != 40802) {
+                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingsmodel_set_show_disabled_plugins` checksum `40802`, library returned `{checksum}`");
+            }
+        }
+        {
+            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingsmodel_toggle_plugin();
+            if (checksum != 46839) {
+                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingsmodel_toggle_plugin` checksum `46839`, library returned `{checksum}`");
+            }
+        }
+        {
+            var checksum = _UniFFILib.uniffi_settings_example_checksum_method_settingsmodel_value();
+            if (checksum != 7169) {
+                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_method_settingsmodel_value` checksum `7169`, library returned `{checksum}`");
+            }
+        }
+        {
+            var checksum = _UniFFILib.uniffi_settings_example_checksum_constructor_settingsmodel_new();
+            if (checksum != 11994) {
+                throw new UniffiContractChecksumException($"SettingsExample: uniffi bindings expected function `uniffi_settings_example_checksum_constructor_settingsmodel_new` checksum `11994`, library returned `{checksum}`");
             }
         }
     }
@@ -1594,6 +1774,32 @@ class FfiConverterUInt32: FfiConverter<uint, uint> {
 
     public override void Write(uint value, BigEndianStream stream) {
         stream.WriteUInt(value);
+    }
+}
+
+
+
+class FfiConverterUInt64: FfiConverter<ulong, ulong> {
+    public static FfiConverterUInt64 INSTANCE = new FfiConverterUInt64();
+
+    public override ulong Lift(ulong value) {
+        return value;
+    }
+
+    public override ulong Read(BigEndianStream stream) {
+        return stream.ReadULong();
+    }
+
+    public override ulong Lower(ulong value) {
+        return value;
+    }
+
+    public override int AllocationSize(ulong value) {
+        return 8;
+    }
+
+    public override void Write(ulong value, BigEndianStream stream) {
+        stream.WriteULong(value);
     }
 }
 
@@ -1673,14 +1879,14 @@ class FfiConverterString: FfiConverter<string, RustBuffer> {
 
 
 /// <summary>
-/// Called back when the model's state changes, on whichever
+/// Called back when the model's value changes, on whichever
 /// thread changed it.
 /// </summary>
 public interface SettingsListener {
-    void StateChanged();
+    void Changed();
 }
 /// <summary>
-/// Called back when the model's state changes, on whichever
+/// Called back when the model's value changes, on whichever
 /// thread changed it.
 /// </summary>
 public class SettingsListenerImpl : SettingsListener, IDisposable {
@@ -1772,10 +1978,10 @@ public class SettingsListenerImpl : SettingsListener, IDisposable {
     }
 
     
-    public void StateChanged() {
+    public void Changed() {
         CallWithPointer(thisPtr =>
     _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
-    _UniFFILib.uniffi_settings_example_fn_method_settingslistener_state_changed(thisPtr,  ref _status)
+    _UniFFILib.uniffi_settings_example_fn_method_settingslistener_changed(thisPtr,  ref _status)
 ));
     }
     
@@ -1785,13 +1991,13 @@ public class SettingsListenerImpl : SettingsListener, IDisposable {
     
 }
 class UniffiCallbackInterfaceSettingsListener {
-    static void StateChanged(ulong @uniffiHandle,IntPtr @uniffiOutReturn,ref UniffiRustCallStatus _uniffi_out_err) {
+    static void Changed(ulong @uniffiHandle,IntPtr @uniffiOutReturn,ref UniffiRustCallStatus _uniffi_out_err) {
         var handle = @uniffiHandle;
         try {
             if (!FfiConverterTypeSettingsListener.INSTANCE.handleMap.TryGet(handle, out var uniffiObject)) {
                 throw new InternalException($"No callback in handlemap '{handle}'");
             }
-            uniffiObject.StateChanged();
+            uniffiObject.Changed();
 
             _uniffi_out_err.code = UniffiCallbackResponseStatus.SUCCESS;
         }
@@ -1819,7 +2025,7 @@ class UniffiCallbackInterfaceSettingsListener {
             return 0; // 0 is never a valid handle; ConcurrentHandleMap starts at 1
         }
     }
-    static _UniFFILib.UniffiCallbackInterfaceSettingsListenerMethod0 _m0 = new _UniFFILib.UniffiCallbackInterfaceSettingsListenerMethod0(StateChanged);
+    static _UniFFILib.UniffiCallbackInterfaceSettingsListenerMethod0 _m0 = new _UniFFILib.UniffiCallbackInterfaceSettingsListenerMethod0(Changed);
     static _UniFFILib.UniffiCallbackInterfaceFree _callback_interface_free = new _UniFFILib.UniffiCallbackInterfaceFree(UniffiFree);
     static _UniFFILib.UniffiCallbackInterfaceClone _callback_interface_clone = new _UniFFILib.UniffiCallbackInterfaceClone(UniffiClone);
 
@@ -1828,7 +2034,7 @@ class UniffiCallbackInterfaceSettingsListener {
     public static void Register() {
         if (_vtablePin.HasValue) return;
         _UniFFILib.UniffiVTableCallbackInterfaceSettingsListener _vtable = new _UniFFILib.UniffiVTableCallbackInterfaceSettingsListener {
-            @stateChanged = Marshal.GetFunctionPointerForDelegate(_m0),
+            @changed = Marshal.GetFunctionPointerForDelegate(_m0),
             @uniffiFree = Marshal.GetFunctionPointerForDelegate(_callback_interface_free),
             @uniffiClone = Marshal.GetFunctionPointerForDelegate(_callback_interface_clone),
         };
@@ -1937,47 +2143,50 @@ class FfiConverterTypeSettingsListener: FfiConverter<SettingsListener, ulong> {
 /// <summary>
 /// The app's model, as the native side holds it.
 /// </summary>
-public interface ISettingsSource {
-    void Send(SettingsAction @action);
+public interface ISettingsModel {
+    ulong AddListener(SettingsListener @listener);
+    void RemoveListener(ulong @id);
+    void Reset();
+    void Save();
+    void SetAutoUpdate(bool @on);
+    void SetLaunchAtStartup(bool @on);
+    void SetShowDisabledPlugins(bool @on);
+    void TogglePlugin(uint @id);
     /// <summary>
-    /// A snapshot of the state, selectors computed.
+    /// A snapshot of the value, selectors computed.
     /// </summary>
-    SettingsState State();
-    void Subscribe(SettingsListener @listener);
+    SettingsState Value();
 }
 /// <summary>
 /// The app's model, as the native side holds it.
 /// </summary>
-public class SettingsSource : ISettingsSource, IDisposable {
+public class SettingsModel : ISettingsModel, IDisposable {
     protected ulong pointer;
     private int _wasDestroyed = 0;
     private long _callCounter = 1;
 
-    public SettingsSource(ulong pointer) {
+    public SettingsModel(ulong pointer) {
         this.pointer = pointer;
     }
 
-    ~SettingsSource() {
+    ~SettingsModel() {
         Destroy();
     }
-    /// <summary>
-    /// A source over the model the marked function makes.
-    /// </summary>
-    public SettingsSource() :
+    public SettingsModel() :
         this(
     _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
-    _UniFFILib.uniffi_settings_example_fn_constructor_settingssource_new( ref _status)
+    _UniFFILib.uniffi_settings_example_fn_constructor_settingsmodel_new( ref _status)
 )) {}
 
     protected void FreeRustArcPtr() {
         _UniffiHelpers.RustCall((ref UniffiRustCallStatus status) => {
-            _UniFFILib.uniffi_settings_example_fn_free_settingssource(this.pointer, ref status);
+            _UniFFILib.uniffi_settings_example_fn_free_settingsmodel(this.pointer, ref status);
         });
     }
 
     protected ulong CloneRustArcPtr() {
         return _UniffiHelpers.RustCall((ref UniffiRustCallStatus status) => {
-            return _UniFFILib.uniffi_settings_example_fn_clone_settingssource(this.pointer, ref status);
+            return _UniFFILib.uniffi_settings_example_fn_clone_settingsmodel(this.pointer, ref status);
         });
     }
 
@@ -2045,59 +2254,112 @@ public class SettingsSource : ISettingsSource, IDisposable {
     }
 
     
-    public void Send(SettingsAction @action) {
+    public ulong AddListener(SettingsListener @listener) {
+        return CallWithPointer(thisPtr => FfiConverterUInt64.INSTANCE.Lift(
+    _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
+    _UniFFILib.uniffi_settings_example_fn_method_settingsmodel_add_listener(thisPtr, FfiConverterTypeSettingsListener.INSTANCE.Lower(@listener), ref _status)
+)));
+    }
+    
+    
+    public void RemoveListener(ulong @id) {
         CallWithPointer(thisPtr =>
     _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
-    _UniFFILib.uniffi_settings_example_fn_method_settingssource_send(thisPtr, FfiConverterTypeSettingsAction.INSTANCE.Lower(@action), ref _status)
+    _UniFFILib.uniffi_settings_example_fn_method_settingsmodel_remove_listener(thisPtr, FfiConverterUInt64.INSTANCE.Lower(@id), ref _status)
+));
+    }
+    
+    
+    
+    public void Reset() {
+        CallWithPointer(thisPtr =>
+    _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
+    _UniFFILib.uniffi_settings_example_fn_method_settingsmodel_reset(thisPtr,  ref _status)
+));
+    }
+    
+    
+    
+    public void Save() {
+        CallWithPointer(thisPtr =>
+    _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
+    _UniFFILib.uniffi_settings_example_fn_method_settingsmodel_save(thisPtr,  ref _status)
+));
+    }
+    
+    
+    
+    public void SetAutoUpdate(bool @on) {
+        CallWithPointer(thisPtr =>
+    _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
+    _UniFFILib.uniffi_settings_example_fn_method_settingsmodel_set_auto_update(thisPtr, FfiConverterBoolean.INSTANCE.Lower(@on), ref _status)
+));
+    }
+    
+    
+    
+    public void SetLaunchAtStartup(bool @on) {
+        CallWithPointer(thisPtr =>
+    _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
+    _UniFFILib.uniffi_settings_example_fn_method_settingsmodel_set_launch_at_startup(thisPtr, FfiConverterBoolean.INSTANCE.Lower(@on), ref _status)
+));
+    }
+    
+    
+    
+    public void SetShowDisabledPlugins(bool @on) {
+        CallWithPointer(thisPtr =>
+    _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
+    _UniFFILib.uniffi_settings_example_fn_method_settingsmodel_set_show_disabled_plugins(thisPtr, FfiConverterBoolean.INSTANCE.Lower(@on), ref _status)
+));
+    }
+    
+    
+    
+    public void TogglePlugin(uint @id) {
+        CallWithPointer(thisPtr =>
+    _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
+    _UniFFILib.uniffi_settings_example_fn_method_settingsmodel_toggle_plugin(thisPtr, FfiConverterUInt32.INSTANCE.Lower(@id), ref _status)
 ));
     }
     
     
     
     /// <summary>
-    /// A snapshot of the state, selectors computed.
+    /// A snapshot of the value, selectors computed.
     /// </summary>
-    public SettingsState State() {
+    public SettingsState Value() {
         return CallWithPointer(thisPtr => FfiConverterTypeSettingsState.INSTANCE.Lift(
     _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
-    _UniFFILib.uniffi_settings_example_fn_method_settingssource_state(thisPtr,  ref _status)
+    _UniFFILib.uniffi_settings_example_fn_method_settingsmodel_value(thisPtr,  ref _status)
 )));
     }
-    
-    
-    public void Subscribe(SettingsListener @listener) {
-        CallWithPointer(thisPtr =>
-    _UniffiHelpers.RustCall( (ref UniffiRustCallStatus _status) =>
-    _UniFFILib.uniffi_settings_example_fn_method_settingssource_subscribe(thisPtr, FfiConverterTypeSettingsListener.INSTANCE.Lower(@listener), ref _status)
-));
-    }
-    
     
     
 
     
 }
-class FfiConverterTypeSettingsSource: FfiConverter<SettingsSource, ulong> {
-    public static FfiConverterTypeSettingsSource INSTANCE = new FfiConverterTypeSettingsSource();
+class FfiConverterTypeSettingsModel: FfiConverter<SettingsModel, ulong> {
+    public static FfiConverterTypeSettingsModel INSTANCE = new FfiConverterTypeSettingsModel();
 
 
-    public override ulong Lower(SettingsSource value) {
+    public override ulong Lower(SettingsModel value) {
         return value.CallWithPointer(thisPtr => thisPtr);
     }
 
-    public override SettingsSource Lift(ulong value) {
-        return new SettingsSource(value);
+    public override SettingsModel Lift(ulong value) {
+        return new SettingsModel(value);
     }
 
-    public override SettingsSource Read(BigEndianStream stream) {
+    public override SettingsModel Read(BigEndianStream stream) {
         return Lift(stream.ReadULong());
     }
 
-    public override int AllocationSize(SettingsSource value) {
+    public override int AllocationSize(SettingsModel value) {
         return 8;
     }
 
-    public override void Write(SettingsSource value, BigEndianStream stream) {
+    public override void Write(SettingsModel value, BigEndianStream stream) {
         stream.WriteULong(Lower(value));
     }
 }
@@ -2201,126 +2463,6 @@ class FfiConverterTypeSettingsState: FfiConverterRustBuffer<SettingsState> {
             FfiConverterBoolean.INSTANCE.Write(value.HasHiddenPlugins, stream);
     }
 }
-
-
-
-
-
-public record SettingsAction {
-    
-    public record SetLaunchAtStartup (
-        bool V1
-    ) : SettingsAction {}
-    
-    public record SetAutoUpdate (
-        bool V1
-    ) : SettingsAction {}
-    
-    public record Save: SettingsAction {}
-    
-    
-    public record Reset: SettingsAction {}
-    
-    
-    public record SetShowDisabledPlugins (
-        bool V1
-    ) : SettingsAction {}
-    
-    public record TogglePlugin (
-        uint V1
-    ) : SettingsAction {}
-    
-
-    
-}
-
-class FfiConverterTypeSettingsAction : FfiConverterRustBuffer<SettingsAction>{
-    public static FfiConverterRustBuffer<SettingsAction> INSTANCE = new FfiConverterTypeSettingsAction();
-
-    public override SettingsAction Read(BigEndianStream stream) {
-        var value = stream.ReadInt();
-        switch (value) {
-            case 1:
-                return new SettingsAction.SetLaunchAtStartup(
-                    FfiConverterBoolean.INSTANCE.Read(stream)
-                );
-            case 2:
-                return new SettingsAction.SetAutoUpdate(
-                    FfiConverterBoolean.INSTANCE.Read(stream)
-                );
-            case 3:
-                return new SettingsAction.Save(
-                );
-            case 4:
-                return new SettingsAction.Reset(
-                );
-            case 5:
-                return new SettingsAction.SetShowDisabledPlugins(
-                    FfiConverterBoolean.INSTANCE.Read(stream)
-                );
-            case 6:
-                return new SettingsAction.TogglePlugin(
-                    FfiConverterUInt32.INSTANCE.Read(stream)
-                );
-            default:
-                throw new InternalException(String.Format("invalid enum value '{0}' in FfiConverterTypeSettingsAction.Read()", value));
-        }
-    }
-
-    public override int AllocationSize(SettingsAction value) {
-        switch (value) {
-            case SettingsAction.SetLaunchAtStartup variant_value:
-                return 4
-                    + FfiConverterBoolean.INSTANCE.AllocationSize(variant_value.V1);
-            case SettingsAction.SetAutoUpdate variant_value:
-                return 4
-                    + FfiConverterBoolean.INSTANCE.AllocationSize(variant_value.V1);
-            case SettingsAction.Save variant_value:
-                return 4;
-            case SettingsAction.Reset variant_value:
-                return 4;
-            case SettingsAction.SetShowDisabledPlugins variant_value:
-                return 4
-                    + FfiConverterBoolean.INSTANCE.AllocationSize(variant_value.V1);
-            case SettingsAction.TogglePlugin variant_value:
-                return 4
-                    + FfiConverterUInt32.INSTANCE.AllocationSize(variant_value.V1);
-            default:
-                throw new InternalException(String.Format("invalid enum value '{0}' in FfiConverterTypeSettingsAction.AllocationSize()", value));
-        }
-    }
-
-    public override void Write(SettingsAction value, BigEndianStream stream) {
-        switch (value) {
-            case SettingsAction.SetLaunchAtStartup variant_value:
-                stream.WriteInt(1);
-                FfiConverterBoolean.INSTANCE.Write(variant_value.V1, stream);
-                break;
-            case SettingsAction.SetAutoUpdate variant_value:
-                stream.WriteInt(2);
-                FfiConverterBoolean.INSTANCE.Write(variant_value.V1, stream);
-                break;
-            case SettingsAction.Save variant_value:
-                stream.WriteInt(3);
-                break;
-            case SettingsAction.Reset variant_value:
-                stream.WriteInt(4);
-                break;
-            case SettingsAction.SetShowDisabledPlugins variant_value:
-                stream.WriteInt(5);
-                FfiConverterBoolean.INSTANCE.Write(variant_value.V1, stream);
-                break;
-            case SettingsAction.TogglePlugin variant_value:
-                stream.WriteInt(6);
-                FfiConverterUInt32.INSTANCE.Write(variant_value.V1, stream);
-                break;
-            default:
-                throw new InternalException(String.Format("invalid enum value '{0}' in FfiConverterTypeSettingsAction.Write()", value));
-        }
-    }
-}
-
-
 
 
 

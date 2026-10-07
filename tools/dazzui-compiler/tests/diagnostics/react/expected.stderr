@@ -1,17 +1,30 @@
-error: `bind` on `value` needs an action to write the change back
-  --> page.rs:29:22
+error: unknown property `onClick` on component `Button`
+  --> page.rs:43:20
    |
-29 |             Toggle { value: bind(state.on) }
-   |                      ^^^^^ nothing sends the new value to Rust
+43 |             Button(onClick: model.save, child: Text("a")),
+   |                    ^^^^^^^
    |
-help: add `on_change: Action::…`
+help: did you mean `on_click`?
 
-error: property `title` on `Button` cannot be bound
-  --> page.rs:30:34
+error: `full_width` on `Button` is a React prop dazzui-compiler does not draw yet
+  --> page.rs:44:20
    |
-30 |             Button { title: bind(state.name) }
-   |                                  ^^^^^^^^^^
+44 |             Button(full_width: true, child: Text("b")),
+   |                    ^^^^^^^^^^ not drawn on the native side yet
    |
-help: pass the value itself: `title: state.…`
 
-error: could not compile due to 2 previous errors
+error: `default_checked` on `Switch` is a React prop dazzui-compiler does not draw yet
+  --> page.rs:45:39
+   |
+45 |             Switch(checked: model.on, default_checked: true),
+   |                                       ^^^^^^^^^^^^^^^ not drawn on the native side yet
+   |
+
+error: `justify` on `Row` is a React prop dazzui-compiler does not draw yet
+  --> page.rs:46:17
+   |
+46 |             Row(justify: Justify::Between, children: [Text("c")]),
+   |                 ^^^^^^^ not drawn on the native side yet
+   |
+
+error: could not compile due to 4 previous errors

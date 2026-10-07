@@ -1,8 +1,8 @@
-error: expected `action`
-  --> page.rs:27:22
+error: a page takes its model: `page Name(model: Model)`; it reads the model's value as `model.field`
+  --> page.rs:41:12
    |
-27 |     page P(state: S, act: A) {
-   |                      ^^^
+41 |     page P(state: S, model: M) {
+   |            ^^^^^
    |
 
 error: could not compile due to 1 previous error

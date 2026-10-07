@@ -17,3 +17,6 @@ syn.workspace = true
 
 [dev-dependencies]
 trybuild.workspace = true
+# The check `ui!` expands to reads the model's value through the runtime's
+# `ValueListenable`, as an app's does.
+dazzui-runtime.workspace = true

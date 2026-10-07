@@ -2,88 +2,194 @@
 # own `dazzui-compiler.toml`, at its crate root, may add components or
 # replace these, in the same format.
 #
-# A component is its semantic interface — props, events, slots, children —
-# and, under `swiftui` and `winui`, how each platform draws it. A default is
-# the registry's, never inherited from a platform: where a platform's own
-# default already draws it, `omit` leaves the argument out; where it does
-# not, the value is written.
+# Every name here is React's: a component is named as the kit names it, a
+# prop or an event as its React prop is, in snake case (`onCheckedChange`
+# is `on_checked_change`), and an enum is the prop's TypeScript union, its
+# values in PascalCase (`'filled'` is `ButtonVariant::Filled`). A React prop
+# the compiler does not draw yet is listed under `unsupported`, so that a
+# page setting it is told so. tests/react.rs holds the names to the kit's.
+# Only the structure is Flutter's: React's children are `child:` or
+# `children: [ … ]`, and a text is a `Text("…")`.
 #
-# VStack, HStack and Text have no platform tables: each backend lowers them
-# itself, since a stack's layout and a text's type token are more than an
-# argument mapping can say.
+# Under `swiftui` and `winui` is how each platform draws a component, as
+# the SwiftUI and WinUI examples' mappings of the same stories do. A
+# default is React's, never inherited from a platform: where a platform's
+# own default already draws it, `omit` leaves the argument out; where it
+# does not, the value is written.
+#
+# Row, Col and Text are the React example's stage components, which the
+# stories lay themselves out with. They have no platform tables: each
+# backend lowers them itself, since a layout and a run of type are more
+# than an argument mapping can say.
 
-[enum.TextStyle]
-cases = ["Title", "Body", "Caption"]
+[enum.Tint]
+cases = ["Primary", "Neutral", "Info", "Success", "Warning", "Danger"]
 
-[enum.ButtonStyle]
-cases = ["Primary", "Secondary"]
+[enum.ButtonVariant]
+cases = ["Recessed", "Normal", "Filled", "Tinted", "Outlined", "Plain"]
 
-[component.VStack]
+[enum.ButtonSize]
+cases = ["Tiny", "Small", "Medium", "Large"]
+
+[enum.SwitchSize]
+cases = ["Small", "Medium", "Large"]
+
+# stage.tsx's `Align`.
+[enum.Align]
+cases = ["Start", "Center", "End", "Stretch"]
+
+# stage.tsx's Text `tone`, a union with no name of its own.
+[enum.TextTone]
+cases = ["Default", "Secondary"]
+
+[component.Row]
 children = "many"
-# SwiftUI spaces a stack by about 8 points of its own accord and WinUI by
-# none: the gap is the registry's to decide.
-props.spacing = { type = "int", default = 0 }
+props.gap = { type = "spacing", default = "3" }
+props.align = { type = "enum:Align", default = "Center" }
+unsupported = ["justify", "width"]
 
-[component.HStack]
+[component.Col]
 children = "many"
-props.spacing = { type = "int", default = 0 }
+props.gap = { type = "spacing", default = "3" }
+props.align = { type = "enum:Align", default = "Stretch" }
+unsupported = ["width"]
 
 [component.Text]
-positional = ["text"]
-props.text = { type = "string", required = true }
-# No default: an unstyled text is the platform's own body text, which a
-# style would only restate.
-props.style = { type = "enum:TextStyle", modifier = true }
+children = "text"
+props.tone = { type = "enum:TextTone", default = "Default" }
+props.strong = { type = "bool", default = false }
+# No default: an untinted text takes the tone's ink.
+props.tint = { type = "enum:Tint" }
 
+# React's children are the label; here it is Flutter's `child: Text(…)`.
 [component.Button]
-positional = ["title"]
-props.title = { type = "string", required = true }
-props.style = { type = "enum:ButtonStyle", default = "Secondary", modifier = true }
-props.disabled = { type = "bool", default = false, modifier = true }
-events.click = { modifier = "on_click" }
+children = { count = "one", allow = ["Text"] }
+props.variant = { type = "enum:ButtonVariant", default = "Recessed" }
+props.size = { type = "enum:ButtonSize", default = "Small" }
+props.tint = { type = "enum:Tint", default = "Primary" }
+props.disabled = { type = "bool", default = false }
+events.on_click = {}
+unsupported = ["full_width", "shortcut", "type"]
 
 [component.Button.swiftui]
 call = "DazzUI.Button"
 args = [
-  { arg = "variant", prop = "style", enum = { Primary = ".filled", Secondary = ".recessed" }, omit = "Secondary" },
+  { arg = "size", prop = "size", enum = { Tiny = ".tiny", Small = ".small", Medium = ".medium", Large = ".large" }, omit = "Small" },
+  { arg = "variant", prop = "variant", enum = { Recessed = ".recessed", Normal = ".normal", Filled = ".filled", Tinted = ".tinted", Outlined = ".outlined", Plain = ".plain" }, omit = "Recessed" },
+  { arg = "tint", prop = "tint", enum = { Primary = ".primary", Neutral = ".neutral", Info = ".info", Success = ".success", Warning = ".warning", Danger = ".danger" }, omit = "Primary" },
   { arg = "enabled", prop = "disabled", invert = true, omit = false },
-  { arg = "action", event = "click", fallback = "{}" },
+  { arg = "action", event = "on_click", fallback = "{}" },
 ]
-trailing = { prop = "title", view = "Text" }
+trailing = { children = true }
 
 [component.Button.winui]
 element = "dazz:Button"
 attrs = [
-  { attr = "Content", prop = "title" },
-  # DazzUI's C# Button defaults to Filled where React and SwiftUI default
-  # to Recessed, so the variant is always written.
-  { attr = "Variant", prop = "style", enum = { Primary = "Filled", Secondary = "Recessed" } },
+  # DazzUI's C# Button defaults to Filled where React defaults to
+  # Recessed, so the variant is always written.
+  { attr = "Variant", prop = "variant", enum = { Recessed = "Recessed", Normal = "Normal", Filled = "Filled", Tinted = "Tinted", Outlined = "Outlined", Plain = "Plain" } },
+  { attr = "Size", prop = "size", enum = { Tiny = "Tiny", Small = "Small", Medium = "Medium", Large = "Large" }, omit = "Small" },
+  { attr = "Tint", prop = "tint", enum = { Primary = "Primary", Neutral = "Neutral", Info = "Info", Success = "Success", Warning = "Warning", Danger = "Danger" }, omit = "Primary" },
   { attr = "IsEnabled", prop = "disabled", invert = true, omit = false },
 ]
-events.click = { event = "Click", args = "RoutedEventArgs" }
+events.on_click = { event = "Click", args = "RoutedEventArgs" }
+# A plain Text child is the button's string content, as the C# kit expects.
+children = { property = "Content", text = "Content" }
 
-[component.Toggle]
-props.value = { type = "bool", required = true, bindable = true }
-props.disabled = { type = "bool", default = false, modifier = true }
-events.change = { modifier = "on_change", payload = "bool", binds = "value" }
+# Controlled, as React's is: `checked` shows the state, and a flip goes to
+# the model through `on_checked_change`, whose next snapshot shows it.
+[component.Switch]
+props.checked = { type = "bool", required = true }
+props.size = { type = "enum:SwitchSize", default = "Medium" }
+props.tint = { type = "enum:Tint", default = "Primary" }
+props.disabled = { type = "bool", default = false }
+events.on_checked_change = { payload = "bool" }
+unsupported = ["default_checked"]
 
-# DazzUI's Switch takes its value and a change callback rather than a
-# Binding: the change goes to Rust, and the value comes back in the next
-# snapshot.
-[component.Toggle.swiftui]
+[component.Switch.swiftui]
 call = "DazzUI.Switch"
 args = [
-  { arg = "checked", prop = "value" },
-  { arg = "onCheckedChange", event = "change" },
+  { arg = "checked", prop = "checked" },
+  { arg = "onCheckedChange", event = "on_checked_change" },
+  { arg = "size", prop = "size", enum = { Small = ".small", Medium = ".medium", Large = ".large" }, omit = "Medium" },
+  { arg = "tint", prop = "tint", enum = { Primary = ".primary", Neutral = ".neutral", Info = ".info", Success = ".success", Warning = ".warning", Danger = ".danger" }, omit = "Primary" },
   { arg = "enabled", prop = "disabled", invert = true, omit = false },
 ]
 
-[component.Toggle.winui]
+[component.Switch.winui]
 element = "dazz:Switch"
 attrs = [
-  { attr = "IsChecked", prop = "value" },
+  { attr = "IsChecked", prop = "checked" },
+  { attr = "Size", prop = "size", enum = { Small = "Small", Medium = "Medium", Large = "Large" }, omit = "Medium" },
+  { attr = "Tint", prop = "tint", enum = { Primary = "Primary", Neutral = "Neutral", Info = "Info", Success = "Success", Warning = "Warning", Danger = "Danger" }, omit = "Primary" },
   { attr = "IsEnabled", prop = "disabled", invert = true, omit = false },
 ]
 # A ToggleButton has flipped itself by the time it raises Click; its new
-# state is what the action carries.
-events.change = { event = "Click", args = "RoutedEventArgs", value = "((ToggleButton)sender).IsChecked == true", using = "Microsoft.UI.Xaml.Controls.Primitives" }
+# state is what the call carries.
+events.on_checked_change = { event = "Click", args = "RoutedEventArgs", value = "((ToggleButton)sender).IsChecked == true", using = "Microsoft.UI.Xaml.Controls.Primitives" }
+
+# The settings column: sections, no wider than the preferences width.
+[component.Preferences]
+children = { allow = ["PreferenceSection"] }
+
+[component.Preferences.swiftui]
+call = "DazzUI.Preferences"
+trailing = { children = true }
+
+[component.Preferences.winui]
+element = "dazz:Preferences"
+children = { property = "Sections" }
+
+# A labelled run of rows, with an optional note under them. WinUI's
+# section holds one element, so its rows go in a PreferenceGroup, which
+# takes only rows: hence `allow`.
+[component.PreferenceSection]
+children = { allow = ["PreferenceRow"] }
+props.label = { type = "string" }
+props.footer = { type = "string" }
+unsupported = ["action"]
+
+[component.PreferenceSection.swiftui]
+call = "DazzUI.PreferenceSection"
+args = [
+  { arg = "label", prop = "label" },
+  { arg = "footer", prop = "footer" },
+]
+trailing = { children = true }
+
+[component.PreferenceSection.winui]
+element = "dazz:PreferenceSection"
+attrs = [
+  { attr = "Title", prop = "label" },
+  { attr = "Footer", prop = "footer" },
+]
+children = { property = "Body", wrap = "dazz:PreferenceGroup", wrap_property = "Rows" }
+
+# One preference: title and optional subtitle on the leading side, and its
+# control — the row's `child` — on the trailing one. The child is passed by
+# label: PreferenceRow has an `icon:` closure too, which one bare trailing
+# closure could also mean.
+[component.PreferenceRow]
+children = "one"
+props.title = { type = "string", required = true }
+props.subtitle = { type = "string" }
+events.on_open = {}
+unsupported = ["icon", "tint"]
+
+[component.PreferenceRow.swiftui]
+call = "DazzUI.PreferenceRow"
+args = [
+  { arg = "title", prop = "title" },
+  { arg = "subtitle", prop = "subtitle" },
+  { arg = "onOpen", event = "on_open" },
+  { arg = "trailing", children = true },
+]
+
+[component.PreferenceRow.winui]
+element = "dazz:PreferenceRow"
+attrs = [
+  { attr = "Label", prop = "title" },
+  { attr = "Description", prop = "subtitle" },
+]
+events.on_open = { event = "Opened", args = "EventArgs" }
+children = { property = "Control" }

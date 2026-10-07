@@ -1,7 +1,8 @@
 //! The settings example's committed `macos/Generated` and
 //! `windows/Generated` are what the CLI writes today. Regenerate them with
 //! `dazzui-compiler generate` from that directory when a change to a backend
-//! is meant. The view-only case checks a page with no page model.
+//! is meant. `tests/protocol_only` checks a page holds its model only as a
+//! protocol.
 
 use std::fs;
 use std::path::Path;
@@ -35,36 +36,44 @@ fn winui_matches_the_committed_output() {
     check(Target::WinUI, "SettingsExample", "windows/Generated");
 }
 
-/// A page with no page model compiles to its view alone: no store, and
-/// nothing that names the bridge.
+/// A page holds its model only as the protocol of the methods it calls:
+/// nothing in it names the store or the Rust model's native object.
 #[test]
-fn a_page_needs_no_model() {
-    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/view_only");
+fn a_page_calls_its_model_through_a_protocol() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/protocol_only");
     let compiled = compile(&dir.join("page.rs"), &dir).unwrap_or_else(|e| panic!("{e}"));
-    assert!(compiled.models.is_empty());
     let options = Options {
-        namespace: "ViewOnly".into(),
-        library: "view_only".into(),
+        namespace: "Notes".into(),
+        library: "notes".into(),
     };
     let swift = generate(&compiled, Target::SwiftUI, &options);
     let names: Vec<_> = swift.iter().map(|f| f.path.as_str()).collect();
-    assert_eq!(names, ["P.swift"]);
+    assert_eq!(names, ["P.swift", "NotesActions.swift", "NotesStore.swift"]);
     let page = &swift[0].contents;
-    assert!(page.contains("public let state: S\n"), "{page}");
     assert!(
-        page.contains("onCheckedChange: { send(.setOn($0)) }"),
+        page.contains("public let model: any NotesActions\n"),
         "{page}"
     );
     assert!(
-        !page.contains("Store") && !page.contains("Listener"),
+        page.contains("onCheckedChange: { model.setOn(on: $0) }"),
         "{page}"
     );
+    assert!(
+        !page.contains("NotesStore") && !page.contains("NotesModel"),
+        "{page}"
+    );
+    assert!(swift[1].contents.contains("func setOn(on: Bool)"));
     let winui = generate(&compiled, Target::WinUI, &options);
     let names: Vec<_> = winui.iter().map(|f| f.path.as_str()).collect();
-    assert_eq!(names, ["P.xaml", "P.xaml.cs"]);
+    assert_eq!(
+        names,
+        ["P.xaml", "P.xaml.cs", "NotesActions.cs", "NotesStore.cs"]
+    );
     assert!(
         winui[1]
             .contents
-            .contains("public Action<A>? Send { get; set; }")
+            .contains("public INotesActions? Model { get; set; }")
     );
+    assert!(!winui[1].contents.contains("NotesStore") && !winui[1].contents.contains("NotesModel"));
+    assert!(winui[2].contents.contains("void SetOn(bool on);"));
 }

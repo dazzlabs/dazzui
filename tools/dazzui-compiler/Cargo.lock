@@ -141,6 +141,7 @@ name = "dazzui-compiler-macro"
 version = "0.1.0"
 dependencies = [
  "dazzui-compiler",
+ "dazzui-runtime",
  "proc-macro2",
  "quote",
  "syn 2.0.119",

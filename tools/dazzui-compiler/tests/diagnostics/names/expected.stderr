@@ -1,40 +1,39 @@
 error: unknown component `Buton`
-  --> page.rs:29:13
+  --> page.rs:43:13
    |
-29 |             Buton("Save")
+43 |             Buton(child: Text("Save")),
    |             ^^^^^ not in the component registry
    |
 help: did you mean `Button`?
 
-error: `Text` takes 1 positional argument
-  --> page.rs:30:23
+error: unknown property `varient` on component `Button`
+  --> page.rs:44:20
    |
-30 |             Text("a", "b")
-   |                       ^^^ unexpected argument
+44 |             Button(varient: ButtonVariant::Filled, child: Text("a")),
+   |                    ^^^^^^^
    |
-help: name it: `prop: value`
+help: did you mean `variant`?
 
-error: unknown property `titel` on component `Button`
-  --> page.rs:31:22
+error: `checked` is given twice
+  --> page.rs:45:39
    |
-31 |             Button { titel: "Save" }.on_clik(Action::Save)
-   |                      ^^^^^
+45 |             Switch(checked: model.on, checked: false),
+   |                                       ^^^^^^^ given again here
    |
-help: did you mean `title`?
 
-error: unknown modifier `on_clik` on component `Button`
-  --> page.rs:31:38
+error: only `Text` takes its text first; `Button` takes a child
+  --> page.rs:46:20
    |
-31 |             Button { titel: "Save" }.on_clik(Action::Save)
-   |                                      ^^^^^^^
+46 |             Button("b", on_click: model.save),
+   |                    ^^^
    |
-help: did you mean `on_click`?
+help: `Button(…, child: Text("…"))`
 
-error: property `title` is given twice
-  --> page.rs:32:25
+error: `PreferenceRow` takes one child: `child: …`, not `children: [ … ]`
+  --> page.rs:47:39
    |
-32 |             Button("c", title: "d")
-   |                         ^^^^^ given again here
+47 |             PreferenceRow(title: "c", children: [Text("d")]),
+   |                                       ^^^^^^^^ a list
    |
 
 error: could not compile due to 5 previous errors

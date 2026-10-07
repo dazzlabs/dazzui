@@ -1,5 +1,5 @@
 use syn::parse::{Parse, ParseStream};
-use syn::{Ident, Lit, Path, Result, Token, braced, parenthesized};
+use syn::{Ident, Lit, Path, Result, Token, braced, bracketed, parenthesized};
 
 use super::ast::*;
 
@@ -9,57 +9,51 @@ impl Parse for PageAst {
         if keyword != "page" {
             return Err(syn::Error::new(
                 keyword.span(),
-                "expected `page`: a ui! block declares `page Name(state: S, action: A) { … }`",
+                "expected `page`: a ui! block declares `page Name(model: Model) { … }`",
             ));
         }
         let name: Ident = input.parse()?;
 
         let header;
         parenthesized!(header in input);
-        let state_ty = typed_param(&header, "state")?;
-        if header.is_empty() {
-            return Err(syn::Error::new(
-                name.span(),
-                "a page takes its state and its action: `page Name(state: State, action: Action)`",
-            ));
+        let shape = "a page takes its model: `page Name(model: Model)`; it reads the model's value as `model.field`";
+        let param: Ident = header.parse()?;
+        if param != "model" {
+            return Err(syn::Error::new(param.span(), shape));
         }
-        header.parse::<Token![,]>()?;
-        let action_ty = typed_param(&header, "action")?;
+        header.parse::<Token![:]>()?;
+        let model_ty: Path = header.parse()?;
         if header.peek(Token![,]) {
             header.parse::<Token![,]>()?;
         }
         if !header.is_empty() {
-            return Err(header.error("a page takes exactly `state` and `action`"));
+            return Err(header.error(shape));
         }
 
         let body;
         braced!(body in input);
         let root: NodeAst = body.parse()?;
+        if !matches!(root, NodeAst::Component(_)) {
+            return Err(syn::Error::new(
+                root.span(),
+                "a page's root is a widget; put an `if` or a `for` in its `children: [ … ]`",
+            ));
+        }
+        if body.peek(Token![,]) {
+            body.parse::<Token![,]>()?;
+        }
         if !body.is_empty() {
-            return Err(body.error("a page has one root node; wrap several in a VStack"));
+            return Err(body.error("a page has one root widget; put several in a Col's `children: [ … ]`"));
         }
         if !input.is_empty() {
             return Err(input.error("one page per ui! block"));
         }
         Ok(PageAst {
             name,
-            state_ty,
-            action_ty,
+            model_ty,
             root,
         })
     }
-}
-
-fn typed_param(input: ParseStream, expected: &str) -> Result<Path> {
-    let name: Ident = input.parse()?;
-    if name != expected {
-        return Err(syn::Error::new(
-            name.span(),
-            format!("expected `{expected}`"),
-        ));
-    }
-    input.parse::<Token![:]>()?;
-    input.parse()
 }
 
 impl Parse for NodeAst {
@@ -70,19 +64,31 @@ impl Parse for NodeAst {
         if input.peek(Token![for]) {
             return Ok(NodeAst::For(input.parse()?));
         }
+        if input.peek(Lit) {
+            return Err(input.error("text is a widget, as in Flutter: `Text(\"…\")`"));
+        }
         Ok(NodeAst::Component(input.parse()?))
     }
 }
 
-/// `{ node* }`
+/// `a, b, …` up to the end of `input`, a trailing comma allowed.
+fn node_list(input: ParseStream) -> Result<Vec<NodeAst>> {
+    let mut nodes = Vec::new();
+    while !input.is_empty() {
+        nodes.push(input.parse()?);
+        if input.is_empty() {
+            break;
+        }
+        input.parse::<Token![,]>()?;
+    }
+    Ok(nodes)
+}
+
+/// `{ a, b }`: an `if` or `for` body.
 fn nodes(input: ParseStream) -> Result<Vec<NodeAst>> {
     let content;
     braced!(content in input);
-    let mut nodes = Vec::new();
-    while !content.is_empty() {
-        nodes.push(content.parse()?);
-    }
-    Ok(nodes)
+    node_list(&content)
 }
 
 impl Parse for IfAst {
@@ -95,7 +101,7 @@ impl Parse for IfAst {
         let first: Ident = input.parse()?;
         let condition = dotted(first, input)?;
         if !input.peek(syn::token::Brace) {
-            return Err(input.error("a condition is a path to a bool, `state.flag` or `!state.flag`; compute anything else in Rust"));
+            return Err(input.error("a condition is a path to a bool, `model.flag` or `!model.flag`; compute anything else in Rust"));
         }
         let then_branch = nodes(input)?;
         let mut else_branch = Vec::new();
@@ -149,71 +155,83 @@ impl Parse for ForAst {
 impl Parse for ComponentAst {
     fn parse(input: ParseStream) -> Result<Self> {
         let name: Ident = input.parse()?;
-
-        let mut args = Vec::new();
-        if input.peek(syn::token::Paren) {
-            let content;
-            parenthesized!(content in input);
-            args = parse_args(&content)?;
+        if !input.peek(syn::token::Paren) {
+            let message = if input.peek(syn::token::Brace) {
+                format!("a widget is constructed as Flutter's are, its children named: `{name}(children: [ … ])`")
+            } else {
+                format!("a widget is constructed as Flutter's are: `{name}(…)`")
+            };
+            return Err(syn::Error::new(name.span(), message));
         }
-
-        let mut props = Vec::new();
-        let mut children = Vec::new();
-        if input.peek(syn::token::Brace) {
-            let body;
-            braced!(body in input);
-            while !body.is_empty() {
-                if starts_named(&body) {
-                    props.push(body.parse()?);
-                    // A comma closes a prop; a line break before children may too.
-                    if body.peek(Token![,]) {
-                        body.parse::<Token![,]>()?;
+        let content;
+        parenthesized!(content in input);
+        let mut component = ComponentAst {
+            name,
+            text: None,
+            props: Vec::new(),
+            children_arg: None,
+            children: Vec::new(),
+        };
+        let mut first = true;
+        while !content.is_empty() {
+            if starts_named(&content) {
+                let prop: Ident = content.fork().parse()?;
+                if prop == "child" || prop == "children" {
+                    let ident: Ident = content.parse()?;
+                    content.parse::<Token![:]>()?;
+                    if component.children_arg.is_some() {
+                        return Err(syn::Error::new(ident.span(), "a widget takes `child:` or `children:`, once"));
+                    }
+                    if ident == "child" {
+                        component.children = vec![content.parse()?];
+                        component.children_arg = Some((ChildrenArg::One, ident.span()));
+                    } else {
+                        if !content.peek(syn::token::Bracket) {
+                            return Err(content.error("`children` is a list: `children: [ … ]`"));
+                        }
+                        let list;
+                        bracketed!(list in content);
+                        component.children = node_list(&list)?;
+                        component.children_arg = Some((ChildrenArg::Many, ident.span()));
                     }
                 } else {
-                    children.push(body.parse()?);
+                    component.props.push(content.parse()?);
                 }
+            } else if first {
+                component.text = Some(content.parse()?);
+            } else {
+                return Err(content.error("props are named, as Flutter's and React's are: `prop: value`"));
             }
+            first = false;
+            if content.is_empty() {
+                break;
+            }
+            content.parse::<Token![,]>()?;
         }
 
-        let mut modifiers = Vec::new();
-        while input.peek(Token![.]) {
-            input.parse::<Token![.]>()?;
-            let name: Ident = input.parse()?;
-            let content;
-            parenthesized!(content in input);
-            modifiers.push(ModifierAst {
-                name,
-                args: parse_args(&content)?,
-            });
+        if input.peek(syn::token::Brace) {
+            return Err(input.error(format!(
+                "children are named, as in Flutter: `{}(…, children: [ … ])`, or `child: …` for one",
+                component.name
+            )));
         }
-
-        Ok(ComponentAst {
-            name,
-            args,
-            props,
-            children,
-            modifiers,
-        })
+        if input.peek(Token![.]) && input.peek2(Ident) {
+            let fork = input.fork();
+            fork.parse::<Token![.]>()?;
+            let modifier: Ident = fork.parse()?;
+            return Err(syn::Error::new(
+                modifier.span(),
+                format!(
+                    "there are no modifiers; `{modifier}` is a prop: `{}({modifier}: …)`",
+                    component.name
+                ),
+            ));
+        }
+        Ok(component)
     }
 }
 
-fn parse_args(input: ParseStream) -> Result<Vec<ArgAst>> {
-    let mut args = Vec::new();
-    while !input.is_empty() {
-        if starts_named(input) {
-            args.push(ArgAst::Named(input.parse()?));
-        } else {
-            args.push(ArgAst::Positional(input.parse()?));
-        }
-        if input.is_empty() {
-            break;
-        }
-        input.parse::<Token![,]>()?;
-    }
-    Ok(args)
-}
-
-/// `ident :` and not `ident ::` — a named prop rather than a node or a path.
+/// `ident :` and not `ident ::` — a named prop rather than a value.
 fn starts_named(input: ParseStream) -> bool {
     let fork = input.fork();
     fork.parse::<Ident>().is_ok() && fork.peek(Token![:]) && !fork.peek(Token![::])
@@ -246,46 +264,37 @@ impl Parse for ValueAst {
                 )),
             };
         }
-        // `Name {` or `Name(`, other than `bind(`: a component, for a slot.
         let fork = input.fork();
-        if let Ok(ident) = fork.parse::<Ident>()
-            && ident != "bind"
-            && (fork.peek(syn::token::Brace) || fork.peek(syn::token::Paren))
-        {
-            return Ok(ValueAst::Component(Box::new(input.parse()?)));
-        }
-        let path: Path = input.parse()?;
-        if let Some(ident) = path.get_ident() {
-            if ident == "bind" && input.peek(syn::token::Paren) {
-                let content;
-                parenthesized!(content in input);
-                let first: Ident = content.parse()?;
-                let target = dotted(first, &content)?;
-                if !content.is_empty() {
-                    return Err(content.error("`bind` takes one state path: `bind(state.field)`"));
+        if let Ok(ident) = fork.parse::<Ident>() {
+            if ident == "bind" && fork.peek(syn::token::Paren) {
+                return Err(syn::Error::new(
+                    ident.span(),
+                    "there is no `bind`: give the value and the change apart, as React's controlled props do: `checked: model.on, on_checked_change: model.set_on`",
+                ));
+            }
+            // `Name(`: a widget, for a prop that takes one.
+            if fork.peek(syn::token::Paren) {
+                return Ok(ValueAst::Component(Box::new(input.parse()?)));
+            }
+            if !fork.peek(Token![::]) {
+                let first: Ident = input.parse()?;
+                let path = dotted(first, input)?;
+                if input.peek(syn::token::Paren) {
+                    let content;
+                    parenthesized!(content in input);
+                    let argument: ValueAst = content.parse()?;
+                    if content.peek(Token![,]) {
+                        content.parse::<Token![,]>()?;
+                    }
+                    if !content.is_empty() {
+                        return Err(content.error("an event's method takes one value"));
+                    }
+                    return Ok(ValueAst::Call(path, Box::new(argument)));
                 }
-                return Ok(ValueAst::Bind(target));
+                return Ok(ValueAst::Dotted(path));
             }
-            if input.peek(Token![.]) && input.peek2(Ident) {
-                return Ok(ValueAst::Dotted(dotted(ident.clone(), input)?));
-            }
-            return Ok(ValueAst::Dotted(DottedAst {
-                segments: vec![ident.clone()],
-            }));
         }
-        if input.peek(syn::token::Paren) {
-            let content;
-            parenthesized!(content in input);
-            let payload: ValueAst = content.parse()?;
-            if content.peek(Token![,]) {
-                content.parse::<Token![,]>()?;
-            }
-            if !content.is_empty() {
-                return Err(content.error("an action carries one value"));
-            }
-            return Ok(ValueAst::Call(path, Box::new(payload)));
-        }
-        Ok(ValueAst::Path(path))
+        Ok(ValueAst::Path(input.parse()?))
     }
 }
 
@@ -307,101 +316,74 @@ mod tests {
         syn::parse_str(src)
     }
 
+    fn component(node: &NodeAst) -> &ComponentAst {
+        let NodeAst::Component(c) = node else {
+            panic!("not a component")
+        };
+        c
+    }
+
     #[test]
     fn parses_a_page() {
         let page = parse(
-            r#"page SettingsPage(state: SettingsState, action: SettingsAction) {
-                VStack(spacing: 16) {
-                    Text("General")
-                    Button("Save").on_click(Action::Save)
-                }
+            r#"page SettingsPage(model: SettingsModel) {
+                Col(gap: "4", children: [
+                    Text("General"),
+                    Button(variant: ButtonVariant::Filled, on_click: model.save, child: Text("Save")),
+                ])
             }"#,
         )
         .unwrap();
         assert_eq!(page.name, "SettingsPage");
-        let NodeAst::Component(stack) = page.root else {
-            panic!()
-        };
-        assert_eq!(stack.name, "VStack");
-        assert!(matches!(&stack.args[0], ArgAst::Named(p) if p.name == "spacing"));
-        assert_eq!(stack.children.len(), 2);
-        let NodeAst::Component(button) = &stack.children[1] else {
-            panic!()
-        };
-        assert_eq!(button.modifiers[0].name, "on_click");
+        let col = component(&page.root);
+        assert_eq!(col.name, "Col");
+        assert_eq!(col.props[0].name, "gap");
+        assert!(matches!(col.children_arg, Some((ChildrenArg::Many, _))));
+        assert_eq!(col.children.len(), 2);
+        assert!(matches!(&component(&col.children[0]).text, Some(ValueAst::Lit(_))));
+        let button = component(&col.children[1]);
+        assert!(matches!(&button.props[0].value, ValueAst::Path(_)));
+        assert!(matches!(&button.props[1].value, ValueAst::Dotted(p) if p.segments.len() == 2));
+        assert!(matches!(button.children_arg, Some((ChildrenArg::One, _))));
+        assert_eq!(component(&button.children[0]).name, "Text");
+    }
+
+    #[test]
+    fn parses_values_and_calls() {
+        let page = parse(
+            r#"page P(model: M) {
+                Row(children: [
+                    Text(model.status, tone: TextTone::Secondary),
+                    Switch(checked: model.on, on_checked_change: model.set_on),
+                    Button(on_click: model.pick(model.id), child: Text("Pick")),
+                ])
+            }"#,
+        )
+        .unwrap();
+        let row = component(&page.root);
+        let text = component(&row.children[0]);
+        assert!(matches!(&text.text, Some(ValueAst::Dotted(p)) if p.segments.len() == 2));
+        assert_eq!(text.props[0].name, "tone");
+        assert!(component(&row.children[1]).children.is_empty());
         assert!(matches!(
-            &button.modifiers[0].args[0],
-            ArgAst::Positional(ValueAst::Path(_))
+            &component(&row.children[2]).props[0].value,
+            ValueAst::Call(method, argument) if method.segments[1] == "pick" && matches!(**argument, ValueAst::Dotted(_))
         ));
     }
 
     #[test]
-    fn tells_props_from_children() {
+    fn parses_collection_if_and_for() {
         let page = parse(
-            r#"page P(state: S, action: A) {
-                Button {
-                    title: "Save",
-                    disabled: false
-                }
+            r#"page P(model: M) {
+                Col(children: [
+                    if !model.signed_in { Text("a") } else if model.busy { Text("b") } else { Text("c"), Text("d") },
+                    for item in model.items, key: item.uuid { Text(item.title) },
+                ])
             }"#,
         )
         .unwrap();
-        let NodeAst::Component(button) = page.root else {
-            panic!()
-        };
-        assert_eq!(button.props.len(), 2);
-        assert!(button.children.is_empty());
-    }
-
-    #[test]
-    fn parses_state_bindings_and_payloads() {
-        let page = parse(
-            r#"page P(state: S, action: A) {
-                Toggle {
-                    value: bind(state.on),
-                    on_change: Action::SetOn,
-                }
-                .disabled(state.user.locked)
-            }"#,
-        )
-        .unwrap();
-        let NodeAst::Component(toggle) = page.root else {
-            panic!()
-        };
-        assert!(matches!(&toggle.props[0].value, ValueAst::Bind(p) if p.segments.len() == 2));
-        assert!(matches!(&toggle.props[1].value, ValueAst::Path(_)));
-        assert!(
-            matches!(&toggle.modifiers[0].args[0], ArgAst::Positional(ValueAst::Dotted(p)) if p.segments.len() == 3)
-        );
-
-        let page = parse(
-            r#"page P(state: S, action: A) { Button("a").on_click(Action::Pick(state.id)) }"#,
-        )
-        .unwrap();
-        let NodeAst::Component(button) = page.root else {
-            panic!()
-        };
-        assert!(matches!(
-            &button.modifiers[0].args[0],
-            ArgAst::Positional(ValueAst::Call(_, payload)) if matches!(**payload, ValueAst::Dotted(_))
-        ));
-    }
-
-    #[test]
-    fn parses_if_and_for() {
-        let page = parse(
-            r#"page P(state: S, action: A) {
-                VStack {
-                    if !state.signed_in { Text("a") } else if state.busy { Text("b") } else { Text("c") Text("d") }
-                    for item in state.items, key: item.uuid { Text(item.title) }
-                }
-            }"#,
-        )
-        .unwrap();
-        let NodeAst::Component(stack) = page.root else {
-            panic!()
-        };
-        let NodeAst::If(cond) = &stack.children[0] else {
+        let col = component(&page.root);
+        let NodeAst::If(cond) = &col.children[0] else {
             panic!()
         };
         assert!(cond.negated);
@@ -409,7 +391,7 @@ mod tests {
             panic!()
         };
         assert_eq!(nested.else_branch.len(), 2);
-        let NodeAst::For(each) = &stack.children[1] else {
+        let NodeAst::For(each) = &col.children[1] else {
             panic!()
         };
         assert_eq!(each.item, "item");
@@ -417,28 +399,24 @@ mod tests {
     }
 
     #[test]
-    fn parses_a_slot() {
-        let page = parse(
-            r#"page P(state: S, action: A) {
-                SettingsRow("Launch", trailing: Toggle { value: bind(state.on), on_change: Action::SetOn }) {
-                    subtitle: "At login",
-                    icon: Icon("gear").style(IconStyle::Muted)
-                }
-            }"#,
-        )
-        .unwrap();
-        let NodeAst::Component(row) = page.root else {
-            panic!()
-        };
-        assert!(
-            matches!(&row.args[1], ArgAst::Named(p) if matches!(&p.value, ValueAst::Component(c) if c.name == "Toggle"))
-        );
-        assert!(matches!(&row.props[1].value, ValueAst::Component(c) if c.modifiers.len() == 1));
+    fn parses_a_widget_given_to_a_prop() {
+        let page = parse(r#"page P(model: M) { PreferenceRow(title: "Launch", icon: Icon(name: "gear")) }"#).unwrap();
+        let row = component(&page.root);
+        assert!(matches!(&row.props[1].value, ValueAst::Component(c) if c.name == "Icon"));
     }
 
+    /// What Flutter does not write is refused with how Flutter writes it.
     #[test]
-    fn rejects_two_roots() {
-        let err = parse(r#"page P(state: S, action: A) { Text("a") Text("b") }"#).unwrap_err();
-        assert!(err.to_string().contains("one root node"));
+    fn refuses_what_flutter_does_not_write() {
+        let err = |src: &str| parse(src).unwrap_err().to_string();
+        assert!(err(r#"page P(state: S, model: M) { Text("a") }"#).contains("a page takes its model"));
+        assert!(err(r#"page P(model: M) { Col { Text("a") } }"#).contains("children: [ … ]"));
+        assert!(err(r#"page P(model: M) { Col(children: [Text("a")]) { Text("b") } }"#).contains("children are named"));
+        assert!(err(r#"page P(model: M) { Col(children: ["a"]) }"#).contains("text is a widget"));
+        assert!(err(r#"page P(model: M) { Button(on_click: model.save, "Save") }"#).contains("props are named"));
+        assert!(err(r#"page P(model: M) { Button(child: Text("a")).disabled(true) }"#).contains("`disabled` is a prop"));
+        assert!(err(r#"page P(model: M) { Switch(checked: bind(model.on)) }"#).contains("there is no `bind`"));
+        assert!(err(r#"page P(model: M) { Text("a") Text("b") }"#).contains("one root widget"));
+        assert!(err(r#"page P(model: M) { Col(child: Text("a"), children: []) }"#).contains("once"));
     }
 }

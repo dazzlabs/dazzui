@@ -121,15 +121,15 @@ pub struct Options {
     pub library: String,
 }
 
-/// Every page's view, then every page model's store.
+/// Every page's view, then every page model's protocol and store.
 pub fn generate(compiled: &Compiled, target: Target, options: &Options) -> Vec<GeneratedFile> {
     let pages = compiled.pages.iter().flat_map(|page| match target {
         Target::SwiftUI => crate::swiftui::generate(page),
         Target::WinUI => crate::winui::generate(page, options),
     });
-    let stores = compiled.models.iter().map(|model| match target {
-        Target::SwiftUI => crate::swiftui::store(model),
-        Target::WinUI => crate::winui::store(model, options),
+    let stores = compiled.models.iter().flat_map(|model| match target {
+        Target::SwiftUI => crate::swiftui::model(model),
+        Target::WinUI => crate::winui::model(model, options),
     });
     pages.chain(stores).collect()
 }

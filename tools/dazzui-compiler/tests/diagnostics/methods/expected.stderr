@@ -1,39 +1,47 @@
-error: no variant `Sav` on action enum `A`
-  --> page.rs:29:42
+error: no method `sav` on model `M`
+  --> page.rs:43:36
    |
-29 |             Button("a").on_click(Action::Sav)
-   |                                          ^^^
+43 |             Button(on_click: model.sav, child: Text("a")),
+   |                                    ^^^
    |
-help: did you mean `Save`?
+help: did you mean `save`?
 
-error: `A::SetOn` carries a value, but `click` has none to give it
-  --> page.rs:30:42
+error: `M::set_on` takes a value, but `on_click` has none to give it
+  --> page.rs:44:36
    |
-30 |             Button("b").on_click(Action::SetOn)
-   |                                          ^^^^^ expects a payload
+44 |             Button(on_click: model.set_on, child: Text("b")),
+   |                                    ^^^^^^ takes a value
    |
-help: pass one: `Action::SetOn(…)`, a `bool`
+help: pass one: `model.set_on(…)`, a `bool`
 
-error: `A::Save` carries no value
-  --> page.rs:31:47
+error: `M::save` takes no value
+  --> page.rs:45:41
    |
-31 |             Button("c").on_click(Action::Save(true))
-   |                                               ^^^^
+45 |             Button(on_click: model.save(true), child: Text("c")),
+   |                                         ^^^^
    |
-help: write `Action::Save`
+help: write `model.save`
 
-error: the action carries a `u32`, but `state.name` is a `String`
-  --> page.rs:32:47
+error: the method takes a `u32`, but `model.name` is a `String`
+  --> page.rs:46:41
    |
-32 |             Button("d").on_click(Action::Pick(state.name))
-   |                                               ^^^^^^^^^^
-   |
-
-error: `A::Rename` carries a `String`, but `change` gives it Bool
-  --> page.rs:33:58
-   |
-33 |             Toggle { value: state.on, on_change: Action::Rename }
-   |                                                          ^^^^^^ payload type differs
+46 |             Button(on_click: model.pick(model.name), child: Text("d")),
+   |                                         ^^^^^^^^^^
    |
 
-error: could not compile due to 5 previous errors
+error: `M::rename` takes a `String`, but `on_checked_change` gives it Bool
+  --> page.rs:47:64
+   |
+47 |             Switch(checked: model.on, on_checked_change: model.rename),
+   |                                                                ^^^^^^ parameter type differs
+   |
+
+error: `on_click` calls a method of the model
+  --> page.rs:48:30
+   |
+48 |             Button(on_click: state.save, child: Text("e")),
+   |                              ^^^^^ not `model`
+   |
+help: `on_click: model.save`
+
+error: could not compile due to 6 previous errors

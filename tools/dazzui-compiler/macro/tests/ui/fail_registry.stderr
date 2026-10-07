@@ -1,19 +1,19 @@
 error: unknown component `Buton`
        = help: did you mean `Button`?
-  --> tests/ui/fail_registry.rs:24:13
+  --> tests/ui/fail_registry.rs:43:13
    |
-24 |             Buton("Save")
+43 |             Buton(child: Text("Save")),
    |             ^^^^^
 
-error: unknown property `titel` on component `Button`
-       = help: did you mean `title`?
-  --> tests/ui/fail_registry.rs:25:22
+error: unknown property `varient` on component `Button`
+       = help: did you mean `variant`?
+  --> tests/ui/fail_registry.rs:44:20
    |
-25 |             Button { titel: "Save" }
-   |                      ^^^^^
+44 |             Button(varient: ButtonVariant::Filled, child: Text("Save")),
+   |                    ^^^^^^^
 
-error: no case `Huge` on `TextStyle`
-  --> tests/ui/fail_registry.rs:26:40
+error: no case `Huge` on `TextTone`
+  --> tests/ui/fail_registry.rs:45:39
    |
-26 |             Text("a").style(TextStyle::Huge)
-   |                                        ^^^^
+45 |             Text("a", tone: TextTone::Huge),
+   |                                       ^^^^

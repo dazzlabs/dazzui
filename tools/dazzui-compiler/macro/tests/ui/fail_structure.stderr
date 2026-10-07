@@ -1,0 +1,5 @@
+error: a widget is constructed as Flutter's are, its children named: `Col(children: [ … ])`
+  --> tests/ui/fail_structure.rs:42:9
+   |
+42 |         Col { Text("Save") }
+   |         ^^^

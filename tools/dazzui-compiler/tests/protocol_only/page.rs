@@ -1,21 +1,33 @@
-// A page and nothing to drive it: its host brings the state and takes the
-// actions, from Rust or not.
+// A page and the model it calls. The page holds the model only as the
+// protocol of its methods, so a host may hand it something else entirely.
 pub struct S {
     pub name: String,
     pub on: bool,
 }
 
-pub enum A {
-    Save,
-    SetOn(bool),
+pub struct NotesModel;
+
+impl ValueListenable for NotesModel {
+    type Value = S;
+}
+
+#[page_model]
+impl NotesModel {
+    pub fn new() -> Self {
+        NotesModel
+    }
+
+    pub fn save(&self) {}
+
+    pub fn set_on(&self, on: bool) {}
 }
 
 ui! {
-    page P(state: S, action: A) {
-        VStack(spacing: 8) {
-            Text(state.name)
-            Toggle { value: bind(state.on), on_change: Action::SetOn }
-            Button("Save").on_click(Action::Save)
-        }
+    page P(model: NotesModel) {
+        Col(children: [
+            Text(model.name),
+            Switch(checked: model.on, on_checked_change: model.set_on),
+            Button(on_click: model.save, child: Text("Save")),
+        ])
     }
 }

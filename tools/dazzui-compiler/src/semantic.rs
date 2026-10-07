@@ -1,62 +1,70 @@
 use std::collections::HashMap;
 
 use crate::ir::{
-    ActionPayload, ActionRef, ChildrenSpec, Component, ComponentId, ComponentSpec, Condition,
-    EventSpec, Expr, LocalPath, Page, PropSpec, PropType, SourceLocation, StatePath, UiBinding,
-    UiEvent, UiNode, UiProp, UiSlot, Value,
+    Argument, ChildrenSpec, Component, ComponentId, ComponentSpec, Condition, EventSpec, Expr,
+    LocalPath, MethodCall, Page, PropType, SPACING_STEPS, SourceLocation, StatePath, UiEvent,
+    UiNode, UiProp, UiSlot, Value,
 };
 use crate::syntax::{
-    ArgAst, ComponentAst, DottedAst, ForAst, IfAst, NodeAst, PageAst, ValueAst, spanned_path,
+    ChildrenArg, ComponentAst, DottedAst, ForAst, IfAst, NodeAst, PageAst, PropAst, ValueAst,
+    spanned_path,
 };
 use proc_macro2::Span;
 use syn::Lit;
 
 use crate::error::{SemanticError, closest, locate, suggest};
 use crate::registry::Registry;
-use crate::rust_types::{EnumDef, Fields, RustType, RustTypes, StructDef};
+use crate::rust_types::{ModelDef, RustType, RustTypes, StructDef};
 
 /// Lowers a parsed page to IR.
 ///
 /// `file` is the path locations are recorded against. With `types`, every
-/// state path and action is also checked against the page's state struct
-/// and action enum; without them — in the macro — that check is rustc's.
+/// state path and model method is also checked against the page's state
+/// struct and model; without them — in the macro — that check is rustc's.
 pub fn lower(
     page: &PageAst,
     registry: &Registry,
     types: Option<&RustTypes>,
     file: &str,
 ) -> Result<Page, Vec<SemanticError>> {
-    let action_type = last_ident(&page.action_ty);
-    let state_type = last_ident(&page.state_ty);
+    let model_type = last_ident(&page.model_ty);
+    let mut state_type = String::new();
     let mut cx = Cx {
         registry,
         scopes: Vec::new(),
         file,
         errors: Vec::new(),
         types,
-        action_enum: None,
+        model: None,
         state_struct: None,
     };
 
     if let Some(types) = types {
-        match types.enums.get(&action_type) {
-            Some(def) => cx.action_enum = Some(def),
+        match types.model(&model_type) {
+            Some(def) => {
+                cx.model = Some(def);
+                match types.model_state(def) {
+                    Ok(state) => {
+                        match types.structs.get(&state) {
+                            Some(s) => cx.state_struct = Some(s),
+                            None => cx.errors.push(SemanticError::new(
+                                spanned_path(&page.model_ty),
+                                format!("cannot find struct `{state}`, `{model_type}`'s value, in this crate"),
+                            )),
+                        }
+                        state_type = state;
+                    }
+                    Err(message) => cx
+                        .errors
+                        .push(SemanticError::new(spanned_path(&page.model_ty), message)),
+                }
+            }
             None => cx.errors.push(
                 SemanticError::new(
-                    spanned_path(&page.action_ty),
-                    format!("cannot find enum `{action_type}` in this crate"),
+                    spanned_path(&page.model_ty),
+                    format!("cannot find `#[page_model] impl {model_type}` in this crate"),
                 )
-                .help("the page's action type must be an enum the CLI can read from `--src`"),
-            ),
-        }
-        match types.structs.get(&state_type) {
-            Some(def) => cx.state_struct = Some(def),
-            None => cx.errors.push(
-                SemanticError::new(
-                    spanned_path(&page.state_ty),
-                    format!("cannot find struct `{state_type}` in this crate"),
-                )
-                .help("the page's state type must be a struct with named fields the CLI can read from `--src`"),
+                .help("the page's model is a type whose impl is marked `#[page_model]`, which the CLI can read from `--src`"),
             ),
         }
     }
@@ -68,7 +76,7 @@ pub fn lower(
     Ok(Page {
         name: page.name.to_string(),
         state_type,
-        action_type,
+        model_type,
         root: root.expect("a node with no errors lowers"),
         source: cx.loc(page.name.span()),
     })
@@ -93,17 +101,8 @@ struct Cx<'a> {
     file: &'a str,
     errors: Vec<SemanticError>,
     types: Option<&'a RustTypes>,
-    action_enum: Option<&'a EnumDef>,
+    model: Option<&'a ModelDef>,
     state_struct: Option<&'a StructDef>,
-}
-
-/// One way a component was given something: `name: value` in parentheses
-/// or the body, a positional argument, or `.name(value)`.
-struct Entry<'v> {
-    name: String,
-    span: Span,
-    value: Option<&'v ValueAst>,
-    modifier: bool,
 }
 
 impl Cx<'_> {
@@ -132,184 +131,80 @@ impl Cx<'_> {
             return None;
         };
         let errors_before = self.errors.len();
-        let entries = self.entries(ast, spec);
 
         let mut seen: HashMap<String, Span> = HashMap::new();
-        // Props a misspelling was taken for: already reported, so not
+        // Names a misspelling was taken for: already reported, so not
         // reported again as missing.
         let mut meant: Vec<String> = Vec::new();
         let mut props = Vec::new();
-        let mut bound: Vec<(&PropSpec, StatePath, Span)> = Vec::new();
         let mut events: Vec<UiEvent> = Vec::new();
         let mut slots: Vec<UiSlot> = Vec::new();
-        // Slots written, whether or not their node lowered: one that did
-        // not is already reported, so not reported again as missing.
-        let mut given_slots: Vec<String> = Vec::new();
-        for entry in entries {
-            let kind = if entry.modifier {
-                "modifier"
-            } else {
-                "property"
-            };
-            if let Some(event) = spec.event_by_modifier(&entry.name) {
-                if events.iter().any(|e| e.name == event.name) {
-                    self.errors.push(
-                        SemanticError::new(entry.span, format!("`{}` is given twice", entry.name))
-                            .label("given again here"),
-                    );
-                } else if let Some(action) = self.event_action(&entry, event) {
-                    events.push(UiEvent {
-                        name: event.name.clone(),
-                        action,
-                        source: self.loc(entry.span),
-                    });
-                }
-                continue;
-            }
-            if let (false, Some(slot)) = (entry.modifier, spec.slot(&entry.name)) {
-                if given_slots.contains(&slot.name) {
-                    self.errors.push(
-                        SemanticError::new(
-                            entry.span,
-                            format!("slot `{}` is given twice", slot.name),
-                        )
+        for PropAst { name: ident, value } in &ast.props {
+            let prop = ident.to_string();
+            let span = ident.span();
+            if seen.insert(prop.clone(), span).is_some() {
+                self.errors.push(
+                    SemanticError::new(span, format!("`{prop}` is given twice"))
                         .label("given again here"),
-                    );
-                } else if let Some(ValueAst::Component(node)) = entry.value {
-                    given_slots.push(slot.name.clone());
-                    if let Some(node) = self.component(node) {
-                        slots.push(UiSlot {
-                            name: slot.name.clone(),
-                            node: UiNode::Component(node),
-                            source: self.loc(entry.span),
-                        });
-                    }
-                } else {
-                    self.errors.push(
-                        SemanticError::new(
-                            entry.span,
-                            format!("slot `{}` on `{name}` takes a component", slot.name),
-                        )
-                        .help(format!("`{}: Component {{ … }}`", slot.name)),
-                    );
-                }
-                continue;
-            }
-            let prop_spec = if entry.modifier {
-                spec.modifier_prop(&entry.name)
-            } else {
-                spec.prop(&entry.name)
-            };
-            let Some(prop_spec) = prop_spec else {
-                let candidates: Vec<&str> = if entry.modifier {
-                    spec.props
-                        .iter()
-                        .filter(|p| p.modifier)
-                        .map(|p| p.name.as_str())
-                        .collect()
-                } else {
-                    spec.props.iter().map(|p| p.name.as_str()).collect()
-                };
-                let events = spec.events.iter().map(|e| e.modifier.as_str());
-                let slot_names = spec
-                    .slots
-                    .iter()
-                    .filter(|_| !entry.modifier)
-                    .map(|s| s.name.as_str());
-                let closest = closest(
-                    &entry.name,
-                    candidates.iter().copied().chain(events).chain(slot_names),
-                );
-                meant.extend(closest.map(str::to_owned));
-                self.errors.push(
-                    SemanticError::new(
-                        entry.span,
-                        format!("unknown {kind} `{}` on component `{name}`", entry.name),
-                    )
-                    .help_opt(closest.map(|c| format!("did you mean `{c}`?"))),
-                );
-                continue;
-            };
-            if seen.insert(prop_spec.name.clone(), entry.span).is_some() {
-                self.errors.push(
-                    SemanticError::new(
-                        entry.span,
-                        format!("property `{}` is given twice", prop_spec.name),
-                    )
-                    .label("given again here"),
                 );
                 continue;
             }
-            let Some(value) = entry.value else {
-                self.errors.push(SemanticError::new(
-                    entry.span,
-                    format!("`.{}(…)` takes one value", entry.name),
-                ));
-                continue;
-            };
-            if let ValueAst::Bind(path) = value {
-                if !prop_spec.bindable {
-                    self.errors.push(
-                        SemanticError::new(
-                            path.span(),
-                            format!("property `{}` on `{name}` cannot be bound", prop_spec.name),
-                        )
-                        .help(format!(
-                            "pass the value itself: `{}: state.…`",
-                            prop_spec.name
-                        )),
-                    );
-                } else if let Some(path) =
-                    self.state_path(path, &prop_spec.ty, &prop_spec.name, &name)
-                {
-                    bound.push((prop_spec, path, entry.span));
-                }
-                continue;
-            }
-            if let Some(expr) = self.expr(value, &prop_spec.ty, &prop_spec.name, &name) {
-                props.push(UiProp {
-                    name: prop_spec.name.clone(),
-                    value: expr,
-                    source: self.loc(entry.span),
-                });
-            }
-        }
-
-        // A binding writes back through the event that carries its new
-        // value, which then belongs to the binding rather than standing on
-        // its own.
-        let mut bindings = Vec::new();
-        for (prop_spec, path, span) in bound {
-            let event = spec
-                .events
-                .iter()
-                .find(|e| e.binds.as_deref() == Some(&prop_spec.name));
-            let position = event.and_then(|event| events.iter().position(|e| e.name == event.name));
-            match (event, position) {
-                (_, Some(i)) => {
-                    let on_change = events.remove(i).action;
-                    bindings.push(UiBinding {
-                        name: prop_spec.name.clone(),
-                        path,
-                        on_change,
+            if let Some(event) = spec.event(&prop) {
+                if let Some(call) = self.event_call(value, event, &prop) {
+                    events.push(UiEvent {
+                        name: prop,
+                        call,
                         source: self.loc(span),
                     });
                 }
-                (Some(event), None) => self.errors.push(
+            } else if let Some(slot) = spec.slot(&prop) {
+                match value {
+                    ValueAst::Component(node) => {
+                        if let Some(node) = self.component(node) {
+                            slots.push(UiSlot {
+                                name: slot.name.clone(),
+                                node: UiNode::Component(node),
+                                source: self.loc(span),
+                            });
+                        }
+                    }
+                    _ => self.errors.push(
+                        SemanticError::new(span, format!("`{prop}` on `{name}` takes a component"))
+                            .help(format!("`{prop}: Component(…)`")),
+                    ),
+                }
+            } else if let Some(prop_spec) = spec.prop(&prop) {
+                if let Some(expr) = self.expr(value, &prop_spec.ty, &prop, &name) {
+                    props.push(UiProp {
+                        name: prop,
+                        value: expr,
+                        source: self.loc(span),
+                    });
+                }
+            } else if spec.unsupported.contains(&prop) {
+                self.errors.push(
                     SemanticError::new(
                         span,
                         format!(
-                            "`bind` on `{}` needs an action to write the change back",
-                            prop_spec.name
+                            "`{prop}` on `{name}` is a React prop dazzui-compiler does not draw yet"
                         ),
                     )
-                    .label("nothing sends the new value to Rust")
-                    .help(format!("add `{}: Action::…`", event.modifier)),
-                ),
-                (None, None) => unreachable!(
-                    "bindable prop `{}` has no event to write back",
-                    prop_spec.name
-                ),
+                    .label("not drawn on the native side yet"),
+                );
+            } else {
+                let closest = closest(&prop, spec.names());
+                meant.extend(closest.map(str::to_owned));
+                self.errors.push(
+                    SemanticError::new(
+                        span,
+                        format!("unknown property `{prop}` on component `{name}`"),
+                    )
+                    .help_opt(
+                        closest
+                            .map(|c| format!("did you mean `{c}`?"))
+                            .or_else(|| react_spelling(&prop, spec)),
+                    ),
+                );
             }
         }
 
@@ -335,14 +230,6 @@ impl Cx<'_> {
 
         for prop_spec in spec.props.iter().filter(|p| p.required) {
             if !seen.contains_key(&prop_spec.name) && !meant.contains(&prop_spec.name) {
-                let how = if spec.positional.first() == Some(&prop_spec.name) {
-                    format!(
-                        "pass it first: `{name}(…)`, or name it: `{}: …`",
-                        prop_spec.name
-                    )
-                } else {
-                    format!("add `{}: …`", prop_spec.name)
-                };
                 self.errors.push(
                     SemanticError::new(
                         ast.name.span(),
@@ -351,38 +238,56 @@ impl Cx<'_> {
                             prop_spec.name
                         ),
                     )
-                    .help(how),
+                    .help(format!("add it: `{name}({}: …)`", prop_spec.name)),
                 );
             }
         }
-
         for slot in spec.slots.iter().filter(|s| s.required) {
-            if !given_slots.contains(&slot.name) && !meant.contains(&slot.name) {
+            if !seen.contains_key(&slot.name) && !meant.contains(&slot.name) {
                 self.errors.push(
                     SemanticError::new(
                         ast.name.span(),
-                        format!(
-                            "missing required slot `{}` on component `{name}`",
-                            slot.name
-                        ),
+                        format!("missing required `{}` on component `{name}`", slot.name),
                     )
-                    .help(format!("add `{}: Component {{ … }}`", slot.name)),
+                    .help(format!("add it: `{name}({}: Component(…))`", slot.name)),
                 );
             }
         }
 
-        let mut children = Vec::new();
-        match &spec.children {
-            ChildrenSpec::None if !ast.children.is_empty() => self.errors.push(
-                SemanticError::new(
-                    ast.children[0].span(),
-                    format!("`{name}` takes no children"),
-                )
-                .label("child given here"),
+        let mut text = Vec::new();
+        match (&ast.text, &spec.children) {
+            (Some(value), ChildrenSpec::Text) => text.extend(self.text(value, &name)),
+            (None, ChildrenSpec::Text) => self.errors.push(
+                SemanticError::new(ast.name.span(), format!("`{name}` needs its text"))
+                    .help(format!("give it first: `{name}(\"…\")`")),
             ),
-            ChildrenSpec::None => {}
-            ChildrenSpec::Many { allow } => {
-                if let Some(allow) = allow {
+            (Some(value), ChildrenSpec::One { .. }) => self.errors.push(
+                SemanticError::new(value.span(), format!("only `Text` takes its text first; `{name}` takes a child"))
+                    .help(format!("`{name}(…, child: Text(\"…\"))`")),
+            ),
+            (Some(value), _) => self.errors.push(
+                SemanticError::new(value.span(), "props are named, as Flutter's and React's are: `prop: value`")
+                    .label("not named"),
+            ),
+            (None, _) => {}
+        }
+
+        let mut children = Vec::new();
+        match (&spec.children, ast.children_arg) {
+            (_, None) => {}
+            (ChildrenSpec::None | ChildrenSpec::Text, Some((_, span))) => self.errors.push(
+                SemanticError::new(span, format!("`{name}` takes no children")).label("given here"),
+            ),
+            (ChildrenSpec::One { .. }, Some((ChildrenArg::Many, span))) => self.errors.push(
+                SemanticError::new(span, format!("`{name}` takes one child: `child: …`, not `children: [ … ]`"))
+                    .label("a list"),
+            ),
+            (ChildrenSpec::Many { .. }, Some((ChildrenArg::One, span))) => self.errors.push(
+                SemanticError::new(span, format!("`{name}` takes a list: `children: [ … ]`, not `child: …`"))
+                    .label("one child"),
+            ),
+            (spec_children, Some(_)) => {
+                if let Some(allow) = spec_children.allow() {
                     self.check_allowed(&ast.children, allow, &name);
                 }
                 children = self.nodes(&ast.children);
@@ -395,12 +300,31 @@ impl Cx<'_> {
         Some(Component {
             id: ComponentId(name),
             props,
-            bindings,
             events,
             slots,
             children,
+            text,
             source: self.loc(ast.name.span()),
         })
+    }
+
+    /// `Text`'s text: a string literal, or a string of the model's value or
+    /// a loop item.
+    fn text(&mut self, value: &ValueAst, component: &str) -> Option<Expr> {
+        match value {
+            ValueAst::Lit(Lit::Str(s)) => Some(Expr::Literal(Value::String(s.value()))),
+            ValueAst::Dotted(path) => self.path_value(path, &PropType::String, "text", component),
+            other => {
+                self.errors.push(
+                    SemanticError::new(
+                        other.span(),
+                        format!("`{component}` takes a string, or a string of the model's value"),
+                    )
+                    .label("not text"),
+                );
+                None
+            }
+        }
     }
 
     /// Only `allow`ed components as children, directly or in an `if`; a
@@ -431,66 +355,13 @@ impl Cx<'_> {
         }
     }
 
-    /// Every way something was given, in source order: positionally, named
-    /// in the parentheses, named in the body, then modifiers.
-    fn entries<'v>(&mut self, ast: &'v ComponentAst, spec: &ComponentSpec) -> Vec<Entry<'v>> {
-        let mut positional = Vec::new();
-        let mut named = Vec::new();
-        let mut positional_index = 0;
-        for arg in &ast.args {
-            match arg {
-                ArgAst::Named(prop) => named.push(Entry {
-                    name: prop.name.to_string(),
-                    span: prop.name.span(),
-                    value: Some(&prop.value),
-                    modifier: false,
-                }),
-                ArgAst::Positional(value) => {
-                    match spec.positional.get(positional_index) {
-                        Some(prop) => positional.push(Entry {
-                            name: prop.clone(),
-                            span: value.span(),
-                            value: Some(value),
-                            modifier: false,
-                        }),
-                        None => self.errors.push(
-                            SemanticError::new(
-                                value.span(),
-                                format!(
-                                    "`{}` takes {} positional argument{}",
-                                    spec.name,
-                                    spec.positional.len(),
-                                    if spec.positional.len() == 1 { "" } else { "s" },
-                                ),
-                            )
-                            .label("unexpected argument")
-                            .help("name it: `prop: value`"),
-                        ),
-                    }
-                    positional_index += 1;
-                }
-            }
+    /// Whether `model.name` names one of the model's methods rather than
+    /// a field of its value.
+    fn is_method(&self, path: &DottedAst) -> bool {
+        match (path.segments.as_slice(), self.model) {
+            ([head, name], Some(model)) => head == "model" && model.method(&name.to_string()).is_some(),
+            _ => false,
         }
-        named.extend(ast.props.iter().map(|prop| Entry {
-            name: prop.name.to_string(),
-            span: prop.name.span(),
-            value: Some(&prop.value),
-            modifier: false,
-        }));
-        let modifiers = ast.modifiers.iter().map(|m| Entry {
-            name: m.name.to_string(),
-            span: m.name.span(),
-            value: match m.args.as_slice() {
-                [ArgAst::Positional(value)] => Some(value),
-                _ => None,
-            },
-            modifier: true,
-        });
-        positional
-            .into_iter()
-            .chain(named)
-            .chain(modifiers)
-            .collect()
     }
 
     /// A read-only value for a prop of type `ty`.
@@ -502,6 +373,18 @@ impl Cx<'_> {
         component: &str,
     ) -> Option<Expr> {
         let found = match value {
+            ValueAst::Lit(Lit::Str(s)) if *ty == PropType::Spacing => {
+                let step = s.value();
+                if SPACING_STEPS.contains(&step.as_str()) {
+                    return Some(Expr::Literal(Value::String(step)));
+                }
+                self.errors.push(
+                    SemanticError::new(s.span(), format!("no spacing step `{step}`"))
+                        .help_opt(suggest(&step, SPACING_STEPS.iter().copied()))
+                        .label(format!("steps are {}", SPACING_STEPS.join(", "))),
+                );
+                return None;
+            }
             ValueAst::Lit(Lit::Str(s)) if *ty == PropType::String => {
                 return Some(Expr::Literal(Value::String(s.value())));
             }
@@ -511,25 +394,28 @@ impl Cx<'_> {
             ValueAst::Lit(Lit::Int(_)) | ValueAst::NegInt(Lit::Int(_)) if *ty == PropType::Int => {
                 return self.int(value).map(|n| Expr::Literal(Value::Int(n)));
             }
-            ValueAst::Path(path) if !is_action(path) => {
+            ValueAst::Path(path) => {
                 if let PropType::Enum(spec) = ty {
                     return self.enum_case(path, spec);
                 }
                 "an enum case"
             }
+            ValueAst::Dotted(path) if self.is_method(path) => "a model method",
             ValueAst::Dotted(path) => {
                 // A mapping passes an integer on as it is, so a mapped
-                // component's may read the state. VStack's and HStack's
-                // spacing is written into the layout by each backend, and an
-                // enum's case into platform code, so those stay literals.
+                // component's may read the state. A spacing step is read from
+                // the theme, and an enum's case written as platform code, so
+                // those stay literals.
                 let mapped = self
                     .registry
                     .get(component)
                     .is_some_and(|s| s.swiftui.is_some() && s.winui.is_some());
-                if matches!(ty, PropType::Enum(_)) || (*ty == PropType::Int && !mapped) {
+                if matches!(ty, PropType::Enum(_) | PropType::Spacing)
+                    || (*ty == PropType::Int && !mapped)
+                {
                     self.errors.push(SemanticError::new(
                         path.span(),
-                        format!("property `{prop}` on `{component}` takes a literal for now, not a state value"),
+                        format!("property `{prop}` on `{component}` takes a literal for now, not a value of the model"),
                     ));
                     return None;
                 }
@@ -540,8 +426,7 @@ impl Cx<'_> {
             ValueAst::Lit(Lit::Bool(_)) => "a bool",
             ValueAst::Lit(Lit::Int(_)) => "an integer",
             ValueAst::Lit(_) => "an unsupported literal",
-            ValueAst::Path(_) | ValueAst::Call(..) => "an action",
-            ValueAst::Bind(_) => "a binding",
+            ValueAst::Call(..) => "a model method",
             ValueAst::Component(_) => "a component",
         };
         let mut error = SemanticError::new(
@@ -552,8 +437,9 @@ impl Cx<'_> {
             ),
         )
         .label(format!("expected {}", ty.name()));
-        if found == "an action" {
-            error = error.help("actions are wired with an event, such as `.on_click(…)`");
+        if found == "a model method" {
+            error =
+                error.help("a model method is given to an event, such as `on_click: model.save`");
         }
         self.errors.push(error);
         None
@@ -619,10 +505,10 @@ impl Cx<'_> {
             .split_first()
             .expect("a dotted path has a segment");
         let head_name = head.to_string();
-        let (start, local) = if head == "state" {
+        let (start, local) = if head == "model" {
             if let Some(scope) = self.scopes.last() {
                 self.errors.push(
-                    SemanticError::new(head.span(), "the state is not read inside a `for`")
+                    SemanticError::new(head.span(), "the model is not read inside a `for`")
                         .label(format!("read `{}` here", scope.name))
                         .help("derive what each element needs with a #[selector] that puts it on the element"),
                 );
@@ -636,14 +522,14 @@ impl Cx<'_> {
                 .scopes
                 .iter()
                 .map(|s| s.name.as_str())
-                .chain(["state"])
+                .chain(["model"])
                 .collect();
             self.errors.push(
                 SemanticError::new(head.span(), format!("cannot find value `{head}`"))
-                    .label("not the state or a loop item")
+                    .label("not the model or a loop item")
                     .help_opt(suggest(&head_name, names.iter().copied()).or_else(|| {
                         Some(
-                            "a value path starts with `state` or a `for` item: `state.field`"
+                            "a value path starts with `model` or a `for` item: `model.field`"
                                 .into(),
                         )
                     })),
@@ -729,27 +615,6 @@ impl Cx<'_> {
         Some(expr)
     }
 
-    /// `bind(state.x)`: only the state can be written back to.
-    fn state_path(
-        &mut self,
-        path: &DottedAst,
-        ty: &PropType,
-        prop: &str,
-        component: &str,
-    ) -> Option<StatePath> {
-        if path.segments[0] != "state" && self.scopes.iter().any(|s| path.segments[0] == s.name) {
-            self.errors.push(
-                SemanticError::new(path.span(), "only a state field can be bound")
-                    .help("a loop item is a copy of the state's; change it with an action"),
-            );
-            return None;
-        }
-        match self.path_value(path, ty, prop, component)? {
-            Expr::State(path) => Some(path),
-            _ => None,
-        }
-    }
-
     fn nodes(&mut self, nodes: &[NodeAst]) -> Vec<UiNode> {
         nodes.iter().filter_map(|n| self.node(n)).collect()
     }
@@ -778,10 +643,10 @@ impl Cx<'_> {
             );
             return None;
         }
-        if item == "state" {
+        if item == "model" {
             self.errors.push(SemanticError::new(
                 ast.item.span(),
-                "a loop item cannot be called `state`",
+                "a loop item cannot be called `model`",
             ));
             return None;
         }
@@ -815,7 +680,7 @@ impl Cx<'_> {
                     SemanticError::new(
                         ast.collection.span(),
                         format!(
-                            "`state.{}` is a `{}`, not a Vec",
+                            "`model.{}` is a `{}`, not a Vec",
                             collection.dotted(),
                             other.rust()
                         ),
@@ -879,163 +744,138 @@ impl Cx<'_> {
         }
     }
 
-    /// The action an event entry sends: `.on_click(Action::Save)`,
-    /// `on_change: Action::SetOn`, `.on_click(Action::Pick(state.id))`.
-    fn event_action(&mut self, entry: &Entry, event: &EventSpec) -> Option<ActionRef> {
-        let shape = || {
-            SemanticError::new(
-                entry.span,
-                format!(
-                    "`{}` takes one action: `{}(Action::Variant)`",
-                    entry.name, entry.name
-                ),
-            )
-        };
-        match entry.value {
-            Some(ValueAst::Path(path)) if is_action(path) => self.action(path, None, event),
-            Some(ValueAst::Call(path, payload)) if is_action(path) => {
-                self.action(path, Some(payload), event)
-            }
-            _ => {
-                self.errors.push(shape());
-                None
-            }
-        }
-    }
-
-    fn action(
+    /// The model method an event calls: `on_click: model.save`,
+    /// `on_checked_change: model.set_on`, `on_click: model.pick(item.id)`.
+    fn event_call(
         &mut self,
-        path: &syn::Path,
-        payload: Option<&ValueAst>,
+        value: &ValueAst,
         event: &EventSpec,
-    ) -> Option<ActionRef> {
-        let segments: Vec<_> = path.segments.iter().collect();
-        if segments.len() != 2 {
-            self.errors.push(SemanticError::new(
-                spanned_path(path),
-                "an action is written `Action::Variant`",
-            ));
-            return None;
-        }
-        let variant_ident = &segments[1].ident;
-        let variant = variant_ident.to_string();
-        let Some(def) = self.action_enum else {
-            // In the macro, rustc checks the variant and its payload.
-            let payload = match payload {
-                Some(value) => ActionPayload::Expr(self.payload_expr(value, None)?),
-                None if event.payload.is_some() => ActionPayload::EventValue,
-                None => ActionPayload::None,
-            };
-            return Some(ActionRef { variant, payload });
-        };
-        let Some(v) = def.variant(&variant) else {
-            let candidates = def.variants.iter().map(|v| v.name.as_str());
-            self.errors.push(
-                SemanticError::new(
-                    variant_ident.span(),
-                    format!("no variant `{variant}` on action enum `{}`", def.name),
-                )
-                .help_opt(suggest(&variant, candidates)),
-            );
-            return None;
-        };
-        let field = match &v.fields {
-            Fields::Unit => None,
-            Fields::Tuple(types) if types.len() == 1 => Some(&types[0]),
+        prop: &str,
+    ) -> Option<MethodCall> {
+        let (path, given) = match value {
+            ValueAst::Dotted(path) => (path, None),
+            ValueAst::Call(path, argument) => (path, Some(&**argument)),
             _ => {
-                self.errors.push(
-                    SemanticError::new(
-                        variant_ident.span(),
-                        format!(
-                            "`{}::{variant}` carries several values; an action carries one or none",
-                            def.name
-                        ),
-                    )
-                    .help("give the variant one tuple field, or none"),
-                );
-                return None;
-            }
-        };
-        let payload = match (payload, field, &event.payload) {
-            (None, None, None) => ActionPayload::None,
-            // The value an event carries is for the action to take; an
-            // action that drops it would hide a change the event reports.
-            (None, None, Some(carried)) => {
-                self.errors.push(
-                    SemanticError::new(
-                        variant_ident.span(),
-                        format!(
-                            "`{}::{variant}` carries no value, but `{}` gives it {}",
-                            def.name,
-                            event.name,
-                            carried.name()
-                        ),
-                    )
-                    .label("expects no payload"),
-                );
-                return None;
-            }
-            (Some(value), Some(field), _) => {
-                ActionPayload::Expr(self.payload_expr(value, Some(field))?)
-            }
-            (Some(value), None, _) => {
                 self.errors.push(
                     SemanticError::new(
                         value.span(),
-                        format!("`{}::{variant}` carries no value", def.name),
+                        format!("`{prop}` calls a method of the model: `{prop}: model.method`"),
                     )
-                    .help(format!("write `Action::{variant}`")),
+                    .label("not a model method"),
                 );
                 return None;
             }
-            (None, Some(field), Some(carried)) => {
-                let fits = matches!(
-                    (carried, field),
-                    (PropType::Bool, RustType::Bool)
-                        | (PropType::String, RustType::String)
-                        | (PropType::Int, RustType::Int(_))
-                );
-                if !fits {
-                    self.errors.push(
-                        SemanticError::new(
-                            variant_ident.span(),
-                            format!(
-                                "`{}::{variant}` carries a `{}`, but `{}` gives it {}",
-                                def.name,
-                                field.rust(),
-                                event.name,
-                                carried.name()
-                            ),
-                        )
-                        .label("payload type differs"),
-                    );
-                    return None;
-                }
-                ActionPayload::EventValue
-            }
-            (None, Some(field), None) => {
+        };
+        let [head, method_ident] = path.segments.as_slice() else {
+            self.errors.push(SemanticError::new(
+                path.span(),
+                format!("`{prop}` calls a method of the model: `{prop}: model.method`"),
+            ));
+            return None;
+        };
+        if head != "model" {
+            self.errors.push(
+                SemanticError::new(head.span(), format!("`{prop}` calls a method of the model"))
+                    .label("not `model`")
+                    .help(format!("`{prop}: model.{method_ident}`")),
+            );
+            return None;
+        }
+        let method = method_ident.to_string();
+        let Some(model) = self.model else {
+            // In the macro, rustc checks the method and its argument.
+            let argument = match given {
+                Some(value) => Argument::Expr(self.payload_expr(value, None)?),
+                None if event.payload.is_some() => Argument::EventValue,
+                None => Argument::None,
+            };
+            return Some(MethodCall {
+                method,
+                param: None,
+                argument,
+            });
+        };
+        let Some(def) = model.method(&method) else {
+            let candidates = model.methods.iter().map(|m| m.name.as_str());
+            self.errors.push(
+                SemanticError::new(
+                    method_ident.span(),
+                    format!("no method `{method}` on model `{}`", model.name),
+                )
+                .help_opt(suggest(&method, candidates).or_else(|| {
+                    Some(format!(
+                        "a page calls the public methods of `#[page_model] impl {}`",
+                        model.name
+                    ))
+                })),
+            );
+            return None;
+        };
+        let what = format!("`{}::{method}`", model.name);
+        let argument = match (given, &def.param, &event.payload) {
+            (None, None, None) => Argument::None,
+            // The value an event carries is for the method to take; one that
+            // drops it would hide a change the event reports.
+            (None, None, Some(carried)) => {
                 self.errors.push(
                     SemanticError::new(
-                        variant_ident.span(),
+                        method_ident.span(),
                         format!(
-                            "`{}::{variant}` carries a value, but `{}` has none to give it",
-                            def.name, event.name
+                            "{what} takes no value, but `{prop}` gives it {}",
+                            carried.name()
                         ),
                     )
-                    .label("expects a payload")
+                    .label("takes no value")
                     .help(format!(
-                        "pass one: `Action::{variant}(…)`, a `{}`",
-                        field.rust()
+                        "give the method a parameter: `pub fn {method}(&self, value: …)`"
                     )),
                 );
                 return None;
             }
+            (Some(value), Some((_, ty)), _) => Argument::Expr(self.payload_expr(value, Some(ty))?),
+            (Some(value), None, _) => {
+                self.errors.push(
+                    SemanticError::new(value.span(), format!("{what} takes no value"))
+                        .help(format!("write `model.{method}`")),
+                );
+                return None;
+            }
+            (None, Some((_, ty)), Some(carried)) => {
+                if !fits(carried, ty) {
+                    self.errors.push(
+                        SemanticError::new(
+                            method_ident.span(),
+                            format!(
+                                "{what} takes a `{}`, but `{prop}` gives it {}",
+                                ty.rust(),
+                                carried.name()
+                            ),
+                        )
+                        .label("parameter type differs"),
+                    );
+                    return None;
+                }
+                Argument::EventValue
+            }
+            (None, Some((_, ty)), None) => {
+                self.errors.push(
+                    SemanticError::new(
+                        method_ident.span(),
+                        format!("{what} takes a value, but `{prop}` has none to give it"),
+                    )
+                    .label("takes a value")
+                    .help(format!("pass one: `model.{method}(…)`, a `{}`", ty.rust())),
+                );
+                return None;
+            }
         };
-        Some(ActionRef { variant, payload })
+        Some(MethodCall {
+            method,
+            param: def.param.as_ref().map(|(name, _)| name.clone()),
+            argument,
+        })
     }
 
-    /// The value an action is given, `Action::Pick(item.id)`: a literal, or
-    /// a path of exactly the variant's field type.
     fn payload_expr(&mut self, value: &ValueAst, field: Option<&RustType>) -> Option<Expr> {
         let ty = match field {
             Some(RustType::Bool) => Some(PropType::Bool),
@@ -1045,7 +885,7 @@ impl Cx<'_> {
                 self.errors.push(SemanticError::new(
                     value.span(),
                     format!(
-                        "an action payload of type `{}` cannot cross to the native side yet",
+                        "a method parameter of type `{}` cannot cross to the native side yet",
                         other.rust()
                     ),
                 ));
@@ -1066,7 +906,7 @@ impl Cx<'_> {
                     self.errors.push(SemanticError::new(
                         value.span(),
                         format!(
-                            "the action carries a `{}`, but `{}` is a `{}`",
+                            "the method takes a `{}`, but `{}` is a `{}`",
                             field.rust(),
                             written.join("."),
                             found.rust()
@@ -1092,7 +932,7 @@ impl Cx<'_> {
                     .unwrap_or_else(|| "a literal or a path".into());
                 self.errors.push(SemanticError::new(
                     value.span(),
-                    format!("an action payload is a literal or a path; expected {expected}"),
+                    format!("a method's argument is a literal or a path; expected {expected}"),
                 ));
                 None
             }
@@ -1109,8 +949,12 @@ fn fits(ty: &PropType, field: &RustType) -> bool {
     )
 }
 
-fn is_action(path: &syn::Path) -> bool {
-    path.segments.first().is_some_and(|s| s.ident == "Action")
+/// For a prop given in React's camel case, the snake case it is written in
+/// here: `onClick` → `on_click`.
+fn react_spelling(prop: &str, spec: &ComponentSpec) -> Option<String> {
+    let snake = crate::ir::snake_case(prop);
+    (snake != prop && spec.names().any(|n| n == snake))
+        .then(|| format!("props are in snake case here: `{snake}`"))
 }
 
 #[cfg(test)]
@@ -1120,12 +964,22 @@ mod tests {
 
     fn types() -> RustTypes {
         let file: syn::File = syn::parse_str(
-            "enum A { Save, SetOn(bool), Rename(String), Pick(u32) }
-             struct S { on: bool, name: String, count: u32, small: u8, user: User, items: Vec<Item>, tags: Vec<String> }
+            "struct S { on: bool, name: String, count: u32, small: u8, user: User, items: Vec<Item>, tags: Vec<String> }
              struct User { locked: bool }
              struct Item { id: u32, title: String, done: bool }
              struct Row { uuid: String }
-             impl S { #[selector] fn open(&self) -> Vec<Item> { todo!() } #[selector] fn rows(&self) -> Vec<Row> { todo!() } }",
+             impl S { #[selector] fn open(&self) -> Vec<Item> { todo!() } #[selector] fn rows(&self) -> Vec<Row> { todo!() } }
+             struct T { on: bool }
+             struct M;
+             impl ValueListenable for M { type Value = S; }
+             #[page_model]
+             impl M {
+                 pub fn new() -> Self { M }
+                 pub fn save(&self) {}
+                 pub fn set_on(&self, on: bool) {}
+                 pub fn rename(&self, name: String) {}
+                 pub fn pick(&self, id: u32) {}
+             }",
         )
         .unwrap();
         let mut types = RustTypes::default();
@@ -1133,162 +987,201 @@ mod tests {
         types
     }
 
-    fn lower_str(src: &str) -> Result<Page, Vec<String>> {
+    fn lower_in(registry: &Registry, src: &str) -> Result<Page, Vec<String>> {
         let ast: PageAst = syn::parse_str(src).unwrap();
-        lower(&ast, &Registry::builtin(), Some(&types()), "page.rs")
+        lower(&ast, registry, Some(&types()), "page.rs")
             .map_err(|errors| errors.into_iter().map(|e| e.message).collect())
     }
 
-    #[test]
-    fn lowers_a_page_and_fills_defaults() {
-        let page = lower_str(
-            r#"page P(state: S, action: A) { VStack { Button("Save").on_click(Action::Save) } }"#,
-        )
-        .unwrap();
-        let UiNode::Component(stack) = &page.root else {
+    fn lower_str(src: &str) -> Result<Page, Vec<String>> {
+        lower_in(&Registry::builtin(), src)
+    }
+
+    fn root(page: &Page) -> &Component {
+        let UiNode::Component(c) = &page.root else {
             panic!()
         };
-        assert_eq!(stack.prop("spacing"), Some(&Expr::Literal(Value::Int(0))));
-        let UiNode::Component(button) = &stack.children[0] else {
-            panic!()
-        };
-        assert_eq!(button.event("click").unwrap().variant, "Save");
-        assert_eq!(
-            button.prop("style"),
-            Some(&Expr::EnumCase {
-                ty: "ButtonStyle".into(),
-                case: "Secondary".into()
-            })
-        );
-        assert_eq!(
-            button.prop("disabled"),
-            Some(&Expr::Literal(Value::Bool(false)))
-        );
+        c
     }
 
     #[test]
-    fn lowers_state_bindings_and_modifiers() {
+    fn lowers_a_page_and_fills_react_defaults() {
         let page = lower_str(
-            r#"page P(state: S, action: A) {
-                VStack {
-                    Text(state.name).style(TextStyle::Title)
-                    Toggle { value: bind(state.on), on_change: Action::SetOn }.disabled(state.user.locked)
-                    Button("Pick").style(ButtonStyle::Primary).on_click(Action::Pick(state.count))
-                }
+            r#"page P(model: M) { Col(children: [Button(on_click: model.save, child: Text("Save"))]) }"#,
+        )
+        .unwrap();
+        let col = root(&page);
+        assert_eq!(page.state_type, "S");
+        assert_eq!(col.prop("gap"), Some(&Expr::Literal(Value::String("3".into()))));
+        let UiNode::Component(button) = &col.children[0] else {
+            panic!()
+        };
+        assert_eq!(
+            button.event("on_click"),
+            Some(&MethodCall {
+                method: "save".into(),
+                param: None,
+                argument: Argument::None
+            })
+        );
+        assert_eq!(
+            button.prop("variant"),
+            Some(&Expr::EnumCase {
+                ty: "ButtonVariant".into(),
+                case: "Recessed".into()
+            })
+        );
+        let UiNode::Component(label) = &button.children[0] else {
+            panic!()
+        };
+        assert_eq!(label.text, [Expr::Literal(Value::String("Save".into()))]);
+    }
+
+    #[test]
+    fn lowers_props_text_and_calls() {
+        let page = lower_str(
+            r#"page P(model: M) {
+                Row(gap: "0-5", align: Align::Start, children: [
+                    Text(model.name, tone: TextTone::Secondary),
+                    Switch(checked: model.on, disabled: model.user.locked, on_checked_change: model.set_on),
+                    Button(variant: ButtonVariant::Filled, on_click: model.pick(model.count), child: Text("Pick")),
+                ])
             }"#,
         )
         .unwrap();
-        let UiNode::Component(stack) = &page.root else {
-            panic!()
-        };
+        let row = root(&page);
+        assert_eq!(row.prop("gap"), Some(&Expr::Literal(Value::String("0-5".into()))));
         let [
             UiNode::Component(text),
-            UiNode::Component(toggle),
+            UiNode::Component(switch),
             UiNode::Component(button),
-        ] = stack.children.as_slice()
+        ] = row.children.as_slice()
         else {
             panic!("three children");
         };
         assert_eq!(
-            text.prop("text"),
-            Some(&Expr::State(StatePath {
+            text.text,
+            [Expr::State(StatePath {
                 segments: vec!["name".into()]
-            }))
+            })]
         );
         assert_eq!(
-            text.prop("style"),
-            Some(&Expr::EnumCase {
-                ty: "TextStyle".into(),
-                case: "Title".into()
+            switch.event("on_checked_change"),
+            Some(&MethodCall {
+                method: "set_on".into(),
+                param: Some("on".into()),
+                argument: Argument::EventValue
             })
         );
-        let binding = toggle.binding("value").unwrap();
-        assert_eq!(binding.path.segments, ["on"]);
         assert_eq!(
-            binding.on_change,
-            ActionRef {
-                variant: "SetOn".into(),
-                payload: ActionPayload::EventValue
-            }
-        );
-        assert!(toggle.events.is_empty());
-        assert_eq!(
-            toggle.prop("disabled"),
+            switch.prop("disabled"),
             Some(&Expr::State(StatePath {
                 segments: vec!["user".into(), "locked".into()]
             }))
         );
         assert_eq!(
-            button.event("click").unwrap().payload,
-            ActionPayload::Expr(Expr::State(StatePath {
+            button.event("on_click").unwrap().argument,
+            Argument::Expr(Expr::State(StatePath {
                 segments: vec!["count".into()]
             }))
         );
     }
 
     #[test]
-    fn reports_unknown_component_prop_and_modifier() {
+    fn reports_names_react_does_not_have() {
         let errors = lower_str(
-            r#"page P(state: S, action: A) { VStack { Buton("x") Text("a", "b") Button { titel: "x" }.on_tap(Action::Save) } }"#,
+            r#"page P(model: M) { Col(children: [
+                Buton(child: Text("x")),
+                Button(varient: ButtonVariant::Filled, child: Text("a")),
+                Button(onClick: model.save, child: Text("b")),
+                Button(full_width: true, child: Text("c")),
+                Switch(checked: true, checked: false),
+            ]) }"#,
         )
         .unwrap_err();
         assert_eq!(
             errors,
             [
                 "unknown component `Buton`",
-                "`Text` takes 1 positional argument",
-                "unknown property `titel` on component `Button`",
-                "unknown modifier `on_tap` on component `Button`",
+                "unknown property `varient` on component `Button`",
+                "unknown property `onClick` on component `Button`",
+                "`full_width` on `Button` is a React prop dazzui-compiler does not draw yet",
+                "`checked` is given twice",
             ]
         );
     }
 
     #[test]
-    fn checks_actions_against_the_enum() {
+    fn checks_calls_against_the_model() {
         let errors = lower_str(
-            r#"page P(state: S, action: A) { VStack {
-                Button("a").on_click(Action::Sav)
-                Button("b").on_click(Action::SetOn)
-                Button("c").on_click(Action::Save(true))
-                Button("d").on_click(Action::Pick(state.small))
-                Toggle { value: state.on, on_change: Action::Rename }
-            } }"#,
+            r#"page P(model: M) { Col(children: [
+                Button(on_click: model.sav, child: Text("a")),
+                Switch(checked: model.on, on_checked_change: model.save),
+                Button(on_click: model.set_on, child: Text("b")),
+                Button(on_click: model.save(1), child: Text("c")),
+                Button(on_click: model.pick(model.small), child: Text("d")),
+                Button(on_click: state.save, child: Text("e")),
+                Button(on_click: "save", child: Text("f")),
+                Button(disabled: model.save, child: Text("g")),
+            ]) }"#,
         )
         .unwrap_err();
         assert_eq!(
             errors,
             [
-                "no variant `Sav` on action enum `A`",
-                "`A::SetOn` carries a value, but `click` has none to give it",
-                "`A::Save` carries no value",
-                "the action carries a `u32`, but `state.small` is a `u8`",
-                "`A::Rename` carries a `String`, but `change` gives it Bool",
+                "no method `sav` on model `M`",
+                "`M::save` takes no value, but `on_checked_change` gives it Bool",
+                "`M::set_on` takes a value, but `on_click` has none to give it",
+                "`M::save` takes no value",
+                "the method takes a `u32`, but `model.small` is a `u8`",
+                "`on_click` calls a method of the model",
+                "`on_click` calls a method of the model: `on_click: model.method`",
+                "property `disabled` on `Button` expects Bool, found a model method",
             ]
         );
     }
 
     #[test]
-    fn checks_state_paths() {
+    fn checks_the_page_against_its_model() {
+        assert_eq!(
+            lower_str(r#"page P(model: N) { Col() }"#).unwrap_err(),
+            ["cannot find `#[page_model] impl N` in this crate"]
+        );
+    }
+
+    #[test]
+    fn checks_value_paths_and_children() {
         let errors = lower_str(
-            r#"page P(state: S, action: A) { VStack {
-                Text(state.nme)
-                Text(state.on)
-                Text(stat.name)
-                Button("x").disabled(state.user.lockd)
-                Toggle { value: bind(state.on) }
-                Text("t") { Text(state.name) }
-            } }"#,
+            r#"page P(model: M) { Col(children: [
+                Text(model.nme),
+                Text(model.on),
+                Text(modl.name),
+                Switch(checked: model.user.lockd),
+                Text(),
+                Text("a", child: Text("b")),
+                Switch(checked: true, child: Text("c")),
+                Button(child: Text("d"), on_click: model.save, variant: ButtonVariant::Plain),
+                Button("e", on_click: model.save),
+                PreferenceRow(title: "f", children: [Text("g")]),
+                Col(child: Text("h")),
+                Button(child: Switch(checked: true), on_click: model.save),
+            ]) }"#,
         )
         .unwrap_err();
         assert_eq!(
             errors,
             [
                 "no field `nme` on type `S`",
-                "property `text` on `Text` expects String, but `state.on` is a `bool`",
-                "cannot find value `stat`",
+                "property `text` on `Text` expects String, but `model.on` is a `bool`",
+                "cannot find value `modl`",
                 "no field `lockd` on type `User`",
-                "`bind` on `value` needs an action to write the change back",
+                "`Text` needs its text",
                 "`Text` takes no children",
+                "`Switch` takes no children",
+                "only `Text` takes its text first; `Button` takes a child",
+                "`PreferenceRow` takes one child: `child: …`, not `children: [ … ]`",
+                "`Col` takes a list: `children: [ … ]`, not `child: …`",
+                "`Button` takes only `Text` as children",
             ]
         );
     }
@@ -1296,24 +1189,22 @@ mod tests {
     #[test]
     fn lowers_if_and_for() {
         let page = lower_str(
-            r#"page P(state: S, action: A) { VStack {
-                if !state.on { Text("off") } else { Text("on") }
-                for item in state.open {
-                    if item.done { Text(item.title) }
-                    Button("Pick").on_click(Action::Pick(item.id))
-                }
-                for row in state.rows, key: row.uuid { Text(row.uuid) }
-            } }"#,
+            r#"page P(model: M) { Col(children: [
+                if !model.on { Text("off") } else { Text("on") },
+                for item in model.open {
+                    if item.done { Text(item.title) },
+                    Button(on_click: model.pick(item.id), child: Text("Pick")),
+                },
+                for row in model.rows, key: row.uuid { Text(row.uuid) },
+            ]) }"#,
         )
         .unwrap();
-        let UiNode::Component(stack) = &page.root else {
-            panic!()
-        };
+        let col = root(&page);
         let UiNode::If {
             condition,
             else_branch,
             ..
-        } = &stack.children[0]
+        } = &col.children[0]
         else {
             panic!()
         };
@@ -1331,7 +1222,7 @@ mod tests {
             key,
             children,
             ..
-        } = &stack.children[1]
+        } = &col.children[1]
         else {
             panic!()
         };
@@ -1356,7 +1247,7 @@ mod tests {
                 segments: vec!["done".into()]
             })
         );
-        let UiNode::ForEach { key, .. } = &stack.children[2] else {
+        let UiNode::ForEach { key, .. } = &col.children[2] else {
             panic!()
         };
         assert_eq!(key.segments, ["uuid"]);
@@ -1365,29 +1256,29 @@ mod tests {
     #[test]
     fn checks_if_and_for() {
         let errors = lower_str(
-            r#"page P(state: S, action: A) { VStack {
-                if state.name { Text("a") }
-                for item in state.count { Text("b") }
-                for tag in state.tags { Text("c") }
-                for row in state.rows { Text("d") }
-                for item in state.items {
-                    Text(state.name)
-                    Text(item.titel)
-                    Text(iten.title)
-                    for other in state.items { Text("e") }
-                }
-                Text(item.title)
-            } }"#,
+            r#"page P(model: M) { Col(children: [
+                if model.name { Text("a") },
+                for item in model.count { Text("b") },
+                for tag in model.tags { Text("c") },
+                for row in model.rows { Text("d") },
+                for item in model.items {
+                    Text(model.name),
+                    Text(item.titel),
+                    Text(iten.title),
+                    for other in model.items { Text("e") },
+                },
+                Text(item.title),
+            ]) }"#,
         )
         .unwrap_err();
         assert_eq!(
             errors,
             [
-                "property `condition` on `if` expects Bool, but `state.name` is a `String`",
-                "`state.count` is a `u32`, not a Vec",
+                "property `condition` on `if` expects Bool, but `model.name` is a `String`",
+                "`model.count` is a `u32`, not a Vec",
                 "a `for` runs over a Vec of structs; this is a `Vec<String>`",
                 "`Row` has no `id` to tell its elements apart",
-                "the state is not read inside a `for`",
+                "the model is not read inside a `for`",
                 "no field `titel` on type `Item`",
                 "cannot find value `iten`",
                 "a `for` inside a `for` is not supported yet",
@@ -1396,56 +1287,77 @@ mod tests {
         );
     }
 
+    /// An app's own components: a list that takes only its rows, and a row
+    /// with a required icon and a control.
     const ROWS: &str = r#"
-        [component.Section]
-        children = { allow = ["Row"] }
-        swiftui = { call = "Section", trailing = { children = true } }
-        winui = { element = "Section" }
+        [component.List]
+        children = { allow = ["ListRow"] }
+        swiftui = { call = "List", trailing = { children = true } }
+        winui = { element = "List" }
 
-        [component.Row]
-        positional = ["title"]
+        [component.ListRow]
+        children = "one"
         props.title = { type = "string", required = true }
-        slots.trailing = {}
         slots.icon = { required = true }
-        swiftui = { call = "Row", args = [{ arg = "title", prop = "title" }, { arg = "trailing", slot = "trailing" }, { arg = "icon", slot = "icon" }] }
-        winui = { element = "Row", slots.trailing = { property = "Control" }, slots.icon = { property = "Icon" } }
+        swiftui = { call = "ListRow", args = [{ arg = "title", prop = "title" }, { arg = "icon", slot = "icon" }, { arg = "trailing", children = true }] }
+        winui = { element = "ListRow", slots.icon = { property = "Icon" }, children = { property = "Control" } }
     "#;
 
-    fn lower_with_rows(src: &str) -> Result<Page, Vec<String>> {
-        let registry = Registry::from_tables(&[
+    fn rows() -> Registry {
+        Registry::from_tables(&[
             (crate::registry::BUILTIN, "registry.toml"),
             (ROWS, "app.toml"),
         ])
-        .unwrap();
-        let ast: PageAst = syn::parse_str(src).unwrap();
-        lower(&ast, &registry, Some(&types()), "page.rs")
-            .map_err(|errors| errors.into_iter().map(|e| e.message).collect())
+        .unwrap()
     }
 
     #[test]
-    fn lowers_slots() {
-        let page = lower_with_rows(
-            r#"page P(state: S, action: A) { Section {
-                Row("On", icon: Text("i"), trailing: Toggle { value: bind(state.on), on_change: Action::SetOn })
-                if state.on { Row { title: "Name", icon: Text(state.name) } }
-            } }"#,
+    fn lowers_a_widget_given_to_a_prop() {
+        let page = lower_in(
+            &rows(),
+            r#"page P(model: M) { List(children: [
+                ListRow(title: "On", icon: Text("i"), child: Switch(checked: model.on, on_checked_change: model.set_on)),
+                if model.on { ListRow(title: "Name", icon: Text(model.name)) },
+            ]) }"#,
         )
         .unwrap();
-        let UiNode::Component(section) = &page.root else {
+        let UiNode::Component(row) = &root(&page).children[0] else {
             panic!()
         };
-        let UiNode::Component(row) = &section.children[0] else {
+        let UiNode::Component(switch) = &row.children[0] else {
             panic!()
         };
-        let Some(UiNode::Component(toggle)) = row.slot("trailing") else {
-            panic!()
-        };
-        assert_eq!(toggle.binding("value").unwrap().on_change.variant, "SetOn");
+        assert_eq!(switch.event("on_checked_change").unwrap().method, "set_on");
         assert!(row.slot("icon").is_some());
     }
 
     #[test]
-    fn a_mapped_component_reads_an_integer_from_the_state() {
+    fn checks_slots_and_allowed_children() {
+        let errors = lower_in(
+            &rows(),
+            r#"page P(model: M) { List(children: [
+                ListRow(title: "a", icon: "x"),
+                ListRow(title: "c"),
+                ListRow(title: "d", icon: Text(model.nme)),
+                Text("h"),
+                for item in model.items { ListRow(title: "i", icon: Text("i")) },
+            ]) }"#,
+        )
+        .unwrap_err();
+        assert_eq!(
+            errors,
+            [
+                "`List` takes only `ListRow` as children",
+                "`List` takes only `ListRow` as children",
+                "`icon` on `ListRow` takes a component",
+                "missing required `icon` on component `ListRow`",
+                "no field `nme` on type `S`",
+            ]
+        );
+    }
+
+    #[test]
+    fn a_mapped_component_reads_an_integer_from_the_value() {
         const COLUMN: &str = r#"
             [component.Column]
             props.width = { type = "int", required = true }
@@ -1457,80 +1369,47 @@ mod tests {
             (COLUMN, "app.toml"),
         ])
         .unwrap();
-        let lower = |src: &str| {
-            let ast: PageAst = syn::parse_str(src).unwrap();
-            lower(&ast, &registry, Some(&types()), "page.rs")
-                .map_err(|errors| errors.into_iter().map(|e| e.message).collect::<Vec<_>>())
-        };
-        let page = lower(r#"page P(state: S, action: A) { VStack { Column(width: state.count) for item in state.items { Column(width: item.id) } } }"#).unwrap();
-        let UiNode::Component(stack) = &page.root else {
-            panic!()
-        };
-        let UiNode::Component(column) = &stack.children[0] else {
+        let page = lower_in(
+            &registry,
+            r#"page P(model: M) { Col(children: [Column(width: model.count), for item in model.items { Column(width: item.id) }]) }"#,
+        )
+        .unwrap();
+        let UiNode::Component(column) = &root(&page).children[0] else {
             panic!()
         };
         assert!(
             matches!(column.prop("width"), Some(Expr::State(path)) if path.segments == ["count"])
         );
-        // A stack's spacing is still a literal, and the type still checked.
+        // A spacing step is still a literal, and the type still checked.
         assert_eq!(
-            lower(r#"page P(state: S, action: A) { HStack(spacing: state.count) { Column(width: state.name) } }"#).unwrap_err(),
+            lower_in(&registry, r#"page P(model: M) { Row(gap: model.name, children: [Column(width: model.name)]) }"#)
+                .unwrap_err(),
             [
-                "property `spacing` on `HStack` takes a literal for now, not a state value",
-                "property `width` on `Column` expects Integer, but `state.name` is a `String`",
+                "property `gap` on `Row` takes a literal for now, not a value of the model",
+                "property `width` on `Column` expects Integer, but `model.name` is a `String`",
             ]
         );
     }
 
     #[test]
-    fn checks_slots_and_allowed_children() {
-        let errors = lower_with_rows(
-            r#"page P(state: S, action: A) { Section {
-                Row("a", icon: Text("i"), trailing: "x")
-                Row("b", icon: Text("i"), icon: Text("j"))
-                Row("c")
-                Row("d", icon: Text(state.nme))
-                Text("e")
-                for item in state.items { Row(item.title, icon: Text("i")) }
-            } }"#,
-        )
-        .unwrap_err();
-        assert_eq!(
-            errors,
-            [
-                "`Section` takes only `Row` as children",
-                "`Section` takes only `Row` as children",
-                "slot `trailing` on `Row` takes a component",
-                "slot `icon` is given twice",
-                "missing required slot `icon` on component `Row`",
-                "no field `nme` on type `S`",
-            ]
-        );
-    }
-
-    #[test]
-    fn checks_types_and_duplicates() {
+    fn checks_literals_and_cases() {
         let errors = lower_str(
-            r#"page P(state: S, action: A) { VStack(spacing: "x") {
-                Button("a", title: "b")
-                Button("c").style(TextStyle::Title)
-                Button("d").style(ButtonStyle::Primry)
-                Text("e", style: TextStyle::Body).style(TextStyle::Title)
-                Text("f").disabled(true)
-                Button { title: bind(state.name) }
-            } }"#,
+            r#"page P(model: M) { Col(gap: "13", children: [
+                Row(gap: 3),
+                Button(variant: TextTone::Secondary, child: Text("a")),
+                Button(variant: ButtonVariant::Primry, child: Text("b")),
+                Text("c", strong: "yes"),
+            ]) }"#,
         )
         .unwrap_err();
         assert_eq!(
             errors,
             [
-                "property `spacing` on `VStack` expects Integer, found a string",
-                "property `title` is given twice",
-                "expected a `ButtonStyle` case, found `TextStyle::Title`",
-                "no case `Primry` on `ButtonStyle`",
-                "property `style` is given twice",
-                "unknown modifier `disabled` on component `Text`",
-                "property `title` on `Button` cannot be bound",
+                "no spacing step `13`",
+                "property `gap` on `Row` expects a spacing step, found an integer",
+                "expected a `ButtonVariant` case, found `TextTone::Secondary`",
+                "no case `Primry` on `ButtonVariant`",
+                "property `strong` on `Text` expects Bool, found a string",
             ]
         );
     }

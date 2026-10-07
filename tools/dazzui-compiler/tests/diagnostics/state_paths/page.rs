@@ -16,20 +16,34 @@ pub struct Tag {
     pub label: String,
 }
 
-pub enum A {
-    Save,
-    SetOn(bool),
-    Rename(String),
-    Pick(u32),
+pub struct M;
+
+impl ValueListenable for M {
+    type Value = S;
+}
+
+#[page_model]
+impl M {
+    pub fn new() -> Self {
+        M
+    }
+
+    pub fn save(&self) {}
+
+    pub fn set_on(&self, on: bool) {}
+
+    pub fn rename(&self, name: String) {}
+
+    pub fn pick(&self, id: u32) {}
 }
 
 ui! {
-    page P(state: S, action: A) {
-        VStack {
-            Text(state.nme)
-            Text(stat.name)
-            Text(state.name.first)
-            Button("a").disabled(state)
-        }
+    page P(model: M) {
+        Col(children: [
+            Text(model.nme),
+            Text(modl.name),
+            Text(model.name.first),
+            Switch(checked: model),
+        ])
     }
 }

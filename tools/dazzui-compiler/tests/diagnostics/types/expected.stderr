@@ -1,37 +1,36 @@
-error: property `spacing` on `VStack` expects Integer, found a string
-  --> page.rs:28:25
+error: no spacing step `wide`
+  --> page.rs:42:18
    |
-28 |         VStack(spacing: "wide") {
-   |                         ^^^^^^ expected Integer
+42 |         Col(gap: "wide", children: [
+   |                  ^^^^^^ steps are 0, px, 0-5, 1, 1-5, 2, 2-5, 3, 3-5, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 20
    |
 
-error: property `text` on `Text` expects String, but `state.on` is a `bool`
-  --> page.rs:29:18
+error: property `text` on `Text` expects String, but `model.on` is a `bool`
+  --> page.rs:43:18
    |
-29 |             Text(state.on)
+43 |             Text(model.on),
    |                  ^^^^^^^^ expected String
    |
 
-error: no case `Primry` on `ButtonStyle`
-  --> page.rs:30:44
+error: no case `Primry` on `ButtonVariant`
+  --> page.rs:44:44
    |
-30 |             Button("a").style(ButtonStyle::Primry)
-   |                                            ^^^^^^ cases are Primary, Secondary
-   |
-help: did you mean `Primary`?
-
-error: expected a `ButtonStyle` case, found `TextStyle::Title`
-  --> page.rs:31:31
-   |
-31 |             Button("b").style(TextStyle::Title)
-   |                               ^^^^^^^^^ expected ButtonStyle
+44 |             Button(variant: ButtonVariant::Primry, child: Text("a")),
+   |                                            ^^^^^^ cases are Recessed, Normal, Filled, Tinted, Outlined, Plain
    |
 
-error: property `spacing` on `HStack` takes a literal for now, not a state value
-  --> page.rs:32:29
+error: expected a `ButtonVariant` case, found `TextTone::Secondary`
+  --> page.rs:45:29
    |
-32 |             HStack(spacing: state.count) { Text("c") }
-   |                             ^^^^^^^^^^^
+45 |             Button(variant: TextTone::Secondary, child: Text("b")),
+   |                             ^^^^^^^^ expected ButtonVariant
+   |
+
+error: property `gap` on `Row` takes a literal for now, not a value of the model
+  --> page.rs:46:22
+   |
+46 |             Row(gap: model.name, children: [Text("c")]),
+   |                      ^^^^^^^^^^
    |
 
 error: could not compile due to 5 previous errors

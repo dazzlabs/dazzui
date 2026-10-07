@@ -2,47 +2,46 @@
 //! UniFFI's.
 //!
 //! [`Bridge`] describes what crosses — the state's fields and selectors,
-//! the structs they hold, the actions — and [`Bridge::rust`] is what the
-//! `#[page_model]` macro emits from it: UniFFI records that mirror the state
-//! as the page reads it, the action enum, an object that holds the app's
-//! model, and a listener trait the native side implements. UniFFI then
-//! writes the Swift and C# for those; the backends add only a thin store
-//! over them, which hands a page its state and a way to send.
+//! the structs they hold, the model's methods — and [`Bridge::rust`] is what
+//! the `#[page_model]` macro emits from it: UniFFI records that mirror the
+//! state as the page reads it, an object of the model's own name that holds
+//! the model and forwards its methods, and a listener trait the native side
+//! implements. UniFFI then writes the Swift and C# for those; the backends
+//! add only a thin store over them, and a protocol of the methods, which is
+//! what a page calls.
 //!
-//! The bridge holds no state and runs no logic of its own: whatever the
-//! model is — a reducer, a view model over use cases — it is reached only
-//! through `PageModel`. The mirrors keep the app free of UniFFI: its own
-//! types derive nothing, and the exported ones take their names. The data
-//! flow is a whole snapshot each time: the native side sends an action, the
-//! model calls its notifier when the state changes, on whatever thread, and
-//! the native side reads the state again. A selector is a field of the
+//! The bridge holds no state and runs no logic of its own: it reaches the
+//! model through its methods and `ValueListenable`, as a Flutter widget
+//! reaches its model. The mirrors keep the app free of UniFFI: its own types
+//! derive nothing, and the exported ones take their names. The data flow is
+//! a whole snapshot each time: the native side calls a method, the model
+//! notifies its listeners when the state changes, on whatever thread, and
+//! the native side reads the value again. A selector is a field of the
 //! snapshot, computed when it is taken.
 
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 
-use crate::ir::{pascal_case, snake_case};
-use crate::rust_types::{
-    EnumDef, Fields, FloatType, IntType, ModelDef, RustType, RustTypes, StructDef,
-};
+use crate::ir::{model_stem, pascal_case, snake_case};
+use crate::rust_types::{FloatType, IntType, ModelDef, RustType, RustTypes, StructDef};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Bridge {
-    /// `Settings`, from `SettingsState`: what the bridge's types are named
-    /// from.
+    /// `SettingsModel`: the model's type, and the name of the native object
+    /// over it.
+    pub model: String,
+    /// `crate::model::SettingsModel`
+    pub model_path: String,
+    /// `Settings`, from `SettingsModel`: what the bridge's other types are
+    /// named from.
     pub stem: String,
     /// `settings`: what its hidden module is named from.
     pub prefix: String,
     pub state: String,
-    pub action: String,
-    /// `crate::action::SettingsAction`
-    pub action_path: String,
-    /// The `#[page_model]` function that makes the model.
-    pub function: String,
     /// Every struct that crosses, each after the structs it holds; the
     /// state is last.
     pub structs: Vec<BridgeStruct>,
-    pub variants: Vec<BridgeVariant>,
+    pub methods: Vec<BridgeMethod>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -71,11 +70,11 @@ pub enum FieldType {
     List(String),
 }
 
-/// An action variant, and the one value it carries, if any.
+/// A model method a page may call, and its one parameter, if any.
 #[derive(Clone, Debug, PartialEq)]
-pub struct BridgeVariant {
+pub struct BridgeMethod {
     pub name: String,
-    pub payload: Option<Scalar>,
+    pub param: Option<(String, Scalar)>,
 }
 
 /// The scalar types that cross.
@@ -95,6 +94,46 @@ impl Scalar {
             RustType::Int(i) => Some(Scalar::Int(*i)),
             RustType::Float(f) => Some(Scalar::Float(*f)),
             RustType::Vec(_) | RustType::Other(_) => None,
+        }
+    }
+
+    /// The Swift type UniFFI gives it.
+    pub fn swift(self) -> &'static str {
+        match self {
+            Scalar::Bool => "Bool",
+            Scalar::Str => "String",
+            Scalar::Float(FloatType::F32) => "Float",
+            Scalar::Float(FloatType::F64) => "Double",
+            Scalar::Int(i) => match i {
+                IntType::I8 => "Int8",
+                IntType::I16 => "Int16",
+                IntType::I32 => "Int32",
+                IntType::I64 | IntType::Isize => "Int64",
+                IntType::U8 => "UInt8",
+                IntType::U16 => "UInt16",
+                IntType::U32 => "UInt32",
+                IntType::U64 | IntType::Usize => "UInt64",
+            },
+        }
+    }
+
+    /// The C# type uniffi-bindgen-cs gives it.
+    pub fn csharp(self) -> &'static str {
+        match self {
+            Scalar::Bool => "bool",
+            Scalar::Str => "string",
+            Scalar::Float(FloatType::F32) => "float",
+            Scalar::Float(FloatType::F64) => "double",
+            Scalar::Int(i) => match i {
+                IntType::I8 => "sbyte",
+                IntType::I16 => "short",
+                IntType::I32 => "int",
+                IntType::I64 | IntType::Isize => "long",
+                IntType::U8 => "byte",
+                IntType::U16 => "ushort",
+                IntType::U32 => "uint",
+                IntType::U64 | IntType::Usize => "ulong",
+            },
         }
     }
 
@@ -118,67 +157,48 @@ impl Scalar {
 impl Bridge {
     /// The bridge for `model`, checked against the Rust types it names.
     pub fn new(model: &ModelDef, types: &RustTypes) -> Result<Self, String> {
-        let (state, action) = types.model_types(model)?;
-        let action_def: &EnumDef = types.enums.get(&action).ok_or_else(|| {
-            format!(
-                "cannot find enum `{action}`, the action `{}`'s model takes",
-                model.function
-            )
-        })?;
+        let state = types.model_state(model)?;
         if !types.structs.contains_key(&state) {
             return Err(format!(
-                "cannot find struct `{state}`, the state `{}`'s model shows",
-                model.function
+                "cannot find struct `{state}`, the value of `{}`",
+                model.name
             ));
         }
         let mut structs = Vec::new();
         collect_struct(&state, types, &mut Vec::new(), &mut structs)?;
-
-        let action = action_def;
-        let variants = action
-            .variants
+        let methods = model
+            .methods
             .iter()
-            .map(|v| {
-                let payload = match &v.fields {
-                    Fields::Unit => None,
-                    Fields::Tuple(types) if types.len() == 1 => {
-                        Some(Scalar::from_rust(&types[0]).ok_or_else(|| {
+            .map(|m| {
+                let param = match &m.param {
+                    None => None,
+                    Some((name, ty)) => Some((
+                        name.clone(),
+                        Scalar::from_rust(ty).ok_or_else(|| {
                             format!(
-                                "`{}::{}` carries type `{}`, which cannot cross yet",
-                                action.name,
-                                v.name,
-                                types[0].rust()
+                                "`{}::{}` takes `{}`, a type that cannot cross yet",
+                                model.name,
+                                m.name,
+                                ty.rust()
                             )
-                        })?)
-                    }
-                    _ => {
-                        return Err(format!(
-                            "`{}::{}` carries several values; an action carries one or none",
-                            action.name, v.name
-                        ));
-                    }
+                        })?,
+                    )),
                 };
-                Ok(BridgeVariant {
-                    name: v.name.clone(),
-                    payload,
+                Ok(BridgeMethod {
+                    name: m.name.clone(),
+                    param,
                 })
             })
-            .collect::<Result<_, _>>()?;
-
-        let stem = state
-            .strip_suffix("State")
-            .filter(|s| !s.is_empty())
-            .unwrap_or(&state)
-            .to_string();
+            .collect::<Result<_, String>>()?;
+        let stem = model_stem(&model.name).to_string();
         Ok(Bridge {
             prefix: snake_case(&stem),
             stem,
-            state: state.clone(),
-            action: action.name.clone(),
-            action_path: action.path.clone(),
-            function: model.function.clone(),
+            model: model.name.clone(),
+            model_path: model.path.clone(),
+            state,
             structs,
-            variants,
+            methods,
         })
     }
 
@@ -186,9 +206,10 @@ impl Bridge {
         self.structs.last().expect("the state crosses")
     }
 
-    /// `SettingsSource`: the object the native side holds, over the model.
-    pub fn source(&self) -> String {
-        format!("{}Source", self.stem)
+    /// `SettingsActions`: the protocol of the model's methods, which is
+    /// what a page calls.
+    pub fn actions(&self) -> String {
+        format!("{}Actions", self.stem)
     }
 
     /// `SettingsStore`: the native side's observable over the source, which
@@ -204,37 +225,36 @@ impl Bridge {
     }
 
     /// The UniFFI exports, which the `#[page_model]` macro emits beside the
-    /// function it marks. The app's types are named by their paths, so it
-    /// compiles wherever the function is; the crate's root must hold
+    /// impl it marks. The app's types are named by their paths, so it
+    /// compiles wherever the impl is; the crate's root must hold
     /// `uniffi::setup_scaffolding!()`.
     pub fn rust(&self) -> TokenStream {
         let module = format_ident!("__dazzui_bridge_{}", self.prefix);
         let path = |p: &str| syn::parse_str::<syn::Path>(p).expect("a Rust path");
-        let core_state = path(&self.state_struct().path);
-        let core_action = path(&self.action_path);
-        let function = format_ident!("{}", self.function);
+        let core_model = path(&self.model_path);
+        let model = format_ident!("{}", self.model);
         let state = format_ident!("{}", self.state);
-        let action = format_ident!("{}", self.action);
-        let source = format_ident!("{}", self.source());
         let listener = format_ident!("{}", self.listener());
         let to_snapshot = format_ident!("mirror_{}", snake_case(&self.state));
 
         let structs = self.structs.iter().map(|s| self.mirror(s));
-        let variants = self.variants.iter().map(|v| {
-            let name = format_ident!("{}", v.name);
-            match v.payload {
-                Some(ty) => {
+        let methods = self.methods.iter().map(|m| {
+            let name = format_ident!("{}", m.name);
+            match &m.param {
+                Some((param, ty)) => {
+                    let param = format_ident!("{}", param);
                     let ty = ty.rust();
-                    quote!(#name(#ty))
+                    quote! {
+                        pub fn #name(&self, #param: #ty) {
+                            self.model.#name(#param);
+                        }
+                    }
                 }
-                None => quote!(#name),
-            }
-        });
-        let arms = self.variants.iter().map(|v| {
-            let name = format_ident!("{}", v.name);
-            match v.payload {
-                Some(_) => quote!(#action::#name(value) => #core_action::#name(value)),
-                None => quote!(#action::#name => #core_action::#name),
+                None => quote! {
+                    pub fn #name(&self) {
+                        self.model.#name();
+                    }
+                },
             }
         });
 
@@ -243,63 +263,54 @@ impl Bridge {
             #[allow(clippy::all)]
             pub mod #module {
                 use ::std::sync::Arc;
-                use ::dazzui_runtime::PageModel;
+                use ::dazzui_runtime::{ListenerId, ValueListenable};
 
                 #(#structs)*
 
-                #[derive(::uniffi::Enum, Clone, Debug, PartialEq)]
-                pub enum #action { #(#variants,)* }
-
-                impl From<#action> for #core_action {
-                    fn from(action: #action) -> Self {
-                        match action { #(#arms,)* }
-                    }
-                }
-
-                /// Called back when the model's state changes, on whichever
+                /// Called back when the model's value changes, on whichever
                 /// thread changed it.
                 #[::uniffi::export(with_foreign)]
                 pub trait #listener: Send + Sync {
-                    fn state_changed(&self);
+                    fn changed(&self);
                 }
 
                 /// The app's model, as the native side holds it.
                 #[derive(::uniffi::Object)]
-                pub struct #source {
-                    model: Box<dyn PageModel<State = #core_state, Action = #core_action>>,
+                pub struct #model {
+                    model: #core_model,
                 }
 
-                impl #source {
-                    /// A source over a model made in Rust, as a test makes one.
-                    pub fn with_model(
-                        model: impl PageModel<State = #core_state, Action = #core_action>,
-                    ) -> Arc<Self> {
-                        Arc::new(Self { model: Box::new(model) })
+                impl #model {
+                    /// The native object over a model made in Rust, as a test
+                    /// makes one.
+                    pub fn with_model(model: #core_model) -> Arc<Self> {
+                        Arc::new(Self { model })
                     }
                 }
 
                 #[::uniffi::export]
-                impl #source {
-                    /// A source over the model the marked function makes.
+                impl #model {
                     #[uniffi::constructor]
                     pub fn new() -> Arc<Self> {
-                        Self::with_model(super::#function())
+                        Self::with_model(#core_model::new())
                     }
 
-                    /// A snapshot of the state, selectors computed.
-                    pub fn state(&self) -> #state {
-                        #to_snapshot(&self.model.state())
+                    /// A snapshot of the value, selectors computed.
+                    pub fn value(&self) -> #state {
+                        #to_snapshot(&ValueListenable::value(&self.model))
                     }
 
-                    pub fn send(&self, action: #action) {
-                        self.model.send(action.into());
+                    pub fn add_listener(&self, listener: Arc<dyn #listener>) -> u64 {
+                        ValueListenable::notifier(&self.model)
+                            .add_listener(move || listener.changed())
+                            .0
                     }
 
-                    pub fn subscribe(&self, listener: Arc<dyn #listener>) {
-                        self.model
-                            .notifier()
-                            .subscribe(move || listener.state_changed());
+                    pub fn remove_listener(&self, id: u64) {
+                        ValueListenable::notifier(&self.model).remove_listener(ListenerId(id));
                     }
+
+                    #(#methods)*
                 }
             }
         }
@@ -444,21 +455,28 @@ mod tests {
         Bridge::new(&types.models[0].clone(), &types)
     }
 
-    #[test]
-    fn mirrors_state_and_actions() {
-        let b = bridge(
-            "struct NoteState { done: bool, count: u32, title: String }
-             enum NoteAction { Toggle, Rename(String), Bump(u32) }
-             #[page_model] fn note() -> Reducer<NoteState, NoteAction> { todo!() }",
+    /// A model over `state`, with `methods`.
+    fn model(state: &str, methods: &str) -> String {
+        format!(
+            "struct M;
+             impl ValueListenable for M {{ type Value = {state}; }}
+             #[page_model] impl M {{ pub fn new() -> Self {{ M }} {methods} }}"
         )
+    }
+
+    #[test]
+    fn mirrors_the_state_and_forwards_the_methods() {
+        let b = bridge(&format!(
+            "struct NoteState {{ done: bool, count: u32, title: String }} {}",
+            model(
+                "NoteState",
+                "pub fn toggle(&self) {} pub fn rename(&self, title: String) {} fn helper(&self) -> u8 { 0 }"
+            )
+        ))
         .unwrap();
         assert_eq!(
-            (
-                b.prefix.as_str(),
-                b.source().as_str(),
-                b.listener().as_str()
-            ),
-            ("note", "NoteSource", "NoteListener")
+            (b.model.as_str(), b.stem.as_str(), b.listener().as_str()),
+            ("M", "M", "MListener")
         );
         let types: Vec<_> = b
             .state_struct()
@@ -474,32 +492,61 @@ mod tests {
                 FieldType::Scalar(Scalar::Str)
             ]
         );
+        // A private method is not the page's to call.
         assert_eq!(
-            b.variants[1],
-            BridgeVariant {
-                name: "Rename".into(),
-                payload: Some(Scalar::Str)
-            }
+            b.methods,
+            [
+                BridgeMethod {
+                    name: "toggle".into(),
+                    param: None
+                },
+                BridgeMethod {
+                    name: "rename".into(),
+                    param: Some(("title".into(), Scalar::Str))
+                },
+            ]
         );
         let rust = b.rust().to_string();
         assert!(rust.contains("uniffi :: Record"), "{rust}");
-        assert!(rust.contains("pub enum NoteAction { Toggle , Rename (:: std :: string :: String) , Bump (u32) , }"), "{rust}");
+        assert!(
+            rust.contains("pub fn rename (& self , title : :: std :: string :: String) { self . model . rename (title) ; }"),
+            "{rust}"
+        );
         syn::parse2::<syn::File>(b.rust()).expect("the Rust side parses");
     }
 
     #[test]
-    fn carries_lists_nested_structs_and_selectors() {
+    fn names_the_bridge_from_the_model() {
         let b = bridge(
-            "struct S { items: Vec<Item>, owner: User }
-             struct Item { id: u32, tags: Vec<Tag> }
-             struct Tag { name: String }
-             struct User { name: String }
-             impl S { #[selector] fn first(&self) -> Vec<Item> { todo!() } }
-             enum A { Go }
-             struct M;
-             impl PageModel for M { type State = S; type Action = A; }
-             #[page_model] fn model() -> M { M }",
+            &format!(
+                "struct SettingsState {{ on: bool }} {}",
+                model("SettingsState", "")
+            )
+            .replace("M", "SettingsModel"),
         )
+        .unwrap();
+        assert_eq!(
+            (
+                b.stem.as_str(),
+                b.store().as_str(),
+                b.actions().as_str(),
+                b.prefix.as_str()
+            ),
+            ("Settings", "SettingsStore", "SettingsActions", "settings")
+        );
+    }
+
+    #[test]
+    fn carries_lists_nested_structs_and_selectors() {
+        let b = bridge(&format!(
+            "struct S {{ items: Vec<Item>, owner: User }}
+             struct Item {{ id: u32, tags: Vec<Tag> }}
+             struct Tag {{ name: String }}
+             struct User {{ name: String }}
+             impl S {{ #[selector] fn first(&self) -> Vec<Item> {{ todo!() }} }}
+             {}",
+            model("S", "")
+        ))
         .unwrap();
         let names: Vec<_> = b.structs.iter().map(|s| s.name.as_str()).collect();
         assert_eq!(names, ["Tag", "Item", "User", "S"]);
@@ -518,43 +565,38 @@ mod tests {
 
     #[test]
     fn rejects_what_cannot_cross() {
-        let err = |src: &str| {
-            bridge(&format!(
-                "{src} enum A {{ Go }} #[page_model] fn model() -> Reducer<S, A> {{ todo!() }}"
-            ))
-            .unwrap_err()
+        let err = |state: &str, methods: &str| {
+            bridge(&format!("{state} {}", model("S", methods))).unwrap_err()
         };
         assert_eq!(
-            err("struct S { tags: Vec<String> }"),
+            err("struct S { tags: Vec<String> }", ""),
             "`S.tags`, a field, has type `Vec<String>`: a Vec crosses only as a Vec of structs"
         );
         assert_eq!(
-            err("struct S { at: Instant }"),
+            err("struct S { at: Instant }", ""),
             "`S.at` has type `Instant`, which cannot cross to the native side yet"
         );
         assert_eq!(
-            err("struct S { child: Vec<S> }"),
+            err("struct S { child: Vec<S> }", ""),
             "`S` holds itself, which cannot cross: S → S"
         );
-    }
-
-    #[test]
-    fn finds_a_models_types_from_its_impl() {
-        let err = bridge(
-            "struct S { on: bool } enum A { Go } struct M;
-             #[page_model] fn model() -> M { M }",
-        )
-        .unwrap_err();
         assert_eq!(
-            err,
-            "`model` returns `M`, and there is no `impl PageModel for M` naming its `State` and `Action`"
+            err(
+                "struct S { on: bool }",
+                "pub fn at(&self, when: Instant) {}"
+            ),
+            "`M::at` takes `Instant`, a type that cannot cross yet"
         );
-        let b = bridge(
-            "struct S { on: bool } enum A { Go } struct M;
-             impl dazzui_runtime::PageModel for M { type State = S; type Action = crate::A; }
-             #[page_model] fn model() -> M { M }",
+        let file: syn::File = syn::parse_str(
+            "struct S { on: bool } struct M; #[page_model] impl M { pub fn new() -> Self { M } }",
         )
         .unwrap();
-        assert_eq!((b.state.as_str(), b.action.as_str()), ("S", "A"));
+        let mut types = RustTypes::default();
+        types.collect(&file.items, "crate");
+        assert!(
+            Bridge::new(&types.models[0], &types)
+                .unwrap_err()
+                .contains("is not a `ValueListenable`")
+        );
     }
 }

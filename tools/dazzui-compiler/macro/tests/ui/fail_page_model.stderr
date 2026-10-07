@@ -1,11 +1,11 @@
-error: a #[page_model] function is `fn name() -> Model`, where `Model: PageModel`
-  --> tests/ui/fail_page_model.rs:26:5
+error: a model's public method is what a page calls: `pub fn name(&self)` or `pub fn name(&self, value: T)`, returning nothing; make anything else private
+  --> tests/ui/fail_page_model.rs:17:9
    |
-26 | pub fn model(state: S) -> u32 {
-   |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+17 |     pub fn set(&self, a: u32, b: u32) {}
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 error: a #[selector] is `fn name(&self) -> T`
-  --> tests/ui/fail_page_model.rs:32:9
+  --> tests/ui/fail_page_model.rs:22:9
    |
-32 |     pub fn count(self) -> u32 {
+22 |     pub fn count(self) -> u32 {
    |         ^^^^^^^^^^^^^^^^^^^^^

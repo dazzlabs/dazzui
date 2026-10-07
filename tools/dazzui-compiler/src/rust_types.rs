@@ -7,11 +7,11 @@ use std::collections::BTreeMap;
 pub struct RustTypes {
     pub enums: BTreeMap<String, EnumDef>,
     pub structs: BTreeMap<String, StructDef>,
-    /// Functions marked `#[page_model]`: what the bridge carries to the
-    /// native side.
+    /// `#[page_model] impl`s: the models pages call, and the bridge
+    /// carries to the native side.
     pub models: Vec<ModelDef>,
-    /// `impl PageModel for T`: each `T`, and its `State` and `Action`.
-    pub page_model_impls: BTreeMap<String, (String, String)>,
+    /// `impl ValueListenable for T`: each `T`, and its `Value`.
+    pub listenable_impls: BTreeMap<String, String>,
     /// Whether the crate's root calls `uniffi::setup_scaffolding!()`, which
     /// the bridge's UniFFI exports need.
     pub scaffolding: bool,
@@ -80,28 +80,39 @@ impl StructDef {
     }
 }
 
-/// `#[page_model] fn settings() -> Model`: a function that makes the model
-/// a page's state comes from and its actions go to.
+/// `#[page_model] impl SettingsModel { … }`: a model, and the methods a
+/// page may call on it.
 #[derive(Clone, Debug, PartialEq)]
 pub struct ModelDef {
-    pub function: String,
-    pub model: ModelType,
-    /// Where the function's name is, for a diagnostic: the file, as the
-    /// project displays it, and the line, column and width.
+    pub name: String,
+    /// `crate::model::SettingsModel`
+    pub path: String,
+    pub methods: Vec<MethodDef>,
+    /// Where the type's name is in the impl, for a diagnostic: the file, as
+    /// the project displays it, and the line, column and width.
     pub file: String,
     pub line: u32,
     pub column: u32,
     pub width: u32,
 }
 
-/// What a `#[page_model]` function returns.
-#[derive(Clone, Debug, PartialEq)]
-pub enum ModelType {
-    /// `Reducer<State, Action>`, whose types are its own.
-    Reducer { state: String, action: String },
-    /// Any other type, whose `impl PageModel` names them.
-    Named(String),
+impl ModelDef {
+    pub fn method(&self, name: &str) -> Option<&MethodDef> {
+        self.methods.iter().find(|m| m.name == name)
+    }
 }
+
+/// `pub fn set_on(&self, on: bool)`: a method a page may call, and its one
+/// parameter, if it has one.
+#[derive(Clone, Debug, PartialEq)]
+pub struct MethodDef {
+    pub name: String,
+    pub param: Option<(String, RustType)>,
+}
+
+/// Names the bridge gives the native object itself, which a model's method
+/// cannot also take.
+const RESERVED: &[&str] = &["value", "add_listener", "remove_listener", "with_model"];
 
 /// The Rust types that cross to the native side.
 #[derive(Clone, Debug, PartialEq)]
@@ -219,8 +230,8 @@ fn quote_type(ty: &syn::Type) -> String {
 }
 
 impl RustTypes {
-    /// Collects the enums, structs, selectors, `#[page_model]` functions
-    /// and `impl PageModel`s of
+    /// Collects the enums, structs, selectors, `#[page_model] impl`s and
+    /// `impl ValueListenable`s of
     /// one parsed file, including those in inline modules. `module` is the
     /// file's module path, `crate::state`.
     pub fn collect(&mut self, items: &[syn::Item], module: &str) {
@@ -257,6 +268,11 @@ impl RustTypes {
                         def.fields = fields;
                     }
                 }
+                syn::Item::Impl(imp) if has_attr(&imp.attrs, "page_model") => {
+                    if let Ok(model) = ModelDef::from_impl(imp, module) {
+                        self.models.push(model);
+                    }
+                }
                 syn::Item::Impl(imp) if imp.trait_.is_none() => {
                     let syn::Type::Path(self_ty) = &*imp.self_ty else {
                         continue;
@@ -289,19 +305,11 @@ impl RustTypes {
                         def.selectors.extend(selectors);
                     }
                 }
-                syn::Item::Impl(imp) if is_page_model_impl(imp) => {
-                    let (Some(name), Some(state), Some(action)) = (
-                        type_name(&imp.self_ty),
-                        associated(imp, "State"),
-                        associated(imp, "Action"),
-                    ) else {
-                        continue;
-                    };
-                    self.page_model_impls.insert(name, (state, action));
-                }
-                syn::Item::Fn(f) if has_attr(&f.attrs, "page_model") => {
-                    if let Ok(model) = ModelDef::from_fn(&f.sig) {
-                        self.models.push(model);
+                syn::Item::Impl(imp) if implements(imp, "ValueListenable") => {
+                    if let (Some(name), Some(value)) =
+                        (type_name(&imp.self_ty), associated(imp, "Value"))
+                    {
+                        self.listenable_impls.insert(name, value);
                     }
                 }
                 syn::Item::Macro(m)
@@ -324,65 +332,116 @@ impl RustTypes {
         }
     }
 
-    /// The state and action a model's pages show and send, or why they
-    /// cannot be told.
-    pub fn model_types(&self, model: &ModelDef) -> Result<(String, String), String> {
-        match &model.model {
-            ModelType::Reducer { state, action } => Ok((state.clone(), action.clone())),
-            ModelType::Named(name) => self.page_model_impls.get(name).cloned().ok_or_else(|| {
-                format!(
-                    "`{}` returns `{name}`, and there is no `impl PageModel for {name}` naming its `State` and `Action`",
-                    model.function
-                )
-            }),
-        }
+    /// The state a model's pages show — its `ValueListenable` value — or
+    /// why it cannot be told.
+    pub fn model_state(&self, model: &ModelDef) -> Result<String, String> {
+        self.listenable_impls.get(&model.name).cloned().ok_or_else(|| {
+            format!(
+                "`{}` is not a `ValueListenable`: implement it, naming the state its pages show: `impl ValueListenable for {} {{ type Value = …; }}`",
+                model.name, model.name
+            )
+        })
+    }
+
+    pub fn model(&self, name: &str) -> Option<&ModelDef> {
+        self.models.iter().find(|m| m.name == name)
     }
 }
 
 impl ModelDef {
-    /// Reads `fn name() -> Model`.
-    pub fn from_fn(sig: &syn::Signature) -> syn::Result<Self> {
-        let shape = || {
-            syn::Error::new_spanned(
-                sig,
-                "a #[page_model] function is `fn name() -> Model`, where `Model: PageModel`",
-            )
-        };
-        if !sig.inputs.is_empty() || !sig.generics.params.is_empty() || sig.asyncness.is_some() {
-            return Err(shape());
+    /// Reads `#[page_model] impl Name { pub fn new() -> Self; pub fn m(&self[, v: T]) … }`.
+    pub fn from_impl(imp: &syn::ItemImpl, module: &str) -> syn::Result<Self> {
+        if imp.trait_.is_some() || !imp.generics.params.is_empty() {
+            return Err(syn::Error::new_spanned(
+                &imp.self_ty,
+                "#[page_model] marks a model's own `impl`, with no generics: `#[page_model] impl SettingsModel { … }`",
+            ));
         }
-        let syn::ReturnType::Type(_, ty) = &sig.output else {
-            return Err(shape());
+        let Some(name) = type_name(&imp.self_ty) else {
+            return Err(syn::Error::new_spanned(
+                &imp.self_ty,
+                "a model is a named type",
+            ));
         };
-        let syn::Type::Path(path) = &**ty else {
-            return Err(shape());
-        };
-        let last = path.path.segments.last().ok_or_else(shape)?;
-        let model = match &last.arguments {
-            syn::PathArguments::AngleBracketed(args) if last.ident == "Reducer" => {
-                let names: Vec<_> = args
-                    .args
-                    .iter()
-                    .filter_map(|a| match a {
-                        syn::GenericArgument::Type(t) => type_name(t),
-                        _ => None,
-                    })
-                    .collect();
-                let [state, action] = names.as_slice() else {
-                    return Err(shape());
-                };
-                ModelType::Reducer {
-                    state: state.clone(),
-                    action: action.clone(),
-                }
+        let mut methods = Vec::new();
+        let mut new = false;
+        for item in &imp.items {
+            let syn::ImplItem::Fn(f) = item else { continue };
+            if !matches!(f.vis, syn::Visibility::Public(_)) {
+                continue;
             }
-            _ => ModelType::Named(last.ident.to_string()),
-        };
-        let span = sig.ident.span();
+            let sig = &f.sig;
+            if sig.ident == "new" {
+                let returns_self = matches!(&sig.output, syn::ReturnType::Type(_, ty)
+                    if type_name(ty).is_some_and(|t| t == "Self" || t == name));
+                if !sig.inputs.is_empty() || !returns_self {
+                    return Err(syn::Error::new_spanned(
+                        sig,
+                        "the native side makes the model with `pub fn new() -> Self`, which takes nothing",
+                    ));
+                }
+                new = true;
+                continue;
+            }
+            let shape = || {
+                syn::Error::new_spanned(
+                    sig,
+                    "a model's public method is what a page calls: `pub fn name(&self)` or `pub fn name(&self, value: T)`, returning nothing; make anything else private",
+                )
+            };
+            if RESERVED.contains(&sig.ident.to_string().as_str()) {
+                return Err(syn::Error::new(
+                    sig.ident.span(),
+                    format!(
+                        "`{}` is a name the bridge gives the native object; call the method something else",
+                        sig.ident
+                    ),
+                ));
+            }
+            let mut inputs = sig.inputs.iter();
+            match inputs.next() {
+                Some(syn::FnArg::Receiver(r))
+                    if r.reference.is_some() && r.mutability.is_none() => {}
+                _ => return Err(shape()),
+            }
+            let param = match inputs.next() {
+                None => None,
+                Some(syn::FnArg::Typed(t)) => {
+                    let syn::Pat::Ident(ident) = &*t.pat else {
+                        return Err(shape());
+                    };
+                    Some((ident.ident.to_string(), RustType::from_syn(&t.ty)))
+                }
+                Some(_) => return Err(shape()),
+            };
+            if inputs.next().is_some()
+                || sig.output != syn::ReturnType::Default
+                || sig.asyncness.is_some()
+                || !sig.generics.params.is_empty()
+            {
+                return Err(shape());
+            }
+            methods.push(MethodDef {
+                name: sig.ident.to_string(),
+                param,
+            });
+        }
+        if !new {
+            return Err(syn::Error::new_spanned(
+                &imp.self_ty,
+                "the native side makes the model with `pub fn new() -> Self`; add one to this impl",
+            ));
+        }
+        let span = match &*imp.self_ty {
+            syn::Type::Path(p) => p.path.segments.last().map(|s| s.ident.span()),
+            _ => None,
+        }
+        .unwrap_or_else(proc_macro2::Span::call_site);
         let (start, end) = (span.start(), span.end());
         Ok(ModelDef {
-            function: sig.ident.to_string(),
-            model,
+            path: format!("{module}::{name}"),
+            name,
+            methods,
             file: String::new(),
             line: start.line as u32,
             column: start.column as u32 + 1,
@@ -399,11 +458,11 @@ fn type_name(ty: &syn::Type) -> Option<String> {
     }
 }
 
-fn is_page_model_impl(imp: &syn::ItemImpl) -> bool {
+fn implements(imp: &syn::ItemImpl, name: &str) -> bool {
     imp.trait_
         .as_ref()
         .and_then(|(_, path, _)| path.segments.last())
-        .is_some_and(|s| s.ident == "PageModel")
+        .is_some_and(|s| s.ident == name)
 }
 
 /// The type an impl's `type Name = …;` names.

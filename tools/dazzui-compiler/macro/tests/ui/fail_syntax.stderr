@@ -1,5 +1,5 @@
-error: a page takes its state and its action: `page Name(state: State, action: Action)`
-  --> tests/ui/fail_syntax.rs:22:10
+error: a page takes its model: `page Name(model: Model)`; it reads the model's value as `model.field`
+  --> tests/ui/fail_syntax.rs:41:12
    |
-22 |     page P(state: S) {
-   |          ^
+41 |     page P(state: S) {
+   |            ^^^^^

@@ -20,34 +20,35 @@ final class SettingsPageTests: XCTestCase {
     XCTAssertEqual(store.state.visiblePlugins.map(\.id), [1, 3])
     XCTAssertTrue(store.state.hasHiddenPlugins)
 
-    store.send(.setShowDisabledPlugins(true))
+    store.model.setShowDisabledPlugins(on: true)
     XCTAssertEqual(store.state.visiblePlugins.map(\.name), ["Spell check", "Grammar", "Translate"])
     XCTAssertFalse(store.state.hasHiddenPlugins)
 
-    store.send(.togglePlugin(2))
+    store.model.togglePlugin(id: 2)
     XCTAssertEqual(store.state.visiblePlugins[1], Plugin(id: 2, name: "Grammar", enabled: true))
   }
 
-  /// A toggle sends its new value; the model changes the state as it takes
-  /// it and calls back on this thread, so the store shows it at once.
-  func testAnActionChangesTheRustState() {
+  /// A switch calls the model's method with its new value; the model
+  /// changes as the method runs and notifies on this thread, so the store
+  /// shows it at once.
+  func testAMethodChangesTheRustState() {
     let store = SettingsStore()
-    store.send(.setAutoUpdate(true))
+    store.model.setAutoUpdate(on: true)
     XCTAssertTrue(store.state.autoUpdate)
     XCTAssertFalse(store.state.saved)
     XCTAssertEqual(store.state.status, "Unsaved changes")
 
-    store.send(.reset)
+    store.model.reset()
     XCTAssertFalse(store.state.autoUpdate)
     XCTAssertTrue(store.state.saved)
   }
 
   /// A save finishes on a Rust thread of its own; the store hears of it
-  /// there and reads the state again on the main one.
+  /// there and reads the value again on the main one.
   func testAChangeFromAnotherThreadReachesTheStore() {
     let store = SettingsStore()
-    store.send(.setAutoUpdate(true))
-    store.send(.save)
+    store.model.setAutoUpdate(on: true)
+    store.model.save()
     XCTAssertTrue(store.state.saving)
     XCTAssertTrue(store.state.saveDisabled)
 
@@ -67,19 +68,28 @@ final class SettingsPageTests: XCTestCase {
 
   func testThePageLaysOut() {
     let store = SettingsStore()
-    let host = NSHostingView(rootView: SettingsPage(state: store.state, send: store.send))
+    let host = NSHostingView(rootView: SettingsPage(state: store.state, model: store.model))
     host.frame = NSRect(x: 0, y: 0, width: 360, height: 240)
     host.layoutSubtreeIfNeeded()
     XCTAssertGreaterThan(host.fittingSize.height, 0)
   }
 
-  /// The page holds nothing: a state made in Swift, and a closure that
-  /// collects what it sends, are all it needs.
-  func testThePageNeedsNoModel() {
-    var sent: [SettingsAction] = []
-    let state = SettingsStore().state
-    let page = SettingsPage(state: state, send: { sent.append($0) })
-    page.send(.save)
-    XCTAssertEqual(sent, [.save])
+  /// The page takes the model only as the protocol of its methods: one
+  /// written in Swift, which records the calls, is all it needs.
+  func testThePageNeedsNoRustModel() {
+    final class Recorder: SettingsActions {
+      var calls: [String] = []
+      func setLaunchAtStartup(on: Bool) { calls.append("launch \(on)") }
+      func setAutoUpdate(on: Bool) { calls.append("update \(on)") }
+      func setShowDisabledPlugins(on: Bool) { calls.append("show \(on)") }
+      func togglePlugin(id: UInt32) { calls.append("toggle \(id)") }
+      func save() { calls.append("save") }
+      func reset() { calls.append("reset") }
+    }
+    let recorder = Recorder()
+    let page = SettingsPage(state: SettingsStore().state, model: recorder)
+    page.model.save()
+    page.model.togglePlugin(id: 3)
+    XCTAssertEqual(recorder.calls, ["save", "toggle 3"])
   }
 }

@@ -7,7 +7,7 @@ use crate::syntax::{PageAst, parse_page};
 use crate::bridge::Bridge;
 use crate::error::SemanticError;
 use crate::registry::Registry;
-use crate::rust_types::{EnumDef, RustTypes, StructDef, module_path};
+use crate::rust_types::{RustTypes, StructDef, module_path};
 use crate::semantic::lower;
 
 /// An app crate's source as the CLI reads it: every `.rs` file under a
@@ -26,25 +26,24 @@ pub struct SourceFile {
 }
 
 /// Everything a project compiles to: its pages, and the page models the
-/// bridge carries to the native side. Neither needs the other: a page is a
-/// view of a state, whoever holds it.
+/// bridge carries to the native side. A page calls its model only through
+/// a protocol of the model's methods, which a host may implement natively.
 pub struct Compiled {
     pub pages: Vec<CompiledPage>,
     pub models: Vec<CompiledModel>,
 }
 
-/// A page, lowered, with the Rust types its state and actions are.
+/// A page, lowered, with the Rust type its state is.
 pub struct CompiledPage {
     pub page: Page,
     pub file: String,
     pub state: StructDef,
-    pub actions: EnumDef,
     /// The components it was compiled against, whose mappings the backends
     /// lower it with.
     pub registry: Registry,
 }
 
-/// A `#[page_model]` function, and the bridge that carries its model.
+/// A `#[page_model] impl`, and the bridge that carries its model.
 pub struct CompiledModel {
     pub bridge: Bridge,
     /// The file the function is in, as generated headers print it.
@@ -128,7 +127,6 @@ impl Project {
             };
             pages.push(CompiledPage {
                 state: self.types.structs[&page.state_type].clone(),
-                actions: self.types.enums[&page.action_type].clone(),
                 page,
                 file: file.clone(),
                 registry: registry.clone(),
@@ -149,13 +147,15 @@ impl Project {
                     continue;
                 }
             };
-            // The bridge's types are named from the state: two models of one
-            // state would export the same names.
-            if let Some(first) = models.iter().find(|m| m.bridge.state == bridge.state) {
+            // The bridge's types are named from the model: two of a name, or
+            // of a stem, would export the same names.
+            if let Some(first) = models.iter().find(|m| m.bridge.stem == bridge.stem) {
                 diagnostics.push(
                     at(format!(
-                        "`{}` and `{}` both make a model of `{}`; a state has one page model",
-                        first.bridge.function, bridge.function, bridge.state
+                        "`{}` and `{}` would both export `{}`; give one another name",
+                        first.bridge.model,
+                        bridge.model,
+                        bridge.store()
                     ))
                     .with_help(format!("the first is in {}", first.file)),
                 );

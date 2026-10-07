@@ -441,6 +441,22 @@ fileprivate struct FfiConverterUInt32: FfiConverterPrimitive {
 #if swift(>=5.8)
 @_documentation(visibility: private)
 #endif
+fileprivate struct FfiConverterUInt64: FfiConverterPrimitive {
+    typealias FfiType = UInt64
+    typealias SwiftType = UInt64
+
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> UInt64 {
+        return try lift(readInt(&buf))
+    }
+
+    public static func write(_ value: SwiftType, into buf: inout [UInt8]) {
+        writeInt(&buf, lower(value))
+    }
+}
+
+#if swift(>=5.8)
+@_documentation(visibility: private)
+#endif
 fileprivate struct FfiConverterBool : FfiConverter {
     typealias FfiType = Int8
     typealias SwiftType = Bool
@@ -507,16 +523,16 @@ fileprivate struct FfiConverterString: FfiConverter {
 
 
 /**
- * Called back when the model's state changes, on whichever
+ * Called back when the model's value changes, on whichever
  * thread changed it.
  */
 public protocol SettingsListener: AnyObject, Sendable {
     
-    func stateChanged() 
+    func changed() 
     
 }
 /**
- * Called back when the model's state changes, on whichever
+ * Called back when the model's value changes, on whichever
  * thread changed it.
  */
 open class SettingsListenerImpl: SettingsListener, @unchecked Sendable {
@@ -572,8 +588,8 @@ open class SettingsListenerImpl: SettingsListener, @unchecked Sendable {
     
 
     
-open func stateChanged()  {try! rustCall() {
-    uniffi_settings_example_fn_method_settingslistener_state_changed(
+open func changed()  {try! rustCall() {
+    uniffi_settings_example_fn_method_settingslistener_changed(
             self.uniffiCloneHandle(),$0
     )
 }
@@ -607,7 +623,7 @@ fileprivate struct UniffiCallbackInterfaceSettingsListener {
                 fatalError("Uniffi callback interface SettingsListener: handle missing in uniffiClone")
             }
         },
-        stateChanged: { (
+        changed: { (
             uniffiHandle: UInt64,
             uniffiOutReturn: UnsafeMutableRawPointer,
             uniffiCallStatus: UnsafeMutablePointer<RustCallStatus>
@@ -617,7 +633,7 @@ fileprivate struct UniffiCallbackInterfaceSettingsListener {
                 guard let uniffiObj = try? FfiConverterTypeSettingsListener.handleMap.get(handle: uniffiHandle) else {
                     throw UniffiInternalError.unexpectedStaleHandle
                 }
-                return uniffiObj.stateChanged(
+                return uniffiObj.changed(
                 )
             }
 
@@ -707,22 +723,34 @@ public func FfiConverterTypeSettingsListener_lower(_ value: SettingsListener) ->
 /**
  * The app's model, as the native side holds it.
  */
-public protocol SettingsSourceProtocol: AnyObject, Sendable {
+public protocol SettingsModelProtocol: AnyObject, Sendable {
     
-    func send(action: SettingsAction) 
+    func addListener(listener: SettingsListener)  -> UInt64
+    
+    func removeListener(id: UInt64) 
+    
+    func reset() 
+    
+    func save() 
+    
+    func setAutoUpdate(on: Bool) 
+    
+    func setLaunchAtStartup(on: Bool) 
+    
+    func setShowDisabledPlugins(on: Bool) 
+    
+    func togglePlugin(id: UInt32) 
     
     /**
-     * A snapshot of the state, selectors computed.
+     * A snapshot of the value, selectors computed.
      */
-    func state()  -> SettingsState
-    
-    func subscribe(listener: SettingsListener) 
+    func value()  -> SettingsState
     
 }
 /**
  * The app's model, as the native side holds it.
  */
-open class SettingsSource: SettingsSourceProtocol, @unchecked Sendable {
+open class SettingsModel: SettingsModelProtocol, @unchecked Sendable {
     fileprivate let handle: UInt64
 
     /// Used to instantiate a [FFIObject] without an actual handle, for fakes in tests, mostly.
@@ -759,15 +787,12 @@ open class SettingsSource: SettingsSourceProtocol, @unchecked Sendable {
     @_documentation(visibility: private)
 #endif
     public func uniffiCloneHandle() -> UInt64 {
-        return try! rustCall { uniffi_settings_example_fn_clone_settingssource(self.handle, $0) }
+        return try! rustCall { uniffi_settings_example_fn_clone_settingsmodel(self.handle, $0) }
     }
-    /**
-     * A source over the model the marked function makes.
-     */
 public convenience init() {
     let handle =
         try! rustCall() {
-    uniffi_settings_example_fn_constructor_settingssource_new($0
+    uniffi_settings_example_fn_constructor_settingsmodel_new($0
     )
 }
     self.init(unsafeFromHandle: handle)
@@ -779,37 +804,84 @@ public convenience init() {
             return
         }
 
-        try! rustCall { uniffi_settings_example_fn_free_settingssource(handle, $0) }
+        try! rustCall { uniffi_settings_example_fn_free_settingsmodel(handle, $0) }
     }
 
     
 
     
-open func send(action: SettingsAction)  {try! rustCall() {
-    uniffi_settings_example_fn_method_settingssource_send(
+open func addListener(listener: SettingsListener) -> UInt64  {
+    return try!  FfiConverterUInt64.lift(try! rustCall() {
+    uniffi_settings_example_fn_method_settingsmodel_add_listener(
             self.uniffiCloneHandle(),
-        FfiConverterTypeSettingsAction_lower(action),$0
+        FfiConverterTypeSettingsListener_lower(listener),$0
+    )
+})
+}
+    
+open func removeListener(id: UInt64)  {try! rustCall() {
+    uniffi_settings_example_fn_method_settingsmodel_remove_listener(
+            self.uniffiCloneHandle(),
+        FfiConverterUInt64.lower(id),$0
+    )
+}
+}
+    
+open func reset()  {try! rustCall() {
+    uniffi_settings_example_fn_method_settingsmodel_reset(
+            self.uniffiCloneHandle(),$0
+    )
+}
+}
+    
+open func save()  {try! rustCall() {
+    uniffi_settings_example_fn_method_settingsmodel_save(
+            self.uniffiCloneHandle(),$0
+    )
+}
+}
+    
+open func setAutoUpdate(on: Bool)  {try! rustCall() {
+    uniffi_settings_example_fn_method_settingsmodel_set_auto_update(
+            self.uniffiCloneHandle(),
+        FfiConverterBool.lower(on),$0
+    )
+}
+}
+    
+open func setLaunchAtStartup(on: Bool)  {try! rustCall() {
+    uniffi_settings_example_fn_method_settingsmodel_set_launch_at_startup(
+            self.uniffiCloneHandle(),
+        FfiConverterBool.lower(on),$0
+    )
+}
+}
+    
+open func setShowDisabledPlugins(on: Bool)  {try! rustCall() {
+    uniffi_settings_example_fn_method_settingsmodel_set_show_disabled_plugins(
+            self.uniffiCloneHandle(),
+        FfiConverterBool.lower(on),$0
+    )
+}
+}
+    
+open func togglePlugin(id: UInt32)  {try! rustCall() {
+    uniffi_settings_example_fn_method_settingsmodel_toggle_plugin(
+            self.uniffiCloneHandle(),
+        FfiConverterUInt32.lower(id),$0
     )
 }
 }
     
     /**
-     * A snapshot of the state, selectors computed.
+     * A snapshot of the value, selectors computed.
      */
-open func state() -> SettingsState  {
+open func value() -> SettingsState  {
     return try!  FfiConverterTypeSettingsState_lift(try! rustCall() {
-    uniffi_settings_example_fn_method_settingssource_state(
+    uniffi_settings_example_fn_method_settingsmodel_value(
             self.uniffiCloneHandle(),$0
     )
 })
-}
-    
-open func subscribe(listener: SettingsListener)  {try! rustCall() {
-    uniffi_settings_example_fn_method_settingssource_subscribe(
-            self.uniffiCloneHandle(),
-        FfiConverterTypeSettingsListener_lower(listener),$0
-    )
-}
 }
     
 
@@ -820,24 +892,24 @@ open func subscribe(listener: SettingsListener)  {try! rustCall() {
 #if swift(>=5.8)
 @_documentation(visibility: private)
 #endif
-public struct FfiConverterTypeSettingsSource: FfiConverter {
+public struct FfiConverterTypeSettingsModel: FfiConverter {
     typealias FfiType = UInt64
-    typealias SwiftType = SettingsSource
+    typealias SwiftType = SettingsModel
 
-    public static func lift(_ handle: UInt64) throws -> SettingsSource {
-        return SettingsSource(unsafeFromHandle: handle)
+    public static func lift(_ handle: UInt64) throws -> SettingsModel {
+        return SettingsModel(unsafeFromHandle: handle)
     }
 
-    public static func lower(_ value: SettingsSource) -> UInt64 {
+    public static func lower(_ value: SettingsModel) -> UInt64 {
         return value.uniffiCloneHandle()
     }
 
-    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> SettingsSource {
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> SettingsModel {
         let handle: UInt64 = try readInt(&buf)
         return try lift(handle)
     }
 
-    public static func write(_ value: SettingsSource, into buf: inout [UInt8]) {
+    public static func write(_ value: SettingsModel, into buf: inout [UInt8]) {
         writeInt(&buf, lower(value))
     }
 }
@@ -846,15 +918,15 @@ public struct FfiConverterTypeSettingsSource: FfiConverter {
 #if swift(>=5.8)
 @_documentation(visibility: private)
 #endif
-public func FfiConverterTypeSettingsSource_lift(_ handle: UInt64) throws -> SettingsSource {
-    return try FfiConverterTypeSettingsSource.lift(handle)
+public func FfiConverterTypeSettingsModel_lift(_ handle: UInt64) throws -> SettingsModel {
+    return try FfiConverterTypeSettingsModel.lift(handle)
 }
 
 #if swift(>=5.8)
 @_documentation(visibility: private)
 #endif
-public func FfiConverterTypeSettingsSource_lower(_ value: SettingsSource) -> UInt64 {
-    return FfiConverterTypeSettingsSource.lower(value)
+public func FfiConverterTypeSettingsModel_lower(_ value: SettingsModel) -> UInt64 {
+    return FfiConverterTypeSettingsModel.lower(value)
 }
 
 
@@ -1007,113 +1079,6 @@ public func FfiConverterTypeSettingsState_lower(_ value: SettingsState) -> RustB
     return FfiConverterTypeSettingsState.lower(value)
 }
 
-// Note that we don't yet support `indirect` for enums.
-// See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
-
-public enum SettingsAction: Equatable, Hashable {
-    
-    case setLaunchAtStartup(Bool
-    )
-    case setAutoUpdate(Bool
-    )
-    case save
-    case reset
-    case setShowDisabledPlugins(Bool
-    )
-    case togglePlugin(UInt32
-    )
-
-
-
-
-
-}
-
-#if compiler(>=6)
-extension SettingsAction: Sendable {}
-#endif
-
-#if swift(>=5.8)
-@_documentation(visibility: private)
-#endif
-public struct FfiConverterTypeSettingsAction: FfiConverterRustBuffer {
-    typealias SwiftType = SettingsAction
-
-    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> SettingsAction {
-        let variant: Int32 = try readInt(&buf)
-        switch variant {
-        
-        case 1: return .setLaunchAtStartup(try FfiConverterBool.read(from: &buf)
-        )
-        
-        case 2: return .setAutoUpdate(try FfiConverterBool.read(from: &buf)
-        )
-        
-        case 3: return .save
-        
-        case 4: return .reset
-        
-        case 5: return .setShowDisabledPlugins(try FfiConverterBool.read(from: &buf)
-        )
-        
-        case 6: return .togglePlugin(try FfiConverterUInt32.read(from: &buf)
-        )
-        
-        default: throw UniffiInternalError.unexpectedEnumCase
-        }
-    }
-
-    public static func write(_ value: SettingsAction, into buf: inout [UInt8]) {
-        switch value {
-        
-        
-        case let .setLaunchAtStartup(v1):
-            writeInt(&buf, Int32(1))
-            FfiConverterBool.write(v1, into: &buf)
-            
-        
-        case let .setAutoUpdate(v1):
-            writeInt(&buf, Int32(2))
-            FfiConverterBool.write(v1, into: &buf)
-            
-        
-        case .save:
-            writeInt(&buf, Int32(3))
-        
-        
-        case .reset:
-            writeInt(&buf, Int32(4))
-        
-        
-        case let .setShowDisabledPlugins(v1):
-            writeInt(&buf, Int32(5))
-            FfiConverterBool.write(v1, into: &buf)
-            
-        
-        case let .togglePlugin(v1):
-            writeInt(&buf, Int32(6))
-            FfiConverterUInt32.write(v1, into: &buf)
-            
-        }
-    }
-}
-
-
-#if swift(>=5.8)
-@_documentation(visibility: private)
-#endif
-public func FfiConverterTypeSettingsAction_lift(_ buf: RustBuffer) throws -> SettingsAction {
-    return try FfiConverterTypeSettingsAction.lift(buf)
-}
-
-#if swift(>=5.8)
-@_documentation(visibility: private)
-#endif
-public func FfiConverterTypeSettingsAction_lower(_ value: SettingsAction) -> RustBuffer {
-    return FfiConverterTypeSettingsAction.lower(value)
-}
-
-
 #if swift(>=5.8)
 @_documentation(visibility: private)
 #endif
@@ -1154,19 +1119,37 @@ private let initializationResult: InitializationResult = {
     if bindings_contract_version != scaffolding_contract_version {
         return InitializationResult.contractVersionMismatch
     }
-    if (uniffi_settings_example_checksum_method_settingslistener_state_changed() != 7042) {
+    if (uniffi_settings_example_checksum_method_settingslistener_changed() != 21934) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_settings_example_checksum_method_settingssource_send() != 13796) {
+    if (uniffi_settings_example_checksum_method_settingsmodel_add_listener() != 51336) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_settings_example_checksum_method_settingssource_state() != 61957) {
+    if (uniffi_settings_example_checksum_method_settingsmodel_remove_listener() != 25916) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_settings_example_checksum_method_settingssource_subscribe() != 12353) {
+    if (uniffi_settings_example_checksum_method_settingsmodel_reset() != 56521) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_settings_example_checksum_constructor_settingssource_new() != 27133) {
+    if (uniffi_settings_example_checksum_method_settingsmodel_save() != 19463) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_settings_example_checksum_method_settingsmodel_set_auto_update() != 902) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_settings_example_checksum_method_settingsmodel_set_launch_at_startup() != 31672) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_settings_example_checksum_method_settingsmodel_set_show_disabled_plugins() != 40802) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_settings_example_checksum_method_settingsmodel_toggle_plugin() != 46839) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_settings_example_checksum_method_settingsmodel_value() != 7169) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_settings_example_checksum_constructor_settingsmodel_new() != 11994) {
         return InitializationResult.apiChecksumMismatch
     }
 

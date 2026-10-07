@@ -1,6 +1,6 @@
-# Badge maps a style it gives no code for.
+# Badge maps a size it gives no code for.
 
 [component.Badge]
-props.style = { type = "enum:ButtonStyle", default = "Secondary" }
-swiftui = { call = "Badge", args = [{ arg = "style", prop = "style", enum = { Primary = ".p" } }] }
+props.size = { type = "enum:SwitchSize", default = "Medium" }
+swiftui = { call = "Badge", args = [{ arg = "size", prop = "size", enum = { Small = ".small" } }] }
 winui = { element = "Badge" }

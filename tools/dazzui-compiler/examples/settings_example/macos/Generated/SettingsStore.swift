@@ -3,32 +3,30 @@
 import Combine
 import Foundation
 
-/// The latest snapshot of the model `settings` makes, and a way to send it
-/// actions: what a page takes. Whatever thread the model changes on, the
-/// snapshot is read again on the main one.
+extension SettingsModel: SettingsActions {}
+
+/// The latest value of a `SettingsModel`, observable, and the model itself: what
+/// a page takes, as `ListenableBuilder` hands a widget. Whatever thread the
+/// model changes on, the value is read again on the main one.
 @MainActor
 public final class SettingsStore: ObservableObject {
   @Published public private(set) var state: SettingsState
-  private let source: SettingsSource
+  public let model: SettingsModel
 
-  public init(source: SettingsSource = SettingsSource()) {
-    self.source = source
-    state = source.state()
-    source.subscribe(listener: Listener(store: self))
-  }
-
-  public func send(_ action: SettingsAction) {
-    source.send(action: action)
+  public init(model: SettingsModel = SettingsModel()) {
+    self.model = model
+    state = model.value()
+    _ = model.addListener(listener: Listener(store: self))
   }
 
   fileprivate func refresh() {
-    state = source.state()
+    state = model.value()
   }
 }
 
-/// Rust calls this back on the thread that changed the state. On the main
-/// one, the store reads it at once, so a model that changes as it takes an
-/// action is shown changed when `send` returns; from any other, it reads it
+/// Rust calls this back on the thread that changed the value. On the main
+/// one, the store reads it at once, so a model that changes as a method
+/// runs is shown changed when the call returns; from any other, it reads it
 /// there next. It holds the store weakly: Rust holds it.
 private final class Listener: SettingsListener, @unchecked Sendable {
   weak var store: SettingsStore?
@@ -37,7 +35,7 @@ private final class Listener: SettingsListener, @unchecked Sendable {
     self.store = store
   }
 
-  func stateChanged() {
+  func changed() {
     if Thread.isMainThread {
       MainActor.assumeIsolated { store?.refresh() }
     } else {

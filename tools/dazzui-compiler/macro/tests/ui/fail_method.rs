@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use dazzui_compiler_macro::ui;
 
 pub struct S {
@@ -11,20 +13,37 @@ pub struct Item {
     pub title: String,
 }
 
-pub enum A {
-    Save,
-    SetOn(bool),
-    Rename(String),
-    Pick(u32),
+pub struct M;
+
+impl dazzui_runtime::ValueListenable for M {
+    type Value = S;
+
+    fn value(&self) -> S {
+        unimplemented!()
+    }
+
+    fn notifier(&self) -> &dazzui_runtime::ChangeNotifier {
+        unimplemented!()
+    }
+}
+
+impl M {
+    pub fn save(&self) {}
+
+    pub fn set_on(&self, on: bool) {}
+
+    pub fn rename(&self, name: String) {}
+
+    pub fn pick(&self, id: u32) {}
 }
 
 ui! {
-    page P(state: S, action: A) {
-        VStack {
-            Button("a").on_click(Action::Sav)
-            Toggle { value: bind(state.on), on_change: Action::Rename }
-            Button("b").on_click(Action::Pick(state.name))
-        }
+    page P(model: M) {
+        Col(children: [
+            Button(on_click: model.sav, child: Text("a")),
+            Switch(checked: model.on, on_checked_change: model.rename),
+            Button(on_click: model.pick(model.name), child: Text("b")),
+        ])
     }
 }
 

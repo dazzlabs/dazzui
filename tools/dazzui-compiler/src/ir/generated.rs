@@ -14,6 +14,16 @@ impl GeneratedFile {
     }
 }
 
+/// `SettingsModel` → `Settings`: the stem a model's companion types are
+/// named from — `SettingsStore`, `SettingsActions` — so that they are not
+/// `SettingsModelStore`.
+pub fn model_stem(model: &str) -> &str {
+    model
+        .strip_suffix("Model")
+        .filter(|s| !s.is_empty())
+        .unwrap_or(model)
+}
+
 /// `SetAutoUpdate` → `set_auto_update`; `launch_at_startup` stays as it is.
 pub fn snake_case(name: &str) -> String {
     let mut out = String::new();

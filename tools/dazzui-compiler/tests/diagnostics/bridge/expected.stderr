@@ -1,23 +1,30 @@
 error: `S.opened` has type `Instant`, which cannot cross to the native side yet
-  --> page.rs:11:8
+  --> page.rs:13:6
    |
-11 | pub fn model() -> Reducer<S, A> {
-   |        ^^^^^
-   |
-
-error: `other` returns `M`, and there is no `impl PageModel for M` naming its `State` and `Action`
-  --> page.rs:18:8
-   |
-18 | pub fn other() -> M {
-   |        ^^^^^
+13 | impl M {
+   |      ^
    |
 
-error: `first` and `second` both make a model of `U`; a state has one page model
-  --> page.rs:32:8
+error: `N` is not a `ValueListenable`: implement it, naming the state its pages show: `impl ValueListenable for N { type Value = …; }`
+  --> page.rs:26:6
    |
-32 | pub fn second() -> Reducer<U, A> {
-   |        ^^^^^^
+26 | impl N {
+   |      ^
+   |
+
+error: `O::at` takes `Instant`, a type that cannot cross yet
+  --> page.rs:43:6
+   |
+43 | impl O {
+   |      ^
+   |
+
+error: `PModel` and `P` would both export `PStore`; give one another name
+  --> page.rs:71:6
+   |
+71 | impl P {
+   |      ^
    |
 help: the first is in page.rs
 
-error: could not compile due to 3 previous errors
+error: could not compile due to 4 previous errors
