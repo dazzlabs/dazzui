@@ -267,9 +267,10 @@ public struct Sidebar<Header: View, Content: View>: View {
   /// Arrow keys walk the divider. Keyboard focus and move commands are a
   /// desktop affordance and only exist there, so the handle is otherwise
   /// reached through its adjustable accessibility action.
+  @ViewBuilder
   private func withResizerFocus<V: View>(_ view: V) -> some View {
     #if os(macOS)
-    return view
+    let focusable = view
       .focusable(resizable)
       .focused($resizerFocused)
       .onMoveCommand { direction in
@@ -280,8 +281,15 @@ public struct Sidebar<Header: View, Content: View>: View {
         default: break
         }
       }
+    if #available(macOS 14.0, *) {
+      // The separator already marks keyboard focus. A system focus ring
+      // would outline the whole grab area, drawing a blue line on each side.
+      focusable.focusEffectDisabled()
+    } else {
+      focusable
+    }
     #else
-    return view
+    view
     #endif
   }
 }
