@@ -25,7 +25,11 @@
     "mobile:build": "pnpm --filter @dazzlabs/dazzui-mobile-example build",
     "codegen": "pnpm --filter @dazzlabs/dazzui-codegen generate",
     "codegen:check": "pnpm --filter @dazzlabs/dazzui-codegen check",
-    "codegen:test": "pnpm --filter @dazzlabs/dazzui-codegen test"
+    "codegen:test": "pnpm --filter @dazzlabs/dazzui-codegen test",
+    "gtk4": "cargo run --manifest-path packages/rust/dazzui-gtk4/Cargo.toml -p dazzui-gtk4-example",
+    "gtk4:build": "cargo build --manifest-path packages/rust/dazzui-gtk4/Cargo.toml --workspace",
+    "gtk4:test": "cargo test --manifest-path packages/rust/dazzui-gtk4/Cargo.toml --workspace",
+    "gtk4:conformance": "packages/rust/dazzui-gtk4/example/tool/conformance.sh"
   },
   "devDependencies": {
     "oxfmt": "^0.16.0",

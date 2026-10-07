@@ -349,3 +349,13 @@ Five collectors are written:
   wider than React's fractional one.
  Adding a platform is a collector and an expectations
 file; the viewer and the check learn of it from `run.json`.
+
+## GTK4
+
+The initial GTK4 collector is
+`packages/rust/dazzui-gtk4/example/tool/conformance.sh`. It consumes the shared
+`$at` addresses, reads actual native bounds, ink and font size, and renders
+2x snapshots through GTK. It writes skipped-scene reasons to `gaps.json` and
+unread properties as `null`; it does not declare a shared test font. GTK4 is
+not in the default run or expectation baselines until its remaining mappings
+and measured differences are reviewed.

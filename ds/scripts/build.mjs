@@ -23,6 +23,11 @@ import { checkMetrics, expandThemes } from './themes.mjs'
  */
 const TARGETS = [
   {
+    package: 'dazzui (GTK4)',
+    dir: path.join('..', 'packages', 'rust', 'dazzui-gtk4', 'src', 'generated'),
+    files: ['gtk4/tokens.css', 'gtk4/themes.rs'],
+  },
+  {
     package: 'DazzUI (WinUI 3)',
     dir: path.join(
       '..',

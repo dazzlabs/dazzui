@@ -1,0 +1,158 @@
+/* GTK CSS nodes replace web DOM parts. All design values come from ds. */
+.dz-scope {
+  color: var(--color-content);
+  background-color: var(--color-surface);
+  font-family: var(--body-medium-font-family);
+  font-size: var(--body-medium-font-size);
+  font-weight: var(--body-medium-font-weight);
+}
+.dz-scope label { background: none; }
+.dz-button, .dz-menu-button > button, .dz-select > button {
+  background-image: none;
+  text-shadow: none;
+  box-shadow: none;
+  min-height: calc(var(--control-size) - 2 * var(--control-padding-block) - 2 * var(--stroke-hairline));
+  min-width: 0;
+  padding: var(--control-padding-block) var(--control-padding-inline);
+  border: var(--stroke-hairline) solid var(--control-border-normal);
+  border-radius: var(--control-radius);
+  font-family: var(--control-font-family);
+  font-size: var(--control-font-size);
+  font-weight: var(--control-font-weight);
+  color: var(--control-content-normal);
+  background-color: var(--control-surface-normal);
+}
+.dz-button:hover { color: var(--control-content-hovered); background-color: var(--control-surface-hovered); border-color: var(--control-border-hovered); }
+.dz-button:active { color: var(--control-content-pressed); background-color: var(--control-surface-pressed); border-color: var(--control-border-pressed); }
+.dz-button:disabled { color: var(--control-content-disabled); background-color: var(--control-surface-disabled); border-color: var(--control-border-disabled); box-shadow: none; }
+.dz-button.dz-variant-filled { font-weight: var(--label-strong-font-weight); box-shadow: var(--shadow-2xs); }
+.dz-button.dz-variant-filled:disabled { font-weight: var(--control-font-weight); box-shadow: none; }
+.dz-button:focus-visible, .dz-checkbox:focus-visible, .dz-radio:focus-visible, .dz-switch:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+.dz-icon-button { min-width: calc(var(--control-size) - 2 * var(--control-padding-block) - 2 * var(--stroke-hairline)); padding-left: var(--control-padding-block); padding-right: var(--control-padding-block); }
+.dz-icon-button image { -gtk-icon-size: var(--control-icon-size); }
+.dz-toggle:checked { background-color: var(--recipe-tinted-surface-normal); color: var(--recipe-tinted-content-normal); border-color: var(--recipe-tinted-border-normal); }
+.dz-checkbox, .dz-radio { padding: 0; border: none; background: none; color: var(--color-content-muted); font-size: var(--label-quiet-font-size); font-weight: var(--label-quiet-font-weight); }
+.dz-checkbox:checked, .dz-radio:checked { color: var(--color-content); font-weight: var(--label-medium-font-weight); }
+.dz-checkbox check, .dz-radio radio {
+  background-image: none; box-shadow: none;
+  background-color: transparent;
+  border: var(--checkbox-thickness) solid var(--color-border-muted);
+  padding: 0;
+  margin-right: var(--spacing-2-5);
+  color: var(--recipe-filled-content-normal);
+  -gtk-icon-size: var(--icon-small);
+}
+.dz-checkbox check { border-radius: var(--checkbox-radius); }
+.dz-radio radio { border-radius: var(--radius-full); }
+.dz-checkbox check:checked, .dz-checkbox check:indeterminate, .dz-radio radio:checked { background-color: var(--recipe-filled-surface-normal); border-color: var(--recipe-filled-surface-normal); }
+.dz-checkbox.dz-size-small check, .dz-radio.dz-size-small radio { min-width: calc(var(--checkbox-small-box) - 2 * var(--checkbox-thickness)); min-height: calc(var(--checkbox-small-box) - 2 * var(--checkbox-thickness)); }
+.dz-checkbox.dz-size-medium check, .dz-radio.dz-size-medium radio { min-width: calc(var(--checkbox-medium-box) - 2 * var(--checkbox-thickness)); min-height: calc(var(--checkbox-medium-box) - 2 * var(--checkbox-thickness)); }
+.dz-checkbox.dz-size-large check, .dz-radio.dz-size-large radio { min-width: calc(var(--checkbox-large-box) - 2 * var(--checkbox-thickness)); min-height: calc(var(--checkbox-large-box) - 2 * var(--checkbox-thickness)); }
+.dz-checkbox:disabled, .dz-radio:disabled, .dz-switch:disabled { opacity: 0.6; }
+.dz-switch { border: none; padding: var(--spacing-0-5); border-radius: var(--radius-full); background: var(--color-surface-sunken); box-shadow: none; }
+.dz-switch:checked { background: var(--recipe-filled-surface-normal); }
+.dz-switch slider { border: none; margin: 0; padding: 0; background: var(--color-content-faint); border-radius: var(--radius-full); box-shadow: none; }
+.dz-switch:checked slider { background: var(--recipe-filled-content-normal); }
+.dz-switch image { color: transparent; -gtk-icon-size: var(--icon-small); opacity: 0; }
+.dz-switch.dz-size-small { min-width: calc(var(--switch-small-width) - 2 * var(--spacing-0-5)); min-height: calc(var(--switch-small-height) - 2 * var(--spacing-0-5)); }
+.dz-switch.dz-size-small slider { min-width: var(--switch-small-thumb); min-height: var(--switch-small-thumb); }
+.dz-switch.dz-size-medium { min-width: calc(var(--switch-medium-width) - 2 * var(--spacing-0-5)); min-height: calc(var(--switch-medium-height) - 2 * var(--spacing-0-5)); }
+.dz-switch.dz-size-medium slider { min-width: var(--switch-medium-thumb); min-height: var(--switch-medium-thumb); }
+.dz-switch.dz-size-large { min-width: calc(var(--switch-large-width) - 2 * var(--spacing-0-5)); min-height: calc(var(--switch-large-height) - 2 * var(--spacing-0-5)); }
+.dz-switch.dz-size-large slider { min-width: var(--switch-large-thumb); min-height: var(--switch-large-thumb); }
+.dz-field, .dz-select > button {
+  background: var(--color-surface-muted);
+  color: var(--color-content);
+  border: var(--stroke-hairline) solid var(--color-border-strong);
+  border-radius: var(--control-field-radius);
+  min-height: calc(var(--control-size) - 2 * var(--control-padding-block) - 2 * var(--stroke-hairline));
+  padding: var(--control-padding-block) var(--spacing-3);
+  font-family: var(--control-font-family);
+  font-size: var(--control-font-size);
+  font-weight: var(--body-small-font-weight);
+  box-shadow: none;
+}
+.dz-field:focus-within, .dz-select:focus-within > button {
+  border-color: var(--tint-600); background-color: var(--color-surface);
+  box-shadow: 0 0 0 var(--focus-width) var(--focus-glow);
+}
+.dz-field text { background: none; color: inherit; }
+.dz-field placeholder { color: var(--color-content-faint); }
+.dz-field button { padding: 0; margin: 0; min-height: 0; min-width: var(--icon-medium); border: none; background: none; box-shadow: none; }
+.dz-field.dz-invalid { border-color: var(--color-danger-600); background-color: var(--color-danger-50); color: var(--color-danger-800); }
+.dz-field:disabled, .dz-select:disabled > button { background: var(--recipe-normal-surface-disabled); color: var(--recipe-normal-content-disabled); }
+.dz-field.dz-mono, .dz-code, .dz-key-cap { font-family: monospace; }
+.dz-text-area { padding: var(--spacing-2-5) var(--spacing-3); border-radius: var(--radius-large); border: var(--stroke-hairline) solid var(--color-border-strong); background: var(--color-surface-muted); min-height: var(--spacing-20); }
+.dz-text-area text { background: none; }
+.dz-slider { padding: 0; min-height: var(--control-size); }
+.dz-slider trough { border: none; min-height: var(--slider-medium-track); background: var(--color-surface-sunken); border-radius: var(--radius-full); }
+.dz-slider highlight { border: none; min-height: var(--slider-medium-track); background: var(--tint-600); border-radius: var(--radius-full); }
+.dz-slider slider { margin: 0; border: var(--slider-thumb-edge-width) solid var(--color-border-strong); background: var(--color-surface); border-radius: var(--radius-full); min-width: calc(var(--slider-medium-thumb) - 2 * var(--slider-thumb-edge-width)); min-height: calc(var(--slider-medium-thumb) - 2 * var(--slider-thumb-edge-width)); box-shadow: var(--shadow-xs); }
+.dz-slider.dz-size-small trough, .dz-slider.dz-size-small highlight { min-height: var(--slider-small-track); }
+.dz-slider.dz-size-large trough, .dz-slider.dz-size-large highlight { min-height: var(--slider-large-track); }
+.dz-slider.dz-size-small slider { min-width: calc(var(--slider-small-thumb) - 2 * var(--slider-thumb-edge-width)); min-height: calc(var(--slider-small-thumb) - 2 * var(--slider-thumb-edge-width)); }
+.dz-slider.dz-size-large slider { min-width: calc(var(--slider-large-thumb) - 2 * var(--slider-thumb-edge-width)); min-height: calc(var(--slider-large-thumb) - 2 * var(--slider-thumb-edge-width)); }
+.dz-slider slider:focus-visible { outline: var(--focus-width) solid var(--focus-ring); }
+.dz-slider:disabled highlight, .dz-slider:disabled slider { background: var(--recipe-normal-surface-disabled); box-shadow: none; }
+.dz-progress trough, .dz-meter trough { background: var(--color-surface-sunken); border: none; border-radius: var(--radius-full); min-height: var(--slider-medium-track); }
+.dz-progress progress, .dz-meter block.filled { background: var(--tint-600); border: none; border-radius: var(--radius-full); min-height: var(--slider-medium-track); }
+.dz-progress.dz-size-small trough, .dz-progress.dz-size-small progress { min-height: var(--slider-small-track); }
+.dz-progress.dz-size-large trough, .dz-progress.dz-size-large progress { min-height: var(--slider-large-track); }
+.dz-meter block.empty { background: var(--color-surface-sunken); border: none; }
+.dz-spinner { color: var(--color-primary-600); min-width: var(--icon-medium); min-height: var(--icon-medium); }
+.dz-spinner.dz-size-small { min-width: var(--icon-small); min-height: var(--icon-small); }
+.dz-spinner.dz-size-large { min-width: var(--icon-large); min-height: var(--icon-large); }
+.dz-badge { padding: var(--spacing-0-5) var(--spacing-1-5); border: var(--stroke-hairline) solid var(--control-border-normal); border-radius: var(--radius-small); background: var(--control-surface-normal); color: var(--control-content-normal); }
+.dz-tag { padding: var(--spacing-1) var(--spacing-2); border-radius: var(--radius-medium); }
+.dz-card { border: var(--stroke-hairline) solid transparent; border-radius: var(--radius-large); padding: var(--spacing-3) var(--spacing-3-5); }
+.dz-card.dz-size-small { padding: var(--spacing-3); border-spacing: var(--spacing-2); }
+.dz-card.dz-size-large { padding: var(--spacing-4); border-spacing: var(--spacing-4); }
+.dz-card-raised { background: var(--color-surface); border-color: var(--color-border); }
+.dz-card-sunken { background: var(--color-surface-muted); border-color: var(--color-border); }
+.dz-card-outlined { border-color: var(--color-border); }
+.dz-card-tinted { background: alpha(var(--tint-600), var(--wash-surface)); border-color: alpha(var(--tint-600), var(--wash-edge)); }
+.dz-code { background: var(--color-surface-sunken); border-radius: var(--radius-small); padding: var(--spacing-0-5) var(--spacing-1); }
+.dz-code-block { padding: var(--spacing-3); }
+.dz-key-cap { color: var(--color-content-muted); border: var(--stroke-hairline) solid var(--color-border); border-radius: var(--radius-tiny); padding: var(--spacing-0-5) var(--spacing-1); background: var(--color-surface-muted); }
+.dz-muted, .dz-section-label { color: var(--color-content-muted); }
+.dz-avatar { border-radius: var(--radius-full); background: var(--color-surface-sunken); color: var(--color-content-muted); min-width: var(--control-size); min-height: var(--control-size); }
+.dz-divider { min-height: var(--stroke-hairline); min-width: var(--stroke-hairline); background: var(--color-border); }
+.dz-link { color: var(--recipe-plain-content-normal); padding: 0; background: none; border: none; box-shadow: none; }
+.dz-link:hover { color: var(--recipe-plain-content-hovered); }
+.dz-empty-state { padding: var(--spacing-8); }
+.dz-preferences { min-width: var(--preferences-width); }
+.dz-preference-row { padding: var(--preferences-row-padding) 0; }
+.dz-option-card { padding: var(--spacing-3); border: var(--stroke-hairline) solid var(--color-border); border-radius: var(--radius-large); background: var(--color-surface-muted); }
+.dz-option-card:checked { border-color: var(--color-primary-600); background: var(--color-surface); }
+.dz-segmented-control { padding: var(--segmented-control-inset); border-radius: var(--radius-medium); background: var(--color-surface-sunken); }
+.dz-tabs button { background: none; border: none; box-shadow: none; padding: var(--spacing-2) var(--spacing-3); color: var(--color-content-muted); }
+.dz-tabs button:checked { color: var(--color-content); background: var(--color-surface); border-radius: var(--radius-medium); }
+.dz-popover > contents, .dz-menu-button popover > contents, .dz-select popover > contents { padding: var(--spacing-1); background: var(--color-surface-overlay); color: var(--color-content); border: var(--stroke-hairline) solid var(--color-border-strong); border-radius: var(--frame-popover-radius); box-shadow: var(--shadow-lg); }
+.dz-dialog-body { padding: calc(var(--spacing-4) + var(--spacing-0-5)); min-width: var(--dialog-width); }
+.dz-table, .dz-tree { background: var(--color-surface); color: var(--color-content); }
+.dz-table row:selected, .dz-tree row:selected { background: var(--color-surface-subtle); font-weight: var(--label-medium-font-weight); }
+.dz-table row, .dz-tree row { padding: var(--spacing-1-5) var(--spacing-3); }
+.dz-action-bar { padding: var(--spacing-2) var(--spacing-3); background: var(--color-surface-column); }
+.dz-splitter > separator { background: var(--color-border); min-width: var(--stroke-hairline); min-height: var(--stroke-hairline); }
+.dz-gallery { padding: var(--spacing-6); }
+.dz-progress-gradient progress { background-image: linear-gradient(to right, var(--progress-gradient-from), var(--progress-gradient-to)); }
+.dz-faint { color: var(--color-content-faint); }
+.dz-tinted-text { color: var(--recipe-plain-content-normal); }
+.dz-divider-subtle { background: var(--color-border); }
+.dz-divider-strong { background: var(--color-border-strong); }
+.dz-button label, .dz-menu-button label, .dz-select label { line-height: var(--control-line-height); }
+.dz-badge { background-image: none; box-shadow: none; min-width: 0; min-height: 0; border-radius: var(--radius-tiny); font-family: var(--label-strong-font-family); font-weight: var(--label-medium-font-weight); }
+.dz-badge.dz-size-medium { padding: var(--spacing-0-5) var(--spacing-2); }
+.dz-badge.dz-size-large { padding: var(--spacing-1) var(--spacing-2); font-size: var(--label-medium-font-size); }
+.dz-badge.dz-variant-normal { background: var(--color-surface); color: var(--color-content-muted); }
+.dz-tag:hover { background: var(--control-surface-hovered); color: var(--control-content-hovered); }
+.dz-tag:checked { background: var(--recipe-filled-surface-normal); color: var(--recipe-filled-content-normal); }
+.dz-progress progress, .dz-progress trough, .dz-meter block, .dz-meter trough { min-width: 0; margin: 0; padding: 0; }
+.dz-slider highlight, .dz-slider trough { min-width: 0; margin: 0; padding: 0; }
+.dz-gallery { background: var(--color-surface); }
+.dz-divider-muted { background: var(--color-border-strong); }
+.dz-text-area-placeholder { padding: var(--spacing-2-5) var(--spacing-3); color: var(--color-content-faint); }
+.dz-mono { font-family: monospace; }

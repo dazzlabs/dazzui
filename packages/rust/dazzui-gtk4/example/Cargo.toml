@@ -1,0 +1,21 @@
+[package]
+name = "dazzui-gtk4-example"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+publish = false
+
+[dependencies]
+dazzui-gtk4 = { path = ".." }
+serde_json = "1"
+serde = { version = "1", features = ["derive"] }
+
+[[test]]
+name = "scenes"
+path = "tests/scenes.rs"
+harness = false
+
+[[test]]
+name = "shell"
+path = "tests/shell.rs"
+harness = false

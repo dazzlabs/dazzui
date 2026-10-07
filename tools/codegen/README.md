@@ -1,6 +1,6 @@
 # Codegen
 
-Compiles the React example's stories into the Flutter, SwiftUI and WinUI
+Compiles the React example's stories into the Flutter, SwiftUI, WinUI, GPUI and GTK4
 examples, and into the scenes the conformance tool holds them to.
 The rules are in [`specs/playgrounds.md`](../../specs/playgrounds.md).
 
@@ -16,6 +16,9 @@ The rules are in [`specs/playgrounds.md`](../../specs/playgrounds.md).
 - `winui.mjs` is the WinUI side, the same four emitters and its own
   `SUPPORT`; its glyphs name FluentIcons.WinUI's icons, as SwiftUI's name
   the FluentIcons package's.
+- `gtk4.mjs` writes a Rust module per story, the registry and theme groups.
+  It preserves React's preview/examples split for Overview and documents;
+  its `SUPPORT` marks scenes the native interpreter cannot yet render.
 - `scenes.mjs` writes `tools/conformance/scenes.json`, the conformance
   contract: every scene and every kit element in it, at its address — see
   [`specs/conformance.md`](../../specs/conformance.md).

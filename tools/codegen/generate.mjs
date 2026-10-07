@@ -12,6 +12,7 @@ import {
 } from './flutter.mjs'
 import { formatOutputs } from './format.mjs'
 import * as gpui from './gpui.mjs'
+import * as gtk4 from './gtk4.mjs'
 import * as swiftui from './swiftui.mjs'
 import * as winui from './winui.mjs'
 import { readStories, readThemes } from './stories.mjs'
@@ -147,6 +148,14 @@ outputs.set(
 outputs.set('packages/rust/dazzui/src/glyphs.rs', gpui.kitGlyphsRs(root))
 
 outputs.set('tools/conformance/scenes.json', scenes)
+const gtk = 'packages/rust/dazzui-gtk4/example/src'
+for (const story of stories)
+  outputs.set(
+    `${gtk}/stories/${gtk4.storyFile(story.id)}`,
+    gtk4.storyRust(story)
+  )
+outputs.set(`${gtk}/stories/mod.rs`, gtk4.storiesIndexRust(stories))
+outputs.set(`${gtk}/lib/themes.rs`, gtk4.themesRust(themes))
 formatOutputs(outputs)
 
 /*

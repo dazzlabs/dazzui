@@ -1,0 +1,30 @@
+/* React example's three columns, document stages and theme previews. */
+.gk { background: var(--color-surface); }
+.gk-list, .gk-themes { background: var(--color-surface-column); }
+.gk-toolbar { min-height: var(--frame-titlebar-size); padding: 0 var(--spacing-4); border-bottom: var(--stroke-hairline) solid var(--color-border); }
+.gk-brand { min-height: var(--frame-titlebar-size); padding: 0 var(--spacing-4); font-size: var(--title-small-font-size); }
+.gk-search { margin: var(--spacing-2) var(--spacing-4); }
+.gk-list-heading { margin: var(--spacing-2) var(--spacing-4); }
+.gk-navigation { background: none; }
+.gk-navigation row { border-radius: var(--control-container-radius); padding: var(--spacing-2) var(--spacing-4); color: var(--color-content-nav); }
+.gk-navigation row:hover { background: var(--color-surface-subtle); }
+.gk-navigation row:selected { background: var(--color-surface-subtle); color: var(--color-content); font-weight: var(--label-medium-font-weight); }
+.gk-grid, .gk-page { padding: var(--spacing-5) var(--spacing-6) var(--spacing-10); }
+.gk-grid > flowboxchild { padding: var(--spacing-1-5); }
+.gk-tile { min-width: calc(var(--spacing-16) * 4); }
+.gk-stage { min-height: calc(var(--spacing-20) * 2); }
+.gk-preview-stage { min-height: calc(var(--spacing-16) * 2); padding: var(--spacing-3); border: none; }
+.gk-quiet { color: var(--color-content-secondary); }
+.gk-theme-group { padding: var(--spacing-2) var(--spacing-4); }
+.gk-theme-tile { padding: 0; margin: var(--spacing-1); min-width: 0; border-radius: var(--radius-medium); }
+.gk-theme-name { min-height: var(--spacing-6); padding: 0 var(--spacing-1-5); font-weight: var(--label-quiet-font-weight); }
+.g-preview { min-height: var(--spacing-10); border-bottom: var(--stroke-hairline) solid var(--color-border-strong); }
+.g-preview-column { min-width: var(--spacing-4); background: var(--color-surface-column); }
+.g-preview-paper { background: var(--color-surface); padding: var(--spacing-1-5); }
+.g-preview-ink { min-width: var(--spacing-4); min-height: var(--spacing-0-5); background: var(--color-content); border-radius: var(--radius-full); }
+.g-preview-accent { min-width: var(--spacing-3); min-height: var(--spacing-2); background: var(--color-primary-500); border-radius: var(--radius-small); }
+.gk > separator, .gk paned > separator { min-width: var(--stroke-hairline); background: var(--color-border); }
+.gk-stage.gk-preview-stage { border: none; padding: var(--spacing-3); }
+.gk-theme-tile { min-height: 0; background: var(--color-surface-muted); border: var(--stroke-hairline) solid var(--color-border); box-shadow: none; }
+.gk-theme-tile:checked { background: var(--color-surface); border-color: var(--color-primary-600); }
+.gk-brand-mark { min-width: var(--spacing-5); min-height: var(--spacing-5); border-radius: var(--radius-small); background: var(--color-primary-500); }

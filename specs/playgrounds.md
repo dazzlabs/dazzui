@@ -67,3 +67,18 @@ other platforms' examples.
   draw every story's preview and every example in light and dark, and
   drive the interactions the interpreters carry; the WinUI example's
   `--smoke-test` draws every page in every theme in a real window.
+
+## GTK4
+
+The GTK4 example mirrors React under `example/src/`: `stories/` holds one
+Rust module per component and its generated registry; `lib/` holds the story
+model, scene interpreter and generated theme families; `components/` holds
+the shell, brand, stage, theme panel and theme preview. `app.rs` owns the
+window lifecycle and `main.rs` dispatches the application or `conformance/`.
+Stories keep Preview separate from examples: previews appear on the searchable
+Overview; documents display the summary and examples with their optional notes.
+The shell has the same component list, document toolbar and grouped theme
+panel as React, with native GTK splitters between its columns.
+`tools/codegen/gtk4.mjs` records each unmapped component, prop or live scene
+in `gaps`; the gallery shows those gaps instead of drawing a partial scene.
+The initial port does not yet participate in the full-support gate.

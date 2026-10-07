@@ -76,6 +76,15 @@ The Storybook reads the generated `style.css` rather than the token sources, so
 it always shows what a consumer actually gets — including how each token
 resolves once its `var()` chain is followed.
 
+## GTK4
+
+The Rust/gtk4-rs implementation lives in
+[`packages/rust/dazzui-gtk4`](packages/rust/dazzui-gtk4/README.md).
+It embeds the shared ds themes and returns native GTK controls. Requires
+GTK4 >= 4.16. Run `pnpm gtk4` for its gallery, `pnpm gtk4:build` to build,
+and `pnpm gtk4:test` for the native tests. The initial port's supported
+story mappings and remaining gaps are documented in the package README.
+
 ## License
 
 MIT
