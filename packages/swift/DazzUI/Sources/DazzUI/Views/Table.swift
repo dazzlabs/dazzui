@@ -57,6 +57,8 @@ public struct TableHead<Content: View>: View {
       content()
     }
     .padding(.horizontal, vars.spacing5)
+    // The rule is the band's border, so it takes its own room below.
+    .padding(.bottom, hairline)
     .background(vars.colorSurfaceChrome)
     .rule(vars.colorBorder, edge: .bottom, width: hairline)
   }
@@ -119,6 +121,8 @@ public struct TableRow<Content: View>: View {
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.vertical, vars.spacing3)
     .padding(.horizontal, vars.spacing5)
+    // The rule is the row's border, so it takes its own room below.
+    .padding(.bottom, hairline)
     .background(background(hovered: hovered))
     .rule(vars.colorBorder, edge: .bottom, width: hairline)
     .animation(vars.motion, value: hovered)
@@ -172,7 +176,20 @@ public struct TableCell<Content: View>: View {
   public var body: some View {
     let vars = theme.vars
 
-    content()
+    Group {
+      if head {
+        content()
+      } else {
+        // The cell's inline content sits on a line in the row's line box,
+        // as CSS's strut puts it: a line of text is the line height tall,
+        // and a badge on the line's baseline stands as far above and below
+        // it as it reaches.
+        HStack(alignment: .firstTextBaseline, spacing: 0) {
+          LineStrut(style: vars.bodyMedium)
+          content()
+        }
+      }
+    }
       .modifier(HeadFace(head: head, vars: vars))
       .frame(maxWidth: .infinity, alignment: align == .end ? .trailing : .leading)
       .multilineTextAlignment(align == .end ? .trailing : .leading)
@@ -191,9 +208,52 @@ private struct HeadFace: ViewModifier {
       content
         .font(vars.labelSmall.font)
         .lineSpacing(vars.labelSmall.lineSpacing)
+        // The heading's line box is shorter than the face's own line, and
+        // CSS lets the face overhang it evenly above and below.
+        .padding(.vertical, min(0, vars.labelSmall.halfLeadingOverhang))
         .foregroundStyle(vars.colorContentFaint)
     } else {
       content
     }
+  }
+}
+
+/// An empty line in `style`'s line box: what CSS's strut is, the line every
+/// line of inline content is at least as tall as. Zero wide and unseen, with
+/// its baseline where CSS puts it — half the leading over the face's ascent,
+/// unrounded, as a browser lays it out.
+private struct LineStrut: View {
+  let style: TypeStyle
+
+  var body: some View {
+    Color.clear
+      .frame(width: 0, height: style.lineHeight)
+      .alignmentGuide(.firstTextBaseline) { _ in style.cssBaseline }
+      .alignmentGuide(.lastTextBaseline) { _ in style.cssBaseline }
+      .accessibilityHidden(true)
+  }
+}
+
+private extension TypeStyle {
+  /// Where CSS sets the baseline in this face's line box: the face's ascent
+  /// below half of what the box has over its ascent and descent.
+  var cssBaseline: CGFloat {
+    #if os(macOS)
+      let face = family.first.flatMap { name in
+        name.hasPrefix("-apple-system") ? nil : NSFont(name: name, size: size)
+      } ?? NSFont.systemFont(ofSize: size)
+      let ascent = face.ascender
+      let descent = -face.descender
+    #else
+      let ascent = size * 0.8
+      let descent = size * 0.2
+    #endif
+    return (lineHeight - ascent - descent) / 2 + ascent
+  }
+
+  /// Half of what the line box has over the face's own line — negative where
+  /// the box is the shorter, as a label's `line-height: 1` is.
+  var halfLeadingOverhang: CGFloat {
+    (lineHeight - naturalLineHeight) / 2
   }
 }
