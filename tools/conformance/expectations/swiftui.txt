@@ -58,7 +58,6 @@
 *  form-field/0/0               height
 *  form-field/1/0               height
 *  form-field/2/0               height
-*  form-field/2/1               width
 *  form-field/preview/0         height
 *  form/0/0                     height
 *  form/0/1                     height
