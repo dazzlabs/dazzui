@@ -174,6 +174,468 @@ pub const STORY: &str = r#"{
         "segmented-control/0 preview: <SegmentedControl> is not drawn by GTK4",
         "segmented-control/0: live story expressions are not yet mapped"
       ]
+    },
+    {
+      "id": "segmented-control/1",
+      "title": "With icons",
+      "note": "A glyph before each label, drawn a half-step under the label’s height.",
+      "state": {
+        "s0": "list",
+        "s1": "list",
+        "s2": "list"
+      },
+      "content": {
+        "$el": "Col",
+        "props": {
+          "align": "start"
+        },
+        "children": [
+          {
+            "$el": "SegmentedControl",
+            "props": {
+              "items": [
+                {
+                  "value": "list",
+                  "label": "List",
+                  "icon": {
+                    "$icon": "TextBulletList20Regular"
+                  }
+                },
+                {
+                  "value": "board",
+                  "label": "Board",
+                  "icon": {
+                    "$icon": "Board20Regular"
+                  }
+                },
+                {
+                  "value": "timeline",
+                  "label": "Timeline",
+                  "icon": {
+                    "$icon": "Timeline20Regular"
+                  }
+                }
+              ],
+              "value": {
+                "$state": "s0"
+              },
+              "onValueChange": {
+                "$do": [
+                  {
+                    "set": "s0",
+                    "to": {
+                      "$arg": 0
+                    }
+                  }
+                ]
+              },
+              "size": "small",
+              "aria-label": "View"
+            },
+            "$at": 0
+          },
+          {
+            "$el": "SegmentedControl",
+            "props": {
+              "items": [
+                {
+                  "value": "list",
+                  "label": "List",
+                  "icon": {
+                    "$icon": "TextBulletList20Regular"
+                  }
+                },
+                {
+                  "value": "board",
+                  "label": "Board",
+                  "icon": {
+                    "$icon": "Board20Regular"
+                  }
+                },
+                {
+                  "value": "timeline",
+                  "label": "Timeline",
+                  "icon": {
+                    "$icon": "Timeline20Regular"
+                  }
+                }
+              ],
+              "value": {
+                "$state": "s1"
+              },
+              "onValueChange": {
+                "$do": [
+                  {
+                    "set": "s1",
+                    "to": {
+                      "$arg": 0
+                    }
+                  }
+                ]
+              },
+              "size": "medium",
+              "aria-label": "View"
+            },
+            "$at": 1
+          },
+          {
+            "$el": "SegmentedControl",
+            "props": {
+              "items": [
+                {
+                  "value": "list",
+                  "label": "List",
+                  "icon": {
+                    "$icon": "TextBulletList20Regular"
+                  }
+                },
+                {
+                  "value": "board",
+                  "label": "Board",
+                  "icon": {
+                    "$icon": "Board20Regular"
+                  }
+                },
+                {
+                  "value": "timeline",
+                  "label": "Timeline",
+                  "icon": {
+                    "$icon": "Timeline20Regular"
+                  }
+                }
+              ],
+              "value": {
+                "$state": "s2"
+              },
+              "onValueChange": {
+                "$do": [
+                  {
+                    "set": "s2",
+                    "to": {
+                      "$arg": 0
+                    }
+                  }
+                ]
+              },
+              "size": "large",
+              "aria-label": "View"
+            },
+            "$at": 2
+          }
+        ]
+      },
+      "gaps": [
+        "segmented-control/1 preview: <SegmentedControl> is not drawn by GTK4",
+        "segmented-control/1: live story expressions are not yet mapped",
+        "segmented-control/1: Fluent glyph TextBulletList20Regular is not yet mapped",
+        "segmented-control/1: Fluent glyph Board20Regular is not yet mapped",
+        "segmented-control/1: Fluent glyph Timeline20Regular is not yet mapped"
+      ]
+    },
+    {
+      "id": "segmented-control/2",
+      "title": "Icons only",
+      "note": "The labels stay the segments’ names for a screen reader.",
+      "state": {
+        "s0": "left",
+        "s1": "left",
+        "s2": "left"
+      },
+      "content": {
+        "$el": "Col",
+        "props": {
+          "align": "start"
+        },
+        "children": [
+          {
+            "$el": "SegmentedControl",
+            "props": {
+              "items": [
+                {
+                  "value": "left",
+                  "label": "Align left",
+                  "icon": {
+                    "$icon": "TextAlignLeft20Regular"
+                  }
+                },
+                {
+                  "value": "center",
+                  "label": "Align center",
+                  "icon": {
+                    "$icon": "TextAlignCenter20Regular"
+                  }
+                },
+                {
+                  "value": "right",
+                  "label": "Align right",
+                  "icon": {
+                    "$icon": "TextAlignRight20Regular"
+                  }
+                },
+                {
+                  "value": "justify",
+                  "label": "Justify",
+                  "icon": {
+                    "$icon": "TextAlignJustify20Regular"
+                  }
+                }
+              ],
+              "value": {
+                "$state": "s0"
+              },
+              "onValueChange": {
+                "$do": [
+                  {
+                    "set": "s0",
+                    "to": {
+                      "$arg": 0
+                    }
+                  }
+                ]
+              },
+              "size": "small",
+              "iconOnly": true,
+              "aria-label": "Alignment"
+            },
+            "$at": 0
+          },
+          {
+            "$el": "SegmentedControl",
+            "props": {
+              "items": [
+                {
+                  "value": "left",
+                  "label": "Align left",
+                  "icon": {
+                    "$icon": "TextAlignLeft20Regular"
+                  }
+                },
+                {
+                  "value": "center",
+                  "label": "Align center",
+                  "icon": {
+                    "$icon": "TextAlignCenter20Regular"
+                  }
+                },
+                {
+                  "value": "right",
+                  "label": "Align right",
+                  "icon": {
+                    "$icon": "TextAlignRight20Regular"
+                  }
+                },
+                {
+                  "value": "justify",
+                  "label": "Justify",
+                  "icon": {
+                    "$icon": "TextAlignJustify20Regular"
+                  }
+                }
+              ],
+              "value": {
+                "$state": "s1"
+              },
+              "onValueChange": {
+                "$do": [
+                  {
+                    "set": "s1",
+                    "to": {
+                      "$arg": 0
+                    }
+                  }
+                ]
+              },
+              "size": "medium",
+              "iconOnly": true,
+              "aria-label": "Alignment"
+            },
+            "$at": 1
+          },
+          {
+            "$el": "SegmentedControl",
+            "props": {
+              "items": [
+                {
+                  "value": "left",
+                  "label": "Align left",
+                  "icon": {
+                    "$icon": "TextAlignLeft20Regular"
+                  }
+                },
+                {
+                  "value": "center",
+                  "label": "Align center",
+                  "icon": {
+                    "$icon": "TextAlignCenter20Regular"
+                  }
+                },
+                {
+                  "value": "right",
+                  "label": "Align right",
+                  "icon": {
+                    "$icon": "TextAlignRight20Regular"
+                  }
+                },
+                {
+                  "value": "justify",
+                  "label": "Justify",
+                  "icon": {
+                    "$icon": "TextAlignJustify20Regular"
+                  }
+                }
+              ],
+              "value": {
+                "$state": "s2"
+              },
+              "onValueChange": {
+                "$do": [
+                  {
+                    "set": "s2",
+                    "to": {
+                      "$arg": 0
+                    }
+                  }
+                ]
+              },
+              "size": "large",
+              "iconOnly": true,
+              "aria-label": "Alignment"
+            },
+            "$at": 2
+          }
+        ]
+      },
+      "gaps": [
+        "segmented-control/2 preview: <SegmentedControl> is not drawn by GTK4",
+        "segmented-control/2: live story expressions are not yet mapped",
+        "segmented-control/2: Fluent glyph TextAlignLeft20Regular is not yet mapped",
+        "segmented-control/2: Fluent glyph TextAlignCenter20Regular is not yet mapped",
+        "segmented-control/2: Fluent glyph TextAlignRight20Regular is not yet mapped",
+        "segmented-control/2: Fluent glyph TextAlignJustify20Regular is not yet mapped"
+      ]
+    },
+    {
+      "id": "segmented-control/3",
+      "title": "Filled, with icons",
+      "state": {
+        "s0": "list",
+        "s1": "left"
+      },
+      "content": {
+        "$el": "Col",
+        "props": {
+          "align": "start"
+        },
+        "children": [
+          {
+            "$el": "SegmentedControl",
+            "props": {
+              "items": [
+                {
+                  "value": "list",
+                  "label": "List",
+                  "icon": {
+                    "$icon": "TextBulletList20Regular"
+                  }
+                },
+                {
+                  "value": "board",
+                  "label": "Board",
+                  "icon": {
+                    "$icon": "Board20Regular"
+                  }
+                },
+                {
+                  "value": "timeline",
+                  "label": "Timeline",
+                  "icon": {
+                    "$icon": "Timeline20Regular"
+                  }
+                }
+              ],
+              "value": {
+                "$state": "s0"
+              },
+              "onValueChange": {
+                "$do": [
+                  {
+                    "set": "s0",
+                    "to": {
+                      "$arg": 0
+                    }
+                  }
+                ]
+              },
+              "activeStyle": "filled",
+              "aria-label": "View"
+            },
+            "$at": 0
+          },
+          {
+            "$el": "SegmentedControl",
+            "props": {
+              "items": [
+                {
+                  "value": "left",
+                  "label": "Align left",
+                  "icon": {
+                    "$icon": "TextAlignLeft20Regular"
+                  }
+                },
+                {
+                  "value": "center",
+                  "label": "Align center",
+                  "icon": {
+                    "$icon": "TextAlignCenter20Regular"
+                  }
+                },
+                {
+                  "value": "right",
+                  "label": "Align right",
+                  "icon": {
+                    "$icon": "TextAlignRight20Regular"
+                  }
+                },
+                {
+                  "value": "justify",
+                  "label": "Justify",
+                  "icon": {
+                    "$icon": "TextAlignJustify20Regular"
+                  }
+                }
+              ],
+              "value": {
+                "$state": "s1"
+              },
+              "onValueChange": {
+                "$do": [
+                  {
+                    "set": "s1",
+                    "to": {
+                      "$arg": 0
+                    }
+                  }
+                ]
+              },
+              "iconOnly": true,
+              "activeStyle": "filled",
+              "aria-label": "Alignment"
+            },
+            "$at": 1
+          }
+        ]
+      },
+      "gaps": [
+        "segmented-control/3 preview: <SegmentedControl> is not drawn by GTK4",
+        "segmented-control/3: live story expressions are not yet mapped",
+        "segmented-control/3: Fluent glyph TextBulletList20Regular is not yet mapped",
+        "segmented-control/3: Fluent glyph Board20Regular is not yet mapped",
+        "segmented-control/3: Fluent glyph Timeline20Regular is not yet mapped",
+        "segmented-control/3: Fluent glyph TextAlignLeft20Regular is not yet mapped",
+        "segmented-control/3: Fluent glyph TextAlignCenter20Regular is not yet mapped",
+        "segmented-control/3: Fluent glyph TextAlignRight20Regular is not yet mapped",
+        "segmented-control/3: Fluent glyph TextAlignJustify20Regular is not yet mapped"
+      ]
     }
   ]
 }"#;

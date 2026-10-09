@@ -225,6 +225,14 @@ public class SegmentedControl : Surface
     private readonly string group = Guid.NewGuid().ToString("N");
     private int selectedIndex = -1;
     public IList<string> Items { get; } = new List<string>();
+    /// <summary>
+    /// A glyph per segment, by index beside <see cref="Items"/>; a segment
+    /// past its end, or with null, has none. A glyph is drawn before its
+    /// label, a half-step under the profile's icon as Button draws one.
+    /// </summary>
+    public IList<Glyph?> Icons { get; } = new List<Glyph?>();
+    /// <summary>Draw each segment's glyph alone, at the profile's full icon size; its label stays its accessible name.</summary>
+    public bool IconOnly { get; set; }
     /// <summary>The segments, in order.</summary>
     public IReadOnlyList<RadioButton> Segments => segments;
     public int SelectedIndex { get => selectedIndex; set { selectedIndex = value; foreach (var (segment, i) in segments.Select((segment, i) => (segment, i))) segment.IsChecked = i == value; if (IsLoaded) Paint(); } }
@@ -240,7 +248,8 @@ public class SegmentedControl : Surface
             for (var i = 0; i < Items.Count; i++)
             {
                 var index = i;
-                var segment = new RadioButton { Content = Items[i], GroupName = group, Template = (ControlTemplate)Microsoft.UI.Xaml.Markup.XamlReader.Load(SegmentTemplate), IsChecked = i == selectedIndex };
+                var segment = new RadioButton { Content = Face(i), GroupName = group, Template = (ControlTemplate)Microsoft.UI.Xaml.Markup.XamlReader.Load(SegmentTemplate), IsChecked = i == selectedIndex };
+                if (IconOnly && GlyphAt(i) is not null) Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(segment, Items[i]);
                 segment.Checked += (_, _) => { if (selectedIndex == index) return; selectedIndex = index; Paint(); SelectionChanged?.Invoke(this, EventArgs.Empty); };
                 segment.KeyDown += (_, args) =>
                 {
@@ -257,6 +266,21 @@ public class SegmentedControl : Surface
         }
         Paint();
     }
+    private Glyph? GlyphAt(int index) => index < Icons.Count ? Icons[index] : null;
+
+    /// <summary>A segment's face: its label, its glyph alone, or the glyph before the label.</summary>
+    private object Face(int index)
+    {
+        if (GlyphAt(index) is not Glyph glyph) return Items[index];
+        var icon = new Icon { Glyph = glyph };
+        if (IconOnly) return icon;
+        var line = new StackPanel { Orientation = Orientation.Horizontal };
+        line.Children.Add(icon);
+        line.Children.Add(new TextBlock { Text = Items[index], VerticalAlignment = VerticalAlignment.Center });
+        icon.VerticalAlignment = VerticalAlignment.Center;
+        return line;
+    }
+
     private void Paint()
     {
         var inset = Theme.Number("segmented-control.inset");
@@ -274,7 +298,20 @@ public class SegmentedControl : Surface
             var chosen = i == selectedIndex;
             segment.Height = height - 2 * inset;
             segment.MinWidth = segment.MinHeight = 0;
-            segment.Padding = new Thickness(Theme.Number("spacing.3"), 0, Theme.Number("spacing.3"), 0);
+            // A glyph beside a label: drawn `control.label-glyph.shrink` under
+            // the profile's icon, spaced the profile's gap, and the end it
+            // sits at `control.label-glyph.inset` closer. Alone it is full size.
+            var pad = Theme.Number("spacing.3");
+            var iconSize = Theme.Number($"control.{Theme.Key(Size)}.icon-size");
+            var lead = pad;
+            if (segment.Content is Icon only) Lay(only, iconSize);
+            else if (segment.Content is StackPanel { Children: [Icon leading, ..] } line)
+            {
+                Lay(leading, iconSize - Theme.Number("control.label-glyph.shrink"));
+                line.Spacing = Theme.Number($"control.{Theme.Key(Size)}.gap");
+                lead = pad - Theme.Number("control.label-glyph.inset");
+            }
+            segment.Padding = new Thickness(lead, 0, pad, 0);
             segment.CornerRadius = new CornerRadius(Math.Max(0, radius - inset));
             segment.FontSize = FontSize;
             segment.FontWeight = Theme.Text("", chosen ? "labelMedium" : "labelQuiet").FontWeight;
@@ -282,6 +319,13 @@ public class SegmentedControl : Surface
             segment.Foreground = chosen ? Filled ? Theme.Recipe(ControlVariant.Filled, Tint, "content") : Theme.Brush("color.content") : Theme.Brush("color.content-secondary");
             Skin.Focus(segment, Theme);
         }
+    }
+
+    private static void Lay(Icon icon, double size)
+    {
+        if (icon.GlyphSize == size) return;
+        icon.GlyphSize = size;
+        Appearance.Refresh(icon);
     }
 }
 /// <summary>

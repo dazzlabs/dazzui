@@ -68,6 +68,42 @@ fn main() {
             (lead, trail)
         })
         .collect();
+    let segment_row = box_(gtk::Orientation::Horizontal, "2");
+    root.append(&segment_row);
+    let labelled = glyph_segmented_control(
+        &[
+            ("List", Some("view-list-symbolic")),
+            ("Grid", Some("view-grid-symbolic")),
+        ],
+        0,
+        false,
+    );
+    let bare = glyph_segmented_control(
+        &[
+            ("Left", Some("format-justify-left-symbolic")),
+            ("Right", Some("format-justify-right-symbolic")),
+        ],
+        0,
+        true,
+    );
+    let icon_buttons: Vec<_> = [Size::Tiny, Size::Large]
+        .into_iter()
+        .map(|s| {
+            icon_button(
+                "list-add-symbolic",
+                "Add",
+                Variant::Normal,
+                Tint::Neutral,
+                s,
+            )
+        })
+        .collect();
+    segment_row.append(&labelled);
+    segment_row.append(&bare);
+    for b in &icon_buttons {
+        b.set_valign(gtk::Align::Start);
+        segment_row.append(b);
+    }
     let field = text_field("Email", Size::Medium);
     field.set_text("persist@example.com");
     root.append(&field);
@@ -159,6 +195,38 @@ fn main() {
             (trail_start - trail_end).round() as i32,
             2,
             "trailing glyph inset"
+        );
+    }
+    // A segment's glyph beside its label is drawn as Button draws one: 2px
+    // under the small profile's 16px icon, 6px before the label, and the
+    // leading end 2px under `spacing-3`. A glyph alone keeps the full 16px.
+    let segment = labelled.first_child().unwrap();
+    let content = segment.first_child().unwrap();
+    let glyph = content.first_child().unwrap();
+    let text = glyph.next_sibling().unwrap();
+    let g = glyph.compute_bounds(&content).unwrap();
+    let t = text.compute_bounds(&content).unwrap();
+    assert_eq!(g.width() as i32, 14, "segment glyph size");
+    assert_eq!((t.x() - g.x() - g.width()) as i32, 6, "segment glyph gap");
+    let (sb, cb) = (
+        segment.compute_bounds(&segment_row).unwrap(),
+        content.compute_bounds(&segment_row).unwrap(),
+    );
+    let start = cb.x() - sb.x();
+    let end = sb.x() + sb.width() - cb.x() - cb.width();
+    assert_eq!((end - start).round() as i32, 2, "segment glyph inset");
+    let only = bare.first_child().unwrap().first_child().unwrap();
+    assert!(
+        only.is::<gtk::Image>(),
+        "icon-only segment draws its glyph alone"
+    );
+    assert_eq!(only.width(), 16, "icon-only segment glyph size");
+    // The tiny icon button takes its own 16px glyph; other sizes keep the profile's.
+    for (b, expected) in icon_buttons.iter().zip([16, 20]) {
+        assert_eq!(
+            b.child().unwrap().width(),
+            expected,
+            "icon-button glyph size"
         );
     }
     check.set_inconsistent(true);

@@ -3,13 +3,17 @@ import { ToggleGroup } from '@base-ui/react/toggle-group'
 import type { ReactNode } from 'react'
 
 import { cx } from '../lib/cx'
+import { Icon, type IconGlyph } from './icon'
 import type { Tint } from '../lib/tint'
 
 export type SegmentedControlSize = 'small' | 'medium' | 'large'
 
 export interface SegmentedItem<T extends string = string> {
   value: T
+  /** The segment's name. With `iconOnly` it names the glyph to a screen reader. */
   label: ReactNode
+  /** A glyph drawn before the label, or in its place with `iconOnly`. */
+  icon?: IconGlyph
   disabled?: boolean
 }
 
@@ -36,6 +40,11 @@ export interface SegmentedControlProps<T extends string = string> extends Omit<
   activeStyle?: 'raised' | 'filled'
   /** Fill the available width, splitting it evenly between the segments. */
   stretch?: boolean
+  /**
+   * Draw each segment's glyph alone. The label stays the segment's
+   * accessible name, so it has to be a string.
+   */
+  iconOnly?: boolean
   className?: string
 }
 
@@ -52,6 +61,7 @@ export function SegmentedControl<T extends string = string>({
   tint = 'primary',
   activeStyle = 'raised',
   stretch = false,
+  iconOnly = false,
   className,
   ...props
 }: SegmentedControlProps<T>) {
@@ -65,6 +75,7 @@ export function SegmentedControl<T extends string = string>({
       data-active-style={activeStyle}
       data-size={size}
       data-stretch={stretch}
+      data-icon-only={iconOnly}
       data-tint={tint}
       className={cx('dz-segmented-control', className)}
       {...props}
@@ -74,9 +85,14 @@ export function SegmentedControl<T extends string = string>({
           key={item.value}
           value={item.value}
           disabled={item.disabled}
+          aria-label={
+            iconOnly && typeof item.label === 'string' ? item.label : undefined
+          }
+          data-icon={item.icon ? (iconOnly ? 'only' : 'leading') : undefined}
           className="dz-segmented-control__segment"
         >
-          {item.label}
+          {item.icon ? <Icon icon={item.icon} /> : null}
+          {iconOnly && item.icon ? null : item.label}
         </Toggle>
       ))}
     </ToggleGroup>

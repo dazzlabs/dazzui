@@ -56,6 +56,12 @@
   --dz-icon-size: var(--control-icon-size);
 }
 
+/* Alone in the tiny square the profile's small glyph is half the box; the
+   square takes its own, `icon-button.tiny.icon-size`. */
+.dz-icon-button[data-size='tiny'] {
+  --dz-icon-size: var(--icon-button-tiny-icon-size);
+}
+
 .dz-icon-button > svg {
   width: var(--dz-icon-size);
   height: var(--dz-icon-size);

@@ -157,7 +157,7 @@ class _IconButtonState extends State<IconButton> {
           ),
           child: IconTheme.merge(
             data: IconThemeData(
-              size: widget.iconSize ?? vars.controlIconSize(widget.size),
+              size: widget.iconSize ?? _iconSize(vars),
               color: content,
             ),
             child: widget.icon,
@@ -166,4 +166,12 @@ class _IconButtonState extends State<IconButton> {
       },
     );
   }
+
+  /// Alone in the tiny square the profile's small glyph would be half the
+  /// box, so the square takes its own, `icon-button.tiny.icon-size`. Every
+  /// other step keeps the profile's.
+  double _iconSize(ThemeVariables vars) =>
+      widget.size.namedSize == NamedSize.tiny
+      ? vars.iconButtonTinyIconSize
+      : vars.controlIconSize(widget.size);
 }

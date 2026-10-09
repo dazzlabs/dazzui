@@ -4243,6 +4243,76 @@
               }
             }
           ]
+        },
+        {
+          "id": "segmented-control/1",
+          "title": "With icons",
+          "specimens": [
+            {
+              "address": "segmented-control/1/0",
+              "component": "segmented-control",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "segmented-control/1/1",
+              "component": "segmented-control",
+              "axes": {
+                "size": "medium"
+              }
+            },
+            {
+              "address": "segmented-control/1/2",
+              "component": "segmented-control",
+              "axes": {
+                "size": "large"
+              }
+            }
+          ]
+        },
+        {
+          "id": "segmented-control/2",
+          "title": "Icons only",
+          "specimens": [
+            {
+              "address": "segmented-control/2/0",
+              "component": "segmented-control",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "segmented-control/2/1",
+              "component": "segmented-control",
+              "axes": {
+                "size": "medium"
+              }
+            },
+            {
+              "address": "segmented-control/2/2",
+              "component": "segmented-control",
+              "axes": {
+                "size": "large"
+              }
+            }
+          ]
+        },
+        {
+          "id": "segmented-control/3",
+          "title": "Filled, with icons",
+          "specimens": [
+            {
+              "address": "segmented-control/3/0",
+              "component": "segmented-control",
+              "axes": {}
+            },
+            {
+              "address": "segmented-control/3/1",
+              "component": "segmented-control",
+              "axes": {}
+            }
+          ]
         }
       ]
     },

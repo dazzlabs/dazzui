@@ -42,6 +42,8 @@
 .dz-button.dz-glyph-leading.dz-glyph-trailing { padding-left: calc(var(--control-padding-inline) - var(--control-label-glyph-inset)); padding-right: calc(var(--control-padding-inline) - var(--control-label-glyph-inset)); }
 .dz-icon-button { min-width: calc(var(--control-size) - 2 * var(--control-padding-block) - 2 * var(--stroke-hairline)); padding-left: var(--control-padding-block); padding-right: var(--control-padding-block); }
 .dz-icon-button image { -gtk-icon-size: var(--control-icon-size); }
+/* Alone in the tiny square the profile's small glyph is half the box. */
+.dz-icon-button.dz-size-tiny image { -gtk-icon-size: var(--icon-button-tiny-icon-size); }
 .dz-toggle:checked { background-color: var(--recipe-tinted-surface-normal); color: var(--recipe-tinted-content-normal); border-color: var(--recipe-tinted-border-normal); }
 .dz-checkbox, .dz-radio { padding: 0; border: none; background: none; color: var(--color-content-muted); font-size: var(--label-quiet-font-size); font-weight: var(--label-quiet-font-weight); }
 .dz-checkbox:checked, .dz-radio:checked { color: var(--color-content); font-weight: var(--label-medium-font-weight); }
@@ -137,6 +139,14 @@
 .dz-option-card { padding: var(--spacing-3); border: var(--stroke-hairline) solid var(--color-border); border-radius: var(--radius-large); background: var(--color-surface-muted); }
 .dz-option-card:checked { border-color: var(--color-primary-600); background: var(--color-surface); }
 .dz-segmented-control { padding: var(--segmented-control-inset); border-radius: var(--radius-medium); background: var(--color-surface-sunken); }
+/* A segment pads `spacing-3`; a glyph beside its label is drawn as Button
+   draws one, and a glyph alone keeps the full icon size. */
+.dz-segmented-control > button { padding-left: var(--spacing-3); padding-right: var(--spacing-3); }
+.dz-segment-content { border-spacing: var(--control-gap); }
+.dz-segment-glyph { -gtk-icon-size: calc(var(--control-icon-size) - var(--control-label-glyph-shrink)); }
+.dz-segment-glyph-only { -gtk-icon-size: var(--control-icon-size); }
+.dz-segmented-control > button.dz-segment-glyph-leading { padding-left: calc(var(--spacing-3) - var(--control-label-glyph-inset)); }
+.dz-segmented-control > button.dz-segment-glyph-leading:dir(rtl) { padding-left: var(--spacing-3); padding-right: calc(var(--spacing-3) - var(--control-label-glyph-inset)); }
 .dz-tabs button { background: none; border: none; box-shadow: none; padding: var(--spacing-2) var(--spacing-3); color: var(--color-content-muted); }
 .dz-tabs button:checked { color: var(--color-content); background: var(--color-surface); border-radius: var(--radius-medium); }
 .dz-popover > contents, .dz-menu-button popover > contents, .dz-select popover > contents { padding: var(--spacing-1); background: var(--color-surface-overlay); color: var(--color-content); border: var(--stroke-hairline) solid var(--color-border-strong); border-radius: var(--frame-popover-radius); box-shadow: var(--shadow-lg); }

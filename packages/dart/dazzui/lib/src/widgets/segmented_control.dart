@@ -38,11 +38,20 @@ class SegmentedItem<T> {
   const SegmentedItem({
     required this.value,
     required this.label,
+    this.icon,
     this.enabled = true,
   });
 
   final T value;
+
+  /// The segment's name. With [SegmentedControl.iconOnly] it names the glyph
+  /// to a screen reader instead.
   final String label;
+
+  /// A glyph drawn before the label, or in its place with
+  /// [SegmentedControl.iconOnly].
+  final IconData? icon;
+
   final bool enabled;
 }
 
@@ -64,6 +73,7 @@ class SegmentedControl<T> extends StatelessWidget {
     this.activeStyle = SegmentedActiveStyle.raised,
     this.stretch = false,
     this.tint = SegmentedTint.primary,
+    this.iconOnly = false,
   });
 
   final List<SegmentedItem<T>> items;
@@ -73,6 +83,11 @@ class SegmentedControl<T> extends StatelessWidget {
   final SegmentedActiveStyle activeStyle;
   final bool stretch;
   final SegmentedTint tint;
+
+  /// Draws each segment's glyph alone, at the profile's full icon size; the
+  /// label stays the segment's name for a screen reader. A segment with no
+  /// glyph keeps its label.
+  final bool iconOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -120,6 +135,8 @@ class SegmentedControl<T> extends StatelessWidget {
           // A square track (Omarchy) leaves the capsule square, not negative.
           radius: math.max(0, trackRadius - inset),
           face: face,
+          size: size,
+          iconOnly: iconOnly,
           onPressed: onChanged == null || !item.enabled
               ? null
               : () => onChanged!(item.value),
@@ -152,6 +169,8 @@ class _Segment<T> extends StatelessWidget {
     required this.height,
     required this.radius,
     required this.face,
+    required this.size,
+    required this.iconOnly,
     required this.onPressed,
   });
 
@@ -162,6 +181,8 @@ class _Segment<T> extends StatelessWidget {
   final double height;
   final double radius;
   final TextStyle face;
+  final WidgetSize size;
+  final bool iconOnly;
   final VoidCallback? onPressed;
 
   @override
@@ -176,6 +197,12 @@ class _Segment<T> extends StatelessWidget {
       borderRadius: corner,
       builder: (context, states) {
         final bool hovered = states.contains(WidgetState.hovered);
+        // A glyph beside a label is drawn and padded the way Button draws
+        // it: `control.label-glyph.shrink` under the profile's icon, and the
+        // start `control.label-glyph.inset` closer. A glyph alone keeps the
+        // full icon and the full padding, and its label as its name.
+        final IconData? icon = item.icon;
+        final bool labelled = icon != null && !iconOnly;
 
         Color? surface;
         Color content = hovered
@@ -201,6 +228,25 @@ class _Segment<T> extends StatelessWidget {
           }
         }
 
+        final Widget label = Text(
+          item.label,
+          maxLines: 1,
+          softWrap: false,
+          textAlign: TextAlign.center,
+          style: vars.labelQuiet.copyWith(
+            fontSize: face.fontSize,
+            height: 1,
+            // Selection is a weight shift as much as a fill.
+            fontWeight: selected
+                ? vars.labelMedium.fontWeight
+                : vars.labelQuiet.fontWeight,
+            color: content,
+          ),
+        );
+        final Widget? glyph = icon == null
+            ? null
+            : Icon(icon, semanticLabel: iconOnly ? item.label : null);
+
         return Opacity(
           opacity: item.enabled ? 1 : 0.5,
           child: SizedBox(
@@ -208,7 +254,12 @@ class _Segment<T> extends StatelessWidget {
             child: AnimatedContainer(
               duration: vars.motionDuration,
               curve: vars.motionEasing,
-              padding: EdgeInsets.symmetric(horizontal: vars.spacing3),
+              padding: EdgeInsetsDirectional.only(
+                start: labelled
+                    ? vars.spacing3 - vars.controlLabelGlyphInset
+                    : vars.spacing3,
+                end: vars.spacing3,
+              ),
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: surface,
@@ -216,25 +267,35 @@ class _Segment<T> extends StatelessWidget {
                 // Both active styles lift with the hairline shadow.
                 boxShadow: selected ? vars.shadow2xs : const <BoxShadow>[],
               ),
-              child: Text(
-                item.label,
-                maxLines: 1,
-                softWrap: false,
-                textAlign: TextAlign.center,
-                style: vars.labelQuiet.copyWith(
-                  fontSize: face.fontSize,
-                  height: 1,
-                  // Selection is a weight shift as much as a fill.
-                  fontWeight: selected
-                      ? vars.labelMedium.fontWeight
-                      : vars.labelQuiet.fontWeight,
-                  color: content,
-                ),
-              ),
+              child: glyph == null
+                  ? label
+                  : IconTheme.merge(
+                      data: IconThemeData(
+                        size: labelled
+                            ? vars.controlIconSize(size) -
+                                  vars.controlLabelGlyphShrink
+                            : vars.controlIconSize(size),
+                        color: content,
+                      ),
+                      child: labelled
+                          ? Row(
+                              mainAxisSize: MainAxisSize.min,
+                              spacing: _gap(vars),
+                              children: [glyph, label],
+                            )
+                          : glyph,
+                    ),
             ),
           ),
         );
       },
     );
   }
+
+  double _gap(ThemeVariables vars) => switch (size.namedSize) {
+    NamedSize.tiny => vars.controlTinyGap,
+    NamedSize.small => vars.controlSmallGap,
+    NamedSize.medium => vars.controlMediumGap,
+    NamedSize.large => vars.controlLargeGap,
+  };
 }

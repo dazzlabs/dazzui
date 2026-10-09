@@ -71,9 +71,15 @@ void main() {
         WidgetSize.medium,
         WidgetSize.large,
       ]) {
+        // The tiny square takes its own glyph, `icon-button.tiny.icon-size`;
+        // every other step keeps the profile's.
         expect(
           tester.getSize(find.byKey(ValueKey(size.namedSize))),
-          Size.square(vars.controlIconSize(size)),
+          Size.square(
+            size == WidgetSize.tiny
+                ? vars.iconButtonTinyIconSize
+                : vars.controlIconSize(size),
+          ),
         );
       }
       // A glyph in a button is the profile's icon less the label-glyph

@@ -34,6 +34,10 @@
 }
 
 .dz-segmented-control__segment {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--control-gap);
   height: calc(var(--control-size) - 2 * var(--segmented-control-inset));
   padding-inline: var(--spacing-3);
   /* The rest of the button reset: an engine leaves 1px on each block edge,
@@ -92,8 +96,20 @@
   color: var(--control-color-filled-content-normal);
 }
 
+/* A glyph beside a label is drawn and padded the way Button draws it:
+   `control.label-glyph.shrink` under the profile's icon, and the end it sits
+   at `control.label-glyph.inset` closer. A glyph alone keeps the full icon. */
 .dz-segmented-control__segment {
   --dz-icon-size: var(--control-icon-size);
+}
+
+.dz-segmented-control__segment[data-icon='leading'] {
+  --dz-icon-size: calc(
+    var(--control-icon-size) - var(--control-label-glyph-shrink)
+  );
+  padding-inline-start: calc(
+    var(--spacing-3) - var(--control-label-glyph-inset)
+  );
 }
 
 .dz-segmented-control__segment > svg {

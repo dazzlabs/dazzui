@@ -458,6 +458,13 @@
 *               segmented-control/0/0        width
 *               segmented-control/0/1        width
 *               segmented-control/0/2        width
+# The glyph-beside-a-label segments: the label's width differs from React's
+# for the same reason as the plain segments above — the platform measures and
+# rounds text its own way. Glyph, gap and padding match.
+*               segmented-control/1/0        width
+*               segmented-control/1/1        width
+*               segmented-control/1/2        width
+*               segmented-control/3/0        width
 *               segmented-control/preview/0  width
 *               select/0/0                   paddingX
 *               select/0/0                   paddingY

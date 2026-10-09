@@ -407,9 +407,18 @@ public static class Mapping
             },
             ["SegmentedControl"] = n =>
             {
-                var control = new SegmentedControl { Size = n.Option("size", ControlSize.Medium) };
+                var control = new SegmentedControl
+                {
+                    Size = n.Option("size", ControlSize.Medium),
+                    IconOnly = n.Flag("iconOnly"),
+                    Filled = n.String("activeStyle") == "filled",
+                };
                 var values = n["items"].Items().Select(item => item?["value"].Text()).ToList();
-                foreach (var item in n["items"].Items()) control.Items.Add(item?["label"].Text());
+                foreach (var item in n["items"].Items())
+                {
+                    control.Items.Add(item?["label"].Text());
+                    control.Icons.Add(Nodes.GlyphOf(item?["icon"]) is string glyph ? Glyphs.All[glyph].Glyph : null);
+                }
                 var changed = n.Handler("onValueChange");
                 control.SelectionChanged += (_, _) =>
                 {

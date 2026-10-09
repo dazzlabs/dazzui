@@ -27,6 +27,16 @@
 *  button/2/0                   width
 *  button/2/3                   width
 *  button/3/2                   width
+# The glyph-beside-a-label buttons: the label's width differs from React's for
+# the same reason as the buttons above. Glyph, gap and padding match.
+*  button/4/2                   width
+*  button/4/4                   width
+*  button/4/6                   width
+*  button/4/8                   width
+*  button/5/0                   width
+*  button/5/6                   width
+*  button/6/2                   width
+*  button/7/2                   width
 *  button/preview/1             width
 *  checkbox/0/0                 width
 *  checkbox/0/1                 width
@@ -71,6 +81,13 @@
 *  segmented-control/0/0        width
 *  segmented-control/0/1        width
 *  segmented-control/0/2        width
+# The glyph-beside-a-label segments: the label's width differs from React's
+# for the same reason as the plain segments above — the platform measures and
+# rounds text its own way. Glyph, gap and padding match.
+*  segmented-control/1/0        width
+*  segmented-control/1/1        width
+*  segmented-control/1/2        width
+*  segmented-control/3/0        width
 *  segmented-control/preview/0  width
 *  sidebar/0/11                 width
 *  sidebar/1/11                 width

@@ -314,11 +314,18 @@ final Map<String, ComponentBuilder> components = {
           SegmentedItem(
             value: '${(item as Map)['value']}',
             label: '${item['label']}',
+            icon: _iconData(item['icon']),
           ),
       ],
       value: value,
       onChanged: set,
       size: _size(n, 'medium'),
+      iconOnly: n.flag('iconOnly'),
+      activeStyle: n.option(
+        SegmentedActiveStyle.values,
+        'activeStyle',
+        SegmentedActiveStyle.raised,
+      ),
     ),
   ),
   'Select': (n) => Held<String?>(

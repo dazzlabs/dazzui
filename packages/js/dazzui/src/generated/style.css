@@ -1061,6 +1061,7 @@
   --headline-small-font-size: var(--base-type-xl);
   --headline-small-font-weight: var(--base-font-weight-semibold);
   --headline-small-line-height: var(--base-leading-xl);
+  --icon-button-tiny-icon-size: var(--spacing-4);
   --icon-large: var(--spacing-5);
   --icon-medium: var(--spacing-4);
   --icon-small: var(--spacing-3);

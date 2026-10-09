@@ -68,7 +68,9 @@ public sealed class IconButton : Button
     {
         Width = Height; Padding = new Thickness(0);
         if (Content is not Icon icon) return;
-        icon.GlyphSize = Theme.Number($"control.{Theme.Key(Size)}.size") - Theme.Number("spacing.3");
+        // The profile's icon, except alone in the tiny square, where the
+        // profile's small glyph would be half the box: that takes its own.
+        icon.GlyphSize = Theme.Number(Size == ControlSize.Tiny ? "icon-button.tiny.icon-size" : $"control.{Theme.Key(Size)}.icon-size");
         Appearance.Refresh(icon);
     }
 }

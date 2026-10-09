@@ -783,6 +783,9 @@ class ThemeVariables {
   // Drawer
   final double drawerSize;
 
+  // Icon Button
+  double get iconButtonTinyIconSize => spacing4;
+
   // Menu
   final double menuMinWidth;
   final double menuItemPadding;

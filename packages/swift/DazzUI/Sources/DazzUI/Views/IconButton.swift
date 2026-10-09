@@ -58,7 +58,7 @@ public struct IconButton<Content: View>: View {
         )
 
         content()
-          .environment(\.dazzIconSize, metrics.iconSize)
+          .environment(\.dazzIconSize, glyphSize)
           .foregroundStyle(foreground(colors: colors, state: state))
           .frame(width: metrics.size, height: metrics.size)
           .background(background(colors: colors, state: state))
@@ -81,6 +81,12 @@ public struct IconButton<Content: View>: View {
         width: vars.focusWidth
       )
     }
+  }
+
+  /// Alone in the tiny square the profile's small glyph is half the box; the
+  /// square takes its own, `icon-button.tiny.icon-size`.
+  private var glyphSize: CGFloat {
+    size == .tiny ? theme.vars.iconButtonTinyIconSize : theme.vars.metrics(size).iconSize
   }
 
   /// Is this the quiet chrome posture the toolbar wants?

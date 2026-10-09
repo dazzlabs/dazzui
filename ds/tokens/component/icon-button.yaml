@@ -1,0 +1,11 @@
+icon-button:
+  # A glyph alone in a square button. The tiny profile's icon is the small
+  # step, sized to sit beside 11px type; alone in a 24px square it is half the
+  # box and reads as a speck. A toolbar glyph is 16px on the Mac, in Fluent and
+  # in GNOME's symbolic set alike, so the tiny square takes that, as a length
+  # rather than a step: the desktop metrics that grow the icon scale would put
+  # a 20px glyph in the same 24px square. Small and up keep the profile's.
+  tiny:
+    icon-size:
+      $type: dimension
+      $value: "{spacing.4}"

@@ -398,11 +398,20 @@ let components: [String: ComponentBuilder] = [
     bound(n, onChange: "onValueChange", initial: "", read: { $0.text }, write: Value.string) { value in
       SegmentedControl(
         items: (n["items"].array ?? []).map {
-          SegmentedItem(value: $0["value"]?.text ?? "", label: $0["label"]?.text ?? "")
+          SegmentedItem(
+            value: $0["value"]?.text ?? "",
+            label: $0["label"]?.text ?? "",
+            icon: $0["icon"].flatMap(iconOf),
+            disabled: $0["disabled"]?.truthy ?? false
+          )
         },
         value: value.wrappedValue,
         onValueChange: { value.wrappedValue = $0 },
-        size: n.option("size", SegmentedControlSize.medium)
+        size: n.option("size", SegmentedControlSize.medium),
+        tint: n.option("tint", Tint.primary),
+        activeStyle: n.option("activeStyle", SegmentedActiveStyle.raised),
+        stretch: n.flag("stretch"),
+        iconOnly: n.flag("iconOnly")
       )
     }
   },

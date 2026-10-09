@@ -97,7 +97,12 @@ Never hand-edit `src/generated/`. A value a component needs belongs in
   glyph's frame carries whitespace of its own. Both are trims on the
   profile rather than lengths, so they follow the desktop metrics that
   re-pick the icon scale and the inline padding. Every port's Button owns
-  both; a consumer passes a glyph and gets them.
+  both; a consumer passes a glyph and gets them. A SegmentedControl item's
+  `icon` follows the same two trims beside its label, and an `iconOnly`
+  segment draws the glyph alone at the full profile size.
+- A glyph alone in the tiny IconButton square takes
+  `icon-button.tiny.icon-size`, not the profile's small step: the small
+  step is sized for 11px type and reads as a speck alone in 24px.
 - Sized controls read the `[data-size]` profile bindings — `--control-size`, `--control-icon-size`,
   `--control-gap`, `--control-padding-*`, `--control-radius`,
   `--control-font-*`, `--control-line-height` — once in their base rule

@@ -3,9 +3,9 @@
 use std::collections::HashMap;
 
 use dazzui::{
-    Checkbox, IconButton, OptionCard, PillTabItem, PillTabs, RadioGroup, RadioGroupOption,
-    SegmentedControl, SegmentedItem, Size, Slider, Switch, Tag, Tint, Toggle, ToggleGroup,
-    ToggleItem, Variant,
+    ActiveStyle, Checkbox, IconButton, OptionCard, PillTabItem, PillTabs, RadioGroup,
+    RadioGroupOption, SegmentedControl, SegmentedItem, Size, Slider, Switch, Tag, Tint, Toggle,
+    ToggleGroup, ToggleItem, Variant,
 };
 use gpui::{AnyElement, App, IntoElement, ParentElement, SharedString, Window};
 use serde_json::Value;
@@ -174,11 +174,20 @@ fn segmented_control(node: &Node, window: &mut Window, cx: &mut App) -> AnyEleme
         .iter()
         .enumerate()
         .map(|(index, item)| {
-            SegmentedItem::new(
+            let mut segment = SegmentedItem::new(
                 value_of(item),
                 label(node, item, format!("items.{index}"), window, cx),
             )
-            .disabled(item["disabled"].as_bool().unwrap_or(false))
+            .disabled(item["disabled"].as_bool().unwrap_or(false));
+            if !item["icon"].is_null() {
+                segment = segment.icon(node.draw_value(
+                    &item["icon"],
+                    format!("items.{index}.icon"),
+                    window,
+                    cx,
+                ));
+            }
+            segment
         })
         .collect();
     let mut control = SegmentedControl::new(
@@ -186,7 +195,14 @@ fn segmented_control(node: &Node, window: &mut Window, cx: &mut App) -> AnyEleme
         segments,
         node.string("value").unwrap_or_default(),
     )
-    .size(node.option("size", Size::parse).unwrap_or(Size::Medium));
+    .size(node.option("size", Size::parse).unwrap_or(Size::Medium))
+    .tint(node.option("tint", Tint::parse).unwrap_or_default())
+    .active_style(
+        node.option("activeStyle", ActiveStyle::parse)
+            .unwrap_or_default(),
+    )
+    .stretch(node.flag("stretch"))
+    .icon_only(node.flag("iconOnly"));
     if let Some(label) = node.string("aria-label") {
         control = control.aria_label(label);
     }

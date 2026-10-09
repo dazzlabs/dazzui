@@ -186,6 +186,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -927,6 +928,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -1668,6 +1670,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -2409,6 +2412,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -3150,6 +3154,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -3891,6 +3896,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -4632,6 +4638,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -5373,6 +5380,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -6114,6 +6122,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -6855,6 +6864,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -7596,6 +7606,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -8337,6 +8348,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -9078,6 +9090,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -9819,6 +9832,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -10560,6 +10574,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -11301,6 +11316,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -12042,6 +12058,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -12783,6 +12800,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -13524,6 +13542,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -14265,6 +14284,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -15006,6 +15026,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -15747,6 +15768,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -16488,6 +16510,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -17229,6 +17252,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -17970,6 +17994,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -18711,6 +18736,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -19452,6 +19478,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -20193,6 +20220,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -20934,6 +20962,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -21675,6 +21704,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -22416,6 +22446,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -23157,6 +23188,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -23898,6 +23930,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -24639,6 +24672,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -25380,6 +25414,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -26121,6 +26156,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -26862,6 +26898,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -27603,6 +27640,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -28344,6 +28382,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -29085,6 +29124,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -29826,6 +29866,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -30567,6 +30608,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -31308,6 +31350,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -32049,6 +32092,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -32790,6 +32834,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -33531,6 +33576,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -34272,6 +34318,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -35013,6 +35060,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -35754,6 +35802,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -36495,6 +36544,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -37236,6 +37286,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -37977,6 +38028,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -38718,6 +38770,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -39459,6 +39512,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -40200,6 +40254,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -40941,6 +40996,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -41682,6 +41738,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -42423,6 +42480,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -43164,6 +43222,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -43905,6 +43964,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 24px;
   --icon-medium: 20px;
   --icon-small: 14px;
@@ -44646,6 +44706,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 24px;
   --icon-medium: 20px;
   --icon-small: 14px;
@@ -45387,6 +45448,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 24px;
   --icon-medium: 20px;
   --icon-small: 14px;
@@ -46128,6 +46190,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 24px;
   --icon-medium: 20px;
   --icon-small: 14px;
@@ -46869,6 +46932,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 24px;
   --icon-medium: 20px;
   --icon-small: 14px;
@@ -47610,6 +47674,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 24px;
   --icon-medium: 20px;
   --icon-small: 14px;
@@ -48351,6 +48416,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 24px;
   --icon-medium: 20px;
   --icon-small: 14px;
@@ -49092,6 +49158,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 24px;
   --icon-medium: 20px;
   --icon-small: 14px;
@@ -49833,6 +49900,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -50574,6 +50642,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;
@@ -51315,6 +51384,7 @@
   --headline-small-font-size: 20px;
   --headline-small-font-weight: 600;
   --headline-small-line-height: 26px;
+  --icon-button-tiny-icon-size: 16px;
   --icon-large: 20px;
   --icon-medium: 16px;
   --icon-small: 12px;

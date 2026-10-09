@@ -38,7 +38,11 @@ impl ActiveStyle {
 /// One segment of a [`SegmentedControl`].
 pub struct SegmentedItem {
     pub value: SharedString,
+    /// The segment's name. With [`SegmentedControl::icon_only`] it is not
+    /// drawn, and GPUI has no accessibility tree to name the glyph with it.
     pub label: AnyElement,
+    /// A glyph drawn before the label, or in its place with `icon_only`.
+    pub icon: Option<AnyElement>,
     pub disabled: bool,
 }
 
@@ -47,8 +51,17 @@ impl SegmentedItem {
         SegmentedItem {
             value: value.into(),
             label: label.into_any_element(),
+            icon: None,
             disabled: false,
         }
+    }
+
+    /// A glyph before the label, drawn `control.label-glyph.shrink` under
+    /// the profile's icon size; the leading end pads
+    /// `control.label-glyph.inset` less, as Button's does.
+    pub fn icon(mut self, icon: impl IntoElement) -> Self {
+        self.icon = Some(icon.into_any_element());
+        self
     }
 
     pub fn disabled(mut self, disabled: bool) -> Self {
@@ -69,6 +82,7 @@ pub struct SegmentedControl {
     tint: Tint,
     active_style: ActiveStyle,
     stretch: bool,
+    icon_only: bool,
     on_value_change: Option<OnValueChange>,
 }
 
@@ -86,6 +100,7 @@ impl SegmentedControl {
             tint: Tint::Primary,
             active_style: ActiveStyle::Raised,
             stretch: false,
+            icon_only: false,
             on_value_change: None,
         }
     }
@@ -108,6 +123,13 @@ impl SegmentedControl {
     /// Fill the available width, splitting it evenly between the segments.
     pub fn stretch(mut self, stretch: bool) -> Self {
         self.stretch = stretch;
+        self
+    }
+
+    /// Draw each segment's glyph alone, at the profile's full icon size. A
+    /// segment without a glyph still draws its label.
+    pub fn icon_only(mut self, icon_only: bool) -> Self {
+        self.icon_only = icon_only;
         self
     }
 
@@ -147,6 +169,9 @@ impl RenderOnce for SegmentedControl {
         let filled = ControlColors::resolve(t, Variant::Filled, self.tint, State::Normal);
         let quiet = t.label_quiet;
         let font_size = profile.content.size;
+        let icon_only = self.icon_only;
+        let label_glyph = profile.icon_size - t.control_label_glyph_shrink;
+        let glyph_padding = px(t.spacing_3 - t.control_label_glyph_inset);
 
         let segments = self
             .items
@@ -156,6 +181,17 @@ impl RenderOnce for SegmentedControl {
                 let pressed = selected == Some(index);
                 let focus = handles[index].clone();
                 let visible = crate::foundation::focus_visible(&focus, window, cx);
+                // A glyph beside the label is drawn and padded as Button
+                // draws one; a glyph alone keeps the slot's full size.
+                let leading = item.icon.is_some() && !icon_only;
+                let glyph = item.icon.map(|icon| {
+                    if icon_only {
+                        icon
+                    } else {
+                        icon_slot(label_glyph, icon).into_any_element()
+                    }
+                });
+                let label = (!icon_only || glyph.is_none()).then_some(item.label);
                 let mut segment = div()
                     .id(kit::child_id(&self.id, &format!("segment-{index}")))
                     .relative()
@@ -165,6 +201,7 @@ impl RenderOnce for SegmentedControl {
                     .gap(px(profile.gap))
                     .h(px(profile.size - 2. * inset))
                     .px(px(t.spacing_3))
+                    .when(leading, |this| this.pl(glyph_padding))
                     .rounded(px(radius - inset))
                     .font_family(quiet.face.family())
                     .text_size(px(font_size))
@@ -186,7 +223,8 @@ impl RenderOnce for SegmentedControl {
                             }
                         }
                     })
-                    .child(item.label)
+                    .children(glyph)
+                    .children(label)
                     .when(visible, |this| this.child(kit::outline(t, radius - inset)));
                 if item.disabled {
                     segment = segment.opacity(0.5).cursor_not_allowed();

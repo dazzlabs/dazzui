@@ -1,4 +1,4 @@
-use crate::{Size, Tint, button, checkbox, label, styled};
+use crate::{DazzWidgetExt, Size, Tint, button, checkbox, label, styled};
 use gtk::prelude::*;
 
 /// A semantic spacing key, e.g. `3` or `2.5`. GTK's CSS border-spacing
@@ -133,11 +133,44 @@ pub fn tabs(stack: &gtk::Stack) -> gtk::StackSwitcher {
 }
 /// Grouped toggles preserve GTK's navigation and exclusive selection.
 pub fn segmented_control(labels: &[&str], selected: usize) -> gtk::Box {
+    let items: Vec<_> = labels.iter().map(|label| (*label, None)).collect();
+    glyph_segmented_control(&items, selected, false)
+}
+/// A segmented control whose segments may carry a host icon-theme glyph.
+///
+/// Each item is `(label, icon)`. As in React, a glyph beside a label is drawn
+/// `control.label-glyph.shrink` under the profile's icon, the profile's gap
+/// before the label, and the segment's leading end pads
+/// `control.label-glyph.inset` less. With `icon_only`, a segment that has a
+/// glyph draws it alone at the full icon size and keeps the label as its
+/// accessible name and tooltip.
+pub fn glyph_segmented_control(
+    items: &[(&str, Option<&str>)],
+    selected: usize,
+    icon_only: bool,
+) -> gtk::Box {
     let w = box_(gtk::Orientation::Horizontal, "0");
     w.add_css_class("dz-segmented-control");
     let mut first: Option<gtk::ToggleButton> = None;
-    for (index, text) in labels.iter().enumerate() {
+    for (index, (text, icon)) in items.iter().enumerate() {
         let item = crate::toggle(text, Tint::Neutral, Size::Small);
+        if let Some(icon) = icon {
+            let glyph = gtk::Image::from_icon_name(icon);
+            if icon_only {
+                glyph.add_css_class("dz-segment-glyph-only");
+                item.set_child(Some(&glyph));
+                item.set_tooltip_text(Some(text));
+            } else {
+                glyph.add_css_class("dz-segment-glyph");
+                let content = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+                content.add_css_class("dz-segment-content");
+                content.append(&glyph);
+                content.append(&gtk::Label::new(Some(text)));
+                item.set_child(Some(&content));
+                item.add_css_class("dz-segment-glyph-leading");
+            }
+            item.set_dazz_label(text);
+        }
         if let Some(first) = &first {
             item.set_group(Some(first));
         } else {

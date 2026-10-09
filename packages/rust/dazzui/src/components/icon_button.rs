@@ -122,8 +122,15 @@ impl RenderOnce for IconButton {
             }
         }
 
+        // Alone in the tiny square the profile's small glyph is half the
+        // box; the square takes its own, `icon-button.tiny.icon-size`.
+        let icon_size = if self.size == Size::Tiny {
+            t.icon_button_tiny_icon_size
+        } else {
+            profile.icon_size
+        };
         icon_slot(
-            profile.icon_size,
+            icon_size,
             button
                 .children(self.children)
                 .when(visible, |this| this.child(kit::outline(t, profile.radius))),

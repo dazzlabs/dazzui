@@ -536,6 +536,7 @@ public struct ThemeVariables: Sendable {
   public var checkboxMediumBox: CGFloat { spacing4 }
   public var checkboxLargeBox: CGFloat { spacing5 }
   public var dialogScrimColor: Color { colorContent }
+  public var iconButtonTinyIconSize: CGFloat { spacing4 }
   public var preferencesRowPadding: CGFloat { spacing15 }
   public var preferencesRowGap: CGFloat { spacing1 }
   public var preferencesHeadingGap: CGFloat { spacing2 }

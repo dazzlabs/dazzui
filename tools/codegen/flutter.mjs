@@ -91,7 +91,15 @@ export const SUPPORT = {
   RadioGroup: ['options', 'defaultValue', size, label],
   SearchField: ['value', 'onValueChange', 'placeholder', label],
   SectionLabel: ['faint', tint, children],
-  SegmentedControl: ['items', 'value', 'onValueChange', size, label],
+  SegmentedControl: [
+    'items',
+    'value',
+    'onValueChange',
+    size,
+    'iconOnly',
+    'activeStyle',
+    label,
+  ],
   Select: ['options', 'defaultValue', 'placeholder', size, 'disabled', label],
   ShortcutRecorder: [
     'value',

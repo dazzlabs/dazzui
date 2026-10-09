@@ -166,6 +166,7 @@ export default defineConfig({
     './tokens/component/checkbox.yaml',
     './tokens/component/dialog.yaml',
     './tokens/component/drawer.yaml',
+    './tokens/component/icon-button.yaml',
     './tokens/component/menu.yaml',
     './tokens/component/preferences.yaml',
     './tokens/component/preview-card.yaml',

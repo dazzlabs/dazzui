@@ -43,7 +43,9 @@ read/write state with gtk4-rs, rather than learning another state API. Use
 `set_dazz_size`, `set_dazz_tint`, `set_dazz_variant` and `set_dazz_invalid`
 for drawing axes. Icon buttons take host icon-theme names and require an
 accessible label. `glyph_button` puts a host icon-theme glyph before or
-after a label, sized, spaced and padded as React's Button does. Table and tree expose GTK's selection models and factories.
+after a label, sized, spaced and padded as React's Button does;
+`glyph_segmented_control` does the same for segments, or draws each glyph
+alone with the label as its accessible name. Table and tree expose GTK's selection models and factories.
 `combobox` is a searchable model selector; free-form autocomplete is not yet
 provided. `tag` is a native selectable toggle.
 
