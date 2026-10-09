@@ -192,3 +192,85 @@ internal static class Skin
         else if (parent is ContentControl control) control.Content = null;
     }
 }
+
+/// <summary>
+/// A ds shadow token drawn under a surface. WinUI's own <c>ThemeShadow</c>
+/// takes no offset, blur or colour, so the token's layers are drawn as
+/// composition drop shadows, masked to the surface's rounded rectangle, on a
+/// host element that sits behind the surface. The token's name stays on the
+/// control as <see cref="ShadowProperty"/>, which is what a reader asks.
+/// </summary>
+public static class Elevation
+{
+    public static readonly DependencyProperty ShadowProperty = DependencyProperty.RegisterAttached(
+        "Shadow", typeof(string), typeof(Elevation), new PropertyMetadata(null));
+    /// <summary>The shadow token (<c>2xs</c> … <c>2xl</c>) the kit draws under this control, if any.</summary>
+    public static string? GetShadow(DependencyObject element) => (string?)element.GetValue(ShadowProperty);
+
+    private sealed class Lift
+    {
+        public Theme Theme = Theme.Default;
+        public string? Token;
+        public double Corner;
+    }
+    private static readonly ConditionalWeakTable<FrameworkElement, Lift> Lifts = new();
+
+    /// <summary>
+    /// Draws <paramref name="token"/> (a <c>shadow.*</c> name less its
+    /// prefix) under <paramref name="host"/>, or clears it when null.
+    /// </summary>
+    internal static void Draw(Control owner, FrameworkElement host, Theme theme, string? token)
+    {
+        owner.SetValue(ShadowProperty, token);
+        if (!Lifts.TryGetValue(host, out var lift))
+        {
+            lift = new Lift();
+            Lifts.Add(host, lift);
+            host.SizeChanged += (_, _) => Render(host, lift);
+        }
+        lift.Theme = theme;
+        lift.Token = token;
+        lift.Corner = owner.CornerRadius.TopLeft;
+        Render(host, lift);
+    }
+
+    private static void Render(FrameworkElement host, Lift lift)
+    {
+        var size = new System.Numerics.Vector2((float)host.ActualWidth, (float)host.ActualHeight);
+        if (lift.Token is null || size.X <= 0 || size.Y <= 0)
+        {
+            Microsoft.UI.Xaml.Hosting.ElementCompositionPreview.SetElementChildVisual(host, null);
+            return;
+        }
+        var compositor = Microsoft.UI.Xaml.Hosting.ElementCompositionPreview.GetElementVisual(host).Compositor;
+        var layers = compositor.CreateContainerVisual();
+        layers.Size = size;
+        foreach (var layer in lift.Theme.Shadow("shadow." + lift.Token).Reverse())
+        {
+            if (layer.Inset) continue;
+            var spread = (float)layer.Spread;
+            var shapeSize = new System.Numerics.Vector2(size.X + 2 * spread, size.Y + 2 * spread);
+            var geometry = compositor.CreateRoundedRectangleGeometry();
+            geometry.Size = shapeSize;
+            geometry.CornerRadius = new System.Numerics.Vector2((float)(lift.Corner + layer.Spread));
+            var shape = compositor.CreateShapeVisual();
+            shape.Size = shapeSize;
+            shape.Shapes.Add(compositor.CreateSpriteShape(geometry));
+            ((Microsoft.UI.Composition.CompositionSpriteShape)shape.Shapes[0]).FillBrush = compositor.CreateColorBrush(Microsoft.UI.Colors.Black);
+            var surface = compositor.CreateVisualSurface();
+            surface.SourceVisual = shape;
+            surface.SourceSize = shapeSize;
+            var shadow = compositor.CreateDropShadow();
+            shadow.Mask = compositor.CreateSurfaceBrush(surface);
+            shadow.Color = layer.Color;
+            shadow.BlurRadius = (float)layer.Blur;
+            shadow.Offset = new System.Numerics.Vector3((float)layer.X, (float)layer.Y, 0);
+            var sprite = compositor.CreateSpriteVisual();
+            sprite.Size = shapeSize;
+            sprite.Offset = new System.Numerics.Vector3(-spread, -spread, 0);
+            sprite.Shadow = shadow;
+            layers.Children.InsertAtTop(sprite);
+        }
+        Microsoft.UI.Xaml.Hosting.ElementCompositionPreview.SetElementChildVisual(host, layers);
+    }
+}

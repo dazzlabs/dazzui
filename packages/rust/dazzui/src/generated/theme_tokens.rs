@@ -119,6 +119,8 @@ pub struct ThemeTokens {
     pub control_color_tinted_surface_pressed: Paint,
     pub control_container_radius: f32,
     pub control_field_radius: f32,
+    pub control_label_glyph_inset: f32,
+    pub control_label_glyph_shrink: f32,
     pub control_large_content: TypeStyle,
     pub control_large_gap: f32,
     pub control_large_icon_size: f32,
@@ -477,6 +479,8 @@ pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
     control_color_tinted_surface_pressed: Paint::Shade(600, 0.24),
     control_container_radius: 10.0,
     control_field_radius: 10.0,
+    control_label_glyph_inset: 2.0,
+    control_label_glyph_shrink: 2.0,
     control_large_content: TypeStyle {
         face: Face::Text,
         size: 12.0,

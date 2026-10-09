@@ -76,9 +76,13 @@ void main() {
           Size.square(vars.controlIconSize(size)),
         );
       }
+      // A glyph in a button is the profile's icon less the label-glyph
+      // shrink, as React's `.dz-button` sizes it.
       expect(
         tester.getSize(find.byKey(const ValueKey('button'))),
-        Size.square(vars.iconLarge),
+        Size.square(
+          vars.controlIconSize(WidgetSize.large) - vars.controlLabelGlyphShrink,
+        ),
       );
       expect(
         tester.getSize(find.byKey(const ValueKey('slot override'))),

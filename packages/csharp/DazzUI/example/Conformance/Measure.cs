@@ -127,8 +127,8 @@ internal static class Measure
                 ["paddingX"] = painted ? null : Round(Math.Max(0, left - stroke)),
                 ["paddingY"] = painted ? null : Round(Math.Max(0, top - stroke)),
                 ["gap"] = stack is null ? null : Round(stack.Spacing),
-                // The kit draws no shadows on WinUI; a ThemeShadow has no token.
-                ["shadow"] = painted ? null : root.Shadow is null ? "none" : "theme",
+                // A token shadow the kit draws says its name; a ThemeShadow has none.
+                ["shadow"] = painted ? null : Elevation.GetShadow(root) ?? (root.Shadow is null ? "none" : "theme"),
             },
         };
     }

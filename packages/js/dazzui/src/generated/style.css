@@ -993,6 +993,8 @@
   --color-warning-950: var(--base-color-amber-950);
   --control-container-radius: var(--base-corner-md);
   --control-field-radius: var(--base-corner-md);
+  --control-label-glyph-inset: var(--spacing-0-5);
+  --control-label-glyph-shrink: var(--spacing-0-5);
   --control-large-content-font-family: var(--label-medium-font-family);
   --control-large-content-font-size: var(--label-medium-font-size);
   --control-large-content-font-weight: var(--label-medium-font-weight);

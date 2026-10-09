@@ -9,17 +9,19 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="ui:Button">
-          <ContentPresenter x:Name="Presenter"
-              Content="{TemplateBinding Content}"
-              ContentTemplate="{TemplateBinding ContentTemplate}"
-              Padding="{TemplateBinding Padding}"
-              Background="{TemplateBinding Background}"
-              Foreground="{TemplateBinding Foreground}"
-              BorderBrush="{TemplateBinding BorderBrush}"
-              BorderThickness="{TemplateBinding BorderThickness}"
-              CornerRadius="{TemplateBinding CornerRadius}"
-              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
+          <Grid>
+            <Border x:Name="Lift" />
+            <ContentPresenter x:Name="Presenter"
+                Content="{TemplateBinding Content}"
+                ContentTemplate="{TemplateBinding ContentTemplate}"
+                Padding="{TemplateBinding Padding}"
+                Background="{TemplateBinding Background}"
+                Foreground="{TemplateBinding Foreground}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="{TemplateBinding CornerRadius}"
+                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
             <VisualStateManager.VisualStateGroups>
               <VisualStateGroup x:Name="CommonStates">
                 <VisualState x:Name="Normal" />
@@ -46,7 +48,7 @@
                 </VisualState>
               </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
-          </ContentPresenter>
+          </Grid>
         </ControlTemplate>
       </Setter.Value>
     </Setter>

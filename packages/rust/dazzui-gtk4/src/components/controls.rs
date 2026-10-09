@@ -6,6 +6,44 @@ pub fn button(label: &str, variant: Variant, tint: Tint, size: Size) -> gtk::But
     w.set_dazz_variant(variant);
     w
 }
+/// A labelled button with a host icon-theme glyph at either end, or both.
+///
+/// As in React, a glyph beside a label is drawn `control.label-glyph.shrink`
+/// under the profile's icon size, sits the profile's gap from the label, and
+/// the end it sits at pads `control.label-glyph.inset` less. With no glyph
+/// this is [`button`]; a glyph with no label is an [`icon_button`].
+pub fn glyph_button(
+    label: &str,
+    leading: Option<&str>,
+    trailing: Option<&str>,
+    variant: Variant,
+    tint: Tint,
+    size: Size,
+) -> gtk::Button {
+    let w = button(label, variant, tint, size);
+    if leading.is_none() && trailing.is_none() {
+        return w;
+    }
+    let content = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+    content.add_css_class("dz-button-content");
+    let glyph = |icon: &str| {
+        let image = gtk::Image::from_icon_name(icon);
+        image.add_css_class("dz-button-glyph");
+        image
+    };
+    if let Some(icon) = leading {
+        content.append(&glyph(icon));
+        w.add_css_class("dz-glyph-leading");
+    }
+    content.append(&gtk::Label::new(Some(label)));
+    if let Some(icon) = trailing {
+        content.append(&glyph(icon));
+        w.add_css_class("dz-glyph-trailing");
+    }
+    w.set_child(Some(&content));
+    w.set_dazz_label(label);
+    w
+}
 /// Icons are supplied by the host's icon theme; give the control an accessible label.
 pub fn icon_button(
     icon: &str,

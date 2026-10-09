@@ -368,6 +368,353 @@ static partial class Stories
                   ]
                 }
               }
+            },
+            {
+              "title": "Icons across the variants",
+              "note": "The glyph takes the label’s colour, so it follows every recipe.",
+              "demo": {
+                "content": {
+                  "$el": "Row",
+                  "children": [
+                    {
+                      "$el": "Button",
+                      "props": {
+                        "variant": "filled"
+                      },
+                      "children": [
+                        {
+                          "$el": "Icon",
+                          "props": {
+                            "icon": {
+                              "$icon": "Add20Regular"
+                            }
+                          },
+                          "$at": 1
+                        },
+                        "New file"
+                      ],
+                      "$at": 0
+                    },
+                    {
+                      "$el": "Button",
+                      "props": {
+                        "variant": "tinted"
+                      },
+                      "children": [
+                        {
+                          "$el": "Icon",
+                          "props": {
+                            "icon": {
+                              "$icon": "Share20Regular"
+                            }
+                          },
+                          "$at": 3
+                        },
+                        "Share"
+                      ],
+                      "$at": 2
+                    },
+                    {
+                      "$el": "Button",
+                      "props": {
+                        "variant": "outlined"
+                      },
+                      "children": [
+                        {
+                          "$el": "Icon",
+                          "props": {
+                            "icon": {
+                              "$icon": "Copy20Regular"
+                            }
+                          },
+                          "$at": 5
+                        },
+                        "Duplicate"
+                      ],
+                      "$at": 4
+                    },
+                    {
+                      "$el": "Button",
+                      "props": {
+                        "variant": "normal"
+                      },
+                      "children": [
+                        {
+                          "$el": "Icon",
+                          "props": {
+                            "icon": {
+                              "$icon": "ArrowSync20Regular"
+                            }
+                          },
+                          "$at": 7
+                        },
+                        "Sync"
+                      ],
+                      "$at": 6
+                    },
+                    {
+                      "$el": "Button",
+                      "props": {
+                        "variant": "recessed"
+                      },
+                      "children": [
+                        {
+                          "$el": "Icon",
+                          "props": {
+                            "icon": {
+                              "$icon": "Settings20Regular"
+                            }
+                          },
+                          "$at": 9
+                        },
+                        "Settings"
+                      ],
+                      "$at": 8
+                    },
+                    {
+                      "$el": "Button",
+                      "props": {
+                        "variant": "plain"
+                      },
+                      "children": [
+                        {
+                          "$el": "Icon",
+                          "props": {
+                            "icon": {
+                              "$icon": "ArrowLeft20Regular"
+                            }
+                          },
+                          "$at": 11
+                        },
+                        "Back"
+                      ],
+                      "$at": 10
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "title": "Icons at every size",
+              "note": "The glyph steps with the size profile, as the label does.",
+              "demo": {
+                "content": {
+                  "$el": "Row",
+                  "children": [
+                    {
+                      "$el": "Button",
+                      "props": {
+                        "size": "tiny"
+                      },
+                      "children": [
+                        {
+                          "$el": "Icon",
+                          "props": {
+                            "icon": {
+                              "$icon": "Add20Regular"
+                            }
+                          },
+                          "$at": 1
+                        },
+                        "Tiny"
+                      ],
+                      "$at": 0
+                    },
+                    {
+                      "$el": "Button",
+                      "props": {
+                        "size": "small"
+                      },
+                      "children": [
+                        {
+                          "$el": "Icon",
+                          "props": {
+                            "icon": {
+                              "$icon": "Add20Regular"
+                            }
+                          },
+                          "$at": 3
+                        },
+                        "Small"
+                      ],
+                      "$at": 2
+                    },
+                    {
+                      "$el": "Button",
+                      "props": {
+                        "size": "medium"
+                      },
+                      "children": [
+                        {
+                          "$el": "Icon",
+                          "props": {
+                            "icon": {
+                              "$icon": "Add20Regular"
+                            }
+                          },
+                          "$at": 5
+                        },
+                        "Medium"
+                      ],
+                      "$at": 4
+                    },
+                    {
+                      "$el": "Button",
+                      "props": {
+                        "size": "large"
+                      },
+                      "children": [
+                        {
+                          "$el": "Icon",
+                          "props": {
+                            "icon": {
+                              "$icon": "Add20Regular"
+                            }
+                          },
+                          "$at": 7
+                        },
+                        "Large"
+                      ],
+                      "$at": 6
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "title": "Trailing icons",
+              "note": "A glyph after the label says where the action goes next.",
+              "demo": {
+                "content": {
+                  "$el": "Row",
+                  "children": [
+                    {
+                      "$el": "Button",
+                      "props": {
+                        "variant": "filled"
+                      },
+                      "children": [
+                        "Continue",
+                        {
+                          "$el": "Icon",
+                          "props": {
+                            "icon": {
+                              "$icon": "ChevronRight20Regular"
+                            }
+                          },
+                          "$at": 1
+                        }
+                      ],
+                      "$at": 0
+                    },
+                    {
+                      "$el": "Button",
+                      "props": {
+                        "variant": "outlined"
+                      },
+                      "children": [
+                        "Open in browser",
+                        {
+                          "$el": "Icon",
+                          "props": {
+                            "icon": {
+                              "$icon": "Open20Regular"
+                            }
+                          },
+                          "$at": 3
+                        }
+                      ],
+                      "$at": 2
+                    },
+                    {
+                      "$el": "Button",
+                      "children": [
+                        "More",
+                        {
+                          "$el": "Icon",
+                          "props": {
+                            "icon": {
+                              "$icon": "ChevronDown20Regular"
+                            }
+                          },
+                          "$at": 5
+                        }
+                      ],
+                      "$at": 4
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "title": "Tinted actions",
+              "demo": {
+                "content": {
+                  "$el": "Row",
+                  "children": [
+                    {
+                      "$el": "Button",
+                      "props": {
+                        "variant": "filled",
+                        "tint": "success"
+                      },
+                      "children": [
+                        {
+                          "$el": "Icon",
+                          "props": {
+                            "icon": {
+                              "$icon": "Send20Regular"
+                            }
+                          },
+                          "$at": 1
+                        },
+                        "Publish"
+                      ],
+                      "$at": 0
+                    },
+                    {
+                      "$el": "Button",
+                      "props": {
+                        "variant": "tinted",
+                        "tint": "danger"
+                      },
+                      "children": [
+                        {
+                          "$el": "Icon",
+                          "props": {
+                            "icon": {
+                              "$icon": "Delete20Regular"
+                            }
+                          },
+                          "$at": 3
+                        },
+                        "Delete"
+                      ],
+                      "$at": 2
+                    },
+                    {
+                      "$el": "Button",
+                      "props": {
+                        "variant": "filled",
+                        "disabled": true
+                      },
+                      "children": [
+                        {
+                          "$el": "Icon",
+                          "props": {
+                            "icon": {
+                              "$icon": "ArrowDownload20Regular"
+                            }
+                          },
+                          "$at": 5
+                        },
+                        "Export"
+                      ],
+                      "$at": 4
+                    }
+                  ]
+                }
+              }
             }
           ]
         }

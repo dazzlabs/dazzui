@@ -506,6 +506,8 @@ public struct ThemeVariables: Sendable {
   public let controlColorPlainContentPressedShade: Int
   public let controlColorPlainBorder: ColorDescriptor
 
+  public var controlLabelGlyphShrink: CGFloat { spacing05 }
+  public var controlLabelGlyphInset: CGFloat { spacing05 }
   public var controlTinyIconSize: CGFloat { iconSmall }
   public var controlTinyGap: CGFloat { spacing1 }
   public var controlTinyPaddingBlock: CGFloat { spacing1 }

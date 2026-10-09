@@ -733,6 +733,8 @@ class ThemeVariables {
   final double controlPressedAlpha;
   final double controlFieldRadius;
   final double controlContainerRadius;
+  double get controlLabelGlyphShrink => spacing05;
+  double get controlLabelGlyphInset => spacing05;
   double get controlTinyIconSize => iconSmall;
   double get controlTinyGap => spacing1;
   double get controlTinyPaddingBlock => spacing1;

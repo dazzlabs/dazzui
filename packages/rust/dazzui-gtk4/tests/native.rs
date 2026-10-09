@@ -38,6 +38,36 @@ fn main() {
         b.set_halign(gtk::Align::Start);
         root.append(b);
     }
+    let glyph_row = box_(gtk::Orientation::Horizontal, "2");
+    root.append(&glyph_row);
+    let glyphed: Vec<_> = sizes
+        .into_iter()
+        .map(|s| {
+            let (lead, trail) = (
+                glyph_button(
+                    "Add",
+                    Some("list-add-symbolic"),
+                    None,
+                    Variant::Normal,
+                    Tint::Neutral,
+                    s,
+                ),
+                glyph_button(
+                    "Next",
+                    None,
+                    Some("go-next-symbolic"),
+                    Variant::Normal,
+                    Tint::Neutral,
+                    s,
+                ),
+            );
+            for b in [&lead, &trail] {
+                b.set_valign(gtk::Align::Start);
+                glyph_row.append(b);
+            }
+            (lead, trail)
+        })
+        .collect();
     let field = text_field("Email", Size::Medium);
     field.set_text("persist@example.com");
     root.append(&field);
@@ -97,6 +127,38 @@ fn main() {
             b.compute_bounds(&root).unwrap().height() as i32,
             expected,
             "control profile height"
+        );
+    }
+    // A glyph beside a label: shrunk 2px under the profile icon, the profile
+    // gap from the label, and its end padded 2px less (Studio).
+    for ((lead, trail), (icon, gap)) in glyphed.iter().zip([(10, 4), (14, 6), (14, 8), (18, 8)]) {
+        let content = |b: &gtk::Button| b.child().unwrap().downcast::<gtk::Box>().unwrap();
+        let (lc, tc) = (content(lead), content(trail));
+        let glyph = lc.first_child().unwrap();
+        let text = glyph.next_sibling().unwrap();
+        let g = glyph.compute_bounds(&lc).unwrap();
+        let t = text.compute_bounds(&lc).unwrap();
+        assert_eq!(g.width() as i32, icon, "glyph size");
+        assert_eq!((t.x() - g.x() - g.width()) as i32, gap, "glyph gap");
+        // Border-box insets of the content, start and end, against the row.
+        let insets = |b: &gtk::Button, c: &gtk::Box| {
+            let (b, c) = (
+                b.compute_bounds(&glyph_row).unwrap(),
+                c.compute_bounds(&glyph_row).unwrap(),
+            );
+            (c.x() - b.x(), b.x() + b.width() - c.x() - c.width())
+        };
+        let (lead_start, lead_end) = insets(lead, &lc);
+        let (trail_start, trail_end) = insets(trail, &tc);
+        assert_eq!(
+            (lead_end - lead_start).round() as i32,
+            2,
+            "leading glyph inset"
+        );
+        assert_eq!(
+            (trail_start - trail_end).round() as i32,
+            2,
+            "trailing glyph inset"
         );
     }
     check.set_inconsistent(true);

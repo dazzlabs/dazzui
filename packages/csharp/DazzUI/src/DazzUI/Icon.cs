@@ -60,6 +60,10 @@ public sealed class IconButton : Button
         Repaint("ButtonForegroundPressed", Theme.Color("color.content"));
         Repaint("ButtonBackgroundPointerOver", Theme.Color("color.surface-subtle"));
     }
+    /// <summary>The glyph alone fills the square: no label padding, no label-glyph shrink.</summary>
+    protected override void LayContent() { if (IsLoaded) Square(); }
+    /// <summary>A square glyph button keeps the control's weight and lies flat in every variant.</summary>
+    private protected override bool Raised => false;
     private void Square()
     {
         Width = Height; Padding = new Thickness(0);

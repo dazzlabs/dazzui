@@ -77,7 +77,7 @@ public static class Mapping
             {
                 var button = new Button
                 {
-                    Content = Inline(n, n.Props["shortcut"]),
+                    Content = Inline(n, n.Props["shortcut"], owned: true),
                     Variant = n.Option("variant", ControlVariant.Recessed),
                     Tint = n.Option("tint", WidgetTint.Primary),
                     Size = n.Option("size", ControlSize.Small),
@@ -745,25 +745,36 @@ public static class Mapping
             ? new Styled(n.Text, "bodySmall", "color.content-secondary")
             : Kid(n) ?? new Grid();
 
-    /// <summary>A button's children in a line: a glyph beside its label, and the shortcut after both.</summary>
-    private static object? Inline(Node n, JsonNode? shortcut)
+    /// <summary>
+    /// A button's children in a line: a glyph beside its label, and the shortcut
+    /// after both. Where the control <paramref name="owned"/> its glyphs, as
+    /// Button does, the line is a bare StackPanel and the glyphs unsized: the
+    /// button sizes them, spaces the line and trims the padding at a glyph's end.
+    /// </summary>
+    private static object? Inline(Node n, JsonNode? shortcut, bool owned = false)
     {
+        double? size = owned ? null : 16;
         if (shortcut is null && n.Children.Count == 1 && n.Children[0].String() is string only) return only;
         // A glyph alone is the control's whole face.
         if (shortcut is null && n.Children.Count == 1 && n.Children[0].Element() == "Icon")
-            return Nodes.Drawn(n.Children[0]!, Glyphs.Draw(Nodes.GlyphOf(n.Children[0]) ?? "", 16));
-        var line = new Stack(Orientation.Horizontal, "spacing.1.5") { VerticalContentAlignment = VerticalAlignment.Center };
+            return Nodes.Drawn(n.Children[0]!, Glyphs.Draw(Nodes.GlyphOf(n.Children[0]) ?? "", size));
+        var stack = owned ? null : new Stack(Orientation.Horizontal, "spacing.1.5") { VerticalContentAlignment = VerticalAlignment.Center };
+        var panel = owned ? new StackPanel { Orientation = Orientation.Horizontal } : null;
+        void Add(UIElement element)
+        {
+            if (element is FrameworkElement framed) framed.VerticalAlignment = VerticalAlignment.Center;
+            if (stack is not null) stack.Add(element); else panel!.Children.Add(element);
+        }
         foreach (var child in n.Children)
         {
             var element = child.Element() == "Icon"
-                ? Nodes.Drawn(child!, Glyphs.Draw(Nodes.GlyphOf(child) ?? "", 16))
+                ? Nodes.Drawn(child!, Glyphs.Draw(Nodes.GlyphOf(child) ?? "", size))
                 : Nodes.Build(child, n.Context);
-            if (element is FrameworkElement framed) framed.VerticalAlignment = VerticalAlignment.Center;
-            if (element is not null) line.Add(element);
+            if (element is not null) Add(element);
         }
         if (shortcut is not null)
-            line.Add(Nodes.Drawn(shortcut, new KeyCap(KeyText(shortcut)) { Variant = KeyCapVariant.Hint, VerticalAlignment = VerticalAlignment.Center }));
-        return line;
+            Add(Nodes.Drawn(shortcut, new KeyCap(KeyText(shortcut)) { Variant = KeyCapVariant.Hint }));
+        return (object?)stack ?? panel;
     }
 
     /// <summary>A KeyCap element's label, which is all a button or a menu row keeps.</summary>

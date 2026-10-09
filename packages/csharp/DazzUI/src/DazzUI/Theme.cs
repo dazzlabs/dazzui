@@ -92,6 +92,20 @@ public sealed class Theme
         };
     }
 
+    /// <summary>A shadow token's layers, outermost first, in device-independent pixels.</summary>
+    internal IReadOnlyList<(Color Color, double X, double Y, double Blur, double Spread, bool Inset)> Shadow(string token) =>
+        values.GetProperty(token).EnumerateArray().Select(layer => (
+            ReadColor(layer.GetProperty("color")),
+            Number(layer.GetProperty("offsetX")),
+            Number(layer.GetProperty("offsetY")),
+            Number(layer.GetProperty("blur")),
+            Number(layer.GetProperty("spread")),
+            layer.TryGetProperty("inset", out var inset) && inset.GetBoolean())).ToArray();
+
+    /// <summary>A type style's weight, as WinUI takes it.</summary>
+    internal FontWeight Weight(string token) =>
+        new() { Weight = (ushort)values.GetProperty(token).GetProperty("fontWeight").GetInt32() };
+
     internal static string Key<T>(T value) where T : Enum => value.ToString().ToLowerInvariant();
 }
 

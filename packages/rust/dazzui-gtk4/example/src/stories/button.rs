@@ -366,6 +366,374 @@ pub const STORY: &str = r#"{
         "button/3 preview: <KeyCap> is not drawn by GTK4",
         "button/3: Fluent glyph ArrowDownload20Regular is not yet mapped"
       ]
+    },
+    {
+      "id": "button/4",
+      "title": "Icons across the variants",
+      "note": "The glyph takes the label’s colour, so it follows every recipe.",
+      "content": {
+        "$el": "Row",
+        "children": [
+          {
+            "$el": "Button",
+            "props": {
+              "variant": "filled"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Add20Regular"
+                  }
+                },
+                "$at": 1
+              },
+              "New file"
+            ],
+            "$at": 0
+          },
+          {
+            "$el": "Button",
+            "props": {
+              "variant": "tinted"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Share20Regular"
+                  }
+                },
+                "$at": 3
+              },
+              "Share"
+            ],
+            "$at": 2
+          },
+          {
+            "$el": "Button",
+            "props": {
+              "variant": "outlined"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Copy20Regular"
+                  }
+                },
+                "$at": 5
+              },
+              "Duplicate"
+            ],
+            "$at": 4
+          },
+          {
+            "$el": "Button",
+            "props": {
+              "variant": "normal"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "ArrowSync20Regular"
+                  }
+                },
+                "$at": 7
+              },
+              "Sync"
+            ],
+            "$at": 6
+          },
+          {
+            "$el": "Button",
+            "props": {
+              "variant": "recessed"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Settings20Regular"
+                  }
+                },
+                "$at": 9
+              },
+              "Settings"
+            ],
+            "$at": 8
+          },
+          {
+            "$el": "Button",
+            "props": {
+              "variant": "plain"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "ArrowLeft20Regular"
+                  }
+                },
+                "$at": 11
+              },
+              "Back"
+            ],
+            "$at": 10
+          }
+        ]
+      },
+      "gaps": [
+        "button/4 preview: <Icon> is not drawn by GTK4",
+        "button/4: Fluent glyph Add20Regular is not yet mapped",
+        "button/4: Fluent glyph Share20Regular is not yet mapped",
+        "button/4: Fluent glyph Copy20Regular is not yet mapped",
+        "button/4: Fluent glyph ArrowSync20Regular is not yet mapped",
+        "button/4: Fluent glyph Settings20Regular is not yet mapped",
+        "button/4: Fluent glyph ArrowLeft20Regular is not yet mapped"
+      ]
+    },
+    {
+      "id": "button/5",
+      "title": "Icons at every size",
+      "note": "The glyph steps with the size profile, as the label does.",
+      "content": {
+        "$el": "Row",
+        "children": [
+          {
+            "$el": "Button",
+            "props": {
+              "size": "tiny"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Add20Regular"
+                  }
+                },
+                "$at": 1
+              },
+              "Tiny"
+            ],
+            "$at": 0
+          },
+          {
+            "$el": "Button",
+            "props": {
+              "size": "small"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Add20Regular"
+                  }
+                },
+                "$at": 3
+              },
+              "Small"
+            ],
+            "$at": 2
+          },
+          {
+            "$el": "Button",
+            "props": {
+              "size": "medium"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Add20Regular"
+                  }
+                },
+                "$at": 5
+              },
+              "Medium"
+            ],
+            "$at": 4
+          },
+          {
+            "$el": "Button",
+            "props": {
+              "size": "large"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Add20Regular"
+                  }
+                },
+                "$at": 7
+              },
+              "Large"
+            ],
+            "$at": 6
+          }
+        ]
+      },
+      "gaps": [
+        "button/5 preview: <Icon> is not drawn by GTK4",
+        "button/5: Fluent glyph Add20Regular is not yet mapped"
+      ]
+    },
+    {
+      "id": "button/6",
+      "title": "Trailing icons",
+      "note": "A glyph after the label says where the action goes next.",
+      "content": {
+        "$el": "Row",
+        "children": [
+          {
+            "$el": "Button",
+            "props": {
+              "variant": "filled"
+            },
+            "children": [
+              "Continue",
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "ChevronRight20Regular"
+                  }
+                },
+                "$at": 1
+              }
+            ],
+            "$at": 0
+          },
+          {
+            "$el": "Button",
+            "props": {
+              "variant": "outlined"
+            },
+            "children": [
+              "Open in browser",
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Open20Regular"
+                  }
+                },
+                "$at": 3
+              }
+            ],
+            "$at": 2
+          },
+          {
+            "$el": "Button",
+            "children": [
+              "More",
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "ChevronDown20Regular"
+                  }
+                },
+                "$at": 5
+              }
+            ],
+            "$at": 4
+          }
+        ]
+      },
+      "gaps": [
+        "button/6 preview: <Icon> is not drawn by GTK4",
+        "button/6: Fluent glyph ChevronRight20Regular is not yet mapped",
+        "button/6: Fluent glyph Open20Regular is not yet mapped",
+        "button/6: Fluent glyph ChevronDown20Regular is not yet mapped"
+      ]
+    },
+    {
+      "id": "button/7",
+      "title": "Tinted actions",
+      "content": {
+        "$el": "Row",
+        "children": [
+          {
+            "$el": "Button",
+            "props": {
+              "variant": "filled",
+              "tint": "success"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Send20Regular"
+                  }
+                },
+                "$at": 1
+              },
+              "Publish"
+            ],
+            "$at": 0
+          },
+          {
+            "$el": "Button",
+            "props": {
+              "variant": "tinted",
+              "tint": "danger"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Delete20Regular"
+                  }
+                },
+                "$at": 3
+              },
+              "Delete"
+            ],
+            "$at": 2
+          },
+          {
+            "$el": "Button",
+            "props": {
+              "variant": "filled",
+              "disabled": true
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "ArrowDownload20Regular"
+                  }
+                },
+                "$at": 5
+              },
+              "Export"
+            ],
+            "$at": 4
+          }
+        ]
+      },
+      "gaps": [
+        "button/7 preview: <Icon> is not drawn by GTK4",
+        "button/7: Fluent glyph Send20Regular is not yet mapped",
+        "button/7: Fluent glyph Delete20Regular is not yet mapped",
+        "button/7: Fluent glyph ArrowDownload20Regular is not yet mapped"
+      ]
     }
   ]
 }"#;

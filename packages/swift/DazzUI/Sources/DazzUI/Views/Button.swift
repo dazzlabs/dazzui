@@ -6,6 +6,12 @@ import SwiftUI
 /// picks the recipe, a tint picks the ramp it resolves against, and hover,
 /// press and disabled follow on their own. So this view is only the box.
 ///
+/// A glyph beside the label is passed as `leading` or `trailing` rather than
+/// drawn inside it, because the button sizes and places it: a step under the
+/// profile's icon, which is sized to fill a square button alone, and the end
+/// it sits at pads less, since the glyph's frame carries whitespace of its
+/// own. A glyph-only button is an ``IconButton``.
+///
 /// Named `Button` rather than prefixed, and reached as `DazzUI.Button`
 /// where `SwiftUI.Button` is also in scope.
 public struct Button<Label: View>: View {
@@ -13,6 +19,10 @@ public struct Button<Label: View>: View {
   public var variant: ControlVariant
   public var tint: Tint
   public var fullWidth: Bool
+  /// A glyph before the label — usually an ``Icon``, which the button sizes.
+  public var leading: AnyView?
+  /// A glyph after the label — where the action goes next.
+  public var trailing: AnyView?
   /// Trailing hint — the key that also triggers this action.
   public var shortcut: String?
   /// The same hint as a view, usually a small ``KeyCap`` — React's
@@ -30,6 +40,8 @@ public struct Button<Label: View>: View {
     variant: ControlVariant = .recessed,
     tint: Tint = .primary,
     fullWidth: Bool = false,
+    leading: (any View)? = nil,
+    trailing: (any View)? = nil,
     shortcut: String? = nil,
     enabled: Bool = true,
     action: @escaping () -> Void,
@@ -39,6 +51,8 @@ public struct Button<Label: View>: View {
     self.variant = variant
     self.tint = tint
     self.fullWidth = fullWidth
+    self.leading = leading.map { AnyView($0) }
+    self.trailing = trailing.map { AnyView($0) }
     self.shortcut = shortcut
     self.enabled = enabled
     self.action = action
@@ -52,6 +66,8 @@ public struct Button<Label: View>: View {
     variant: ControlVariant = .recessed,
     tint: Tint = .primary,
     fullWidth: Bool = false,
+    leading: (any View)? = nil,
+    trailing: (any View)? = nil,
     enabled: Bool = true,
     action: @escaping () -> Void,
     @ViewBuilder label: @escaping () -> Label,
@@ -62,6 +78,8 @@ public struct Button<Label: View>: View {
       variant: variant,
       tint: tint,
       fullWidth: fullWidth,
+      leading: leading,
+      trailing: trailing,
       enabled: enabled,
       action: action,
       label: label
@@ -72,6 +90,16 @@ public struct Button<Label: View>: View {
   public var body: some View {
     let vars = theme.vars
     let metrics = vars.metrics(size)
+    // A glyph beside a label is drawn `control.label-glyph.shrink` under the
+    // profile's icon; the end it sits at pads `control.label-glyph.inset`
+    // less. A stroke's width is reserved on both ends either way.
+    let glyphSize = metrics.iconSize - vars.controlLabelGlyphShrink
+    let leadingPadding =
+      metrics.paddingInline + vars.spacingPx
+      - (leading == nil ? 0 : vars.controlLabelGlyphInset)
+    let trailingPadding =
+      metrics.paddingInline + vars.spacingPx
+      - (trailing == nil ? 0 : vars.controlLabelGlyphInset)
 
     Pressable(action: action, enabled: enabled, cornerRadius: metrics.radius) { state in
       let colors = vars.controlColors(
@@ -81,8 +109,12 @@ public struct Button<Label: View>: View {
       )
 
       HStack(spacing: metrics.gap) {
-        label()
-          .environment(\.dazzIconSize, metrics.iconSize)
+        Group {
+          leading
+          label()
+          trailing
+        }
+        .environment(\.dazzIconSize, glyphSize)
         // A trailing shortcut is a hint, not part of the label — it takes
         // the display cut and steps back.
         if let shortcutView {
@@ -98,7 +130,8 @@ public struct Button<Label: View>: View {
       .padding(.vertical, metrics.paddingBlock)
       // CSS's border participates in the intrinsic width; our stroke is an
       // overlay, so reserve its width in the content inset explicitly.
-      .padding(.horizontal, metrics.paddingInline + vars.spacingPx)
+      .padding(.leading, leadingPadding)
+      .padding(.trailing, trailingPadding)
       .frame(maxWidth: fullWidth ? .infinity : nil)
       .frame(height: metrics.size)
       .background(colors.surface)
@@ -142,6 +175,8 @@ public extension Button where Label == Text {
     variant: ControlVariant = .recessed,
     tint: Tint = .primary,
     fullWidth: Bool = false,
+    leading: (any View)? = nil,
+    trailing: (any View)? = nil,
     shortcut: String? = nil,
     enabled: Bool = true,
     action: @escaping () -> Void
@@ -151,6 +186,8 @@ public extension Button where Label == Text {
       variant: variant,
       tint: tint,
       fullWidth: fullWidth,
+      leading: leading,
+      trailing: trailing,
       shortcut: shortcut,
       enabled: enabled,
       action: action,
@@ -167,6 +204,8 @@ public extension Button where Label == Text {
     variant: ControlVariant = .recessed,
     tint: Tint = .primary,
     fullWidth: Bool = false,
+    leading: (any View)? = nil,
+    trailing: (any View)? = nil,
     enabled: Bool = true,
     action: @escaping () -> Void,
     @ViewBuilder shortcut: () -> Shortcut
@@ -176,6 +215,8 @@ public extension Button where Label == Text {
       variant: variant,
       tint: tint,
       fullWidth: fullWidth,
+      leading: leading,
+      trailing: trailing,
       enabled: enabled,
       action: action,
       label: { Text(title) },

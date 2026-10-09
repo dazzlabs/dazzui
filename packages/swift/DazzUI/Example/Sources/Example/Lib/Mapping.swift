@@ -81,6 +81,9 @@ let components: [String: ComponentBuilder] = [
     )
   },
   "Button": { n in
+    // A glyph at either end of a labelled button is the button's to size and
+    // place, so it leaves the label for the `leading` or `trailing` slot.
+    let ends = GlyphEnds(n)
     // A shortcut written as an element — a `KeyCap` — is drawn as one, in
     // the button's shortcut slot; a string is the string.
     if n.props["shortcut"]?["$el"] != nil {
@@ -90,9 +93,11 @@ let components: [String: ComponentBuilder] = [
           variant: n.option("variant", ControlVariant.recessed),
           tint: n.option("tint", Tint.primary),
           fullWidth: n.flag("fullWidth"),
+          leading: ends.leading,
+          trailing: ends.trailing,
           enabled: !n.flag("disabled"),
           action: n.press()
-        ) { InlineKids(node: n) } shortcut: { n.element("shortcut") }
+        ) { InlineKids(node: ends.label) } shortcut: { n.element("shortcut") }
       )
     }
     return AnyView(
@@ -101,10 +106,12 @@ let components: [String: ComponentBuilder] = [
         variant: n.option("variant", ControlVariant.recessed),
         tint: n.option("tint", Tint.primary),
         fullWidth: n.flag("fullWidth"),
+        leading: ends.leading,
+        trailing: ends.trailing,
         shortcut: keyText(n.props["shortcut"]),
         enabled: !n.flag("disabled"),
         action: n.press()
-      ) { InlineKids(node: n) }
+      ) { InlineKids(node: ends.label) }
     )
   },
   "Callout": { n in
@@ -651,6 +658,27 @@ func menuItems(_ n: Node, _ items: Value) -> [MenuItem] {
       disabled: item["disabled"]?.truthy ?? false,
       onSelect: { n.context.run(item["onSelect"] ?? .null) }
     )
+  }
+}
+
+/// A labelled button's children split the way React's `glyphEnds` reads
+/// them: an `Icon` first or last, beside at least one other child, is a
+/// glyph at that end; what is left is the label. A lone glyph stays in the
+/// label — that button is an `IconButton` in all but name. A glyph is drawn
+/// through the scene, so it is still the specimen its `$at` names.
+@MainActor
+struct GlyphEnds {
+  let leading: NodeView?
+  let trailing: NodeView?
+  let label: Node
+
+  init(_ node: Node) {
+    func isIcon(_ value: Value?) -> Bool { value?["$el"]?.string == "Icon" }
+    var children = node.children
+    let paired = children.count >= 2
+    leading = paired && isIcon(children.first) ? NodeView(children.removeFirst()) : nil
+    trailing = paired && isIcon(children.last) ? NodeView(children.removeLast()) : nil
+    label = node.with(children: children)
   }
 }
 

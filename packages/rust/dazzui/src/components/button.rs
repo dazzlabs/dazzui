@@ -2,7 +2,7 @@
 
 use gpui::{
     AnyElement, App, ClickEvent, ElementId, InteractiveElement, IntoElement, ParentElement,
-    RenderOnce, StatefulInteractiveElement, Styled, Window, div, prelude::*,
+    RenderOnce, StatefulInteractiveElement, Styled, Window, div, prelude::*, px,
 };
 
 use crate::components::icon::icon_slot;
@@ -15,6 +15,13 @@ type OnClick = Box<dyn Fn(&ClickEvent, &mut Window, &mut App) + 'static>;
 /// A button. The recipe is `variant` — `recessed`, the workaday grey chip,
 /// by default; `filled` for the one action a view points at — resolved
 /// against `tint`.
+///
+/// A glyph beside the label goes in with [`Button::glyph`] rather than
+/// [`ParentElement::child`]: the button then draws it
+/// `control.label-glyph.shrink` under the profile's icon size, and pads the
+/// end it sits at `control.label-glyph.inset` less — React reads both off
+/// its children, which an [`AnyElement`] cannot say. A glyph alone is an
+/// [`crate::IconButton`].
 #[derive(IntoElement)]
 pub struct Button {
     id: ElementId,
@@ -25,6 +32,8 @@ pub struct Button {
     full_width: bool,
     shortcut: Option<AnyElement>,
     children: Vec<AnyElement>,
+    /// Which of `children` are glyphs, index for index.
+    glyphs: Vec<bool>,
     on_click: Option<OnClick>,
 }
 
@@ -39,6 +48,7 @@ impl Button {
             full_width: false,
             shortcut: None,
             children: Vec::new(),
+            glyphs: Vec::new(),
             on_click: None,
         }
     }
@@ -76,6 +86,23 @@ impl Button {
         self
     }
 
+    /// A glyph child — an [`crate::Icon`], or whatever a caller draws as
+    /// one. It sits where it is added, among the other children.
+    pub fn glyph(mut self, glyph: impl IntoElement) -> Self {
+        self.children.push(glyph.into_any_element());
+        self.glyphs.push(true);
+        self
+    }
+
+    /// Whether a glyph sits at the leading and at the trailing end of the
+    /// label. Only a button with a label has ends: one child is no label.
+    fn glyph_ends(&self) -> (bool, bool) {
+        if self.glyphs.len() < 2 {
+            return (false, false);
+        }
+        (self.glyphs[0], self.glyphs[self.glyphs.len() - 1])
+    }
+
     pub fn on_click(
         mut self,
         handler: impl Fn(&ClickEvent, &mut Window, &mut App) + 'static,
@@ -88,6 +115,7 @@ impl Button {
 impl ParentElement for Button {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
         self.children.extend(elements);
+        self.glyphs.resize(self.children.len(), false);
     }
 }
 
@@ -100,6 +128,8 @@ impl RenderOnce for Button {
             .read(cx)
             .clone();
         let filled = self.variant == Variant::Filled && !self.disabled;
+        let (leading, trailing) = self.glyph_ends();
+        let trimmed = px(profile.padding_inline - t.control_label_glyph_inset);
 
         let mut button = div()
             .id(self.id)
@@ -110,6 +140,8 @@ impl RenderOnce for Button {
             .whitespace_nowrap()
             .border_1()
             .profile(profile)
+            .when(leading, |this| this.pl(trimmed))
+            .when(trailing, |this| this.pr(trimmed))
             .when(self.full_width, |this| this.w_full())
             .when(filled, |this| {
                 this.font_weight(t.label_strong.font_weight())
@@ -134,7 +166,7 @@ impl RenderOnce for Button {
                 .child(shortcut)
         });
         icon_slot(
-            profile.icon_size,
+            profile.icon_size - t.control_label_glyph_shrink,
             button.children(self.children).children(shortcut),
         )
     }

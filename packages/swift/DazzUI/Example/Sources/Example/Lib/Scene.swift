@@ -161,6 +161,16 @@ struct Node {
     self.context = context
   }
 
+  private init(_ node: Node, children: [Value]) {
+    component = node.component
+    props = node.props
+    self.children = children
+    context = node.context
+  }
+
+  /// The same component with some of its children taken out.
+  func with(children: [Value]) -> Node { Node(self, children: children) }
+
   func has(_ name: String) -> Bool { props[name] != nil }
 
   /// A prop's current value.

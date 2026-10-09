@@ -38,8 +38,8 @@ fn label(node: &Node, item: &Value, part: String, window: &mut Window, cx: &mut 
 }
 
 /// Whether a label is one glyph and nothing else — what React's
-/// `:has(> svg:only-child)` finds.
-fn is_glyph(value: &Value) -> bool {
+/// `:has(> svg:only-child)` finds. The button reads its ends with it too.
+pub(super) fn is_glyph(value: &Value) -> bool {
     value.get("$icon").is_some() || value["$el"].as_str() == Some("Icon")
 }
 

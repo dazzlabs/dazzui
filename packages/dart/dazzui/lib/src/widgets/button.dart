@@ -63,6 +63,8 @@ class Button extends StatefulWidget {
   const Button({
     super.key,
     required this.child,
+    this.leading,
+    this.trailing,
     this.tint,
     this.variant,
     this.size = WidgetSize.small,
@@ -79,6 +81,19 @@ class Button extends StatefulWidget {
   ///
   /// Typically a [Text] widget.
   final Widget child;
+
+  /// A glyph before the label, typically an [Icon].
+  ///
+  /// It is drawn `control.label-glyph.shrink` under the profile's icon, which
+  /// is sized to fill a square button alone, and the end it sits at pads
+  /// `control.label-glyph.inset` less: the glyph's frame carries whitespace
+  /// of its own, so that end would otherwise read wider than the bare-text
+  /// one. A button that is only a glyph is an [IconButton].
+  final Widget? leading;
+
+  /// A glyph after the label, typically an [Icon] — where the action goes
+  /// next. Sized and inset as [leading] is, at the trailing end.
+  final Widget? trailing;
 
   /// The tint of the button.
   ///
@@ -171,7 +186,21 @@ class _ButtonState extends State<Button> {
             _resolve<T>(buttonTheme, states, variant, get);
 
         final Size box = resolve<Size>((t) => t.minSize!);
-        EdgeInsets padding = resolve<EdgeInsets>((t) => t.padding!);
+        final EdgeInsets profile = resolve<EdgeInsets>((t) => t.padding!);
+        // The stroke is reserved on every side, inside the box and outside
+        // the profile's padding, where CSS's border sits. Drawn in the
+        // foreground it would otherwise take nothing, and every label would
+        // stand a stroke closer to the edge than React's does. Directional,
+        // so a leading glyph trims the start in either reading order, as the
+        // stylesheet's `padding-inline-start` does.
+        final double stroke = context.hairlineWidth;
+        final double inset = vars.controlLabelGlyphInset;
+        final EdgeInsetsDirectional padding = EdgeInsetsDirectional.fromSTEB(
+          stroke + profile.left - (widget.leading != null ? inset : 0),
+          stroke + profile.top,
+          stroke + profile.right - (widget.trailing != null ? inset : 0),
+          stroke + profile.bottom,
+        );
 
         final Color surface = resolve<Color>((t) => t.surfaceColor!);
         final Color content = resolve<Color>((t) => t.contentColor!);
@@ -206,12 +235,12 @@ class _ButtonState extends State<Button> {
               borderRadius: borderRadius,
               boxShadow: lifted ? vars.shadow2xs : const <BoxShadow>[],
             ),
-            // The hairline rides in the *foreground* decoration rather than the
-            // background one: a `BoxDecoration.border` insets the content box by
-            // its own width, which would make an outlined button a hairline
-            // narrower inside than the filled one beside it.
+            // The hairline rides in the *foreground* decoration, over the
+            // stroke the padding reserves, so every variant keeps one box —
+            // a clear border on a filled button holds the same room an
+            // outlined one's does, as it does in CSS.
             foregroundDecoration: BoxDecoration(
-              border: Border.all(color: border, width: context.hairlineWidth),
+              border: Border.all(color: border, width: stroke),
               borderRadius: borderRadius,
             ),
             // CSS centres a glyph even when it is taller than the padded
@@ -231,9 +260,14 @@ class _ButtonState extends State<Button> {
                   context,
                 ).style.merge(labelStyle.copyWith(color: content)),
                 softWrap: false,
+                // Every glyph in a button is the profile's icon less the
+                // label-glyph shrink: the profile's is sized to fill a square
+                // button alone, and beside a label it would outweigh it.
                 child: IconTheme(
                   data: IconTheme.of(context).copyWith(
-                    size: vars.controlIconSize(widget.size),
+                    size:
+                        vars.controlIconSize(widget.size) -
+                        vars.controlLabelGlyphShrink,
                     color: content,
                   ),
                   child: Row(
@@ -243,7 +277,9 @@ class _ButtonState extends State<Button> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     spacing: _gap(vars, widget.size),
                     children: [
+                      ?widget.leading,
                       widget.child,
+                      ?widget.trailing,
                       // A trailing shortcut is a hint, not part of the label — it
                       // takes the display cut and steps back.
                       if (widget.shortcut != null)

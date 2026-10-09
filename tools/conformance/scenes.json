@@ -764,6 +764,255 @@
               "text": "Disabled"
             }
           ]
+        },
+        {
+          "id": "button/4",
+          "title": "Icons across the variants",
+          "specimens": [
+            {
+              "address": "button/4/0",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "New file",
+              "container": true
+            },
+            {
+              "address": "button/4/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "button/4/2",
+              "component": "button",
+              "axes": {
+                "variant": "tinted"
+              },
+              "text": "Share",
+              "container": true
+            },
+            {
+              "address": "button/4/3",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "button/4/4",
+              "component": "button",
+              "axes": {
+                "variant": "outlined"
+              },
+              "text": "Duplicate",
+              "container": true
+            },
+            {
+              "address": "button/4/5",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "button/4/6",
+              "component": "button",
+              "axes": {
+                "variant": "normal"
+              },
+              "text": "Sync",
+              "container": true
+            },
+            {
+              "address": "button/4/7",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "button/4/8",
+              "component": "button",
+              "axes": {
+                "variant": "recessed"
+              },
+              "text": "Settings",
+              "container": true
+            },
+            {
+              "address": "button/4/9",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "button/4/10",
+              "component": "button",
+              "axes": {
+                "variant": "plain"
+              },
+              "text": "Back",
+              "container": true
+            },
+            {
+              "address": "button/4/11",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "button/5",
+          "title": "Icons at every size",
+          "specimens": [
+            {
+              "address": "button/5/0",
+              "component": "button",
+              "axes": {
+                "size": "tiny"
+              },
+              "text": "Tiny",
+              "container": true
+            },
+            {
+              "address": "button/5/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "button/5/2",
+              "component": "button",
+              "axes": {
+                "size": "small"
+              },
+              "text": "Small",
+              "container": true
+            },
+            {
+              "address": "button/5/3",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "button/5/4",
+              "component": "button",
+              "axes": {
+                "size": "medium"
+              },
+              "text": "Medium",
+              "container": true
+            },
+            {
+              "address": "button/5/5",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "button/5/6",
+              "component": "button",
+              "axes": {
+                "size": "large"
+              },
+              "text": "Large",
+              "container": true
+            },
+            {
+              "address": "button/5/7",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "button/6",
+          "title": "Trailing icons",
+          "specimens": [
+            {
+              "address": "button/6/0",
+              "component": "button",
+              "axes": {
+                "variant": "filled"
+              },
+              "text": "Continue",
+              "container": true
+            },
+            {
+              "address": "button/6/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "button/6/2",
+              "component": "button",
+              "axes": {
+                "variant": "outlined"
+              },
+              "text": "Open in browser",
+              "container": true
+            },
+            {
+              "address": "button/6/3",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "button/6/4",
+              "component": "button",
+              "axes": {},
+              "text": "More",
+              "container": true
+            },
+            {
+              "address": "button/6/5",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "button/7",
+          "title": "Tinted actions",
+          "specimens": [
+            {
+              "address": "button/7/0",
+              "component": "button",
+              "axes": {
+                "variant": "filled",
+                "tint": "success"
+              },
+              "text": "Publish",
+              "container": true
+            },
+            {
+              "address": "button/7/1",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "button/7/2",
+              "component": "button",
+              "axes": {
+                "variant": "tinted",
+                "tint": "danger"
+              },
+              "text": "Delete",
+              "container": true
+            },
+            {
+              "address": "button/7/3",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "button/7/4",
+              "component": "button",
+              "axes": {
+                "variant": "filled",
+                "disabled": "true"
+              },
+              "text": "Export",
+              "container": true
+            },
+            {
+              "address": "button/7/5",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
         }
       ]
     },

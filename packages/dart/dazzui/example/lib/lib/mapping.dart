@@ -682,24 +682,54 @@ SplitterPanel _panel(Node n) => SplitterPanel(
   child: _one(n),
 );
 
+/// Whether a child node is a glyph: the kit's `Icon`, or a bare icon.
+bool _isGlyph(Object? node) =>
+    node is Map && (node[r'$el'] == 'Icon' || node.containsKey(r'$icon'));
+
+/// A glyph at either end of a labelled button goes to that end's slot, which
+/// sizes it and trims its padding, as React reads `data-icon` off the
+/// children. A lone child — a glyph alone included — is the label.
 Widget _button(Node n) {
+  final WidgetSize size = _size(n, 'small');
+  final List<Object?> children = n.children;
+  final bool labelled = children.length >= 2;
+  final bool leading = labelled && _isGlyph(children.first);
+  final bool trailing =
+      labelled &&
+      children.length > (leading ? 2 : 1) &&
+      _isGlyph(children.last);
   final List<Widget> kids = n.kids;
+  final List<Widget> label = kids.sublist(
+    leading ? 1 : 0,
+    trailing ? kids.length - 1 : kids.length,
+  );
   return Button(
     variant: n.option(ButtonVariant.values, 'variant', ButtonVariant.recessed),
     tint: n.option(ButtonTint.values, 'tint', ButtonTint.primary),
-    size: _size(n, 'small'),
+    size: size,
     shortcut: n.element('shortcut'),
     expand: n.flag('fullWidth'),
     onPressed: _press(n, 'onClick'),
-    child: kids.length == 1
-        ? kids.single
+    leading: leading ? kids.first : null,
+    trailing: trailing ? kids.last : null,
+    child: label.length == 1
+        ? label.single
+        // Anything else between the ends sits at the profile's gap, as it
+        // would as a flex child of the button on the web.
         : Row(
             mainAxisSize: MainAxisSize.min,
-            spacing: Theme.of(n.context).vars.spacing15,
-            children: kids,
+            spacing: _gap(Theme.of(n.context).vars, size),
+            children: label,
           ),
   );
 }
+
+double _gap(ThemeVariables vars, WidgetSize size) => switch (size.namedSize) {
+  NamedSize.tiny => vars.controlTinyGap,
+  NamedSize.small => vars.controlSmallGap,
+  NamedSize.medium => vars.controlMediumGap,
+  NamedSize.large => vars.controlLargeGap,
+};
 
 Widget _accordion(Node n) => Accordion(
   initiallyOpen: _strings(n['defaultValue']),

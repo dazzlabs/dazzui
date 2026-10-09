@@ -90,6 +90,14 @@ Never hand-edit `src/generated/`. A value a component needs belongs in
   `--control-icon-size`; auxiliary chevrons, checks and dismiss glyphs use
   `--icon-small`. Keep explicit inline sizes as overrides and never size
   arbitrary descendants, avatars or spinners as glyphs.
+- A glyph beside a label is not a glyph alone. The profile's icon size fills
+  a square button, and next to a label it overtops the type, so Button draws
+  its glyphs `control.label-glyph.shrink` under it. The end a glyph sits at
+  pads `control.label-glyph.inset` less than `padding.inline`, because the
+  glyph's frame carries whitespace of its own. Both are trims on the
+  profile rather than lengths, so they follow the desktop metrics that
+  re-pick the icon scale and the inline padding. Every port's Button owns
+  both; a consumer passes a glyph and gets them.
 - Sized controls read the `[data-size]` profile bindings — `--control-size`, `--control-icon-size`,
   `--control-gap`, `--control-padding-*`, `--control-radius`,
   `--control-font-*`, `--control-line-height` — once in their base rule

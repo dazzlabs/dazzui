@@ -82,12 +82,32 @@
   opacity: 0.7;
 }
 
+/* A glyph beside a label is drawn `control.label-glyph.shrink` under the
+   profile's icon, which is sized to fill a square button alone. */
 .dz-button {
-  --dz-icon-size: var(--control-icon-size);
+  --dz-icon-size: calc(
+    var(--control-icon-size) - var(--control-label-glyph-shrink)
+  );
 }
 
 .dz-button > svg {
   width: var(--dz-icon-size);
   height: var(--dz-icon-size);
   flex-shrink: 0;
+}
+
+/* The end a glyph sits at pads `control.label-glyph.inset` less: the glyph's
+   frame carries whitespace of its own. A glyph-only button is an IconButton. */
+.dz-button[data-icon='leading'],
+.dz-button[data-icon='both'] {
+  padding-inline-start: calc(
+    var(--control-padding-inline) - var(--control-label-glyph-inset)
+  );
+}
+
+.dz-button[data-icon='trailing'],
+.dz-button[data-icon='both'] {
+  padding-inline-end: calc(
+    var(--control-padding-inline) - var(--control-label-glyph-inset)
+  );
 }

@@ -1,4 +1,17 @@
-import { ArrowDownload20Regular as Download } from '@fluentui/react-icons'
+import {
+  Add20Regular as Add,
+  ArrowDownload20Regular as Download,
+  ArrowLeft20Regular as Back,
+  ArrowSync20Regular as Sync,
+  ChevronDown20Regular as ChevronDown,
+  ChevronRight20Regular as ChevronRight,
+  Copy20Regular as Copy,
+  Delete20Regular as Delete,
+  Open20Regular as Open,
+  Send20Regular as Send,
+  Settings20Regular as Settings,
+  Share20Regular as Share,
+} from '@fluentui/react-icons'
 import {
   Button,
   type ButtonVariant,
@@ -84,6 +97,101 @@ const story: Story = {
           </Button>
           <Button shortcut={<KeyCap>⌘S</KeyCap>}>Save</Button>
           <Button disabled>Disabled</Button>
+        </Row>
+      ),
+    },
+    {
+      title: 'Icons across the variants',
+      note: 'The glyph takes the label’s colour, so it follows every recipe.',
+      Demo: () => (
+        <Row>
+          <Button variant="filled">
+            <Icon icon={Add} />
+            New file
+          </Button>
+          <Button variant="tinted">
+            <Icon icon={Share} />
+            Share
+          </Button>
+          <Button variant="outlined">
+            <Icon icon={Copy} />
+            Duplicate
+          </Button>
+          <Button variant="normal">
+            <Icon icon={Sync} />
+            Sync
+          </Button>
+          <Button variant="recessed">
+            <Icon icon={Settings} />
+            Settings
+          </Button>
+          <Button variant="plain">
+            <Icon icon={Back} />
+            Back
+          </Button>
+        </Row>
+      ),
+    },
+    {
+      title: 'Icons at every size',
+      note: 'The glyph steps with the size profile, as the label does.',
+      Demo: () => (
+        <Row>
+          <Button size="tiny">
+            <Icon icon={Add} />
+            Tiny
+          </Button>
+          <Button size="small">
+            <Icon icon={Add} />
+            Small
+          </Button>
+          <Button size="medium">
+            <Icon icon={Add} />
+            Medium
+          </Button>
+          <Button size="large">
+            <Icon icon={Add} />
+            Large
+          </Button>
+        </Row>
+      ),
+    },
+    {
+      title: 'Trailing icons',
+      note: 'A glyph after the label says where the action goes next.',
+      Demo: () => (
+        <Row>
+          <Button variant="filled">
+            Continue
+            <Icon icon={ChevronRight} />
+          </Button>
+          <Button variant="outlined">
+            Open in browser
+            <Icon icon={Open} />
+          </Button>
+          <Button>
+            More
+            <Icon icon={ChevronDown} />
+          </Button>
+        </Row>
+      ),
+    },
+    {
+      title: 'Tinted actions',
+      Demo: () => (
+        <Row>
+          <Button variant="filled" tint="success">
+            <Icon icon={Send} />
+            Publish
+          </Button>
+          <Button variant="tinted" tint="danger">
+            <Icon icon={Delete} />
+            Delete
+          </Button>
+          <Button variant="filled" disabled>
+            <Icon icon={Download} />
+            Export
+          </Button>
         </Row>
       ),
     },

@@ -67,6 +67,20 @@ control:
           bright: "{base.corner.xl-bright}"
           graphite: "{base.corner.sm}"
           nocturne: "{base.corner.sm}"
+  # A glyph that sits beside a label rather than alone. The profile's
+  # `icon-size` is sized to fill a square button; next to a label it overtops
+  # the type — 16px against 12 — so it is drawn `shrink` under, where it sits
+  # at the label's height. Its frame still carries whitespace of its own, so
+  # the end it sits at reads wider than the bare-label end, and that end pads
+  # `inset` less than `padding.inline`. Both are stated against the profile
+  # rather than as lengths of their own because the desktop metrics re-pick
+  # the icon scale and the inline padding per theme, and a trim follows them
+  # where a length would have to be re-picked beside each.
+  label-glyph:
+    shrink:
+      $value: "{spacing.0.5}"
+    inset:
+      $value: "{spacing.0.5}"
   tiny:
     icon-size:
       $value: "{icon.small}"

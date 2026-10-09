@@ -31,6 +31,15 @@
   outline: var(--focus-width) solid var(--focus-ring);
   outline-offset: var(--focus-offset);
 }
+/* A glyph beside a label: `label-glyph.shrink` under the profile's icon, the
+   profile's gap from the label, and `label-glyph.inset` off its end's padding. */
+.dz-button-content { border-spacing: var(--control-gap); }
+.dz-button-glyph { -gtk-icon-size: calc(var(--control-icon-size) - var(--control-label-glyph-shrink)); }
+.dz-button.dz-glyph-leading { padding-left: calc(var(--control-padding-inline) - var(--control-label-glyph-inset)); }
+.dz-button.dz-glyph-trailing { padding-right: calc(var(--control-padding-inline) - var(--control-label-glyph-inset)); }
+.dz-button.dz-glyph-leading:dir(rtl) { padding-left: var(--control-padding-inline); padding-right: calc(var(--control-padding-inline) - var(--control-label-glyph-inset)); }
+.dz-button.dz-glyph-trailing:dir(rtl) { padding-right: var(--control-padding-inline); padding-left: calc(var(--control-padding-inline) - var(--control-label-glyph-inset)); }
+.dz-button.dz-glyph-leading.dz-glyph-trailing { padding-left: calc(var(--control-padding-inline) - var(--control-label-glyph-inset)); padding-right: calc(var(--control-padding-inline) - var(--control-label-glyph-inset)); }
 .dz-icon-button { min-width: calc(var(--control-size) - 2 * var(--control-padding-block) - 2 * var(--stroke-hairline)); padding-left: var(--control-padding-block); padding-right: var(--control-padding-block); }
 .dz-icon-button image { -gtk-icon-size: var(--control-icon-size); }
 .dz-toggle:checked { background-color: var(--recipe-tinted-surface-normal); color: var(--recipe-tinted-content-normal); border-color: var(--recipe-tinted-border-normal); }

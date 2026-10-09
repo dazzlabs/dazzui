@@ -118,6 +118,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 10px;
   --control-field-radius: 10px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -857,6 +859,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 14px;
   --control-field-radius: 9999px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -1596,6 +1600,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 14px;
   --control-field-radius: 9999px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -2335,6 +2341,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 10px;
   --control-field-radius: 10px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -3074,6 +3082,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 10px;
   --control-field-radius: 10px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -3813,6 +3823,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 8px;
   --control-field-radius: 8px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -4552,6 +4564,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 8px;
   --control-field-radius: 8px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -5291,6 +5305,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 10px;
   --control-field-radius: 10px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -6030,6 +6046,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 10px;
   --control-field-radius: 10px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -6769,6 +6787,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 8px;
   --control-field-radius: 8px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -7508,6 +7528,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 8px;
   --control-field-radius: 8px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -8247,6 +8269,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -8986,6 +9010,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -9725,6 +9751,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -10464,6 +10492,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -11203,6 +11233,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -11942,6 +11974,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -12681,6 +12715,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -13420,6 +13456,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -14159,6 +14197,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -14898,6 +14938,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -15637,6 +15679,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -16376,6 +16420,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -17115,6 +17161,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -17854,6 +17902,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -18593,6 +18643,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -19332,6 +19384,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -20071,6 +20125,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -20810,6 +20866,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -21549,6 +21607,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -22288,6 +22348,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -23027,6 +23089,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -23766,6 +23830,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -24505,6 +24571,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -25244,6 +25312,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -25983,6 +26053,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -26722,6 +26794,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -27461,6 +27535,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -28200,6 +28276,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -28939,6 +29017,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -29678,6 +29758,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -30417,6 +30499,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -31156,6 +31240,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -31895,6 +31981,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -32634,6 +32722,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -33373,6 +33463,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -34112,6 +34204,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -34851,6 +34945,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -35590,6 +35686,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -36329,6 +36427,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -37068,6 +37168,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -37807,6 +37909,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -38546,6 +38650,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -39285,6 +39391,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -40024,6 +40132,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 0px;
   --control-field-radius: 0px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
@@ -40763,6 +40873,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 10px;
   --control-field-radius: 8px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 13px;
   --control-large-content-font-weight: 600;
@@ -41502,6 +41614,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 10px;
   --control-field-radius: 8px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 13px;
   --control-large-content-font-weight: 600;
@@ -42241,6 +42355,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 6px;
   --control-field-radius: 6px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 13px;
   --control-large-content-font-weight: 600;
@@ -42980,6 +43096,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 6px;
   --control-field-radius: 6px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 13px;
   --control-large-content-font-weight: 600;
@@ -43719,6 +43837,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 4px;
   --control-field-radius: 4px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 14px;
   --control-large-content-font-weight: 600;
@@ -44458,6 +44578,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 4px;
   --control-field-radius: 4px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 14px;
   --control-large-content-font-weight: 600;
@@ -45197,6 +45319,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 12px;
   --control-field-radius: 9px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 14.5px;
   --control-large-content-font-weight: 600;
@@ -45936,6 +46060,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 12px;
   --control-field-radius: 9px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 14.5px;
   --control-large-content-font-weight: 600;
@@ -46675,6 +46801,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 12px;
   --control-field-radius: 9px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 14.5px;
   --control-large-content-font-weight: 600;
@@ -47414,6 +47542,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 12px;
   --control-field-radius: 9px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 14.5px;
   --control-large-content-font-weight: 600;
@@ -48153,6 +48283,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 12px;
   --control-field-radius: 9px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 14.5px;
   --control-large-content-font-weight: 600;
@@ -48892,6 +49024,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 12px;
   --control-field-radius: 9px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 14.5px;
   --control-large-content-font-weight: 600;
@@ -49631,6 +49765,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 5px;
   --control-field-radius: 5px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 13.33px;
   --control-large-content-font-weight: 600;
@@ -50370,6 +50506,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 5px;
   --control-field-radius: 5px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 13.33px;
   --control-large-content-font-weight: 600;
@@ -51109,6 +51247,8 @@
   --color-warning-950: rgba(61, 37, 6, 1);
   --control-container-radius: 10px;
   --control-field-radius: 10px;
+  --control-label-glyph-inset: 2px;
+  --control-label-glyph-shrink: 2px;
   --control-large-content-font-family: "-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif";
   --control-large-content-font-size: 12px;
   --control-large-content-font-weight: 600;
