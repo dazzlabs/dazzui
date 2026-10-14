@@ -66,10 +66,7 @@ pub const STORY: &str = r#"{
         }
       ]
     },
-    "gaps": [
-      "option-card/preview preview: <OptionCard> is not drawn by GTK4",
-      "option-card/preview: live story expressions are not yet mapped"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -159,10 +156,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "option-card/0 preview: <OptionCard> is not drawn by GTK4",
-        "option-card/0: live story expressions are not yet mapped"
-      ]
+      "gaps": []
     },
     {
       "id": "option-card/1",
@@ -184,9 +178,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "option-card/1 preview: <OptionCard> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

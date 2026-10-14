@@ -6,7 +6,7 @@
   font-size: var(--body-medium-font-size);
   font-weight: var(--body-medium-font-weight);
 }
-.dz-scope label { background: none; }
+.dz-icon { -gtk-icon-size: var(--icon-medium); }
 .dz-button, .dz-menu-button > button, .dz-select > button {
   background-image: none;
   text-shadow: none;
@@ -35,6 +35,9 @@
    profile's gap from the label, and `label-glyph.inset` off its end's padding. */
 .dz-button-content { border-spacing: var(--control-gap); }
 .dz-button-glyph { -gtk-icon-size: calc(var(--control-icon-size) - var(--control-label-glyph-shrink)); }
+.dz-button-content .dz-icon { -gtk-icon-size: var(--control-icon-size); }
+.dz-labelled-button .dz-icon { -gtk-icon-size: calc(var(--control-icon-size) - var(--control-label-glyph-shrink)); }
+.dz-button-shortcut { opacity: 0.6; }
 .dz-button.dz-glyph-leading { padding-left: calc(var(--control-padding-inline) - var(--control-label-glyph-inset)); }
 .dz-button.dz-glyph-trailing { padding-right: calc(var(--control-padding-inline) - var(--control-label-glyph-inset)); }
 .dz-button.dz-glyph-leading:dir(rtl) { padding-left: var(--control-padding-inline); padding-right: calc(var(--control-padding-inline) - var(--control-label-glyph-inset)); }
@@ -45,6 +48,7 @@
 /* Alone in the tiny square the profile's small glyph is half the box. */
 .dz-icon-button.dz-size-tiny image { -gtk-icon-size: var(--icon-button-tiny-icon-size); }
 .dz-toggle:checked { background-color: var(--recipe-tinted-surface-normal); color: var(--recipe-tinted-content-normal); border-color: var(--recipe-tinted-border-normal); }
+.dz-toggle-icon { min-width: calc(var(--control-size) - 2 * var(--control-padding-block) - 2 * var(--stroke-hairline)); padding-left: var(--control-padding-block); padding-right: var(--control-padding-block); }
 .dz-checkbox, .dz-radio { padding: 0; border: none; background: none; color: var(--color-content-muted); font-size: var(--label-quiet-font-size); font-weight: var(--label-quiet-font-weight); }
 .dz-checkbox:checked, .dz-radio:checked { color: var(--color-content); font-weight: var(--label-medium-font-weight); }
 .dz-checkbox check, .dz-radio radio {
@@ -84,13 +88,23 @@
   font-family: var(--control-font-family);
   font-size: var(--control-font-size);
   font-weight: var(--body-small-font-weight);
+  line-height: var(--control-line-height);
   box-shadow: none;
 }
+.dz-select > button arrow { -gtk-icon-source: -gtk-icontheme('dazzui-ChevronDown12Regular-symbolic'); -gtk-icon-size: var(--icon-small); min-width: 0; min-height: 0; margin: 0 0 0 var(--spacing-2); padding: 0; color: var(--color-content-subtle); }
+.dz-select:disabled > button arrow { color: var(--color-content-faint); }
+.dz-select:dir(rtl) > button arrow { margin: 0 var(--spacing-2) 0 0; }
 .dz-field:focus-within, .dz-select:focus-within > button {
   border-color: var(--tint-600); background-color: var(--color-surface);
   box-shadow: 0 0 0 var(--focus-width) var(--focus-glow);
 }
-.dz-field text { background: none; color: inherit; }
+.dz-field text { background: none; color: inherit; min-height: 0; padding: 0; margin: 0; line-height: var(--control-line-height); }
+/* GtkText's minimum includes the font's full ascent/descent, even under a
+   smaller CSS line-height. Center that native line inside the control's own
+   height instead of adding the web line box's padding to its font bounds. */
+.dz-field { padding-top: 0; padding-bottom: 0; min-height: calc(var(--control-size) - 2 * var(--stroke-hairline)); }
+.dz-search-field { border-radius: var(--radius-medium); }
+.dz-search-field image { -gtk-icon-size: var(--control-icon-size); }
 .dz-field placeholder { color: var(--color-content-faint); }
 .dz-field button { padding: 0; margin: 0; min-height: 0; min-width: var(--icon-medium); border: none; background: none; box-shadow: none; }
 .dz-field.dz-invalid { border-color: var(--color-danger-600); background-color: var(--color-danger-50); color: var(--color-danger-800); }
@@ -99,25 +113,29 @@
 .dz-text-area { padding: var(--spacing-2-5) var(--spacing-3); border-radius: var(--radius-large); border: var(--stroke-hairline) solid var(--color-border-strong); background: var(--color-surface-muted); min-height: var(--spacing-20); }
 .dz-text-area text { background: none; }
 .dz-slider { padding: 0; min-height: var(--control-size); }
-.dz-slider trough { border: none; min-height: var(--slider-medium-track); background: var(--color-surface-sunken); border-radius: var(--radius-full); }
+.dz-slider trough { border: none; min-height: var(--slider-medium-track); background: var(--color-surface-sunken); border-radius: calc(var(--slider-medium-track) / 2); }
 .dz-slider highlight { border: none; min-height: var(--slider-medium-track); background: var(--tint-600); border-radius: var(--radius-full); }
 .dz-slider slider { margin: 0; border: var(--slider-thumb-edge-width) solid var(--color-border-strong); background: var(--color-surface); border-radius: var(--radius-full); min-width: calc(var(--slider-medium-thumb) - 2 * var(--slider-thumb-edge-width)); min-height: calc(var(--slider-medium-thumb) - 2 * var(--slider-thumb-edge-width)); box-shadow: var(--shadow-xs); }
 .dz-slider.dz-size-small trough, .dz-slider.dz-size-small highlight { min-height: var(--slider-small-track); }
 .dz-slider.dz-size-large trough, .dz-slider.dz-size-large highlight { min-height: var(--slider-large-track); }
+.dz-slider.dz-size-small trough { border-radius: calc(var(--slider-small-track) / 2); }
+.dz-slider.dz-size-large trough { border-radius: calc(var(--slider-large-track) / 2); }
 .dz-slider.dz-size-small slider { min-width: calc(var(--slider-small-thumb) - 2 * var(--slider-thumb-edge-width)); min-height: calc(var(--slider-small-thumb) - 2 * var(--slider-thumb-edge-width)); }
 .dz-slider.dz-size-large slider { min-width: calc(var(--slider-large-thumb) - 2 * var(--slider-thumb-edge-width)); min-height: calc(var(--slider-large-thumb) - 2 * var(--slider-thumb-edge-width)); }
 .dz-slider slider:focus-visible { outline: var(--focus-width) solid var(--focus-ring); }
 .dz-slider:disabled highlight, .dz-slider:disabled slider { background: var(--recipe-normal-surface-disabled); box-shadow: none; }
-.dz-progress trough, .dz-meter trough { background: var(--color-surface-sunken); border: none; border-radius: var(--radius-full); min-height: var(--slider-medium-track); }
-.dz-progress progress, .dz-meter block.filled { background: var(--tint-600); border: none; border-radius: var(--radius-full); min-height: var(--slider-medium-track); }
-.dz-progress.dz-size-small trough, .dz-progress.dz-size-small progress { min-height: var(--slider-small-track); }
-.dz-progress.dz-size-large trough, .dz-progress.dz-size-large progress { min-height: var(--slider-large-track); }
+.dz-progress, .dz-meter { --dz-track-size: var(--spacing-1-5); }
+.dz-progress.dz-size-small, .dz-meter.dz-size-small { --dz-track-size: var(--spacing-1); }
+.dz-progress.dz-size-large, .dz-meter.dz-size-large { --dz-track-size: var(--spacing-2); }
+.dz-progress trough, .dz-meter trough { background: var(--color-surface-sunken); border: none; border-radius: calc(var(--dz-track-size) / 2); min-height: var(--dz-track-size); }
+/* Only the groove rounds; the advancing edge is a straight cut. */
+.dz-progress progress, .dz-meter block.filled { background: var(--tint-600); border: none; border-radius: var(--radius-none); min-height: var(--dz-track-size); }
 .dz-meter block.empty { background: var(--color-surface-sunken); border: none; }
 .dz-spinner { color: var(--color-primary-600); min-width: var(--icon-medium); min-height: var(--icon-medium); }
 .dz-spinner.dz-size-small { min-width: var(--icon-small); min-height: var(--icon-small); }
 .dz-spinner.dz-size-large { min-width: var(--icon-large); min-height: var(--icon-large); }
 .dz-badge { padding: var(--spacing-0-5) var(--spacing-1-5); border: var(--stroke-hairline) solid var(--control-border-normal); border-radius: var(--radius-small); background: var(--control-surface-normal); color: var(--control-content-normal); }
-.dz-tag { padding: var(--spacing-1) var(--spacing-2); border-radius: var(--radius-medium); }
+.dz-tag { padding: var(--spacing-0-5) var(--spacing-1-5); border-radius: var(--radius-tiny); }
 .dz-card { border: var(--stroke-hairline) solid transparent; border-radius: var(--radius-large); padding: var(--spacing-3) var(--spacing-3-5); }
 .dz-card.dz-size-small { padding: var(--spacing-3); border-spacing: var(--spacing-2); }
 .dz-card.dz-size-large { padding: var(--spacing-4); border-spacing: var(--spacing-4); }
@@ -125,23 +143,46 @@
 .dz-card-sunken { background: var(--color-surface-muted); border-color: var(--color-border); }
 .dz-card-outlined { border-color: var(--color-border); }
 .dz-card-tinted { background: alpha(var(--tint-600), var(--wash-surface)); border-color: alpha(var(--tint-600), var(--wash-edge)); }
-.dz-code { background: var(--color-surface-sunken); border-radius: var(--radius-small); padding: var(--spacing-0-5) var(--spacing-1); }
-.dz-code-block { padding: var(--spacing-3); }
-.dz-key-cap { color: var(--color-content-muted); border: var(--stroke-hairline) solid var(--color-border); border-radius: var(--radius-tiny); padding: var(--spacing-0-5) var(--spacing-1); background: var(--color-surface-muted); }
+.dz-code { background: var(--color-surface-sunken); color: var(--color-content); font-size: var(--caption-small-font-size); border-radius: var(--radius-tiny); padding: var(--spacing-0-5) var(--spacing-1); }
+.dz-code-block { background: var(--color-surface-muted); border: var(--stroke-hairline) solid var(--color-border); border-radius: var(--control-container-radius); padding: var(--spacing-2-5) var(--spacing-3); }
+.dz-key-cap { color: var(--color-content-faint); font-family: var(--label-strong-font-family); font-size: var(--label-small-font-size); font-weight: var(--label-medium-font-weight); line-height: 1; border: none; border-radius: var(--radius-none); padding: 0; background: none; }
+.dz-key-cap.dz-size-large { font-size: var(--label-medium-font-size); }
+.dz-key-cap-strong { color: var(--color-content-subtle); }
+.dz-key-cap-key { min-height: calc(var(--spacing-5) + var(--spacing-0-5)); padding: 0 var(--spacing-2-5); border-radius: var(--radius-tiny); background: var(--color-surface-inset); color: var(--color-content); font-weight: var(--label-strong-font-weight); }
 .dz-muted, .dz-section-label { color: var(--color-content-muted); }
-.dz-avatar { border-radius: var(--radius-full); background: var(--color-surface-sunken); color: var(--color-content-muted); min-width: var(--control-size); min-height: var(--control-size); }
+.dz-avatar { border-radius: var(--radius-full); background: var(--recipe-tinted-surface-normal); color: var(--recipe-tinted-content-normal); min-width: var(--spacing-7); min-height: var(--spacing-7); font-family: var(--label-strong-font-family); font-size: var(--label-medium-font-size); font-weight: var(--label-strong-font-weight); line-height: 1; }
+.dz-avatar.dz-size-small { min-width: var(--spacing-5); min-height: var(--spacing-5); font-size: var(--caption-small-font-size); }
+.dz-avatar.dz-size-large { min-width: var(--spacing-9); min-height: var(--spacing-9); font-size: var(--label-large-font-size); }
+.dz-avatar-square { border-radius: var(--radius-medium); }
+.dz-meter-label { font-weight: var(--label-medium-font-weight); line-height: 1; }
+.dz-meter-value { font-family: monospace; color: var(--color-content-muted); line-height: 1; }
 .dz-divider { min-height: var(--stroke-hairline); min-width: var(--stroke-hairline); background: var(--color-border); }
-.dz-link { color: var(--recipe-plain-content-normal); padding: 0; background: none; border: none; box-shadow: none; }
+.dz-link { color: var(--recipe-plain-content-normal); padding: 0; background: none; border: none; border-radius: var(--radius-tiny); box-shadow: none; }
 .dz-link:hover { color: var(--recipe-plain-content-hovered); }
 .dz-empty-state { padding: var(--spacing-8); }
 .dz-preferences { min-width: var(--preferences-width); }
-.dz-preference-row { padding: var(--preferences-row-padding) 0; }
-.dz-option-card { padding: var(--spacing-3); border: var(--stroke-hairline) solid var(--color-border); border-radius: var(--radius-large); background: var(--color-surface-muted); }
-.dz-option-card:checked { border-color: var(--color-primary-600); background: var(--color-surface); }
-.dz-segmented-control { padding: var(--segmented-control-inset); border-radius: var(--radius-medium); background: var(--color-surface-sunken); }
+.dz-preference-row { min-height: var(--control-medium-size); padding: 0; }
+.dz-preference-text { padding: var(--preferences-row-padding) 0; }
+.dz-preference-subtitle { color: var(--color-content-subtle); }
+.dz-option-card { padding: var(--spacing-3-5) var(--spacing-3); border: var(--stroke-hairline) solid var(--color-border); border-radius: var(--radius-large); background: var(--color-surface-muted); border-spacing: 0; }
+.dz-option-card > check { min-width: 0; min-height: 0; padding: 0; margin: 0; border: 0; -gtk-icon-size: 0; opacity: 0; }
+.dz-option-card:hover:not(:checked):not(:disabled) { background-color: var(--color-surface-subtle); }
+.dz-option-card:checked { border-color: var(--recipe-outlined-border-normal); background: alpha(var(--tint-600), var(--wash-surface)); box-shadow: inset 0 0 0 calc(var(--stroke-control) - var(--stroke-hairline)) var(--recipe-outlined-border-normal); }
+.dz-option-card-title { color: var(--color-content); }
+.dz-option-card-description { color: var(--color-content-subtle); font-size: var(--label-small-font-size); line-height: 1.5; }
+.dz-option-card:checked .dz-option-card-description { color: var(--color-content-muted); }
+.dz-option-card:disabled { background-color: var(--recipe-normal-surface-disabled); color: var(--recipe-normal-content-disabled); }
+.dz-option-card:focus-visible { outline: var(--focus-width) solid var(--focus-ring); outline-offset: var(--focus-offset); }
+.dz-segmented-control { padding: var(--segmented-control-inset); border-radius: var(--control-radius); background: var(--color-surface-inset); }
+.dz-segmented-control.dz-size-medium { --control-radius: var(--radius-medium); }
 /* A segment pads `spacing-3`; a glyph beside its label is drawn as Button
    draws one, and a glyph alone keeps the full icon size. */
-.dz-segmented-control > button { padding-left: var(--spacing-3); padding-right: var(--spacing-3); }
+.dz-segmented-control > button { min-width: 0; min-height: calc(var(--control-size) - 2 * var(--segmented-control-inset)); padding: 0 var(--spacing-3); border: none; border-radius: calc(var(--control-radius) - var(--segmented-control-inset)); background: none; background-image: none; box-shadow: none; color: var(--color-content-secondary); font-family: var(--label-quiet-font-family); font-size: var(--control-font-size); font-weight: var(--label-quiet-font-weight); }
+.dz-segmented-control > button:hover { color: var(--color-content); }
+.dz-segmented-control > button:checked { color: var(--color-content); background: var(--color-surface-raised); font-weight: var(--label-medium-font-weight); box-shadow: var(--shadow-2xs); }
+.dz-segments-filled > button:checked { color: var(--recipe-filled-content-normal); background: var(--recipe-filled-surface-normal); }
+.dz-segmented-control > button:disabled { opacity: 0.5; }
+.dz-segmented-control > button:focus-visible { outline: var(--focus-width) solid var(--focus-ring); outline-offset: var(--focus-offset); }
 .dz-segment-content { border-spacing: var(--control-gap); }
 .dz-segment-glyph { -gtk-icon-size: calc(var(--control-icon-size) - var(--control-label-glyph-shrink)); }
 .dz-segment-glyph-only { -gtk-icon-size: var(--control-icon-size); }
@@ -149,12 +190,22 @@
 .dz-segmented-control > button.dz-segment-glyph-leading:dir(rtl) { padding-left: var(--spacing-3); padding-right: calc(var(--spacing-3) - var(--control-label-glyph-inset)); }
 .dz-tabs button { background: none; border: none; box-shadow: none; padding: var(--spacing-2) var(--spacing-3); color: var(--color-content-muted); }
 .dz-tabs button:checked { color: var(--color-content); background: var(--color-surface); border-radius: var(--radius-medium); }
-.dz-popover > contents, .dz-menu-button popover > contents, .dz-select popover > contents { padding: var(--spacing-1); background: var(--color-surface-overlay); color: var(--color-content); border: var(--stroke-hairline) solid var(--color-border-strong); border-radius: var(--frame-popover-radius); box-shadow: var(--shadow-lg); }
+.dz-popover > contents, .dz-menu-button popover > contents, .dz-select popover > contents { padding: var(--spacing-1); background: var(--color-surface-overlay); color: var(--color-content); border: var(--stroke-hairline) solid var(--color-border-strong); border-radius: var(--radius-large); box-shadow: var(--shadow-lg); }
 .dz-dialog-body { padding: calc(var(--spacing-4) + var(--spacing-0-5)); min-width: var(--dialog-width); }
 .dz-table, .dz-tree { background: var(--color-surface); color: var(--color-content); }
 .dz-table row:selected, .dz-tree row:selected { background: var(--color-surface-subtle); font-weight: var(--label-medium-font-weight); }
 .dz-table row, .dz-tree row { padding: var(--spacing-1-5) var(--spacing-3); }
-.dz-action-bar { padding: var(--spacing-2) var(--spacing-3); background: var(--color-surface-column); }
+.dz-action-bar { padding: 0; background: none; border-spacing: var(--control-small-gap); }
+.dz-fieldset-legend { color: var(--color-content-subtle); font-weight: var(--label-small-font-weight); line-height: 1; }
+.dz-callout { padding: var(--spacing-3) var(--spacing-3-5); border: var(--stroke-hairline) solid alpha(var(--tint-600), var(--wash-edge)); border-radius: var(--radius-large); background: alpha(var(--tint-600), var(--wash-surface)); }
+.dz-callout.dz-size-small { padding: var(--spacing-2) var(--spacing-3); border-radius: var(--control-container-radius); }
+.dz-callout.dz-size-large { padding: var(--spacing-4); }
+.dz-callout-title { color: var(--recipe-tinted-content-hovered); font-family: var(--label-medium-font-family); font-size: var(--label-medium-font-size); font-weight: var(--label-medium-font-weight); line-height: 1.4; }
+.dz-callout-description { color: var(--recipe-tinted-content-normal); font-family: var(--label-quiet-font-family); font-size: var(--label-quiet-font-size); font-weight: var(--caption-small-font-weight); line-height: 1.5; }
+.dz-callout-icon { color: var(--tint-600); -gtk-icon-size: var(--icon-medium); }
+.dz-link label { text-decoration-line: none; }
+.dz-link.dz-underline-always label, .dz-link.dz-underline-hover:hover label { text-decoration-line: underline; }
+.dz-link-arrow { -gtk-icon-size: var(--icon-small); }
 .dz-splitter > separator { background: var(--color-border); min-width: var(--stroke-hairline); min-height: var(--stroke-hairline); }
 .dz-gallery { padding: var(--spacing-6); }
 .dz-progress-gradient progress { background-image: linear-gradient(to right, var(--progress-gradient-from), var(--progress-gradient-to)); }
@@ -163,15 +214,48 @@
 .dz-divider-subtle { background: var(--color-border); }
 .dz-divider-strong { background: var(--color-border-strong); }
 .dz-button label, .dz-menu-button label, .dz-select label { line-height: var(--control-line-height); }
-.dz-badge { background-image: none; box-shadow: none; min-width: 0; min-height: 0; border-radius: var(--radius-tiny); font-family: var(--label-strong-font-family); font-weight: var(--label-medium-font-weight); }
+.dz-badge { background-image: none; box-shadow: none; min-width: 0; min-height: 0; border-radius: var(--radius-tiny); font-family: var(--label-strong-font-family); font-size: var(--label-small-font-size); font-weight: var(--label-medium-font-weight); line-height: 1.4; }
 .dz-badge.dz-size-medium { padding: var(--spacing-0-5) var(--spacing-2); }
 .dz-badge.dz-size-large { padding: var(--spacing-1) var(--spacing-2); font-size: var(--label-medium-font-size); }
 .dz-badge.dz-variant-normal { background: var(--color-surface); color: var(--color-content-muted); }
-.dz-tag:hover { background: var(--control-surface-hovered); color: var(--control-content-hovered); }
-.dz-tag:checked { background: var(--recipe-filled-surface-normal); color: var(--recipe-filled-content-normal); }
+.dz-tag:not(.dz-tag-static):hover { background: var(--control-surface-hovered); color: var(--control-content-hovered); }
+.dz-tag:checked { background: var(--recipe-tinted-surface-normal); color: var(--recipe-tinted-content-normal); border-color: var(--recipe-outlined-border-normal); }
+.dz-tag-remove { padding: 0; min-width: var(--icon-small); min-height: var(--icon-small); border: none; background: none; background-image: none; box-shadow: none; color: inherit; border-radius: var(--radius-full); }
+.dz-tag-remove image { -gtk-icon-size: var(--icon-small); }
 .dz-progress progress, .dz-progress trough, .dz-meter block, .dz-meter trough { min-width: 0; margin: 0; padding: 0; }
 .dz-slider highlight, .dz-slider trough { min-width: 0; margin: 0; padding: 0; }
 .dz-gallery { background: var(--color-surface); }
 .dz-divider-muted { background: var(--color-border-strong); }
 .dz-text-area-placeholder { padding: var(--spacing-2-5) var(--spacing-3); color: var(--color-content-faint); }
 .dz-mono { font-family: monospace; }
+
+/* Free-standing filter pills, sized to their labels rather than a track. */
+.dz-pill-tab-content { border-spacing: var(--control-tiny-gap); }
+.dz-pill-tab {
+  min-width: 0;
+  min-height: var(--control-tiny-size);
+  padding: 0 var(--spacing-3);
+  border: 0;
+  border-radius: var(--radius-full);
+  background-image: none;
+  background-color: var(--color-surface-inset);
+  box-shadow: none;
+  text-shadow: none;
+  color: var(--color-content-nav);
+  font-family: var(--label-small-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--label-small-font-weight);
+}
+.dz-pill-tab image { -gtk-icon-size: var(--icon-medium); }
+.dz-pill-tab:hover:not(:checked):not(:disabled) { background-color: var(--color-surface-sunken); color: var(--color-content); }
+.dz-pill-tab:checked { background-color: var(--recipe-filled-surface-normal); color: var(--recipe-filled-content-normal); font-weight: var(--label-strong-font-weight); }
+.dz-pill-tab:disabled { opacity: 0.5; }
+.dz-pill-tab:focus-visible { outline: var(--focus-width) solid var(--focus-ring); outline-offset: var(--focus-offset); }
+
+.dz-select-placeholder { color: var(--color-content-faint); }
+.dz-select:disabled .dz-select-placeholder { color: var(--recipe-normal-content-disabled); }
+.dz-select-group { padding: var(--spacing-1-5) var(--spacing-2) var(--spacing-1); color: var(--color-content-subtle); font-family: var(--caption-small-font-family); font-size: var(--caption-small-font-size); font-weight: var(--label-small-font-weight); line-height: 1; }
+.dz-select.dz-invalid > button { border-color: var(--tint-600); background-color: var(--tint-50); color: var(--tint-800); }
+.dz-select.dz-mono > button { font-family: monospace; }
+.dz-select.dz-readonly > button:disabled { background-color: var(--color-surface-muted); color: var(--color-content); border-color: var(--color-border-strong); }
+.dz-select.dz-readonly:focus-visible > button { border-color: var(--tint-600); box-shadow: 0 0 0 var(--focus-width) var(--focus-glow); }

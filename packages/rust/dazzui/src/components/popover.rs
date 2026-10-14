@@ -68,13 +68,13 @@ impl Popover {
 
     /// Names the panel as well as heading it.
     pub fn title(mut self, title: impl IntoElement) -> Self {
-        self.title = Some(title.into_any_element());
+        self.title = Some(crate::foundation::text_child(title));
         self
     }
 
     /// A line under the title.
     pub fn description(mut self, description: impl IntoElement) -> Self {
-        self.description = Some(description.into_any_element());
+        self.description = Some(crate::foundation::text_child(description));
         self
     }
 
@@ -117,7 +117,8 @@ impl Popover {
 
 impl ParentElement for Popover {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -148,13 +149,13 @@ impl RenderOnce for Popover {
                 div()
                     .text_color(t.color_content.hsla())
                     .type_style(t.label_large)
-                    .child(title)
+                    .child(crate::foundation::text_child(title))
             });
             let description = self.description.map(|description| {
                 div()
                     .mt(px(t.spacing_1))
                     .text_color(t.color_content_secondary.hsla())
-                    .child(description)
+                    .child(crate::foundation::text_child(description))
             });
             let body = (!self.children.is_empty()).then(|| {
                 div()

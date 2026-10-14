@@ -1,6 +1,15 @@
 use crate::{DazzWidgetExt, Size, Tint, Variant, styled};
 use gtk::prelude::*;
 
+/// A Fluent glyph, with the same name and outline the React export uses.
+/// Symbolic rendering inherits the surrounding text colour and icon size.
+pub fn icon(name: &str) -> gtk::Image {
+    let w = gtk::Image::from_icon_name(&format!("dazzui-{name}-symbolic"));
+    w.add_css_class("dz-icon");
+    w.set_accessible_role(gtk::AccessibleRole::Presentation);
+    w
+}
+
 /// `type_name` uses the token's kebab name, such as `body-medium` or `title-small`.
 pub fn label(text: &str, type_name: &str) -> gtk::Label {
     let w = gtk::Label::new(Some(text));
@@ -36,6 +45,7 @@ pub fn code(text: &str, block: bool) -> gtk::Label {
 pub fn key_cap(text: &str) -> gtk::Label {
     let w = label(text, "label-small");
     w.add_css_class("dz-key-cap");
+    w.set_dazz_size(Size::Medium);
     w
 }
 pub fn section_label(text: &str) -> gtk::Label {
@@ -47,7 +57,7 @@ pub fn avatar(initials: &str, size: Size) -> gtk::Label {
     let w = styled(
         label(initials, "label-medium"),
         "dz-avatar",
-        Tint::Neutral,
+        Tint::Primary,
         size,
     );
     w.set_xalign(0.5);

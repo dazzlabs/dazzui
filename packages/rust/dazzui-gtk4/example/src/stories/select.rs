@@ -201,9 +201,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "select/1 preview: <Select placeholder> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "select/2",
@@ -256,9 +254,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "select/2: grouped select options are not yet mapped"
-      ]
+      "gaps": []
     }
   ]
 }"#;

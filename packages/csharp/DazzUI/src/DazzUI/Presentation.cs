@@ -31,7 +31,7 @@ public sealed class SectionLabel : Surface
         Foreground = Accent is WidgetTint accent ? Theme.Recipe(ControlVariant.Plain, accent, "content")
             : Theme.Brush(Faint ? "color.content-faint" : "color.content-subtle");
         Theme.Typography(this, "labelSmall");
-        HorizontalAlignment = HorizontalAlignment.Left;
+        Skin.TextLine(this, Theme.Text("", "labelSmall").LineHeight);
     }
 }
 public enum AvatarShape { Circle, Square }
@@ -142,8 +142,10 @@ public sealed class KeyCap : Surface
         Background = Raised ? Theme.Brush("color.surface-inset") : null;
         Foreground = Theme.Brush(Variant == KeyCapVariant.Hint ? "color.content-faint" : Variant == KeyCapVariant.Strong ? "color.content-subtle" : "color.content");
         BorderThickness = new Thickness(0);
-        Skin.SetCorner(this, Theme.Number("radius.tiny"));
+        Skin.SetCorner(this, Raised ? Theme.Number("radius.tiny") : 0);
         Theme.Typography(this, Size == ControlSize.Large ? "labelMedium" : "labelSmall");
+        FontWeight = Theme.Text("", Raised ? "labelStrong" : "labelMedium").FontWeight;
+        Skin.TextLine(this, FontSize);
         Height = Raised ? Theme.Number("spacing.5") + Theme.Number("spacing.0.5") : double.NaN;
         VerticalContentAlignment = VerticalAlignment.Center;
     }
@@ -158,8 +160,8 @@ public sealed class Code : Surface
         Background = Theme.Brush("color.surface-sunken");
         Skin.SetCorner(this, Theme.Number("radius.tiny"));
         Padding = new Thickness(Theme.Number("spacing.1"), Theme.Number("spacing.0.5"), Theme.Number("spacing.1"), Theme.Number("spacing.0.5"));
-        Theme.Typography(this, "bodySmall");
-        FontFamily = new FontFamily("Cascadia Mono, Consolas"); // Windows monospace fallback.
+        Theme.Typography(this, "captionSmall");
+        FontFamily = Theme.CodeFont;
     }
 }
 /// <summary>
@@ -179,7 +181,7 @@ public sealed class CodeBlock : Surface
     public UIElement? Actions { get; set; }
     protected override void RefreshAppearance()
     {
-        var mono = new FontFamily("Cascadia Mono, Consolas");
+        var mono = Theme.CodeFont;
         var size = Theme.Text("", "captionSmall").FontSize;
         var leading = Theme.Text("", "bodySmall").LineHeight;
         TextBlock Code(string text) => new() { Text = text, FontFamily = mono, FontSize = size, LineHeight = leading, LineStackingStrategy = LineStackingStrategy.BlockLineHeight };

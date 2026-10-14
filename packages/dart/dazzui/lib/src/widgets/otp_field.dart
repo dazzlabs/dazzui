@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../foundation/field_validity.dart';
 import '../foundation/font_face.dart';
 import '../foundation/widget_size.dart';
 import '../generated/theme_variables.dart';
@@ -117,7 +118,9 @@ class _OtpFieldState extends State<OtpField> {
   Widget build(BuildContext context) {
     final ThemeVariables vars = Theme.of(context).vars;
     final FieldMetrics metrics = FieldMetrics.of(vars, widget.size);
-    final bool invalid = widget.state == TextFieldState.error;
+    // React's state selects the danger tint; actual invalidity belongs to
+    // FormField. An error tint alone does not mark every native slot invalid.
+    final bool invalid = FieldValidity.of(context);
     final ColorSwatch<int> ramp = switch (tintForState(
       widget.state,
       widget.tint,
@@ -141,6 +144,7 @@ class _OtpFieldState extends State<OtpField> {
       // rule, which is what a printed code does.
       if (widget.groupAfter != null &&
           index > 0 &&
+          index != widget.length - 1 &&
           index % widget.groupAfter! == 0) {
         cells.add(SizedBox(width: vars.spacing3 - vars.spacing2));
       }
@@ -152,16 +156,19 @@ class _OtpFieldState extends State<OtpField> {
           width: metrics.height,
           height: metrics.height,
           alignment: Alignment.center,
-          decoration: fieldBoxDecoration(
-            context,
-            ramp: ramp,
-            // A filled cell lifts to the paper and keeps it, so the run says
-            // how far through the code the reader is without the caret having
-            // to be the only thing that does.
-            focused: here || (filled && !invalid),
-            invalid: invalid,
-            enabled: _enabled,
-          ).copyWith(boxShadow: here ? null : const <BoxShadow>[]),
+          decoration:
+              fieldBoxDecoration(
+                context,
+                ramp: ramp,
+                focused: here,
+                invalid: invalid,
+                enabled: _enabled,
+              ).copyWith(
+                color: filled && !invalid && _enabled
+                    ? vars.colorSurface
+                    : null,
+                boxShadow: here ? null : const <BoxShadow>[],
+              ),
           child: Text(
             !filled
                 ? ''
@@ -174,7 +181,11 @@ class _OtpFieldState extends State<OtpField> {
                 .copyWith(
                   fontWeight: vars.bodySmall.fontWeight,
                   height: 1,
-                  color: invalid ? ramp[800]! : vars.colorContent,
+                  color: !_enabled
+                      ? vars.controlColorNormalContent.disabledColor
+                      : invalid
+                      ? ramp[800]!
+                      : vars.colorContent,
                 )
                 .inFace(vars.fontCode),
           ),

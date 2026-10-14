@@ -62,10 +62,9 @@ class PillTabs<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeVariables vars = Theme.of(context).vars;
 
-    // Pills run onto a second line rather than past their container.
-    return Wrap(
+    return Row(
+      mainAxisSize: MainAxisSize.min,
       spacing: vars.spacing2,
-      runSpacing: vars.spacing2,
       children: [
         for (final PillTabItem<T> item in items)
           _Pill<T>(
@@ -125,7 +124,6 @@ class _Pill<T> extends StatelessWidget {
               duration: vars.motionDuration,
               curve: vars.motionEasing,
               padding: EdgeInsets.symmetric(horizontal: vars.spacing3),
-              alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: surface,
                 borderRadius: radius,

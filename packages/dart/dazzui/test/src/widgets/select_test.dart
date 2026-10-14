@@ -16,6 +16,60 @@ void main() {
     SelectOption(value: 'de', label: 'German'),
   ];
 
+  testWidgets('mixed options and groups keep order, choice and disabled rows', (
+    tester,
+  ) async {
+    String? selected;
+    await tester.pumpWidget(
+      host(
+        Center(
+          child: SizedBox(
+            width: 240,
+            child: Select<String>(
+              options: const [
+                SelectOption(value: 'none', label: 'Unassigned'),
+                SelectGroup(
+                  label: 'People',
+                  options: [
+                    SelectOption(value: 'ada', label: 'Ada'),
+                    SelectOption(
+                      value: 'grace',
+                      label: 'Grace',
+                      enabled: false,
+                    ),
+                  ],
+                ),
+                SelectOption(value: 'bot', label: 'Agent'),
+              ],
+              value: 'ada',
+              onChanged: (value) => selected = value,
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(find.text('Ada'), findsNWidgets(2));
+    await tester.tap(find.byType(Select<String>));
+    await tester.pumpAndSettle();
+    Finder row(String text) => find.descendant(
+      of: find.byType(MenuPanel),
+      matching: find.text(text),
+    );
+    final positions = [
+      for (final text in ['Unassigned', 'People', 'Ada', 'Grace', 'Agent'])
+        tester.getTopLeft(row(text)).dy,
+    ];
+    expect(positions, orderedEquals([...positions]..sort()));
+    await tester.tap(row('Grace'));
+    await tester.pump();
+    expect(selected, isNull);
+    expect(find.byType(MenuPanel), findsOneWidget);
+    await tester.tap(row('Agent'));
+    await tester.pump();
+    expect(selected, 'bot');
+    expect(find.byType(MenuPanel), findsNothing);
+  });
+
   testWidgets('the trigger shows the chosen label, or the placeholder', (
     tester,
   ) async {

@@ -56,7 +56,7 @@ machine over SSH and copies back the readings of every scene in
   SkeletonText, Step, StepList, Toast and ToastViewport.
 - Layout and navigation: ActionBar, Accordion, Collapsible, Preferences,
   PreferenceSection, PreferenceGroup, PreferenceRow, Sidebar, SidebarGroup,
-  NavItem, Aside, Rail, Splitter, Tree and Table.
+  NavItem, Aside, Rail, Splitter, Tree, Table, TableHead, TableRow and TableCell.
 - Overlays: Menu, ContextMenu, Menubar, Popover, PreviewCard, Tooltip,
   Dialog and Drawer.
 
@@ -64,6 +64,14 @@ Controls are drawn to React's geometry and recipes — a Tree, a
 SegmentedControl, PillTabs or a Collapsible draws its own rows and segments
 rather than restyling a native list — while native WinUI primitives own
 editing, selection, focus and popup behavior.
+The system UI face comes from Windows' message-font setting, as the browser's
+`system-ui` does. `Theme.CodeFont` exposes the Windows `ui-monospace` face used
+by code, mono fields and numeric readings. Layout retains fractional logical
+sizes, and annotation labels use React's declared leading.
+String annotation labels match missing font weights as CSS does and align
+their glyph baselines using the font's ascent, descent and declared leading.
+Interactive preference rows use a native button for keyboard
+and automation activation; adding or removing their action updates that role.
 Controls that WinUI does not support subclassing are composed and expose their
 native input through `Input`, `Indicator`, `View` or `Native`. RangeSlider and
 Splitter implement their extra drag and keyboard behavior with native Thumb
@@ -122,6 +130,26 @@ The .NET library embeds the snapshot and builds independently of ds and Node.
 
 ## Validation
 
+Tables use the React component hierarchy. Add bands to `Table.Children` and
+cells to each band's `Children`; a cell's `Content` accepts text or a component.
+`TableCell.Head` gives a cell the heading style and column-header role, and
+`Align = TextAlignment.Right` corresponds to React's `align="end"`.
+Cells share the available row width equally, with no column gap. Other child
+elements retain their natural width. The bands have square corners in every
+theme.
+
+`TableRow.Interactive` enables keyboard focus and native button activation;
+`Click` is the handler. `Active` remains caller-owned and takes its selection
+wash from `Table.Tint`. Changing the theme or adding another row keeps existing
+cell controls and their state. The table and cells expose native grid and table
+automation patterns, including column headers and cell coordinates.
+Only interactive rows expose selectable state to automation. Rich inline
+cells align their content with the cell font's line box; block panels retain
+their own height.
+
+The former `Columns`/data-record `Rows` API and automatic list selection are
+replaced by these independently composable controls.
+
 ```powershell
 node --test ds/plugins/winui3.test.mjs
 pnpm winui3:test
@@ -142,6 +170,7 @@ actions, popovers, dialog results and all four drawer edges.
 Reports, the runtime story list, and PNG captures are written to a unique
 ignored `artifacts/smoke-*` directory.
 
-Story/catalog alignment and native rendering tests are separate from React
-conformance. WinUI has no conformance collector yet; these tests do not
-assert pixel-identical output.
+Story/catalog alignment and native rendering tests complement the React
+conformance collector described above. A successful smoke run verifies the
+native controls and interactions; the conformance verdict separately reports
+the remaining differences from React.

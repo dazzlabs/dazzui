@@ -59,14 +59,7 @@ pub const STORY: &str = r#"{
         }
       ]
     },
-    "gaps": [
-      "icon/preview preview: <Icon> is not drawn by GTK4",
-      "icon/preview: Fluent glyph Home20Regular is not yet mapped",
-      "icon/preview: Fluent glyph Search20Regular is not yet mapped",
-      "icon/preview: Fluent glyph Folder20Regular is not yet mapped",
-      "icon/preview: Fluent glyph Document20Regular is not yet mapped",
-      "icon/preview: Fluent glyph Add20Regular is not yet mapped"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -143,16 +136,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "icon/0 preview: <Icon> is not drawn by GTK4",
-        "icon/0: Fluent glyph Home20Regular is not yet mapped",
-        "icon/0: Fluent glyph Search20Regular is not yet mapped",
-        "icon/0: Fluent glyph Folder20Regular is not yet mapped",
-        "icon/0: Fluent glyph Document20Regular is not yet mapped",
-        "icon/0: Fluent glyph Add20Regular is not yet mapped",
-        "icon/0: Fluent glyph Settings20Regular is not yet mapped",
-        "icon/0: Fluent glyph Delete20Regular is not yet mapped"
-      ]
+      "gaps": []
     },
     {
       "id": "icon/1",
@@ -215,10 +199,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "icon/1 preview: <Icon> is not drawn by GTK4",
-        "icon/1: Fluent glyph Settings20Regular is not yet mapped"
-      ]
+      "gaps": []
     },
     {
       "id": "icon/2",
@@ -299,10 +280,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "icon/2 preview: <Icon> is not drawn by GTK4",
-        "icon/2: Fluent glyph Folder20Regular is not yet mapped"
-      ]
+      "gaps": []
     }
   ]
 }"#;

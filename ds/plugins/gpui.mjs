@@ -64,6 +64,13 @@ export function generate(tokens, modeSelectors) {
     '',
     'use crate::tokens::*;',
     '',
+    ...['ui', 'display', 'code'].flatMap(role => [
+      role === 'code'
+        ? '#[cfg(any(target_os = "linux", target_os = "macos"))]'
+        : '#[cfg(target_os = "linux")]',
+      `pub const FONT_${role.toUpperCase()}: &[&str] = &[${tokens[`base.font.${role}`].$value.map(name => JSON.stringify(name)).join(', ')}];`,
+      '',
+    ]),
     '/// Every semantic and component token, resolved for one theme.',
     '#[derive(Clone, Copy, Debug, PartialEq)]',
     'pub struct ThemeTokens {',

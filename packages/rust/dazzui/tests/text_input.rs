@@ -3,10 +3,13 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
+mod support;
+use support::keys;
+
 use dazzui::foundation::text_input::{InputState, TextInput};
 use gpui::{
-    AppContext, ClipboardItem, Context, Entity, IntoElement, ParentElement, Render, Styled,
-    TestAppContext, VisualTestContext, Window, div, px,
+    AppContext, ClipboardItem, Context, Entity, EntityInputHandler, IntoElement, ParentElement,
+    Render, Styled, TestAppContext, VisualTestContext, Window, div, prelude::FluentBuilder, px,
 };
 
 struct Harness {
@@ -14,6 +17,7 @@ struct Harness {
     multiline: bool,
     masked: bool,
     max_length: Option<usize>,
+    line_height: Option<f32>,
     changes: Rc<RefCell<Vec<String>>>,
     submits: Rc<RefCell<Vec<String>>>,
 }
@@ -32,7 +36,13 @@ impl Render for Harness {
         if let Some(max) = self.max_length {
             input = input.max_length(max);
         }
-        div().w(px(240.)).text_size(px(13.)).child(input)
+        div()
+            .w(px(240.))
+            .text_size(px(13.))
+            .when_some(self.line_height, |this, height| {
+                this.line_height(px(height))
+            })
+            .child(input)
     }
 }
 
@@ -40,6 +50,7 @@ struct Setup {
     multiline: bool,
     masked: bool,
     max_length: Option<usize>,
+    line_height: Option<f32>,
 }
 
 fn open(
@@ -52,6 +63,7 @@ fn open(
         multiline: setup.multiline,
         masked: setup.masked,
         max_length: setup.max_length,
+        line_height: setup.line_height,
         changes: Rc::default(),
         submits: Rc::default(),
     });
@@ -67,11 +79,40 @@ fn single() -> Setup {
         multiline: false,
         masked: false,
         max_length: None,
+        line_height: None,
     }
 }
 
 fn value(input: &Entity<InputState>, cx: &mut VisualTestContext) -> String {
     input.read_with(cx, |input, _| input.value().to_string())
+}
+
+#[gpui::test]
+fn multiline_ime_rectangles_keep_fractional_leading(cx: &mut TestAppContext) {
+    let (_, input, cx) = open(
+        cx,
+        Setup {
+            multiline: true,
+            line_height: Some(20.8),
+            ..single()
+        },
+    );
+    cx.simulate_input("a\nb\nc");
+    cx.run_until_parked();
+    let (first, second) = cx.update(|window, cx| {
+        input.update(cx, |input, cx| {
+            (
+                input
+                    .bounds_for_range(0..0, Default::default(), window, cx)
+                    .unwrap(),
+                input
+                    .bounds_for_range(2..2, Default::default(), window, cx)
+                    .unwrap(),
+            )
+        })
+    });
+    assert!((f32::from(second.origin.y - first.origin.y) - 20.8).abs() < 0.001);
+    assert!((f32::from(second.size.height) - 20.8).abs() < 0.001);
 }
 
 #[gpui::test]
@@ -102,22 +143,22 @@ fn input_method_text_arrives_through_the_handler(cx: &mut TestAppContext) {
 fn selection_replaces_and_words_move(cx: &mut TestAppContext) {
     let (_, input, cx) = open(cx, single());
     cx.simulate_input("one two three");
-    cx.simulate_keystrokes("alt-left alt-left");
+    cx.simulate_keystrokes(keys("alt-left alt-left", "ctrl-left ctrl-left"));
     assert_eq!(input.read_with(cx, |input, _| input.selected_range()), 4..4);
 
-    cx.simulate_keystrokes("alt-shift-right");
+    cx.simulate_keystrokes(keys("alt-shift-right", "ctrl-shift-right"));
     assert_eq!(input.read_with(cx, |input, _| input.selected_range()), 4..7);
     cx.simulate_input("2");
     assert_eq!(value(&input, cx), "one 2 three");
 
-    cx.simulate_keystrokes("cmd-a");
+    cx.simulate_keystrokes(keys("cmd-a", "ctrl-a"));
     cx.simulate_input("x");
     assert_eq!(value(&input, cx), "x");
 
     cx.simulate_input(" y z");
-    cx.simulate_keystrokes("alt-backspace");
+    cx.simulate_keystrokes(keys("alt-backspace", "ctrl-backspace"));
     assert_eq!(value(&input, cx), "x y ");
-    cx.simulate_keystrokes("cmd-backspace");
+    cx.simulate_keystrokes(keys("cmd-backspace", "shift-home backspace"));
     assert_eq!(value(&input, cx), "");
 }
 
@@ -125,16 +166,16 @@ fn selection_replaces_and_words_move(cx: &mut TestAppContext) {
 fn clipboard_copies_cuts_and_pastes(cx: &mut TestAppContext) {
     let (_, input, cx) = open(cx, single());
     cx.simulate_input("copy me");
-    cx.simulate_keystrokes("cmd-a cmd-c");
+    cx.simulate_keystrokes(keys("cmd-a cmd-c", "ctrl-a ctrl-c"));
     assert_eq!(
         cx.read_from_clipboard().and_then(|item| item.text()),
         Some("copy me".into())
     );
-    cx.simulate_keystrokes("cmd-x");
+    cx.simulate_keystrokes(keys("cmd-x", "ctrl-x"));
     assert_eq!(value(&input, cx), "");
 
     cx.write_to_clipboard(ClipboardItem::new_string("two\nlines".into()));
-    cx.simulate_keystrokes("cmd-v");
+    cx.simulate_keystrokes(keys("cmd-v", "ctrl-v"));
     // A single line takes a pasted break as a space.
     assert_eq!(value(&input, cx), "two lines");
 }
@@ -178,7 +219,7 @@ fn a_password_is_masked_and_kept_off_the_clipboard(cx: &mut TestAppContext) {
     );
     cx.write_to_clipboard(ClipboardItem::new_string("before".into()));
     cx.simulate_input("secret");
-    cx.simulate_keystrokes("cmd-a cmd-c");
+    cx.simulate_keystrokes(keys("cmd-a cmd-c", "ctrl-a ctrl-c"));
     assert_eq!(value(&input, cx), "secret");
     assert_eq!(
         cx.read_from_clipboard().and_then(|item| item.text()),
@@ -186,7 +227,7 @@ fn a_password_is_masked_and_kept_off_the_clipboard(cx: &mut TestAppContext) {
     );
     cx.simulate_keystrokes("left backspace");
     assert_eq!(value(&input, cx), "secret");
-    cx.simulate_keystrokes("cmd-right backspace");
+    cx.simulate_keystrokes(keys("cmd-right backspace", "end backspace"));
     assert_eq!(value(&input, cx), "secre");
 }
 

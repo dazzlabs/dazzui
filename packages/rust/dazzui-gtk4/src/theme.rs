@@ -7,6 +7,11 @@ thread_local! { static DISPLAYS: RefCell<Vec<gtk::glib::WeakRef<gtk::gdk::Displa
 
 /// Install the embedded sheets once per display, on the GTK main thread.
 pub fn init(display: &gdk::Display) {
+    static ICONS: std::sync::Once = std::sync::Once::new();
+    ICONS.call_once(|| {
+        gtk::gio::resources_register_include!("icons.gresource")
+            .expect("The embedded Fluent icons are valid resources");
+    });
     DISPLAYS.with(|displays| {
         let mut displays = displays.borrow_mut();
         displays.retain(|d| d.upgrade().is_some());
@@ -25,6 +30,7 @@ pub fn init(display: &gdk::Display) {
                 gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
             );
         }
+        gtk::IconTheme::for_display(display).add_resource_path("/dev/dazzlabs/dazzui/icons");
         displays.push(display.downgrade());
     });
 }

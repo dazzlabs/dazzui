@@ -1,5 +1,5 @@
 import { createReadStream, existsSync, statSync } from 'node:fs'
-import { extname, join, normalize } from 'node:path'
+import { extname, join, normalize, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig, type Plugin } from 'vite'
 
@@ -13,7 +13,7 @@ import { defineConfig, type Plugin } from 'vite'
  * shows the fixtures only while no run exists.
  */
 const here = fileURLToPath(new URL('.', import.meta.url))
-const data = join(here, 'data')
+const data = resolve(process.env.DAZZUI_CONFORMANCE_DATA ?? join(here, 'data'))
 const fixtures = join(here, 'fixtures')
 
 const TYPES: Record<string, string> = {

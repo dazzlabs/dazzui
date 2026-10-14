@@ -255,6 +255,8 @@ public static class Mapping
                     Value = n.Number("value") ?? 0,
                     Label = n.String("label"),
                     ShowValue = n.Flag("showValue"),
+                    Minimum = n.Number("min") ?? 0,
+                    Maximum = n.Number("max") ?? 100,
                     Tint = n.Option("tint", WidgetTint.Primary),
                     Size = n.Option("size", ControlSize.Medium),
                 };
@@ -265,12 +267,16 @@ public static class Mapping
             {
                 var field = new NumberField
                 {
-                    Value = n.Number("defaultValue") ?? double.NaN,
                     Minimum = n.Number("min") ?? double.MinValue,
                     Maximum = n.Number("max") ?? double.MaxValue,
+                    Value = n.Number("defaultValue") ?? double.NaN,
                     SmallChange = n.Number("step") ?? 1,
                     Unit = n.String("unit"),
                     Size = n.Option("size", ControlSize.Medium),
+                    Tint = n.Option("tint", WidgetTint.Primary),
+                    Invalid = n.String("state") == "error",
+                    IsEnabled = !n.Flag("disabled"),
+                    PlaceholderText = n.String("placeholder") ?? "",
                 };
                 Name(field, n.String("aria-label"));
                 return field;
@@ -342,7 +348,7 @@ public static class Mapping
             },
             ["PreferenceRow"] = n =>
             {
-                var row = new PreferenceRow { Label = n.String("title") ?? "", Description = n.String("subtitle"), Control = n.Children.Count == 0 ? null : Kid(n) };
+                var row = new PreferenceRow { Label = n.String("title") ?? "", Description = n.String("subtitle"), Leading = n.Element("icon"), Tint = n.Option("tint", WidgetTint.Neutral), Control = n.Children.Count == 0 ? null : Kid(n) };
                 if (n.Action("onOpen") is Action open) row.Opened += (_, _) => open();
                 return row;
             },
@@ -378,6 +384,7 @@ public static class Mapping
                     Tint = n.Option("tint", WidgetTint.Primary),
                     Size = n.Option("size", ControlSize.Small),
                     Gradient = n.Flag("gradient"),
+                    IsIndeterminate = n.Number("value") is null,
                 };
                 Name(progress, n.String("aria-label"));
                 return progress;
@@ -435,9 +442,23 @@ public static class Mapping
                     PlaceholderText = n.String("placeholder") ?? "Choose…",
                     Size = n.Option("size", ControlSize.Medium),
                     IsEnabled = !n.Flag("disabled"),
+                    Invalid = n.String("state") == "error",
+                    Mono = n.Flag("mono"),
+                    Tint = n.Option("tint", WidgetTint.Primary),
                 };
-                select.SetOptions(n["options"].Items().Select(option => new SelectOption(option?["value"].Text() ?? "", option?["label"].Text() ?? "")));
-                select.Value = n.String("defaultValue");
+                select.SetOptions(n["options"].Items().SelectMany(entry =>
+                    entry?["options"] is JsonArray group
+                        ? group.Select(option => new SelectOption(option?["value"].Text() ?? "", option?["label"].Text() ?? "", entry?["label"].Text(), option?["disabled"]?.GetValue<bool>() ?? false))
+                        : [new SelectOption(entry?["value"].Text() ?? "", entry?["label"].Text() ?? "", Disabled: entry?["disabled"]?.GetValue<bool>() ?? false)]));
+                var changing = false;
+                var changed = n.Handler("onValueChange");
+                select.SelectionChanged += (_, _) => { if (!changing && select.Value is string value) changed?.Invoke(JsonValue.Create(value)); };
+                n.Live(select, () =>
+                {
+                    changing = true;
+                    select.Value = n.String("value") ?? n.String("defaultValue");
+                    changing = false;
+                });
                 Name(select, n.String("aria-label"));
                 return select;
             },
@@ -603,19 +624,40 @@ public static class Mapping
             },
             ["Table"] = n =>
             {
-                var table = new Table { Selectable = false };
-                var head = n.Children.FirstOrDefault(child => child.Element() == "TableHead");
-                var heads = head?["children"].Items().Select(cell => new Node(cell!, n.Context)).ToArray() ?? [];
-                for (var i = 0; i < heads.Length; i++)
-                    table.Columns.Add(new TableColumn($"c{i}", heads[i].Text, 1, Align(heads[i].String("align"))));
-                var index = 0;
-                foreach (var row in n.Children.Where(child => child.Element() == "TableRow"))
-                {
-                    var cells = row!["children"].Items().Select(cell => new Node(cell!, n.Context)).ToArray();
-                    table.Rows.Add(new TableRow($"r{index++}", cells.Select((cell, i) => (Key: $"c{i}", Value: Cell(cell)))
-                        .ToDictionary(pair => pair.Key, pair => pair.Value)));
-                }
+                var table = new Table { Tint = n.Option("tint", WidgetTint.Primary) };
+                foreach (var child in n.Kids()) table.Children.Add(child);
+                Name(table, n.String("aria-label"));
+                n.Live(table, () => table.Tint = n.Option("tint", WidgetTint.Primary));
                 return table;
+            },
+            ["TableHead"] = n =>
+            {
+                var head = new TableHead();
+                foreach (var child in n.Kids()) head.Children.Add(child);
+                Name(head, n.String("aria-label"));
+                return head;
+            },
+            ["TableRow"] = n =>
+            {
+                var row = new TableRow { Active = n.Flag("active"), Interactive = n.Flag("interactive") };
+                foreach (var child in n.Kids()) row.Children.Add(child);
+                row.Click += (_, _) => n.Press()();
+                Name(row, n.String("aria-label"));
+                n.Live(row, () => { row.Active = n.Flag("active"); row.Interactive = n.Flag("interactive"); });
+                return row;
+            },
+            ["TableCell"] = n =>
+            {
+                var words = n.Children.All(child => child.String() is not null || Nodes.IsLive(child));
+                var cell = new TableCell { Head = n.Flag("head"), Align = Align(n.String("align")), Content = words ? n.Text : Kid(n) };
+                Name(cell, n.String("aria-label"));
+                n.Live(cell, () =>
+                {
+                    cell.Head = n.Flag("head");
+                    cell.Align = Align(n.String("align"));
+                    if (words) cell.Content = n.Text;
+                });
+                return cell;
             },
             ["Tag"] = n =>
             {
@@ -652,6 +694,7 @@ public static class Mapping
                     Size = n.Option("size", ControlSize.Medium),
                     IsEnabled = !n.Flag("disabled"),
                     AcceptsReturn = n.Flag("multiline"),
+                    Rows = (int)(n.Number("rows") ?? 2),
                 };
                 Name(field, n.String("aria-label"));
                 return field;
@@ -802,7 +845,7 @@ public static class Mapping
     /// <summary>A slider's reading: after the track, in the code face, right-aligned in a column of its own.</summary>
     private static TextBlock Reading() => new()
     {
-        FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Cascadia Mono, Consolas"),
+        FontFamily = Theme.Default.CodeFont,
         FontSize = 11,
         TextAlignment = TextAlignment.Right,
         MinWidth = 40,
@@ -829,16 +872,6 @@ public static class Mapping
         "center" => TextAlignment.Center,
         _ => TextAlignment.Left,
     };
-
-    /// <summary>A table cell's content: its words, or the component it holds.</summary>
-    private static object? Cell(Node cell)
-    {
-        if (cell.Children.All(child => child.String() is not null)) return cell.Text;
-        var element = Kid(cell);
-        if (element is FrameworkElement framed)
-            framed.HorizontalAlignment = cell.String("align") == "end" ? HorizontalAlignment.Right : HorizontalAlignment.Left;
-        return element;
-    }
 
     private static FlyoutPlacementMode Side(string? side, FlyoutPlacementMode fallback) => side switch
     {
@@ -974,13 +1007,16 @@ public static class Mapping
             item?["meta"] is JsonNode meta && meta.Element() is null ? meta.Text() : null,
             Expanded: expanded.Contains(item?["id"].Text()),
             Disabled: item?["disabled"].Truthy() ?? false,
-            Icon: Nodes.GlyphOf(item?["icon"]) is string glyph ? Glyphs.All[glyph].Glyph : null,
-            MetaView: item?["meta"] is JsonNode view && view.Element() is not null ? () => Nodes.Build(view, n.Context)! : null);
-        var tree = new Tree { Size = n.Option("size", ControlSize.Medium) };
+            MetaView: item?["meta"] is JsonNode view && view.Element() is not null ? () => Nodes.Build(view, n.Context)! : null,
+            IconView: item?["icon"] is JsonNode icon ? () => Nodes.Build(icon, n.Context)! : null,
+            LabelView: item?["label"] is JsonNode label && label.Element() is not null ? () => Nodes.Build(label, n.Context)! : null);
+        var tree = new Tree { Size = n.Option("size", ControlSize.Medium), Tint = n.Option("tint", WidgetTint.Primary) };
         foreach (var item in n["items"].Items()) tree.Nodes.Add(Item(item));
         var changed = n.Handler("onSelectedChange");
         tree.Selected += (_, node) => changed?.Invoke(JsonValue.Create(node.Id));
-        n.Live(tree, () => tree.SelectedId = n.String("selected"));
+        var opened = n.Handler("onExpandedChange");
+        tree.ExpandedChanged += (_, ids) => opened?.Invoke(new JsonArray(ids.Select(id => (JsonNode?)JsonValue.Create(id)).ToArray()));
+        n.Live(tree, () => { tree.SelectedId = n.String("selected"); if (n.Has("expanded")) tree.ExpandedIds = n["expanded"].Strings(); });
         Name(tree, n.String("aria-label"));
         return tree;
     }

@@ -79,7 +79,8 @@ impl Radio {
 
 impl ParentElement for Radio {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -163,7 +164,7 @@ impl RadioGroupOption {
     pub fn new(value: impl Into<SharedString>, label: impl IntoElement) -> Self {
         RadioGroupOption {
             value: value.into(),
-            label: label.into_any_element(),
+            label: crate::foundation::text_child(label),
             disabled: false,
         }
     }
@@ -300,7 +301,7 @@ impl RenderOnce for RadioGroup {
                     .disabled(!enabled[index])
                     .roving(handles[index].clone(), tab_stop == Some(index))
                     .on_select(move |window, cx| select(value.clone(), window, cx))
-                    .child(option.label)
+                    .child(crate::foundation::text_child(option.label))
             })
             .collect::<Vec<_>>();
 

@@ -29,3 +29,40 @@ data/           a real run — gitignored
 
 The window is the React example's, put to a different use: the same three
 columns, drawn from the kit alone, with `shell.css` only placing things.
+
+## Incremental collection
+
+```sh
+pnpm conformance --incremental --platforms react,winui --themes studio-light --scenes table/preview
+```
+
+`--incremental` updates only the requested platforms, themes and scenes.
+`--platforms` selects collectors; `--scenes` accepts story IDs (`table`) or
+exact scene IDs (`table/preview`, `button/0`). Both accept comma-separated
+lists. Omit `--incremental` for a replacement run. GTK4 is available explicitly
+with `--platforms react,gtk4`; its mapping gaps remain outside the default run.
+
+A collector writes into isolation. If any selected collector fails or cannot
+produce readings, the previous run stays published. A successful update
+replaces the whole selected scene, including specimens that stopped drawing,
+while retaining other themes, scenes and platforms. Screenshot URLs follow
+their contents, so unchanged images are reused and new images cannot be
+confused with browser-cached old captures. `--no-images` clears outdated
+screenshots in the updated scope. Each scene records its own collection time
+and commit; retained scenes keep their original provenance.
+
+The open viewer notices a published update, reloads changed platforms and
+recomputes the differences without losing the selected page or lens. Hover
+a scene caption to see when that scene was collected. Verdicts are still
+derived from readings, never persisted. Expectations and tolerances are not
+changed by collection.
+
+Incremental merging requires the same scale and shared font. If the specimen
+contract changes, include every affected scene and retained platform, or make
+a full run. Concurrent collections to the same output are rejected to avoid
+lost updates. `--out <directory>` chooses a separate run; set
+`DAZZUI_CONFORMANCE_DATA=<directory>` when starting the viewer to inspect it.
+
+`pnpm --filter @dazzlabs/dazzui-conformance test:collect` exercises real React
+screenshots, scoped updates and capture-failure recovery. It uses the example's
+Playwright browser; `DAZZUI_CHROMIUM_EXECUTABLE` can select an installed Chrome.

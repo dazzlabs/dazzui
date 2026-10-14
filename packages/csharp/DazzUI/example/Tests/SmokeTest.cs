@@ -19,14 +19,31 @@ internal static class SmokeTest
 {
     public static async Task RunAsync(Window window, Shell shell)
     {
+        using var display = new DisplayWakeLock();
         var output = Environment.GetEnvironmentVariable("DAZZUI_SMOKE_OUTPUT")
             ?? Path.Combine(AppContext.BaseDirectory, "smoke-results");
         Directory.CreateDirectory(output);
+        var finishing = false;
+        window.Closed += (_, _) =>
+        {
+            if (finishing) return;
+            File.WriteAllText(Path.Combine(output, "result.txt"), "FAIL: the test window closed before verification finished.");
+            Environment.Exit(1);
+        };
         try
         {
             await File.WriteAllTextAsync(Path.Combine(output, "stories.json"), System.Text.Json.JsonSerializer.Serialize(
                 Stories.All.Select(story => new { id = story.Id, name = story.Name, examples = story.Examples.Select(example => example.Title) })));
             // DAZZUI_SMOKE_PAGES narrows the run to a few pages, by id.
+            if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "table")
+            {
+                await TableTests.RunAsync(shell, output);
+                await File.WriteAllTextAsync(Path.Combine(output, "result.txt"), "PASS: table layout, native automation, controlled interaction, theme preservation and dynamic rows.\n");
+                finishing = true;
+                window.Close();
+                Environment.Exit(0);
+                return;
+            }
             var pageIds = Environment.GetEnvironmentVariable("DAZZUI_SMOKE_PAGES")?.Split(',', StringSplitOptions.RemoveEmptyEntries);
             var pages = new string?[] { null }.Concat(Stories.All.Select(story => story.Id))
                 .Where(page => pageIds is null || pageIds.Contains(page ?? "overview")).ToArray();
@@ -66,7 +83,7 @@ internal static class SmokeTest
                     await Settle(shell);
                     var settled = clock.ElapsedMilliseconds;
                     var bitmap = new RenderTargetBitmap();
-                    await bitmap.RenderAsync(shell);
+                    await bitmap.RenderAsync(shell).AsTask().WaitAsync(TimeSpan.FromSeconds(30));
                     File.AppendAllText(Path.Combine(output, "timings.txt"), $"{choice.Id} {page ?? "overview"} open={opened} settle={settled - opened} render={clock.ElapsedMilliseconds - settled} gc={GC.CollectionCount(2)}\n");
                     if (bitmap.PixelWidth == 0 || bitmap.PixelHeight == 0)
                         throw new InvalidOperationException($"Empty render: {choice.Id}, {page}");
@@ -86,12 +103,14 @@ internal static class SmokeTest
             await CornerTests.RunAsync(shell, output);
             await File.WriteAllTextAsync(Path.Combine(output, "result.txt"),
                 $"PASS: {Stories.All.Count} stories; every page in {drawn.Length} drawn themes and the overview in {imported.Length} imported ones, {renders} renders; button heights; live scene state; component and popup interactions (behavior.txt).\n");
+            finishing = true;
             window.Close();
             Environment.Exit(0);
         }
         catch (Exception error)
         {
             await File.WriteAllTextAsync(Path.Combine(output, "result.txt"), error.ToString());
+            finishing = true;
             window.Close();
             Environment.Exit(1);
         }
@@ -148,7 +167,7 @@ internal static class SmokeTest
     internal static async Task SaveAsync(UIElement element, string directory, string name)
     {
         var bitmap = new RenderTargetBitmap();
-        await bitmap.RenderAsync(element);
+        await bitmap.RenderAsync(element).AsTask().WaitAsync(TimeSpan.FromSeconds(30));
         var pixels = (await bitmap.GetPixelsAsync()).ToArray();
         var folder = await StorageFolder.GetFolderFromPathAsync(Path.GetFullPath(directory));
         var file = await folder.CreateFileAsync(name, CreationCollisionOption.ReplaceExisting);

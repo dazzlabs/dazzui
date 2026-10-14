@@ -31,7 +31,8 @@ impl Code {
 
 impl ParentElement for Code {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -95,7 +96,7 @@ impl CodeBlock {
 
     /// What the block is — a path, a filename, a shell's name.
     pub fn title(mut self, title: impl IntoElement) -> Self {
-        self.title = Some(title.into_any_element());
+        self.title = Some(crate::foundation::text_child(title));
         self
     }
 
@@ -171,7 +172,7 @@ impl RenderOnce for CodeBlock {
                             .font_family(Face::Mono.family())
                             .text_size(px(code_size))
                             .line_height(px(t.caption_small.line_height))
-                            .child(title),
+                            .child(crate::foundation::text_child(title)),
                     )
                 })
                 .when_some(self.language, |this, language| {

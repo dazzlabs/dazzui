@@ -191,9 +191,9 @@ class _NumberFieldState extends State<NumberField> {
           // rather than text, so it sits closer to the edge than a value.
           padding: EdgeInsetsDirectional.fromSTEB(
             vars.spacing3,
-            0,
+            metrics.paddingBlock,
             vars.spacing1,
-            0,
+            metrics.paddingBlock,
           ),
           child: Row(
             spacing: vars.spacing1,

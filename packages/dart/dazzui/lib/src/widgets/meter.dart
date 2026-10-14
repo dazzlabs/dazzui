@@ -29,11 +29,12 @@ class Meter extends StatelessWidget {
     super.key,
     required this.value,
     this.min = 0,
-    this.max = 1,
+    this.max = 100,
     this.size = WidgetSize.medium,
     this.tint = MeterTint.primary,
     this.label,
     this.valueLabel,
+    this.showValue = false,
     this.semanticsLabel,
   });
 
@@ -55,6 +56,10 @@ class Meter extends StatelessWidget {
   /// is the meter's whole point, so most readings want one.
   final String? valueLabel;
 
+  /// Print the reading as a percentage of [min]–[max]. [valueLabel] overrides
+  /// its formatting when supplied.
+  final bool showValue;
+
   final String? semanticsLabel;
 
   double get _fraction {
@@ -65,6 +70,8 @@ class Meter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeVariables vars = Theme.of(context).vars;
+    final String? reading =
+        valueLabel ?? (showValue ? '${(_fraction * 100).round()}%' : null);
 
     final double thickness = switch (size.namedSize) {
       NamedSize.large => vars.spacing2,
@@ -106,13 +113,13 @@ class Meter extends StatelessWidget {
 
     return Semantics(
       label: semanticsLabel,
-      value: valueLabel,
+      value: reading,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         spacing: vars.spacing2,
         children: [
-          if (label != null || valueLabel != null)
+          if (label != null || reading != null)
             Row(
               crossAxisAlignment: CrossAxisAlignment.baseline,
               textBaseline: TextBaseline.alphabetic,
@@ -129,9 +136,9 @@ class Meter extends StatelessWidget {
                       child: label!,
                     ),
                   ),
-                if (valueLabel != null)
+                if (reading != null)
                   Text(
-                    valueLabel!,
+                    reading,
                     // A reading rather than a label: the mono face, so a
                     // column of meters keeps its numbers on one edge. It is
                     // the one place a widget reaches a `base.*` primitive,

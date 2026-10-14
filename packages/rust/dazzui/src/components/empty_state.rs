@@ -19,7 +19,7 @@ pub struct EmptyState {
 impl EmptyState {
     pub fn new(title: impl IntoElement) -> Self {
         EmptyState {
-            title: title.into_any_element(),
+            title: crate::foundation::text_child(title),
             action: None,
         }
     }
@@ -48,7 +48,7 @@ impl RenderOnce for EmptyState {
                     .text_center()
                     .type_style(t.body_medium)
                     .text_color(t.color_content_subtle.hsla())
-                    .child(self.title),
+                    .child(crate::foundation::text_child(self.title)),
             )
             .when_some(self.action, |this, action| {
                 this.child(

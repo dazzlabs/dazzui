@@ -35,6 +35,8 @@ public sealed class IconButton : Button
     public string Label { get; set; } = "Action";
     public IconButton()
     {
+        Variant = ControlVariant.Plain;
+        Tint = WidgetTint.Neutral;
         Size = ControlSize.Tiny;
         Loaded += (_, _) =>
         {
@@ -91,6 +93,8 @@ public sealed class Link : HyperlinkButton
     private void Apply()
     {
         Theme.Typography(this, "bodyMedium"); Foreground = Theme.Recipe(ControlVariant.Plain, Tint, "content"); Padding = new Thickness(0); Skin.Focus(this, Theme);
+        BorderThickness = new Thickness(0);
+        Skin.SetCorner(this, Theme.Number("radius.tiny"));
         if (Content is string text) Content = new TextBlock { Text = text };
         if (Content is TextBlock words)
             words.TextDecorations = Underline == LinkUnderline.Always || Underline == LinkUnderline.Hover && hovered ? Windows.UI.Text.TextDecorations.Underline : Windows.UI.Text.TextDecorations.None;

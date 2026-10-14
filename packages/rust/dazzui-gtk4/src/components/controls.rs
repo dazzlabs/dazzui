@@ -129,6 +129,7 @@ pub fn text_area() -> gtk::TextView {
 }
 pub fn search_field(placeholder: &str, size: Size) -> gtk::SearchEntry {
     let w = styled(gtk::SearchEntry::new(), "dz-field", Tint::Primary, size);
+    w.add_css_class("dz-search-field");
     w.set_placeholder_text(Some(placeholder));
     w
 }
@@ -147,6 +148,131 @@ pub fn select(labels: &[&str], size: Size) -> gtk::DropDown {
         Tint::Primary,
         size,
     )
+}
+#[derive(Clone, Debug)]
+pub struct SelectOption {
+    pub value: String,
+    pub label: String,
+    pub disabled: bool,
+}
+#[derive(Clone, Debug)]
+pub enum SelectItem {
+    Option(SelectOption),
+    Group {
+        label: String,
+        options: Vec<SelectOption>,
+    },
+}
+/// A native selector with non-selectable group headings and disabled options.
+/// Index zero represents no value; headings also occupy native model indices.
+/// Use [`select_values`] to map a selected position to its domain value.
+pub fn select_options(items: &[SelectItem], placeholder: &str, size: Size) -> gtk::DropDown {
+    use std::{cell::Cell, rc::Rc};
+    // GTK's selection auto-selects its first row. A hidden, non-activatable
+    // empty row gives that position the same meaning as React's null value.
+    let mut rows = vec![(placeholder.to_owned(), false, false)];
+    for item in items {
+        match item {
+            SelectItem::Option(option) => rows.push((option.label.clone(), false, option.disabled)),
+            SelectItem::Group { label, options } => {
+                rows.push((label.clone(), true, true));
+                rows.extend(
+                    options
+                        .iter()
+                        .map(|option| (option.label.clone(), false, option.disabled)),
+                );
+            }
+        }
+    }
+    let rows = Rc::new(rows);
+    let labels: Vec<_> = rows.iter().map(|row| row.0.as_str()).collect();
+    let w = select(&labels, size);
+    let factory = |popup: bool| {
+        let factory = gtk::SignalListItemFactory::new();
+        let setup_placeholder = placeholder.to_owned();
+        factory.connect_setup(move |_, item| {
+            let item = item.downcast_ref::<gtk::ListItem>().unwrap();
+            let label = gtk::Label::new(Some(&setup_placeholder));
+            label.set_xalign(0.);
+            item.set_child(Some(&label));
+        });
+        let rows = rows.clone();
+        let placeholder = placeholder.to_owned();
+        factory.connect_bind(move |_, item| {
+            let item = item.downcast_ref::<gtk::ListItem>().unwrap();
+            let label = item.child().unwrap().downcast::<gtk::Label>().unwrap();
+            let row = rows.get(item.position() as usize);
+            let empty = item.position() == 0;
+            label.set_label(row.map(|row| row.0.as_str()).unwrap_or(&placeholder));
+            let heading = popup && row.is_some_and(|row| row.1);
+            if heading {
+                label.add_css_class("dz-select-group");
+            } else {
+                label.remove_css_class("dz-select-group");
+            }
+            if !popup && empty {
+                label.add_css_class("dz-select-placeholder");
+            } else {
+                label.remove_css_class("dz-select-placeholder");
+            }
+            if popup && let Some(parent) = label.parent() {
+                parent.set_visible(!empty);
+            }
+            let enabled = !row.is_some_and(|row| row.2);
+            item.set_selectable(enabled && !empty);
+            item.set_activatable(enabled && !empty);
+            label.set_sensitive(enabled || heading);
+        });
+        factory
+    };
+    w.set_factory(Some(&factory(false)));
+    w.set_list_factory(Some(&factory(true)));
+    w.set_selected(0);
+    w.update_property(&[gtk::accessible::Property::ValueText("")]);
+    let previous = Cell::new(0);
+    let correcting = Cell::new(false);
+    w.connect_selected_notify(move |w| {
+        if correcting.get() {
+            return;
+        }
+        let selected = w.selected();
+        if rows.get(selected as usize).is_some_and(|row| row.2) {
+            let forward =
+                previous.get() == gtk::INVALID_LIST_POSITION || selected >= previous.get();
+            let positions: Box<dyn Iterator<Item = usize>> = if forward {
+                Box::new(selected as usize..rows.len())
+            } else {
+                Box::new((0..=selected as usize).rev())
+            };
+            let next = positions
+                .filter(|&index| index > 0 && !rows[index].2)
+                .map(|index| index as u32)
+                .next()
+                .unwrap_or(previous.get());
+            correcting.set(true);
+            w.set_selected(next);
+            correcting.set(false);
+        }
+        previous.set(w.selected());
+        if w.selected() == 0 {
+            w.update_property(&[gtk::accessible::Property::ValueText("")]);
+        }
+    });
+    w
+}
+/// The domain value at each native position; empty and heading rows have none.
+pub fn select_values(items: &[SelectItem]) -> Vec<Option<String>> {
+    let mut values = vec![None];
+    for item in items {
+        match item {
+            SelectItem::Option(option) => values.push(Some(option.value.clone())),
+            SelectItem::Group { options, .. } => {
+                values.push(None);
+                values.extend(options.iter().map(|option| Some(option.value.clone())));
+            }
+        }
+    }
+    values
 }
 /// A searchable selector. Text stays an option from the model; free-form
 /// autocomplete uses a host-owned Entry and Popover.

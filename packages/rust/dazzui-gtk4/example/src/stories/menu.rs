@@ -69,12 +69,7 @@ pub const STORY: &str = r#"{
       "$at": 0
     },
     "gaps": [
-      "menu/preview preview: <Menu> is not drawn by GTK4",
-      "menu/preview preview: <Icon> is not drawn by GTK4",
-      "menu/preview preview: <KeyCap> is not drawn by GTK4",
-      "menu/preview: Fluent glyph Edit20Regular is not yet mapped",
-      "menu/preview: Fluent glyph Copy20Regular is not yet mapped",
-      "menu/preview: Fluent glyph Delete20Regular is not yet mapped"
+      "menu/preview preview: <Menu> is not drawn by GTK4"
     ]
   },
   "examples": [
@@ -144,12 +139,7 @@ pub const STORY: &str = r#"{
         "$at": 0
       },
       "gaps": [
-        "menu/0 preview: <Menu> is not drawn by GTK4",
-        "menu/0 preview: <Icon> is not drawn by GTK4",
-        "menu/0 preview: <KeyCap> is not drawn by GTK4",
-        "menu/0: Fluent glyph Edit20Regular is not yet mapped",
-        "menu/0: Fluent glyph Copy20Regular is not yet mapped",
-        "menu/0: Fluent glyph Delete20Regular is not yet mapped"
+        "menu/0 preview: <Menu> is not drawn by GTK4"
       ]
     },
     {
@@ -231,12 +221,7 @@ pub const STORY: &str = r#"{
         "$at": 0
       },
       "gaps": [
-        "menu/1 preview: <ContextMenu> is not drawn by GTK4",
-        "menu/1 preview: <Icon> is not drawn by GTK4",
-        "menu/1 preview: <KeyCap> is not drawn by GTK4",
-        "menu/1: Fluent glyph Edit20Regular is not yet mapped",
-        "menu/1: Fluent glyph Copy20Regular is not yet mapped",
-        "menu/1: Fluent glyph Delete20Regular is not yet mapped"
+        "menu/1 preview: <ContextMenu> is not drawn by GTK4"
       ]
     },
     {
@@ -327,12 +312,7 @@ pub const STORY: &str = r#"{
         "$at": 0
       },
       "gaps": [
-        "menu/2 preview: <Menubar> is not drawn by GTK4",
-        "menu/2 preview: <Icon> is not drawn by GTK4",
-        "menu/2 preview: <KeyCap> is not drawn by GTK4",
-        "menu/2: Fluent glyph Edit20Regular is not yet mapped",
-        "menu/2: Fluent glyph Copy20Regular is not yet mapped",
-        "menu/2: Fluent glyph Delete20Regular is not yet mapped"
+        "menu/2 preview: <Menubar> is not drawn by GTK4"
       ]
     }
   ]

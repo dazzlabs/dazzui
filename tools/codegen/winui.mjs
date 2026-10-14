@@ -1,5 +1,5 @@
 import { SUPPORT as FLUTTER_SUPPORT } from './flutter.mjs'
-import { gaps } from './support.mjs'
+import { CHILDREN, gaps } from './support.mjs'
 
 /*
  * The WinUI 3 example's generated sources: the stories as data, the glyphs
@@ -11,6 +11,12 @@ import { gaps } from './support.mjs'
  * WinUI's to narrow or widen.
  */
 export const SUPPORT = structuredClone(FLUTTER_SUPPORT)
+SUPPORT.PreferenceGroup = ['title', 'description', CHILDREN]
+SUPPORT.PreferenceSection = ['label', 'footer', CHILDREN]
+SUPPORT.Table = ['tint', 'aria-label', CHILDREN]
+SUPPORT.TableHead = ['aria-label', CHILDREN]
+SUPPORT.TableRow = ['active', 'interactive', 'onClick', 'aria-label', CHILDREN]
+SUPPORT.TableCell = ['head', 'align', 'aria-label', CHILDREN]
 
 /** Every component and prop a story sets that WinUI does not draw. */
 export const unsupported = stories => gaps(stories, SUPPORT, 'WinUI')

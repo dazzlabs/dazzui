@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Automation.Peers;
@@ -31,13 +32,100 @@ internal static class BehaviorTests
     {
         await Task.Delay(80);
         shell.UpdateLayout();
-        await new RenderTargetBitmap().RenderAsync(shell);
+        try { await new RenderTargetBitmap().RenderAsync(shell).AsTask().WaitAsync(TimeSpan.FromSeconds(30)); }
+        catch (TimeoutException error)
+        {
+            throw new TimeoutException($"Native snapshot timed out: host visible={shell.XamlRoot?.IsHostVisible}, fixture={shell.CurrentPage?.GetType().Name}.", error);
+        }
     }
     public static async Task RunAsync(Shell shell, string output)
     {
         File.WriteAllText(Path.Combine(output, "progress.txt"), "Interactive controls, inherited themes and popup behavior");
         // Let initial navigation selection finish before installing fixtures.
         await Settle(shell);
+        await TableTests.RunAsync(shell, output);
+        Check(new UI.Button().Variant == UI.ControlVariant.Recessed, "Button's public default must match React's recessed variant.");
+        var quietIcon = new UI.IconButton();
+        Check(quietIcon.Variant == UI.ControlVariant.Plain && quietIcon.Tint == UI.WidgetTint.Neutral && quietIcon.Size == UI.ControlSize.Tiny, "IconButton's public defaults must match React's quiet toolbar control.");
+        var preference = new UI.PreferenceRow { Label = "Open details", Description = "Native keyboard and automation activation", Width = 320 };
+        var preferenceOpened = 0;
+        EventHandler onOpen = (_, _) => preferenceOpened++;
+        shell.ShowFixture(preference); await Settle(shell);
+        Check(!Walk(preference).OfType<Microsoft.UI.Xaml.Controls.Button>().Any(), "An inert preference row became an action.");
+        preference.Opened += onOpen; await Settle(shell);
+        var preferenceAction = Walk(preference).OfType<Microsoft.UI.Xaml.Controls.Button>().Single();
+        Check(preferenceAction.IsTabStop, "An interactive preference row is missing from keyboard navigation.");
+        Pattern<IInvokeProvider>(preferenceAction, PatternInterface.Invoke).Invoke(); await Settle(shell);
+        Check(preferenceOpened == 1, "Native preference invocation did not report its action once.");
+        preference.Opened -= onOpen; await Settle(shell);
+        Check(!Walk(preference).OfType<Microsoft.UI.Xaml.Controls.Button>().Any(), "Removing the action left a focusable preference button.");
+        var annotation = new UI.Tag { Text = "Before" };
+        shell.ShowFixture(annotation); await Settle(shell);
+        annotation.Text = "After"; await Settle(shell);
+        Check(annotation.Text == "After" && Walk(annotation).OfType<TextBlock>().Any(label => label.Text == "After" && Math.Abs(label.LineHeight - annotation.Selection.FontSize * 1.4) < .001),
+            $"Updating tag text lost its label or declared leading: text={annotation.Text}, size={annotation.Selection.FontSize}, rendered={string.Join(", ", Walk(annotation).OfType<TextBlock>().Select(label => $"{label.Text}:{label.LineHeight}"))}.");
+        var meter = new UI.Meter { Minimum = 20, Maximum = 60, Value = 50, ShowValue = true, Label = "Usage", Width = 320 };
+        shell.ShowFixture(meter); await Settle(shell);
+        var meterRange = Pattern<IRangeValueProvider>(meter, PatternInterface.RangeValue);
+        Check(meterRange.Minimum == 20 && meterRange.Maximum == 60 && meterRange.Value == 50, "Meter automation lost its custom range.");
+        Check(Walk(meter).OfType<TextBlock>().Any(label => label.Text == "75%" && label.FontFamily.Source == meter.Theme.CodeFont.Source), "Meter did not format its range in the shared code face.");
+        var boundedNumber = new UI.NumberField { Minimum = 10, Maximum = 12, Value = 12, Width = 160 };
+        shell.ShowFixture(boundedNumber); await Settle(shell);
+        var steps = new[] { "Increase", "Decrease" }.Select(name => Walk(boundedNumber).OfType<Microsoft.UI.Xaml.Controls.Button>().Single(button => Microsoft.UI.Xaml.Automation.AutomationProperties.GetName(button) == name)).ToArray();
+        Check(!steps[0].IsEnabled && steps[1].IsEnabled, "Number field did not disable the increment at its maximum.");
+        boundedNumber.Value = 10; await Settle(shell);
+        Check(steps[0].IsEnabled && !steps[1].IsEnabled, "Number field did not update its boundary actions after the value changed.");
+        Pattern<IInvokeProvider>(steps[0], PatternInterface.Invoke).Invoke(); await Settle(shell);
+        Check(boundedNumber.Value == 11, "Native stepper activation did not change the numeric value.");
+        var choiceState = new SceneState(new JsonObject { ["person"] = "grace" });
+        var choice = (UI.Select)Nodes.Build(JsonNode.Parse("""
+            {"$el":"Select","props":{"value":{"$state":"person"},"onValueChange":{"$do":[{"set":"person","to":{"$arg":0}}]},"options":[{"value":"none","label":"Unassigned"},{"label":"People","options":[{"value":"ada","label":"Ada"},{"value":"grace","label":"Grace","disabled":true}]}]}}
+            """), new Context(choiceState))!;
+        shell.ShowFixture(choice); await Settle(shell);
+        Check(choice.Value == "grace" && choice.Items.Count == 4 && choice.Items.OfType<ComboBoxItem>().Count(item => !item.IsEnabled) == 2, "Select lost its mixed groups, disabled option or initial controlled value.");
+        choice.Value = "ada"; await Settle(shell);
+        Check(choiceState.Read("person")!.GetValue<string>() == "ada", "Selecting an option did not update the controlled scene.");
+        choiceState.Write("person", JsonValue.Create("none")); await Settle(shell);
+        Check(choice.Value == "none", "An external controlled value did not reach the existing native selector.");
+        choice.Mono = true; choice.Invalid = true; await Settle(shell);
+        Check(choice.FontFamily.Source == choice.Theme.CodeFont.Source && ((SolidColorBrush)choice.BorderBrush).Color == choice.Theme.Color("color.danger.600"), "Select did not apply live typography and error changes.");
+        var tree = new UI.Tree { Width = 240 };
+        tree.Nodes.Add(new UI.TreeNode("empty", "Empty folder", Children: [],
+            IconView: () => new Border { Width = 16, Height = 16 },
+            LabelView: () => new UI.Badge { Content = "Rich label" },
+            MetaView: () => new UI.Badge { Content = "M" }));
+        tree.Nodes.Add(new UI.TreeNode("leaf", "Leaf"));
+        shell.ShowFixture(tree); await Settle(shell);
+        Check(Walk(tree).OfType<UI.Badge>().Count() == 2, "Tree lost a rich label or metadata slot.");
+        Check(Walk(tree).OfType<UI.Icon>().Count() == 1, "An empty branch must retain its twisty.");
+        tree.SelectedId = "leaf"; await Settle(shell);
+        Check(Walk(tree).OfType<UI.Badge>().Count() == 2, "Tree slots were lost after selection rebuilt the rows.");
+        tree.Nodes.Add(new UI.TreeNode("parent", "Parent", Children: [new UI.TreeNode("child", "Child")], Expanded: false));
+        tree.ExpandedIds = ["parent"]; await Settle(shell);
+        Check(Walk(tree).OfType<TextBlock>().Any(label => label.Text == "Child"), "Controlled tree expansion did not open the branch.");
+        tree.ExpandedIds = []; await Settle(shell);
+        Check(!Walk(tree).OfType<TextBlock>().Any(label => label.Text == "Child"), "Controlled tree expansion did not close the branch.");
+        foreach (var themeName in new[] { "studio-light", "bright-light", "bright-dark", "graphite-light", "studio-dark" })
+        {
+            tree.Theme = new UI.Theme(themeName);
+            foreach (var size in new[] { UI.ControlSize.Small, UI.ControlSize.Medium })
+            {
+                tree.Size = size;
+                foreach (var width in new[] { 240d, 16d, 240d })
+                {
+                    tree.Width = width; await Settle(shell);
+                    foreach (var row in ((StackPanel)tree.Content).Children.OfType<Grid>())
+                    {
+                        var expected = new CornerRadius(Math.Min(tree.Theme.Number("radius.small"), Math.Min(row.ActualWidth, row.ActualHeight) / 2));
+                        Check(row.CornerRadius == expected,
+                            $"{themeName}: {size} tree row at width {width} must have circular corners ({expected}), got {row.CornerRadius}.");
+                    }
+                    Check(tree.SelectedId == "leaf" && !Walk(tree).OfType<TextBlock>().Any(label => label.Text == "Child"),
+                        "Tree theme and size changes lost selection or controlled expansion.");
+                }
+                if (themeName.StartsWith("bright-")) await SmokeTest.SaveAsync(tree, output, $"{themeName}-tree-{size}.png");
+            }
+        }
         var buttonSamples = new StackPanel { Spacing = 16, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
         foreach (var size in Enum.GetValues<UI.ControlSize>())
         {
@@ -65,6 +153,8 @@ internal static class BehaviorTests
             {
                 input.Size = size; input.Width = 240; input.PlaceholderText = "Placeholder";
                 shell.ShowFixture(input); await Settle(shell);
+                if (input is not UI.SearchField)
+                    Check(input.Padding.Left == input.Theme.Number("spacing.3") && input.Padding.Right == input.Theme.Number("spacing.3"), $"{input.GetType().Name} {size}: field inherited a button inset.");
                 Check(input.IsLoaded && ReferenceEquals(shell.CurrentPage, input), "Input fixture was replaced before layout checks.");
                 foreach (var value in new[] { "", "Ag 文本" })
                 {

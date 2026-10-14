@@ -42,7 +42,8 @@ impl Default for Form {
 
 impl ParentElement for Form {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -97,7 +98,8 @@ impl Default for Fieldset {
 
 impl ParentElement for Fieldset {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 

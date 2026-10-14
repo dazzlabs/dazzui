@@ -141,9 +141,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "callout/1 preview: <Callout action> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

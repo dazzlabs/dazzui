@@ -94,9 +94,7 @@ pub const STORY: &str = r#"{
         ],
         "$at": 0
       },
-      "gaps": [
-        "spinner/1 preview: <Spinner onAccent> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

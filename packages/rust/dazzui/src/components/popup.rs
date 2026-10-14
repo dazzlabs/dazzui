@@ -770,7 +770,7 @@ impl RenderOnce for PopupRow {
                     .min_w_0()
                     .overflow_hidden()
                     .text_ellipsis()
-                    .child(self.label),
+                    .child(crate::foundation::text_child(self.label)),
             )
             .children(shortcut);
         if !self.disabled {
@@ -797,7 +797,7 @@ pub fn group_label(t: &ThemeTokens, label: impl IntoElement) -> Div {
         .text_size(px(t.caption_small.size))
         .font_weight(t.label_small.font_weight())
         .line_height(px(t.caption_small.size))
-        .child(label)
+        .child(crate::foundation::text_child(label))
 }
 
 /// The height of one row: its label set solid, padded by `menu.item-padding`.

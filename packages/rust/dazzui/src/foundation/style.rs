@@ -40,6 +40,17 @@ pub fn baseline(face: Face, size: f32, line_height: f32, window: &gpui::Window) 
 
 /// Styling a box from tokens rather than from numbers.
 pub trait StyledExt: Styled + Sized {
+    /// OpenType's equal-advance figures, matching CSS `tabular-nums`.
+    fn tabular_nums(mut self) -> Self {
+        self.text_style()
+            .get_or_insert_with(Default::default)
+            .font_features = Some(gpui::FontFeatures(std::sync::Arc::new(vec![(
+            "tnum".into(),
+            1,
+        )])));
+        self
+    }
+
     /// A typography token: face, size, leading and weight together.
     fn type_style(self, style: TypeStyle) -> Self {
         self.font_family(style.face.family())

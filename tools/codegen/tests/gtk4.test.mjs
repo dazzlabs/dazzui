@@ -8,12 +8,12 @@ import {
   themesRust,
 } from '../gtk4.mjs'
 
-test('reports unsupported props, live scenes and ranges instead of dropping them', () => {
+test('reports unsupported props and ranges instead of dropping them', () => {
   assert.match(
     sceneGaps('button/0', {
-      content: { $el: 'Button', props: { shortcut: 'x' } },
+      content: { $el: 'Button', props: { unsupportedProp: 'x' } },
     })[0],
-    /shortcut/
+    /unsupportedProp/
   )
   assert.match(
     sceneGaps('slider/0', {
@@ -21,12 +21,18 @@ test('reports unsupported props, live scenes and ranges instead of dropping them
     }).join('\n'),
     /range sliders/
   )
-  assert.match(
+  assert.deepEqual(
     sceneGaps('switch/0', {
       state: { s0: true },
-      content: { $el: 'Switch' },
-    }).join('\n'),
-    /live story/
+      content: {
+        $el: 'Switch',
+        props: {
+          checked: { $state: 's0' },
+          onCheckedChange: { $do: [{ set: 's0', to: { $arg: 0 } }] },
+        },
+      },
+    }),
+    []
   )
 })
 
@@ -42,6 +48,31 @@ test('keeps scene ids and specimen addresses from shared codegen', () => {
   assert.equal(result.preview.id, 'button/preview')
   assert.equal(result.preview.content.$at, 7)
   assert.deepEqual(result.preview.gaps, [])
+})
+
+test('accepts grouped selectors and keeps rich label gaps explicit', () => {
+  const props = {
+    options: [{ label: 'People', options: [{ value: 'ada', label: 'Ada' }] }],
+    placeholder: 'Choose a person',
+  }
+  assert.deepEqual(
+    sceneGaps('select/0', { content: { $el: 'Select', props } }),
+    []
+  )
+  assert.match(
+    sceneGaps('select/1', {
+      content: {
+        $el: 'Select',
+        props: {
+          ...props,
+          options: [
+            { value: 'ada', label: { $el: 'Badge', children: ['Ada'] } },
+          ],
+        },
+      },
+    }).join('\n'),
+    /rich select option labels/
+  )
 })
 
 test('generates one Rust module per story, a registry and React family groups', () => {

@@ -7,6 +7,28 @@ use std::{
     time::{Duration, Instant},
 };
 
+mod paint;
+mod text;
+
+pub use text::first_text;
+
+/// The reference's 40rem stage, independent of the native window allocation.
+pub fn scene_frame(content: &impl IsA<gtk::Widget>) -> (gtk::Fixed, gtk::Box) {
+    let content = content.as_ref();
+    let frame = box_(gtk::Orientation::Vertical, "0");
+    frame.add_css_class("dz-gallery");
+    frame.set_size_request(640, -1);
+    content.set_halign(if content.hexpands() {
+        gtk::Align::Fill
+    } else {
+        gtk::Align::Center
+    });
+    frame.append(content);
+    let fixed = gtk::Fixed::new();
+    fixed.put(&frame, 0., 0.);
+    (fixed, frame)
+}
+
 pub fn settle() {
     let until = Instant::now() + Duration::from_millis(50);
     while Instant::now() < until {
@@ -105,27 +127,32 @@ pub fn run() -> Result<(), Box<dyn Error>> {
             std::fs::create_dir_all(&image_dir)?;
         }
         for story in stories::all() {
-            if let Some(filter) = &story_filter
-                && !filter.split(',').any(|s| s == story.id)
-            {
-                continue;
-            }
             for scene in story.scenes() {
                 let id = scene.id.as_str();
+                if let Some(filter) = &story_filter
+                    && !filter
+                        .split(',')
+                        .any(|selected| id == selected || id.starts_with(&format!("{selected}/")))
+                {
+                    continue;
+                }
                 if !scene.is_supported() {
                     gaps.insert(id.into(), json!(scene.gaps));
                     continue;
                 }
                 let mut specimens = vec![];
-                let content = scene::render(&scene.content, &mut specimens)?;
-                let frame = box_(gtk::Orientation::Vertical, "0");
-                frame.add_css_class("dz-gallery");
-                content.set_halign(gtk::Align::Center);
-                frame.append(&content);
-                window.set_child(Some(&frame));
+                let content = scene::render_scene(scene, &mut specimens)?;
+                // A tiling compositor may enlarge the native window. The
+                // collector's scene keeps the same 40rem measure regardless.
+                let (fixed, frame) = scene_frame(&content);
+                window.set_child(Some(&fixed));
                 // Reset the previous scene's taller allocation.
                 window.set_default_size(640, 1);
                 window.present();
+                settle();
+                // Native windows focus their first control when presented.
+                // The reference's initial scene has no focused control.
+                gtk::prelude::GtkWindowExt::set_focus(&window, None::<&gtk::Widget>);
                 settle();
                 if images {
                     let file = format!("{}.png", id.replace('/', "-"));
@@ -138,22 +165,27 @@ pub fn run() -> Result<(), Box<dyn Error>> {
                     )?;
                     rendered.insert(id.into(), json!(format!("images/{name}/{file}")));
                 }
+                let owned: Vec<_> = specimens.iter().map(|(_, widget)| widget.clone()).collect();
                 for (at, widget) in specimens {
                     if widget.width() == 0 || widget.height() == 0 || !widget.is_mapped() {
                         continue;
                     }
-                    let color = widget.color();
-                    let ink = format!(
-                        "#{:02x}{:02x}{:02x}{:02x}",
-                        (color.red() * 255.).round() as u8,
-                        (color.green() * 255.).round() as u8,
-                        (color.blue() * 255.).round() as u8,
-                        (color.alpha() * 255.).round() as u8
-                    );
-                    let font = widget.pango_context().font_description();
+                    let text = first_text(&widget, &owned);
+                    let ink_node = text.clone().or_else(|| text::first_glyph(&widget, &owned));
+                    let ink = ink_node.map(|node| {
+                        let color = node.color();
+                        format!(
+                            "#{:02x}{:02x}{:02x}{:02x}",
+                            (color.red() * 255.).round() as u8,
+                            (color.green() * 255.).round() as u8,
+                            (color.blue() * 255.).round() as u8,
+                            (color.alpha() * 255.).round() as u8
+                        )
+                    });
+                    let font = text.and_then(|node| node.pango_context().font_description());
                     let mut reading = json!({"box":{"width":widget.compute_bounds(&frame).ok_or("No widget bounds")?.width(),"height":widget.compute_bounds(&frame).ok_or("No widget bounds")?.height()},"values":{
                         "ink":ink, "fontSize":font.as_ref().map(|f|f.size() as f64 / gtk::pango::SCALE as f64),
-                        "fontWeight":null,"lineHeight":null,"corner":null,"stroke":null,"fill":null,"strokeColor":null,"paddingX":null,"paddingY":null,"gap":null,"shadow":null
+                        "fontWeight":null,"lineHeight":null,"corner":paint::corners(&widget).map(|r| r[0]),"stroke":null,"fill":null,"strokeColor":null,"paddingX":null,"paddingY":null,"gap":null,"shadow":null
                     }});
                     if images {
                         let file = format!("{}-{at}.png", id.replace('/', "-"));
@@ -173,12 +205,16 @@ pub fn run() -> Result<(), Box<dyn Error>> {
         themes.insert(name.into(), Value::Object(readings));
         scene_images.insert(name.into(), Value::Object(rendered));
     }
-    let commit = std::process::Command::new("git")
-        .args(["rev-parse", "--short", "HEAD"])
-        .output()
+    let commit = std::env::var("DAZZUI_CONFORMANCE_COMMIT")
         .ok()
-        .filter(|o| o.status.success())
-        .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_owned())
+        .or_else(|| {
+            std::process::Command::new("git")
+                .args(["rev-parse", "--short", "HEAD"])
+                .output()
+                .ok()
+                .filter(|o| o.status.success())
+                .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_owned())
+        })
         .unwrap_or_default();
     let result = json!({"platform":"gtk4","title":"GTK4","role":"implementation","collected":gtk::glib::DateTime::now_utc()?.format_iso8601()?.as_str(),"commit":commit,"scale":2,"font":null,"themes":themes,"scenes":scene_images});
     std::fs::write(

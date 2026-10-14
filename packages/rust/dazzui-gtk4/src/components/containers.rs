@@ -10,8 +10,8 @@ pub fn box_(orientation: gtk::Orientation, gap: &str) -> gtk::Box {
 }
 #[derive(Clone, Copy, Debug, Default)]
 pub enum CardVariant {
-    Raised,
     #[default]
+    Raised,
     Sunken,
     Outlined,
     Tinted,
@@ -27,12 +27,59 @@ pub fn card(variant: CardVariant, tint: Tint, size: Size) -> gtk::Box {
     w
 }
 pub fn callout(title: &str, body: &str, tint: Tint) -> gtk::Box {
-    let w = card(CardVariant::Tinted, tint, Size::Medium);
-    w.add_css_class("dz-callout");
-    w.append(&label(title, "label-strong"));
+    let title = label(title, "label-medium");
     let description = label(body, "body-small");
     description.set_wrap(true);
-    w.append(&description);
+    callout_with_slots(
+        Some(title.upcast_ref()),
+        Some(description.upcast_ref()),
+        None,
+        None,
+        tint,
+        Size::Medium,
+    )
+}
+/// The same notice with React's leading, title, description and action slots.
+pub fn callout_with_slots(
+    title: Option<&gtk::Widget>,
+    description: Option<&gtk::Widget>,
+    leading: Option<&gtk::Widget>,
+    action: Option<&gtk::Widget>,
+    tint: Tint,
+    size: Size,
+) -> gtk::Box {
+    let w = styled(
+        box_(gtk::Orientation::Horizontal, "2-5"),
+        "dz-callout",
+        tint,
+        size,
+    );
+    let align = if title.is_some() && description.is_some() {
+        gtk::Align::Start
+    } else {
+        gtk::Align::Center
+    };
+    if let Some(icon) = leading {
+        icon.add_css_class("dz-callout-icon");
+        icon.set_valign(align);
+        w.append(icon);
+    }
+    let body = box_(gtk::Orientation::Vertical, "1");
+    body.set_valign(align);
+    body.set_hexpand(action.is_some());
+    if let Some(title) = title {
+        title.add_css_class("dz-callout-title");
+        body.append(title);
+    }
+    if let Some(description) = description {
+        description.add_css_class("dz-callout-description");
+        body.append(description);
+    }
+    w.append(&body);
+    if let Some(action) = action {
+        action.set_valign(align);
+        w.append(action);
+    }
     w
 }
 pub fn empty_state(
@@ -92,18 +139,20 @@ pub fn preference_row(
     description: Option<&str>,
     control: &impl IsA<gtk::Widget>,
 ) -> gtk::Box {
-    let w = box_(gtk::Orientation::Horizontal, "3");
+    let w = box_(gtk::Orientation::Horizontal, "2-5");
     w.add_css_class("dz-preference-row");
     let column = box_(gtk::Orientation::Vertical, "1");
+    column.add_css_class("dz-preference-text");
+    column.set_valign(gtk::Align::Center);
     column.set_hexpand(true);
-    column.append(&label(text, "label-medium"));
+    column.append(&label(text, "label-quiet"));
     if let Some(description) = description {
-        let hint = label(description, "body-small");
-        hint.add_css_class("dz-muted");
-        hint.set_wrap(true);
+        let hint = label(description, "caption-small");
+        hint.add_css_class("dz-preference-subtitle");
         column.append(&hint);
     }
     w.append(&column);
+    control.set_valign(gtk::Align::Center);
     w.append(control);
     crate::DazzWidgetExt::set_dazz_label(control, text);
     w
@@ -131,6 +180,54 @@ pub fn tabs(stack: &gtk::Stack) -> gtk::StackSwitcher {
     w.set_stack(Some(stack));
     w
 }
+/// A free-standing filter tab, with an optional count in the label's ink.
+pub struct PillTab<'a> {
+    pub value: &'a str,
+    pub label: &'a str,
+    pub count: Option<&'a str>,
+    pub icon: Option<&'a str>,
+    pub disabled: bool,
+}
+pub fn pill_tabs(items: &[PillTab<'_>], selected: Option<&str>, tint: Tint) -> gtk::Box {
+    let root = styled(
+        box_(gtk::Orientation::Horizontal, "2"),
+        "dz-pill-tabs",
+        tint,
+        Size::Tiny,
+    );
+    root.set_accessible_role(gtk::AccessibleRole::TabList);
+    root.set_valign(gtk::Align::Center);
+    let mut first: Option<gtk::ToggleButton> = None;
+    for item in items {
+        let tab = gtk::ToggleButton::new();
+        tab.set_accessible_role(gtk::AccessibleRole::Tab);
+        tab.add_css_class("dz-pill-tab");
+        tab.set_valign(gtk::Align::Center);
+        tab.set_sensitive(!item.disabled);
+        if let Some(first) = &first {
+            tab.set_group(Some(first));
+        } else {
+            first = Some(tab.clone());
+        }
+        let face = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+        face.add_css_class("dz-pill-tab-content");
+        if let Some(icon) = item.icon {
+            face.append(&gtk::Image::from_icon_name(icon));
+        }
+        face.append(&gtk::Label::new(Some(item.label)));
+        if let Some(count) = item.count {
+            face.append(&gtk::Label::new(Some(count)));
+        }
+        tab.set_child(Some(&face));
+        tab.set_active(selected == Some(item.value));
+        tab.connect_toggled(|tab| {
+            tab.update_state(&[gtk::accessible::State::Selected(Some(tab.is_active()))])
+        });
+        tab.update_state(&[gtk::accessible::State::Selected(Some(tab.is_active()))]);
+        root.append(&tab);
+    }
+    root
+}
 /// Grouped toggles preserve GTK's navigation and exclusive selection.
 pub fn segmented_control(labels: &[&str], selected: usize) -> gtk::Box {
     let items: Vec<_> = labels.iter().map(|label| (*label, None)).collect();
@@ -149,11 +246,19 @@ pub fn glyph_segmented_control(
     selected: usize,
     icon_only: bool,
 ) -> gtk::Box {
-    let w = box_(gtk::Orientation::Horizontal, "0");
-    w.add_css_class("dz-segmented-control");
+    let w = styled(
+        box_(gtk::Orientation::Horizontal, "0"),
+        "dz-segmented-control",
+        Tint::Primary,
+        Size::Medium,
+    );
+    w.set_valign(gtk::Align::Center);
     let mut first: Option<gtk::ToggleButton> = None;
     for (index, (text, icon)) in items.iter().enumerate() {
-        let item = crate::toggle(text, Tint::Neutral, Size::Small);
+        // Segments inherit the track's profile. An independent button profile
+        // would reset the nested radius and stop size changes reaching them.
+        let item = gtk::ToggleButton::with_label(text);
+        item.add_css_class("dz-segment");
         if let Some(icon) = icon {
             let glyph = gtk::Image::from_icon_name(icon);
             if icon_only {
@@ -188,12 +293,21 @@ pub fn option_card(
 ) -> gtk::CheckButton {
     let w = checkbox("", Tint::Primary, Size::Medium);
     w.add_css_class("dz-option-card");
+    w.set_accessible_role(gtk::AccessibleRole::Radio);
+    w.set_hexpand(true);
     if let Some(group) = group {
         w.set_group(Some(group));
     }
-    let column = box_(gtk::Orientation::Vertical, "1");
-    column.append(&label(title, "label-strong"));
-    column.append(&label(description, "body-small"));
+    let column = box_(gtk::Orientation::Vertical, "1-5");
+    let title = label(title, "label-strong");
+    title.add_css_class("dz-option-card-title");
+    column.append(&title);
+    if !description.is_empty() {
+        let description = label(description, "caption-small");
+        description.add_css_class("dz-option-card-description");
+        description.set_wrap(true);
+        column.append(&description);
+    }
     w.set_child(Some(&column));
     w
 }
@@ -282,5 +396,24 @@ pub fn tree(
 pub fn action_bar() -> gtk::Box {
     let w = box_(gtk::Orientation::Horizontal, "2");
     w.add_css_class("dz-action-bar");
+    w
+}
+
+/// A run of fields; submission and server validation are owned by the host.
+pub fn form() -> gtk::Box {
+    let w = box_(gtk::Orientation::Vertical, "4");
+    w.add_css_class("dz-form");
+    w
+}
+pub fn fieldset(legend: Option<&str>) -> gtk::Box {
+    let w = box_(gtk::Orientation::Vertical, "3");
+    w.set_accessible_role(gtk::AccessibleRole::Group);
+    w.add_css_class("dz-fieldset");
+    if let Some(legend) = legend {
+        w.set_dazz_label(legend);
+        let title = label(legend, "caption-small");
+        title.add_css_class("dz-fieldset-legend");
+        w.append(&title);
+    }
     w
 }

@@ -27,7 +27,7 @@ flutter test conformance/collect_test.dart \
   --dart-define=CONFORMANCE_THEMES="$themes" \
   --dart-define=CONFORMANCE_SCENES="$scenes" \
   --dart-define=CONFORMANCE_IMAGES="$images" \
-  --dart-define=CONFORMANCE_COMMIT="$(git rev-parse --short HEAD)"
+  --dart-define=CONFORMANCE_COMMIT="${DAZZUI_CONFORMANCE_COMMIT:-$(git rev-parse --short HEAD 2>/dev/null || echo unknown)}"
 
 if [ -f "$out/failures.txt" ]; then
   cat "$out/failures.txt" >&2

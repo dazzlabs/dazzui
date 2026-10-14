@@ -98,7 +98,8 @@ impl Checkbox {
 
 impl ParentElement for Checkbox {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -149,15 +150,18 @@ impl RenderOnce for Checkbox {
             .flex_wrap()
             .min_w_0()
             .children(self.children)
-            .when_some(self.note, |this, note| {
-                this.child(
-                    div()
-                        .flex()
-                        .text_color(t.color_content_faint.hsla())
-                        .child(" ")
-                        .child(note),
-                )
-            });
+            .when_some(
+                self.note
+                    .and_then(|note| crate::foundation::text_with_prefix(" ", note)),
+                |this, note| {
+                    this.child(
+                        div()
+                            .flex()
+                            .text_color(t.color_content_faint.hsla())
+                            .child(note),
+                    )
+                },
+            );
 
         let mut row = div()
             .id(self.id.clone())
@@ -175,7 +179,7 @@ impl RenderOnce for Checkbox {
                 this.font_weight(t.label_medium.font_weight())
             })
             .child(mark)
-            .child(label)
+            .child(crate::foundation::text_child(label))
             .when(visible, |this| this.child(kit::outline(t, t.radius_tiny)));
 
         if self.disabled {

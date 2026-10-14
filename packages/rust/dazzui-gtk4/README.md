@@ -6,7 +6,8 @@ native CSS nodes with the shared ds tokens. This crate is a separate Cargo
 workspace beside the GPUI implementation and is invisible to pnpm.
 
 Requires Rust and GTK4 **4.16 or later** with development headers and
-`pkg-config`. The minimum follows GTK's introduction of CSS custom properties.
+`pkg-config` and `glib-compile-resources`. The minimum follows GTK's
+introduction of CSS custom properties.
 On macOS: `brew install gtk4 pkg-config`. On Linux, install the corresponding
 GTK4 development package; Ubuntu 24.04's stock GTK 4.14 needs an upgrade.
 
@@ -41,8 +42,9 @@ window.set_child(Some(&column));
 Every constructor returns its actual GTK type. Connect native signals and
 read/write state with gtk4-rs, rather than learning another state API. Use
 `set_dazz_size`, `set_dazz_tint`, `set_dazz_variant` and `set_dazz_invalid`
-for drawing axes. Icon buttons take host icon-theme names and require an
-accessible label. `glyph_button` puts a host icon-theme glyph before or
+for drawing axes. `icon` loads the embedded Fluent glyph by its React export
+name. Icon buttons also accept host icon-theme names and require an
+accessible label. `glyph_button` puts an icon-theme glyph before or
 after a label, sized, spaced and padded as React's Button does;
 `glyph_segmented_control` does the same for segments, or draws each glyph
 alone with the label as its accessible name. Table and tree expose GTK's selection models and factories.
@@ -59,7 +61,9 @@ DazzUI classes. The host chooses its theme; GTK's global theme is not replaced.
 
 `src/generated/tokens.css` and `themes.rs` are committed output of
 `ds/plugins/gtk4.mjs`. Run `pnpm tokens` at the repository root to regenerate;
-never edit these files. The crate builds without Node or ds installed.
+never edit these files. `src/generated/icons/` is emitted by `pnpm codegen`
+from the same Fluent SVG paths React imports and embedded during the Rust
+build. The crate builds without Node or ds installed.
 
 The library includes buttons, toggles, checkboxes, radios, switches, text,
 password, multiline, search and number fields, selectors, sliders, progress,
@@ -89,9 +93,12 @@ the panel switches appearance and displays a miniature of every family.
 Use `pnpm gtk4 --story button --theme bright-dark` to open a specific page.
 
 The example's 51 story pages are generated from the React stories by
-`pnpm codegen`; it currently renders **58 scenes across 20 component pages**.
-Unmapped scenes show their exact missing components or props. Live story
-expressions, Fluent glyph translation, grouped selects, range sliders and
+`pnpm codegen`; it currently renders **103 scenes across 33 component pages**.
+Unmapped scenes show their exact missing components or props. Mapped scenes
+evaluate shared state expressions and connect native widget signals without
+replacing edited fields. `select_options` accepts flat and grouped text
+options, placeholders and disabled choices, and `select_values` maps native
+positions to domain values. Rich option labels, range sliders and
 several advanced families (drawer, toast, OTP, shortcut recorder, skeleton,
 sidebar, step list and accordion) still need mapping or implementation. This
 is an initial GTK port, not a claim of complete React feature or geometry
@@ -99,7 +106,8 @@ conformance. Native GTK text metrics and control internals still need visual
 comparison, particularly imported themes.
 
 A collector already reads the generated specimen addresses and writes native
-bounds, ink, font size and 2× scene/specimen images in the shared format:
+bounds, ink, font size, all four painted corners and 2× scene/specimen images
+in the shared format:
 
 ```sh
 example/tool/conformance.sh --out /tmp/dazzui-gtk4-readings \

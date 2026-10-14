@@ -12,7 +12,9 @@ param(
 [Console]::OutputEncoding = [Text.Encoding]::UTF8
 Remove-Item -Recurse -Force $Out -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force $Out | Out-Null
-$wrapper = Join-Path $Out 'launch.cmd'
+# The collector owns $Out and may recreate it while it runs. Keep the batch
+# file outside it so cmd.exe can still read the line that records the exit.
+$wrapper = Join-Path ([IO.Path]::GetTempPath()) ("dazzui-desktop-$([Guid]::NewGuid().ToString('N')).cmd")
 $lines = @('@echo off', "set DAZZUI_SMOKE_OUTPUT=$Out")
 foreach ($pair in ($Environment -split ';' | Where-Object { $_ })) { $lines += "set $pair" }
 $lines += "`"$Exe`" $Arguments"
@@ -33,6 +35,7 @@ while (-not (Test-Path "$Out\exit.txt") -and (Get-Date) -lt $deadline) { Start-S
 Unregister-ScheduledTask -TaskName $name -Confirm:$false -ErrorAction SilentlyContinue
 if (-not (Test-Path "$Out\exit.txt")) { "TIMED OUT"; Get-Process ([IO.Path]::GetFileNameWithoutExtension($Exe)) -ErrorAction SilentlyContinue | Stop-Process -Force }
 else { "exit: $((Get-Content "$Out\exit.txt").Trim())" }
+Remove-Item $wrapper -Force -ErrorAction SilentlyContinue
 foreach ($f in 'result.txt', 'crash.txt', 'failures.txt', 'progress.txt') {
   $path = Join-Path $Out $f
   if (Test-Path $path) { "--- $f"; Get-Content $path -TotalCount 40 }

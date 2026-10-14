@@ -129,7 +129,7 @@ let components: [String: ComponentBuilder] = [
   "Card": { n in
     AnyView(
       Card(size: n.option("size", CardSize.medium), variant: n.option("variant", CardVariant.raised)) {
-        n.kids
+        n.kids.environment(\.sceneLineBox, true)
       }
     )
   },
@@ -262,10 +262,12 @@ let components: [String: ComponentBuilder] = [
     return AnyView(
       Meter(
         value: value,
+        minimum: n.number("min") ?? 0,
+        maximum: n.number("max") ?? 100,
         size: n.option("size", MeterSize.medium),
         tint: n.option("tint", Tint.primary),
         label: n.string("label"),
-        valueLabel: n.flag("showValue") ? "\(Int(value.rounded()))%" : nil
+        showValue: n.flag("showValue")
       )
     )
   },
@@ -865,9 +867,10 @@ private struct TreeNodeView: View {
     (value.array ?? []).map { item in
       TreeNode(
         id: item["id"]?.text ?? "",
-        label: item["label"]?.text ?? "",
-        icon: item["icon"].flatMap(iconOf),
-        meta: item["meta"].map(keyText) ?? nil,
+        label: NodeView(item["label"] ?? .null),
+        icon: item["icon"].map { AnyView(NodeView($0)) },
+        meta: item["meta"].map { AnyView(NodeView($0)) },
+        text: item["text"]?.text ?? item["label"]?.text ?? "",
         children: item["children"].map(items),
         enabled: !(item["disabled"]?.truthy ?? false)
       )
@@ -878,21 +881,20 @@ private struct TreeNodeView: View {
     let selected = node.has("selected") ? node.string("selected") : own
     Tree(
       items: items(node["items"]),
-      expanded: expanded,
+      expanded: node.has("expanded") ? strings(node["expanded"]) : expanded,
       selected: selected,
       size: node.option("size", TreeSize.medium),
+      tint: node.option("tint", Tint.primary),
       onSelect: { id in
         own = id
         node.handler("onSelectedChange")?(.string(id))
       },
-      onToggle: { id in
-        if let index = expanded.firstIndex(of: id) {
-          expanded.remove(at: index)
-        } else {
-          expanded.append(id)
-        }
+      onExpandedChange: { next in
+        if !node.has("expanded") { expanded = next }
+        node.handler("onExpandedChange")?(.array(next.map(Value.string)))
       }
     )
+    .accessibilityLabel(node.string("aria-label") ?? "")
   }
 }
 

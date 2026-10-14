@@ -33,7 +33,7 @@ pub struct FormField {
 impl FormField {
     pub fn new(label: impl IntoElement) -> Self {
         FormField {
-            label: label.into_any_element(),
+            label: crate::foundation::text_child(label),
             hint: None,
             state: FieldState::Default,
             tint: Tint::Primary,
@@ -43,7 +43,7 @@ impl FormField {
 
     /// Help text under the control; it carries the error tone when erroring.
     pub fn hint(mut self, hint: impl IntoElement) -> Self {
-        self.hint = Some(hint.into_any_element());
+        self.hint = Some(crate::foundation::text_child(hint));
         self
     }
 
@@ -60,7 +60,8 @@ impl FormField {
 
 impl ParentElement for FormField {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -88,7 +89,7 @@ impl RenderOnce for FormField {
                     div()
                         .text_color(ink)
                         .type_style(t.label_small)
-                        .child(self.label),
+                        .child(crate::foundation::text_child(self.label)),
                 ),
             )
             .children(self.children)

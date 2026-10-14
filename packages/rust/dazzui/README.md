@@ -38,6 +38,10 @@ pointer needs one to keep its state between frames. A prop React leaves to
 the component (`defaultValue`, `defaultChecked`) is held by the component;
 `value` with its change handler makes it the caller's.
 
+Controls prepare plain string children with the shared font stack and
+display-pixel measurement. For text drawn directly with GPUI, use
+`dazzui::foundation::text_child`; rich elements pass through unchanged.
+
 ## Themes
 
 `Theme::set(name, cx)` sets the app's theme by the name React selects it with
@@ -69,6 +73,11 @@ toolchain (`xcodebuild -downloadComponent MetalToolchain`). Without it,
 `runtime-shaders` compiles them at launch instead; what is drawn is the
 same.
 
+On Windows and Linux, use `cargo build --workspace` and
+`cargo test --workspace` without the Metal feature. Input tests use the
+platform's own selection, word movement and clipboard shortcuts. Linux's
+UI and code fonts follow the host's Fontconfig generic-family settings.
+
 ## The example
 
 `example/` is the React example's window, drawn with this package: the
@@ -83,3 +92,8 @@ cargo run -p dazzui-example --features runtime-shaders
 `--story <id>` opens on a component, `--theme <name>` in a theme.
 `example/tool/conformance.sh` is its conformance collector; see
 [`specs/conformance.md`](../../../specs/conformance.md).
+On Linux and Windows, run the example executable with `--conformance`,
+`--out <directory>`, `--contract <repo>/tools/conformance/scenes.json`, and
+`--no-images`. It needs the signed-in user's desktop session. The readings
+record the actual display scale; screenshot capture currently uses macOS's
+`screencapture`.

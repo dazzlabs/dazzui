@@ -6,12 +6,101 @@ export const SUPPORT = {
   Row: [C, 'gap', 'align', 'justify', 'width'],
   Col: [C, 'gap', 'align', 'width'],
   Text: [C, 'strong', 'tone', 'tint'],
-  Button: [C, 'variant', 'tint', 'size', 'disabled', 'fullWidth'],
+  Button: [
+    C,
+    'variant',
+    'tint',
+    'size',
+    'disabled',
+    'fullWidth',
+    'shortcut',
+    'onClick',
+  ],
+  Icon: ['icon', 'size'],
+  IconButton: [C, 'label', 'size', 'variant', 'tint', 'disabled'],
+  KeyCap: [C, 'variant', 'size'],
+  Avatar: ['name', 'size', 'shape', 'tint', 'fallback'],
+  SearchField: [
+    'value',
+    'onValueChange',
+    'placeholder',
+    'aria-label',
+    'size',
+    'disabled',
+  ],
+  SegmentedControl: [
+    'items',
+    'value',
+    'onValueChange',
+    'size',
+    'tint',
+    'activeStyle',
+    'stretch',
+    'iconOnly',
+    'aria-label',
+  ],
+  Tag: [
+    C,
+    'selected',
+    'onSelectedChange',
+    'onRemove',
+    'removeLabel',
+    'variant',
+    'tint',
+    'size',
+    'disabled',
+  ],
+  PillTabs: [
+    'items',
+    'value',
+    'defaultValue',
+    'onValueChange',
+    'tint',
+    'aria-label',
+  ],
+  Meter: [
+    'value',
+    'min',
+    'max',
+    'label',
+    'showValue',
+    'size',
+    'tint',
+    'aria-label',
+  ],
   Badge: [C, 'variant', 'tint', 'size'],
   Card: [C, 'variant', 'size'],
-  Callout: [C, 'title', 'tint'],
-  Checkbox: [C, 'defaultChecked', 'indeterminate', 'disabled', 'tint', 'note'],
-  Switch: ['defaultChecked', 'disabled', 'size', 'tint', 'aria-label'],
+  OptionCard: [
+    'title',
+    'description',
+    'selected',
+    'onClick',
+    'tint',
+    'disabled',
+  ],
+  Callout: [C, 'title', 'tint', 'size', 'icon', 'action'],
+  ActionBar: [C, 'align'],
+  Fieldset: [C, 'legend', 'disabled'],
+  Checkbox: [
+    C,
+    'defaultChecked',
+    'checked',
+    'onCheckedChange',
+    'indeterminate',
+    'disabled',
+    'tint',
+    'note',
+    'size',
+  ],
+  Switch: [
+    'defaultChecked',
+    'checked',
+    'onCheckedChange',
+    'disabled',
+    'size',
+    'tint',
+    'aria-label',
+  ],
   TextField: [
     'defaultValue',
     'placeholder',
@@ -26,15 +115,29 @@ export const SUPPORT = {
     'size',
     'disabled',
   ],
-  Select: ['options', 'defaultValue', 'size', 'aria-label', 'disabled'],
+  Select: [
+    'options',
+    'defaultValue',
+    'value',
+    'onValueChange',
+    'placeholder',
+    'state',
+    'mono',
+    'readOnly',
+    'required',
+    'tint',
+    'size',
+    'aria-label',
+    'disabled',
+  ],
   Slider: ['defaultValue', 'aria-label', 'size', 'showValue'],
   Progress: ['value', 'aria-label', 'size', 'tint', 'gradient'],
-  Spinner: ['size'],
+  Spinner: ['size', 'tint', 'onAccent'],
   Divider: ['orientation', 'tone'],
   Code: [C],
   CodeBlock: ['code'],
   SectionLabel: [C, 'faint', 'tint'],
-  Link: [C, 'href', 'external', 'tint'],
+  Link: [C, 'href', 'external', 'tint', 'underline'],
   Collapsible: [C, 'title', 'defaultOpen'],
   EmptyState: [C, 'title', 'action'],
   FormField: [C, 'label', 'hint', 'state'],
@@ -43,21 +146,43 @@ export const SUPPORT = {
   PreferenceSection: [C, 'label', 'footer'],
   PreferenceRow: [C, 'title', 'subtitle'],
   RadioGroup: ['options', 'defaultValue', 'aria-label', 'size'],
-  Toggle: ['label', 'size', 'defaultPressed', 'variant'],
+  Toggle: [
+    C,
+    'label',
+    'size',
+    'defaultPressed',
+    'pressed',
+    'onPressedChange',
+    'variant',
+    'tint',
+    'disabled',
+  ],
 }
 
 export function sceneGaps(id, scene) {
   const problems = gaps([{ id, preview: scene, examples: [] }], SUPPORT, 'GTK4')
-  if (scene.state)
-    problems.push(`${id}: live story expressions are not yet mapped`)
   const visit = value => {
     if (!value || typeof value !== 'object') return
-    if (value.$icon)
-      problems.push(`${id}: Fluent glyph ${value.$icon} is not yet mapped`)
     if (value.$el === 'Slider' && Array.isArray(value.props?.defaultValue))
       problems.push(`${id}: range sliders are not yet mapped`)
-    if (value.$el === 'Select' && value.props?.options.some(o => o.options))
-      problems.push(`${id}: grouped select options are not yet mapped`)
+    if (value.$el === 'Select') {
+      const options = value.props?.options
+      if (!Array.isArray(options))
+        problems.push(`${id}: dynamic select options are not yet mapped`)
+      else if (
+        options.some(
+          o =>
+            typeof o.label !== 'string' ||
+            o.options?.some(o => typeof o.label !== 'string')
+        )
+      )
+        problems.push(`${id}: rich select option labels are not yet mapped`)
+      if (
+        value.props?.placeholder &&
+        typeof value.props.placeholder !== 'string'
+      )
+        problems.push(`${id}: rich select placeholders are not yet mapped`)
+    }
     Object.values(value).forEach(v =>
       Array.isArray(v) ? v.forEach(visit) : visit(v)
     )

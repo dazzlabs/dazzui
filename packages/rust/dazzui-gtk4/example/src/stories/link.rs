@@ -79,9 +79,7 @@ pub const STORY: &str = r##"{
           }
         ]
       },
-      "gaps": [
-        "link/0 preview: <Link underline> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "link/1",

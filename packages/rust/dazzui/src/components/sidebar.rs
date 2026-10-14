@@ -164,7 +164,8 @@ impl SidebarProvider {
 
 impl ParentElement for SidebarProvider {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -267,7 +268,8 @@ impl Default for Sidebar {
 
 impl ParentElement for Sidebar {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -383,7 +385,8 @@ impl SidebarInset {
 
 impl ParentElement for SidebarInset {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -455,7 +458,8 @@ impl SidebarHeader {
 
 impl ParentElement for SidebarHeader {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -483,7 +487,8 @@ impl SidebarFooter {
 
 impl ParentElement for SidebarFooter {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -507,7 +512,8 @@ impl SidebarContent {
 
 impl ParentElement for SidebarContent {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -570,7 +576,8 @@ impl SidebarGroup {
 
 impl ParentElement for SidebarGroup {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -604,7 +611,8 @@ impl SidebarGroupLabel {
 
 impl ParentElement for SidebarGroupLabel {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -640,7 +648,8 @@ impl SidebarGroupContent {
 
 impl ParentElement for SidebarGroupContent {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -665,7 +674,8 @@ impl SidebarMenu {
 
 impl ParentElement for SidebarMenu {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -724,7 +734,8 @@ impl SidebarMenuItem {
 
 impl ParentElement for SidebarMenuItem {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -858,7 +869,8 @@ impl SidebarMenuButton {
 
 impl ParentElement for SidebarMenuButton {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -1094,7 +1106,7 @@ impl RenderOnce for SidebarMenuButton {
                     .child(icon),
             ))
         })
-        .child(label)
+        .child(crate::foundation::text_child(label))
     }
 }
 
@@ -1112,7 +1124,8 @@ impl SidebarMenuBadge {
 
 impl ParentElement for SidebarMenuBadge {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -1145,6 +1158,7 @@ impl RenderOnce for SidebarMenuBadge {
             .text_size(px(t.caption_small.size))
             .line_height(px(t.caption_small.line_height))
             .font_weight(t.label_medium.font_weight())
+            .tabular_nums()
             .map(|this| match selected_ink {
                 Some(color) => this.text_color(color),
                 None => this

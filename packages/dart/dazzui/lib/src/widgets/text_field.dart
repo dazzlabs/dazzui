@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:math' as math;
 import 'dart:ui' as ui show BoxHeightStyle, BoxWidthStyle;
 
 import 'package:flutter/cupertino.dart'
@@ -1691,16 +1692,19 @@ class _TextFieldState extends State<TextField>
     // leading is what keeps one line centred in the box.
     final TextStyle entered = controlFace.copyWith(
       fontWeight: theme.vars.bodySmall.fontWeight,
+      height: widget.maxLines == 1 ? controlFace.height : 1.6,
     );
     final TextStyle textStyle =
         (widget.mono ? entered.inFace(vars.fontCode) : entered)
             .merge(resolvedStyle)
             .copyWith(
-              color: enabled
-                  ? (widget.state == TextFieldState.error
-                        ? theme.vars.colorDanger[800]!
-                        : theme.vars.colorContent)
-                  : theme.vars.controlColorNormalContent.disabledColor,
+              color:
+                  resolvedStyle?.color ??
+                  (enabled
+                      ? (widget.state == TextFieldState.error
+                            ? theme.vars.colorDanger[800]!
+                            : theme.vars.colorContent)
+                      : theme.vars.controlColorNormalContent.disabledColor),
             );
 
     final TextStyle? resolvedPlaceholderStyle = widget.placeholderStyle
@@ -1941,7 +1945,21 @@ class _TextFieldState extends State<TextField>
             // A multiline one is a container with a floor of its own.
             constraints: widget.maxLines == 1
                 ? BoxConstraints(minHeight: controlHeight)
-                : BoxConstraints(minHeight: vars.spacing20),
+                : BoxConstraints(
+                    // RenderEditable rounds a font's preferred line box. The
+                    // declared minimum lines still occupy their full leading,
+                    // as textarea rows do, rather than losing a fraction on
+                    // every line.
+                    minHeight: math.max(
+                      vars.spacing20,
+                      (widget.minLines ?? 1) *
+                              (textStyle.fontSize ?? 0) *
+                              (textStyle.height ?? 1) +
+                          padding.resolve(Directionality.of(context)).vertical +
+                          (effectiveDecoration.border?.dimensions.vertical ??
+                              0),
+                    ),
+                  ),
             decoration: effectiveDecoration,
             child: _selectionGestureDetectorBuilder.buildGestureDetector(
               behavior: HitTestBehavior.translucent,

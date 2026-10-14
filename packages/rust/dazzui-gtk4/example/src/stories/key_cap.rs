@@ -44,9 +44,7 @@ pub const STORY: &str = r#"{
         }
       ]
     },
-    "gaps": [
-      "key-cap/preview preview: <KeyCap> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -87,9 +85,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "key-cap/0 preview: <KeyCap> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "key-cap/1",
@@ -129,9 +125,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "key-cap/1 preview: <KeyCap> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

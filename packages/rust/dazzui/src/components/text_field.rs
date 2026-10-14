@@ -13,6 +13,8 @@ use crate::generated::ThemeTokens;
 use crate::theme::ActiveTheme;
 use crate::tokens::Face;
 
+const MULTILINE_LEADING: f32 = 1.6;
+
 /// Whether a text control is reporting a problem: React's `TextFieldState`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum FieldState {
@@ -186,7 +188,7 @@ impl FieldBox {
                 .min_h(px(t.spacing_20))
                 .py(px(t.spacing_2_5))
                 .rounded(px(t.radius_large))
-                .line_height(relative(1.6))
+                .line_height(relative(MULTILINE_LEADING))
         } else {
             element
                 .items_center()
@@ -422,6 +424,14 @@ impl RenderOnce for TextField {
         let disabled = self.disabled;
         chrome
             .style(div(), t)
+            // The editor rounds its preferred line box. Preserve the full
+            // declared leading across the minimum rows, as textarea rows do.
+            .when(self.multiline, |this| {
+                this.min_h(px(t.spacing_20.max(
+                    self.rows.max(1) as f32 * self.size.profile(t).content.size * MULTILINE_LEADING
+                        + 2. * (t.spacing_2_5 + t.stroke_hairline),
+                )))
+            })
             .map(|this| {
                 if disabled {
                     this.cursor_not_allowed()

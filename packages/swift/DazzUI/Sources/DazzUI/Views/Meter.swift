@@ -27,6 +27,7 @@ public struct Meter: View {
   /// What is printed beside the label. The number is the meter's whole point,
   /// so most readings want one.
   public var valueLabel: String?
+  public var showValue: Bool
 
   @Environment(\.theme) private var theme
 
@@ -37,7 +38,8 @@ public struct Meter: View {
     size: MeterSize = .medium,
     tint: Tint = .primary,
     label: String? = nil,
-    valueLabel: String? = nil
+    valueLabel: String? = nil,
+    showValue: Bool = false
   ) {
     self.value = value
     self.minimum = minimum
@@ -46,25 +48,29 @@ public struct Meter: View {
     self.tint = tint
     self.label = label
     self.valueLabel = valueLabel
+    self.showValue = showValue
   }
 
   public var body: some View {
     let vars = theme.vars
+    let reading = valueLabel ?? (showValue ? "\(Int((fraction * 100).rounded()))%" : nil)
 
     VStack(alignment: .leading, spacing: vars.spacing2) {
-      if label != nil || valueLabel != nil {
+      if label != nil || reading != nil {
         HStack(alignment: .firstTextBaseline, spacing: vars.spacing3) {
           if let label {
             Text(label)
               .font(.system(size: vars.labelSmall.size, weight: vars.labelMedium.weight))
+              .lineBox(vars.labelSmall, lineHeight: vars.labelSmall.size)
               .foregroundStyle(vars.colorContent)
               .frame(maxWidth: .infinity, alignment: .leading)
           }
-          if let valueLabel {
+          if let reading {
             // A reading rather than a label: the mono face, so a column of
             // meters keeps its numbers on one edge.
-            Text(valueLabel)
+            Text(reading)
               .font(.system(size: vars.labelSmall.size, design: .monospaced))
+              .lineBox(vars.labelSmall, lineHeight: vars.labelSmall.size)
               .foregroundStyle(vars.colorContentMuted)
           }
         }
@@ -84,7 +90,7 @@ public struct Meter: View {
     }
     .accessibilityElement(children: .ignore)
     .accessibilityLabel(label ?? "")
-    .accessibilityValue(valueLabel ?? "")
+    .accessibilityValue(reading ?? "")
   }
 
   private var fraction: Double {

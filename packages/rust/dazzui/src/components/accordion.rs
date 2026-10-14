@@ -97,7 +97,7 @@ impl AccordionItem {
     pub fn new(value: impl Into<SharedString>, title: impl IntoElement) -> Self {
         AccordionItem {
             value: value.into(),
-            title: title.into_any_element(),
+            title: crate::foundation::text_child(title),
             icon: None,
             meta: None,
             disabled: false,
@@ -120,7 +120,7 @@ impl AccordionItem {
     }
 
     pub fn meta(mut self, meta: impl IntoElement) -> Self {
-        self.meta = Some(meta.into_any_element());
+        self.meta = Some(crate::foundation::text_child(meta));
         self
     }
 
@@ -132,7 +132,8 @@ impl AccordionItem {
 
 impl ParentElement for AccordionItem {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 

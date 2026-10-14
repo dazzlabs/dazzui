@@ -28,6 +28,10 @@ use crate::lib::themes::THEME_FAMILY_GROUPS;
 
 /// The width every collector draws a scene at: 40rem.
 const WIDTH: f32 = 640.0;
+/// React's browser viewport surrounds the 40rem scene. Window-anchored
+/// controls such as ToastViewport resolve against this, rather than the frame.
+const VIEWPORT_WIDTH: f32 = 1024.0;
+const VIEWPORT_HEIGHT: f32 = 768.0;
 /// The index the frame itself is recorded under, beside the specimens'.
 const FRAME: usize = usize::MAX;
 
@@ -126,7 +130,10 @@ impl gpui::RenderOnce for Framed {
 }
 
 pub fn run(options: Options, cx: &mut App) {
-    let bounds = Bounds::new(point(px(40.), px(40.)), size(px(WIDTH), px(400.)));
+    let bounds = Bounds::new(
+        point(px(40.), px(40.)),
+        size(px(VIEWPORT_WIDTH), px(VIEWPORT_HEIGHT)),
+    );
     let window = cx
         .open_window(
             WindowOptions {
@@ -144,6 +151,7 @@ pub fn run(options: Options, cx: &mut App) {
             },
         )
         .expect("a window to collect in");
+    cx.activate(true);
     cx.spawn(async move |cx| {
         let code = match collect(&options, window, cx).await {
             Ok(()) => 0,
@@ -167,19 +175,30 @@ async fn frame(cx: &mut AsyncApp) {
 /// Waits until a scene has been drawn and what it records has stopped
 /// changing. A fixed wait is not enough: a busy machine can hold a frame
 /// back long enough that a scene reads as having drawn nothing.
-async fn settle(cx: &mut AsyncApp) {
+async fn settle(
+    window: WindowHandle<Stage>,
+    cx: &mut AsyncApp,
+    images: bool,
+) -> Result<(), String> {
     let mut previous = None;
     for _ in 0..25 {
+        if !images {
+            // A compositor can stop requesting presentation for an occluded
+            // window. Box collection still needs a newly laid-out native frame.
+            cx.update_window(window.into(), |_, window, cx| window.draw(cx).clear())
+                .map_err(|error| error.to_string())?;
+        }
         frame(cx).await;
         let frames = specimen::frames();
         if !frames.contains_key(&FRAME) {
             continue;
         }
         if previous.as_ref() == Some(&frames) {
-            return;
+            return Ok(());
         }
         previous = Some(frames);
     }
+    Err("the window did not draw a stable scene frame".into())
 }
 
 async fn collect(
@@ -203,18 +222,21 @@ async fn collect(
         })
         .collect();
 
-    let wanted = |story: &Value| {
+    let wanted = |scene: &&Value| {
         options.scenes.as_ref().is_none_or(|only| {
-            only.iter()
-                .any(|id| Some(id.as_str()) == story["id"].as_str())
+            only.iter().any(|id| {
+                scene["id"]
+                    .as_str()
+                    .is_some_and(|key| key == id || key.starts_with(&format!("{id}/")))
+            })
         })
     };
     let scenes: Vec<&Value> = contract["stories"]
         .as_array()
         .into_iter()
         .flatten()
-        .filter(|story| wanted(story))
         .flat_map(|story| story["scenes"].as_array().into_iter().flatten())
+        .filter(wanted)
         .collect();
 
     let _ = std::fs::remove_dir_all(&options.out);
@@ -234,6 +256,10 @@ async fn collect(
 
         for contracted in &scenes {
             let id = contracted["id"].as_str().unwrap_or_default();
+            write(
+                &options.out.join("progress.txt"),
+                &format!("{theme_id} {id}\n"),
+            )?;
             let specimens = contracted["specimens"]
                 .as_array()
                 .cloned()
@@ -274,7 +300,7 @@ async fn collect(
                     cx.notify();
                 })
                 .map_err(|e| e.to_string())?;
-            settle(cx).await;
+            settle(window, cx, options.images).await?;
             let height = specimen::frames()
                 .get(&FRAME)
                 .map(|b| f32::from(b.size.height))
@@ -282,11 +308,14 @@ async fn collect(
             specimen::start();
             window
                 .update(cx, |_, window, cx| {
-                    window.resize(size(px(WIDTH), px(height.ceil())));
+                    window.resize(size(
+                        px(VIEWPORT_WIDTH),
+                        px(height.ceil().max(VIEWPORT_HEIGHT)),
+                    ));
                     cx.notify();
                 })
                 .map_err(|e| e.to_string())?;
-            settle(cx).await;
+            settle(window, cx, options.images).await?;
             let frames = specimen::frames();
 
             let file = id.replace('/', "-");
@@ -299,10 +328,15 @@ async fn collect(
                     .ok_or("the window has no number to capture it by")?;
                 capture(number, &path)?;
                 let picture = image::open(&path).map_err(|e| e.to_string())?;
-                let scale = picture.width() as f32 / WIDTH;
+                let scale = picture.width() as f32 / VIEWPORT_WIDTH;
                 let scene_height = (height * scale).round() as u32;
-                let picture =
-                    picture.crop_imm(0, 0, picture.width(), scene_height.min(picture.height()));
+                let scene_width = (WIDTH * scale).round() as u32;
+                let picture = picture.crop_imm(
+                    0,
+                    0,
+                    scene_width.min(picture.width()),
+                    scene_height.min(picture.height()),
+                );
                 picture.save(&path).map_err(|e| e.to_string())?;
                 scenes_of.insert(id.into(), json!(format!("images/{theme_id}/{file}.png")));
                 for (index, bounds) in &frames {
@@ -343,13 +377,16 @@ async fn collect(
         readings_scenes.insert(theme_id.clone(), Value::Object(scenes_of));
     }
 
+    let scale = window
+        .update(cx, |_, window, _| window.scale_factor())
+        .map_err(|error| error.to_string())?;
     let readings = json!({
         "platform": "gpui",
         "title": "GPUI",
         "role": "implementation",
         "collected": now(),
         "commit": options.commit,
-        "scale": 2,
+        "scale": scale,
         // The platform's own UI face, as React's; no embedded test face.
         "font": null,
         "themes": readings_themes,
@@ -426,13 +463,9 @@ fn write(path: &Path, text: &str) -> Result<(), String> {
 }
 
 fn now() -> String {
-    std::process::Command::new("date")
-        .args(["-u", "+%Y-%m-%dT%H:%M:%SZ"])
-        .output()
-        .ok()
-        .and_then(|out| String::from_utf8(out.stdout).ok())
-        .map(|s| s.trim().to_string())
-        .unwrap_or_default()
+    time::OffsetDateTime::now_utc()
+        .format(&time::format_description::well_known::Rfc3339)
+        .expect("UTC timestamps are valid RFC3339")
 }
 
 /// The window's number, which `screencapture -l` takes.
@@ -466,9 +499,24 @@ fn capture(number: i64, path: &Path) -> Result<(), String> {
         .arg(path)
         .status()
         .map_err(|e| e.to_string())?;
-    if status.success() {
-        Ok(())
-    } else {
-        Err(format!("screencapture failed for window {number}"))
+    if !status.success() {
+        return Err(format!("screencapture failed for window {number}"));
     }
+    // Captures carry the display's ICC profile; image's PNG writer strips it.
+    // Convert the pixels before cropping so the saved PNGs remain sRGB.
+    let output = std::process::Command::new("sips")
+        .args([
+            "--matchTo",
+            "/System/Library/ColorSync/Profiles/sRGB Profile.icc",
+        ])
+        .arg(path)
+        .output()
+        .map_err(|error| error.to_string())?;
+    if !output.status.success() {
+        return Err(format!(
+            "capture colour conversion: {}",
+            String::from_utf8_lossy(&output.stderr)
+        ));
+    }
+    Ok(())
 }

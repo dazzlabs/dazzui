@@ -318,7 +318,8 @@ impl ContextMenu {
 
 impl ParentElement for ContextMenu {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -494,7 +495,7 @@ impl RenderOnce for Menubar {
                 .text_size(px(t.control_small_content.size))
                 .font_weight(t.control_small_content.font_weight())
                 .line_height(px(t.control_small_content.size))
-                .child(menu.label);
+                .child(crate::foundation::text_child(menu.label));
             let ramp = self.tint.ramp(t);
             let wash = t.control_color_normal_surface_hovered.resolve(ramp);
             if disabled {

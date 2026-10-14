@@ -64,7 +64,7 @@ impl SearchField {
 
     /// Trailing hint shown while the field is empty — usually a `KeyCap`.
     pub fn hint(mut self, hint: impl IntoElement) -> Self {
-        self.hint = Some(hint.into_any_element());
+        self.hint = Some(crate::foundation::text_child(hint));
         self
     }
 

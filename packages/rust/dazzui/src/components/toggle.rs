@@ -124,7 +124,8 @@ impl Toggle {
 
 impl ParentElement for Toggle {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -226,7 +227,7 @@ impl ToggleItem {
     pub fn new(value: impl Into<SharedString>, label: impl IntoElement) -> Self {
         ToggleItem {
             value: value.into(),
-            label: label.into_any_element(),
+            label: crate::foundation::text_child(label),
             hint: None,
             disabled: false,
             icon_only: false,
@@ -382,7 +383,7 @@ impl RenderOnce for ToggleGroup {
                             handler(next, window, cx);
                         }
                     })
-                    .child(item.label);
+                    .child(crate::foundation::text_child(item.label));
                 if let Some(hint) = item.hint {
                     toggle = toggle.label(hint);
                 }

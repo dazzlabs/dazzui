@@ -40,8 +40,9 @@ class TreeNode<T> {
 
   final Widget label;
 
-  /// A glyph before the label — a file's kind, a folder, a status.
-  final IconData? icon;
+  /// A component before the label — a file's kind, a folder, a status.
+  /// Use [Icon] to draw an icon-font glyph in the inherited slot size.
+  final Widget? icon;
 
   /// A trailing aside: a count, a change marker, a [Badge].
   final Widget? meta;
@@ -428,10 +429,12 @@ class _TreeRow<T> extends StatelessWidget {
                 ),
                 if (row.node.icon != null) ...<Widget>[
                   SizedBox(width: vars.spacing1),
-                  Icon(
-                    row.node.icon,
-                    size: vars.iconMedium,
-                    color: selected ? content : vars.colorContentSubtle,
+                  IconTheme.merge(
+                    data: IconThemeData(
+                      size: vars.iconMedium,
+                      color: selected ? content : vars.colorContentSubtle,
+                    ),
+                    child: row.node.icon!,
                   ),
                 ],
                 SizedBox(width: vars.spacing1),

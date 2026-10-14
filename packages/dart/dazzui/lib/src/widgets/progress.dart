@@ -27,9 +27,10 @@ class Progress extends StatefulWidget {
     this.tint = ProgressTint.primary,
     this.gradient = false,
     this.semanticsLabel,
-  }) : assert(value == null || (value >= 0 && value <= 1));
+  });
 
-  /// How far along, from 0 to 1. A null value is the indeterminate sweep.
+  /// How far along, from 0 to 100. Values outside the range are clamped.
+  /// A null value is the indeterminate sweep.
   final double? value;
 
   final WidgetSize size;
@@ -78,6 +79,7 @@ class _ProgressState extends State<Progress>
   @override
   Widget build(BuildContext context) {
     final ThemeVariables vars = Theme.of(context).vars;
+    final double? value = widget.value?.clamp(0.0, 100.0);
 
     final double thickness = switch (widget.size.namedSize) {
       NamedSize.large => vars.spacing2,
@@ -103,7 +105,7 @@ class _ProgressState extends State<Progress>
 
     return Semantics(
       label: widget.semanticsLabel,
-      value: widget.value == null ? null : '${(widget.value! * 100).round()}%',
+      value: value == null ? null : '${value.round()}%',
       child: ClipRRect(
         borderRadius: BorderRadius.circular(thickness / 2),
         child: SizedBox(
@@ -111,9 +113,9 @@ class _ProgressState extends State<Progress>
           width: double.infinity,
           child: ColoredBox(
             color: vars.colorSurfaceSunken,
-            child: widget.value == null
+            child: value == null
                 ? _Sweep(animation: _sweep, decoration: fill)
-                : _Fill(value: widget.value!, decoration: fill, vars: vars),
+                : _Fill(value: value / 100, decoration: fill, vars: vars),
           ),
         ),
       ),
@@ -137,12 +139,14 @@ class _Fill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) => AnimatedContainer(
-        duration: vars.motionDuration * 2,
-        curve: vars.motionEasing,
+      builder: (context, constraints) => Align(
         alignment: AlignmentDirectional.centerStart,
-        width: constraints.maxWidth * value,
-        decoration: decoration,
+        child: AnimatedContainer(
+          duration: vars.motionDuration * 2,
+          curve: vars.motionEasing,
+          width: constraints.maxWidth * value,
+          decoration: decoration,
+        ),
       ),
     );
   }

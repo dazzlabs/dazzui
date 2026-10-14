@@ -69,8 +69,11 @@ final class ConformanceCollector: XCTestCase {
       }
     )
     let stories = (contract["stories"] as? [[String: Any]] ?? [])
-      .filter { only == nil || only!.contains($0["id"] as? String ?? "") }
     let scenes = stories.flatMap { $0["scenes"] as? [[String: Any]] ?? [] }
+      .filter { scene in
+        let id = scene["id"] as? String ?? ""
+        return only == nil || only!.contains { id == $0 || id.hasPrefix($0 + "/") }
+      }
 
     try? FileManager.default.removeItem(at: out)
     try FileManager.default.createDirectory(at: out, withIntermediateDirectories: true)

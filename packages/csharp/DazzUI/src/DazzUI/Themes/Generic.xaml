@@ -74,10 +74,25 @@
   <Style TargetType="ui:Badge" BasedOn="{StaticResource SurfaceStyle}" />
   <Style TargetType="ui:Card" BasedOn="{StaticResource SurfaceStyle}" />
   <Style TargetType="ui:Surface" BasedOn="{StaticResource SurfaceStyle}" />
+  <Style TargetType="ui:TableRow">
+    <Setter Property="Template"><Setter.Value>
+      <ControlTemplate TargetType="ui:TableRow">
+        <Border Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            CornerRadius="{TemplateBinding CornerRadius}"
+            Padding="{TemplateBinding Padding}">
+          <ContentPresenter Content="{TemplateBinding Content}"
+              HorizontalContentAlignment="Stretch"
+              VerticalContentAlignment="Center" />
+        </Border>
+      </ControlTemplate>
+    </Setter.Value></Setter>
+  </Style>
   <Style TargetType="ui:Checkbox">
     <Setter Property="Template"><Setter.Value>
       <ControlTemplate TargetType="ui:Checkbox">
-        <StackPanel Orientation="Horizontal" Background="Transparent">
+        <StackPanel x:Name="Row" Orientation="Horizontal" Background="Transparent">
           <Border x:Name="Box" VerticalAlignment="Center">
             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" />
           </Border>
@@ -89,7 +104,7 @@
   <Style TargetType="ui:Radio">
     <Setter Property="Template"><Setter.Value>
       <ControlTemplate TargetType="ui:Radio">
-        <StackPanel Orientation="Horizontal" Background="Transparent">
+        <StackPanel x:Name="Row" Orientation="Horizontal" Background="Transparent">
           <Border x:Name="Box" VerticalAlignment="Center">
             <Border HorizontalAlignment="Center" VerticalAlignment="Center" />
           </Border>
@@ -101,12 +116,12 @@
   <Style TargetType="ui:OptionCard">
     <Setter Property="Template"><Setter.Value>
       <ControlTemplate TargetType="ui:OptionCard">
-        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}">
-          <StackPanel Orientation="Horizontal">
-            <Border x:Name="Box" VerticalAlignment="Top"><Border HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
+        <Grid>
+          <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}">
             <ContentPresenter Content="{TemplateBinding Content}" />
-          </StackPanel>
-        </Border>
+          </Border>
+          <Border x:Name="SelectionOutline" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="{TemplateBinding CornerRadius}" IsHitTestVisible="False" Visibility="Collapsed" />
+        </Grid>
       </ControlTemplate>
     </Setter.Value></Setter>
   </Style>

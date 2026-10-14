@@ -69,16 +69,54 @@ bool _sameSize(RenderObject object, Size size) =>
 Map<String, Object?> measure(
   RenderBox root,
   Set<RenderObject> nested,
-  ThemeVariables vars,
-) {
+  ThemeVariables vars, {
+  String? component,
+}) {
   final Size size = root.size;
   final List<RenderObject> own = _own(root, nested);
 
   // The surface: a decoration the size of the component's box.
   BoxDecoration? background;
   BoxDecoration? foreground;
+  BorderRadius? clipRadius;
+  BorderRadius? focusRadius;
+  Color? backgroundColor;
+  double? paintedRadius;
+  double? paintedInset;
   for (final RenderObject object in own) {
-    if (object is! RenderDecoratedBox || !_sameSize(object, size)) continue;
+    // A layout's children own their surfaces. A closed disclosure may be
+    // exactly its header's size, but that does not make the header its box.
+    if (object is RenderFlex) break;
+    if (!_sameSize(object, size)) continue;
+    if (object is RenderConstrainedBox) {
+      final Map<String, Object?> diagnostics = {
+        for (final property in object.toDiagnosticsNode().getProperties())
+          if (property is DiagnosticsProperty)
+            property.name ?? '': property.value,
+      };
+      // A custom-rendered switch exposes the geometry and colour its painter
+      // used, including the current animation position, in its inspector.
+      if (diagnostics['trackRadius'] case final double radius) {
+        paintedRadius = radius;
+        backgroundColor = diagnostics['paintedTrackColor'] as Color?;
+        paintedInset = diagnostics['thumbInset'] as double?;
+      }
+    }
+    if (object is RenderClipRRect) {
+      clipRadius ??= object.borderRadius.resolve(TextDirection.ltr);
+    }
+    final Object? creator = object.debugCreator;
+    if (component == 'link' && creator is DebugCreator) {
+      creator.element.visitAncestorElements((element) {
+        final widget = element.widget;
+        if (widget is FocusRing) focusRadius ??= widget.borderRadius;
+        return !identical(element.findRenderObject(), root);
+      });
+    }
+    if (creator is DebugCreator && creator.element.widget is ColoredBox) {
+      backgroundColor ??= (creator.element.widget as ColoredBox).color;
+    }
+    if (object is! RenderDecoratedBox) continue;
     final Decoration decoration = object.decoration;
     if (decoration is! BoxDecoration) continue;
     if (object.position == DecorationPosition.background) {
@@ -92,7 +130,12 @@ Map<String, Object?> measure(
   final bool painted =
       background == null &&
       foreground == null &&
-      own.any((o) => o is RenderCustomPaint && o.painter != null);
+      backgroundColor == null &&
+      own.any(
+        (o) =>
+            o is RenderCustomPaint &&
+            (o.painter != null || o.foregroundPainter != null),
+      );
 
   final BoxBorder? border = background?.border ?? foreground?.border;
   final BorderSide? side = border is Border ? border.top : null;
@@ -100,12 +143,16 @@ Map<String, Object?> measure(
       ? 0
       : side.width;
   final BorderRadiusGeometry? radius =
-      background?.borderRadius ?? foreground?.borderRadius;
+      clipRadius ??
+      background?.borderRadius ??
+      foreground?.borderRadius ??
+      focusRadius;
   // A radius past half the short side draws a capsule either way.
   final double corner = math.min(
-    radius == null
-        ? (background?.shape == BoxShape.circle ? size.shortestSide / 2 : 0)
-        : radius.resolve(TextDirection.ltr).topLeft.x,
+    paintedRadius ??
+        (radius == null
+            ? (background?.shape == BoxShape.circle ? size.shortestSide / 2 : 0)
+            : radius.resolve(TextDirection.ltr).topLeft.x),
     size.shortestSide / 2,
   );
 
@@ -116,11 +163,12 @@ Map<String, Object?> measure(
   final List<RenderParagraph> paragraphs = own
       .whereType<RenderParagraph>()
       .toList();
-  final TextStyle? text = paragraphs
-      .where((p) => !glyph(p))
-      .firstOrNull
-      ?.text
-      .style;
+  final RenderEditable? editable = own.whereType<RenderEditable>().firstOrNull;
+  final TextStyle? text =
+      editable?.text?.toPlainText().isNotEmpty == true &&
+          editable?.text?.style?.color?.a != 0
+      ? editable?.text?.style
+      : paragraphs.where((p) => !glyph(p)).firstOrNull?.text.style;
   final Color? ink = (text ?? paragraphs.firstOrNull?.text.style)?.color;
   final double? fontSize = text?.fontSize;
 
@@ -132,7 +180,7 @@ Map<String, Object?> measure(
   // from the root down to where the content starts: its first flex, or its
   // first run of text.
   EdgeInsets insets = EdgeInsets.zero;
-  final RenderObject? content = flex ?? paragraphs.firstOrNull;
+  final RenderObject? content = editable ?? flex ?? paragraphs.firstOrNull;
   for (RenderObject? object = content; object != null; object = object.parent) {
     if (object is RenderPadding && !identical(object, content)) {
       insets += object.padding.resolve(TextDirection.ltr);
@@ -148,15 +196,21 @@ Map<String, Object?> measure(
       'strokeColor': painted || stroke == 0 ? null : hex(side!.color),
       'fill': painted
           ? null
-          : hex(background?.color ?? const Color(0x00000000)),
+          : hex(
+              background?.color ?? backgroundColor ?? const Color(0x00000000),
+            ),
       'ink': ink == null ? null : hex(ink),
       'fontSize': fontSize == null ? null : _round(fontSize),
       'fontWeight': text?.fontWeight?.value ?? (text == null ? null : 400),
       'lineHeight': fontSize == null || text?.height == null
           ? null
           : _round(fontSize * text!.height!),
-      'paddingX': painted ? null : _round(math.max(0, insets.left - stroke)),
-      'paddingY': painted ? null : _round(math.max(0, insets.top - stroke)),
+      'paddingX': painted
+          ? null
+          : _round(paintedInset ?? math.max(0, insets.left - stroke)),
+      'paddingY': painted
+          ? null
+          : _round(paintedInset ?? math.max(0, insets.top - stroke)),
       'gap': flex == null ? null : _round(flex.spacing),
       'shadow': painted ? null : _shadow(background?.boxShadow, vars),
     },

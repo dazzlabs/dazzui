@@ -19,7 +19,7 @@ done
 [ -n "$out" ] || { echo "--out is required" >&2; exit 2; }
 mkdir -p "$out"
 out="$(cd "$out" && pwd)"
-repo="$(git rev-parse --show-toplevel)"
+repo="$(cd ../../../.. && pwd)"
 log="${TMPDIR:-/tmp}/gpui-conformance.log"
 
 # The Metal toolchain is optional on a Mac; without it GPUI compiles its
@@ -30,9 +30,9 @@ if ! cargo build -p dazzui-example --features runtime-shaders >"$log" 2>&1; then
   exit 1
 fi
 
-../target/debug/dazzui-example --conformance --out "$out" \
+cargo run --quiet -p dazzui-example --features runtime-shaders -- --conformance --out "$out" \
   --contract "$repo/tools/conformance/scenes.json" \
-  --commit "$(git rev-parse --short HEAD)" "${passed[@]+"${passed[@]}"}"
+  --commit "${DAZZUI_CONFORMANCE_COMMIT:-$(git rev-parse --short HEAD 2>/dev/null || echo unknown)}" "${passed[@]+"${passed[@]}"}"
 
 if [ -f "$out/failures.txt" ]; then
   cat "$out/failures.txt" >&2

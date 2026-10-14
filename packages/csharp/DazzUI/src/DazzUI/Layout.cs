@@ -51,7 +51,12 @@ public class Collapsible : Surface
     private bool hovered;
     /// <summary>Raised when the panel opens or closes.</summary>
     public event EventHandler? IsExpandedChanged;
-    public object? Header { get => title.Content; set => title.Content = value; }
+    private object? header;
+    public object? Header
+    {
+        get => header;
+        set { header = value; title.Content = value is string text && IsLoaded ? Theme.Text(text, "labelMedium") : value; }
+    }
     /// <summary>What sits at the row's end — a count, a badge — in the quiet ink.</summary>
     public UIElement? Meta { get => meta.Content as UIElement; set => meta.Content = value; }
     public UIElement? Body { get => panel.Child; set => panel.Child = value; }
@@ -59,6 +64,7 @@ public class Collapsible : Surface
     public Collapsible()
     {
         trigger.Template = (ControlTemplate)Microsoft.UI.Xaml.Markup.XamlReader.Load(TriggerTemplate);
+        trigger.MinWidth = trigger.MinHeight = 0;
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
@@ -95,6 +101,11 @@ public class Collapsible : Surface
         trigger.CornerRadius = new CornerRadius(Theme.Number("control.container.radius"));
         Skin.Focus(trigger, Theme);
         Theme.Typography(trigger, "labelMedium");
+        if (header is string words)
+        {
+            if (title.Content is TextBlock headerText) Theme.Text("", "labelMedium").CopyTo(headerText);
+            else title.Content = Theme.Text(words, "labelMedium");
+        }
         trigger.Foreground = Theme.Brush(trigger.IsEnabled ? "color.content" : "color.content-faint");
         row.ColumnSpacing = gap;
         chevron.GlyphSize = small;
@@ -129,10 +140,10 @@ public sealed class Accordion : Surface
                     if (!item.IsExpanded || Multiple) return;
                     foreach (var other in Items.Where(other => other != item)) other.IsExpanded = false;
                 };
-                stack.Children.Add(new Border { Child = item });
+                stack.Children.Add(item);
             }
         var first = true;
-        foreach (var rule in stack.Children.OfType<Border>())
+        foreach (var rule in stack.Children.OfType<AccordionItem>())
         {
             rule.BorderBrush = Theme.Brush("color.border");
             rule.BorderThickness = new Thickness(0, Divided && !first ? Theme.Number("stroke.hairline") : 0, 0, 0);
@@ -148,6 +159,8 @@ public sealed class Accordion : Surface
 /// </summary>
 public sealed class PreferenceRow : Surface
 {
+    private const string ActionTemplate = "<ControlTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' TargetType='Button'><Border Background='Transparent' CornerRadius='{TemplateBinding CornerRadius}' Padding='{TemplateBinding Padding}'><ContentPresenter Content='{TemplateBinding Content}' HorizontalContentAlignment='Stretch' VerticalContentAlignment='Center'/></Border></ControlTemplate>";
+    private readonly Microsoft.UI.Xaml.Controls.Button action = new() { HorizontalAlignment = HorizontalAlignment.Stretch, HorizontalContentAlignment = HorizontalAlignment.Stretch, MinHeight = 0, MinWidth = 0 };
     private bool hovered;
     public string Label { get; set; } = "";
     public string? Description { get; set; }
@@ -156,17 +169,19 @@ public sealed class PreferenceRow : Surface
     /// <summary>Raised when an interactive row is pressed; subscribing makes the row interactive.</summary>
     public event EventHandler? Opened
     {
-        add { opened += value; Interactive = true; }
-        remove => opened -= value;
+        add { opened += value; Interactive = true; if (IsLoaded) RefreshAppearance(); }
+        remove { opened -= value; Interactive = opened is not null; if (IsLoaded) RefreshAppearance(); }
     }
     private event EventHandler? opened;
     private bool Interactive { get; set; }
     public PreferenceRow()
     {
+        Tint = WidgetTint.Neutral;
         HorizontalAlignment = HorizontalAlignment.Stretch;
+        action.Template = (ControlTemplate)Microsoft.UI.Xaml.Markup.XamlReader.Load(ActionTemplate);
+        action.Click += (_, _) => opened?.Invoke(this, EventArgs.Empty);
         PointerEntered += (_, _) => { hovered = true; Paint(); };
         PointerExited += (_, _) => { hovered = false; Paint(); };
-        Tapped += (_, _) => opened?.Invoke(this, EventArgs.Empty);
     }
     private void Paint()
     {
@@ -177,12 +192,9 @@ public sealed class PreferenceRow : Surface
     {
         // The gap sits only between what is there: a row without a glyph starts on the heading's edge.
         var gap = Theme.Number("spacing.2.5");
-        var grid = new Grid();
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        var grid = new Grid { ColumnSpacing = gap };
+        if (Leading is not null) grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        if (Leading is FrameworkElement lead) lead.Margin = new Thickness(0, 0, gap, 0);
-        if (Control is FrameworkElement control) control.Margin = new Thickness(gap, 0, 0, 0);
         var title = Theme.Text(Label, "labelQuiet");
         title.TextTrimming = TextTrimming.CharacterEllipsis;
         title.TextWrapping = TextWrapping.NoWrap;
@@ -195,23 +207,36 @@ public sealed class PreferenceRow : Surface
             subtitle.TextWrapping = TextWrapping.NoWrap;
             text.Children.Add(subtitle);
         }
-        Grid.SetColumn(text, 1); grid.Children.Add(text);
-        if (Leading is not null) { Skin.Detach(Leading); grid.Children.Add(Leading); }
+        Grid.SetColumn(text, Leading is null ? 0 : 1); grid.Children.Add(text);
+        if (Leading is not null) { Skin.Detach(Leading); Leading.SetValue(Grid.ColumnProperty, 0); grid.Children.Add(Leading); }
         var trailing = Control;
         if (Interactive)
         {
             var chevron = new Icon { Glyph = FluentIcons.Common.Icon.ChevronRight, GlyphSize = Theme.Number("icon.small"), Foreground = Theme.Brush("color.content-subtle"), VerticalAlignment = VerticalAlignment.Center };
-            chevron.Margin = new Thickness(gap, 0, 0, 0);
-            trailing = trailing is null ? chevron : new StackPanel { Orientation = Orientation.Horizontal, Spacing = Theme.Number("spacing.2"), Children = { Detached(trailing), chevron } };
+            trailing = trailing is null ? chevron : new StackPanel { Orientation = Orientation.Horizontal, Spacing = gap, Children = { Detached(trailing), chevron } };
         }
-        if (trailing is FrameworkElement end) { Skin.Detach(end); end.VerticalAlignment = VerticalAlignment.Center; end.SetValue(Grid.ColumnProperty, 2); grid.Children.Add(end); }
+        if (trailing is FrameworkElement end)
+        {
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            Skin.Detach(end); end.VerticalAlignment = VerticalAlignment.Center;
+            Grid.SetColumn(end, grid.ColumnDefinitions.Count - 1); grid.Children.Add(end);
+        }
         MinHeight = Theme.Number("control.medium.size");
         var inset = Interactive ? Theme.Number("spacing.2") : 0;
-        Padding = new Thickness(inset, 0, inset, 0);
+        Padding = new Thickness(0);
         Margin = new Thickness(-inset, 0, -inset, 0);
-        Skin.SetCorner(this, Theme.Number("control.container.radius"));
+        Skin.SetCorner(this, Interactive ? Theme.Number("control.container.radius") : 0);
         VerticalContentAlignment = VerticalAlignment.Center;
-        Content = grid;
+        if (Interactive)
+        {
+            action.Content = grid;
+            action.Padding = new Thickness(inset, 0, inset, 0);
+            Skin.SetCorner(action, Theme.Number("control.container.radius"));
+            Skin.Focus(action, Theme);
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(action, Label);
+            Content = action;
+        }
+        else { action.Content = null; Content = grid; }
         Paint();
     }
     private static UIElement Detached(UIElement element) { Skin.Detach(element); return element; }

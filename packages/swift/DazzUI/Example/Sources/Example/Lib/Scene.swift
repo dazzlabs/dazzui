@@ -35,7 +35,16 @@ private struct TriggerPressKey: EnvironmentKey {
   static let defaultValue: (() -> Void)? = nil
 }
 
+private struct SceneLineBoxKey: EnvironmentKey {
+  static let defaultValue = false
+}
+
 extension EnvironmentValues {
+  var sceneLineBox: Bool {
+    get { self[SceneLineBoxKey.self] }
+    set { self[SceneLineBoxKey.self] = newValue }
+  }
+
   /// The press a trigger is given — the button a dialog, a drawer or a
   /// popover opens from never declares its own.
   var triggerPress: (() -> Void)? {
@@ -57,25 +66,37 @@ struct NodeView: View {
   @EnvironmentObject private var scene: SceneState
   @Environment(\.toaster) private var toaster
   @Environment(\.triggerPress) private var press
+  @Environment(\.theme) private var theme
+  @Environment(\.sceneLineBox) private var lineBox
 
   var body: some View {
     let context = Node.Context(scene: scene, toaster: toaster, press: press)
     switch node {
     case .string(let text):
-      Text(text)
+      textRun(text)
     case .object(let object) where object["$icon"] != nil:
       Icon(glyph(node))
     case .object(let object) where object["$el"] != nil:
       let parsed = Node(node, context)
       if let build = components[parsed.component] {
-        build(parsed).specimen(object["$at"]?.number.map { Int($0) })
+        build(parsed)
+          .environment(\.sceneLineBox, false)
+          .specimen(object["$at"]?.number.map { Int($0) })
       } else {
         fatalError("No SwiftUI mapping for <\(parsed.component)>")
       }
     case .object where isLive(node):
-      Text(context.resolve(node).text)
+      textRun(context.resolve(node).text)
     default:
       EmptyView()
+    }
+  }
+
+  @ViewBuilder private func textRun(_ text: String) -> some View {
+    if lineBox {
+      Text(text).lineBox(theme.vars.bodyMedium)
+    } else {
+      Text(text)
     }
   }
 }

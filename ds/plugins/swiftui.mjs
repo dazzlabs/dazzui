@@ -816,9 +816,15 @@ function double(value) {
  * theme that moves it cannot be written down.
  */
 function isIntToken(token) {
-  if (typeof token.id === 'string' && token.id.toLowerCase().includes('alpha')) return false
-  const values = [token.$value, ...Object.values(token.mode ?? {}).map(m => m?.$value ?? m)]
-  return values.every(value => value === undefined || Number.isInteger(Number(value)))
+  if (typeof token.id === 'string' && token.id.toLowerCase().includes('alpha'))
+    return false
+  const values = [
+    token.$value,
+    ...Object.values(token.mode ?? {}).map(m => m?.$value ?? m),
+  ]
+  return values.every(
+    value => value === undefined || Number.isInteger(Number(value))
+  )
 }
 
 function fontWeight(value) {

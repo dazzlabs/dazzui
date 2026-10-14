@@ -360,12 +360,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "button/3 preview: <Icon> is not drawn by GTK4",
-        "button/3 preview: <Button shortcut> is not drawn by GTK4",
-        "button/3 preview: <KeyCap> is not drawn by GTK4",
-        "button/3: Fluent glyph ArrowDownload20Regular is not yet mapped"
-      ]
+      "gaps": []
     },
     {
       "id": "button/4",
@@ -490,15 +485,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "button/4 preview: <Icon> is not drawn by GTK4",
-        "button/4: Fluent glyph Add20Regular is not yet mapped",
-        "button/4: Fluent glyph Share20Regular is not yet mapped",
-        "button/4: Fluent glyph Copy20Regular is not yet mapped",
-        "button/4: Fluent glyph ArrowSync20Regular is not yet mapped",
-        "button/4: Fluent glyph Settings20Regular is not yet mapped",
-        "button/4: Fluent glyph ArrowLeft20Regular is not yet mapped"
-      ]
+      "gaps": []
     },
     {
       "id": "button/5",
@@ -585,10 +572,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "button/5 preview: <Icon> is not drawn by GTK4",
-        "button/5: Fluent glyph Add20Regular is not yet mapped"
-      ]
+      "gaps": []
     },
     {
       "id": "button/6",
@@ -653,12 +637,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "button/6 preview: <Icon> is not drawn by GTK4",
-        "button/6: Fluent glyph ChevronRight20Regular is not yet mapped",
-        "button/6: Fluent glyph Open20Regular is not yet mapped",
-        "button/6: Fluent glyph ChevronDown20Regular is not yet mapped"
-      ]
+      "gaps": []
     },
     {
       "id": "button/7",
@@ -728,12 +707,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "button/7 preview: <Icon> is not drawn by GTK4",
-        "button/7: Fluent glyph Send20Regular is not yet mapped",
-        "button/7: Fluent glyph Delete20Regular is not yet mapped",
-        "button/7: Fluent glyph ArrowDownload20Regular is not yet mapped"
-      ]
+      "gaps": []
     }
   ]
 }"#;

@@ -47,6 +47,7 @@ impl TreeSize {
 pub struct TreeNode {
     pub id: SharedString,
     pub label: SharedString,
+    pub label_view: Option<AnyElement>,
     pub icon: Option<AnyElement>,
     pub meta: Option<AnyElement>,
     pub disabled: bool,
@@ -58,6 +59,7 @@ impl TreeNode {
         TreeNode {
             id: id.into(),
             label: label.into(),
+            label_view: None,
             icon: None,
             meta: None,
             disabled: false,
@@ -70,8 +72,14 @@ impl TreeNode {
         self
     }
 
+    /// Rich label content; `label` remains the name used for type-ahead.
+    pub fn label_view(mut self, label: impl IntoElement) -> Self {
+        self.label_view = Some(crate::foundation::text_child(label));
+        self
+    }
+
     pub fn meta(mut self, meta: impl IntoElement) -> Self {
-        self.meta = Some(meta.into_any_element());
+        self.meta = Some(crate::foundation::text_child(meta));
         self
     }
 
@@ -520,7 +528,11 @@ impl RenderOnce for Tree {
                         .overflow_hidden()
                         .whitespace_nowrap()
                         .text_ellipsis()
-                        .child(row.node.label.clone()),
+                        .child(
+                            row.node
+                                .label_view
+                                .unwrap_or_else(|| row.node.label.clone().into_any_element()),
+                        ),
                 )
                 .when_some(row.node.meta, |this, meta| {
                     this.child(

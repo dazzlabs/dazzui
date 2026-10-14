@@ -30,9 +30,7 @@ pub const STORY: &str = r#"{
       },
       "$at": 0
     },
-    "gaps": [
-      "pill-tabs/preview preview: <PillTabs> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -62,9 +60,7 @@ pub const STORY: &str = r#"{
         },
         "$at": 0
       },
-      "gaps": [
-        "pill-tabs/0 preview: <PillTabs> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

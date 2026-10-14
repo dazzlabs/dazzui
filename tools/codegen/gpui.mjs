@@ -14,6 +14,9 @@ import { gaps } from './support.mjs'
  * its own.
  */
 export const SUPPORT = structuredClone(FLUTTER_SUPPORT)
+SUPPORT.PreferenceGroup = ['title', 'description', '#children']
+SUPPORT.PreferenceRow = ['title', 'subtitle', 'onOpen', '#children']
+SUPPORT.PreferenceSection = ['label', 'footer', '#children']
 
 /** Every component and prop a story sets that GPUI does not draw. */
 export const unsupported = stories => gaps(stories, SUPPORT, 'GPUI')
@@ -93,7 +96,7 @@ let renderer
  * rendered to markup and its paths kept, so GPUI draws the same outline the
  * web does rather than a second source's idea of it.
  */
-function glyphSvg(root, name) {
+export function glyphSvg(root, name) {
   renderer ??= (() => {
     const require = exampleRequire(root)
     const React = require('react')
@@ -160,6 +163,16 @@ ${names.map(name => `    (${constant(name)}, ${raw(glyphSvg(root, name))}),`).jo
  * is drawn to the same glyphs.
  */
 export function glyphsRs(root, stories) {
+  const svgs = glyphSvgs(root, stories)
+  return `${header}
+/// The Fluent glyphs the example draws, by their React name, as SVG.
+pub static GLYPHS: &[(&str, &str)] = &[
+${[...svgs].map(([name, svg]) => `    (${JSON.stringify(name)}, ${raw(svg)}),`).join('\n')}
+];
+`
+}
+
+export function glyphSvgs(root, stories) {
   const names = new Set()
   const visit = value => {
     if (Array.isArray(value)) return value.forEach(visit)
@@ -170,15 +183,7 @@ export function glyphsRs(root, stories) {
   visit(stories)
   const window = path.join(root, 'packages/js/dazzui/example/src/components')
   for (const name of importedGlyphs(window)) names.add(name)
-  return `${header}
-/// The Fluent glyphs the example draws, by their React name, as SVG.
-pub static GLYPHS: &[(&str, &str)] = &[
-${[...names]
-  .sort()
-  .map(name => `    (${JSON.stringify(name)}, ${raw(glyphSvg(root, name))}),`)
-  .join('\n')}
-];
-`
+  return new Map([...names].sort().map(name => [name, glyphSvg(root, name)]))
 }
 
 /* Themes ----------------------------------------------------------------- */

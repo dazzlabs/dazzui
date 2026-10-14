@@ -154,3 +154,33 @@ class SidebarCard extends StatelessWidget {
     );
   }
 }
+
+/// A count at the trailing edge of a sidebar menu row.
+///
+/// It inherits the row's ink, including its selected and hovered states.
+class SidebarMenuBadge extends StatelessWidget {
+  const SidebarMenuBadge({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeVariables vars = Theme.of(context).vars;
+    return Container(
+      constraints: BoxConstraints(minWidth: vars.spacing5),
+      height: vars.spacing5,
+      padding: EdgeInsets.symmetric(horizontal: vars.spacing1),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(vars.radiusSmall),
+      ),
+      child: DefaultTextStyle.merge(
+        style: vars.captionSmall.copyWith(
+          color: DefaultTextStyle.of(context).style.color,
+          fontWeight: vars.labelMedium.fontWeight,
+          height: vars.spacing5 / vars.captionSmall.fontSize!,
+        ),
+        child: Center(widthFactor: 1, child: child),
+      ),
+    );
+  }
+}

@@ -134,7 +134,8 @@ impl Tag {
 
 impl ParentElement for Tag {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -270,7 +271,7 @@ impl RenderOnce for Tag {
                         }
                     });
             }
-            label.into_any_element()
+            crate::foundation::text_child(label)
         } else {
             div().flex().children(self.children).into_any_element()
         };
@@ -310,6 +311,8 @@ impl RenderOnce for Tag {
             button
         });
 
-        tag.children(icon).child(label).children(remove)
+        tag.children(icon)
+            .child(crate::foundation::text_child(label))
+            .children(remove)
     }
 }

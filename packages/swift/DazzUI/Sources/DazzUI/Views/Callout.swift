@@ -64,19 +64,19 @@ public struct Callout<Leading: View, Description: View, Trailing: View>: View {
         if let title {
           Text(title)
             .font(vars.labelMedium.font)
-            .lineSpacing(titleLeading * vars.labelMedium.size - vars.labelMedium.size)
+            .lineBox(vars.labelMedium, lineHeight: titleLeading * vars.labelMedium.size)
             .foregroundStyle(grade(.hovered))
         }
         description()
           .font(.system(size: vars.labelQuiet.size, weight: vars.captionSmall.weight))
-          .lineSpacing(bodyLeading * vars.labelQuiet.size - vars.labelQuiet.size)
+          .lineBox(vars.labelQuiet, lineHeight: bodyLeading * vars.labelQuiet.size)
           .foregroundStyle(grade(.normal))
       }
       .frame(maxWidth: .infinity, alignment: .leading)
       trailing()
     }
-    .padding(.vertical, paddingBlock)
-    .padding(.horizontal, paddingInline)
+    .padding(.vertical, paddingBlock + hairline)
+    .padding(.horizontal, paddingInline + hairline)
     .background(vars.ramp(tint)[600].opacity(vars.washSurface))
     .clipShape(RoundedRectangle(cornerRadius: radius, style: .circular))
     .border(

@@ -75,12 +75,7 @@ pub const STORY: &str = r#"{
       "$at": 0
     },
     "gaps": [
-      "toggle/preview preview: <ToggleGroup> is not drawn by GTK4",
-      "toggle/preview preview: <Icon> is not drawn by GTK4",
-      "toggle/preview: live story expressions are not yet mapped",
-      "toggle/preview: Fluent glyph TextBold20Regular is not yet mapped",
-      "toggle/preview: Fluent glyph TextItalic20Regular is not yet mapped",
-      "toggle/preview: Fluent glyph TextUnderline20Regular is not yet mapped"
+      "toggle/preview preview: <ToggleGroup> is not drawn by GTK4"
     ]
   },
   "examples": [
@@ -142,12 +137,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "toggle/0 preview: <Toggle> takes no children on GTK4",
-        "toggle/0 preview: <Icon> is not drawn by GTK4",
-        "toggle/0: Fluent glyph TextBold20Regular is not yet mapped",
-        "toggle/0: Fluent glyph TextItalic20Regular is not yet mapped"
-      ]
+      "gaps": []
     },
     {
       "id": "toggle/1",
@@ -221,12 +211,7 @@ pub const STORY: &str = r#"{
         "$at": 0
       },
       "gaps": [
-        "toggle/1 preview: <ToggleGroup> is not drawn by GTK4",
-        "toggle/1 preview: <Icon> is not drawn by GTK4",
-        "toggle/1: live story expressions are not yet mapped",
-        "toggle/1: Fluent glyph TextBold20Regular is not yet mapped",
-        "toggle/1: Fluent glyph TextItalic20Regular is not yet mapped",
-        "toggle/1: Fluent glyph TextUnderline20Regular is not yet mapped"
+        "toggle/1 preview: <ToggleGroup> is not drawn by GTK4"
       ]
     },
     {
@@ -301,12 +286,7 @@ pub const STORY: &str = r#"{
         "$at": 0
       },
       "gaps": [
-        "toggle/2 preview: <ToggleGroup> is not drawn by GTK4",
-        "toggle/2 preview: <Icon> is not drawn by GTK4",
-        "toggle/2: live story expressions are not yet mapped",
-        "toggle/2: Fluent glyph TextBold20Regular is not yet mapped",
-        "toggle/2: Fluent glyph TextItalic20Regular is not yet mapped",
-        "toggle/2: Fluent glyph TextUnderline20Regular is not yet mapped"
+        "toggle/2 preview: <ToggleGroup> is not drawn by GTK4"
       ]
     }
   ]

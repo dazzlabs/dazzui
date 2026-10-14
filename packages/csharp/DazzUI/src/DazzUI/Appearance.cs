@@ -52,6 +52,7 @@ public class Surface : ContentControl
     public ControlSize Size { get => Appearance.GetSize(this); set => Appearance.SetSize(this, value); }
     public Surface()
     {
+        UseLayoutRounding = false;
         DefaultStyleKey = typeof(Surface);
         IsTabStop = false;
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
@@ -72,6 +73,76 @@ public sealed class ThemeScope : Surface
 
 internal static class Skin
 {
+    private sealed class WeightConverter(Control control) : Microsoft.UI.Xaml.Data.IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language) =>
+            PlatformFonts.MatchWeight(control.FontFamily, (Windows.UI.Text.FontWeight)value);
+        public object ConvertBack(object value, Type targetType, object parameter, string language) =>
+            throw new NotSupportedException();
+    }
+    private sealed class LineBox(ContentControl control)
+    {
+        internal double Height;
+        internal bool Wrap;
+        private TextBlock? words;
+        private void AlignBaseline()
+        {
+            if (words is null || words.ActualHeight <= 0 || !ReferenceEquals(control.Content, words)) return;
+            var baseline = PlatformFonts.LineBaseline(words.FontFamily, words.FontSize, words.FontWeight, Height);
+            var offset = baseline - words.BaselineOffset;
+            if (words.RenderTransform is not TranslateTransform translation || Math.Abs(translation.Y - offset) > 0.001)
+                words.RenderTransform = new TranslateTransform { Y = offset };
+        }
+        internal void Update()
+        {
+            if (control.Content is string text)
+            {
+                words = new TextBlock { Text = text, TextWrapping = Wrap ? TextWrapping.Wrap : TextWrapping.NoWrap, LineStackingStrategy = LineStackingStrategy.BlockLineHeight };
+                words.SizeChanged += (_, _) => AlignBaseline();
+                words.LayoutUpdated += (_, _) => AlignBaseline();
+                foreach (var property in new[] { TextBlock.FontFamilyProperty, TextBlock.FontSizeProperty, TextBlock.FontWeightProperty })
+                    words.RegisterPropertyChangedCallback(property, (_, _) => AlignBaseline());
+                foreach (var property in new[] { "FontFamily", "FontSize", "Foreground" })
+                {
+                    var target = property switch
+                    {
+                        "FontFamily" => TextBlock.FontFamilyProperty,
+                        "FontSize" => TextBlock.FontSizeProperty,
+                        _ => TextBlock.ForegroundProperty,
+                    };
+                    words.SetBinding(target, new Microsoft.UI.Xaml.Data.Binding { Source = control, Path = new PropertyPath(property) });
+                }
+                words.LineHeight = Height;
+                control.Content = words;
+            }
+            if (words is not null && ReferenceEquals(control.Content, words))
+            {
+                words.SetBinding(TextBlock.FontWeightProperty, new Microsoft.UI.Xaml.Data.Binding
+                {
+                    Source = control, Path = new PropertyPath("FontWeight"), Converter = new WeightConverter(control),
+                });
+                words.LineHeight = Height;
+                words.TextWrapping = Wrap ? TextWrapping.Wrap : TextWrapping.NoWrap;
+                AlignBaseline();
+            }
+        }
+    }
+    private static readonly ConditionalWeakTable<ContentControl, LineBox> Lines = new();
+    /// <summary>A string label with declared leading, retaining caller-owned rich content.</summary>
+    internal static void TextLine(ContentControl control, double height, bool wrap = false)
+    {
+        if (!Lines.TryGetValue(control, out var line))
+        {
+            line = new LineBox(control);
+            Lines.Add(control, line);
+            var owned = line;
+            control.RegisterPropertyChangedCallback(ContentControl.ContentProperty, (_, _) => owned.Update());
+            control.RegisterPropertyChangedCallback(Microsoft.UI.Xaml.Controls.Control.FontFamilyProperty, (_, _) => owned.Update());
+        }
+        line.Height = height;
+        line.Wrap = wrap;
+        line.Update();
+    }
     private sealed class CornerState(Control control)
     {
         internal double Requested;
@@ -138,6 +209,11 @@ internal static class Skin
         Control(control, theme, size);
         SetCorner(control, theme.Number("control.field.radius"));
         control.BorderThickness = new Thickness(theme.Number("stroke.hairline"));
+        // Fields use spacing.3 at every size, rather than a button's profile
+        // inset. ComboBox positions its value from the outside of its border;
+        // TextBox's native viewport already accounts for that border itself.
+        var inline = theme.Number("spacing.3") + (control is ComboBox ? control.BorderThickness.Left : 0);
+        control.Padding = new Thickness(inline, control.Padding.Top, inline, control.Padding.Bottom);
         // In error the whole field is re-tinted to danger: edge, wash and ink together.
         control.BorderBrush = invalid ? theme.Brush("color.danger.600") : theme.Brush("color.border-strong");
         control.Background = !control.IsEnabled ? theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "surface", "disabled")
@@ -153,6 +229,7 @@ internal static class Skin
             control.Resources[prefix + "BackgroundDisabled"] = theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "surface", "disabled");
             control.Resources[prefix + "BorderBrush"] = control.BorderBrush;
             control.Resources[prefix + "BorderBrushPointerOver"] = control.BorderBrush;
+            control.Resources[prefix + "BorderBrushDisabled"] = theme.Brush("color.border-strong");
             control.Resources[prefix + "BorderBrushFocused"] = theme.Recipe(ControlVariant.Outlined, invalid ? WidgetTint.Danger : Appearance.GetTint(control), "border");
             control.Resources[prefix + "Foreground"] = control.Foreground;
             control.Resources[prefix + "ForegroundDisabled"] = theme.Brush("color.content-faint");

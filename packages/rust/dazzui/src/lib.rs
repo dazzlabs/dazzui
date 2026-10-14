@@ -9,6 +9,8 @@ pub mod components;
 pub mod foundation;
 mod generated;
 pub mod glyphs;
+#[cfg(target_os = "linux")]
+mod platform_fonts;
 pub mod theme;
 pub mod tokens;
 

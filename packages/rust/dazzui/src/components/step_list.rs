@@ -45,7 +45,8 @@ impl StepList {
 
 impl ParentElement for StepList {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -74,7 +75,7 @@ impl Step {
     pub fn new(status: StepStatus, label: impl IntoElement) -> Self {
         Step {
             status,
-            label: label.into_any_element(),
+            label: crate::foundation::text_child(label),
             meta: None,
             tint: Tint::Primary,
         }
@@ -82,7 +83,7 @@ impl Step {
 
     /// Trailing detail — a count, a duration.
     pub fn meta(mut self, meta: impl IntoElement) -> Self {
-        self.meta = Some(meta.into_any_element());
+        self.meta = Some(crate::foundation::text_child(meta));
         self
     }
 
@@ -141,6 +142,7 @@ impl RenderOnce for Step {
             };
             div()
                 .flex_none()
+                .whitespace_nowrap()
                 .pl(px(t.spacing_2_5))
                 .ml_auto()
                 .text_color(meta_color)
@@ -163,7 +165,12 @@ impl RenderOnce for Step {
             .text_color(color)
             .when(self.status == StepStatus::Idle, |this| this.opacity(0.8))
             .child(marker)
-            .child(div().min_w_0().ml(px(t.spacing_2_5)).child(self.label))
+            .child(
+                div()
+                    .min_w_0()
+                    .ml(px(t.spacing_2_5))
+                    .child(crate::foundation::text_child(self.label)),
+            )
             .children(meta)
     }
 }

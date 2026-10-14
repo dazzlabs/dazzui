@@ -40,9 +40,7 @@ pub const STORY: &str = r#"{
         }
       ]
     },
-    "gaps": [
-      "action-bar/preview preview: <ActionBar> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -144,9 +142,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "action-bar/0 preview: <ActionBar> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "action-bar/1",
@@ -188,10 +184,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "action-bar/1 preview: <ActionBar> is not drawn by GTK4",
-        "action-bar/1 preview: <KeyCap> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

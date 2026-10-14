@@ -9,7 +9,7 @@ use gpui::{
 
 use crate::components::checkbox::kit;
 use crate::components::icon::icon_slot;
-use crate::foundation::{ControlColors, State, Tint, Variant, pointer_down};
+use crate::foundation::{ControlColors, State, StyledExt, Tint, Variant, pointer_down};
 use crate::theme::ActiveTheme;
 
 type OnValueChange = Rc<dyn Fn(SharedString, &mut Window, &mut App) + 'static>;
@@ -27,7 +27,7 @@ impl PillTabItem {
     pub fn new(value: impl Into<SharedString>, label: impl IntoElement) -> Self {
         PillTabItem {
             value: value.into(),
-            label: label.into_any_element(),
+            label: crate::foundation::text_child(label),
             count: None,
             disabled: false,
         }
@@ -159,8 +159,12 @@ impl RenderOnce for PillTabs {
                                 .text_color(t.color_content_nav.hsla())
                         }
                     })
-                    .child(item.label)
-                    .children(item.count)
+                    .child(crate::foundation::text_child(item.label))
+                    .children(item.count.map(|count| {
+                        div()
+                            .tabular_nums()
+                            .child(crate::foundation::text_child(count))
+                    }))
                     .when(visible, |this| this.child(kit::outline(t, t.radius_full)));
                 if item.disabled {
                     pill = pill.opacity(0.5).cursor_not_allowed();

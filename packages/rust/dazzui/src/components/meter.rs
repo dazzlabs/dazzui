@@ -5,7 +5,7 @@ use gpui::{
 };
 
 use crate::components::progress::{fill_bar, groove_height};
-use crate::foundation::{Size, Tint, baseline};
+use crate::foundation::{Size, StyledExt, Tint, baseline};
 use crate::theme::ActiveTheme;
 use crate::tokens::Face;
 
@@ -56,7 +56,7 @@ impl Meter {
 
     /// Names the reading.
     pub fn label(mut self, label: impl IntoElement) -> Self {
-        self.label = Some(label.into_any_element());
+        self.label = Some(crate::foundation::text_child(label));
         self
     }
 
@@ -83,7 +83,7 @@ impl RenderOnce for Meter {
                     .text_size(px(label_size))
                     .font_weight(t.label_medium.font_weight())
                     .line_height(px(label_size))
-                    .child(label)
+                    .child(crate::foundation::text_child(label))
             });
             // The two runs share a baseline, and two faces set solid put it
             // at different heights: the one whose baseline sits higher is
@@ -97,6 +97,7 @@ impl RenderOnce for Meter {
                 div()
                     .text_color(t.color_content_muted.hsla())
                     .font_family(Face::Mono.family())
+                    .tabular_nums()
                     .text_size(px(label_size))
                     .line_height(px(label_size))
                     .mt(px((label_base - value_base).max(0.0)))

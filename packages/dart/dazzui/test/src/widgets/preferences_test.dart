@@ -38,6 +38,27 @@ void main() {
         tester.getSize(find.byType(Preferences)).width,
         ThemeData.studioLight().vars.preferencesWidth,
       );
+
+      await tester.pumpWidget(
+        app.host(
+          const Align(
+            alignment: Alignment.topLeft,
+            child: SizedBox(
+              width: 600,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [column],
+              ),
+            ),
+          ),
+        ),
+      );
+      // A stretched parent supplies tight constraints; the visible rows must
+      // still stop at the cap, as an explicitly sized CSS flex item does.
+      expect(
+        tester.getSize(find.byType(PreferenceRow)).width,
+        ThemeData.studioLight().vars.preferencesWidth,
+      );
     });
   });
 

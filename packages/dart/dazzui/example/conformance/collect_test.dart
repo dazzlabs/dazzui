@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:dazzui/dazzui.dart';
+import 'package:dazzui/src/foundation/inline_outset.dart';
 import 'package:dazzui_example/host.dart';
 import 'package:dazzui_example/lib/scene.dart';
 import 'package:dazzui_example/lib/story.dart';
@@ -102,9 +103,13 @@ void main() {
       : scenesAsked.split(',');
   final List<Map<String, Object?>> scenes = [
     for (final story in contract['stories'] as List<Object?>)
-      if (onlyStories.isEmpty ||
-          onlyStories.contains((story as Map)['id'] as String))
-        for (final scene in (story as Map)['scenes'] as List<Object?>)
+      for (final scene in (story as Map)['scenes'] as List<Object?>)
+        if (onlyStories.isEmpty ||
+            onlyStories.any(
+              (id) =>
+                  (scene as Map)['id'] == id ||
+                  (scene['id'] as String).startsWith('$id/'),
+            ))
           scene as Map<String, Object?>,
   ];
 
@@ -250,6 +255,27 @@ void main() {
                 ? built[node]!.removeFirst().findRenderObject() as RenderBox?
                 : null,
         ];
+        // A percentage wrapper occupies its parent's measure while its child
+        // is the actual component box, just as CSS resolves width: 80%.
+        for (int i = 0; i < roots.length; i++) {
+          final root = roots[i];
+          if (root is RenderFractionallySizedOverflowBox &&
+              root.child != null) {
+            roots[i] = root.child;
+          }
+          // The layout wrapper allocates CSS's margin box; its child is the
+          // wider button border box, which owns the paint, focus and input.
+          if (root is RenderInlineOutset && root.child != null) {
+            roots[i] = root.child;
+          }
+          // The aligner loosens a stretched parent's constraints; the capped
+          // child is the Preferences box that corresponds to CSS max-width.
+          if (nodes[i][r'$el'] == 'Preferences' &&
+              root is RenderPositionedBox &&
+              root.child != null) {
+            roots[i] = root.child;
+          }
+        }
         // A provider, or a wrapper lending its trigger a behaviour, draws
         // nothing of its own: its root is a specimen inside it.
         for (int i = 0; i < roots.length; i++) {
@@ -284,7 +310,12 @@ void main() {
         for (int i = 0; i < roots.length; i++) {
           final RenderBox? root = roots[i];
           if (root == null || !root.hasSize || !root.attached) continue;
-          final Map<String, Object?> reading = measure(root, nested, data.vars);
+          final Map<String, Object?> reading = measure(
+            root,
+            nested,
+            data.vars,
+            component: kebab(nodes[i][r'$el'] as String),
+          );
           if (crops[i] != null) reading['image'] = 'images/$theme/${crops[i]}';
           readingsOf[(specimens[i] as Map)['address'] as String] = reading;
         }

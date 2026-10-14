@@ -94,8 +94,9 @@ of its own.
 ## Readings
 
 Each platform runs its own **collector** over its own example, draws every
-scene in every theme it carries at a fixed scale (2x) with motion off, and
-writes `readings.json`. A scene is drawn alone, in one frame every platform
+scene in every theme it carries with motion off, normally at 2x, and
+writes `readings.json`. GPUI uses the host display's actual scale and records
+it in the readings. A scene is drawn alone, in one frame every platform
 repeats: 40rem wide, `spacing-6` of padding on `color-surface`, its content
 centred, as the example's document column centres a story.
 
@@ -327,16 +328,28 @@ Five collectors are written:
   every element it builds for a node through `Nodes.Built` — a mapping that
   draws a child node itself calls `Nodes.Drawn` — and the collector reads
   the template primitives the size of the control, never the control's own
-  brushes, which its template only passes on. Type is set in Windows' own
-  face, so widths of text differ from React's for a reason that is not the
-  component's. A glyph a kit control takes as a `Glyph` value and draws
+  brushes, which its template only passes on. Compound query and shortcut
+  controls are read at their native painted control, and percentage skeletons
+  at the skeleton rather than the grid that allocates its share. Clear
+  disclosure and meter layouts do not borrow a child's decoration. The
+  spinner's ellipse and arc supply their actual corner and stroke.
+  System UI type resolves Windows' message font, matching the browser's
+  system-ui face on that machine. Text widths still differ from a React run
+  collected on another OS. A glyph a kit control takes as a `Glyph` value and draws
   inside itself — an `IconButton`'s, a `NavItem`'s — has no element of its
   own, and is missing.
 - **GPUI** — `packages/rust/dazzui/example/tool/conformance.sh`, which
   builds the example and runs it with `--conformance`
   (`example/src/conformance.rs`). Each scene is drawn in a borderless window
-  of its own at the display's scale, sized to the scene, and captured with
-  `screencapture` by the window's number. Every node codegen addressed is
+  at the display's scale. Its 1024px-wide viewport matches React's browser;
+  the 640px scene sits at the top left and the viewport is at least 768px
+  tall. On macOS it is captured with `screencapture` by the window's number
+  and cropped to the scene. Captures convert the display's ICC profile to sRGB
+  before the PNG writer drops the profile during cropping.
+  Linux and Windows collect boxes with `--no-images`;
+  that mode explicitly generates native window frames, so an occluded window
+  does not depend on its compositor requesting presentation. A missing or
+  unstable scene frame fails collection. Every node codegen addressed is
   drawn through `lib/specimen.rs`, which while collecting records the bounds
   its element laid out at. A node the mapping hands a kit component as
   data — an accordion's item, a splitter's panel, a sidebar row's count —
@@ -344,10 +357,16 @@ Five collectors are written:
   through the item's `wrap_with` (or takes as an element) for the purpose.
   It reads the box, and only the box: what GPUI painted
   goes into a scene an app cannot read back, so every other property is
-  unread and the pictures carry the rest. GPUI lays out on whole logical
-  pixels (taffy's rounding), so a width set by text lands up to a pixel
-  wider than React's fractional one.
- Adding a platform is a collector and an expectations
+  unread and the pictures carry the rest. Plain text measures shaped advances
+  at display-pixel precision instead of the SDK's whole logical-pixel ceiling. GPUI still
+  aligns layout to display pixels — half logical pixels on the collector's
+  2x Mac display. Wrapping, truncation and text painting remain the SDK's.
+  On Linux, UI and code faces resolve Fontconfig's `system-ui` and `monospace`
+  aliases, rather than GPUI's hardcoded IBM Plex Sans and fallback list.
+  Remaining font families come from ds's generated stacks, keeping graphemes
+  intact when an explicit fallback supplies a glyph the UI face lacks.
+
+Adding a platform is a collector and an expectations
 file; the viewer and the check learn of it from `run.json`.
 
 ## GTK4
@@ -356,6 +375,47 @@ The initial GTK4 collector is
 `packages/rust/dazzui-gtk4/example/tool/conformance.sh`. It consumes the shared
 `$at` addresses, reads actual native bounds, ink and font size, and renders
 2x snapshots through GTK. It writes skipped-scene reasons to `gaps.json` and
-unread properties as `null`; it does not declare a shared test font. GTK4 is
+unread properties as `null`. Rounded clips and borders in GTK's GSK snapshot
+provide all four painted corner radii, matched to the specimen's own box
+rather than borrowed from a nested control. A box's computed CSS background
+and frame are captured without its children; a clear layout does not acquire
+its only child's rounded track, and an absent painted radius stays unread.
+It does not declare a shared test font. GTK4 is
 not in the default run or expectation baselines until its remaining mappings
 and measured differences are reviewed.
+
+The scene is allocated at 640 logical pixels inside a fixed container, so a
+tiling compositor may enlarge the native window without enlarging the stage.
+The collector clears the native window's automatic initial focus before
+measuring, matching the reference's unfocused initial scene. Ink and type
+come from the first mapped text node owned by the specimen (including a
+native placeholder), excluding labels owned by nested specimens; a glyph
+alone contributes ink without inventing a font size.
+
+## Incremental updates
+
+`pnpm conformance --incremental` merges a collection into the published run.
+`--platforms react,winui`, `--themes studio-light` and
+`--scenes table/preview,button/0` narrow the update; scene selectors also accept
+whole story IDs. Every collector accepts the same story-or-scene selectors.
+GTK4 can be selected explicitly without joining the default baselines.
+
+Collectors write to an isolated staging directory. All selected collectors
+must succeed before publishing. A scene is replaced as a unit: old specimens
+that stopped drawing become missing, and an update without images removes
+that scene's old image references. Other scenes, themes and platforms remain.
+Screenshot files are named by their content hash and are reused when unchanged.
+Old image URLs remain valid while an open viewer still holds the earlier run.
+GTK4 mapping gaps are merged by scene too.
+
+Readings carry optional `snapshots[theme][scene]` collection times and commits
+so a partially updated run does not claim that every scene was freshly drawn.
+The run publishes a new revision last. The viewer notices it, reloads changed
+platforms and derives new differences while retaining navigation and the lens.
+The check continues to use the same derived verdicts and expectations.
+
+Incremental merges reject changes to the display scale or shared font. A
+changed scene contract must be included in the update on every retained
+platform; other contract changes require a full run. A per-output lock prevents
+concurrent collectors from overwriting each other's updates. Failed collectors
+leave the previous published run available.

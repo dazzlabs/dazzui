@@ -381,7 +381,7 @@ impl RenderOnce for ShortcutRecorder {
             .font_weight(type_style.font_weight())
             .line_height(px(type_style.line_height))
             .shadow(shadow)
-            .child(label);
+            .child(crate::foundation::text_child(label));
         if disabled {
             button = button.cursor_not_allowed().opacity(0.6);
         } else {

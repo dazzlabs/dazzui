@@ -48,8 +48,9 @@ public struct Card<Content: View>: View {
     VStack(alignment: .leading, spacing: gap) {
       content()
     }
-    .padding(.vertical, paddingBlock)
-    .padding(.horizontal, paddingInline)
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .padding(.vertical, paddingBlock + hairline)
+    .padding(.horizontal, paddingInline + hairline)
     .background(surface)
     .clipShape(RoundedRectangle(cornerRadius: radius, style: .circular))
     // Drawn on every variant rather than only where it shows, so `outlined`

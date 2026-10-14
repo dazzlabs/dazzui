@@ -16,9 +16,7 @@ public sealed class Badge : Surface
         BorderThickness = new Thickness(theme.Number("stroke.hairline"));
         Padding = new Thickness(theme.Number("spacing.2"), theme.Number("spacing.0.5"),
             theme.Number("spacing.2"), theme.Number("spacing.0.5"));
-        var label = theme.Text(text, "labelSmall");
-        label.Foreground = theme.Recipe(ControlVariant.Tinted, tint, "content");
-        Content = label;
+        Content = text;
         IsTabStop = false;
         HorizontalAlignment = HorizontalAlignment.Left;
     }
@@ -38,7 +36,8 @@ public sealed class Badge : Surface
         var inline = Theme.Number(Size is ControlSize.Small or ControlSize.Tiny ? "spacing.1.5" : "spacing.2");
         Padding = new Thickness(inline, block, inline, block);
         Theme.Typography(this, Size == ControlSize.Large ? "labelMedium" : "labelSmall");
-        if (Content is TextBlock text) text.Foreground = Foreground;
+        FontWeight = Theme.Text("", "labelMedium").FontWeight;
+        Skin.TextLine(this, FontSize * 1.4);
     }
 }
 public enum BadgeVariant { Tinted, Filled, Outlined, Raised }

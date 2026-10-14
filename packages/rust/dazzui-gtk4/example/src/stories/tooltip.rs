@@ -34,10 +34,7 @@ pub const STORY: &str = r#"{
       "$at": 0
     },
     "gaps": [
-      "tooltip/preview preview: <Tooltip> is not drawn by GTK4",
-      "tooltip/preview preview: <IconButton> is not drawn by GTK4",
-      "tooltip/preview preview: <Icon> is not drawn by GTK4",
-      "tooltip/preview: Fluent glyph Settings20Regular is not yet mapped"
+      "tooltip/preview preview: <Tooltip> is not drawn by GTK4"
     ]
   },
   "examples": [
@@ -72,10 +69,7 @@ pub const STORY: &str = r#"{
         "$at": 0
       },
       "gaps": [
-        "tooltip/0 preview: <Tooltip> is not drawn by GTK4",
-        "tooltip/0 preview: <IconButton> is not drawn by GTK4",
-        "tooltip/0 preview: <Icon> is not drawn by GTK4",
-        "tooltip/0: Fluent glyph Settings20Regular is not yet mapped"
+        "tooltip/0 preview: <Tooltip> is not drawn by GTK4"
       ]
     },
     {

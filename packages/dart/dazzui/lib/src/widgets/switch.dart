@@ -955,6 +955,16 @@ class _RenderSwitch extends RenderConstrainedBox {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder description) {
     super.debugFillProperties(description);
+    description.add(DoubleProperty('trackRadius', _trackRadius));
+    description.add(
+      ColorProperty(
+        'paintedTrackColor',
+        Color.lerp(trackColor, activeColor, _state.position.value),
+      ),
+    );
+    description.add(
+      DoubleProperty('thumbInset', (_trackHeight - _thumbSize) / 2),
+    );
     description.add(
       FlagProperty(
         'value',

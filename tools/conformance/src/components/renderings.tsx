@@ -27,9 +27,14 @@ export function Renderings({ loaded, index, scene, platforms }: Props) {
         const readings = loaded.readings[platform]!
         const src = imageOf(platform, readings.scenes[index.theme]?.[scene.id])
         const reference = platform === loaded.reference
+        const snapshot =
+          readings.snapshots?.[index.theme]?.[scene.id] ?? readings
         return (
           <figure key={platform} className="g-rendering">
-            <figcaption className="g-rendering__head">
+            <figcaption
+              className="g-rendering__head"
+              title={`Collected ${snapshot.collected} at ${snapshot.commit}`}
+            >
               <span className="g-rendering__title">{readings.title}</span>
               {reference ? (
                 <Badge size="small" variant="outlined" tint="neutral">

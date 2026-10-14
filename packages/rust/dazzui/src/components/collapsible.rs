@@ -162,7 +162,7 @@ impl Collapsible {
     pub fn new(id: impl Into<ElementId>, title: impl IntoElement) -> Self {
         Collapsible {
             id: id.into(),
-            title: title.into_any_element(),
+            title: crate::foundation::text_child(title),
             icon: None,
             meta: None,
             open: None,
@@ -181,7 +181,7 @@ impl Collapsible {
 
     /// A trailing aside on the header — a count, a duration, a `Badge`.
     pub fn meta(mut self, meta: impl IntoElement) -> Self {
-        self.meta = Some(meta.into_any_element());
+        self.meta = Some(crate::foundation::text_child(meta));
         self
     }
 
@@ -212,7 +212,8 @@ impl Collapsible {
 
 impl ParentElement for Collapsible {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 

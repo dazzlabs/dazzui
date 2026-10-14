@@ -334,6 +334,7 @@ private struct StageText: View {
       }
     }
     .fontWeight(node.flag("strong") ? vars.labelStrong.weight : nil)
+    .lineBox(vars.bodyMedium)
     if let color {
       run.foregroundStyle(color)
     } else {

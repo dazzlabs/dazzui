@@ -10,9 +10,15 @@ import 'popover.dart';
 import 'pressable.dart';
 import 'text_field.dart';
 
-/// One choosable option.
+/// An option or group in a selector's ordered list.
 @immutable
-class SelectOption<T> {
+sealed class SelectItem<T> {
+  const SelectItem();
+}
+
+@immutable
+/// One choosable option.
+class SelectOption<T> extends SelectItem<T> {
   const SelectOption({
     required this.value,
     required this.label,
@@ -29,7 +35,7 @@ class SelectOption<T> {
 
 /// A run of options under a heading, the way `<optgroup>` groups.
 @immutable
-class SelectGroup<T> {
+class SelectGroup<T> extends SelectItem<T> {
   const SelectGroup({required this.label, required this.options});
 
   final String label;
@@ -62,15 +68,10 @@ class Select<T> extends StatefulWidget {
     this.tint = TextFieldTint.primary,
   });
 
-  /// The flat list. Leave it empty and pass [groups] instead to group them.
-  ///
-  /// Grouped or flat, never both: a list read one way would silently lose the
-  /// other. It is not asserted in the constructor — `length` is not something
-  /// a `const` assert may read, and every story here is const — so the build
-  /// reads [groups] first and ignores a flat list beside it.
-  final List<SelectOption<T>> options;
+  /// Options and groups in display order, as in React's `options` list.
+  final List<SelectItem<T>> options;
 
-  /// The grouped list. When it is not empty it is what is drawn.
+  /// Additional groups appended after [options].
   final List<SelectGroup<T>> groups;
 
   final T? value;
@@ -97,9 +98,14 @@ class _SelectState<T> extends State<Select<T>> {
   bool _open = false;
   double _anchorWidth = 0;
 
+  List<SelectItem<T>> get _items => [...widget.options, ...widget.groups];
+
   List<SelectOption<T>> get _flat => [
-    ...widget.options,
-    for (final SelectGroup<T> group in widget.groups) ...group.options,
+    for (final item in _items)
+      ...switch (item) {
+        SelectOption<T>() => [item],
+        SelectGroup<T>() => item.options,
+      },
   ];
 
   SelectOption<T>? get _chosen {
@@ -116,7 +122,7 @@ class _SelectState<T> extends State<Select<T>> {
     final TextStyle face = vars.labelMedium;
     final double line = (face.fontSize ?? 13) * (face.height ?? 1.25);
     final double row = line + vars.menuItemPadding * 2;
-    final int rows = _flat.length + widget.groups.length;
+    final int rows = _flat.length + _items.whereType<SelectGroup<T>>().length;
     return rows * row + vars.spacing1 * 2;
   }
 
@@ -297,9 +303,9 @@ class _SelectState<T> extends State<Select<T>> {
       ),
       padding: EdgeInsetsDirectional.fromSTEB(
         vars.spacing3,
-        0,
+        metrics.paddingBlock,
         vars.spacing3,
-        0,
+        metrics.paddingBlock,
       ),
       child: Row(
         spacing: vars.spacing2,
@@ -337,7 +343,7 @@ class _SelectList<T> extends StatelessWidget {
     required this.onChoose,
   });
 
-  final List<SelectOption<T>> options;
+  final List<SelectItem<T>> options;
   final List<SelectGroup<T>> groups;
   final T? selected;
   final ValueChanged<SelectOption<T>> onChoose;
@@ -358,14 +364,16 @@ class _SelectList<T> extends StatelessWidget {
       return checked ? _RevealOnOpen(child: drawn) : drawn;
     }
 
-    final List<Widget> children = groups.isEmpty
-        ? [for (final SelectOption<T> option in options) row(option)]
-        : [
-            for (final SelectGroup<T> group in groups) ...[
-              MenuGroupLabel(child: Text(group.label)),
-              ...group.options.map(row),
-            ],
-          ];
+    final List<Widget> children = [
+      for (final item in [...options, ...groups])
+        ...switch (item) {
+          SelectOption<T>() => [row(item)],
+          SelectGroup<T>() => [
+            MenuGroupLabel(child: Text(item.label)),
+            ...item.options.map(row),
+          ],
+        },
+    ];
 
     return MenuPanel(children: children);
   }

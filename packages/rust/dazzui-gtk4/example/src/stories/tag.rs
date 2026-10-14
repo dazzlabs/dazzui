@@ -85,10 +85,7 @@ pub const STORY: &str = r#"{
         }
       ]
     },
-    "gaps": [
-      "tag/preview preview: <Tag> is not drawn by GTK4",
-      "tag/preview: live story expressions are not yet mapped"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -173,10 +170,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "tag/0 preview: <Tag> is not drawn by GTK4",
-        "tag/0: live story expressions are not yet mapped"
-      ]
+      "gaps": []
     },
     {
       "id": "tag/1",
@@ -214,9 +208,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "tag/1 preview: <Tag> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

@@ -12,8 +12,8 @@ use dazzui::{
     PreferenceSection, Preferences, Sidebar, SidebarCollapsible, SidebarContent, SidebarGroup,
     SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarMenu,
     SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger,
-    SidebarVariant, Splitter, SplitterOrientation, SplitterPanel, ToastOptions, ToastPlacement,
-    ToastProvider, ToastViewport, Toaster, Tree, TreeNode, TreeSize,
+    SidebarVariant, Splitter, SplitterOrientation, SplitterPanel, Tint, ToastOptions,
+    ToastPlacement, ToastProvider, ToastViewport, Toaster, Tree, TreeNode, TreeSize,
 };
 use gpui::{AnyElement, App, IntoElement, ParentElement, SharedString, Window, div};
 use serde_json::Value;
@@ -144,8 +144,21 @@ fn tree_nodes(
         .enumerate()
         .map(|(index, item)| {
             let here = format!("{path}.{index}");
-            let mut tree_node = TreeNode::new(text(&item["id"]), text(&item["label"]))
+            let name = if item["text"].is_null() {
+                text(&item["label"])
+            } else {
+                text(&item["text"])
+            };
+            let mut tree_node = TreeNode::new(text(&item["id"]), name)
                 .disabled(item["disabled"].as_bool().unwrap_or(false));
+            if item["label"].is_object() {
+                tree_node = tree_node.label_view(node.draw_value(
+                    &item["label"],
+                    format!("{here}.label"),
+                    window,
+                    cx,
+                ));
+            }
             if !item["icon"].is_null() {
                 tree_node = tree_node.icon(node.draw_value(
                     &item["icon"],
@@ -163,7 +176,13 @@ fn tree_nodes(
                 ));
             }
             if item.get("children").is_some() {
-                let children = tree_nodes(node, &item["children"], &here, window, cx);
+                let children = tree_nodes(
+                    node,
+                    &item["children"],
+                    &format!("{here}.children"),
+                    window,
+                    cx,
+                );
                 tree_node = tree_node.children(children);
             }
             tree_node
@@ -178,10 +197,27 @@ fn tree(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
         .size(node.option("size", TreeSize::parse).unwrap_or_default())
         .default_expanded(strings(&node.get("defaultExpanded")))
         .selected(node.string("selected").map(SharedString::from))
+        .tint(node.option("tint", Tint::parse).unwrap_or_default())
         .aria_label(node.string("aria-label").unwrap_or_default());
     if let Some(handler) = node.handler("onSelectedChange") {
         tree = tree.on_selected_change(move |id, window, cx| {
             handler(Value::String(id.to_string()), window, cx)
+        });
+    }
+    if node.has("expanded") {
+        tree = tree.expanded(strings(&node.get("expanded")));
+    }
+    if let Some(handler) = node.handler("onExpandedChange") {
+        tree = tree.on_expanded_change(move |ids, window, cx| {
+            handler(
+                Value::Array(
+                    ids.into_iter()
+                        .map(|id| Value::String(id.to_string()))
+                        .collect(),
+                ),
+                window,
+                cx,
+            )
         });
     }
     tree.into_any_element()

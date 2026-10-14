@@ -41,6 +41,15 @@ export interface Run {
   commit: string
   /** In the order the viewer shows them; the reference first. */
   platforms: readonly string[]
+  revision?: string
+  incremental?: boolean
+  workingTree?: boolean
+  snapshots?: Record<string, Snapshot>
+}
+
+export interface Snapshot {
+  collected: string
+  commit: string
 }
 
 /** The property vocabulary. `null` is "could not read". */
@@ -62,6 +71,8 @@ export interface Readings {
   font: string | null
   themes: Record<string, Record<string, Reading>>
   scenes: Record<string, Record<string, string>>
+  /** Incremental runs keep the provenance of each retained scene. */
+  snapshots?: Record<string, Record<string, Snapshot>>
 }
 
 export interface Tolerances {

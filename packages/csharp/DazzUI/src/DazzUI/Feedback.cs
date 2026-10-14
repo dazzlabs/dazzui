@@ -18,8 +18,8 @@ public class Progress : Surface
     private readonly TranslateTransform sweep = new();
     private Storyboard? sweeping;
     private double value, minimum, maximum = 100;
-    private bool indeterminate;
-    public double Value { get => value; set { this.value = value; Arrange(); } }
+    private bool indeterminate = true;
+    public double Value { get => value; set { this.value = value; indeterminate = false; Arrange(); } }
     public double Minimum { get => minimum; set { minimum = value; Arrange(); } }
     public double Maximum { get => maximum; set { maximum = value; Arrange(); } }
     public bool IsIndeterminate { get => indeterminate; set { indeterminate = value; Arrange(); } }
@@ -107,6 +107,7 @@ public sealed class Meter : Progress
     public bool ShowValue { get; set; }
     public Meter()
     {
+        IsIndeterminate = false;
         Size = ControlSize.Medium;
         Grid.SetColumn(reading, 1);
         head.Children.Add(label);
@@ -127,11 +128,16 @@ public sealed class Meter : Progress
         label.Foreground = Theme.Brush("color.content");
         label.FontSize = Theme.Text("", "labelSmall").FontSize;
         label.FontWeight = Theme.Text("", "labelMedium").FontWeight;
+        label.FontFamily = PlatformFonts.Ui;
+        label.LineHeight = label.FontSize;
+        label.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
         var span = Maximum - Minimum;
         reading.Text = ShowValue ? $"{Math.Round(span <= 0 ? 0 : (Value - Minimum) / span * 100)}%" : "";
         reading.Foreground = Theme.Brush("color.content-muted");
         reading.FontSize = label.FontSize;
-        reading.FontFamily = new FontFamily("Cascadia Mono, Consolas");
+        reading.FontFamily = Theme.CodeFont;
+        reading.LineHeight = reading.FontSize;
+        reading.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
     }
 }
 /// <summary>
@@ -188,17 +194,22 @@ public sealed class Spinner : Surface
         head.StrokeThickness = stroke;
         head.Width = head.Height = size;
     }
-}public enum SkeletonShape { Rectangle, Circle, Text }
+}
+public enum SkeletonShape { Text, Circle, Rect, Rectangle = Rect }
 public class Skeleton : Surface
 {
-    public SkeletonShape Shape { get; set; }
+    public SkeletonShape Shape { get; set; } = SkeletonShape.Text;
     protected override void RefreshAppearance()
     {
         Background = Theme.Brush("color.surface-sunken");
         Skin.SetCorner(this, Theme.Number(Shape == SkeletonShape.Circle ? "radius.full" : Shape == SkeletonShape.Text ? "radius.tiny" : "radius.small"));
         // A line of text is the height of a line of body copy, not a length of its own.
-        if (double.IsNaN(Height)) Height = Shape == SkeletonShape.Text ? Theme.Text("", "bodySmall").LineHeight : Theme.Number("spacing.8");
-        if (Shape == SkeletonShape.Circle && double.IsNaN(Width)) Width = Height;
+        if (Shape == SkeletonShape.Text) Height = Theme.Text("", "bodySmall").LineHeight;
+        if (Shape == SkeletonShape.Circle)
+        {
+            if (!double.IsNaN(Width)) Height = Width;
+            else if (!double.IsNaN(Height)) Width = Height;
+        }
     }
 }
 public sealed class SkeletonText : Surface
@@ -215,7 +226,7 @@ public sealed class SkeletonText : Surface
             lines.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             var line = new Skeleton { Shape = SkeletonShape.Text };
             Grid.SetRow(line, i);
-            if (i < Lines - 1 || Lines == 1) Grid.SetColumnSpan(line, 2);
+            if (i < Lines - 1) Grid.SetColumnSpan(line, 2);
             lines.Children.Add(line);
         }
         Content = lines;

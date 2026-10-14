@@ -104,7 +104,10 @@ class NavItem extends StatelessWidget {
                   data: IconTheme.of(
                     context,
                   ).copyWith(color: content, size: vars.iconMedium),
-                  child: trailing!,
+                  child: DefaultTextStyle.merge(
+                    style: TextStyle(color: content),
+                    child: trailing!,
+                  ),
                 ),
             ],
           ),

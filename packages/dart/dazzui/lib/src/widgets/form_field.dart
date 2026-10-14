@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+import '../foundation/field_validity.dart';
 import '../generated/theme_variables.dart';
 import '../theme/theme.dart';
 import 'form.dart';
@@ -52,7 +53,7 @@ class FormField extends StatelessWidget {
       children: [
         if (label != null)
           Text(label!, style: vars.labelSmall.copyWith(color: ink)),
-        child,
+        FieldValidity(invalid: invalid, child: child),
         if (hint != null)
           Text(
             hint,

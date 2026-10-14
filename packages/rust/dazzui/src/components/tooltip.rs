@@ -101,7 +101,7 @@ impl RenderOnce for Tooltip {
                 .shadow(shadows(t.shadow_sm))
                 .text_color(t.color_content.hsla())
                 .type_style(t.label_small)
-                .child(self.label);
+                .child(crate::foundation::text_child(self.label));
             positioned(&anchor, Placement::side(self.side, self.align, t), label)
         });
 

@@ -112,7 +112,7 @@ class _SkeletonState extends State<Skeleton>
                     end: Alignment(shift + 1, 0),
                     colors: <Color>[ground, crest, ground],
                   ),
-            color: still ? ground : null,
+            color: ground,
           ),
         );
       },

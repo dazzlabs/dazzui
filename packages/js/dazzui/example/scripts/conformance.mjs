@@ -40,8 +40,11 @@ const contract = JSON.parse(
 )
 const only = args.scenes?.split(',')
 const scenes = contract.stories
-  .filter(story => !only || only.includes(story.id))
   .flatMap(story => story.scenes)
+  .filter(
+    scene =>
+      !only || only.some(id => scene.id === id || scene.id.startsWith(`${id}/`))
+  )
 
 const server = await createServer({
   root: example,
@@ -49,7 +52,9 @@ const server = await createServer({
   server: { host: '127.0.0.1', port: 0 },
 })
 await server.listen()
-const browser = await chromium.launch()
+const browser = await chromium.launch({
+  executablePath: process.env.DAZZUI_CHROMIUM_EXECUTABLE || undefined,
+})
 const failures = []
 
 try {
@@ -84,10 +89,7 @@ try {
     title: 'React',
     role: 'reference',
     collected: new Date().toISOString(),
-    commit: execFileSync('git', ['rev-parse', '--short', 'HEAD'], {
-      cwd: repo,
-      encoding: 'utf8',
-    }).trim(),
+    commit: process.env.DAZZUI_CONFORMANCE_COMMIT ?? commitOf(repo),
     scale: SCALE,
     // The kit sets type in the system face; no test face is embedded, so
     // no crop is compared as a picture.
@@ -144,6 +146,9 @@ try {
         if (!reading) return
         const address = scene.specimens[index].address
         const entry = { ...reading }
+        // The contract compares a container's box only; its children are
+        // independent specimens with their own decoration and typography.
+        if (scene.specimens[index].container) entry.values = {}
         if (crops[index]) {
           const name = `images/${theme}/${file}-${index}.png`
           writeFileSync(join(out, name), Buffer.from(crops[index], 'base64'))
@@ -167,4 +172,16 @@ if (failures.length) {
 
 function kebab(name) {
   return name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()
+}
+
+function commitOf(repo) {
+  try {
+    return execFileSync('git', ['rev-parse', '--short', 'HEAD'], {
+      cwd: repo,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim()
+  } catch {
+    return 'unknown'
+  }
 }

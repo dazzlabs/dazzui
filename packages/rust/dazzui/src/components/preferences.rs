@@ -31,7 +31,8 @@ impl Preferences {
 
 impl ParentElement for Preferences {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -70,7 +71,7 @@ impl PreferenceSection {
 
     /// The heading over the rows. Omit for an unlabelled run.
     pub fn label(mut self, label: impl IntoElement) -> Self {
-        self.label = Some(label.into_any_element());
+        self.label = Some(crate::foundation::text_child(label));
         self
     }
 
@@ -82,14 +83,15 @@ impl PreferenceSection {
 
     /// A muted note under the rows.
     pub fn footer(mut self, footer: impl IntoElement) -> Self {
-        self.footer = Some(footer.into_any_element());
+        self.footer = Some(crate::foundation::text_child(footer));
         self
     }
 }
 
 impl ParentElement for PreferenceSection {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -148,7 +150,7 @@ pub struct PreferenceGroup {
 impl PreferenceGroup {
     pub fn new(title: impl IntoElement) -> Self {
         PreferenceGroup {
-            title: title.into_any_element(),
+            title: crate::foundation::text_child(title),
             description: None,
             action: None,
             children: Vec::new(),
@@ -157,7 +159,7 @@ impl PreferenceGroup {
 
     /// The line under the title, for what the group is for.
     pub fn description(mut self, description: impl IntoElement) -> Self {
-        self.description = Some(description.into_any_element());
+        self.description = Some(crate::foundation::text_child(description));
         self
     }
 
@@ -169,7 +171,8 @@ impl PreferenceGroup {
 
 impl ParentElement for PreferenceGroup {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -195,7 +198,7 @@ impl RenderOnce for PreferenceGroup {
                                 div()
                                     .text_color(t.color_content.hsla())
                                     .type_style(t.title_medium)
-                                    .child(self.title),
+                                    .child(crate::foundation::text_child(self.title)),
                             )
                             .when_some(self.description, |this, description| {
                                 this.child(
@@ -203,7 +206,7 @@ impl RenderOnce for PreferenceGroup {
                                         .text_color(t.color_content_subtle.hsla())
                                         .type_style(t.caption_small)
                                         .line_height(px(t.caption_small.size * 1.7))
-                                        .child(description),
+                                        .child(crate::foundation::text_child(description)),
                                 )
                             }),
                     )
@@ -239,7 +242,7 @@ impl PreferenceRow {
     pub fn new(id: impl Into<ElementId>, title: impl IntoElement) -> Self {
         PreferenceRow {
             id: id.into(),
-            title: title.into_any_element(),
+            title: crate::foundation::text_child(title),
             subtitle: None,
             icon: None,
             on_open: None,
@@ -250,7 +253,7 @@ impl PreferenceRow {
 
     /// The second line, for what the title cannot say in three words.
     pub fn subtitle(mut self, subtitle: impl IntoElement) -> Self {
-        self.subtitle = Some(subtitle.into_any_element());
+        self.subtitle = Some(crate::foundation::text_child(subtitle));
         self
     }
 
@@ -277,7 +280,8 @@ impl PreferenceRow {
 
 impl ParentElement for PreferenceRow {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -322,7 +326,7 @@ impl RenderOnce for PreferenceRow {
                             .text_ellipsis()
                             .text_color(t.color_content.hsla())
                             .type_style(t.label_quiet)
-                            .child(self.title),
+                            .child(crate::foundation::text_child(self.title)),
                     )
                     .when_some(self.subtitle, |this, subtitle| {
                         this.child(
@@ -332,7 +336,7 @@ impl RenderOnce for PreferenceRow {
                                 .text_ellipsis()
                                 .text_color(t.color_content_subtle.hsla())
                                 .type_style(t.caption_small)
-                                .child(subtitle),
+                                .child(crate::foundation::text_child(subtitle)),
                         )
                     }),
             )

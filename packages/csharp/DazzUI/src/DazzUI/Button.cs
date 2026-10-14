@@ -20,7 +20,7 @@ public class Button : Microsoft.UI.Xaml.Controls.Button
     public static readonly DependencyProperty TintProperty = DependencyProperty.Register(
         nameof(Tint), typeof(WidgetTint), typeof(Button), new PropertyMetadata(WidgetTint.Primary, Changed));
     public static readonly DependencyProperty VariantProperty = DependencyProperty.Register(
-        nameof(Variant), typeof(ControlVariant), typeof(Button), new PropertyMetadata(ControlVariant.Filled, Changed));
+        nameof(Variant), typeof(ControlVariant), typeof(Button), new PropertyMetadata(ControlVariant.Recessed, Changed));
     public static readonly DependencyProperty SizeProperty = DependencyProperty.Register(
         nameof(Size), typeof(ControlSize), typeof(Button), new PropertyMetadata(ControlSize.Small, Changed));
 

@@ -29,20 +29,38 @@ internal static class Collector
 {
     private const double Scale = 2;
 
+    internal static FrameworkElement PaintedRoot(FrameworkElement root, string component) => root switch
+    {
+        Autocomplete query => query.Input,
+        ShortcutRecorder recorder => recorder.Field,
+        Grid room when component == "Skeleton" && room.Children.Count == 1 && room.Children[0] is Skeleton bone => bone,
+        _ => root,
+    };
+
     public static async Task RunAsync(Window window, ContentControl host)
     {
+        using var display = new DisplayWakeLock();
         var output = Environment.GetEnvironmentVariable("DAZZUI_CONFORMANCE_OUTPUT")
             ?? Path.Combine(AppContext.BaseDirectory, "conformance");
         Directory.CreateDirectory(output);
+        var finishing = false;
+        window.Closed += (_, _) =>
+        {
+            if (finishing) return;
+            File.WriteAllText(Path.Combine(output, "failures.txt"), "The collection window closed before measurement finished.");
+            Environment.Exit(1);
+        };
         try
         {
             await CollectAsync(host, output);
+            finishing = true;
             window.Close();
             Environment.Exit(0);
         }
         catch (Exception error)
         {
             await File.WriteAllTextAsync(Path.Combine(output, "failures.txt"), error.ToString());
+            finishing = true;
             window.Close();
             Environment.Exit(1);
         }
@@ -65,8 +83,8 @@ internal static class Collector
         };
 
         var scenes = contract["stories"].Items()
-            .Where(story => only is null || only.Contains(story!["id"].Text()))
             .SelectMany(story => story!["scenes"].Items())
+            .Where(scene => only is null || only.Any(id => scene!["id"].Text() == id || scene["id"].Text().StartsWith(id + "/", StringComparison.Ordinal)))
             .ToList();
         var drawable = new Dictionary<string, Scene>();
         foreach (var story in Stories.All)
@@ -137,8 +155,15 @@ internal static class Collector
                 }
                 finally { Nodes.Built -= Record; }
 
+                FrameworkElement? Attached(JsonNode node)
+                {
+                    if (!built.TryGetValue(node, out var queue)) return null;
+                    while (queue.TryDequeue(out var element))
+                        if (element is FrameworkElement root && root.XamlRoot is not null && IsInside(root, frame)) return PaintedRoot(root, node.Element()!);
+                    return null;
+                }
                 var roots = nodes
-                    .Select(node => built.TryGetValue(node, out var queue) && queue.Count > 0 ? queue.Dequeue() as FrameworkElement : null)
+                    .Select(Attached)
                     .ToArray();
                 // A provider, or a wrapper lending its trigger a behaviour,
                 // draws nothing of its own: its element is a specimen inside it.
@@ -209,7 +234,7 @@ internal static class Collector
     private static async Task<string?[]> DrawAsync(FrameworkElement frame, Rect?[] rects, string dir, string file)
     {
         var bitmap = new RenderTargetBitmap();
-        await bitmap.RenderAsync(frame, (int)Math.Round(frame.ActualWidth * Scale), (int)Math.Round(frame.ActualHeight * Scale));
+        await bitmap.RenderAsync(frame, (int)Math.Round(frame.ActualWidth * Scale), (int)Math.Round(frame.ActualHeight * Scale)).AsTask().WaitAsync(TimeSpan.FromSeconds(30));
         var pixels = (await bitmap.GetPixelsAsync()).ToArray();
         int width = bitmap.PixelWidth, height = bitmap.PixelHeight;
         if (width == 0 || height == 0) return new string?[rects.Length];

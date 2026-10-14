@@ -31,7 +31,7 @@ impl OptionCard {
     pub fn new(id: impl Into<ElementId>, title: impl IntoElement) -> Self {
         OptionCard {
             id: id.into(),
-            title: title.into_any_element(),
+            title: crate::foundation::text_child(title),
             description: None,
             selected: false,
             tint: Tint::Primary,
@@ -42,7 +42,7 @@ impl OptionCard {
     }
 
     pub fn description(mut self, description: impl IntoElement) -> Self {
-        self.description = Some(description.into_any_element());
+        self.description = Some(crate::foundation::text_child(description));
         self
     }
 
@@ -96,7 +96,7 @@ impl RenderOnce for OptionCard {
                 .text_size(px(small))
                 .font_weight(caption.font_weight())
                 .line_height(px(small * 1.5))
-                .child(description)
+                .child(crate::foundation::text_child(description))
         });
 
         let mut card = div()
@@ -133,7 +133,7 @@ impl RenderOnce for OptionCard {
                 div()
                     .text_color(t.color_content.hsla())
                     .type_style(t.label_strong)
-                    .child(self.title),
+                    .child(crate::foundation::text_child(self.title)),
             )
             .children(description)
             .when(visible, |this| this.child(kit::outline(t, t.radius_large)));

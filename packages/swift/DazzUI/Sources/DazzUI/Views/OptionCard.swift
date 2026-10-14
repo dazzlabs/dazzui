@@ -54,7 +54,7 @@ public struct OptionCard<Title: View, Description: View>: View {
           .font(.system(size: vars.labelSmall.size, weight: vars.captionSmall.weight))
           // The caption sets its own leading here rather than taking the
           // caption face's, at the roomier ratio a wrapped explanation wants.
-          .lineSpacing(vars.labelSmall.size * Self.descriptionLeading - vars.labelSmall.size)
+          .lineBox(vars.labelSmall, lineHeight: vars.labelSmall.size * Self.descriptionLeading)
           .foregroundStyle(descriptionInk)
           .animation(vars.motion, value: selected)
       }
@@ -76,6 +76,7 @@ public struct OptionCard<Title: View, Description: View>: View {
             trailing: vars.spacing3
           )
       )
+      .padding(hairline)
       .background(surface(state: state))
       .clipShape(RoundedRectangle(cornerRadius: vars.radiusLarge, style: .circular))
       // Selection *thickens* the border as well as colouring it, which is what

@@ -91,9 +91,25 @@ pub enum Face {
 }
 
 impl Face {
+    #[cfg(target_os = "linux")]
+    pub(crate) fn families(self) -> &'static [&'static str] {
+        match self {
+            Face::Text => crate::generated::FONT_UI,
+            Face::Display => crate::generated::FONT_DISPLAY,
+            Face::Mono => crate::generated::FONT_CODE,
+        }
+    }
+
     /// The family GPUI resolves. `.SystemUIFont` is GPUI's name for the
     /// platform's UI face, which is what `-apple-system` asks for on the web.
     pub fn family(self) -> &'static str {
+        #[cfg(target_os = "macos")]
+        if self == Face::Mono {
+            return mac_code_family();
+        }
+        #[cfg(target_os = "linux")]
+        return crate::platform_fonts::family(self == Face::Mono);
+        #[cfg(not(target_os = "linux"))]
         match self {
             Face::Text | Face::Display => ".SystemUIFont",
             Face::Mono => MONO_FAMILY,
@@ -103,9 +119,24 @@ impl Face {
 
 #[cfg(target_os = "macos")]
 const MONO_FAMILY: &str = "Menlo";
+
+#[cfg(target_os = "macos")]
+fn mac_code_family() -> &'static str {
+    static FAMILY: std::sync::OnceLock<&'static str> = std::sync::OnceLock::new();
+    FAMILY.get_or_init(|| {
+        crate::generated::FONT_CODE
+            .iter()
+            .copied()
+            .find(|name| {
+                core_text::font::new_from_name(name, 12.)
+                    .is_ok_and(|font| font.family_name() == *name)
+            })
+            .unwrap_or(MONO_FAMILY)
+    })
+}
 #[cfg(target_os = "windows")]
 const MONO_FAMILY: &str = "Consolas";
-#[cfg(not(any(target_os = "macos", target_os = "windows")))]
+#[cfg(not(any(target_os = "macos", target_os = "windows", target_os = "linux")))]
 const MONO_FAMILY: &str = "monospace";
 
 /// A typography token: `labelMedium`, `control.small.content`.
@@ -119,6 +150,13 @@ pub struct TypeStyle {
 
 impl TypeStyle {
     pub fn font_weight(self) -> FontWeight {
+        // Core Text's system and SF Mono Medium report trait 0.23. font-kit's inverse
+        // CSS mapping calls that 530, so GPUI's CSS-500 matching rule otherwise
+        // chooses Regular (400) before this slightly-higher Medium candidate.
+        #[cfg(target_os = "macos")]
+        if self.weight == 500 && (self.face != Face::Mono || self.face.family() == "SF Mono") {
+            return FontWeight(530.);
+        }
         FontWeight(self.weight as f32)
     }
 

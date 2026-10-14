@@ -275,7 +275,8 @@ impl Dialog {
 
 impl ParentElement for Dialog {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -345,21 +346,22 @@ pub struct DialogHeader {
 impl DialogHeader {
     pub fn new(title: impl IntoElement) -> Self {
         DialogHeader {
-            title: title.into_any_element(),
+            title: crate::foundation::text_child(title),
             subtitle: None,
             children: Vec::new(),
         }
     }
 
     pub fn subtitle(mut self, subtitle: impl IntoElement) -> Self {
-        self.subtitle = Some(subtitle.into_any_element());
+        self.subtitle = Some(crate::foundation::text_child(subtitle));
         self
     }
 }
 
 impl ParentElement for DialogHeader {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -389,7 +391,7 @@ pub(crate) fn sheet_header(
                     .font_weight(t.label_strong.font_weight())
                     .text_size(px(t.title_small.size))
                     .line_height(px(t.title_small.size))
-                    .child(title),
+                    .child(crate::foundation::text_child(title)),
             )
         })
         .when_some(subtitle, |this, subtitle| {
@@ -397,7 +399,7 @@ pub(crate) fn sheet_header(
                 div()
                     .text_color(t.color_content_subtle.hsla())
                     .type_style(t.caption_small)
-                    .child(subtitle),
+                    .child(crate::foundation::text_child(subtitle)),
             )
         })
         .children(children)
@@ -453,7 +455,8 @@ impl DialogBody {
 
 impl ParentElement for DialogBody {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -476,7 +479,8 @@ impl DialogFooter {
 
 impl ParentElement for DialogFooter {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 

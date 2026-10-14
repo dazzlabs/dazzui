@@ -177,11 +177,11 @@ final Map<String, ComponentBuilder> components = {
   'Meter': (n) {
     final double value = n.number('value') ?? 0;
     return Meter(
-      value: value / 100,
+      value: value,
       size: _size(n, 'medium'),
       tint: n.option(MeterTint.values, 'tint', MeterTint.primary),
       label: n.has('label') ? Text(n.string('label')!) : null,
-      valueLabel: n.flag('showValue') ? '${value.round()}%' : null,
+      showValue: n.flag('showValue'),
       semanticsLabel: n.string('aria-label'),
     );
   },
@@ -240,19 +240,23 @@ final Map<String, ComponentBuilder> components = {
   ),
   'PopoverClose': _close,
   'PreferenceGroup': (n) => PreferenceGroup(
-    title: n.string('title')!,
-    description: n.string('description'),
+    title: n.element('title')!,
+    description: n.element('description'),
+    action: n.element('action'),
     children: n.kids,
   ),
   'PreferenceRow': (n) => PreferenceRow(
-    title: n.string('title')!,
-    subtitle: n.string('subtitle'),
+    title: n.element('title')!,
+    subtitle: n.element('subtitle'),
+    icon: n.element('icon'),
+    tint: n.option(PreferenceRowTint.values, 'tint', PreferenceRowTint.neutral),
     trailing: n.children.isEmpty ? null : _one(n),
-    onPressed: n.action('onOpen'),
+    onOpen: n.action('onOpen'),
   ),
   'PreferenceSection': (n) => PreferenceSection(
-    label: n.string('label'),
-    footer: n.string('footer'),
+    label: n.element('label'),
+    footer: n.element('footer'),
+    action: n.element('action'),
     children: n.kids,
   ),
   'Preferences': (n) => Preferences(children: n.kids),
@@ -262,7 +266,7 @@ final Map<String, ComponentBuilder> components = {
     child: _one(n),
   ),
   'Progress': (n) => Progress(
-    value: (n.number('value') ?? 0) / 100,
+    value: n.number('value'),
     size: _size(n, 'small'),
     tint: n.option(ProgressTint.values, 'tint', ProgressTint.primary),
     gradient: n.flag('gradient'),
@@ -328,20 +332,19 @@ final Map<String, ComponentBuilder> components = {
       ),
     ),
   ),
-  'Select': (n) => Held<String?>(
+  'Select': (n) => bound<String?>(
+    n,
+    onChange: 'onValueChange',
     initial: n.string('defaultValue'),
-    builder: (context, value, set) => Select<String>(
-      options: [
-        for (final option in n['options'] as List<Object?>)
-          SelectOption(
-            value: '${(option as Map)['value']}',
-            label: '${option['label']}',
-          ),
-      ],
+    read: (raw) => raw as String?,
+    builder: (value, set) => Select<String>(
+      options: _selectItems(n['options'] as List<Object?>),
       value: value,
       onChanged: n.flag('disabled') ? null : set,
       placeholder: n.string('placeholder') ?? 'Choose…',
       size: _size(n, 'medium'),
+      state: _state(n),
+      tint: n.option(TextFieldTint.values, 'tint', TextFieldTint.primary),
     ),
   ),
   'ShortcutRecorder': (n) => bound<String>(
@@ -424,7 +427,7 @@ final Map<String, ComponentBuilder> components = {
     spacing: Theme.of(n.context).vars.frameNavGap,
     children: n.kids,
   ),
-  'SidebarMenuBadge': (n) => Text(n.text),
+  'SidebarMenuBadge': (n) => SidebarMenuBadge(child: Text(n.text)),
   'SidebarMenuButton': (n) {
     final Map<Object?, Object?>? icon =
         n.props['icon'] as Map<Object?, Object?>?;
@@ -600,14 +603,39 @@ final Map<String, ComponentBuilder> components = {
     read: (raw) => raw as String?,
     builder: (value, set) => Tree<String>(
       items: _treeNodes(n, n['items']),
+      expanded: n['expanded'] == null ? null : _strings(n['expanded']),
       initiallyExpanded: _strings(n['defaultExpanded']),
+      onExpandedChanged: (ids) => n.handler('onExpandedChange')?.call(ids),
       selected: value,
       onSelectedChanged: set,
       size: _size(n, 'medium'),
+      tint: n.option(TreeTint.values, 'tint', TreeTint.primary),
       semanticsLabel: n.string('aria-label'),
     ),
   ),
 };
+
+List<SelectItem<String>> _selectItems(List<Object?> items) => [
+  for (final item in items.cast<Map>())
+    if (item['options'] case final List<Object?> options)
+      SelectGroup(
+        label: '${item['label']}',
+        options: [
+          for (final option in options.cast<Map>())
+            SelectOption(
+              value: '${option['value']}',
+              label: '${option['label']}',
+              enabled: option['disabled'] != true,
+            ),
+        ],
+      )
+    else
+      SelectOption(
+        value: '${item['value']}',
+        label: '${item['label']}',
+        enabled: item['disabled'] != true,
+      ),
+];
 
 /* Helpers ---------------------------------------------------------------- */
 
@@ -672,8 +700,9 @@ List<TreeNode<String>> _treeNodes(Node n, Object? items) => [
     TreeNode<String>(
       id: '${(item as Map)['id']}',
       label: buildNode(n.context, item['label']),
-      icon: _iconData(item['icon']),
+      icon: item['icon'] == null ? null : buildNode(n.context, item['icon']),
       meta: item['meta'] == null ? null : buildNode(n.context, item['meta']),
+      text: item['text'] as String?,
       enabled: item['disabled'] != true,
       children: item['children'] == null
           ? null

@@ -70,8 +70,7 @@ pub const STORY: &str = r##"{
       ]
     },
     "gaps": [
-      "preview-card/preview preview: <PreviewCard> is not drawn by GTK4",
-      "preview-card/preview preview: <Avatar> is not drawn by GTK4"
+      "preview-card/preview preview: <PreviewCard> is not drawn by GTK4"
     ]
   },
   "examples": [
@@ -144,8 +143,7 @@ pub const STORY: &str = r##"{
         ]
       },
       "gaps": [
-        "preview-card/0 preview: <PreviewCard> is not drawn by GTK4",
-        "preview-card/0 preview: <Avatar> is not drawn by GTK4"
+        "preview-card/0 preview: <PreviewCard> is not drawn by GTK4"
       ]
     },
     {

@@ -18,9 +18,9 @@ const px = (value: string) => {
   return Number.isFinite(n) ? round(n) : null
 }
 
-/* A canvas pixel is the one colour format every browser agrees on: whatever
-   the computed style says — oklch, color-mix, display-p3 — is painted and
-   read back as sRGB bytes. */
+/* Convert colours through the browser, but paint opaque RGB. An 8-bit canvas
+   stores premultiplied channels: painting a 12% wash and unpremultiplying its
+   pixel can change a channel by several bytes. Alpha is serialized separately. */
 const canvas = document.createElement('canvas')
 canvas.width = canvas.height = 1
 const context = canvas.getContext('2d', { willReadFrequently: true })!
@@ -29,8 +29,25 @@ export function hex(colour: string): string {
   context.clearRect(0, 0, 1, 1)
   context.fillStyle = '#000'
   context.fillStyle = colour
+  const normalized = context.fillStyle
+  let alpha = 1
+  const slash = /\/\s*([\d.eE+-]+%?)\s*\)$/.exec(normalized)
+  const rgba = /^rgba\((.*),\s*([\d.eE+-]+%?)\)$/.exec(normalized)
+  const channel = (value: string) =>
+    parseFloat(value) / (value.endsWith('%') ? 100 : 1)
+  if (slash) {
+    alpha = channel(slash[1]!)
+    context.fillStyle = normalized.replace(slash[0], '/ 1)')
+  } else if (rgba) {
+    alpha = channel(rgba[2]!)
+    context.fillStyle = `rgb(${rgba[1]})`
+  } else if (/^#[\da-f]{8}$/i.test(normalized)) {
+    alpha = parseInt(normalized.slice(7), 16) / 255
+    context.fillStyle = normalized.slice(0, 7)
+  }
   context.fillRect(0, 0, 1, 1)
-  const [r, g, b, a] = context.getImageData(0, 0, 1, 1).data
+  const [r, g, b] = context.getImageData(0, 0, 1, 1).data
+  const a = Math.round(Math.max(0, Math.min(1, alpha)) * 255)
   const byte = (n: number) => n.toString(16).padStart(2, '0')
   if (a === 0) return '#00000000'
   return `#${byte(r!)}${byte(g!)}${byte(b!)}${a === 255 ? '' : byte(a!)}`
@@ -75,6 +92,39 @@ function shadow(value: string) {
  * glyph it draws, which has an ink but no type.
  */
 function firstText(node: HTMLElement, nested: ReadonlySet<Element>) {
+  const inputStyle = (element: Node) => {
+    if (
+      element instanceof HTMLInputElement ||
+      element instanceof HTMLTextAreaElement
+    ) {
+      if (
+        element.getAttribute('aria-hidden') === 'true' ||
+        (element instanceof HTMLInputElement &&
+          ![
+            'text',
+            'email',
+            'password',
+            'search',
+            'tel',
+            'url',
+            'number',
+          ].includes(element.type))
+      )
+        return undefined
+      const style = getComputedStyle(element)
+      return !element.value && element.placeholder
+        ? {
+            color: getComputedStyle(element, '::placeholder').color,
+            fontSize: style.fontSize,
+            fontWeight: style.fontWeight,
+            lineHeight: style.lineHeight,
+          }
+        : style
+    }
+    return undefined
+  }
+  const input = inputStyle(node)
+  if (input) return { text: input, glyph: undefined }
   const walker = document.createTreeWalker(
     node,
     NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
@@ -87,6 +137,8 @@ function firstText(node: HTMLElement, nested: ReadonlySet<Element>) {
   )
   let glyph: Element | undefined
   for (let current = walker.nextNode(); current; current = walker.nextNode()) {
+    const input = inputStyle(current)
+    if (input) return { text: input, glyph }
     if (current.nodeType === Node.TEXT_NODE) {
       if (current.textContent?.trim() && current.parentElement)
         return { text: getComputedStyle(current.parentElement), glyph }
@@ -100,7 +152,15 @@ export function measure(
   nested: ReadonlySet<Element>
 ): Reading {
   const rect = node.getBoundingClientRect()
-  const style = getComputedStyle(node)
+  // Some compound controls put the painted box inside a behaviour root.
+  // Read that box rather than reporting its unstyled wrapper as square.
+  const surface = node.matches('.dz-number-field')
+    ? (node.querySelector<HTMLElement>('.dz-number-field__group') ?? node)
+    : node.matches('.dz-shortcut-recorder')
+      ? (node.querySelector<HTMLElement>('.dz-shortcut-recorder__button') ??
+        node)
+      : node
+  const style = getComputedStyle(surface)
   const { text, glyph } = firstText(node, nested)
   const ink = text?.color ?? (glyph && getComputedStyle(glyph).color)
   const border =
@@ -108,7 +168,7 @@ export function measure(
   // A heavier stroke laid over the border on a layer of its own — the way a
   // chosen OptionCard draws it, so its content does not move — is the stroke
   // the reader sees, and the one the other platforms draw.
-  const over = getComputedStyle(node, '::after')
+  const over = getComputedStyle(surface, '::after')
   const laid =
     over.content !== 'none' &&
     over.position === 'absolute' &&

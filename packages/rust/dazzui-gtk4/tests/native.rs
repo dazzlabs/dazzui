@@ -1,5 +1,7 @@
 use dazzui_gtk4::{gtk, prelude::*, *};
 use std::{cell::RefCell, rc::Rc};
+#[path = "../example/src/conformance/paint.rs"]
+mod paint;
 fn drain() {
     let end = std::time::Instant::now() + std::time::Duration::from_millis(40);
     while std::time::Instant::now() < end {
@@ -104,9 +106,97 @@ fn main() {
         b.set_valign(gtk::Align::Start);
         segment_row.append(b);
     }
+    let pills = pill_tabs(
+        &[
+            PillTab {
+                value: "all",
+                label: "All",
+                count: Some("24"),
+                icon: None,
+                disabled: false,
+            },
+            PillTab {
+                value: "unread",
+                label: "Unread",
+                count: Some("3"),
+                icon: None,
+                disabled: false,
+            },
+        ],
+        Some("all"),
+        Tint::Primary,
+    );
+    pills.set_halign(gtk::Align::Start);
+    root.append(&pills);
+    let choice = option_card("Choice", "A selectable surface", None);
+    choice.set_active(true);
+    root.append(&choice);
+    let first_pill = pills
+        .first_child()
+        .unwrap()
+        .downcast::<gtk::ToggleButton>()
+        .unwrap();
+    let second_pill = first_pill
+        .next_sibling()
+        .unwrap()
+        .downcast::<gtk::ToggleButton>()
+        .unwrap();
+    second_pill.set_active(true);
+    assert!(!first_pill.is_active() && second_pill.is_active());
     let field = text_field("Email", Size::Medium);
     field.set_text("persist@example.com");
     root.append(&field);
+    let clear_meter = box_(gtk::Orientation::Vertical, "0");
+    clear_meter.append(&progress(0.5, Tint::Primary, Size::Medium));
+    root.append(&clear_meter);
+    let preference_action = button("Manage", Variant::Recessed, Tint::Neutral, Size::Small);
+    root.append(&preference_row(
+        "Sessions",
+        Some("Connected devices"),
+        &preference_action,
+    ));
+    let searches: Vec<_> = [Size::Small, Size::Medium, Size::Large]
+        .into_iter()
+        .map(|size| search_field("Search", size))
+        .collect();
+    for search in &searches {
+        root.append(search);
+    }
+    let grouped = select_options(
+        &[
+            SelectItem::Option(SelectOption {
+                value: "none".into(),
+                label: "Unassigned".into(),
+                disabled: false,
+            }),
+            SelectItem::Group {
+                label: "People".into(),
+                options: vec![
+                    SelectOption {
+                        value: "ada".into(),
+                        label: "Ada".into(),
+                        disabled: false,
+                    },
+                    SelectOption {
+                        value: "grace".into(),
+                        label: "Grace".into(),
+                        disabled: true,
+                    },
+                ],
+            },
+        ],
+        "Choose one",
+        Size::Medium,
+    );
+    root.append(&grouped);
+    let select_sizes: Vec<_> = [Size::Small, Size::Medium, Size::Large]
+        .into_iter()
+        .map(|size| select_options(&[], "Choose", size))
+        .collect();
+    for select in &select_sizes {
+        root.append(select);
+    }
+    assert_eq!(grouped.selected(), 0, "selector starts empty");
     let check = checkbox("Remember", Tint::Success, Size::Medium);
     check.set_active(true);
     root.append(&check);
@@ -142,12 +232,161 @@ fn main() {
         assert_eq!(field.text(), "persist@example.com");
         assert!(check.is_active());
         assert!(sw.is_active());
+        let corners = paint::corners(&second_pill).expect("painted pill corner");
+        for corner in corners {
+            assert!(
+                (corner - second_pill.height() as f32 / 2.).abs() <= 0.5,
+                "pill corner in {name}"
+            );
+        }
+        assert!(
+            pills.width() < 300,
+            "pills must size to their labels in {name}"
+        );
         for b in &buttons {
             assert!(
                 b.width() > 0 && b.compute_bounds(&root).unwrap().height() as i32 > 0,
                 "unallocated button in {name}"
             );
         }
+    }
+    Theme::default().apply(&window);
+    drain();
+    fn labels(widget: &impl IsA<gtk::Widget>) -> Vec<String> {
+        let widget = widget.as_ref();
+        let mut out = vec![];
+        if let Some(label) = widget.downcast_ref::<gtk::Label>() {
+            out.push(label.text().into());
+        }
+        let mut child = widget.first_child();
+        while let Some(widget) = child {
+            child = widget.next_sibling();
+            out.extend(labels(&widget));
+        }
+        out
+    }
+    let texts = labels(&grouped);
+    assert!(
+        texts.iter().any(|text| text == "Choose one"),
+        "missing native placeholder: selected={}; {texts:?}",
+        grouped.selected()
+    );
+    grouped.set_selected(2);
+    assert_eq!(
+        grouped.selected(),
+        3,
+        "headings cannot become the selected value"
+    );
+    grouped.set_selected(4);
+    assert_eq!(
+        grouped.selected(),
+        3,
+        "disabled options cannot become the selected value"
+    );
+    grouped.set_selected(0);
+    drain();
+    assert!(labels(&grouped).iter().any(|text| text == "Choose one"));
+    let icons = gtk::IconTheme::for_display(&WidgetExt::display(&window));
+    assert!(
+        icons.has_icon("dazzui-Add20Regular-symbolic"),
+        "Fluent glyph resource"
+    );
+    // Read the submitted render nodes, not the token we meant to draw.
+    // Nested segments must remain concentric even under pill and square themes.
+    for (theme, expected, card_corner) in [
+        ("studio-light", 10., 12.),
+        ("studio-dark", 10., 12.),
+        ("bright-light", 14., 12.),
+        ("bright-dark", 14., 12.),
+        ("graphite-light", 8., 10.),
+        ("nocturne-dark", 8., 10.),
+    ] {
+        Theme::new(theme).unwrap().apply(&window);
+        drain();
+        assert_eq!(
+            paint::corners(&clear_meter),
+            None,
+            "{theme}: a clear layout must not borrow its child's track corner"
+        );
+        assert_eq!(
+            paint::corners(&labelled),
+            Some([expected; 4]),
+            "{theme}: track corners"
+        );
+        let segment = labelled.first_child().unwrap();
+        assert_eq!(
+            paint::corners(&segment),
+            Some([expected - 3.; 4]),
+            "{theme}: segment corners"
+        );
+        assert_eq!(
+            paint::corners(&choice),
+            Some([card_corner; 4]),
+            "{theme}: selected option card corners"
+        );
+        let field_corner = if theme.starts_with("bright-") {
+            None
+        } else if theme.starts_with("studio-") {
+            Some(10.)
+        } else {
+            Some(8.)
+        };
+        assert_eq!(
+            field.compute_bounds(&root).unwrap().height(),
+            28.,
+            "{theme}: text field height"
+        );
+        assert_eq!(
+            preference_action.compute_bounds(&root).unwrap().height(),
+            26.,
+            "{theme}: preference action must keep its control height"
+        );
+        if theme.starts_with("bright-") {
+            assert_eq!(
+                paint::corners(&preference_action),
+                Some([13.; 4]),
+                "{theme}: preference action pill"
+            );
+        }
+        assert_eq!(
+            paint::corners(&field),
+            Some([field_corner.unwrap_or(14.); 4]),
+            "{theme}: text field corners"
+        );
+        for (search, height) in searches.iter().zip([26., 28., 32.]) {
+            assert_eq!(
+                search.compute_bounds(&root).unwrap().height(),
+                height,
+                "{theme}: search field height"
+            );
+            let expected = if theme.starts_with("bright-") {
+                height / 2.
+            } else {
+                field_corner.unwrap()
+            };
+            assert_eq!(
+                paint::corners(search),
+                Some([expected; 4]),
+                "{theme}: search field corners"
+            );
+        }
+        for (select, height) in select_sizes.iter().zip([26., 28., 32.]) {
+            assert_eq!(
+                select.compute_bounds(&root).unwrap().height(),
+                height,
+                "{theme}: select height"
+            );
+            assert_eq!(
+                paint::corners(select),
+                Some([field_corner.unwrap_or(height / 2.); 4]),
+                "{theme}: select corners"
+            );
+        }
+        assert_eq!(
+            labelled.compute_bounds(&root).unwrap().height(),
+            28.,
+            "{theme}: track height"
+        );
     }
     Theme::default().apply(&window);
     drain();
@@ -198,7 +437,7 @@ fn main() {
         );
     }
     // A segment's glyph beside its label is drawn as Button draws one: 2px
-    // under the small profile's 16px icon, 6px before the label, and the
+    // under the medium profile's 16px icon, 8px before the label, and the
     // leading end 2px under `spacing-3`. A glyph alone keeps the full 16px.
     let segment = labelled.first_child().unwrap();
     let content = segment.first_child().unwrap();
@@ -207,7 +446,7 @@ fn main() {
     let g = glyph.compute_bounds(&content).unwrap();
     let t = text.compute_bounds(&content).unwrap();
     assert_eq!(g.width() as i32, 14, "segment glyph size");
-    assert_eq!((t.x() - g.x() - g.width()) as i32, 6, "segment glyph gap");
+    assert_eq!((t.x() - g.x() - g.width()) as i32, 8, "segment glyph gap");
     let (sb, cb) = (
         segment.compute_bounds(&segment_row).unwrap(),
         content.compute_bounds(&segment_row).unwrap(),

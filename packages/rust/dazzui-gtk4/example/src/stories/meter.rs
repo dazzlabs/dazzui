@@ -23,9 +23,7 @@ pub const STORY: &str = r#"{
         }
       ]
     },
-    "gaps": [
-      "meter/preview preview: <Meter> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -48,9 +46,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "meter/0 preview: <Meter> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "meter/1",
@@ -91,9 +87,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "meter/1 preview: <Meter> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "meter/2",
@@ -137,9 +131,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "meter/2 preview: <Meter> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

@@ -169,11 +169,7 @@ pub const STORY: &str = r#"{
       ]
     },
     "gaps": [
-      "tree/preview preview: <Tree> is not drawn by GTK4",
-      "tree/preview preview: <Icon> is not drawn by GTK4",
-      "tree/preview: live story expressions are not yet mapped",
-      "tree/preview: Fluent glyph Folder20Regular is not yet mapped",
-      "tree/preview: Fluent glyph Document20Regular is not yet mapped"
+      "tree/preview preview: <Tree> is not drawn by GTK4"
     ]
   },
   "examples": [
@@ -343,11 +339,7 @@ pub const STORY: &str = r#"{
         ]
       },
       "gaps": [
-        "tree/0 preview: <Tree> is not drawn by GTK4",
-        "tree/0 preview: <Icon> is not drawn by GTK4",
-        "tree/0: live story expressions are not yet mapped",
-        "tree/0: Fluent glyph Folder20Regular is not yet mapped",
-        "tree/0: Fluent glyph Document20Regular is not yet mapped"
+        "tree/0 preview: <Tree> is not drawn by GTK4"
       ]
     },
     {
@@ -469,11 +461,7 @@ pub const STORY: &str = r#"{
         ]
       },
       "gaps": [
-        "tree/1 preview: <Tree> is not drawn by GTK4",
-        "tree/1 preview: <Icon> is not drawn by GTK4",
-        "tree/1: live story expressions are not yet mapped",
-        "tree/1: Fluent glyph Folder20Regular is not yet mapped",
-        "tree/1: Fluent glyph Document20Regular is not yet mapped"
+        "tree/1 preview: <Tree> is not drawn by GTK4"
       ]
     }
   ]

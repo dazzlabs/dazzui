@@ -148,7 +148,6 @@ pub const STORY: &str = r#"{
       },
       "gaps": [
         "form/0 preview: <Form> is not drawn by GTK4",
-        "form/0 preview: <ActionBar> is not drawn by GTK4",
         "form/0 preview: <Button type> is not drawn by GTK4"
       ]
     },
@@ -199,9 +198,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "form/1 preview: <Fieldset> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

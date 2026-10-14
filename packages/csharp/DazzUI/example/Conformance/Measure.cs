@@ -22,6 +22,13 @@ internal static class Measure
 {
     private static double Round(double n) => Math.Round(n * 100) / 100;
 
+    // A bound label retains the control's requested weight. Its converter
+    // can choose an installed face (600 -> 700) just as CSS font matching
+    // does without changing the computed font-weight reported by React.
+    private static int Weight(TextBlock text) =>
+        text.GetBindingExpression(TextBlock.FontWeightProperty)?.ParentBinding.Source is Control owner
+            ? owner.FontWeight.Weight : text.FontWeight.Weight;
+
     public static string Hex(Windows.UI.Color colour, double opacity = 1)
     {
         var a = (int)Math.Round(colour.A * opacity);
@@ -37,6 +44,7 @@ internal static class Measure
         void Visit(DependencyObject item)
         {
             if (item != root && nested.Contains(item)) return;
+            if (item is UIElement visual && (visual.Visibility == Visibility.Collapsed || visual.Opacity == 0)) return;
             list.Add(item);
             for (var i = 0; i < VisualTreeHelper.GetChildrenCount(item); i++) Visit(VisualTreeHelper.GetChild(item, i));
         }
@@ -76,11 +84,21 @@ internal static class Measure
         foreach (var item in own)
         {
             if (item is Control || !SameSize(item, root)) continue;
-            if (PaintOf(item) is { } paint && (paint.Background is not null || paint.BorderBrush is not null))
+            if (PaintOf(item) is { } paint && (paint.Background is not null || paint.BorderBrush is not null || root is Surface && paint.Corner != default))
             {
                 surface = paint;
                 break;
             }
+            // A layout's children own their surfaces. A closed disclosure's
+            // trigger or a label-free meter's track can happen to fill that
+            // layout; neither becomes the container's own decoration.
+            if (root is Surface && item is Panel) break;
+        }
+        if (root is Spinner && own.OfType<Microsoft.UI.Xaml.Shapes.Ellipse>().FirstOrDefault(e => SameSize(e, root)) is { } ring)
+        {
+            var head = own.OfType<Microsoft.UI.Xaml.Shapes.Path>().FirstOrDefault(p => SameSize(p, root));
+            var width = head?.StrokeThickness ?? ring.StrokeThickness;
+            surface = new(ring.Fill, head?.Stroke ?? ring.Stroke, new Thickness(width), new CornerRadius(Math.Min(ring.ActualWidth, ring.ActualHeight) / 2), default);
         }
         // A brush that is not one colour cannot be written as one.
         var painted = surface is { Background: not (null or SolidColorBrush) } or { BorderBrush: not (null or SolidColorBrush) };
@@ -92,16 +110,38 @@ internal static class Measure
 
         var texts = own.OfType<TextBlock>().Where(t => t.ActualWidth > 0 || t.Text.Length > 0).ToList();
         var text = texts.FirstOrDefault(t => !Glyph(t) && t.Text.Trim().Length > 0);
-        var ink = Colour((text ?? texts.FirstOrDefault())?.Foreground);
+        // WinUI's TextBox renders entered text through a native editor, not a
+        // TextBlock. Its value precedes a number field's unit in the visual
+        // tree just as the input precedes the unit in React's DOM.
+        var editor = own.OfType<TextBox>().FirstOrDefault(t => t.ActualWidth > 0 && t.ActualHeight > 0 && t.Text.Length > 0);
+        if (editor is not null && text is not null && own.IndexOf(text) < own.IndexOf(editor)) editor = null;
+        var ink = Colour(editor?.Foreground ?? (text ?? texts.FirstOrDefault())?.Foreground);
         var stack = own.OfType<StackPanel>().FirstOrDefault();
+        var layout = own.FirstOrDefault(item => item is StackPanel || root is Surface && item is Grid grid && (grid.ColumnDefinitions.Count > 0 || grid.RowDefinitions.Count > 0));
+        double? gap = layout switch
+        {
+            StackPanel line => line.Spacing,
+            Grid grid => grid.ColumnDefinitions.Count > 1 && grid.ColumnSpacing != 0 ? grid.ColumnSpacing
+                : grid.RowSpacing != 0 ? grid.RowSpacing : grid.ColumnSpacing,
+            _ => null,
+        };
 
         // The padding is the inset from the box's edge to its content, less
         // the stroke — what CSS calls padding: every padding, border and
         // margin from the root down to where the content starts.
         double left = 0, top = 0;
-        var content = (DependencyObject?)stack ?? text;
+        var viewport = own.OfType<ScrollViewer>().FirstOrDefault(view => view.Name == "ContentElement");
+        var content = root is SearchField
+            ? own.OfType<Icon>().FirstOrDefault(icon => icon.ActualWidth > 0)
+            : root is TextBox or AutoSuggestBox ? viewport
+            : layout ?? (DependencyObject?)stack ?? viewport ?? (DependencyObject?)text;
         for (var item = content; item is not null; item = VisualTreeHelper.GetParent(item))
         {
+            if (item == content && item is ScrollViewer scroll)
+            {
+                left += scroll.Padding.Left;
+                top += scroll.Padding.Top;
+            }
             if (item != content && item is not Control && PaintOf(item) is { } paint)
             {
                 left += paint.Padding.Left + paint.Border.Left;
@@ -121,12 +161,12 @@ internal static class Measure
                 ["strokeColor"] = painted || stroke == 0 ? null : Colour(surface!.BorderBrush),
                 ["fill"] = painted ? null : Colour(surface?.Background) ?? "#00000000",
                 ["ink"] = ink,
-                ["fontSize"] = text is null ? null : Round(text.FontSize),
-                ["fontWeight"] = text is null ? null : (int)text.FontWeight.Weight,
-                ["lineHeight"] = text is null || text.LineHeight == 0 ? null : Round(text.LineHeight),
+                ["fontSize"] = editor is not null ? Round(editor.FontSize) : text is null ? null : Round(text.FontSize),
+                ["fontWeight"] = editor is not null ? (int)editor.FontWeight.Weight : text is null ? null : Weight(text),
+                ["lineHeight"] = editor is not null || text is null || text.LineHeight == 0 ? null : Round(text.LineHeight),
                 ["paddingX"] = painted ? null : Round(Math.Max(0, left - stroke)),
                 ["paddingY"] = painted ? null : Round(Math.Max(0, top - stroke)),
-                ["gap"] = stack is null ? null : Round(stack.Spacing),
+                ["gap"] = gap is null ? null : Round(gap.Value),
                 // A token shadow the kit draws says its name; a ThemeShadow has none.
                 ["shadow"] = painted ? null : Elevation.GetShadow(root) ?? (root.Shadow is null ? "none" : "theme"),
             },

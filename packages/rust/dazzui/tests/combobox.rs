@@ -6,6 +6,9 @@ use std::cell::RefCell;
 use std::collections::HashSet;
 use std::rc::Rc;
 
+mod support;
+use support::keys;
+
 use dazzui::{Autocomplete, Combobox, SelectOption};
 use gpui::{
     Context, InteractiveElement, IntoElement, Modifiers, ParentElement, Render, Styled,
@@ -123,13 +126,13 @@ fn combobox_filters_chooses_and_clears(cx: &mut TestAppContext) {
 
     // Filtering is a case-insensitive "contains": "AN" leaves Germany,
     // Japan and New Zealand; the second of them is Japan.
-    cx.simulate_keystrokes("cmd-a");
+    cx.simulate_keystrokes(keys("cmd-a", "ctrl-a"));
     cx.simulate_input("AN");
     cx.simulate_keystrokes("down down enter");
     assert_eq!(*log.borrow(), ["value:jp", "value:jp"]);
 
     // Escape with the list open closes it; the query is dropped.
-    cx.simulate_keystrokes("cmd-a");
+    cx.simulate_keystrokes(keys("cmd-a", "ctrl-a"));
     cx.simulate_input("qq");
     assert!(drawn(&painted, cx, "empty"));
     cx.simulate_keystrokes("escape");
@@ -164,7 +167,7 @@ fn autocomplete_suggests_and_keeps_what_was_typed(cx: &mut TestAppContext) {
     );
 
     // Free text is a value too; the list only says nothing matches.
-    cx.simulate_keystrokes("cmd-a");
+    cx.simulate_keystrokes(keys("cmd-a", "ctrl-a"));
     cx.simulate_input("Futura");
     assert!(drawn(&painted, cx, "auto-empty"));
     cx.simulate_keystrokes("escape");

@@ -38,10 +38,7 @@ pub const STORY: &str = r#"{
         }
       ]
     },
-    "gaps": [
-      "search-field/preview preview: <SearchField> is not drawn by GTK4",
-      "search-field/preview: live story expressions are not yet mapped"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -79,10 +76,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "search-field/0 preview: <SearchField> is not drawn by GTK4",
-        "search-field/0: live story expressions are not yet mapped"
-      ]
+      "gaps": []
     }
   ]
 }"#;

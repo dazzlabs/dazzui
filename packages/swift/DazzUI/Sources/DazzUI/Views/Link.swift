@@ -1,6 +1,17 @@
 import FluentIcons
 import SwiftUI
 
+private struct InlineLinkKey: EnvironmentKey {
+  static let defaultValue = false
+}
+
+extension EnvironmentValues {
+  var inlineLink: Bool {
+    get { self[InlineLinkKey.self] }
+    set { self[InlineLinkKey.self] = newValue }
+  }
+}
+
 /// When the rule under the label is drawn.
 ///
 /// `hover` is the default, because a page of prose with a rule under every link
@@ -33,6 +44,7 @@ public struct Link: View {
   public var action: (() -> Void)?
 
   @Environment(\.theme) private var theme
+  @Environment(\.inlineLink) private var inline
   @FocusState private var focused: Bool
 
   public init(
@@ -66,6 +78,7 @@ public struct Link: View {
 
       HStack(spacing: vars.spacing05) {
         Text(title)
+          .lineBox(vars.bodyMedium, lineHeight: inline ? vars.bodyMedium.naturalLineHeight : nil)
           .underline(ruled(state: state))
         if external {
           Icon(.arrowUpRight12Regular, size: vars.iconSmall)

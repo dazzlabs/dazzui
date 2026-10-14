@@ -219,7 +219,13 @@ fn toasts_arrive_and_leave(cx: &mut TestAppContext) {
     cx.run_until_parked();
     let toast = cx.debug_bounds("dz-toast").expect("the toast is drawn");
     assert!(toast.origin.y > px(700.), "it hangs from the bottom edge");
-    assert_eq!(toast.center().x, px(500.), "centred along it");
+    // An odd number of display pixels puts the centre half a pixel away
+    // from the ideal centre when both painted edges are pixel aligned.
+    let half_pixel = cx.update(|window, _| px(0.5 / window.scale_factor()));
+    assert!(
+        (toast.center().x - px(500.)).abs() <= half_pixel,
+        "centred to the nearest display pixel"
+    );
 
     cx.executor().advance_clock(Duration::from_millis(5100));
     cx.run_until_parked();

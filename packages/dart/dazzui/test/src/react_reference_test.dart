@@ -1,5 +1,6 @@
 import 'package:dazzui/dazzui.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../host.dart' as app;
@@ -17,6 +18,188 @@ void main() {
   }
 
   const vars = themeVariables;
+
+  testWidgets('OTP tint and form validity remain separate, as in React', (
+    tester,
+  ) async {
+    Widget code() => OtpField(
+      length: 4,
+      value: '12',
+      state: TextFieldState.error,
+      onChanged: (_) {},
+    );
+    BoxDecoration cell() =>
+        tester
+                .widgetList<AnimatedContainer>(
+                  find.descendant(
+                    of: find.byType(OtpField),
+                    matching: find.byType(AnimatedContainer),
+                  ),
+                )
+                .first
+                .decoration!
+            as BoxDecoration;
+    Color? ink() => tester.widget<Text>(find.text('1')).style?.color;
+    await tester.pumpWidget(host(code()));
+    expect(ink(), vars.colorContent);
+    expect(cell().color, vars.colorSurface);
+    expect((cell().border! as Border).top.color, vars.colorBorderStrong);
+    await tester.pumpWidget(host(FormField(invalid: true, child: code())));
+    expect(ink(), vars.colorDanger[800]);
+    expect(cell().color, vars.colorDanger[50]);
+  });
+
+  testWidgets('masked codes keep the backing input invisible', (tester) async {
+    await tester.pumpWidget(
+      host(OtpField(length: 4, value: '1234', mask: true, onChanged: (_) {})),
+    );
+    final editable = tester.widget<EditableText>(find.byType(EditableText));
+    expect(editable.style.color, const Color(0x00000000));
+    expect(find.text('•'), findsNWidgets(4));
+  });
+
+  testWidgets('number steppers remain usable inside every field size', (
+    tester,
+  ) async {
+    for (final size in [
+      WidgetSize.tiny,
+      WidgetSize.small,
+      WidgetSize.medium,
+      WidgetSize.large,
+    ]) {
+      double? value = 1;
+      await tester.pumpWidget(
+        host(
+          StatefulBuilder(
+            key: ValueKey(size),
+            builder: (context, setState) => SizedBox(
+              width: 160,
+              child: NumberField(
+                value: value,
+                min: 0,
+                max: 10,
+                size: size,
+                onChanged: (next) => setState(() => value = next),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.bySemanticsLabel('Increase'));
+      await tester.pumpAndSettle();
+      expect(value, 2);
+      await tester.tap(find.byType(EditableText));
+      await tester.sendKeyEvent(LogicalKeyboardKey.pageUp);
+      await tester.pumpAndSettle();
+      expect(value, 10);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pumpAndSettle();
+      expect(value, 9);
+      expect(tester.takeException(), isNull);
+    }
+  });
+
+  testWidgets(
+    'controlled tree expansion reports the next value without opening itself',
+    (tester) async {
+      List<String>? changed;
+      await tester.pumpWidget(
+        host(
+          SizedBox(
+            width: 240,
+            child: Tree<String>(
+              items: const [
+                TreeNode<String>(
+                  id: 'folder',
+                  label: Text('Folder'),
+                  children: [
+                    TreeNode<String>(id: 'file', label: Text('File')),
+                  ],
+                ),
+              ],
+              expanded: const [],
+              onExpandedChanged: (value) => changed = value,
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Folder'));
+      await tester.pump();
+      expect(changed, ['folder']);
+      expect(find.text('File'), findsNothing);
+    },
+  );
+
+  testWidgets('tree preserves rich icon, label and metadata slots', (
+    tester,
+  ) async {
+    String? selected;
+    await tester.pumpWidget(
+      host(
+        SizedBox(
+          width: 240,
+          child: Tree<String>(
+            items: const [
+              TreeNode<String>(
+                id: 'file',
+                text: 'A file',
+                label: Text('A file'),
+                icon: Icon(FluentIcons.document_20_regular),
+                meta: Badge(size: WidgetSize.small, child: Text('M')),
+              ),
+            ],
+            onSelectedChanged: (value) => selected = value,
+          ),
+        ),
+      ),
+    );
+    expect(find.byType(Badge), findsOneWidget);
+    expect(tester.getSize(find.byType(Icon)).width, vars.iconMedium);
+    await tester.tap(find.text('A file'));
+    expect(selected, 'file');
+  });
+
+  testWidgets('multiline fields use the React text leading', (tester) async {
+    await tester.pumpWidget(
+      host(const SizedBox(width: 240, child: TextField(maxLines: 4))),
+    );
+    final editable = tester.widget<EditableText>(find.byType(EditableText));
+    expect(editable.style.height, 1.6);
+    expect(editable.style.fontSize, vars.labelMedium.fontSize);
+    await tester.pumpWidget(
+      host(
+        const SizedBox(width: 320, child: TextField(maxLines: 5, minLines: 5)),
+      ),
+    );
+    expect(tester.getSize(find.byType(TextField)).height, closeTo(118, 0.1));
+  });
+
+  testWidgets('sidebar counts keep their size and follow selected row ink', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      host(
+        SizedBox(
+          width: 240,
+          child: NavItem(
+            label: 'Inbox',
+            current: true,
+            onPressed: () {},
+            trailing: const SidebarMenuBadge(child: Text('12')),
+          ),
+        ),
+      ),
+    );
+    expect(
+      tester.getSize(find.byType(SidebarMenuBadge)).height,
+      vars.spacing5,
+    );
+    final context = tester.element(find.text('12'));
+    final style = DefaultTextStyle.of(context).style;
+    expect(style.color, vars.colorOnAccent);
+    expect(style.fontSize, vars.captionSmall.fontSize);
+    expect(style.fontWeight, vars.labelMedium.fontWeight);
+  });
 
   group('Button', () {
     testWidgets('sits at the size profile height, small by default', (
@@ -416,6 +599,32 @@ void main() {
   });
 
   group('PillTabs', () {
+    testWidgets('pills share one row and size to their labels', (tester) async {
+      await tester.pumpWidget(
+        host(
+          PillTabs<String>(
+            items: const [
+              PillTabItem(value: 'all', label: 'All'),
+              PillTabItem(value: 'saved', label: 'Saved'),
+              PillTabItem(value: 'recent', label: 'Recent'),
+            ],
+            value: 'all',
+            onChanged: (_) {},
+          ),
+        ),
+      );
+      final size = tester.getSize(find.byType(PillTabs<String>));
+      expect(size.height, vars.controlTinySize);
+      expect(size.width, lessThan(300));
+      final pills = find
+          .byType(AnimatedContainer)
+          .evaluate()
+          .map((e) => tester.getRect(find.byWidget(e.widget)))
+          .toList();
+      expect(pills.map((r) => r.top).toSet().length, 1);
+      expect(pills.every((r) => r.width < 100), isTrue);
+    });
+
     testWidgets('an unselected pill has a fill of its own', (tester) async {
       await tester.pumpWidget(
         host(
@@ -447,19 +656,65 @@ void main() {
   });
 
   group('Progress', () {
+    testWidgets('uses the React percentage range and clamps the fill', (
+      tester,
+    ) async {
+      for (final (double value, double expectedWidth) in [
+        (-10.0, 0.0),
+        (25.0, 50.0),
+        (50.0, 100.0),
+        (150.0, 200.0),
+      ]) {
+        await tester.pumpWidget(
+          host(SizedBox(width: 200, child: Progress(value: value))),
+        );
+        await tester.pump(const Duration(seconds: 1));
+        expect(
+          tester.getSize(find.byType(AnimatedContainer)).width,
+          expectedWidth,
+          reason: '$value percent',
+        );
+      }
+    });
+
     testWidgets('every size lands on its own thickness', (tester) async {
       for (final (WidgetSize step, double thickness) in [
         (WidgetSize.small, vars.spacing1),
         (WidgetSize.medium, vars.spacing15),
         (WidgetSize.large, vars.spacing2),
       ]) {
-        await tester.pumpWidget(host(Progress(value: 0.5, size: step)));
+        await tester.pumpWidget(host(Progress(value: 50, size: step)));
         expect(
           tester.getSize(find.byType(Progress)).height,
           thickness,
           reason: '${step.namedSize.name} progress',
         );
       }
+    });
+  });
+
+  group('Meter', () {
+    testWidgets('defaults to 0–100 and formats a custom range', (tester) async {
+      await tester.pumpWidget(
+        host(
+          const SizedBox(width: 200, child: Meter(value: 25, showValue: true)),
+        ),
+      );
+      expect(find.text('25%'), findsOneWidget);
+      await tester.pumpWidget(
+        host(
+          const SizedBox(
+            width: 200,
+            child: Meter(value: 30, min: 20, max: 60, showValue: true),
+          ),
+        ),
+      );
+      expect(find.text('25%'), findsOneWidget);
+      await tester.pumpWidget(
+        host(const Meter(value: 25, showValue: true, valueLabel: '25 GB')),
+      );
+      expect(find.text('25 GB'), findsOneWidget);
+      expect(find.text('25%'), findsNothing);
     });
   });
 

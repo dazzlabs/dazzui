@@ -36,7 +36,6 @@ pub const STORY: &str = r#"{
     },
     "gaps": [
       "toast/preview preview: <ToastProvider> is not drawn by GTK4",
-      "toast/preview preview: <Button onClick> is not drawn by GTK4",
       "toast/preview preview: <ToastViewport> is not drawn by GTK4"
     ]
   },
@@ -187,7 +186,6 @@ pub const STORY: &str = r#"{
       },
       "gaps": [
         "toast/0 preview: <ToastProvider> is not drawn by GTK4",
-        "toast/0 preview: <Button onClick> is not drawn by GTK4",
         "toast/0 preview: <ToastViewport> is not drawn by GTK4"
       ]
     },
@@ -230,7 +228,6 @@ pub const STORY: &str = r#"{
       },
       "gaps": [
         "toast/1 preview: <ToastProvider> is not drawn by GTK4",
-        "toast/1 preview: <Button onClick> is not drawn by GTK4",
         "toast/1 preview: <ToastViewport> is not drawn by GTK4"
       ]
     },
@@ -270,7 +267,6 @@ pub const STORY: &str = r#"{
       },
       "gaps": [
         "toast/2 preview: <ToastProvider> is not drawn by GTK4",
-        "toast/2 preview: <Button onClick> is not drawn by GTK4",
         "toast/2 preview: <ToastViewport> is not drawn by GTK4"
       ]
     }

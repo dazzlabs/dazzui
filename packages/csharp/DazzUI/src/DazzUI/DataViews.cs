@@ -5,7 +5,8 @@ using Microsoft.UI.Xaml.Media;
 namespace DazzUI;
 
 public sealed record TreeNode(string Id, string Label, IReadOnlyList<TreeNode>? Children = null, string? Meta = null, bool Expanded = true, bool Disabled = false,
-    Glyph? Icon = null, Func<UIElement>? MetaView = null)
+    Glyph? Icon = null, Func<UIElement>? MetaView = null,
+    Func<UIElement>? IconView = null, Func<UIElement>? LabelView = null)
 {
     public override string ToString() => Meta is null ? Label : $"{Label}   {Meta}";
 }
@@ -23,6 +24,13 @@ public sealed class Tree : Surface
     private bool seeded;
     private string? selected;
     private string? hovered;
+    private bool controlledExpansion;
+    public IReadOnlyList<string>? ExpandedIds
+    {
+        get => expanded.ToArray();
+        set { controlledExpansion = value is not null; if (value is null) return; expanded.Clear(); expanded.UnionWith(value); seeded = true; if (IsLoaded) Rebuild(); }
+    }
+    public event EventHandler<IReadOnlyList<string>>? ExpandedChanged;
     public IList<TreeNode> Nodes { get; } = new List<TreeNode>();
     public TreeNode? SelectedNode => Find(Nodes, selected);
     /// <summary>The selected row's id; setting it selects without raising <see cref="Selected"/>.</summary>
@@ -52,6 +60,14 @@ public sealed class Tree : Surface
         Rebuild();
         Selected?.Invoke(this, node);
     }
+    private void Toggle(TreeNode node)
+    {
+        if (node.Disabled || node.Children is null) return;
+        var next = new HashSet<string>(expanded);
+        if (!next.Remove(node.Id)) next.Add(node.Id);
+        if (!controlledExpansion) { expanded.Clear(); expanded.UnionWith(next); Rebuild(); }
+        ExpandedChanged?.Invoke(this, next.ToArray());
+    }
     private bool Navigate(Windows.System.VirtualKey key)
     {
         var at = visible.FindIndex(pair => pair.Node.Id == selected);
@@ -60,11 +76,10 @@ public sealed class Tree : Surface
         {
             case Windows.System.VirtualKey.Down when at + 1 < visible.Count: Select(visible[at + 1].Node); return true;
             case Windows.System.VirtualKey.Up when at > 0: Select(visible[at - 1].Node); return true;
-            case Windows.System.VirtualKey.Right when node?.Children is { Count: > 0 } && !expanded.Contains(node.Id): expanded.Add(node.Id); Rebuild(); return true;
-            case Windows.System.VirtualKey.Left when node is not null && expanded.Contains(node.Id): expanded.Remove(node.Id); Rebuild(); return true;
-            case Windows.System.VirtualKey.Enter or Windows.System.VirtualKey.Space when node?.Children is { Count: > 0 }:
-                if (!expanded.Remove(node.Id)) expanded.Add(node.Id);
-                Rebuild();
+            case Windows.System.VirtualKey.Right when node?.Children is not null && !expanded.Contains(node.Id): Toggle(node); return true;
+            case Windows.System.VirtualKey.Left when node is not null && expanded.Contains(node.Id): Toggle(node); return true;
+            case Windows.System.VirtualKey.Enter or Windows.System.VirtualKey.Space when node?.Children is not null:
+                Toggle(node);
                 return true;
         }
         return false;
@@ -74,7 +89,7 @@ public sealed class Tree : Surface
         if (!seeded)
         {
             seeded = true;
-            void Seed(IEnumerable<TreeNode> nodes) { foreach (var node in nodes) { if (node.Expanded && node.Children is { Count: > 0 }) expanded.Add(node.Id); Seed(node.Children ?? []); } }
+            void Seed(IEnumerable<TreeNode> nodes) { foreach (var node in nodes) { if (node.Expanded && node.Children is not null) expanded.Add(node.Id); Seed(node.Children ?? []); } }
             Seed(Nodes);
         }
         Rebuild();
@@ -107,11 +122,19 @@ public sealed class Tree : Surface
             CornerRadius = new CornerRadius(Theme.Number("radius.small")),
             Background = chosen ? Theme.Recipe(ControlVariant.Tinted, Tint, "surface") : over ? Theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "surface", "hovered") : new SolidColorBrush(Microsoft.UI.Colors.Transparent),
         };
+        // WinUI stretches the full-radius token into an ellipse unless it is
+        // clamped to half the row's shorter side, including after a resize.
+        var radius = Theme.Number("radius.small");
+        row.SizeChanged += (_, _) =>
+        {
+            var corner = new CornerRadius(Math.Min(radius, Math.Min(row.ActualWidth, row.ActualHeight) / 2));
+            if (row.CornerRadius != corner) row.CornerRadius = corner;
+        };
         foreach (var width in new[] { GridLength.Auto, GridLength.Auto, new GridLength(1, GridUnitType.Star), GridLength.Auto })
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = width });
         // The twisty keeps its column on a leaf, so a level's glyphs stay in line.
         var twisty = new Border { Width = Theme.Number("spacing.4"), Height = Theme.Number("spacing.4"), VerticalAlignment = VerticalAlignment.Center };
-        if (node.Children is { Count: > 0 })
+        if (node.Children is not null)
         {
             var open = expanded.Contains(node.Id);
             twisty.Child = new Icon
@@ -125,23 +148,28 @@ public sealed class Tree : Surface
                 RenderTransformOrigin = new Windows.Foundation.Point(.5, .5),
             };
             twisty.Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent);
-            twisty.Tapped += (_, args) => { if (!expanded.Remove(node.Id)) expanded.Add(node.Id); Rebuild(); args.Handled = true; };
+            twisty.Tapped += (_, args) => { Toggle(node); args.Handled = true; };
         }
         row.Children.Add(twisty);
-        if (node.Icon is Glyph glyph)
+        UIElement? iconSlot = node.IconView?.Invoke();
+        if (iconSlot is null && node.Icon is Glyph glyph)
+            iconSlot = new Icon { Glyph = glyph, GlyphSize = Theme.Number("icon.medium") };
+        if (iconSlot is FrameworkElement iconView)
         {
-            var icon = new Icon { Glyph = glyph, GlyphSize = Theme.Number("icon.medium"), Foreground = chosen ? ink : Theme.Brush("color.content-subtle"), VerticalAlignment = VerticalAlignment.Center };
-            Grid.SetColumn(icon, 1); row.Children.Add(icon);
+            if (iconView is Icon icon) { icon.GlyphSize = Theme.Number("icon.medium"); icon.Foreground = chosen ? ink : Theme.Brush("color.content-subtle"); }
+            iconView.VerticalAlignment = VerticalAlignment.Center;
+            Grid.SetColumn(iconView, 1); row.Children.Add(iconView);
         }
-        var label = new TextBlock
+        UIElement labelContent = node.LabelView?.Invoke() ?? new TextBlock { Text = node.Label };
+        FrameworkElement label = labelContent as FrameworkElement ?? new ContentPresenter { Content = labelContent };
+        if (label is TextBlock textLabel)
         {
-            Text = node.Label,
-            Foreground = ink,
-            FontSize = Theme.Text("", small ? "labelSmall" : "labelQuiet").FontSize,
-            FontWeight = Theme.Text("", chosen ? "labelMedium" : "labelQuiet").FontWeight,
-            TextTrimming = TextTrimming.CharacterEllipsis,
-            VerticalAlignment = VerticalAlignment.Center,
-        };
+            textLabel.Foreground = ink;
+            textLabel.FontSize = Theme.Text("", small ? "labelSmall" : "labelQuiet").FontSize;
+            textLabel.FontWeight = Theme.Text("", chosen ? "labelMedium" : "labelQuiet").FontWeight;
+            textLabel.TextTrimming = TextTrimming.CharacterEllipsis;
+        }
+        label.VerticalAlignment = VerticalAlignment.Center;
         Grid.SetColumn(label, 2); row.Children.Add(label);
         UIElement? meta = node.MetaView?.Invoke();
         if (meta is null && node.Meta is not null)
@@ -156,75 +184,11 @@ public sealed class Tree : Surface
             aside.Margin = new Thickness(Theme.Number("spacing.2"), 0, 0, 0);
             Grid.SetColumn(aside, 3); row.Children.Add(aside);
         }
-        row.Tapped += (_, _) => { Select(node); Focus(FocusState.Pointer); };
+        row.Tapped += (_, _) => { if (node.Disabled) return; Toggle(node); Select(node); Focus(FocusState.Pointer); };
         row.PointerEntered += (_, _) => { hovered = node.Id; if (!chosen) Rebuild(); };
         row.PointerExited += (_, _) => { if (hovered == node.Id) { hovered = null; Rebuild(); } };
         Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(row, node.Label);
         visible.Add((node, row));
         return row;
-    }
-}
-public sealed record TableColumn(string Key, string Label, double Weight = 1, TextAlignment Alignment = TextAlignment.Left);
-public sealed record TableRow(string Id, IReadOnlyDictionary<string, object?> Cells);
-public sealed class Table : Surface
-{
-    public IList<TableColumn> Columns { get; } = new List<TableColumn>();
-    public IList<TableRow> Rows { get; } = new List<TableRow>();
-    public ListView View { get; } = new();
-    public bool Selectable { get; set; } = true;
-    public bool Multiple { get; set; }
-    public IReadOnlyList<string> SelectedIds => View.SelectedItems.OfType<ListViewItem>().Select(item => ((TableRow)item.Tag).Id).ToArray();
-    protected override void RefreshAppearance()
-    {
-        View.SelectionMode = !Selectable ? ListViewSelectionMode.None : Multiple ? ListViewSelectionMode.Multiple : ListViewSelectionMode.Single;
-        View.Foreground = Theme.Brush("color.content"); View.Background = Theme.Brush("color.surface");
-        View.Resources["ListViewItemBackgroundSelected"] = Theme.Recipe(ControlVariant.Tinted, Tint, "surface");
-        View.Resources["ListViewItemForegroundSelected"] = Theme.Recipe(ControlVariant.Tinted, Tint, "content");
-        if (!Selectable)
-        {
-            // A table nothing selects is drawn, not listed: a head band and ruled rows.
-            var column = new StackPanel();
-            var head = MakeRow(null);
-            head.Background = Theme.Brush("color.surface-chrome");
-            column.Children.Add(head);
-            foreach (var row in Rows) column.Children.Add(MakeRow(row));
-            Content = column;
-            return;
-        }
-        var selection = SelectedIds;
-        View.Items.Clear();
-        View.Header = MakeRow(null);
-        foreach (var row in Rows)
-        {
-            var item = new ListViewItem { Content = MakeRow(row), Tag = row, HorizontalContentAlignment = HorizontalAlignment.Stretch, Padding = new Thickness(0) };
-            View.Items.Add(item);
-            if (selection.Contains(row.Id)) item.IsSelected = true;
-        }
-        Content = View;
-    }
-    private Grid MakeRow(TableRow? row)
-    {
-        var head = row is null;
-        var grid = new Grid
-        {
-            ColumnSpacing = Theme.Number("spacing.4"),
-            Padding = new Thickness(Theme.Number("spacing.5"), Theme.Number(head ? "spacing.2" : "spacing.3"), Theme.Number("spacing.5"), Theme.Number(head ? "spacing.2" : "spacing.3")),
-            BorderBrush = Theme.Brush("color.border"),
-            BorderThickness = new Thickness(0, 0, 0, Theme.Number("stroke.hairline")),
-        };
-        foreach (var (column, index) in Columns.Select((column, index) => (column, index)))
-        {
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(column.Weight, GridUnitType.Star) });
-            var value = row is null ? column.Label : row.Cells.GetValueOrDefault(column.Key);
-            var cell = value as UIElement ?? Theme.Text(value?.ToString() ?? "", row is null ? "labelSmall" : "bodyMedium");
-            if (cell is TextBlock text)
-            {
-                text.TextAlignment = column.Alignment;
-                text.VerticalAlignment = VerticalAlignment.Center;
-                if (row is null) text.Foreground = Theme.Brush("color.content-faint");
-            }
-            Skin.Detach(cell); cell.SetValue(Grid.ColumnProperty, index); grid.Children.Add(cell);
-        }
-        return grid;
     }
 }

@@ -5,6 +5,29 @@
 
 use crate::tokens::*;
 
+#[cfg(target_os = "linux")]
+pub const FONT_UI: &[&str] = &[
+    "-apple-system",
+    "SF Pro Text",
+    "system-ui",
+    "PingFang SC",
+    "Noto Sans CJK SC",
+    "sans-serif",
+];
+
+#[cfg(target_os = "linux")]
+pub const FONT_DISPLAY: &[&str] = &[
+    "-apple-system",
+    "SF Pro Display",
+    "system-ui",
+    "PingFang SC",
+    "Noto Sans CJK SC",
+    "sans-serif",
+];
+
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+pub const FONT_CODE: &[&str] = &["ui-monospace", "SF Mono", "Menlo", "monospace"];
+
 /// Every semantic and component token, resolved for one theme.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ThemeTokens {

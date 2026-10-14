@@ -3,6 +3,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
+import '../foundation/inline_outset.dart';
 import '../foundation/theme_extension.dart';
 import '../foundation/widget_size.dart';
 import '../generated/theme_variables.dart';
@@ -323,7 +324,7 @@ class _Ambient extends StatelessWidget {
       style: data.vars.bodyMedium.copyWith(color: data.vars.colorContent),
       child: IconTheme.merge(
         data: IconThemeData(size: data.vars.iconMedium),
-        child: child,
+        child: OutsetHitTestRegion(child: child),
       ),
     );
   }

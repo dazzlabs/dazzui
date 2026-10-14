@@ -252,13 +252,8 @@ pub const STORY: &str = r#"{
       "sidebar/preview preview: <SidebarMenu> is not drawn by GTK4",
       "sidebar/preview preview: <SidebarMenuItem> is not drawn by GTK4",
       "sidebar/preview preview: <SidebarMenuButton> is not drawn by GTK4",
-      "sidebar/preview preview: <Icon> is not drawn by GTK4",
       "sidebar/preview preview: <SidebarMenuBadge> is not drawn by GTK4",
-      "sidebar/preview preview: <SidebarInset> is not drawn by GTK4",
-      "sidebar/preview: live story expressions are not yet mapped",
-      "sidebar/preview: Fluent glyph Document20Regular is not yet mapped",
-      "sidebar/preview: Fluent glyph Book20Regular is not yet mapped",
-      "sidebar/preview: Fluent glyph Settings20Regular is not yet mapped"
+      "sidebar/preview preview: <SidebarInset> is not drawn by GTK4"
     ]
   },
   "examples": [
@@ -509,14 +504,9 @@ pub const STORY: &str = r#"{
         "sidebar/0 preview: <SidebarMenu> is not drawn by GTK4",
         "sidebar/0 preview: <SidebarMenuItem> is not drawn by GTK4",
         "sidebar/0 preview: <SidebarMenuButton> is not drawn by GTK4",
-        "sidebar/0 preview: <Icon> is not drawn by GTK4",
         "sidebar/0 preview: <SidebarMenuBadge> is not drawn by GTK4",
         "sidebar/0 preview: <SidebarInset> is not drawn by GTK4",
-        "sidebar/0 preview: <SidebarTrigger> is not drawn by GTK4",
-        "sidebar/0: live story expressions are not yet mapped",
-        "sidebar/0: Fluent glyph Document20Regular is not yet mapped",
-        "sidebar/0: Fluent glyph Book20Regular is not yet mapped",
-        "sidebar/0: Fluent glyph Settings20Regular is not yet mapped"
+        "sidebar/0 preview: <SidebarTrigger> is not drawn by GTK4"
       ]
     },
     {
@@ -768,14 +758,9 @@ pub const STORY: &str = r#"{
         "sidebar/1 preview: <SidebarMenu> is not drawn by GTK4",
         "sidebar/1 preview: <SidebarMenuItem> is not drawn by GTK4",
         "sidebar/1 preview: <SidebarMenuButton> is not drawn by GTK4",
-        "sidebar/1 preview: <Icon> is not drawn by GTK4",
         "sidebar/1 preview: <SidebarMenuBadge> is not drawn by GTK4",
         "sidebar/1 preview: <SidebarInset> is not drawn by GTK4",
-        "sidebar/1 preview: <SidebarTrigger> is not drawn by GTK4",
-        "sidebar/1: live story expressions are not yet mapped",
-        "sidebar/1: Fluent glyph Document20Regular is not yet mapped",
-        "sidebar/1: Fluent glyph Book20Regular is not yet mapped",
-        "sidebar/1: Fluent glyph Settings20Regular is not yet mapped"
+        "sidebar/1 preview: <SidebarTrigger> is not drawn by GTK4"
       ]
     },
     {
@@ -1267,14 +1252,9 @@ pub const STORY: &str = r#"{
         "sidebar/2 preview: <SidebarMenu> is not drawn by GTK4",
         "sidebar/2 preview: <SidebarMenuItem> is not drawn by GTK4",
         "sidebar/2 preview: <SidebarMenuButton> is not drawn by GTK4",
-        "sidebar/2 preview: <Icon> is not drawn by GTK4",
         "sidebar/2 preview: <SidebarMenuBadge> is not drawn by GTK4",
         "sidebar/2 preview: <SidebarInset> is not drawn by GTK4",
-        "sidebar/2 preview: <SidebarTrigger> is not drawn by GTK4",
-        "sidebar/2: live story expressions are not yet mapped",
-        "sidebar/2: Fluent glyph Document20Regular is not yet mapped",
-        "sidebar/2: Fluent glyph Book20Regular is not yet mapped",
-        "sidebar/2: Fluent glyph Settings20Regular is not yet mapped"
+        "sidebar/2 preview: <SidebarTrigger> is not drawn by GTK4"
       ]
     }
   ]

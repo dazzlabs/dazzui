@@ -10,7 +10,7 @@ use gpui::{
 
 use crate::components::text_field::{FieldBox, FieldState, part_id, selection_color};
 use crate::foundation::text_input::{self, InputState, OnText, TextInput, input_state};
-use crate::foundation::{Size, Tint};
+use crate::foundation::{Size, StyledExt, Tint};
 use crate::theme::ActiveTheme;
 use crate::tokens::Face;
 
@@ -277,6 +277,7 @@ impl RenderOnce for OtpField {
                 .text_color(colors.content)
                 .shadow(colors.glow.into_iter().collect())
                 .font_family(content.face.family())
+                .tabular_nums()
                 .text_size(px(content.size))
                 .line_height(px(content.line_height))
                 .when(group_end, |this| this.ml(px(t.spacing_3)))

@@ -14,7 +14,7 @@ use crate::components::text_field::{
     FieldBox, FieldState, part_id, placeholder_color, selection_color,
 };
 use crate::foundation::text_input::{self, TextInput, input_state};
-use crate::foundation::{ControlColors, Size, State, Tint, Variant, pointer_down};
+use crate::foundation::{ControlColors, Size, State, StyledExt, Tint, Variant, pointer_down};
 use crate::glyphs;
 use crate::theme::ActiveTheme;
 
@@ -402,6 +402,7 @@ impl RenderOnce for NumberField {
         let down = step_by;
         chrome
             .style(div(), t)
+            .tabular_nums()
             .gap(px(t.spacing_1))
             // The trailing inset is the stepper's own: it is a control rather
             // than text, so it sits closer to the edge than a value would.

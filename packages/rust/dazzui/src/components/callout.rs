@@ -52,7 +52,7 @@ impl Callout {
 
     /// Omit for a one-line notice; the description then carries it alone.
     pub fn title(mut self, title: impl IntoElement) -> Self {
-        self.title = Some(title.into_any_element());
+        self.title = Some(crate::foundation::text_child(title));
         self
     }
 
@@ -71,7 +71,8 @@ impl Default for Callout {
 
 impl ParentElement for Callout {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -95,7 +96,7 @@ impl RenderOnce for Callout {
                 .text_size(px(style.size))
                 .font_weight(style.font_weight())
                 .line_height(px(style.size * 1.4))
-                .child(title)
+                .child(crate::foundation::text_child(title))
         });
         let description = (!self.children.is_empty()).then(|| {
             let size = t.label_quiet.size;

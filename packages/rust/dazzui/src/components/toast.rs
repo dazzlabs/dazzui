@@ -176,7 +176,8 @@ impl ToastProvider {
 
 impl ParentElement for ToastProvider {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 
@@ -324,7 +325,7 @@ fn toast(toaster: &Toaster, id: u64, options: ToastOptions, cx: &App) -> AnyElem
                 .text_color(t.color_content.hsla())
                 .type_style(t.label_medium)
                 .line_height(px(t.label_medium.size * 1.4))
-                .child(options.title),
+                .child(crate::foundation::text_child(options.title)),
         )
         .when_some(options.action, |this, action| {
             let toaster = toaster.clone();

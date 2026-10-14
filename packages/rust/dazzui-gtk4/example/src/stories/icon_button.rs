@@ -68,13 +68,7 @@ pub const STORY: &str = r#"{
         }
       ]
     },
-    "gaps": [
-      "icon-button/preview preview: <IconButton> is not drawn by GTK4",
-      "icon-button/preview preview: <Icon> is not drawn by GTK4",
-      "icon-button/preview: Fluent glyph Add20Regular is not yet mapped",
-      "icon-button/preview: Fluent glyph Settings20Regular is not yet mapped",
-      "icon-button/preview: Fluent glyph Delete20Regular is not yet mapped"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -199,11 +193,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "icon-button/0 preview: <IconButton> is not drawn by GTK4",
-        "icon-button/0 preview: <Icon> is not drawn by GTK4",
-        "icon-button/0: Fluent glyph Settings20Regular is not yet mapped"
-      ]
+      "gaps": []
     },
     {
       "id": "icon-button/1",
@@ -289,11 +279,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "icon-button/1 preview: <IconButton> is not drawn by GTK4",
-        "icon-button/1 preview: <Icon> is not drawn by GTK4",
-        "icon-button/1: Fluent glyph Add20Regular is not yet mapped"
-      ]
+      "gaps": []
     }
   ]
 }"#;

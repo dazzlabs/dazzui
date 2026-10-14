@@ -245,6 +245,7 @@ public struct PreviewCard<Trigger: View, Content: View>: View {
     let vars = theme.vars
 
     trigger()
+      .environment(\.inlineLink, true)
       // The pointer opens it and the pointer closes it. The card hangs off the
       // trigger's own box, so the hover that keeps it up is the same one that
       // raised it — which is what lets a reader travel into the card without

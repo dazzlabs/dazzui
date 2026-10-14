@@ -13,7 +13,11 @@ public class TextField : TextBox
     public WidgetTint Tint { get => Appearance.GetTint(this); set => Appearance.SetTint(this, value); }
     private bool invalid;
     public bool Invalid { get => invalid; set { invalid = value; Apply(); } }
-    public bool Mono { get; set; }
+    private bool mono;
+    public bool Mono { get => mono; set { mono = value; Apply(); } }
+    private int rows = 2;
+    /// <summary>The initial number of prose lines in a multiline field.</summary>
+    public int Rows { get => rows; set { rows = Math.Max(1, value); Apply(); } }
     public TextField()
     {
         Appearance.Bind(this, Apply);
@@ -23,10 +27,15 @@ public class TextField : TextBox
     protected virtual void Apply()
     {
         Skin.Input(this, Theme, Size, Invalid);
-        if (Mono) FontFamily = new FontFamily("Cascadia Mono, Consolas");
+        if (Mono) FontFamily = Theme.CodeFont;
         if (!AcceptsReturn) Height = Theme.Number($"control.{Theme.Key(Size)}.size");
         // A multiline field grows from a floor rather than sitting at a height.
-        else { Height = double.NaN; MinHeight = Theme.Number("spacing.20"); TextWrapping = TextWrapping.Wrap; }
+        else
+        {
+            Height = double.NaN;
+            MinHeight = Math.Max(Theme.Number("spacing.20"), Rows * FontSize * 1.6 + 2 * (Theme.Number("spacing.2.5") + Theme.Number("stroke.hairline")));
+            TextWrapping = TextWrapping.Wrap;
+        }
         // Native editors lay text out from the top. Derive the inset from the
         // platform font metrics rather than assuming a CSS line box or a fixed
         // Windows font height; the same padding also positions the placeholder.
@@ -72,10 +81,18 @@ public sealed class SearchField : TextField
     }
     private void ApplySearchInsets()
     {
-        var inset = Theme.Number($"control.{Theme.Key(Size)}.padding.inline");
-        Padding = new Thickness(inset + Theme.Number("spacing.6"), Padding.Top, Hint is null ? inset : inset + Theme.Number("spacing.10"), Padding.Bottom);
-        if (searchIcon is not null) searchIcon.Margin = new Thickness(inset, 0, 0, 0);
-        if (hint is not null) { hint.Content = Hint ?? ""; hint.Margin = new Thickness(0, 0, inset, 0); }
+        var inset = Theme.Number("spacing.3");
+        var glyph = Theme.Number($"control.{Theme.Key(Size)}.icon-size");
+        var gap = Theme.Number($"control.{Theme.Key(Size)}.gap");
+        Padding = new Thickness(inset + glyph + gap, Padding.Top, Hint is null ? inset : inset + Theme.Number("spacing.10"), Padding.Bottom);
+        if (searchIcon is not null)
+        {
+            searchIcon.Margin = new Thickness(inset + BorderThickness.Left, 0, 0, 0);
+            searchIcon.GlyphSize = glyph;
+            searchIcon.Foreground = Theme.Brush("color.content-faint");
+            Appearance.Refresh(searchIcon);
+        }
+        if (hint is not null) { hint.Content = Hint ?? ""; hint.Margin = new Thickness(0, 0, inset + BorderThickness.Right, 0); }
     }
 }
 public record SelectOption(string Value, string Label, string? Group = null, bool Disabled = false)
@@ -87,11 +104,21 @@ public class Select : ComboBox
     public Theme Theme { get => Appearance.GetTheme(this); set => Appearance.SetTheme(this, value); }
     public ControlSize Size { get => Appearance.GetSize(this); set => Appearance.SetSize(this, value); }
     public WidgetTint Tint { get => Appearance.GetTint(this); set => Appearance.SetTint(this, value); }
-    public bool Invalid { get; set; }
+    private bool invalid;
+    public bool Invalid { get => invalid; set { invalid = value; Apply(); } }
+    private bool mono;
+    public bool Mono { get => mono; set { mono = value; Apply(); } }
     public Select()
     {
-        Appearance.Bind(this, () => { Skin.Input(this, Theme, Size, Invalid); Height = Theme.Number($"control.{Theme.Key(Size)}.size"); });
+        Appearance.Bind(this, Apply);
+        IsEnabledChanged += (_, _) => Apply();
         HorizontalAlignment = HorizontalAlignment.Stretch;
+    }
+    private void Apply()
+    {
+        Skin.Input(this, Theme, Size, Invalid);
+        if (Mono) FontFamily = Theme.CodeFont;
+        Height = Theme.Number($"control.{Theme.Key(Size)}.size");
     }
     public void SetOptions(IEnumerable<SelectOption> options)
     {
@@ -102,8 +129,8 @@ public class Select : ComboBox
             if (option.Group is not null && option.Group != lastGroup)
             {
                 Items.Add(new ComboBoxItem { Content = option.Group, IsEnabled = false });
-                lastGroup = option.Group;
             }
+            lastGroup = option.Group;
             Items.Add(new ComboBoxItem { Content = option.Label, Tag = option.Value, IsEnabled = !option.Disabled });
         }
     }
@@ -186,7 +213,7 @@ public class Autocomplete : Surface
     protected override void RefreshAppearance()
     {
         Skin.Input(Input, Theme, Size, Invalid);
-        if (Mono) Input.FontFamily = new FontFamily("Cascadia Mono, Consolas");
+        if (Mono) Input.FontFamily = Theme.CodeFont;
         PaintPlaceholder();
         Skin.InputPadding(Input, Theme, Size);
         nativeTextBoxStyle ??= Input.TextBoxStyle;
@@ -221,6 +248,7 @@ public sealed class Combobox : Autocomplete
 public sealed class NumberField : Surface
 {
     private readonly Border box = new();
+    private readonly Grid row = new();
     private readonly TextBox editor = new() { BorderThickness = new Thickness(0), VerticalAlignment = VerticalAlignment.Center };
     private readonly TextBlock unit = new() { VerticalAlignment = VerticalAlignment.Center };
     private readonly Border stepper = new();
@@ -237,17 +265,20 @@ public sealed class NumberField : Surface
     public double LargeChange { get; set; } = 10;
     public string PlaceholderText { get => editor.PlaceholderText; set => editor.PlaceholderText = value; }
     public event EventHandler<double>? ValueChanged;
-    public bool Invalid { get; set; }
-    public string? Unit { get; set; }
+    private bool invalid;
+    public bool Invalid { get => invalid; set { invalid = value; if (IsLoaded) RefreshAppearance(); } }
+    private string? unitText;
+    public string? Unit { get => unitText; set { unitText = value; if (IsLoaded) RefreshAppearance(); } }
     public NumberField()
     {
-        var row = new Grid();
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         Grid.SetColumn(unit, 1);
         Grid.SetColumn(stepper, 2);
         stepper.Child = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Children = { up, down } };
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(up, "Increase");
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(down, "Decrease");
         row.Children.Add(editor);
         row.Children.Add(unit);
         row.Children.Add(stepper);
@@ -255,6 +286,7 @@ public sealed class NumberField : Surface
         Content = box;
         up.Click += (_, _) => Commit(Read() + SmallChange);
         down.Click += (_, _) => Commit(Read() - SmallChange);
+        IsEnabledChanged += (_, _) => { if (IsLoaded) RefreshAppearance(); };
         editor.GotFocus += (_, _) => { focused = true; RefreshAppearance(); };
         editor.LostFocus += (_, _) => { focused = false; Commit(Read()); RefreshAppearance(); };
         editor.KeyDown += (_, args) =>
@@ -290,7 +322,15 @@ public sealed class NumberField : Surface
         Value = next;
         if (!Equals(previous, value)) ValueChanged?.Invoke(this, value);
     }
-    private void Show() => editor.Text = double.IsNaN(value) ? "" : value.ToString(System.Globalization.CultureInfo.CurrentCulture);
+    private void Show()
+    {
+        editor.Text = double.IsNaN(value) ? "" : value.ToString(System.Globalization.CultureInfo.CurrentCulture);
+        up.IsEnabled = IsEnabled && (double.IsNaN(value) || value < Maximum);
+        down.IsEnabled = IsEnabled && (double.IsNaN(value) || value > Minimum);
+        foreach (var step in new[] { up, down })
+            if (step.Content is Icon glyph)
+                glyph.Foreground = step.IsEnabled ? Theme.Brush("color.content-subtle") : Theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "content", "disabled");
+    }
     protected override void RefreshAppearance()
     {
         var height = Theme.Number($"control.{Theme.Key(Size)}.size");
@@ -301,20 +341,32 @@ public sealed class NumberField : Surface
         box.BorderThickness = new Thickness(Theme.Number("stroke.hairline"));
         box.CornerRadius = new CornerRadius(Math.Min(Theme.Number("control.field.radius"), height / 2));
         box.Height = height;
-        box.Padding = new Thickness(0, 0, Theme.Number("spacing.1"), 0);
+        var block = Theme.Number($"control.{Theme.Key(Size)}.padding.block");
+        box.Padding = new Thickness(Theme.Number("spacing.3"), block, Theme.Number("spacing.1"), block);
+        row.ColumnSpacing = Theme.Number("spacing.1");
+        var columns = Unit is null ? 2 : 3;
+        while (row.ColumnDefinitions.Count > columns) row.ColumnDefinitions.RemoveAt(row.ColumnDefinitions.Count - 1);
+        while (row.ColumnDefinitions.Count < columns) row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        Grid.SetColumn(stepper, columns - 1);
         var clear = new SolidColorBrush(Microsoft.UI.Colors.Transparent);
         editor.Background = clear;
         editor.BorderThickness = new Thickness(0);
         foreach (var key in new[] { "TextControlBackground", "TextControlBackgroundPointerOver", "TextControlBackgroundFocused", "TextControlBorderBrush", "TextControlBorderBrushPointerOver", "TextControlBorderBrushFocused" })
             editor.Resources[key] = clear;
         editor.Height = height - 2 * Theme.Number("stroke.hairline");
-        editor.Padding = new Thickness(Theme.Number("spacing.3"), editor.Padding.Top, Theme.Number("spacing.1"), editor.Padding.Bottom);
+        // The group owns the shared field insets. The native editor keeps its
+        // full font bounds, centered through that line box, without charging
+        // the horizontal padding a second time.
+        editor.Margin = new Thickness(0, -block, 0, -block);
+        editor.Padding = new Thickness(0, editor.Padding.Top, 0, editor.Padding.Bottom);
         Skin.InputPadding(editor, Theme, Size);
         unit.Text = Unit ?? "";
         unit.Visibility = Unit is null ? Visibility.Collapsed : Visibility.Visible;
         unit.Foreground = Theme.Brush("color.content-faint");
         unit.FontSize = Theme.Text("", "labelSmall").FontSize;
-        unit.Margin = new Thickness(0, 0, Theme.Number("spacing.1"), 0);
+        unit.FontFamily = editor.FontFamily;
+        unit.LineHeight = unit.FontSize;
+        unit.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
         stepper.BorderBrush = Theme.Brush("color.border");
         stepper.BorderThickness = new Thickness(Theme.Number("stroke.hairline"), 0, 0, 0);
         stepper.Margin = new Thickness(0, Theme.Number("spacing.1"), 0, Theme.Number("spacing.1"));
@@ -330,7 +382,11 @@ public sealed class NumberField : Surface
             step.Resources["ButtonBackgroundPressed"] = Theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "surface", "pressed");
             step.Resources["ButtonBorderBrushPointerOver"] = clear;
             step.Resources["ButtonBorderBrushPressed"] = clear;
-            if (step.Content is Icon glyph) glyph.GlyphSize = Math.Min(Theme.Number("icon.small"), Theme.Number("spacing.3"));
+            if (step.Content is Icon glyph)
+            {
+                glyph.GlyphSize = Math.Min(Theme.Number("icon.small"), Theme.Number("spacing.3"));
+                glyph.Foreground = step.IsEnabled ? step.Foreground : Theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "content", "disabled");
+            }
         }
         Show();
     }

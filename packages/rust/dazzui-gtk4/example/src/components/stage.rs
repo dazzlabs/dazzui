@@ -9,7 +9,7 @@ pub fn stage(value: &Scene, overview: bool) -> gtk::Box {
         stage.add_css_class("gk-preview-stage");
     }
     let content: gtk::Widget = if value.is_supported() {
-        match scene::render(&value.content, &mut vec![]) {
+        match scene::render_scene(value, &mut vec![]) {
             Ok(widget) => widget,
             Err(error) => callout("Example unavailable", &error, Tint::Danger).upcast(),
         }

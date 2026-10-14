@@ -114,7 +114,8 @@ impl Button {
 
 impl ParentElement for Button {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
         self.glyphs.resize(self.children.len(), false);
     }
 }

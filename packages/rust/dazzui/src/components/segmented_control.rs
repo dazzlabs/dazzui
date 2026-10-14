@@ -50,7 +50,7 @@ impl SegmentedItem {
     pub fn new(value: impl Into<SharedString>, label: impl IntoElement) -> Self {
         SegmentedItem {
             value: value.into(),
-            label: label.into_any_element(),
+            label: crate::foundation::text_child(label),
             icon: None,
             disabled: false,
         }

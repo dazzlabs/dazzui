@@ -32,6 +32,15 @@ use gpui::{
 
 use crate::foundation::scope::scoped;
 
+fn editor_line_height(window: &Window) -> Pixels {
+    let style = window.text_style();
+    // Window::line_height rounds to whole logical pixels. Keep the declared
+    // leading for wrapping, selection and input-method rectangles alike.
+    style
+        .line_height
+        .to_pixels(style.font_size, window.rem_size())
+}
+
 actions!(
     dazzui_text_input,
     [
@@ -1356,7 +1365,7 @@ impl Element for TextBody {
         cx: &mut App,
     ) -> (LayoutId, TextStyle) {
         let text_style = window.text_style();
-        let line_height = window.line_height();
+        let line_height = editor_line_height(window);
         let mut style = Style::default();
         style.size.width = relative(1.).into();
 
@@ -1395,7 +1404,7 @@ impl Element for TextBody {
         window: &mut Window,
         cx: &mut App,
     ) -> BodyLayout {
-        let line_height = window.line_height();
+        let line_height = editor_line_height(window);
         let placeholder_color = self
             .placeholder_color
             .unwrap_or_else(|| crate::foundation::fade(text_style.color, 0.5));

@@ -23,7 +23,7 @@ done
 [ -n "$out" ] || { echo "--out is required" >&2; exit 2; }
 mkdir -p "$out"
 out="$(cd "$out" && pwd)"
-repo="$(git rev-parse --show-toplevel)"
+repo="$(cd ../../../.. && pwd)"
 log="${TMPDIR:-/tmp}/swiftui-conformance.log"
 
 if ! TEST_RUNNER_DAZZUI_CONFORMANCE_OUTPUT="$out" \
@@ -31,8 +31,8 @@ if ! TEST_RUNNER_DAZZUI_CONFORMANCE_OUTPUT="$out" \
   TEST_RUNNER_DAZZUI_CONFORMANCE_THEMES="$themes" \
   TEST_RUNNER_DAZZUI_CONFORMANCE_SCENES="$scenes" \
   TEST_RUNNER_DAZZUI_CONFORMANCE_IMAGES="$images" \
-  TEST_RUNNER_DAZZUI_CONFORMANCE_COMMIT="$(git rev-parse --short HEAD)" \
-  xcodebuild test -project Example.xcodeproj -scheme Example \
+  TEST_RUNNER_DAZZUI_CONFORMANCE_COMMIT="${DAZZUI_CONFORMANCE_COMMIT:-$(git rev-parse --short HEAD 2>/dev/null || echo unknown)}" \
+  xcodebuild test -project Example.xcodeproj -scheme Example -skipPackageUpdates \
     -destination 'platform=macOS' -derivedDataPath .build/xcode \
     -only-testing:ExampleTests/ConformanceCollector >"$log" 2>&1; then
   grep -E "error:|failed|Failing" "$log" | sort -u | head -20 >&2

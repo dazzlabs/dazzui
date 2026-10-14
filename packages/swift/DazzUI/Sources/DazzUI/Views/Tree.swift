@@ -16,6 +16,9 @@ public struct TreeNode: Identifiable {
   public var icon: FluentIcon?
   /// A trailing aside: a count, a change marker.
   public var meta: String?
+  public var labelView: AnyView?
+  public var iconView: AnyView?
+  public var metaView: AnyView?
   /// Non-nil, empty included, marks the node as a branch. An empty array is how
   /// an empty folder still draws a twisty and still opens, which is the
   /// difference between "nothing in here" and "not a folder".
@@ -36,6 +39,23 @@ public struct TreeNode: Identifiable {
     self.meta = meta
     self.children = children
     self.enabled = enabled
+  }
+
+  /// Rich slots retain the components supplied by the caller, including
+  /// their own colour and geometry. `text` names a non-text label.
+  public init<Label: View>(
+    id: String,
+    label: Label,
+    icon: AnyView? = nil,
+    meta: AnyView? = nil,
+    text: String = "",
+    children: [TreeNode]? = nil,
+    enabled: Bool = true
+  ) {
+    self.init(id: id, label: text, children: children, enabled: enabled)
+    self.labelView = AnyView(label)
+    self.iconView = icon
+    self.metaView = meta
   }
 
   public var isBranch: Bool { children != nil }
@@ -63,7 +83,8 @@ private struct TreeRow: Identifiable {
 /// were reading.
 public struct Tree: View {
   public var items: [TreeNode]
-  public var expanded: [String]
+  public var expanded: [String]?
+  public var initiallyExpanded: [String]
   public var selected: String?
   public var size: TreeSize
   /// Which ramp the selected row is washed with. The hover comes off the
@@ -73,25 +94,32 @@ public struct Tree: View {
   public var tint: Tint
   public var onSelect: ((String) -> Void)?
   public var onToggle: ((String) -> Void)?
+  public var onExpandedChange: (([String]) -> Void)?
 
   @Environment(\.theme) private var theme
+  @State private var ownExpanded: [String]
 
   public init(
     items: [TreeNode],
-    expanded: [String] = [],
+    expanded: [String]? = nil,
+    initiallyExpanded: [String] = [],
     selected: String? = nil,
     size: TreeSize = .medium,
     tint: Tint = .primary,
     onSelect: ((String) -> Void)? = nil,
-    onToggle: ((String) -> Void)? = nil
+    onToggle: ((String) -> Void)? = nil,
+    onExpandedChange: (([String]) -> Void)? = nil
   ) {
     self.items = items
     self.expanded = expanded
+    self.initiallyExpanded = initiallyExpanded
+    _ownExpanded = State(initialValue: initiallyExpanded)
     self.selected = selected
     self.size = size
     self.tint = tint
     self.onSelect = onSelect
     self.onToggle = onToggle
+    self.onExpandedChange = onExpandedChange
   }
 
   public var body: some View {
@@ -105,11 +133,20 @@ public struct Tree: View {
           size: size,
           tint: tint,
           onSelect: { onSelect?(row.id) },
-          onToggle: { onToggle?(row.id) }
+          onToggle: { toggle(row.id) }
         )
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)
+  }
+
+  private func toggle(_ id: String) {
+    var next = expanded ?? ownExpanded
+    if let index = next.firstIndex(of: id) { next.remove(at: index) }
+    else { next.append(id) }
+    if expanded == nil { ownExpanded = next }
+    onToggle?(id)
+    onExpandedChange?(next)
   }
 
   /// The visible rows, in the order the eye reads them.
@@ -117,7 +154,7 @@ public struct Tree: View {
     var out: [TreeRow] = []
     func walk(_ nodes: [TreeNode], _ level: Int) {
       for node in nodes {
-        let open = node.isBranch && expanded.contains(node.id)
+        let open = node.isBranch && (expanded ?? ownExpanded).contains(node.id)
         out.append(TreeRow(id: node.id, node: node, level: level, open: open))
         if open, let children = node.children {
           walk(children, level + 1)
@@ -154,18 +191,28 @@ private struct Row: View {
     ) { state in
       HStack(spacing: 0) {
         Twisty(branch: node.isBranch, open: open, enabled: node.enabled, action: onToggle)
-        if let icon = node.icon {
-          Icon(icon, size: vars.iconMedium)
+        if node.iconView != nil || node.icon != nil {
+          Group {
+            if let view = node.iconView { view }
+            else if let icon = node.icon { Icon(icon, size: vars.iconMedium) }
+          }
+            .environment(\.dazzIconSize, vars.iconMedium)
             .foregroundStyle(selected ? content(state) : vars.colorContentSubtle)
             .padding(.leading, vars.spacing1)
         }
-        Text(node.label)
+        Group {
+          if let view = node.labelView { view }
+          else { Text(node.label) }
+        }
           .lineLimit(1)
           .truncationMode(.tail)
           .padding(.leading, vars.spacing1)
           .frame(maxWidth: .infinity, alignment: .leading)
-        if let meta = node.meta {
-          Text(meta)
+        if node.metaView != nil || node.meta != nil {
+          Group {
+            if let view = node.metaView { view }
+            else if let meta = node.meta { Text(meta) }
+          }
             .font(vars.captionSmall.font)
             .foregroundStyle(selected ? content(state) : vars.colorContentFaint)
             .padding(.leading, vars.spacing2)

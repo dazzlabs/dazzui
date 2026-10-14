@@ -43,10 +43,7 @@ pub const STORY: &str = r#"{
       },
       "$at": 0
     },
-    "gaps": [
-      "segmented-control/preview preview: <SegmentedControl> is not drawn by GTK4",
-      "segmented-control/preview: live story expressions are not yet mapped"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -170,10 +167,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "segmented-control/0 preview: <SegmentedControl> is not drawn by GTK4",
-        "segmented-control/0: live story expressions are not yet mapped"
-      ]
+      "gaps": []
     },
     {
       "id": "segmented-control/1",
@@ -324,13 +318,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "segmented-control/1 preview: <SegmentedControl> is not drawn by GTK4",
-        "segmented-control/1: live story expressions are not yet mapped",
-        "segmented-control/1: Fluent glyph TextBulletList20Regular is not yet mapped",
-        "segmented-control/1: Fluent glyph Board20Regular is not yet mapped",
-        "segmented-control/1: Fluent glyph Timeline20Regular is not yet mapped"
-      ]
+      "gaps": []
     },
     {
       "id": "segmented-control/2",
@@ -505,14 +493,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "segmented-control/2 preview: <SegmentedControl> is not drawn by GTK4",
-        "segmented-control/2: live story expressions are not yet mapped",
-        "segmented-control/2: Fluent glyph TextAlignLeft20Regular is not yet mapped",
-        "segmented-control/2: Fluent glyph TextAlignCenter20Regular is not yet mapped",
-        "segmented-control/2: Fluent glyph TextAlignRight20Regular is not yet mapped",
-        "segmented-control/2: Fluent glyph TextAlignJustify20Regular is not yet mapped"
-      ]
+      "gaps": []
     },
     {
       "id": "segmented-control/3",
@@ -625,17 +606,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "segmented-control/3 preview: <SegmentedControl> is not drawn by GTK4",
-        "segmented-control/3: live story expressions are not yet mapped",
-        "segmented-control/3: Fluent glyph TextBulletList20Regular is not yet mapped",
-        "segmented-control/3: Fluent glyph Board20Regular is not yet mapped",
-        "segmented-control/3: Fluent glyph Timeline20Regular is not yet mapped",
-        "segmented-control/3: Fluent glyph TextAlignLeft20Regular is not yet mapped",
-        "segmented-control/3: Fluent glyph TextAlignCenter20Regular is not yet mapped",
-        "segmented-control/3: Fluent glyph TextAlignRight20Regular is not yet mapped",
-        "segmented-control/3: Fluent glyph TextAlignJustify20Regular is not yet mapped"
-      ]
+      "gaps": []
     }
   ]
 }"#;

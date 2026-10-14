@@ -111,6 +111,17 @@ export function walk(container: HTMLElement, Demo: ComponentType): Found[] {
 
   const found: Found[] = []
   const used = new Set<Fiber>()
+  const declared = new Set<unknown>()
+  const remembered = new WeakSet<object>()
+  const remember = (value: unknown): void => {
+    if (!value || typeof value !== 'object' || remembered.has(value)) return
+    remembered.add(value)
+    if (isElement(value)) {
+      declared.add(value.props)
+      remember(value.props)
+    } else if (Array.isArray(value)) value.forEach(remember)
+    else if (isPlain(value)) Object.values(value).forEach(remember)
+  }
 
   /* The fiber an element made: by its props object, or — where the kit
      clones an element it was handed, as a trigger is merged with the
@@ -123,6 +134,14 @@ export function walk(container: HTMLElement, Demo: ComponentType): Found[] {
       let best = want.length ? 0 : -1
       const search = (candidate: Fiber) => {
         if (candidate.elementType === element.type && !used.has(candidate)) {
+          // A sibling with the same glyph or label is its own declaration,
+          // not a clone of this one. In particular, a closed tree branch
+          // must not steal a later visible file's icon and shift addresses.
+          if (
+            candidate.memoizedProps !== element.props &&
+            declared.has(candidate.memoizedProps)
+          )
+            return
           const have = candidate.memoizedProps as Element['props']
           const score = want.filter(([k, v]) => have?.[k] === v).length
           if (score > best) {
@@ -156,6 +175,7 @@ export function walk(container: HTMLElement, Demo: ComponentType): Found[] {
   }
 
   const visit = (element: Element, scope: Fiber): void => {
+    remember(element)
     const { type } = element
     if (KIT.has(type)) {
       const fiber = fiberOf(element, scope)

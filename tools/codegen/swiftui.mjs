@@ -11,6 +11,10 @@ import { gaps } from './support.mjs'
  * Flutter's; it is SwiftUI's to narrow or widen.
  */
 export const SUPPORT = structuredClone(FLUTTER_SUPPORT)
+// These mappings still accept the original preference slots only.
+SUPPORT.PreferenceGroup = ['title', 'description', '#children']
+SUPPORT.PreferenceRow = ['title', 'subtitle', 'onOpen', '#children']
+SUPPORT.PreferenceSection = ['label', 'footer', '#children']
 
 /** Every component and prop a story sets that SwiftUI does not draw. */
 export const unsupported = stories => gaps(stories, SUPPORT, 'SwiftUI')

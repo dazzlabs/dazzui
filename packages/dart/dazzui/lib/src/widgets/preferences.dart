@@ -1,11 +1,29 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
+import '../foundation/inline_outset.dart';
+import '../foundation/widget_tint.dart';
 import '../generated/theme_variables.dart';
 import '../theme/theme.dart';
 import 'divider.dart';
 import 'pressable.dart';
 import 'section_label.dart';
+
+bool _hasWords(Object? value) => value != null && value != '';
+Widget _words(Object value, TextStyle style, {bool truncate = false}) =>
+    value is Widget
+    ? DefaultTextStyle.merge(
+        style: style,
+        maxLines: truncate ? 1 : null,
+        overflow: truncate ? TextOverflow.ellipsis : null,
+        child: value,
+      )
+    : Text(
+        value as String,
+        style: style,
+        maxLines: truncate ? 1 : null,
+        overflow: truncate ? TextOverflow.ellipsis : null,
+      );
 
 /// The settings column.
 ///
@@ -56,14 +74,19 @@ class Preferences extends StatelessWidget {
     // one: `width: 100%; max-width` in the stylesheet. The inner box is what
     // makes it the former — under a loose constraint alone a centred column
     // would shrink to its rows.
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: vars.preferencesWidth),
-      child: SizedBox(
-        width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: _run(children, vars.preferencesGroupGap),
+    return Align(
+      alignment: AlignmentDirectional.topStart,
+      widthFactor: 1,
+      heightFactor: 1,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: vars.preferencesWidth),
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: _run(children, vars.preferencesGroupGap),
+          ),
         ),
       ),
     );
@@ -78,10 +101,13 @@ class PreferenceGroup extends StatelessWidget {
     this.description,
     this.action,
     required this.children,
-  });
+  }) : assert(title is String || title is Widget),
+       assert(
+         description == null || description is String || description is Widget,
+       );
 
-  final String title;
-  final String? description;
+  final Object title;
+  final Object? description;
   final Widget? action;
   final List<Widget> children;
 
@@ -114,16 +140,16 @@ class PreferenceGroup extends StatelessWidget {
                     // sizes up, at the label weight — is the first face that
                     // stands over a row. A section heading stays a
                     // SectionLabel.
-                    Text(
+                    _words(
                       title,
-                      style: vars.titleMedium.copyWith(
+                      vars.titleMedium.copyWith(
                         color: vars.colorContent,
                       ),
                     ),
-                    if (description != null)
-                      Text(
+                    if (_hasWords(description))
+                      _words(
                         description!,
-                        style: vars.captionSmall.copyWith(
+                        vars.captionSmall.copyWith(
                           height: 1.7,
                           color: vars.colorContentSubtle,
                         ),
@@ -153,10 +179,11 @@ class PreferenceSection extends StatelessWidget {
     this.footer,
     this.action,
     required this.children,
-  });
+  }) : assert(label == null || label is String || label is Widget),
+       assert(footer == null || footer is String || footer is Widget);
 
-  final String? label;
-  final String? footer;
+  final Object? label;
+  final Object? footer;
   final Widget? action;
   final List<Widget> children;
 
@@ -168,16 +195,23 @@ class PreferenceSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (label != null || action != null)
+        if (_hasWords(label) || action != null)
           Padding(
             padding: EdgeInsets.only(bottom: vars.preferencesHeadingGap),
             child: Row(
               spacing: vars.spacing4,
               children: [
                 Expanded(
-                  child: label == null
+                  child: !_hasWords(label)
                       ? const SizedBox.shrink()
-                      : SectionLabel(label!),
+                      : label is String
+                      ? SectionLabel(label! as String)
+                      : _words(
+                          label!,
+                          vars.labelSmall.copyWith(
+                            color: vars.colorContentSubtle,
+                          ),
+                        ),
                 ),
                 if (action != null) _HeadingAction(child: action!),
               ],
@@ -189,12 +223,12 @@ class PreferenceSection extends StatelessWidget {
           spacing: vars.preferencesRowGap,
           children: children,
         ),
-        if (footer != null)
+        if (_hasWords(footer))
           Padding(
             padding: EdgeInsets.only(top: vars.preferencesFooterGap),
-            child: Text(
+            child: _words(
               footer!,
-              style: vars.captionSmall.copyWith(
+              vars.captionSmall.copyWith(
                 height: 1.7,
                 color: vars.colorContentSubtle,
               ),
@@ -290,12 +324,18 @@ class _RenderHeadingAction extends RenderShiftedBox {
   }
 }
 
-/// One decision.
-///
-/// A row's height is a minimum plus a pad on its text, never a fixed height.
-/// The minimum keeps the text column in one rhythm whatever control sits on
-/// the right; the pad rides on the text so a row grows for content — a
-/// subtitle, a wrapped title — and never for a control.
+/// The ramp an opening row previews on hover.
+enum PreferenceRowTint with WidgetTint {
+  primary,
+  neutral,
+  info,
+  success,
+  warning,
+  danger,
+}
+
+/// One decision. Text sets the minimum height; an opening row owns its
+/// expanded border box, hover wash, focus ring and button semantics.
 class PreferenceRow extends StatelessWidget {
   const PreferenceRow({
     super.key,
@@ -303,19 +343,27 @@ class PreferenceRow extends StatelessWidget {
     this.subtitle,
     this.icon,
     this.trailing,
-    this.onPressed,
-  });
+    this.onOpen,
+    this.tint = PreferenceRowTint.neutral,
+    @Deprecated('Use onOpen, as in the React API.') this.onPressed,
+  }) : assert(onOpen == null || onPressed == null),
+       assert(title is String || title is Widget),
+       assert(subtitle == null || subtitle is String || subtitle is Widget);
 
-  final String title;
-  final String? subtitle;
+  final Object title;
+  final Object? subtitle;
   final Widget? icon;
   final Widget? trailing;
+  final VoidCallback? onOpen;
+  final PreferenceRowTint tint;
+  @Deprecated('Use onOpen, as in the React API.')
   final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
     final ThemeVariables vars = Theme.of(context).vars;
-    final bool interactive = onPressed != null;
+    final VoidCallback? open = onOpen ?? onPressed;
+    final bool interactive = open != null;
 
     Widget content(Set<WidgetState> states) {
       final bool hovered = states.contains(WidgetState.hovered);
@@ -347,28 +395,40 @@ class PreferenceRow extends StatelessWidget {
                   // A row rests at `labelQuiet`, the way a list row does:
                   // every title at the label weight was a column of bold
                   // with nothing left to outrank it.
-                  Text(
+                  _words(
                     title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: vars.labelQuiet.copyWith(
+                    vars.labelQuiet.copyWith(
                       color: vars.colorContent,
                     ),
+                    truncate: true,
                   ),
-                  if (subtitle != null)
-                    Text(
+                  if (_hasWords(subtitle))
+                    _words(
                       subtitle!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: vars.captionSmall.copyWith(
+                      vars.captionSmall.copyWith(
                         color: vars.colorContentSubtle,
                       ),
+                      truncate: true,
                     ),
                 ],
               ),
             ),
           ),
-          ?trailing,
+          if (trailing != null || interactive)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: vars.spacing25,
+              children: [
+                ?trailing,
+                if (interactive)
+                  ExcludeSemantics(
+                    child: Text(
+                      '›',
+                      style: vars.bodyMedium.copyWith(color: vars.colorContent),
+                    ),
+                  ),
+              ],
+            ),
         ],
       );
 
@@ -379,52 +439,48 @@ class PreferenceRow extends StatelessWidget {
         );
       }
 
-      // The wash bleeds sideways past the text while the row still starts on
-      // the same left edge as the inert rows above it — a Stack rather than a
-      // negative margin, which Flutter rejects. It previews selection (the
-      // accent's quiet step) because an interactive row here opens something.
       return ConstrainedBox(
         constraints: BoxConstraints(minHeight: vars.controlMediumSize),
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned(
-              top: 0,
-              bottom: 0,
-              left: -vars.spacing2,
-              right: -vars.spacing2,
-              child: AnimatedContainer(
-                duration: vars.motionDuration,
-                curve: vars.motionEasing,
-                decoration: BoxDecoration(
-                  color: hovered
-                      ? vars
-                            .colorPrimary[vars
-                                .controlColorPlainSurface
-                                .hoveredShade!]!
-                            .withValues(
-                              alpha:
-                                  vars.controlColorPlainSurface.hoveredOpacity,
-                            )
-                      : null,
-                  borderRadius: BorderRadius.circular(
-                    vars.controlContainerRadius,
-                  ),
-                ),
-              ),
+        child: TweenAnimationBuilder<Color?>(
+          duration: vars.motionDuration,
+          curve: vars.motionEasing,
+          tween: ColorTween(
+            end: hovered
+                ? vars.controlColor
+                      .resolveWith(
+                        {},
+                        tint: tint,
+                      )[vars.controlColorPlainSurface.hoveredShade!]!
+                      .withValues(
+                        alpha: vars.controlColorPlainSurface.hoveredOpacity,
+                      )
+                : const Color(0x00000000),
+          ),
+          builder: (context, color, child) => DecoratedBox(
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(vars.controlContainerRadius),
             ),
-            row,
-          ],
+            child: child,
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: vars.spacing2),
+            child: row,
+          ),
         ),
       );
     }
 
     if (!interactive) return content(const {});
 
-    return Pressable(
-      onPressed: onPressed,
-      borderRadius: BorderRadius.circular(vars.controlContainerRadius),
-      builder: (context, states) => content(states),
+    return InlineOutset(
+      amount: vars.spacing2,
+      radius: BorderRadius.circular(vars.controlContainerRadius),
+      child: Pressable(
+        onPressed: open,
+        borderRadius: BorderRadius.circular(vars.controlContainerRadius),
+        builder: (context, states) => content(states),
+      ),
     );
   }
 }

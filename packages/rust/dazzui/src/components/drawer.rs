@@ -100,18 +100,18 @@ impl Drawer {
     }
 
     pub fn title(mut self, title: impl IntoElement) -> Self {
-        self.title = Some(title.into_any_element());
+        self.title = Some(crate::foundation::text_child(title));
         self
     }
 
     pub fn description(mut self, description: impl IntoElement) -> Self {
-        self.description = Some(description.into_any_element());
+        self.description = Some(crate::foundation::text_child(description));
         self
     }
 
     /// A row of controls pinned to the far edge, clear of the scrolling body.
     pub fn footer(mut self, footer: impl IntoElement) -> Self {
-        self.footer = Some(footer.into_any_element());
+        self.footer = Some(crate::foundation::text_child(footer));
         self
     }
 
@@ -123,7 +123,8 @@ impl Drawer {
 
 impl ParentElement for Drawer {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        self.children.extend(elements);
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
     }
 }
 

@@ -230,8 +230,8 @@ pub fn glyph_path(value: &Value) -> SharedString {
 /// One node of a scene, drawn: text, a glyph, or a component.
 pub fn draw(value: &Value, ctx: &Ctx, path: &str, window: &mut Window, cx: &mut App) -> AnyElement {
     match value {
-        Value::String(text) => SharedString::from(text.clone()).into_any_element(),
-        Value::Number(_) => SharedString::from(text(value)).into_any_element(),
+        Value::String(text) => dazzui::foundation::text_child(SharedString::from(text.clone())),
+        Value::Number(_) => dazzui::foundation::text_child(SharedString::from(text(value))),
         Value::Object(object) if object.contains_key("$icon") => {
             specimen::wrap(object.get("$at"), Icon::new(glyph_path(value)), path)
         }
@@ -245,7 +245,7 @@ pub fn draw(value: &Value, ctx: &Ctx, path: &str, window: &mut Window, cx: &mut 
             specimen::wrap(object.get("$at"), element, path)
         }
         _ if is_live(value) => {
-            SharedString::from(text(&ctx.resolve(value, &[]))).into_any_element()
+            dazzui::foundation::text_child(SharedString::from(text(&ctx.resolve(value, &[]))))
         }
         _ => div().into_any_element(),
     }

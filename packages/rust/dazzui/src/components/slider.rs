@@ -9,7 +9,9 @@ use gpui::{
 };
 
 use crate::components::checkbox::kit;
-use crate::foundation::{ControlColors, Size, State, Tint, Variant, focus_visible, pointer_down};
+use crate::foundation::{
+    ControlColors, Size, State, StyledExt, Tint, Variant, focus_visible, pointer_down,
+};
 use crate::theme::ActiveTheme;
 use crate::tokens::{Face, shadows};
 
@@ -417,6 +419,7 @@ impl RenderOnce for Slider {
                 .text_right()
                 .text_color(t.color_content_muted.hsla())
                 .font_family(Face::Mono.family())
+                .tabular_nums()
                 .text_size(px(small))
                 .line_height(px(small))
                 .child(

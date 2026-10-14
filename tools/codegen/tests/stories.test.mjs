@@ -166,6 +166,46 @@ test('Flutter reports a prop it does not draw', () => {
   assert.ok(SUPPORT.Button.includes('onClick'))
 })
 
+test('WinUI accepts composed table props and rejects unknown row props', () => {
+  const row = {
+    $el: 'TableRow',
+    props: { active: true, interactive: true, onClick: { $do: [] } },
+    children: [
+      { $el: 'TableCell', props: { align: 'end' }, children: ['Ready'] },
+    ],
+  }
+  const stories = [
+    {
+      id: 'table',
+      preview: {
+        content: {
+          $el: 'Table',
+          props: { tint: 'danger', 'aria-label': 'Deploys' },
+          children: [
+            {
+              $el: 'TableHead',
+              children: [
+                {
+                  $el: 'TableCell',
+                  props: { head: true },
+                  children: ['State'],
+                },
+              ],
+            },
+            row,
+          ],
+        },
+      },
+      examples: [],
+    },
+  ]
+  assert.deepEqual(winui.unsupported(stories), [])
+  row.props.wobble = true
+  assert.deepEqual(winui.unsupported(stories), [
+    'table preview: <TableRow wobble> is not drawn by WinUI',
+  ])
+})
+
 test('a SwiftUI story member that is a keyword is fenced, and its JSON is raw', () => {
   const story = {
     id: 'switch',

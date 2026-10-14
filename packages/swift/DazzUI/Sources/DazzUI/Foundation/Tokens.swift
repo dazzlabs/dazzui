@@ -149,7 +149,7 @@ public struct TypeStyle: Sendable, Equatable {
   /// not over its size, which would set every line the face's leading apart
   /// on top of the design's.
   public var lineSpacing: CGFloat {
-    max(0, lineHeight - naturalLineHeight)
+    lineHeight - naturalLineHeight
   }
 
   /// CSS's half-leading: what a line box puts above and below its line.
@@ -163,9 +163,10 @@ public extension View {
   /// and half the leading above the first and below the last, so one line is
   /// `lineHeight` tall rather than the face's own height. For a run of text;
   /// on a row of controls the padding would land on the row.
-  func lineBox(_ style: TypeStyle) -> some View {
-    lineSpacing(style.lineSpacing)
-      .padding(.vertical, style.halfLeading)
+  func lineBox(_ style: TypeStyle, lineHeight: CGFloat? = nil) -> some View {
+    let leading = (lineHeight ?? style.lineHeight) - style.naturalLineHeight
+    return lineSpacing(leading)
+      .padding(.vertical, leading / 2)
   }
 }
 

@@ -1,3 +1,4 @@
+use super::{state::Context, story::Scene};
 use dazzui_gtk4::{gtk, prelude::*, *};
 use serde_json::Value;
 
@@ -23,16 +24,16 @@ fn boolean(p: &Value, k: &str) -> bool {
 fn number(p: &Value, k: &str, fallback: f64) -> f64 {
     p[k].as_f64().unwrap_or(fallback)
 }
-fn size(p: &Value) -> Size {
-    match string(p, "size", "medium") {
+fn size(p: &Value, fallback: &str) -> Size {
+    match string(p, "size", fallback) {
         "tiny" => Size::Tiny,
         "small" => Size::Small,
         "large" => Size::Large,
         _ => Size::Medium,
     }
 }
-fn tint(p: &Value) -> Tint {
-    match string(p, "tint", "primary") {
+fn tint(p: &Value, fallback: &str) -> Tint {
+    match string(p, "tint", fallback) {
         "neutral" => Tint::Neutral,
         "info" => Tint::Info,
         "success" => Tint::Success,
@@ -65,25 +66,107 @@ fn length(v: &str) -> Option<i32> {
         None
     }
 }
+pub(super) fn select_items(value: &Value) -> Vec<SelectItem> {
+    let option = |item: &Value| SelectOption {
+        value: string(item, "value", "").to_owned(),
+        label: string(item, "label", "").to_owned(),
+        disabled: boolean(item, "disabled"),
+    };
+    value
+        .as_array()
+        .into_iter()
+        .flatten()
+        .map(|item| {
+            if let Some(options) = item["options"].as_array() {
+                SelectItem::Group {
+                    label: string(item, "label", "").to_owned(),
+                    options: options.iter().map(option).collect(),
+                }
+            } else {
+                SelectItem::Option(option(item))
+            }
+        })
+        .collect()
+}
 fn append(
     box_: &gtk::Box,
     nodes: &[Value],
     specimens: &mut Vec<(usize, gtk::Widget)>,
+    ctx: &Context,
 ) -> Result<(), String> {
     for child in nodes {
-        box_.append(&render(child, specimens)?);
+        box_.append(&render_with(child, specimens, ctx)?);
+    }
+    Ok(())
+}
+fn button_children(
+    b: &gtk::Box,
+    nodes: &[Value],
+    specimens: &mut Vec<(usize, gtk::Widget)>,
+    ctx: &Context,
+) -> Result<(), String> {
+    for node in nodes {
+        if let Some(text) = node.as_str() {
+            b.append(&gtk::Label::new(Some(text)));
+        } else {
+            b.append(&render_with(node, specimens, ctx)?);
+        }
     }
     Ok(())
 }
 /// Return an error for unmapped scenes; never quietly substitute a different control.
 pub fn render(n: &Value, specimens: &mut Vec<(usize, gtk::Widget)>) -> Result<gtk::Widget, String> {
+    let ctx = Context::new(&Value::Null);
+    render_with(n, specimens, &ctx)
+}
+pub fn render_scene(
+    scene: &Scene,
+    specimens: &mut Vec<(usize, gtk::Widget)>,
+) -> Result<gtk::Widget, String> {
+    let ctx = Context::new(&scene.state);
+    let root = render_with(&scene.content, specimens, &ctx)?;
+    root.connect_destroy(move |_| {
+        let _ = &ctx;
+    });
+    Ok(root)
+}
+fn render_with(
+    raw: &Value,
+    specimens: &mut Vec<(usize, gtk::Widget)>,
+    ctx: &Context,
+) -> Result<gtk::Widget, String> {
+    let resolved = ctx.resolve(raw, &[]);
+    let n = &resolved;
     if n.is_string() {
-        return Ok(label(&text(n), "body-small").upcast());
+        let w = label(&text(n), "body-small");
+        if raw != n {
+            let raw = raw.clone();
+            ctx.bind(&w, move |w, ctx| {
+                w.set_label(&super::state::text(&ctx.resolve(&raw, &[])))
+            });
+        }
+        return Ok(w.upcast());
+    }
+    if let Some(name) = n["$icon"].as_str() {
+        return Ok(icon(name).upcast());
     }
     let kind = n["$el"].as_str().ok_or("Expected a story node")?;
     let p = &n["props"];
-    let s = size(p);
-    let t = tint(p);
+    let s = size(
+        p,
+        match kind {
+            "Button" | "Progress" => "small",
+            "IconButton" | "Toggle" => "tiny",
+            _ => "medium",
+        },
+    );
+    let t = tint(
+        p,
+        match kind {
+            "IconButton" | "Toggle" | "Callout" => "neutral",
+            _ => "primary",
+        },
+    );
     let own = n["$at"].as_u64().map(|n| n as usize);
     let before = specimens.len();
     let w: gtk::Widget = match kind {
@@ -97,7 +180,12 @@ pub fn render(n: &Value, specimens: &mut Vec<(usize, gtk::Widget)>) -> Result<gt
                 },
                 string(p, "gap", "3"),
             );
-            append(&b, children(n), specimens)?;
+            append(
+                &b,
+                raw["children"].as_array().map(Vec::as_slice).unwrap_or(&[]),
+                specimens,
+                ctx,
+            )?;
             if let Some(width) = p["width"].as_str().and_then(length) {
                 b.set_size_request(width, -1);
             }
@@ -111,6 +199,14 @@ pub fn render(n: &Value, specimens: &mut Vec<(usize, gtk::Widget)>) -> Result<gt
                 _ => gtk::Align::Start,
             };
             if row {
+                let kids = children_widgets(&b);
+                if !kids.is_empty()
+                    && kids
+                        .iter()
+                        .all(|child| child.has_css_class("dz-option-card"))
+                {
+                    b.set_homogeneous(true);
+                }
                 for child in children_widgets(&b) {
                     child.set_valign(align);
                 }
@@ -134,7 +230,7 @@ pub fn render(n: &Value, specimens: &mut Vec<(usize, gtk::Widget)>) -> Result<gt
         }
         "Text" => {
             let b = box_(gtk::Orientation::Horizontal, "0");
-            for node in children(n) {
+            for node in children(raw) {
                 if node.is_string() {
                     let l = label(
                         &text(node),
@@ -153,29 +249,289 @@ pub fn render(n: &Value, specimens: &mut Vec<(usize, gtk::Widget)>) -> Result<gt
                     }
                     b.append(&l);
                 } else {
-                    b.append(&render(node, specimens)?);
+                    b.append(&render_with(node, specimens, ctx)?);
                 }
             }
             b.upcast()
         }
         "Button" => {
-            let b = button(&text(n), variant(p, Variant::Normal), t, s);
+            let b = button("", variant(p, Variant::Recessed), t, s);
+            let content = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+            content.add_css_class("dz-button-content");
+            // Match React's glyph-end trims without flattening nested kit nodes.
+            let kids = children(raw);
+            let glyph = |n: &Value| n["$el"] == "Icon" || n.get("$icon").is_some();
+            let trim = kids.len() > 1;
+            let leading = trim && kids.first().is_some_and(glyph);
+            let trailing = trim && kids.last().is_some_and(glyph);
+            if let Some(shortcut) = p.get("shortcut") {
+                let hint = render_with(shortcut, specimens, ctx)?;
+                hint.add_css_class("dz-button-shortcut");
+                // Props precede children in the shared specimen walk.
+                button_children(&content, kids, specimens, ctx)?;
+                content.append(&hint);
+            } else {
+                button_children(&content, kids, specimens, ctx)?;
+            }
+            if leading {
+                b.add_css_class("dz-glyph-leading");
+            }
+            if trailing {
+                b.add_css_class("dz-glyph-trailing");
+            }
+            if trim {
+                content.add_css_class("dz-labelled-button");
+            }
+            b.set_child(Some(&content));
             b.set_hexpand(boolean(p, "fullWidth"));
             b.upcast()
         }
+        "Icon" => {
+            let w = icon(
+                p["icon"]["$icon"]
+                    .as_str()
+                    .ok_or("Icon needs a Fluent glyph")?,
+            );
+            if let Some(size) = p["size"].as_i64() {
+                w.set_pixel_size(size as i32);
+            }
+            w.upcast()
+        }
+        "IconButton" => {
+            let b = button("", variant(p, Variant::Plain), t, s);
+            b.add_css_class("dz-icon-button");
+            let face = children(n).first().ok_or("IconButton needs a glyph")?;
+            b.set_child(Some(&render_with(face, specimens, ctx)?));
+            b.set_dazz_label(string(p, "label", ""));
+            b.set_tooltip_text(Some(string(p, "label", "")));
+            b.upcast()
+        }
+        "KeyCap" => {
+            let w = key_cap(&text(n));
+            w.set_dazz_size(s);
+            w.add_css_class(&format!("dz-key-cap-{}", string(p, "variant", "hint")));
+            w.upcast()
+        }
+        "Avatar" => {
+            let name = string(p, "name", "");
+            let words: Vec<_> = name.split_whitespace().collect();
+            let initials = words
+                .first()
+                .and_then(|w| w.chars().next())
+                .into_iter()
+                .chain(
+                    (words.len() > 1)
+                        .then(|| words.last().unwrap().chars().next())
+                        .flatten(),
+                )
+                .collect::<String>()
+                .to_uppercase();
+            let w = avatar(string(p, "fallback", &initials), s);
+            w.set_dazz_tint(t);
+            w.set_dazz_label(name);
+            if string(p, "shape", "circle") == "square" {
+                w.add_css_class("dz-avatar-square");
+            }
+            w.upcast()
+        }
         "Badge" => badge(&text(n), variant(p, Variant::Tinted), t, s).upcast(),
+        "Tag" => {
+            if p.get("selected").is_some() {
+                let w = tag(&text(n), variant(p, Variant::Tinted), t, s);
+                w.set_active(boolean(p, "selected"));
+                w.upcast()
+            } else {
+                let w = box_(gtk::Orientation::Horizontal, "1");
+                w.add_css_class("dz-badge");
+                w.add_css_class("dz-tag");
+                w.add_css_class("dz-tag-static");
+                w.set_dazz_size(s);
+                w.set_dazz_tint(t);
+                w.set_dazz_variant(variant(p, Variant::Tinted));
+                w.append(&gtk::Label::new(Some(&text(n))));
+                if p.get("onRemove").is_some() {
+                    let remove = gtk::Button::new();
+                    remove.add_css_class("dz-tag-remove");
+                    remove.set_child(Some(&icon("Dismiss12Regular")));
+                    remove.set_dazz_label(string(p, "removeLabel", "Remove"));
+                    let action = raw["props"]["onRemove"].clone();
+                    let ctx = ctx.clone();
+                    remove.connect_clicked(move |_| ctx.run(&action, &[]));
+                    w.append(&remove);
+                }
+                w.upcast()
+            }
+        }
+        "SegmentedControl" => {
+            let items = p["items"]
+                .as_array()
+                .ok_or("SegmentedControl needs items")?;
+            let names: Vec<_> = items
+                .iter()
+                .map(|i| {
+                    i["icon"]["$icon"]
+                        .as_str()
+                        .map(|name| format!("dazzui-{name}-symbolic"))
+                })
+                .collect();
+            let faces: Vec<_> = items
+                .iter()
+                .zip(&names)
+                .map(|(item, icon)| (string(item, "label", ""), icon.as_deref()))
+                .collect();
+            let selected = items
+                .iter()
+                .position(|i| i["value"] == p["value"])
+                .unwrap_or(0);
+            let w = glyph_segmented_control(&faces, selected, boolean(p, "iconOnly"));
+            w.set_dazz_size(s);
+            w.set_dazz_tint(t);
+            if string(p, "activeStyle", "raised") == "filled" {
+                w.add_css_class("dz-segments-filled");
+            }
+            if boolean(p, "stretch") {
+                w.set_hexpand(true);
+                w.set_homogeneous(true);
+            }
+            for (child, item) in children_widgets(&w).iter().zip(items) {
+                let toggle = child.clone().downcast::<gtk::ToggleButton>().unwrap();
+                toggle.set_sensitive(!boolean(item, "disabled"));
+                let key = item["value"].clone();
+                let source = raw["props"]["value"].clone();
+                let own_key = key.clone();
+                ctx.bind(&toggle, move |toggle, ctx| {
+                    toggle.set_active(ctx.resolve(&source, &[]) == own_key)
+                });
+                let ctx = ctx.clone();
+                let action = raw["props"]["onValueChange"].clone();
+                toggle.connect_toggled(move |toggle| {
+                    if toggle.is_active() {
+                        ctx.run(&action, std::slice::from_ref(&key));
+                    }
+                });
+            }
+            w.upcast()
+        }
+        "PillTabs" => {
+            let items = p["items"].as_array().ok_or("PillTabs needs items")?;
+            let counts: Vec<_> = items
+                .iter()
+                .map(|item| item.get("count").map(super::state::text))
+                .collect();
+            let icons: Vec<_> = items
+                .iter()
+                .map(|item| {
+                    item["icon"]["$icon"]
+                        .as_str()
+                        .map(|name| format!("dazzui-{name}-symbolic"))
+                })
+                .collect();
+            let faces: Vec<_> = items
+                .iter()
+                .enumerate()
+                .map(|(index, item)| PillTab {
+                    value: string(item, "value", ""),
+                    label: string(item, "label", ""),
+                    count: counts[index].as_deref(),
+                    icon: icons[index].as_deref(),
+                    disabled: boolean(item, "disabled"),
+                })
+                .collect();
+            let selected = p
+                .get("value")
+                .or_else(|| p.get("defaultValue"))
+                .and_then(Value::as_str);
+            let root = pill_tabs(&faces, selected, t);
+            for (child, item) in children_widgets(&root).iter().zip(items) {
+                let tab = child.clone().downcast::<gtk::ToggleButton>().unwrap();
+                let key = item["value"].clone();
+                if let Some(source) = raw["props"].get("value") {
+                    let source = source.clone();
+                    let key = key.clone();
+                    ctx.bind(&tab, move |tab, ctx| {
+                        tab.set_active(ctx.resolve(&source, &[]) == key)
+                    });
+                }
+                let ctx = ctx.clone();
+                let action = raw["props"]["onValueChange"].clone();
+                tab.connect_toggled(move |tab| {
+                    if tab.is_active() {
+                        ctx.run(&action, std::slice::from_ref(&key));
+                    }
+                });
+            }
+            root.upcast()
+        }
+        "OptionCard" => {
+            let card = option_card(string(p, "title", ""), string(p, "description", ""), None);
+            card.set_dazz_tint(t);
+            card.set_active(boolean(p, "selected"));
+            card.upcast()
+        }
         "Card" => {
-            let cv = match string(p, "variant", "sunken") {
+            let cv = match string(p, "variant", "raised") {
                 "raised" => CardVariant::Raised,
                 "outlined" => CardVariant::Outlined,
                 "tinted" => CardVariant::Tinted,
                 _ => CardVariant::Sunken,
             };
             let b = card(cv, t, s);
-            append(&b, children(n), specimens)?;
+            append(
+                &b,
+                raw["children"].as_array().map(Vec::as_slice).unwrap_or(&[]),
+                specimens,
+                ctx,
+            )?;
             b.upcast()
         }
-        "Callout" => callout(string(p, "title", ""), &text(n), t).upcast(),
+        "Callout" => {
+            let title = raw["props"]
+                .get("title")
+                .map(|title| render_with(title, specimens, ctx))
+                .transpose()?;
+            let leading = raw["props"]
+                .get("icon")
+                .map(|icon| render_with(icon, specimens, ctx))
+                .transpose()?;
+            let action = raw["props"]
+                .get("action")
+                .map(|action| render_with(action, specimens, ctx))
+                .transpose()?;
+            let description = label(&text(n), "body-small");
+            description.set_wrap(true);
+            callout_with_slots(
+                title.as_ref(),
+                (!text(n).is_empty()).then_some(description.upcast_ref()),
+                leading.as_ref(),
+                action.as_ref(),
+                t,
+                s,
+            )
+            .upcast()
+        }
+        "ActionBar" => {
+            let b = action_bar();
+            let align = string(p, "align", "start");
+            if align == "end" {
+                let spacer = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+                spacer.set_hexpand(true);
+                b.append(&spacer);
+            }
+            for (index, node) in children(raw).iter().enumerate() {
+                if align == "between" && index > 0 {
+                    let spacer = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+                    spacer.set_hexpand(true);
+                    b.append(&spacer);
+                }
+                b.append(&render_with(node, specimens, ctx)?);
+            }
+            b.upcast()
+        }
+        "Fieldset" => {
+            let b = fieldset(p["legend"].as_str());
+            append(&b, children(raw), specimens, ctx)?;
+            b.upcast()
+        }
         "Checkbox" => {
             let b = checkbox(&text(n), t, s);
             b.set_active(boolean(p, "defaultChecked"));
@@ -190,10 +546,26 @@ pub fn render(n: &Value, specimens: &mut Vec<(usize, gtk::Widget)>) -> Result<gt
             b.set_active(boolean(p, "defaultChecked"));
             b.upcast()
         }
+        "SearchField" => {
+            let w = search_field(string(p, "placeholder", ""), s);
+            w.set_text(string(p, "value", ""));
+            w.upcast()
+        }
         "Toggle" => {
-            let b = toggle(string(p, "label", ""), t, s);
+            let b = toggle(&text(n), t, s);
+            let content = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+            content.add_css_class("dz-button-content");
+            button_children(&content, children(raw), specimens, ctx)?;
+            b.set_child(Some(&content));
+            if children(raw).len() == 1 && children(raw)[0]["$el"] == "Icon" {
+                b.add_css_class("dz-toggle-icon");
+            }
+            if let Some(label) = p["label"].as_str() {
+                b.set_dazz_label(label);
+                b.set_tooltip_text(Some(label));
+            }
             b.set_active(boolean(p, "defaultPressed"));
-            b.set_dazz_variant(variant(p, Variant::Normal));
+            b.set_dazz_variant(variant(p, Variant::Plain));
             b.upcast()
         }
         "TextField" => {
@@ -255,15 +627,40 @@ pub fn render(n: &Value, specimens: &mut Vec<(usize, gtk::Widget)>) -> Result<gt
             w
         }
         "Select" => {
-            let options = p["options"].as_array().ok_or("Select needs options")?;
-            let labels: Vec<_> = options.iter().map(|o| string(o, "label", "")).collect();
-            let w = select(&labels, s);
-            if let Some(value) = p["defaultValue"].as_str() {
-                if let Some(index) = options.iter().position(|o| o["value"] == value) {
-                    w.set_selected(index as u32);
-                }
+            let items = select_items(&p["options"]);
+            let w = select_options(&items, string(p, "placeholder", ""), s);
+            let values = select_values(&items);
+            if let Some(value) = p
+                .get("value")
+                .or_else(|| p.get("defaultValue"))
+                .and_then(Value::as_str)
+            {
+                w.set_selected(
+                    values
+                        .iter()
+                        .position(|item| item.as_deref() == Some(value))
+                        .unwrap_or(0) as u32,
+                );
+            }
+            w.set_dazz_tint(if string(p, "state", "") == "error" {
+                Tint::Danger
             } else {
-                w.set_selected(gtk::INVALID_LIST_POSITION);
+                t
+            });
+            w.set_dazz_invalid(string(p, "state", "") == "error");
+            if boolean(p, "mono") {
+                w.add_css_class("dz-mono");
+            }
+            if boolean(p, "required") {
+                w.update_property(&[gtk::accessible::Property::Required(true)]);
+            }
+            if boolean(p, "readOnly") {
+                w.add_css_class("dz-readonly");
+                w.set_focusable(true);
+                if let Some(button) = w.first_child() {
+                    button.set_sensitive(false);
+                }
+                w.update_property(&[gtk::accessible::Property::ReadOnly(true)]);
             }
             w.upcast()
         }
@@ -280,7 +677,41 @@ pub fn render(n: &Value, specimens: &mut Vec<(usize, gtk::Widget)>) -> Result<gt
             }
             w.upcast()
         }
-        "Spinner" => spinner(s).upcast(),
+        "Meter" => {
+            let b = box_(gtk::Orientation::Vertical, "2");
+            let min = number(p, "min", 0.);
+            let max = number(p, "max", 100.);
+            let fraction = if max > min {
+                ((number(p, "value", 0.) - min) / (max - min)).clamp(0., 1.)
+            } else {
+                0.
+            };
+            if p.get("label").is_some() || boolean(p, "showValue") {
+                let head = box_(gtk::Orientation::Horizontal, "3");
+                if let Some(title) = p["label"].as_str() {
+                    let title = label(title, "label-small");
+                    title.add_css_class("dz-meter-label");
+                    title.set_hexpand(true);
+                    head.append(&title);
+                }
+                if boolean(p, "showValue") {
+                    let reading = label(&format!("{}%", (fraction * 100.).round()), "label-small");
+                    reading.add_css_class("dz-meter-value");
+                    head.append(&reading);
+                }
+                b.append(&head);
+            }
+            b.append(&progress(fraction, t, s));
+            b.upcast()
+        }
+        "Spinner" => {
+            let w = spinner(s);
+            w.set_dazz_tint(t);
+            if boolean(p, "onAccent") {
+                w.add_css_class("dz-on-accent");
+            }
+            w.upcast()
+        }
         "Divider" => {
             let w = divider(if string(p, "orientation", "horizontal") == "vertical" {
                 gtk::Orientation::Vertical
@@ -308,31 +739,56 @@ pub fn render(n: &Value, specimens: &mut Vec<(usize, gtk::Widget)>) -> Result<gt
         "Link" => {
             let w = link(&text(n), string(p, "href", ""));
             w.set_dazz_tint(t);
+            w.add_css_class(&format!("dz-underline-{}", string(p, "underline", "hover")));
             if boolean(p, "external") {
                 w.set_tooltip_text(Some(string(p, "href", "")));
+                let face = box_(gtk::Orientation::Horizontal, "0-5");
+                face.append(&gtk::Label::new(Some(&text(n))));
+                let arrow = icon("ArrowUpRight12Regular");
+                arrow.add_css_class("dz-link-arrow");
+                face.append(&arrow);
+                w.set_child(Some(&face));
             }
             w.upcast()
         }
         "Collapsible" => {
             let b = box_(gtk::Orientation::Vertical, "2");
-            append(&b, children(n), specimens)?;
+            append(
+                &b,
+                raw["children"].as_array().map(Vec::as_slice).unwrap_or(&[]),
+                specimens,
+                ctx,
+            )?;
             let w = collapsible(string(p, "title", ""), &b);
             w.set_expanded(boolean(p, "defaultOpen"));
             w.upcast()
         }
         "EmptyState" => {
-            let action = p.get("action").map(|a| render(a, specimens)).transpose()?;
+            let action = p
+                .get("action")
+                .map(|a| render_with(a, specimens, ctx))
+                .transpose()?;
             empty_state(string(p, "title", ""), &text(n), action.as_ref()).upcast()
         }
         "FormField" => {
             let b = box_(gtk::Orientation::Vertical, "2");
-            append(&b, children(n), specimens)?;
+            append(
+                &b,
+                raw["children"].as_array().map(Vec::as_slice).unwrap_or(&[]),
+                specimens,
+                ctx,
+            )?;
             b.set_dazz_invalid(string(p, "state", "") == "error");
             form_field(string(p, "label", ""), &b, p["hint"].as_str()).upcast()
         }
         "Preferences" => {
             let b = preferences();
-            append(&b, children(n), specimens)?;
+            append(
+                &b,
+                raw["children"].as_array().map(Vec::as_slice).unwrap_or(&[]),
+                specimens,
+                ctx,
+            )?;
             b.upcast()
         }
         "PreferenceGroup" | "PreferenceSection" => {
@@ -348,7 +804,12 @@ pub fn render(n: &Value, specimens: &mut Vec<(usize, gtk::Widget)>) -> Result<gt
             if let Some(description) = p["description"].as_str() {
                 b.append(&label(description, "body-small"));
             }
-            append(&b, children(n), specimens)?;
+            append(
+                &b,
+                raw["children"].as_array().map(Vec::as_slice).unwrap_or(&[]),
+                specimens,
+                ctx,
+            )?;
             if let Some(footer) = p["footer"].as_str() {
                 b.append(&label(footer, "body-small"));
             }
@@ -356,7 +817,12 @@ pub fn render(n: &Value, specimens: &mut Vec<(usize, gtk::Widget)>) -> Result<gt
         }
         "PreferenceRow" => {
             let b = box_(gtk::Orientation::Horizontal, "2");
-            append(&b, children(n), specimens)?;
+            append(
+                &b,
+                raw["children"].as_array().map(Vec::as_slice).unwrap_or(&[]),
+                specimens,
+                ctx,
+            )?;
             preference_row(string(p, "title", ""), p["subtitle"].as_str(), &b).upcast()
         }
         "RadioGroup" => {
@@ -375,6 +841,7 @@ pub fn render(n: &Value, specimens: &mut Vec<(usize, gtk::Widget)>) -> Result<gt
         }
         other => return Err(format!("Unmapped GTK4 component: {other}")),
     };
+    ctx.wire(kind, &w, &raw["props"]);
     if let Some(at) = own {
         specimens.insert(before, (at, w.clone()));
     }

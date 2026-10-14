@@ -17,6 +17,7 @@ public sealed class Theme
     private readonly JsonElement values;
     public string Name { get; }
     public bool IsDark => Name.EndsWith("-dark", StringComparison.Ordinal);
+    public FontFamily CodeFont => PlatformFonts.Code;
     public static IReadOnlyList<string> Names { get; } = Themes.EnumerateObject().Select(p => p.Name).ToArray();
     public static Theme Default { get; } = new("studio-light");
 
@@ -71,10 +72,11 @@ public sealed class Theme
 
     public void Typography(Control control, string token)
     {
+        control.UseLayoutRounding = false;
         var style = values.GetProperty(token);
         control.FontSize = Number(style.GetProperty("fontSize"));
         control.FontWeight = new FontWeight { Weight = (ushort)style.GetProperty("fontWeight").GetInt32() };
-        // Native Windows UI font; the token's platform-system font has no literal family.
+        control.FontFamily = PlatformFonts.Ui;
     }
 
     public TextBlock Text(string text, string token = "bodyMedium")
@@ -82,8 +84,10 @@ public sealed class Theme
         var style = values.GetProperty(token);
         return new TextBlock
         {
+            UseLayoutRounding = false,
             Text = text,
             FontSize = Number(style.GetProperty("fontSize")),
+            FontFamily = PlatformFonts.Ui,
             FontWeight = new FontWeight { Weight = (ushort)style.GetProperty("fontWeight").GetInt32() },
             LineHeight = Number(style.GetProperty("lineHeight")),
             LineStackingStrategy = Microsoft.UI.Xaml.LineStackingStrategy.BlockLineHeight,

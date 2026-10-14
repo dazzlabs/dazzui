@@ -29,6 +29,7 @@ public class Checkbox : CheckBox
         Foreground = Theme.Brush(IsChecked == true ? "color.content" : "color.content-muted");
         // A disabled row keeps its colours and steps back as a whole.
         Opacity = IsEnabled ? 1 : 0.6;
+        if (GetTemplateChild("Row") is StackPanel row) row.Spacing = Theme.Number("spacing.2.5");
         if (Note is not null && Content is string label)
             Content = new TextBlock { Inlines = { new Microsoft.UI.Xaml.Documents.Run { Text = label + " " }, new Microsoft.UI.Xaml.Documents.Run { Text = Note, Foreground = Theme.Brush("color.content-faint") } } };
         if (GetTemplateChild("Box") is Border box)
@@ -36,7 +37,7 @@ public class Checkbox : CheckBox
             box.Width = box.Height = Theme.Number($"checkbox.{Skin.SizeKey(Size)}.box");
             box.CornerRadius = new CornerRadius(Theme.Number("checkbox.radius"));
             box.BorderThickness = new Thickness(Theme.Number("checkbox.thickness"));
-            box.Margin = new Thickness(0, 0, Theme.Number("spacing.2.5"), 0);
+            box.Margin = new Thickness(0);
             var marked = IsChecked != false;
             box.Background = marked ? Theme.Recipe(ControlVariant.Filled, Tint, "surface") : null;
             box.BorderBrush = marked ? box.Background : Theme.Brush("color.border-muted");
@@ -57,7 +58,9 @@ public sealed class CheckboxGroup : Surface
     {
         if (Content is null)
             foreach (var item in Items) { item.Checked += (_, _) => SelectionChanged?.Invoke(this, EventArgs.Empty); item.Unchecked += (_, _) => SelectionChanged?.Invoke(this, EventArgs.Empty); }
-        Content = Skin.Column(Theme, Items.Cast<UIElement>().ToArray());
+        var column = Skin.Column(Theme, Items.Cast<UIElement>().ToArray());
+        column.Spacing = Theme.Number("spacing.2.5");
+        Content = column;
     }
 }
 public class Radio : RadioButton
@@ -78,12 +81,13 @@ public class Radio : RadioButton
         if (IsChecked == true) FontWeight = Theme.Text("", "labelMedium").FontWeight;
         Foreground = Theme.Brush(IsChecked == true ? "color.content" : "color.content-muted");
         Opacity = IsEnabled || this is OptionCard ? 1 : 0.6;
+        if (GetTemplateChild("Row") is StackPanel row) row.Spacing = Theme.Number("spacing.2.5");
         if (GetTemplateChild("Box") is Border box)
         {
             box.Width = box.Height = Theme.Number($"radio.{Skin.SizeKey(Size)}.box");
             box.CornerRadius = new CornerRadius(Theme.Number("radius.full"));
             box.BorderThickness = new Thickness(Theme.Number("radio.thickness"));
-            box.Margin = new Thickness(0, 0, Theme.Number("spacing.2.5"), 0);
+            box.Margin = new Thickness(0);
             box.Background = null;
             box.BorderBrush = IsChecked == true ? Theme.Recipe(ControlVariant.Filled, Tint, "surface") : Theme.Brush("color.border-muted");
             if (box.Child is Border dot)
@@ -419,12 +423,15 @@ public sealed class OptionCard : Radio
             : chosen ? Theme.Alpha($"color.{Theme.Key(Tint)}.600", Theme.Number("wash.surface"))
             : Theme.Brush(hovered ? "color.surface-subtle" : "color.surface-muted");
         BorderBrush = chosen ? Theme.Recipe(ControlVariant.Outlined, Tint, "border") : Theme.Brush("color.border");
-        BorderThickness = new Thickness(Theme.Number(chosen ? "stroke.control" : "stroke.hairline"));
+        BorderThickness = new Thickness(Theme.Number("stroke.hairline"));
         Skin.SetCorner(this, Theme.Number("radius.large"));
-        // The border is inside the box, so the thicker chosen one gives its
-        // difference back out of the padding: the content stays where it was.
-        var give = chosen ? Theme.Number("stroke.control") - Theme.Number("stroke.hairline") : 0;
-        Padding = new Thickness(Theme.Number("spacing.3") - give, Theme.Number("spacing.3.5") - give, Theme.Number("spacing.3") - give, Theme.Number("spacing.3.5") - give);
+        // Selection adds a painted edge without changing the layout border.
+        if (GetTemplateChild("SelectionOutline") is Border outline)
+        {
+            outline.BorderThickness = new Thickness(Theme.Number("stroke.control"));
+            outline.Visibility = chosen ? Visibility.Visible : Visibility.Collapsed;
+        }
+        Padding = new Thickness(Theme.Number("spacing.3"), Theme.Number("spacing.3.5"), Theme.Number("spacing.3"), Theme.Number("spacing.3.5"));
         var title = Theme.Text(Title, "labelStrong");
         title.Foreground = Theme.Brush("color.content");
         var description = Theme.Text(Description, "labelSmall");
@@ -452,7 +459,7 @@ public sealed class Tag : Surface
     public ToggleButton Selection { get; } = new();
     public bool Removable { get; set; }
     public ControlVariant Variant { get; set; } = ControlVariant.Tinted;
-    public string Text { get => Selection.Content?.ToString() ?? ""; set => Selection.Content = value; }
+    public string Text { get => Selection.Content is TextBlock text ? text.Text : Selection.Content?.ToString() ?? ""; set => Selection.Content = value; }
     public bool IsSelected { get => Selection.IsChecked == true; set => Selection.IsChecked = value; }
     public event EventHandler? Removed;
     public Tag()
@@ -483,6 +490,7 @@ public sealed class Tag : Surface
         Theme.Typography(Selection, large ? "labelMedium" : "labelSmall");
         Selection.FontWeight = Theme.Text("", "labelMedium").FontWeight;
         Selection.Foreground = Foreground;
+        Skin.TextLine(Selection, Selection.FontSize * 1.4);
         Skin.Focus(Selection, Theme);
         remove.Visibility = Removable ? Visibility.Visible : Visibility.Collapsed;
         remove.Margin = new Thickness(Theme.Number("spacing.1"), 0, 0, 0);
