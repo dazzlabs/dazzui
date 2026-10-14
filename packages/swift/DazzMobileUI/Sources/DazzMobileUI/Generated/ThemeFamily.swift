@@ -38,6 +38,7 @@ public enum ThemeFamily: String, CaseIterable, Sendable, Identifiable {
   case debian
   case fedora
   case kde
+  case spotify
 
   public var id: String { rawValue }
 
@@ -78,6 +79,7 @@ public enum ThemeFamily: String, CaseIterable, Sendable, Identifiable {
     case .debian: return colorScheme == .dark ? .debianDark : .debianLight
     case .fedora: return colorScheme == .dark ? .fedoraDark : .fedoraLight
     case .kde: return colorScheme == .dark ? .kdeDark : .kdeLight
+    case .spotify: return colorScheme == .dark ? .spotifyDark : .spotifyLight
     }
   }
 }

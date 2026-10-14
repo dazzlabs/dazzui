@@ -41,6 +41,10 @@ public static class Themes
             new("fedora", "Fedora (GNOME)"),
             new("kde", "KDE Plasma"),
         ]),
+        new("Applications",
+        [
+            new("spotify", "Spotify"),
+        ]),
         new("Omarchy",
         [
             new("omarchy-tokyo-night", "Tokyo Night"),

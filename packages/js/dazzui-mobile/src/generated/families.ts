@@ -40,6 +40,7 @@ export const FAMILIES = [
   'debian',
   'fedora',
   'kde',
+  'spotify',
 ] as const
 
 export type Family = (typeof FAMILIES)[number]

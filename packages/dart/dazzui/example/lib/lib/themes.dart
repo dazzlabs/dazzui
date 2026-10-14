@@ -62,6 +62,7 @@ const themeFamilyGroups = <ThemeFamilyGroup>[
     ThemeFamily("fedora", "Fedora (GNOME)"),
     ThemeFamily("kde", "KDE Plasma"),
   ]),
+  ThemeFamilyGroup("Applications", [ThemeFamily("spotify", "Spotify")]),
   ThemeFamilyGroup("Omarchy", [
     ThemeFamily("omarchy-tokyo-night", "Tokyo Night"),
     ThemeFamily("omarchy-catppuccin", "Catppuccin"),
@@ -116,6 +117,8 @@ ThemeVariables themeVariablesOf(String id) => switch (id) {
   "fedora-dark" => themeVariablesFedoraDark,
   "kde-light" => themeVariablesKdeLight,
   "kde-dark" => themeVariablesKdeDark,
+  "spotify-light" => themeVariablesSpotifyLight,
+  "spotify-dark" => themeVariablesSpotifyDark,
   "omarchy-tokyo-night-light" => themeVariablesOmarchyTokyoNightLight,
   "omarchy-tokyo-night-dark" => themeVariablesOmarchyTokyoNightDark,
   "omarchy-catppuccin-light" => themeVariablesOmarchyCatppuccinLight,

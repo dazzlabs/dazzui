@@ -69,5 +69,7 @@ pub const THEMES: &[&str] = &[
     "fedora-dark",
     "kde-light",
     "kde-dark",
+    "spotify-light",
+    "spotify-dark",
     "studio-dark",
 ];

@@ -1,0 +1,62 @@
+# Application design languages, expressed once for every toolkit.
+# Spotify references and the distinction between observed and adapted values:
+# specs/spotify.md. Light is a DazzUI adaptation, not a Spotify appearance.
+metrics:
+  spotify:
+    radius.tiny: 4px
+    radius.small: 9999px
+    radius.medium: 9999px
+    control.field.radius: 4px
+    radius.large: 8px
+    radius.big: 8px
+    frame.window.radius: 8px
+    frame.popover.radius: 8px
+    control.container.radius: 8px
+    checkbox.radius: 4px
+    icon.small: "{spacing.3.5}"
+    icon.medium: "{spacing.5}"
+    icon.large: "{spacing.6}"
+    control.tiny.size: 24px
+    control.small.size: 32px
+    control.medium.size: 40px
+    control.large.size: 48px
+    control.medium.padding.inline: 24px
+    type:
+      caption: [11, 16]
+      small: [12, 16]
+      body: [14, 20]
+      emphasis: [16, 24]
+      title: [24, 32]
+      label: 14
+
+themes:
+  spotify-light:
+    title: Spotify Light (DazzUI adaptation)
+    metrics: spotify
+    scheme: light
+    background: "#ffffff"
+    foreground: "#121212"
+    accent: "#107c38"
+    on-accent: "#ffffff"
+    separator: 0.1
+  spotify-dark:
+    title: Spotify Dark
+    metrics: spotify
+    scheme: dark
+    background: "#121212"
+    foreground: "#ffffff"
+    accent: "#1ed760"
+    on-accent: "#000000"
+    separator: 0.1
+    colors:
+      canvas: "#000000"
+      surface-column: "#0a0a0a"
+      surface-muted: "#1f1f1f"
+      surface-chrome: "#1f1f1f"
+      surface-overlay: "#282828"
+      surface-inset: "#2a2a2a"
+      surface-sunken: "#333333"
+      surface-raised: "#535353"
+      content-secondary: "#b3b3b3"
+      content-nav: "#b3b3b3"
+      content-muted: "#b3b3b3"

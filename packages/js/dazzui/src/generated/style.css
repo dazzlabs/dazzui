@@ -785,6 +785,28 @@
   --base-color-sky-800: #00598a;
   --base-color-sky-900: #024a70;
   --base-color-sky-950: #052f4a;
+  --base-color-spotify-dark-50: #ecfcee;
+  --base-color-spotify-dark-100: #d9fbdd;
+  --base-color-spotify-dark-200: #baf8c3;
+  --base-color-spotify-dark-300: #8df3a0;
+  --base-color-spotify-dark-400: #56e47a;
+  --base-color-spotify-dark-500: #1ed760;
+  --base-color-spotify-dark-600: #2aae52;
+  --base-color-spotify-dark-700: #0b8f3c;
+  --base-color-spotify-dark-800: #116e2f;
+  --base-color-spotify-dark-900: #055421;
+  --base-color-spotify-dark-950: #00300f;
+  --base-color-spotify-light-50: #effaf1;
+  --base-color-spotify-light-100: #ddf3e0;
+  --base-color-spotify-light-200: #bce4c2;
+  --base-color-spotify-light-300: #92d09d;
+  --base-color-spotify-light-400: #5fb171;
+  --base-color-spotify-light-500: #379752;
+  --base-color-spotify-light-600: #107c38;
+  --base-color-spotify-light-700: #01692c;
+  --base-color-spotify-light-800: #0f5526;
+  --base-color-spotify-light-900: #00461b;
+  --base-color-spotify-light-950: #062f13;
   --base-color-transparent: #00000000;
   --base-color-ubuntu-dark-50: #fff4f1;
   --base-color-ubuntu-dark-100: #fde7e1;
@@ -1918,6 +1940,85 @@
   color-scheme: light;
 }
 
+[data-theme='spotify-light'],
+[data-theme='spotify-dark'] {
+  --body-large-font-family: var(--base-font-ui);
+  --body-large-font-size: 16px;
+  --body-large-font-weight: var(--base-font-weight-normal);
+  --body-large-line-height: 24px;
+  --body-medium-font-family: var(--base-font-ui);
+  --body-medium-font-size: 14px;
+  --body-medium-font-weight: var(--base-font-weight-normal);
+  --body-medium-line-height: 20px;
+  --body-small-font-family: var(--base-font-ui);
+  --body-small-font-size: 12px;
+  --body-small-font-weight: var(--base-font-weight-normal);
+  --body-small-line-height: 16px;
+  --caption-large-font-family: var(--base-font-ui);
+  --caption-large-font-size: 14px;
+  --caption-large-font-weight: var(--base-font-weight-normal);
+  --caption-large-line-height: 20px;
+  --caption-medium-font-family: var(--base-font-ui);
+  --caption-medium-font-size: 12px;
+  --caption-medium-font-weight: var(--base-font-weight-normal);
+  --caption-medium-line-height: 16px;
+  --caption-small-font-family: var(--base-font-ui);
+  --caption-small-font-size: 11px;
+  --caption-small-font-weight: var(--base-font-weight-normal);
+  --caption-small-line-height: 16px;
+  --checkbox-radius: 4px;
+  --control-container-radius: 8px;
+  --control-field-radius: 4px;
+  --control-large-size: 48px;
+  --control-medium-padding-inline: 24px;
+  --control-medium-size: 40px;
+  --control-small-size: 32px;
+  --control-tiny-size: 24px;
+  --frame-popover-radius: 8px;
+  --frame-window-radius: 8px;
+  --icon-large: var(--spacing-6);
+  --icon-medium: var(--spacing-5);
+  --icon-small: var(--spacing-3-5);
+  --label-large-font-family: var(--base-font-ui);
+  --label-large-font-size: 14px;
+  --label-large-font-weight: var(--base-font-weight-semibold);
+  --label-large-line-height: 14px;
+  --label-medium-font-family: var(--base-font-ui);
+  --label-medium-font-size: 14px;
+  --label-medium-font-weight: var(--base-font-weight-semibold);
+  --label-medium-line-height: 14px;
+  --label-quiet-font-family: var(--base-font-ui);
+  --label-quiet-font-size: 14px;
+  --label-quiet-font-weight: var(--base-font-weight-medium);
+  --label-quiet-line-height: 14px;
+  --label-small-font-family: var(--base-font-ui);
+  --label-small-font-size: 11px;
+  --label-small-font-weight: var(--base-font-weight-semibold);
+  --label-small-line-height: 11px;
+  --label-strong-font-family: var(--base-font-display);
+  --label-strong-font-size: 14px;
+  --label-strong-font-weight: var(--base-font-weight-bold);
+  --label-strong-line-height: 14px;
+  --radius-big: 8px;
+  --radius-large: 8px;
+  --radius-medium: 9999px;
+  --radius-small: 9999px;
+  --radius-tiny: 4px;
+  --title-large-font-family: var(--base-font-ui);
+  --title-large-font-size: 24px;
+  --title-large-font-weight: var(--base-font-weight-semibold);
+  --title-large-line-height: 32px;
+  --title-medium-font-family: var(--base-font-ui);
+  --title-medium-font-size: 16px;
+  --title-medium-font-weight: var(--base-font-weight-semibold);
+  --title-medium-line-height: 24px;
+  --title-small-font-family: var(--base-font-ui);
+  --title-small-font-size: 14px;
+  --title-small-font-weight: var(--base-font-weight-semibold);
+  --title-small-line-height: 20px;
+  color-scheme: light;
+}
+
 [data-theme='studio-dark'],
 [data-theme='bright-dark'],
 [data-theme='frost-dark'],
@@ -1952,7 +2053,8 @@
 [data-theme='ubuntu-dark'],
 [data-theme='debian-dark'],
 [data-theme='fedora-dark'],
-[data-theme='kde-dark'] {
+[data-theme='kde-dark'],
+[data-theme='spotify-dark'] {
   --color-border: #ffffff0f;
   --color-border-muted: #363c4d;
   --color-border-strong: #ffffff17;
@@ -4387,6 +4489,82 @@
   --dialog-scrim-color: var(--color-content);
   --progress-gradient-from: var(--base-color-kde-dark-500);
   --progress-gradient-to: var(--base-color-kde-dark-300);
+  color-scheme: dark;
+}
+
+[data-theme='spotify-light'] {
+  --color-border: #1212121a;
+  --color-border-muted: #a5a5a5;
+  --color-border-strong: #12121221;
+  --color-canvas: #ededed;
+  --color-content: #121212;
+  --color-content-faint: #aaaaaa;
+  --color-content-muted: #676767;
+  --color-content-nav: #545454;
+  --color-content-secondary: #3d3d3d;
+  --color-content-subtle: #898989;
+  --color-on-accent: #ffffff;
+  --color-primary-50: var(--base-color-spotify-light-50);
+  --color-primary-100: var(--base-color-spotify-light-100);
+  --color-primary-200: var(--base-color-spotify-light-200);
+  --color-primary-300: var(--base-color-spotify-light-300);
+  --color-primary-400: var(--base-color-spotify-light-400);
+  --color-primary-500: var(--base-color-spotify-light-500);
+  --color-primary-600: var(--base-color-spotify-light-600);
+  --color-primary-700: var(--base-color-spotify-light-700);
+  --color-primary-800: var(--base-color-spotify-light-800);
+  --color-primary-900: var(--base-color-spotify-light-900);
+  --color-primary-950: var(--base-color-spotify-light-950);
+  --color-surface: #ffffff;
+  --color-surface-chrome: #f7f7f7;
+  --color-surface-column: #fafafa;
+  --color-surface-inset: #efefef;
+  --color-surface-muted: #f7f7f7;
+  --color-surface-overlay: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-surface-subtle: #1212120f;
+  --color-surface-sunken: #e0e0e0;
+  --dialog-scrim-color: var(--color-content);
+  --progress-gradient-from: var(--base-color-spotify-light-600);
+  --progress-gradient-to: var(--base-color-spotify-light-300);
+  color-scheme: light;
+}
+
+[data-theme='spotify-dark'] {
+  --color-border: #ffffff1a;
+  --color-border-muted: #6c6c6c;
+  --color-border-strong: #ffffff21;
+  --color-canvas: #000000;
+  --color-content: #ffffff;
+  --color-content-faint: #676767;
+  --color-content-muted: #b3b3b3;
+  --color-content-nav: #b3b3b3;
+  --color-content-secondary: #b3b3b3;
+  --color-content-subtle: #898989;
+  --color-on-accent: #000000;
+  --color-primary-50: var(--base-color-spotify-dark-50);
+  --color-primary-100: var(--base-color-spotify-dark-100);
+  --color-primary-200: var(--base-color-spotify-dark-200);
+  --color-primary-300: var(--base-color-spotify-dark-300);
+  --color-primary-400: var(--base-color-spotify-dark-400);
+  --color-primary-500: var(--base-color-spotify-dark-500);
+  --color-primary-600: var(--base-color-spotify-dark-600);
+  --color-primary-700: var(--base-color-spotify-dark-700);
+  --color-primary-800: var(--base-color-spotify-dark-800);
+  --color-primary-900: var(--base-color-spotify-dark-900);
+  --color-primary-950: var(--base-color-spotify-dark-950);
+  --color-surface: #121212;
+  --color-surface-chrome: #1f1f1f;
+  --color-surface-column: #0a0a0a;
+  --color-surface-inset: #2a2a2a;
+  --color-surface-muted: #1f1f1f;
+  --color-surface-overlay: #282828;
+  --color-surface-raised: #535353;
+  --color-surface-subtle: #ffffff12;
+  --color-surface-sunken: #333333;
+  --dialog-scrim-color: var(--color-content);
+  --progress-gradient-from: var(--base-color-spotify-dark-500);
+  --progress-gradient-to: var(--base-color-spotify-dark-300);
   color-scheme: dark;
 }
 

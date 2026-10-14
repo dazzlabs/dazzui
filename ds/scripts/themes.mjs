@@ -42,7 +42,7 @@ import fs from 'node:fs'
 import YAML from 'yaml'
 
 const DIR = new URL('../themes/', import.meta.url)
-const SOURCES = ['omarchy.yaml', 'desktops.yaml']
+const SOURCES = ['omarchy.yaml', 'desktops.yaml', 'applications.yaml']
 const REQUIRED = ['title', 'scheme', 'background', 'foreground', 'accent']
 
 /**
@@ -109,6 +109,7 @@ function bothModes(theme) {
     {
       ...theme,
       ...derived,
+      colors: undefined,
       onAccent: undefined,
       scheme: other,
       name: `${theme.name}-${other}`,
@@ -322,13 +323,20 @@ export function derive(theme) {
   // nowhere under it to go, and lifts instead.
   const under = dL => stepOff(paper, [0, 0, 0], dL) ?? off(dL)
 
-  const muted = off(steps.muted)
-  const column = dark ? under(steps.column) : off(steps.column)
-  const inset = off(steps.inset)
-  const sunken = off(steps.sunken)
-  const raised = dark ? off(steps.raised) : paper
-  const canvas = dark ? under(steps.canvas) : off(steps.canvas)
-  const overlay = dark ? muted : paper
+  // A source that publishes a surface ladder can retain those exact roles.
+  // Derive the hover wash against the actual surfaces, including overrides.
+  const color = (role, fallback) =>
+    theme.colors?.[role] ? parse(theme.colors[role], paper) : fallback
+  const muted = color('surface-muted', off(steps.muted))
+  const column = color(
+    'surface-column',
+    dark ? under(steps.column) : off(steps.column)
+  )
+  const inset = color('surface-inset', off(steps.inset))
+  const sunken = color('surface-sunken', off(steps.sunken))
+  const raised = color('surface-raised', dark ? off(steps.raised) : paper)
+  const canvas = color('canvas', dark ? under(steps.canvas) : off(steps.canvas))
+  const overlay = color('surface-overlay', dark ? muted : paper)
 
   // The hover wash: the ink at the least alpha that moves every fill it
   // lands on by the guard's step, and never under the design's own 6% / 7%.
@@ -381,6 +389,20 @@ export function derive(theme) {
     'border-strong': hex(ink, separator + (theme.separator ? 0.03 : 0.04)),
     'border-muted': hex(mix(paper, ink, 0.38)),
     'on-accent': hex(onAccent),
+  }
+
+  for (const [role, value] of Object.entries(theme.colors ?? {})) {
+    if (
+      !(role in roles) ||
+      role === 'surface' ||
+      role === 'content' ||
+      role === 'on-accent'
+    ) {
+      throw new Error(
+        `${theme.name}: unknown or palette-owned color role \`${role}\`.`
+      )
+    }
+    roles[role] = hex(parse(value, paper))
   }
 
   const ref = step => `{base.color.${theme.name}.${step}}`

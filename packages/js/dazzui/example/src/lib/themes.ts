@@ -40,6 +40,10 @@ export const FAMILY_GROUPS: readonly FamilyGroup[] = [
     ],
   },
   {
+    title: 'Applications',
+    families: [{ value: 'spotify', title: 'Spotify' }],
+  },
+  {
     title: 'Omarchy',
     families: [
       { value: 'omarchy-tokyo-night', title: 'Tokyo Night' },

@@ -43,6 +43,9 @@ let themeFamilyGroups: [ThemeFamilyGroup] = [
     ThemeFamily(value: "fedora", title: "Fedora (GNOME)"),
     ThemeFamily(value: "kde", title: "KDE Plasma"),
   ]),
+  ThemeFamilyGroup(title: "Applications", families: [
+    ThemeFamily(value: "spotify", title: "Spotify"),
+  ]),
   ThemeFamilyGroup(title: "Omarchy", families: [
     ThemeFamily(value: "omarchy-tokyo-night", title: "Tokyo Night"),
     ThemeFamily(value: "omarchy-catppuccin", title: "Catppuccin"),

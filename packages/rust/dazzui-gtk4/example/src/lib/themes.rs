@@ -75,6 +75,13 @@ pub const FAMILY_GROUPS: &[FamilyGroup] = &[
         ],
     },
     FamilyGroup {
+        title: "Applications",
+        families: &[Family {
+            value: "spotify",
+            title: "Spotify",
+        }],
+    },
+    FamilyGroup {
         title: "Omarchy",
         families: &[
             Family {

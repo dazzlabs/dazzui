@@ -2205,6 +2205,68 @@ public extension Palette {
     nativeTintShade: 500
   )
 
+  /// The `spotify-light` counterpart of ``studioLight``.
+  ///
+  /// Every token that moves under this theme is named here; the rest fall
+  /// through to the initialiser's defaults, and the computed properties
+  /// follow this instance.
+  static let spotifyLight = Palette(
+    colorPrimary: Colors.spotifyLight,
+    colorCanvas: Color(argb: 0xFFED_EDED),
+    colorSurface: Color(argb: 0xFFFF_FFFF),
+    colorSurfaceMuted: Color(argb: 0xFFF7_F7F7),
+    colorSurfaceSunken: Color(argb: 0xFFE0_E0E0),
+    colorSurfaceSubtle: Color(argb: 0x0F12_1212),
+    colorSurfaceInset: Color(argb: 0xFFEF_EFEF),
+    colorSurfaceRaised: Color(argb: 0xFFFF_FFFF),
+    colorSurfaceOverlay: Color(argb: 0xFFFF_FFFF),
+    colorSurfaceChrome: Color(argb: 0xFFF7_F7F7),
+    colorSurfaceColumn: Color(argb: 0xFFFA_FAFA),
+    colorContent: Color(argb: 0xFF12_1212),
+    colorContentSecondary: Color(argb: 0xFF3D_3D3D),
+    colorContentNav: Color(argb: 0xFF54_5454),
+    colorContentMuted: Color(argb: 0xFF67_6767),
+    colorContentSubtle: Color(argb: 0xFF89_8989),
+    colorContentFaint: Color(argb: 0xFFAA_AAAA),
+    colorBorder: Color(argb: 0x1A12_1212),
+    colorBorderStrong: Color(argb: 0x2112_1212),
+    colorBorderMuted: Color(argb: 0xFFA5_A5A5),
+    colorOnAccent: Color(argb: 0xFFFF_FFFF)
+  )
+
+  /// The `spotify-dark` counterpart of ``studioLight``.
+  ///
+  /// Every token that moves under this theme is named here; the rest fall
+  /// through to the initialiser's defaults, and the computed properties
+  /// follow this instance.
+  static let spotifyDark = Palette(
+    colorPrimary: Colors.spotifyDark,
+    colorSuccess: Colors.greenDark,
+    colorWarning: Colors.amberDark,
+    colorDanger: Colors.redDark,
+    colorCanvas: Color(argb: 0xFF00_0000),
+    colorSurface: Color(argb: 0xFF12_1212),
+    colorSurfaceMuted: Color(argb: 0xFF1F_1F1F),
+    colorSurfaceSunken: Color(argb: 0xFF33_3333),
+    colorSurfaceSubtle: Color(argb: 0x12FF_FFFF),
+    colorSurfaceInset: Color(argb: 0xFF2A_2A2A),
+    colorSurfaceRaised: Color(argb: 0xFF53_5353),
+    colorSurfaceOverlay: Color(argb: 0xFF28_2828),
+    colorSurfaceChrome: Color(argb: 0xFF1F_1F1F),
+    colorSurfaceColumn: Color(argb: 0xFF0A_0A0A),
+    colorContent: Color(argb: 0xFFFF_FFFF),
+    colorContentSecondary: Color(argb: 0xFFB3_B3B3),
+    colorContentNav: Color(argb: 0xFFB3_B3B3),
+    colorContentMuted: Color(argb: 0xFFB3_B3B3),
+    colorContentSubtle: Color(argb: 0xFF89_8989),
+    colorContentFaint: Color(argb: 0xFF67_6767),
+    colorBorder: Color(argb: 0x1AFF_FFFF),
+    colorBorderStrong: Color(argb: 0x21FF_FFFF),
+    colorBorderMuted: Color(argb: 0xFF6C_6C6C),
+    colorOnAccent: Color(argb: 0xFF00_0000),
+    nativeTintShade: 500
+  )
+
   /// The `studio-dark` counterpart of ``studioLight``.
   ///
   /// Every token that moves under this theme is named here; the rest fall

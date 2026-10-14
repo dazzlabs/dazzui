@@ -75,6 +75,8 @@ public enum ThemeName: String, CaseIterable, Sendable {
   case fedoraDark = "fedora-dark"
   case kdeLight = "kde-light"
   case kdeDark = "kde-dark"
+  case spotifyLight = "spotify-light"
+  case spotifyDark = "spotify-dark"
 
   public var variables: ThemeVariables {
     switch self {
@@ -148,6 +150,8 @@ public enum ThemeName: String, CaseIterable, Sendable {
     case .fedoraDark: return .fedoraDark
     case .kdeLight: return .kdeLight
     case .kdeDark: return .kdeDark
+    case .spotifyLight: return .spotifyLight
+    case .spotifyDark: return .spotifyDark
     }
   }
 

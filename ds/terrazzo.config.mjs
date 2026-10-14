@@ -12,9 +12,8 @@ import winUI3Plugin from './plugins/winui3.mjs'
 import { importedSelectors } from './scripts/themes.mjs'
 
 /**
- * The seventy themes: six drawn families over one default, and the
- * imported ones — Omarchy's twenty-two and seven desktops, each light and
- * dark.
+ * Six drawn families over one default, and the imported ones — Omarchy,
+ * desktops and applications, each light and dark.
  *
  * Studio Light is the default and needs no mode: it is what `:root` holds.
  * Every other theme is selected by `data-theme`, and the modes compose rather

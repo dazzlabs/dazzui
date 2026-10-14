@@ -40,7 +40,7 @@ the mockups round a row at 7 and a card at 8, which is exactly where that rung
 lands.
 
 **The imported themes are read off another system, not drawn.** Beside the
-twelve sit two sources under `ds/themes/`:
+twelve sit three sources under `ds/themes/`:
 
 - `omarchy.yaml` — [Omarchy](https://github.com/basecamp/omarchy)'s
   twenty-two themes from its `colors.toml` files, as
@@ -54,6 +54,11 @@ twelve sit two sources under `ds/themes/`:
   from the values dazzle's prototype draws its native windows with (AppKit,
   WinUI 3 / Fluent 2, libadwaita, Yaru, Breeze). Debian and Fedora ship
   Adwaita unchanged, so they are the same theme under two names.
+- `applications.yaml` — Spotify's application palette and capsule controls,
+  as `spotify-dark` and a DazzUI-derived `spotify-light` counterpart. See
+  [Spotify](spotify.md) for the research and mapping. A source may preserve
+  explicit semantic `colors` rather than deriving those roles; the hover
+  wash uses the overridden surfaces and the same contrast guard applies.
 
 A file holds two things. Per theme: a title, a scheme, and the three colours
 the source builds a window from — background, foreground (an alpha is

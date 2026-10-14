@@ -1300,4 +1300,38 @@ abstract final class Colors {
       950: Color(0xFF052A3D),
     },
   );
+
+  static const ColorSwatch<int> spotifyLight = ColorSwatch<int>(
+    0xff107c38,
+    <int, Color>{
+      50: Color(0xFFEFFAF1),
+      100: Color(0xFFDDF3E0),
+      200: Color(0xFFBCE4C2),
+      300: Color(0xFF92D09D),
+      400: Color(0xFF5FB171),
+      500: Color(0xFF379752),
+      600: Color(0xFF107C38),
+      700: Color(0xFF01692C),
+      800: Color(0xFF0F5526),
+      900: Color(0xFF00461B),
+      950: Color(0xFF062F13),
+    },
+  );
+
+  static const ColorSwatch<int> spotifyDark = ColorSwatch<int>(
+    0xff2aae52,
+    <int, Color>{
+      50: Color(0xFFECFCEE),
+      100: Color(0xFFD9FBDD),
+      200: Color(0xFFBAF8C3),
+      300: Color(0xFF8DF3A0),
+      400: Color(0xFF56E47A),
+      500: Color(0xFF1ED760),
+      600: Color(0xFF2AAE52),
+      700: Color(0xFF0B8F3C),
+      800: Color(0xFF116E2F),
+      900: Color(0xFF055421),
+      950: Color(0xFF00300F),
+    },
+  );
 }

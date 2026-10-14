@@ -1007,6 +1007,34 @@ public enum Colors {
     950: Color(argb: 0xFF05_2F4A),
   ])
 
+  public static let spotifyDark = ColorSwatch([
+    50: Color(argb: 0xFFEC_FCEE),
+    100: Color(argb: 0xFFD9_FBDD),
+    200: Color(argb: 0xFFBA_F8C3),
+    300: Color(argb: 0xFF8D_F3A0),
+    400: Color(argb: 0xFF56_E47A),
+    500: Color(argb: 0xFF1E_D760),
+    600: Color(argb: 0xFF2A_AE52),
+    700: Color(argb: 0xFF0B_8F3C),
+    800: Color(argb: 0xFF11_6E2F),
+    900: Color(argb: 0xFF05_5421),
+    950: Color(argb: 0xFF00_300F),
+  ])
+
+  public static let spotifyLight = ColorSwatch([
+    50: Color(argb: 0xFFEF_FAF1),
+    100: Color(argb: 0xFFDD_F3E0),
+    200: Color(argb: 0xFFBC_E4C2),
+    300: Color(argb: 0xFF92_D09D),
+    400: Color(argb: 0xFF5F_B171),
+    500: Color(argb: 0xFF37_9752),
+    600: Color(argb: 0xFF10_7C38),
+    700: Color(argb: 0xFF01_692C),
+    800: Color(argb: 0xFF0F_5526),
+    900: Color(argb: 0xFF00_461B),
+    950: Color(argb: 0xFF06_2F13),
+  ])
+
   public static let ubuntuDark = ColorSwatch([
     50: Color(argb: 0xFFFF_F4F1),
     100: Color(argb: 0xFFFD_E7E1),

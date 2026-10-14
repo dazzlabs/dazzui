@@ -75,6 +75,13 @@ pub static THEME_FAMILY_GROUPS: &[ThemeFamilyGroup] = &[
         ],
     },
     ThemeFamilyGroup {
+        title: "Applications",
+        families: &[ThemeFamily {
+            value: "spotify",
+            title: "Spotify",
+        }],
+    },
+    ThemeFamilyGroup {
         title: "Omarchy",
         families: &[
             ThemeFamily {

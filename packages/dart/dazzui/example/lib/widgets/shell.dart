@@ -17,6 +17,10 @@ import 'theme_panel.dart';
 const ColumnWidth _list = ColumnWidth(initial: 272, min: 200, max: 420);
 const ColumnWidth _themes = ColumnWidth(initial: 336, min: 280, max: 560);
 
+double _previewWidth(ThemeVariables vars) =>
+    256 *
+    math.max(1, vars.controlMediumSize / themeVariables.controlMediumSize);
+
 /// The example, as a desktop application's window: the component list on
 /// the left, the document under its toolbar, and the theme panel on the
 /// right — the same window the React example draws, column for column.
@@ -83,8 +87,18 @@ class _ShellState extends State<Shell> {
               ),
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  final double list = _listOpen ? _listWidth : 0;
-                  final double themes = _themesOpen ? _themesWidth : 0;
+                  final double document =
+                      _previewWidth(vars) +
+                      vars.spacing6 * 2 +
+                      vars.spacing4 * 2;
+                  final bool showList =
+                      _listOpen &&
+                      constraints.maxWidth >= _listWidth + document;
+                  final double list = showList ? _listWidth : 0;
+                  final bool showThemes =
+                      _themesOpen &&
+                      constraints.maxWidth >= list + _themesWidth + document;
+                  final double themes = showThemes ? _themesWidth : 0;
                   return Stack(
                     children: [
                       Row(
@@ -103,13 +117,24 @@ class _ShellState extends State<Shell> {
                               children: [
                                 _Toolbar(
                                   story: story,
-                                  listOpen: _listOpen,
-                                  themesOpen: _themesOpen,
-                                  onToggleList: () =>
-                                      setState(() => _listOpen = !_listOpen),
-                                  onToggleThemes: () => setState(
-                                    () => _themesOpen = !_themesOpen,
-                                  ),
+                                  listOpen: showList,
+                                  themesOpen: showThemes,
+                                  onToggleList: () => setState(() {
+                                    _listOpen = !showList;
+                                    if (_listOpen && !showThemes) {
+                                      _themesOpen = false;
+                                    }
+                                  }),
+                                  onToggleThemes: () => setState(() {
+                                    _themesOpen = !showThemes;
+                                    if (_themesOpen &&
+                                        constraints.maxWidth <
+                                            _listWidth +
+                                                _themesWidth +
+                                                document) {
+                                      _listOpen = false;
+                                    }
+                                  }),
                                 ),
                                 Expanded(
                                   child: story == null
@@ -125,7 +150,7 @@ class _ShellState extends State<Shell> {
                               ],
                             ),
                           ),
-                          if (_themesOpen)
+                          if (showThemes)
                             ThemePanel(
                               theme: widget.theme,
                               width: themes,
@@ -136,7 +161,7 @@ class _ShellState extends State<Shell> {
                             ),
                         ],
                       ),
-                      if (_listOpen)
+                      if (showList)
                         Positioned(
                           top: 0,
                           bottom: 0,
@@ -151,7 +176,7 @@ class _ShellState extends State<Shell> {
                                 setState(() => _listWidth = width),
                           ),
                         ),
-                      if (_themesOpen)
+                      if (showThemes)
                         Positioned(
                           top: 0,
                           bottom: 0,
@@ -374,8 +399,10 @@ class _Overview extends StatelessWidget {
       padding: _pagePadding(vars),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          // The web's `repeat(auto-fill, minmax(16rem, 1fr))`.
-          final int columns = ((constraints.maxWidth + gap) / (256 + gap))
+          // Roomier theme profiles need roomier previews as well. Keep the
+          // default 16rem track, scaling it with the regular control height.
+          final double track = _previewWidth(vars);
+          final int columns = ((constraints.maxWidth + gap) / (track + gap))
               .floor()
               .clamp(1, 99);
           return Column(
