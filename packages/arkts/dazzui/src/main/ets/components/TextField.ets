@@ -83,6 +83,11 @@ export struct DazzTextField {
           this.tokens.color(this.disabled ? 'content-faint' : 'content')
         )
         .placeholderColor(this.tokens.color('content-faint'))
+        .placeholderFont({
+          size: this.tokens.label(this.controlSize).size,
+          weight: this.tokens.type('bodySmall').weight,
+          family: this.mono ? 'monospace' : 'HarmonyOS Sans',
+        })
         .caretColor(this.tokens.color('primary.600'))
         .height(
           this.tokens.type('bodySmall').leading * this.rows +
@@ -115,6 +120,11 @@ export struct DazzTextField {
           this.tokens.color(this.disabled ? 'content-faint' : 'content')
         )
         .placeholderColor(this.tokens.color('content-faint'))
+        .placeholderFont({
+          size: this.tokens.label(this.controlSize).size,
+          weight: this.tokens.type('bodySmall').weight,
+          family: this.mono ? 'monospace' : 'HarmonyOS Sans',
+        })
         .caretColor(this.tokens.color('primary.600'))
         .height(this.tokens.size(this.controlSize))
         .padding({
