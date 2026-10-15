@@ -33,6 +33,7 @@ export struct DazzSelect {
   }
   build() {
     Select(this.entries())
+      .controlSize(ControlSize.SMALL)
       .selected(this.index())
       .value(this.label())
       .font({
@@ -50,6 +51,8 @@ export struct DazzSelect {
       .padding({
         left: this.tokens.metric('spacing.3'),
         right: this.tokens.metric('spacing.3'),
+        top: 0,
+        bottom: 0,
       })
       .backgroundColor(
         this.tokens.color(this.disabled ? 'surface-sunken' : 'surface-muted')

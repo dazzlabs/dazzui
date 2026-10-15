@@ -85,11 +85,11 @@ export struct DazzButton {
         top: 0,
         bottom: 0,
       })
-      .borderRadius(this.tokens.size(this.controlSize, 'radius'))
       .backgroundColor(
         this.tokens.paint(this.variant, 'surface', this.state(), this.tint)
       )
       .border({
+        radius: this.tokens.size(this.controlSize, 'radius'),
         width: this.tokens.metric('stroke.hairline'),
         color: this.tokens.paint(
           this.variant,
