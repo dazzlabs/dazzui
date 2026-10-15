@@ -13,6 +13,7 @@ import {
 import { formatOutputs } from './format.mjs'
 import * as gpui from './gpui.mjs'
 import * as gtk4 from './gtk4.mjs'
+import * as harmony from './harmony.mjs'
 import * as swiftui from './swiftui.mjs'
 import * as winui from './winui.mjs'
 import { readStories, readThemes } from './stories.mjs'
@@ -160,6 +161,16 @@ const gtkIcons = 'packages/rust/dazzui-gtk4/src/generated/icons'
 const glyphs = gpui.glyphSvgs(root, stories)
 for (const name of gpui.kitGlyphNames(root))
   glyphs.set(name, gpui.glyphSvg(root, name))
+const ark = 'packages/arkts/dazzui'
+const arkExample = `${ark}/example/entry/src/main/ets/generated`
+outputs.set(`${arkExample}/Stories.ets`, harmony.storiesETS(stories))
+outputs.set(`${arkExample}/Themes.ets`, harmony.themesETS(themes))
+outputs.set(`${ark}/example/coverage.json`, harmony.coverageJSON(stories))
+for (const [name, svg] of glyphs)
+  outputs.set(
+    `${ark}/src/main/resources/rawfile/dazzui/icons/${name}.svg`,
+    svg.replaceAll('currentColor', '#000000') + '\n'
+  )
 const iconFiles = [...glyphs]
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([name, svg]) => {

@@ -85,6 +85,17 @@ GTK4 >= 4.16. Run `pnpm gtk4` for its gallery, `pnpm gtk4:build` to build,
 and `pnpm gtk4:test` for the native tests. The initial port's supported
 story mappings and remaining gaps are documented in the package README.
 
+## HarmonyOS desktop
+
+The native ArkTS/ArkUI HAR and PC gallery live in
+[`packages/arkts/dazzui`](packages/arkts/dazzui/README.md). The package receives
+committed ds themes and generated React stories, independently of pnpm's
+workspace. Open its `example/` in DevEco Studio with HarmonyOS SDK 6.0.0
+(API 20) and a PC/2in1 target. `pnpm harmony:build` builds the example,
+`pnpm harmony:har` builds the library, and `pnpm harmony:test` checks the
+generators and non-UI runtime logic. The initial port's scene coverage and
+native compilation/conformance limitations are documented in its README.
+
 ## License
 
 MIT

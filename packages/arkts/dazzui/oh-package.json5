@@ -1,0 +1,9 @@
+{
+  "modelVersion": "6.0.0",
+  "name": "@dazzlabs/dazzui",
+  "version": "0.0.0",
+  "description": "Native HarmonyOS desktop DazzUI components",
+  "main": "Index.ets",
+  "license": "MIT",
+  "dependencies": {}
+}

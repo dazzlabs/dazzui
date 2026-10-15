@@ -174,3 +174,14 @@ Never hand-edit `src/generated/`. A value a component needs belongs in
 - A `color` paired with an `alpha` anywhere else in the graph (`dialog.scrim`)
   is resolved by the same plugin onto `:root`, so no component has to apply an
   alpha in CSS.
+
+## HarmonyOS desktop
+
+`packages/arkts/dazzui` implements a native ArkTS/ArkUI desktop HAR. ArkUI
+owns input/IME, checkbox/radio/switch interaction, slider/tab selection,
+menu positioning, modal lifecycle and splitter dragging. Controls draw from
+the same ds profiles and recipes as the desktop reference, under a scoped
+`DazzTheme` provider. The `Dazz` API prefix avoids collisions with ArkUI's
+built-in component names. Native popup rows, marks and handles retain some
+platform geometry; the initial implementation has not established full
+geometry conformance. Its unmapped React scenes are recorded by codegen.

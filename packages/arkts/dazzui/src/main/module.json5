@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "dazzui",
+    "type": "har",
+    "deviceTypes": [
+      "2in1"
+    ],
+    "description": "Native desktop DazzUI"
+  }
+}

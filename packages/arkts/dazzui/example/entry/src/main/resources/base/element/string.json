@@ -1,0 +1,12 @@
+{
+  "string": [
+    {
+      "name": "app_name",
+      "value": "DazzUI"
+    },
+    {
+      "name": "module_desc",
+      "value": "Native HarmonyOS desktop gallery"
+    }
+  ]
+}

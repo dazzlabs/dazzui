@@ -173,6 +173,28 @@ MiniWindow, BrowserFrame and friends — which is still pending a decision, and
 the mobile device frames, which are presentation props rather than system
 parts.
 
+- `packages/arkts/dazzui` (`@dazzlabs/dazzui`) — the native HarmonyOS desktop
+  ArkTS/ArkUI HAR, outside pnpm. `src/main/ets/generated/ThemeData.ets` is
+  committed output from `ds/plugins/harmony.mjs`; regenerate with `pnpm tokens`.
+  `example/` is the Stage-model PC/2in1 gallery (HarmonyOS SDK 6.0.0 / API 20),
+  whose typed scenes, themes and Fluent SVGs come from `pnpm codegen`.
+  Native inputs, selection controls, menus, dialogs and splitters own behavior.
+  Open `example/` in DevEco Studio; `pnpm harmony:build` builds its HAP,
+  `pnpm harmony:har` the standalone library, and `pnpm harmony:test` the
+  generator/non-UI runtime checks. `pnpm harmony` builds, installs and starts on
+  a connected device/emulator. The example follows DevEco's bundled compile SDK
+  with API 20 compatibility/target; its API 26 PC emulator run is verified on
+  the `macbook-pro` host. ArkUI reserves common attribute names on custom
+  components: constructor props use `controlSize`, `iconSize`, `contentWidth`,
+  `contentHeight`, `contentAlign` and `onAction`; React story names stay intact.
+  Use `@LocalBuilder` for forwarded slots so their state stays bound to the
+  owner, and provide a dialog context object rather than a Function value.
+  The initial mapping is not in the full-support
+  or conformance gate: unmapped scenes appear as explicit gaps, recorded in
+  `example/coverage.json`. `pnpm harmony:conformance` opens a native capture page
+  on an installed, signed gallery. See the package README for SDK and device
+  verification requirements; Node tests do not compile ArkUI.
+
 ## Commands
 
 Run these from the repository root.

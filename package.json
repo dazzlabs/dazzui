@@ -29,7 +29,13 @@
     "gtk4": "cargo run --manifest-path packages/rust/dazzui-gtk4/Cargo.toml -p dazzui-gtk4-example",
     "gtk4:build": "cargo build --manifest-path packages/rust/dazzui-gtk4/Cargo.toml --workspace",
     "gtk4:test": "cargo test --manifest-path packages/rust/dazzui-gtk4/Cargo.toml --workspace",
-    "gtk4:conformance": "packages/rust/dazzui-gtk4/example/tool/conformance.sh"
+    "gtk4:conformance": "packages/rust/dazzui-gtk4/example/tool/conformance.sh",
+    "harmony:setup": "node packages/arkts/dazzui/scripts/hvigor.mjs install",
+    "harmony:build": "node packages/arkts/dazzui/scripts/hvigor.mjs hap",
+    "harmony:har": "node packages/arkts/dazzui/scripts/hvigor.mjs har",
+    "harmony:test": "node --test ds/plugins/harmony.test.mjs tools/codegen/tests/harmony.test.mjs packages/arkts/dazzui/tests/*.test.mjs",
+    "harmony:conformance": "node packages/arkts/dazzui/scripts/conformance.mjs",
+    "harmony": "node packages/arkts/dazzui/scripts/run.mjs"
   },
   "devDependencies": {
     "oxfmt": "^0.16.0",

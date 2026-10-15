@@ -419,3 +419,14 @@ changed scene contract must be included in the update on every retained
 platform; other contract changes require a full run. A per-output lock prevents
 concurrent collectors from overwriting each other's updates. Failed collectors
 leave the previous published run available.
+
+## HarmonyOS native capture
+
+The initial ArkUI port has an on-device capture page, opened by
+`pnpm harmony:conformance <scene> <theme>` on an installed, signed gallery.
+It reads actual rectangles by generated specimen address, converts physical
+pixels to vp, and saves JSON plus a native component snapshot to the app files
+directory for export through DevEco. Hidden nodes and unsupported scenes are
+recorded separately. It does not yet emit the full decoration/type readings
+or join the default collector/checker baselines; native SDK/device validation
+is required before promoting this initial capture format into the gate.

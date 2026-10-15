@@ -23,6 +23,20 @@ import { checkMetrics, expandThemes } from './themes.mjs'
  */
 const TARGETS = [
   {
+    package: 'dazzui (HarmonyOS)',
+    dir: path.join(
+      '..',
+      'packages',
+      'arkts',
+      'dazzui',
+      'src',
+      'main',
+      'ets',
+      'generated'
+    ),
+    files: ['harmony/ThemeData.ets'],
+  },
+  {
     package: 'dazzui (GTK4)',
     dir: path.join('..', 'packages', 'rust', 'dazzui-gtk4', 'src', 'generated'),
     files: ['gtk4/tokens.css', 'gtk4/themes.rs'],

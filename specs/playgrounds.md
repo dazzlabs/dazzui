@@ -82,3 +82,13 @@ panel as React, with native GTK splitters between its columns.
 `tools/codegen/gtk4.mjs` records each unmapped component, prop or live scene
 in `gaps`; the gallery shows those gaps instead of drawing a partial scene.
 The initial port does not yet participate in the full-support gate.
+
+## HarmonyOS desktop
+
+`tools/codegen/harmony.mjs` writes typed scene data and theme groups for the
+ArkUI gallery, and shares the Fluent SVG emitter with GPUI. The wire format
+keeps state slots, setters, arguments, comparisons and specimen addresses;
+the native interpreter uses typed records instead of reflection. Overview
+uses previews; document pages use examples and notes. `example/coverage.json`
+records unsupported components, props and values. Any gap replaces the whole
+scene with that list, and the initial port stays outside the full-support gate.

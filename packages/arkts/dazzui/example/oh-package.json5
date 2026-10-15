@@ -1,0 +1,10 @@
+{
+  "modelVersion": "6.0.0",
+  "name": "dazzui-harmony-example",
+  "version": "0.0.0",
+  "description": "DazzUI desktop gallery",
+  "dependencies": {},
+  "devDependencies": {
+    "@ohos/hypium": "1.0.21"
+  }
+}

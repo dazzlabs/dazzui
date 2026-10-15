@@ -1,6 +1,6 @@
 # Codegen
 
-Compiles the React example's stories into the Flutter, SwiftUI, WinUI, GPUI and GTK4
+Compiles the React example's stories into the Flutter, SwiftUI, WinUI, GPUI, GTK4 and HarmonyOS
 examples, and into the scenes the conformance tool holds them to.
 The rules are in [`specs/playgrounds.md`](../../specs/playgrounds.md).
 
@@ -19,6 +19,9 @@ The rules are in [`specs/playgrounds.md`](../../specs/playgrounds.md).
 - `gtk4.mjs` writes a Rust module per story, the registry and theme groups.
   It preserves React's preview/examples split for Overview and documents;
   its `SUPPORT` marks scenes the native interpreter cannot yet render.
+- `harmony.mjs` writes typed ArkTS scenes, theme groups and scene coverage.
+  Unsupported scenes are explicit gaps; the native gallery shares GPUI's
+  Fluent SVG sources. The initial port stays outside the full-support gate.
 - `scenes.mjs` writes `tools/conformance/scenes.json`, the conformance
   contract: every scene and every kit element in it, at its address — see
   [`specs/conformance.md`](../../specs/conformance.md).
