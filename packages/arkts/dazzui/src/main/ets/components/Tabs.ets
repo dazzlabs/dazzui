@@ -30,7 +30,7 @@ export struct DazzSegmentedControl {
       .fontWeight(this.tokens.label(this.controlSize).weight)
       .fontColor(
         this.tokens.paint(
-          this.index() === this.items.indexOf(item)
+          (this.value ?? this.localValue) === item.value
             ? this.activeStyle === 'filled'
               ? 'filled'
               : 'normal'
@@ -50,7 +50,7 @@ export struct DazzSegmentedControl {
       )
       .borderRadius(this.tokens.size(this.controlSize, 'radius'))
       .backgroundColor(
-        this.index() === this.items.indexOf(item)
+        (this.value ?? this.localValue) === item.value
           ? this.tokens.paint(
               this.activeStyle === 'filled' ? 'filled' : 'normal',
               'surface',
