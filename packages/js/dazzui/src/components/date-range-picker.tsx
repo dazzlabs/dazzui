@@ -70,7 +70,7 @@ export interface DateRangePickerProps {
   durations?: readonly DateRangeDuration[]
   /** Minutes between the times the lists offer. */
   timeStep?: number
-  /** Months side by side in the sheet. */
+  /** Months side by side in the sheet: one, or two for a sheet that mostly picks spans across them. */
   months?: 1 | 2
   /** `0` is Sunday. Monday by default. */
   weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6
@@ -160,7 +160,8 @@ const clock = (date: Date) =>
  * A span of days and times, chosen in one sheet.
  *
  * The trigger is a field — it wears the select's box — and what it opens
- * is a sheet: two months to pick the span on, and beside them a column
+ * is a sheet: a month to pick the span on — two, for a product whose
+ * spans mostly cross one — and beside it a column
  * that opens with a menu of the spans a calendar reaches for most, then
  * the start and end with their times and a row of durations. Nothing in
  * the sheet reaches the value until Done; an
@@ -182,7 +183,7 @@ export function DateRangePicker({
   presets = DATE_RANGE_PRESETS,
   durations = DATE_RANGE_DURATIONS,
   timeStep = 15,
-  months = 2,
+  months = 1,
   weekStartsOn = 1,
   locale,
   labels: labelsProp,

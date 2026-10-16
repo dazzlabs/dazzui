@@ -60,9 +60,11 @@ const story: Story = {
     },
     {
       title: 'Several days, and all day',
+      note: 'Two months, for spans that mostly cross one.',
       Demo: () => (
         <Col width="24rem">
           <DateRangePicker
+            months={2}
             defaultValue={{ start: at(20, 9), end: at(23, 17), allDay: false }}
             today={TODAY}
             aria-label="Offsite"
@@ -90,11 +92,10 @@ const story: Story = {
       ),
     },
     {
-      title: 'One month, the product’s own presets and durations',
+      title: 'The product’s own presets and durations',
       note: 'A calendar for sprints: two-week spans, and a working day as the one duration.',
       Demo: () => (
         <DateRangePicker
-          months={1}
           presets={[
             ...DATE_RANGE_PRESETS.slice(0, 1),
             {
