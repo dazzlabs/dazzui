@@ -117,7 +117,6 @@ public struct ThemeVariables: Sendable {
     washEdge: CGFloat = 0.2,
     calendarCellGap: CGFloat = 2.0,
     checkboxRadius: CGFloat = 5.0,
-    dateRangePickerPresetsWidth: CGFloat = 120.0,
     dialogWidth: CGFloat = 440.0,
     dialogScrimAlpha: CGFloat = 0.25,
     drawerSize: CGFloat = 352.0,
@@ -305,7 +304,6 @@ public struct ThemeVariables: Sendable {
     self.washEdge = washEdge
     self.calendarCellGap = calendarCellGap
     self.checkboxRadius = checkboxRadius
-    self.dateRangePickerPresetsWidth = dateRangePickerPresetsWidth
     self.dialogWidth = dialogWidth
     self.dialogScrimAlpha = dialogScrimAlpha
     self.drawerSize = drawerSize
@@ -459,7 +457,6 @@ public struct ThemeVariables: Sendable {
   public let washEdge: CGFloat
   public let calendarCellGap: CGFloat
   public let checkboxRadius: CGFloat
-  public let dateRangePickerPresetsWidth: CGFloat
   public let dialogWidth: CGFloat
   public let dialogScrimAlpha: CGFloat
   public let drawerSize: CGFloat

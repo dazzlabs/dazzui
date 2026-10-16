@@ -1,11 +1,10 @@
 /*
- * The sheet is the shared popup (popup.css) holding a presets column, the
- * months, the start and end under them and a footer, each hairlined off
- * the next, so it drops its own padding and lets the parts pad themselves
- * — a row of presets wants the popup's one step, a calendar wants two, and
- * the footer wants the dialog's run. The ends sit under the months rather
- * than beside them so the sheet is no wider than two months and the
- * presets: a third column made it a window rather than a popup.
+ * The sheet is the shared popup (popup.css) holding a bar, the months, the
+ * start and end under them and a footer, hairlined off each other, so it
+ * drops its own padding and lets the parts pad themselves — a calendar
+ * wants two steps, the footer the dialog's run. The bar carries the two
+ * chevrons that move the months and the quick-pick menu, so each month
+ * shows its name alone and the sheet is no wider than the months.
  *
  * The trigger is a select: it wears that box (text-field.css) and adds only
  * the calendar glyph at its leading edge.
@@ -34,55 +33,32 @@
 
 .dz-date-range-picker {
   display: grid;
-  grid-template-columns: auto auto;
-  grid-template-rows: auto auto auto;
   min-width: 0;
   padding: 0;
   overflow: visible;
   font-variant-numeric: tabular-nums;
 }
 
-.dz-date-range-picker__presets {
-  grid-row: 1 / 3;
-  padding: var(--spacing-1);
+/* The bar ---------------------------------------------------------------------
+ * The chevrons at the leading edge, as a toolbar sets them, and the menu's
+ * name at the trailing one. It sits on the months' own inset so the
+ * chevrons line up over the first month's edge. */
+.dz-date-range-picker__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-2) 0;
 }
 
-.dz-date-range-picker__months,
-.dz-date-range-picker__ends {
-  border-inline-start: var(--stroke-hairline) solid var(--color-border);
-}
-
-/* Presets ------------------------------------------------------------------
- * The popup's own rows. They are plain buttons rather than menu items — a
- * press keeps the sheet open — so the hover wash is written here, where
- * popup.css reads it off Base UI's highlight. The chosen one shows the tick
- * the way a select's row does. */
-.dz-date-range-picker__presets {
-  display: grid;
-  align-content: start;
-  width: var(--date-range-picker-presets-width);
-}
-
-.dz-date-range-picker__presets .dz-popup__item:hover {
-  background-color: var(--control-color-normal-surface-hovered);
-}
-
-.dz-date-range-picker__presets .dz-popup__item[data-selected] {
-  font-weight: var(--label-medium-font-weight);
-}
-
-.dz-date-range-picker__presets .dz-popup__item[data-selected] .dz-popup__check {
-  visibility: visible;
-}
-
-.dz-date-range-picker__presets .dz-popup__item:focus-visible {
-  outline: var(--focus-width) solid var(--focus-ring);
-  outline-offset: calc(-1 * var(--focus-width));
+.dz-date-range-picker__nav {
+  display: flex;
+  gap: var(--spacing-0-5);
 }
 
 /* Months -------------------------------------------------------------------- */
 .dz-date-range-picker__months {
-  padding: var(--spacing-2);
+  padding: var(--spacing-1) var(--spacing-2) var(--spacing-2);
 }
 
 /* Start and end ---------------------------------------------------------------

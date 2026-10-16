@@ -133,7 +133,6 @@ export const BASE: ThemeData = {
     "control.tiny.padding.inline": 10,
     "control.tiny.radius": 8,
     "control.tiny.size": 24,
-    "date-range-picker.presets-width": 120,
     "dialog.width": 440,
     "drawer.size": 352,
     "focus.offset": 0,

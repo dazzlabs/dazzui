@@ -49,6 +49,12 @@ interface CalendarBase {
   locale?: string
   /** What the grid counts as today. The clock's, unless a test says otherwise. */
   today?: Date
+  /**
+   * Whether the head carries the chevrons that move the month. Off for a
+   * calendar whose host moves it — a picker with the chevrons in its own
+   * bar — which then shows the month's name alone.
+   */
+  navigation?: boolean
   tint?: Tint
   className?: string
   'aria-label'?: string
@@ -108,6 +114,7 @@ export function Calendar(props: CalendarProps) {
     weekStartsOn = 1,
     locale,
     today: todayProp,
+    navigation = true,
     tint = 'primary',
     className,
     'aria-label': ariaLabel,
@@ -309,7 +316,7 @@ export function Calendar(props: CalendarProps) {
         return (
           <div key={index} className="dz-calendar__month">
             <div className="dz-calendar__head">
-              {index === 0 ? (
+              {!navigation ? null : index === 0 ? (
                 <IconButton
                   label="Previous month"
                   onClick={() => setMonth(addMonths(firstMonth, -1))}
@@ -322,7 +329,7 @@ export function Calendar(props: CalendarProps) {
               <span className="dz-calendar__title" aria-live="polite">
                 {names.title.format(current)}
               </span>
-              {index === months - 1 ? (
+              {!navigation ? null : index === months - 1 ? (
                 <IconButton
                   label="Next month"
                   onClick={() => setMonth(addMonths(firstMonth, 1))}

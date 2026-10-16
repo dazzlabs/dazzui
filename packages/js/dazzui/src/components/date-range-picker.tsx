@@ -1,14 +1,16 @@
 import { Popover as Base } from '@base-ui/react/popover'
 import {
   CalendarLtr16Regular,
-  Checkmark12Filled,
   ChevronDown12Regular,
+  ChevronLeft12Regular,
+  ChevronRight12Regular,
 } from '@fluentui/react-icons'
 import { useMemo, useState } from 'react'
 
 import { cx } from '../lib/cx'
 import {
   addDays,
+  addMonths,
   compareDay,
   minutesOfDay,
   sameDay,
@@ -20,6 +22,8 @@ import {
 import type { Tint } from '../lib/tint'
 import { Button } from './button'
 import { Calendar, type DateRange } from './calendar'
+import { IconButton } from './icon-button'
+import { Menu } from './menu'
 import { Select } from './text-field'
 import type { TextFieldSize, TextFieldState } from './text-field'
 import { tintFor } from './text-field'
@@ -64,7 +68,7 @@ export interface DateRangePickerProps {
   value?: DateRangeValue | null
   defaultValue?: DateRangeValue | null
   onValueChange?: (value: DateRangeValue) => void
-  /** The presets column. `DATE_RANGE_PRESETS` unless the product has its own. */
+  /** The quick-pick menu. `DATE_RANGE_PRESETS` unless the product has its own. */
   presets?: readonly DateRangePreset[]
   /** The duration chips. `DATE_RANGE_DURATIONS` unless the product has its own. */
   durations?: readonly DateRangeDuration[]
@@ -160,9 +164,10 @@ const clock = (date: Date) =>
  * A span of days and times, chosen in one sheet.
  *
  * The trigger is a field — it wears the select's box — and what it opens
- * is a sheet: the presets a calendar reaches for most down one side, two
- * months to pick the span on, and under them the start and end with their
- * times and a row of durations. Nothing in the sheet reaches the value until Done; an
+ * is a sheet: a bar with the chevrons that move the months and a menu of
+ * the spans a calendar reaches for most, two months to pick the span on,
+ * and under them the start and end with their times and a row of
+ * durations. Nothing in the sheet reaches the value until Done; an
  * outside press or Escape puts it back. That is the one way this differs
  * from every other popup here, and it is deliberate: a span is several
  * decisions, and a reader who has made two of them should not lose both to
@@ -345,22 +350,35 @@ export function DateRangePicker({
             data-months={months}
             className="dz-popup dz-date-range-picker"
           >
-            <div className="dz-date-range-picker__presets">
-              <div className="dz-popup__group-label">{labels.presets}</div>
-              {presets.map(preset => (
-                <button
-                  key={preset.label}
-                  type="button"
-                  className="dz-popup__item"
-                  data-selected={presetOn(preset) || undefined}
-                  onClick={() => applyPreset(preset)}
+            <div className="dz-date-range-picker__head">
+              <span className="dz-date-range-picker__nav">
+                <IconButton
+                  label="Previous month"
+                  onClick={() => setMonth(addMonths(month, -1))}
                 >
-                  <span aria-hidden className="dz-popup__check">
-                    <Checkmark12Filled />
-                  </span>
-                  <span className="dz-popup__label">{preset.label}</span>
-                </button>
-              ))}
+                  <ChevronLeft12Regular />
+                </IconButton>
+                <IconButton
+                  label="Next month"
+                  onClick={() => setMonth(addMonths(month, 1))}
+                >
+                  <ChevronRight12Regular />
+                </IconButton>
+              </span>
+              <Menu
+                tint={tint}
+                trigger={
+                  <Button size="tiny" variant="plain" tint="neutral">
+                    {labels.presets}
+                    <ChevronDown12Regular />
+                  </Button>
+                }
+                items={presets.map(preset => ({
+                  label: preset.label,
+                  checked: presetOn(preset),
+                  onSelect: () => applyPreset(preset),
+                }))}
+              />
             </div>
             <div className="dz-date-range-picker__months">
               <Calendar
@@ -369,6 +387,7 @@ export function DateRangePicker({
                 months={months}
                 month={month}
                 onMonthChange={setMonth}
+                navigation={false}
                 value={days}
                 onValueChange={setDays}
                 weekStartsOn={weekStartsOn}

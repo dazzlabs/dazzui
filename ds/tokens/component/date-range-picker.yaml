@@ -1,6 +1,0 @@
-date-range-picker:
-  # The presets column is capped rather than sized to its text, so a long
-  # preset name does not move the months between one open and the next.
-  presets-width:
-    $type: dimension
-    $value: 7.5rem
