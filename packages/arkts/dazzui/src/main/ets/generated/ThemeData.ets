@@ -96,6 +96,9 @@ export const BASE: ThemeData = {
     "dialog.scrim": "#4012142A"
   },
   "metrics": {
+    "calendar.cell-gap": 2,
+    "calendar.medium.cell-size": 28,
+    "calendar.small.cell-size": 26,
     "checkbox.large.box": 20,
     "checkbox.medium.box": 16,
     "checkbox.radius": 5,
@@ -130,6 +133,8 @@ export const BASE: ThemeData = {
     "control.tiny.padding.inline": 10,
     "control.tiny.radius": 8,
     "control.tiny.size": 24,
+    "date-range-picker.presets-width": 120,
+    "date-range-picker.side-width": 208,
     "dialog.width": 440,
     "drawer.size": 352,
     "focus.offset": 0,
@@ -18462,6 +18467,7 @@ export const THEMES: Record<string, ThemeData> = {
       "dialog.scrim": "#40252525"
     },
     "metrics": {
+      "calendar.small.cell-size": 24,
       "checkbox.radius": 4,
       "control.field.radius": 8,
       "control.large.radius": 9999,
@@ -18738,6 +18744,7 @@ export const THEMES: Record<string, ThemeData> = {
       "dialog.scrim": "#40DEDEDF"
     },
     "metrics": {
+      "calendar.small.cell-size": 24,
       "checkbox.radius": 4,
       "control.field.radius": 8,
       "control.large.radius": 9999,
@@ -19140,6 +19147,8 @@ export const THEMES: Record<string, ThemeData> = {
       "dialog.scrim": "#40232323"
     },
     "metrics": {
+      "calendar.medium.cell-size": 22,
+      "calendar.small.cell-size": 19,
       "checkbox.radius": 3,
       "control.container.radius": 6,
       "control.field.radius": 6,
@@ -19421,6 +19430,8 @@ export const THEMES: Record<string, ThemeData> = {
       "dialog.scrim": "#40E0E0E0"
     },
     "metrics": {
+      "calendar.medium.cell-size": 22,
+      "calendar.small.cell-size": 19,
       "checkbox.radius": 3,
       "control.container.radius": 6,
       "control.field.radius": 6,
@@ -19828,6 +19839,8 @@ export const THEMES: Record<string, ThemeData> = {
       "dialog.scrim": "#40181818"
     },
     "metrics": {
+      "calendar.medium.cell-size": 32,
+      "calendar.small.cell-size": 28,
       "checkbox.radius": 4,
       "control.container.radius": 4,
       "control.field.radius": 4,
@@ -20126,6 +20139,8 @@ export const THEMES: Record<string, ThemeData> = {
       "dialog.scrim": "#40FFFFFF"
     },
     "metrics": {
+      "calendar.medium.cell-size": 32,
+      "calendar.small.cell-size": 28,
       "checkbox.radius": 4,
       "control.container.radius": 4,
       "control.field.radius": 4,
@@ -20564,6 +20579,8 @@ export const THEMES: Record<string, ThemeData> = {
       "dialog.scrim": "#403D3D3D"
     },
     "metrics": {
+      "calendar.medium.cell-size": 34,
+      "calendar.small.cell-size": 28,
       "checkbox.radius": 6,
       "control.container.radius": 12,
       "control.field.radius": 9,
@@ -20860,6 +20877,8 @@ export const THEMES: Record<string, ThemeData> = {
       "dialog.scrim": "#40F7F7F7"
     },
     "metrics": {
+      "calendar.medium.cell-size": 34,
+      "calendar.small.cell-size": 28,
       "checkbox.radius": 6,
       "control.container.radius": 12,
       "control.field.radius": 9,
@@ -21282,6 +21301,8 @@ export const THEMES: Record<string, ThemeData> = {
       "dialog.scrim": "#40323237"
     },
     "metrics": {
+      "calendar.medium.cell-size": 34,
+      "calendar.small.cell-size": 28,
       "checkbox.radius": 6,
       "control.container.radius": 12,
       "control.field.radius": 9,
@@ -21578,6 +21599,8 @@ export const THEMES: Record<string, ThemeData> = {
       "dialog.scrim": "#40FFFFFF"
     },
     "metrics": {
+      "calendar.medium.cell-size": 34,
+      "calendar.small.cell-size": 28,
       "checkbox.radius": 6,
       "control.container.radius": 12,
       "control.field.radius": 9,
@@ -22000,6 +22023,8 @@ export const THEMES: Record<string, ThemeData> = {
       "dialog.scrim": "#40323237"
     },
     "metrics": {
+      "calendar.medium.cell-size": 34,
+      "calendar.small.cell-size": 28,
       "checkbox.radius": 6,
       "control.container.radius": 12,
       "control.field.radius": 9,
@@ -22296,6 +22321,8 @@ export const THEMES: Record<string, ThemeData> = {
       "dialog.scrim": "#40FFFFFF"
     },
     "metrics": {
+      "calendar.medium.cell-size": 34,
+      "calendar.small.cell-size": 28,
       "checkbox.radius": 6,
       "control.container.radius": 12,
       "control.field.radius": 9,
@@ -22719,6 +22746,7 @@ export const THEMES: Record<string, ThemeData> = {
       "dialog.scrim": "#40232629"
     },
     "metrics": {
+      "calendar.medium.cell-size": 30,
       "checkbox.radius": 3,
       "control.container.radius": 5,
       "control.field.radius": 5,
@@ -23025,6 +23053,7 @@ export const THEMES: Record<string, ThemeData> = {
       "dialog.scrim": "#40FCFCFC"
     },
     "metrics": {
+      "calendar.medium.cell-size": 30,
       "checkbox.radius": 3,
       "control.container.radius": 5,
       "control.field.radius": 5,
@@ -23453,6 +23482,8 @@ export const THEMES: Record<string, ThemeData> = {
       "dialog.scrim": "#40121212"
     },
     "metrics": {
+      "calendar.medium.cell-size": 40,
+      "calendar.small.cell-size": 32,
       "checkbox.radius": 4,
       "control.container.radius": 8,
       "control.field.radius": 4,
@@ -23736,6 +23767,8 @@ export const THEMES: Record<string, ThemeData> = {
       "dialog.scrim": "#40FFFFFF"
     },
     "metrics": {
+      "calendar.medium.cell-size": 40,
+      "calendar.small.cell-size": 32,
       "checkbox.radius": 4,
       "control.container.radius": 8,
       "control.field.radius": 4,

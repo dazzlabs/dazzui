@@ -115,7 +115,10 @@ public struct ThemeVariables: Sendable {
     captionLarge: TypeStyle = TypeStyle(family: ["-apple-system", "SF Pro Text", "system-ui", "PingFang SC", "Noto Sans CJK SC", "sans-serif"], size: 13.0, weight: .regular, lineHeight: 20.0),
     washSurface: CGFloat = 0.06,
     washEdge: CGFloat = 0.2,
+    calendarCellGap: CGFloat = 2.0,
     checkboxRadius: CGFloat = 5.0,
+    dateRangePickerPresetsWidth: CGFloat = 120.0,
+    dateRangePickerSideWidth: CGFloat = 208.0,
     dialogWidth: CGFloat = 440.0,
     dialogScrimAlpha: CGFloat = 0.25,
     drawerSize: CGFloat = 352.0,
@@ -301,7 +304,10 @@ public struct ThemeVariables: Sendable {
     self.captionLarge = captionLarge
     self.washSurface = washSurface
     self.washEdge = washEdge
+    self.calendarCellGap = calendarCellGap
     self.checkboxRadius = checkboxRadius
+    self.dateRangePickerPresetsWidth = dateRangePickerPresetsWidth
+    self.dateRangePickerSideWidth = dateRangePickerSideWidth
     self.dialogWidth = dialogWidth
     self.dialogScrimAlpha = dialogScrimAlpha
     self.drawerSize = drawerSize
@@ -453,7 +459,10 @@ public struct ThemeVariables: Sendable {
   public let captionLarge: TypeStyle
   public let washSurface: CGFloat
   public let washEdge: CGFloat
+  public let calendarCellGap: CGFloat
   public let checkboxRadius: CGFloat
+  public let dateRangePickerPresetsWidth: CGFloat
+  public let dateRangePickerSideWidth: CGFloat
   public let dialogWidth: CGFloat
   public let dialogScrimAlpha: CGFloat
   public let drawerSize: CGFloat
@@ -531,6 +540,8 @@ public struct ThemeVariables: Sendable {
   public var controlLargePaddingInline: CGFloat { spacing4 }
   public var controlLargeRadius: CGFloat { radiusMedium }
   public var controlLargeContent: TypeStyle { labelMedium }
+  public var calendarMediumCellSize: CGFloat { controlMediumSize }
+  public var calendarSmallCellSize: CGFloat { controlSmallSize }
   public var checkboxThickness: CGFloat { strokeControl }
   public var checkboxSmallBox: CGFloat { spacing35 }
   public var checkboxMediumBox: CGFloat { spacing4 }

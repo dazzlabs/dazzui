@@ -39,12 +39,16 @@ Never hand-edit `src/generated/`. A value a component needs belongs in
   the type-ahead, the `aria-*` wiring and the collision handling that a
   hand-rolled version never quite finishes.
 - **Where Base UI has no part, the behaviour is written out and the reason is
-  written down.** Three components own their own: `Tree`, whose keyboard is
+  written down.** Four components own their own: `Tree`, whose keyboard is
   not a list's — `ArrowRight` opens a shut branch and descends into an open
   one, `ArrowLeft` shuts one and climbs out of a leaf, and the whole tree is
   one tab stop, none of which falls out of a `Collapsible` per node;
-  `Splitter`, whose seams are a pointer gesture with an `aria-valuenow`
-  rather than a state machine; and `Skeleton`, which has no behaviour at all.
+  `Calendar`, whose grid is one tab stop the arrow keys move through by a
+  day and a week and Page Up and Page Down by a month, and whose range mode
+  previews the span against the day under the pointer or the keyboard —
+  Base UI has no calendar part; `Splitter`, whose seams are a pointer
+  gesture with an `aria-valuenow` rather than a state machine; and
+  `Skeleton`, which has no behaviour at all.
   Writing one of these is the exception, not a precedent: check
   [base-ui.com](https://base-ui.com) first, and if a part exists, wear it.
 - **State comes off Base UI's attributes, not the DOM's pseudo-classes.**

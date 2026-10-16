@@ -1,0 +1,11 @@
+date-range-picker:
+  # The sheet is three columns: the presets, the two months, and the start
+  # and end beside them. The two outer columns are capped rather than sized
+  # to their text, so a long preset name or a long month name does not move
+  # the calendar between one open and the next.
+  presets-width:
+    $type: dimension
+    $value: 7.5rem
+  side-width:
+    $type: dimension
+    $value: 13rem

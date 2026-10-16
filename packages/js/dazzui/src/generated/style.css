@@ -910,6 +910,9 @@
   --body-small-font-size: var(--base-type-small);
   --body-small-font-weight: var(--base-font-weight-normal);
   --body-small-line-height: var(--base-leading-small);
+  --calendar-cell-gap: 0.125rem;
+  --calendar-medium-cell-size: var(--control-medium-size);
+  --calendar-small-cell-size: var(--control-small-size);
   --caption-large-font-family: var(--base-font-ui);
   --caption-large-font-size: var(--base-type-body);
   --caption-large-font-weight: var(--base-font-weight-normal);
@@ -1057,6 +1060,8 @@
   --control-tiny-padding-inline: var(--spacing-2-5);
   --control-tiny-radius: var(--radius-small);
   --control-tiny-size: var(--base-control-height-tiny);
+  --date-range-picker-presets-width: 7.5rem;
+  --date-range-picker-side-width: 13rem;
   --dialog-scrim-color: var(--color-content);
   --dialog-width: 27.5rem;
   --drawer-size: 22rem;

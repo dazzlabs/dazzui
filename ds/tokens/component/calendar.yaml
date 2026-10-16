@@ -1,0 +1,21 @@
+calendar:
+  # A day is a square at the control height, so a month grid sits in the
+  # same rhythm as the buttons beside it: the regular step for a calendar
+  # that stands on its own, the small step for one inside a panel that has
+  # to hold two months side by side. Stated against the profile rather than
+  # as lengths, so the desktop metrics that re-pick the control heights
+  # carry the grid with them.
+  medium:
+    cell-size:
+      $type: dimension
+      $value: "{control.medium.size}"
+  small:
+    cell-size:
+      $type: dimension
+      $value: "{control.small.size}"
+  # The run between two days. 2px is off the 4px grid on purpose: at 0 a
+  # range reads as one slab and the selected day's corner has nothing to
+  # sit in; at 4 the seven columns stop reading as a week.
+  cell-gap:
+    $type: dimension
+    $value: 0.125rem

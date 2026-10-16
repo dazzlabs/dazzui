@@ -230,7 +230,10 @@ class ThemeVariables {
     this.controlMediumPaddingInline = 16,
     this.controlMediumSize = 28,
     this.controlLargeSize = 32,
+    this.calendarCellGap = 2,
     this.checkboxRadius = 5,
+    this.dateRangePickerPresetsWidth = 120,
+    this.dateRangePickerSideWidth = 208,
     this.dialogWidth = 440,
     this.dialogScrimAlpha = 0.25,
     this.drawerSize = 352,
@@ -768,12 +771,21 @@ class ThemeVariables {
 
   // #region Component
 
+  // Calendar
+  double get calendarMediumCellSize => controlMediumSize;
+  double get calendarSmallCellSize => controlSmallSize;
+  final double calendarCellGap;
+
   // Checkbox
   double get checkboxThickness => strokeControl;
   final double checkboxRadius;
   double get checkboxSmallBox => spacing35;
   double get checkboxMediumBox => spacing4;
   double get checkboxLargeBox => spacing5;
+
+  // Date Range Picker
+  final double dateRangePickerPresetsWidth;
+  final double dateRangePickerSideWidth;
 
   // Dialog
   final double dialogWidth;
@@ -1012,7 +1024,10 @@ class ThemeVariables {
     double? controlMediumPaddingInline,
     double? controlMediumSize,
     double? controlLargeSize,
+    double? calendarCellGap,
     double? checkboxRadius,
+    double? dateRangePickerPresetsWidth,
+    double? dateRangePickerSideWidth,
     double? dialogWidth,
     double? dialogScrimAlpha,
     double? drawerSize,
@@ -1219,7 +1234,12 @@ class ThemeVariables {
           controlMediumPaddingInline ?? this.controlMediumPaddingInline,
       controlMediumSize: controlMediumSize ?? this.controlMediumSize,
       controlLargeSize: controlLargeSize ?? this.controlLargeSize,
+      calendarCellGap: calendarCellGap ?? this.calendarCellGap,
       checkboxRadius: checkboxRadius ?? this.checkboxRadius,
+      dateRangePickerPresetsWidth:
+          dateRangePickerPresetsWidth ?? this.dateRangePickerPresetsWidth,
+      dateRangePickerSideWidth:
+          dateRangePickerSideWidth ?? this.dateRangePickerSideWidth,
       dialogWidth: dialogWidth ?? this.dialogWidth,
       dialogScrimAlpha: dialogScrimAlpha ?? this.dialogScrimAlpha,
       drawerSize: drawerSize ?? this.drawerSize,

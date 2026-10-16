@@ -1,0 +1,183 @@
+/*
+ * A month grid. Every day is a square at the control height, so the grid
+ * sits in the same rhythm as the buttons beside it, and the seven columns
+ * are `calendar.cell-gap` apart — enough for a picked day's corner to show
+ * against its neighbours, not enough for the week to fall into days.
+ *
+ * Colour comes off the shared state machine: a day carries `data-control`
+ * and the recipe its state calls for — `tinted` inside a range, `filled`
+ * for a picked day — so hover and press are the recipes' own and this file
+ * draws only the shape. A day at rest is a row rather than a control: ink
+ * on nothing, with the neutral wash under the pointer that a menu row or a
+ * table row takes, because an accent wash on every one of forty-two days
+ * would make the month shout. The three states a recipe does not know are
+ * the ones a calendar adds: today, a day outside the month, and the end a
+ * pending range is previewing.
+ */
+.dz-calendar {
+  --dz-calendar-cell: var(--calendar-medium-cell-size);
+  display: inline-flex;
+  gap: var(--spacing-4);
+  color: var(--color-content);
+  user-select: none;
+}
+
+.dz-calendar[data-size='small'] {
+  --dz-calendar-cell: var(--calendar-small-cell-size);
+}
+
+.dz-calendar__month {
+  display: grid;
+  gap: var(--spacing-1);
+  width: calc(7 * var(--dz-calendar-cell) + 6 * var(--calendar-cell-gap));
+}
+
+/* The bar: a chevron at each end of the month's name, in the tiny glyph
+   square. A middle month of a run has neither, and keeps the room. */
+.dz-calendar__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-1);
+}
+
+.dz-calendar__spacer {
+  width: var(--control-tiny-size);
+  height: var(--control-tiny-size);
+}
+
+.dz-calendar__title {
+  flex: 1;
+  text-align: center;
+  font-family: var(--label-medium-font-family);
+  font-size: var(--label-medium-font-size);
+  font-weight: var(--label-medium-font-weight);
+  line-height: var(--label-medium-line-height);
+  font-variant-numeric: tabular-nums;
+}
+
+.dz-calendar__weekdays,
+.dz-calendar__row {
+  display: grid;
+  grid-template-columns: repeat(7, var(--dz-calendar-cell));
+  gap: var(--calendar-cell-gap);
+}
+
+.dz-calendar__grid {
+  display: grid;
+  gap: var(--calendar-cell-gap);
+}
+
+.dz-calendar__weekdays > span {
+  display: grid;
+  place-items: center;
+  height: var(--spacing-5);
+  color: var(--color-content-subtle);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+  font-weight: var(--label-small-font-weight);
+  line-height: 1;
+}
+
+.dz-calendar__day {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--dz-calendar-cell);
+  height: var(--dz-calendar-cell);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-small);
+  background-color: var(--control-surface);
+  color: var(--control-content);
+  cursor: pointer;
+  font-family: var(--label-quiet-font-family);
+  font-size: var(--label-quiet-font-size);
+  font-weight: var(--label-quiet-font-weight);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  transition:
+    background-color var(--motion-duration) var(--motion-easing),
+    color var(--motion-duration) var(--motion-easing);
+}
+
+/* At rest: the row's drawing, not the quiet accent control's. */
+.dz-calendar__day[data-variant='plain'] {
+  background-color: transparent;
+  color: var(--color-content);
+}
+
+.dz-calendar__day[data-variant='plain']:hover:not([aria-disabled='true']) {
+  background-color: var(--control-color-normal-surface-hovered);
+}
+
+.dz-calendar__day[data-variant='plain']:active:not([aria-disabled='true']) {
+  background-color: var(--control-color-normal-surface-pressed);
+}
+
+.dz-calendar__day:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+  z-index: 1;
+}
+
+.dz-calendar__day[aria-disabled='true'] {
+  cursor: not-allowed;
+}
+
+/* A day of the month before or after, drawn so the grid stays six rows
+   but faint enough to read as not this month's. */
+.dz-calendar__day[data-outside]:not([data-selected]):not([data-range]) {
+  color: var(--color-content-faint);
+}
+
+/* Today: the accent's ink, a weight heavier, and a dot — the three stay
+   when the day is picked or inside a range, in whatever ink the recipe
+   gives the label, so today is never lost under a selection. */
+.dz-calendar__day[data-today] {
+  font-weight: var(--label-strong-font-weight);
+}
+
+.dz-calendar__day[data-today]:not([data-selected]):not([data-range]) {
+  color: var(--tint-600);
+}
+
+.dz-calendar__day[data-today]::after {
+  content: '';
+  position: absolute;
+  bottom: var(--spacing-0-5);
+  width: var(--spacing-0-5);
+  height: var(--spacing-0-5);
+  border-radius: var(--radius-full);
+  background-color: currentColor;
+}
+
+/* A picked day is the filled recipe and the label a weight up, the way a
+   selection is drawn everywhere here. */
+.dz-calendar__day[data-selected] {
+  font-weight: var(--label-medium-font-weight);
+}
+
+/* The span between the two ends is one band: the days inside square their
+   corners, and the two ends keep the corner only on the outer side, so the
+   band's edge stays concentric with the day's. */
+.dz-calendar__day[data-range] {
+  border-radius: 0;
+}
+
+.dz-calendar__day[data-range-start] {
+  border-start-start-radius: var(--radius-small);
+  border-end-start-radius: var(--radius-small);
+}
+
+.dz-calendar__day[data-range-end] {
+  border-start-end-radius: var(--radius-small);
+  border-end-end-radius: var(--radius-small);
+}
+
+/* The end a pending range is previewing against: dashed, because it is
+   where the span would end, not where it does. */
+.dz-calendar__day[data-preview] {
+  outline: var(--stroke-hairline) dashed var(--tint-600);
+  outline-offset: calc(-1 * var(--stroke-hairline));
+}

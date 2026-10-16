@@ -1,0 +1,166 @@
+/*
+ * The sheet is the shared popup (popup.css) holding three columns and a
+ * footer, each hairlined off the next, so it drops its own padding and lets
+ * the columns pad themselves — a row of presets wants the popup's one step,
+ * a calendar wants two, and the footer wants the dialog's run.
+ *
+ * The trigger is a select: it wears that box (text-field.css) and adds only
+ * the calendar glyph at its leading edge.
+ */
+.dz-date-range-picker__trigger {
+  width: auto;
+  min-width: 16rem;
+}
+
+.dz-date-range-picker__glyph {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--color-content-subtle);
+  --dz-icon-size: var(--icon-small);
+}
+
+.dz-date-range-picker__glyph > svg {
+  width: var(--dz-icon-size);
+  height: var(--dz-icon-size);
+}
+
+.dz-date-range-picker__sep {
+  margin-inline: var(--spacing-1);
+  color: var(--color-content-faint);
+}
+
+.dz-date-range-picker {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  min-width: 0;
+  padding: 0;
+  overflow: visible;
+  font-variant-numeric: tabular-nums;
+}
+
+.dz-date-range-picker__presets,
+.dz-date-range-picker__months,
+.dz-date-range-picker__side {
+  padding: var(--spacing-1);
+}
+
+.dz-date-range-picker__months,
+.dz-date-range-picker__side {
+  border-inline-start: var(--stroke-hairline) solid var(--color-border);
+}
+
+/* Presets ------------------------------------------------------------------
+ * The popup's own rows. They are plain buttons rather than menu items — a
+ * press keeps the sheet open — so the hover wash is written here, where
+ * popup.css reads it off Base UI's highlight. The chosen one shows the tick
+ * the way a select's row does. */
+.dz-date-range-picker__presets {
+  display: grid;
+  align-content: start;
+  width: var(--date-range-picker-presets-width);
+}
+
+.dz-date-range-picker__presets .dz-popup__item:hover {
+  background-color: var(--control-color-normal-surface-hovered);
+}
+
+.dz-date-range-picker__presets .dz-popup__item[data-selected] {
+  font-weight: var(--label-medium-font-weight);
+}
+
+.dz-date-range-picker__presets .dz-popup__item[data-selected] .dz-popup__check {
+  visibility: visible;
+}
+
+.dz-date-range-picker__presets .dz-popup__item:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: calc(-1 * var(--focus-width));
+}
+
+/* Months -------------------------------------------------------------------- */
+.dz-date-range-picker__months {
+  padding: var(--spacing-2);
+}
+
+/* Start and end ---------------------------------------------------------------
+ * A key over a date and its time, twice, then the durations. The keys are
+ * the section label's voice; the date takes the row's quiet label. */
+.dz-date-range-picker__side {
+  display: grid;
+  align-content: start;
+  gap: var(--spacing-3);
+  width: var(--date-range-picker-side-width);
+  padding: var(--spacing-2) var(--spacing-3);
+}
+
+.dz-date-range-picker__end {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--spacing-1) var(--spacing-2);
+  align-items: center;
+}
+
+.dz-date-range-picker__key {
+  grid-column: 1 / -1;
+  color: var(--color-content-subtle);
+  font-family: var(--caption-small-font-family);
+  font-size: var(--caption-small-font-size);
+  font-weight: var(--label-small-font-weight);
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dz-date-range-picker__date {
+  font-family: var(--label-quiet-font-family);
+  font-size: var(--label-quiet-font-size);
+  font-weight: var(--label-quiet-font-weight);
+  line-height: 1;
+}
+
+.dz-date-range-picker__time {
+  width: auto;
+  min-width: 5rem;
+}
+
+.dz-date-range-picker__durations {
+  display: grid;
+  gap: var(--spacing-1-5);
+}
+
+.dz-date-range-picker__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-1);
+}
+
+/* Footer ---------------------------------------------------------------------
+ * A read-only line of what the sheet holds, and the two actions at the
+ * trailing edge, as a dialog sets its own. */
+.dz-date-range-picker__foot {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  padding: var(--spacing-2) var(--spacing-2) var(--spacing-2) var(--spacing-3);
+  border-block-start: var(--stroke-hairline) solid var(--color-border);
+}
+
+.dz-date-range-picker__summary {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-content-secondary);
+  font-family: var(--label-small-font-family);
+  font-size: var(--label-small-font-size);
+  font-weight: var(--label-small-font-weight);
+  line-height: var(--label-small-line-height);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dz-date-range-picker__actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--spacing-2);
+}

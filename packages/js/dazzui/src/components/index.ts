@@ -25,6 +25,12 @@ export {
   type ButtonSize,
   type ButtonVariant,
 } from './button'
+export {
+  Calendar,
+  type CalendarProps,
+  type CalendarSize,
+  type DateRange,
+} from './calendar'
 export { Callout, type CalloutProps, type CalloutSize } from './callout'
 export { Card, type CardProps, type CardSize, type CardVariant } from './card'
 export {
@@ -44,6 +50,16 @@ export {
   type ComboboxOptionGroup,
   type ComboboxProps,
 } from './combobox'
+export {
+  DATE_RANGE_DURATIONS,
+  DATE_RANGE_PRESETS,
+  DateRangePicker,
+  type DateRangeDuration,
+  type DateRangePickerLabels,
+  type DateRangePickerProps,
+  type DateRangePreset,
+  type DateRangeValue,
+} from './date-range-picker'
 export {
   Dialog,
   DialogBody,

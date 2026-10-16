@@ -34,6 +34,9 @@ pub struct ThemeTokens {
     pub body_large: TypeStyle,
     pub body_medium: TypeStyle,
     pub body_small: TypeStyle,
+    pub calendar_cell_gap: f32,
+    pub calendar_medium_cell_size: f32,
+    pub calendar_small_cell_size: f32,
     pub caption_large: TypeStyle,
     pub caption_medium: TypeStyle,
     pub caption_small: TypeStyle,
@@ -173,6 +176,8 @@ pub struct ThemeTokens {
     pub control_tiny_padding_inline: f32,
     pub control_tiny_radius: f32,
     pub control_tiny_size: f32,
+    pub date_range_picker_presets_width: f32,
+    pub date_range_picker_side_width: f32,
     pub dialog_scrim: Paint,
     pub dialog_width: f32,
     pub drawer_size: f32,
@@ -308,6 +313,9 @@ pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 18.0,
         weight: 400,
     },
+    calendar_cell_gap: 2.0,
+    calendar_medium_cell_size: 28.0,
+    calendar_small_cell_size: 26.0,
     caption_large: TypeStyle {
         face: Face::Text,
         size: 13.0,
@@ -554,6 +562,8 @@ pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
     control_tiny_padding_inline: 10.0,
     control_tiny_radius: 8.0,
     control_tiny_size: 24.0,
+    date_range_picker_presets_width: 120.0,
+    date_range_picker_side_width: 208.0,
     dialog_scrim: Paint::Color(Color(0x12142aff), 0.25),
     dialog_width: 440.0,
     drawer_size: 352.0,
@@ -11494,6 +11504,7 @@ pub const MACOS27_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 14.0,
         weight: 400,
     },
+    calendar_small_cell_size: 24.0,
     caption_large: TypeStyle {
         face: Face::Text,
         size: 13.0,
@@ -11669,6 +11680,7 @@ pub const MACOS27_DARK: ThemeTokens = ThemeTokens {
         line_height: 14.0,
         weight: 400,
     },
+    calendar_small_cell_size: 24.0,
     caption_large: TypeStyle {
         face: Face::Text,
         size: 13.0,
@@ -11948,6 +11960,8 @@ pub const MACOS15_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 14.0,
         weight: 400,
     },
+    calendar_medium_cell_size: 22.0,
+    calendar_small_cell_size: 19.0,
     caption_large: TypeStyle {
         face: Face::Text,
         size: 13.0,
@@ -12128,6 +12142,8 @@ pub const MACOS15_DARK: ThemeTokens = ThemeTokens {
         line_height: 14.0,
         weight: 400,
     },
+    calendar_medium_cell_size: 22.0,
+    calendar_small_cell_size: 19.0,
     caption_large: TypeStyle {
         face: Face::Text,
         size: 13.0,
@@ -12412,6 +12428,8 @@ pub const WINDOWS11_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 400,
     },
+    calendar_medium_cell_size: 32.0,
+    calendar_small_cell_size: 28.0,
     caption_large: TypeStyle {
         face: Face::Text,
         size: 14.0,
@@ -12610,6 +12628,8 @@ pub const WINDOWS11_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 400,
     },
+    calendar_medium_cell_size: 32.0,
+    calendar_small_cell_size: 28.0,
     caption_large: TypeStyle {
         face: Face::Text,
         size: 14.0,
@@ -12916,6 +12936,8 @@ pub const UBUNTU_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 17.0,
         weight: 400,
     },
+    calendar_medium_cell_size: 34.0,
+    calendar_small_cell_size: 28.0,
     caption_large: TypeStyle {
         face: Face::Text,
         size: 14.5,
@@ -13113,6 +13135,8 @@ pub const UBUNTU_DARK: ThemeTokens = ThemeTokens {
         line_height: 17.0,
         weight: 400,
     },
+    calendar_medium_cell_size: 34.0,
+    calendar_small_cell_size: 28.0,
     caption_large: TypeStyle {
         face: Face::Text,
         size: 14.5,
@@ -13414,6 +13438,8 @@ pub const DEBIAN_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 17.0,
         weight: 400,
     },
+    calendar_medium_cell_size: 34.0,
+    calendar_small_cell_size: 28.0,
     caption_large: TypeStyle {
         face: Face::Text,
         size: 14.5,
@@ -13611,6 +13637,8 @@ pub const DEBIAN_DARK: ThemeTokens = ThemeTokens {
         line_height: 17.0,
         weight: 400,
     },
+    calendar_medium_cell_size: 34.0,
+    calendar_small_cell_size: 28.0,
     caption_large: TypeStyle {
         face: Face::Text,
         size: 14.5,
@@ -13912,6 +13940,8 @@ pub const FEDORA_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 17.0,
         weight: 400,
     },
+    calendar_medium_cell_size: 34.0,
+    calendar_small_cell_size: 28.0,
     caption_large: TypeStyle {
         face: Face::Text,
         size: 14.5,
@@ -14109,6 +14139,8 @@ pub const FEDORA_DARK: ThemeTokens = ThemeTokens {
         line_height: 17.0,
         weight: 400,
     },
+    calendar_medium_cell_size: 34.0,
+    calendar_small_cell_size: 28.0,
     caption_large: TypeStyle {
         face: Face::Text,
         size: 14.5,
@@ -14410,6 +14442,7 @@ pub const KDE_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 15.0,
         weight: 400,
     },
+    calendar_medium_cell_size: 30.0,
     caption_large: TypeStyle {
         face: Face::Text,
         size: 13.33,
@@ -14605,6 +14638,7 @@ pub const KDE_DARK: ThemeTokens = ThemeTokens {
         line_height: 15.0,
         weight: 400,
     },
+    calendar_medium_cell_size: 30.0,
     caption_large: TypeStyle {
         face: Face::Text,
         size: 13.33,
@@ -14904,6 +14938,8 @@ pub const SPOTIFY_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 400,
     },
+    calendar_medium_cell_size: 40.0,
+    calendar_small_cell_size: 32.0,
     caption_large: TypeStyle {
         face: Face::Text,
         size: 14.0,
@@ -15086,6 +15122,8 @@ pub const SPOTIFY_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 400,
     },
+    calendar_medium_cell_size: 40.0,
+    calendar_small_cell_size: 32.0,
     caption_large: TypeStyle {
         face: Face::Text,
         size: 14.0,

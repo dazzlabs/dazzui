@@ -34,6 +34,9 @@
 @import '../components/tabs.css';
 @import '../components/tag.css';
 @import '../components/button.css';
+/* After button.css in spirit: a day is a control and reads the profile's
+   recipes the way a button does, but draws its own square. */
+@import '../components/calendar.css';
 @import '../components/callout.css';
 @import '../components/card.css';
 @import '../components/checkbox.css';
@@ -90,6 +93,9 @@
    order doing the work. */
 @import '../components/number-field.css';
 @import '../components/combobox.css';
+/* After popup.css and text-field.css: the sheet is the shared popup holding
+   three columns, and the trigger wears the select's box. */
+@import '../components/date-range-picker.css';
 @import '../components/toast.css';
 /* After button.css in spirit rather than in order: a toggle is that box
    with one state a button does not have, and it reads the same profile
