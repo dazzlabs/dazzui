@@ -104,6 +104,29 @@ ${story('Save')}`)
   assert.deepEqual(preview.content.children, [{ $icon: 'Settings20Regular' }])
 })
 
+test('a date is constructed ahead of time and written as local text', () => {
+  const { preview } = compile(`
+const TODAY = new Date(2026, 9, 16)
+const at = (day: number, hours: number, minutes = 0) => new Date(2026, 9, day, hours, minutes)
+function Pick() {
+  const [day, setDay] = useState<Date | null>(at(20, 9, 30))
+  return <Tag selected={day === TODAY} onSelectedChange={setDay}>{\`\${TODAY}\`}</Tag>
+}
+${story('Pick')}`)
+  assert.deepEqual(preview.state, { s0: '2026-10-20T09:30' })
+  assert.deepEqual(preview.content.props.selected, {
+    $eq: [{ $state: 's0' }, '2026-10-16T00:00'],
+  })
+  assert.throws(
+    () => compile(story(`() => <Tag>{\`\${new Date()}\`}</Tag>`)),
+    /each a number known ahead of time/
+  )
+  assert.throws(
+    () => compile(story(`() => <Tag>{\`\${new Map()}\`}</Tag>`)),
+    /Only new Date/
+  )
+})
+
 test('JSX text follows the JSX whitespace rule', () => {
   const { preview } = compile(
     story(`() => (

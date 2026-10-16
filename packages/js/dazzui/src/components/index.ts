@@ -58,6 +58,7 @@ export {
   type DateRangePickerLabels,
   type DateRangePickerProps,
   type DateRangePreset,
+  presetRange,
   type DateRangeValue,
 } from './date-range-picker'
 export {

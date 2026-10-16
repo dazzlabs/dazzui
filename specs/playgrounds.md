@@ -20,7 +20,10 @@ other platforms' examples.
 - **A story is written in the portable subset**, and codegen refuses
   anything outside it with the file and line:
   - values come only from the kit, `@fluentui/react-icons`, the stage
-    (`../components/stage`) and `react`'s `useState`;
+    (`../components/stage`) and `react`'s `useState`; the one constructor
+    is `new Date(year, month, day[, hours[, minutes]])` with parts known
+    ahead of time, written into the data as local `YYYY-MM-DDTHH:MM`, and
+    a platform writes a date a calendar picks back the same way;
   - elements are kit components, glyphs and the four stage components —
     `Row`, `Col`, `Frame`, `Text` — never HTML, never `style` or
     `className`;

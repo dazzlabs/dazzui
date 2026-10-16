@@ -1,6 +1,6 @@
 {
   "platform": "harmony",
-  "total": 176,
+  "total": 188,
   "mapped": 111,
   "gaps": {
     "accordion/preview": [
@@ -24,6 +24,24 @@
     ],
     "avatar/1": [
       "avatar/1 preview: <AvatarGroup> is not drawn by HarmonyOS"
+    ],
+    "calendar/preview": [
+      "calendar/preview preview: <Calendar> is not drawn by HarmonyOS"
+    ],
+    "calendar/0": [
+      "calendar/0 preview: <Calendar> is not drawn by HarmonyOS"
+    ],
+    "calendar/1": [
+      "calendar/1 preview: <Calendar> is not drawn by HarmonyOS"
+    ],
+    "calendar/2": [
+      "calendar/2 preview: <Calendar> is not drawn by HarmonyOS"
+    ],
+    "calendar/3": [
+      "calendar/3 preview: <Calendar> is not drawn by HarmonyOS"
+    ],
+    "calendar/4": [
+      "calendar/4 preview: <Calendar> is not drawn by HarmonyOS"
     ],
     "checkbox/0": [
       "checkbox/0 preview: <Checkbox indeterminate> is not drawn by HarmonyOS"
@@ -53,6 +71,24 @@
     ],
     "combobox/2": [
       "combobox/2 preview: <Autocomplete> is not drawn by HarmonyOS"
+    ],
+    "date-range-picker/preview": [
+      "date-range-picker/preview preview: <DateRangePicker> is not drawn by HarmonyOS"
+    ],
+    "date-range-picker/0": [
+      "date-range-picker/0 preview: <DateRangePicker> is not drawn by HarmonyOS"
+    ],
+    "date-range-picker/1": [
+      "date-range-picker/1 preview: <DateRangePicker> is not drawn by HarmonyOS"
+    ],
+    "date-range-picker/2": [
+      "date-range-picker/2 preview: <DateRangePicker> is not drawn by HarmonyOS"
+    ],
+    "date-range-picker/3": [
+      "date-range-picker/3 preview: <DateRangePicker> is not drawn by HarmonyOS"
+    ],
+    "date-range-picker/4": [
+      "date-range-picker/4 preview: <DateRangePicker> is not drawn by HarmonyOS"
     ],
     "dialog/1": [
       "dialog/1 preview: <TextField required> is not drawn by HarmonyOS"
