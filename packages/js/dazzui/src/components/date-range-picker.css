@@ -1,8 +1,11 @@
 /*
- * The sheet is the shared popup (popup.css) holding three columns and a
- * footer, each hairlined off the next, so it drops its own padding and lets
- * the columns pad themselves — a row of presets wants the popup's one step,
- * a calendar wants two, and the footer wants the dialog's run.
+ * The sheet is the shared popup (popup.css) holding a presets column, the
+ * months, the start and end under them and a footer, each hairlined off
+ * the next, so it drops its own padding and lets the parts pad themselves
+ * — a row of presets wants the popup's one step, a calendar wants two, and
+ * the footer wants the dialog's run. The ends sit under the months rather
+ * than beside them so the sheet is no wider than two months and the
+ * presets: a third column made it a window rather than a popup.
  *
  * The trigger is a select: it wears that box (text-field.css) and adds only
  * the calendar glyph at its leading edge.
@@ -31,21 +34,21 @@
 
 .dz-date-range-picker {
   display: grid;
-  grid-template-columns: auto auto auto;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto auto;
   min-width: 0;
   padding: 0;
   overflow: visible;
   font-variant-numeric: tabular-nums;
 }
 
-.dz-date-range-picker__presets,
-.dz-date-range-picker__months,
-.dz-date-range-picker__side {
+.dz-date-range-picker__presets {
+  grid-row: 1 / 3;
   padding: var(--spacing-1);
 }
 
 .dz-date-range-picker__months,
-.dz-date-range-picker__side {
+.dz-date-range-picker__ends {
   border-inline-start: var(--stroke-hairline) solid var(--color-border);
 }
 
@@ -83,14 +86,22 @@
 }
 
 /* Start and end ---------------------------------------------------------------
- * A key over a date and its time, twice, then the durations. The keys are
- * the section label's voice; the date takes the row's quiet label. */
-.dz-date-range-picker__side {
-  display: grid;
-  align-content: start;
-  gap: var(--spacing-3);
-  width: var(--date-range-picker-side-width);
-  padding: var(--spacing-2) var(--spacing-3);
+ * A key over a date and its time, twice, then the durations, in one run
+ * under the months that wraps when the months are too few to hold it. The
+ * keys are the section label's voice; the date takes the row's quiet
+ * label. */
+.dz-date-range-picker__ends {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  gap: var(--spacing-2) var(--spacing-5);
+  /* No width of its own: the months decide the column, and this run wraps
+     inside it. A grid track takes its items' max-content, so without this
+     the run would have widened the sheet to hold itself on one line. */
+  width: 0;
+  min-width: 100%;
+  padding: var(--spacing-2) var(--spacing-3) var(--spacing-3);
+  border-block-start: var(--stroke-hairline) solid var(--color-border);
 }
 
 .dz-date-range-picker__end {
@@ -123,8 +134,10 @@
   min-width: 5rem;
 }
 
+/* The durations take a line of their own under the two ends. */
 .dz-date-range-picker__durations {
   display: grid;
+  flex-basis: 100%;
   gap: var(--spacing-1-5);
 }
 

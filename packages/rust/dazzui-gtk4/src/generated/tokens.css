@@ -165,7 +165,6 @@
   --control-tiny-radius: 8px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -912,7 +911,6 @@
   --control-tiny-radius: 9999px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -1659,7 +1657,6 @@
   --control-tiny-radius: 9999px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -2406,7 +2403,6 @@
   --control-tiny-radius: 8px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -3153,7 +3149,6 @@
   --control-tiny-radius: 8px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -3900,7 +3895,6 @@
   --control-tiny-radius: 7px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -4647,7 +4641,6 @@
   --control-tiny-radius: 7px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -5394,7 +5387,6 @@
   --control-tiny-radius: 8px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -6141,7 +6133,6 @@
   --control-tiny-radius: 8px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -6888,7 +6879,6 @@
   --control-tiny-radius: 7px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -7635,7 +7625,6 @@
   --control-tiny-radius: 7px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -8382,7 +8371,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -9129,7 +9117,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -9876,7 +9863,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -10623,7 +10609,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -11370,7 +11355,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -12117,7 +12101,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -12864,7 +12847,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -13611,7 +13593,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -14358,7 +14339,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -15105,7 +15085,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -15852,7 +15831,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -16599,7 +16577,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -17346,7 +17323,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -18093,7 +18069,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -18840,7 +18815,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -19587,7 +19561,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -20334,7 +20307,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -21081,7 +21053,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -21828,7 +21799,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -22575,7 +22545,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -23322,7 +23291,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -24069,7 +24037,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -24816,7 +24783,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -25563,7 +25529,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -26310,7 +26275,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -27057,7 +27021,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -27804,7 +27767,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -28551,7 +28513,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -29298,7 +29259,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -30045,7 +30005,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -30792,7 +30751,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -31539,7 +31497,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -32286,7 +32243,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -33033,7 +32989,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -33780,7 +33735,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -34527,7 +34481,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -35274,7 +35227,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -36021,7 +35973,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -36768,7 +36719,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -37515,7 +37465,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -38262,7 +38211,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -39009,7 +38957,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -39756,7 +39703,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -40503,7 +40449,6 @@
   --control-tiny-radius: 0px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -41250,7 +41195,6 @@
   --control-tiny-radius: 9999px;
   --control-tiny-size: 20px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -41997,7 +41941,6 @@
   --control-tiny-radius: 9999px;
   --control-tiny-size: 20px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -42744,7 +42687,6 @@
   --control-tiny-radius: 6px;
   --control-tiny-size: 16px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -43491,7 +43433,6 @@
   --control-tiny-radius: 6px;
   --control-tiny-size: 16px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -44238,7 +44179,6 @@
   --control-tiny-radius: 4px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -44985,7 +44925,6 @@
   --control-tiny-radius: 4px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -45732,7 +45671,6 @@
   --control-tiny-radius: 9px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -46479,7 +46417,6 @@
   --control-tiny-radius: 9px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -47226,7 +47163,6 @@
   --control-tiny-radius: 9px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -47973,7 +47909,6 @@
   --control-tiny-radius: 9px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -48720,7 +48655,6 @@
   --control-tiny-radius: 9px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -49467,7 +49401,6 @@
   --control-tiny-radius: 9px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -50214,7 +50147,6 @@
   --control-tiny-radius: 5px;
   --control-tiny-size: 22px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -50961,7 +50893,6 @@
   --control-tiny-radius: 5px;
   --control-tiny-size: 22px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -51708,7 +51639,6 @@
   --control-tiny-radius: 9999px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -52455,7 +52385,6 @@
   --control-tiny-radius: 9999px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -53202,7 +53131,6 @@
   --control-tiny-radius: 8px;
   --control-tiny-size: 24px;
   --date-range-picker-presets-width: 120px;
-  --date-range-picker-side-width: 208px;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;

@@ -96,7 +96,7 @@ const story: Story = {
         <DateRangePicker
           months={1}
           presets={[
-            DATE_RANGE_PRESETS[0],
+            ...DATE_RANGE_PRESETS.slice(0, 1),
             {
               label: 'This sprint',
               range: t => ({

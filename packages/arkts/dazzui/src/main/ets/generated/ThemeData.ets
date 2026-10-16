@@ -134,7 +134,6 @@ export const BASE: ThemeData = {
     "control.tiny.radius": 8,
     "control.tiny.size": 24,
     "date-range-picker.presets-width": 120,
-    "date-range-picker.side-width": 208,
     "dialog.width": 440,
     "drawer.size": 352,
     "focus.offset": 0,

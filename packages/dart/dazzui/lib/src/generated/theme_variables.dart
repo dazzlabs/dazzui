@@ -233,7 +233,6 @@ class ThemeVariables {
     this.calendarCellGap = 2,
     this.checkboxRadius = 5,
     this.dateRangePickerPresetsWidth = 120,
-    this.dateRangePickerSideWidth = 208,
     this.dialogWidth = 440,
     this.dialogScrimAlpha = 0.25,
     this.drawerSize = 352,
@@ -785,7 +784,6 @@ class ThemeVariables {
 
   // Date Range Picker
   final double dateRangePickerPresetsWidth;
-  final double dateRangePickerSideWidth;
 
   // Dialog
   final double dialogWidth;
@@ -1027,7 +1025,6 @@ class ThemeVariables {
     double? calendarCellGap,
     double? checkboxRadius,
     double? dateRangePickerPresetsWidth,
-    double? dateRangePickerSideWidth,
     double? dialogWidth,
     double? dialogScrimAlpha,
     double? drawerSize,
@@ -1238,8 +1235,6 @@ class ThemeVariables {
       checkboxRadius: checkboxRadius ?? this.checkboxRadius,
       dateRangePickerPresetsWidth:
           dateRangePickerPresetsWidth ?? this.dateRangePickerPresetsWidth,
-      dateRangePickerSideWidth:
-          dateRangePickerSideWidth ?? this.dateRangePickerSideWidth,
       dialogWidth: dialogWidth ?? this.dialogWidth,
       dialogScrimAlpha: dialogScrimAlpha ?? this.dialogScrimAlpha,
       drawerSize: drawerSize ?? this.drawerSize,

@@ -160,9 +160,9 @@ const clock = (date: Date) =>
  * A span of days and times, chosen in one sheet.
  *
  * The trigger is a field — it wears the select's box — and what it opens
- * is three columns: the presets a calendar reaches for most, two months to
- * pick the span on, and the start and end beside them with their times and
- * a row of durations. Nothing in the sheet reaches the value until Done; an
+ * is a sheet: the presets a calendar reaches for most down one side, two
+ * months to pick the span on, and under them the start and end with their
+ * times and a row of durations. Nothing in the sheet reaches the value until Done; an
  * outside press or Escape puts it back. That is the one way this differs
  * from every other popup here, and it is deliberate: a span is several
  * decisions, and a reader who has made two of them should not lose both to
@@ -377,7 +377,7 @@ export function DateRangePicker({
                 tint={tint}
               />
             </div>
-            <div className="dz-date-range-picker__side">
+            <div className="dz-date-range-picker__ends">
               <div className="dz-date-range-picker__end">
                 <span className="dz-date-range-picker__key">
                   {labels.start}
