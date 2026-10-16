@@ -8,7 +8,9 @@ final class IconSizingTests: XCTestCase {
   func testThemeScaleAndControlProfiles() {
     for name in ThemeName.allCases {
       let vars = name.variables
-      let wide = ["windows11", "ubuntu", "debian", "fedora"].contains {
+      // The desktops whose metrics pick the wider glyph scale, and Spotify,
+      // whose application metrics do the same.
+      let wide = ["windows11", "ubuntu", "debian", "fedora", "spotify"].contains {
         name.rawValue.hasPrefix($0 + "-")
       }
       XCTAssertEqual(vars.iconSmall, wide ? 14 : 12, name.rawValue)

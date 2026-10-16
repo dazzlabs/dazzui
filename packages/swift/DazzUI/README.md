@@ -138,8 +138,10 @@ checkmark would be a different mark at a different weight in the same box.
 | `checkbox.tsx`, `menu.tsx`, `step-list.tsx` | `Checkmark12Filled` |
 | `search-field.tsx`, `toast.tsx` | `Dismiss12Regular` |
 | `search-field.tsx` | `Search16Regular` |
-| `text-field.tsx` | `ChevronDown12Regular` |
+| `text-field.tsx`, `date-range-picker.tsx` | `ChevronDown12Regular` |
 | `shortcut-recorder.tsx` | `DismissCircle12Filled` |
+| `calendar.tsx` | `ChevronLeft12Regular`, `ChevronRight12Regular` |
+| `date-range-picker.tsx` | `Calendar16Regular` — the web names `CalendarLtr16Regular`, which the Swift package does not carry; the two differ only in the dots' direction |
 
 `Icon` takes a `FluentIcon`, and the components that carry one — `IconButton`,
 `NavItem`, `MenuItem` — take one too. It also keeps an `Image` initialiser, so

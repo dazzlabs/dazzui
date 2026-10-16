@@ -298,6 +298,19 @@ private struct FloatingPanelModifier<Panel: View>: ViewModifier {
         .contains(event.locationInWindow)
     }
 
+    /// Whether `window` is a sheet hung off this one — a select's list or a
+    /// menu opened from inside a popover. A press there is inside, not
+    /// outside: the inner sheet's own monitor decides what it does with it.
+    private func withinSheet(_ window: NSWindow?) -> Bool {
+      guard let panel else { return false }
+      var current = window?.parent
+      while let candidate = current {
+        if candidate === panel { return true }
+        current = candidate.parent
+      }
+      return false
+    }
+
     /// Whether a press landed on the anchor — the trigger or the field.
     private func onAnchor(_ event: NSEvent) -> Bool {
       guard let window, event.window === window else { return false }
@@ -321,18 +334,20 @@ private struct FloatingPanelModifier<Panel: View>: ViewModifier {
           // A shortcut still reaches the app's menu, and the sheet's own
           // field still takes its typing; the window behind a modal sheet
           // takes neither.
-          if !self.modal || event.window === panel || event.modifierFlags.contains(.command) {
+          if !self.modal || event.window === panel || self.withinSheet(event.window)
+            || event.modifierFlags.contains(.command)
+          {
             return event
           }
           return nil
         case .scrollWheel:
-          if event.window === panel { return event }
+          if event.window === panel || self.withinSheet(event.window) { return event }
           guard !self.modal else { return nil }
           // What the anchor sits in may have moved under it.
           DispatchQueue.main.async { [weak self] in self?.place() }
           return event
         default:
-          if self.onSheet(event) { return event }
+          if self.onSheet(event) || self.withinSheet(event.window) { return event }
           if !self.modal && self.onAnchor(event) { return event }
           self.dismiss()
           return self.modal ? nil : event
@@ -352,7 +367,7 @@ private struct FloatingPanelModifier<Panel: View>: ViewModifier {
           DispatchQueue.main.async { [weak self] in
             guard let self, self.panel != nil else { return }
             let key = NSApp.keyWindow
-            if key !== parent && key !== self.panel { self.dismiss() }
+            if key !== parent && key !== self.panel && !self.withinSheet(key) { self.dismiss() }
           }
         })
       observers.append(
