@@ -18,6 +18,8 @@ members = ["example"]
 
 [dependencies]
 gpui = "0.2.2"
+# A calendar's value is a date, and `chrono` is the date a Rust program has.
+chrono = "0.4"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 core-text = "21"

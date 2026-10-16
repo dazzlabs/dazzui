@@ -11,6 +11,7 @@ use crate::lib::scene::Node;
 use crate::lib::stage;
 
 mod button;
+mod calendar;
 mod choice;
 mod display;
 mod input;
@@ -28,6 +29,7 @@ fn registry() -> &'static HashMap<&'static str, Build> {
         map.insert("Frame", stage::frame);
         map.insert("Text", stage::text);
         button::register(&mut map);
+        calendar::register(&mut map);
         display::register(&mut map);
         choice::register(&mut map);
         input::register(&mut map);

@@ -10,15 +10,16 @@
 use std::rc::Rc;
 
 use gpui::{
-    AnyElement, App, Bounds, Div, ElementId, Entity, FocusHandle, InteractiveElement, IntoElement,
-    KeyDownEvent, MouseButton, ParentElement, RenderOnce, SharedString, Stateful,
-    StatefulInteractiveElement, Styled, Window, div, prelude::*, px, size,
+    AnyElement, App, Bounds, ElementId, Entity, FocusHandle, InteractiveElement, IntoElement,
+    KeyDownEvent, MouseButton, ParentElement, RenderOnce, SharedString, StatefulInteractiveElement,
+    Styled, Window, div, prelude::*, px, size,
 };
 
 use crate::components::popup::{
     Align, Anchor, OnOpenChange, Placement, PopupRow, PopupState, Press, Side, TriggerFn,
     dismissable, measured, open_state, part_id, positioned, sheet, toggle_press,
 };
+use crate::foundation::scope::Provide;
 use crate::foundation::{Tint, focus_visible, pointer_down, with_outline};
 use crate::theme::ActiveTheme;
 
@@ -88,7 +89,7 @@ fn menu_sheet(
     on_open_change: Option<OnOpenChange>,
     extra_key: Option<ExtraKey>,
     cx: &App,
-) -> Stateful<Div> {
+) -> Provide {
     let t = cx.theme();
     let highlighted = state.read(cx).highlighted;
     let checked = items.iter().position(|item| item.checked == Some(true));
