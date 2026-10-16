@@ -114,6 +114,46 @@ let components: [String: ComponentBuilder] = [
       ) { InlineKids(node: ends.label) }
     )
   },
+  "Calendar": { n in
+    let tint = n.option("tint", Tint.primary)
+    let size = n.option("size", CalendarSize.medium)
+    let months = Int(n.number("months") ?? 1)
+    let navigation = !n.has("navigation") || n.flag("navigation")
+    if n.string("mode") == "range" {
+      return bound(
+        n, onChange: "onValueChange", fallback: "defaultValue", initial: DateRange(),
+        read: dateRange, write: writeDateRange
+      ) { range in
+        DazzUI.Calendar(
+          range: range,
+          size: size,
+          months: months,
+          min: date(n["min"]),
+          max: date(n["max"]),
+          weekStartsOn: weekStartsOn(n),
+          today: date(n["today"]),
+          navigation: navigation,
+          tint: tint
+        )
+      }
+    }
+    return bound(
+      n, onChange: "onValueChange", fallback: "defaultValue", initial: Date?.none,
+      read: date, write: { $0.map(writeDate) ?? .null }
+    ) { selection in
+      DazzUI.Calendar(
+        selection: selection,
+        size: size,
+        months: months,
+        min: date(n["min"]),
+        max: date(n["max"]),
+        weekStartsOn: weekStartsOn(n),
+        today: date(n["today"]),
+        navigation: navigation,
+        tint: tint
+      )
+    }
+  },
   "Callout": { n in
     AnyView(
       Callout(
@@ -173,6 +213,29 @@ let components: [String: ComponentBuilder] = [
   "Combobox": { n in AnyView(ComboboxNode(node: n)) },
   "ContextMenu": { n in
     AnyView(ContextMenu(items: menuItems(n, n["items"])) { n.kids })
+  },
+  "DateRangePicker": { n in
+    bound(
+      n, onChange: "onValueChange", fallback: "defaultValue", initial: DateRangeValue?.none,
+      read: dateRangeValue, write: { $0.map(writeDateRangeValue) ?? .null }
+    ) { value in
+      DateRangePicker(
+        value: value,
+        presets: n.has("presets") ? presets(n["presets"]) : dateRangePresets,
+        durations: n.has("durations")
+          ? (n["durations"].array ?? []).map {
+            DateRangeDuration(label: $0["label"]?.text ?? "", minutes: Int($0["minutes"]?.number ?? 60))
+          } : dateRangeDurations,
+        timeStep: Int(n.number("timeStep") ?? 15),
+        months: Int(n.number("months") ?? 1),
+        weekStartsOn: weekStartsOn(n),
+        today: date(n["today"]),
+        size: n.option("size", TextFieldSize.medium),
+        state: n.option("state", TextFieldState.default),
+        tint: n.option("tint", Tint.primary),
+        enabled: !n.flag("disabled")
+      )
+    }
   },
   "Dialog": { n in AnyView(DialogNode(node: n)) },
   "DialogBody": { n in AnyView(DialogBody { n.kids }) },
@@ -639,6 +702,69 @@ let components: [String: ComponentBuilder] = [
 ]
 
 /* Helpers ---------------------------------------------------------------- */
+
+/* Dates ----------------------------------------------------------------------
+ * A story writes a date as local `YYYY-MM-DDTHH:MM`, the way codegen writes
+ * `new Date(2026, 9, 16, 14, 30)`, and a slot a calendar writes back takes
+ * the same text, so a round trip through a scene's state reads as it was
+ * written. */
+
+private func storyDateFormatter() -> DateFormatter {
+  let formatter = DateFormatter()
+  formatter.locale = Locale(identifier: "en_US_POSIX")
+  formatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
+  return formatter
+}
+
+func date(_ value: Value?) -> Date? {
+  value?.string.flatMap { storyDateFormatter().date(from: $0) }
+}
+
+func writeDate(_ date: Date) -> Value {
+  .string(storyDateFormatter().string(from: date))
+}
+
+func dateRange(_ value: Value) -> DateRange {
+  DateRange(start: date(value["start"]), end: date(value["end"]))
+}
+
+func writeDateRange(_ range: DateRange) -> Value {
+  .object([
+    "start": range.start.map(writeDate) ?? .null,
+    "end": range.end.map(writeDate) ?? .null,
+  ])
+}
+
+func dateRangeValue(_ value: Value) -> DateRangeValue? {
+  guard let start = date(value["start"]), let end = date(value["end"]) else { return nil }
+  return DateRangeValue(start: start, end: end, allDay: value["allDay"]?.truthy ?? false)
+}
+
+func writeDateRangeValue(_ value: DateRangeValue) -> Value {
+  .object([
+    "start": writeDate(value.start),
+    "end": writeDate(value.end),
+    "allDay": .bool(value.allDay),
+  ])
+}
+
+/// React counts the week from Sunday as `0`; Foundation from Sunday as `1`.
+@MainActor
+func weekStartsOn(_ n: Node) -> Int {
+  Int(n.number("weekStartsOn") ?? 1) + 1
+}
+
+/// A preset is data here: a label and two whole-day offsets from today.
+func presets(_ value: Value) -> [DateRangePreset] {
+  (value.array ?? []).map { preset in
+    let days = preset["days"]?.array ?? []
+    let from = Int(days.first?.number ?? 0)
+    let to = Int(days.dropFirst().first?.number ?? Double(from))
+    return DateRangePreset(label: preset["label"]?.text ?? "") { today, math in
+      DateRange(start: math.addDays(today, from), end: math.addDays(today, to))
+    }
+  }
+}
 
 func strings(_ value: Value) -> [String] {
   (value.array ?? []).map(\.text)
