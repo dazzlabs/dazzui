@@ -56,6 +56,59 @@ final Map<String, ComponentBuilder> components = {
     child: Text(n.text),
   ),
   'Button': _button,
+  'Calendar': (n) {
+    final CalendarTint tint = n.option(
+      CalendarTint.values,
+      'tint',
+      CalendarTint.primary,
+    );
+    final int months = (n.number('months') ?? 1).toInt();
+    final bool navigation = !n.has('navigation') || n.flag('navigation');
+    if (n.string('mode') == 'range') {
+      return bound<DateRange>(
+        n,
+        onChange: 'onValueChange',
+        fallback: 'defaultValue',
+        initial: const DateRange.empty(),
+        read: _dateRange,
+        write: _writeDateRange,
+        builder: (value, set) => Calendar.range(
+          range: value,
+          onRangeChanged: set,
+          size: _size(n, 'medium'),
+          months: months,
+          min: _date(n['min']),
+          max: _date(n['max']),
+          weekStartsOn: _weekStartsOn(n),
+          today: _date(n['today']),
+          navigation: navigation,
+          tint: tint,
+          semanticsLabel: n.string('aria-label'),
+        ),
+      );
+    }
+    return bound<DateTime?>(
+      n,
+      onChange: 'onValueChange',
+      fallback: 'defaultValue',
+      initial: null,
+      read: _date,
+      write: (day) => day == null ? null : _writeDate(day),
+      builder: (value, set) => Calendar(
+        value: value,
+        onChanged: set,
+        size: _size(n, 'medium'),
+        months: months,
+        min: _date(n['min']),
+        max: _date(n['max']),
+        weekStartsOn: _weekStartsOn(n),
+        today: _date(n['today']),
+        navigation: navigation,
+        tint: tint,
+        semanticsLabel: n.string('aria-label'),
+      ),
+    );
+  },
   'Callout': (n) => Callout(
     tint: n.option(CalloutTint.values, 'tint', CalloutTint.neutral),
     size: _size(n, 'medium'),
@@ -107,6 +160,47 @@ final Map<String, ComponentBuilder> components = {
   'Combobox': _combobox,
   'ContextMenu': (n) =>
       ContextMenu(items: _menuItems(n, n['items']), child: _one(n)),
+  'DateRangePicker': (n) => bound<DateRangeValue?>(
+    n,
+    onChange: 'onValueChange',
+    fallback: 'defaultValue',
+    initial: null,
+    read: _dateRangeValue,
+    write: (value) => value == null
+        ? null
+        : {
+            'start': _writeDate(value.start),
+            'end': _writeDate(value.end),
+            'allDay': value.allDay,
+          },
+    builder: (value, set) => DateRangePicker(
+      value: value,
+      onChanged: set,
+      presets: n.has('presets') ? _presets(n['presets']) : dateRangePresets,
+      durations: n.has('durations')
+          ? [
+              for (final item in n['durations'] as List<Object?>)
+                DateRangeDuration(
+                  label: '${(item as Map)['label']}',
+                  minutes: (item['minutes'] as num).toInt(),
+                ),
+            ]
+          : dateRangeDurations,
+      timeStep: (n.number('timeStep') ?? 15).toInt(),
+      months: (n.number('months') ?? 1).toInt(),
+      weekStartsOn: _weekStartsOn(n),
+      today: _date(n['today']),
+      size: _size(n, 'medium'),
+      state: _state(n),
+      tint: n.option(
+        DateRangePickerTint.values,
+        'tint',
+        DateRangePickerTint.primary,
+      ),
+      enabled: !n.flag('disabled'),
+      semanticsLabel: n.string('aria-label'),
+    ),
+  ),
   'Dialog': _dialog,
   'DialogBody': (n) => DialogBody(children: n.kids),
   'DialogClose': _close,
@@ -386,10 +480,8 @@ final Map<String, ComponentBuilder> components = {
       ),
     );
   },
-  'SidebarGroupContent': (n) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: n.kids,
-  ),
+  'SidebarGroupContent': (n) =>
+      Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: n.kids),
   'SidebarGroupLabel': (n) {
     if (!_SidebarColumn.of(n.context).showsLabels) {
       return const SizedBox.shrink();
@@ -652,6 +744,57 @@ TextFieldState _state(Node n) =>
 
 List<String> _strings(Object? value) => [
   for (final item in (value as List<Object?>?) ?? const []) '$item',
+];
+
+/* Dates --------------------------------------------------------------------
+ * A story writes a date as local `YYYY-MM-DDTHH:MM`, the way codegen writes
+ * `new Date(2026, 9, 16, 14, 30)`, and a slot a calendar writes back takes
+ * the same text, so a round trip through a scene's state reads as it was
+ * written. */
+
+DateTime? _date(Object? raw) => raw is String ? DateTime.parse(raw) : null;
+
+String _two(int n) => n.toString().padLeft(2, '0');
+
+String _writeDate(DateTime date) =>
+    '${date.year.toString().padLeft(4, '0')}-${_two(date.month)}-'
+    '${_two(date.day)}T${_two(date.hour)}:${_two(date.minute)}';
+
+DateRange _dateRange(Object? raw) => raw is Map
+    ? DateRange(start: _date(raw['start']), end: _date(raw['end']))
+    : const DateRange.empty();
+
+Map<String, Object?> _writeDateRange(DateRange range) => {
+  'start': range.start == null ? null : _writeDate(range.start!),
+  'end': range.end == null ? null : _writeDate(range.end!),
+};
+
+DateRangeValue? _dateRangeValue(Object? raw) {
+  if (raw is! Map) return null;
+  final DateTime? start = _date(raw['start']);
+  final DateTime? end = _date(raw['end']);
+  if (start == null || end == null) return null;
+  return DateRangeValue(start: start, end: end, allDay: truthy(raw['allDay']));
+}
+
+/// React counts the week from Sunday as `0`; Dart from Monday as `1`.
+int _weekStartsOn(Node n) {
+  final int day = (n.number('weekStartsOn') ?? DateTime.monday).toInt();
+  return day == 0 ? DateTime.sunday : day;
+}
+
+/// A preset is data here: a label and two whole-day offsets from today.
+List<DateRangePreset> _presets(Object? raw) => [
+  for (final item in raw as List<Object?>)
+    DateRangePreset(
+      label: '${(item as Map)['label']}',
+      range: (today) {
+        final List<Object?> days = (item['days'] as List<Object?>?) ?? const [];
+        final int from = days.isEmpty ? 0 : (days[0] as num).toInt();
+        final int to = days.length < 2 ? from : (days[1] as num).toInt();
+        return DateRange(start: addDays(today, from), end: addDays(today, to));
+      },
+    ),
 ];
 
 /// The one child a component wraps.
