@@ -2,15 +2,12 @@ import { Popover as Base } from '@base-ui/react/popover'
 import {
   CalendarLtr16Regular,
   ChevronDown12Regular,
-  ChevronLeft12Regular,
-  ChevronRight12Regular,
 } from '@fluentui/react-icons'
 import { useMemo, useState } from 'react'
 
 import { cx } from '../lib/cx'
 import {
   addDays,
-  addMonths,
   compareDay,
   minutesOfDay,
   sameDay,
@@ -22,7 +19,6 @@ import {
 import type { Tint } from '../lib/tint'
 import { Button } from './button'
 import { Calendar, type DateRange } from './calendar'
-import { IconButton } from './icon-button'
 import { Menu } from './menu'
 import { Select } from './text-field'
 import type { TextFieldSize, TextFieldState } from './text-field'
@@ -164,10 +160,10 @@ const clock = (date: Date) =>
  * A span of days and times, chosen in one sheet.
  *
  * The trigger is a field — it wears the select's box — and what it opens
- * is a sheet: a bar with the chevrons that move the months and a menu of
- * the spans a calendar reaches for most, two months to pick the span on,
- * and under them the start and end with their times and a row of
- * durations. Nothing in the sheet reaches the value until Done; an
+ * is a sheet: two months to pick the span on, and beside them a column
+ * that opens with a menu of the spans a calendar reaches for most, then
+ * the start and end with their times and a row of durations. Nothing in
+ * the sheet reaches the value until Done; an
  * outside press or Escape puts it back. That is the one way this differs
  * from every other popup here, and it is deliberate: a span is several
  * decisions, and a reader who has made two of them should not lose both to
@@ -350,36 +346,6 @@ export function DateRangePicker({
             data-months={months}
             className="dz-popup dz-date-range-picker"
           >
-            <div className="dz-date-range-picker__head">
-              <span className="dz-date-range-picker__nav">
-                <IconButton
-                  label="Previous month"
-                  onClick={() => setMonth(addMonths(month, -1))}
-                >
-                  <ChevronLeft12Regular />
-                </IconButton>
-                <IconButton
-                  label="Next month"
-                  onClick={() => setMonth(addMonths(month, 1))}
-                >
-                  <ChevronRight12Regular />
-                </IconButton>
-              </span>
-              <Menu
-                tint={tint}
-                trigger={
-                  <Button size="tiny" variant="plain" tint="neutral">
-                    {labels.presets}
-                    <ChevronDown12Regular />
-                  </Button>
-                }
-                items={presets.map(preset => ({
-                  label: preset.label,
-                  checked: presetOn(preset),
-                  onSelect: () => applyPreset(preset),
-                }))}
-              />
-            </div>
             <div className="dz-date-range-picker__months">
               <Calendar
                 mode="range"
@@ -387,7 +353,6 @@ export function DateRangePicker({
                 months={months}
                 month={month}
                 onMonthChange={setMonth}
-                navigation={false}
                 value={days}
                 onValueChange={setDays}
                 weekStartsOn={weekStartsOn}
@@ -396,7 +361,23 @@ export function DateRangePicker({
                 tint={tint}
               />
             </div>
-            <div className="dz-date-range-picker__ends">
+            <div className="dz-date-range-picker__side">
+              <div className="dz-date-range-picker__quick">
+                <Menu
+                  tint={tint}
+                  trigger={
+                    <Button size="tiny" variant="plain" tint="neutral">
+                      {labels.presets}
+                      <ChevronDown12Regular />
+                    </Button>
+                  }
+                  items={presets.map(preset => ({
+                    label: preset.label,
+                    checked: presetOn(preset),
+                    onSelect: () => applyPreset(preset),
+                  }))}
+                />
+              </div>
               <div className="dz-date-range-picker__end">
                 <span className="dz-date-range-picker__key">
                   {labels.start}

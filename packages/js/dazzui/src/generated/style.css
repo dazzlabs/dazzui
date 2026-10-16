@@ -1060,6 +1060,7 @@
   --control-tiny-padding-inline: var(--spacing-2-5);
   --control-tiny-radius: var(--radius-small);
   --control-tiny-size: var(--base-control-height-tiny);
+  --date-range-picker-side-width: 12rem;
   --dialog-scrim-color: var(--color-content);
   --dialog-width: 27.5rem;
   --drawer-size: 22rem;

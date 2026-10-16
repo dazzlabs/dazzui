@@ -1,10 +1,11 @@
 /*
- * The sheet is the shared popup (popup.css) holding a bar, the months, the
- * start and end under them and a footer, hairlined off each other, so it
- * drops its own padding and lets the parts pad themselves — a calendar
- * wants two steps, the footer the dialog's run. The bar carries the two
- * chevrons that move the months and the quick-pick menu, so each month
- * shows its name alone and the sheet is no wider than the months.
+ * The sheet is the shared popup (popup.css) holding the months, a column
+ * beside them and a footer, hairlined off each other, so it drops its own
+ * padding and lets the parts pad themselves — a calendar wants two steps,
+ * the footer the dialog's run. The column opens with the quick-pick menu
+ * and holds the start, the end and the durations under it; it is capped
+ * at `date-range-picker.side-width` rather than sized to its text, so a
+ * long date never moves the months between one open and the next.
  *
  * The trigger is a select: it wears that box (text-field.css) and adds only
  * the calendar glyph at its leading edge.
@@ -33,27 +34,11 @@
 
 .dz-date-range-picker {
   display: grid;
+  grid-template-columns: auto auto;
   min-width: 0;
   padding: 0;
   overflow: visible;
   font-variant-numeric: tabular-nums;
-}
-
-/* The bar ---------------------------------------------------------------------
- * The chevrons at the leading edge, as a toolbar sets them, and the menu's
- * name at the trailing one. It sits on the months' own inset so the
- * chevrons line up over the first month's edge. */
-.dz-date-range-picker__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-2);
-  padding: var(--spacing-2) var(--spacing-2) 0;
-}
-
-.dz-date-range-picker__nav {
-  display: flex;
-  gap: var(--spacing-0-5);
 }
 
 /* Months -------------------------------------------------------------------- */
@@ -61,23 +46,25 @@
   padding: var(--spacing-1) var(--spacing-2) var(--spacing-2);
 }
 
-/* Start and end ---------------------------------------------------------------
- * A key over a date and its time, twice, then the durations, in one run
- * under the months that wraps when the months are too few to hold it. The
- * keys are the section label's voice; the date takes the row's quiet
- * label. */
-.dz-date-range-picker__ends {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: start;
-  gap: var(--spacing-2) var(--spacing-5);
-  /* No width of its own: the months decide the column, and this run wraps
-     inside it. A grid track takes its items' max-content, so without this
-     the run would have widened the sheet to hold itself on one line. */
-  width: 0;
-  min-width: 100%;
+/* The column ----------------------------------------------------------------
+ * The quick-pick menu's name on the first line, set flush with the keys
+ * under it, then a key over a date and its time, twice, then the
+ * durations. The keys are the section label's voice; the date takes the
+ * row's quiet label. */
+.dz-date-range-picker__side {
+  display: grid;
+  align-content: start;
+  gap: var(--spacing-3);
+  width: var(--date-range-picker-side-width);
   padding: var(--spacing-2) var(--spacing-3) var(--spacing-3);
-  border-block-start: var(--stroke-hairline) solid var(--color-border);
+  border-inline-start: var(--stroke-hairline) solid var(--color-border);
+}
+
+/* A plain button pads its label by the profile's inline step; pulling the
+   row back by it sets the name on the column's own edge. */
+.dz-date-range-picker__quick {
+  display: flex;
+  margin-inline-start: calc(-1 * var(--control-tiny-padding-inline));
 }
 
 .dz-date-range-picker__end {
@@ -110,10 +97,8 @@
   min-width: 5rem;
 }
 
-/* The durations take a line of their own under the two ends. */
 .dz-date-range-picker__durations {
   display: grid;
-  flex-basis: 100%;
   gap: var(--spacing-1-5);
 }
 

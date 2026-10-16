@@ -165,6 +165,7 @@ export default defineConfig({
     './tokens/global/typography.yaml',
     './tokens/component/calendar.yaml',
     './tokens/component/checkbox.yaml',
+    './tokens/component/date-range-picker.yaml',
     './tokens/component/dialog.yaml',
     './tokens/component/drawer.yaml',
     './tokens/component/icon-button.yaml',

@@ -1,0 +1,8 @@
+date-range-picker:
+  # The column beside the months — the quick-pick menu, the start, the end
+  # and the durations — is capped rather than sized to its text, so a long
+  # date or preset name does not move the months between one open and the
+  # next. Twelve rems holds a date and its time on one line.
+  side-width:
+    $type: dimension
+    $value: 12rem

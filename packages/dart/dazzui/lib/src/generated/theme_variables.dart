@@ -232,6 +232,7 @@ class ThemeVariables {
     this.controlLargeSize = 32,
     this.calendarCellGap = 2,
     this.checkboxRadius = 5,
+    this.dateRangePickerSideWidth = 192,
     this.dialogWidth = 440,
     this.dialogScrimAlpha = 0.25,
     this.drawerSize = 352,
@@ -781,6 +782,9 @@ class ThemeVariables {
   double get checkboxMediumBox => spacing4;
   double get checkboxLargeBox => spacing5;
 
+  // Date Range Picker
+  final double dateRangePickerSideWidth;
+
   // Dialog
   final double dialogWidth;
   Color get dialogScrimColor => colorContent;
@@ -1020,6 +1024,7 @@ class ThemeVariables {
     double? controlLargeSize,
     double? calendarCellGap,
     double? checkboxRadius,
+    double? dateRangePickerSideWidth,
     double? dialogWidth,
     double? dialogScrimAlpha,
     double? drawerSize,
@@ -1228,6 +1233,8 @@ class ThemeVariables {
       controlLargeSize: controlLargeSize ?? this.controlLargeSize,
       calendarCellGap: calendarCellGap ?? this.calendarCellGap,
       checkboxRadius: checkboxRadius ?? this.checkboxRadius,
+      dateRangePickerSideWidth:
+          dateRangePickerSideWidth ?? this.dateRangePickerSideWidth,
       dialogWidth: dialogWidth ?? this.dialogWidth,
       dialogScrimAlpha: dialogScrimAlpha ?? this.dialogScrimAlpha,
       drawerSize: drawerSize ?? this.drawerSize,
