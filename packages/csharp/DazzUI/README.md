@@ -51,7 +51,8 @@ machine over SSH and copies back the readings of every scene in
 - Fields and selection: TextField, SearchField, FieldValue, Select,
   Autocomplete, Combobox, NumberField, OtpField, Form, FormField, Fieldset,
   Checkbox, CheckboxGroup, Radio, RadioGroup, Switch, OptionCard,
-  SegmentedControl, PillTabs, Tag and ShortcutRecorder.
+  SegmentedControl, PillTabs, Tag, ShortcutRecorder, Calendar and
+  DateRangePicker.
 - Feedback: Progress, Meter, Slider, RangeSlider, Spinner, Skeleton,
   SkeletonText, Step, StepList, Toast and ToastViewport.
 - Layout and navigation: ActionBar, Accordion, Collapsible, Preferences,
@@ -78,7 +79,9 @@ Splitter implement their extra drag and keyboard behavior with native Thumb
 controls and range-value automation peers. Icons are the Fluent System Icons
 React draws, by name, from [FluentIcons.WinUI](https://github.com/davidxuang/FluentIcons):
 `new Icon { Glyph = FluentIcons.Common.Icon.Settings }`, as SwiftUI names them
-from its FluentIcons package.
+from its FluentIcons package. The one glyph the package spells differently is
+the picker's: the web draws `CalendarLtr16Regular`, which this set carries
+only as `Calendar`; the two differ in the dots' direction alone.
 
 ## Consume and theme
 
