@@ -23,6 +23,20 @@ import { checkMetrics, expandThemes } from './themes.mjs'
  */
 const TARGETS = [
   {
+    package: 'dazzui-mobile (HarmonyOS)',
+    dir: path.join(
+      '..',
+      'packages',
+      'arkts',
+      'dazzui-mobile',
+      'src',
+      'main',
+      'ets',
+      'generated'
+    ),
+    files: ['harmony-mobile/DazzThemes.ets'],
+  },
+  {
     package: 'dazzui (HarmonyOS)',
     dir: path.join(
       '..',

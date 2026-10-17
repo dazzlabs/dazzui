@@ -19,6 +19,7 @@ published. Each package carries its own playground in `example/`.
 | `packages/swift/DazzMobileUI` | `DazzMobileUI`                      | iOS: system SwiftUI controls with ds colours.                                                               |
 | `packages/csharp/DazzUI`      | `DazzUI`                            | The WinUI 3 implementation. See its [README](packages/csharp/DazzUI/README.md).                              |
 | `packages/kotlin/dazzui-mobile` | `dazzui-mobile`                   | Android: stock Compose Material 3 with ds colours. See its [README](packages/kotlin/dazzui-mobile/README.md). |
+| `packages/arkts/dazzui-mobile` | `@dazzlabs/dazzui-mobile` | HarmonyOS mobile: native ArkUI controls with ds colours. See its [README](packages/arkts/dazzui-mobile/README.md). |
 | `packages/rust/dazzui`        | `dazzui`                            | The GPUI implementation. See its [README](packages/rust/dazzui/README.md).                                   |
 | `tools/codegen`               | `@dazzlabs/dazzui-codegen`          | Generates every playground's stories from the React declarations.                                           |
 | `tools/conformance`           | `@dazzlabs/dazzui-conformance`      | The conformance viewer: how closely each implementation draws what React draws.                             |
@@ -95,6 +96,16 @@ workspace. Open its `example/` in DevEco Studio with HarmonyOS SDK 6.0.0
 `pnpm harmony:har` builds the library, and `pnpm harmony:test` checks the
 generators and non-UI runtime logic. The initial port's scene coverage and
 native compilation/conformance limitations are documented in its README.
+
+## HarmonyOS mobile
+
+[`packages/arkts/dazzui-mobile`](packages/arkts/dazzui-mobile/README.md) supplies
+color-only `DazzMobileTheme` scopes for native ArkUI controls on phones and
+tablets. All paired ds families support light, dark and system appearance.
+`pnpm harmony:mobile` builds, installs and opens the mobile gallery;
+`pnpm harmony:mobile:har` builds the standalone HAR. Use
+`pnpm harmony:mobile:test` for generator/runtime checks and
+`pnpm harmony:mobile:test:device` for the installed gallery's native tests.
 
 ## License
 

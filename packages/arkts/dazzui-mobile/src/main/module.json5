@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "dazzui_mobile",
+    "type": "har",
+    "deviceTypes": [
+      "phone", "tablet"
+    ],
+    "description": "Native mobile DazzUI"
+  }
+}

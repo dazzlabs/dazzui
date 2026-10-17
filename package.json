@@ -35,7 +35,13 @@
     "harmony:har": "node packages/arkts/dazzui/scripts/hvigor.mjs har",
     "harmony:test": "node --test ds/plugins/harmony.test.mjs tools/codegen/tests/harmony.test.mjs packages/arkts/dazzui/tests/*.test.mjs",
     "harmony:conformance": "node packages/arkts/dazzui/scripts/conformance.mjs",
-    "harmony": "node packages/arkts/dazzui/scripts/run.mjs"
+    "harmony": "node packages/arkts/dazzui/scripts/run.mjs",
+    "harmony:mobile:setup": "node packages/arkts/dazzui-mobile/scripts/hvigor.mjs install",
+    "harmony:mobile:build": "node packages/arkts/dazzui-mobile/scripts/hvigor.mjs hap",
+    "harmony:mobile:har": "node packages/arkts/dazzui-mobile/scripts/hvigor.mjs har",
+    "harmony:mobile": "node packages/arkts/dazzui-mobile/scripts/run.mjs",
+    "harmony:mobile:test": "node --test ds/plugins/harmony-mobile.test.mjs packages/arkts/dazzui-mobile/tests/*.test.mjs",
+    "harmony:mobile:test:device": "node packages/arkts/dazzui-mobile/scripts/test-device.mjs"
   },
   "devDependencies": {
     "oxfmt": "^0.16.0",

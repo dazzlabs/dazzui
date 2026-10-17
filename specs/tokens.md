@@ -177,3 +177,12 @@ Studio Light snapshot plus per-theme differences carries every semantic
 metric, type style, shadow and recipe. `DazzTokens` copies those maps per scope
 and resolves recipe shades against the selected tint at runtime, multiplying
 the source alpha rather than replacing it. It does not import ds at runtime.
+
+## HarmonyOS mobile
+
+`ds/plugins/harmony-mobile.mjs` uses the shared resolved graph and paired-family
+filter to generate `packages/arkts/dazzui-mobile/src/main/ets/generated/DazzThemes.ets`.
+It maps only colors to ArkUI `CustomColors`, emitted as ARGB with recipe alpha
+preserved. `dazzTheme` returns a fresh light/dark `CustomTheme`; no platform
+package is a runtime dependency. The mobile HAR does not import desktop
+metrics, typography, shapes or motion. Native components own those decisions.

@@ -155,10 +155,17 @@ when a themed length aliases a themed token; such a role is stated against
 `base` with a mode per family, as `control.container.radius` and
 `control.field.radius` are.
 
+The HarmonyOS mobile HAR also carries only these paired families. Its
+`DazzMobileTheme` installs ArkUI `WithTheme` colors and follows system appearance
+unless a local override is supplied. It observes configuration changes and
+resolves the effective palette for both native controls and theme callbacks;
+it never changes the host's color-mode policy. Nested scopes remain independent.
+Typography, geometry, state treatment and motion remain native ArkUI.
+
 The mobile packages carry only themes that come in `-light`/`-dark` pairs —
 they hand a host a family and let the OS pick its half — which every theme
 now does, so the desktops and Omarchy reach them as families. The React
-mobile package is the third of them and carries a theme the web's way:
+mobile package carries a theme the web's way:
 `plugins/mobile-css.mjs` writes each family's two halves as
 `[data-family]` blocks, the dark one both under `[data-appearance='dark']`
 and under a `prefers-color-scheme: dark` media rule fenced to

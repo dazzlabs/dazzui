@@ -92,3 +92,14 @@ the native interpreter uses typed records instead of reflection. Overview
 uses previews; document pages use examples and notes. `example/coverage.json`
 records unsupported components, props and values. Any gap replaces the whole
 scene with that list, and the initial port stays outside the full-support gate.
+
+## HarmonyOS mobile
+
+`packages/arkts/dazzui-mobile/example` is a Stage phone/tablet gallery built
+directly from native ArkUI controls, with family and appearance selectors.
+Its Actions, Inputs and Explore tabs use mobile layouts and native behavior.
+It is authored independently of desktop stories and does not change the frozen
+iOS/Android outputs. Its test-only Verification page checks all generated
+families in both modes, system appearance changes and nested scopes through
+native theme callbacks; `scripts/test-device.mjs` also drives the live gallery
+and asserts the OS accessibility tree. Desktop pixel conformance does not apply.

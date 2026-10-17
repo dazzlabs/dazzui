@@ -195,6 +195,23 @@ parts.
   on an installed, signed gallery. See the package README for SDK and device
   verification requirements; Node tests do not compile ArkUI.
 
+- `packages/arkts/dazzui-mobile` (`@dazzlabs/dazzui-mobile`) — native
+  HarmonyOS mobile, outside pnpm. It supplies only ds colors to stock ArkUI
+  controls through `DazzMobileTheme` / `WithTheme`; do not port desktop
+  geometry, draw controls or add per-control wrappers. API 20 is the minimum.
+  `ds/plugins/harmony-mobile.mjs` generates committed
+  `src/main/ets/generated/DazzThemes.ets` with paired theme families. Regenerate
+  with `pnpm tokens`. The theme scope resolves appearance from configuration
+  updates without changing the host's color policy, and unregisters its
+  environment callback when removed. This also keeps `onWillApplyTheme` on
+  the effective colors: the API 26 emulator otherwise reports light colors
+  even while native controls use `darkColors`. `example/` is a phone/tablet
+  gallery authored with system components, separate from desktop codegen and
+  the frozen iOS/Android scenes. `pnpm harmony:mobile` builds/installs/starts;
+  `pnpm harmony:mobile:har` builds the HAR; `pnpm harmony:mobile:test` checks
+  generators/non-UI runtime; `pnpm harmony:mobile:test:device` exercises the
+  installed gallery and actual theme callbacks. See the package README.
+
 ## Commands
 
 Run these from the repository root.

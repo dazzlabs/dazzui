@@ -1,0 +1,8 @@
+{
+  "modelVersion": "6.0.0",
+  "name": "entry",
+  "version": "0.0.0",
+  "dependencies": {
+    "@dazzlabs/dazzui-mobile": "file:../.."
+  }
+}

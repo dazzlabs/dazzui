@@ -1,0 +1,9 @@
+{
+  "modelVersion": "6.0.0",
+  "name": "@dazzlabs/dazzui-mobile",
+  "version": "0.0.0",
+  "description": "HarmonyOS native mobile theme",
+  "main": "Index.ets",
+  "license": "MIT",
+  "dependencies": {}
+}

@@ -1,0 +1,9 @@
+oh_modules/
+.hvigor/
+build/
+local.properties
+*.har
+*.hap
+example/hvigor/hvigor-wrapper.js
+example/hvigorw
+example/hvigorw.bat
