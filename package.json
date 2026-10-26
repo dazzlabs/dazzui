@@ -21,6 +21,7 @@
     "format:check": "oxfmt --check ./",
     "example": "pnpm --filter @dazzlabs/dazzui-example dev",
     "example:build": "pnpm --filter @dazzlabs/dazzui-example build",
+    "example:deploy": "pnpm --filter @dazzlabs/dazzui-example run deploy",
     "mobile": "pnpm --filter @dazzlabs/dazzui-mobile-example dev",
     "mobile:build": "pnpm --filter @dazzlabs/dazzui-mobile-example build",
     "codegen": "pnpm --filter @dazzlabs/dazzui-codegen generate",

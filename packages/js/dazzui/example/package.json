@@ -10,7 +10,8 @@
     "build": "pnpm -w run packages && vite build",
     "typecheck": "tsc --noEmit",
     "conformance": "node scripts/conformance.mjs",
-    "conformance:test": "node --test scripts/conformance.test.mjs"
+    "conformance:test": "node --test scripts/conformance.test.mjs",
+    "deploy": "pnpm run build && wrangler deploy"
   },
   "dependencies": {
     "@dazzlabs/dazzui": "workspace:*",
@@ -24,6 +25,7 @@
     "@types/react-dom": "^19.2.0",
     "playwright": "1.63.0",
     "typescript": "~6.0.3",
-    "vite": "^8.1.5"
+    "vite": "^8.1.5",
+    "wrangler": "^4.152.0"
   }
 }

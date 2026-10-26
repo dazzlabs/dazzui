@@ -7,7 +7,11 @@ application. A plain Vite application over `@dazzlabs/dazzui`.
 ```sh
 pnpm example          # from the repository root: build the packages, serve :6006
 pnpm example:build    # production build
+pnpm example:deploy   # build, then publish dist/ as the dazzui-example Worker
 ```
+
+The deploy is static assets only (`wrangler.jsonc`): the address lives in
+the query and the hash, so every path serves `index.html`.
 
 ## Layout
 
