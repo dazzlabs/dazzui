@@ -32,6 +32,7 @@
 
 .dz-search-field__input {
   flex: 1;
+  width: var(--search-field-input-width);
   min-width: 0;
   border: 0;
   background: none;

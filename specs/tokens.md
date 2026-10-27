@@ -15,6 +15,9 @@ system's washes, grades and recipes.
    - `style.css` — CSS custom properties (the contract consumers use)
    - `control.css` — the ramp bindings and the resolved interactive color
      recipes, from `plugins/control.mjs`
+   - `runtime.ts` — theme-invariant durations needed before a React API has a
+     DOM node, from `plugins/runtime.mjs`. The build rejects a per-theme value
+     here; scoped visual values remain CSS variables.
    - `flutter/colors.dart` + `flutter/theme_variables.dart` — the Dart token
      sources, from `plugins/flutter.mjs`
    - `swiftui/Colors.swift` + `swiftui/ThemeVariables.swift` — the Swift token
@@ -28,12 +31,29 @@ system's washes, grades and recipes.
    do this — 0.10 lints each token file with only that file's tokens.)
 2. `distribute()` in `scripts/build.mjs` then copies each platform's files out
    of that staging directory into the platform package itself — the two
-   stylesheets into `packages/js/dazzui/src/generated/`, the two Dart files
+   stylesheets and runtime module into `packages/js/dazzui/src/generated/`, the two Dart files
    into `packages/dart/dazzui/lib/src/generated/`, and so on for Swift and
    Rust. The `TARGETS` list is where a new platform package is added. The
    Dart copies are then run through `dart format` (PATH first, fvm's stable
    as fallback), and the Rust through `rustfmt`, because the committed files
    are formatted and a rebuild must not dirty them.
+
+React's Toast adapter imports its notice/action durations from the committed
+runtime module. Its transition still reads scoped CSS variables. HarmonyOS's
+queue receives the same resolved durations from its theme tokens; neither
+package imports ds at runtime.
+
+Tooltip's native hover-rest and close defaults live in
+`tokens/component/tooltip.yaml`. The runtime tests compare the generated values
+in every palette with the installed Base UI Tooltip defaults; React retains
+Base UI's trigger and provider behavior. These delays are independent of system
+font sizing. A Sidebar scope overrides hover rest to zero, matching React.
+
+The date-range picker's trigger/time minimum widths and key tracking live in
+`tokens/component/date-range-picker.yaml`, beside its side-column width. React
+and HarmonyOS read the same roles. System sizing scales the lengths and applies
+tracking relative to the resolved native font size; the tracking ratio itself
+does not scale.
 
 Nothing writes a token file: every source, `_base.yaml` included, is
 hand-authored. (The Tailwind sync that used to write `_base.yaml` is gone —
@@ -177,6 +197,22 @@ Studio Light snapshot plus per-theme differences carries every semantic
 metric, type style, shadow and recipe. `DazzTokens` copies those maps per scope
 and resolves recipe shades against the selected tint at runtime, multiplying
 the source alpha rather than replacing it. It does not import ds at runtime.
+
+Shadow lengths remain the CSS lengths in logical pixels. Button, WindowFrame, Dialog,
+Toast, Sidebar, Menu and Select use `components/ShadowLayer.ets` to draw a native Gaussian image filter
+with sigma equal to half the physical blur length. The canvas includes the blur's
+outset and offset and keeps its origin aligned to the surface's pixel phase.
+Other native controls and popup hosts use `foundation/Shadow.ets` to map offsets
+and sigma into native shadow options. The native popup host passes the targeted
+Gaussian check; a directly attached small button shadow did not, so Button
+uses the separate drawing layer. Menu and Select use `shadow.lg` behind their
+clipped foreground viewport; their native host defaults failed the shared
+Gaussian profile. The silhouette follows the native painted border box,
+rounded to physical pixels, rather than the fractional layout rectangle.
+These conversions belong to the renderer rather than the token source.
+The current 72 themes each carry seven single-layer outer shadows with zero
+spread; there is no second outer layer to reproduce. Inset chrome effects are
+separate platform drawings.
 
 ## HarmonyOS mobile
 

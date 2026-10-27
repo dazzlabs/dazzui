@@ -1,5 +1,11 @@
 import { PreviewCard as Base } from '@base-ui/react/preview-card'
-import type { ReactElement, ReactNode } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from 'react'
 
 import { cx } from '../lib/cx'
 
@@ -50,13 +56,33 @@ export function PreviewCard({
   className,
   children,
 }: PreviewCardProps) {
+  const reference = useRef<HTMLAnchorElement>(null)
+  const [timing, setTiming] = useState<{ open?: number; close?: number }>({})
+  useEffect(() => {
+    if (!reference.current) return
+    const style = getComputedStyle(reference.current)
+    const read = (name: string) => {
+      const value = style.getPropertyValue(name).trim()
+      const duration = parseFloat(value) * (value.endsWith('ms') ? 1 : 1000)
+      return Number.isFinite(duration) ? duration : undefined
+    }
+    setTiming({
+      open: read('--preview-card-open-delay'),
+      close: read('--preview-card-close-delay'),
+    })
+  }, [])
   return (
     <Base.Root
       open={open}
       defaultOpen={defaultOpen}
       onOpenChange={onOpenChange ? next => onOpenChange(next) : undefined}
     >
-      <Base.Trigger render={trigger} delay={delay} closeDelay={closeDelay} />
+      <Base.Trigger
+        ref={reference}
+        render={trigger}
+        delay={delay ?? timing.open}
+        closeDelay={closeDelay ?? timing.close}
+      />
       <Base.Portal container={container}>
         <Base.Positioner
           side={side}

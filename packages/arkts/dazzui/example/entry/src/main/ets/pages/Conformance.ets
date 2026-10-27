@@ -107,7 +107,7 @@ struct ConformanceScene {
         },
       })
       Text(this.status)
-        .fontSize(this.tokens.type('captionSmall').size)
+        .fontSize(this.tokens.fontSize(this.tokens.type('captionSmall').size))
         .fontColor(this.tokens.color('content-muted'))
         .copyOption(CopyOptions.LocalDevice)
     }

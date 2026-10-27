@@ -8,10 +8,10 @@ export struct DazzKeyCap {
   @Prop variant: string = 'hint'
   build() {
     Text(this.label)
-      .fontSize(
+      .fontSize(this.tokens.fontSize(
         this.tokens.type(this.controlSize === 'large' ? 'labelMedium' : 'labelSmall')
           .size
-      )
+      ))
       .fontWeight(
         this.tokens.type(this.variant === 'key' ? 'labelStrong' : 'labelMedium')
           .weight

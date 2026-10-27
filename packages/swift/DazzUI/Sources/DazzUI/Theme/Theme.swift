@@ -4,10 +4,22 @@ import SwiftUI
 public struct Theme: Sendable {
   public let name: ThemeName
   public let vars: ThemeVariables
+  public let sizing: ThemeSizing
 
   public init(_ name: ThemeName) {
     self.name = name
     self.vars = name.variables
+    self.sizing = .design
+  }
+
+  @MainActor public init(_ name: ThemeName, sizing: ThemeSizing) {
+    self.init(name, sizing: sizing, metrics: SystemSizingMetrics.read())
+  }
+
+  internal init(_ name: ThemeName, sizing: ThemeSizing, metrics: SystemSizingMetrics) {
+    self.name = name
+    self.sizing = sizing
+    self.vars = sizing == .system ? name.variables.resolvingSystemSizing(metrics) : name.variables
   }
 
   /// The default is Studio Light, the same baseline `:root` holds.
@@ -32,6 +44,11 @@ public extension View {
   func theme(_ name: ThemeName) -> some View {
     environment(\.theme, Theme(name))
       .environment(\.colorScheme, name.colorScheme)
+  }
+
+  /// Follows macOS typography and control metrics independently from color.
+  @MainActor func theme(_ name: ThemeName, sizing: ThemeSizing) -> some View {
+    modifier(SystemThemeModifier(name: name, sizing: sizing))
   }
 }
 

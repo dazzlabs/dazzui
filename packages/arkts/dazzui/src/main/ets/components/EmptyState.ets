@@ -10,7 +10,7 @@ export struct DazzEmptyState {
   build() {
     Column({ space: this.tokens.metric('spacing.4') }) {
       Text(this.title)
-        .fontSize(this.tokens.type('labelStrong').size)
+        .fontSize(this.tokens.fontSize(this.tokens.type('labelStrong').size))
         .fontWeight(this.tokens.type('labelStrong').weight)
         .fontColor(this.tokens.color('content'))
       this.content()

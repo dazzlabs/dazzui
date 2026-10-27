@@ -12,3 +12,7 @@ dialog:
     alpha:
       $type: number
       $value: 0.25
+  # The destructive sheet's edge, shared with the React reference.
+  danger-border-alpha:
+    $type: number
+    $value: 0.34

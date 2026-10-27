@@ -6,15 +6,17 @@ import SwiftUI
 struct AppView: View {
   @State private var page: String?
   @State private var theme: ThemeChoice
+  @State private var sizing: ThemeSizing
 
-  init(page: String? = nil, theme: ThemeChoice = defaultTheme) {
+  init(page: String? = nil, theme: ThemeChoice = defaultTheme, sizing: ThemeSizing = .design) {
     _page = State(initialValue: page)
     _theme = State(initialValue: theme)
+    _sizing = State(initialValue: sizing)
   }
 
   var body: some View {
-    Shell(page: $page, theme: $theme)
-      .theme(theme.name)
+    Shell(page: $page, theme: $theme, sizing: $sizing)
+      .theme(theme.name, sizing: sizing)
       .overlayHost()
   }
 }

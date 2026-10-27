@@ -3,16 +3,9 @@ import { Dismiss12Regular } from '@fluentui/react-icons'
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 
 import { cx } from '../lib/cx'
+import { TOAST_NOTICE_MS, TOAST_ACTION_MS } from '../generated/runtime'
 import type { Tint } from '../lib/tint'
 import { Button } from './button'
-
-/**
- * How long a toast stays up, in milliseconds. A plain notice reads in a few
- * seconds; one carrying an action waits for the hand to reach it; a failure
- * stays until it is dismissed.
- */
-const NOTICE_MS = 5000
-const ACTION_MS = 8000
 
 export interface ToastAction {
   label: ReactNode
@@ -69,7 +62,8 @@ function toBase(options: ToastOptions) {
     title,
     type: tint,
     timeout:
-      timeout ?? (tint === 'danger' ? 0 : action ? ACTION_MS : NOTICE_MS),
+      timeout ??
+      (tint === 'danger' ? 0 : action ? TOAST_ACTION_MS : TOAST_NOTICE_MS),
     priority: priority ?? (tint === 'danger' ? 'high' : 'low'),
     onClose,
     data,

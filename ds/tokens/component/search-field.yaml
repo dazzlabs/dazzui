@@ -1,0 +1,7 @@
+search-field:
+  # The intrinsic text-input width in the React reference. Naming it keeps
+  # an inline search from taking an entire native toolbar. A stretched field
+  # still fills its host column, and the input can shrink inside the wrapper.
+  input-width:
+    $type: dimension
+    $value: 8.5rem

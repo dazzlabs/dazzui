@@ -121,6 +121,9 @@ export {
   type PreferencesProps,
   PreferenceSection,
   type PreferenceSectionProps,
+  type PreferenceThemeOption,
+  PreferenceThemeSwatches,
+  type PreferenceThemeSwatchesProps,
 } from './preferences'
 export { PreviewCard, type PreviewCardProps } from './preview-card'
 export { Progress, type ProgressProps, type ProgressSize } from './progress'

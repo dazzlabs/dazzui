@@ -58,7 +58,7 @@ export struct DazzNumberField {
       }).layoutWeight(1)
       if (this.unit) {
         Text(this.unit)
-          .fontSize(this.tokens.type('captionSmall').size)
+          .fontSize(this.tokens.fontSize(this.tokens.type('captionSmall').size))
           .fontColor(this.tokens.color('content-muted'))
       }
       DazzButton({

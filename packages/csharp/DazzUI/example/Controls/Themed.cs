@@ -12,16 +12,6 @@ namespace DazzUI.Example;
 /// </summary>
 public static class Themed
 {
-    private static event Action? Changed;
-
-    /// <summary>Tells every panel in the window that the theme has changed.</summary>
-    public static void Refresh() => Changed?.Invoke();
-
-    /// <summary>Applies the theme <paramref name="element"/> stands in when it is loaded, and again whenever the theme changes.</summary>
-    public static void Follow(FrameworkElement element, Action<Theme> apply)
-    {
-        void Run() => apply(Appearance.GetTheme(element));
-        element.Loaded += (_, _) => { Changed -= Run; Changed += Run; Run(); };
-        element.Unloaded += (_, _) => Changed -= Run;
-    }
+    /// <summary>Applies an inherited theme and follows its runtime sizing.</summary>
+    public static void Follow(FrameworkElement element, Action<Theme> apply) => Appearance.Follow(element, apply);
 }

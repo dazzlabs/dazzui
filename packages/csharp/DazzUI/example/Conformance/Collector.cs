@@ -111,7 +111,6 @@ internal static class Collector
             theme.Typography(host, "bodyMedium");
             frame.Background = theme.Brush("color.surface");
             frame.Padding = new Thickness(theme.Number("spacing.6"));
-            Themed.Refresh();
 
             var readingsOf = new JsonObject();
             var scenesOf = new JsonObject();

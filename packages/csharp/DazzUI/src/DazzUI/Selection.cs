@@ -317,6 +317,7 @@ public class SegmentedControl : Surface
             }
             segment.Padding = new Thickness(lead, 0, pad, 0);
             segment.CornerRadius = new CornerRadius(Math.Max(0, radius - inset));
+            segment.IsTextScaleFactorEnabled = Theme.Sizing != ThemeSizing.System;
             segment.FontSize = FontSize;
             segment.FontWeight = Theme.Text("", chosen ? "labelMedium" : "labelQuiet").FontWeight;
             segment.Background = chosen ? Filled ? Theme.Recipe(ControlVariant.Filled, Tint, "surface") : Theme.Brush("color.surface-raised") : null;
@@ -390,6 +391,7 @@ public sealed class PillTabs : Surface
             pill.MinWidth = pill.MinHeight = 0;
             pill.Padding = new Thickness(Theme.Number("spacing.3"), 0, Theme.Number("spacing.3"), 0);
             pill.CornerRadius = new CornerRadius(height / 2);
+            pill.IsTextScaleFactorEnabled = Theme.Sizing != ThemeSizing.System;
             pill.FontSize = size;
             pill.FontWeight = Theme.Text("", chosen ? "labelStrong" : "labelSmall").FontWeight;
             pill.Background = chosen ? Theme.Recipe(ControlVariant.Filled, Tint, "surface") : Theme.Brush("color.surface-inset");

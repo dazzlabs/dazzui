@@ -2,9 +2,11 @@
 //! The Fluent glyphs the kit's components draw, as React imports them.
 
 pub const ARROW_UP_RIGHT_12_REGULAR: &str = "dazzui/ArrowUpRight12Regular.svg";
+pub const CALENDAR_LTR_16_REGULAR: &str = "dazzui/CalendarLtr16Regular.svg";
 pub const CHECKMARK_12_FILLED: &str = "dazzui/Checkmark12Filled.svg";
 pub const CHECKMARK_16_REGULAR: &str = "dazzui/Checkmark16Regular.svg";
 pub const CHEVRON_DOWN_12_REGULAR: &str = "dazzui/ChevronDown12Regular.svg";
+pub const CHEVRON_LEFT_12_REGULAR: &str = "dazzui/ChevronLeft12Regular.svg";
 pub const CHEVRON_RIGHT_12_REGULAR: &str = "dazzui/ChevronRight12Regular.svg";
 pub const CHEVRON_UP_12_REGULAR: &str = "dazzui/ChevronUp12Regular.svg";
 pub const COPY_16_REGULAR: &str = "dazzui/Copy16Regular.svg";
@@ -23,6 +25,10 @@ pub(crate) static SVGS: &[(&str, &str)] = &[
         r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12"><path fill="#000" d="M1.15 10.85a.5.5 0 0 1 0-.7L9.29 2H4.47a.5.5 0 0 1 0-1h6.03c.28 0 .5.22.5.5v6a.5.5 0 0 1-1 0V2.7l-8.15 8.15a.5.5 0 0 1-.7 0"/></svg>"##,
     ),
     (
+        CALENDAR_LTR_16_REGULAR,
+        r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="#000" d="M5.25 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M6 10.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0M8 9a.75.75 0 1 0 0-1.5A.75.75 0 0 0 8 9m.75 1.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m2-1.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M14 4.5A2.5 2.5 0 0 0 11.5 2h-7A2.5 2.5 0 0 0 2 4.5v7A2.5 2.5 0 0 0 4.5 14h7a2.5 2.5 0 0 0 2.5-2.5zM3 6h10v5.5c0 .83-.67 1.5-1.5 1.5h-7A1.5 1.5 0 0 1 3 11.5zm1.5-3h7c.83 0 1.5.67 1.5 1.5V5H3v-.5C3 3.67 3.67 3 4.5 3"/></svg>"##,
+    ),
+    (
         CHECKMARK_12_FILLED,
         r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12"><path fill="#000" d="M9.76 3.2c.3.29.32.76.04 1.06l-4.25 4.5a.75.75 0 0 1-1.08.02L2.22 6.53a.75.75 0 0 1 1.06-1.06l1.7 1.7L8.7 3.24a.75.75 0 0 1 1.06-.04"/></svg>"##,
     ),
@@ -33,6 +39,10 @@ pub(crate) static SVGS: &[(&str, &str)] = &[
     (
         CHEVRON_DOWN_12_REGULAR,
         r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12"><path fill="#000" d="M2.15 4.65c.2-.2.5-.2.7 0L6 7.79l3.15-3.14a.5.5 0 1 1 .7.7l-3.5 3.5a.5.5 0 0 1-.7 0l-3.5-3.5a.5.5 0 0 1 0-.7"/></svg>"##,
+    ),
+    (
+        CHEVRON_LEFT_12_REGULAR,
+        r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12"><path fill="#000" d="M7.35 2.15c.2.2.2.5 0 .7L4.21 6l3.14 3.15a.5.5 0 1 1-.7.7l-3.5-3.5a.5.5 0 0 1 0-.7l3.5-3.5c.2-.2.5-.2.7 0"/></svg>"##,
     ),
     (
         CHEVRON_RIGHT_12_REGULAR,

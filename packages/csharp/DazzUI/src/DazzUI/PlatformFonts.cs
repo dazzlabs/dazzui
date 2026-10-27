@@ -10,7 +10,8 @@ namespace DazzUI;
 /// <summary>The Windows system-ui face, which can differ from XAML's app-language default.</summary>
 internal static class PlatformFonts
 {
-    internal static FontFamily Ui { get; } = ReadUi();
+    internal static FontFamily Ui { get; private set; } = ReadUi();
+    internal static void Refresh() { Ui = ReadUi(); Metrics.Clear(); }
     // The Windows ui-monospace face used by the browser's code-font role.
     internal static FontFamily Code { get; } = new("Consolas");
     private static readonly ConcurrentDictionary<string, ushort[]> Weights = new(StringComparer.OrdinalIgnoreCase);
@@ -22,7 +23,7 @@ internal static class PlatformFonts
         {
             var probe = new TextBlock
             {
-                Text = "x", FontFamily = family, FontSize = size, FontWeight = weight, UseLayoutRounding = false,
+                IsTextScaleFactorEnabled = false, Text = "x", FontFamily = family, FontSize = size, FontWeight = weight, UseLayoutRounding = false,
             };
             probe.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             return (Math.Round(probe.BaselineOffset, MidpointRounding.AwayFromZero),

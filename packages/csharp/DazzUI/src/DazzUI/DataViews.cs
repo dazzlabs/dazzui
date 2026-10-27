@@ -165,6 +165,7 @@ public sealed class Tree : Surface
         if (label is TextBlock textLabel)
         {
             textLabel.Foreground = ink;
+            textLabel.IsTextScaleFactorEnabled = Theme.Sizing != ThemeSizing.System;
             textLabel.FontSize = Theme.Text("", small ? "labelSmall" : "labelQuiet").FontSize;
             textLabel.FontWeight = Theme.Text("", chosen ? "labelMedium" : "labelQuiet").FontWeight;
             textLabel.TextTrimming = TextTrimming.CharacterEllipsis;

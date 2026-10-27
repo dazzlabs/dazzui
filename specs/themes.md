@@ -142,6 +142,46 @@ a given theme off Omarchy. On the web these return nothing. The Flutter
 example wears the machine's theme by default when there is one, offered as
 the first tile under *This machine*, until another tile is picked.
 
+**macOS system sizing is a separate SwiftUI theme axis.** The default is
+`ThemeSizing.design`; `.theme(name, sizing: .system)` installs live AppKit
+metrics. The preferred body font sets the layout scale, while native mini,
+small, regular and large font sizes and measured rounded-button heights supply
+the control profiles. The Swift generator emits the dimension/typography copy,
+preserving semantic aliases without scaling ratios, colors, corners, strokes,
+focus or timings. Mobile Swift output remains color-only. Activation, font-set
+and workspace accessibility notifications refresh the scope; active scenes also
+check the public font APIs periodically. Environment updates retain view
+identity and editing state. The macOS gallery defaults to system sizing and
+exposes an independent switch; conformance retains design metrics.
+
+**WinUI system sizing is independent from color.** `ThemeSizing.Design` is
+the library default and the conformance mode. `ThemeSizing.System` reads
+WinUI's text size and control minimum-height resources, falling back to the
+committed Windows metrics, and follows `UISettings.TextScaleFactor` changes.
+Typography and layout dimensions resolve in logical pixels; XAML retains
+monitor DPI scaling, while the resolved text suppresses a second accessibility
+scale. Corners, strokes, focus and timing roles retain their design values.
+Loaded components and `Appearance.Follow` host panels refresh on their UI
+dispatcher without reconstructing the scene. The interactive WinUI gallery
+starts in system sizing and exposes a switch in its theme panel.
+
+**HarmonyOS system sizing is a separate runtime axis.** Desktop
+`DazzTheme.sizing` defaults to `design`; `system` reads UIAbility font
+configuration and public ArkUI typography/button/text-field resources. It
+resolves sizes through the current UIContext, measures text to accommodate
+larger fonts, and scales spacing and icons with the effective body-font scale.
+It does not select a color family or change color recipes. Configuration changes
+refresh the scope; resolved sizes use vp to avoid applying the font scale twice.
+ArkUI resolves the selected face and applies the system weight scale. Configured
+generic font families are metadata, not a guessed selected family.
+
+Both HarmonyOS hosts opt into system font following through their app
+configuration profile (`fontSizeScale: "followSystem"`), independently from the
+palette. Mobile continues to use native fp typography and stock controls;
+`DazzMobileTheme` remains color-only. `readSystemFontSettings` exposes a snapshot
+for host UI, without setting an application font scale. The native scale setter
+is confined to test pages because it stops following system font changes.
+
 Two things a theme re-sizes needed the native generators to store what they
 used to compute, following the rule a re-picked recipe shade already had: a
 type style that carries a mode keeps `<style>FontSize` and

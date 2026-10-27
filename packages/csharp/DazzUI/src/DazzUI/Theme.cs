@@ -9,23 +9,30 @@ namespace DazzUI;
 public enum WidgetTint { Neutral, Primary, Success, Warning, Danger, Info }
 public enum ControlVariant { Normal, Recessed, Filled, Tinted, Outlined, Plain }
 public enum ControlSize { Tiny, Small, Medium, Large }
+public enum ThemeSizing { Design, System }
 
-/// <summary>A complete, immutable snapshot from the shared ds token graph.</summary>
+/// <summary>A shared ds token snapshot with an optional live Windows sizing policy.</summary>
 public sealed class Theme
 {
     private static readonly JsonElement Themes = Load();
     private readonly JsonElement values;
     public string Name { get; }
+    public ThemeSizing Sizing { get; }
+    /// <summary>Runtime font/layout scale in logical pixels. Display DPI remains XAML's responsibility.</summary>
+    public double LayoutScale => Sizing == ThemeSizing.System
+        ? SystemStyle.FontSize / Number(values.GetProperty("bodyMedium").GetProperty("fontSize")) * SystemStyle.TextScale
+        : 1;
     public bool IsDark => Name.EndsWith("-dark", StringComparison.Ordinal);
     public FontFamily CodeFont => PlatformFonts.Code;
     public static IReadOnlyList<string> Names { get; } = Themes.EnumerateObject().Select(p => p.Name).ToArray();
     public static Theme Default { get; } = new("studio-light");
 
-    public Theme(string name)
+    public Theme(string name, ThemeSizing sizing = ThemeSizing.Design)
     {
         if (!Themes.TryGetProperty(name, out values))
             throw new ArgumentException($"Unknown DazzUI theme: {name}", nameof(name));
         Name = name;
+        Sizing = sizing;
     }
 
     private static JsonElement Load()
@@ -36,7 +43,25 @@ public sealed class Theme
         return document.RootElement.Clone();
     }
 
-    public double Number(string token) => Number(values.GetProperty(token));
+    public double Number(string token)
+    {
+        var value = values.GetProperty(token);
+        var number = Number(value);
+        if (Sizing != ThemeSizing.System || value.ValueKind != JsonValueKind.Object
+            || !value.TryGetProperty("unit", out var unit) || unit.GetString() is not ("px" or "rem")) return number;
+        // Corners, hairlines, focus rings and animation timings retain their roles.
+        if (token.StartsWith("radius.", StringComparison.Ordinal) || token.EndsWith(".radius", StringComparison.Ordinal)
+            || token.StartsWith("stroke.", StringComparison.Ordinal) || token.StartsWith("focus.", StringComparison.Ordinal)
+            || token.EndsWith(".thickness", StringComparison.Ordinal) || token.EndsWith(".edge-width", StringComparison.Ordinal)
+            || token == "spacing.px") return number;
+        if (token.StartsWith("control.", StringComparison.Ordinal) && token.EndsWith(".size", StringComparison.Ordinal))
+            return number / Number(values.GetProperty("control.medium.size")) * SystemStyle.ControlHeight * SystemStyle.TextScale;
+        return number * LayoutScale;
+    }
+
+    private double TypeScale(string token) => Sizing == ThemeSizing.System && token.StartsWith("control.", StringComparison.Ordinal)
+        ? SystemStyle.FontSize / Number(values.GetProperty("control.medium.content").GetProperty("fontSize")) * SystemStyle.TextScale
+        : LayoutScale;
     private static double Number(JsonElement value)
     {
         if (value.ValueKind == JsonValueKind.Number) return value.GetDouble();
@@ -74,7 +99,8 @@ public sealed class Theme
     {
         control.UseLayoutRounding = false;
         var style = values.GetProperty(token);
-        control.FontSize = Number(style.GetProperty("fontSize"));
+        control.IsTextScaleFactorEnabled = Sizing != ThemeSizing.System;
+        control.FontSize = Number(style.GetProperty("fontSize")) * TypeScale(token);
         control.FontWeight = new FontWeight { Weight = (ushort)style.GetProperty("fontWeight").GetInt32() };
         control.FontFamily = PlatformFonts.Ui;
     }
@@ -86,10 +112,11 @@ public sealed class Theme
         {
             UseLayoutRounding = false,
             Text = text,
-            FontSize = Number(style.GetProperty("fontSize")),
+            IsTextScaleFactorEnabled = Sizing != ThemeSizing.System,
+            FontSize = Number(style.GetProperty("fontSize")) * TypeScale(token),
             FontFamily = PlatformFonts.Ui,
             FontWeight = new FontWeight { Weight = (ushort)style.GetProperty("fontWeight").GetInt32() },
-            LineHeight = Number(style.GetProperty("lineHeight")),
+            LineHeight = Number(style.GetProperty("lineHeight")) * TypeScale(token),
             LineStackingStrategy = Microsoft.UI.Xaml.LineStackingStrategy.BlockLineHeight,
             Foreground = Brush("color.content"),
             TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
@@ -118,6 +145,8 @@ internal static class TextStyle
     /// <summary>Gives <paramref name="target"/> the face this styled text has, keeping its words and ink.</summary>
     public static void CopyTo(this TextBlock source, TextBlock target)
     {
+        target.IsTextScaleFactorEnabled = source.IsTextScaleFactorEnabled;
+        target.FontFamily = source.FontFamily;
         target.FontSize = source.FontSize;
         target.FontWeight = source.FontWeight;
         target.LineHeight = source.LineHeight;

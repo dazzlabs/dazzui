@@ -21,7 +21,10 @@ public static class Appearance
     public static Theme GetTheme(DependencyObject element)
     {
         for (DependencyObject? current = element; current is not null; current = VisualTreeHelper.GetParent(current))
+        {
+            if (current is Button && current.GetValue(Button.ThemeProperty) is Theme buttonTheme) return buttonTheme;
             if (current.GetValue(ThemeProperty) is Theme theme) return theme;
+        }
         return Theme.Default;
     }
     public static void SetTheme(DependencyObject element, Theme? value) => element.SetValue(ThemeProperty, value);
@@ -31,10 +34,49 @@ public static class Appearance
     public static void SetSize(DependencyObject element, ControlSize value) => element.SetValue(SizeProperty, value);
     public static ControlVariant GetVariant(DependencyObject element) => (ControlVariant)element.GetValue(VariantProperty);
     public static void SetVariant(DependencyObject element, ControlVariant value) => element.SetValue(VariantProperty, value);
+    /// <summary>Keep host layout in its inherited theme, including live system sizing changes.</summary>
+    public static void Follow(FrameworkElement element, Action<Theme> apply) =>
+        Bind(element, () => apply(GetTheme(element)));
+
     internal static void Bind(FrameworkElement element, Action refresh)
     {
-        Registrations.Add(element, new Registration(refresh));
-        element.Loaded += (_, _) => refresh();
+        void Apply()
+        {
+            refresh();
+            // Text and glyphs created by custom templates must not apply the
+            // accessibility scale a second time after their tokens were resolved.
+            UpdateTextScaling(element);
+        }
+        var pending = 0;
+        void SystemChanged()
+        {
+            if (Interlocked.Exchange(ref pending, 1) != 0) return;
+            if (!element.DispatcherQueue.TryEnqueue(() =>
+            {
+                Interlocked.Exchange(ref pending, 0);
+                SystemStyle.RefreshFonts();
+                var theme = GetTheme(element);
+                if (element.IsLoaded && theme.Sizing == ThemeSizing.System) Apply();
+            })) Interlocked.Exchange(ref pending, 0);
+        }
+        Registrations.Add(element, new Registration(Apply));
+        element.Loaded += (_, _) => { SystemStyle.Changed -= SystemChanged; SystemStyle.Changed += SystemChanged; Apply(); };
+        element.Unloaded += (_, _) => SystemStyle.Changed -= SystemChanged;
+    }
+    internal static void UpdateTextScaling(DependencyObject root)
+    {
+        var theme = GetTheme(root);
+        var automatic = theme.Sizing != ThemeSizing.System;
+        if (root is Control control && control.IsTextScaleFactorEnabled != automatic) control.IsTextScaleFactorEnabled = automatic;
+        if (root is TextBlock text && text.IsTextScaleFactorEnabled != automatic) text.IsTextScaleFactorEnabled = automatic;
+        // Components own their subtrees; the parent does not overwrite a locally
+        // themed component (including its native template descendants).
+        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
+        {
+            var child = VisualTreeHelper.GetChild(root, i);
+            if (child is FrameworkElement element && Registrations.TryGetValue(element, out _)) continue;
+            UpdateTextScaling(child);
+        }
     }
     private static void Changed(DependencyObject sender, DependencyPropertyChangedEventArgs args) => Refresh(sender);
     public static void Refresh(DependencyObject root)
@@ -67,6 +109,7 @@ public sealed class ThemeScope : Surface
     protected override void RefreshAppearance()
     {
         base.RefreshAppearance();
+        Theme.Typography(this, "bodyMedium");
         RequestedTheme = Theme.IsDark ? ElementTheme.Dark : ElementTheme.Light;
     }
 }
@@ -112,6 +155,10 @@ internal static class Skin
                     };
                     words.SetBinding(target, new Microsoft.UI.Xaml.Data.Binding { Source = control, Path = new PropertyPath(property) });
                 }
+                words.SetBinding(TextBlock.IsTextScaleFactorEnabledProperty, new Microsoft.UI.Xaml.Data.Binding
+                {
+                    Source = control, Path = new PropertyPath("IsTextScaleFactorEnabled"),
+                });
                 words.LineHeight = Height;
                 control.Content = words;
             }
@@ -246,7 +293,7 @@ internal static class Skin
     }
     internal static void InputPadding(Control control, Theme theme, ControlSize size, bool multiline = false)
     {
-        var line = new TextBlock { Text = "Ag", FontFamily = control.FontFamily, FontSize = control.FontSize, FontWeight = control.FontWeight, FontStyle = control.FontStyle, FontStretch = control.FontStretch };
+        var line = new TextBlock { IsTextScaleFactorEnabled = control.IsTextScaleFactorEnabled, Text = "Ag", FontFamily = control.FontFamily, FontSize = control.FontSize, FontWeight = control.FontWeight, FontStyle = control.FontStyle, FontStretch = control.FontStretch };
         line.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
         var block = multiline ? theme.Number("spacing.2.5")
             : Math.Max(0, (theme.Number($"control.{Theme.Key(size)}.size") - control.BorderThickness.Top - control.BorderThickness.Bottom - line.DesiredSize.Height) / 2);

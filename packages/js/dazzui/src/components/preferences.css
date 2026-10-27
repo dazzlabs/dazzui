@@ -251,3 +251,88 @@
   height: var(--dz-icon-size);
   flex-shrink: 0;
 }
+
+/* The theme swatches --------------------------------------------------------
+ * A row's control: a run of windows in miniature, each the height of a small
+ * control and half again as wide, so the run sits on the row's line the way
+ * a select would. Every surface inside a swatch reads the theme it nests. */
+.dz-preference-themes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--spacing-1-5);
+}
+
+/* A run of swatches is the one control in a row that can give way: in a
+   column too narrow for the run, it wraps under itself rather than pushing
+   past the row's edge or squeezing the title out. */
+.dz-preference-row__trailing:has(> .dz-preference-themes) {
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+.dz-preference-row:has(.dz-preference-themes) .dz-preference-row__text {
+  flex-shrink: 0;
+}
+
+.dz-preference-themes__swatch {
+  all: unset;
+  display: block;
+  box-sizing: border-box;
+  border-radius: var(--radius-small);
+  cursor: pointer;
+}
+
+/* Chosen is the accent drawn around the swatch at the control stroke, a
+   hairline clear of it, the way a focus ring stands off a control: outside
+   the box, so choosing one moves nothing. */
+.dz-preference-themes__swatch[aria-checked='true'] {
+  box-shadow:
+    0 0 0 var(--stroke-hairline) var(--color-surface),
+    0 0 0 calc(var(--stroke-hairline) + var(--stroke-control))
+      var(--control-color-outlined-border-normal);
+}
+
+.dz-preference-themes__swatch:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.dz-preference-themes__window {
+  display: flex;
+  overflow: hidden;
+  width: calc(var(--control-small-size) * 1.5);
+  height: var(--control-small-size);
+  box-sizing: border-box;
+  border: var(--stroke-hairline) solid var(--color-border-strong);
+  border-radius: var(--radius-small);
+  background: var(--color-surface);
+}
+
+.dz-preference-themes__column {
+  flex: none;
+  width: 30%;
+  border-inline-end: var(--stroke-hairline) solid var(--color-border-strong);
+  background: var(--color-surface-column);
+}
+
+.dz-preference-themes__paper {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--spacing-1);
+}
+
+.dz-preference-themes__ink {
+  height: var(--spacing-0-5);
+  border-radius: var(--spacing-px);
+  background: var(--color-content);
+}
+
+.dz-preference-themes__accent {
+  width: 60%;
+  height: var(--spacing-1-5);
+  border-radius: var(--spacing-px);
+  background: var(--color-primary-500);
+}

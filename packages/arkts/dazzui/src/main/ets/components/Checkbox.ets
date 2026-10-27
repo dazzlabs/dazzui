@@ -1,3 +1,4 @@
+import { DazzIcon } from './Icon'
 import { DazzTokens } from '../foundation/Tokens'
 import { DazzTint } from '../foundation/TokenTypes'
 
@@ -7,6 +8,7 @@ export struct DazzCheckbox {
   @Prop checked: boolean | undefined = undefined
   @Prop defaultChecked: boolean = false
   @Prop disabled: boolean = false
+  @Prop indeterminate: boolean = false
   @Prop label: string = ''
   @Prop note: string = ''
   @Prop tint: DazzTint = 'primary'
@@ -21,10 +23,13 @@ export struct DazzCheckbox {
     if (this.checked === undefined) this.localChecked = value
     this.onCheckedChange(value)
   }
+  @LocalBuilder mixedIndicator() {
+    DazzIcon({ name: 'Subtract12Filled', iconSize: this.tokens.metric('icon.small'), color: this.tokens.paint('filled', 'content', this.disabled ? 'disabled' : 'normal', this.tint) })
+  }
   build() {
     Row({ space: this.tokens.metric('spacing.2.5') }) {
-      Checkbox()
-        .select(this.checked ?? this.localChecked)
+      Checkbox({ indicatorBuilder: this.indeterminate ? this.mixedIndicator : undefined })
+        .select(this.indeterminate || (this.checked ?? this.localChecked))
         .shape(CheckBoxShape.ROUNDED_SQUARE)
         .width(this.tokens.metric('checkbox.' + this.controlSize + '.box'))
         .height(this.tokens.metric('checkbox.' + this.controlSize + '.box'))
@@ -50,10 +55,11 @@ export struct DazzCheckbox {
         })
         .enabled(!this.disabled)
         .accessibilityText(this.label)
-        .onChange((checked: boolean) => this.change(checked))
+        .accessibilityDescription(this.indeterminate ? 'Mixed' : '')
+        .onChange((checked: boolean) => this.change(this.indeterminate ? true : checked))
       if (this.label) {
         Text(this.label + (this.note ? ' ' + this.note : ''))
-          .fontSize(this.tokens.type('labelSmall').size)
+          .fontSize(this.tokens.fontSize(this.tokens.type('labelSmall').size))
           .fontWeight(
             this.tokens.type(
               (this.checked ?? this.localChecked) ? 'labelSmall' : 'labelQuiet'

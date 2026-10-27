@@ -363,6 +363,7 @@ public sealed class NumberField : Surface
         unit.Text = Unit ?? "";
         unit.Visibility = Unit is null ? Visibility.Collapsed : Visibility.Visible;
         unit.Foreground = Theme.Brush("color.content-faint");
+        unit.IsTextScaleFactorEnabled = Theme.Sizing != ThemeSizing.System;
         unit.FontSize = Theme.Text("", "labelSmall").FontSize;
         unit.FontFamily = editor.FontFamily;
         unit.LineHeight = unit.FontSize;

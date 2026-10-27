@@ -1,8 +1,14 @@
-import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import {
+  type ComponentPropsWithoutRef,
+  type CSSProperties,
+  type ReactNode,
+  useState,
+} from 'react'
 
 import { cx } from '../lib/cx'
 import type { Tint } from '../lib/tint'
 import { SectionLabel } from './section-label'
+import { Tooltip } from './tooltip'
 
 export interface PreferencesProps extends ComponentPropsWithoutRef<'div'> {}
 
@@ -173,4 +179,115 @@ export function PreferenceRow({
       {body}
     </div>
   )
+}
+
+export interface PreferenceThemeOption<T extends string = string> {
+  value: T
+  /** The theme's name, in the tooltip and to a screen reader. */
+  label: string
+  /**
+   * The `data-theme` the swatch is drawn in; `value` when left out. An empty
+   * string is the theme `:root` holds, which has no selector of its own.
+   */
+  theme?: string
+}
+
+export interface PreferenceThemeSwatchesProps<
+  T extends string = string,
+> extends Omit<
+  ComponentPropsWithoutRef<'div'>,
+  'defaultValue' | 'onChange' | 'children'
+> {
+  options: readonly PreferenceThemeOption<T>[]
+  value?: T
+  defaultValue?: T
+  onValueChange?: (value: T) => void
+}
+
+/**
+ * The theme, as a row's control: a run of swatches at the trailing edge of a
+ * `PreferenceRow`, each a window in miniature drawn in that theme's own
+ * colours — its column, its paper, a line of its ink and its accent. The
+ * name is the tooltip's, so a row of six stays the width of a control.
+ *
+ * A swatch takes its theme by nesting that theme's `data-theme`, which is
+ * all a token sheet selects on. The one theme that cannot be asked for that
+ * way is the one `:root` holds; its values are read once, off the document
+ * with its own theme taken off, and laid on the swatch directly.
+ */
+export function PreferenceThemeSwatches<T extends string = string>({
+  options,
+  value,
+  defaultValue,
+  onValueChange,
+  className,
+  ...props
+}: PreferenceThemeSwatchesProps<T>) {
+  const [own, setOwn] = useState(defaultValue)
+  const current = value ?? own
+  return (
+    <div
+      role="radiogroup"
+      className={cx('dz-preference-themes', className)}
+      {...props}
+    >
+      {options.map(option => {
+        const theme = option.theme ?? option.value
+        const atRoot = theme === ''
+        return (
+          <Tooltip key={option.value} label={option.label}>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={option.value === current}
+              aria-label={option.label}
+              className="dz-preference-themes__swatch"
+              onClick={() => {
+                setOwn(option.value)
+                onValueChange?.(option.value)
+              }}
+            >
+              <span
+                className="dz-preference-themes__window"
+                data-theme={atRoot ? undefined : theme}
+                style={atRoot ? readRootTheme() : undefined}
+                aria-hidden
+              >
+                <span className="dz-preference-themes__column" />
+                <span className="dz-preference-themes__paper">
+                  <span className="dz-preference-themes__ink" />
+                  <span className="dz-preference-themes__accent" />
+                </span>
+              </span>
+            </button>
+          </Tooltip>
+        )
+      })}
+    </div>
+  )
+}
+
+/** What a swatch draws with. */
+const DRAWN = [
+  '--color-surface',
+  '--color-surface-column',
+  '--color-border-strong',
+  '--color-content',
+  '--color-primary-500',
+] as const
+
+let rootTheme: CSSProperties | undefined
+
+/** The values `:root` holds under no `data-theme`, read once. */
+function readRootTheme(): CSSProperties {
+  if (rootTheme) return rootTheme
+  const root = document.documentElement
+  const applied = root.getAttribute('data-theme')
+  root.removeAttribute('data-theme')
+  const computed = getComputedStyle(root)
+  rootTheme = Object.fromEntries(
+    DRAWN.map(name => [name, computed.getPropertyValue(name)])
+  ) as CSSProperties
+  if (applied !== null) root.setAttribute('data-theme', applied)
+  return rootTheme
 }

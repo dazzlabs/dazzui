@@ -34,6 +34,15 @@ internal static class SmokeTest
         {
             await File.WriteAllTextAsync(Path.Combine(output, "stories.json"), System.Text.Json.JsonSerializer.Serialize(
                 Stories.All.Select(story => new { id = story.Id, name = story.Name, examples = story.Examples.Select(example => example.Title) })));
+            await SystemSizingTests.RunAsync(shell, output);
+            if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "system-sizing")
+            {
+                await File.WriteAllTextAsync(Path.Combine(output, "result.txt"), "PASS: system sizing at 100%, 150%, 225%; native editing and selection; nested design sizing; palette and strokes.\n");
+                finishing = true;
+                window.Close();
+                Environment.Exit(0);
+                return;
+            }
             // DAZZUI_SMOKE_PAGES narrows the run to a few pages, by id.
             if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "table")
             {

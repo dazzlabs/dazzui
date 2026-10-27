@@ -1,7 +1,20 @@
 import { Tooltip as Base } from '@base-ui/react/tooltip'
-import type { ReactElement, ReactNode } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useId,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from 'react'
 
 import { cx } from '../lib/cx'
+
+const TooltipScope = createContext<
+  ((id: string, mounted: boolean) => void) | null
+>(null)
 
 export interface TooltipProps extends Pick<
   Base.Trigger.Props,
@@ -33,9 +46,30 @@ export function Tooltip({
   disabled,
   className,
 }: TooltipProps) {
+  const parent = useContext(TooltipScope)
+  const id = useId()
+  const [nested, setNested] = useState<Set<string>>(() => new Set())
+  const register = useCallback((id: string, mounted: boolean) => {
+    setNested(previous => {
+      if (previous.has(id) === mounted) return previous
+      const next = new Set(previous)
+      if (mounted) next.add(id)
+      else next.delete(id)
+      return next
+    })
+  }, [])
+  useEffect(() => {
+    parent?.(id, true)
+    return () => parent?.(id, false)
+  }, [parent, id])
+
   return (
-    <Base.Root disabled={disabled}>
-      <Base.Trigger render={children} delay={delay} closeDelay={closeDelay} />
+    // A control such as IconButton already owns its hint. Scope only the
+    // trigger; tooltips in a rich label must not disable their popup owner.
+    <Base.Root disabled={disabled || nested.size > 0}>
+      <TooltipScope.Provider value={register}>
+        <Base.Trigger render={children} delay={delay} closeDelay={closeDelay} />
+      </TooltipScope.Provider>
       <Base.Portal>
         <Base.Positioner
           side={side}

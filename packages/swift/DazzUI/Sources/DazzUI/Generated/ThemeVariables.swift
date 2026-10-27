@@ -4,6 +4,7 @@ import SwiftUI
 ///
 /// DO NOT EDIT - This file is auto-generated
 public struct ThemeVariables: Sendable {
+  internal var systemSizing: SystemSizingMetrics?
   public init(
     colorPrimary: ColorSwatch = Colors.brand,
     colorNeutral: ColorSwatch = Colors.neutral,
@@ -118,17 +119,25 @@ public struct ThemeVariables: Sendable {
     calendarCellGap: CGFloat = 2.0,
     checkboxRadius: CGFloat = 5.0,
     dateRangePickerSideWidth: CGFloat = 192.0,
+    dateRangePickerTriggerMinWidth: CGFloat = 256.0,
+    dateRangePickerTimeMinWidth: CGFloat = 80.0,
+    dateRangePickerKeyTracking: CGFloat = 0.06,
     dialogWidth: CGFloat = 440.0,
     dialogScrimAlpha: CGFloat = 0.25,
+    dialogDangerBorderAlpha: CGFloat = 0.34,
     drawerSize: CGFloat = 352.0,
     menuMinWidth: CGFloat = 176.0,
     menuItemPadding: CGFloat = 7.0,
     preferencesWidth: CGFloat = 480.0,
+    previewCardOpenDelay: Double = 0.6,
+    previewCardCloseDelay: Double = 0.3,
     previewCardWidth: CGFloat = 320.0,
     progressGradientFrom: Color = Colors.brand[600],
     progressGradientTo: Color = Color(argb: 0xFFA0_8CFF),
+    searchFieldInputWidth: CGFloat = 136.0,
     segmentedControlInset: CGFloat = 3.0,
     shortcutRecorderWidth: CGFloat = 132.0,
+    shortcutRecorderRejectDuration: Double = 0.36,
     sliderMediumTrack: CGFloat = 6.0,
     sliderMediumThumb: CGFloat = 16.0,
     sliderThumbInk: Int = 0,
@@ -138,7 +147,20 @@ public struct ThemeVariables: Sendable {
     switchMediumWidth: CGFloat = 32.0,
     switchMediumHeight: CGFloat = 18.0,
     switchMediumThumb: CGFloat = 14.0,
+    tabsPulseDuration: Double = 1.4,
+    tabsPulseOpacity: CGFloat = 0.35,
+    toastNoticeDuration: Double = 5.0,
+    toastActionDuration: Double = 8.0,
+    toastTransitionDuration: Double = 0.26,
+    toastTransitionX1: CGFloat = 0.21,
+    toastTransitionY1: CGFloat = 0.9,
+    toastTransitionX2: CGFloat = 0.35,
+    toastTransitionY2: CGFloat = 1.05,
+    toastTransitionScale: CGFloat = 0.98,
     toastMaxWidth: CGFloat = 420.0,
+    tooltipOpenDelay: Double = 0.6,
+    tooltipCloseDelay: Double = 0.0,
+    treeTypeaheadWindow: Double = 0.6,
     controlColorRecessedBorder: ColorDescriptor = ColorDescriptor(
     normalColor: Colors.transparent,
     hoveredColor: Colors.transparent,
@@ -306,17 +328,25 @@ public struct ThemeVariables: Sendable {
     self.calendarCellGap = calendarCellGap
     self.checkboxRadius = checkboxRadius
     self.dateRangePickerSideWidth = dateRangePickerSideWidth
+    self.dateRangePickerTriggerMinWidth = dateRangePickerTriggerMinWidth
+    self.dateRangePickerTimeMinWidth = dateRangePickerTimeMinWidth
+    self.dateRangePickerKeyTracking = dateRangePickerKeyTracking
     self.dialogWidth = dialogWidth
     self.dialogScrimAlpha = dialogScrimAlpha
+    self.dialogDangerBorderAlpha = dialogDangerBorderAlpha
     self.drawerSize = drawerSize
     self.menuMinWidth = menuMinWidth
     self.menuItemPadding = menuItemPadding
     self.preferencesWidth = preferencesWidth
+    self.previewCardOpenDelay = previewCardOpenDelay
+    self.previewCardCloseDelay = previewCardCloseDelay
     self.previewCardWidth = previewCardWidth
     self.progressGradientFrom = progressGradientFrom
     self.progressGradientTo = progressGradientTo
+    self.searchFieldInputWidth = searchFieldInputWidth
     self.segmentedControlInset = segmentedControlInset
     self.shortcutRecorderWidth = shortcutRecorderWidth
+    self.shortcutRecorderRejectDuration = shortcutRecorderRejectDuration
     self.sliderMediumTrack = sliderMediumTrack
     self.sliderMediumThumb = sliderMediumThumb
     self.sliderThumbInk = sliderThumbInk
@@ -326,7 +356,20 @@ public struct ThemeVariables: Sendable {
     self.switchMediumWidth = switchMediumWidth
     self.switchMediumHeight = switchMediumHeight
     self.switchMediumThumb = switchMediumThumb
+    self.tabsPulseDuration = tabsPulseDuration
+    self.tabsPulseOpacity = tabsPulseOpacity
+    self.toastNoticeDuration = toastNoticeDuration
+    self.toastActionDuration = toastActionDuration
+    self.toastTransitionDuration = toastTransitionDuration
+    self.toastTransitionX1 = toastTransitionX1
+    self.toastTransitionY1 = toastTransitionY1
+    self.toastTransitionX2 = toastTransitionX2
+    self.toastTransitionY2 = toastTransitionY2
+    self.toastTransitionScale = toastTransitionScale
     self.toastMaxWidth = toastMaxWidth
+    self.tooltipOpenDelay = tooltipOpenDelay
+    self.tooltipCloseDelay = tooltipCloseDelay
+    self.treeTypeaheadWindow = treeTypeaheadWindow
     self.controlColorRecessedBorder = controlColorRecessedBorder
     self.controlColorFilledSurfaceNormalShade = controlColorFilledSurfaceNormalShade
     self.controlColorFilledSurfaceHoveredShade = controlColorFilledSurfaceHoveredShade
@@ -460,17 +503,25 @@ public struct ThemeVariables: Sendable {
   public let calendarCellGap: CGFloat
   public let checkboxRadius: CGFloat
   public let dateRangePickerSideWidth: CGFloat
+  public let dateRangePickerTriggerMinWidth: CGFloat
+  public let dateRangePickerTimeMinWidth: CGFloat
+  public let dateRangePickerKeyTracking: CGFloat
   public let dialogWidth: CGFloat
   public let dialogScrimAlpha: CGFloat
+  public let dialogDangerBorderAlpha: CGFloat
   public let drawerSize: CGFloat
   public let menuMinWidth: CGFloat
   public let menuItemPadding: CGFloat
   public let preferencesWidth: CGFloat
+  public let previewCardOpenDelay: Double
+  public let previewCardCloseDelay: Double
   public let previewCardWidth: CGFloat
   public let progressGradientFrom: Color
   public let progressGradientTo: Color
+  public let searchFieldInputWidth: CGFloat
   public let segmentedControlInset: CGFloat
   public let shortcutRecorderWidth: CGFloat
+  public let shortcutRecorderRejectDuration: Double
   public let sliderMediumTrack: CGFloat
   public let sliderMediumThumb: CGFloat
   public let sliderThumbInk: Int
@@ -480,7 +531,20 @@ public struct ThemeVariables: Sendable {
   public let switchMediumWidth: CGFloat
   public let switchMediumHeight: CGFloat
   public let switchMediumThumb: CGFloat
+  public let tabsPulseDuration: Double
+  public let tabsPulseOpacity: CGFloat
+  public let toastNoticeDuration: Double
+  public let toastActionDuration: Double
+  public let toastTransitionDuration: Double
+  public let toastTransitionX1: CGFloat
+  public let toastTransitionY1: CGFloat
+  public let toastTransitionX2: CGFloat
+  public let toastTransitionY2: CGFloat
+  public let toastTransitionScale: CGFloat
   public let toastMaxWidth: CGFloat
+  public let tooltipOpenDelay: Double
+  public let tooltipCloseDelay: Double
+  public let treeTypeaheadWindow: Double
   public let controlColorRecessedBorder: ColorDescriptor
   /// The ramp step `controlColorFilledSurface` picks when normal; a theme re-points it.
   public let controlColorFilledSurfaceNormalShade: Int
@@ -519,24 +583,24 @@ public struct ThemeVariables: Sendable {
   public var controlTinyPaddingBlock: CGFloat { spacing1 }
   public var controlTinyPaddingInline: CGFloat { spacing25 }
   public var controlTinyRadius: CGFloat { radiusSmall }
-  public var controlTinyContent: TypeStyle { labelSmall }
+  public var controlTinyContent: TypeStyle { systemSizing?.content(.tiny, design: labelSmall) ?? labelSmall }
   public var controlSmallIconSize: CGFloat { iconMedium }
   public var controlSmallGap: CGFloat { spacing15 }
   public var controlSmallPaddingBlock: CGFloat { spacing1 }
   public var controlSmallPaddingInline: CGFloat { spacing3 }
   public var controlSmallRadius: CGFloat { radiusSmall }
-  public var controlSmallContent: TypeStyle { labelMedium }
+  public var controlSmallContent: TypeStyle { systemSizing?.content(.small, design: labelMedium) ?? labelMedium }
   public var controlMediumIconSize: CGFloat { iconMedium }
   public var controlMediumGap: CGFloat { spacing2 }
   public var controlMediumPaddingBlock: CGFloat { spacing15 }
   public var controlMediumRadius: CGFloat { radiusSmall }
-  public var controlMediumContent: TypeStyle { labelMedium }
+  public var controlMediumContent: TypeStyle { systemSizing?.content(.medium, design: labelMedium) ?? labelMedium }
   public var controlLargeIconSize: CGFloat { iconLarge }
   public var controlLargeGap: CGFloat { spacing2 }
   public var controlLargePaddingBlock: CGFloat { spacing15 }
   public var controlLargePaddingInline: CGFloat { spacing4 }
   public var controlLargeRadius: CGFloat { radiusMedium }
-  public var controlLargeContent: TypeStyle { labelMedium }
+  public var controlLargeContent: TypeStyle { systemSizing?.content(.large, design: labelMedium) ?? labelMedium }
   public var calendarMediumCellSize: CGFloat { controlMediumSize }
   public var calendarSmallCellSize: CGFloat { controlSmallSize }
   public var checkboxThickness: CGFloat { strokeControl }
@@ -569,6 +633,9 @@ public struct ThemeVariables: Sendable {
   public var switchLargeWidth: CGFloat { spacing11 }
   public var switchLargeHeight: CGFloat { spacing6 }
   public var switchLargeThumb: CGFloat { spacing5 }
+  public var tabsIconSize: CGFloat { spacing35 }
+  public var tabsCloseIconSize: CGFloat { spacing3 }
+  public var toastTransitionOffset: CGFloat { spacing25 }
   public var controlColorNormalSurface: ColorDescriptor { ColorDescriptor(
     normalColor: colorSurface,
     hoveredColor: colorSurfaceSubtle,
@@ -664,6 +731,188 @@ public struct ThemeVariables: Sendable {
     pressedOpacity: 0.9,
     disabledColor: colorContentFaint
   ) }
+
+  /// Resolves runtime system metrics without changing palette or recipe data.
+  internal func resolvingSystemSizing(_ metrics: SystemSizingMetrics) -> ThemeVariables {
+    let scale = metrics.bodyFontSize / bodyMedium.size
+    var result = ThemeVariables(
+      colorPrimary: colorPrimary,
+      colorNeutral: colorNeutral,
+      colorInfo: colorInfo,
+      colorSuccess: colorSuccess,
+      colorWarning: colorWarning,
+      colorDanger: colorDanger,
+      colorCanvas: colorCanvas,
+      colorSurface: colorSurface,
+      colorSurfaceMuted: colorSurfaceMuted,
+      colorSurfaceSunken: colorSurfaceSunken,
+      colorSurfaceSubtle: colorSurfaceSubtle,
+      colorSurfaceInset: colorSurfaceInset,
+      colorSurfaceRaised: colorSurfaceRaised,
+      colorSurfaceOverlay: colorSurfaceOverlay,
+      colorSurfaceChrome: colorSurfaceChrome,
+      colorSurfaceColumn: colorSurfaceColumn,
+      colorContent: colorContent,
+      colorContentSecondary: colorContentSecondary,
+      colorContentNav: colorContentNav,
+      colorContentMuted: colorContentMuted,
+      colorContentSubtle: colorContentSubtle,
+      colorContentFaint: colorContentFaint,
+      colorBorder: colorBorder,
+      colorBorderStrong: colorBorderStrong,
+      colorBorderMuted: colorBorderMuted,
+      colorOnAccent: colorOnAccent,
+      controlPressedAlpha: controlPressedAlpha,
+      controlFieldRadius: controlFieldRadius,
+      controlContainerRadius: controlContainerRadius,
+      controlTinySize: metrics.control(.tiny).height,
+      controlSmallSize: metrics.control(.small).height,
+      controlMediumPaddingInline: controlMediumPaddingInline * scale,
+      controlMediumSize: metrics.control(.medium).height,
+      controlLargeSize: metrics.control(.large).height,
+      shadow2xs: shadow2xs,
+      shadowXs: shadowXs,
+      shadowSm: shadowSm,
+      shadowMd: shadowMd,
+      shadowLg: shadowLg,
+      shadowXl: shadowXl,
+      shadow2xl: shadow2xl,
+      focusWidth: focusWidth,
+      focusOffset: focusOffset,
+      focusGlowShade: focusGlowShade,
+      focusGlowAlpha: focusGlowAlpha,
+      focusRingShade: focusRingShade,
+      focusRingAlpha: focusRingAlpha,
+      frameWindowRadius: frameWindowRadius,
+      frameWindowWidth: frameWindowWidth * scale,
+      framePopoverRadius: framePopoverRadius,
+      frameTitlebarSize: frameTitlebarSize * scale,
+      frameSidebarWidth: frameSidebarWidth * scale,
+      frameSidebarIconWidth: frameSidebarIconWidth * scale,
+      frameRailWidth: frameRailWidth * scale,
+      frameAsideWidth: frameAsideWidth * scale,
+      frameNavGap: frameNavGap * scale,
+      iconSmall: iconSmall * scale,
+      iconMedium: iconMedium * scale,
+      iconLarge: iconLarge * scale,
+      motionDuration: motionDuration,
+      motionEasing: motionEasing,
+      radiusNone: radiusNone,
+      radiusTiny: radiusTiny,
+      radiusSmall: radiusSmall,
+      radiusMedium: radiusMedium,
+      radiusLarge: radiusLarge,
+      radiusBig: radiusBig,
+      radiusFull: radiusFull,
+      spacingPx: spacingPx,
+      spacing0: spacing0 * scale,
+      spacing05: spacing05 * scale,
+      spacing1: spacing1 * scale,
+      spacing15: spacing15 * scale,
+      spacing2: spacing2 * scale,
+      spacing25: spacing25 * scale,
+      spacing3: spacing3 * scale,
+      spacing35: spacing35 * scale,
+      spacing4: spacing4 * scale,
+      spacing5: spacing5 * scale,
+      spacing6: spacing6 * scale,
+      spacing7: spacing7 * scale,
+      spacing8: spacing8 * scale,
+      spacing9: spacing9 * scale,
+      spacing10: spacing10 * scale,
+      spacing11: spacing11 * scale,
+      spacing12: spacing12 * scale,
+      spacing14: spacing14 * scale,
+      spacing16: spacing16 * scale,
+      spacing20: spacing20 * scale,
+      strokeHairline: strokeHairline,
+      strokeControl: strokeControl,
+      headlineSmall: headlineSmall.scaled(by: scale),
+      headlineMedium: headlineMedium.scaled(by: scale),
+      headlineLarge: headlineLarge.scaled(by: scale),
+      titleSmall: titleSmall.scaled(by: scale),
+      titleMedium: titleMedium.scaled(by: scale),
+      titleLarge: titleLarge.scaled(by: scale),
+      bodySmall: bodySmall.scaled(by: scale),
+      bodyMedium: bodyMedium.scaled(by: scale),
+      bodyLarge: bodyLarge.scaled(by: scale),
+      labelQuiet: labelQuiet.scaled(by: scale),
+      labelStrong: labelStrong.scaled(by: scale),
+      labelSmall: labelSmall.scaled(by: scale),
+      labelMedium: labelMedium.scaled(by: scale),
+      labelLarge: labelLarge.scaled(by: scale),
+      captionSmall: captionSmall.scaled(by: scale),
+      captionMedium: captionMedium.scaled(by: scale),
+      captionLarge: captionLarge.scaled(by: scale),
+      washSurface: washSurface,
+      washEdge: washEdge,
+      calendarCellGap: calendarCellGap * scale,
+      checkboxRadius: checkboxRadius,
+      dateRangePickerSideWidth: dateRangePickerSideWidth * scale,
+      dateRangePickerTriggerMinWidth: dateRangePickerTriggerMinWidth * scale,
+      dateRangePickerTimeMinWidth: dateRangePickerTimeMinWidth * scale,
+      dateRangePickerKeyTracking: dateRangePickerKeyTracking,
+      dialogWidth: dialogWidth * scale,
+      dialogScrimAlpha: dialogScrimAlpha,
+      dialogDangerBorderAlpha: dialogDangerBorderAlpha,
+      drawerSize: drawerSize * scale,
+      menuMinWidth: menuMinWidth * scale,
+      menuItemPadding: menuItemPadding * scale,
+      preferencesWidth: preferencesWidth * scale,
+      previewCardOpenDelay: previewCardOpenDelay,
+      previewCardCloseDelay: previewCardCloseDelay,
+      previewCardWidth: previewCardWidth * scale,
+      progressGradientFrom: progressGradientFrom,
+      progressGradientTo: progressGradientTo,
+      searchFieldInputWidth: searchFieldInputWidth * scale,
+      segmentedControlInset: segmentedControlInset * scale,
+      shortcutRecorderWidth: shortcutRecorderWidth * scale,
+      shortcutRecorderRejectDuration: shortcutRecorderRejectDuration,
+      sliderMediumTrack: sliderMediumTrack * scale,
+      sliderMediumThumb: sliderMediumThumb * scale,
+      sliderThumbInk: sliderThumbInk,
+      sliderThumbLift: sliderThumbLift,
+      sliderThumbEdgeWidth: sliderThumbEdgeWidth,
+      sliderThumbHotScale: sliderThumbHotScale,
+      switchMediumWidth: switchMediumWidth * scale,
+      switchMediumHeight: switchMediumHeight * scale,
+      switchMediumThumb: switchMediumThumb * scale,
+      tabsPulseDuration: tabsPulseDuration,
+      tabsPulseOpacity: tabsPulseOpacity,
+      toastNoticeDuration: toastNoticeDuration,
+      toastActionDuration: toastActionDuration,
+      toastTransitionDuration: toastTransitionDuration,
+      toastTransitionX1: toastTransitionX1,
+      toastTransitionY1: toastTransitionY1,
+      toastTransitionX2: toastTransitionX2,
+      toastTransitionY2: toastTransitionY2,
+      toastTransitionScale: toastTransitionScale,
+      toastMaxWidth: toastMaxWidth * scale,
+      tooltipOpenDelay: tooltipOpenDelay,
+      tooltipCloseDelay: tooltipCloseDelay,
+      treeTypeaheadWindow: treeTypeaheadWindow,
+      controlColorRecessedBorder: controlColorRecessedBorder,
+      controlColorFilledSurfaceNormalShade: controlColorFilledSurfaceNormalShade,
+      controlColorFilledSurfaceHoveredShade: controlColorFilledSurfaceHoveredShade,
+      controlColorFilledSurfacePressedShade: controlColorFilledSurfacePressedShade,
+      controlColorFilledBorder: controlColorFilledBorder,
+      controlColorTintedContentNormalShade: controlColorTintedContentNormalShade,
+      controlColorTintedContentHoveredShade: controlColorTintedContentHoveredShade,
+      controlColorTintedContentPressedShade: controlColorTintedContentPressedShade,
+      controlColorTintedBorder: controlColorTintedBorder,
+      controlColorOutlinedContentNormalShade: controlColorOutlinedContentNormalShade,
+      controlColorOutlinedContentHoveredShade: controlColorOutlinedContentHoveredShade,
+      controlColorOutlinedContentPressedShade: controlColorOutlinedContentPressedShade,
+      controlColorOutlinedBorder: controlColorOutlinedBorder,
+      controlColorPlainSurface: controlColorPlainSurface,
+      controlColorPlainContentNormalShade: controlColorPlainContentNormalShade,
+      controlColorPlainContentHoveredShade: controlColorPlainContentHoveredShade,
+      controlColorPlainContentPressedShade: controlColorPlainContentPressedShade,
+      controlColorPlainBorder: controlColorPlainBorder
+    )
+    result.systemSizing = metrics
+    return result
+  }
 }
 
 public extension ThemeVariables {

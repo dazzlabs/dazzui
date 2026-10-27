@@ -5,9 +5,9 @@ import { Col, Row, Text } from '../../components/stage'
 import type { Story } from '../../lib/story'
 
 /*
- * React only, for now: no other platform draws a month grid yet, so this
- * story sits outside the directory codegen compiles. Moving it up is the
- * claim that every platform maps `Calendar`.
+ * Outside the shared portable pipeline: not every toolkit draws this grid.
+ * HarmonyOS reads this source through its own date-aware story compiler.
+ * Moving it up is the claim that every platform maps `Calendar`.
  */
 
 const TODAY = new Date(2026, 9, 16)

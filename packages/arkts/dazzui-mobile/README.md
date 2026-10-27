@@ -62,6 +62,41 @@ Use `DazzMobileTheme` for these callbacks: on the API 26 emulator, raw
 use `darkColors`. The scope observes configuration changes, resolves the same
 effective palette for both paths, and removes its observer when unmounted.
 
+## System fonts
+
+Font following is a host setting, independent of `DazzMobileTheme.family` and
+`appearance`. The gallery enables it in `AppScope/app.json5` with
+`app.configuration: "$profile:configuration"` and this
+`AppScope/resources/base/profile/configuration.json`:
+
+```json
+{ "configuration": { "fontSizeScale": "followSystem" } }
+```
+
+Use the same setting in your host app. Keep native font sizes in fp (numeric
+ArkUI font sizes are fp), retain the default UI font, and allow content to grow.
+ArkUI handles the selected font, fallback, weight scaling and native control
+sizing, including accessibility sizes. Choosing another ds family changes only
+colors. Do not call `ApplicationContext.setFontSizeScale` to implement a theme
+or font-following toggle: it overrides the app's policy and unsubscribes from
+system font changes. To keep a fixed app font policy, omit `followSystem` from
+the host configuration instead.
+
+`readSystemFontSettings(uiContext)` reads `fontId`, `fontScale`,
+`fontWeightScale`, `followsSystem` and the configured generic font families.
+It queries fonts inside the supplied UI context and returns a fresh snapshot.
+The families are configuration metadata, not the active selected face. Hosts
+can read again in their application `environment` callback when settings change;
+the native controls already update without a DazzUI font wrapper.
+
+After installing the gallery, `pnpm harmony:mobile:test:system` checks native
+text scaling and verifies that a color-family switch preserves its size. The
+test page uses a process-local scale override, then the script restarts the
+normal gallery to restore system following. `HARMONY_DEVICE` selects a phone or
+tablet when more than one is connected.
+Pass an output directory after the command to save the 1x, 2x and recolored
+2x native captures with their measured report.
+
 ## Generated colors
 
 `pnpm tokens` runs `ds/plugins/harmony-mobile.mjs` and distributes the committed
@@ -134,3 +169,11 @@ HarmonyOS API 26 phone emulator: HAP compilation/install/start, standalone HAR
 compilation and archive inspection, all 74 native theme checks (45 roles in
 outer, nested and sibling scopes), and the native interaction suite passed.
 Runtime verification on API 20 and physical phones/tablets has not been performed.
+
+System-font verification on 2026-10-17–18 also passed on that API 26 phone emulator:
+the native 16 fp text resolved to 16 vp at 1x and 32 vp at 2x, with measured
+text heights of approximately 18.67 and 37.67 vp. Switching Studio to Ember
+changed the native brand color while preserving the 2x text height. The test
+then restarted the gallery to remove its process-local scale override.
+The native button and text field also grew from 40 vp to approximately
+53.67 vp at 2x; both retained that height after the family switch.

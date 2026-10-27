@@ -45,7 +45,8 @@ public partial class App : Application
         }
         var (page, theme) = Location.Read(arguments);
         window = new Window { Title = "DazzUI — WinUI 3 example" };
-        var shell = new Shell(page, theme);
+        var shell = new Shell(page, theme, arguments.Contains("--smoke-test") || arguments.Contains("--design-sizing")
+            ? ThemeSizing.Design : ThemeSizing.System);
         window.Content = shell;
         if (window.AppWindow.Presenter is OverlappedPresenter presenter)
         {

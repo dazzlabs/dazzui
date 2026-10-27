@@ -111,6 +111,10 @@ public struct TypeStyle: Sendable, Equatable {
     self.lineHeight = lineHeight
   }
 
+  internal func scaled(by scale: CGFloat) -> TypeStyle {
+    TypeStyle(family: family, size: size * scale, weight: weight, lineHeight: lineHeight * scale)
+  }
+
   /// The font this face resolves to.
   ///
   /// Every face in the graph leads its stack with `-apple-system`, which on

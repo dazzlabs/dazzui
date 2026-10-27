@@ -6,3 +6,12 @@ date-range-picker:
   side-width:
     $type: dimension
     $value: 12rem
+  trigger-min-width:
+    $type: dimension
+    $value: 16rem
+  time-min-width:
+    $type: dimension
+    $value: 5rem
+  key-tracking:
+    $type: number
+    $value: 0.06

@@ -179,6 +179,10 @@ parts.
   `example/` is the Stage-model PC/2in1 gallery (HarmonyOS SDK 6.0.0 / API 20),
   whose typed scenes, themes and Fluent SVGs come from `pnpm codegen`.
   Native inputs, selection controls, menus, dialogs and splitters own behavior.
+  `DazzTheme.sizing` selects `design` (default) or runtime `system` fonts and
+  control sizing independently from `name`; the gallery opts into system fonts
+  in its AppScope configuration profile. Resolved token fonts use
+  `tokens.fontSize(value)` (vp) to avoid applying the native font scale twice.
   Open `example/` in DevEco Studio; `pnpm harmony:build` builds its HAP,
   `pnpm harmony:har` the standalone library, and `pnpm harmony:test` the
   generator/non-UI runtime checks. `pnpm harmony` builds, installs and starts on
@@ -189,6 +193,10 @@ parts.
   `contentHeight`, `contentAlign` and `onAction`; React story names stay intact.
   Use `@LocalBuilder` for forwarded slots so their state stays bound to the
   owner, and provide a dialog context object rather than a Function value.
+  Use `LayoutPolicy.wrapContent` for intrinsic stage layout: a Flex width of
+  `auto` still fills its parent. Feed explicit host-area width/height to native
+  RowSplit when the window resizes, so its cached drag positions reset without
+  recreating controls; retain sidebar widths only during divider drags.
   The initial mapping is not in the full-support
   or conformance gate: unmapped scenes appear as explicit gaps, recorded in
   `example/coverage.json`. `pnpm harmony:conformance` opens a native capture page
@@ -196,7 +204,10 @@ parts.
   verification requirements; Node tests do not compile ArkUI.
 
 - `packages/arkts/dazzui-mobile` (`@dazzlabs/dazzui-mobile`) — native
-  HarmonyOS mobile, outside pnpm. It supplies only ds colors to stock ArkUI
+  HarmonyOS mobile, outside pnpm. Its host configuration opts into
+  `fontSizeScale: "followSystem"`; `readSystemFontSettings` exposes configuration
+  metadata while ArkUI owns font selection, scaling and native control sizing.
+  It supplies only ds colors to stock ArkUI
   controls through `DazzMobileTheme` / `WithTheme`; do not port desktop
   geometry, draw controls or add per-control wrappers. API 20 is the minimum.
   `ds/plugins/harmony-mobile.mjs` generates committed

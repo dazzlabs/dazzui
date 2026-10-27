@@ -34,10 +34,11 @@ public sealed class Shell : UserControl
     private readonly Resizer themesResizer;
     private string query = "";
 
-    public Shell(string? pageId, ThemeChoice theme)
+    public Shell(string? pageId, ThemeChoice theme, ThemeSizing sizing = ThemeSizing.Design)
     {
         Page = Stories.Find(pageId)?.Id;
         Theme = theme;
+        Sizing = sizing;
         list = new ComponentList(this);
         toolbar = new Toolbar(this);
         themes = new ThemePanel(this);
@@ -69,6 +70,7 @@ public sealed class Shell : UserControl
         root.Children.Add(window);
         root.Children.Add(Overlay.Layer);
         Content = root;
+        Appearance.Follow(this, theme => theme.Typography(this, "bodyMedium"));
 
         // Ctrl+B puts the list away, as the web's sidebar does with ⌘B.
         var toggle = new KeyboardAccelerator { Key = VirtualKey.B, Modifiers = VirtualKeyModifiers.Control };
@@ -83,6 +85,13 @@ public sealed class Shell : UserControl
     public string? Page { get; private set; }
 
     public ThemeChoice Theme { get; private set; }
+    public ThemeSizing Sizing { get; private set; }
+
+    public void ChooseSizing(ThemeSizing sizing)
+    {
+        Sizing = sizing;
+        ApplyTheme();
+    }
 
     public string Query
     {
@@ -140,7 +149,7 @@ public sealed class Shell : UserControl
 
     private void ApplyTheme()
     {
-        var theme = Theme.Theme;
+        var theme = new Theme(Theme.Id, Sizing);
         RequestedTheme = theme.IsDark ? ElementTheme.Dark : ElementTheme.Light;
         Appearance.SetTheme(this, theme);
         // A UserControl paints no background of its own; its root does.
@@ -148,7 +157,6 @@ public sealed class Shell : UserControl
         Foreground = theme.Brush("color.content");
         theme.Typography(this, "bodyMedium");
         themes.Refresh();
-        Themed.Refresh();
     }
 
     private void ShowPage()

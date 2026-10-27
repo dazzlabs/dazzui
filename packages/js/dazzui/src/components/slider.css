@@ -105,7 +105,9 @@
   );
 }
 
-.dz-slider__thumb:focus-visible {
+/* Base UI's range input owns focus inside the painted thumb. */
+.dz-slider__thumb:focus-visible,
+.dz-slider__thumb:has(> input:focus-visible) {
   outline: var(--focus-width) solid var(--focus-ring);
   outline-offset: var(--focus-offset);
 }

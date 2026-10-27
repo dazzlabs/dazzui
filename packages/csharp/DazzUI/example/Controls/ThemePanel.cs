@@ -12,6 +12,7 @@ public sealed class ThemePanel : Surface
     private readonly Shell shell;
     private readonly Toggle mode = new() { Variant = ControlVariant.Plain, Size = ControlSize.Tiny };
     private readonly Grid head = new();
+    private readonly Toggle systemSizing = new() { Content = "Follow system sizing", Size = ControlSize.Small };
     private readonly List<(Grid Grid, int Count)> grids = [];
     private readonly List<ThemeTile> tiles = [];
 
@@ -26,6 +27,8 @@ public sealed class ThemePanel : Surface
         head.Children.Add(mode);
 
         var list = new Stack(Orientation.Vertical, "spacing.0", theme => new Thickness(0, theme.Number("spacing.2"), 0, theme.Number("spacing.2")));
+        systemSizing.Click += (_, _) => shell.ChooseSizing(systemSizing.IsChecked == true ? ThemeSizing.System : ThemeSizing.Design);
+        list.Add(systemSizing);
         foreach (var group in Themes.Groups)
         {
             var section = new Stack(Orientation.Vertical, "spacing.2", theme => new Thickness(theme.Number("spacing.4"), theme.Number("spacing.2"), theme.Number("spacing.4"), theme.Number("spacing.2")));
@@ -59,6 +62,7 @@ public sealed class ThemePanel : Surface
     /// <summary>Marks the theme the window is in.</summary>
     public void Refresh()
     {
+        systemSizing.IsChecked = shell.Sizing == ThemeSizing.System;
         var dark = shell.Theme.Dark;
         mode.IsChecked = dark;
         mode.Content = Glyphs.Draw(dark ? "WeatherMoon20Regular" : "WeatherSunny20Regular", 16);

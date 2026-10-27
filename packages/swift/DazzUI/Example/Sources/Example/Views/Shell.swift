@@ -13,6 +13,7 @@ private let themesWidth = ColumnWidth(initial: 336, min: 280, max: 560)
 struct Shell: View {
   @Binding var page: String?
   @Binding var theme: ThemeChoice
+  @Binding var sizing: ThemeSizing
 
   @State private var query = ""
   @State private var listOpen = true
@@ -52,7 +53,7 @@ struct Shell: View {
       }
       .frame(maxWidth: .infinity)
       if themesOpen {
-        ThemePanel(theme: $theme, width: themes)
+        ThemePanel(theme: $theme, sizing: $sizing, width: themes)
           .overlay(alignment: .leading) {
             Resizer(outward: -1, column: themesWidth, width: $themes, label: "Resize the theme panel")
               .offset(x: -(vars.spacing1 + 1))

@@ -4,6 +4,7 @@ import { DazzTint } from '../foundation/TokenTypes'
 @Component
 export struct DazzCallout {
   @Consume('dazzui.theme') tokens: DazzTokens
+  @Provide({ allowOverride: 'dazzui.prose' }) prose: string = 'bodySmall'
   @Prop title: string = ''
   @Prop tint: DazzTint = 'info'
   @BuilderParam content: () => void = this.empty
@@ -13,7 +14,7 @@ export struct DazzCallout {
     Column({ space: this.tokens.metric('spacing.2') }) {
       if (this.title) {
         Text(this.title)
-          .fontSize(this.tokens.type('labelSmall').size)
+          .fontSize(this.tokens.fontSize(this.tokens.type('labelSmall').size))
           .fontWeight(this.tokens.type('labelStrong').weight)
           .fontColor(
             this.tokens.paint('tinted', 'content', 'normal', this.tint)

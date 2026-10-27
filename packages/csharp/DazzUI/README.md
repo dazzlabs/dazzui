@@ -68,6 +68,28 @@ The system UI face comes from Windows' message-font setting, as the browser's
 `system-ui` does. `Theme.CodeFont` exposes the Windows `ui-monospace` face used
 by code, mono fields and numeric readings. Layout retains fractional logical
 sizes, and annotation labels use React's declared leading.
+`new Theme(name, ThemeSizing.System)` independently selects runtime system
+sizing. It uses WinUI's `TextControlThemeFontSize` and
+`TextControlThemeMinHeight` resources, with the committed Windows 11 metrics
+as a fallback, and follows Windows Accessibility → Text size through
+`UISettings.TextScaleFactor`. Typography, line heights, spacing, icons and
+control boxes grow together. Corners, strokes, focus rings and animation
+timings retain their design values; colors still come from the selected
+family. XAML handles monitor DPI separately. Resolved text disables XAML's
+additional text scaling so the accessibility factor is applied once.
+
+The default `ThemeSizing.Design` retains shared geometry for conformance.
+The interactive example starts in system sizing; **Follow system sizing** in
+the theme panel switches it without rebuilding the current story. Pass
+`--design-sizing` to start with design metrics. Smoke and conformance runs
+use design sizing, with separate native system-sizing fixtures.
+
+Loaded components follow text-size changes on their UI dispatcher and retain
+native editing, selection and checked state. Host-owned panels can subscribe
+through `Appearance.Follow(panel, theme => { /* update layout */ });`; the
+subscription follows the panel's loaded/unloaded lifetime. `Theme.Text`
+returns a styled snapshot; keep host-owned text current with that callback.
+
 String annotation labels match missing font weights as CSS does and align
 their glyph baselines using the font's ascent, descent and declared leading.
 Interactive preference rows use a native button for keyboard
@@ -104,7 +126,7 @@ var scope = new DazzUI.ThemeScope
 };
 
 // A theme change preserves editing and selection state.
-scope.Theme = new DazzUI.Theme("bright-dark");
+scope.Theme = new DazzUI.Theme("bright-dark", DazzUI.ThemeSizing.System);
 ```
 
 `Appearance.SetTheme(root, theme)` also themes an existing subtree. An explicit
@@ -166,6 +188,13 @@ React's can be set, `DAZZUI_SMOKE_PAGES=a,b` narrows the pages and
 checkbox/radio automation, form validation and submission, OTP paste and
 masking, range constraints, inherited themes without resetting input, menu
 actions, popovers, dialog results and all four drawer edges.
+
+`DAZZUI_SMOKE_SUITES=system-sizing` runs only system-size fixtures. They drive
+the same text-scale notification and dispatcher path at 100%, 150% and 225%
+without modifying the user's OS settings, across drawn and Windows themes.
+They check label fit, native selection preservation, independent nested design
+scopes, host-panel notifications and unchanged palette/stroke values, then render
+all gallery pages at 225%.
 
 Reports, the runtime story list, and PNG captures are written to a unique
 ignored `artifacts/smoke-*` directory.

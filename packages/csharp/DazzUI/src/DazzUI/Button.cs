@@ -38,7 +38,7 @@ public class Button : Microsoft.UI.Xaml.Controls.Button
         ApplyTheme();
     }
 
-    private static void Changed(DependencyObject sender, DependencyPropertyChangedEventArgs args) => ((Button)sender).ApplyTheme();
+    private static void Changed(DependencyObject sender, DependencyPropertyChangedEventArgs args) => Appearance.Refresh(sender);
 
     protected override void OnApplyTemplate()
     {
@@ -47,6 +47,7 @@ public class Button : Microsoft.UI.Xaml.Controls.Button
         ApplyTheme();
         base.OnApplyTemplate();
         AlignLabel();
+        Appearance.UpdateTextScaling(this);
     }
 
     private void AlignLabel()
@@ -116,7 +117,11 @@ public class Button : Microsoft.UI.Xaml.Controls.Button
         if (Content is StackPanel row) row.Spacing = Theme.Number(profile + ".gap");
         // Inside the profile's block padding a label sits on its cap height
         // and baseline, as a lone label does, not on the face's full leading.
-        foreach (var words in parts.OfType<TextBlock>()) words.TextLineBounds = TextLineBounds.Tight;
+        foreach (var words in parts.OfType<TextBlock>())
+        {
+            words.TextLineBounds = TextLineBounds.Tight;
+            words.IsTextScaleFactorEnabled = Theme.Sizing != ThemeSizing.System;
+        }
         foreach (var icon in parts.OfType<Icon>())
             if (icon.GlyphSize != glyph)
             {

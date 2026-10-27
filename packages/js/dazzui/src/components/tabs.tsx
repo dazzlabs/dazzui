@@ -47,9 +47,6 @@ export interface TabsProps<T extends string = string> {
   className?: string
 }
 
-/** What the more-button takes of the row; reserved once anything has to go behind it. */
-const MORE_WIDTH = 28
-
 /**
  * Tabs: the navigation of a view or a toolbar. Each is its name in quiet ink,
  * and the one showing is in full ink over a rule along the row's foot — no
@@ -100,6 +97,7 @@ export function Tabs<T extends string = string>({
         `${item.value}|${item.label}|${item.count ?? ''}|${item.detail ?? ''}|${item.closable ? 1 : 0}|${item.icon ? 1 : 0}|${item.status ?? ''}`
     )
     .join('\n')
+  const hasTrailing = Boolean(trailing)
   useLayoutEffect(() => {
     const element = root.current
     const measure = ruler.current
@@ -111,7 +109,13 @@ export function Tabs<T extends string = string>({
       const small = [
         ...measure.querySelectorAll<HTMLElement>('[data-ruler="compact"]'),
       ].map(node => node.offsetWidth)
-      const trailingWidth = tail.current?.offsetWidth ?? 0
+      const trailingWidth = tail.current
+        ? tail.current.offsetWidth +
+          (parseFloat(getComputedStyle(tail.current).marginInlineStart) || 0)
+        : 0
+      const moreWidth =
+        measure.querySelector<HTMLElement>('[data-ruler="more"]')
+          ?.offsetWidth ?? 0
       const basis = whole.reduce((sum, width) => sum + width, 0) + trailingWidth
       const room = element.clientWidth - trailingWidth
       const active = items.findIndex(item => item.value === value)
@@ -119,7 +123,7 @@ export function Tabs<T extends string = string>({
       const floor = Math.min(
         basis,
         (whole[Math.max(active, 0)] ?? 0) +
-          (items.length > 1 ? MORE_WIDTH : 0) +
+          (items.length > 1 ? moreWidth : 0) +
           trailingWidth
       )
       const sum = (widths: readonly number[], count: number) =>
@@ -131,10 +135,17 @@ export function Tabs<T extends string = string>({
         const mixed = small.map((width, index) =>
           index === active ? (whole[index] ?? width) : width
         )
+        const visibleWidth = (count: number) => {
+          const widths = mixed.slice(0, count)
+          // A hidden active tab replaces the last visible peer at full width.
+          if (active >= count && count > 0)
+            widths[count - 1] = whole[active] ?? small[active] ?? 0
+          return sum(widths, widths.length)
+        }
         let shown = items.length
         while (
           shown > 1 &&
-          sum(mixed, shown) + (shown < items.length ? MORE_WIDTH : 0) > room
+          visibleWidth(shown) + (shown < items.length ? moreWidth : 0) > room
         )
           shown -= 1
         next = { compact: true, shown, basis, floor }
@@ -151,9 +162,12 @@ export function Tabs<T extends string = string>({
     solve()
     const observer = new ResizeObserver(solve)
     observer.observe(element)
+    for (const node of measure.querySelectorAll<HTMLElement>('[data-ruler]'))
+      observer.observe(node)
+    if (tail.current) observer.observe(tail.current)
     return () => observer.disconnect()
     // `signature` stands for `items`: the widths change only when what the tabs say does.
-  }, [signature, value])
+  }, [signature, value, hasTrailing])
 
   // The tab that is showing is never the one behind the more-button: it takes the last place in the row.
   const active = items.findIndex(item => item.value === value)
@@ -196,7 +210,9 @@ export function Tabs<T extends string = string>({
           data-status={item.status}
         />
       ) : null}
-      {item.icon ? <Icon icon={item.icon} size={14} /> : null}
+      {item.icon ? (
+        <Icon icon={item.icon} size="var(--tabs-icon-size)" />
+      ) : null}
       {compact && item.icon ? null : (
         <span className="dz-tabs__label">{item.label}</span>
       )}
@@ -257,7 +273,10 @@ export function Tabs<T extends string = string>({
                   variant="plain"
                   onClick={() => onClose(item.value)}
                 >
-                  <Icon icon={DismissRegular} size={12} />
+                  <Icon
+                    icon={DismissRegular}
+                    size="var(--tabs-close-icon-size)"
+                  />
                 </IconButton>
               ) : null}
             </span>
@@ -276,7 +295,7 @@ export function Tabs<T extends string = string>({
               tint="neutral"
               variant="plain"
             >
-              <Icon icon={MoreHorizontalRegular} size={14} />
+              <Icon icon={MoreHorizontalRegular} size="var(--tabs-icon-size)" />
             </IconButton>
           }
           items={hidden.map(item => ({
@@ -284,7 +303,9 @@ export function Tabs<T extends string = string>({
               item.count === undefined
                 ? item.label
                 : `${item.label} · ${item.count}`,
-            icon: item.icon ? <Icon icon={item.icon} size={14} /> : undefined,
+            icon: item.icon ? (
+              <Icon icon={item.icon} size="var(--tabs-icon-size)" />
+            ) : undefined,
             disabled: item.disabled,
             onSelect: () => onValueChange(item.value),
           }))}
@@ -299,10 +320,12 @@ export function Tabs<T extends string = string>({
 
       {/* The ruler: every tab whole, then every tab as its icon. Out of sight and out of the tree a reader walks. */}
       <div aria-hidden className="dz-tabs__ruler" ref={ruler}>
+        <span className="dz-tabs__more-ruler" data-ruler="more" />
         {items.map(item => (
           <span
             className="dz-tabs__item"
             data-ruler="whole"
+            data-active={item.value === value || undefined}
             key={`whole-${item.value}`}
           >
             <span className="dz-tabs__tab">{body(item, false)}</span>

@@ -1060,7 +1060,11 @@
   --control-tiny-padding-inline: var(--spacing-2-5);
   --control-tiny-radius: var(--radius-small);
   --control-tiny-size: var(--base-control-height-tiny);
+  --date-range-picker-key-tracking: 0.06;
   --date-range-picker-side-width: 12rem;
+  --date-range-picker-time-min-width: 5rem;
+  --date-range-picker-trigger-min-width: 16rem;
+  --dialog-danger-border-alpha: 0.34;
   --dialog-scrim-color: var(--color-content);
   --dialog-width: 27.5rem;
   --drawer-size: 22rem;
@@ -1123,6 +1127,8 @@
   --preferences-section-gap: var(--spacing-6);
   --preferences-title-gap: var(--spacing-4);
   --preferences-width: 30rem;
+  --preview-card-close-delay: 300ms;
+  --preview-card-open-delay: 600ms;
   --preview-card-width: 20rem;
   --progress-gradient-from: var(--base-color-brand-600);
   --progress-gradient-to: #a08cff;
@@ -1140,6 +1146,7 @@
   --radius-none: 0;
   --radius-small: var(--base-corner-sm);
   --radius-tiny: var(--base-corner-xs);
+  --search-field-input-width: 8.5rem;
   --segmented-control-inset: 0.1875rem;
   --shadow-2xl: 0 24px 56px 0 #00000047;
   --shadow-2xs: 0 1px 2px 0 #0000001a;
@@ -1148,6 +1155,7 @@
   --shadow-sm: 0 4px 12px 0 #00000024;
   --shadow-xl: 0 12px 32px 0 #0000003d;
   --shadow-xs: 0 1px 3px 0 #0000001f;
+  --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 8.25rem;
   --slider-large-thumb: var(--spacing-5);
   --slider-large-track: var(--spacing-2);
@@ -1191,6 +1199,10 @@
   --switch-small-height: var(--spacing-4);
   --switch-small-thumb: var(--spacing-3);
   --switch-small-width: var(--spacing-7);
+  --tabs-close-icon-size: var(--spacing-3);
+  --tabs-icon-size: var(--spacing-3-5);
+  --tabs-pulse-duration: 1400ms;
+  --tabs-pulse-opacity: 0.35;
   --title-large-font-family: var(--base-font-ui);
   --title-large-font-size: var(--base-type-title);
   --title-large-font-weight: var(--base-font-weight-semibold);
@@ -1203,7 +1215,19 @@
   --title-small-font-size: var(--base-type-body);
   --title-small-font-weight: var(--base-font-weight-semibold);
   --title-small-line-height: var(--base-leading-body);
+  --toast-action-duration: 8000ms;
   --toast-max-width: 26.25rem;
+  --toast-notice-duration: 5000ms;
+  --toast-transition-duration: 260ms;
+  --toast-transition-offset: var(--spacing-2-5);
+  --toast-transition-scale: 0.98;
+  --toast-transition-x1: 0.21;
+  --toast-transition-x2: 0.35;
+  --toast-transition-y1: 0.9;
+  --toast-transition-y2: 1.05;
+  --tooltip-close-delay: 0ms;
+  --tooltip-open-delay: 600ms;
+  --tree-typeahead-window: 600ms;
   --wash-edge: 0.2;
   --wash-surface: 0.06;
 }

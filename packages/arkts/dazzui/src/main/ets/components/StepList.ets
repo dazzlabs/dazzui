@@ -46,7 +46,7 @@ export struct DazzStep {
           .height(this.tokens.metric('icon.medium'))
       }
       Text(this.label)
-        .fontSize(this.tokens.type('labelQuiet').size)
+        .fontSize(this.tokens.fontSize(this.tokens.type('labelQuiet').size))
         .fontWeight(
           this.tokens.type(
             this.status === 'active' ? 'labelMedium' : 'labelQuiet'
@@ -65,7 +65,7 @@ export struct DazzStep {
       Blank()
       if (this.meta) {
         Text(this.meta)
-          .fontSize(this.tokens.type('labelSmall').size)
+          .fontSize(this.tokens.fontSize(this.tokens.type('labelSmall').size))
           .fontColor(
             this.status === 'active'
               ? this.tokens.paint('plain', 'content')

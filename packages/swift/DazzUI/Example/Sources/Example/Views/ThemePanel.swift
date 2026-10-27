@@ -4,6 +4,7 @@ import SwiftUI
 /// The theme, and nothing else: which half of it, then which family.
 struct ThemePanel: View {
   @Binding var theme: ThemeChoice
+  @Binding var sizing: ThemeSizing
   let width: CGFloat
 
   @Environment(\.theme) private var current
@@ -35,10 +36,16 @@ struct ThemePanel: View {
       }
       ScrollView {
         VStack(alignment: .leading, spacing: 0) {
+          DazzUI.Toggle(pressed: sizing == .system, size: .small,
+            accessibilityName: "Follow system sizing", action: {
+            sizing = sizing == .system ? .design : .system
+          }) { Text("Follow system sizing") }
+          .padding(.horizontal, vars.spacing4)
+          .padding(.bottom, vars.spacing2)
           ForEach(themeFamilyGroups, id: \.title) { group in
             VStack(alignment: .leading, spacing: vars.spacing2) {
               SectionLabel { Text(group.title) }
-                .font(.system(size: 11))
+                .font(vars.labelSmall.font)
                 .frame(height: vars.spacing5)
               Grid(horizontalSpacing: vars.spacing2, verticalSpacing: vars.spacing2) {
                 ForEach(rows(group.families), id: \.first) { row in
@@ -87,7 +94,7 @@ struct ThemePanel: View {
         VStack(spacing: 0) {
           ThemePreview(theme: choice, height: vars.spacing10, framed: false)
           Text(family.title)
-            .font(.system(size: 11, weight: .medium))
+            .font(vars.labelSmall.font)
             .lineLimit(1)
             .truncationMode(.tail)
             .padding(.horizontal, vars.spacing15)

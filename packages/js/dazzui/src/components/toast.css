@@ -23,8 +23,10 @@
   box-shadow: var(--shadow-md);
   pointer-events: auto;
   transition:
-    opacity 0.26s cubic-bezier(0.21, 0.9, 0.35, 1.05),
-    transform 0.26s cubic-bezier(0.21, 0.9, 0.35, 1.05);
+    opacity var(--toast-transition-duration)
+      cubic-bezier(var(--toast-transition-x1), var(--toast-transition-y1), var(--toast-transition-x2), var(--toast-transition-y2)),
+    transform var(--toast-transition-duration)
+      cubic-bezier(var(--toast-transition-x1), var(--toast-transition-y1), var(--toast-transition-x2), var(--toast-transition-y2));
 }
 
 /* It rises in and falls back out the way it came, so a toast that is replaced
@@ -32,7 +34,8 @@
 .dz-toast[data-starting-style],
 .dz-toast[data-ending-style] {
   opacity: 0;
-  transform: translateY(10px) scale(0.98);
+  transform: translateY(var(--toast-transition-offset))
+    scale(var(--toast-transition-scale));
 }
 
 .dz-toast__icon {
@@ -107,7 +110,7 @@
   outline: 0;
 }
 
-/* Column direction keeps the newest toast nearest the edge it hangs from. */
+/* The store is newest-first. Bottom keeps source order; top reverses it. */
 .dz-toast-viewport[data-placement='bottom'] {
   bottom: 0;
   flex-direction: column;

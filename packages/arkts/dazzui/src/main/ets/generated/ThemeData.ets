@@ -93,6 +93,12 @@ export const BASE: ThemeData = {
     "progress.gradient.to": "#FFA08CFF",
     "focus.ring": "#736B4DFF",
     "focus.glow": "#246B4DFF",
+    "focus.glow.primary": "#246B4DFF",
+    "focus.glow.neutral": "#24525252",
+    "focus.glow.info": "#240084D1",
+    "focus.glow.success": "#241F9D5E",
+    "focus.glow.warning": "#24E0912A",
+    "focus.glow.danger": "#24D64040",
     "dialog.scrim": "#4012142A"
   },
   "metrics": {
@@ -133,7 +139,11 @@ export const BASE: ThemeData = {
     "control.tiny.padding.inline": 10,
     "control.tiny.radius": 8,
     "control.tiny.size": 24,
+    "date-range-picker.key-tracking": 0.06,
     "date-range-picker.side-width": 192,
+    "date-range-picker.time-min-width": 80,
+    "date-range-picker.trigger-min-width": 256,
+    "dialog.danger-border-alpha": 0.34,
     "dialog.width": 440,
     "drawer.size": 352,
     "focus.offset": 0,
@@ -154,6 +164,10 @@ export const BASE: ThemeData = {
     "menu.item-padding": 7,
     "menu.min-width": 176,
     "motion.duration": 150,
+    "motion.easing.x1": 0.4,
+    "motion.easing.y1": 0,
+    "motion.easing.x2": 0.2,
+    "motion.easing.y2": 1,
     "preferences.footer-gap": 4,
     "preferences.group-gap": 40,
     "preferences.heading-gap": 8,
@@ -162,6 +176,8 @@ export const BASE: ThemeData = {
     "preferences.section-gap": 24,
     "preferences.title-gap": 16,
     "preferences.width": 480,
+    "preview-card.close-delay": 300,
+    "preview-card.open-delay": 600,
     "preview-card.width": 320,
     "radio.large.box": 20,
     "radio.large.dot": 10,
@@ -177,7 +193,9 @@ export const BASE: ThemeData = {
     "radius.none": 0,
     "radius.small": 8,
     "radius.tiny": 7,
+    "search-field.input-width": 136,
     "segmented-control.inset": 3,
+    "shortcut-recorder.reject-duration": 360,
     "shortcut-recorder.width": 132,
     "slider.large.thumb": 20,
     "slider.large.track": 8,
@@ -221,7 +239,23 @@ export const BASE: ThemeData = {
     "switch.small.height": 16,
     "switch.small.thumb": 12,
     "switch.small.width": 28,
+    "tabs.close-icon-size": 12,
+    "tabs.icon-size": 14,
+    "tabs.pulse-duration": 1400,
+    "tabs.pulse-opacity": 0.35,
+    "toast.action-duration": 8000,
     "toast.max-width": 420,
+    "toast.notice-duration": 5000,
+    "toast.transition.duration": 260,
+    "toast.transition.offset": 10,
+    "toast.transition.scale": 0.98,
+    "toast.transition.x1": 0.21,
+    "toast.transition.x2": 0.35,
+    "toast.transition.y1": 0.9,
+    "toast.transition.y2": 1.05,
+    "tooltip.close-delay": 0,
+    "tooltip.open-delay": 600,
+    "tree.typeahead-window": 600,
     "wash.edge": 0.2,
     "wash.surface": 0.06
   },
@@ -797,6 +831,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFD6FF3F",
       "focus.ring": "#73111C2E",
       "focus.glow": "#24111C2E",
+      "focus.glow.primary": "#24111C2E",
       "dialog.scrim": "#40111C2E"
     },
     "metrics": {
@@ -1062,6 +1097,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFD6FF3F",
       "focus.ring": "#8CC2EA2C",
       "focus.glow": "#24C2EA2C",
+      "focus.glow.primary": "#24C2EA2C",
       "dialog.scrim": "#40F2F4EF"
     },
     "metrics": {
@@ -1392,6 +1428,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FF74C9DC",
       "focus.ring": "#730F7A92",
       "focus.glow": "#240F7A92",
+      "focus.glow.primary": "#240F7A92",
       "dialog.scrim": "#400E1F26"
     },
     "metrics": {},
@@ -1568,6 +1605,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FF74C9DC",
       "focus.ring": "#800F7A92",
       "focus.glow": "#240F7A92",
+      "focus.glow.primary": "#240F7A92",
       "dialog.scrim": "#40EAF3F7"
     },
     "metrics": {},
@@ -1887,6 +1925,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FF8F8F99",
       "focus.ring": "#733F3F46",
       "focus.glow": "#243F3F46",
+      "focus.glow.primary": "#243F3F46",
       "dialog.scrim": "#4017171B"
     },
     "metrics": {
@@ -2091,6 +2130,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFA1A1AA",
       "focus.ring": "#80D4D4D8",
       "focus.glow": "#24D4D4D8",
+      "focus.glow.primary": "#24D4D4D8",
       "dialog.scrim": "#40F4F4F6"
     },
     "metrics": {
@@ -2426,6 +2466,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFE9A969",
       "focus.ring": "#73AD5717",
       "focus.glow": "#24AD5717",
+      "focus.glow.primary": "#24AD5717",
       "dialog.scrim": "#40241A11"
     },
     "metrics": {},
@@ -2622,6 +2663,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFF0B877",
       "focus.ring": "#80E0954A",
       "focus.glow": "#24E0954A",
+      "focus.glow.primary": "#24E0954A",
       "dialog.scrim": "#40F6EFE4"
     },
     "metrics": {},
@@ -2940,6 +2982,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFB5ABFC",
       "focus.ring": "#738375D1",
       "focus.glow": "#248375D1",
+      "focus.glow.primary": "#248375D1",
       "dialog.scrim": "#4023242E"
     },
     "metrics": {
@@ -3129,6 +3172,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFB5ABFC",
       "focus.ring": "#808375D1",
       "focus.glow": "#248375D1",
+      "focus.glow.primary": "#248375D1",
       "dialog.scrim": "#40E9E9ED"
     },
     "metrics": {
@@ -3464,6 +3508,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFAABEE7",
       "focus.ring": "#734C6499",
       "focus.glow": "#244C6499",
+      "focus.glow.primary": "#244C6499",
       "dialog.scrim": "#401A1B26"
     },
     "metrics": {
@@ -3743,6 +3788,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFBAD0FD",
       "focus.ring": "#805E84D6",
       "focus.glow": "#245E84D6",
+      "focus.glow.primary": "#245E84D6",
       "dialog.scrim": "#40A9B1D6"
     },
     "metrics": {
@@ -4148,6 +4194,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFAEC3E5",
       "focus.ring": "#7355709B",
       "focus.glow": "#2455709B",
+      "focus.glow.primary": "#2455709B",
       "dialog.scrim": "#401E1E2E"
     },
     "metrics": {
@@ -4427,6 +4474,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFC1D8FD",
       "focus.ring": "#806992D6",
       "focus.glow": "#246992D6",
+      "focus.glow.primary": "#246992D6",
       "dialog.scrim": "#40CDD6F4"
     },
     "metrics": {
@@ -4832,6 +4880,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFA7C5FB",
       "focus.ring": "#731E66F5",
       "focus.glow": "#241E66F5",
+      "focus.glow.primary": "#241E66F5",
       "dialog.scrim": "#404C4F69"
     },
     "metrics": {
@@ -5111,6 +5160,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFB7CFFE",
       "focus.ring": "#805882D8",
       "focus.glow": "#245882D8",
+      "focus.glow.primary": "#245882D8",
       "dialog.scrim": "#40EFF1F5"
     },
     "metrics": {
@@ -5516,6 +5566,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFB0B4DF",
       "focus.ring": "#734E5187",
       "focus.glow": "#244E5187",
+      "focus.glow.primary": "#244E5187",
       "dialog.scrim": "#40060B1E"
     },
     "metrics": {
@@ -5795,6 +5846,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFB8BEFF",
       "focus.ring": "#80666ABE",
       "focus.glow": "#24666ABE",
+      "focus.glow.primary": "#24666ABE",
       "dialog.scrim": "#40FFCEAD"
     },
     "metrics": {
@@ -6200,6 +6252,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFACC7C3",
       "focus.ring": "#734F746F",
       "focus.glow": "#244F746F",
+      "focus.glow.primary": "#244F746F",
       "dialog.scrim": "#402D353B"
     },
     "metrics": {
@@ -6479,6 +6532,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFB5DED8",
       "focus.ring": "#805F9B93",
       "focus.glow": "#245F9B93",
+      "focus.glow.primary": "#245F9B93",
       "dialog.scrim": "#40D3C6AA"
     },
     "metrics": {
@@ -6884,6 +6938,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FF92BEF5",
       "focus.ring": "#73205EA6",
       "focus.glow": "#24205EA6",
+      "focus.glow.primary": "#24205EA6",
       "dialog.scrim": "#40100F0F"
     },
     "metrics": {
@@ -7163,6 +7218,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFB1CDEE",
       "focus.ring": "#805B80AC",
       "focus.glow": "#245B80AC",
+      "focus.glow.primary": "#245B80AC",
       "dialog.scrim": "#40FFFCF0"
     },
     "metrics": {
@@ -7568,6 +7624,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFADC3BE",
       "focus.ring": "#734E6C65",
       "focus.glow": "#244E6C65",
+      "focus.glow.primary": "#244E6C65",
       "dialog.scrim": "#40282828"
     },
     "metrics": {
@@ -7847,6 +7904,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFB5D8CF",
       "focus.ring": "#80609086",
       "focus.glow": "#24609086",
+      "focus.glow.primary": "#24609086",
       "dialog.scrim": "#40D4BE98"
     },
     "metrics": {
@@ -8252,6 +8310,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFA8DCB0",
       "focus.ring": "#73519C61",
       "focus.glow": "#24519C61",
+      "focus.glow.primary": "#24519C61",
       "dialog.scrim": "#400B0C16"
     },
     "metrics": {
@@ -8531,6 +8590,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFBDFDC7",
       "focus.ring": "#8053CE72",
       "focus.glow": "#2453CE72",
+      "focus.glow.primary": "#2453CE72",
       "dialog.scrim": "#40DDF7FF"
     },
     "metrics": {
@@ -8936,6 +8996,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFCDCBBE",
       "focus.ring": "#73888573",
       "focus.glow": "#24888573",
+      "focus.glow.primary": "#24888573",
       "dialog.scrim": "#401F1F28"
     },
     "metrics": {
@@ -9215,6 +9276,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFECE8D4",
       "focus.ring": "#80B2AD91",
       "focus.glow": "#24B2AD91",
+      "focus.glow.primary": "#24B2AD91",
       "dialog.scrim": "#40DCD7BA"
     },
     "metrics": {
@@ -9620,6 +9682,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFC7B9B5",
       "focus.ring": "#73705E59",
       "focus.glow": "#24705E59",
+      "focus.glow.primary": "#24705E59",
       "dialog.scrim": "#400C0B0C"
     },
     "metrics": {
@@ -9899,6 +9962,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFDEC8C2",
       "focus.ring": "#80987B74",
       "focus.glow": "#24987B74",
+      "focus.glow.primary": "#24987B74",
       "dialog.scrim": "#40FAFCFB"
     },
     "metrics": {
@@ -10304,6 +10368,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFAECADA",
       "focus.ring": "#73567D92",
       "focus.glow": "#24567D92",
+      "focus.glow.primary": "#24567D92",
       "dialog.scrim": "#4016242D"
     },
     "metrics": {
@@ -10583,6 +10648,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFB9E4FC",
       "focus.ring": "#8067A4C5",
       "focus.glow": "#2467A4C5",
+      "focus.glow.primary": "#2467A4C5",
       "dialog.scrim": "#40D6E2EE"
     },
     "metrics": {
@@ -10988,6 +11054,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFA7C3FD",
       "focus.ring": "#733264EB",
       "focus.glow": "#243264EB",
+      "focus.glow.primary": "#243264EB",
       "dialog.scrim": "#40212121"
     },
     "metrics": {
@@ -11267,6 +11334,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFBDCFFB",
       "focus.ring": "#806481D3",
       "focus.glow": "#246481D3",
+      "focus.glow.primary": "#246481D3",
       "dialog.scrim": "#40FAFAFA"
     },
     "metrics": {
@@ -11672,6 +11740,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFE0B589",
       "focus.ring": "#738F5808",
       "focus.glow": "#248F5808",
+      "focus.glow.primary": "#248F5808",
       "dialog.scrim": "#40121212"
     },
     "metrics": {
@@ -11951,6 +12020,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFFDC489",
       "focus.ring": "#80BA761F",
       "focus.glow": "#24BA761F",
+      "focus.glow.primary": "#24BA761F",
       "dialog.scrim": "#40BEBEBE"
     },
     "metrics": {
@@ -12356,6 +12426,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFB1B79D",
       "focus.ring": "#734A512F",
       "focus.glow": "#244A512F",
+      "focus.glow.primary": "#244A512F",
       "dialog.scrim": "#40222222"
     },
     "metrics": {
@@ -12635,6 +12706,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFB9C19A",
       "focus.ring": "#80646E37",
       "focus.glow": "#24646E37",
+      "focus.glow.primary": "#24646E37",
       "dialog.scrim": "#40C2C2B0"
     },
     "metrics": {
@@ -13040,6 +13112,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFAFBECE",
       "focus.ring": "#73506478",
       "focus.glow": "#24506478",
+      "focus.glow.primary": "#24506478",
       "dialog.scrim": "#402E3440"
     },
     "metrics": {
@@ -13319,6 +13392,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFB8CFE7",
       "focus.ring": "#806685A4",
       "focus.glow": "#246685A4",
+      "focus.glow.primary": "#246685A4",
       "dialog.scrim": "#40D8DEE9"
     },
     "metrics": {
@@ -13724,6 +13798,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FF9FBEAE",
       "focus.ring": "#73325C49",
       "focus.glow": "#24325C49",
+      "focus.glow.primary": "#24325C49",
       "dialog.scrim": "#40111C18"
     },
     "metrics": {
@@ -14003,6 +14078,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FF9ECDB5",
       "focus.ring": "#80397E60",
       "focus.glow": "#24397E60",
+      "focus.glow.primary": "#24397E60",
       "dialog.scrim": "#40C1C497"
     },
     "metrics": {
@@ -14408,6 +14484,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFE3BC9E",
       "focus.ring": "#739B6940",
       "focus.glow": "#249B6940",
+      "focus.glow.primary": "#249B6940",
       "dialog.scrim": "#4005182E"
     },
     "metrics": {
@@ -14687,6 +14764,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFFDD3B3",
       "focus.ring": "#80D38543",
       "focus.glow": "#24D38543",
+      "focus.glow.primary": "#24D38543",
       "dialog.scrim": "#40F6DCAC"
     },
     "metrics": {
@@ -15092,6 +15170,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFE5B3A4",
       "focus.ring": "#73975745",
       "focus.glow": "#24975745",
+      "focus.glow.primary": "#24975745",
       "dialog.scrim": "#402C2525"
     },
     "metrics": {
@@ -15371,6 +15450,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFFCC5B5",
       "focus.ring": "#80D06D51",
       "focus.glow": "#24D06D51",
+      "focus.glow.primary": "#24D06D51",
       "dialog.scrim": "#40E6D9DB"
     },
     "metrics": {
@@ -15776,6 +15856,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFAAD5DD",
       "focus.ring": "#7356949F",
       "focus.glow": "#2456949F",
+      "focus.glow.primary": "#2456949F",
       "dialog.scrim": "#40575279"
     },
     "metrics": {
@@ -16055,6 +16136,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFC2DEE2",
       "focus.ring": "#80759BA1",
       "focus.glow": "#24759BA1",
+      "focus.glow.primary": "#24759BA1",
       "dialog.scrim": "#40FAF4ED"
     },
     "metrics": {
@@ -16460,6 +16542,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFB1B5B7",
       "focus.ring": "#734B5053",
       "focus.glow": "#244B5053",
+      "focus.glow.primary": "#244B5053",
       "dialog.scrim": "#40101315"
     },
     "metrics": {
@@ -16739,6 +16822,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFB9BFC3",
       "focus.ring": "#80656C71",
       "focus.glow": "#24656C71",
+      "focus.glow.primary": "#24656C71",
       "dialog.scrim": "#40CACCCC"
     },
     "metrics": {
@@ -17140,6 +17224,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFB8B8B8",
       "focus.ring": "#73575757",
       "focus.glow": "#24575757",
+      "focus.glow.primary": "#24575757",
       "dialog.scrim": "#40000000"
     },
     "metrics": {
@@ -17399,6 +17484,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFC4C4C4",
       "focus.ring": "#80757575",
       "focus.glow": "#24757575",
+      "focus.glow.primary": "#24757575",
       "dialog.scrim": "#40FFFFFF"
     },
     "metrics": {
@@ -17800,6 +17886,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFC1C1C1",
       "focus.ring": "#736E6E6E",
       "focus.glow": "#246E6E6E",
+      "focus.glow.primary": "#246E6E6E",
       "dialog.scrim": "#40000000"
     },
     "metrics": {
@@ -18059,6 +18146,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFD0D0D0",
       "focus.ring": "#80878787",
       "focus.glow": "#24878787",
+      "focus.glow.primary": "#24878787",
       "dialog.scrim": "#40FFFFFF"
     },
     "metrics": {
@@ -18463,6 +18551,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFABD0FE",
       "focus.ring": "#730088FF",
       "focus.glow": "#240088FF",
+      "focus.glow.primary": "#240088FF",
       "dialog.scrim": "#40252525"
     },
     "metrics": {
@@ -18740,6 +18829,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FF9CCAFE",
       "focus.ring": "#801B79CE",
       "focus.glow": "#241B79CE",
+      "focus.glow.primary": "#241B79CE",
       "dialog.scrim": "#40DEDEDF"
     },
     "metrics": {
@@ -19143,6 +19233,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFA8CCFE",
       "focus.ring": "#73007AFF",
       "focus.glow": "#24007AFF",
+      "focus.glow.primary": "#24007AFF",
       "dialog.scrim": "#40232323"
     },
     "metrics": {
@@ -19426,6 +19517,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FF99C5FE",
       "focus.ring": "#801C6FCF",
       "focus.glow": "#241C6FCF",
+      "focus.glow.primary": "#241C6FCF",
       "dialog.scrim": "#40E0E0E0"
     },
     "metrics": {
@@ -19835,6 +19927,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FF8FBFFC",
       "focus.ring": "#73005FB8",
       "focus.glow": "#24005FB8",
+      "focus.glow.primary": "#24005FB8",
       "dialog.scrim": "#40181818"
     },
     "metrics": {
@@ -20135,6 +20228,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFB3E5FF",
       "focus.ring": "#8035A8D8",
       "focus.glow": "#2435A8D8",
+      "focus.glow.primary": "#2435A8D8",
       "dialog.scrim": "#40FFFFFF"
     },
     "metrics": {
@@ -20575,6 +20669,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFFDBCA8",
       "focus.ring": "#73E95420",
       "focus.glow": "#24E95420",
+      "focus.glow.primary": "#24E95420",
       "dialog.scrim": "#403D3D3D"
     },
     "metrics": {
@@ -20873,6 +20968,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFFDAE96",
       "focus.ring": "#80C54313",
       "focus.glow": "#24C54313",
+      "focus.glow.primary": "#24C54313",
       "dialog.scrim": "#40F7F7F7"
     },
     "metrics": {
@@ -21297,6 +21393,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFAACDFC",
       "focus.ring": "#733584E4",
       "focus.glow": "#243584E4",
+      "focus.glow.primary": "#243584E4",
       "dialog.scrim": "#40323237"
     },
     "metrics": {
@@ -21595,6 +21692,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FF98C3FC",
       "focus.ring": "#801A6DCB",
       "focus.glow": "#241A6DCB",
+      "focus.glow.primary": "#241A6DCB",
       "dialog.scrim": "#40FFFFFF"
     },
     "metrics": {
@@ -22019,6 +22117,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFAACDFC",
       "focus.ring": "#733584E4",
       "focus.glow": "#243584E4",
+      "focus.glow.primary": "#243584E4",
       "dialog.scrim": "#40323237"
     },
     "metrics": {
@@ -22317,6 +22416,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FF98C3FC",
       "focus.ring": "#801A6DCB",
       "focus.glow": "#241A6DCB",
+      "focus.glow.primary": "#241A6DCB",
       "dialog.scrim": "#40FFFFFF"
     },
     "metrics": {
@@ -22742,6 +22842,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FFADDEFD",
       "focus.ring": "#733DAEE9",
       "focus.glow": "#243DAEE9",
+      "focus.glow.primary": "#243DAEE9",
       "dialog.scrim": "#40232629"
     },
     "metrics": {
@@ -23049,6 +23150,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FF9AD8FE",
       "focus.ring": "#800890C9",
       "focus.glow": "#240890C9",
+      "focus.glow.primary": "#240890C9",
       "dialog.scrim": "#40FCFCFC"
     },
     "metrics": {
@@ -23478,6 +23580,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FF92D09D",
       "focus.ring": "#73107C38",
       "focus.glow": "#24107C38",
+      "focus.glow.primary": "#24107C38",
       "dialog.scrim": "#40121212"
     },
     "metrics": {
@@ -23763,6 +23866,7 @@ export const THEMES: Record<string, ThemeData> = {
       "progress.gradient.to": "#FF8DF3A0",
       "focus.ring": "#802AAE52",
       "focus.glow": "#242AAE52",
+      "focus.glow.primary": "#242AAE52",
       "dialog.scrim": "#40FFFFFF"
     },
     "metrics": {

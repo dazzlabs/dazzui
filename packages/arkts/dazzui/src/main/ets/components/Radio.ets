@@ -51,7 +51,7 @@ export struct DazzRadioGroup {
                 if (checked) this.choose(item)
               })
             Text(item.label)
-              .fontSize(this.tokens.type('labelSmall').size)
+              .fontSize(this.tokens.fontSize(this.tokens.type('labelSmall').size))
               .fontWeight(
                 this.tokens.type(
                   (this.value ?? this.localValue) === item.value

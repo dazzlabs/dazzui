@@ -41,7 +41,7 @@ class SwiftUIPlugin {
     outputFile('swiftui/Colors.swift', generateColorsFile(tokens, sources))
     outputFile(
       'swiftui/ThemeVariables.swift',
-      generateThemeVariablesFile(tokens, sources, this.modeSelectors)
+      generateThemeVariablesFile(tokens, sources, this.modeSelectors, true)
     )
     outputFile(
       'swiftui/ThemeName.swift',
@@ -205,7 +205,12 @@ ${themes.map(theme => `    case .${swiftName(theme)}: return .${swiftName(theme)
 `
 }
 
-function generateThemeVariablesFile(tokens, sources, modeSelectors) {
+function generateThemeVariablesFile(
+  tokens,
+  sources,
+  modeSelectors,
+  systemSizing = false
+) {
   const categories = categorizeTokensBySource(tokens, sources)
   const { stored, computed } = buildMembers(categories, tokens)
 
@@ -222,7 +227,7 @@ function generateThemeVariablesFile(tokens, sources, modeSelectors) {
 ///
 /// ${HEADER.split('\n')[1].replace('// ', '')}
 public struct ThemeVariables: Sendable {
-  public init(
+${systemSizing ? '  internal var systemSizing: SystemSizingMetrics?\n' : ''}  public init(
 ${params.join(',\n')}
   ) {
 ${assignments.join('\n')}
@@ -235,11 +240,49 @@ ${stored
 ${computed
   .map(
     member =>
-      `${member.doc}  public var ${member.name}: ${member.type} { ${member.value} }`
+      `${member.doc}  public var ${member.name}: ${member.type} { ${
+        systemSizing &&
+        /^control\.(tiny|small|medium|large)\.content$/.test(member.id ?? '')
+          ? `systemSizing?.content(.${member.id.split('.')[1]}, design: ${member.value}) ?? ${member.value}`
+          : member.value
+      } }`
   )
   .join('\n')}
-}
+${systemSizing ? generateSystemSizing(stored) : ''}}
 ${generateThemeInstances(tokens, modeSelectors, stored)}`
+}
+
+// Only dimensions scale: ratios, alpha, tracking, weights and timing stay put.
+function generateSystemSizing(stored) {
+  const args = stored.map(member => {
+    let value = member.name
+    const control = member.id?.match(
+      /^control\.(tiny|small|medium|large)\.size$/
+    )
+    if (control) value = `metrics.control(.${control[1]}).height`
+    else if (member.type === 'TypeStyle') value += '.scaled(by: scale)'
+    else if (
+      ['dimension', 'spacing', 'fontSize', 'lineHeight'].includes(
+        member.tokenType
+      ) &&
+      !/^(radius\.|stroke\.|focus\.)|\.radius$|\.thickness$|\.edge-width$|^spacing\.px$/.test(
+        member.id
+      )
+    )
+      value += ' * scale'
+    return `      ${member.name}: ${value}`
+  })
+  return `
+  /// Resolves runtime system metrics without changing palette or recipe data.
+  internal func resolvingSystemSizing(_ metrics: SystemSizingMetrics) -> ThemeVariables {
+    let scale = metrics.bodyFontSize / bodyMedium.size
+    var result = ThemeVariables(
+${args.join(',\n')}
+    )
+    result.systemSizing = metrics
+    return result
+  }
+`
 }
 
 /**
@@ -308,6 +351,8 @@ function buildMembers(categories, tokens) {
           value = { type: 'CGFloat', value: double(dimension(token.$value)) }
         }
         const member = {
+          id,
+          tokenType: token.$type,
           doc: docComment(token),
           name: tokenIdToVarName(id),
           type: value.type,

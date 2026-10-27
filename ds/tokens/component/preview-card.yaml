@@ -1,4 +1,11 @@
 preview-card:
+  # Base UI's preview defaults, shared with native hover/focus interactions.
+  open-delay:
+    $type: duration
+    $value: 600ms
+  close-delay:
+    $type: duration
+    $value: 300ms
   # A ceiling rather than a width. A popover is as wide as what a caller put
   # in it; a preview card is filled from whatever it previews, so it needs a
   # width it cannot exceed no matter what comes back — narrower than a dialog,

@@ -14,7 +14,7 @@ export struct DazzOptionCard {
     Button({ type: ButtonType.Normal }) {
       Column({ space: this.tokens.metric('spacing.2') }) {
         Text(this.title)
-          .fontSize(this.tokens.type('labelStrong').size)
+          .fontSize(this.tokens.fontSize(this.tokens.type('labelStrong').size))
           .fontWeight(
             this.tokens.type(this.selected ? 'labelStrong' : 'labelSmall')
               .weight
@@ -23,7 +23,7 @@ export struct DazzOptionCard {
             this.tokens.color(this.disabled ? 'content-faint' : 'content')
           )
         Text(this.description)
-          .fontSize(this.tokens.type('bodySmall').size)
+          .fontSize(this.tokens.fontSize(this.tokens.type('bodySmall').size))
           .fontColor(this.tokens.color('content-muted'))
       }
         .alignItems(HorizontalAlign.Start)

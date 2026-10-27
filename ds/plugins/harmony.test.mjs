@@ -74,3 +74,44 @@ test('all recipes keep tint open and preserve the graph alpha, including dark sh
     }
   }
 })
+
+test('native motion uses the shared duration and each Bezier coordinate', () => {
+  for (const values of Object.values(snapshots)) {
+    const output = snapshot(values)
+    assert.equal(
+      output.metrics['motion.duration'],
+      dimension(values['motion.duration'])
+    )
+    for (const [index, coordinate] of ['x1', 'y1', 'x2', 'y2'].entries())
+      assert.equal(
+        output.metrics[`motion.easing.${coordinate}`],
+        values['motion.easing'][index]
+      )
+    assert.equal(output.colors['motion.easing'], undefined)
+  }
+})
+
+test('field focus halos resolve every tint from the shared focus recipes', () => {
+  for (const values of Object.values(snapshots)) {
+    const output = snapshot(values)
+    for (const role of ['focus.glow']) {
+      for (const tint of [
+        'primary',
+        'neutral',
+        'info',
+        'success',
+        'warning',
+        'danger',
+      ]) {
+        assert.equal(
+          output.colors[`${role}.${tint}`],
+          color(
+            values[`color.${tint}.${values[`${role}.shade`]}`],
+            values[`${role}.alpha`]
+          )
+        )
+      }
+      assert.equal(output.colors[role], output.colors[`${role}.primary`])
+    }
+  }
+})

@@ -23,16 +23,21 @@ export struct DazzSwitch {
         this.tokens.paint(
           'filled',
           'surface',
-          this.disabled ? 'disabled' : 'normal',
+          'normal',
           this.tint
         )
       )
-      .switchPointColor(this.tokens.color('on-accent'))
+      .switchPointColor(
+        (this.checked ?? this.localChecked)
+          ? this.tokens.paint('filled', 'content', 'normal', this.tint)
+          : this.tokens.color('content-faint')
+      )
       .switchStyle({
         pointRadius: this.tokens.metric('switch.' + this.controlSize + '.thumb') / 2,
         unselectedColor: this.tokens.color('surface-sunken'),
       })
       .padding(0)
+      .margin(0)
       .enabled(!this.disabled)
       .accessibilityText(this.accessibilityLabel)
       .onChange((value: boolean) => {

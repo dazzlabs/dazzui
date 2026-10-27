@@ -1,0 +1,26 @@
+{
+  "pages": [
+    {
+      "id": "calendar",
+      "mapped": true
+    },
+    {
+      "id": "date-range-picker",
+      "mapped": true
+    },
+    {
+      "id": "tabs",
+      "mapped": true
+    },
+    {
+      "id": "window-frame",
+      "mapped": true
+    }
+  ],
+  "scenes": {
+    "platform": "harmony",
+    "total": 28,
+    "mapped": 28,
+    "gaps": {}
+  }
+}

@@ -184,7 +184,7 @@ public sealed class CodeBlock : Surface
         var mono = Theme.CodeFont;
         var size = Theme.Text("", "captionSmall").FontSize;
         var leading = Theme.Text("", "bodySmall").LineHeight;
-        TextBlock Code(string text) => new() { Text = text, FontFamily = mono, FontSize = size, LineHeight = leading, LineStackingStrategy = LineStackingStrategy.BlockLineHeight };
+        TextBlock Code(string text) => new() { IsTextScaleFactorEnabled = Theme.Sizing != ThemeSizing.System, Text = text, FontFamily = mono, FontSize = size, LineHeight = leading, LineStackingStrategy = LineStackingStrategy.BlockLineHeight };
         var column = new StackPanel();
         if (Title is not null || Syntax is not null || Copyable || Actions is not null)
         {

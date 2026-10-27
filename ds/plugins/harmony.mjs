@@ -49,8 +49,10 @@ export function snapshot(values) {
           radius: dimension(shadow.blur),
           color: color(shadow.color),
         }))
-    else if (id === 'motion.easing') continue
-    else if (Array.isArray(value) && value.length === 4)
+    else if (id === 'motion.easing') {
+      for (const [index, coordinate] of ['x1', 'y1', 'x2', 'y2'].entries())
+        result.metrics[`${id}.${coordinate}`] = value[index]
+    } else if (Array.isArray(value) && value.length === 4)
       result.colors[id] = color(value)
     else throw new Error(`Unsupported ArkUI token: ${id}`)
   }
@@ -61,6 +63,21 @@ export function snapshot(values) {
         ? values[`${id}.color`]
         : values[`color.primary.${shade}`]
     result.colors[id] = color(bytes, values[`${id}.alpha`] ?? 1)
+    if (id === 'focus.glow') {
+      for (const tint of [
+        'primary',
+        'neutral',
+        'info',
+        'success',
+        'warning',
+        'danger',
+      ]) {
+        result.colors[`${id}.${tint}`] = color(
+          shade === undefined ? bytes : values[`color.${tint}.${shade}`],
+          values[`${id}.alpha`] ?? 1
+        )
+      }
+    }
   }
   for (const variant of [
     'filled',

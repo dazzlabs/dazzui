@@ -6,6 +6,7 @@ export struct DazzProgress {
   @Consume('dazzui.theme') tokens: DazzTokens
   @Prop value: number = 0
   @Prop max: number = 100
+  @Prop gradient: boolean = false
   @Prop controlSize: string = 'medium'
   @Prop tint: DazzTint = 'primary'
   @Prop accessibilityLabel: string = ''
@@ -15,7 +16,7 @@ export struct DazzProgress {
       total: this.max,
       type: ProgressType.Linear,
     })
-      .color(this.tokens.paint('filled', 'surface', 'normal', this.tint))
+      .color(this.gradient ? new LinearGradient([{ color: this.tokens.color('progress.gradient.from'), offset: 0 }, { color: this.tokens.color('progress.gradient.to'), offset: 1 }]) : this.tokens.paint('filled', 'surface', 'normal', this.tint))
       .backgroundColor(this.tokens.color('surface-sunken'))
       .style({
         strokeWidth: this.tokens.metric(
@@ -64,12 +65,12 @@ export struct DazzMeter {
     Column({ space: this.tokens.metric('spacing.2') }) {
       Row() {
         Text(this.label)
-          .fontSize(this.tokens.type('labelSmall').size)
+          .fontSize(this.tokens.fontSize(this.tokens.type('labelSmall').size))
           .fontColor(this.tokens.color('content-muted'))
         Blank()
         if (this.showValue) {
           Text(String(this.value))
-            .fontSize(this.tokens.type('labelSmall').size)
+            .fontSize(this.tokens.fontSize(this.tokens.type('labelSmall').size))
             .fontColor(this.tokens.color('content-muted'))
         }
       }

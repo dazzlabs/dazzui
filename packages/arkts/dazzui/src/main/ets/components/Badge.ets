@@ -8,13 +8,20 @@ export struct DazzBadge {
   @Prop variant: string = 'tinted'
   @Prop tint: DazzTint = 'primary'
   @Prop controlSize: DazzSize = 'medium'
+  labelSize(): number { return this.tokens.type(this.controlSize === 'large' ? 'labelMedium' : 'labelSmall').size }
+  blockPadding(): number { return this.tokens.metric(this.controlSize === 'large' ? 'spacing.1' : 'spacing.0.5') }
+  edge(): number { return this.tokens.metric('spacing.px') }
   build() {
     Text(this.label)
-      .fontSize(
+      .height(this.labelSize() * 1.4 + 2 * (this.blockPadding() + this.edge()))
+      .fontSize(this.tokens.fontSize(
         this.tokens.type(this.controlSize === 'large' ? 'labelMedium' : 'labelSmall')
           .size
-      )
+      ))
       .fontWeight(this.tokens.type('labelMedium').weight)
+      .lineHeight(this.tokens.fontSize(this.tokens.type(
+        this.controlSize === 'large' ? 'labelMedium' : 'labelSmall').size * 1.4))
+      .maxLines(1)
       .fontColor(
         this.variant === 'raised'
           ? this.tokens.color('content-muted')
@@ -36,30 +43,21 @@ export struct DazzBadge {
             )
       )
       .padding({
-        left: this.tokens.metric(
+        left: this.edge() + this.tokens.metric(
           this.controlSize === 'small' ? 'spacing.1.5' : 'spacing.2'
         ),
-        right: this.tokens.metric(
+        right: this.edge() + this.tokens.metric(
           this.controlSize === 'small' ? 'spacing.1.5' : 'spacing.2'
         ),
-        top: this.tokens.metric(
-          this.controlSize === 'large' ? 'spacing.1' : 'spacing.0.5'
-        ),
-        bottom: this.tokens.metric(
-          this.controlSize === 'large' ? 'spacing.1' : 'spacing.0.5'
-        ),
+        top: this.blockPadding() + this.edge(),
+        bottom: this.blockPadding() + this.edge(),
       })
       .border({
-        width: this.tokens.metric('stroke.hairline'),
+        width: this.edge(),
         color:
-          this.variant === 'raised'
-            ? Color.Transparent
-            : this.tokens.paint(
-                this.variant as DazzVariant,
-                'border',
-                'normal',
-                this.tint
-              ),
+          this.variant === 'outlined'
+            ? this.tokens.paint('outlined', 'border', 'normal', this.tint)
+            : Color.Transparent,
         radius: this.tokens.metric('radius.tiny'),
       })
   }

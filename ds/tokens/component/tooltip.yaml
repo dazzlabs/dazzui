@@ -1,0 +1,8 @@
+tooltip:
+  # Base UI's tooltip rest delay and immediate close, shared by native ports.
+  open-delay:
+    $type: duration
+    $value: 600ms
+  close-delay:
+    $type: duration
+    $value: 0ms

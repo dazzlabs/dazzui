@@ -161,6 +161,10 @@ export class StoryCompiler {
     return { scope, exported }
   }
 
+  stageSource() {
+    return STAGE
+  }
+
   imports(statement, scope) {
     const from = statement.moduleSpecifier.text
     const clause = statement.importClause
@@ -181,7 +185,7 @@ export class StoryCompiler {
               ? new Component(imported, false)
               : this.fail(element, `${imported} is not a component`)
       else if (from === ICONS) value = new Glyph(imported)
-      else if (from === STAGE)
+      else if (from === this.stageSource())
         value = STAGE_COMPONENTS.has(imported)
           ? new Component(imported, true)
           : this.fail(element, `${imported} is not part of the stage`)
@@ -808,4 +812,6 @@ export async function readThemes(root) {
   return read('FAMILY_GROUPS')
 }
 
-export { StoryError }
+// Platform-specific readers can retain the same element serialization while
+// admitting a deliberately narrower native mapping of React-only layout.
+export { StoryError, Element, Live, Closure }

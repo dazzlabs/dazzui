@@ -16,14 +16,14 @@ export struct SceneView {
     if (this.scene.gaps.length) {
       Column({ space: this.tokens.metric('spacing.2') }) {
         Text('Mapping gaps')
-          .fontSize(this.tokens.type('labelSmall').size)
+          .fontSize(this.tokens.fontSize(this.tokens.type('labelSmall').size))
           .fontWeight(this.tokens.type('labelStrong').weight)
           .fontColor(this.tokens.color('warning.700'))
         ForEach(
           this.scene.gaps,
           (gap: string) => {
             Text(gap)
-              .fontSize(this.tokens.type('bodySmall').size)
+              .fontSize(this.tokens.fontSize(this.tokens.type('bodySmall').size))
               .fontColor(this.tokens.color('content-muted'))
           },
           (gap: string) => gap

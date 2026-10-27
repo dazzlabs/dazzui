@@ -2,3 +2,6 @@ shortcut-recorder:
   width:
     $type: dimension
     $value: 8.25rem
+  reject-duration:
+    $type: duration
+    $value: 360ms

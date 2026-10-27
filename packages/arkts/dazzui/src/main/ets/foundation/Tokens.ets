@@ -9,6 +9,7 @@ import {
   DazzShadow,
   DazzPaint,
 } from './TokenTypes'
+import { DazzSystemStyle } from './SystemStyleData'
 
 export { THEME_NAMES }
 
@@ -38,8 +39,13 @@ export class DazzTokens {
   private typography: Record<string, DazzTypography>
   private recipes: Record<string, DazzPaint>
   private shadows: Record<string, DazzShadow[]>
+  private system?: DazzSystemStyle
 
-  constructor(name: string = 'studio-light') {
+  get systemStyle(): DazzSystemStyle | undefined {
+    return this.system?.copy()
+  }
+
+  constructor(name: string = 'studio-light', systemStyle?: DazzSystemStyle) {
     if (THEME_NAMES.indexOf(name) < 0)
       throw new Error('Unknown DazzUI theme: ' + name)
     this.name = name
@@ -49,10 +55,30 @@ export class DazzTokens {
     this.typography = merge(BASE.typography, data.typography)
     this.recipes = merge(BASE.recipes, data.recipes)
     this.shadows = merge(BASE.shadows, data.shadows)
+    this.system = systemStyle?.copy()
+    const style = this.system
+    if (style) {
+      this.typography = merge(this.typography, style.typography)
+      for (const size of ['tiny', 'small', 'medium', 'large']) {
+        this.typography['control.' + size + '.content'] = {
+          size:
+            size === 'tiny' || size === 'small'
+              ? style.smallButtonFontSize
+              : style.buttonFontSize,
+          leading:
+            size === 'tiny' || size === 'small'
+              ? style.smallButtonFontSize
+              : style.buttonFontSize,
+          weight: style.buttonFontWeight,
+        }
+      }
+      for (const id of Object.keys(this.metrics))
+        this.metrics[id] = style.metric(id, this.metrics[id])
+    }
   }
 
   color(role: string): string {
-    const key = role.startsWith('color.') ? role : 'color.' + role
+    const key = this.colors[role] !== undefined ? role : 'color.' + role
     if (this.colors[key] === undefined)
       throw new Error('Unknown DazzUI color: ' + role)
     return this.colors[key]
@@ -84,6 +110,9 @@ export class DazzTokens {
   focus(): string {
     return this.colors['focus.ring']
   }
+  focusGlow(tint: DazzTint = 'primary'): string {
+    return this.colors['focus.glow.' + tint]
+  }
   scrim(): string {
     return this.colors['dialog.scrim']
   }
@@ -104,5 +133,31 @@ export class DazzTokens {
   }
   label(size: DazzSize): DazzTypography {
     return this.type('control.' + size + '.content')
+  }
+  /** Sizes are already resolved to vp. Never let ArkUI scale them a second time. */
+  fontSize(value: number): string {
+    return value + 'vp'
+  }
+  fieldSize(size: DazzSize): number {
+    return this.system?.fieldHeight ?? this.size(size)
+  }
+  fieldLabel(size: DazzSize): DazzTypography {
+    const style = this.system
+    return style
+      ? {
+          size: style.fieldFontSize,
+          leading: style.fieldLineHeight,
+          weight: style.fieldFontWeight,
+        }
+      : this.label(size)
+  }
+  fieldLineHeight(): number {
+    return this.system?.fieldLineHeight ?? this.type('bodySmall').leading
+  }
+  fieldWeight(): number {
+    return this.system?.fieldFontWeight ?? this.type('bodySmall').weight
+  }
+  fieldPadding(): number {
+    return this.system?.fieldPadding ?? this.metric('spacing.3')
   }
 }

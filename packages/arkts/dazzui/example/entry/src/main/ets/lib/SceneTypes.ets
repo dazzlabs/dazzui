@@ -31,3 +31,7 @@ export interface ThemeGroup {
   title: string
   families: ThemeFamily[]
 }
+
+export class SceneNavigation {
+  open: (href: string) => void = () => {}
+}

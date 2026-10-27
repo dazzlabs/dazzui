@@ -1,0 +1,4 @@
+tree:
+  typeahead-window:
+    $type: duration
+    $value: 600ms

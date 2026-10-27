@@ -171,6 +171,12 @@ export function Calendar(props: CalendarProps) {
       sameMonth(m, day)
     )
 
+  const tabStop = visible(focused)
+    ? focused
+    : visible(today)
+      ? today
+      : firstMonth
+
   const disabled = (day: Date) =>
     (!!min && compareDay(day, min) < 0) || (!!max && compareDay(day, max) > 0)
 
@@ -353,12 +359,9 @@ export function Calendar(props: CalendarProps) {
                     const outside = !sameMonth(day, current)
                     const off = disabled(day)
                     // The one tab stop is the focused day, if it is shown;
-                    // otherwise today, or failing that the first day shown.
-                    const stop = visible(focused)
-                      ? sameDay(day, focused)
-                      : visible(today)
-                        ? sameDay(day, today)
-                        : index === 0 && r === 0 && day === row[0]
+                    // otherwise today, or the first day of the first month.
+                    // The first grid cell may belong to the previous month.
+                    const stop = sameDay(day, tabStop)
                     return (
                       <div
                         key={day.getTime()}

@@ -6,7 +6,8 @@ struct ExampleApp: App {
 
   var body: some SwiftUI.Scene {
     WindowGroup("DazzUI — SwiftUI example") {
-      AppView(page: location.page, theme: location.theme)
+      AppView(page: location.page, theme: location.theme,
+        sizing: ProcessInfo.processInfo.arguments.contains("-design-sizing") ? .design : .system)
         .frame(minWidth: 960, minHeight: 600)
     }
     .defaultSize(width: 1360, height: 860)

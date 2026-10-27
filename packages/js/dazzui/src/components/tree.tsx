@@ -60,9 +60,6 @@ interface Row<T extends string> {
   open: boolean
 }
 
-/** How long a run of keystrokes counts as one word for type-ahead. */
-const TYPEAHEAD_WINDOW = 600
-
 function labelText<T extends string>(node: TreeNode<T>) {
   return (node.text ?? (typeof node.label === 'string' ? node.label : ''))
     .trim()
@@ -224,8 +221,13 @@ export function Tree<T extends string = string>({
           break
         }
         const now = Date.now()
+        const duration = getComputedStyle(event.currentTarget)
+          .getPropertyValue('--tree-typeahead-window')
+          .trim()
+        const typeaheadWindow =
+          parseFloat(duration) * (duration.endsWith('ms') ? 1 : 1000)
         const prefix =
-          now - typed.current.at < TYPEAHEAD_WINDOW
+          now - typed.current.at < typeaheadWindow
             ? typed.current.prefix + event.key.toLowerCase()
             : event.key.toLowerCase()
         typed.current = { prefix, at: now }

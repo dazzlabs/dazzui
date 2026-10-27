@@ -40,9 +40,10 @@ import { Col, Row, Text } from '../../components/stage'
 import type { Story } from '../../lib/story'
 
 /*
- * React only: no other platform draws a window inside a window, so this
- * story sits outside the directory codegen compiles, and may use what the
- * portable subset forbids.
+ * Outside the portable subset: this story may use rich titlebar slots and
+ * a source-authored content inset. HarmonyOS explicitly reads these forms
+ * through its own grammar and draws the presentation windows inside its
+ * native gallery window.
  */
 
 const PLATFORMS: { platform: WindowFramePlatform; title: string }[] = [

@@ -33,6 +33,11 @@ declares its asset catalog as a resource, so SwiftPM alone leaves
 processes the catalog, which is why the project exists. The package README has
 the detail.
 
+The gallery starts with system sizing: AppKit's preferred typography and native
+control measurements, independent from the selected palette. **Follow system
+sizing** in the theme panel switches back to the shared design geometry. Pass
+`-design-sizing` to start with design metrics.
+
 ## How it is organised
 
 The React example's window, drawn with this package: the component list,
@@ -67,6 +72,12 @@ The tests run from the same scheme:
 ```bash
 xcodebuild -project Example.xcodeproj -scheme Example -destination 'platform=macOS' -derivedDataPath .build/xcode test
 ```
+
+`SystemSizingTests` verifies native measurements, all-theme scaling at 100%,
+150% and 225%, unchanged color/recipe/stroke/timing values, and notification-driven
+updates preserving the native editor and its selection. It also renders all 51
+story previews in light and dark at 225%. These scale fixtures do not modify
+system preferences.
 
 ## Why it is a separate package
 

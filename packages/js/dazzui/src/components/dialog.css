@@ -20,7 +20,7 @@
 }
 
 .dz-dialog[data-tone='danger'] {
-  border-color: color-mix(in srgb, var(--color-danger-600) 34%, transparent);
+  border-color: color-mix(in srgb, var(--color-danger-600) calc(var(--dialog-danger-border-alpha) * 100%), transparent);
 }
 
 .dz-dialog__header {

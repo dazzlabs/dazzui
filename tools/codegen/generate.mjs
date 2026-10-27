@@ -14,6 +14,7 @@ import { formatOutputs } from './format.mjs'
 import * as gpui from './gpui.mjs'
 import * as gtk4 from './gtk4.mjs'
 import * as harmony from './harmony.mjs'
+import { readHarmonyReactStories } from './harmony-react.mjs'
 import * as swiftui from './swiftui.mjs'
 import * as winui from './winui.mjs'
 import { readStories, readThemes } from './stories.mjs'
@@ -163,10 +164,32 @@ for (const name of gpui.kitGlyphNames(root))
   glyphs.set(name, gpui.glyphSvg(root, name))
 const ark = 'packages/arkts/dazzui'
 const arkExample = `${ark}/example/entry/src/main/ets/generated`
-outputs.set(`${arkExample}/Stories.ets`, harmony.storiesETS(stories))
+const reactOnly = await readHarmonyReactStories(root)
+// Give native-only scenes stable addresses without adding other platforms to
+// their support gate or changing the shared conformance contract.
+outputs.set(`${ark}/example/react-scenes.json`, scenesJson(reactOnly.stories))
+const harmonyStories = [...stories, ...reactOnly.stories].sort((a, b) =>
+  a.name.localeCompare(b.name)
+)
+outputs.set(`${arkExample}/Stories.ets`, harmony.storiesETS(harmonyStories))
 outputs.set(`${arkExample}/Themes.ets`, harmony.themesETS(themes))
 outputs.set(`${ark}/example/coverage.json`, harmony.coverageJSON(stories))
-for (const [name, svg] of glyphs)
+outputs.set(
+  `${ark}/example/react-coverage.json`,
+  JSON.stringify(
+    {
+      pages: reactOnly.pages,
+      scenes: JSON.parse(harmony.coverageJSON(reactOnly.stories)),
+    },
+    null,
+    2
+  ) + '\n'
+)
+const harmonyGlyphs = new Map([
+  ...glyphs,
+  ...gpui.glyphSvgs(root, reactOnly.stories),
+])
+for (const [name, svg] of harmonyGlyphs)
   outputs.set(
     `${ark}/src/main/resources/rawfile/dazzui/icons/${name}.svg`,
     svg.replaceAll('currentColor', '#000000') + '\n'
@@ -250,4 +273,7 @@ if (stale.length)
   throw new Error(`Run pnpm codegen; stale outputs:\n${stale.join('\n')}`)
 console.log(
   `${stories.length} stories, ${stories.reduce((n, s) => n + s.examples.length, 0)} examples; ${outputs.size} generated files checked`
+)
+console.log(
+  `HarmonyOS also reads ${reactOnly.stories.length} React-only page(s); ${reactOnly.pages.filter(page => !page.mapped).length} remain unmapped`
 )

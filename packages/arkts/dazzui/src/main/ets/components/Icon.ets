@@ -8,6 +8,7 @@ export struct DazzIcon {
   @Prop color: string = ''
   build() {
     Image($rawfile('dazzui/icons/' + this.name + '.svg'))
+      .id('dazz-icon-image-' + String(this.getUniqueId()))
       .width(this.iconSize ?? this.tokens.metric('icon.medium'))
       .height(this.iconSize ?? this.tokens.metric('icon.medium'))
       .fillColor(this.color || this.tokens.color('content'))

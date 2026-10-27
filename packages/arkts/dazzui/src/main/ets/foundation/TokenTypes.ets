@@ -29,6 +29,7 @@ export interface DazzPaint {
 export interface DazzShadow {
   x: number
   y: number
+  // The ds/CSS blur length in logical pixels, not ShadowOptions.radius.
   radius: number
   color: string
 }
@@ -43,5 +44,7 @@ export interface DazzItem {
   value: string
   label: string
   icon?: string
+  count?: number
+  hint?: string
   disabled?: boolean
 }

@@ -19,3 +19,13 @@ export interface Story {
   Preview: ComponentType
   examples: readonly Example[]
 }
+
+/**
+ * Examples only React can show, added to a compiled story's page. A file in
+ * `stories/react/` exports one under the compiled story's `id`; codegen never
+ * reads it, so the page grows on React alone.
+ */
+export interface StoryExtension {
+  id: string
+  examples: readonly Example[]
+}

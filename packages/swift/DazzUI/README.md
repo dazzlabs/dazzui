@@ -31,6 +31,32 @@ struct ContentView: View {
 `theme(_:)` scopes a token set to a subtree, the way React's `data-theme`
 attribute does. Themes are per-subtree, so several can sit on screen at once.
 
+## System sizing on macOS
+
+Use `.theme(.studioLight, sizing: .system)` to follow AppKit typography and
+control sizes independently from the color family. `ThemeSizing.design` remains
+the library default and the geometry used by conformance tests.
+
+System sizing reads `NSFont.preferredFont(forTextStyle: .body, options: [:])`
+and `NSFont.systemFontSize(for:)`, then measures rounded native buttons in the
+mini, small, regular and large control sizes. Those measurements supply the
+four shared control profiles. Typography, line height, spacing, icons and layout
+lengths follow the preferred body-font scale. Colors, recipes, corners, strokes,
+focus rings, ratios and animation timings retain their design values. AppKit
+and SwiftUI handle display scaling separately.
+
+The modifier refreshes on application activation, font-set and accessibility
+display notifications. While its scene is active it also checks the public font
+APIs once per second, since AppKit has no dedicated preferred-text-size change
+notification. It updates the environment in place, preserving view identity and
+editing state. It reads the metrics reported by AppKit; it does not read private
+preference keys or change the user's system settings.
+
+`Theme(name, sizing: .system)` creates a snapshot on the main actor. Use the view
+modifier for automatic updates. A nested `.theme(name)` retains design sizing.
+The interactive gallery starts in system sizing and offers **Follow system
+sizing** in its theme panel; `-design-sizing` starts it in design mode.
+
 ## Naming
 
 Names match the React export **exactly**, with no prefix — `Button` is

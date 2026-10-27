@@ -7,6 +7,7 @@ export default class EntryAbility extends UIAbility {
   private storage: LocalStorage = new LocalStorage()
   private stage?: window.WindowStage
   private verification: boolean = false
+  private systemFontTest: boolean = false
 
   configure(want: Want): void {
     const family = want.parameters?.['family']
@@ -16,6 +17,7 @@ export default class EntryAbility extends UIAbility {
     this.storage.setOrCreate('appearance', appearance === 'dark' ? ThemeColorMode.DARK :
       appearance === 'light' ? ThemeColorMode.LIGHT : ThemeColorMode.SYSTEM)
     this.verification = want.parameters?.['verification'] === true
+    this.systemFontTest = want.parameters?.['systemFontTest'] === true
     const runId = want.parameters?.['runId']
     this.storage.setOrCreate('runId', typeof runId === 'string' ? runId : '')
   }
@@ -27,7 +29,7 @@ export default class EntryAbility extends UIAbility {
     if (this.stage) this.load(this.stage)
   }
   load(stage: window.WindowStage): void {
-    stage.loadContent(this.verification ? 'pages/Verification' : 'pages/Index', this.storage,
+    stage.loadContent(this.systemFontTest ? 'pages/SystemFonts' : this.verification ? 'pages/Verification' : 'pages/Index', this.storage,
       (error: BusinessError) => {
         if (error.code) console.error('Cannot load DazzUI Mobile: ' + error.message)
       })

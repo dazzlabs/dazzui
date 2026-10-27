@@ -1,0 +1,8 @@
+/example
+/scripts
+/tests
+/build
+/.hvigor
+/oh_modules
+*.har
+*.hap

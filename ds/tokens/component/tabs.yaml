@@ -1,0 +1,14 @@
+tabs:
+  # Tabs keep these explicit glyph frames beside their compact labels.
+  icon-size:
+    $type: dimension
+    $value: "{spacing.3.5}"
+  close-icon-size:
+    $type: dimension
+    $value: "{spacing.3}"
+  pulse-duration:
+    $type: duration
+    $value: 1400ms
+  pulse-opacity:
+    $type: number
+    $value: 0.35

@@ -122,12 +122,12 @@
 }
 
 .dz-tabs__status[data-busy] {
-  animation: dz-tabs-pulse 1.4s var(--motion-easing) infinite;
+  animation: dz-tabs-pulse var(--tabs-pulse-duration) var(--motion-easing) infinite;
 }
 
 @keyframes dz-tabs-pulse {
   50% {
-    opacity: 0.35;
+    opacity: var(--tabs-pulse-opacity);
   }
 }
 
@@ -150,6 +150,12 @@
 
 .dz-tabs__close--ruler {
   width: var(--control-tiny-size);
+}
+
+/* Reserve the actual more control and the breathing room beside it. */
+.dz-tabs__more-ruler {
+  flex-shrink: 0;
+  width: calc(var(--control-tiny-size) + var(--spacing-1));
 }
 
 .dz-tabs__more,

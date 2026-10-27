@@ -10,9 +10,9 @@ import { Col, Text } from '../../components/stage'
 import type { Story } from '../../lib/story'
 
 /*
- * React only, for now: the sheet composes Calendar, Select and Toggle, and
- * no other platform draws the first of those yet. Moving this story up is
- * the claim that every platform maps the whole sheet.
+ * Outside the shared portable pipeline: the sheet composes Calendar, Select
+ * and Toggle, and is not mapped by every toolkit. HarmonyOS reads this source
+ * separately; moving it up claims that every platform maps the whole sheet.
  */
 
 const TODAY = new Date(2026, 9, 16)

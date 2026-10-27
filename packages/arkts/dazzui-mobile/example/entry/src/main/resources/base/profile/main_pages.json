@@ -1,6 +1,7 @@
 {
   "src": [
     "pages/Index",
-    "pages/Verification"
+    "pages/Verification",
+    "pages/SystemFonts"
   ]
 }

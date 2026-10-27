@@ -12,14 +12,14 @@ export struct DazzFormField {
     Column({ space: this.tokens.metric('spacing.2') }) {
       if (this.label) {
         Text(this.label)
-          .fontSize(this.tokens.type('labelSmall').size)
+          .fontSize(this.tokens.fontSize(this.tokens.type('labelSmall').size))
           .fontWeight(this.tokens.type('labelSmall').weight)
           .fontColor(this.tokens.color('content'))
       }
       this.content()
       if (this.hint) {
         Text(this.hint)
-          .fontSize(this.tokens.type('captionMedium').size)
+          .fontSize(this.tokens.fontSize(this.tokens.type('captionMedium').size))
           .fontColor(
             this.tokens.color(
               this.state === 'error' ? 'danger.700' : 'content-muted'
@@ -43,7 +43,7 @@ export struct DazzFieldset {
     Column({ space: this.tokens.metric('spacing.4') }) {
       if (this.legend) {
         Text(this.legend)
-          .fontSize(this.tokens.type('labelStrong').size)
+          .fontSize(this.tokens.fontSize(this.tokens.type('labelStrong').size))
           .fontWeight(this.tokens.type('labelStrong').weight)
           .fontColor(this.tokens.color('content'))
       }

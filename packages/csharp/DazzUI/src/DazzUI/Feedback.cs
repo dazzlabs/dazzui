@@ -126,6 +126,7 @@ public sealed class Meter : Progress
         head.ColumnSpacing = Theme.Number("spacing.3");
         label.Text = Label ?? "";
         label.Foreground = Theme.Brush("color.content");
+        label.IsTextScaleFactorEnabled = reading.IsTextScaleFactorEnabled = Theme.Sizing != ThemeSizing.System;
         label.FontSize = Theme.Text("", "labelSmall").FontSize;
         label.FontWeight = Theme.Text("", "labelMedium").FontWeight;
         label.FontFamily = PlatformFonts.Ui;

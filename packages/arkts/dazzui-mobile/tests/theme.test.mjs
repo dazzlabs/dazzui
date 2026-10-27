@@ -104,3 +104,69 @@ test('the HAR is standalone, color-only, and defaults to system appearance', () 
     )
   )
 })
+
+test('font settings read the current UI configuration without overriding native policy', () => {
+  const source = fs.readFileSync(
+    new URL('src/main/ets/SystemFontSettings.ets', root),
+    'utf8'
+  )
+  const compiled = ts.transpileModule(source, {
+    compilerOptions: { module: ts.ModuleKind.CommonJS },
+  })
+  const api = {}
+  let scoped = false
+  vm.runInThisContext(
+    `(function(exports, require) { ${compiled.outputText}\n})`
+  )(api, () => ({
+    font: {
+      getUIFontConfig: () => {
+        assert.equal(scoped, true)
+        return { generic: [{ family: 'sans-serif' }] }
+      },
+    },
+  }))
+  const config = {
+    fontId: 'selected-face',
+    fontSizeScale: 1.75,
+    fontWeightScale: 1.2,
+  }
+  const ui = {
+    getHostContext: () => ({ config }),
+    isFollowingSystemFontScale: () => true,
+    runScopedTask: action => {
+      scoped = true
+      action()
+      scoped = false
+    },
+  }
+  const first = api.readSystemFontSettings(ui)
+  assert.deepEqual(first, {
+    fontId: 'selected-face',
+    fontScale: 1.75,
+    fontWeightScale: 1.2,
+    followsSystem: true,
+    fontFamilies: ['sans-serif'],
+  })
+  config.fontId = 'new-face'
+  first.fontFamilies.push('mutated')
+  assert.deepEqual(api.readSystemFontSettings(ui).fontFamilies, ['sans-serif'])
+  assert.equal(api.readSystemFontSettings(ui).fontId, 'new-face')
+  assert.equal(first.fontId, 'selected-face')
+  assert.throws(
+    () => api.readSystemFontSettings({ getHostContext: () => undefined }),
+    /live UIAbility/
+  )
+  const app = JSON.parse(
+    fs.readFileSync(new URL('example/AppScope/app.json5', root))
+  )
+  assert.equal(app.app.configuration, '$profile:configuration')
+  const profile = JSON.parse(
+    fs.readFileSync(
+      new URL(
+        'example/AppScope/resources/base/profile/configuration.json',
+        root
+      )
+    )
+  )
+  assert.equal(profile.configuration.fontSizeScale, 'followSystem')
+})

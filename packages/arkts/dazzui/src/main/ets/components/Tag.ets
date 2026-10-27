@@ -18,7 +18,7 @@ export struct DazzTag {
     Row({ space: this.tokens.metric('spacing.1') }) {
       if (this.selectable) {
         Button(this.label, { type: ButtonType.Normal })
-          .fontSize(this.tokens.type('labelSmall').size)
+          .fontSize(this.tokens.fontSize(this.tokens.type('labelSmall').size))
           .fontWeight(this.tokens.type('labelMedium').weight)
           .fontColor(
             this.tokens.paint(
@@ -34,7 +34,7 @@ export struct DazzTag {
           .onClick(() => this.onSelectedChange(!this.selected))
       } else {
         Text(this.label)
-          .fontSize(this.tokens.type('labelSmall').size)
+          .fontSize(this.tokens.fontSize(this.tokens.type('labelSmall').size))
           .fontWeight(this.tokens.type('labelMedium').weight)
           .fontColor(
             this.tokens.paint(

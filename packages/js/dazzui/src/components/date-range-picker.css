@@ -12,7 +12,7 @@
  */
 .dz-date-range-picker__trigger {
   width: auto;
-  min-width: 16rem;
+  min-width: var(--date-range-picker-trigger-min-width);
 }
 
 .dz-date-range-picker__glyph {
@@ -81,7 +81,7 @@
   font-size: var(--caption-small-font-size);
   font-weight: var(--label-small-font-weight);
   line-height: 1;
-  letter-spacing: 0.06em;
+  letter-spacing: calc(var(--date-range-picker-key-tracking) * 1em);
   text-transform: uppercase;
 }
 
@@ -94,7 +94,7 @@
 
 .dz-date-range-picker__time {
   width: auto;
-  min-width: 5rem;
+  min-width: var(--date-range-picker-time-min-width);
 }
 
 .dz-date-range-picker__durations {

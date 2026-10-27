@@ -160,8 +160,13 @@ export function ShortcutRecorder({
   const [rejected, setRejected] = useState(false)
 
   useEffect(() => {
-    if (!rejected) return
-    const timer = window.setTimeout(() => setRejected(false), 360)
+    if (!rejected || !button.current) return
+    const duration = getComputedStyle(button.current)
+      .getPropertyValue('--shortcut-recorder-reject-duration')
+      .trim()
+    const milliseconds =
+      parseFloat(duration) * (duration.endsWith('ms') ? 1 : 1000)
+    const timer = window.setTimeout(() => setRejected(false), milliseconds)
     return () => window.clearTimeout(timer)
   }, [rejected])
 

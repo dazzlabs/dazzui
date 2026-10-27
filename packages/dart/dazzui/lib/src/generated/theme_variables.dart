@@ -233,17 +233,25 @@ class ThemeVariables {
     this.calendarCellGap = 2,
     this.checkboxRadius = 5,
     this.dateRangePickerSideWidth = 192,
+    this.dateRangePickerTriggerMinWidth = 256,
+    this.dateRangePickerTimeMinWidth = 80,
+    this.dateRangePickerKeyTracking = 0.06,
     this.dialogWidth = 440,
     this.dialogScrimAlpha = 0.25,
+    this.dialogDangerBorderAlpha = 0.34,
     this.drawerSize = 352,
     this.menuMinWidth = 176,
     this.menuItemPadding = 7,
     this.preferencesWidth = 480,
+    this.previewCardOpenDelay = const Duration(microseconds: 600000),
+    this.previewCardCloseDelay = const Duration(microseconds: 300000),
     this.previewCardWidth = 320,
     this.progressGradientFrom = const Color(0xFF6B4DFF),
     this.progressGradientTo = const Color(0xFFA08CFF),
+    this.searchFieldInputWidth = 136,
     this.segmentedControlInset = 3,
     this.shortcutRecorderWidth = 132,
+    this.shortcutRecorderRejectDuration = const Duration(microseconds: 360000),
     this.sliderMediumTrack = 6,
     this.sliderMediumThumb = 16,
     this.sliderThumbInk = 0,
@@ -253,7 +261,20 @@ class ThemeVariables {
     this.switchMediumWidth = 32,
     this.switchMediumHeight = 18,
     this.switchMediumThumb = 14,
+    this.tabsPulseDuration = const Duration(microseconds: 1400000),
+    this.tabsPulseOpacity = 0.35,
+    this.toastNoticeDuration = const Duration(microseconds: 5000000),
+    this.toastActionDuration = const Duration(microseconds: 8000000),
+    this.toastTransitionDuration = const Duration(microseconds: 260000),
+    this.toastTransitionX1 = 0.21,
+    this.toastTransitionY1 = 0.9,
+    this.toastTransitionX2 = 0.35,
+    this.toastTransitionY2 = 1.05,
+    this.toastTransitionScale = 0.98,
     this.toastMaxWidth = 420,
+    this.tooltipOpenDelay = const Duration(microseconds: 600000),
+    this.tooltipCloseDelay = const Duration(microseconds: 0),
+    this.treeTypeaheadWindow = const Duration(microseconds: 600000),
     this.fontCode = const FontFace(family: 'SF Mono', fallback: ['Menlo']),
     this.fontDisplay = const FontFace(
       fallback: ['SF Pro Display', 'PingFang SC', 'Noto Sans CJK SC'],
@@ -784,11 +805,15 @@ class ThemeVariables {
 
   // Date Range Picker
   final double dateRangePickerSideWidth;
+  final double dateRangePickerTriggerMinWidth;
+  final double dateRangePickerTimeMinWidth;
+  final double dateRangePickerKeyTracking;
 
   // Dialog
   final double dialogWidth;
   Color get dialogScrimColor => colorContent;
   final double dialogScrimAlpha;
+  final double dialogDangerBorderAlpha;
 
   // Drawer
   final double drawerSize;
@@ -811,6 +836,8 @@ class ThemeVariables {
   double get preferencesGroupGap => spacing10;
 
   // Preview Card
+  final Duration previewCardOpenDelay;
+  final Duration previewCardCloseDelay;
   final double previewCardWidth;
 
   // Progress
@@ -826,11 +853,15 @@ class ThemeVariables {
   double get radioLargeBox => spacing5;
   double get radioLargeDot => spacing25;
 
+  // Search Field
+  final double searchFieldInputWidth;
+
   // Segmented Control
   final double segmentedControlInset;
 
   // Shortcut Recorder
   final double shortcutRecorderWidth;
+  final Duration shortcutRecorderRejectDuration;
 
   // Slider
   double get sliderSmallTrack => spacing1;
@@ -855,8 +886,30 @@ class ThemeVariables {
   double get switchLargeHeight => spacing6;
   double get switchLargeThumb => spacing5;
 
+  // Tabs
+  double get tabsIconSize => spacing35;
+  double get tabsCloseIconSize => spacing3;
+  final Duration tabsPulseDuration;
+  final double tabsPulseOpacity;
+
   // Toast
+  final Duration toastNoticeDuration;
+  final Duration toastActionDuration;
+  final Duration toastTransitionDuration;
+  final double toastTransitionX1;
+  final double toastTransitionY1;
+  final double toastTransitionX2;
+  final double toastTransitionY2;
+  double get toastTransitionOffset => spacing25;
+  final double toastTransitionScale;
   final double toastMaxWidth;
+
+  // Tooltip
+  final Duration tooltipOpenDelay;
+  final Duration tooltipCloseDelay;
+
+  // Tree
+  final Duration treeTypeaheadWindow;
 
   // #endregion
 
@@ -1025,17 +1078,25 @@ class ThemeVariables {
     double? calendarCellGap,
     double? checkboxRadius,
     double? dateRangePickerSideWidth,
+    double? dateRangePickerTriggerMinWidth,
+    double? dateRangePickerTimeMinWidth,
+    double? dateRangePickerKeyTracking,
     double? dialogWidth,
     double? dialogScrimAlpha,
+    double? dialogDangerBorderAlpha,
     double? drawerSize,
     double? menuMinWidth,
     double? menuItemPadding,
     double? preferencesWidth,
+    Duration? previewCardOpenDelay,
+    Duration? previewCardCloseDelay,
     double? previewCardWidth,
     Color? progressGradientFrom,
     Color? progressGradientTo,
+    double? searchFieldInputWidth,
     double? segmentedControlInset,
     double? shortcutRecorderWidth,
+    Duration? shortcutRecorderRejectDuration,
     double? sliderMediumTrack,
     double? sliderMediumThumb,
     int? sliderThumbInk,
@@ -1045,7 +1106,20 @@ class ThemeVariables {
     double? switchMediumWidth,
     double? switchMediumHeight,
     double? switchMediumThumb,
+    Duration? tabsPulseDuration,
+    double? tabsPulseOpacity,
+    Duration? toastNoticeDuration,
+    Duration? toastActionDuration,
+    Duration? toastTransitionDuration,
+    double? toastTransitionX1,
+    double? toastTransitionY1,
+    double? toastTransitionX2,
+    double? toastTransitionY2,
+    double? toastTransitionScale,
     double? toastMaxWidth,
+    Duration? tooltipOpenDelay,
+    Duration? tooltipCloseDelay,
+    Duration? treeTypeaheadWindow,
     FontFace? fontCode,
     FontFace? fontDisplay,
     FontFace? fontUi,
@@ -1235,19 +1309,34 @@ class ThemeVariables {
       checkboxRadius: checkboxRadius ?? this.checkboxRadius,
       dateRangePickerSideWidth:
           dateRangePickerSideWidth ?? this.dateRangePickerSideWidth,
+      dateRangePickerTriggerMinWidth:
+          dateRangePickerTriggerMinWidth ?? this.dateRangePickerTriggerMinWidth,
+      dateRangePickerTimeMinWidth:
+          dateRangePickerTimeMinWidth ?? this.dateRangePickerTimeMinWidth,
+      dateRangePickerKeyTracking:
+          dateRangePickerKeyTracking ?? this.dateRangePickerKeyTracking,
       dialogWidth: dialogWidth ?? this.dialogWidth,
       dialogScrimAlpha: dialogScrimAlpha ?? this.dialogScrimAlpha,
+      dialogDangerBorderAlpha:
+          dialogDangerBorderAlpha ?? this.dialogDangerBorderAlpha,
       drawerSize: drawerSize ?? this.drawerSize,
       menuMinWidth: menuMinWidth ?? this.menuMinWidth,
       menuItemPadding: menuItemPadding ?? this.menuItemPadding,
       preferencesWidth: preferencesWidth ?? this.preferencesWidth,
+      previewCardOpenDelay: previewCardOpenDelay ?? this.previewCardOpenDelay,
+      previewCardCloseDelay:
+          previewCardCloseDelay ?? this.previewCardCloseDelay,
       previewCardWidth: previewCardWidth ?? this.previewCardWidth,
       progressGradientFrom: progressGradientFrom ?? this.progressGradientFrom,
       progressGradientTo: progressGradientTo ?? this.progressGradientTo,
+      searchFieldInputWidth:
+          searchFieldInputWidth ?? this.searchFieldInputWidth,
       segmentedControlInset:
           segmentedControlInset ?? this.segmentedControlInset,
       shortcutRecorderWidth:
           shortcutRecorderWidth ?? this.shortcutRecorderWidth,
+      shortcutRecorderRejectDuration:
+          shortcutRecorderRejectDuration ?? this.shortcutRecorderRejectDuration,
       sliderMediumTrack: sliderMediumTrack ?? this.sliderMediumTrack,
       sliderMediumThumb: sliderMediumThumb ?? this.sliderMediumThumb,
       sliderThumbInk: sliderThumbInk ?? this.sliderThumbInk,
@@ -1257,7 +1346,21 @@ class ThemeVariables {
       switchMediumWidth: switchMediumWidth ?? this.switchMediumWidth,
       switchMediumHeight: switchMediumHeight ?? this.switchMediumHeight,
       switchMediumThumb: switchMediumThumb ?? this.switchMediumThumb,
+      tabsPulseDuration: tabsPulseDuration ?? this.tabsPulseDuration,
+      tabsPulseOpacity: tabsPulseOpacity ?? this.tabsPulseOpacity,
+      toastNoticeDuration: toastNoticeDuration ?? this.toastNoticeDuration,
+      toastActionDuration: toastActionDuration ?? this.toastActionDuration,
+      toastTransitionDuration:
+          toastTransitionDuration ?? this.toastTransitionDuration,
+      toastTransitionX1: toastTransitionX1 ?? this.toastTransitionX1,
+      toastTransitionY1: toastTransitionY1 ?? this.toastTransitionY1,
+      toastTransitionX2: toastTransitionX2 ?? this.toastTransitionX2,
+      toastTransitionY2: toastTransitionY2 ?? this.toastTransitionY2,
+      toastTransitionScale: toastTransitionScale ?? this.toastTransitionScale,
       toastMaxWidth: toastMaxWidth ?? this.toastMaxWidth,
+      tooltipOpenDelay: tooltipOpenDelay ?? this.tooltipOpenDelay,
+      tooltipCloseDelay: tooltipCloseDelay ?? this.tooltipCloseDelay,
+      treeTypeaheadWindow: treeTypeaheadWindow ?? this.treeTypeaheadWindow,
       fontCode: fontCode ?? this.fontCode,
       fontDisplay: fontDisplay ?? this.fontDisplay,
       fontUi: fontUi ?? this.fontUi,
