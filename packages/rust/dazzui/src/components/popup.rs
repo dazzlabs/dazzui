@@ -11,7 +11,7 @@
 //! Base UI does the positioning on the web; the positioner there is padded
 //! by `--spacing-1` on the side facing the trigger, which is the gap here.
 
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::time::{Duration, Instant};
 
@@ -24,7 +24,8 @@ use gpui::{
 
 use crate::StyledExt;
 use crate::components::icon::{Icon, icon_slot};
-use crate::foundation::Tint;
+use crate::foundation::scope::Provide;
+use crate::foundation::{Tint, provide, scoped};
 use crate::generated::ThemeTokens;
 use crate::glyphs;
 use crate::theme::ActiveTheme;
@@ -45,6 +46,45 @@ pub type OnOpenChange = Rc<dyn Fn(bool, &mut Window, &mut App)>;
 /// Base UI's `collisionPadding`: how close a sheet may come to the window's
 /// edge before it is pushed back in.
 const COLLISION_PADDING: f32 = 5.0;
+
+/// The tallest a sheet may be and still fit the window with the collision
+/// padding kept: what a list long enough to scroll is capped at.
+pub fn max_sheet_height(window: &Window) -> f32 {
+    f32::from(window.viewport_size().height) - 2. * COLLISION_PADDING
+}
+
+/// The sheets open inside a sheet, as they were last drawn — a select's
+/// list inside a picker's panel. An outside press is judged against the
+/// sheet's own box, so a press in a list that overflows the sheet would read
+/// as outside it and close the panel under the reader's choice; a sheet
+/// registers its box here, up through every sheet it is nested in, and each
+/// counts a press inside it as its own.
+#[derive(Clone, Default)]
+pub struct Nest {
+    bounds: Rc<RefCell<Vec<Bounds<Pixels>>>>,
+    parent: Option<Rc<Nest>>,
+}
+
+impl Nest {
+    /// A nest inside the one in force, if a sheet is being built inside one.
+    fn inside(cx: &App) -> Nest {
+        Nest {
+            bounds: Rc::default(),
+            parent: scoped::<Nest>(cx).map(Rc::new),
+        }
+    }
+
+    fn register(&self, bounds: Bounds<Pixels>) {
+        self.bounds.borrow_mut().push(bounds);
+        if let Some(parent) = &self.parent {
+            parent.register(bounds);
+        }
+    }
+
+    fn contains(&self, position: Point<Pixels>) -> bool {
+        self.bounds.borrow().iter().any(|b| b.contains(&position))
+    }
+}
 
 /// Which side of its trigger a sheet opens on.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
@@ -224,6 +264,7 @@ pub fn positioned(anchor: &Anchor, placement: Placement, sheet: impl IntoElement
         anchor: anchor.clone(),
         placement,
         child: sheet.into_any_element(),
+        nest: None,
     })
     .priority(1)
 }
@@ -232,6 +273,8 @@ struct Positioned {
     anchor: Anchor,
     placement: Placement,
     child: AnyElement,
+    /// The sheet this one opens inside, which hears where it was drawn.
+    nest: Option<Nest>,
 }
 
 impl IntoElement for Positioned {
@@ -261,6 +304,9 @@ impl Element for Positioned {
         window: &mut Window,
         cx: &mut App,
     ) -> (LayoutId, LayoutId) {
+        // Laid out while the sheet it is inside, if any, is laid out — which
+        // is when that sheet's nest is in force.
+        self.nest = scoped::<Nest>(cx);
         let child = self.child.request_layout(window, cx);
         // A box the size of the window, out of flow, so the sheet is laid out
         // at its own width rather than squeezed into its trigger's.
@@ -291,6 +337,9 @@ impl Element for Positioned {
         let origin = place(self.placement, anchor, laid.size, viewport);
         let offset = origin - laid.origin;
         let offset = point(offset.x.round(), offset.y.round());
+        if let Some(nest) = &self.nest {
+            nest.register(Bounds::new(laid.origin + offset, laid.size));
+        }
         window.with_element_offset(offset, |window| self.child.prepaint(window, cx));
     }
 
@@ -574,25 +623,28 @@ impl PopupState {
 }
 
 /// A sheet that goes away on its own: an outside press closes it — except a
-/// press inside `keep`, the trigger, which toggles it itself — and so does
-/// Escape. It takes the popup's focus, so the keyboard reaches it.
+/// press inside `keep`, the trigger, which toggles it itself, or inside a
+/// sheet opened from this one — and so does Escape. It takes the popup's
+/// focus, so the keyboard reaches it.
 pub fn dismissable(
     sheet: Stateful<Div>,
     state: &Entity<PopupState>,
     keep: &Anchor,
     on_open_change: Option<OnOpenChange>,
     cx: &App,
-) -> Stateful<Div> {
+) -> Provide {
     let focus = state.read(cx).focus.clone();
     let outside = state.clone();
     let escape = state.clone();
     let keep = keep.clone();
+    let nest = Nest::inside(cx);
+    let inner = nest.clone();
     let notify = on_open_change.clone();
-    sheet
+    let sheet = sheet
         .track_focus(&focus)
         .occlude()
         .on_mouse_down_out(move |event, window, cx| {
-            if keep.contains(event.position) {
+            if keep.contains(event.position) || inner.contains(event.position) {
                 return;
             }
             outside.update(cx, |state, cx| state.hide(window, cx));
@@ -608,7 +660,8 @@ pub fn dismissable(
                 }
                 cx.stop_propagation();
             }
-        })
+        });
+    provide(nest, sheet)
 }
 
 /// One row of a list sheet — `.dz-popup__item`: a quiet-weight label on a

@@ -45,6 +45,7 @@ function load(file) {
   return exports
 }
 const native = load('src/main/ets/foundation/DateRangeData.ets')
+const dates = load('src/main/ets/foundation/DateData.ets')
 const formulas = load('src/main/ets/foundation/DateFormulaData.ets')
 const glue = load('example/entry/src/main/ets/lib/SceneDateRangeData.ets')
 const state = load('example/entry/src/main/ets/lib/SceneState.ets')
@@ -374,7 +375,7 @@ test('date range summaries preserve React’s actual JSX text and separator posi
   }
 })
 
-test('date range custom sprint presets retain timestamp arithmetic and generated callbacks update the live caption', async () => {
+test('date range custom sprint presets count whole days from today and generated callbacks publish to one scene state', async () => {
   const story = (await readHarmonyReactStories(repo)).stories.find(
     story => story.id === 'date-range-picker'
   )
@@ -387,28 +388,30 @@ test('date range custom sprint presets retain timestamp arithmetic and generated
   )
   const today = at(16)
   const next = presets[2].range(today)
-  assert.equal(next.start.getTime(), today.getTime() + 14 * 864e5)
-  assert.equal(next.end.getTime(), today.getTime() + 27 * 864e5)
+  assert.equal(
+    next.start.getTime(),
+    dates.addDays(today, 14).getTime(),
+    'A preset counts calendar days from today'
+  )
+  assert.equal(next.end.getTime(), dates.addDays(today, 27).getTime())
   const data = load(
     'example/entry/src/main/ets/generated/Stories.ets'
   ).STORIES.find(story => story.id === 'date-range-picker')
   const first = data.examples[0]
   const model = new state.SceneState(first.initial)
   const sibling = new state.SceneState(first.initial)
-  const [control, caption] = first.content.items
+  const control = first.content
   const initial = glue.sceneDateRange(model.evaluate(control.fields.value))
   const changed = { start: at(18, 9, 7), end: at(19, 14, 37), allDay: true }
   model.run(control.fields.onValueChange, glue.sceneDateRangeValue(changed))
   assert.deepEqual(
     glue.sceneDateRange(model.evaluate(control.fields.value)),
-    changed
+    changed,
+    'The generated callback publishes the whole picker value'
   )
   assert.deepEqual(
     glue.sceneDateRange(sibling.evaluate(control.fields.value)),
-    initial
-  )
-  assert.equal(
-    caption.items.map(item => state.text(model.evaluate(item))).join(''),
-    `${changed.start.toLocaleString()} → ${changed.end.toLocaleString()} (all day)`
+    initial,
+    'The sibling scene state never sees it'
   )
 })

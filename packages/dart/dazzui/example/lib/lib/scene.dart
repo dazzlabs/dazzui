@@ -138,9 +138,8 @@ void run(
   for (final Object? step in action[r'$do'] as List<Object?>) {
     if (step is! Map) continue;
     if (step.containsKey('set')) {
-      SceneScope.of(
-        context,
-      ).write(step['set'] as String, resolve(context, step['to'], args));
+      SceneScope.of(context)
+          .write(step['set'] as String, resolve(context, step['to'], args));
     } else if (step.containsKey('toast')) {
       final Map<Object?, Object?> toast =
           step['toast'] as Map<Object?, Object?>;
@@ -339,7 +338,8 @@ class _HeldState<T> extends State<Held<T>> {
 
 /// A value a story either binds (`value` and its change event) or leaves to
 /// the component (`default…`). Bound, it reads and writes the scene's slot;
-/// left, it is held here.
+/// left, it is held here. [write] is the value as the slot holds it — a
+/// date as the text codegen wrote it — where that is not the value itself.
 Widget bound<T>(
   Node node, {
   String value = 'value',
@@ -347,20 +347,23 @@ Widget bound<T>(
   String? fallback,
   required T initial,
   required T Function(Object? raw) read,
+  Object? Function(T value)? write,
   required Widget Function(T value, ValueChanged<T> set) builder,
 }) {
+  void report(T next) {
+    if (onChange == null) return;
+    node.handler<Object?>(onChange)?.call(write == null ? next : write(next));
+  }
+
   if (node.has(value)) {
-    final ValueChanged<T>? write = onChange == null
-        ? null
-        : node.handler<T>(onChange);
-    return builder(read(node[value]), write ?? (_) {});
+    return builder(read(node[value]), report);
   }
   final Object? start = fallback == null ? null : node[fallback];
   return Held<T>(
     initial: start == null ? initial : read(start),
     builder: (context, current, set) => builder(current, (next) {
       set(next);
-      if (onChange != null) node.handler<T>(onChange)?.call(next);
+      report(next);
     }),
   );
 }

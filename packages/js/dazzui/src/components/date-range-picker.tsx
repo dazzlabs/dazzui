@@ -36,10 +36,22 @@ export interface DateRangeValue {
   allDay: boolean
 }
 
-/** A named span the reader can pick in one press, counted from today. */
-export interface DateRangePreset {
-  label: string
-  range: (today: Date) => { start: Date; end: Date }
+/**
+ * A named span the reader can pick in one press, counted from today: a
+ * function of today, or — for a preset that is data, as a story or a
+ * product's settings file holds one — a pair of whole-day offsets from it,
+ * `[0, 0]` being today and `[1, 7]` tomorrow for a week.
+ */
+export type DateRangePreset = { label: string } & (
+  | { range: (today: Date) => { start: Date; end: Date } }
+  | { days: readonly [from: number, to: number] }
+)
+
+/** The span a preset names, counted from `today`. */
+export function presetRange(preset: DateRangePreset, today: Date) {
+  if ('range' in preset) return preset.range(today)
+  const [from, to] = preset.days
+  return { start: addDays(today, from), end: addDays(today, to) }
 }
 
 /** A length the end is set to, from the start. */
@@ -283,13 +295,13 @@ export function DateRangePicker({
   }
 
   const applyPreset = (preset: DateRangePreset) => {
-    const { start, end } = preset.range(today)
+    const { start, end } = presetRange(preset, today)
     setMonth(startOfMonth(start))
     setDays({ start, end })
   }
 
   const presetOn = (preset: DateRangePreset) => {
-    const { start, end } = preset.range(today)
+    const { start, end } = presetRange(preset, today)
     return sameDay(start, draft.start) && sameDay(end, draft.end)
   }
 

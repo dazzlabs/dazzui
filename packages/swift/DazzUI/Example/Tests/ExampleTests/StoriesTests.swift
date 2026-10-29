@@ -26,7 +26,7 @@ final class StoriesTests: XCTestCase {
   }
 
   func testEveryStoryIsCompiledFromReact() {
-    XCTAssertEqual(Stories.all.count, 51)
+    XCTAssertEqual(Stories.all.count, 53)
     XCTAssertEqual(Stories.all.map(\.name), Stories.all.map(\.name).sorted {
       $0.localizedCompare($1) == .orderedAscending
     })

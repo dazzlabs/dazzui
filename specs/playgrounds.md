@@ -20,7 +20,10 @@ other platforms' examples.
 - **A story is written in the portable subset**, and codegen refuses
   anything outside it with the file and line:
   - values come only from the kit, `@fluentui/react-icons`, the stage
-    (`../components/stage`) and `react`'s `useState`;
+    (`../components/stage`) and `react`'s `useState`; the one constructor
+    is `new Date(year, month, day[, hours[, minutes]])` with parts known
+    ahead of time, written into the data as local `YYYY-MM-DDTHH:MM`, and
+    a platform writes a date a calendar picks back the same way;
   - elements are kit components, glyphs and the four stage components —
     `Row`, `Col`, `Frame`, `Text` — never HTML, never `style` or
     `className`;
@@ -34,14 +37,16 @@ other platforms' examples.
 - **A story outside the portable pipeline lives in `stories/react/`.**
   The portable compiler reads the top level of `stories/` alone, so a story
   there is not a shared conformance scene,
-  and is not held to the portable subset. Calendar, DateRangePicker, Tabs
-  and WindowFrame currently live there. A platform may implement one of
-  these components separately or opt into reading a story with an explicit
-  platform-specific grammar and separate coverage. HarmonyOS does so for Tabs,
-  Calendar, DateRangePicker and WindowFrame;
-  this does not expand the portable subset. The WindowFrame story draws
-  presentation windows inside the gallery's real OS window. Moving a
-  story up out of `react/` is the claim that every platform now maps it.
+  and is not held to the portable subset. Tabs and WindowFrame live there.
+  A platform may implement one of these components separately or opt into
+  reading a story with an explicit platform-specific grammar and separate
+  coverage. HarmonyOS does so for Tabs and WindowFrame, and reads the
+  portable Calendar and DateRangePicker from their own files with that
+  grammar, because its wire format carries a date as integer parts rather
+  than local civil time; this does not expand the portable subset. The
+  WindowFrame story draws presentation windows inside the gallery's real OS
+  window. Moving a story up out of `react/` is the claim that every platform
+  now maps it.
   A file there may instead export a `StoryExtension` — an `id` and
   `examples` alone — under a compiled story's id, and its examples join that
   page on React only: the Preferences page's theme row is one, since a
@@ -174,15 +179,18 @@ their protected presses still reach other scoped pointer observers without
 treating their own viewport as an outside target. Source mappings cover all
 four portable Toast scenes. Screen-reader equivalence and full paint
 conformance remain gaps, independent of the mapping count.
-`tools/codegen/harmony-react.mjs` also reads the actual React-only Tabs,
-Calendar, DateRangePicker and WindowFrame pages.
+`tools/codegen/harmony-react.mjs` also reads the actual React-only Tabs and
+WindowFrame pages, and the portable Calendar and DateRangePicker ones, whose
+dates it writes as integer parts for the native interpreter.
 Its narrow grammar accepts the story's token-based fixed header and functional
 array removal, while refusing other HTML styles and arbitrary callbacks with
 source locations. The generated `react-scenes.json` and `react-coverage.json`
-keep those scenes separate from portable conformance. Their data joins only
-the HarmonyOS gallery registry and glyph set. WindowFrame additionally accepts
-only its source Pane's token padding, retaining typed titlebar slots, rich
-titles, scoped Pin/segmented state and the five sidebar workspaces. Native
+keep those scenes separate from portable conformance, and the portable list
+drops the pages it read natively so the gallery carries each once. Their data
+joins only the HarmonyOS gallery registry and glyph set. WindowFrame
+additionally accepts only its source Pane's token padding, retaining typed
+titlebar slots, rich titles, scoped Pin/segmented state and the five sidebar
+workspaces. Native
 Buttons dispatch window-control callbacks; macOS keeps disabled lights while
 Windows and Linux omit unavailable controls. The native component transcribes
 platform chrome metrics from the React stylesheet, using ds for theme colours,
@@ -236,15 +244,17 @@ proposals, and pending range preview moving between pointer and keyboard.
 Native labels and Tab indices are read from the running buttons, with focus
 and selection from the UI tree. Full paint and accessibility remain open.
 The date-range reader preserves local Date parts, live formatted captions,
-product durations and preset callbacks. `harmony-dates.mjs` translates only a
+product durations and presets. `harmony-dates.mjs` translates only a
 sealed set of date getters, constructors, numeric operations and known local
-date helpers, rather than executing arbitrary callbacks. Default preset metadata
-comes from the actual React component module. Formula evaluation stays on the
-device so a timestamp-based sprint crossing a daylight-saving boundary behaves
-as the original source does. The native picker keeps its draft/session beneath
-the forwarded popup builder and publishes only on Done. Native checks cover
-dimensions, initial focus, draft/Cancel/Done/reopen, time coordination, all-day
-disabling, Escape/outside cancellation and custom presets. Nineteen live states
+date helpers, rather than executing arbitrary callbacks; a preset that is data
+— a pair of whole-day offsets from today — becomes the same sealed formula,
+and the component's own preset metadata comes from the actual React component
+module. Formula evaluation stays on the device so a timestamp-based sprint
+crossing a daylight-saving boundary behaves as the original source does. The
+native picker keeps its draft/session beneath the forwarded popup builder and
+publishes only on Done. Native checks cover dimensions, initial focus,
+draft/Cancel/Done/reopen, time coordination, all-day disabling,
+Escape/outside cancellation and custom presets. Nineteen live states
 also agree with the actual React component on controlled acceptance/refusal,
 draft reopening, input-dependent opening focus, nested Escape, focus return and
 forward/reverse Tab traversal. All five picker examples render; narrow fitting,

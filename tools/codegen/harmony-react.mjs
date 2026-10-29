@@ -2,7 +2,11 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import ts from 'typescript'
 import { StoryCompiler, Element, Live, Closure } from './stories.mjs'
-import { dateRangeFormula, dateRangeKitSource } from './harmony-dates.mjs'
+import {
+  dateFormulaType,
+  dateRangeFormula,
+  dateRangeKitSource,
+} from './harmony-dates.mjs'
 
 const unwrap = node =>
   ts.isParenthesizedExpression(node) ? unwrap(node.expression) : node
@@ -18,6 +22,30 @@ function color(value) {
   return match[1]
 }
 
+/**
+ * A preset's two whole-day offsets from today, as the sealed formulas the
+ * native interpreter evaluates on the device: `[0, 13]` is today through a
+ * fortnight from it.
+ */
+function daysFormula(days, compiler, node) {
+  if (days.length !== 2 || days.some(day => !Number.isInteger(day)))
+    compiler.fail(node, 'A preset’s days are two whole-day offsets from today')
+  const offset = day =>
+    day === 0
+      ? { op: 'today' }
+      : {
+          op: 'addDays',
+          args: [{ op: 'today' }, { op: 'number', number: day }],
+        }
+  const range = { start: offset(days[0]), end: offset(days[1]) }
+  if (
+    dateFormulaType(range.start) !== 'date' ||
+    dateFormulaType(range.end) !== 'date'
+  )
+    compiler.fail(node, 'A preset’s range must stay a date formula')
+  return range
+}
+
 /** Only HarmonyOS opts into these React-only forms; portable grammar stays strict. */
 export class HarmonyReactCompiler extends StoryCompiler {
   json(value, node) {
@@ -30,10 +58,21 @@ export class HarmonyReactCompiler extends StoryCompiler {
         label: value.label,
         range: { $dateRange: dateRangeFormula(value.range, this) },
       }
+    if (
+      typeof value?.label === 'string' &&
+      Array.isArray(value.days) &&
+      Object.keys(value).every(key => ['label', 'days'].includes(key))
+    )
+      return {
+        label: value.label,
+        range: { $dateRange: daysFormula(value.days, this, node) },
+      }
     return super.json(value, node)
   }
   stageSource() {
-    return '../../components/stage'
+    return this.file.startsWith('stories/react/')
+      ? '../../components/stage'
+      : '../components/stage'
   }
   expression(node, scope) {
     if (ts.isNewExpression(node)) {
@@ -241,7 +280,8 @@ export class HarmonyReactCompiler extends StoryCompiler {
 }
 
 export async function readHarmonyReactStories(root) {
-  const dir = path.join(root, 'packages/js/dazzui/example/src/stories/react')
+  const stories = path.join(root, 'packages/js/dazzui/example/src/stories')
+  const dir = path.join(stories, 'react')
   const kitSource = await fs.readFile(
     path.join(root, 'packages/js/dazzui/src/components/date-range-picker.tsx'),
     'utf8'
@@ -251,35 +291,52 @@ export async function readHarmonyReactStories(root) {
     'components/date-range-picker.tsx',
     HarmonyReactCompiler
   )
+  /*
+   * Calendar and DateRangePicker are portable stories now that every
+   * platform draws them; HarmonyOS still reads them with its own grammar,
+   * because a date reaches the native interpreter as integer parts rather
+   * than the portable wire format's local civil time. Tabs and WindowFrame
+   * are React-only and sit in `react/`.
+   */
   const mapped = [
-    'calendar.tsx',
-    'date-range-picker.tsx',
-    'tabs.tsx',
-    'window-frame.tsx',
+    { file: 'calendar.tsx', dir: stories, source: 'stories/calendar.tsx' },
+    {
+      file: 'date-range-picker.tsx',
+      dir: stories,
+      source: 'stories/date-range-picker.tsx',
+    },
+    { file: 'tabs.tsx', dir, source: 'stories/react/tabs.tsx' },
+    {
+      file: 'window-frame.tsx',
+      dir,
+      source: 'stories/react/window-frame.tsx',
+    },
   ]
-  const stories = []
-  for (const file of mapped) {
-    const source = await fs.readFile(path.join(dir, file), 'utf8')
-    const story = new HarmonyReactCompiler(`stories/react/${file}`, source, {
+  const compiled = []
+  for (const { file, dir: from, source: filePath } of mapped) {
+    const source = await fs.readFile(path.join(from, file), 'utf8')
+    const story = new HarmonyReactCompiler(filePath, source, {
       kitValues: { DATE_RANGE_PRESETS: kit.presets },
     }).story()
     if (`${story.id}.tsx` !== file)
       throw new Error(`${file}: story id differs from its filename`)
-    stories.push(story)
+    compiled.push(story)
   }
   // A `StoryExtension` adds React-only examples to a compiled story's page;
   // it is not a page of its own.
-  const files = []
+  const pages = []
   for (const file of (await fs.readdir(dir)).sort()) {
     if (!file.endsWith('.tsx')) continue
     const source = await fs.readFile(path.join(dir, file), 'utf8')
-    if (!/\bStoryExtension\b/.test(source)) files.push(file)
+    if (!/\bStoryExtension\b/.test(source))
+      pages.push({ id: file.replace(/\.tsx$/, ''), mapped: true })
   }
+  // A portable story the native reader compiles is a native page too.
+  for (const { file } of mapped)
+    if (!pages.some(page => page.id === file.replace(/\.tsx$/, '')))
+      pages.push({ id: file.replace(/\.tsx$/, ''), mapped: true })
   return {
-    stories,
-    pages: files.map(file => ({
-      id: file.replace(/\.tsx$/, ''),
-      mapped: mapped.includes(file),
-    })),
+    stories: compiled,
+    pages: pages.sort((a, b) => a.id.localeCompare(b.id)),
   }
 }

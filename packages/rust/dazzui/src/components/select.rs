@@ -10,14 +10,14 @@ use std::rc::Rc;
 
 use gpui::{
     AnyElement, App, ElementId, FocusHandle, InteractiveElement, IntoElement, KeyDownEvent,
-    MouseButton, ParentElement, RenderOnce, SharedString, StatefulInteractiveElement, Styled,
-    Window, div, point, prelude::*, px,
+    MouseButton, ParentElement, RenderOnce, ScrollHandle, SharedString, StatefulInteractiveElement,
+    Styled, Window, div, point, prelude::*, px,
 };
 
 use crate::components::icon::{Icon, icon_slot};
 use crate::components::popup::{
-    Placement, PopupRow, PopupState, Press, dismissable, group_label, group_label_height, measured,
-    part_id, positioned, row_height, sheet, toggle_press,
+    Placement, PopupRow, PopupState, Press, dismissable, group_label, group_label_height,
+    max_sheet_height, measured, part_id, positioned, row_height, sheet, toggle_press,
 };
 use crate::components::text_field::{FieldBox, FieldState};
 use crate::foundation::{Size, Tint, focus_visible, pointer_down};
@@ -194,6 +194,28 @@ impl RenderOnce for Select {
         let state = PopupState::keyed(&id, false, window, cx);
         let open = state.read(cx).open && !self.disabled;
         let anchor = state.read(cx).anchor.clone();
+        let scroll: ScrollHandle = window
+            .use_keyed_state(part_id(&id, "scroll"), cx, |_, _| ScrollHandle::new())
+            .read(cx)
+            .clone();
+        // Which of the sheet's children holds the chosen row — the row, or
+        // the group around it — so a list too long for the window opens
+        // scrolled to it.
+        let chosen_child = {
+            let mut index = 0;
+            let mut found = None;
+            for (child, entry) in self.options.iter().enumerate() {
+                let count = match entry {
+                    SelectEntry::Option(_) => 1,
+                    SelectEntry::Group { options, .. } => options.len(),
+                };
+                if selected.is_some_and(|at| at >= index && at < index + count) {
+                    found = Some(child);
+                }
+                index += count;
+            }
+            found.unwrap_or(0)
+        };
 
         // Choosing: the value moves, the list closes, the caller hears.
         let choose: Rc<dyn Fn(usize, &mut Window, &mut App)> = {
@@ -226,7 +248,14 @@ impl RenderOnce for Select {
         };
         let placeholder = label.is_none();
         let lifted = open || focus_visible(&focus, window, cx);
-        let toggle: Press = toggle_press(&state, selected, None);
+        let toggle: Press = {
+            let toggle = toggle_press(&state, selected, None);
+            let scroll = scroll.clone();
+            Rc::new(move |window, cx| {
+                toggle(window, cx);
+                scroll.scroll_to_item(chosen_child);
+            })
+        };
         let mut trigger = FieldBox::new(self.size)
             .tint(self.tint)
             .state(if self.invalid {
@@ -361,6 +390,11 @@ impl RenderOnce for Select {
             let list = sheet(t)
                 .id("list")
                 .min_w(px(trigger_width - shift_x))
+                // A list longer than the window scrolls inside it rather
+                // than running off it.
+                .max_h(px(max_sheet_height(window)))
+                .overflow_y_scroll()
+                .track_scroll(&scroll)
                 .children(rows)
                 .on_key_down(move |event: &KeyDownEvent, window, cx| {
                     let key = event.keystroke.key.as_str();

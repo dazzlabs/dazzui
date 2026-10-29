@@ -38,6 +38,11 @@ pointer needs one to keep its state between frames. A prop React leaves to
 the component (`defaultValue`, `defaultChecked`) is held by the component;
 `value` with its change handler makes it the caller's.
 
+A date is `chrono`'s: `Calendar` takes and gives back a `NaiveDate`, and
+`DateRangePicker` a `DateRangeValue` of two `NaiveDateTime`s, civil and
+local, since the kit draws a calendar and does not do calendars. The crate
+is re-exported as `dazzui::chrono`, so an app reads the same version.
+
 Controls prepare plain string children with the shared font stack and
 display-pixel measurement. For text drawn directly with GPUI, use
 `dazzui::foundation::text_child`; rich elements pass through unchanged.

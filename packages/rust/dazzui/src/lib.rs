@@ -15,6 +15,8 @@ pub mod theme;
 pub mod tokens;
 
 pub use assets::Assets;
+/// The dates the kit's calendar components take and give back.
+pub use chrono;
 pub use components::*;
 pub use foundation::{
     Length, Profile, Size, State, StyledExt, Tint, Variant, baseline, content_area,

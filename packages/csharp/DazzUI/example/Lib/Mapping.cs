@@ -89,6 +89,35 @@ public static class Mapping
                 button.Click += (_, _) => { press(); submit?.Invoke(); };
                 return button;
             },
+            ["Calendar"] = n =>
+            {
+                var range = n.String("mode") == "range";
+                var calendar = new Calendar
+                {
+                    Mode = range ? CalendarMode.Range : CalendarMode.Single,
+                    Size = n.Option("size", ControlSize.Medium),
+                    Months = (int?)n.Number("months") ?? 1,
+                    Min = ReadDay(n["min"]),
+                    Max = ReadDay(n["max"]),
+                    WeekStartsOn = (DayOfWeek)((int?)n.Number("weekStartsOn") ?? 1),
+                    Today = ReadDay(n["today"]),
+                    Navigation = !n.Has("navigation") || n.Flag("navigation"),
+                    Tint = n.Option("tint", WidgetTint.Primary),
+                };
+                var changed = n.Handler("onValueChange");
+                if (range)
+                {
+                    calendar.RangeChanged += (_, value) => changed?.Invoke(DateRangeJson(value));
+                    n.Live(calendar, () => calendar.Range = ReadDateRange(n["value"] ?? n["defaultValue"]));
+                }
+                else
+                {
+                    calendar.ValueChanged += (_, value) => changed?.Invoke(DayJson(value));
+                    n.Live(calendar, () => calendar.Value = ReadDay(n["value"] ?? n["defaultValue"]));
+                }
+                Name(calendar, n.String("aria-label"));
+                return calendar;
+            },
             ["Callout"] = n => new Callout
             {
                 Title = n.String("title"),
@@ -157,6 +186,38 @@ public static class Mapping
                 // The menu takes its theme from where it is attached.
                 if (target is FrameworkElement framed) framed.Loaded += (_, _) => menu.Attach(framed);
                 return target;
+            },
+            ["DateRangePicker"] = n =>
+            {
+                var picker = new DateRangePicker
+                {
+                    TimeStep = (int?)n.Number("timeStep") ?? 15,
+                    Months = (int?)n.Number("months") ?? 1,
+                    WeekStartsOn = (DayOfWeek)((int?)n.Number("weekStartsOn") ?? 1),
+                    Today = ReadDay(n["today"]),
+                    Size = n.Option("size", ControlSize.Medium),
+                    Invalid = n.String("state") == "error",
+                    Tint = n.Option("tint", WidgetTint.Primary),
+                    IsEnabled = !n.Flag("disabled"),
+                };
+                // A preset is data here: a label and two whole-day offsets from today.
+                if (n.Has("presets"))
+                {
+                    picker.Presets.Clear();
+                    foreach (var preset in n["presets"].Items())
+                        picker.Presets.Add(DateRangePreset.Days(preset?["label"].Text() ?? "", (int)(preset?["days"]?[0].Number() ?? 0), (int)(preset?["days"]?[1].Number() ?? 0)));
+                }
+                if (n.Has("durations"))
+                {
+                    picker.Durations.Clear();
+                    foreach (var duration in n["durations"].Items())
+                        picker.Durations.Add(new DateRangeDuration(duration?["label"].Text() ?? "", (int)(duration?["minutes"].Number() ?? 60)));
+                }
+                var changed = n.Handler("onValueChange");
+                picker.ValueChanged += (_, value) => changed?.Invoke(DateRangeValueJson(value));
+                n.Live(picker, () => picker.Value = ReadDateRangeValue(n["value"] ?? n["defaultValue"]));
+                Name(picker, n.String("aria-label"));
+                return picker;
             },
             ["Dialog"] = n => Present(n, drawer: false),
             ["DialogBody"] = n => Section(n, "body"),
@@ -880,6 +941,43 @@ public static class Mapping
         "left" => FlyoutPlacementMode.Left,
         "right" => FlyoutPlacementMode.Right,
         _ => fallback,
+    };
+
+    /* Dates ----------------------------------------------------------------
+     * A story writes a date as local `YYYY-MM-DDTHH:MM`, the way codegen
+     * writes `new Date(2026, 9, 16, 14, 30)`, and a slot a calendar writes
+     * back takes the same text, so a round trip through a scene's state reads
+     * as it was written. */
+
+    private const string DateFormat = "yyyy-MM-dd'T'HH:mm";
+
+    private static DateTime? ReadMoment(JsonNode? value) =>
+        value.String() is string text && DateTime.TryParseExact(text, DateFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var at) ? at : null;
+
+    private static DateOnly? ReadDay(JsonNode? value) => ReadMoment(value) is DateTime at ? DateOnly.FromDateTime(at) : null;
+
+    private static JsonNode MomentJson(DateTime at) => JsonValue.Create(at.ToString(DateFormat, System.Globalization.CultureInfo.InvariantCulture));
+
+    private static JsonNode DayJson(DateOnly day) => MomentJson(day.ToDateTime(TimeOnly.MinValue));
+
+    private static DateRange ReadDateRange(JsonNode? value) => new(ReadDay(value?["start"]), ReadDay(value?["end"]));
+
+    private static JsonNode DateRangeJson(DateRange range) => new JsonObject
+    {
+        ["start"] = range.Start is DateOnly start ? DayJson(start) : null,
+        ["end"] = range.End is DateOnly end ? DayJson(end) : null,
+    };
+
+    private static DateRangeValue? ReadDateRangeValue(JsonNode? value) =>
+        ReadMoment(value?["start"]) is DateTime start && ReadMoment(value?["end"]) is DateTime end
+            ? new DateRangeValue(start, end, value?["allDay"].Truthy() ?? false)
+            : null;
+
+    private static JsonNode DateRangeValueJson(DateRangeValue value) => new JsonObject
+    {
+        ["start"] = MomentJson(value.Start),
+        ["end"] = MomentJson(value.End),
+        ["allDay"] = JsonValue.Create(value.AllDay),
     };
 
     private static void Select(ToggleGroup group, JsonNode? value)

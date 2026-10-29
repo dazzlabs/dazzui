@@ -168,12 +168,23 @@ const reactOnly = await readHarmonyReactStories(root)
 // Give native-only scenes stable addresses without adding other platforms to
 // their support gate or changing the shared conformance contract.
 outputs.set(`${ark}/example/react-scenes.json`, scenesJson(reactOnly.stories))
-const harmonyStories = [...stories, ...reactOnly.stories].sort((a, b) =>
+/*
+ * The native reader compiles a page that is portable too — Calendar and
+ * DateRangePicker — because its wire format carries dates as integer parts,
+ * not the portable data's local civil time. The portable list drops those
+ * pages so the gallery carries each one once, and coverage counts it once.
+ */
+const nativePages = new Set(reactOnly.stories.map(story => story.id))
+const portableStories = stories.filter(story => !nativePages.has(story.id))
+const harmonyStories = [...portableStories, ...reactOnly.stories].sort((a, b) =>
   a.name.localeCompare(b.name)
 )
 outputs.set(`${arkExample}/Stories.ets`, harmony.storiesETS(harmonyStories))
 outputs.set(`${arkExample}/Themes.ets`, harmony.themesETS(themes))
-outputs.set(`${ark}/example/coverage.json`, harmony.coverageJSON(stories))
+outputs.set(
+  `${ark}/example/coverage.json`,
+  harmony.coverageJSON(portableStories)
+)
 outputs.set(
   `${ark}/example/react-coverage.json`,
   JSON.stringify(
@@ -275,5 +286,5 @@ console.log(
   `${stories.length} stories, ${stories.reduce((n, s) => n + s.examples.length, 0)} examples; ${outputs.size} generated files checked`
 )
 console.log(
-  `HarmonyOS also reads ${reactOnly.stories.length} React-only page(s); ${reactOnly.pages.filter(page => !page.mapped).length} remain unmapped`
+  `HarmonyOS also reads ${reactOnly.stories.length} native page(s); ${reactOnly.pages.filter(page => !page.mapped).length} remain unmapped`
 )

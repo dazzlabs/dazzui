@@ -443,12 +443,14 @@ The current mapping covers all 176 portable scenes. This is source mapping
 coverage, not a full-support or fidelity claim. See the generated coverage file for exact
 scene coverage; a mapped scene alone does not prove geometry conformance.
 Those counts cover only the portable stories. HarmonyOS additionally reads the
-actual React-only Tabs, Calendar, DateRangePicker and WindowFrame stories through
-`tools/codegen/harmony-react.mjs`. Their previews and twenty-four examples bring the
-gallery to 55 pages and 149 examples. `example/react-coverage.json` tracks these
-28 scenes separately. The portable grammar and conformance gate do not include
-these extra scenes. WindowFrame draws presentation windows inside the gallery;
-its controls dispatch callbacks and never operate the host OS window.
+actual React-only Tabs and WindowFrame stories, and the portable Calendar and
+DateRangePicker ones, through `tools/codegen/harmony-react.mjs`, which writes a
+date as integer parts for the native interpreter. Their previews and
+twenty-four examples bring the gallery to 55 pages and 149 examples.
+`example/react-coverage.json` tracks these 28 scenes separately. The portable
+grammar and conformance gate do not include these extra scenes. WindowFrame
+draws presentation windows inside the gallery; its controls dispatch callbacks
+and never operate the host OS window.
 
 Inside `titleContent`, a custom title component can consume
 `dazzui.window-title` as a `DazzWindowTitleStyle`. It carries the resolved
@@ -883,7 +885,7 @@ The native checks completed during the alignment work include:
 
 | Area | Checked on the API 26 PC emulator |
 | --- | --- |
-| Gallery | The 51 portable pages and 125 example containers; all overview previews; padded stage dimensions and centering; search binding; both shell panels; splitter widths surviving restore/maximize. The four additional React-only pages have targeted checks below. |
+| Gallery | The 51 portable pages and 125 example containers; all overview previews; padded stage dimensions and centering; search binding; both shell panels; splitter widths surviving restore/maximize. The four additional native pages have targeted checks below. |
 | Button paint | Filled Button shadow pixels match the shared small-shadow recipe at actual scale in Studio light/dark and Bright light. The native foreground has no duplicate shadow; disabled and normal buttons and filled IconButtons stay flat. A text Toggle changes to the strong label weight when latched, restores its profile weight when released, and stays flat. |
 | Dialog | Overlay fill, rounded content clipping, short-form sizing, activation and Cancel dismissal in Studio light/dark and Bright light. Real dialog Gaussian shadow pixels pass the straight-edge and outer-corner check over the shared scrim in those three themes. A long body scrolls to its final action while the header and full-height footer stay pinned; the sheet leaves the shared fixed viewport padding. All five generated examples preserve their header/body/footer bounds and dismiss through their footer actions. |
 | Toast paint | Native Gaussian shadows pass the four straight-edge and four outer-corner profiles for short and width-capped long receipts in Studio light/dark and Bright light. The capped message preserves both control gaps, its action fires once, and action/dismissal remove the live drawing scope. |

@@ -1,34 +1,18 @@
 import { Calendar, type DateRange } from '@dazzlabs/dazzui'
 import { useState } from 'react'
 
-import { Col, Row, Text } from '../../components/stage'
-import type { Story } from '../../lib/story'
+import { Row } from '../components/stage'
+import type { Story } from '../lib/story'
 
 /*
- * Outside the shared portable pipeline: not every toolkit draws this grid.
- * HarmonyOS reads this source through its own date-aware story compiler.
- * Moving it up is the claim that every platform maps `Calendar`.
+ * The grid counts a fixed day as today, so every platform draws the same
+ * month and the scenes compare: 16 October 2026, a Friday.
  */
-
 const TODAY = new Date(2026, 9, 16)
-
-const describe = (range: DateRange) =>
-  range.start
-    ? `${range.start.toLocaleDateString()} → ${
-        range.end ? range.end.toLocaleDateString() : '…'
-      }`
-    : 'Pick a start'
 
 function Single() {
   const [day, setDay] = useState<Date | null>(new Date(2026, 9, 20))
-  return (
-    <Col gap="2" align="start">
-      <Calendar value={day} onValueChange={setDay} today={TODAY} />
-      <Text tone="secondary">
-        {day ? day.toLocaleDateString() : 'Nothing picked'}
-      </Text>
-    </Col>
-  )
+  return <Calendar value={day} onValueChange={setDay} today={TODAY} />
 }
 
 function Range() {
@@ -37,15 +21,12 @@ function Range() {
     end: new Date(2026, 9, 24),
   })
   return (
-    <Col gap="2" align="start">
-      <Calendar
-        mode="range"
-        value={range}
-        onValueChange={setRange}
-        today={TODAY}
-      />
-      <Text tone="secondary">{describe(range)}</Text>
-    </Col>
+    <Calendar
+      mode="range"
+      value={range}
+      onValueChange={setRange}
+      today={TODAY}
+    />
   )
 }
 
@@ -91,12 +72,7 @@ const story: Story = {
             max={new Date(2026, 9, 23)}
             today={TODAY}
           />
-          <Calendar
-            defaultValue={TODAY}
-            weekStartsOn={0}
-            locale="en-US"
-            today={TODAY}
-          />
+          <Calendar defaultValue={TODAY} weekStartsOn={0} today={TODAY} />
         </Row>
       ),
     },

@@ -1405,13 +1405,20 @@ await check('window-frame', async () => {
 await check('date-range-picker', async () => {
   await launch('date-range-picker', ['--ps', 'sizing', 'design'])
   const story = stories.find(story => story.id === 'date-range-picker')
-  const captionID =
-    'date-range-picker/0/' + story.examples[0].content.items[1].address
+  // The story draws the picker alone, so the value it publishes is read from
+  // the trigger's own accessible summary rather than a sibling caption.
+  const pickerID = 'date-range-picker/0/' + story.examples[0].content.address
   const sheet = (current = tree()) =>
     findNode(current, node => /^dazz-date-range-\d+-sheet$/.test(node.id))
   const caption = (current = tree()) => {
-    const node = findNode(current, node => node.id === captionID)
-    return node?.attributes.text || node?.attributes.description
+    const picker = findNode(current, node => node.id === pickerID)
+    const trigger =
+      picker &&
+      findNode(
+        picker,
+        node => typeof node.id === 'string' && node.id.endsWith('-trigger')
+      )
+    return trigger?.attributes.description
   }
   const nodes = (current = tree()) => {
     const root = sheet(current)
@@ -1553,7 +1560,7 @@ await check('date-range-picker', async () => {
   await press('Done')
   await closed()
   await until(
-    current => caption(current)?.endsWith('(all day)'),
+    current => caption(current)?.includes('All day'),
     'Done reaches the controlled caption'
   )
   const allDay = caption()

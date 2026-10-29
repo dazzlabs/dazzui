@@ -2566,47 +2566,51 @@ test('calendar range picking and hover/focus preview match React, including reve
         }
 })
 
-test('generated Calendar callbacks preserve local dates and update the actual source captions in isolated scene state', () => {
+test('generated Calendar callbacks preserve local dates in isolated scene state', () => {
   const story = load(
     'example/entry/src/main/ets/generated/Stories.ets'
   ).STORIES.find(story => story.id === 'calendar')
   assert.ok(story)
   const state = new SceneState(story.preview.initial)
   const sibling = new SceneState(story.preview.initial)
-  const [control, caption] = story.preview.content.items
-  const readCaption = () =>
-    caption.items.map(item => text(state.evaluate(item))).join('')
-  assert.equal(readCaption(), new Date(2026, 9, 20).toLocaleDateString())
+  const control = story.preview.content
+  assert.deepEqual(
+    dateFromValue(state.evaluate(control.fields.value)),
+    new Date(2026, 9, 20),
+    'The story authors a local day, not a timestamp from the generator'
+  )
   const next = new Date(2026, 10, 23, 14, 37, 42, 123)
   state.run(control.fields.onValueChange, dateValue(next))
   assert.deepEqual(dateFromValue(state.evaluate(control.fields.value)), next)
-  assert.equal(readCaption(), next.toLocaleDateString())
   assert.deepEqual(
     dateFromValue(sibling.evaluate(control.fields.value)),
-    new Date(2026, 9, 20)
+    new Date(2026, 9, 20),
+    'A scene state is isolated'
   )
   state.run(control.fields.onValueChange, EMPTY_VALUE)
   assert.equal(
-    readCaption(),
-    'Nothing picked',
-    'Null must choose the lazy fallback without formatting a null date'
+    dateFromValue(state.evaluate(control.fields.value)),
+    null,
+    'A cleared day is the null the source state holds'
   )
 
   const rangeScene = story.examples[1]
   const rangeState = new SceneState(rangeScene.initial)
-  const [rangeControl, rangeCaption] = rangeScene.content.items
-  const describe = () =>
-    rangeCaption.items.map(item => text(rangeState.evaluate(item))).join('')
-  rangeState.run(rangeControl.fields.onValueChange, {
+  const rangeControl = rangeScene.content
+  const open = {
     kind: 'object',
     fields: { start: dateValue(next), end: EMPTY_VALUE },
-  })
-  assert.equal(describe(), next.toLocaleDateString() + ' → …')
+  }
+  rangeState.run(rangeControl.fields.onValueChange, open)
+  assert.deepEqual(rangeState.evaluate(rangeControl.fields.value), open)
   rangeState.run(rangeControl.fields.onValueChange, {
     kind: 'object',
-    fields: { start: EMPTY_VALUE, end: EMPTY_VALUE },
+    fields: { start: dateValue(next), end: dateValue(next) },
   })
-  assert.equal(describe(), 'Pick a start')
+  assert.deepEqual(
+    dateFromValue(rangeState.evaluate(rangeControl.fields.value).fields.start),
+    next
+  )
   for (const [value, expected] of [
     [EMPTY_VALUE, false],
     [booleanValue(false), false],

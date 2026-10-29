@@ -283,9 +283,42 @@ internal static class BehaviorTests
             await SmokeTest.SaveAsync(drawer.Native, output, $"drawer-{side}.png");
             drawer.Hide(); await opened; await Settle(shell);
         }
+        // A calendar across two months: eighty-four cells, one tab stop, and a
+        // day that stands in both months painted in both.
+        var today = new DateOnly(2026, 10, 16);
+        var calendar = new UI.Calendar { Mode = UI.CalendarMode.Range, Months = 2, Size = UI.ControlSize.Small, Today = today, Range = new UI.DateRange(new DateOnly(2026, 10, 28), new DateOnly(2026, 11, 3)) };
+        shell.ShowFixture(calendar); await Settle(shell);
+        var days = Walk(calendar).OfType<Microsoft.UI.Xaml.Controls.Button>().Where(button => button is not UI.Button).ToArray();
+        Check(days.Length == 84, $"Two months must draw eighty-four days, not {days.Length}.");
+        Check(days.Count(day => day.IsTabStop) == 1, "The grid must be one tab stop.");
+        var filled = calendar.Theme.Recipe(UI.ControlVariant.Filled, calendar.Tint, "surface").Color;
+        Check(days.Count(day => day.Background is SolidColorBrush brush && brush.Color == filled) == 4, "Each end of the range must be filled in every month it stands in.");
+        await SmokeTest.SaveAsync(calendar, output, "calendar-two-months.png");
+        var ranged = 0; calendar.RangeChanged += (_, _) => ranged++;
+        var ninth = days.First(day => Microsoft.UI.Xaml.Automation.AutomationProperties.GetName(day) == "Friday, October 9, 2026");
+        Pattern<IInvokeProvider>(ninth, PatternInterface.Invoke).Invoke(); await Settle(shell);
+        Check(ranged == 1 && calendar.Range.Start == new DateOnly(2026, 10, 9) && calendar.Range.End is null, "A press on a finished range did not start a new one.");
+        // The picker: its sheet opens from the trigger, a press moves the
+        // draft and not the value, and Done writes the draft back.
+        var picker = new UI.DateRangePicker { Today = today, Value = new UI.DateRangeValue(new DateTime(2026, 10, 16, 14, 30, 0), new DateTime(2026, 10, 16, 15, 30, 0)), Width = 320 };
+        shell.ShowFixture(picker); await Settle(shell);
+        picker.Sheet.ShowAt(picker.Trigger); await Settle(shell);
+        Check(picker.Sheet.IsOpen && picker.Sheet.Content is FrameworkElement, "The picker's sheet did not open.");
+        var sheet = (FrameworkElement)picker.Sheet.Content!;
+        var sheetCalendar = Walk(sheet).OfType<UI.Calendar>().Single();
+        Check(Walk(sheet).OfType<UI.Select>().Count() == 2 && Walk(sheet).OfType<UI.Toggle>().Count() == 4, "The sheet lost its time lists or its duration chips.");
+        await SmokeTest.SaveAsync(sheet, output, "date-range-picker-sheet.png");
+        var committed = 0; picker.ValueChanged += (_, _) => committed++;
+        var twentieth = Walk(sheetCalendar).OfType<Microsoft.UI.Xaml.Controls.Button>().First(day => Microsoft.UI.Xaml.Automation.AutomationProperties.GetName(day) == "Tuesday, October 20, 2026");
+        Pattern<IInvokeProvider>(twentieth, PatternInterface.Invoke).Invoke(); await Settle(shell);
+        Check(committed == 0 && picker.Value!.Value.Start.Day == 16, "The draft reached the value before Done.");
+        var done = Walk(sheet).OfType<UI.Button>().Single(button => Equals(button.Content, "Done"));
+        Pattern<IInvokeProvider>(done, PatternInterface.Invoke).Invoke(); await Settle(shell);
+        Check(committed == 1 && picker.Value == new UI.DateRangeValue(new DateTime(2026, 10, 20, 14, 30, 0), new DateTime(2026, 10, 20, 15, 30, 0)) && !picker.Sheet.IsOpen,
+            $"Done did not commit the draft and close the sheet: {picker.Value}, open={picker.Sheet.IsOpen}.");
         var masked = new UI.OtpField { Masked = true, Value = "654321" };
         shell.ShowFixture(masked); await Settle(shell);
         Check(Walk(masked).OfType<PasswordBox>().Count() == 6 && masked.Value == "654321", "Masked OTP did not use native password inputs.");
-        await File.WriteAllTextAsync(Path.Combine(output, "behavior.txt"), "PASS: checkbox, exclusive radio selection, form validation/submission, native edit role, OTP paste/masking, range automation, theme/state preservation, menu action, popover, dialog primary result, four drawer edges.\n");
+        await File.WriteAllTextAsync(Path.Combine(output, "behavior.txt"), "PASS: checkbox, exclusive radio selection, form validation/submission, native edit role, OTP paste/masking, range automation, theme/state preservation, menu action, popover, dialog primary result, four drawer edges, calendar across two months, date range picker draft and Done.\n");
     }
 }

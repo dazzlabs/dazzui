@@ -265,6 +265,8 @@ export class StoryCompiler {
         )
       case ts.SyntaxKind.CallExpression:
         return this.call(node, scope)
+      case ts.SyntaxKind.NewExpression:
+        return this.construct(node, scope)
       case ts.SyntaxKind.ConditionalExpression:
         return this.choose(
           this.expression(node.condition, scope),
@@ -391,6 +393,31 @@ export class StoryCompiler {
       default:
         this.fail(node, `Unsupported method: ${method}`)
     }
+  }
+
+  /**
+   * `new Date(year, month, day[, hours[, minutes]])` — the one constructor
+   * a story may call, because a calendar's value is a date. The parts must
+   * be known ahead of time; the data every platform reads writes the date
+   * as local `YYYY-MM-DDTHH:MM`, the way JavaScript would construct it.
+   */
+  construct(node, scope) {
+    const callee = node.expression
+    if (!ts.isIdentifier(callee) || callee.text !== 'Date' || scope.has('Date'))
+      this.fail(node, 'Only new Date(year, month, day, …) can be compiled')
+    const args = (node.arguments ?? []).map(argument =>
+      this.expression(argument, scope)
+    )
+    if (
+      args.length < 3 ||
+      args.length > 5 ||
+      args.some(argument => typeof argument !== 'number')
+    )
+      this.fail(
+        node,
+        'A date is new Date(year, month, day[, hours[, minutes]]), each a number known ahead of time'
+      )
+    return new Date(...args)
   }
 
   hook(hook, args, node) {
@@ -637,6 +664,7 @@ export class StoryCompiler {
     )
       return value
     if (Array.isArray(value)) return value.map(item => this.json(item, node))
+    if (value instanceof Date) return localDateTime(value)
     if (value instanceof Live) return value.json
     if (value instanceof Glyph) return { $icon: value.name }
     if (value instanceof Element) return this.element(value, node)
@@ -755,6 +783,15 @@ export class StoryCompiler {
       }),
     }
   }
+}
+
+/**
+ * A date as every platform reads it: local civil time to the minute, with no
+ * zone, so `new Date(2026, 9, 16, 14, 30)` is `2026-10-16T14:30` everywhere.
+ */
+function localDateTime(date) {
+  const pad = n => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
 /** JSX's own rule for text: lines trimmed, blank ones dropped, joined by a space. */

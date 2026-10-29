@@ -100,7 +100,7 @@ test('WindowFrame reads all actual React scenes, scoped slots and application st
   ])
     assert.deepEqual(sceneGaps(story.id, scene), [])
   const changed = new HarmonyReactCompiler(
-    'window-frame.tsx',
+    'stories/react/window-frame.tsx',
     source.replace('width={280}', 'width={281}'),
     { kitValues: {} }
   ).story()
@@ -108,7 +108,7 @@ test('WindowFrame reads all actual React scenes, scoped slots and application st
   assert.throws(
     () =>
       new HarmonyReactCompiler(
-        'window-frame.tsx',
+        'stories/react/window-frame.tsx',
         source.replace('paddingBlockStart: 0', 'paddingBlockStart: 1'),
         { kitValues: {} }
       ).story(),
@@ -117,7 +117,7 @@ test('WindowFrame reads all actual React scenes, scoped slots and application st
   assert.throws(
     () =>
       new StoryCompiler(
-        'window-frame.tsx',
+        'stories/react/window-frame.tsx',
         source.replace('../../components/stage', '../components/stage'),
         { kitValues: {} }
       ).story(),
@@ -390,11 +390,11 @@ test('unsupported controls, props, ranges and actions stay explicit', () => {
   )
 })
 
-test('HarmonyOS reads every actual DateRangePicker example and rejects executable preset callbacks', async () => {
+test('HarmonyOS reads every actual DateRangePicker example and seals its data presets', async () => {
   const root = new URL('../../../', import.meta.url).pathname
   const source = fs.readFileSync(
     new URL(
-      '../../../packages/js/dazzui/example/src/stories/react/date-range-picker.tsx',
+      '../../../packages/js/dazzui/example/src/stories/date-range-picker.tsx',
       import.meta.url
     ),
     'utf8'
@@ -411,7 +411,7 @@ test('HarmonyOS reads every actual DateRangePicker example and rejects executabl
     HarmonyReactCompiler
   )
   const compile = source =>
-    new HarmonyReactCompiler('stories/react/date-range-picker.tsx', source, {
+    new HarmonyReactCompiler('stories/date-range-picker.tsx', source, {
       kitValues: { DATE_RANGE_PRESETS: kit.presets },
     }).story()
   const story = (await readHarmonyReactStories(root)).stories.find(
@@ -440,6 +440,23 @@ test('HarmonyOS reads every actual DateRangePicker example and rejects executabl
     custom.presets.map(preset => preset.label),
     ['Today', 'This sprint', 'Next sprint']
   )
+  // A preset that is data becomes the same sealed formula the interpreter
+  // already evaluates for a callback: whole-day offsets from today.
+  assert.deepEqual(custom.presets[0].range.$dateRange, {
+    start: { op: 'today' },
+    end: { op: 'today' },
+  })
+  assert.deepEqual(custom.presets[1].range.$dateRange, {
+    start: { op: 'today' },
+    end: {
+      op: 'addDays',
+      args: [{ op: 'today' }, { op: 'number', number: 13 }],
+    },
+  })
+  assert.deepEqual(custom.presets[2].range.$dateRange.start, {
+    op: 'addDays',
+    args: [{ op: 'today' }, { op: 'number', number: 14 }],
+  })
   assert.deepEqual(custom.durations, [{ label: 'Working day', minutes: 480 }])
   assert.equal(custom.timeStep, 30)
   for (const scene of [
@@ -447,43 +464,34 @@ test('HarmonyOS reads every actual DateRangePicker example and rejects executabl
     ...story.examples.map(example => example.scene),
   ])
     assert.deepEqual(sceneGaps('date-range-picker', scene), [])
-  const changed = compile(source.replace('13 * 864e5', '12 * 864e5'))
+  const changed = compile(source.replace('days: [0, 13]', 'days: [0, 12]'))
   assert.notDeepEqual(
     changed.examples[3].scene.content.props.presets[1],
     custom.presets[1],
-    'Native formulas follow the source calculation'
+    'Native formulas follow the source data'
   )
   for (const replacement of [
-    'Math.random()',
-    'new Date()',
-    '123',
-    "new Date('2026-10-16')",
+    'days: [0, 13, 27]',
+    "days: [0, '13']",
+    'days: [0, Math.random()]',
   ])
     assert.throws(
-      () =>
-        compile(
-          source.replace('new Date(t.getTime() + 13 * 864e5)', replacement)
-        ),
+      () => compile(source.replace('days: [0, 13]', replacement)),
       /date-range-picker\.tsx:\d+:/
     )
-  assert.throws(
-    () => compile(source.replace('start: t,', 'start: t.setDate(1),')),
-    /Unsupported date getter/
-  )
 })
 
-test('HarmonyOS reads the Calendar source dates, ranges, notes and locale without duplicating its fixtures', async () => {
+test('HarmonyOS reads the Calendar source dates, ranges, notes and tints without duplicating its fixtures', async () => {
   const root = new URL('../../../', import.meta.url).pathname
   const source = fs.readFileSync(
     new URL(
-      '../../../packages/js/dazzui/example/src/stories/react/calendar.tsx',
+      '../../../packages/js/dazzui/example/src/stories/calendar.tsx',
       import.meta.url
     ),
     'utf8'
   )
-  const story = (await readHarmonyReactStories(root)).stories.find(
-    story => story.id === 'calendar'
-  )
+  const result = await readHarmonyReactStories(root)
+  const story = result.stories.find(story => story.id === 'calendar')
   assert.deepEqual(
     story.examples.map(example => example.title),
     ['One day', 'A span', 'Two months, small', 'Bounds and week start', 'Tints']
@@ -493,16 +501,11 @@ test('HarmonyOS reads the Calendar source dates, ranges, notes and locale withou
     start: { $date: [2026, 9, 20] },
     end: { $date: [2026, 9, 24] },
   })
-  assert.deepEqual(
-    story.examples[1].scene.content.children[0].props.onValueChange,
-    { $do: [{ set: 's0', to: { $arg: 0 } }] }
-  )
+  assert.deepEqual(story.examples[1].scene.content.props.onValueChange, {
+    $do: [{ set: 's0', to: { $arg: 0 } }],
+  })
   assert.equal(story.examples[2].scene.content.props.months, 2)
   assert.equal(story.examples[2].scene.content.props.size, 'small')
-  assert.equal(
-    story.examples[3].scene.content.children[1].props.locale,
-    'en-US'
-  )
   assert.equal(
     story.examples[3].scene.content.children[1].props.weekStartsOn,
     0
@@ -516,8 +519,13 @@ test('HarmonyOS reads the Calendar source dates, ranges, notes and locale withou
     ...story.examples.map(example => example.scene),
   ])
     assert.deepEqual(sceneGaps('calendar', scene), [])
+  assert.deepEqual(
+    result.pages.map(page => page.id),
+    ['calendar', 'date-range-picker', 'tabs', 'window-frame'],
+    'The pages the native reader compiles, portable or React-only'
+  )
   const changed = new HarmonyReactCompiler(
-    'calendar.tsx',
+    'stories/calendar.tsx',
     source.replace('new Date(2026, 9, 20)', 'new Date(2026, 10, 23)'),
     { kitValues: {} }
   ).story()
@@ -526,24 +534,26 @@ test('HarmonyOS reads the Calendar source dates, ranges, notes and locale withou
     ['new Date(2026, 9, 16)', 'new Date()'],
     ['new Date(2026, 9, 16)', 'new URL(2026, 9, 16)'],
     ['new Date(2026, 9, 16)', 'new Date(99999999999, 9, 16)'],
-    ['day.toLocaleDateString()', "day.toLocaleDateString('en-US')"],
   ])
     assert.throws(
       () =>
-        new HarmonyReactCompiler('calendar.tsx', source.replace(from, to), {
-          kitValues: {},
-        }).story(),
+        new HarmonyReactCompiler(
+          'stories/calendar.tsx',
+          source.replace(from, to),
+          { kitValues: {} }
+        ).story(),
       /calendar\.tsx:\d+:/
     )
-  assert.throws(
-    () =>
-      new StoryCompiler(
-        'calendar.tsx',
-        source.replace('../../components/stage', '../components/stage'),
-        { kitValues: {} }
-      ).story(),
-    /Unsupported expression: NewExpression/
-  )
+  // The same source is portable now: every other platform reads its dates as
+  // local civil time, and HarmonyOS reads the same days as integer parts.
+  const portable = new StoryCompiler('stories/calendar.tsx', source, {
+    kitValues: {},
+  }).story()
+  assert.equal(portable.preview.state.s0, '2026-10-20T00:00')
+  assert.deepEqual(portable.examples[1].scene.state.s0, {
+    start: '2026-10-20T00:00',
+    end: '2026-10-24T00:00',
+  })
 })
 
 test('the typed wire format preserves live state, expressions, actions and specimen addresses', () => {

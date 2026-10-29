@@ -1,20 +1,14 @@
 import {
-  DATE_RANGE_PRESETS,
   DateRangePicker,
   type DateRangeValue,
   FormField,
 } from '@dazzlabs/dazzui'
 import { useState } from 'react'
 
-import { Col, Text } from '../../components/stage'
-import type { Story } from '../../lib/story'
+import { Col } from '../components/stage'
+import type { Story } from '../lib/story'
 
-/*
- * Outside the shared portable pipeline: the sheet composes Calendar, Select
- * and Toggle, and is not mapped by every toolkit. HarmonyOS reads this source
- * separately; moving it up claims that every platform maps the whole sheet.
- */
-
+/* The sheet counts a fixed day as today: 16 October 2026, a Friday. */
 const TODAY = new Date(2026, 9, 16)
 
 const at = (day: number, hours: number, minutes = 0, month = 9) =>
@@ -29,21 +23,12 @@ const MEETING: DateRangeValue = {
 function Meeting() {
   const [value, setValue] = useState<DateRangeValue | null>(MEETING)
   return (
-    <Col gap="2" align="start">
-      <DateRangePicker
-        value={value}
-        onValueChange={setValue}
-        today={TODAY}
-        aria-label="When"
-      />
-      <Text tone="secondary">
-        {value
-          ? `${value.start.toLocaleString()} → ${value.end.toLocaleString()}${
-              value.allDay ? ' (all day)' : ''
-            }`
-          : 'Nothing chosen'}
-      </Text>
-    </Col>
+    <DateRangePicker
+      value={value}
+      onValueChange={setValue}
+      today={TODAY}
+      aria-label="When"
+    />
   )
 }
 
@@ -93,25 +78,13 @@ const story: Story = {
     },
     {
       title: 'The product’s own presets and durations',
-      note: 'A calendar for sprints: two-week spans, and a working day as the one duration.',
+      note: 'A calendar for sprints: two-week spans counted from today, and a working day as the one duration.',
       Demo: () => (
         <DateRangePicker
           presets={[
-            ...DATE_RANGE_PRESETS.slice(0, 1),
-            {
-              label: 'This sprint',
-              range: t => ({
-                start: t,
-                end: new Date(t.getTime() + 13 * 864e5),
-              }),
-            },
-            {
-              label: 'Next sprint',
-              range: t => ({
-                start: new Date(t.getTime() + 14 * 864e5),
-                end: new Date(t.getTime() + 27 * 864e5),
-              }),
-            },
+            { label: 'Today', days: [0, 0] },
+            { label: 'This sprint', days: [0, 13] },
+            { label: 'Next sprint', days: [14, 27] },
           ]}
           durations={[{ label: 'Working day', minutes: 8 * 60 }]}
           timeStep={30}

@@ -1017,6 +1017,105 @@
       ]
     },
     {
+      "id": "calendar",
+      "name": "Calendar",
+      "summary": "A month grid: one day, or a span of them.",
+      "scenes": [
+        {
+          "id": "calendar/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "calendar/preview/0",
+              "component": "calendar",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "calendar/0",
+          "title": "One day",
+          "specimens": [
+            {
+              "address": "calendar/0/0",
+              "component": "calendar",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "calendar/1",
+          "title": "A span",
+          "specimens": [
+            {
+              "address": "calendar/1/0",
+              "component": "calendar",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "calendar/2",
+          "title": "Two months, small",
+          "specimens": [
+            {
+              "address": "calendar/2/0",
+              "component": "calendar",
+              "axes": {
+                "size": "small"
+              }
+            }
+          ]
+        },
+        {
+          "id": "calendar/3",
+          "title": "Bounds and week start",
+          "specimens": [
+            {
+              "address": "calendar/3/0",
+              "component": "calendar",
+              "axes": {}
+            },
+            {
+              "address": "calendar/3/1",
+              "component": "calendar",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "calendar/4",
+          "title": "Tints",
+          "specimens": [
+            {
+              "address": "calendar/4/0",
+              "component": "calendar",
+              "axes": {
+                "size": "small",
+                "tint": "primary"
+              }
+            },
+            {
+              "address": "calendar/4/1",
+              "component": "calendar",
+              "axes": {
+                "size": "small",
+                "tint": "success"
+              }
+            },
+            {
+              "address": "calendar/4/2",
+              "component": "calendar",
+              "axes": {
+                "size": "small",
+                "tint": "danger"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "callout",
       "name": "Callout",
       "summary": "Something the reader should know before they go on.",
@@ -1495,6 +1594,113 @@
               "address": "combobox/2/0",
               "component": "autocomplete",
               "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "date-range-picker",
+      "name": "DateRangePicker",
+      "summary": "When something starts and ends, chosen in one sheet.",
+      "scenes": [
+        {
+          "id": "date-range-picker/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "date-range-picker/preview/0",
+              "component": "date-range-picker",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "date-range-picker/0",
+          "title": "A meeting",
+          "specimens": [
+            {
+              "address": "date-range-picker/0/0",
+              "component": "date-range-picker",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "date-range-picker/1",
+          "title": "Several days, and all day",
+          "specimens": [
+            {
+              "address": "date-range-picker/1/0",
+              "component": "date-range-picker",
+              "axes": {}
+            },
+            {
+              "address": "date-range-picker/1/1",
+              "component": "date-range-picker",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "date-range-picker/2",
+          "title": "Empty, and in a form",
+          "specimens": [
+            {
+              "address": "date-range-picker/2/0",
+              "component": "form-field",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "date-range-picker/2/1",
+              "component": "date-range-picker",
+              "axes": {}
+            },
+            {
+              "address": "date-range-picker/2/2",
+              "component": "date-range-picker",
+              "axes": {
+                "disabled": "true"
+              }
+            }
+          ]
+        },
+        {
+          "id": "date-range-picker/3",
+          "title": "The product’s own presets and durations",
+          "specimens": [
+            {
+              "address": "date-range-picker/3/0",
+              "component": "date-range-picker",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "date-range-picker/4",
+          "title": "Sizes and states",
+          "specimens": [
+            {
+              "address": "date-range-picker/4/0",
+              "component": "date-range-picker",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "date-range-picker/4/1",
+              "component": "date-range-picker",
+              "axes": {
+                "size": "large"
+              }
+            },
+            {
+              "address": "date-range-picker/4/2",
+              "component": "date-range-picker",
+              "axes": {
+                "state": "error"
+              }
             }
           ]
         }

@@ -5,12 +5,14 @@ mod action_bar;
 mod avatar;
 mod badge;
 mod button;
+mod calendar;
 mod callout;
 mod card;
 mod checkbox;
 mod code;
 mod collapsible;
 mod combobox;
+mod date_range_picker;
 mod dialog;
 mod divider;
 mod drawer;
@@ -59,12 +61,14 @@ pub static SOURCES: &[&str] = &[
     avatar::STORY,
     badge::STORY,
     button::STORY,
+    calendar::STORY,
     callout::STORY,
     card::STORY,
     checkbox::STORY,
     code::STORY,
     collapsible::STORY,
     combobox::STORY,
+    date_range_picker::STORY,
     dialog::STORY,
     divider::STORY,
     drawer::STORY,

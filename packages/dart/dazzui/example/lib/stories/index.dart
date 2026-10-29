@@ -6,12 +6,14 @@ import 'action_bar.dart' as action_bar;
 import 'avatar.dart' as avatar;
 import 'badge.dart' as badge;
 import 'button.dart' as button;
+import 'calendar.dart' as calendar;
 import 'callout.dart' as callout;
 import 'card.dart' as card;
 import 'checkbox.dart' as checkbox;
 import 'code.dart' as code;
 import 'collapsible.dart' as collapsible;
 import 'combobox.dart' as combobox;
+import 'date_range_picker.dart' as date_range_picker;
 import 'dialog.dart' as dialog;
 import 'divider.dart' as divider;
 import 'drawer.dart' as drawer;
@@ -60,12 +62,14 @@ const stories = <Story>[
   avatar.story,
   badge.story,
   button.story,
+  calendar.story,
   callout.story,
   card.story,
   checkbox.story,
   code.story,
   collapsible.story,
   combobox.story,
+  date_range_picker.story,
   dialog.story,
   divider.story,
   drawer.story,
