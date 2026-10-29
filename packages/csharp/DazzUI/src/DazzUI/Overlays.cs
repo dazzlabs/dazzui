@@ -213,24 +213,42 @@ public sealed class Drawer : Dialog
     }
 }
 public sealed record ToastOptions(string Title, string? Description = null, WidgetTint Tint = WidgetTint.Neutral,
-    string? ActionLabel = null, Action? Action = null, TimeSpan? Duration = null);
+    string? ActionLabel = null, Action? Action = null, TimeSpan? Duration = null,
+    Glyph? Leading = null, bool? Dismissible = null, string DismissLabel = "Dismiss");
 public sealed class Toast : Surface
 {
     public ToastOptions Options { get; set; } = new("Saved");
     public event EventHandler? Dismissed;
     protected override void RefreshAppearance()
     {
-        var body = Skin.Column(Theme, Theme.Text(Options.Title, "labelMedium"));
-        if (Options.Description is not null) body.Children.Add(Theme.Text(Options.Description, "bodySmall"));
-        var actions = new ActionBar();
+        var body = new Grid { ColumnSpacing = Theme.Number("spacing.2.5"), VerticalAlignment = VerticalAlignment.Center };
+        void Add(FrameworkElement child, bool flexible = false)
+        {
+            body.ColumnDefinitions.Add(new ColumnDefinition { Width = flexible ? new GridLength(1, GridUnitType.Star) : GridLength.Auto });
+            Grid.SetColumn(child, body.ColumnDefinitions.Count - 1); body.Children.Add(child);
+        }
+        if (Options.Leading is Glyph glyph) Add(new Icon { Glyph = glyph, Foreground = Theme.Recipe(ControlVariant.Plain, Options.Tint, "content"), VerticalAlignment = VerticalAlignment.Center });
+        var message = Theme.Text(Options.Title, "labelMedium");
+        message.Foreground = Theme.Brush("color.content"); message.TextTrimming = TextTrimming.CharacterEllipsis;
+        message.VerticalAlignment = VerticalAlignment.Center;
+        if (Options.Description is null) Add(message, true);
+        else Add(Skin.Column(Theme, message, Theme.Text(Options.Description, "bodySmall")), true);
         if (Options.ActionLabel is not null)
         {
-            var action = new Button { Content = Options.ActionLabel, Variant = ControlVariant.Plain };
-            action.Click += (_, _) => Options.Action?.Invoke(); actions.Items.Add(action);
+            var action = new Button { Content = Options.ActionLabel, Variant = ControlVariant.Plain, Size = ControlSize.Tiny };
+            action.Click += (_, _) => Options.Action?.Invoke(); Add(action);
         }
-        var close = new Button { Content = "Dismiss", Variant = ControlVariant.Plain };
-        close.Click += (_, _) => Dismissed?.Invoke(this, EventArgs.Empty); actions.Items.Add(close); body.Children.Add(actions);
-        Content = new Card(body, Theme) { Variant = CardVariant.Raised, Tint = Options.Tint };
+        if (Options.Dismissible ?? (Options.Duration <= TimeSpan.Zero || Options.Duration is null && Options.Tint == WidgetTint.Danger))
+        {
+            var close = new IconButton { Glyph = FluentIcons.Common.Icon.Dismiss, Label = Options.DismissLabel };
+            close.Click += (_, _) => Dismissed?.Invoke(this, EventArgs.Empty); Add(close);
+        }
+        Content = body;
+        HorizontalAlignment = HorizontalAlignment.Center; VerticalContentAlignment = VerticalAlignment.Center;
+        Padding = new Thickness(Theme.Number("spacing.3"), Theme.Number("spacing.1.5"), Theme.Number("spacing.1.5"), Theme.Number("spacing.1.5"));
+        MinHeight = Theme.Number("spacing.9");
+        Background = Theme.Brush("color.surface-overlay"); BorderBrush = Theme.Brush("color.border-strong");
+        BorderThickness = new Thickness(Theme.Number("stroke.hairline")); CornerRadius = new CornerRadius(Theme.Number("radius.big"));
         MaxWidth = Theme.Number("toast.max-width");
         Microsoft.UI.Xaml.Automation.AutomationProperties.SetLiveSetting(this, Microsoft.UI.Xaml.Automation.Peers.AutomationLiveSetting.Polite);
     }
@@ -239,12 +257,12 @@ public sealed class ToastViewport : Surface
 {
     private readonly StackPanel stack = new();
     private readonly Dictionary<Toast, DispatcherTimer> timers = [];
-    public ToastViewport() { Content = stack; Unloaded += (_, _) => { foreach (var timer in timers.Values) timer.Stop(); timers.Clear(); }; }
+    public ToastViewport() { Content = stack; Unloaded += (_, _) => { foreach (var timer in timers.Values) timer.Stop(); timers.Clear(); stack.Children.Clear(); }; }
     public Toast Add(ToastOptions options)
     {
         var toast = new Toast { Options = options };
         toast.Dismissed += (_, _) => Remove(toast); stack.Children.Add(toast);
-        var duration = options.Duration ?? TimeSpan.FromSeconds(5);
+        var duration = options.Duration ?? (options.Tint == WidgetTint.Danger ? TimeSpan.Zero : TimeSpan.FromSeconds(options.ActionLabel is null ? 4 : 6));
         if (duration > TimeSpan.Zero)
         {
             var timer = new DispatcherTimer { Interval = duration };

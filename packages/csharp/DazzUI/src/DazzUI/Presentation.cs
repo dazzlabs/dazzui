@@ -8,7 +8,7 @@ namespace DazzUI;
 
 public sealed class Divider : Surface
 {
-    public Orientation Orientation { get; set; }
+    public Orientation Orientation { get; set; } = Orientation.Horizontal;
     public bool Muted { get; set; }
     protected override void RefreshAppearance()
     {

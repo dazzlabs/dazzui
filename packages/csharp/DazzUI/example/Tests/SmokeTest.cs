@@ -32,8 +32,35 @@ internal static class SmokeTest
         };
         try
         {
+            if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "toast")
+            {
+                await ToastTests.RunAsync(shell);
+                await File.WriteAllTextAsync(Path.Combine(output, "result.txt"), "PASS: compact toast, expiry, dismiss, long text, action and theme.\n");
+                finishing = true;
+                window.Close();
+                Environment.Exit(0);
+                return;
+            }
+            if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "divider")
+            {
+                await DividerTests.RunAsync(shell);
+                await File.WriteAllTextAsync(Path.Combine(output, "result.txt"), "PASS: horizontal default and vertical divider layout.\n");
+                finishing = true;
+                window.Close();
+                Environment.Exit(0);
+                return;
+            }
             await File.WriteAllTextAsync(Path.Combine(output, "stories.json"), System.Text.Json.JsonSerializer.Serialize(
                 Stories.All.Select(story => new { id = story.Id, name = story.Name, examples = story.Examples.Select(example => example.Title) })));
+            if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "secure-field")
+            {
+                await SecureFieldTests.RunAsync(shell);
+                await File.WriteAllTextAsync(Path.Combine(output, "result.txt"), "PASS: secure field masking, accessibility, editing, theme and validation.\n");
+                finishing = true;
+                window.Close();
+                Environment.Exit(0);
+                return;
+            }
             await SystemSizingTests.RunAsync(shell, output);
             if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "system-sizing")
             {

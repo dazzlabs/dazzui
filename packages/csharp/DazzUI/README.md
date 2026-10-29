@@ -48,7 +48,7 @@ machine over SSH and copies back the readings of every scene in
 - Actions and presentation: Button, IconButton, Toggle, ToggleGroup, Link,
   Badge, Card, Avatar, AvatarGroup, Callout, Code, CodeBlock, Divider, EmptyState,
   Icon, KeyCap and SectionLabel.
-- Fields and selection: TextField, SearchField, FieldValue, Select,
+- Fields and selection: TextField, SecureTextField, SearchField, FieldValue, Select,
   Autocomplete, Combobox, NumberField, OtpField, Form, FormField, Fieldset,
   Checkbox, CheckboxGroup, Radio, RadioGroup, Switch, OptionCard,
   SegmentedControl, PillTabs, Tag and ShortcutRecorder.
@@ -64,6 +64,9 @@ Controls are drawn to React's geometry and recipes — a Tree, a
 SegmentedControl, PillTabs or a Collapsible draws its own rows and segments
 rather than restyling a native list — while native WinUI primitives own
 editing, selection, focus and popup behavior.
+Toast uses a compact horizontal layout; timed notices dismiss themselves,
+while persistent notices expose a dismiss button whose accessible label can
+be localized with `ToastOptions.DismissLabel`.
 The system UI face comes from Windows' message-font setting, as the browser's
 `system-ui` does. `Theme.CodeFont` exposes the Windows `ui-monospace` face used
 by code, mono fields and numeric readings. Layout retains fractional logical

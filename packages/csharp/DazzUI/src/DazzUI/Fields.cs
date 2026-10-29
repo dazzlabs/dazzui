@@ -47,6 +47,31 @@ public sealed class FieldValue : TextField
 {
     public FieldValue() { IsReadOnly = true; IsTabStop = false; }
 }
+/// <summary>A masked native password editor using the same field tokens as TextField.</summary>
+public sealed class SecureTextField : Surface
+{
+    public PasswordBox Input { get; } = new() { PasswordRevealMode = PasswordRevealMode.Hidden };
+    private bool invalid;
+    public bool Invalid { get => invalid; set { invalid = value; RefreshAppearance(); } }
+    public string Password { get => Input.Password; set => Input.Password = value; }
+    public string PlaceholderText { get => Input.PlaceholderText; set => Input.PlaceholderText = value; }
+    public event RoutedEventHandler PasswordChanged { add => Input.PasswordChanged += value; remove => Input.PasswordChanged -= value; }
+
+    public SecureTextField()
+    {
+        Content = Input;
+        IsEnabledChanged += (_, _) => RefreshAppearance();
+    }
+
+    protected override void RefreshAppearance()
+    {
+        Input.IsEnabled = IsEnabled;
+        Appearance.SetSize(Input, Size);
+        Skin.Input(Input, Theme, Size, Invalid);
+        Input.Height = Theme.Number($"control.{Theme.Key(Size)}.size");
+        Skin.InputPadding(Input, Theme, Size);
+    }
+}
 public sealed class SearchField : TextField
 {
     private Icon? searchIcon;
@@ -414,6 +439,11 @@ public sealed class FormField : Surface
             body.Children.Add(Field);
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetLabeledBy(Field, label);
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetIsRequiredForForm(Field, Required);
+            if (Field is SecureTextField secure)
+            {
+                Microsoft.UI.Xaml.Automation.AutomationProperties.SetLabeledBy(secure.Input, label);
+                Microsoft.UI.Xaml.Automation.AutomationProperties.SetIsRequiredForForm(secure.Input, Required);
+            }
         }
         if ((Error ?? Hint) is string note)
         {
