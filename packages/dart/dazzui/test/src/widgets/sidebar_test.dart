@@ -117,4 +117,38 @@ void main() {
 
     semantics.dispose();
   });
+
+  testWidgets('a width the host changes lands on the spot', (tester) async {
+    Widget window({required double width, bool collapsed = false}) => app.host(
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Sidebar(
+            width: width,
+            collapsed: collapsed,
+            children: [
+              SidebarGroup(
+                children: [NavItem(label: 'Inbox', onPressed: () {})],
+              ),
+            ],
+          ),
+          const Expanded(child: SizedBox()),
+        ],
+      ),
+    );
+
+    await tester.pumpWidget(window(width: 240));
+    expect(tester.getSize(find.byType(Sidebar)).width, 240);
+
+    // A divider being dragged re-points the width; the column takes it in the
+    // frame it arrives, or the handle would trail the pointer over the token.
+    await tester.pumpWidget(window(width: 300));
+    await tester.pump();
+    expect(tester.getSize(find.byType(Sidebar)).width, 300);
+
+    // The same width while the column is put away is still no column.
+    await tester.pumpWidget(window(width: 300, collapsed: true));
+    await tester.pumpAndSettle();
+    expect(tester.getSize(find.byType(Sidebar)).width, 0);
+  });
 }

@@ -20,8 +20,10 @@ import 'section_label.dart';
 /// slides over it — the way a native split view collapses — and the column's
 /// scroll position survives the round trip. Once it is shut it leaves the
 /// semantics tree, the focus traversal and the pointer's reach, so a pane
-/// that filled the window is the only thing left to read or press.
-class Sidebar extends StatelessWidget {
+/// that filled the window is the only thing left to read or press. A width the
+/// host re-points — a divider being dragged to a new one — is applied as it
+/// comes; only the collapse travels.
+class Sidebar extends StatefulWidget {
   const Sidebar({
     super.key,
     this.header,
@@ -45,9 +47,43 @@ class Sidebar extends StatelessWidget {
   final List<Widget> children;
 
   @override
+  State<Sidebar> createState() => _SidebarState();
+}
+
+class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
+  /// How far open the column is: one is open, zero shut, and every frame
+  /// between is the edge the pane beside it sees.
+  ///
+  /// Only [Sidebar.collapsed] sweeps. A width the host changes — a divider
+  /// being dragged, a column re-pointed — is applied as it comes, so a handle
+  /// still follows the pointer rather than trailing it over the token.
+  late final AnimationController _sweep = AnimationController(
+    vsync: this,
+    value: widget.collapsed ? 0 : 1,
+  );
+
+  @override
+  void didUpdateWidget(Sidebar old) {
+    super.didUpdateWidget(old);
+    if (widget.collapsed == old.collapsed) return;
+    _sweep.duration = Theme.of(context).vars.motionDuration;
+    if (widget.collapsed) {
+      _sweep.reverse();
+    } else {
+      _sweep.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _sweep.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final ThemeVariables vars = Theme.of(context).vars;
-    final double open = width ?? vars.frameSidebarWidth;
+    final double open = widget.width ?? vars.frameSidebarWidth;
     // The content keeps the width it has when open and is cut by the column's
     // own edge as it closes: a column that laid itself out again on the way
     // out would wrap and ellipsize every label in front of the reader.
@@ -56,27 +92,32 @@ class Sidebar extends StatelessWidget {
         .toDouble();
 
     return ExcludeFocus(
-      excluding: collapsed,
+      excluding: widget.collapsed,
       child: ExcludeSemantics(
-        excluding: collapsed,
+        excluding: widget.collapsed,
         child: IgnorePointer(
-          ignoring: collapsed,
-          child: AnimatedContainer(
-            duration: vars.motionDuration,
-            curve: vars.motionEasing,
-            width: collapsed ? 0 : open,
-            decoration: BoxDecoration(
-              color: vars.colorSurfaceColumn,
-              // The edge goes with the column rather than standing in the
-              // window after it: a hairline left behind is a column one pixel
-              // wide that nothing can reach.
-              border: BorderDirectional(
-                end: BorderSide(
-                  color: collapsed ? const Color(0x00000000) : vars.colorBorder,
-                  width: context.hairlineWidth,
+          ignoring: widget.collapsed,
+          child: AnimatedBuilder(
+            animation: _sweep,
+            builder: (BuildContext context, Widget? child) {
+              final double edge = vars.motionEasing.transform(_sweep.value);
+              return Container(
+                width: open * edge,
+                decoration: BoxDecoration(
+                  color: vars.colorSurfaceColumn,
+                  // The edge goes with the column rather than standing in the
+                  // window after it: a hairline left behind is a column one
+                  // pixel wide that nothing can reach.
+                  border: BorderDirectional(
+                    end: BorderSide(
+                      color: vars.colorBorder.withValues(alpha: edge),
+                      width: context.hairlineWidth,
+                    ),
+                  ),
                 ),
-              ),
-            ),
+                child: child,
+              );
+            },
             child: ClipRect(
               child: OverflowBox(
                 alignment: AlignmentDirectional.centerStart,
@@ -85,14 +126,14 @@ class Sidebar extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    if (header != null)
+                    if (widget.header != null)
                       Container(
                         height: vars.frameTitlebarSize,
                         alignment: AlignmentDirectional.centerStart,
                         padding: EdgeInsets.symmetric(
                           horizontal: vars.spacing4,
                         ),
-                        child: header!,
+                        child: widget.header!,
                       ),
                     // Only the row list scrolls, so a pinned card stays put.
                     // The groups carry their own block padding, as
@@ -108,7 +149,7 @@ class Sidebar extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           mainAxisSize: MainAxisSize.min,
-                          children: children,
+                          children: widget.children,
                         ),
                       ),
                     ),

@@ -27,10 +27,16 @@ struct Shell: View {
     let vars = current.vars
     let story = Stories.story(page)
     HStack(spacing: 0) {
-      if listOpen {
-        ComponentList(query: $query, page: $page)
-          .frame(width: list)
-      }
+      // The column is never unmounted: a toolbar toggle or ⌘B only flips
+      // `listOpen`, and the kit's sidebar sweeps shut behind its own edge so
+      // the document beside it holds still and the list keeps its width.
+      ComponentList(
+        query: $query,
+        page: $page,
+        width: $list,
+        collapsed: !listOpen,
+        onCollapse: { listOpen = false }
+      )
       VStack(spacing: 0) {
         Toolbar(
           story: story,
@@ -45,11 +51,6 @@ struct Shell: View {
           }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .overlay(alignment: .leading) {
-          if listOpen {
-            Resizer(outward: 1, column: listWidth, width: $list, label: "Resize the component list", lineAtStart: true)
-          }
-        }
       }
       .frame(maxWidth: .infinity)
       if themesOpen {
@@ -77,60 +78,59 @@ struct Shell: View {
 private struct ComponentList: View {
   @Binding var query: String
   @Binding var page: String?
+  @Binding var width: CGFloat
+  /// Whether the column is put away — the sidebar travels between the two,
+  /// the shell only says which one it is.
+  let collapsed: Bool
+  let onCollapse: () -> Void
 
   @Environment(\.theme) private var theme
-  @Environment(\.hairline) private var hairline
 
   var body: some View {
     let vars = theme.vars
-    VStack(alignment: .leading, spacing: 0) {
+    Sidebar(
+      resizable: true,
+      width: $width,
+      defaultWidth: listWidth.initial,
+      minWidth: listWidth.min,
+      maxWidth: listWidth.max,
+      collapsed: collapsed,
+      onCollapse: onCollapse,
+      resizeLabel: "Resize the component list"
+    ) {
       Brand { page = nil }
-        .padding(.vertical, vars.spacing2)
-        .padding(.horizontal, vars.spacing25)
-        .frame(minHeight: vars.frameTitlebarSize, alignment: .leading)
-      ScrollView {
-        VStack(alignment: .leading, spacing: 0) {
-          SearchField(value: query, onValueChange: { query = $0 }, placeholder: "Search", size: .small) {
-            EmptyView()
-          }
-          .padding(.bottom, vars.spacing15)
-          .padding(.horizontal, vars.spacing25)
-
-          NavItem(active: page == nil, size: .small, action: { page = nil }) {
-            Icon(.home20Regular)
-          } label: {
-            Text("Overview")
-          }
-          .overlay(alignment: .trailing) {
-            Text("\(Stories.all.count)")
-              .font(vars.labelSmall.font)
-              .foregroundStyle(page == nil ? vars.colorOnAccent : vars.colorContentSubtle)
-              .padding(.trailing, vars.spacing2)
-              .allowsHitTesting(false)
-          }
-          .padding(.vertical, vars.spacing15)
-          .padding(.horizontal, vars.spacing25)
-
-          VStack(alignment: .leading, spacing: vars.frameNavGap) {
-            SectionLabel { Text("Components") }
-              .padding(.vertical, vars.spacing1)
-              .padding(.horizontal, vars.spacing25)
-            ForEach(Stories.matching(query)) { story in
-              NavItem(active: story.id == page, size: .small, action: { page = story.id }) {
-                Text(story.name)
-              }
-            }
-          }
-          .padding(.vertical, vars.spacing15)
-          .padding(.horizontal, vars.spacing25)
+    } content: {
+      SidebarGroup {
+        SearchField(
+          value: query,
+          onValueChange: { query = $0 },
+          placeholder: "Search",
+          size: .small
+        ) {
+          EmptyView()
         }
-        .padding(.bottom, vars.spacing2)
       }
-    }
-    .frame(maxHeight: .infinity, alignment: .top)
-    .background(vars.colorSurfaceColumn)
-    .overlay(alignment: .trailing) {
-      Rectangle().fill(vars.colorBorder).frame(width: hairline)
+      SidebarGroup {
+        NavItem(active: page == nil, size: .small, action: { page = nil }) {
+          Icon(.home20Regular)
+        } label: {
+          Text("Overview")
+        }
+        .overlay(alignment: .trailing) {
+          Text("\(Stories.all.count)")
+            .font(vars.labelSmall.font)
+            .foregroundStyle(page == nil ? vars.colorOnAccent : vars.colorContentSubtle)
+            .padding(.trailing, vars.spacing2)
+            .allowsHitTesting(false)
+        }
+      }
+      SidebarGroup("Components") {
+        ForEach(Stories.matching(query)) { story in
+          NavItem(active: story.id == page, size: .small, action: { page = story.id }) {
+            Text(story.name)
+          }
+        }
+      }
     }
   }
 }

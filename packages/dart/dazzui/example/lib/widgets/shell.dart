@@ -9,7 +9,6 @@ import 'package:flutter/services.dart';
 
 import '../stories/index.dart';
 import 'brand.dart';
-import 'column.dart';
 import 'layout.dart';
 import 'resizer.dart';
 import 'theme_panel.dart';
@@ -105,7 +104,8 @@ class _ShellState extends State<Shell> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           _List(
-                            width: list,
+                            width: _listWidth,
+                            collapsed: !showList,
                             query: _query,
                             page: widget.page,
                             onQuery: (query) => setState(() => _query = query),
@@ -211,13 +211,17 @@ class _ShellState extends State<Shell> {
 class _List extends StatelessWidget {
   const _List({
     required this.width,
+    required this.collapsed,
     required this.query,
     required this.page,
     required this.onQuery,
     required this.onOpen,
   });
 
+  /// The width the column has when open. Put away, it keeps this one, so
+  /// opening it again lands where the divider was dragged to.
   final double width;
+  final bool collapsed;
   final String query;
   final String? page;
   final ValueChanged<String> onQuery;
@@ -225,67 +229,44 @@ class _List extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeVariables vars = Theme.of(context).vars;
-    EdgeInsets group({bool first = false}) => EdgeInsets.only(
-      top: first ? 0 : vars.spacing15,
-      bottom: vars.spacing15,
-      left: vars.spacing25,
-      right: vars.spacing25,
-    );
-    return ShellColumn(
+    return Sidebar(
       width: width,
-      side: ShellSide.left,
-      surface: vars.colorSurfaceColumn,
-      headerRule: false,
-      headerPadding: EdgeInsets.symmetric(
-        vertical: vars.spacing2,
-        horizontal: vars.spacing25,
-      ),
+      collapsed: collapsed,
       header: Brand(onPressed: () => onOpen(null)),
-      contentPadding: EdgeInsets.only(bottom: vars.spacing2),
       children: [
-        Padding(
-          padding: group(first: true),
-          child: SearchField(
-            value: query,
-            onChanged: onQuery,
-            placeholder: 'Search',
-            size: WidgetSize.small,
-          ),
+        SidebarGroup(
+          children: [
+            SearchField(
+              value: query,
+              onChanged: onQuery,
+              placeholder: 'Search',
+              size: WidgetSize.small,
+            ),
+          ],
         ),
-        Padding(
-          padding: group(),
-          child: NavItem(
-            label: 'Overview',
-            icon: FluentIcons.home_20_regular,
-            size: WidgetSize.small,
-            current: page == null,
-            trailing: Text('${stories.length}'),
-            onPressed: () => onOpen(null),
-          ),
+        SidebarGroup(
+          children: [
+            NavItem(
+              label: 'Overview',
+              icon: FluentIcons.home_20_regular,
+              size: WidgetSize.small,
+              current: page == null,
+              trailing: Text('${stories.length}'),
+              onPressed: () => onOpen(null),
+            ),
+          ],
         ),
-        Padding(
-          padding: group(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: vars.frameNavGap,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: vars.spacing1,
-                  horizontal: vars.spacing25,
-                ),
-                child: const SectionLabel('Components'),
+        SidebarGroup(
+          label: 'Components',
+          children: [
+            for (final story in matching(query))
+              NavItem(
+                label: story.name,
+                size: WidgetSize.small,
+                current: story.id == page,
+                onPressed: () => onOpen(story.id),
               ),
-              for (final story in matching(query))
-                NavItem(
-                  label: story.name,
-                  size: WidgetSize.small,
-                  current: story.id == page,
-                  onPressed: () => onOpen(story.id),
-                ),
-            ],
-          ),
+          ],
         ),
       ],
     );

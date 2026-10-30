@@ -21,8 +21,6 @@ struct Resizer: View {
   let column: ColumnWidth
   @Binding var width: CGFloat
   let label: String
-  /// Draws the line on the handle's leading edge rather than its middle.
-  var lineAtStart = false
 
   @Environment(\.theme) private var theme
   @State private var hovered = false
@@ -30,7 +28,7 @@ struct Resizer: View {
 
   var body: some View {
     let vars = theme.vars
-    ZStack(alignment: lineAtStart ? .leading : .center) {
+    ZStack(alignment: .center) {
       Color.clear.contentShape(Rectangle())
       Rectangle()
         .fill(vars.colorPrimary[500])
