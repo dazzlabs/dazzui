@@ -61,6 +61,11 @@ class SplitterPanel {
 /// The splitter owns the shares; [onSizesChanged] is for persisting them. A
 /// drag that had to round-trip through a host's state would lag the pointer,
 /// and a seam that lags the pointer feels broken.
+///
+/// A drag applies its width on the spot; every other change — an arrow key,
+/// Home, End, a double-tap that evens the pair — is a jump the reader did not
+/// make with the pointer, and settles over the motion token instead, reflowing
+/// the column the way a short smooth drag would.
 class Splitter extends StatefulWidget {
   const Splitter({
     super.key,
@@ -82,8 +87,27 @@ class Splitter extends StatefulWidget {
   State<Splitter> createState() => _SplitterState();
 }
 
-class _SplitterState extends State<Splitter> {
-  late List<double> _sizes = _normalised();
+class _SplitterState extends State<Splitter>
+    with SingleTickerProviderStateMixin {
+  /// Where the splitter is going: what a drag has moved, what a key has asked
+  /// for, and what a handle reports as its value.
+  late List<double> _target = _normalised();
+
+  /// Where the last settle began, so a jump can travel rather than land.
+  late List<double> _from = _target;
+
+  /// A discrete change in flight. A drag stops it and takes over, which is
+  /// what keeps a seam under the pointer whatever asked for the last width.
+  late final AnimationController _settle = AnimationController(
+    vsync: this,
+    value: 1,
+  )..addListener(() => setState(() {}));
+
+  @override
+  void dispose() {
+    _settle.dispose();
+    super.dispose();
+  }
 
   /// Normalised to a hundred once, here, so everything downstream — the
   /// clamps, the value a handle reports, what a host is handed to persist —
@@ -103,8 +127,21 @@ class _SplitterState extends State<Splitter> {
   void didUpdateWidget(Splitter old) {
     super.didUpdateWidget(old);
     if (widget.panels.length != old.panels.length) {
-      _sizes = _normalised();
+      _settle.stop();
+      _target = _normalised();
+      _from = _target;
     }
+  }
+
+  /// What this frame draws: the target at rest, or where the settle has got
+  /// to between [_from] and [_target].
+  List<double> _shown(Curve curve) {
+    if (!_settle.isAnimating) return _target;
+    final double t = curve.transform(_settle.value);
+    return <double>[
+      for (int index = 0; index < _target.length; index++)
+        _from[index] + (_target[index] - _from[index]) * t,
+    ];
   }
 
   bool get _horizontal => widget.orientation == SplitterOrientation.horizontal;
@@ -113,26 +150,49 @@ class _SplitterState extends State<Splitter> {
   /// share, the trailing one takes what the pair has left over. Nothing else
   /// in the row moves, which is what stops a drag at one seam from rippling
   /// through the whole window.
-  void _resize(int index, double nextLeading) {
+  void _resize(int index, double nextLeading, {bool settle = true}) {
+    final ThemeVariables vars = Theme.of(context).vars;
+    final List<double> from = _shown(vars.motionEasing);
+    final List<double> next = List<double>.of(_target);
+    final double pair = next[index] + next[index + 1];
+    final SplitterPanel lead = widget.panels[index];
+    final SplitterPanel trail = widget.panels[index + 1];
+    final double leading = nextLeading
+        .clamp(lead.minSize, lead.maxSize)
+        .clamp(pair - trail.maxSize, pair - trail.minSize)
+        .toDouble();
+    next[index] = leading;
+    next[index + 1] = pair - leading;
+
     setState(() {
-      final double pair = _sizes[index] + _sizes[index + 1];
-      final SplitterPanel lead = widget.panels[index];
-      final SplitterPanel trail = widget.panels[index + 1];
-      final double leading = nextLeading
-          .clamp(lead.minSize, lead.maxSize)
-          .clamp(pair - trail.maxSize, pair - trail.minSize)
-          .toDouble();
-      _sizes[index] = leading;
-      _sizes[index + 1] = pair - leading;
+      _from = settle ? from : next;
+      _target = next;
+      if (settle) {
+        _settle.duration = vars.motionDuration;
+        _settle.forward(from: 0);
+      } else {
+        _settle.stop();
+      }
     });
-    widget.onSizesChanged?.call(List<double>.of(_sizes));
+    widget.onSizesChanged?.call(List<double>.of(next));
   }
 
   void _drag(int index, double delta, double run) {
     if (run <= 0) return;
+    // A settle the pointer interrupts is caught where it stands, so the seam
+    // does not jump under the hand that stopped it.
+    if (_settle.isAnimating) {
+      final List<double> shown = _shown(Theme.of(context).vars.motionEasing);
+      setState(() {
+        _settle.stop();
+        _from = shown;
+        _target = shown;
+      });
+    }
     // Measured against the run the panels actually have, so the seam lands
-    // under the pointer rather than near it.
-    _resize(index, _sizes[index] + (delta / run) * 100);
+    // under the pointer rather than near it — and applied on the spot, never
+    // settled: a seam that trails the pointer feels broken.
+    _resize(index, _target[index] + (delta / run) * 100, settle: false);
   }
 
   @override
@@ -140,6 +200,7 @@ class _SplitterState extends State<Splitter> {
     final ThemeVariables vars = Theme.of(context).vars;
     final double target = vars.spacing2;
     final int seams = widget.panels.length - 1;
+    final List<double> sizes = _shown(vars.motionEasing);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -157,7 +218,7 @@ class _SplitterState extends State<Splitter> {
             Expanded(
               // Flex is an integer, so a share is carried at a thousandth of
               // a percent — finer than a pointer can ask for.
-              flex: (_sizes[index] * 1000).round().clamp(1, 1 << 30),
+              flex: (sizes[index] * 1000).round().clamp(1, 1 << 30),
               child: ClipRect(
                 key: widget.panels[index].key,
                 child: widget.panels[index].child,
@@ -169,15 +230,15 @@ class _SplitterState extends State<Splitter> {
               _Handle(
                 orientation: widget.orientation,
                 target: target,
-                value: _sizes[index],
+                value: _target[index],
                 min: widget.panels[index].minSize,
                 max: widget.panels[index].maxSize,
                 onDrag: (double delta) => _drag(index, delta, run),
-                onStep: (double step) => _resize(index, _sizes[index] + step),
+                onStep: (double step) => _resize(index, _target[index] + step),
                 onHome: () => _resize(index, widget.panels[index].minSize),
                 onEnd: () => _resize(index, widget.panels[index].maxSize),
                 onReset: () =>
-                    _resize(index, (_sizes[index] + _sizes[index + 1]) / 2),
+                    _resize(index, (_target[index] + _target[index + 1]) / 2),
               ),
             );
           }

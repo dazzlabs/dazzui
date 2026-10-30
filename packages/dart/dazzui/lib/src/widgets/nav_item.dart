@@ -65,52 +65,64 @@ class NavItem extends StatelessWidget {
           content = vars.colorContent;
         }
 
-        return AnimatedContainer(
+        return TweenAnimationBuilder<Color?>(
+          // The row's surface is an `AnimatedContainer`; its ink has to cross
+          // the same ground on the same token, or selecting a row would wash
+          // it in and leave the label and its glyph a beat behind.
+          tween: ColorTween(end: content),
           duration: vars.motionDuration,
           curve: vars.motionEasing,
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(
-            vertical: size == WidgetSize.small
-                ? vars.menuItemPadding
-                : vars.spacing2,
-            horizontal: vars.spacing25,
-          ),
-          decoration: BoxDecoration(color: surface, borderRadius: radius),
-          child: Row(
-            spacing: vars.spacing15,
-            children: [
-              if (icon != null)
-                // The glyph is taller than the label, so it is boxed to the
-                // row's line height and allowed to overflow rather than
-                // stretching the row.
-                SizedBox(
-                  width: vars.iconMedium,
-                  height: vars.labelQuiet.fontSize,
-                  child: OverflowBox(
-                    maxHeight: vars.iconMedium,
-                    child: Icon(icon, size: vars.iconMedium, color: content),
-                  ),
-                ),
-              Expanded(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: vars.labelQuiet.copyWith(height: 1, color: content),
-                ),
+          builder: (BuildContext row, Color? tweened, Widget? _) {
+            final Color ink = tweened ?? content;
+
+            return AnimatedContainer(
+              duration: vars.motionDuration,
+              curve: vars.motionEasing,
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(
+                vertical: size == WidgetSize.small
+                    ? vars.menuItemPadding
+                    : vars.spacing2,
+                horizontal: vars.spacing25,
               ),
-              if (trailing != null)
-                IconTheme(
-                  data: IconTheme.of(
-                    context,
-                  ).copyWith(color: content, size: vars.iconMedium),
-                  child: DefaultTextStyle.merge(
-                    style: TextStyle(color: content),
-                    child: trailing!,
+              decoration: BoxDecoration(color: surface, borderRadius: radius),
+              child: Row(
+                spacing: vars.spacing15,
+                children: [
+                  if (icon != null)
+                    // The glyph is taller than the label, so it is boxed to
+                    // the row's line height and allowed to overflow rather
+                    // than stretching the row.
+                    SizedBox(
+                      width: vars.iconMedium,
+                      height: vars.labelQuiet.fontSize,
+                      child: OverflowBox(
+                        maxHeight: vars.iconMedium,
+                        child: Icon(icon, size: vars.iconMedium, color: ink),
+                      ),
+                    ),
+                  Expanded(
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: vars.labelQuiet.copyWith(height: 1, color: ink),
+                    ),
                   ),
-                ),
-            ],
-          ),
+                  if (trailing != null)
+                    IconTheme(
+                      data: IconTheme.of(
+                        context,
+                      ).copyWith(color: ink, size: vars.iconMedium),
+                      child: DefaultTextStyle.merge(
+                        style: TextStyle(color: ink),
+                        child: trailing!,
+                      ),
+                    ),
+                ],
+              ),
+            );
+          },
         );
       },
     );

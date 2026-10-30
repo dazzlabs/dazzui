@@ -23,14 +23,35 @@
   flex-direction: column;
 }
 
-/* Both minimums are load bearing: a flex item's floor is its content, so a
-   panel holding anything unbreakable — a long path, a wide table — would
-   refuse to shrink past it and the seam would stop moving before its own
-   `minSize` did. */
+/*
+ * A panel takes its share of what the handles leave, not of the box: the
+ * shares are written as percentages of the run, and the run is the container
+ * less a gutter per seam. The arithmetic stays here rather than in a grow
+ * unit because a grow unit is not interpolated — a seam that jumped from one
+ * number to the next would land its discrete moves with no travel at all,
+ * where a length can settle over the motion token. A drag turns the
+ * transition off, so the seam never trails the pointer.
+ *
+ * Both minimums are load bearing: a flex item's floor is its content, so a
+ * panel holding anything unbreakable — a long path, a wide table — would
+ * refuse to shrink past it and the seam would stop moving before its own
+ * `minSize` did.
+ */
 .dz-splitter__panel {
+  flex-grow: 0;
+  flex-shrink: 1;
+  flex-basis: calc(
+    (100% - var(--spacing-2) * var(--splitter-seams)) *
+      var(--splitter-share) / 100
+  );
+  transition: flex-basis var(--motion-duration) var(--motion-easing);
   overflow: auto;
   min-width: 0;
   min-height: 0;
+}
+
+.dz-splitter[data-dragging] .dz-splitter__panel {
+  transition: none;
 }
 
 /*

@@ -46,6 +46,10 @@ public struct Sidebar<Header: View, Content: View>: View {
   public var defaultWidth: CGFloat?
   public var minWidth: CGFloat
   public var maxWidth: CGFloat
+  /// Whether the column is put away. The host owns the state — a toolbar
+  /// button, a shortcut, a drag past the floor — and toggles it; how it
+  /// travels is the column's.
+  public var collapsed: Bool
   /// Called when the divider is dragged past the floor. Left out, the drag
   /// simply stops at `minWidth` — pass it only where collapsing is a state the
   /// window can actually be in.
@@ -71,6 +75,7 @@ public struct Sidebar<Header: View, Content: View>: View {
     defaultWidth: CGFloat? = nil,
     minWidth: CGFloat = sidebarMinimumWidth,
     maxWidth: CGFloat = sidebarMaximumWidth,
+    collapsed: Bool = false,
     onCollapse: (() -> Void)? = nil,
     resizeLabel: String = "Resize sidebar",
     tint: Tint = .primary,
@@ -84,6 +89,7 @@ public struct Sidebar<Header: View, Content: View>: View {
       defaultWidth: defaultWidth,
       minWidth: minWidth,
       maxWidth: maxWidth,
+      collapsed: collapsed,
       onCollapse: onCollapse,
       resizeLabel: resizeLabel,
       tint: tint,
@@ -98,6 +104,7 @@ public struct Sidebar<Header: View, Content: View>: View {
     defaultWidth: CGFloat?,
     minWidth: CGFloat,
     maxWidth: CGFloat,
+    collapsed: Bool,
     onCollapse: (() -> Void)?,
     resizeLabel: String,
     tint: Tint,
@@ -109,6 +116,7 @@ public struct Sidebar<Header: View, Content: View>: View {
     self.defaultWidth = defaultWidth
     self.minWidth = minWidth
     self.maxWidth = maxWidth
+    self.collapsed = collapsed
     self.onCollapse = onCollapse
     self.resizeLabel = resizeLabel
     self.tint = tint
@@ -118,6 +126,42 @@ public struct Sidebar<Header: View, Content: View>: View {
   public var body: some View {
     let vars = theme.vars
 
+    column(vars: vars)
+      // Put away, the column keeps the width it has when open and is cut by
+      // its own leading edge as it shuts, so the pane beside it holds still
+      // while the edge slides over it — the way a native split view collapses
+      // — and a width the divider was dragged to survives the round trip.
+      // Gone, it is clipped out of the pointer and the accessibility tree, so
+      // it neither catches a click nor leaves its rows to a reader. The
+      // animation is the column's rather than the caller's: a host toggles a
+      // flag and the token decides how it travels.
+      .frame(width: collapsed ? 0 : resolvedWidth, alignment: .leading)
+      .clipped()
+      .overlay(alignment: .trailing) {
+        if resizable { resizer(vars: vars) }
+      }
+      .allowsHitTesting(!collapsed)
+      .accessibilityHidden(collapsed)
+      .animation(vars.motion, value: collapsed)
+      .onChange(of: collapsed) { away in
+        guard away else { return }
+        // A drag that collapsed the column hands the resize cursor back: the
+        // column is cut out from under the pointer rather than unmounted, so
+        // no hover exit follows to take it.
+        if hoveringResizer {
+          #if canImport(AppKit)
+          NSCursor.pop()
+          #endif
+          hoveringResizer = false
+        }
+        dragOrigin = nil
+        dragging = false
+        collapsedByThisDrag = false
+      }
+  }
+
+  /// The column itself, at the width it has when open.
+  private func column(vars: ThemeVariables) -> some View {
     VStack(spacing: 0) {
       if let header {
         HStack(spacing: 0) {
@@ -134,9 +178,6 @@ public struct Sidebar<Header: View, Content: View>: View {
     .frame(width: resolvedWidth)
     .background(vars.colorSurfaceColumn)
     .rule(vars.colorBorder, edge: .trailing, width: hairline)
-    .overlay(alignment: .trailing) {
-      if resizable { resizer(vars: vars) }
-    }
   }
 
   /// Only the row list scrolls, so a pinned card stays put. Groups carry
@@ -203,7 +244,7 @@ public struct Sidebar<Header: View, Content: View>: View {
         .onTapGesture(count: 2) {
           // Double-clicking a divider puts it back where it started, the same
           // thing every split view does.
-          commit(clamp(naturalWidth))
+          settle { commit(clamp(naturalWidth)) }
         }
         .gesture(drag)
         .onHover { inside in
@@ -223,15 +264,28 @@ public struct Sidebar<Header: View, Content: View>: View {
     .accessibilityLabel(resizeLabel)
     .accessibilityValue(Text("\(Int(resolvedWidth))"))
     .accessibilityAdjustableAction { direction in
-      switch direction {
-      case .increment: commit(clamp(resolvedWidth + keyStep))
-      case .decrement: commit(clamp(resolvedWidth - keyStep))
-      @unknown default: break
+      settle {
+        switch direction {
+        case .increment: commit(clamp(resolvedWidth + keyStep))
+        case .decrement: commit(clamp(resolvedWidth - keyStep))
+        @unknown default: break
+        }
       }
     }
   }
 
+  /// Discrete jumps — a double-click home, an arrow-key step, an accessibility
+  /// nudge — settle over the motion token, reflowing the column the way a short
+  /// smooth drag would. A drag keeps applying its width on the spot so the
+  /// divider never trails the pointer.
+  private func settle(_ change: () -> Void) {
+    withAnimation(theme.vars.motion, change)
+  }
+
   private var lineOpacity: Double {
+    // Nothing to grab where the column was: a handle left lit at the window's
+    // edge would promise an edge that is not there.
+    if collapsed { return 0 }
     if dragging { return 1 }
     return hoveringResizer || resizerFocused ? resizerHintOpacity : 0
   }
@@ -298,8 +352,8 @@ public struct Sidebar<Header: View, Content: View>: View {
       .onMoveCommand { direction in
         let step = NSEvent.modifierFlags.contains(.shift) ? coarseKeyStep : keyStep
         switch direction {
-        case .left: commit(clamp(resolvedWidth - step))
-        case .right: commit(clamp(resolvedWidth + step))
+        case .left: settle { commit(clamp(resolvedWidth - step)) }
+        case .right: settle { commit(clamp(resolvedWidth + step)) }
         default: break
         }
       }
@@ -315,6 +369,7 @@ public extension Sidebar where Header == EmptyView {
     defaultWidth: CGFloat? = nil,
     minWidth: CGFloat = sidebarMinimumWidth,
     maxWidth: CGFloat = sidebarMaximumWidth,
+    collapsed: Bool = false,
     onCollapse: (() -> Void)? = nil,
     resizeLabel: String = "Resize sidebar",
     tint: Tint = .primary,
@@ -327,6 +382,7 @@ public extension Sidebar where Header == EmptyView {
       defaultWidth: defaultWidth,
       minWidth: minWidth,
       maxWidth: maxWidth,
+      collapsed: collapsed,
       onCollapse: onCollapse,
       resizeLabel: resizeLabel,
       tint: tint,

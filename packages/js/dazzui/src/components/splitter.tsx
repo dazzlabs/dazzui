@@ -1,5 +1,6 @@
 import type {
   ComponentPropsWithoutRef,
+  CSSProperties,
   PointerEvent,
   ReactElement,
   ReactNode,
@@ -88,6 +89,7 @@ export function Splitter({
   orientation = 'horizontal',
   onSizesChange,
   className,
+  style,
   children,
   ...props
 }: SplitterProps) {
@@ -99,6 +101,11 @@ export function Splitter({
   const drag = useRef<
     { start: number; sizes: number[]; total: number } | undefined
   >(undefined)
+  /* A drag applies each width on the spot; every other change — an arrow key,
+     Home, End, a double-click — is a jump the reader did not make with the
+     pointer, and settles over the motion token instead. Both end in the same
+     state update, so this is what tells the stylesheet which one a change is. */
+  const [dragging, setDragging] = useState(false)
   const [sizes, setSizes] = useState(() => {
     const declared = panels.map(panel => panel.props.defaultSize ?? 1)
     const sum = declared.reduce((a, b) => a + b, 0)
@@ -154,6 +161,7 @@ export function Splitter({
       sizes: measured,
       total,
     }
+    setDragging(true)
     event.currentTarget.setPointerCapture(event.pointerId)
   }
 
@@ -171,6 +179,7 @@ export function Splitter({
   const onPointerUp = (event: PointerEvent<HTMLDivElement>) => {
     if (!drag.current) return
     drag.current = undefined
+    setDragging(false)
     event.currentTarget.releasePointerCapture(event.pointerId)
   }
 
@@ -183,6 +192,15 @@ export function Splitter({
          colours would be a decision about nothing. */
       data-tint="primary"
       data-orientation={orientation}
+      data-dragging={dragging || undefined}
+      /* What the handles take off the run, so the panels can divide the rest
+         in CSS: a share is a share of the panels' run, not of the box. */
+      style={
+        {
+          '--splitter-seams': Math.max(panels.length - 1, 0),
+          ...style,
+        } as CSSProperties
+      }
       className={cx('dz-splitter', className)}
       {...props}
     >
@@ -196,15 +214,13 @@ export function Splitter({
               ref: (element: HTMLDivElement | null) => {
                 refs.current[index] = element
               },
-              /* Grow units rather than a basis: the handles take their width
-                 off the top and the panels divide what is left. A basis in
-                 percent would add up to more than the container by exactly
-                 the width of the handles. */
+              /* The share, as a number: the stylesheet turns it into a
+                 percentage of the panels' run, which is a length the browser
+                 can settle over the motion token — a grow unit is not. */
               style: {
-                flexGrow: share(index),
-                flexBasis: 0,
+                '--splitter-share': share(index),
                 ...panel.props.style,
-              },
+              } as CSSProperties,
             } as Partial<SplitterPanelProps>)}
             {seam ? (
               <div

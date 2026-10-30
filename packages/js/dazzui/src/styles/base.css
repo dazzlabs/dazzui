@@ -1,5 +1,5 @@
 /*
- * The ground rules every component stands on. Scoped to `ff-` classes so the
+ * The ground rules every component stands on. Scoped to `dz-` classes so the
  * package stays embeddable — nothing here reaches a host page's own markup.
  */
 
@@ -8,12 +8,12 @@
  * under border-box. A host page without a reset would otherwise render every
  * 28px control at 30px.
  */
-[class^='ff-'],
-[class*=' ff-'],
-[class^='ff-'] *,
-[class*=' ff-'] *,
-[class^='ff-'] *::before,
-[class*=' ff-'] *::after {
+[class^='dz-'],
+[class*=' dz-'],
+[class^='dz-'] *,
+[class*=' dz-'] *,
+[class^='dz-'] *::before,
+[class*=' dz-'] *::after {
   box-sizing: border-box;
 }
 
@@ -45,12 +45,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [class^='ff-'],
-  [class*=' ff-'],
-  [class^='ff-'] *,
-  [class*=' ff-'] *,
-  [class^='ff-'] *::before,
-  [class*=' ff-'] *::after {
+  [class^='dz-'],
+  [class*=' dz-'],
+  [class^='dz-'] *,
+  [class*=' dz-'] *,
+  [class^='dz-'] *::before,
+  [class*=' dz-'] *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

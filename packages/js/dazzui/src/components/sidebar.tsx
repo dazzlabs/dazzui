@@ -170,6 +170,15 @@ export function Sidebar({
   // The root is the space the column takes in the row; the container is the
   // column itself, positioned over it so it can slide without reflowing
   // what it holds. Collapsing narrows the root and moves the container.
+  //
+  // A column that has slid away is no longer a column: its rows are off the
+  // frame, so they leave the accessibility tree with it. The stylesheet takes
+  // them out of the pointer and the tab order once the slide ends — not
+  // before, or the sweep would draw nothing — which is what `aria-hidden`
+  // cannot do on its own. Collapsed to icons the column is still there, and
+  // every row is still a destination.
+  const away = state === 'collapsed' && collapsible === 'offcanvas'
+
   return (
     <div
       data-state={state}
@@ -178,7 +187,11 @@ export function Sidebar({
       data-side={side}
       className="dz-sidebar"
     >
-      <div className={cx('dz-sidebar__container', className)} {...props}>
+      <div
+        aria-hidden={away || undefined}
+        className={cx('dz-sidebar__container', className)}
+        {...props}
+      >
         <div className="dz-sidebar__inner">{children}</div>
       </div>
     </div>

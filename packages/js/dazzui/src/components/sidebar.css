@@ -81,6 +81,22 @@
   inset-inline-end: calc(var(--sidebar-width) * -1);
 }
 
+/*
+ * Slid away, the column leaves the frame for good: it is out of the pointer's
+ * reach, out of the tab order and out of the picture. `aria-hidden` on the
+ * container takes it out of the tree at the same moment — the state the reader
+ * is in — but `visibility` has to wait for the slide to finish, or the sweep
+ * would draw nothing and the pane beside it would jump a column's width in a
+ * frame. Hidden is not on the transition out, so opening puts the column back
+ * in one frame and it slides in, which is the way round a reveal reads.
+ */
+.dz-sidebar[data-collapsible='offcanvas'] > .dz-sidebar__container {
+  visibility: hidden;
+  transition:
+    inset-inline var(--motion-duration) var(--motion-easing),
+    visibility 0s linear var(--motion-duration);
+}
+
 .dz-sidebar[data-collapsible='icon'] > .dz-sidebar__container {
   width: var(--sidebar-width-icon);
 }
@@ -224,6 +240,10 @@
   flex-direction: column;
   min-width: 0;
   background-color: var(--color-surface);
+  /* Beside an inset sidebar the sheet's leading edge is a column's edge, and
+     it moves with the column: opening the second step of margin has to travel
+     with the slide rather than land a frame before it. */
+  transition: margin-inline-start var(--motion-duration) var(--motion-easing);
 }
 
 /* Beside an inset sidebar it is the raised sheet, set in by the same step

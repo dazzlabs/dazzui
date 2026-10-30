@@ -142,7 +142,11 @@ public struct SidebarMenuButton<Leading: View, Label: View, Badge: View>: View {
             .padding(.trailing, vars.spacing1)
         }
       }
+      // The wash under the pointer and the fill that marks the current page
+      // travel on the same token: a selection that landed while hover
+      // crossfaded read as the one state the system had no opinion about.
       .animation(vars.motion, value: state.controlState)
+      .animation(vars.motion, value: active)
     }
     .focused($focused)
     .focusRing(

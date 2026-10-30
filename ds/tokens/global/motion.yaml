@@ -1,6 +1,9 @@
 # The one transition the system uses: color crossfades on interactive
-# surfaces. 150ms on the standard ease curve — long enough to read as a fade,
-# short enough that a fast pointer never waits on it.
+# surfaces, and the settle a column or a seam lands on when it is asked to
+# move without a pointer — a collapse, a double-click home, a keyboard step.
+# 150ms on the standard ease curve — long enough to read as a fade, short
+# enough that a fast pointer never waits on it. A drag never reads it: a
+# width the hand is drawing is applied on the spot.
 motion:
   duration:
     $type: duration

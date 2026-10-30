@@ -108,7 +108,12 @@ public struct NavItem<Leading: View, Label: View>: View {
       .frame(maxWidth: .infinity, alignment: .leading)
       .background(background(state: state))
       .clipShape(RoundedRectangle(cornerRadius: vars.radiusSmall, style: .circular))
+      // Two states, one token: the wash under the pointer, and the fill that
+      // marks the current page. Selecting a row used to land its fill with no
+      // travel at all while hover crossfaded, which read as the one state the
+      // system had no opinion about.
       .animation(vars.motion, value: state.controlState)
+      .animation(vars.motion, value: active)
     }
     .focused($focused)
     .focusRing(

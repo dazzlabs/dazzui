@@ -13,11 +13,20 @@ import 'section_label.dart';
 ///
 /// The rows inside are [NavItem]s, run in [SidebarGroup]s — a sidebar owns
 /// the column, a group the spacing of its rows.
+///
+/// A column put away with [collapsed] is not unmounted: it keeps the width it
+/// has when open behind a clip anchored to its leading edge and sweeps shut
+/// over the motion token, so the pane beside it holds still while the edge
+/// slides over it — the way a native split view collapses — and the column's
+/// scroll position survives the round trip. Once it is shut it leaves the
+/// semantics tree, the focus traversal and the pointer's reach, so a pane
+/// that filled the window is the only thing left to read or press.
 class Sidebar extends StatelessWidget {
   const Sidebar({
     super.key,
     this.header,
     this.width,
+    this.collapsed = false,
     required this.children,
   });
 
@@ -28,51 +37,87 @@ class Sidebar extends StatelessWidget {
   /// An explicit width. Leave it out and the column takes the token's.
   final double? width;
 
+  /// Whether the column is put away. The host owns the state — a trigger, a
+  /// shortcut, a drag past the floor — and toggles it; how it travels is the
+  /// column's.
+  final bool collapsed;
+
   final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
     final ThemeVariables vars = Theme.of(context).vars;
+    final double open = width ?? vars.frameSidebarWidth;
+    // The content keeps the width it has when open and is cut by the column's
+    // own edge as it closes: a column that laid itself out again on the way
+    // out would wrap and ellipsize every label in front of the reader.
+    final double content = (open - context.hairlineWidth)
+        .clamp(0.0, open)
+        .toDouble();
 
-    return Container(
-      width: width ?? vars.frameSidebarWidth,
-      decoration: BoxDecoration(
-        color: vars.colorSurfaceColumn,
-        border: BorderDirectional(
-          end: BorderSide(
-            color: vars.colorBorder,
-            width: context.hairlineWidth,
+    return ExcludeFocus(
+      excluding: collapsed,
+      child: ExcludeSemantics(
+        excluding: collapsed,
+        child: IgnorePointer(
+          ignoring: collapsed,
+          child: AnimatedContainer(
+            duration: vars.motionDuration,
+            curve: vars.motionEasing,
+            width: collapsed ? 0 : open,
+            decoration: BoxDecoration(
+              color: vars.colorSurfaceColumn,
+              // The edge goes with the column rather than standing in the
+              // window after it: a hairline left behind is a column one pixel
+              // wide that nothing can reach.
+              border: BorderDirectional(
+                end: BorderSide(
+                  color: collapsed ? const Color(0x00000000) : vars.colorBorder,
+                  width: context.hairlineWidth,
+                ),
+              ),
+            ),
+            child: ClipRect(
+              child: OverflowBox(
+                alignment: AlignmentDirectional.centerStart,
+                minWidth: content,
+                maxWidth: content,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (header != null)
+                      Container(
+                        height: vars.frameTitlebarSize,
+                        alignment: AlignmentDirectional.centerStart,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: vars.spacing4,
+                        ),
+                        child: header!,
+                      ),
+                    // Only the row list scrolls, so a pinned card stays put.
+                    // The groups carry their own block padding, as
+                    // `.dz-sidebar__group` does, so two of them stand a full
+                    // step apart while the column itself adds only
+                    // `.dz-sidebar__content`'s.
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.symmetric(
+                          vertical: vars.spacing2,
+                          horizontal: vars.spacing25,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisSize: MainAxisSize.min,
+                          children: children,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (header != null)
-            Container(
-              height: vars.frameTitlebarSize,
-              alignment: AlignmentDirectional.centerStart,
-              padding: EdgeInsets.symmetric(horizontal: vars.spacing4),
-              child: header!,
-            ),
-          // Only the row list scrolls, so a pinned card stays put. The
-          // groups carry their own block padding, as `.dz-sidebar__group`
-          // does, so two of them stand a full step apart while the column
-          // itself adds only `.dz-sidebar__content`'s.
-          Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                vertical: vars.spacing2,
-                horizontal: vars.spacing25,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: children,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
