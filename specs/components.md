@@ -178,6 +178,13 @@ Never hand-edit `src/generated/`. A value a component needs belongs in
 - A `color` paired with an `alpha` anywhere else in the graph (`dialog.scrim`)
   is resolved by the same plugin onto `:root`, so no component has to apply an
   alpha in CSS.
+- **A hint is presented over the window, not in the layout.** A tooltip is a
+  remark about a control, and the layout that holds the control clips it (a
+  sidebar's edge, a scrolling pane) or paints a later sibling over it. React
+  portals the label to the body; SwiftUI presents it in a panel of its own,
+  flipped to the other side and nudged along the edge when the side asked for
+  would leave the window; ArkUI uses a passive native overlay. What it must
+  never be is a child of the control's layout.
 - **Motion is the component's, and it is one token.** A state the reader
   toggles — a column collapsing on either edge, a row becoming the current
   page, a seam asked for a new width by a key rather than a drag — travels
@@ -417,7 +424,8 @@ Escape dismiss, and disabled hints leave their controls enabled. Sidebar scopes
 retain React's zero hover delay. Provider warm groups, rich labels, aligned-edge
 collision behavior, motion and assistive technology still need native coverage.
 IconButton installs a label Tooltip automatically. An explicit Tooltip around
-it yields to the inner hint in both React and ArkUI, including keyboard focus;
+it yields to the inner hint in React, ArkUI and SwiftUI, including keyboard
+focus;
 otherwise nested Base UI triggers can display two hints and leave one open
 after activation. Native key observation runs before the Button consumes
 activation, while the control retains its own action. Scope registration is removed

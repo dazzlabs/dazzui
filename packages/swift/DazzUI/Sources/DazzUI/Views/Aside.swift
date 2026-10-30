@@ -19,9 +19,9 @@ public struct Aside<Content: View>: View {
   /// The width it has when open. Leave it out and the column takes the token's.
   public var width: CGFloat?
   /// Whether the panel is put away. The host owns the state and makes the
-  /// change inside an animation — `withAnimation(theme.vars.motion)` — so the
-  /// pane beside it takes its space frame by frame, the same contract the
-  /// leading ``Sidebar`` has.
+  /// change inside an animation — `withAnimation(theme.vars.motion)` — so
+  /// the pane beside it takes its space frame by frame, the same contract
+  /// the leading ``Sidebar`` has.
   public var collapsed: Bool
   @ViewBuilder public var content: () -> Content
 

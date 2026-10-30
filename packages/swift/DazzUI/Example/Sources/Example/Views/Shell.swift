@@ -154,10 +154,10 @@ private struct Toolbar: View {
   var body: some View {
     let vars = theme.vars
     HStack(spacing: vars.spacing2) {
-      Tooltip(side: .bottom) { Text("Toggle sidebar  ⌘B") } content: {
-        IconButton(label: "Toggle sidebar", action: toggleList) {
-          Icon(.panelLeft20Regular)
-        }
+      // The label is the accessible name and the tooltip both, so the button
+      // surfaces it itself.
+      IconButton(label: "Toggle sidebar ⌘B", action: toggleList) {
+        Icon(.panelLeft20Regular)
       }
       HStack(alignment: .firstTextBaseline, spacing: vars.spacing2) {
         Text(story?.name ?? "Overview").fontWeight(vars.labelStrong.weight)
@@ -167,10 +167,8 @@ private struct Toolbar: View {
       }
       .padding(.leading, vars.spacing1)
       Spacer()
-      Tooltip(side: .bottom) { Text("Toggle theme panel") } content: {
-        IconButton(label: "Toggle theme panel", action: toggleThemes) {
-          Icon(.panelRight20Regular)
-        }
+      IconButton(label: "Toggle theme panel", action: toggleThemes) {
+        Icon(.panelRight20Regular)
       }
     }
     .padding(.horizontal, vars.spacing4)
