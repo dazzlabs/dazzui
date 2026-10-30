@@ -94,9 +94,14 @@ class _ShellState extends State<Shell> {
                       _listOpen &&
                       constraints.maxWidth >= _listWidth + document;
                   final double list = showList ? _listWidth : 0;
+                  // The panel's room is measured against the window with the
+                  // list open, not with the list's animated width: a sidebar
+                  // the reader puts away must not make a second panel appear
+                  // behind it mid-sweep.
                   final bool showThemes =
                       _themesOpen &&
-                      constraints.maxWidth >= list + _themesWidth + document;
+                      constraints.maxWidth >=
+                          _listWidth + _themesWidth + document;
                   final double themes = showThemes ? _themesWidth : 0;
                   return Stack(
                     children: [

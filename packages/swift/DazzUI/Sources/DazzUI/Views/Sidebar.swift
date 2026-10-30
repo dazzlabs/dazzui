@@ -32,6 +32,12 @@ private let resizerHintOpacity: Double = 0.6
 /// desktop shell have to agree with each other: the header strip is exactly
 /// the titlebar's height, so it lines up with the toolbar in the pane beside
 /// it.
+///
+/// A column put away with ``collapsed`` is not unmounted: it keeps its width
+/// behind a clip anchored to the leading edge and its rows are cut rather than
+/// laid out again, so the pane beside it holds still while the edge slides
+/// over it — the way a native split view collapses — and a width the divider
+/// was dragged to survives the round trip.
 public struct Sidebar<Header: View, Content: View>: View {
   /// Content for the strip above the row list, held at exactly the titlebar's
   /// height.
@@ -47,8 +53,13 @@ public struct Sidebar<Header: View, Content: View>: View {
   public var minWidth: CGFloat
   public var maxWidth: CGFloat
   /// Whether the column is put away. The host owns the state — a toolbar
-  /// button, a shortcut, a drag past the floor — and toggles it; how it
-  /// travels is the column's.
+  /// button, a shortcut, a drag past the floor — and toggles it inside an
+  /// animation: `withAnimation(theme.vars.motion)`. The pane beside the column
+  /// takes its space frame by frame only when the change arrives in a
+  /// transaction; a column sweeping in a transaction of its own would leave
+  /// the pane already at its new width underneath it. What the column keeps is
+  /// the drawing: its content at the open width, cut by its own leading edge,
+  /// and gone from the pointer and the accessibility tree once it is shut.
   public var collapsed: Bool
   /// Called when the divider is dragged past the floor. Left out, the drag
   /// simply stops at `minWidth` — pass it only where collapsing is a state the
@@ -128,13 +139,10 @@ public struct Sidebar<Header: View, Content: View>: View {
 
     column(vars: vars)
       // Put away, the column keeps the width it has when open and is cut by
-      // its own leading edge as it shuts, so the pane beside it holds still
-      // while the edge slides over it — the way a native split view collapses
-      // — and a width the divider was dragged to survives the round trip.
-      // Gone, it is clipped out of the pointer and the accessibility tree, so
-      // it neither catches a click nor leaves its rows to a reader. The
-      // animation is the column's rather than the caller's: a host toggles a
-      // flag and the token decides how it travels.
+      // its own leading edge as it shuts, so a width the divider was dragged
+      // to survives the round trip and the rows are cut rather than laid out
+      // again. Gone, it is clipped out of the pointer and the accessibility
+      // tree, so it neither catches a click nor leaves its rows to a reader.
       .frame(width: collapsed ? 0 : resolvedWidth, alignment: .leading)
       .clipped()
       .overlay(alignment: .trailing) {
@@ -142,7 +150,6 @@ public struct Sidebar<Header: View, Content: View>: View {
       }
       .allowsHitTesting(!collapsed)
       .accessibilityHidden(collapsed)
-      .animation(vars.motion, value: collapsed)
       .onChange(of: collapsed) { away in
         guard away else { return }
         // A drag that collapsed the column hands the resize cursor back: the

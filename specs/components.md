@@ -183,16 +183,20 @@ Never hand-edit `src/generated/`. A value a component needs belongs in
   for a new width by a key rather than a drag — travels over `motion` inside
   the component that draws it: `--motion-duration`/`--motion-easing`,
   `vars.motion` on SwiftUI, `ThemeVariables.motionDuration`/`motionEasing` on
-  Flutter. A host toggles a flag and does not pass an animation, which is how
-  a port lands on the same 150ms rather than on an opinion of its own. A drag
-  is the exception in the other direction: the width the hand is drawing is
-  applied on the spot, so nothing the pointer drives ever settles. And a
-  column that has gone is taken out of the accessibility tree and the
-  pointer as well as out of the picture — React `aria-hidden`s the container
-  and hides it once the slide finishes, SwiftUI `.accessibilityHidden` and
-  `.allowsHitTesting(false)`, Flutter `ExcludeSemantics`, `ExcludeFocus` and
-  `IgnorePointer` — because a column put away still holding a tab stop is a
-  control a reader can reach and not see.
+  Flutter. A host names no duration and draws no transition of its own, which
+  is how a port lands on the same 150ms rather than on an opinion of its own.
+  SwiftUI is the one platform where the host still makes the change inside the
+  token's transaction (`withAnimation(vars.motion)`): a pane reflows only in
+  the transaction its sibling's width was changed in, so a column that swept
+  in a transaction of its own would leave the pane already at its new width
+  underneath it. A drag is the exception in the other direction: the width the
+  hand is drawing is applied on the spot, so nothing the pointer drives ever
+  settles. And a column that has gone is taken out of the accessibility tree
+  and the pointer as well as out of the picture — React `aria-hidden`s the
+  container and hides it once the slide finishes, SwiftUI `.accessibilityHidden`
+  and `.allowsHitTesting(false)`, Flutter `ExcludeSemantics`, `ExcludeFocus`
+  and `IgnorePointer` — because a column put away still holding a tab stop is
+  a control a reader can reach and not see.
 
 ## HarmonyOS desktop
 

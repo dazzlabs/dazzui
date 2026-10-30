@@ -35,12 +35,14 @@ struct Shell: View {
         page: $page,
         width: $list,
         collapsed: !listOpen,
-        onCollapse: { listOpen = false }
+        onCollapse: { withAnimation(vars.motion) { listOpen = false } }
       )
       VStack(spacing: 0) {
         Toolbar(
           story: story,
-          toggleList: { listOpen.toggle() },
+          // The change that reflows the window is made in the kit's motion, so
+          // the pane beside the column travels with its edge.
+          toggleList: { withAnimation(vars.motion) { listOpen.toggle() } },
           toggleThemes: { themesOpen.toggle() }
         )
         Group {
@@ -66,7 +68,7 @@ struct Shell: View {
     .foregroundStyle(vars.colorContent)
     .background {
       // ⌘B puts the list away, as the web's sidebar does.
-      SwiftUI.Button("") { listOpen.toggle() }
+      SwiftUI.Button("") { withAnimation(vars.motion) { listOpen.toggle() } }
         .keyboardShortcut("b", modifiers: .command)
         .hidden()
     }
@@ -196,23 +198,30 @@ private struct Overview: View {
     let vars = theme.vars
     let gap = vars.spacing3
     GeometryReader { proxy in
-      // The web's `repeat(auto-fill, minmax(16rem, 1fr))`.
+      // The web's `repeat(auto-fill, minmax(16rem, 1fr))`. A grid rather than
+      // rows of cells: a card keeps its identity when the window changes the
+      // number of columns, so a width the sidebar is collapsing takes the
+      // cards with it instead of crossfading one arrangement into the next.
       let room = proxy.size.width - vars.spacing6 * 2
       let columns = max(1, Int((room + gap) / (256 + gap)))
       ScrollView {
-        Grid(horizontalSpacing: gap, verticalSpacing: gap) {
-          ForEach(Array(stride(from: 0, to: stories.count, by: columns)), id: \.self) { start in
-            GridRow {
-              ForEach(start..<(start + columns), id: \.self) { index in
-                if index < stories.count {
-                  Tile(story: stories[index], open: open)
-                } else {
-                  Color.clear.gridCellUnsizedAxes([.vertical])
-                }
-              }
-            }
+        LazyVGrid(
+          columns: Array(
+            repeating: GridItem(.flexible(), spacing: gap, alignment: .top),
+            count: columns
+          ),
+          alignment: .leading,
+          spacing: gap
+        ) {
+          ForEach(stories) { story in
+            Tile(story: story, open: open)
           }
         }
+        // The web reflows a grid instantly on every frame of a width change;
+        // SwiftUI would animate each card from its old cell to its new one,
+        // so two arrangements would be on screen at once for the length of the
+        // animation. The page around it still travels with the column.
+        .transaction { $0.animation = nil }
         .page(vars)
       }
     }
