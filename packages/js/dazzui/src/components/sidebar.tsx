@@ -2,6 +2,7 @@ import { useRender } from '@base-ui/react/use-render'
 import { PanelLeft20Regular } from '@fluentui/react-icons'
 import {
   type ComponentPropsWithoutRef,
+  type CSSProperties,
   createContext,
   type ReactElement,
   type ReactNode,
@@ -140,6 +141,19 @@ export interface SidebarProps extends ComponentPropsWithoutRef<'div'> {
    * and the information column are always `none`.
    */
   collapsible?: SidebarCollapsible
+  /**
+   * Whether the column is put away, for one that is driven by a control of
+   * its own — the trailing column's titlebar button — rather than by the
+   * window's ⌘B. Given, it outranks the provider; left out, the column
+   * follows the window and its trigger does the toggling.
+   */
+  collapsed?: boolean
+  /**
+   * The width the column has of its own, written into `--sidebar-width` on
+   * the element. A trailing column takes the frame's aside width by default,
+   * so one the reader has resized has to say what it is.
+   */
+  width?: string
 }
 
 /** The column. */
@@ -147,11 +161,25 @@ export function Sidebar({
   side = 'left',
   variant = 'sidebar',
   collapsible = 'offcanvas',
+  collapsed,
+  width,
   className,
   children,
   ...props
 }: SidebarProps) {
-  const { state } = useSidebar()
+  const sidebar = useSidebar()
+  const state =
+    collapsed === undefined
+      ? sidebar.state
+      : collapsed
+        ? 'collapsed'
+        : 'expanded'
+  /* The width belongs to the column's own element, not to whatever holds it:
+     a trailing column's width is set by the frame's token unless the column
+     says otherwise, and an inherited value would never reach it. */
+  const style = width
+    ? ({ '--sidebar-width': width } as CSSProperties)
+    : undefined
 
   if (collapsible === 'none') {
     return (
@@ -159,6 +187,7 @@ export function Sidebar({
         data-side={side}
         data-variant={variant}
         data-collapsible="none"
+        style={style}
         className={cx('dz-sidebar', className)}
         {...props}
       >
@@ -185,6 +214,7 @@ export function Sidebar({
       data-collapsible={state === 'collapsed' ? collapsible : ''}
       data-variant={variant}
       data-side={side}
+      style={style}
       className="dz-sidebar"
     >
       <div

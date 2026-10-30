@@ -5,7 +5,6 @@ import SwiftUI
 struct ThemePanel: View {
   @Binding var theme: ThemeChoice
   @Binding var sizing: ThemeSizing
-  let width: CGFloat
 
   @Environment(\.theme) private var current
   @Environment(\.hairline) private var hairline
@@ -68,12 +67,7 @@ struct ThemePanel: View {
         .padding(.vertical, vars.spacing2)
       }
     }
-    .frame(width: width)
     .frame(maxHeight: .infinity)
-    .background(vars.colorSurfaceColumn)
-    .overlay(alignment: .leading) {
-      Rectangle().fill(vars.colorBorder).frame(width: hairline)
-    }
   }
 
   private func rows(_ families: [ThemeFamily]) -> [[ThemeFamily]] {

@@ -166,22 +166,23 @@ export function Shell({ page, open, theme, setTheme }: ShellProps) {
         </main>
       </SidebarInset>
 
-      {inspecting && (
-        <ThemePanel
-          theme={theme}
-          setTheme={setTheme}
-          width={themesWidth}
-          resizer={
-            <Resizer
-              side="right"
-              column={THEMES}
-              width={themesWidth}
-              setWidth={setThemesWidth}
-              label="Resize the theme panel"
-            />
-          }
-        />
-      )}
+      {/* The panel is never unmounted: putting it away sweeps it shut, so
+          the document beside it holds still while its edge slides over it. */}
+      <ThemePanel
+        theme={theme}
+        setTheme={setTheme}
+        width={themesWidth}
+        collapsed={!inspecting}
+        resizer={
+          <Resizer
+            side="right"
+            column={THEMES}
+            width={themesWidth}
+            setWidth={setThemesWidth}
+            label="Resize the theme panel"
+          />
+        }
+      />
     </SidebarProvider>
   )
 }

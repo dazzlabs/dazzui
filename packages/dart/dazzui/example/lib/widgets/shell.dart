@@ -155,15 +155,18 @@ class _ShellState extends State<Shell> {
                               ],
                             ),
                           ),
-                          if (showThemes)
-                            ThemePanel(
-                              theme: widget.theme,
-                              width: themes,
-                              onChanged: widget.setTheme,
-                              omarchy: widget.omarchy,
-                              followingOmarchy: widget.followingOmarchy,
-                              onFollowOmarchy: widget.setFollowingOmarchy,
-                            ),
+                          // The panel is never unmounted: putting it away
+                          // sweeps it shut, so the document beside it holds
+                          // still while its edge slides over it.
+                          ThemePanel(
+                            theme: widget.theme,
+                            width: _themesWidth,
+                            collapsed: !showThemes,
+                            onChanged: widget.setTheme,
+                            omarchy: widget.omarchy,
+                            followingOmarchy: widget.followingOmarchy,
+                            onFollowOmarchy: widget.setFollowingOmarchy,
+                          ),
                         ],
                       ),
                       if (showList)

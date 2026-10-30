@@ -13,7 +13,7 @@ import {
   SidebarHeader,
   Toggle,
 } from '@dazzlabs/dazzui'
-import { type CSSProperties, type ReactNode, useEffect } from 'react'
+import { type ReactNode, useEffect } from 'react'
 
 import { FAMILY_GROUPS, type Theme } from '../lib/themes'
 import { ThemePreview } from './theme-preview'
@@ -22,29 +22,41 @@ interface Props {
   theme: Theme
   setTheme: (theme: Theme) => void
   width: number
+  /** Whether the panel is put away. The shell owns the state; the kit's
+   * trailing column travels there. */
+  collapsed: boolean
   /** The panel's own edge, placed by the shell that keeps its width. */
   resizer: ReactNode
 }
 
 /** The theme, and nothing else: which half of it, then which family. */
-export function ThemePanel({ theme, setTheme, width, resizer }: Props) {
+export function ThemePanel({
+  theme,
+  setTheme,
+  width,
+  collapsed,
+  resizer,
+}: Props) {
   const dark = theme.mode === 'dark'
 
-  /* The chosen theme may be thirty rows down; open on it. */
+  /* The chosen theme may be thirty rows down; open on it, and again each
+     time the panel is opened. */
   useEffect(() => {
+    if (collapsed) return
     document
       .querySelector('.gk-themes [aria-checked="true"]')
       ?.scrollIntoView({ block: 'center' })
-  }, [])
+  }, [collapsed])
 
   return (
     <Sidebar
       side="right"
-      collapsible="none"
+      collapsible="offcanvas"
+      collapsed={collapsed}
+      width={`${width}px`}
       className="gk-themes"
-      style={{ '--sidebar-width': `${width}px` } as CSSProperties}
     >
-      {resizer}
+      {collapsed ? null : resizer}
       <SidebarHeader className="gk-themes__head">
         <strong>Theme</strong>
         <Toggle

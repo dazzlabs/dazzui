@@ -43,7 +43,7 @@ struct Shell: View {
           // The change that reflows the window is made in the kit's motion, so
           // the pane beside the column travels with its edge.
           toggleList: { withAnimation(vars.motion) { listOpen.toggle() } },
-          toggleThemes: { themesOpen.toggle() }
+          toggleThemes: { withAnimation(vars.motion) { themesOpen.toggle() } }
         )
         Group {
           if let story {
@@ -55,12 +55,16 @@ struct Shell: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
       }
       .frame(maxWidth: .infinity)
-      if themesOpen {
-        ThemePanel(theme: $theme, sizing: $sizing, width: themes)
-          .overlay(alignment: .leading) {
-            Resizer(outward: -1, column: themesWidth, width: $themes, label: "Resize the theme panel")
-              .offset(x: -(vars.spacing1 + 1))
-          }
+      // The panel is never unmounted: putting it away sweeps it shut, so the
+      // document beside it holds still while its edge slides over it.
+      Aside(width: themes, collapsed: !themesOpen) {
+        ThemePanel(theme: $theme, sizing: $sizing)
+      }
+      .overlay(alignment: .leading) {
+        if themesOpen {
+          Resizer(outward: -1, column: themesWidth, width: $themes, label: "Resize the theme panel")
+            .offset(x: -(vars.spacing1 + 1))
+        }
       }
     }
     .background(vars.colorSurface)
