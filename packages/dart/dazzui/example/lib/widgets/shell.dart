@@ -58,6 +58,7 @@ class _ShellState extends State<Shell> {
   String _query = '';
   bool _listOpen = true;
   bool _themesOpen = true;
+  MenuPresentation _menus = MenuPresentation.custom;
   double _listWidth = _list.initial;
   double _themesWidth = _themes.initial;
 
@@ -66,145 +67,152 @@ class _ShellState extends State<Shell> {
     final ThemeVariables vars = Theme.of(context).vars;
     final Story? story = storyOf(widget.page);
 
-    return CallbackShortcuts(
-      bindings: {
-        const SingleActivator(LogicalKeyboardKey.keyB, meta: true): () =>
-            setState(() => _listOpen = !_listOpen),
-        const SingleActivator(LogicalKeyboardKey.keyB, control: true): () =>
-            setState(() => _listOpen = !_listOpen),
-      },
-      child: Focus(
-        autofocus: true,
-        child: ColoredBox(
-          color: vars.colorSurface,
-          child: DefaultTextStyle(
-            style: vars.bodyMedium.copyWith(color: vars.colorContent),
-            child: IconTheme(
-              data: IconThemeData(
-                color: vars.colorContent,
-                size: vars.iconMedium,
-              ),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final double document =
-                      _previewWidth(vars) +
-                      vars.spacing6 * 2 +
-                      vars.spacing4 * 2;
-                  final bool showList =
-                      _listOpen &&
-                      constraints.maxWidth >= _listWidth + document;
-                  final double list = showList ? _listWidth : 0;
-                  // The panel's room is measured against the window with the
-                  // list open, not with the list's animated width: a sidebar
-                  // the reader puts away must not make a second panel appear
-                  // behind it mid-sweep.
-                  final bool showThemes =
-                      _themesOpen &&
-                      constraints.maxWidth >=
-                          _listWidth + _themesWidth + document;
-                  final double themes = showThemes ? _themesWidth : 0;
-                  return Stack(
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _List(
-                            width: _listWidth,
-                            collapsed: !showList,
-                            query: _query,
-                            page: widget.page,
-                            onQuery: (query) => setState(() => _query = query),
-                            onOpen: widget.open,
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                _Toolbar(
-                                  story: story,
-                                  listOpen: showList,
-                                  themesOpen: showThemes,
-                                  onToggleList: () => setState(() {
-                                    _listOpen = !showList;
-                                    if (_listOpen && !showThemes) {
-                                      _themesOpen = false;
-                                    }
-                                  }),
-                                  onToggleThemes: () => setState(() {
-                                    _themesOpen = !showThemes;
-                                    if (_themesOpen &&
-                                        constraints.maxWidth <
-                                            _listWidth +
-                                                _themesWidth +
-                                                document) {
-                                      _listOpen = false;
-                                    }
-                                  }),
-                                ),
-                                Expanded(
-                                  child: story == null
-                                      ? _Overview(
-                                          stories: matching(_query),
-                                          onOpen: widget.open,
-                                        )
-                                      : _Document(
-                                          key: ValueKey(story.id),
-                                          story: story,
-                                        ),
-                                ),
-                              ],
+    return MenuConfiguration(
+      presentation: _menus,
+      child: CallbackShortcuts(
+        bindings: {
+          const SingleActivator(LogicalKeyboardKey.keyB, meta: true): () =>
+              setState(() => _listOpen = !_listOpen),
+          const SingleActivator(LogicalKeyboardKey.keyB, control: true): () =>
+              setState(() => _listOpen = !_listOpen),
+        },
+        child: Focus(
+          autofocus: true,
+          child: ColoredBox(
+            color: vars.colorSurface,
+            child: DefaultTextStyle(
+              style: vars.bodyMedium.copyWith(color: vars.colorContent),
+              child: IconTheme(
+                data: IconThemeData(
+                  color: vars.colorContent,
+                  size: vars.iconMedium,
+                ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final double document =
+                        _previewWidth(vars) +
+                        vars.spacing6 * 2 +
+                        vars.spacing4 * 2;
+                    final bool showList =
+                        _listOpen &&
+                        constraints.maxWidth >= _listWidth + document;
+                    final double list = showList ? _listWidth : 0;
+                    // The panel's room is measured against the window with the
+                    // list open, not with the list's animated width: a sidebar
+                    // the reader puts away must not make a second panel appear
+                    // behind it mid-sweep.
+                    final bool showThemes =
+                        _themesOpen &&
+                        constraints.maxWidth >=
+                            _listWidth + _themesWidth + document;
+                    final double themes = showThemes ? _themesWidth : 0;
+                    return Stack(
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _List(
+                              width: _listWidth,
+                              collapsed: !showList,
+                              query: _query,
+                              page: widget.page,
+                              onQuery: (query) =>
+                                  setState(() => _query = query),
+                              onOpen: widget.open,
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  _Toolbar(
+                                    story: story,
+                                    listOpen: showList,
+                                    themesOpen: showThemes,
+                                    onToggleList: () => setState(() {
+                                      _listOpen = !showList;
+                                      if (_listOpen && !showThemes) {
+                                        _themesOpen = false;
+                                      }
+                                    }),
+                                    onToggleThemes: () => setState(() {
+                                      _themesOpen = !showThemes;
+                                      if (_themesOpen &&
+                                          constraints.maxWidth <
+                                              _listWidth +
+                                                  _themesWidth +
+                                                  document) {
+                                        _listOpen = false;
+                                      }
+                                    }),
+                                  ),
+                                  Expanded(
+                                    child: story == null
+                                        ? _Overview(
+                                            stories: matching(_query),
+                                            onOpen: widget.open,
+                                          )
+                                        : _Document(
+                                            key: ValueKey(story.id),
+                                            story: story,
+                                          ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // The panel is never unmounted: putting it away
+                            // sweeps it shut, so the document beside it holds
+                            // still while its edge slides over it.
+                            ThemePanel(
+                              theme: widget.theme,
+                              width: _themesWidth,
+                              collapsed: !showThemes,
+                              onChanged: widget.setTheme,
+                              omarchy: widget.omarchy,
+                              followingOmarchy: widget.followingOmarchy,
+                              onFollowOmarchy: widget.setFollowingOmarchy,
+                              menuPresentation: _menus,
+                              onMenuPresentationChanged: (value) =>
+                                  setState(() => _menus = value),
+                            ),
+                          ],
+                        ),
+                        if (showList)
+                          Positioned(
+                            top: 0,
+                            bottom: 0,
+                            left: list - context.hairlineWidth,
+                            child: Resizer(
+                              outward: 1,
+                              column: _list,
+                              width: _listWidth,
+                              lineAtStart: true,
+                              label: 'Resize the component list',
+                              onChanged: (width) =>
+                                  setState(() => _listWidth = width),
                             ),
                           ),
-                          // The panel is never unmounted: putting it away
-                          // sweeps it shut, so the document beside it holds
-                          // still while its edge slides over it.
-                          ThemePanel(
-                            theme: widget.theme,
-                            width: _themesWidth,
-                            collapsed: !showThemes,
-                            onChanged: widget.setTheme,
-                            omarchy: widget.omarchy,
-                            followingOmarchy: widget.followingOmarchy,
-                            onFollowOmarchy: widget.setFollowingOmarchy,
+                        if (showThemes)
+                          Positioned(
+                            top: 0,
+                            bottom: 0,
+                            left:
+                                constraints.maxWidth -
+                                themes -
+                                vars.spacing1 -
+                                context.hairlineWidth,
+                            child: Resizer(
+                              outward: -1,
+                              column: _themes,
+                              width: _themesWidth,
+                              label: 'Resize the theme panel',
+                              onChanged: (width) =>
+                                  setState(() => _themesWidth = width),
+                            ),
                           ),
-                        ],
-                      ),
-                      if (showList)
-                        Positioned(
-                          top: 0,
-                          bottom: 0,
-                          left: list - context.hairlineWidth,
-                          child: Resizer(
-                            outward: 1,
-                            column: _list,
-                            width: _listWidth,
-                            lineAtStart: true,
-                            label: 'Resize the component list',
-                            onChanged: (width) =>
-                                setState(() => _listWidth = width),
-                          ),
-                        ),
-                      if (showThemes)
-                        Positioned(
-                          top: 0,
-                          bottom: 0,
-                          left:
-                              constraints.maxWidth -
-                              themes -
-                              vars.spacing1 -
-                              context.hairlineWidth,
-                          child: Resizer(
-                            outward: -1,
-                            column: _themes,
-                            width: _themesWidth,
-                            label: 'Resize the theme panel',
-                            onChanged: (width) =>
-                                setState(() => _themesWidth = width),
-                          ),
-                        ),
-                    ],
-                  );
-                },
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ),

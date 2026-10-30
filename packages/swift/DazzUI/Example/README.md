@@ -36,7 +36,9 @@ the detail.
 The gallery starts with system sizing: AppKit's preferred typography and native
 control measurements, independent from the selected palette. **Follow system
 sizing** in the theme panel switches back to the shared design geometry. Pass
-`-design-sizing` to start with design metrics.
+`-design-sizing` to start with design metrics. **Use native menus** in the same
+panel switches ordinary menus to AppKit while keeping their triggers and
+fields in the gallery's layout. Search suggestions remain custom.
 
 ## How it is organised
 
@@ -78,6 +80,13 @@ xcodebuild -project Example.xcodeproj -scheme Example -destination 'platform=mac
 updates preserving the native editor and its selection. It also renders all 51
 story previews in light and dark at 225%. These scale fixtures do not modify
 system preferences.
+
+`MenuPresentationTests` verifies default and nested scopes, live propagation
+through dialogs and floating panels, native item conversion, selection and
+cancellation in real AppKit tracking loops, keyboard dispatch, menubar switching,
+mode changes and teardown. It also checks that native mode preserves trigger
+geometry and leaves Combobox and Autocomplete suggestions custom and editable.
+Run just these checks with `-only-testing:ExampleTests/MenuPresentationTests`.
 
 ## Why it is a separate package
 

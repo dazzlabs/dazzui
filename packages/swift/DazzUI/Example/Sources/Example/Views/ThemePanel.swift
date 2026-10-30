@@ -5,6 +5,7 @@ import SwiftUI
 struct ThemePanel: View {
   @Binding var theme: ThemeChoice
   @Binding var sizing: ThemeSizing
+  @Binding var menuPresentation: MenuPresentation
 
   @Environment(\.theme) private var current
   @Environment(\.hairline) private var hairline
@@ -39,6 +40,12 @@ struct ThemePanel: View {
             accessibilityName: "Follow system sizing", action: {
             sizing = sizing == .system ? .design : .system
           }) { Text("Follow system sizing") }
+          .padding(.horizontal, vars.spacing4)
+          .padding(.bottom, vars.spacing2)
+          DazzUI.Toggle(pressed: menuPresentation == .native, size: .small,
+            accessibilityName: "Use native menus", action: {
+            menuPresentation = menuPresentation == .native ? .custom : .native
+          }) { Text("Use native menus") }
           .padding(.horizontal, vars.spacing4)
           .padding(.bottom, vars.spacing2)
           ForEach(themeFamilyGroups, id: \.title) { group in

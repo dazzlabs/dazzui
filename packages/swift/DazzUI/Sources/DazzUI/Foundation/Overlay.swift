@@ -142,6 +142,24 @@ private struct DrawerLayer<Panel: View>: View {
   }
 }
 
+/// Compare the theme's resolved sizing inputs together, then pass the new
+/// snapshot into onChange. Reading the modifier's captured environment there
+/// can otherwise replay the previous render's values into the portal.
+private struct OverlayScope: Equatable {
+  let theme: Theme
+  let presentation: MenuPresentation
+
+  static func == (lhs: Self, rhs: Self) -> Bool {
+    lhs.presentation == rhs.presentation && lhs.theme.name == rhs.theme.name
+      && lhs.theme.sizing == rhs.theme.sizing
+      && lhs.theme.vars.bodyMedium.size == rhs.theme.vars.bodyMedium.size
+      && ControlSize.allCases.allSatisfy {
+        lhs.theme.vars.metrics($0).size == rhs.theme.vars.metrics($0).size
+          && lhs.theme.vars.metrics($0).content.size == rhs.theme.vars.metrics($0).content.size
+      }
+  }
+}
+
 private struct Presenting<Layer: View>: ViewModifier {
   @Binding var isPresented: Bool
   let dismissible: Bool
@@ -149,17 +167,22 @@ private struct Presenting<Layer: View>: ViewModifier {
 
   @Environment(\.overlayStack) private var stack
   @Environment(\.theme) private var theme
+  @Environment(\.menuPresentation) private var presentation
   @State private var id = UUID()
 
   func body(content: Content) -> some View {
     content
       .onAppear { sync(isPresented) }
       .onChange(of: isPresented) { sync($0) }
-      .onChange(of: theme.name) { _ in if isPresented { sync(true) } }
+      .onChange(of: OverlayScope(theme: theme, presentation: presentation)) { scope in
+        if isPresented { sync(true, scope: scope) }
+      }
       .onDisappear { stack?.hide(id) }
   }
 
-  private func sync(_ shown: Bool) {
+  private func sync(_ shown: Bool, scope: OverlayScope? = nil) {
+    let scope = scope ?? OverlayScope(theme: theme, presentation: presentation)
+    let resolved = scope.theme
     guard let stack else { return }
     guard shown else {
       stack.hide(id)
@@ -168,7 +191,10 @@ private struct Presenting<Layer: View>: ViewModifier {
     let binding = $isPresented
     let close = { binding.wrappedValue = false }
     let drawn = layer(close)
-      .theme(theme.name)
+      .environment(\.theme, resolved)
+      .font(resolved.vars.bodyMedium.font)
+      .environment(\.colorScheme, resolved.name.colorScheme)
+      .menuPresentation(scope.presentation)
       .environment(\.closeOverlay, CloseOverlayAction(close))
     #if os(macOS)
       stack.show(id, AnyView(drawn.onExitCommand { if dismissible { close() } }))

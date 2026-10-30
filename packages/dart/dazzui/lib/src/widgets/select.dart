@@ -1,6 +1,7 @@
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/widgets.dart';
 
+import '../foundation/native_menu.dart';
 import '../foundation/widget_size.dart';
 import '../generated/theme_variables.dart';
 import '../theme/theme.dart';
@@ -92,7 +93,7 @@ class Select<T> extends StatefulWidget {
   State<Select<T>> createState() => _SelectState<T>();
 }
 
-class _SelectState<T> extends State<Select<T>> {
+class _SelectState<T> extends State<Select<T>> with NativeMenuOwner<Select<T>> {
   final OverlayPortalController _controller = OverlayPortalController();
   final LayerLink _link = LayerLink();
   bool _open = false;
@@ -128,13 +129,37 @@ class _SelectState<T> extends State<Select<T>> {
 
   void _toggle() => _open ? _close() : _openList();
 
-  void _openList() {
+  Future<void> _openList() async {
     if (_open) return;
     setState(() => _open = true);
-    _controller.show();
+    NativeMenuEntry option(SelectOption<T> item) => NativeMenuEntry(
+      label: item.label,
+      enabled: item.enabled,
+      checked: item.value == widget.value,
+      onSelect: () => widget.onChanged?.call(item.value),
+    );
+    final presented = await nativeMenu.open(
+      context: context,
+      entries: [
+        for (final item in _items)
+          ...switch (item) {
+            SelectOption<T>() => [option(item)],
+            SelectGroup<T>() => [
+              NativeMenuEntry(label: item.label, heading: true, enabled: false),
+              ...item.options.map(option),
+            ],
+          },
+      ],
+      onDismiss: _close,
+    );
+    if (mounted && _open && !presented) _controller.show();
   }
 
+  @override
+  void dismissMenu() => _close();
+
   void _close() {
+    nativeMenu.close();
     if (!_open) return;
     setState(() => _open = false);
     _controller.hide();

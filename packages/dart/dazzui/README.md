@@ -54,6 +54,35 @@ use it.
 `Theme.of(context)`. The names come from ds, the design system's single
 token source; `lib/src/generated/` is what it wrote. **Never hand-edit it.**
 
+## Native menus
+
+The package requires Dart 3.13 or newer, matching its direct `nativeapi`
+dependency. Wrap your window once to use native desktop dropdowns:
+
+```dart
+MenuConfiguration(
+  presentation: MenuPresentation.native,
+  child: Theme(data: ThemeData.studioLight(), child: MyWindow()),
+)
+```
+
+Menu, Select, ContextMenu and Menubar inherit this preference. The default is
+`MenuPresentation.custom`; a nested configuration can override it. Changing
+presentation closes an open menu and applies the new mode on its next opening.
+Triggers keep their DazzUI appearance. The native list uses the system's
+appearance, spacing, navigation and dismissal behavior. Shortcut strings are
+still display hints, not newly registered keyboard shortcuts.
+
+Native menus are available on macOS, Windows and Linux when the nativeapi
+backend and current host window are available. Web and mobile use the custom
+panel, as does a desktop host where the backend cannot open a menu. Linux builds
+need nativeapi's GTK 3, X11 and Xi development packages.
+
+Combobox and Autocomplete retain their searchable custom suggestion lists in
+both modes, so typing continues to filter them. Rich popovers such as the date
+picker also stay custom; ordinary dropdowns inside them inherit the setting.
+The example's theme panel offers a Native menus switch.
+
 ## The example
 
 `example/` is the React example's window drawn with this package: every
@@ -61,4 +90,13 @@ component, live, in every theme.
 
 ```bash
 cd example && flutter run
+```
+
+The macOS integration test opens real nativeapi menus, selects with AppKit
+item actions, cancels and reopens, and switches menubar menus at the pointer.
+Its debug-only Swift driver is compiled into the example; release builds omit
+it. Run from `example/`:
+
+```bash
+flutter test integration_test/native_menu_test.dart -d macos
 ```

@@ -11,7 +11,7 @@ topics:
   - theme
 
 environment:
-  sdk: ">=3.9.2 <4.0.0"
+  sdk: ^3.13.0
 
 dependencies:
   collection: ^1.18.0
@@ -24,6 +24,7 @@ dependencies:
   fluentui_system_icons: ^1.1.255
   flutter:
     sdk: flutter
+  nativeapi: ^0.5.2
 
 dev_dependencies:
   # A range rather than a caret: this is a dev dependency, and in a pub

@@ -7,6 +7,7 @@ struct AppView: View {
   @State private var page: String?
   @State private var theme: ThemeChoice
   @State private var sizing: ThemeSizing
+  @State private var menuPresentation: MenuPresentation = .custom
 
   init(page: String? = nil, theme: ThemeChoice = defaultTheme, sizing: ThemeSizing = .design) {
     _page = State(initialValue: page)
@@ -15,7 +16,8 @@ struct AppView: View {
   }
 
   var body: some View {
-    Shell(page: $page, theme: $theme, sizing: $sizing)
+    Shell(page: $page, theme: $theme, sizing: $sizing, menuPresentation: $menuPresentation)
+      .menuPresentation(menuPresentation)
       .theme(theme.name, sizing: sizing)
       .overlayHost()
   }

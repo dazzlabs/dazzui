@@ -28,7 +28,7 @@ public struct MenuItem: Identifiable {
   public var id: String { label }
   public var label: String
   public var icon: AnyView?
-  /// Trailing hint — the keys that also trigger this item.
+  /// Trailing hint; displaying it does not register a keyboard shortcut.
   public var shortcut: AnyView?
   /// Radio-style check state. Set it on every item of a group, including the
   /// unchecked ones, so the leading column stays aligned.
@@ -93,6 +93,7 @@ public struct Menu<Trigger: View>: View {
 
   @Environment(\.theme) private var theme
   @Environment(\.hairline) private var hairline
+  @Environment(\.menuPresentation) private var presentation
   @State private var open = false
 
   public init(
@@ -112,7 +113,7 @@ public struct Menu<Trigger: View>: View {
       // Modal, as Base UI's menu is by default: a press outside only closes
       // it, so pressing the trigger again closes rather than reopens.
       .floatingPanel(
-        isPresented: $open,
+        isPresented: Binding(get: { open && !presentation.usesNativeMenus }, set: { open = $0 }),
         side: .bottom,
         align: align == .start ? .start : .end,
         gap: theme.vars.spacing1,
@@ -120,6 +121,7 @@ public struct Menu<Trigger: View>: View {
       ) {
         panel
       }
+      .nativeMenu(isPresented: $open, entries: items.map(NativeMenuEntry.item), align: align)
   }
 
   private var panel: some View {

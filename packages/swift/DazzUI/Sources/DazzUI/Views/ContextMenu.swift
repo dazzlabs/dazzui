@@ -10,9 +10,9 @@ import SwiftUI
 /// resembling it. What is its own is where it opens: at the pointer rather
 /// than against a trigger's edge.
 ///
-/// SwiftUI's own `.contextMenu` draws AppKit's menu, which is a different
-/// design; the secondary click is caught here instead so the panel is the
-/// system's own. Every affordance in a context menu must also be reachable
+/// The secondary click is caught here so the popup follows the subtree's
+/// `menuPresentation`: DazzUI's sheet by default, or AppKit's menu in native
+/// mode. Every affordance in a context menu must also be reachable
 /// somewhere a pointer can see: a right-click is a shortcut, never the only
 /// door.
 public struct ContextMenu<Content: View>: View {
@@ -24,6 +24,7 @@ public struct ContextMenu<Content: View>: View {
   @ViewBuilder public var content: () -> Content
 
   @Environment(\.theme) private var theme
+  @Environment(\.menuPresentation) private var presentation
   @State private var open = false
   @State private var at: CGPoint = .zero
 
@@ -44,7 +45,7 @@ public struct ContextMenu<Content: View>: View {
         open = true
       })
       .overlay(alignment: .topLeading) {
-        if open {
+        if open && !presentation.usesNativeMenus {
           MenuSheet {
             ForEach(items) { item in
               MenuRow(item: item, tint: tint) { open = false }
@@ -55,8 +56,9 @@ public struct ContextMenu<Content: View>: View {
           .offset(x: at.x, y: at.y)
         }
       }
+      .nativeMenu(isPresented: $open, entries: items.map(NativeMenuEntry.item), point: at)
       .background {
-        if open {
+        if open && !presentation.usesNativeMenus {
           SwiftUI.Button("") { open = false }
             .keyboardShortcut(.cancelAction)
             .opacity(0)

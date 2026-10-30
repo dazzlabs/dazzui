@@ -28,7 +28,9 @@ public struct Menubar: View {
   public var tint: Tint
 
   @Environment(\.theme) private var theme
+  @Environment(\.menuPresentation) private var presentation
   @State private var open: String?
+  @StateObject private var nativeBar = NativeMenuBar()
 
   public init(menus: [MenubarMenu], tint: Tint = .neutral) {
     self.menus = menus
@@ -51,8 +53,13 @@ public struct Menubar: View {
           toggle: { open = open == menu.id ? nil : menu.id },
           enter: { if open != nil { open = menu.id } }
         )
+        .nativeMenu(
+          isPresented: Binding(get: { open == menu.id }, set: { if !$0 && open == menu.id { open = nil } }),
+          entries: menu.disabled ? [] : menu.items.map(NativeMenuEntry.item),
+          bar: nativeBar, menuID: menu.id, switchMenu: { open = menu.id }
+        )
         .overlay(alignment: .bottomLeading) {
-          if open == menu.id {
+          if open == menu.id && !presentation.usesNativeMenus {
             MenuSheet {
               ForEach(menu.items) { item in
                 MenuRow(item: item, tint: tint) { open = nil }
@@ -65,7 +72,7 @@ public struct Menubar: View {
       }
     }
     .background {
-      if open != nil {
+      if open != nil && !presentation.usesNativeMenus {
         SwiftUI.Button("") { open = nil }
           .keyboardShortcut(.cancelAction)
           .opacity(0)

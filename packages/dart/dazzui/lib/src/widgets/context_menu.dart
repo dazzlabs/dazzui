@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../foundation/native_menu.dart';
 import '../generated/theme_variables.dart';
 import '../theme/theme.dart';
 import 'menu.dart';
@@ -30,20 +31,32 @@ class ContextMenu extends StatefulWidget {
   State<ContextMenu> createState() => _ContextMenuState();
 }
 
-class _ContextMenuState extends State<ContextMenu> {
+class _ContextMenuState extends State<ContextMenu>
+    with NativeMenuOwner<ContextMenu> {
   final OverlayPortalController _controller = OverlayPortalController();
   Offset _at = Offset.zero;
   bool _open = false;
 
-  void _openAt(Offset global) {
+  Future<void> _openAt(Offset global) async {
+    _close();
     setState(() {
       _at = global;
       _open = true;
     });
-    _controller.show();
+    final presented = await nativeMenu.open(
+      context: context,
+      entries: widget.items.map((item) => item.nativeEntry).toList(),
+      position: global,
+      onDismiss: _close,
+    );
+    if (mounted && _open && !presented) _controller.show();
   }
 
+  @override
+  void dismissMenu() => _close();
+
   void _close() {
+    nativeMenu.close();
     if (!_open) return;
     setState(() => _open = false);
     _controller.hide();

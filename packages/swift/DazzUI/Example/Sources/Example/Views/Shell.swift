@@ -14,6 +14,7 @@ struct Shell: View {
   @Binding var page: String?
   @Binding var theme: ThemeChoice
   @Binding var sizing: ThemeSizing
+  @Binding var menuPresentation: MenuPresentation
 
   @State private var query = ""
   @State private var listOpen = true
@@ -58,7 +59,7 @@ struct Shell: View {
       // The panel is never unmounted: putting it away sweeps it shut, so the
       // document beside it holds still while its edge slides over it.
       Aside(width: themes, collapsed: !themesOpen) {
-        ThemePanel(theme: $theme, sizing: $sizing)
+        ThemePanel(theme: $theme, sizing: $sizing, menuPresentation: $menuPresentation)
       }
       .overlay(alignment: .leading) {
         if themesOpen {

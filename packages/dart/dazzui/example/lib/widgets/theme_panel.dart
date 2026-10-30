@@ -15,6 +15,8 @@ class ThemePanel extends StatelessWidget {
     this.omarchy,
     this.followingOmarchy = false,
     this.onFollowOmarchy,
+    this.menuPresentation = MenuPresentation.custom,
+    this.onMenuPresentationChanged,
   });
 
   final ThemeChoice theme;
@@ -31,6 +33,8 @@ class ThemePanel extends StatelessWidget {
   final OmarchyPalette? omarchy;
   final bool followingOmarchy;
   final ValueChanged<bool>? onFollowOmarchy;
+  final MenuPresentation menuPresentation;
+  final ValueChanged<MenuPresentation>? onMenuPresentationChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +89,24 @@ class ThemePanel extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Padding(
+                    padding: EdgeInsets.all(vars.spacing4),
+                    child: Row(
+                      children: [
+                        const Expanded(child: Text('Native menus')),
+                        Switch(
+                          value: menuPresentation == MenuPresentation.native,
+                          onChanged: onMenuPresentationChanged == null
+                              ? null
+                              : (value) => onMenuPresentationChanged!(
+                                  value
+                                      ? MenuPresentation.native
+                                      : MenuPresentation.custom,
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
                   if (omarchy case final omarchy?)
                     _Group(
                       title: 'This machine',

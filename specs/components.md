@@ -125,6 +125,18 @@ Never hand-edit `src/generated/`. A value a component needs belongs in
   attribute reveals the tick column. Gaps between a popup and its trigger are
   padding on the positioner rather than an offset passed in code, so the gap
   is a token and the collision logic counts it when the panel flips.
+- **Native dropdowns are an application preference on SwiftUI and Flutter.**
+  Both default to `MenuPresentation.custom`. SwiftUI's
+  `.menuPresentation(.native)` and Flutter's `MenuConfiguration` scope Menu,
+  Select, ContextMenu and Menubar independently from the color theme. A nearer
+  scope overrides the root; changing it dismisses an open menu. Native mode
+  keeps the trigger's DazzUI drawing and lets the desktop OS draw the list.
+  Searchable Combobox and Autocomplete suggestions keep their custom panels,
+  as do rich popovers such as the date picker. Ordinary menus inside those
+  panels inherit the preference. Unsupported platforms or an unavailable
+  native backend fall back to the custom panel. Shortcut strings remain hints,
+  rather than registering additional accelerators. Flutter depends directly
+  on `nativeapi` and follows its Dart SDK floor (3.13).
 - **A text control's family is one file per platform, and the three wear the
   same box.** React keeps `TextField`, `Select` and `FieldValue` in
   `text-field.tsx` because the box, the states and the tinting are one design

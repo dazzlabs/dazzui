@@ -76,6 +76,7 @@ private struct FloatingPanelModifier<Panel: View>: ViewModifier {
   let panel: (CGSize) -> Panel
 
   @Environment(\.theme) private var theme
+  @Environment(\.menuPresentation) private var presentation
   @State private var anchor: CGSize = .zero
 
   func body(content: Content) -> some View {
@@ -97,7 +98,10 @@ private struct FloatingPanelModifier<Panel: View>: ViewModifier {
           panel: AnyView(
             panel(anchor)
               .padding(margin)
-              .theme(theme.name)
+              .environment(\.theme, theme)
+              .font(theme.vars.bodyMedium.font)
+              .environment(\.colorScheme, theme.name.colorScheme)
+              .menuPresentation(presentation)
           )
         )
       )
@@ -324,6 +328,9 @@ private struct FloatingPanelModifier<Panel: View>: ViewModifier {
         ]
       ) { [weak self] event in
         guard let self, let panel = self.panel else { return event }
+        // AppKit owns events while a nested native menu tracks. Its windows
+        // are not child panels, so treating them as outside would dismiss us.
+        if NativeMenuSession.isTracking { return event }
 
         switch event.type {
         case .keyDown:
@@ -365,7 +372,7 @@ private struct FloatingPanelModifier<Panel: View>: ViewModifier {
           // The key window moving between the two — a popover's field taking
           // the focus, or handing it back — is not the focus leaving.
           DispatchQueue.main.async { [weak self] in
-            guard let self, self.panel != nil else { return }
+            guard let self, self.panel != nil, !NativeMenuSession.isTracking else { return }
             let key = NSApp.keyWindow
             if key !== parent && key !== self.panel && !self.withinSheet(key) { self.dismiss() }
           }

@@ -394,6 +394,7 @@ public struct Select<Value: Hashable>: View {
   public var placeholder: String
 
   @Environment(\.theme) private var theme
+  @Environment(\.menuPresentation) private var presentation
   @FocusState private var focused: Bool
   @State private var open = false
 
@@ -451,9 +452,13 @@ public struct Select<Value: Hashable>: View {
 
     trigger
       // Modal, as Base UI's select is: the form behind waits for a choice.
-      .floatingPanel(isPresented: $open, gap: vars.spacing1, modal: true) { anchor in
+      .floatingPanel(
+        isPresented: Binding(get: { open && !presentation.usesNativeMenus }, set: { open = $0 }),
+        gap: vars.spacing1, modal: true
+      ) { anchor in
         AnchoredMenuSheet(width: anchor.width) { list }
       }
+      .nativeMenu(isPresented: $open, entries: nativeEntries)
       .onChange(of: enabled) { if !$0 { open = false } }
   }
 
@@ -541,6 +546,22 @@ public struct Select<Value: Hashable>: View {
       selection = option.value
       open = false
     }
+  }
+
+  internal var nativeEntries: [NativeMenuEntry] {
+    entries.flatMap { entry in
+      switch entry {
+      case .option(let option): return [nativeEntry(option)]
+      case .group(let group):
+        return [.heading(group.label)] + group.options.map(nativeEntry)
+      }
+    }
+  }
+
+  private func nativeEntry(_ option: SelectOption<Value>) -> NativeMenuEntry {
+    .item(MenuItem(option.label, checked: option.value == selection, disabled: !option.enabled) {
+      selection = option.value
+    })
   }
 
   private var selectedLabel: String {

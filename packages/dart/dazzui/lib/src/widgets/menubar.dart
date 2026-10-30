@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../foundation/native_menu.dart';
 import '../generated/theme_variables.dart';
 import '../theme/theme.dart';
 import 'menu.dart';
@@ -42,20 +45,67 @@ class Menubar extends StatefulWidget {
   State<Menubar> createState() => _MenubarState();
 }
 
-class _MenubarState extends State<Menubar> {
+class _MenubarState extends State<Menubar> with NativeMenuOwner<Menubar> {
   final OverlayPortalController _controller = OverlayPortalController();
   final Map<int, LayerLink> _links = {};
+  final Map<int, GlobalKey> _anchors = {};
   int? _open;
+  Timer? _nativeHover;
+
+  @override
+  void dispose() {
+    _nativeHover?.cancel();
+    super.dispose();
+  }
+
+  void _trackNativeHover() {
+    final pointer = nativeMenu.pointerPosition;
+    if (pointer == null || _open == null) return;
+    for (var index = 0; index < widget.menus.length; index++) {
+      if (index == _open || !widget.menus[index].enabled) continue;
+      final box = _anchors[index]?.currentContext?.findRenderObject();
+      if (box is RenderBox &&
+          (box.localToGlobal(Offset.zero) & box.size).contains(pointer)) {
+        _openAt(index);
+        return;
+      }
+    }
+  }
 
   LayerLink _linkFor(int index) => _links.putIfAbsent(index, LayerLink.new);
 
-  void _openAt(int index) {
+  Future<void> _openAt(int index) async {
     if (!widget.menus[index].enabled) return;
+    _controller.hide();
     setState(() => _open = index);
-    _controller.show();
+    final presented = await nativeMenu.open(
+      context: context,
+      entries: widget.menus[index].items
+          .map((item) => item.nativeEntry)
+          .toList(),
+      position:
+          (_anchors[index]!.currentContext!.findRenderObject() as RenderBox)
+              .localToGlobal(Offset(0, context.vars.controlSmallSize)),
+      onDismiss: _close,
+    );
+    if (!mounted || _open != index) return;
+    _nativeHover?.cancel();
+    if (presented) {
+      _nativeHover = Timer.periodic(
+        const Duration(milliseconds: 30),
+        (_) => _trackNativeHover(),
+      );
+    } else {
+      _controller.show();
+    }
   }
 
+  @override
+  void dismissMenu() => _close();
+
   void _close() {
+    _nativeHover?.cancel();
+    nativeMenu.close();
     if (_open == null) return;
     setState(() => _open = null);
     _controller.hide();
@@ -67,7 +117,7 @@ class _MenubarState extends State<Menubar> {
     for (int hop = 1; hop <= count; hop += 1) {
       final int next = (_open! + delta * hop) % count;
       if (widget.menus[(next + count) % count].enabled) {
-        setState(() => _open = (next + count) % count);
+        _openAt((next + count) % count);
         return;
       }
     }
@@ -124,6 +174,7 @@ class _MenubarState extends State<Menubar> {
         children: [
           for (int index = 0; index < widget.menus.length; index += 1)
             CompositedTransformTarget(
+              key: _anchors.putIfAbsent(index, GlobalKey.new),
               link: _linkFor(index),
               child: _Trigger(
                 menu: widget.menus[index],

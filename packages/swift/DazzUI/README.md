@@ -57,6 +57,27 @@ modifier for automatic updates. A nested `.theme(name)` retains design sizing.
 The interactive gallery starts in system sizing and offers **Follow system
 sizing** in its theme panel; `-design-sizing` starts it in design mode.
 
+## Menu presentation
+
+Set `.menuPresentation(.native)` at the app's root to use AppKit menus for
+`Menu`, `Select`, `ContextMenu` and the in-window `Menubar`. The default is
+`.custom`; a nested `.menuPresentation(.custom)` overrides its ancestors.
+The setting is independent from theme and system sizing, and crosses dialog,
+drawer and floating-panel boundaries. Changing it closes any open menu; the
+next opening uses the new mode.
+
+Triggers and Select fields keep their DazzUI layout in both modes. Native rows
+retain order, headings, checkmarks, disabled state, icons and shortcut hints.
+AnyView icon and hint slots are rendered into images inside standard native
+rows; shortcut hints do not register keyboard accelerators. AppKit owns native
+menu highlighting, navigation and dismissal. The menubar remains inside the
+window, with pointer switching between its menus.
+
+Combobox and Autocomplete suggestions remain custom so typing and filtering
+continue to work. DateRangePicker's calendar remains custom; ordinary menus
+inside it follow the setting. Platforms without AppKit use custom presentation.
+The example's theme panel offers **Use native menus** for live comparison.
+
 ## Naming
 
 Names match the React export **exactly**, with no prefix — `Button` is

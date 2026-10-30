@@ -2,6 +2,7 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../foundation/native_menu.dart';
 import '../foundation/widget_tint.dart';
 import '../generated/theme_variables.dart';
 import '../theme/theme.dart';
@@ -48,6 +49,15 @@ class MenuItem {
   final bool enabled;
 
   final VoidCallback? onSelect;
+
+  NativeMenuEntry get nativeEntry => NativeMenuEntry(
+    label: label,
+    icon: icon,
+    shortcut: shortcut,
+    checked: checked,
+    enabled: enabled,
+    onSelect: onSelect,
+  );
 }
 
 /// What the trigger builder is handed.
@@ -82,19 +92,29 @@ class Menu extends StatefulWidget {
   State<Menu> createState() => _MenuState();
 }
 
-class _MenuState extends State<Menu> {
+class _MenuState extends State<Menu> with NativeMenuOwner<Menu> {
   final OverlayPortalController _controller = OverlayPortalController();
   final LayerLink _link = LayerLink();
   bool _open = false;
 
   void _toggle() => _open ? _close() : _openMenu();
 
-  void _openMenu() {
+  Future<void> _openMenu() async {
     setState(() => _open = true);
-    _controller.show();
+    final presented = await nativeMenu.open(
+      context: context,
+      entries: widget.items.map((item) => item.nativeEntry).toList(),
+      alignEnd: widget.align == MenuAlign.end,
+      onDismiss: _close,
+    );
+    if (mounted && _open && !presented) _controller.show();
   }
 
+  @override
+  void dismissMenu() => _close();
+
   void _close() {
+    nativeMenu.close();
     if (!_open) return;
     setState(() => _open = false);
     _controller.hide();

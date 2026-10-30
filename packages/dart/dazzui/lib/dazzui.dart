@@ -12,6 +12,7 @@ export 'package:flutter/widgets.dart'
 export 'src/foundation/color_descriptor.dart';
 export 'src/foundation/extensions/color.dart';
 export 'src/foundation/font_face.dart';
+export 'src/foundation/menu_configuration.dart';
 export 'src/foundation/theme_extension.dart';
 export 'src/foundation/widget_size.dart';
 export 'src/foundation/widget_tint.dart';
