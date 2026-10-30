@@ -118,6 +118,45 @@ void main() {
     semantics.dispose();
   });
 
+  testWidgets('the edge is the separator recipe, not solid ink', (
+    tester,
+  ) async {
+    const ThemeVariables vars = themeVariables;
+    await tester.pumpWidget(
+      app.host(
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Sidebar(
+              children: [
+                SidebarGroup(
+                  children: [NavItem(label: 'Inbox', onPressed: () {})],
+                ),
+              ],
+            ),
+            const Expanded(child: SizedBox()),
+          ],
+        ),
+      ),
+    );
+
+    final Container column = tester.widget<Container>(
+      find
+          .descendant(
+            of: find.byType(Sidebar),
+            matching: find.byType(Container),
+          )
+          .first,
+    );
+    final BoxDecoration decoration = column.decoration! as BoxDecoration;
+    final BorderDirectional border = decoration.border! as BorderDirectional;
+    // The separator is ink at a few percent — a hairline that kept the colour
+    // but dropped the alpha would be a black rule down the window.
+    expect(border.end.color, vars.colorBorder);
+    expect(border.end.color.a, lessThan(0.2));
+    expect(border.end.width, greaterThan(0));
+  });
+
   testWidgets('a width the host changes lands on the spot', (tester) async {
     Widget window({required double width, bool collapsed = false}) => app.host(
       Row(

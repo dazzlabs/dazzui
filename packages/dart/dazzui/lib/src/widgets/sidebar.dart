@@ -107,10 +107,15 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
                   color: vars.colorSurfaceColumn,
                   // The edge goes with the column rather than standing in the
                   // window after it: a hairline left behind is a column one
-                  // pixel wide that nothing can reach.
+                  // pixel wide that nothing can reach. Its ink is the
+                  // separator's own alpha, scaled by how open the column is —
+                  // not restated at full strength, which would paint the token's
+                  // 7% ink as a black line down the window.
                   border: BorderDirectional(
                     end: BorderSide(
-                      color: vars.colorBorder.withValues(alpha: edge),
+                      color: vars.colorBorder.withValues(
+                        alpha: vars.colorBorder.a * edge,
+                      ),
                       width: context.hairlineWidth,
                     ),
                   ),

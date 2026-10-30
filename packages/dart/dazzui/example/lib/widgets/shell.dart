@@ -381,37 +381,43 @@ class _Overview extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeVariables vars = Theme.of(context).vars;
     final double gap = vars.spacing3;
-    return SingleChildScrollView(
-      padding: _pagePadding(vars),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          // Roomier theme profiles need roomier previews as well. Keep the
-          // default 16rem track, scaling it with the regular control height.
-          final double track = _previewWidth(vars);
-          final int columns = ((constraints.maxWidth + gap) / (track + gap))
-              .floor()
-              .clamp(1, 99);
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: gap,
-            children: [
-              for (int start = 0; start < stories.length; start += columns)
-                StretchRow(
-                  gap: gap,
-                  columns: columns,
-                  children: [
-                    for (
-                      int i = start;
-                      i < math.min(start + columns, stories.length);
-                      i++
-                    )
-                      _Tile(story: stories[i], onOpen: onOpen),
-                  ],
-                ),
-            ],
-          );
-        },
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Roomier theme profiles need roomier previews as well. Keep the
+        // default 16rem track, scaling it with the regular control height.
+        final double track = _previewWidth(vars);
+        final int columns = ((constraints.maxWidth + gap) / (track + gap))
+            .floor()
+            .clamp(1, 99);
+        final int rows = (stories.length + columns - 1) ~/ columns;
+        // A run of rows, built as they come into view: the window is a card
+        // per component and each card holds a live scene, so laying all of
+        // them out on every frame of a width change — a sidebar collapsing,
+        // a divider dragged — is what makes those animations stutter. The
+        // rows off screen cost nothing until they are scrolled to.
+        return ListView.builder(
+          padding: _pagePadding(vars),
+          itemCount: rows,
+          itemBuilder: (BuildContext context, int row) {
+            final int start = row * columns;
+            return Padding(
+              padding: EdgeInsets.only(bottom: row == rows - 1 ? 0 : gap),
+              child: StretchRow(
+                gap: gap,
+                columns: columns,
+                children: [
+                  for (
+                    int i = start;
+                    i < math.min(start + columns, stories.length);
+                    i++
+                  )
+                    _Tile(story: stories[i], onOpen: onOpen),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
