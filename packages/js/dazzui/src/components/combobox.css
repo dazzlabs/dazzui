@@ -91,12 +91,20 @@
    in a panel of rows, so it takes the row's inset and the muted ink rather
    than looking like a row that cannot be picked. */
 .dz-popup__empty {
-  padding-block: var(--menu-item-padding);
-  padding-inline: var(--spacing-2);
   color: var(--color-content-faint);
   font-family: var(--body-small-font-family);
   font-size: var(--body-small-font-size);
   line-height: var(--body-small-line-height);
+}
+
+/* The region is mounted whether or not it has anything to say — Base UI
+   announces how many matches are left through it, so it is never removed from
+   the DOM — and an empty block still takes its own padding, which was a blank
+   row between the panel's edge and the first option. The inset belongs to the
+   prose, so it arrives with the prose and costs nothing without it. */
+.dz-popup__empty:not(:empty) {
+  padding-block: var(--menu-item-padding);
+  padding-inline: var(--spacing-2);
 }
 
 .dz-combobox__action svg {
