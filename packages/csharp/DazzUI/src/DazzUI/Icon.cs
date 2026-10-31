@@ -22,6 +22,20 @@ public sealed class Icon : Surface
         // names a size gets exactly that, as a rendered `<svg>` would.
         Width = Height = GlyphSize ?? Theme.Number("icon.medium");
         var glyph = Element(Glyph, GlyphVariant);
+        // The resizable grid is a twenty-pixel drawing; at sixteen it is
+        // scaled into a box that clips its outer strokes. A standard size
+        // takes the package's grid for that size instead.
+        glyph.IconSize = Width switch
+        {
+            12 => IconSize.Size12,
+            16 => IconSize.Size16,
+            20 => IconSize.Size20,
+            24 => IconSize.Size24,
+            28 => IconSize.Size28,
+            32 => IconSize.Size32,
+            48 => IconSize.Size48,
+            _ => IconSize.Resizable,
+        };
         glyph.FontSize = Width;
         glyph.SetBinding(IconElement.ForegroundProperty, new Microsoft.UI.Xaml.Data.Binding { Source = this, Path = new PropertyPath(nameof(Foreground)) });
         Content = glyph;
