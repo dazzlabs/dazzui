@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using Windows.Foundation;
 using Windows.System;
 
@@ -30,6 +31,10 @@ public sealed class Shell : UserControl
     private readonly ThemePanel themes;
     private readonly ColumnDefinition listColumn = new();
     private readonly ColumnDefinition themesColumn = new();
+    private readonly Grid listHost = new();
+    private readonly Grid themesHost = new();
+    private readonly WidthAnimation listWidth;
+    private readonly WidthAnimation themesWidth;
     private readonly Resizer listResizer;
     private readonly Resizer themesResizer;
     private string query = "";
@@ -42,15 +47,34 @@ public sealed class Shell : UserControl
         list = new ComponentList(this);
         toolbar = new Toolbar(this);
         themes = new ThemePanel(this);
-        listResizer = new Resizer(1, ListWidth, width => listColumn.Width = new GridLength(width), "Resize the component list") { HorizontalAlignment = HorizontalAlignment.Left };
-        themesResizer = new Resizer(-1, ThemesWidth, width => themesColumn.Width = new GridLength(width), "Resize the theme panel") { HorizontalAlignment = HorizontalAlignment.Right };
+        // The panels keep their laid-out width while their host narrows: the
+        // host's clip reveals them, so the rows and theme tiles are not
+        // re-measured on every animation frame.
+        list.Width = ListWidth.Initial;
+        list.HorizontalAlignment = HorizontalAlignment.Left;
+        themes.Width = ThemesWidth.Initial;
+        themes.HorizontalAlignment = HorizontalAlignment.Right;
+        listHost.HorizontalAlignment = HorizontalAlignment.Left;
+        themesHost.HorizontalAlignment = HorizontalAlignment.Right;
+        listHost.Children.Add(list);
+        themesHost.Children.Add(themes);
+        ClipToBounds(listHost);
+        ClipToBounds(themesHost);
+        listWidth = new WidthAnimation(listHost);
+        themesWidth = new WidthAnimation(themesHost);
+        listHost.Width = ListWidth.Initial;
+        themesHost.Width = ThemesWidth.Initial;
+        listResizer = new Resizer(1, ListWidth, width => { listWidth.Set(width); list.Width = width; listColumn.Width = new GridLength(width); }, "Resize the component list") { HorizontalAlignment = HorizontalAlignment.Left };
+        themesResizer = new Resizer(-1, ThemesWidth, width => { themesWidth.Set(width); themes.Width = width; themesColumn.Width = new GridLength(width); }, "Resize the theme panel") { HorizontalAlignment = HorizontalAlignment.Right };
 
+        // The page takes the state's full centre at once; the panes then
+        // animate over or into their columns, so a frame never reflows the
+        // document. They are later in the visual tree, so they cover it.
         listColumn.Width = new GridLength(ListWidth.Initial);
         themesColumn.Width = new GridLength(ThemesWidth.Initial);
         window.ColumnDefinitions.Add(listColumn);
         window.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         window.ColumnDefinitions.Add(themesColumn);
-        window.Children.Add(list);
 
         var main = new Grid { RowDefinitions = { new RowDefinition { Height = GridLength.Auto }, new RowDefinition { Height = new GridLength(1, GridUnitType.Star) } } };
         main.Children.Add(toolbar);
@@ -58,11 +82,14 @@ public sealed class Shell : UserControl
         main.Children.Add(page);
         Grid.SetColumn(main, 1);
         window.Children.Add(main);
+
+        Grid.SetColumn(listHost, 0);
+        window.Children.Add(listHost);
         Grid.SetColumn(listResizer, 1);
         window.Children.Add(listResizer);
 
-        Grid.SetColumn(themes, 2);
-        window.Children.Add(themes);
+        Grid.SetColumn(themesHost, 2);
+        window.Children.Add(themesHost);
         Grid.SetColumn(themesResizer, 1);
         window.Children.Add(themesResizer);
 
@@ -123,15 +150,84 @@ public sealed class Shell : UserControl
     public void ToggleList()
     {
         ListOpen = !ListOpen;
-        list.Visibility = listResizer.Visibility = ListOpen ? Visibility.Visible : Visibility.Collapsed;
-        listColumn.Width = new GridLength(ListOpen ? listResizer.Value : 0);
+        if (ListOpen)
+        {
+            // Opening: the page keeps its full width and the pane grows over
+            // it; the page takes its narrower centre under the finished pane.
+            list.Visibility = Visibility.Visible;
+            listResizer.Visibility = Visibility.Collapsed;
+            listWidth.AnimateTo(listResizer.Value, Appearance.GetTheme(this), () =>
+            {
+                if (!ListOpen) return;
+                listColumn.Width = new GridLength(listResizer.Value);
+                UpdateLayout();
+                listResizer.Visibility = Visibility.Visible;
+            });
+        }
+        else
+        {
+            // Closing: lay the page into its final centre and let that frame
+            // paint before the slide, so the heavy overview reflows once here
+            // rather than dropping frames through the motion.
+            listColumn.Width = new GridLength(0);
+            UpdateLayout();
+            AfterRender(() =>
+            {
+                if (ListOpen) return;
+                listResizer.Visibility = Visibility.Collapsed;
+                listWidth.AnimateTo(0, Appearance.GetTheme(this), () =>
+                {
+                    if (ListOpen) return;
+                    list.Visibility = Visibility.Collapsed;
+                });
+            });
+        }
     }
 
     public void ToggleThemes()
     {
         ThemesOpen = !ThemesOpen;
-        themes.Visibility = themesResizer.Visibility = ThemesOpen ? Visibility.Visible : Visibility.Collapsed;
-        themesColumn.Width = new GridLength(ThemesOpen ? themesResizer.Value : 0);
+        if (ThemesOpen)
+        {
+            themes.Visibility = Visibility.Visible;
+            themesResizer.Visibility = Visibility.Collapsed;
+            themesWidth.AnimateTo(themesResizer.Value, Appearance.GetTheme(this), () =>
+            {
+                if (!ThemesOpen) return;
+                themesColumn.Width = new GridLength(themesResizer.Value);
+                UpdateLayout();
+                themesResizer.Visibility = Visibility.Visible;
+            });
+        }
+        else
+        {
+            themesColumn.Width = new GridLength(0);
+            UpdateLayout();
+            AfterRender(() =>
+            {
+                if (ThemesOpen) return;
+                themesResizer.Visibility = Visibility.Collapsed;
+                themesWidth.AnimateTo(0, Appearance.GetTheme(this), () =>
+                {
+                    if (ThemesOpen) return;
+                    themes.Visibility = Visibility.Collapsed;
+                });
+            });
+        }
+    }
+
+    /// <summary>Runs <paramref name="start"/> after the next frame paints, so a reflow is not counted as an animation frame.</summary>
+    private void AfterRender(Action start)
+    {
+        EventHandler<object>? handler = null;
+        handler = (_, _) =>
+        {
+            Microsoft.UI.Xaml.Media.CompositionTarget.Rendering -= handler;
+            // Start outside the render pass, so the storyboard's clock does
+            // not run through the frame that is still being painted.
+            DispatcherQueue.TryEnqueue(() => start());
+        };
+        Microsoft.UI.Xaml.Media.CompositionTarget.Rendering += handler;
     }
 
     /// <summary>Stands a test's own content where the page goes.</summary>
@@ -165,6 +261,13 @@ public sealed class Shell : UserControl
         toolbar.Show(story);
         Show(story is null ? new Overview(Stories.Matching(query), Open) : new Document(story));
     }
+
+    /// <summary>A panel host clips to its own box, so a column below its content's width does not draw over the page.</summary>
+    private static void ClipToBounds(FrameworkElement element) =>
+        element.SizeChanged += (_, args) => element.Clip = new RectangleGeometry
+        {
+            Rect = new Rect(0, 0, args.NewSize.Width, args.NewSize.Height),
+        };
 }
 
 /// <summary>How wide a column may be, and how wide it starts.</summary>

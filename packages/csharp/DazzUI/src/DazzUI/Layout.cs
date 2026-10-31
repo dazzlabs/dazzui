@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
 
 namespace DazzUI;
 
@@ -361,15 +362,76 @@ public enum SidebarCollapsible { None, Offcanvas, Icons }
 public class Sidebar : Surface
 {
     private bool collapsed;
+    private bool animatingWidth;
+    private Storyboard? widthTween;
+    private int widthVersion;
     private readonly HashSet<NavItem> wired = [];
-    public bool IsCollapsed { get => collapsed; set { collapsed = value; RefreshAppearance(); } }
+    public bool IsCollapsed
+    {
+        get => collapsed;
+        set
+        {
+            if (collapsed == value) return;
+            var from = IsLoaded ? ActualWidth : double.NaN;
+            collapsed = value;
+            var to = TargetWidth;
+            RefreshAppearance();
+            if (IsLoaded) AnimateWidth(from, to);
+        }
+    }
     public SidebarCollapsible Collapsible { get; set; }
     public UIElement? Header { get; set; }
     public UIElement? Footer { get; set; }
     public IList<UIElement> Items { get; } = new List<UIElement>();
+    public Sidebar()
+    {
+        // A collapsed column is narrower than its contents; the clip keeps
+        // them from drawing over the page while they slide away.
+        SizeChanged += (_, args) => Clip = new RectangleGeometry
+        {
+            Rect = new Windows.Foundation.Rect(0, 0, args.NewSize.Width, args.NewSize.Height),
+        };
+        Unloaded += (_, _) => { widthTween?.Stop(); widthTween = null; animatingWidth = false; };
+    }
+    private double TargetWidth => IsCollapsed && Collapsible == SidebarCollapsible.Offcanvas ? 0
+        : Theme.Number(IsCollapsed && Collapsible == SidebarCollapsible.Icons ? "frame.sidebar.icon-width" : "frame.sidebar.width");
+    private void AnimateWidth(double from, double to)
+    {
+        widthTween?.Stop();
+        widthTween = null;
+        animatingWidth = false;
+        var current = ++widthVersion;
+        if (double.IsNaN(from) || Math.Abs(from - to) < 0.5)
+        {
+            Width = to;
+            return;
+        }
+        animatingWidth = true;
+        Width = from;
+        var animation = new DoubleAnimation
+        {
+            From = from,
+            To = to,
+            Duration = TimeSpan.FromMilliseconds(Theme.Milliseconds("motion.duration")),
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },
+            EnableDependentAnimation = true,
+        };
+        Storyboard.SetTarget(animation, this);
+        Storyboard.SetTargetProperty(animation, "Width");
+        widthTween = new Storyboard { Children = { animation } };
+        widthTween.Completed += (_, _) =>
+        {
+            if (current != widthVersion) return;
+            widthTween = null;
+            animatingWidth = false;
+            Width = to;
+        };
+        widthTween.Begin();
+    }
     protected override void RefreshAppearance()
     {
-        Width = IsCollapsed && Collapsible == SidebarCollapsible.Offcanvas ? 0 : Theme.Number(IsCollapsed && Collapsible == SidebarCollapsible.Icons ? "frame.sidebar.icon-width" : "frame.sidebar.width");
+        var target = TargetWidth;
+        if (!animatingWidth) Width = target;
         Background = Theme.Brush("color.surface-column");
         var icons = IsCollapsed && Collapsible == SidebarCollapsible.Icons;
         foreach (var group in Items.OfType<SidebarGroup>()) group.IsIconOnly = icons;

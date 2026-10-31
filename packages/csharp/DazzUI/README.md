@@ -72,6 +72,11 @@ the design's block padding, and a disabled field repaints its native template
 with the theme's disabled recipe instead of keeping the light one. What is
 left is text measured by Windows rather than Chromium's `system-ui` face, and
 a glyph a control still draws from a `Glyph` value.
+Sidebar and Aside animate their width over `motion.duration`, and the
+example's component list and theme panel do the same. The example lays the
+page into its final centre once, then slides the pane over (or into) it, so
+the document is not reflowed on every frame; the rail steps out of the
+pointer's way when the column reaches zero.
 Toast uses a compact horizontal layout; timed notices dismiss themselves,
 while persistent notices expose a dismiss button whose accessible label can
 be localized with `ToastOptions.DismissLabel`.

@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Media;
 
 namespace DazzUI.Example;
 
@@ -1355,6 +1356,7 @@ public sealed class SidebarColumn : Grid
     private readonly string variant;
     private readonly SidebarContext sidebar;
     private readonly Grid frame = new() { HorizontalAlignment = HorizontalAlignment.Left };
+    private readonly WidthAnimation widthTween;
 
     public SidebarColumn(Node n)
     {
@@ -1369,11 +1371,16 @@ public sealed class SidebarColumn : Grid
             frame.Children.Add(kid);
         }
         Children.Add(frame);
-        Themed.Follow(this, Apply);
-        sidebar.Follow(this, _ => { if (IsLoaded) Apply(Appearance.GetTheme(this)); });
+        widthTween = new WidthAnimation(this);
+        SizeChanged += (_, args) => Clip = new RectangleGeometry
+        {
+            Rect = new Windows.Foundation.Rect(0, 0, args.NewSize.Width, args.NewSize.Height),
+        };
+        Themed.Follow(this, theme => Apply(theme, animate: false));
+        sidebar.Follow(this, _ => { if (IsLoaded) Apply(Appearance.GetTheme(this), animate: true); });
     }
 
-    private void Apply(Theme theme)
+    private void Apply(Theme theme, bool animate)
     {
         var framed = variant != "sidebar";
         var collapsible = sidebar.Collapsible;
@@ -1384,7 +1391,8 @@ public sealed class SidebarColumn : Grid
             : !sidebar.Open && collapsible == "offcanvas" ? 0
             : icons ? theme.Number("frame.sidebar.icon-width") + (framed ? theme.Number("spacing.4") : 0)
             : full;
-        Width = width;
+        if (animate) widthTween.AnimateTo(width, theme);
+        else widthTween.Set(width);
         Padding = new Thickness(pad);
         // The edge is the column's, so the content inside it gives up the
         // hairline: React's inner column is 171 in a 172 column.

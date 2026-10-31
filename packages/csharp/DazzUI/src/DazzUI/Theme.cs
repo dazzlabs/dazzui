@@ -59,6 +59,9 @@ public sealed class Theme
         return number * LayoutScale;
     }
 
+    /// <summary>A duration token, in milliseconds — motion is not a length and never scales with text.</summary>
+    public double Milliseconds(string token) => values.GetProperty(token).GetProperty("value").GetDouble();
+
     private double TypeScale(string token) => Sizing == ThemeSizing.System && token.StartsWith("control.", StringComparison.Ordinal)
         ? SystemStyle.FontSize / Number(values.GetProperty("control.medium.content").GetProperty("fontSize")) * SystemStyle.TextScale
         : LayoutScale;
