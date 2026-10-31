@@ -169,7 +169,13 @@ public class Dialog
     {
         foreach (var element in Descendants(Native))
         {
-            if (element is Control { Name: "Title" } title) ActiveTheme.Typography(title, "titleLarge");
+            if (element is ContentControl { Name: "Title" } title)
+            {
+                // The sheet draws its own header; the template's title row
+                // would otherwise keep its twelve-pixel gap above it.
+                title.Visibility = string.IsNullOrEmpty(title.Content?.ToString()) ? Visibility.Collapsed : Visibility.Visible;
+                ActiveTheme.Typography(title, "titleSmall");
+            }
             if (element is ScrollViewer { Name: "ContentScrollViewer" } scroll) scroll.VerticalContentAlignment = VerticalAlignment.Top;
             if (element is ContentPresenter { Name: "Content" } content) content.VerticalAlignment = VerticalAlignment.Top;
             if (element is Microsoft.UI.Xaml.Controls.Button button && button.Name is "PrimaryButton" or "SecondaryButton" or "CloseButton")
@@ -208,10 +214,20 @@ public class Dialog
         Native.Resources["ContentDialogBackground"] = theme.Brush("color.surface-overlay");
         Native.Resources["ContentDialogTopOverlay"] = theme.Brush("color.surface-overlay");
         Native.Resources["ContentDialogForeground"] = theme.Brush("color.content");
-        Native.Resources["ContentDialogMaxWidth"] = theme.Number("dialog.width");
-        Native.Resources["ContentDialogBorderBrush"] = theme.Brush("color.border-strong");
+        var border = theme.Number("stroke.hairline");
+        var maxWidth = theme.Number("dialog.width");
+        if (Content is FrameworkElement sheet && !double.IsNaN(sheet.Width))
+            maxWidth = Math.Max(maxWidth, sheet.Width + border * 2);
+        Native.Resources["ContentDialogMaxWidth"] = maxWidth;
+        Native.Resources["ContentDialogBorderBrush"] = Danger
+            ? theme.Alpha("color.danger.600", theme.Number("dialog.danger-border-alpha"))
+            : theme.Brush("color.border-strong");
         Native.Resources["ContentDialogSmokeFill"] = theme.Alpha("dialog.scrim.color", theme.Number("dialog.scrim.alpha"));
         Native.Resources["ContentDialogPadding"] = Padding ?? new Thickness(theme.Number("spacing.6"));
+        Native.Resources["ContentDialogTitleMargin"] = new Thickness(0);
+        Native.Resources["ContentDialogSeparatorThickness"] = new Thickness(0);
+        Native.Resources["ContentDialogContentMargin"] = new Thickness(0);
+        Native.Resources["ContentDialogContentScrollViewerMargin"] = new Thickness(0);
         Native.Resources["ContentDialogCornerRadius"] = new CornerRadius(theme.Number("frame.window.radius"));
         Native.Resources["AccentButtonBackground"] = theme.Recipe(ControlVariant.Filled, Danger ? WidgetTint.Danger : WidgetTint.Primary, "surface");
         if (Content is not null) Appearance.SetTheme(Content, theme);

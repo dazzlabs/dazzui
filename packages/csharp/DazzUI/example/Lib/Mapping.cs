@@ -1044,8 +1044,10 @@ public static class Mapping
     /// <summary>A dialog's or a drawer's head: its title, and the line under it.</summary>
     private static UIElement Heading(string title, string? subtitle)
     {
-        var head = new Stack(Orientation.Vertical, "spacing.1", theme => Inset(theme, "spacing.3", "spacing.5"));
-        head.Add(new Styled(title, "titleSmall") { Weight = "labelStrong" });
+        // The web's header is floored at 44px, and its title is one line at
+        // leading 1 rather than the title step's own 20px line.
+        var head = new Stack(Orientation.Vertical, "spacing.1", theme => Inset(theme, "spacing.3", "spacing.5")) { BorderBottom = true, MinHeightToken = "spacing.11" };
+        head.Add(new Styled(title, "titleSmall") { Weight = "labelStrong", LeadingScale = 1 });
         if (subtitle is not null) head.Add(new Styled(subtitle, "captionSmall", "color.content-subtle"));
         return head;
     }
@@ -1060,6 +1062,7 @@ public static class Mapping
             var footer = new Stack(Orientation.Vertical, "spacing.0", theme => Inset(theme, "spacing.3", "spacing.5"))
             {
                 BackgroundToken = "color.surface-chrome",
+                BorderTop = true,
             };
             footer.Add(bar);
             return footer;
@@ -1120,7 +1123,7 @@ public static class Mapping
                     sheet.Add(body);
                     if (n.Element("footer", inner) is UIElement footer)
                     {
-                        var bar = new Stack(Orientation.Vertical, "spacing.0", theme => Inset(theme, "spacing.3", "spacing.5")) { BackgroundToken = "color.surface-chrome" };
+                        var bar = new Stack(Orientation.Vertical, "spacing.0", theme => Inset(theme, "spacing.3", "spacing.5")) { BackgroundToken = "color.surface-chrome", BorderTop = true };
                         bar.Add(footer);
                         sheet.Add(bar);
                     }
@@ -1224,6 +1227,12 @@ public sealed class Stack : Grid
     /// <summary>The token its ground is painted in, if any.</summary>
     public string? BackgroundToken { get; init; }
 
+    /// <summary>A hairline along its top edge, as a dialog's footer draws.</summary>
+    public bool BorderTop { get; init; }
+
+    /// <summary>A hairline along its bottom edge, as a dialog's header draws.</summary>
+    public bool BorderBottom { get; init; }
+
     /// <summary>Where the children sit across a line, or down a stack taller than they are.</summary>
     public VerticalAlignment VerticalContentAlignment
     {
@@ -1244,6 +1253,9 @@ public sealed class Stack : Grid
         if (inset is not null) Padding = inset(theme);
         if (MinHeightToken is not null) MinHeight = theme.Number(MinHeightToken);
         if (BackgroundToken is not null) Background = theme.Brush(BackgroundToken);
+        BorderBrush = theme.Brush("color.border");
+        var hairline = theme.Number("stroke.hairline");
+        BorderThickness = new Thickness(0, BorderTop ? hairline : 0, 0, BorderBottom ? hairline : 0);
     }
 }
 

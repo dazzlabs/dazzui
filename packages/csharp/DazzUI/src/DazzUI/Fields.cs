@@ -23,6 +23,37 @@ public class TextField : TextBox
         Appearance.Bind(this, Apply);
         IsEnabledChanged += (_, _) => Apply();
         RegisterPropertyChangedCallback(AcceptsReturnProperty, (_, _) => Apply());
+        Loaded += (_, _) => HideClearSoon();
+        GotFocus += (_, _) => HideClearSoon();
+        TextChanged += (_, _) => HideClearSoon();
+    }
+    protected override void OnApplyTemplate()
+    {
+        base.OnApplyTemplate();
+        HideClearSoon();
+    }
+    private void HideClearSoon()
+    {
+        HideClear();
+        DispatcherQueue.TryEnqueue(HideClear);
+    }
+    /// <summary>Whether the native clear button belongs: a search field keeps it, a plain field does not.</summary>
+    protected virtual bool NativeClear => false;
+    /// <summary>A web text field has no native clear button; the search field owns its own dismiss.</summary>
+    private void HideClear()
+    {
+        if (NativeClear) return;
+        if (GetTemplateChild("DeleteButton") is Microsoft.UI.Xaml.Controls.Button clear)
+        {
+            // The template's ButtonVisible state sets this button visible
+            // again; opacity and width are not part of that state, so the
+            // field keeps the web's plain value line.
+            clear.Visibility = Visibility.Collapsed;
+            clear.Opacity = 0;
+            clear.Width = 0;
+            clear.MinWidth = 0;
+            clear.IsHitTestVisible = false;
+        }
     }
     protected virtual void Apply()
     {
@@ -78,6 +109,7 @@ public sealed class SearchField : TextField
     private KeyCap? hint;
     public string? Hint { get; set; }
     public event EventHandler? Dismissed;
+    protected override bool NativeClear => true;
     public SearchField()
     {
         PlaceholderText = "Search";
