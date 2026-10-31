@@ -234,6 +234,10 @@ internal static class Skin
     public static void Control(Control control, Theme theme, ControlSize size)
     {
         var prefix = $"control.{Theme.Key(size)}";
+        // Native templates resolve their disabled/focus state resources
+        // against the element's own theme; without this a field keeps the
+        // light template's values under a dark DazzUI theme.
+        control.RequestedTheme = theme.IsDark ? ElementTheme.Dark : ElementTheme.Light;
         control.MinHeight = theme.Number(prefix + ".size");
         control.MinWidth = 0;
         control.Padding = new Thickness(theme.Number(prefix + ".padding.inline"), 0,
@@ -281,6 +285,45 @@ internal static class Skin
             control.Resources[prefix + "Foreground"] = control.Foreground;
             control.Resources[prefix + "ForegroundDisabled"] = theme.Brush("color.content-faint");
         }
+        // A field that is already disabled has resolved its state resources
+        // against the theme it was built in, and WinUI does not re-resolve
+        // them when the brushes change. Paint the field's own parts with the
+        // current recipe so a dark disabled field does not keep the light
+        // template's fill and edge.
+        if (!control.IsEnabled)
+        {
+            void PaintDisabled()
+            {
+                if (control.IsEnabled) return;
+                void Paint(FrameworkElement edge)
+                {
+                    switch (edge)
+                    {
+                        case Border border:
+                            border.Background = control.Background;
+                            border.BorderBrush = control.BorderBrush;
+                            border.BorderThickness = control.BorderThickness;
+                            break;
+                        case ContentPresenter presenter:
+                            presenter.Background = control.Background;
+                            presenter.BorderBrush = control.BorderBrush;
+                            presenter.BorderThickness = control.BorderThickness;
+                            break;
+                    }
+                }
+                if (Named<Border>(control, "BorderElement") is { } named) Paint(named);
+                // The field's visible box is whichever primitive fills the
+                // control: a TextBox's border, a ComboBox's presenter.
+                foreach (var edge in Descendants<FrameworkElement>(control))
+                    if (edge is Border or ContentPresenter &&
+                        Math.Abs(edge.ActualWidth - control.ActualWidth) < .5 &&
+                        Math.Abs(edge.ActualHeight - control.ActualHeight) < .5)
+                        Paint(edge);
+                foreach (var words in Descendants<TextBlock>(control)) words.Foreground = control.Foreground;
+            }
+            PaintDisabled();
+            control.DispatcherQueue.TryEnqueue(PaintDisabled);
+        }
         var faint = theme.Brush("color.content-faint");
         foreach (var state in new[] { "", "PointerOver", "Focused", "Disabled" })
             control.Resources["TextControlPlaceholderForeground" + state] = faint;
@@ -293,11 +336,27 @@ internal static class Skin
     }
     internal static void InputPadding(Control control, Theme theme, ControlSize size, bool multiline = false)
     {
-        var line = new TextBlock { IsTextScaleFactorEnabled = control.IsTextScaleFactorEnabled, Text = "Ag", FontFamily = control.FontFamily, FontSize = control.FontSize, FontWeight = control.FontWeight, FontStyle = control.FontStyle, FontStretch = control.FontStretch };
-        line.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
-        var block = multiline ? theme.Number("spacing.2.5")
-            : Math.Max(0, (theme.Number($"control.{Theme.Key(size)}.size") - control.BorderThickness.Top - control.BorderThickness.Bottom - line.DesiredSize.Height) / 2);
+        // The design's own block inset, not one derived from the native line
+        // box: React gives a field `control.<size>.padding.block` (and a
+        // multiline one `spacing.2.5`), and the field's height already holds
+        // that line.
+        var block = multiline ? theme.Number("spacing.2.5") : theme.Number($"control.{Theme.Key(size)}.padding.block");
+        // ComboBox's template puts the value's box inside the field's border,
+        // one hairline below the padding Top's origin.
+        if (control is ComboBox) block += control.BorderThickness.Top;
         control.Padding = new Thickness(control.Padding.Left, block, control.Padding.Right, block);
+    }
+    /// <summary>A template part by name, anywhere below the control's visual root.</summary>
+    private static T? Named<T>(DependencyObject root, string name) where T : FrameworkElement =>
+        Descendants<T>(root).FirstOrDefault(item => item.Name == name);
+    private static IEnumerable<T> Descendants<T>(DependencyObject root) where T : DependencyObject
+    {
+        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
+        {
+            var child = VisualTreeHelper.GetChild(root, i);
+            if (child is T found) yield return found;
+            foreach (var deeper in Descendants<T>(child)) yield return deeper;
+        }
     }
     public static StackPanel Column(Theme theme, params UIElement[] children) => Stack(theme, Orientation.Vertical, children);
     public static StackPanel Row(Theme theme, params UIElement[] children) => Stack(theme, Orientation.Horizontal, children);

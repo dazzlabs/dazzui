@@ -18,7 +18,9 @@ public sealed class Icon : Surface
     public double? GlyphSize { get; set; }
     protected override void RefreshAppearance()
     {
-        Width = Height = GlyphSize ?? Theme.Number(Size == ControlSize.Small ? "spacing.3" : Size == ControlSize.Large ? "spacing.5" : "spacing.4");
+        // React's Icon defaults to the theme's `icon.medium`; a caller that
+        // names a size gets exactly that, as a rendered `<svg>` would.
+        Width = Height = GlyphSize ?? Theme.Number("icon.medium");
         var glyph = Element(Glyph, GlyphVariant);
         glyph.FontSize = Width;
         glyph.SetBinding(IconElement.ForegroundProperty, new Microsoft.UI.Xaml.Data.Binding { Source = this, Path = new PropertyPath(nameof(Foreground)) });
@@ -40,7 +42,9 @@ public sealed class IconButton : Button
         Size = ControlSize.Tiny;
         Loaded += (_, _) =>
         {
-            Content = new Icon { Glyph = Glyph, GlyphVariant = GlyphVariant };
+            // A caller may hand the button a glyph element of its own — the
+            // React story's `<Icon>` child — which stays as drawn.
+            if (Content is not Icon) Content = new Icon { Glyph = Glyph, GlyphVariant = GlyphVariant };
             Square();
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(this, Label);
             Tooltip.Set(this, Label);
@@ -95,8 +99,11 @@ public sealed class Link : HyperlinkButton
         Theme.Typography(this, "bodyMedium"); Foreground = Theme.Recipe(ControlVariant.Plain, Tint, "content"); Padding = new Thickness(0); Skin.Focus(this, Theme);
         BorderThickness = new Thickness(0);
         Skin.SetCorner(this, Theme.Number("radius.tiny"));
-        if (Content is string text) Content = new TextBlock { Text = text };
+        if (Content is string text) Content = Theme.Text(text, "bodyMedium");
         if (Content is TextBlock words)
+        {
+            words.Foreground = Foreground;
             words.TextDecorations = Underline == LinkUnderline.Always || Underline == LinkUnderline.Hover && hovered ? Windows.UI.Text.TextDecorations.Underline : Windows.UI.Text.TextDecorations.None;
+        }
     }
 }

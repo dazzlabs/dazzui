@@ -202,8 +202,18 @@ public class Autocomplete : Surface
     private void PaintPlaceholder()
     {
         var faint = Theme.Brush("color.content-faint");
-        foreach (var box in Parts<TextBox>(Input)) box.PlaceholderForeground = faint;
-        foreach (var words in Parts<TextBlock>(Input).Where(part => part.Name == "PlaceholderTextContentPresenter")) words.Foreground = faint;
+        foreach (var box in Parts<TextBox>(Input))
+        {
+            box.PlaceholderForeground = faint;
+            // The query box's template takes the placeholder ink from its
+            // own resources, not the outer suggest box's.
+            foreach (var key in new[] { "TextControlPlaceholderForeground", "TextControlPlaceholderForegroundPointerOver", "TextControlPlaceholderForegroundFocused", "TextControlPlaceholderForegroundDisabled" })
+                box.Resources[key] = faint;
+        }
+        foreach (var words in Parts<TextBlock>(Input).Where(part =>
+            part.Name.Contains("Placeholder", StringComparison.OrdinalIgnoreCase) ||
+            Input.PlaceholderText.Length > 0 && part.Text == Input.PlaceholderText))
+            words.Foreground = faint;
     }
     private static IEnumerable<T> Parts<T>(DependencyObject root) where T : DependencyObject
     {
@@ -465,6 +475,10 @@ public sealed class Fieldset : Surface
     {
         var legend = Theme.Text(Legend, "captionSmall");
         legend.FontWeight = Theme.Text("", "labelSmall").FontWeight;
+        // The legend's own leading: one, as the web sets it, not the caption
+        // step's.
+        legend.LineHeight = legend.FontSize;
+        legend.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
         legend.Foreground = Theme.Brush("color.content-subtle");
         var body = new StackPanel { Spacing = Theme.Number("spacing.3") };
         body.Children.Add(legend);

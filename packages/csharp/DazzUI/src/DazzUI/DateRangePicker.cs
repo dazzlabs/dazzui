@@ -242,7 +242,8 @@ public sealed class DateRangePicker : Surface
         Skin.Input(trigger, Theme, Size, Invalid);
         trigger.Height = Theme.Number($"control.{Theme.Key(Size)}.size");
         trigger.MinWidth = 16 * 16;
-        trigger.Padding = new Thickness(Theme.Number("spacing.3"), 0, Theme.Number("spacing.3"), 0);
+        var block = Theme.Number($"control.{Theme.Key(Size)}.padding.block");
+        trigger.Padding = new Thickness(Theme.Number("spacing.3"), block, Theme.Number("spacing.3"), block);
         if ((focused || sheet.IsOpen) && IsEnabled)
         {
             trigger.BorderBrush = Theme.Recipe(ControlVariant.Outlined, Invalid ? WidgetTint.Danger : Tint, "border");

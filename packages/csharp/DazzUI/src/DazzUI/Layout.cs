@@ -280,9 +280,11 @@ public sealed class Preferences : Surface
     public IList<UIElement> Sections { get; } = new List<UIElement>();
     protected override void RefreshAppearance()
     {
-        Width = Theme.Number("preferences.width");
-        MaxWidth = double.PositiveInfinity;
-        HorizontalAlignment = HorizontalAlignment.Left;
+        // As the web writes it: the settings width, capped by the room it is
+        // given — a preferences column in a narrow pane is that pane's width.
+        Width = double.NaN;
+        MaxWidth = Theme.Number("preferences.width");
+        HorizontalAlignment = HorizontalAlignment.Stretch;
         var column = new StackPanel { Spacing = Theme.Number("preferences.group-gap") };
         foreach (var section in Sections) { Skin.Detach(section); column.Children.Add(section); }
         Content = column;
@@ -290,8 +292,15 @@ public sealed class Preferences : Surface
 }public class NavItem : Toggle
 {
     public string? Count { get; set; }
+    /// <summary>The element at the row's end — a count badge, an action.</summary>
+    public UIElement? Trailing { get; set; }
     /// <summary>The leading glyph, or none.</summary>
     public Glyph? Glyph { get; set; } = FluentIcons.Common.Icon.Folder;
+    /// <summary>
+    /// The leading element itself — a story's <see cref="Icon"/> node, drawn
+    /// and addressed as its own specimen — in place of <see cref="Glyph"/>.
+    /// </summary>
+    public UIElement? Leading { get; set; }
     public bool IsIconOnly { get; set; }
     public NavItem() { DefaultStyleKey = typeof(NavItem); Size = ControlSize.Medium; HorizontalContentAlignment = HorizontalAlignment.Left; HorizontalAlignment = HorizontalAlignment.Stretch; Variant = ControlVariant.Normal; }
     protected override void OnApplyTemplate() { base.OnApplyTemplate(); Apply(); }
@@ -309,19 +318,43 @@ public sealed class Preferences : Surface
             : Theme.Brush(!IsEnabled ? "color.content-faint" : state is "hovered" or "pressed" ? "color.content" : "color.content-nav");
         BorderThickness = new Thickness(0);
         Skin.SetCorner(this, Theme.Number("radius.small"));
-        Theme.Typography(this, IsChecked == true ? "labelMedium" : "labelQuiet");
+        var type = IsChecked == true ? "labelMedium" : "labelQuiet";
+        Theme.Typography(this, type);
+        // The row's eight-pixel block inset leaves only the label's own line;
+        // the platform's default line box would be clipped by it.
+        Skin.TextLine(this, Theme.Text("", type).LineHeight);
         if (GetTemplateChild("Label") is ContentPresenter label) label.Visibility = IsIconOnly ? Visibility.Collapsed : Visibility.Visible;
+        // The row's own inset, not the button profile's: a navigation row is
+        // ten inline and eight block, with a six-pixel gap to its glyph.
+        Padding = IsIconOnly
+            ? new Thickness(Theme.Number("spacing.1.5"))
+            : new Thickness(Theme.Number("spacing.2.5"), Theme.Number("spacing.2"), Theme.Number("spacing.2.5"), Theme.Number("spacing.2"));
+        Width = IsIconOnly ? Height : double.NaN;
+        HorizontalContentAlignment = IsIconOnly ? HorizontalAlignment.Center : HorizontalAlignment.Left;
         if (GetTemplateChild("Leading") is ContentControl leading)
         {
-            if (Glyph is Glyph glyph) { if (leading.Content is not Icon current || current.Glyph != glyph) leading.Content = new Icon { Glyph = glyph }; }
+            if (Leading is not null) { Skin.Detach(Leading); leading.Content = Leading; }
+            else if (Glyph is Glyph glyph) { if (leading.Content is not Icon current || current.Glyph != glyph) leading.Content = new Icon { Glyph = glyph }; }
             else leading.Content = null;
-            leading.Margin = new Thickness(0, 0, IsIconOnly || leading.Content is null ? 0 : Theme.Number("spacing.2"), 0);
+            leading.Margin = new Thickness(0, 0, IsIconOnly || leading.Content is null ? 0 : Theme.Number("spacing.1.5"), 0);
         }
-        if (GetTemplateChild("Count") is TextBlock count)
+        if (GetTemplateChild("Trailing") is ContentControl trailing)
         {
-            count.Text = Count ?? ""; count.Visibility = IsIconOnly || Count is null ? Visibility.Collapsed : Visibility.Visible;
+            if (Trailing is not null) { Skin.Detach(Trailing); trailing.Content = Trailing; }
+            else if (Count is not null)
+            {
+                var count = Theme.Text(Count, "captionSmall");
+                count.FontWeight = Theme.Text("", "labelMedium").FontWeight;
+                trailing.Content = count;
+            }
+            else trailing.Content = null;
+            trailing.Visibility = IsIconOnly || trailing.Content is null ? Visibility.Collapsed : Visibility.Visible;
         }
-        if (IsIconOnly && Content is string text) Tooltip.Set(this, text);
+        // A count follows the row's own ink: white on the filled page, the
+        // navigation grey otherwise.
+        if (Trailing is SidebarBadge badge) { badge.Ink = Foreground; Appearance.Refresh(badge); }
+        var labelText = Content as string ?? (Content as TextBlock)?.Text;
+        if (IsIconOnly && labelText is not null) Tooltip.Set(this, labelText);
     }
 }
 public enum SidebarCollapsible { None, Offcanvas, Icons }
@@ -363,6 +396,47 @@ public sealed class SidebarGroup : Surface
     public string Label { get; set; } = "";
     public IList<UIElement> Items { get; } = new List<UIElement>();
     protected override void RefreshAppearance() { Content = Skin.Column(Theme, (IsIconOnly ? Array.Empty<UIElement>() : new UIElement[] { new SectionLabel(Label) }).Concat(Items).ToArray()); }
+}
+/// <summary>
+/// A row's count at the row's end: a twenty-pixel chip in the navigation
+/// ink, the caption at the label's weight, tabular figures, and the small
+/// corner — the web's <c>sidebar-menu-badge</c>.
+/// </summary>
+public sealed class SidebarBadge : Surface
+{
+    public string Text { get; set; } = "";
+    /// <summary>The row's ink, when the badge follows a selected row; null for the navigation ink.</summary>
+    public Microsoft.UI.Xaml.Media.Brush? Ink { get; set; }
+    public SidebarBadge() { HorizontalAlignment = HorizontalAlignment.Left; VerticalAlignment = VerticalAlignment.Center; }
+    protected override void RefreshAppearance()
+    {
+        Height = Theme.Number("spacing.5");
+        MinWidth = Theme.Number("spacing.5");
+        Padding = new Thickness(Theme.Number("spacing.1"), 0, Theme.Number("spacing.1"), 0);
+        Skin.SetCorner(this, Theme.Number("radius.small"));
+        Foreground = Ink ?? Theme.Brush("color.content-nav");
+        Theme.Typography(this, "captionSmall");
+        FontWeight = Theme.Text("", "labelMedium").FontWeight;
+        Skin.TextLine(this, Theme.Number("spacing.5"));
+        Content = Text;
+    }
+}
+/// <summary>
+/// A group's heading, on the rows' own inset: the faint section label with
+/// the sidebar's four-block, ten-inline padding around it, which is what
+/// gives the heading its nineteen-pixel row.
+/// </summary>
+public sealed class SidebarHeading : Surface
+{
+    public string Label { get; set; } = "";
+    protected override void RefreshAppearance()
+    {
+        Padding = new Thickness(Theme.Number("spacing.2.5"), Theme.Number("spacing.1"), Theme.Number("spacing.2.5"), Theme.Number("spacing.1"));
+        Foreground = Theme.Brush("color.content-faint");
+        Theme.Typography(this, "labelSmall");
+        Skin.TextLine(this, Theme.Text("", "labelSmall").LineHeight);
+        Content = Label;
+    }
 }
 public sealed class Aside : Card
 {

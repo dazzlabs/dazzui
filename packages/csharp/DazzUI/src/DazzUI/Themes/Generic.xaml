@@ -142,7 +142,7 @@
           <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
           <ContentControl x:Name="Leading" IsTabStop="False" VerticalAlignment="Center" />
           <ContentPresenter x:Name="Label" Grid.Column="1" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" />
-          <TextBlock x:Name="Count" Grid.Column="2" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" />
+          <ContentControl x:Name="Trailing" Grid.Column="2" VerticalAlignment="Center" HorizontalContentAlignment="Right" />
         </Grid>
       </ControlTemplate>
     </Setter.Value></Setter>

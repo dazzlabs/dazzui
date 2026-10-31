@@ -335,9 +335,11 @@ Five collectors are written:
   spinner's ellipse and arc supply their actual corner and stroke.
   System UI type resolves Windows' message font, matching the browser's
   system-ui face on that machine. Text widths still differ from a React run
-  collected on another OS. A glyph a kit control takes as a `Glyph` value and draws
-  inside itself — an `IconButton`'s, a `NavItem`'s — has no element of its
-  own, and is missing.
+  collected on another OS. `IconButton` and `NavItem` draw the story's
+  `<Icon>` as an element of its own, so that glyph is read where React draws
+  it. A glyph a kit control still takes as a `Glyph` value and draws inside
+  itself — a `SegmentedControl`'s segments — has no element of its own, and
+  is missing.
 - **GPUI** — `packages/rust/dazzui/example/tool/conformance.sh`, which
   builds the example and runs it with `--conformance`
   (`example/src/conformance.rs`). Each scene is drawn in a borderless window

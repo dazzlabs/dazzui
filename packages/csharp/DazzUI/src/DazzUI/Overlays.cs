@@ -52,21 +52,58 @@ public sealed class ContextMenu : Menu
 {
     public new void Attach(FrameworkElement target) { Build(Appearance.GetTheme(target)); target.ContextFlyout = Flyout; }
 }
+/// <summary>
+/// A row of menu triggers. The native <c>MenuBar</c> floors its row at forty
+/// and measures each title wider than React's, so the bar is drawn as the
+/// kit's own plain buttons and keeps the keyboard movement a menubar has.
+/// </summary>
 public sealed class Menubar : Surface
 {
     public IList<(string Label, Menu Menu)> Menus { get; } = new List<(string, Menu)>();
     protected override void RefreshAppearance()
     {
-        var row = new MenuBar { Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent), Foreground = Theme.Brush("color.content") };
+        var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = Theme.Number("spacing.0.5") };
+        var triggers = new List<MenubarItem>();
         foreach (var (label, menu) in Menus)
         {
-            var trigger = new MenuBarItem { Title = label, AccessKey = label[..1], Height = Theme.Number("control.small.size"), Padding = new Thickness(Theme.Number("spacing.2"), 0, Theme.Number("spacing.2"), 0) };
-            Theme.Typography(trigger, "labelMedium");
-            foreach (var item in menu.Items) trigger.Items.Add(Menu.BuildItem(item, Theme));
-            row.Items.Add(trigger);
+            var trigger = new MenubarItem
+            {
+                Content = label,
+                AccessKey = label[..1],
+                Size = ControlSize.Small,
+                Variant = ControlVariant.Plain,
+                Tint = WidgetTint.Neutral,
+            };
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(trigger, label);
+            // The flyout is built from the trigger's theme, and the trigger
+            // is not in the tree yet.
+            Appearance.SetTheme(trigger, Theme);
+            menu.Attach(trigger);
+            trigger.KeyDown += (_, args) =>
+            {
+                var step = args.Key is Windows.System.VirtualKey.Left or Windows.System.VirtualKey.Up ? -1
+                    : args.Key is Windows.System.VirtualKey.Right or Windows.System.VirtualKey.Down ? 1 : 0;
+                if (step == 0) return;
+                var at = triggers.IndexOf(trigger);
+                triggers[(at + step + triggers.Count) % triggers.Count].Focus(FocusState.Keyboard);
+                args.Handled = true;
+            };
+            triggers.Add(trigger);
+            row.Children.Add(trigger);
         }
         Content = row;
     }
+}
+/// <summary>A menubar trigger: a plain button at the menubar's own eight-pixel inline inset.</summary>
+public sealed class MenubarItem : Button
+{
+    protected override void LayContent()
+    {
+        base.LayContent();
+        var pad = Theme.Number("spacing.2");
+        Padding = new Thickness(pad, 0, pad, 0);
+    }
+    private protected override bool Raised => false;
 }
 public class Popover
 {

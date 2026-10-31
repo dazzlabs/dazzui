@@ -130,7 +130,13 @@ public static class Mapping
             {
                 var size = n.Option("size", ControlSize.Medium);
                 var body = new Stack(Orientation.Vertical, size == ControlSize.Large ? "spacing.4" : size == ControlSize.Small ? "spacing.2" : "spacing.3");
-                foreach (var kid in n.Kids()) body.Add(kid);
+                foreach (var child in n.Children)
+                {
+                    // A bare string is the card's own body copy, at the type
+                    // step its stylesheet gives the card.
+                    if (child.String() is string words) body.Add(new Styled(words, "bodyMedium"));
+                    else if (Nodes.Build(child, n.Context) is UIElement kid) body.Add(kid);
+                }
                 return new Card { Content = body, Variant = n.Option("variant", CardVariant.Raised), Size = size };
             },
             ["Checkbox"] = n =>
@@ -256,7 +262,8 @@ public static class Mapping
                     Field = Kid(n),
                 };
             },
-            ["Icon"] = n => Glyphs.Draw(Nodes.GlyphOf(n.Props["icon"]) ?? "", n.Number("size") ?? 20),
+            // No size is React's own default: the theme's `icon.medium`.
+            ["Icon"] = n => Glyphs.Draw(Nodes.GlyphOf(n.Props["icon"]) ?? "", n.Number("size")),
             ["IconButton"] = n =>
             {
                 var button = new IconButton
@@ -267,7 +274,11 @@ public static class Mapping
                     Size = n.Option("size", ControlSize.Tiny),
                     IsEnabled = !n.Flag("disabled"),
                 };
-                if (n.Children.Select(Nodes.GlyphOf).OfType<string>().FirstOrDefault() is string name)
+                // The story's `<Icon>` child is the button's face, and its
+                // own specimen: draw it here rather than naming a glyph.
+                if (n.Children.FirstOrDefault(child => child.Element() == "Icon") is JsonNode glyphNode)
+                    button.Content = Nodes.Drawn(glyphNode, Glyphs.Draw(Nodes.GlyphOf(glyphNode) ?? ""));
+                else if (n.Children.Select(Nodes.GlyphOf).OfType<string>().FirstOrDefault() is string name)
                     (button.Glyph, button.GlyphVariant) = Glyphs.All[name];
                 var press = n.Press();
                 button.Click += (_, _) => press();
@@ -399,7 +410,8 @@ public static class Mapping
             {
                 var titles = new Stack(Orientation.Vertical, "spacing.0.5");
                 titles.Add(new Styled(n.String("title") ?? "", "titleMedium"));
-                if (n.String("description") is string description) titles.Add(new Styled(description, "captionSmall", "color.content-subtle"));
+                // The group's description sets its caption at 1.7 leading.
+                if (n.String("description") is string description) titles.Add(new Styled(description, "captionSmall", "color.content-subtle") { LeadingScale = 1.7 });
                 var sections = new Stack(Orientation.Vertical, "preferences.section-gap");
                 foreach (var kid in n.Kids()) sections.Add(kid);
                 var group = new Stack(Orientation.Vertical, "preferences.title-gap");
@@ -558,8 +570,9 @@ public static class Mapping
             },
             ["SidebarGroupLabel"] = n =>
             {
-                var label = new SectionLabel(n.Text);
-                label.Loaded += (_, _) => label.Margin = new Thickness(Appearance.GetTheme(label).Number("spacing.2.5"), Appearance.GetTheme(label).Number("spacing.1"), 0, Appearance.GetTheme(label).Number("spacing.1"));
+                // The group heading is the faint section label on the rows'
+                // inset — its own padded row, not a margin above one.
+                var label = new SidebarHeading { Label = n.Text };
                 n.Context.Sidebar?.Follow(label, sidebar => label.Visibility = sidebar.ShowsLabels ? Visibility.Visible : Visibility.Collapsed);
                 return label;
             },
@@ -580,15 +593,17 @@ public static class Mapping
                 foreach (var kid in n.Kids()) menu.Add(kid);
                 return menu;
             },
-            ["SidebarMenuBadge"] = n => new Styled(n.Text, "labelSmall"),
-            ["SidebarMenuButton"] = n => SidebarRow(n, null),
+            ["SidebarMenuBadge"] = n => new SidebarBadge { Text = n.Text },
+            ["SidebarMenuButton"] = n => SidebarRow(n),
             ["SidebarMenuItem"] = n =>
             {
+                // The badge is a specimen of its own at the row's end, not
+                // text folded into the button.
                 var badge = n.Children.FirstOrDefault(child => child.Element() == "SidebarMenuBadge");
-                var count = badge is null ? null : new Node(badge, n.Context).Text;
+                var trailing = badge is null ? null : Nodes.Build(badge, n.Context);
                 var item = new Stack(Orientation.Vertical, "spacing.0");
                 foreach (var child in n.Children.Where(child => child.Element() != "SidebarMenuBadge"))
-                    if ((child.Element() == "SidebarMenuButton" ? Nodes.Drawn(child!, SidebarRow(new Node(child!, n.Context), count)) : Nodes.Build(child, n.Context)) is UIElement row)
+                    if ((child.Element() == "SidebarMenuButton" ? Nodes.Drawn(child!, SidebarRow(new Node(child!, n.Context), trailing)) : Nodes.Build(child, n.Context)) is UIElement row)
                         item.Add(row);
                 return item;
             },
@@ -801,7 +816,11 @@ public static class Mapping
                 {
                     var toggle = new Toggle { Tag = item?["value"].Text() };
                     var glyph = Nodes.GlyphOf(item?["label"]);
-                    toggle.Content = glyph is null ? item?["label"].Text() : Glyphs.Draw(glyph, 16);
+                    // A label that is a glyph is a specimen of its own, so
+                    // the element drawn for it is reported as that node.
+                    toggle.Content = glyph is null ? item?["label"].Text()
+                        : item?["label"] is JsonNode label ? Nodes.Drawn(label, Glyphs.Draw(glyph, 16))
+                        : Glyphs.Draw(glyph, 16);
                     if (item?["hint"].String() is string hint) { Name(toggle, hint); toggle.Loaded += (_, _) => Tooltip.Set(toggle, hint); }
                     toggle.Click += (_, _) =>
                     {
@@ -903,16 +922,23 @@ public static class Mapping
         return line;
     }
 
-    /// <summary>A slider's reading: after the track, in the code face, right-aligned in a column of its own.</summary>
-    private static TextBlock Reading() => new()
+    /// <summary>
+    /// A slider's reading: after the track, in the code face at the caption
+    /// step, in the secondary ink, right-aligned in a column of its own.
+    /// </summary>
+    private static TextBlock Reading()
     {
-        FontFamily = Theme.Default.CodeFont,
-        FontSize = 11,
-        TextAlignment = TextAlignment.Right,
-        MinWidth = 40,
-        VerticalAlignment = VerticalAlignment.Center,
-        Opacity = 0.7,
-    };
+        var reading = new TextBlock { TextAlignment = TextAlignment.Right, MinWidth = 40, VerticalAlignment = VerticalAlignment.Center, LineStackingStrategy = LineStackingStrategy.BlockLineHeight };
+        Themed.Follow(reading, theme =>
+        {
+            var caption = theme.Text("", "captionSmall");
+            reading.FontFamily = theme.CodeFont;
+            reading.FontSize = caption.FontSize;
+            reading.LineHeight = caption.FontSize;
+            reading.Foreground = theme.Brush("color.content-muted");
+        });
+        return reading;
+    }
 
     private static UIElement Beside(FrameworkElement track, TextBlock value)
     {
@@ -1121,15 +1147,19 @@ public static class Mapping
 
     /* Sidebar ------------------------------------------------------------- */
 
-    /// <summary>A sidebar row: a navigation item, with the badge its item carries at its end.</summary>
-    private static UIElement SidebarRow(Node n, string? badge)
+    /// <summary>A sidebar row: a navigation item, with the element its item carries at its end.</summary>
+    private static UIElement SidebarRow(Node n, UIElement? trailing = null)
     {
-        var glyph = Nodes.GlyphOf(n.Props["icon"]);
+        // Draw the story's icon node as an element of its own, so the
+        // collector reads it where React draws it.
+        var leading = n.Props["icon"] is JsonNode iconNode ? Nodes.Build(iconNode, n.Context) : null;
+        var glyph = leading is null ? Nodes.GlyphOf(n.Props["icon"]) : null;
         var row = new NavItem
         {
             Content = n.Text,
+            Leading = leading,
             Glyph = glyph is null ? null : Glyphs.All[glyph].Glyph,
-            Count = badge,
+            Trailing = trailing,
         };
         var press = n.Press();
         void Toggled()
@@ -1234,12 +1264,15 @@ public sealed class Styled : Grid
     /// <summary>A type style whose weight overrides the style's own.</summary>
     public string? Weight { get; init; }
 
+    /// <summary>A leading as a multiple of the style's own, where the web sets one.</summary>
+    public double? LeadingScale { get; init; }
+
     private void Apply(Theme theme)
     {
         var styled = theme.Text("", style);
         block.FontSize = styled.FontSize;
-        block.LineHeight = styled.LineHeight;
-        block.LineStackingStrategy = styled.LineStackingStrategy;
+        block.LineHeight = LeadingScale is double scale ? styled.FontSize * scale : styled.LineHeight;
+        block.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
         block.FontWeight = Weight is null ? styled.FontWeight : theme.Text("", Weight).FontWeight;
         if (ink is not null) block.Foreground = theme.Brush(ink);
     }
@@ -1353,13 +1386,16 @@ public sealed class SidebarColumn : Grid
             : full;
         Width = width;
         Padding = new Thickness(pad);
+        // The edge is the column's, so the content inside it gives up the
+        // hairline: React's inner column is 171 in a 172 column.
+        var edge = variant == "sidebar" && width > 0 ? theme.Number("stroke.hairline") : 0;
         // Closing slides the column shut over content that keeps its width;
         // the layout clips what no longer fits.
-        frame.Width = Math.Max(0, (icons ? width : full) - pad * 2);
+        frame.Width = Math.Max(0, (icons ? width : full) - pad * 2 - edge);
         var surface = theme.Brush(collapsible == "none" ? "color.surface" : "color.surface-column");
         Background = variant == "sidebar" ? surface : null;
         BorderBrush = theme.Brush("color.border");
-        BorderThickness = new Thickness(0, 0, variant == "sidebar" && width > 0 ? theme.Number("stroke.hairline") : 0, 0);
+        BorderThickness = new Thickness(0, 0, edge, 0);
         frame.Background = variant == "floating" ? surface : null;
         frame.BorderBrush = theme.Brush("color.border");
         frame.BorderThickness = new Thickness(variant == "floating" ? theme.Number("stroke.hairline") : 0);
@@ -1393,6 +1429,9 @@ public sealed class SidebarInset : Grid
         if (sidebar?.Inset != true) return;
         var gap = theme.Number("spacing.2");
         paper.CornerRadius = new CornerRadius(theme.Number("radius.large"));
-        Padding = new Thickness(sidebar.Open ? 0 : gap, gap, gap, gap);
+        // The web sets the sheet in by a margin, so the column's ground shows
+        // around it and the sheet itself is a step narrower and shorter.
+        Margin = new Thickness(sidebar.Open ? 0 : gap, gap, gap, gap);
+        Padding = new Thickness(0);
     }
 }

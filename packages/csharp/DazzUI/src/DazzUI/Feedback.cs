@@ -252,7 +252,10 @@ public class Slider : Microsoft.UI.Xaml.Controls.Slider
             Resources["SliderTrackThemeHeight"] = Theme.Number($"slider.{Skin.SizeKey(Size)}.track");
             Resources["SliderThumbWidth"] = Theme.Number($"slider.{Skin.SizeKey(Size)}.thumb");
             Resources["SliderThumbHeight"] = Theme.Number($"slider.{Skin.SizeKey(Size)}.thumb");
-            MinHeight = Theme.Number($"control.{Theme.Key(Size)}.size"); Skin.Focus(this, Theme);
+            // The row is the control step itself, as the web's control box
+            // is; the native template would otherwise floor it at 34.
+            Height = Theme.Number($"control.{Theme.Key(Size)}.size");
+            MinHeight = 0; Skin.Focus(this, Theme);
         });
     }
 }

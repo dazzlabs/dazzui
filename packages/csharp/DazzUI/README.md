@@ -64,7 +64,14 @@ machine over SSH and copies back the readings of every scene in
 Controls are drawn to React's geometry and recipes — a Tree, a
 SegmentedControl, PillTabs or a Collapsible draws its own rows and segments
 rather than restyling a native list — while native WinUI primitives own
-editing, selection, focus and popup behavior.
+editing, selection, focus and popup behavior. The collector has been used to
+check that scene by scene: an Icon takes the theme's `icon.medium` unless a
+size is named, a navigation row and its badge use the sidebar's own inset and
+ink, card and stage text carry their declared leading, sliders and fields use
+the design's block padding, and a disabled field repaints its native template
+with the theme's disabled recipe instead of keeping the light one. What is
+left is text measured by Windows rather than Chromium's `system-ui` face, and
+a glyph a control still draws from a `Glyph` value.
 Toast uses a compact horizontal layout; timed notices dismiss themselves,
 while persistent notices expose a dismiss button whose accessible label can
 be localized with `ToastOptions.DismissLabel`.

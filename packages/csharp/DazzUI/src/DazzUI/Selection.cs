@@ -31,7 +31,13 @@ public class Checkbox : CheckBox
         Opacity = IsEnabled ? 1 : 0.6;
         if (GetTemplateChild("Row") is StackPanel row) row.Spacing = Theme.Number("spacing.2.5");
         if (Note is not null && Content is string label)
-            Content = new TextBlock { Inlines = { new Microsoft.UI.Xaml.Documents.Run { Text = label + " " }, new Microsoft.UI.Xaml.Documents.Run { Text = Note, Foreground = Theme.Brush("color.content-faint") } } };
+        {
+            var words = new TextBlock { Inlines = { new Microsoft.UI.Xaml.Documents.Run { Text = label + " " }, new Microsoft.UI.Xaml.Documents.Run { Text = Note, Foreground = Theme.Brush("color.content-faint") } } };
+            words.LineHeight = Theme.Text("", "labelQuiet").LineHeight;
+            words.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
+            Content = words;
+        }
+        else Skin.TextLine(this, Theme.Text("", "labelQuiet").LineHeight);
         if (GetTemplateChild("Box") is Border box)
         {
             box.Width = box.Height = Theme.Number($"checkbox.{Skin.SizeKey(Size)}.box");
@@ -78,6 +84,7 @@ public class Radio : RadioButton
     {
         Skin.Focus(this, Theme); MinWidth = MinHeight = 0;
         Theme.Typography(this, "labelQuiet");
+        Skin.TextLine(this, Theme.Text("", "labelQuiet").LineHeight);
         if (IsChecked == true) FontWeight = Theme.Text("", "labelMedium").FontWeight;
         Foreground = Theme.Brush(IsChecked == true ? "color.content" : "color.content-muted");
         Opacity = IsEnabled || this is OptionCard ? 1 : 0.6;
@@ -134,8 +141,14 @@ public class Toggle : ToggleButton
     protected virtual void Apply()
     {
         Skin.Control(this, Theme, Size); Height = Theme.Number($"control.{Theme.Key(Size)}.size");
-        // A glyph alone is a square control: the inline padding is for a label.
+        // A glyph alone is a square control: the padding is for a label.
         if (Content is Icon && this is not NavItem) { Padding = new Thickness(0); Width = Height; }
+        else
+        {
+            var profile = $"control.{Theme.Key(Size)}";
+            Padding = new Thickness(Theme.Number(profile + ".padding.inline"), Theme.Number(profile + ".padding.block"),
+                Theme.Number(profile + ".padding.inline"), Theme.Number(profile + ".padding.block"));
+        }
         var variant = IsChecked == true ? ControlVariant.Tinted : Variant;
         var state = RecipeState;
         Background = Theme.Recipe(variant, Tint, "surface", state);
@@ -347,7 +360,9 @@ public sealed class PillTabs : Surface
     public IList<string> Items { get; } = new List<string>();
     public int SelectedIndex { get => selectedIndex; set { selectedIndex = value; Sync(); } }
     public event EventHandler? SelectionChanged;
-    public PillTabs() { Content = row; HorizontalAlignment = HorizontalAlignment.Left; }
+    // The root lays out one child — the row — so what a reader sees as the
+    // row's gap is the list's, exactly as React's flex root reads.
+    public PillTabs() { Content = new StackPanel { Children = { row } }; HorizontalAlignment = HorizontalAlignment.Left; }
     private void Sync()
     {
         for (var i = 0; i < row.Children.Count; i++)

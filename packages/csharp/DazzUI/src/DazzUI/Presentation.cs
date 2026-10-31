@@ -45,6 +45,8 @@ public sealed class Avatar : Surface
     public string NameText { get; set; } = "DazzUI";
     public Uri? Source { get; set; }
     public AvatarShape Shape { get; set; }
+    /// <summary>Whether it sits in a group, which lays each one on the ground colour it is cut out in.</summary>
+    internal bool Grouped { get; set; }
     public Avatar() { Size = ControlSize.Medium; HorizontalAlignment = HorizontalAlignment.Left; VerticalAlignment = VerticalAlignment.Center; }
     internal static (string Box, string Type) Metrics(ControlSize size) => size switch
     {
@@ -56,8 +58,11 @@ public sealed class Avatar : Surface
     {
         var (box, type) = Metrics(Size);
         Width = Height = Theme.Number(box);
-        Skin.SetCorner(this, Theme.Number(Shape == AvatarShape.Circle ? "radius.full" : "radius.medium"));
-        Background = Theme.Recipe(ControlVariant.Tinted, Tint, "surface");
+        var corner = Theme.Number(Shape == AvatarShape.Circle ? "radius.full" : "radius.medium");
+        Skin.SetCorner(this, corner);
+        // The avatar itself is clear; the tinted wash belongs to the
+        // fallback, so a picture and a group ring do not double it.
+        Background = Grouped ? Theme.Brush("color.surface") : null;
         Foreground = Theme.Recipe(ControlVariant.Tinted, Tint, "content");
         HorizontalContentAlignment = HorizontalAlignment.Center;
         VerticalContentAlignment = VerticalAlignment.Center;
@@ -65,15 +70,23 @@ public sealed class Avatar : Surface
         var initials = Theme.Text(string.Concat(NameText.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(n => n[0])).ToUpperInvariant(), type);
         initials.FontWeight = Theme.Text("", "labelStrong").FontWeight;
         initials.Foreground = Foreground;
-        initials.LineHeight = 0;
+        initials.LineHeight = initials.FontSize;
         initials.TextLineBounds = TextLineBounds.Tight;
         initials.HorizontalAlignment = HorizontalAlignment.Center;
         initials.VerticalAlignment = VerticalAlignment.Center;
-        Content = initials;
+        var fallback = new Border
+        {
+            Background = Theme.Recipe(ControlVariant.Tinted, Tint, "surface"),
+            CornerRadius = new CornerRadius(corner),
+            Width = Width,
+            Height = Height,
+            Child = initials,
+        };
+        Content = fallback;
         if (Source is not null)
         {
             var image = new Image { Source = new BitmapImage(Source), Stretch = Stretch.UniformToFill, Width = Width, Height = Height };
-            image.ImageFailed += (_, _) => Content = initials;
+            image.ImageFailed += (_, _) => Content = fallback;
             Content = image;
         }
         Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(this, NameText);
@@ -107,6 +120,7 @@ public sealed class AvatarGroup : Surface
         };
         foreach (var avatar in Avatars)
         {
+            avatar.Grouped = true;
             avatar.Size = Size;
             Skin.Detach(avatar);
             row.Children.Add(Ringed(avatar));
@@ -133,7 +147,7 @@ public sealed class KeyCap : Surface
 {
     public KeyCapVariant Variant { get; set; }
     public bool Raised { get => Variant == KeyCapVariant.Key; set => Variant = value ? KeyCapVariant.Key : KeyCapVariant.Hint; }
-    public KeyCap() { HorizontalAlignment = HorizontalAlignment.Left; }
+    public KeyCap() { HorizontalAlignment = HorizontalAlignment.Left; VerticalAlignment = VerticalAlignment.Center; }
     public KeyCap(string text) : this() => Content = text;
     protected override void RefreshAppearance()
     {
@@ -184,7 +198,8 @@ public sealed class CodeBlock : Surface
         var mono = Theme.CodeFont;
         var size = Theme.Text("", "captionSmall").FontSize;
         var leading = Theme.Text("", "bodySmall").LineHeight;
-        TextBlock Code(string text) => new() { IsTextScaleFactorEnabled = Theme.Sizing != ThemeSizing.System, Text = text, FontFamily = mono, FontSize = size, LineHeight = leading, LineStackingStrategy = LineStackingStrategy.BlockLineHeight };
+        var caption = Theme.Text("", "captionSmall").LineHeight;
+        TextBlock Code(string text, double? line = null) => new() { IsTextScaleFactorEnabled = Theme.Sizing != ThemeSizing.System, Text = text, FontFamily = mono, FontSize = size, LineHeight = line ?? leading, LineStackingStrategy = LineStackingStrategy.BlockLineHeight };
         var column = new StackPanel();
         if (Title is not null || Syntax is not null || Copyable || Actions is not null)
         {
@@ -194,7 +209,7 @@ public sealed class CodeBlock : Surface
             head.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             if (Title is not null)
             {
-                var title = Code(Title);
+                var title = Code(Title, caption);
                 title.Foreground = Theme.Brush("color.content-secondary");
                 title.VerticalAlignment = VerticalAlignment.Center;
                 head.Children.Add(title);

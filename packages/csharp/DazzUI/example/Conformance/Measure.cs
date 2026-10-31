@@ -135,6 +135,13 @@ internal static class Measure
             ? own.OfType<Icon>().FirstOrDefault(icon => icon.ActualWidth > 0)
             : root is TextBox or AutoSuggestBox ? viewport
             : layout ?? (DependencyObject?)stack ?? viewport ?? (DependencyObject?)text;
+        // A surface with no text or layout of its own — a switch, whose only
+        // content is its thumb — is inset by its own padding.
+        if (content is null && surface is not null)
+        {
+            left = surface.Padding.Left + surface.Border.Left;
+            top = surface.Padding.Top + surface.Border.Top;
+        }
         for (var item = content; item is not null; item = VisualTreeHelper.GetParent(item))
         {
             if (item == content && item is ScrollViewer scroll)

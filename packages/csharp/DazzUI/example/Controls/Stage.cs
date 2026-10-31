@@ -301,12 +301,21 @@ public sealed class StageText : Grid
         var ink = tint is not null ? theme.Brush($"color.{tint}.500")
             : node.String("tone") == "secondary" ? theme.Brush("color.content-secondary")
             : null;
+        // A stage paragraph is body copy: React's default `Text` inherits the
+        // page's body step, leading included. XAML inherits size and family
+        // but not the line height, so it is set here.
+        var body = theme.Text("", "bodyMedium");
         foreach (var (words, _) in runs)
         {
             if (ink is null) words.ClearValue(TextBlock.ForegroundProperty);
             else words.Foreground = ink;
-            if (node.Flag("strong"))
-                words.FontWeight = new Windows.UI.Text.FontWeight { Weight = (ushort)theme.Token("labelStrong").GetProperty("fontWeight").GetInt32() };
+            words.FontFamily = body.FontFamily;
+            words.FontSize = body.FontSize;
+            words.LineHeight = body.LineHeight;
+            words.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
+            words.FontWeight = node.Flag("strong")
+                ? new Windows.UI.Text.FontWeight { Weight = (ushort)theme.Token("labelStrong").GetProperty("fontWeight").GetInt32() }
+                : body.FontWeight;
         }
         if (ink is not null) foreach (var control in inline.OfType<Icon>()) control.Foreground = ink;
     }
