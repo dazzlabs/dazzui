@@ -600,6 +600,7 @@ public static class Mapping
                 {
                     VerticalContentAlignment = VerticalAlignment.Center,
                     MinHeightToken = "frame.titlebar.size",
+                    NoWrap = true,
                 };
                 foreach (var kid in n.Kids()) header.Add(kid);
                 return header;
@@ -1233,6 +1234,9 @@ public sealed class Stack : Grid
     /// <summary>A hairline along its bottom edge, as a dialog's header draws.</summary>
     public bool BorderBottom { get; init; }
 
+    /// <summary>Keep a label on one line, as a narrow sidebar heading is cut.</summary>
+    public bool NoWrap { get; init; }
+
     /// <summary>Where the children sit across a line, or down a stack taller than they are.</summary>
     public VerticalAlignment VerticalContentAlignment
     {
@@ -1256,6 +1260,19 @@ public sealed class Stack : Grid
         BorderBrush = theme.Brush("color.border");
         var hairline = theme.Number("stroke.hairline");
         BorderThickness = new Thickness(0, BorderTop ? hairline : 0, 0, BorderBottom ? hairline : 0);
+        if (NoWrap)
+            foreach (var words in Descendants(this).OfType<TextBlock>())
+                words.TextWrapping = TextWrapping.NoWrap;
+    }
+
+    private static IEnumerable<DependencyObject> Descendants(DependencyObject root)
+    {
+        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
+        {
+            var child = VisualTreeHelper.GetChild(root, i);
+            yield return child;
+            foreach (var inner in Descendants(child)) yield return inner;
+        }
     }
 }
 
@@ -1428,7 +1445,10 @@ public sealed class SidebarColumn : Grid
         var edge = variant == "sidebar" && width > 0 ? theme.Number("stroke.hairline") : 0;
         // Closing slides the column shut over content that keeps its width;
         // the layout clips what no longer fits.
-        frame.Width = Math.Max(0, (icons ? width : full) - pad * 2 - edge);
+        // In icon mode the frame keeps the full icon width: its 28px rows and
+        // the group's ten-pixel insets need all forty-eight, and the column's
+        // hairline paints over the frame's last pixel rather than eating it.
+        frame.Width = Math.Max(0, (icons ? width : full) - pad * 2 - (icons ? 0 : edge));
         var surface = theme.Brush(collapsible == "none" ? "color.surface" : "color.surface-column");
         Background = variant == "sidebar" ? surface : null;
         BorderBrush = theme.Brush("color.border");
