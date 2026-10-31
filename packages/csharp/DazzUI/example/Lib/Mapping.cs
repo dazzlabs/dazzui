@@ -1403,6 +1403,7 @@ public sealed class SidebarColumn : Grid
     private readonly SidebarContext sidebar;
     private readonly Grid frame = new() { HorizontalAlignment = HorizontalAlignment.Left };
     private readonly WidthAnimation widthTween;
+    private readonly List<FrameworkElement> chrome = [];
 
     public SidebarColumn(Node n)
     {
@@ -1415,6 +1416,7 @@ public sealed class SidebarColumn : Grid
             frame.RowDefinitions.Add(new RowDefinition { Height = child.Element() == "SidebarContent" ? new GridLength(1, GridUnitType.Star) : GridLength.Auto });
             SetRow(kid, frame.Children.Count);
             frame.Children.Add(kid);
+            if (child.Element() is "SidebarHeader" or "SidebarFooter") chrome.Add(kid);
         }
         Children.Add(frame);
         widthTween = new WidthAnimation(this);
@@ -1431,6 +1433,9 @@ public sealed class SidebarColumn : Grid
         var framed = variant != "sidebar";
         var collapsible = sidebar.Collapsible;
         var icons = collapsible == "icon" && !sidebar.Open;
+        // A header or footer has no room in a forty-eight-pixel rail; the
+        // web cuts its text at the edge, which reads as a clipped word.
+        foreach (var element in chrome) element.Visibility = icons ? Visibility.Collapsed : Visibility.Visible;
         var pad = framed ? theme.Number("spacing.2") : 0;
         var full = theme.Number(collapsible == "none" ? "frame.rail.width" : "frame.sidebar.width");
         var width = collapsible == "none" ? full

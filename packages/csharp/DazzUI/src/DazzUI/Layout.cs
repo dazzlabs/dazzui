@@ -323,15 +323,20 @@ public sealed class Preferences : Surface
         Skin.SetCorner(this, Theme.Number("radius.small"));
         var type = IsChecked == true ? "labelMedium" : "labelQuiet";
         Theme.Typography(this, type);
-        // The row's eight-pixel block inset leaves only the label's own line;
-        // the platform's default line box would be clipped by it.
-        Skin.TextLine(this, Theme.Text("", type).LineHeight);
+        // The glyph and the label share a sixteen-pixel line, leaving six
+        // pixels of block inset in the twenty-eight-pixel row. The web's line
+        // is twelve pixels because the browser lets a glyph overflow; a
+        // native line box clips it, so the row gives it the four more it needs.
+        Skin.TextLine(this, Theme.Text("", type).FontSize + Theme.Number("spacing.1"));
         if (GetTemplateChild("Label") is ContentPresenter label) label.Visibility = IsIconOnly ? Visibility.Collapsed : Visibility.Visible;
+        Height = Theme.Number("control.medium.size");
+        MinHeight = 0;
         // The row's own inset, not the button profile's: a navigation row is
-        // ten inline and eight block, with a six-pixel gap to its glyph.
+        // ten inline and six block, with a six-pixel gap to its glyph. Icon
+        // mode keeps its six pixels on the sides only, as the web does.
         Padding = IsIconOnly
-            ? new Thickness(Theme.Number("spacing.1.5"))
-            : new Thickness(Theme.Number("spacing.2.5"), Theme.Number("spacing.2"), Theme.Number("spacing.2.5"), Theme.Number("spacing.2"));
+            ? new Thickness(Theme.Number("spacing.1.5"), 0, Theme.Number("spacing.1.5"), 0)
+            : new Thickness(Theme.Number("spacing.2.5"), Theme.Number("spacing.1.5"), Theme.Number("spacing.2.5"), Theme.Number("spacing.1.5"));
         Width = IsIconOnly ? Height : double.NaN;
         HorizontalContentAlignment = IsIconOnly ? HorizontalAlignment.Center : HorizontalAlignment.Left;
         if (GetTemplateChild("Leading") is ContentControl leading)
