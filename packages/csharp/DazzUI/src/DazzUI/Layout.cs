@@ -327,9 +327,13 @@ public sealed class Preferences : Surface
         // pixels of block inset in the twenty-eight-pixel row. The web's line
         // is twelve pixels because the browser lets a glyph overflow; a
         // native line box clips it, so the row gives it the four more it needs.
-        Skin.TextLine(this, Theme.Text("", type).FontSize + Theme.Number("spacing.1"));
+        var line = Theme.Text("", type).FontSize + Theme.Number("spacing.1");
+        Skin.TextLine(this, line);
         if (GetTemplateChild("Label") is ContentPresenter label) label.Visibility = IsIconOnly ? Visibility.Collapsed : Visibility.Visible;
-        Height = Theme.Number("control.medium.size");
+        // The web row is its line plus the block inset, not the profile's
+        // control height — a system-sizing profile would otherwise add four
+        // pixels the sidebar's rows never had.
+        Height = line + 2 * Theme.Number("spacing.1.5");
         MinHeight = 0;
         // The row's own inset, not the button profile's: a navigation row is
         // ten inline and six block, with a six-pixel gap to its glyph. Icon
