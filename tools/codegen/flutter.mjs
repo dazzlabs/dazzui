@@ -116,6 +116,13 @@ export const SUPPORT = {
   PreferenceGroup: ['title', 'description', 'action', children],
   PreferenceRow: ['title', 'subtitle', 'icon', tint, 'onOpen', children],
   PreferenceSection: ['label', 'footer', 'action', children],
+  PreferenceThemeSwatches: [
+    'options',
+    'value',
+    'defaultValue',
+    'onValueChange',
+    label,
+  ],
   Preferences: [children],
   PreviewCard: ['trigger', 'width', children],
   Progress: ['value', size, tint, 'gradient', label],

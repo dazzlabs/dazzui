@@ -21,11 +21,13 @@ export interface Story {
 }
 
 /**
- * Examples only React can show, added to a compiled story's page. A file in
+ * Examples outside shared conformance, added to a compiled story's page. A file in
  * `stories/react/` exports one under the compiled story's `id`; codegen never
- * reads it, so the page grows on React alone.
+ * reads it only for the platforms explicitly listed below.
  */
 export interface StoryExtension {
   id: string
+  /** Native mappings that also compile these examples, outside conformance. */
+  platforms?: readonly ('flutter' | 'swiftui' | 'winui')[]
   examples: readonly Example[]
 }

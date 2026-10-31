@@ -8,6 +8,7 @@ import '../theme/theme.dart';
 import 'divider.dart';
 import 'pressable.dart';
 import 'section_label.dart';
+import 'tooltip.dart';
 
 bool _hasWords(Object? value) => value != null && value != '';
 Widget _words(Object value, TextStyle style, {bool truncate = false}) =>
@@ -343,6 +344,7 @@ class PreferenceRow extends StatelessWidget {
     this.subtitle,
     this.icon,
     this.trailing,
+    this.wrapControl = false,
     this.onOpen,
     this.tint = PreferenceRowTint.neutral,
     @Deprecated('Use onOpen, as in the React API.') this.onPressed,
@@ -353,6 +355,9 @@ class PreferenceRow extends StatelessWidget {
   final Object title;
   final Object? subtitle;
   final Widget? icon;
+
+  /// Allow a composed trailing control, such as theme swatches, to wrap.
+  final bool wrapControl;
   final Widget? trailing;
   final VoidCallback? onOpen;
   final PreferenceRowTint tint;
@@ -364,6 +369,9 @@ class PreferenceRow extends StatelessWidget {
     final ThemeVariables vars = Theme.of(context).vars;
     final VoidCallback? open = onOpen ?? onPressed;
     final bool interactive = open != null;
+    final bool wraps =
+        trailing != null &&
+        (wrapControl || trailing is PreferenceThemeSwatches);
 
     Widget content(Set<WidgetState> states) {
       final bool hovered = states.contains(WidgetState.hovered);
@@ -378,7 +386,9 @@ class PreferenceRow extends StatelessWidget {
               data: IconThemeData(size: vars.iconMedium),
               child: icon!,
             ),
-          Expanded(
+          Flexible(
+            fit: wraps ? FlexFit.loose : FlexFit.tight,
+            flex: wraps ? 0 : 1,
             child: Padding(
               // The pad rides on the text, so a row that grows a subtitle
               // keeps air above the title and below it. A single line padded
@@ -414,7 +424,9 @@ class PreferenceRow extends StatelessWidget {
               ),
             ),
           ),
-          if (trailing != null || interactive)
+          if (wraps)
+            Expanded(child: trailing!)
+          else if (trailing != null || interactive)
             Row(
               mainAxisSize: MainAxisSize.min,
               spacing: vars.spacing25,
@@ -483,4 +495,198 @@ class PreferenceRow extends StatelessWidget {
       ),
     );
   }
+}
+
+/// One theme preview. An empty [theme] names Studio Light, as on React.
+@immutable
+class PreferenceThemeOption<T> {
+  const PreferenceThemeOption({
+    required this.value,
+    required this.label,
+    this.theme,
+  });
+
+  final T value;
+  final String label;
+  final String? theme;
+
+  ThemeVariables get variables {
+    final String id = theme ?? '$value';
+    return themeVariablesByName[id.isEmpty ? 'studio-light' : id] ??
+        themeVariables;
+  }
+}
+
+/// Theme previews in a preference row. Choosing one reports a value; the host
+/// decides where to apply it. Each preview keeps its own palette.
+class PreferenceThemeSwatches<T> extends StatefulWidget {
+  const PreferenceThemeSwatches({
+    super.key,
+    required this.options,
+    this.value,
+    this.defaultValue,
+    this.onValueChange,
+    this.semanticsLabel,
+  });
+
+  final List<PreferenceThemeOption<T>> options;
+  final T? value;
+  final T? defaultValue;
+  final ValueChanged<T>? onValueChange;
+  final String? semanticsLabel;
+
+  @override
+  State<PreferenceThemeSwatches<T>> createState() =>
+      _PreferenceThemeSwatchesState<T>();
+}
+
+class _PreferenceThemeSwatchesState<T>
+    extends State<PreferenceThemeSwatches<T>> {
+  late T? _own = widget.defaultValue;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeVariables page = Theme.of(context).vars;
+    final T? current = widget.value ?? _own;
+    return Semantics(
+      container: true,
+      label: widget.semanticsLabel,
+      child: Wrap(
+        alignment: WrapAlignment.end,
+        spacing: page.spacing15,
+        runSpacing: page.spacing15,
+        children: [
+          for (final option in widget.options)
+            Tooltip(
+              key: ValueKey(option.value),
+              label: option.label,
+              child: MergeSemantics(
+                child: Semantics(
+                  inMutuallyExclusiveGroup: true,
+                  child: Pressable(
+                    semanticsLabel: option.label,
+                    checked: option.value == current,
+                    borderRadius: BorderRadius.circular(page.radiusSmall),
+                    onPressed: () {
+                      setState(() => _own = option.value);
+                      widget.onValueChange?.call(option.value);
+                    },
+                    builder: (context, states) => CustomPaint(
+                      painter: _ThemeSwatchPainter(
+                        vars: option.variables,
+                        page: page,
+                        selected: option.value == current,
+                        direction: Directionality.of(context),
+                      ),
+                      child: SizedBox(
+                        width: option.variables.controlSmallSize * 1.5,
+                        height: option.variables.controlSmallSize,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ThemeSwatchPainter extends CustomPainter {
+  const _ThemeSwatchPainter({
+    required this.vars,
+    required this.page,
+    required this.selected,
+    required this.direction,
+  });
+
+  final ThemeVariables vars;
+  final ThemeVariables page;
+  final bool selected;
+  final TextDirection direction;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Rect rect = Offset.zero & size;
+    final RRect window = RRect.fromRectAndRadius(
+      rect,
+      Radius.circular(vars.radiusSmall),
+    );
+    final Paint paint = Paint();
+    if (selected) {
+      final descriptor = page.controlColorOutlinedBorder;
+      final Color border =
+          (descriptor.normalColor ??
+                  page.colorPrimary[descriptor.normalShade!]!)
+              .withValues(
+                alpha: descriptor.normalOpacity ?? 1,
+              );
+      final RRect outer = RRect.fromRectAndRadius(
+        rect,
+        Radius.circular(page.radiusSmall),
+      );
+      canvas.drawRRect(
+        outer.inflate(page.strokeHairline + page.strokeControl),
+        paint..color = border,
+      );
+      canvas.drawRRect(
+        outer.inflate(page.strokeHairline),
+        paint..color = page.colorSurface,
+      );
+    }
+    canvas.save();
+    canvas.clipRRect(window);
+    canvas.drawRect(rect, paint..color = vars.colorSurface);
+    if (direction == TextDirection.rtl) {
+      canvas.translate(size.width, 0);
+      canvas.scale(-1, 1);
+    }
+    final double rule = vars.strokeHairline;
+    final double column = (size.width - rule * 2) * 0.3;
+    canvas.drawRect(
+      Rect.fromLTWH(rule, rule, column, size.height - rule * 2),
+      paint..color = vars.colorSurfaceColumn,
+    );
+    canvas.drawRect(
+      Rect.fromLTWH(rule + column - rule, rule, rule, size.height - rule * 2),
+      paint..color = vars.colorBorderStrong,
+    );
+    final double left = rule + column + vars.spacing1;
+    final double width = size.width - rule - vars.spacing1 - left;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(left, rule + vars.spacing1, width, vars.spacing05),
+        Radius.circular(vars.spacingPx),
+      ),
+      paint..color = vars.colorContent,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          left,
+          size.height - rule - vars.spacing1 - vars.spacing15,
+          width * 0.6,
+          vars.spacing15,
+        ),
+        Radius.circular(vars.spacingPx),
+      ),
+      paint..color = vars.colorPrimary[500]!,
+    );
+    canvas.restore();
+    canvas.drawRRect(
+      window.deflate(rule / 2),
+      paint
+        ..color = vars.colorBorderStrong
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = rule,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_ThemeSwatchPainter oldDelegate) =>
+      oldDelegate.vars != vars ||
+      oldDelegate.page != page ||
+      oldDelegate.selected != selected ||
+      oldDelegate.direction != direction;
 }

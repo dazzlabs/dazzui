@@ -345,6 +345,9 @@ final Map<String, ComponentBuilder> components = {
     icon: n.element('icon'),
     tint: n.option(PreferenceRowTint.values, 'tint', PreferenceRowTint.neutral),
     trailing: n.children.isEmpty ? null : _one(n),
+    wrapControl: n.children.any(
+      (child) => child is Map && child[r'$el'] == 'PreferenceThemeSwatches',
+    ),
     onOpen: n.action('onOpen'),
   ),
   'PreferenceSection': (n) => PreferenceSection(
@@ -354,6 +357,26 @@ final Map<String, ComponentBuilder> components = {
     children: n.kids,
   ),
   'Preferences': (n) => Preferences(children: n.kids),
+  'PreferenceThemeSwatches': (n) => bound<String?>(
+    n,
+    onChange: 'onValueChange',
+    fallback: 'defaultValue',
+    initial: null,
+    read: (raw) => raw as String?,
+    builder: (value, set) => PreferenceThemeSwatches<String>(
+      options: [
+        for (final raw in n['options'] as List<Object?>)
+          PreferenceThemeOption(
+            value: '${(raw as Map)['value']}',
+            label: '${raw['label']}',
+            theme: raw['theme'] as String?,
+          ),
+      ],
+      value: value,
+      onValueChange: set,
+      semanticsLabel: n.string('aria-label'),
+    ),
+  ),
   'PreviewCard': (n) => PreviewCard(
     trigger: n.element('trigger')!,
     width: (Length.parse(n['width']) as Px?)?.value,

@@ -137,6 +137,15 @@ Never hand-edit `src/generated/`. A value a component needs belongs in
   native backend fall back to the custom panel. Shortcut strings remain hints,
   rather than registering additional accelerators. Flutter depends directly
   on `nativeapi` and follows its Dart SDK floor (3.13).
+- `PreferenceThemeSwatches` is also available on Flutter, macOS SwiftUI and
+  WinUI 3. Each option has a value, an accessible label and an optional theme
+  override; omitting that override uses the value as the theme name. The
+  miniature window reads its own generated palette and geometry, while the
+  selection ring and the gap between swatches use the surrounding theme.
+  Selecting reports a value rather than applying a theme to the app. Native
+  previews wrap at the trailing edge of narrow preference rows. Flutter and
+  SwiftUI accept controlled or default values; WinUI exposes a bindable
+  `Value` and `ValueChanged` over native radio buttons.
 - **A text control's family is one file per platform, and the three wear the
   same box.** React keeps `TextField`, `Select` and `FieldValue` in
   `text-field.tsx` because the box, the states and the tinting are one design

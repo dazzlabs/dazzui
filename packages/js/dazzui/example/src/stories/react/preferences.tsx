@@ -9,11 +9,7 @@ import {
 import { Col } from '../../components/stage'
 import type { StoryExtension } from '../../lib/story'
 
-/*
- * React only, for now: a swatch takes its theme by nesting a `data-theme`,
- * which no port has a way to do inside one subtree yet. These examples join
- * the compiled Preferences page on React and nowhere else.
- */
+// The native ports resolve each swatch's own palette from their token tables.
 
 const THEMES = [
   { value: 'studio-light', label: 'Studio', theme: '' },
@@ -26,6 +22,7 @@ const THEMES = [
 
 const extension: StoryExtension = {
   id: 'preferences',
+  platforms: ['flutter', 'swiftui', 'winui'],
   examples: [
     {
       title: 'Choosing a theme',

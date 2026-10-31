@@ -438,6 +438,23 @@ public static class Mapping
                 foreach (var kid in n.Kids()) column.Sections.Add(kid);
                 return column;
             },
+            ["PreferenceThemeSwatches"] = n =>
+            {
+                var control = new PreferenceThemeSwatches();
+                foreach (var option in n["options"].Items())
+                    control.Options.Add(new PreferenceThemeOption(option?["value"].Text() ?? "",
+                        option?["label"].Text() ?? "", option?["theme"] is JsonNode palette ? palette.Text() : null));
+                control.Value = n.String("value") ?? n.String("defaultValue");
+                var changed = n.Handler("onValueChange");
+                control.ValueChanged += (_, value) =>
+                {
+                    changed?.Invoke(JsonValue.Create(value));
+                    if (n.Has("value")) control.Value = n.String("value");
+                };
+                if (n.Has("value")) n.Live(control, () => control.Value = n.String("value"));
+                Name(control, n.String("aria-label"));
+                return control;
+            },
             ["PreviewCard"] = n =>
             {
                 var card = new PreviewCard { Placement = FlyoutPlacementMode.Bottom };

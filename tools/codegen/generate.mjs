@@ -24,19 +24,24 @@ const root = fileURLToPath(new URL('../../', import.meta.url))
 const check = process.argv.includes('--check')
 
 const stories = await readStories(root)
+const [flutterStories, swiftStories, winuiStories] = await Promise.all(
+  ['flutter', 'swiftui', 'winui'].map(platform =>
+    readStories(root, { platform })
+  )
+)
 const gaps = [
-  ...unsupported(stories).map(
+  ...unsupported(flutterStories).map(
     gap =>
       `${gap} — map it in packages/dart/dazzui/example/lib/lib/mapping.dart and list it in tools/codegen/flutter.mjs`
   ),
   ...swiftui
-    .unsupported(stories)
+    .unsupported(swiftStories)
     .map(
       gap =>
         `${gap} — map it in packages/swift/DazzUI/Example/Sources/Example/Lib/Mapping.swift and list it in tools/codegen/swiftui.mjs`
     ),
   ...winui
-    .unsupported(stories)
+    .unsupported(winuiStories)
     .map(
       gap =>
         `${gap} — map it in packages/csharp/DazzUI/example/Lib/Mapping.cs and list it in tools/codegen/winui.mjs`
@@ -58,6 +63,10 @@ if (gaps.length)
  * are emitted from.
  */
 const scenes = scenesJson(stories)
+// Native extensions keep stable specimen addresses without entering the
+// shared conformance contract or claiming mappings on other platforms.
+for (const platformStories of [flutterStories, swiftStories, winuiStories])
+  scenesJson(platformStories)
 const themes = await readThemes(root)
 const variables = await fs.readFile(
   path.join(
@@ -73,12 +82,12 @@ const variables = await fs.readFile(
  */
 const flutter = 'packages/dart/dazzui/example/lib'
 const outputs = new Map([
-  ...stories.map(story => [
+  ...flutterStories.map(story => [
     `${flutter}/stories/${storyFile(story.id)}`,
     storyDart(story),
   ]),
-  [`${flutter}/stories/index.dart`, storiesIndexDart(stories)],
-  [`${flutter}/lib/glyphs.dart`, glyphsDart(stories)],
+  [`${flutter}/stories/index.dart`, storiesIndexDart(flutterStories)],
+  [`${flutter}/lib/glyphs.dart`, glyphsDart(flutterStories)],
   [`${flutter}/lib/themes.dart`, themesDart(themes, variables)],
 ])
 
@@ -91,13 +100,16 @@ const themeNames = await fs.readFile(
   ),
   'utf8'
 )
-for (const story of stories)
+for (const story of swiftStories)
   outputs.set(
     `${swift}/Stories/${swiftui.storyFile(story.id)}`,
     swiftui.storySwift(story)
   )
-outputs.set(`${swift}/Stories/Index.swift`, swiftui.storiesIndexSwift(stories))
-outputs.set(`${swift}/Lib/Glyphs.swift`, swiftui.glyphsSwift(stories))
+outputs.set(
+  `${swift}/Stories/Index.swift`,
+  swiftui.storiesIndexSwift(swiftStories)
+)
+outputs.set(`${swift}/Lib/Glyphs.swift`, swiftui.glyphsSwift(swiftStories))
 outputs.set(
   `${swift}/Lib/Themes.swift`,
   swiftui.themesSwift(themes, themeNames)
@@ -116,13 +128,13 @@ const tokens = Object.keys(
     )
   )
 )
-for (const story of stories)
+for (const story of winuiStories)
   outputs.set(
     `${csharp}/Stories/${winui.storyFile(story.id)}`,
     winui.storyCs(story)
   )
-outputs.set(`${csharp}/Stories/Index.cs`, winui.storiesIndexCs(stories))
-outputs.set(`${csharp}/Lib/Glyphs.cs`, winui.glyphsCs(stories))
+outputs.set(`${csharp}/Stories/Index.cs`, winui.storiesIndexCs(winuiStories))
+outputs.set(`${csharp}/Lib/Glyphs.cs`, winui.glyphsCs(winuiStories))
 outputs.set(`${csharp}/Lib/Themes.cs`, winui.themesCs(themes, tokens))
 
 /*

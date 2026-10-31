@@ -49,9 +49,12 @@ other platforms' examples.
   now maps it.
   A file there may instead export a `StoryExtension` — an `id` and
   `examples` alone — under a compiled story's id, and its examples join that
-  page on React only: the Preferences page's theme row is one, since a
-  swatch takes its theme by nesting a `data-theme`, which no port can do
-  inside one subtree yet.
+  page on React. An extension can explicitly opt into `flutter`, `swiftui`
+  and `winui` through its `platforms` list once those mappings exist. The
+  generator checks each selected platform and gives its extra scenes stable
+  addresses, without adding them to shared conformance or claiming support
+  on another platform. The Preferences theme row uses this route: each native
+  swatch reads its own palette from the generated theme table.
 - **A platform's example mirrors the React one's layout.** On Flutter:
   `lib/stories/` holds a generated file per story and `index.dart`;
   `lib/lib/` holds the story type, the scene interpreter and its component

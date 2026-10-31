@@ -32,6 +32,15 @@ internal static class SmokeTest
         };
         try
         {
+            if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "theme-swatches")
+            {
+                await PreferenceThemeSwatchesTests.RunAsync(shell, output);
+                await File.WriteAllTextAsync(Path.Combine(output, "result.txt"), "PASS: independent swatch palettes, native radio selection, external value updates, controlled refusal, theme preservation and wrapping.\n");
+                finishing = true;
+                window.Close();
+                Environment.Exit(0);
+                return;
+            }
             if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "toast")
             {
                 await ToastTests.RunAsync(shell);

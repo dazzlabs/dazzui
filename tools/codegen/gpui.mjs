@@ -14,6 +14,7 @@ import { gaps } from './support.mjs'
  * its own.
  */
 export const SUPPORT = structuredClone(FLUTTER_SUPPORT)
+delete SUPPORT.PreferenceThemeSwatches
 SUPPORT.PreferenceGroup = ['title', 'description', '#children']
 SUPPORT.PreferenceRow = ['title', 'subtitle', 'onOpen', '#children']
 SUPPORT.PreferenceSection = ['label', 'footer', '#children']

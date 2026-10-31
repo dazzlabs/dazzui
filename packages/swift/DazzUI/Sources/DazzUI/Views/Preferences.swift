@@ -386,3 +386,175 @@ private struct HeadingAction<Content: View>: View {
 private enum PreferenceLeading {
   static let note: CGFloat = 1.7
 }
+
+/// A theme's value and accessible name, optionally drawn in another palette.
+public struct PreferenceThemeOption<Value: Hashable>: Identifiable {
+  public var value: Value
+  public var label: String
+  public var theme: ThemeName?
+  public var id: Value { value }
+
+  public init(value: Value, label: String, theme: ThemeName? = nil) {
+    self.value = value
+    self.label = label
+    self.theme = theme
+  }
+
+  var variables: ThemeVariables {
+    (theme ?? ThemeName(rawValue: String(describing: value)) ?? .studioLight).variables
+  }
+}
+
+/// A wrapping run of miniature windows, each drawn in its own theme.
+/// Selection reports a value; applying that theme remains the host's decision.
+public struct PreferenceThemeSwatches<Value: Hashable>: View {
+  public var options: [PreferenceThemeOption<Value>]
+  public var value: Value?
+  public var onValueChange: ((Value) -> Void)?
+  @State private var own: Value?
+  @Environment(\.theme) private var page
+
+  public init(
+    options: [PreferenceThemeOption<Value>],
+    value: Value? = nil,
+    defaultValue: Value? = nil,
+    onValueChange: ((Value) -> Void)? = nil
+  ) {
+    self.options = options
+    self.value = value
+    self.onValueChange = onValueChange
+    _own = State(initialValue: defaultValue)
+  }
+
+  public var body: some View {
+    PreferenceSwatchLayout(spacing: page.vars.spacing15) {
+      ForEach(options) { option in
+        PreferenceSwatch(
+          option: option, selected: option.value == (value ?? own)
+        ) {
+          own = option.value
+          onValueChange?(option.value)
+        }
+      }
+    }
+    .accessibilityElement(children: .contain)
+  }
+}
+
+private struct PreferenceSwatch<Value: Hashable>: View {
+  let option: PreferenceThemeOption<Value>
+  let selected: Bool
+  let action: () -> Void
+  @Environment(\.theme) private var page
+  @Environment(\.layoutDirection) private var direction
+  @FocusState private var focused: Bool
+
+  var body: some View {
+    let outer = page.vars
+    let vars = option.variables
+    Tooltip {
+      Text(option.label)
+    } content: {
+      Pressable(action: action, cornerRadius: outer.radiusSmall) { _ in
+        Canvas { context, size in
+          let rect = CGRect(origin: .zero, size: size)
+          let rule = vars.strokeHairline
+          let column = (size.width - rule * 2) * 0.3
+          let window = Path(roundedRect: rect, cornerRadius: vars.radiusSmall)
+          context.clip(to: window)
+          context.fill(window, with: .color(vars.colorSurface))
+          if direction == .rightToLeft {
+            context.translateBy(x: size.width, y: 0)
+            context.scaleBy(x: -1, y: 1)
+          }
+          context.fill(Path(CGRect(x: rule, y: rule, width: column,
+            height: size.height - rule * 2)), with: .color(vars.colorSurfaceColumn))
+          context.fill(Path(CGRect(x: column, y: rule, width: rule,
+            height: size.height - rule * 2)), with: .color(vars.colorBorderStrong))
+          let left = rule + column + vars.spacing1
+          let width = size.width - rule - vars.spacing1 - left
+          context.fill(Path(roundedRect: CGRect(x: left, y: rule + vars.spacing1,
+            width: width, height: vars.spacing05), cornerRadius: vars.spacingPx),
+            with: .color(vars.colorContent))
+          context.fill(Path(roundedRect: CGRect(x: left,
+            y: size.height - rule - vars.spacing1 - vars.spacing15,
+            width: width * 0.6, height: vars.spacing15), cornerRadius: vars.spacingPx),
+            with: .color(vars.colorPrimary[500]))
+        }
+        .frame(width: vars.controlSmallSize * 1.5, height: vars.controlSmallSize)
+        .border(vars.colorBorderStrong, width: vars.strokeHairline,
+          cornerRadius: vars.radiusSmall)
+        .overlay {
+          if selected {
+            let gap = outer.strokeHairline
+            let stroke = outer.strokeControl
+            RoundedRectangle(cornerRadius: outer.radiusSmall + gap + stroke / 2)
+              .stroke(outer.resolve(outer.descriptor(.outlined, .border),
+                tint: .primary, state: .normal), lineWidth: stroke)
+              .padding(-gap - stroke / 2)
+              .background {
+                RoundedRectangle(cornerRadius: outer.radiusSmall + gap)
+                  .stroke(outer.colorSurface, lineWidth: gap)
+                  .padding(-gap / 2)
+              }
+              .allowsHitTesting(false)
+          }
+        }
+      }
+      .focused($focused)
+      .focusRing(visible: focused, color: outer.focusRing,
+        cornerRadius: outer.radiusSmall, width: outer.focusWidth)
+      .accessibilityLabel(option.label)
+      .accessibilityAddTraits(selected ? [.isSelected] : [])
+    }
+  }
+}
+
+/// The last row aligns to the trailing edge as CSS's flex-end does.
+private struct PreferenceSwatchLayout: Layout {
+  var spacing: CGFloat
+
+  private func rows(_ subviews: Subviews, width: CGFloat) -> [[Int]] {
+    var result: [[Int]] = [[]]
+    var run: CGFloat = 0
+    for index in subviews.indices {
+      let size = subviews[index].sizeThatFits(.unspecified)
+      if run > 0, run + spacing + size.width > width {
+        result.append([])
+        run = 0
+      }
+      result[result.count - 1].append(index)
+      run += (run > 0 ? spacing : 0) + size.width
+    }
+    return result.filter { !$0.isEmpty }
+  }
+
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    let lines = rows(subviews, width: proposal.width ?? .infinity)
+    var size = CGSize.zero
+    for row in lines {
+      let sizes = row.map { subviews[$0].sizeThatFits(.unspecified) }
+      size.width = max(size.width, sizes.reduce(0) { $0 + $1.width }
+        + CGFloat(row.count - 1) * spacing)
+      size.height += (sizes.map(\.height).max() ?? 0) + spacing
+    }
+    size.height = max(0, size.height - spacing)
+    return size
+  }
+
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize,
+    subviews: Subviews, cache: inout ()) {
+    var y = bounds.minY
+    for row in rows(subviews, width: bounds.width) {
+      let sizes = row.map { subviews[$0].sizeThatFits(.unspecified) }
+      let width = sizes.reduce(0) { $0 + $1.width } + CGFloat(row.count - 1) * spacing
+      var x = bounds.maxX - width
+      for (index, size) in zip(row, sizes) {
+        subviews[index].place(at: CGPoint(x: x, y: y), anchor: .topLeading,
+          proposal: ProposedViewSize(size))
+        x += size.width + spacing
+      }
+      y += (sizes.map(\.height).max() ?? 0) + spacing
+    }
+  }
+}

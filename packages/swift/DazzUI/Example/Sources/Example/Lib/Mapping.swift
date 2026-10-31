@@ -409,6 +409,22 @@ let components: [String: ComponentBuilder] = [
     AnyView(PreferenceSection(label: n.string("label"), footer: n.string("footer")) { n.kids })
   },
   "Preferences": { n in AnyView(Preferences { n.kids }) },
+  "PreferenceThemeSwatches": { n in
+    let options: [PreferenceThemeOption<String>] = (n["options"].array ?? []).map { option in
+      let palette = option["theme"].map { ThemeName(rawValue: $0.text) ?? .studioLight }
+      return PreferenceThemeOption(value: option["value"]?.text ?? "",
+        label: option["label"]?.text ?? "", theme: palette)
+    }
+    return bound(n, onChange: "onValueChange", fallback: "defaultValue", initial: "",
+      read: { $0.text }, write: Value.string) { value in
+      PreferenceThemeSwatches(
+        options: options,
+        value: value.wrappedValue,
+        onValueChange: { value.wrappedValue = $0 }
+      )
+      .accessibilityLabel(n.string("aria-label") ?? "")
+    }
+  },
   "PreviewCard": { n in
     AnyView(
       PreviewCard(width: Length(n["width"])?.points) {

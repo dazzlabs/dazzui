@@ -218,7 +218,9 @@ public sealed class PreferenceRow : Surface
         }
         if (trailing is FrameworkElement end)
         {
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            var swatches = trailing is PreferenceThemeSwatches;
+            if (swatches) grid.ColumnDefinitions[Leading is null ? 0 : 1].Width = GridLength.Auto;
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = swatches ? new GridLength(1, GridUnitType.Star) : GridLength.Auto });
             Skin.Detach(end); end.VerticalAlignment = VerticalAlignment.Center;
             Grid.SetColumn(end, grid.ColumnDefinitions.Count - 1); grid.Children.Add(end);
         }

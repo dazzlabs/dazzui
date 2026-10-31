@@ -759,19 +759,24 @@ export class StoryCompiler {
     return scene
   }
 
-  story() {
+  story({ extension = false, platform } = {}) {
     const { exported } = this.module()
     const where = this.source.statements.at(-1)
     if (!exported || typeof exported !== 'object')
       this.fail(where, 'A story file exports its story by default')
-    for (const key of ['id', 'name', 'summary'])
+    if (extension && !exported.platforms?.includes(platform)) return null
+    for (const key of extension ? ['id'] : ['id', 'name', 'summary'])
       if (typeof exported[key] !== 'string')
         this.fail(where, `The story needs a ${key}`)
     return {
       id: exported.id,
-      name: exported.name,
-      summary: exported.summary,
-      preview: this.render(exported.Preview, where),
+      ...(extension
+        ? {}
+        : {
+            name: exported.name,
+            summary: exported.summary,
+            preview: this.render(exported.Preview, where),
+          }),
       examples: exported.examples.map(example => {
         if (typeof example.title !== 'string')
           this.fail(where, 'Every example needs a title')
@@ -814,7 +819,7 @@ export function evaluateModule(file, source) {
   return name => compiler.read(name, scope, compiler.source)
 }
 
-export async function readStories(root) {
+export async function readStories(root, { platform } = {}) {
   const example = path.join(root, 'packages/js/dazzui/example/src')
   const tints = await fs.readFile(
     path.join(root, 'packages/js/dazzui/src/lib/tint.ts'),
@@ -836,6 +841,51 @@ export async function readStories(root) {
     if (`${story.id}.tsx` !== file)
       throw new StoryError(`stories/${file}: the id must be the file's name`)
     stories.push(story)
+  }
+  if (platform) {
+    const extensions = path.join(dir, 'react')
+    for (const file of (await fs.readdir(extensions))
+      .filter(file => file.endsWith('.tsx'))
+      .sort()) {
+      const source = await fs.readFile(path.join(extensions, file), 'utf8')
+      const syntax = ts.createSourceFile(
+        file,
+        source,
+        ts.ScriptTarget.Latest,
+        true,
+        ts.ScriptKind.TSX
+      )
+      const optedIn = syntax.statements.some(
+        statement =>
+          ts.isVariableStatement(statement) &&
+          statement.declarationList.declarations.some(
+            declaration =>
+              declaration.initializer &&
+              ts.isObjectLiteralExpression(declaration.initializer) &&
+              declaration.initializer.properties.some(
+                property =>
+                  ts.isPropertyAssignment(property) &&
+                  property.name.getText(syntax) === 'platforms'
+              )
+          )
+      )
+      if (!optedIn) continue
+      // Extension files live one directory below portable stories.
+      const compiler = new StoryCompiler(
+        `stories/react/${file}`,
+        source,
+        context
+      )
+      compiler.stageSource = () => '../../components/stage'
+      const extension = compiler.story({ extension: true, platform })
+      if (!extension) continue
+      const story = stories.find(story => story.id === extension.id)
+      if (!story)
+        throw new StoryError(
+          `stories/react/${file}: no portable story named ${extension.id}`
+        )
+      story.examples.push(...extension.examples)
+    }
   }
   return stories.sort((a, b) => a.name.localeCompare(b.name))
 }

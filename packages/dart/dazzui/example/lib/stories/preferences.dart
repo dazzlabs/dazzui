@@ -278,5 +278,72 @@ const story = Story(
         },
       ),
     ),
+    Example(
+      title: "Choosing a theme",
+      note: "Each swatch is drawn in its own theme, whatever the page is in.",
+      demo: Scene(
+        content: {
+          "\$el": "Col",
+          "props": {"width": "32rem"},
+          "children": [
+            {
+              "\$el": "Preferences",
+              "children": [
+                {
+                  "\$el": "PreferenceSection",
+                  "props": {"label": "Appearance"},
+                  "children": [
+                    {
+                      "\$el": "PreferenceRow",
+                      "props": {"title": "Theme"},
+                      "children": [
+                        {
+                          "\$el": "PreferenceThemeSwatches",
+                          "props": {
+                            "aria-label": "Theme",
+                            "options": [
+                              {
+                                "value": "studio-light",
+                                "label": "Studio",
+                                "theme": "",
+                              },
+                              {"value": "bright-light", "label": "Bright"},
+                              {"value": "frost-light", "label": "Frost"},
+                              {"value": "graphite-light", "label": "Graphite"},
+                              {"value": "ember-light", "label": "Ember"},
+                              {"value": "nocturne-light", "label": "Nocturne"},
+                            ],
+                            "defaultValue": "studio-light",
+                          },
+                          "\$at": 3,
+                        },
+                      ],
+                      "\$at": 2,
+                    },
+                    {
+                      "\$el": "PreferenceRow",
+                      "props": {"title": "Follow the system"},
+                      "children": [
+                        {
+                          "\$el": "Switch",
+                          "props": {
+                            "defaultChecked": true,
+                            "aria-label": "Follow the system",
+                          },
+                          "\$at": 5,
+                        },
+                      ],
+                      "\$at": 4,
+                    },
+                  ],
+                  "\$at": 1,
+                },
+              ],
+              "\$at": 0,
+            },
+          ],
+        },
+      ),
+    ),
   ],
 );

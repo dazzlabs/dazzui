@@ -45,6 +45,32 @@ test('every React story compiles, and Flutter draws all of it', async () => {
   }
 })
 
+test('theme swatches compile only for the native ports that opt in', async () => {
+  const shared = await readStories(root)
+  const preferences = stories =>
+    stories.find(story => story.id === 'preferences')
+  const original = preferences(shared)
+  assert.ok(
+    !original.examples.some(example => example.title === 'Choosing a theme')
+  )
+  for (const [platform, check] of [
+    ['flutter', unsupported],
+    ['swiftui', swiftui.unsupported],
+    ['winui', winui.unsupported],
+  ]) {
+    const stories = await readStories(root, { platform })
+    assert.deepEqual(check(stories), [])
+    const native = preferences(stories)
+    assert.equal(native.examples.length, original.examples.length + 1)
+    const scene = native.examples.at(-1).scene
+    const swatch = scene.content.children[0].children[0].children[0].children[0]
+    assert.equal(swatch.$el, 'PreferenceThemeSwatches')
+    assert.equal(swatch.props.options.length, 6)
+    assert.equal(swatch.props.options[0].theme, '')
+    assert.equal(swatch.props.defaultValue, 'studio-light')
+  }
+})
+
 test('constant lists are unrolled ahead of time', () => {
   const { preview } = compile(
     story(
