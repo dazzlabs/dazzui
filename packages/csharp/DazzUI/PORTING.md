@@ -11,6 +11,8 @@ Implemented areas:
 - Selection, text/numeric/OTP fields, forms, progress and feedback.
 - Menus, dialogs/drawers, popovers, navigation, tree/table, splitter and shortcuts.
 - Sidebars that animate their width, on both sides of the example window.
+- Window chrome: the titlebar band with its slots, caption control sets and
+  inactive ink, with minimize/maximize/close/drag requests left to the host.
 - The React example's window: component list, overview, component pages,
   theme panel, resizable columns.
 - Real-window all-theme rendering and native automation/interaction checks.

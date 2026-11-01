@@ -24,7 +24,7 @@ internal static class WindowChromeTests
     private static Microsoft.UI.Xaml.Controls.Button Caption(UI.WindowTitlebar bar, string name) =>
         Walk(bar).OfType<Microsoft.UI.Xaml.Controls.Button>().Single(button => AutomationProperties.GetName(button) == name);
 
-    public static async Task RunAsync(Shell shell)
+    public static async Task RunAsync(Shell shell, string output)
     {
         var bar = new UI.WindowTitlebar
         {
@@ -36,6 +36,7 @@ internal static class WindowChromeTests
         await Task.Delay(80);
         shell.UpdateLayout();
         Check(Math.Abs(bar.ActualHeight - 52) < .5, $"A titlebar measured {bar.ActualHeight}px instead of the 52px band.");
+        await SmokeTest.SaveAsync(bar, output, "window-titlebar.png");
         var buttons = Walk(bar).OfType<Microsoft.UI.Xaml.Controls.Button>().ToArray();
         Check(buttons.Length == 3, $"A full caption strip has {buttons.Length} controls.");
         Check(buttons.All(button => Math.Abs(button.Width - 46) < .1 && Math.Abs(button.Height - 52) < .1),

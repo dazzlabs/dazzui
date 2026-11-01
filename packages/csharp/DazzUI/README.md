@@ -60,6 +60,10 @@ machine over SSH and copies back the readings of every scene in
   NavItem, Aside, Rail, Splitter, Tree, Table, TableHead, TableRow and TableCell.
 - Overlays: Menu, ContextMenu, Menubar, Popover, PreviewCard, Tooltip,
   Dialog and Drawer.
+- Window chrome: WindowTitlebar with its leading, title, toolbar, trailing and
+  accessory slots, and WindowControls — the 46px Windows caption strip, with
+  inactive ink, close-only and all-hidden sets. The host owns AppWindow and
+  connects the minimize, maximize, close and drag requests.
 
 Controls are drawn to React's geometry and recipes — a Tree, a
 SegmentedControl, PillTabs or a Collapsible draws its own rows and segments

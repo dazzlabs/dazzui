@@ -70,7 +70,7 @@ internal static class SmokeTest
             }
             if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "window-chrome")
             {
-                await WindowChromeTests.RunAsync(shell);
+                await WindowChromeTests.RunAsync(shell, output);
                 await File.WriteAllTextAsync(Path.Combine(output, "result.txt"), "PASS: titlebar band, compact band, caption sets, close request and inactive ink.\n");
                 finishing = true;
                 window.Close();
