@@ -137,7 +137,7 @@ export function generateCSS(themes) {
         .join('\n')}\n}`
     )
   }
-  for (const [id, value] of Object.entries(themes['studio-light'])) {
+  for (const [id, value] of Object.entries(themes['bright-light'])) {
     if (id.startsWith('spacing.') && value?.unit)
       blocks.push(
         `.dz-gap-${name(id.slice(8))} { border-spacing: var(--${name(id)}); }`

@@ -10,7 +10,7 @@ function systemBarColor(value: ResourceColor): string {
 @Entry({ useSharedStorage: true })
 @Component
 struct Index {
-  @LocalStorageProp('family') family: DazzThemeFamily = DazzThemeFamily.Studio
+  @LocalStorageProp('family') family: DazzThemeFamily = DazzThemeFamily.Bright
   @LocalStorageProp('appearance') appearance: ThemeColorMode = ThemeColorMode.SYSTEM
 
   @LocalBuilder

@@ -45,7 +45,7 @@ test('the actual ArkTS family API returns both complete native appearances', () 
     )
     assert.deepEqual(Object.keys(theme), ['colors', 'darkColors'])
   }
-  assert.deepEqual(dazzTheme(), dazzTheme(DazzThemeFamily.Studio))
+  assert.deepEqual(dazzTheme(), dazzTheme(DazzThemeFamily.Bright))
   assert.throws(() => dazzTheme('missing'), /Unknown/)
 })
 

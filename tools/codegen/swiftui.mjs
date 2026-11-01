@@ -145,10 +145,10 @@ struct ThemeChoice: Hashable {
   /// The theme's name, as the web's \`data-theme\` writes it.
   var id: String { "\\(family)-\\(dark ? "dark" : "light")" }
 
-  var name: ThemeName { ThemeName(rawValue: id) ?? .studioLight }
+  var name: ThemeName { ThemeName(rawValue: id) ?? .brightLight }
 }
 
-let defaultTheme = ThemeChoice(family: "studio")
+let defaultTheme = ThemeChoice(family: ${JSON.stringify(groups[0].families[0].value)})
 
 /// A theme family: one name, in light and in dark.
 struct ThemeFamily: Hashable {

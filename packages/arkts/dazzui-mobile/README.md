@@ -44,7 +44,7 @@ struct Index {
 }
 ```
 
-Studio is the default. All 36 paired ds families are available in
+Bright is the default. All 36 paired ds families are available in
 `DazzThemeFamily` and `DAZZ_THEME_FAMILIES`. `appearance` defaults to
 `ThemeColorMode.SYSTEM`; set `LIGHT` or `DARK` for a local override. This does
 not change the application's or device's color-mode policy. Nested scopes can
@@ -172,7 +172,7 @@ Runtime verification on API 20 and physical phones/tablets has not been performe
 
 System-font verification on 2026-10-17–18 also passed on that API 26 phone emulator:
 the native 16 fp text resolved to 16 vp at 1x and 32 vp at 2x, with measured
-text heights of approximately 18.67 and 37.67 vp. Switching Studio to Ember
+text heights of approximately 18.67 and 37.67 vp. Switching Bright to Ember
 changed the native brand color while preserving the 2x text height. The test
 then restarted the gallery to remove its process-local scale override.
 The native button and text field also grew from 40 vp to approximately

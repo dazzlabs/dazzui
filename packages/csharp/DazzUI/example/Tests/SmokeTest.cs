@@ -151,7 +151,7 @@ internal static class SmokeTest
                     if (bitmap.PixelWidth == 0 || bitmap.PixelHeight == 0)
                         throw new InvalidOperationException($"Empty render: {choice.Id}, {page}");
                     CheckButtons(shell, choice.Id, page);
-                    if (shots && choice == themes[0] || page is null or "button" && choice.Family == "studio")
+                    if (shots && choice == themes[0] || page is null or "button" && choice.Family == "bright")
                         await SaveAsync(shell, output, $"{choice.Id}-{page ?? "overview"}.png");
                     // DAZZUI_SMOKE_EXAMPLES=1 keeps each example's stage on its own, as React's are captured.
                     if (examples && choice == themes[0] && shell.CurrentPage is Document document)

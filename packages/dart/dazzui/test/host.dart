@@ -15,7 +15,7 @@ import 'package:flutter/cupertino.dart' show DefaultCupertinoLocalizations;
 /// replacement here: the ambient text style it carried is the [Theme]'s own
 /// now, which is where a test wants it anyway.
 Widget host(Widget child, {ThemeData? theme}) {
-  final ThemeData data = theme ?? ThemeData.studioLight();
+  final ThemeData data = theme ?? ThemeData.brightLight();
 
   return WidgetsApp(
     color: data.vars.colorCanvas,

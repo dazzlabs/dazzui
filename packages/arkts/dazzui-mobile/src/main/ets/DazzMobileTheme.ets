@@ -12,7 +12,7 @@ function emptyContent() {
 /** Color-only scope for stock ArkUI controls. System appearance by default. */
 @Component
 export struct DazzMobileTheme {
-  @Prop family: DazzThemeFamily = DazzThemeFamily.Studio
+  @Prop family: DazzThemeFamily = DazzThemeFamily.Bright
   @Prop appearance: ThemeColorMode = ThemeColorMode.SYSTEM
   @BuilderParam content: () => void = emptyContent
   @State private systemDark: boolean = false

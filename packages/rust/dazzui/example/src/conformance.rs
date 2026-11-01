@@ -145,7 +145,7 @@ pub fn run(options: Options, cx: &mut App) {
             },
             |_, cx| {
                 cx.new(|_| Stage {
-                    theme: Theme::named("studio-light").unwrap(),
+                    theme: Theme::named("bright-light").unwrap(),
                     scene: None,
                 })
             },

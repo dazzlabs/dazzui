@@ -22,8 +22,8 @@ public struct Theme: Sendable {
     self.vars = sizing == .system ? name.variables.resolvingSystemSizing(metrics) : name.variables
   }
 
-  /// The default is Studio Light, the same baseline `:root` holds.
-  public static let `default` = Theme(.studioLight)
+  /// The default is Bright Light, the same theme `:root` holds.
+  public static let `default` = Theme(.brightLight)
 }
 
 private struct ThemeKey: EnvironmentKey {

@@ -18,10 +18,19 @@ import '../widgets/key_cap_theme.dart';
 
 /// A theme data.
 class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
-  /// Studio Light — the baseline every other theme is written against.
-  static ThemeData studioLight() {
+  /// Bright Light — warm paper, ink navy, acid green marker. The default,
+  /// and the instance every other theme is written against.
+  static ThemeData brightLight() {
     return ThemeData(
       vars: themeVariables,
+      brightness: Brightness.light,
+    );
+  }
+
+  /// Studio Light — white cards on a lilac-grey canvas, the baseline.
+  static ThemeData studioLight() {
+    return ThemeData(
+      vars: themeVariablesStudioLight,
       brightness: Brightness.light,
     );
   }
@@ -31,14 +40,6 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
     return ThemeData(
       vars: themeVariablesStudioDark,
       brightness: Brightness.dark,
-    );
-  }
-
-  /// Bright Light — warm paper, ink navy, acid green marker.
-  static ThemeData brightLight() {
-    return ThemeData(
-      vars: themeVariablesBrightLight,
-      brightness: Brightness.light,
     );
   }
 
@@ -114,11 +115,11 @@ class ThemeData extends ThemeExtension<ThemeData> with DiagnosticableTreeMixin {
     );
   }
 
-  /// Creates a dark theme — Studio Dark under its older name.
-  static ThemeData dark() => studioDark();
+  /// Creates a dark theme — Bright Dark under its older name.
+  static ThemeData dark() => brightDark();
 
-  /// Creates a light theme — Studio Light under its older name.
-  static ThemeData light() => studioLight();
+  /// Creates a light theme — Bright Light under its older name.
+  static ThemeData light() => brightLight();
 
   const ThemeData({
     this.vars = themeVariables,
@@ -293,7 +294,7 @@ class Theme extends InheritedTheme {
     );
   }
 
-  /// The theme the current subtree is rendered under, falling back to Studio
+  /// The theme the current subtree is rendered under, falling back to Bright
   /// Light so a widget dropped into a bare app still paints correctly rather
   /// than throwing on a missing ancestor.
   ///
@@ -303,7 +304,7 @@ class Theme extends InheritedTheme {
   /// the playground does around one window rather than around the process.
   static ThemeData of(BuildContext context) {
     final theme = context.dependOnInheritedWidgetOfExactType<Theme>();
-    return theme?.data ?? ThemeData.studioLight();
+    return theme?.data ?? ThemeData.brightLight();
   }
 }
 

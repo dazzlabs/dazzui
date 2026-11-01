@@ -193,7 +193,7 @@ and a Rust theme registry. GTK CSS custom properties require GTK >= 4.16.
 `packages/arkts/dazzui/src/main/ets/generated/ThemeData.ets`. It shares the
 resolved theme walk with WinUI/GPUI. Colors use ArkUI ARGB order; px/rem
 lengths become logical vp and durations remain milliseconds. A complete
-Studio Light snapshot plus per-theme differences carries every semantic
+Bright Light snapshot plus per-theme differences carries every semantic
 metric, type style, shadow and recipe. `DazzTokens` copies those maps per scope
 and resolves recipe shades against the selected tint at runtime, multiplying
 the source alpha rather than replacing it. It does not import ds at runtime.

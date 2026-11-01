@@ -56,8 +56,8 @@ display-pixel measurement. For text drawn directly with GPUI, use
 properties by name: `--control-medium-size` is `t.control_medium_size`.
 
 `src/generated/theme_tokens.rs` is what `ds/plugins/gpui.mjs` wrote. Every
-theme is a `const` naming only what differs from Studio Light's, over
-`..STUDIO_LIGHT`, so nothing is derived at run time except the tint: a
+theme is a `const` naming only what differs from Bright Light's, over
+`..BRIGHT_LIGHT`, so nothing is derived at run time except the tint: a
 recipe cell that picks a shade off the control's ramp stays a
 `Paint::Shade`, resolved against the ramp where the control is drawn.
 `src/glyphs.rs` is written by `pnpm codegen` from the Fluent icons the

@@ -3,7 +3,7 @@ import DazzMobileUI
 
 /// The playground's root view, built entirely from native SwiftUI controls.
 struct NativeControls: View {
-  @State private var family: ThemeFamily = .studio
+  @State private var family: ThemeFamily = .bright
   @State private var appearance = Appearance.system
 
   var body: some View {

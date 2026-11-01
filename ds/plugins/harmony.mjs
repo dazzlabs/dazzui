@@ -101,7 +101,7 @@ export function snapshot(values) {
 }
 
 export function themeData(themes) {
-  const base = snapshot(themes['studio-light'])
+  const base = snapshot(themes['bright-light'])
   const overrides = Object.fromEntries(
     Object.entries(themes).map(([name, values]) => {
       const resolved = snapshot(values)

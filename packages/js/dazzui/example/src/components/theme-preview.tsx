@@ -12,11 +12,11 @@ const DRAWN = [
 ] as const
 
 /**
- * Studio Light's values, read off the document before any theme is applied.
+ * Bright Light's values, read off the document before any theme is applied.
  * Every other theme can be asked for by nesting its `data-theme`; this one
  * lives on `:root`, so inside another theme there is no selector to ask.
  */
-const studioLight = (() => {
+const rootTheme = (() => {
   const root = document.documentElement
   const applied = root.getAttribute('data-theme')
   root.removeAttribute('data-theme')
@@ -39,7 +39,7 @@ export function ThemePreview({ theme }: { theme: Theme }) {
     <span
       className="g-preview"
       data-theme={isDefault ? undefined : id}
-      style={isDefault ? studioLight : undefined}
+      style={isDefault ? rootTheme : undefined}
       aria-hidden
     >
       <span className="g-preview__column" />

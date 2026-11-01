@@ -27,13 +27,14 @@ control:
       $value: 0.9
   # The corner a box that grows with its content wears — a preference row, a
   # callout, a code block, a disclosure header. It is the regular control step,
-  # because those boxes are drawn in the control's rhythm; Bright is the
-  # exception, where that step is a pill — right for a box whose height sets its
-  # curve, and wrong here, where the curve would stretch with the content
-  # instead of staying a corner. So Bright re-picks a corner of its own: its
-  # `xl`, the one finite step that family invented, rather than the shared
-  # container step every other surface already wears — which would have drawn
-  # this row at the card's corner and left Bright looking like the rest.
+  # because those boxes are drawn in the control's rhythm; Bright, the
+  # default, is the exception: there that step is a pill — right for a box
+  # whose height sets its curve, and wrong here, where the curve would stretch
+  # with the content instead of staying a corner. So Bright wears a corner of
+  # its own: its `xl`, the one finite step that family invented, rather than
+  # the shared container step every other surface already wears — which would
+  # have drawn this row at the card's corner and left Bright looking like the
+  # rest. Every other theme keeps that shared step, as the `studio` mode says.
   #
   # Stated against the corner metrics rather than as an alias of one radius
   # step, the way the radius scale states its own steps: it is the one role
@@ -52,19 +53,19 @@ control:
   field:
     radius:
       $type: dimension
-      $value: "{base.corner.md}"
+      $value: 9999px
       $extensions:
         mode:
-          bright: 9999px
+          studio: "{base.corner.md}"
           graphite: "{base.corner.sm}"
           nocturne: "{base.corner.sm}"
   container:
     radius:
       $type: dimension
-      $value: "{base.corner.md}"
+      $value: "{base.corner.xl-bright}"
       $extensions:
         mode:
-          bright: "{base.corner.xl-bright}"
+          studio: "{base.corner.md}"
           graphite: "{base.corner.sm}"
           nocturne: "{base.corner.sm}"
   # A glyph that sits beside a label rather than alone. The profile's

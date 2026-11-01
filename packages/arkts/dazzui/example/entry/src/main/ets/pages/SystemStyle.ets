@@ -94,7 +94,7 @@ struct FontComparison {
 @Entry({ useSharedStorage: true })
 @Component
 struct SystemStyle {
-  @State theme: string = 'studio-light'
+  @State theme: string = 'bright-light'
   @LocalBuilder adapted() { FontComparison() }
   build() {
     Column({ space: 16 }) {
@@ -106,7 +106,7 @@ struct SystemStyle {
           this.getUIContext().getHostContext()?.getApplicationContext().setFontSizeScale(2)
         })
         Button('Change theme').id('change-theme').onClick(() => {
-          this.theme = this.theme === 'studio-light' ? 'bright-dark' : 'studio-light'
+          this.theme = this.theme === 'bright-light' ? 'bright-dark' : 'bright-light'
         })
       }
       DazzTheme({ name: this.theme, sizing: 'system', content: this.adapted })

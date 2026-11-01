@@ -7,7 +7,7 @@
 //! use dazzui_gtk4::{gtk, prelude::*, *};
 //! gtk::init().unwrap();
 //! let window = gtk::Window::new();
-//! Theme::new("studio-light").unwrap().apply(&window);
+//! Theme::new("bright-light").unwrap().apply(&window);
 //! let save = button("Save", Variant::Filled, Tint::Primary, Size::Medium);
 //! save.connect_clicked(|_| println!("saved"));
 //! window.set_child(Some(&save));

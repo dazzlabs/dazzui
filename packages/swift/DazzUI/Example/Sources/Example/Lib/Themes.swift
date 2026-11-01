@@ -9,10 +9,10 @@ struct ThemeChoice: Hashable {
   /// The theme's name, as the web's `data-theme` writes it.
   var id: String { "\(family)-\(dark ? "dark" : "light")" }
 
-  var name: ThemeName { ThemeName(rawValue: id) ?? .studioLight }
+  var name: ThemeName { ThemeName(rawValue: id) ?? .brightLight }
 }
 
-let defaultTheme = ThemeChoice(family: "studio")
+let defaultTheme = ThemeChoice(family: "bright")
 
 /// A theme family: one name, in light and in dark.
 struct ThemeFamily: Hashable {
@@ -27,8 +27,8 @@ struct ThemeFamilyGroup {
 
 let themeFamilyGroups: [ThemeFamilyGroup] = [
   ThemeFamilyGroup(title: "DazzUI", families: [
-    ThemeFamily(value: "studio", title: "Studio"),
     ThemeFamily(value: "bright", title: "Bright"),
+    ThemeFamily(value: "studio", title: "Studio"),
     ThemeFamily(value: "frost", title: "Frost"),
     ThemeFamily(value: "graphite", title: "Graphite"),
     ThemeFamily(value: "ember", title: "Ember"),

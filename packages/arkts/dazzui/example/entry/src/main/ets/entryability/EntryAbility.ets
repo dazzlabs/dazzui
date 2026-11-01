@@ -16,7 +16,7 @@ export default class EntryAbility extends UIAbility {
   private modalTest: boolean = false
   private paintTest: boolean = false
   private sceneId: string = 'button/preview'
-  private themeName: string = 'studio-light'
+  private themeName: string = 'bright-light'
   private stage?: window.WindowStage
   private storage: LocalStorage = new LocalStorage()
 
@@ -45,7 +45,7 @@ export default class EntryAbility extends UIAbility {
     const scene = want.parameters?.['sceneId']
     const theme = want.parameters?.['themeName']
     this.sceneId = typeof scene === 'string' ? scene : 'button/preview'
-    this.themeName = typeof theme === 'string' ? theme : 'studio-light'
+    this.themeName = typeof theme === 'string' ? theme : 'bright-light'
     this.storage.setOrCreate('sceneId', this.sceneId)
     this.storage.setOrCreate('themeName', this.themeName)
   }

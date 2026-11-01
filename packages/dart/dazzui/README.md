@@ -49,9 +49,9 @@ use it.
 
 ## Themes
 
-`ThemeData` has a constructor per theme — `studioLight()`, `studioDark()`,
-`frostLight()` and the rest. A component reads the theme in force with
-`Theme.of(context)`. The names come from ds, the design system's single
+`ThemeData` has a constructor per theme — `brightLight()` (the default),
+`studioLight()`, `frostLight()` and the rest. A component reads the theme in
+force with `Theme.of(context)`. The names come from ds, the design system's single
 token source; `lib/src/generated/` is what it wrote. **Never hand-edit it.**
 
 ## Native menus

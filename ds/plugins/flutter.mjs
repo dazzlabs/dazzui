@@ -579,9 +579,9 @@ ${overrides.join('\n')}
 
   // Every theme by the name `data-theme` gives it, so a host — or a
   // playground offering seventy of them — can pick one by name rather than
-  // by a hand-written case per theme. Studio Light is the default instance.
+  // by a hand-written case per theme. Bright Light is the default instance.
   const entries = [
-    `  'studio-light': themeVariables,`,
+    `  'bright-light': themeVariables,`,
     ...emitted.map(theme => `  '${theme}': ${themeInstanceName(theme)},`),
   ]
   blocks.push(`

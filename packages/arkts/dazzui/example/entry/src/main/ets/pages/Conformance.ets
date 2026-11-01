@@ -10,7 +10,7 @@ import { captureBoxes, capturePixels } from '../lib/Conformance'
 @Entry({ useSharedStorage: true })
 @Component
 struct Conformance {
-  @LocalStorageProp('themeName') themeName: string = 'studio-light'
+  @LocalStorageProp('themeName') themeName: string = 'bright-light'
   @LocalStorageProp('sceneId') sceneId: string = 'button/preview'
   @LocalBuilder specimen() {
     ConformanceScene({ sceneId: this.sceneId, themeName: this.themeName })
@@ -26,7 +26,7 @@ struct Conformance {
 struct ConformanceScene {
   @Consume('dazzui.theme') tokens: DazzTokens
   @Prop sceneId: string = 'button/preview'
-  @Prop themeName: string = 'studio-light'
+  @Prop themeName: string = 'bright-light'
   @State status: string = ''
   scene(): Scene | undefined {
     for (const story of STORIES) {

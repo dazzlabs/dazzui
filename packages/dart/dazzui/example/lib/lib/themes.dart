@@ -27,7 +27,7 @@ class ThemeChoice {
   int get hashCode => Object.hash(family, dark);
 }
 
-const defaultTheme = ThemeChoice('studio');
+const defaultTheme = ThemeChoice("bright");
 
 /// A theme family: one name, in light and in dark.
 class ThemeFamily {
@@ -46,8 +46,8 @@ class ThemeFamilyGroup {
 
 const themeFamilyGroups = <ThemeFamilyGroup>[
   ThemeFamilyGroup("DazzUI", [
-    ThemeFamily("studio", "Studio"),
     ThemeFamily("bright", "Bright"),
+    ThemeFamily("studio", "Studio"),
     ThemeFamily("frost", "Frost"),
     ThemeFamily("graphite", "Graphite"),
     ThemeFamily("ember", "Ember"),
@@ -91,10 +91,10 @@ const themeFamilyGroups = <ThemeFamilyGroup>[
 
 /// The variables a theme is drawn with, by its React name.
 ThemeVariables themeVariablesOf(String id) => switch (id) {
-  "studio-light" => themeVariables,
-  "studio-dark" => themeVariablesStudioDark,
-  "bright-light" => themeVariablesBrightLight,
+  "bright-light" => themeVariables,
   "bright-dark" => themeVariablesBrightDark,
+  "studio-light" => themeVariablesStudioLight,
+  "studio-dark" => themeVariablesStudioDark,
   "frost-light" => themeVariablesFrostLight,
   "frost-dark" => themeVariablesFrostDark,
   "graphite-light" => themeVariablesGraphiteLight,

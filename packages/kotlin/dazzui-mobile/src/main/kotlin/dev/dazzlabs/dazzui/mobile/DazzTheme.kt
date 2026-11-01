@@ -13,7 +13,7 @@ import dev.dazzlabs.dazzui.mobile.generated.dazzColorScheme
  */
 @Composable
 fun DazzTheme(
-    family: DazzThemeFamily = DazzThemeFamily.Studio,
+    family: DazzThemeFamily = DazzThemeFamily.Bright,
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {

@@ -142,7 +142,7 @@ rather than four designs that resemble each other.
   package, with `--features runtime-shaders` on a Mac without the Metal
   toolchain. `src/generated/theme_tokens.rs` is what `ds/plugins/gpui.mjs`
   wrote and is committed: every theme a `const` naming only what differs
-  from Studio Light's, over `..STUDIO_LIGHT`. `src/glyphs.rs` — the Fluent
+  from Bright Light's, over `..BRIGHT_LIGHT`. `src/glyphs.rs` — the Fluent
   glyphs the kit draws, rendered from the icons React imports — is written
   by `pnpm codegen`. A theme is a global the app sets and a subtree may
   override with `themed`; a component reads it with `cx.theme()`.

@@ -29,8 +29,9 @@
  *
  * A file also names its *metrics*: the geometry a family shares — Hyprland's
  * square corner, AppKit's capsule, Fluent's 4px control corner — as token
- * values applied under a family mode, beside `bright` and `graphite`. Several
- * themes can share one: Debian, Fedora and Ubuntu all wear Adwaita's.
+ * values applied under a family mode, beside `studio`, `graphite` and the
+ * rest. Several themes can share one: Debian, Fedora and Ubuntu all wear
+ * Adwaita's.
  *
  * Like `recipes.mjs`, this runs on the token documents before Terrazzo parses
  * them and writes nothing back. Every theme's derived values are a mode named

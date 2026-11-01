@@ -317,7 +317,7 @@ pub struct ThemeTokens {
     pub wash_surface: f32,
 }
 
-pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
+pub const BRIGHT_LIGHT: ThemeTokens = ThemeTokens {
     body_large: TypeStyle {
         face: Face::Text,
         size: 15.0,
@@ -362,16 +362,16 @@ pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
     checkbox_radius: 5.0,
     checkbox_small_box: 14.0,
     checkbox_thickness: 1.5,
-    color_border: Color(0x14162a12),
-    color_border_muted: Color(0x5f6478ff),
-    color_border_strong: Color(0x14162a17),
-    color_canvas: Color(0xeeecf6ff),
-    color_content: Color(0x12142aff),
-    color_content_faint: Color(0xa2a7bdff),
-    color_content_muted: Color(0x565b78ff),
-    color_content_nav: Color(0x4a4f6bff),
-    color_content_secondary: Color(0x3c405cff),
-    color_content_subtle: Color(0x8c92aaff),
+    color_border: Color(0x111c2e14),
+    color_border_muted: Color(0x111c2e40),
+    color_border_strong: Color(0x111c2e17),
+    color_canvas: Color(0xe6eadeff),
+    color_content: Color(0x111c2eff),
+    color_content_faint: Color(0x111c2e61),
+    color_content_muted: Color(0x111c2ea8),
+    color_content_nav: Color(0x111c2eb3),
+    color_content_secondary: Color(0x111c2ec7),
+    color_content_subtle: Color(0x111c2e73),
     color_danger: Ramp([
         Color(0xfdf2f2ff),
         Color(0xf9e2e2ff),
@@ -411,19 +411,19 @@ pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
         Color(0x171717ff),
         Color(0x0a0a0aff),
     ]),
-    color_on_accent: Color(0xffffffff),
+    color_on_accent: Color(0xd6ff3fff),
     color_primary: Ramp([
-        Color(0xf4f1feff),
-        Color(0xe6dfffff),
-        Color(0xcdc0ffff),
-        Color(0xb9a8ffff),
-        Color(0x9a82ffff),
-        Color(0x7c5cffff),
-        Color(0x6b4dffff),
-        Color(0x5b3fe0ff),
-        Color(0x4c33ccff),
-        Color(0x3d2aa3ff),
-        Color(0x2a1c6bff),
+        Color(0xf6fae2ff),
+        Color(0xf1f7d2ff),
+        Color(0xe6f77aff),
+        Color(0xd6ff3fff),
+        Color(0x8fa06aff),
+        Color(0x3d5470ff),
+        Color(0x111c2eff),
+        Color(0x1c2a41ff),
+        Color(0x263449ff),
+        Color(0x0b1420ff),
+        Color(0x060b12ff),
     ]),
     color_success: Ramp([
         Color(0xe9f5efff),
@@ -438,15 +438,15 @@ pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
         Color(0x093924ff),
         Color(0x06281aff),
     ]),
-    color_surface: Color(0xffffffff),
-    color_surface_chrome: Color(0xf7f7faff),
-    color_surface_column: Color(0xfafafcff),
-    color_surface_inset: Color(0xf0f0f5ff),
-    color_surface_muted: Color(0xf7f7faff),
-    color_surface_overlay: Color(0xffffffff),
+    color_surface: Color(0xfbfaf7ff),
+    color_surface_chrome: Color(0xffffffff),
+    color_surface_column: Color(0xf4f3eeff),
+    color_surface_inset: Color(0xf0efe9ff),
+    color_surface_muted: Color(0xffffffff),
+    color_surface_overlay: Color(0xfbfaf7ff),
     color_surface_raised: Color(0xffffffff),
-    color_surface_subtle: Color(0x14162a0f),
-    color_surface_sunken: Color(0xe3e3ecff),
+    color_surface_subtle: Color(0x111c2e0f),
+    color_surface_sunken: Color(0xe5e3dbff),
     color_warning: Ramp([
         Color(0xfdf6eaff),
         Color(0xfef1deff),
@@ -464,35 +464,35 @@ pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
     control_color_filled_border_hovered: Paint::Color(Color(0x00000000), 1.0),
     control_color_filled_border_normal: Paint::Color(Color(0x00000000), 1.0),
     control_color_filled_border_pressed: Paint::Color(Color(0x00000000), 1.0),
-    control_color_filled_content_disabled: Paint::Color(Color(0xa2a7bdff), 1.0),
-    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
-    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
-    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
-    control_color_filled_surface_disabled: Paint::Color(Color(0xe3e3ecff), 1.0),
+    control_color_filled_content_disabled: Paint::Color(Color(0x111c2e61), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xd6ff3fff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xd6ff3fff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xd6ff3fff), 0.9),
+    control_color_filled_surface_disabled: Paint::Color(Color(0xe5e3dbff), 1.0),
     control_color_filled_surface_hovered: Paint::Shade(700, 1.0),
     control_color_filled_surface_normal: Paint::Shade(600, 1.0),
     control_color_filled_surface_pressed: Paint::Shade(700, 0.9),
     control_color_normal_border_disabled: Paint::Color(Color(0x00000000), 1.0),
-    control_color_normal_border_hovered: Paint::Color(Color(0x14162a17), 1.0),
-    control_color_normal_border_normal: Paint::Color(Color(0x14162a17), 1.0),
-    control_color_normal_border_pressed: Paint::Color(Color(0x14162a17), 0.9),
-    control_color_normal_content_disabled: Paint::Color(Color(0xa2a7bdff), 1.0),
-    control_color_normal_content_hovered: Paint::Color(Color(0x12142aff), 1.0),
-    control_color_normal_content_normal: Paint::Color(Color(0x12142aff), 1.0),
-    control_color_normal_content_pressed: Paint::Color(Color(0x12142aff), 0.9),
-    control_color_normal_surface_disabled: Paint::Color(Color(0xe3e3ecff), 1.0),
-    control_color_normal_surface_hovered: Paint::Color(Color(0x14162a0f), 1.0),
-    control_color_normal_surface_normal: Paint::Color(Color(0xffffffff), 1.0),
-    control_color_normal_surface_pressed: Paint::Color(Color(0x14162a0f), 0.9),
+    control_color_normal_border_hovered: Paint::Color(Color(0x111c2e17), 1.0),
+    control_color_normal_border_normal: Paint::Color(Color(0x111c2e17), 1.0),
+    control_color_normal_border_pressed: Paint::Color(Color(0x111c2e17), 0.9),
+    control_color_normal_content_disabled: Paint::Color(Color(0x111c2e61), 1.0),
+    control_color_normal_content_hovered: Paint::Color(Color(0x111c2eff), 1.0),
+    control_color_normal_content_normal: Paint::Color(Color(0x111c2eff), 1.0),
+    control_color_normal_content_pressed: Paint::Color(Color(0x111c2eff), 0.9),
+    control_color_normal_surface_disabled: Paint::Color(Color(0xe5e3dbff), 1.0),
+    control_color_normal_surface_hovered: Paint::Color(Color(0x111c2e0f), 1.0),
+    control_color_normal_surface_normal: Paint::Color(Color(0xfbfaf7ff), 1.0),
+    control_color_normal_surface_pressed: Paint::Color(Color(0x111c2e0f), 0.9),
     control_color_outlined_border_disabled: Paint::Color(Color(0x00000000), 1.0),
     control_color_outlined_border_hovered: Paint::Shade(700, 1.0),
     control_color_outlined_border_normal: Paint::Shade(600, 1.0),
     control_color_outlined_border_pressed: Paint::Shade(700, 0.9),
-    control_color_outlined_content_disabled: Paint::Color(Color(0xa2a7bdff), 1.0),
+    control_color_outlined_content_disabled: Paint::Color(Color(0x111c2e61), 1.0),
     control_color_outlined_content_hovered: Paint::Shade(800, 1.0),
     control_color_outlined_content_normal: Paint::Shade(700, 1.0),
     control_color_outlined_content_pressed: Paint::Shade(800, 0.9),
-    control_color_outlined_surface_disabled: Paint::Color(Color(0xe3e3ecff), 1.0),
+    control_color_outlined_surface_disabled: Paint::Color(Color(0xe5e3dbff), 1.0),
     control_color_outlined_surface_hovered: Paint::Shade(600, 0.08),
     control_color_outlined_surface_normal: Paint::Color(Color(0x00000000), 1.0),
     control_color_outlined_surface_pressed: Paint::Shade(600, 0.12),
@@ -500,7 +500,7 @@ pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
     control_color_plain_border_hovered: Paint::Color(Color(0x00000000), 1.0),
     control_color_plain_border_normal: Paint::Color(Color(0x00000000), 1.0),
     control_color_plain_border_pressed: Paint::Color(Color(0x00000000), 1.0),
-    control_color_plain_content_disabled: Paint::Color(Color(0xa2a7bdff), 1.0),
+    control_color_plain_content_disabled: Paint::Color(Color(0x111c2e61), 1.0),
     control_color_plain_content_hovered: Paint::Shade(800, 1.0),
     control_color_plain_content_normal: Paint::Shade(700, 1.0),
     control_color_plain_content_pressed: Paint::Shade(800, 0.9),
@@ -512,28 +512,28 @@ pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
     control_color_recessed_border_hovered: Paint::Color(Color(0x00000000), 1.0),
     control_color_recessed_border_normal: Paint::Color(Color(0x00000000), 1.0),
     control_color_recessed_border_pressed: Paint::Color(Color(0x00000000), 1.0),
-    control_color_recessed_content_disabled: Paint::Color(Color(0xa2a7bdff), 1.0),
-    control_color_recessed_content_hovered: Paint::Color(Color(0x12142aff), 1.0),
-    control_color_recessed_content_normal: Paint::Color(Color(0x12142aff), 1.0),
-    control_color_recessed_content_pressed: Paint::Color(Color(0x12142aff), 0.9),
-    control_color_recessed_surface_disabled: Paint::Color(Color(0xe3e3ecff), 1.0),
-    control_color_recessed_surface_hovered: Paint::Color(Color(0xe3e3ecff), 1.0),
-    control_color_recessed_surface_normal: Paint::Color(Color(0xf0f0f5ff), 1.0),
-    control_color_recessed_surface_pressed: Paint::Color(Color(0xe3e3ecff), 0.9),
+    control_color_recessed_content_disabled: Paint::Color(Color(0x111c2e61), 1.0),
+    control_color_recessed_content_hovered: Paint::Color(Color(0x111c2eff), 1.0),
+    control_color_recessed_content_normal: Paint::Color(Color(0x111c2eff), 1.0),
+    control_color_recessed_content_pressed: Paint::Color(Color(0x111c2eff), 0.9),
+    control_color_recessed_surface_disabled: Paint::Color(Color(0xe5e3dbff), 1.0),
+    control_color_recessed_surface_hovered: Paint::Color(Color(0xe5e3dbff), 1.0),
+    control_color_recessed_surface_normal: Paint::Color(Color(0xf0efe9ff), 1.0),
+    control_color_recessed_surface_pressed: Paint::Color(Color(0xe5e3dbff), 0.9),
     control_color_tinted_border_disabled: Paint::Color(Color(0x00000000), 1.0),
     control_color_tinted_border_hovered: Paint::Color(Color(0x00000000), 1.0),
     control_color_tinted_border_normal: Paint::Color(Color(0x00000000), 1.0),
     control_color_tinted_border_pressed: Paint::Color(Color(0x00000000), 1.0),
-    control_color_tinted_content_disabled: Paint::Color(Color(0xa2a7bdff), 1.0),
+    control_color_tinted_content_disabled: Paint::Color(Color(0x111c2e61), 1.0),
     control_color_tinted_content_hovered: Paint::Shade(800, 1.0),
     control_color_tinted_content_normal: Paint::Shade(700, 1.0),
     control_color_tinted_content_pressed: Paint::Shade(800, 0.9),
-    control_color_tinted_surface_disabled: Paint::Color(Color(0xe3e3ecff), 1.0),
+    control_color_tinted_surface_disabled: Paint::Color(Color(0xe5e3dbff), 1.0),
     control_color_tinted_surface_hovered: Paint::Shade(600, 0.2),
     control_color_tinted_surface_normal: Paint::Shade(600, 0.12),
     control_color_tinted_surface_pressed: Paint::Shade(600, 0.24),
-    control_container_radius: 10.0,
-    control_field_radius: 10.0,
+    control_container_radius: 14.0,
+    control_field_radius: 9999.0,
     control_label_glyph_inset: 2.0,
     control_label_glyph_shrink: 2.0,
     control_large_content: TypeStyle {
@@ -546,7 +546,7 @@ pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
     control_large_icon_size: 20.0,
     control_large_padding_block: 6.0,
     control_large_padding_inline: 16.0,
-    control_large_radius: 10.0,
+    control_large_radius: 9999.0,
     control_large_size: 32.0,
     control_medium_content: TypeStyle {
         face: Face::Text,
@@ -558,7 +558,7 @@ pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
     control_medium_icon_size: 16.0,
     control_medium_padding_block: 6.0,
     control_medium_padding_inline: 16.0,
-    control_medium_radius: 8.0,
+    control_medium_radius: 9999.0,
     control_medium_size: 28.0,
     control_pressed_alpha: 0.9,
     control_small_content: TypeStyle {
@@ -571,7 +571,7 @@ pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
     control_small_icon_size: 16.0,
     control_small_padding_block: 4.0,
     control_small_padding_inline: 12.0,
-    control_small_radius: 8.0,
+    control_small_radius: 9999.0,
     control_small_size: 26.0,
     control_tiny_content: TypeStyle {
         face: Face::Text,
@@ -583,14 +583,14 @@ pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
     control_tiny_icon_size: 12.0,
     control_tiny_padding_block: 4.0,
     control_tiny_padding_inline: 10.0,
-    control_tiny_radius: 8.0,
+    control_tiny_radius: 9999.0,
     control_tiny_size: 24.0,
     date_range_picker_key_tracking: 0.06,
     date_range_picker_side_width: 192.0,
     date_range_picker_time_min_width: 80.0,
     date_range_picker_trigger_min_width: 256.0,
     dialog_danger_border_alpha: 0.34,
-    dialog_scrim: Paint::Color(Color(0x12142aff), 0.25),
+    dialog_scrim: Paint::Color(Color(0x111c2eff), 0.25),
     dialog_width: 440.0,
     drawer_size: 352.0,
     focus_glow: Paint::Shade(600, 0.14),
@@ -599,12 +599,12 @@ pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
     focus_width: 3.0,
     frame_aside_width: 214.0,
     frame_nav_gap: 3.0,
-    frame_popover_radius: 16.0,
+    frame_popover_radius: 14.0,
     frame_rail_width: 150.0,
     frame_sidebar_icon_width: 48.0,
     frame_sidebar_width: 172.0,
     frame_titlebar_size: 52.0,
-    frame_window_radius: 18.0,
+    frame_window_radius: 16.0,
     frame_window_width: 840.0,
     headline_large: TypeStyle {
         face: Face::Display,
@@ -673,8 +673,8 @@ pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
     preview_card_close_delay: 300.0,
     preview_card_open_delay: 600.0,
     preview_card_width: 320.0,
-    progress_gradient_from: Color(0x6b4dffff),
-    progress_gradient_to: Color(0xa08cffff),
+    progress_gradient_from: Color(0x111c2eff),
+    progress_gradient_to: Color(0xd6ff3fff),
     radio_large_box: 20.0,
     radio_large_dot: 10.0,
     radio_medium_box: 16.0,
@@ -682,59 +682,59 @@ pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
     radio_small_box: 14.0,
     radio_small_dot: 6.0,
     radio_thickness: 1.5,
-    radius_big: 16.0,
+    radius_big: 14.0,
     radius_full: 9999.0,
     radius_large: 12.0,
-    radius_medium: 10.0,
+    radius_medium: 9999.0,
     radius_none: 0.0,
-    radius_small: 8.0,
+    radius_small: 9999.0,
     radius_tiny: 7.0,
     search_field_input_width: 136.0,
     segmented_control_inset: 3.0,
     shadow_2xl: &[Shadow {
-        color: Color(0x00000047),
+        color: Color(0x111c2e3d),
         x: 0.0,
         y: 24.0,
         blur: 56.0,
         spread: 0.0,
     }],
     shadow_2xs: &[Shadow {
-        color: Color(0x0000001a),
+        color: Color(0x111c2e1f),
         x: 0.0,
         y: 1.0,
         blur: 2.0,
         spread: 0.0,
     }],
     shadow_lg: &[Shadow {
-        color: Color(0x00000038),
+        color: Color(0x111c2e2e),
         x: 0.0,
         y: 10.0,
         blur: 30.0,
         spread: 0.0,
     }],
     shadow_md: &[Shadow {
-        color: Color(0x00000033),
+        color: Color(0x111c2e2e),
         x: 0.0,
         y: 8.0,
         blur: 24.0,
         spread: 0.0,
     }],
     shadow_sm: &[Shadow {
-        color: Color(0x00000024),
+        color: Color(0x111c2e24),
         x: 0.0,
         y: 4.0,
         blur: 12.0,
         spread: 0.0,
     }],
     shadow_xl: &[Shadow {
-        color: Color(0x0000003d),
+        color: Color(0x111c2e33),
         x: 0.0,
         y: 12.0,
         blur: 32.0,
         spread: 0.0,
     }],
     shadow_xs: &[Shadow {
-        color: Color(0x0000001f),
+        color: Color(0x111c2e24),
         x: 0.0,
         y: 1.0,
         blur: 3.0,
@@ -823,145 +823,145 @@ pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
     wash_surface: 0.06,
 };
 
-pub const BRIGHT_LIGHT: ThemeTokens = ThemeTokens {
-    color_border: Color(0x111c2e14),
-    color_border_muted: Color(0x111c2e40),
-    color_border_strong: Color(0x111c2e17),
-    color_canvas: Color(0xe6eadeff),
-    color_content: Color(0x111c2eff),
-    color_content_faint: Color(0x111c2e61),
-    color_content_muted: Color(0x111c2ea8),
-    color_content_nav: Color(0x111c2eb3),
-    color_content_secondary: Color(0x111c2ec7),
-    color_content_subtle: Color(0x111c2e73),
-    color_on_accent: Color(0xd6ff3fff),
+pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
+    color_border: Color(0x14162a12),
+    color_border_muted: Color(0x5f6478ff),
+    color_border_strong: Color(0x14162a17),
+    color_canvas: Color(0xeeecf6ff),
+    color_content: Color(0x12142aff),
+    color_content_faint: Color(0xa2a7bdff),
+    color_content_muted: Color(0x565b78ff),
+    color_content_nav: Color(0x4a4f6bff),
+    color_content_secondary: Color(0x3c405cff),
+    color_content_subtle: Color(0x8c92aaff),
+    color_on_accent: Color(0xffffffff),
     color_primary: Ramp([
-        Color(0xf6fae2ff),
-        Color(0xf1f7d2ff),
-        Color(0xe6f77aff),
-        Color(0xd6ff3fff),
-        Color(0x8fa06aff),
-        Color(0x3d5470ff),
-        Color(0x111c2eff),
-        Color(0x1c2a41ff),
-        Color(0x263449ff),
-        Color(0x0b1420ff),
-        Color(0x060b12ff),
+        Color(0xf4f1feff),
+        Color(0xe6dfffff),
+        Color(0xcdc0ffff),
+        Color(0xb9a8ffff),
+        Color(0x9a82ffff),
+        Color(0x7c5cffff),
+        Color(0x6b4dffff),
+        Color(0x5b3fe0ff),
+        Color(0x4c33ccff),
+        Color(0x3d2aa3ff),
+        Color(0x2a1c6bff),
     ]),
-    color_surface: Color(0xfbfaf7ff),
-    color_surface_chrome: Color(0xffffffff),
-    color_surface_column: Color(0xf4f3eeff),
-    color_surface_inset: Color(0xf0efe9ff),
-    color_surface_muted: Color(0xffffffff),
-    color_surface_overlay: Color(0xfbfaf7ff),
-    color_surface_subtle: Color(0x111c2e0f),
-    color_surface_sunken: Color(0xe5e3dbff),
-    control_color_filled_content_disabled: Paint::Color(Color(0x111c2e61), 1.0),
-    control_color_filled_content_hovered: Paint::Color(Color(0xd6ff3fff), 1.0),
-    control_color_filled_content_normal: Paint::Color(Color(0xd6ff3fff), 1.0),
-    control_color_filled_content_pressed: Paint::Color(Color(0xd6ff3fff), 0.9),
-    control_color_filled_surface_disabled: Paint::Color(Color(0xe5e3dbff), 1.0),
-    control_color_normal_border_hovered: Paint::Color(Color(0x111c2e17), 1.0),
-    control_color_normal_border_normal: Paint::Color(Color(0x111c2e17), 1.0),
-    control_color_normal_border_pressed: Paint::Color(Color(0x111c2e17), 0.9),
-    control_color_normal_content_disabled: Paint::Color(Color(0x111c2e61), 1.0),
-    control_color_normal_content_hovered: Paint::Color(Color(0x111c2eff), 1.0),
-    control_color_normal_content_normal: Paint::Color(Color(0x111c2eff), 1.0),
-    control_color_normal_content_pressed: Paint::Color(Color(0x111c2eff), 0.9),
-    control_color_normal_surface_disabled: Paint::Color(Color(0xe5e3dbff), 1.0),
-    control_color_normal_surface_hovered: Paint::Color(Color(0x111c2e0f), 1.0),
-    control_color_normal_surface_normal: Paint::Color(Color(0xfbfaf7ff), 1.0),
-    control_color_normal_surface_pressed: Paint::Color(Color(0x111c2e0f), 0.9),
-    control_color_outlined_content_disabled: Paint::Color(Color(0x111c2e61), 1.0),
-    control_color_outlined_surface_disabled: Paint::Color(Color(0xe5e3dbff), 1.0),
-    control_color_plain_content_disabled: Paint::Color(Color(0x111c2e61), 1.0),
-    control_color_recessed_content_disabled: Paint::Color(Color(0x111c2e61), 1.0),
-    control_color_recessed_content_hovered: Paint::Color(Color(0x111c2eff), 1.0),
-    control_color_recessed_content_normal: Paint::Color(Color(0x111c2eff), 1.0),
-    control_color_recessed_content_pressed: Paint::Color(Color(0x111c2eff), 0.9),
-    control_color_recessed_surface_disabled: Paint::Color(Color(0xe5e3dbff), 1.0),
-    control_color_recessed_surface_hovered: Paint::Color(Color(0xe5e3dbff), 1.0),
-    control_color_recessed_surface_normal: Paint::Color(Color(0xf0efe9ff), 1.0),
-    control_color_recessed_surface_pressed: Paint::Color(Color(0xe5e3dbff), 0.9),
-    control_color_tinted_content_disabled: Paint::Color(Color(0x111c2e61), 1.0),
-    control_color_tinted_surface_disabled: Paint::Color(Color(0xe5e3dbff), 1.0),
-    control_container_radius: 14.0,
-    control_field_radius: 9999.0,
-    control_large_radius: 9999.0,
-    control_medium_radius: 9999.0,
-    control_small_radius: 9999.0,
-    control_tiny_radius: 9999.0,
-    dialog_scrim: Paint::Color(Color(0x111c2eff), 0.25),
-    frame_popover_radius: 14.0,
-    frame_window_radius: 16.0,
-    progress_gradient_from: Color(0x111c2eff),
-    progress_gradient_to: Color(0xd6ff3fff),
-    radius_big: 14.0,
-    radius_medium: 9999.0,
-    radius_small: 9999.0,
+    color_surface: Color(0xffffffff),
+    color_surface_chrome: Color(0xf7f7faff),
+    color_surface_column: Color(0xfafafcff),
+    color_surface_inset: Color(0xf0f0f5ff),
+    color_surface_muted: Color(0xf7f7faff),
+    color_surface_overlay: Color(0xffffffff),
+    color_surface_subtle: Color(0x14162a0f),
+    color_surface_sunken: Color(0xe3e3ecff),
+    control_color_filled_content_disabled: Paint::Color(Color(0xa2a7bdff), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
+    control_color_filled_surface_disabled: Paint::Color(Color(0xe3e3ecff), 1.0),
+    control_color_normal_border_hovered: Paint::Color(Color(0x14162a17), 1.0),
+    control_color_normal_border_normal: Paint::Color(Color(0x14162a17), 1.0),
+    control_color_normal_border_pressed: Paint::Color(Color(0x14162a17), 0.9),
+    control_color_normal_content_disabled: Paint::Color(Color(0xa2a7bdff), 1.0),
+    control_color_normal_content_hovered: Paint::Color(Color(0x12142aff), 1.0),
+    control_color_normal_content_normal: Paint::Color(Color(0x12142aff), 1.0),
+    control_color_normal_content_pressed: Paint::Color(Color(0x12142aff), 0.9),
+    control_color_normal_surface_disabled: Paint::Color(Color(0xe3e3ecff), 1.0),
+    control_color_normal_surface_hovered: Paint::Color(Color(0x14162a0f), 1.0),
+    control_color_normal_surface_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_normal_surface_pressed: Paint::Color(Color(0x14162a0f), 0.9),
+    control_color_outlined_content_disabled: Paint::Color(Color(0xa2a7bdff), 1.0),
+    control_color_outlined_surface_disabled: Paint::Color(Color(0xe3e3ecff), 1.0),
+    control_color_plain_content_disabled: Paint::Color(Color(0xa2a7bdff), 1.0),
+    control_color_recessed_content_disabled: Paint::Color(Color(0xa2a7bdff), 1.0),
+    control_color_recessed_content_hovered: Paint::Color(Color(0x12142aff), 1.0),
+    control_color_recessed_content_normal: Paint::Color(Color(0x12142aff), 1.0),
+    control_color_recessed_content_pressed: Paint::Color(Color(0x12142aff), 0.9),
+    control_color_recessed_surface_disabled: Paint::Color(Color(0xe3e3ecff), 1.0),
+    control_color_recessed_surface_hovered: Paint::Color(Color(0xe3e3ecff), 1.0),
+    control_color_recessed_surface_normal: Paint::Color(Color(0xf0f0f5ff), 1.0),
+    control_color_recessed_surface_pressed: Paint::Color(Color(0xe3e3ecff), 0.9),
+    control_color_tinted_content_disabled: Paint::Color(Color(0xa2a7bdff), 1.0),
+    control_color_tinted_surface_disabled: Paint::Color(Color(0xe3e3ecff), 1.0),
+    control_container_radius: 10.0,
+    control_field_radius: 10.0,
+    control_large_radius: 10.0,
+    control_medium_radius: 8.0,
+    control_small_radius: 8.0,
+    control_tiny_radius: 8.0,
+    dialog_scrim: Paint::Color(Color(0x12142aff), 0.25),
+    frame_popover_radius: 16.0,
+    frame_window_radius: 18.0,
+    progress_gradient_from: Color(0x6b4dffff),
+    progress_gradient_to: Color(0xa08cffff),
+    radius_big: 16.0,
+    radius_medium: 10.0,
+    radius_small: 8.0,
     shadow_2xl: &[Shadow {
-        color: Color(0x111c2e3d),
+        color: Color(0x00000047),
         x: 0.0,
         y: 24.0,
         blur: 56.0,
         spread: 0.0,
     }],
     shadow_2xs: &[Shadow {
-        color: Color(0x111c2e1f),
+        color: Color(0x0000001a),
         x: 0.0,
         y: 1.0,
         blur: 2.0,
         spread: 0.0,
     }],
     shadow_lg: &[Shadow {
-        color: Color(0x111c2e2e),
+        color: Color(0x00000038),
         x: 0.0,
         y: 10.0,
         blur: 30.0,
         spread: 0.0,
     }],
     shadow_md: &[Shadow {
-        color: Color(0x111c2e2e),
+        color: Color(0x00000033),
         x: 0.0,
         y: 8.0,
         blur: 24.0,
         spread: 0.0,
     }],
     shadow_sm: &[Shadow {
-        color: Color(0x111c2e24),
+        color: Color(0x00000024),
         x: 0.0,
         y: 4.0,
         blur: 12.0,
         spread: 0.0,
     }],
     shadow_xl: &[Shadow {
-        color: Color(0x111c2e33),
+        color: Color(0x0000003d),
         x: 0.0,
         y: 12.0,
         blur: 32.0,
         spread: 0.0,
     }],
     shadow_xs: &[Shadow {
-        color: Color(0x111c2e24),
+        color: Color(0x0000001f),
         x: 0.0,
         y: 1.0,
         blur: 3.0,
         spread: 0.0,
     }],
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
-pub const BRIGHT_DARK: ThemeTokens = ThemeTokens {
-    color_border: Color(0xf2f4ef14),
-    color_border_muted: Color(0x35414fff),
-    color_border_strong: Color(0xf2f4ef17),
-    color_canvas: Color(0x060b12ff),
-    color_content: Color(0xf2f4efff),
-    color_content_faint: Color(0xf2f4ef61),
-    color_content_muted: Color(0xf2f4efa8),
-    color_content_nav: Color(0xf2f4efb3),
-    color_content_secondary: Color(0xf2f4efc7),
-    color_content_subtle: Color(0xf2f4ef73),
+pub const STUDIO_DARK: ThemeTokens = ThemeTokens {
+    color_border: Color(0xffffff0f),
+    color_border_muted: Color(0x363c4dff),
+    color_border_strong: Color(0xffffff17),
+    color_canvas: Color(0x0a0b10ff),
+    color_content: Color(0xf2f3faff),
+    color_content_faint: Color(0x6a7090ff),
+    color_content_muted: Color(0x9aa1bbff),
+    color_content_nav: Color(0x9aa1bbff),
+    color_content_secondary: Color(0xc3c8dcff),
+    color_content_subtle: Color(0x8b93b0ff),
     color_danger: Ramp([
         Color(0xfdf2f2ff),
         Color(0xf9e2e2ff),
@@ -975,19 +975,19 @@ pub const BRIGHT_DARK: ThemeTokens = ThemeTokens {
         Color(0x4b1210ff),
         Color(0x310b0aff),
     ]),
-    color_on_accent: Color(0x111c2eff),
+    color_on_accent: Color(0xffffffff),
     color_primary: Ramp([
-        Color(0xf6fae2ff),
-        Color(0xf1f7d2ff),
-        Color(0xe9ff8fff),
-        Color(0xd6ff3fff),
-        Color(0xb8e034ff),
-        Color(0xd6ff3fff),
-        Color(0xc2ea2cff),
-        Color(0xa8cc22ff),
-        Color(0x4a5c14ff),
-        Color(0x24310fff),
-        Color(0x1a2410ff),
+        Color(0xf4f1feff),
+        Color(0xe6dfffff),
+        Color(0xcdc0ffff),
+        Color(0xb9a8ffff),
+        Color(0x9a82ffff),
+        Color(0x7c5cffff),
+        Color(0x6b4dffff),
+        Color(0x5b3fe0ff),
+        Color(0x4c33ccff),
+        Color(0x3d2aa3ff),
+        Color(0x2a1c6bff),
     ]),
     color_success: Ramp([
         Color(0xe9f5efff),
@@ -1002,15 +1002,15 @@ pub const BRIGHT_DARK: ThemeTokens = ThemeTokens {
         Color(0x093924ff),
         Color(0x06281aff),
     ]),
-    color_surface: Color(0x0c141eff),
-    color_surface_chrome: Color(0x111a26ff),
-    color_surface_column: Color(0x0a111aff),
-    color_surface_inset: Color(0x16202cff),
-    color_surface_muted: Color(0x141d29ff),
-    color_surface_overlay: Color(0x111a26ff),
-    color_surface_raised: Color(0x2a3644ff),
-    color_surface_subtle: Color(0xf2f4ef12),
-    color_surface_sunken: Color(0x1c2734ff),
+    color_surface: Color(0x0d0f14ff),
+    color_surface_chrome: Color(0x12141aff),
+    color_surface_column: Color(0x0a0c11ff),
+    color_surface_inset: Color(0x1b1e26ff),
+    color_surface_muted: Color(0x12141aff),
+    color_surface_overlay: Color(0x12141aff),
+    color_surface_raised: Color(0x3a3f4dff),
+    color_surface_subtle: Color(0xffffff12),
+    color_surface_sunken: Color(0x262a34ff),
     color_warning: Ramp([
         Color(0xfdf6eaff),
         Color(0xfef1deff),
@@ -1024,65 +1024,65 @@ pub const BRIGHT_DARK: ThemeTokens = ThemeTokens {
         Color(0x573409ff),
         Color(0x3d2506ff),
     ]),
-    control_color_filled_content_disabled: Paint::Color(Color(0xf2f4ef61), 1.0),
-    control_color_filled_content_hovered: Paint::Color(Color(0x111c2eff), 1.0),
-    control_color_filled_content_normal: Paint::Color(Color(0x111c2eff), 1.0),
-    control_color_filled_content_pressed: Paint::Color(Color(0x111c2eff), 0.9),
-    control_color_filled_surface_disabled: Paint::Color(Color(0x1c2734ff), 1.0),
+    control_color_filled_content_disabled: Paint::Color(Color(0x6a7090ff), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
+    control_color_filled_surface_disabled: Paint::Color(Color(0x262a34ff), 1.0),
     control_color_filled_surface_hovered: Paint::Shade(600, 1.0),
     control_color_filled_surface_normal: Paint::Shade(500, 1.0),
     control_color_filled_surface_pressed: Paint::Shade(600, 0.9),
-    control_color_normal_border_hovered: Paint::Color(Color(0xf2f4ef17), 1.0),
-    control_color_normal_border_normal: Paint::Color(Color(0xf2f4ef17), 1.0),
-    control_color_normal_border_pressed: Paint::Color(Color(0xf2f4ef17), 0.9),
-    control_color_normal_content_disabled: Paint::Color(Color(0xf2f4ef61), 1.0),
-    control_color_normal_content_hovered: Paint::Color(Color(0xf2f4efff), 1.0),
-    control_color_normal_content_normal: Paint::Color(Color(0xf2f4efff), 1.0),
-    control_color_normal_content_pressed: Paint::Color(Color(0xf2f4efff), 0.9),
-    control_color_normal_surface_disabled: Paint::Color(Color(0x1c2734ff), 1.0),
-    control_color_normal_surface_hovered: Paint::Color(Color(0xf2f4ef12), 1.0),
-    control_color_normal_surface_normal: Paint::Color(Color(0x0c141eff), 1.0),
-    control_color_normal_surface_pressed: Paint::Color(Color(0xf2f4ef12), 0.9),
+    control_color_normal_border_hovered: Paint::Color(Color(0xffffff17), 1.0),
+    control_color_normal_border_normal: Paint::Color(Color(0xffffff17), 1.0),
+    control_color_normal_border_pressed: Paint::Color(Color(0xffffff17), 0.9),
+    control_color_normal_content_disabled: Paint::Color(Color(0x6a7090ff), 1.0),
+    control_color_normal_content_hovered: Paint::Color(Color(0xf2f3faff), 1.0),
+    control_color_normal_content_normal: Paint::Color(Color(0xf2f3faff), 1.0),
+    control_color_normal_content_pressed: Paint::Color(Color(0xf2f3faff), 0.9),
+    control_color_normal_surface_disabled: Paint::Color(Color(0x262a34ff), 1.0),
+    control_color_normal_surface_hovered: Paint::Color(Color(0xffffff12), 1.0),
+    control_color_normal_surface_normal: Paint::Color(Color(0x0d0f14ff), 1.0),
+    control_color_normal_surface_pressed: Paint::Color(Color(0xffffff12), 0.9),
     control_color_outlined_border_hovered: Paint::Shade(300, 1.0),
     control_color_outlined_border_normal: Paint::Shade(400, 1.0),
     control_color_outlined_border_pressed: Paint::Shade(300, 0.9),
-    control_color_outlined_content_disabled: Paint::Color(Color(0xf2f4ef61), 1.0),
+    control_color_outlined_content_disabled: Paint::Color(Color(0x6a7090ff), 1.0),
     control_color_outlined_content_hovered: Paint::Shade(200, 1.0),
     control_color_outlined_content_normal: Paint::Shade(300, 1.0),
     control_color_outlined_content_pressed: Paint::Shade(200, 0.9),
-    control_color_outlined_surface_disabled: Paint::Color(Color(0x1c2734ff), 1.0),
-    control_color_plain_content_disabled: Paint::Color(Color(0xf2f4ef61), 1.0),
+    control_color_outlined_surface_disabled: Paint::Color(Color(0x262a34ff), 1.0),
+    control_color_plain_content_disabled: Paint::Color(Color(0x6a7090ff), 1.0),
     control_color_plain_content_hovered: Paint::Shade(200, 1.0),
     control_color_plain_content_normal: Paint::Shade(300, 1.0),
     control_color_plain_content_pressed: Paint::Shade(200, 0.9),
-    control_color_recessed_content_disabled: Paint::Color(Color(0xf2f4ef61), 1.0),
-    control_color_recessed_content_hovered: Paint::Color(Color(0xf2f4efff), 1.0),
-    control_color_recessed_content_normal: Paint::Color(Color(0xf2f4efff), 1.0),
-    control_color_recessed_content_pressed: Paint::Color(Color(0xf2f4efff), 0.9),
-    control_color_recessed_surface_disabled: Paint::Color(Color(0x1c2734ff), 1.0),
-    control_color_recessed_surface_hovered: Paint::Color(Color(0x1c2734ff), 1.0),
-    control_color_recessed_surface_normal: Paint::Color(Color(0x16202cff), 1.0),
-    control_color_recessed_surface_pressed: Paint::Color(Color(0x1c2734ff), 0.9),
-    control_color_tinted_content_disabled: Paint::Color(Color(0xf2f4ef61), 1.0),
+    control_color_recessed_content_disabled: Paint::Color(Color(0x6a7090ff), 1.0),
+    control_color_recessed_content_hovered: Paint::Color(Color(0xf2f3faff), 1.0),
+    control_color_recessed_content_normal: Paint::Color(Color(0xf2f3faff), 1.0),
+    control_color_recessed_content_pressed: Paint::Color(Color(0xf2f3faff), 0.9),
+    control_color_recessed_surface_disabled: Paint::Color(Color(0x262a34ff), 1.0),
+    control_color_recessed_surface_hovered: Paint::Color(Color(0x262a34ff), 1.0),
+    control_color_recessed_surface_normal: Paint::Color(Color(0x1b1e26ff), 1.0),
+    control_color_recessed_surface_pressed: Paint::Color(Color(0x262a34ff), 0.9),
+    control_color_tinted_content_disabled: Paint::Color(Color(0x6a7090ff), 1.0),
     control_color_tinted_content_hovered: Paint::Shade(200, 1.0),
     control_color_tinted_content_normal: Paint::Shade(300, 1.0),
     control_color_tinted_content_pressed: Paint::Shade(200, 0.9),
-    control_color_tinted_surface_disabled: Paint::Color(Color(0x1c2734ff), 1.0),
-    control_container_radius: 14.0,
-    control_field_radius: 9999.0,
-    control_large_radius: 9999.0,
-    control_medium_radius: 9999.0,
-    control_small_radius: 9999.0,
-    control_tiny_radius: 9999.0,
-    dialog_scrim: Paint::Color(Color(0xf2f4efff), 0.25),
-    focus_ring: Paint::Shade(600, 0.55),
-    frame_popover_radius: 14.0,
-    frame_window_radius: 16.0,
-    progress_gradient_from: Color(0xd6ff3fff),
-    progress_gradient_to: Color(0xd6ff3fff),
-    radius_big: 14.0,
-    radius_medium: 9999.0,
-    radius_small: 9999.0,
+    control_color_tinted_surface_disabled: Paint::Color(Color(0x262a34ff), 1.0),
+    control_container_radius: 10.0,
+    control_field_radius: 10.0,
+    control_large_radius: 10.0,
+    control_medium_radius: 8.0,
+    control_small_radius: 8.0,
+    control_tiny_radius: 8.0,
+    dialog_scrim: Paint::Color(Color(0xf2f3faff), 0.25),
+    focus_ring: Paint::Shade(600, 0.5),
+    frame_popover_radius: 16.0,
+    frame_window_radius: 18.0,
+    progress_gradient_from: Color(0x7c5cffff),
+    progress_gradient_to: Color(0xb9a8ffff),
+    radius_big: 16.0,
+    radius_medium: 10.0,
+    radius_small: 8.0,
     shadow_2xl: &[Shadow {
         color: Color(0x000000b3),
         x: 0.0,
@@ -1132,7 +1132,7 @@ pub const BRIGHT_DARK: ThemeTokens = ThemeTokens {
         blur: 3.0,
         spread: 0.0,
     }],
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const FROST_LIGHT: ThemeTokens = ThemeTokens {
@@ -1146,6 +1146,7 @@ pub const FROST_LIGHT: ThemeTokens = ThemeTokens {
     color_content_nav: Color(0x3a5b68ff),
     color_content_secondary: Color(0x2f4c58ff),
     color_content_subtle: Color(0x7794a0ff),
+    color_on_accent: Color(0xffffffff),
     color_primary: Ramp([
         Color(0xeef8faff),
         Color(0xd7eff4ff),
@@ -1159,13 +1160,18 @@ pub const FROST_LIGHT: ThemeTokens = ThemeTokens {
         Color(0x0d3c4aff),
         Color(0x08262fff),
     ]),
+    color_surface: Color(0xffffffff),
     color_surface_chrome: Color(0xf2f6f8ff),
     color_surface_column: Color(0xf2f6f8ff),
     color_surface_inset: Color(0xecf2f4ff),
     color_surface_muted: Color(0xf2f6f8ff),
+    color_surface_overlay: Color(0xffffffff),
     color_surface_subtle: Color(0x0e1f260f),
     color_surface_sunken: Color(0xdbe6eaff),
     control_color_filled_content_disabled: Paint::Color(Color(0x9ab1baff), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
     control_color_filled_surface_disabled: Paint::Color(Color(0xdbe6eaff), 1.0),
     control_color_normal_border_hovered: Paint::Color(Color(0x0e1f262b), 1.0),
     control_color_normal_border_normal: Paint::Color(Color(0x0e1f262b), 1.0),
@@ -1176,6 +1182,7 @@ pub const FROST_LIGHT: ThemeTokens = ThemeTokens {
     control_color_normal_content_pressed: Paint::Color(Color(0x0e1f26ff), 0.9),
     control_color_normal_surface_disabled: Paint::Color(Color(0xdbe6eaff), 1.0),
     control_color_normal_surface_hovered: Paint::Color(Color(0x0e1f260f), 1.0),
+    control_color_normal_surface_normal: Paint::Color(Color(0xffffffff), 1.0),
     control_color_normal_surface_pressed: Paint::Color(Color(0x0e1f260f), 0.9),
     control_color_outlined_content_disabled: Paint::Color(Color(0x9ab1baff), 1.0),
     control_color_outlined_surface_disabled: Paint::Color(Color(0xdbe6eaff), 1.0),
@@ -1190,10 +1197,70 @@ pub const FROST_LIGHT: ThemeTokens = ThemeTokens {
     control_color_recessed_surface_pressed: Paint::Color(Color(0xdbe6eaff), 0.9),
     control_color_tinted_content_disabled: Paint::Color(Color(0x9ab1baff), 1.0),
     control_color_tinted_surface_disabled: Paint::Color(Color(0xdbe6eaff), 1.0),
+    control_container_radius: 10.0,
+    control_field_radius: 10.0,
+    control_large_radius: 10.0,
+    control_medium_radius: 8.0,
+    control_small_radius: 8.0,
+    control_tiny_radius: 8.0,
     dialog_scrim: Paint::Color(Color(0x0e1f26ff), 0.25),
+    frame_popover_radius: 16.0,
+    frame_window_radius: 18.0,
     progress_gradient_from: Color(0x0f7a92ff),
     progress_gradient_to: Color(0x74c9dcff),
-    ..STUDIO_LIGHT
+    radius_big: 16.0,
+    radius_medium: 10.0,
+    radius_small: 8.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
+    ..BRIGHT_LIGHT
 };
 
 pub const FROST_DARK: ThemeTokens = ThemeTokens {
@@ -1313,10 +1380,21 @@ pub const FROST_DARK: ThemeTokens = ThemeTokens {
     control_color_tinted_content_normal: Paint::Shade(300, 1.0),
     control_color_tinted_content_pressed: Paint::Shade(200, 0.9),
     control_color_tinted_surface_disabled: Paint::Color(Color(0x23333dff), 1.0),
+    control_container_radius: 10.0,
+    control_field_radius: 10.0,
+    control_large_radius: 10.0,
+    control_medium_radius: 8.0,
+    control_small_radius: 8.0,
+    control_tiny_radius: 8.0,
     dialog_scrim: Paint::Color(Color(0xeaf3f7ff), 0.25),
     focus_ring: Paint::Shade(600, 0.5),
+    frame_popover_radius: 16.0,
+    frame_window_radius: 18.0,
     progress_gradient_from: Color(0x1690a9ff),
     progress_gradient_to: Color(0x74c9dcff),
+    radius_big: 16.0,
+    radius_medium: 10.0,
+    radius_small: 8.0,
     shadow_2xl: &[Shadow {
         color: Color(0x000000b3),
         x: 0.0,
@@ -1366,7 +1444,7 @@ pub const FROST_DARK: ThemeTokens = ThemeTokens {
         blur: 3.0,
         spread: 0.0,
     }],
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const GRAPHITE_LIGHT: ThemeTokens = ThemeTokens {
@@ -1394,10 +1472,12 @@ pub const GRAPHITE_LIGHT: ThemeTokens = ThemeTokens {
         Color(0x131317ff),
         Color(0x0b0b0eff),
     ]),
+    color_surface: Color(0xffffffff),
     color_surface_chrome: Color(0xf6f6f8ff),
     color_surface_column: Color(0xf6f6f8ff),
     color_surface_inset: Color(0xefeff2ff),
     color_surface_muted: Color(0xf6f6f8ff),
+    color_surface_overlay: Color(0xffffffff),
     color_surface_subtle: Color(0x17171b0f),
     color_surface_sunken: Color(0xe2e2e7ff),
     control_color_filled_content_disabled: Paint::Color(Color(0xa3a3abff), 1.0),
@@ -1414,6 +1494,7 @@ pub const GRAPHITE_LIGHT: ThemeTokens = ThemeTokens {
     control_color_normal_content_pressed: Paint::Color(Color(0x17171bff), 0.9),
     control_color_normal_surface_disabled: Paint::Color(Color(0xe2e2e7ff), 1.0),
     control_color_normal_surface_hovered: Paint::Color(Color(0x17171b0f), 1.0),
+    control_color_normal_surface_normal: Paint::Color(Color(0xffffffff), 1.0),
     control_color_normal_surface_pressed: Paint::Color(Color(0x17171b0f), 0.9),
     control_color_outlined_content_disabled: Paint::Color(Color(0xa3a3abff), 1.0),
     control_color_outlined_surface_disabled: Paint::Color(Color(0xe2e2e7ff), 1.0),
@@ -1436,14 +1517,62 @@ pub const GRAPHITE_LIGHT: ThemeTokens = ThemeTokens {
     control_tiny_radius: 7.0,
     dialog_scrim: Paint::Color(Color(0x17171bff), 0.25),
     frame_popover_radius: 12.0,
-    frame_window_radius: 16.0,
     progress_gradient_from: Color(0x3f3f46ff),
     progress_gradient_to: Color(0x8f8f99ff),
     radius_big: 12.0,
     radius_large: 10.0,
     radius_medium: 8.0,
     radius_small: 7.0,
-    ..STUDIO_LIGHT
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
+    ..BRIGHT_LIGHT
 };
 
 pub const GRAPHITE_DARK: ThemeTokens = ThemeTokens {
@@ -1572,7 +1701,6 @@ pub const GRAPHITE_DARK: ThemeTokens = ThemeTokens {
     dialog_scrim: Paint::Color(Color(0xf4f4f6ff), 0.25),
     focus_ring: Paint::Shade(600, 0.5),
     frame_popover_radius: 12.0,
-    frame_window_radius: 16.0,
     progress_gradient_from: Color(0xededf0ff),
     progress_gradient_to: Color(0xa1a1aaff),
     radius_big: 12.0,
@@ -1628,7 +1756,7 @@ pub const GRAPHITE_DARK: ThemeTokens = ThemeTokens {
         blur: 3.0,
         spread: 0.0,
     }],
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const EMBER_LIGHT: ThemeTokens = ThemeTokens {
@@ -1694,10 +1822,70 @@ pub const EMBER_LIGHT: ThemeTokens = ThemeTokens {
     control_color_recessed_surface_pressed: Paint::Color(Color(0xe6ddcdff), 0.9),
     control_color_tinted_content_disabled: Paint::Color(Color(0xb0a294ff), 1.0),
     control_color_tinted_surface_disabled: Paint::Color(Color(0xe6ddcdff), 1.0),
+    control_container_radius: 10.0,
+    control_field_radius: 10.0,
+    control_large_radius: 10.0,
+    control_medium_radius: 8.0,
+    control_small_radius: 8.0,
+    control_tiny_radius: 8.0,
     dialog_scrim: Paint::Color(Color(0x241a11ff), 0.25),
+    frame_popover_radius: 16.0,
+    frame_window_radius: 18.0,
     progress_gradient_from: Color(0xad5717ff),
     progress_gradient_to: Color(0xe9a969ff),
-    ..STUDIO_LIGHT
+    radius_big: 16.0,
+    radius_medium: 10.0,
+    radius_small: 8.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
+    ..BRIGHT_LIGHT
 };
 
 pub const EMBER_DARK: ThemeTokens = ThemeTokens {
@@ -1817,10 +2005,21 @@ pub const EMBER_DARK: ThemeTokens = ThemeTokens {
     control_color_tinted_content_normal: Paint::Shade(300, 1.0),
     control_color_tinted_content_pressed: Paint::Shade(200, 0.9),
     control_color_tinted_surface_disabled: Paint::Color(Color(0x2f271eff), 1.0),
+    control_container_radius: 10.0,
+    control_field_radius: 10.0,
+    control_large_radius: 10.0,
+    control_medium_radius: 8.0,
+    control_small_radius: 8.0,
+    control_tiny_radius: 8.0,
     dialog_scrim: Paint::Color(Color(0xf6efe4ff), 0.25),
     focus_ring: Paint::Shade(600, 0.5),
+    frame_popover_radius: 16.0,
+    frame_window_radius: 18.0,
     progress_gradient_from: Color(0xd9832eff),
     progress_gradient_to: Color(0xf0b877ff),
+    radius_big: 16.0,
+    radius_medium: 10.0,
+    radius_small: 8.0,
     shadow_2xl: &[Shadow {
         color: Color(0x000000b3),
         x: 0.0,
@@ -1870,7 +2069,7 @@ pub const EMBER_DARK: ThemeTokens = ThemeTokens {
         blur: 3.0,
         spread: 0.0,
     }],
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const NOCTURNE_LIGHT: ThemeTokens = ThemeTokens {
@@ -1884,6 +2083,7 @@ pub const NOCTURNE_LIGHT: ThemeTokens = ThemeTokens {
     color_content_nav: Color(0x4c4e61ff),
     color_content_secondary: Color(0x383a49ff),
     color_content_subtle: Color(0x85889eff),
+    color_on_accent: Color(0xffffffff),
     color_primary: Ramp([
         Color(0xf5f4ffff),
         Color(0xe7e5feff),
@@ -1897,13 +2097,18 @@ pub const NOCTURNE_LIGHT: ThemeTokens = ThemeTokens {
         Color(0x453897ff),
         Color(0x2d2465ff),
     ]),
+    color_surface: Color(0xffffffff),
     color_surface_chrome: Color(0xf6f6faff),
     color_surface_column: Color(0xf6f6faff),
     color_surface_inset: Color(0xeeeef5ff),
     color_surface_muted: Color(0xf6f6faff),
+    color_surface_overlay: Color(0xffffffff),
     color_surface_subtle: Color(0x23242e0f),
     color_surface_sunken: Color(0xe2e2ecff),
     control_color_filled_content_disabled: Paint::Color(Color(0xadafc1ff), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
     control_color_filled_surface_disabled: Paint::Color(Color(0xe2e2ecff), 1.0),
     control_color_normal_border_hovered: Paint::Color(Color(0x23242e2b), 1.0),
     control_color_normal_border_normal: Paint::Color(Color(0x23242e2b), 1.0),
@@ -1914,6 +2119,7 @@ pub const NOCTURNE_LIGHT: ThemeTokens = ThemeTokens {
     control_color_normal_content_pressed: Paint::Color(Color(0x23242eff), 0.9),
     control_color_normal_surface_disabled: Paint::Color(Color(0xe2e2ecff), 1.0),
     control_color_normal_surface_hovered: Paint::Color(Color(0x23242e0f), 1.0),
+    control_color_normal_surface_normal: Paint::Color(Color(0xffffffff), 1.0),
     control_color_normal_surface_pressed: Paint::Color(Color(0x23242e0f), 0.9),
     control_color_outlined_content_disabled: Paint::Color(Color(0xadafc1ff), 1.0),
     control_color_outlined_surface_disabled: Paint::Color(Color(0xe2e2ecff), 1.0),
@@ -1936,14 +2142,62 @@ pub const NOCTURNE_LIGHT: ThemeTokens = ThemeTokens {
     control_tiny_radius: 7.0,
     dialog_scrim: Paint::Color(Color(0x23242eff), 0.25),
     frame_popover_radius: 12.0,
-    frame_window_radius: 16.0,
     progress_gradient_from: Color(0x8375d1ff),
     progress_gradient_to: Color(0xb5abfcff),
     radius_big: 12.0,
     radius_large: 10.0,
     radius_medium: 8.0,
     radius_small: 7.0,
-    ..STUDIO_LIGHT
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
+    ..BRIGHT_LIGHT
 };
 
 pub const NOCTURNE_DARK: ThemeTokens = ThemeTokens {
@@ -2072,7 +2326,6 @@ pub const NOCTURNE_DARK: ThemeTokens = ThemeTokens {
     dialog_scrim: Paint::Color(Color(0xe9e9edff), 0.25),
     focus_ring: Paint::Shade(600, 0.5),
     frame_popover_radius: 12.0,
-    frame_window_radius: 16.0,
     progress_gradient_from: Color(0x9184d9ff),
     progress_gradient_to: Color(0xb5abfcff),
     radius_big: 12.0,
@@ -2128,7 +2381,7 @@ pub const NOCTURNE_DARK: ThemeTokens = ThemeTokens {
         blur: 3.0,
         spread: 0.0,
     }],
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_TOKYO_NIGHT_LIGHT: ThemeTokens = ThemeTokens {
@@ -2266,6 +2519,55 @@ pub const OMARCHY_TOKYO_NIGHT_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -2290,7 +2592,7 @@ pub const OMARCHY_TOKYO_NIGHT_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_TOKYO_NIGHT_DARK: ThemeTokens = ThemeTokens {
@@ -2556,7 +2858,7 @@ pub const OMARCHY_TOKYO_NIGHT_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_CATPPUCCIN_LIGHT: ThemeTokens = ThemeTokens {
@@ -2694,6 +2996,55 @@ pub const OMARCHY_CATPPUCCIN_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -2718,7 +3069,7 @@ pub const OMARCHY_CATPPUCCIN_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_CATPPUCCIN_DARK: ThemeTokens = ThemeTokens {
@@ -2984,7 +3335,7 @@ pub const OMARCHY_CATPPUCCIN_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_CATPPUCCIN_LATTE_LIGHT: ThemeTokens = ThemeTokens {
@@ -3122,6 +3473,55 @@ pub const OMARCHY_CATPPUCCIN_LATTE_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -3146,7 +3546,7 @@ pub const OMARCHY_CATPPUCCIN_LATTE_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_CATPPUCCIN_LATTE_DARK: ThemeTokens = ThemeTokens {
@@ -3412,7 +3812,7 @@ pub const OMARCHY_CATPPUCCIN_LATTE_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_ETHEREAL_LIGHT: ThemeTokens = ThemeTokens {
@@ -3550,6 +3950,55 @@ pub const OMARCHY_ETHEREAL_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -3574,7 +4023,7 @@ pub const OMARCHY_ETHEREAL_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_ETHEREAL_DARK: ThemeTokens = ThemeTokens {
@@ -3840,7 +4289,7 @@ pub const OMARCHY_ETHEREAL_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_EVERFOREST_LIGHT: ThemeTokens = ThemeTokens {
@@ -3978,6 +4427,55 @@ pub const OMARCHY_EVERFOREST_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -4002,7 +4500,7 @@ pub const OMARCHY_EVERFOREST_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_EVERFOREST_DARK: ThemeTokens = ThemeTokens {
@@ -4268,7 +4766,7 @@ pub const OMARCHY_EVERFOREST_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_FLEXOKI_LIGHT_LIGHT: ThemeTokens = ThemeTokens {
@@ -4406,6 +4904,55 @@ pub const OMARCHY_FLEXOKI_LIGHT_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -4430,7 +4977,7 @@ pub const OMARCHY_FLEXOKI_LIGHT_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_FLEXOKI_LIGHT_DARK: ThemeTokens = ThemeTokens {
@@ -4696,7 +5243,7 @@ pub const OMARCHY_FLEXOKI_LIGHT_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_GRUVBOX_LIGHT: ThemeTokens = ThemeTokens {
@@ -4834,6 +5381,55 @@ pub const OMARCHY_GRUVBOX_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -4858,7 +5454,7 @@ pub const OMARCHY_GRUVBOX_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_GRUVBOX_DARK: ThemeTokens = ThemeTokens {
@@ -5124,7 +5720,7 @@ pub const OMARCHY_GRUVBOX_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_HACKERMAN_LIGHT: ThemeTokens = ThemeTokens {
@@ -5262,6 +5858,55 @@ pub const OMARCHY_HACKERMAN_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -5286,7 +5931,7 @@ pub const OMARCHY_HACKERMAN_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_HACKERMAN_DARK: ThemeTokens = ThemeTokens {
@@ -5552,7 +6197,7 @@ pub const OMARCHY_HACKERMAN_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_KANAGAWA_LIGHT: ThemeTokens = ThemeTokens {
@@ -5690,6 +6335,55 @@ pub const OMARCHY_KANAGAWA_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -5714,7 +6408,7 @@ pub const OMARCHY_KANAGAWA_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_KANAGAWA_DARK: ThemeTokens = ThemeTokens {
@@ -5980,7 +6674,7 @@ pub const OMARCHY_KANAGAWA_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_LAST_HORIZON_LIGHT: ThemeTokens = ThemeTokens {
@@ -6118,6 +6812,55 @@ pub const OMARCHY_LAST_HORIZON_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -6142,7 +6885,7 @@ pub const OMARCHY_LAST_HORIZON_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_LAST_HORIZON_DARK: ThemeTokens = ThemeTokens {
@@ -6408,7 +7151,7 @@ pub const OMARCHY_LAST_HORIZON_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_LUMON_LIGHT: ThemeTokens = ThemeTokens {
@@ -6546,6 +7289,55 @@ pub const OMARCHY_LUMON_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -6570,7 +7362,7 @@ pub const OMARCHY_LUMON_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_LUMON_DARK: ThemeTokens = ThemeTokens {
@@ -6836,7 +7628,7 @@ pub const OMARCHY_LUMON_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_LUPINE_LIGHT: ThemeTokens = ThemeTokens {
@@ -6974,6 +7766,55 @@ pub const OMARCHY_LUPINE_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -6998,7 +7839,7 @@ pub const OMARCHY_LUPINE_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_LUPINE_DARK: ThemeTokens = ThemeTokens {
@@ -7264,7 +8105,7 @@ pub const OMARCHY_LUPINE_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_MATTE_BLACK_LIGHT: ThemeTokens = ThemeTokens {
@@ -7402,6 +8243,55 @@ pub const OMARCHY_MATTE_BLACK_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -7426,7 +8316,7 @@ pub const OMARCHY_MATTE_BLACK_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_MATTE_BLACK_DARK: ThemeTokens = ThemeTokens {
@@ -7692,7 +8582,7 @@ pub const OMARCHY_MATTE_BLACK_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_MIASMA_LIGHT: ThemeTokens = ThemeTokens {
@@ -7830,6 +8720,55 @@ pub const OMARCHY_MIASMA_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -7854,7 +8793,7 @@ pub const OMARCHY_MIASMA_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_MIASMA_DARK: ThemeTokens = ThemeTokens {
@@ -8120,7 +9059,7 @@ pub const OMARCHY_MIASMA_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_NORD_LIGHT: ThemeTokens = ThemeTokens {
@@ -8258,6 +9197,55 @@ pub const OMARCHY_NORD_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -8282,7 +9270,7 @@ pub const OMARCHY_NORD_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_NORD_DARK: ThemeTokens = ThemeTokens {
@@ -8548,7 +9536,7 @@ pub const OMARCHY_NORD_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_OSAKA_JADE_LIGHT: ThemeTokens = ThemeTokens {
@@ -8686,6 +9674,55 @@ pub const OMARCHY_OSAKA_JADE_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -8710,7 +9747,7 @@ pub const OMARCHY_OSAKA_JADE_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_OSAKA_JADE_DARK: ThemeTokens = ThemeTokens {
@@ -8976,7 +10013,7 @@ pub const OMARCHY_OSAKA_JADE_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_RETRO_82_LIGHT: ThemeTokens = ThemeTokens {
@@ -9114,6 +10151,55 @@ pub const OMARCHY_RETRO_82_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -9138,7 +10224,7 @@ pub const OMARCHY_RETRO_82_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_RETRO_82_DARK: ThemeTokens = ThemeTokens {
@@ -9404,7 +10490,7 @@ pub const OMARCHY_RETRO_82_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_RISTRETTO_LIGHT: ThemeTokens = ThemeTokens {
@@ -9542,6 +10628,55 @@ pub const OMARCHY_RISTRETTO_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -9566,7 +10701,7 @@ pub const OMARCHY_RISTRETTO_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_RISTRETTO_DARK: ThemeTokens = ThemeTokens {
@@ -9832,7 +10967,7 @@ pub const OMARCHY_RISTRETTO_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_ROSE_PINE_LIGHT: ThemeTokens = ThemeTokens {
@@ -9970,6 +11105,55 @@ pub const OMARCHY_ROSE_PINE_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -9994,7 +11178,7 @@ pub const OMARCHY_ROSE_PINE_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_ROSE_PINE_DARK: ThemeTokens = ThemeTokens {
@@ -10260,7 +11444,7 @@ pub const OMARCHY_ROSE_PINE_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_SOLITUDE_LIGHT: ThemeTokens = ThemeTokens {
@@ -10398,6 +11582,55 @@ pub const OMARCHY_SOLITUDE_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -10422,7 +11655,7 @@ pub const OMARCHY_SOLITUDE_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_SOLITUDE_DARK: ThemeTokens = ThemeTokens {
@@ -10688,7 +11921,7 @@ pub const OMARCHY_SOLITUDE_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_VANTABLACK_LIGHT: ThemeTokens = ThemeTokens {
@@ -10739,6 +11972,7 @@ pub const OMARCHY_VANTABLACK_LIGHT: ThemeTokens = ThemeTokens {
     color_content_nav: Color(0x474747ff),
     color_content_secondary: Color(0x2e2e2eff),
     color_content_subtle: Color(0x808080ff),
+    color_on_accent: Color(0xffffffff),
     color_primary: Ramp([
         Color(0xf7f7f7ff),
         Color(0xeaeaeaff),
@@ -10752,13 +11986,18 @@ pub const OMARCHY_VANTABLACK_LIGHT: ThemeTokens = ThemeTokens {
         Color(0x353535ff),
         Color(0x262626ff),
     ]),
+    color_surface: Color(0xffffffff),
     color_surface_chrome: Color(0xf7f7f7ff),
     color_surface_column: Color(0xfafafaff),
     color_surface_inset: Color(0xefefefff),
     color_surface_muted: Color(0xf7f7f7ff),
+    color_surface_overlay: Color(0xffffffff),
     color_surface_subtle: Color(0x0000000f),
     color_surface_sunken: Color(0xe0e0e0ff),
     control_color_filled_content_disabled: Paint::Color(Color(0xa3a3a3ff), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
     control_color_filled_surface_disabled: Paint::Color(Color(0xe0e0e0ff), 1.0),
     control_color_normal_border_hovered: Paint::Color(Color(0x0000002b), 1.0),
     control_color_normal_border_normal: Paint::Color(Color(0x0000002b), 1.0),
@@ -10769,6 +12008,7 @@ pub const OMARCHY_VANTABLACK_LIGHT: ThemeTokens = ThemeTokens {
     control_color_normal_content_pressed: Paint::Color(Color(0x000000ff), 0.9),
     control_color_normal_surface_disabled: Paint::Color(Color(0xe0e0e0ff), 1.0),
     control_color_normal_surface_hovered: Paint::Color(Color(0x0000000f), 1.0),
+    control_color_normal_surface_normal: Paint::Color(Color(0xffffffff), 1.0),
     control_color_normal_surface_pressed: Paint::Color(Color(0x0000000f), 0.9),
     control_color_outlined_content_disabled: Paint::Color(Color(0xa3a3a3ff), 1.0),
     control_color_outlined_surface_disabled: Paint::Color(Color(0xe0e0e0ff), 1.0),
@@ -10818,6 +12058,55 @@ pub const OMARCHY_VANTABLACK_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -10842,7 +12131,7 @@ pub const OMARCHY_VANTABLACK_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_VANTABLACK_DARK: ThemeTokens = ThemeTokens {
@@ -11108,7 +12397,7 @@ pub const OMARCHY_VANTABLACK_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_WHITE_LIGHT: ThemeTokens = ThemeTokens {
@@ -11159,6 +12448,7 @@ pub const OMARCHY_WHITE_LIGHT: ThemeTokens = ThemeTokens {
     color_content_nav: Color(0x474747ff),
     color_content_secondary: Color(0x2e2e2eff),
     color_content_subtle: Color(0x808080ff),
+    color_on_accent: Color(0xffffffff),
     color_primary: Ramp([
         Color(0xf7f7f7ff),
         Color(0xecececff),
@@ -11172,13 +12462,18 @@ pub const OMARCHY_WHITE_LIGHT: ThemeTokens = ThemeTokens {
         Color(0x3b3b3bff),
         Color(0x262626ff),
     ]),
+    color_surface: Color(0xffffffff),
     color_surface_chrome: Color(0xf7f7f7ff),
     color_surface_column: Color(0xfafafaff),
     color_surface_inset: Color(0xefefefff),
     color_surface_muted: Color(0xf7f7f7ff),
+    color_surface_overlay: Color(0xffffffff),
     color_surface_subtle: Color(0x0000000f),
     color_surface_sunken: Color(0xe0e0e0ff),
     control_color_filled_content_disabled: Paint::Color(Color(0xa3a3a3ff), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
     control_color_filled_surface_disabled: Paint::Color(Color(0xe0e0e0ff), 1.0),
     control_color_normal_border_hovered: Paint::Color(Color(0x0000002b), 1.0),
     control_color_normal_border_normal: Paint::Color(Color(0x0000002b), 1.0),
@@ -11189,6 +12484,7 @@ pub const OMARCHY_WHITE_LIGHT: ThemeTokens = ThemeTokens {
     control_color_normal_content_pressed: Paint::Color(Color(0x000000ff), 0.9),
     control_color_normal_surface_disabled: Paint::Color(Color(0xe0e0e0ff), 1.0),
     control_color_normal_surface_hovered: Paint::Color(Color(0x0000000f), 1.0),
+    control_color_normal_surface_normal: Paint::Color(Color(0xffffffff), 1.0),
     control_color_normal_surface_pressed: Paint::Color(Color(0x0000000f), 0.9),
     control_color_outlined_content_disabled: Paint::Color(Color(0xa3a3a3ff), 1.0),
     control_color_outlined_surface_disabled: Paint::Color(Color(0xe0e0e0ff), 1.0),
@@ -11238,6 +12534,55 @@ pub const OMARCHY_WHITE_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 0.0,
     radius_small: 0.0,
     radius_tiny: 0.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     slider_medium_thumb: 14.0,
     slider_medium_track: 4.0,
     slider_thumb_edge_width: 2.0,
@@ -11262,7 +12607,7 @@ pub const OMARCHY_WHITE_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const OMARCHY_WHITE_DARK: ThemeTokens = ThemeTokens {
@@ -11528,7 +12873,7 @@ pub const OMARCHY_WHITE_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const MACOS27_LIGHT: ThemeTokens = ThemeTokens {
@@ -11580,6 +12925,7 @@ pub const MACOS27_LIGHT: ThemeTokens = ThemeTokens {
     color_content_nav: Color(0x5f5f60ff),
     color_content_secondary: Color(0x4a4a4bff),
     color_content_subtle: Color(0x8d8d8eff),
+    color_on_accent: Color(0xffffffff),
     color_primary: Ramp([
         Color(0xf2f7ffff),
         Color(0xe4f0ffff),
@@ -11603,6 +12949,9 @@ pub const MACOS27_LIGHT: ThemeTokens = ThemeTokens {
     color_surface_subtle: Color(0x25252510),
     color_surface_sunken: Color(0xd7d7d9ff),
     control_color_filled_content_disabled: Paint::Color(Color(0xaaaaabff), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
     control_color_filled_surface_disabled: Paint::Color(Color(0xd7d7d9ff), 1.0),
     control_color_normal_border_hovered: Paint::Color(Color(0x2525251a), 1.0),
     control_color_normal_border_normal: Paint::Color(Color(0x2525251a), 1.0),
@@ -11628,6 +12977,7 @@ pub const MACOS27_LIGHT: ThemeTokens = ThemeTokens {
     control_color_recessed_surface_pressed: Paint::Color(Color(0xd7d7d9ff), 0.9),
     control_color_tinted_content_disabled: Paint::Color(Color(0xaaaaabff), 1.0),
     control_color_tinted_surface_disabled: Paint::Color(Color(0xd7d7d9ff), 1.0),
+    control_container_radius: 10.0,
     control_field_radius: 8.0,
     control_large_content: TypeStyle {
         face: Face::Text,
@@ -11635,7 +12985,6 @@ pub const MACOS27_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 13.0,
         weight: 600,
     },
-    control_large_radius: 9999.0,
     control_medium_content: TypeStyle {
         face: Face::Text,
         size: 13.0,
@@ -11643,14 +12992,12 @@ pub const MACOS27_LIGHT: ThemeTokens = ThemeTokens {
         weight: 600,
     },
     control_medium_padding_inline: 18.0,
-    control_medium_radius: 9999.0,
     control_small_content: TypeStyle {
         face: Face::Text,
         size: 13.0,
         line_height: 13.0,
         weight: 600,
     },
-    control_small_radius: 9999.0,
     control_small_size: 24.0,
     control_tiny_content: TypeStyle {
         face: Face::Text,
@@ -11658,10 +13005,9 @@ pub const MACOS27_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 10.0,
         weight: 600,
     },
-    control_tiny_radius: 9999.0,
     control_tiny_size: 20.0,
     dialog_scrim: Paint::Color(Color(0x252525ff), 0.25),
-    frame_window_radius: 16.0,
+    frame_popover_radius: 16.0,
     label_medium: TypeStyle {
         face: Face::Text,
         size: 13.0,
@@ -11688,10 +13034,58 @@ pub const MACOS27_LIGHT: ThemeTokens = ThemeTokens {
     },
     progress_gradient_from: Color(0x0088ffff),
     progress_gradient_to: Color(0xabd0feff),
+    radius_big: 16.0,
     radius_large: 10.0,
-    radius_medium: 9999.0,
-    radius_small: 9999.0,
     radius_tiny: 6.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     title_medium: TypeStyle {
         face: Face::Text,
         size: 15.0,
@@ -11704,7 +13098,7 @@ pub const MACOS27_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const MACOS27_DARK: ThemeTokens = ThemeTokens {
@@ -11769,6 +13163,7 @@ pub const MACOS27_DARK: ThemeTokens = ThemeTokens {
         Color(0x4b1210ff),
         Color(0x310b0aff),
     ]),
+    color_on_accent: Color(0xffffffff),
     color_primary: Ramp([
         Color(0xf2f7feff),
         Color(0xe1effeff),
@@ -11818,6 +13213,9 @@ pub const MACOS27_DARK: ThemeTokens = ThemeTokens {
         Color(0x3d2506ff),
     ]),
     control_color_filled_content_disabled: Paint::Color(Color(0x666668ff), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
     control_color_filled_surface_disabled: Paint::Color(Color(0x39393bff), 1.0),
     control_color_filled_surface_hovered: Paint::Shade(600, 1.0),
     control_color_filled_surface_normal: Paint::Shade(500, 1.0),
@@ -11858,6 +13256,7 @@ pub const MACOS27_DARK: ThemeTokens = ThemeTokens {
     control_color_tinted_content_normal: Paint::Shade(300, 1.0),
     control_color_tinted_content_pressed: Paint::Shade(200, 0.9),
     control_color_tinted_surface_disabled: Paint::Color(Color(0x39393bff), 1.0),
+    control_container_radius: 10.0,
     control_field_radius: 8.0,
     control_large_content: TypeStyle {
         face: Face::Text,
@@ -11865,7 +13264,6 @@ pub const MACOS27_DARK: ThemeTokens = ThemeTokens {
         line_height: 13.0,
         weight: 600,
     },
-    control_large_radius: 9999.0,
     control_medium_content: TypeStyle {
         face: Face::Text,
         size: 13.0,
@@ -11873,14 +13271,12 @@ pub const MACOS27_DARK: ThemeTokens = ThemeTokens {
         weight: 600,
     },
     control_medium_padding_inline: 18.0,
-    control_medium_radius: 9999.0,
     control_small_content: TypeStyle {
         face: Face::Text,
         size: 13.0,
         line_height: 13.0,
         weight: 600,
     },
-    control_small_radius: 9999.0,
     control_small_size: 24.0,
     control_tiny_content: TypeStyle {
         face: Face::Text,
@@ -11888,11 +13284,10 @@ pub const MACOS27_DARK: ThemeTokens = ThemeTokens {
         line_height: 10.0,
         weight: 600,
     },
-    control_tiny_radius: 9999.0,
     control_tiny_size: 20.0,
     dialog_scrim: Paint::Color(Color(0xdededfff), 0.25),
     focus_ring: Paint::Shade(600, 0.5),
-    frame_window_radius: 16.0,
+    frame_popover_radius: 16.0,
     label_medium: TypeStyle {
         face: Face::Text,
         size: 13.0,
@@ -11919,9 +13314,8 @@ pub const MACOS27_DARK: ThemeTokens = ThemeTokens {
     },
     progress_gradient_from: Color(0x0091ffff),
     progress_gradient_to: Color(0x9ccafeff),
+    radius_big: 16.0,
     radius_large: 10.0,
-    radius_medium: 9999.0,
-    radius_small: 9999.0,
     radius_tiny: 6.0,
     shadow_2xl: &[Shadow {
         color: Color(0x000000b3),
@@ -11984,7 +13378,7 @@ pub const MACOS27_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const MACOS15_LIGHT: ThemeTokens = ThemeTokens {
@@ -12037,6 +13431,7 @@ pub const MACOS15_LIGHT: ThemeTokens = ThemeTokens {
     color_content_nav: Color(0x5b5b5bff),
     color_content_secondary: Color(0x474747ff),
     color_content_subtle: Color(0x888888ff),
+    color_on_accent: Color(0xffffffff),
     color_primary: Ramp([
         Color(0xf2f7ffff),
         Color(0xe4effeff),
@@ -12060,6 +13455,9 @@ pub const MACOS15_LIGHT: ThemeTokens = ThemeTokens {
     color_surface_subtle: Color(0x23232310),
     color_surface_sunken: Color(0xcececeff),
     control_color_filled_content_disabled: Paint::Color(Color(0xa4a4a4ff), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
     control_color_filled_surface_disabled: Paint::Color(Color(0xcececeff), 1.0),
     control_color_normal_border_hovered: Paint::Color(Color(0x23232321), 1.0),
     control_color_normal_border_normal: Paint::Color(Color(0x23232321), 1.0),
@@ -12154,6 +13552,55 @@ pub const MACOS15_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 6.0,
     radius_small: 6.0,
     radius_tiny: 4.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     title_medium: TypeStyle {
         face: Face::Text,
         size: 15.0,
@@ -12166,7 +13613,7 @@ pub const MACOS15_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const MACOS15_DARK: ThemeTokens = ThemeTokens {
@@ -12232,6 +13679,7 @@ pub const MACOS15_DARK: ThemeTokens = ThemeTokens {
         Color(0x4b1210ff),
         Color(0x310b0aff),
     ]),
+    color_on_accent: Color(0xffffffff),
     color_primary: Ramp([
         Color(0xf2f7ffff),
         Color(0xe1eeffff),
@@ -12281,6 +13729,9 @@ pub const MACOS15_DARK: ThemeTokens = ThemeTokens {
         Color(0x3d2506ff),
     ]),
     control_color_filled_content_disabled: Paint::Color(Color(0x717171ff), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
     control_color_filled_surface_disabled: Paint::Color(Color(0x494949ff), 1.0),
     control_color_filled_surface_hovered: Paint::Shade(600, 1.0),
     control_color_filled_surface_normal: Paint::Shade(500, 1.0),
@@ -12452,7 +13903,7 @@ pub const MACOS15_DARK: ThemeTokens = ThemeTokens {
         line_height: 16.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const WINDOWS11_LIGHT: ThemeTokens = ThemeTokens {
@@ -12505,6 +13956,7 @@ pub const WINDOWS11_LIGHT: ThemeTokens = ThemeTokens {
     color_content_nav: Color(0x555555ff),
     color_content_secondary: Color(0x3f3f3fff),
     color_content_subtle: Color(0x858585ff),
+    color_on_accent: Color(0xffffffff),
     color_primary: Ramp([
         Color(0xf2f7ffff),
         Color(0xdeedffff),
@@ -12528,6 +13980,9 @@ pub const WINDOWS11_LIGHT: ThemeTokens = ThemeTokens {
     color_surface_subtle: Color(0x1818180f),
     color_surface_sunken: Color(0xd5d5d5ff),
     control_color_filled_content_disabled: Paint::Color(Color(0xa4a4a4ff), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
     control_color_filled_surface_disabled: Paint::Color(Color(0xd5d5d5ff), 1.0),
     control_color_normal_border_hovered: Paint::Color(Color(0x1818181c), 1.0),
     control_color_normal_border_normal: Paint::Color(Color(0x1818181c), 1.0),
@@ -12634,6 +14089,55 @@ pub const WINDOWS11_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 4.0,
     radius_small: 4.0,
     radius_tiny: 4.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     title_large: TypeStyle {
         face: Face::Text,
         size: 20.0,
@@ -12652,7 +14156,7 @@ pub const WINDOWS11_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 20.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const WINDOWS11_DARK: ThemeTokens = ThemeTokens {
@@ -12960,7 +14464,7 @@ pub const WINDOWS11_DARK: ThemeTokens = ThemeTokens {
         line_height: 20.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const UBUNTU_LIGHT: ThemeTokens = ThemeTokens {
@@ -13013,6 +14517,7 @@ pub const UBUNTU_LIGHT: ThemeTokens = ThemeTokens {
     color_content_nav: Color(0x727272ff),
     color_content_secondary: Color(0x5f5f5fff),
     color_content_subtle: Color(0x9c9c9cff),
+    color_on_accent: Color(0xffffffff),
     color_primary: Ramp([
         Color(0xfff4f1ff),
         Color(0xfeeae4ff),
@@ -13036,6 +14541,9 @@ pub const UBUNTU_LIGHT: ThemeTokens = ThemeTokens {
     color_surface_subtle: Color(0x3d3d3d11),
     color_surface_sunken: Color(0xdcdcdcff),
     control_color_filled_content_disabled: Paint::Color(Color(0xb6b6b6ff), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
     control_color_filled_surface_disabled: Paint::Color(Color(0xdcdcdcff), 1.0),
     control_color_normal_border_hovered: Paint::Color(Color(0x3d3d3d21), 1.0),
     control_color_normal_border_normal: Paint::Color(Color(0x3d3d3d21), 1.0),
@@ -13141,6 +14649,55 @@ pub const UBUNTU_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 9.0,
     radius_small: 9.0,
     radius_tiny: 6.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     title_large: TypeStyle {
         face: Face::Text,
         size: 20.0,
@@ -13159,7 +14716,7 @@ pub const UBUNTU_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 20.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const UBUNTU_DARK: ThemeTokens = ThemeTokens {
@@ -13225,6 +14782,7 @@ pub const UBUNTU_DARK: ThemeTokens = ThemeTokens {
         Color(0x4b1210ff),
         Color(0x310b0aff),
     ]),
+    color_on_accent: Color(0xffffffff),
     color_primary: Ramp([
         Color(0xfff4f1ff),
         Color(0xfde7e1ff),
@@ -13274,6 +14832,9 @@ pub const UBUNTU_DARK: ThemeTokens = ThemeTokens {
         Color(0x3d2506ff),
     ]),
     control_color_filled_content_disabled: Paint::Color(Color(0x757575ff), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
     control_color_filled_surface_disabled: Paint::Color(Color(0x434343ff), 1.0),
     control_color_filled_surface_hovered: Paint::Shade(600, 1.0),
     control_color_filled_surface_normal: Paint::Shade(500, 1.0),
@@ -13462,7 +15023,7 @@ pub const UBUNTU_DARK: ThemeTokens = ThemeTokens {
         line_height: 20.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const DEBIAN_LIGHT: ThemeTokens = ThemeTokens {
@@ -13515,6 +15076,7 @@ pub const DEBIAN_LIGHT: ThemeTokens = ThemeTokens {
     color_content_nav: Color(0x6a6a6eff),
     color_content_secondary: Color(0x56565aff),
     color_content_subtle: Color(0x969699ff),
+    color_on_accent: Color(0xffffffff),
     color_primary: Ramp([
         Color(0xf2f7ffff),
         Color(0xe4efffff),
@@ -13538,6 +15100,9 @@ pub const DEBIAN_LIGHT: ThemeTokens = ThemeTokens {
     color_surface_subtle: Color(0x32323711),
     color_surface_sunken: Color(0xdcdcddff),
     control_color_filled_content_disabled: Paint::Color(Color(0xb2b2b4ff), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
     control_color_filled_surface_disabled: Paint::Color(Color(0xdcdcddff), 1.0),
     control_color_normal_border_hovered: Paint::Color(Color(0x32323721), 1.0),
     control_color_normal_border_normal: Paint::Color(Color(0x32323721), 1.0),
@@ -13643,6 +15208,55 @@ pub const DEBIAN_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 9.0,
     radius_small: 9.0,
     radius_tiny: 6.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     title_large: TypeStyle {
         face: Face::Text,
         size: 20.0,
@@ -13661,7 +15275,7 @@ pub const DEBIAN_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 20.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const DEBIAN_DARK: ThemeTokens = ThemeTokens {
@@ -13727,6 +15341,7 @@ pub const DEBIAN_DARK: ThemeTokens = ThemeTokens {
         Color(0x4b1210ff),
         Color(0x310b0aff),
     ]),
+    color_on_accent: Color(0xffffffff),
     color_primary: Ramp([
         Color(0xf2f7ffff),
         Color(0xe0edfeff),
@@ -13776,6 +15391,9 @@ pub const DEBIAN_DARK: ThemeTokens = ThemeTokens {
         Color(0x3d2506ff),
     ]),
     control_color_filled_content_disabled: Paint::Color(Color(0x727274ff), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
     control_color_filled_surface_disabled: Paint::Color(Color(0x38383bff), 1.0),
     control_color_filled_surface_hovered: Paint::Shade(600, 1.0),
     control_color_filled_surface_normal: Paint::Shade(500, 1.0),
@@ -13964,7 +15582,7 @@ pub const DEBIAN_DARK: ThemeTokens = ThemeTokens {
         line_height: 20.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const FEDORA_LIGHT: ThemeTokens = ThemeTokens {
@@ -14017,6 +15635,7 @@ pub const FEDORA_LIGHT: ThemeTokens = ThemeTokens {
     color_content_nav: Color(0x6a6a6eff),
     color_content_secondary: Color(0x56565aff),
     color_content_subtle: Color(0x969699ff),
+    color_on_accent: Color(0xffffffff),
     color_primary: Ramp([
         Color(0xf2f7ffff),
         Color(0xe4efffff),
@@ -14040,6 +15659,9 @@ pub const FEDORA_LIGHT: ThemeTokens = ThemeTokens {
     color_surface_subtle: Color(0x32323711),
     color_surface_sunken: Color(0xdcdcddff),
     control_color_filled_content_disabled: Paint::Color(Color(0xb2b2b4ff), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
     control_color_filled_surface_disabled: Paint::Color(Color(0xdcdcddff), 1.0),
     control_color_normal_border_hovered: Paint::Color(Color(0x32323721), 1.0),
     control_color_normal_border_normal: Paint::Color(Color(0x32323721), 1.0),
@@ -14145,6 +15767,55 @@ pub const FEDORA_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 9.0,
     radius_small: 9.0,
     radius_tiny: 6.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     title_large: TypeStyle {
         face: Face::Text,
         size: 20.0,
@@ -14163,7 +15834,7 @@ pub const FEDORA_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 20.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const FEDORA_DARK: ThemeTokens = ThemeTokens {
@@ -14229,6 +15900,7 @@ pub const FEDORA_DARK: ThemeTokens = ThemeTokens {
         Color(0x4b1210ff),
         Color(0x310b0aff),
     ]),
+    color_on_accent: Color(0xffffffff),
     color_primary: Ramp([
         Color(0xf2f7ffff),
         Color(0xe0edfeff),
@@ -14278,6 +15950,9 @@ pub const FEDORA_DARK: ThemeTokens = ThemeTokens {
         Color(0x3d2506ff),
     ]),
     control_color_filled_content_disabled: Paint::Color(Color(0x727274ff), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
     control_color_filled_surface_disabled: Paint::Color(Color(0x38383bff), 1.0),
     control_color_filled_surface_hovered: Paint::Shade(600, 1.0),
     control_color_filled_surface_normal: Paint::Shade(500, 1.0),
@@ -14466,7 +16141,7 @@ pub const FEDORA_DARK: ThemeTokens = ThemeTokens {
         line_height: 20.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const KDE_LIGHT: ThemeTokens = ThemeTokens {
@@ -14644,6 +16319,55 @@ pub const KDE_LIGHT: ThemeTokens = ThemeTokens {
     radius_medium: 5.0,
     radius_small: 5.0,
     radius_tiny: 3.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     title_large: TypeStyle {
         face: Face::Text,
         size: 18.67,
@@ -14662,7 +16386,7 @@ pub const KDE_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 18.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const KDE_DARK: ThemeTokens = ThemeTokens {
@@ -14962,7 +16686,7 @@ pub const KDE_DARK: ThemeTokens = ThemeTokens {
         line_height: 18.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const SPOTIFY_LIGHT: ThemeTokens = ThemeTokens {
@@ -15015,6 +16739,7 @@ pub const SPOTIFY_LIGHT: ThemeTokens = ThemeTokens {
     color_content_nav: Color(0x545454ff),
     color_content_secondary: Color(0x3d3d3dff),
     color_content_subtle: Color(0x898989ff),
+    color_on_accent: Color(0xffffffff),
     color_primary: Ramp([
         Color(0xeffaf1ff),
         Color(0xddf3e0ff),
@@ -15028,13 +16753,18 @@ pub const SPOTIFY_LIGHT: ThemeTokens = ThemeTokens {
         Color(0x00461bff),
         Color(0x062f13ff),
     ]),
+    color_surface: Color(0xffffffff),
     color_surface_chrome: Color(0xf7f7f7ff),
     color_surface_column: Color(0xfafafaff),
     color_surface_inset: Color(0xefefefff),
     color_surface_muted: Color(0xf7f7f7ff),
+    color_surface_overlay: Color(0xffffffff),
     color_surface_subtle: Color(0x1212120f),
     color_surface_sunken: Color(0xe0e0e0ff),
     control_color_filled_content_disabled: Paint::Color(Color(0xaaaaaaff), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0xffffffff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0xffffffff), 0.9),
     control_color_filled_surface_disabled: Paint::Color(Color(0xe0e0e0ff), 1.0),
     control_color_normal_border_hovered: Paint::Color(Color(0x12121221), 1.0),
     control_color_normal_border_normal: Paint::Color(Color(0x12121221), 1.0),
@@ -15045,6 +16775,7 @@ pub const SPOTIFY_LIGHT: ThemeTokens = ThemeTokens {
     control_color_normal_content_pressed: Paint::Color(Color(0x121212ff), 0.9),
     control_color_normal_surface_disabled: Paint::Color(Color(0xe0e0e0ff), 1.0),
     control_color_normal_surface_hovered: Paint::Color(Color(0x1212120f), 1.0),
+    control_color_normal_surface_normal: Paint::Color(Color(0xffffffff), 1.0),
     control_color_normal_surface_pressed: Paint::Color(Color(0x1212120f), 0.9),
     control_color_outlined_content_disabled: Paint::Color(Color(0xaaaaaaff), 1.0),
     control_color_outlined_surface_disabled: Paint::Color(Color(0xe0e0e0ff), 1.0),
@@ -15068,7 +16799,6 @@ pub const SPOTIFY_LIGHT: ThemeTokens = ThemeTokens {
         weight: 600,
     },
     control_large_icon_size: 24.0,
-    control_large_radius: 9999.0,
     control_large_size: 48.0,
     control_medium_content: TypeStyle {
         face: Face::Text,
@@ -15078,7 +16808,6 @@ pub const SPOTIFY_LIGHT: ThemeTokens = ThemeTokens {
     },
     control_medium_icon_size: 20.0,
     control_medium_padding_inline: 24.0,
-    control_medium_radius: 9999.0,
     control_medium_size: 40.0,
     control_small_content: TypeStyle {
         face: Face::Text,
@@ -15087,10 +16816,8 @@ pub const SPOTIFY_LIGHT: ThemeTokens = ThemeTokens {
         weight: 600,
     },
     control_small_icon_size: 20.0,
-    control_small_radius: 9999.0,
     control_small_size: 32.0,
     control_tiny_icon_size: 14.0,
-    control_tiny_radius: 9999.0,
     dialog_scrim: Paint::Color(Color(0x121212ff), 0.25),
     frame_popover_radius: 8.0,
     frame_window_radius: 8.0,
@@ -15125,9 +16852,56 @@ pub const SPOTIFY_LIGHT: ThemeTokens = ThemeTokens {
     progress_gradient_to: Color(0x92d09dff),
     radius_big: 8.0,
     radius_large: 8.0,
-    radius_medium: 9999.0,
-    radius_small: 9999.0,
     radius_tiny: 4.0,
+    shadow_2xl: &[Shadow {
+        color: Color(0x00000047),
+        x: 0.0,
+        y: 24.0,
+        blur: 56.0,
+        spread: 0.0,
+    }],
+    shadow_2xs: &[Shadow {
+        color: Color(0x0000001a),
+        x: 0.0,
+        y: 1.0,
+        blur: 2.0,
+        spread: 0.0,
+    }],
+    shadow_lg: &[Shadow {
+        color: Color(0x00000038),
+        x: 0.0,
+        y: 10.0,
+        blur: 30.0,
+        spread: 0.0,
+    }],
+    shadow_md: &[Shadow {
+        color: Color(0x00000033),
+        x: 0.0,
+        y: 8.0,
+        blur: 24.0,
+        spread: 0.0,
+    }],
+    shadow_sm: &[Shadow {
+        color: Color(0x00000024),
+        x: 0.0,
+        y: 4.0,
+        blur: 12.0,
+        spread: 0.0,
+    }],
+    shadow_xl: &[Shadow {
+        color: Color(0x0000003d),
+        x: 0.0,
+        y: 12.0,
+        blur: 32.0,
+        spread: 0.0,
+    }],
+    shadow_xs: &[Shadow {
+        color: Color(0x0000001f),
+        x: 0.0,
+        y: 1.0,
+        blur: 3.0,
+        spread: 0.0,
+    }],
     title_large: TypeStyle {
         face: Face::Text,
         size: 24.0,
@@ -15146,7 +16920,7 @@ pub const SPOTIFY_LIGHT: ThemeTokens = ThemeTokens {
         line_height: 20.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 pub const SPOTIFY_DARK: ThemeTokens = ThemeTokens {
@@ -15314,7 +17088,6 @@ pub const SPOTIFY_DARK: ThemeTokens = ThemeTokens {
         weight: 600,
     },
     control_large_icon_size: 24.0,
-    control_large_radius: 9999.0,
     control_large_size: 48.0,
     control_medium_content: TypeStyle {
         face: Face::Text,
@@ -15324,7 +17097,6 @@ pub const SPOTIFY_DARK: ThemeTokens = ThemeTokens {
     },
     control_medium_icon_size: 20.0,
     control_medium_padding_inline: 24.0,
-    control_medium_radius: 9999.0,
     control_medium_size: 40.0,
     control_small_content: TypeStyle {
         face: Face::Text,
@@ -15333,10 +17105,8 @@ pub const SPOTIFY_DARK: ThemeTokens = ThemeTokens {
         weight: 600,
     },
     control_small_icon_size: 20.0,
-    control_small_radius: 9999.0,
     control_small_size: 32.0,
     control_tiny_icon_size: 14.0,
-    control_tiny_radius: 9999.0,
     dialog_scrim: Paint::Color(Color(0xffffffff), 0.25),
     focus_ring: Paint::Shade(600, 0.5),
     frame_popover_radius: 8.0,
@@ -15372,8 +17142,6 @@ pub const SPOTIFY_DARK: ThemeTokens = ThemeTokens {
     progress_gradient_to: Color(0x8df3a0ff),
     radius_big: 8.0,
     radius_large: 8.0,
-    radius_medium: 9999.0,
-    radius_small: 9999.0,
     radius_tiny: 4.0,
     shadow_2xl: &[Shadow {
         color: Color(0x000000b3),
@@ -15442,20 +17210,20 @@ pub const SPOTIFY_DARK: ThemeTokens = ThemeTokens {
         line_height: 20.0,
         weight: 600,
     },
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
-pub const STUDIO_DARK: ThemeTokens = ThemeTokens {
-    color_border: Color(0xffffff0f),
-    color_border_muted: Color(0x363c4dff),
-    color_border_strong: Color(0xffffff17),
-    color_canvas: Color(0x0a0b10ff),
-    color_content: Color(0xf2f3faff),
-    color_content_faint: Color(0x6a7090ff),
-    color_content_muted: Color(0x9aa1bbff),
-    color_content_nav: Color(0x9aa1bbff),
-    color_content_secondary: Color(0xc3c8dcff),
-    color_content_subtle: Color(0x8b93b0ff),
+pub const BRIGHT_DARK: ThemeTokens = ThemeTokens {
+    color_border: Color(0xf2f4ef14),
+    color_border_muted: Color(0x35414fff),
+    color_border_strong: Color(0xf2f4ef17),
+    color_canvas: Color(0x060b12ff),
+    color_content: Color(0xf2f4efff),
+    color_content_faint: Color(0xf2f4ef61),
+    color_content_muted: Color(0xf2f4efa8),
+    color_content_nav: Color(0xf2f4efb3),
+    color_content_secondary: Color(0xf2f4efc7),
+    color_content_subtle: Color(0xf2f4ef73),
     color_danger: Ramp([
         Color(0xfdf2f2ff),
         Color(0xf9e2e2ff),
@@ -15468,6 +17236,20 @@ pub const STUDIO_DARK: ThemeTokens = ThemeTokens {
         Color(0x7e1f1cff),
         Color(0x4b1210ff),
         Color(0x310b0aff),
+    ]),
+    color_on_accent: Color(0x111c2eff),
+    color_primary: Ramp([
+        Color(0xf6fae2ff),
+        Color(0xf1f7d2ff),
+        Color(0xe9ff8fff),
+        Color(0xd6ff3fff),
+        Color(0xb8e034ff),
+        Color(0xd6ff3fff),
+        Color(0xc2ea2cff),
+        Color(0xa8cc22ff),
+        Color(0x4a5c14ff),
+        Color(0x24310fff),
+        Color(0x1a2410ff),
     ]),
     color_success: Ramp([
         Color(0xe9f5efff),
@@ -15482,15 +17264,15 @@ pub const STUDIO_DARK: ThemeTokens = ThemeTokens {
         Color(0x093924ff),
         Color(0x06281aff),
     ]),
-    color_surface: Color(0x0d0f14ff),
-    color_surface_chrome: Color(0x12141aff),
-    color_surface_column: Color(0x0a0c11ff),
-    color_surface_inset: Color(0x1b1e26ff),
-    color_surface_muted: Color(0x12141aff),
-    color_surface_overlay: Color(0x12141aff),
-    color_surface_raised: Color(0x3a3f4dff),
-    color_surface_subtle: Color(0xffffff12),
-    color_surface_sunken: Color(0x262a34ff),
+    color_surface: Color(0x0c141eff),
+    color_surface_chrome: Color(0x111a26ff),
+    color_surface_column: Color(0x0a111aff),
+    color_surface_inset: Color(0x16202cff),
+    color_surface_muted: Color(0x141d29ff),
+    color_surface_overlay: Color(0x111a26ff),
+    color_surface_raised: Color(0x2a3644ff),
+    color_surface_subtle: Color(0xf2f4ef12),
+    color_surface_sunken: Color(0x1c2734ff),
     color_warning: Ramp([
         Color(0xfdf6eaff),
         Color(0xfef1deff),
@@ -15504,51 +17286,53 @@ pub const STUDIO_DARK: ThemeTokens = ThemeTokens {
         Color(0x573409ff),
         Color(0x3d2506ff),
     ]),
-    control_color_filled_content_disabled: Paint::Color(Color(0x6a7090ff), 1.0),
-    control_color_filled_surface_disabled: Paint::Color(Color(0x262a34ff), 1.0),
+    control_color_filled_content_disabled: Paint::Color(Color(0xf2f4ef61), 1.0),
+    control_color_filled_content_hovered: Paint::Color(Color(0x111c2eff), 1.0),
+    control_color_filled_content_normal: Paint::Color(Color(0x111c2eff), 1.0),
+    control_color_filled_content_pressed: Paint::Color(Color(0x111c2eff), 0.9),
+    control_color_filled_surface_disabled: Paint::Color(Color(0x1c2734ff), 1.0),
     control_color_filled_surface_hovered: Paint::Shade(600, 1.0),
     control_color_filled_surface_normal: Paint::Shade(500, 1.0),
     control_color_filled_surface_pressed: Paint::Shade(600, 0.9),
-    control_color_normal_border_hovered: Paint::Color(Color(0xffffff17), 1.0),
-    control_color_normal_border_normal: Paint::Color(Color(0xffffff17), 1.0),
-    control_color_normal_border_pressed: Paint::Color(Color(0xffffff17), 0.9),
-    control_color_normal_content_disabled: Paint::Color(Color(0x6a7090ff), 1.0),
-    control_color_normal_content_hovered: Paint::Color(Color(0xf2f3faff), 1.0),
-    control_color_normal_content_normal: Paint::Color(Color(0xf2f3faff), 1.0),
-    control_color_normal_content_pressed: Paint::Color(Color(0xf2f3faff), 0.9),
-    control_color_normal_surface_disabled: Paint::Color(Color(0x262a34ff), 1.0),
-    control_color_normal_surface_hovered: Paint::Color(Color(0xffffff12), 1.0),
-    control_color_normal_surface_normal: Paint::Color(Color(0x0d0f14ff), 1.0),
-    control_color_normal_surface_pressed: Paint::Color(Color(0xffffff12), 0.9),
+    control_color_normal_border_hovered: Paint::Color(Color(0xf2f4ef17), 1.0),
+    control_color_normal_border_normal: Paint::Color(Color(0xf2f4ef17), 1.0),
+    control_color_normal_border_pressed: Paint::Color(Color(0xf2f4ef17), 0.9),
+    control_color_normal_content_disabled: Paint::Color(Color(0xf2f4ef61), 1.0),
+    control_color_normal_content_hovered: Paint::Color(Color(0xf2f4efff), 1.0),
+    control_color_normal_content_normal: Paint::Color(Color(0xf2f4efff), 1.0),
+    control_color_normal_content_pressed: Paint::Color(Color(0xf2f4efff), 0.9),
+    control_color_normal_surface_disabled: Paint::Color(Color(0x1c2734ff), 1.0),
+    control_color_normal_surface_hovered: Paint::Color(Color(0xf2f4ef12), 1.0),
+    control_color_normal_surface_normal: Paint::Color(Color(0x0c141eff), 1.0),
+    control_color_normal_surface_pressed: Paint::Color(Color(0xf2f4ef12), 0.9),
     control_color_outlined_border_hovered: Paint::Shade(300, 1.0),
     control_color_outlined_border_normal: Paint::Shade(400, 1.0),
     control_color_outlined_border_pressed: Paint::Shade(300, 0.9),
-    control_color_outlined_content_disabled: Paint::Color(Color(0x6a7090ff), 1.0),
+    control_color_outlined_content_disabled: Paint::Color(Color(0xf2f4ef61), 1.0),
     control_color_outlined_content_hovered: Paint::Shade(200, 1.0),
     control_color_outlined_content_normal: Paint::Shade(300, 1.0),
     control_color_outlined_content_pressed: Paint::Shade(200, 0.9),
-    control_color_outlined_surface_disabled: Paint::Color(Color(0x262a34ff), 1.0),
-    control_color_plain_content_disabled: Paint::Color(Color(0x6a7090ff), 1.0),
+    control_color_outlined_surface_disabled: Paint::Color(Color(0x1c2734ff), 1.0),
+    control_color_plain_content_disabled: Paint::Color(Color(0xf2f4ef61), 1.0),
     control_color_plain_content_hovered: Paint::Shade(200, 1.0),
     control_color_plain_content_normal: Paint::Shade(300, 1.0),
     control_color_plain_content_pressed: Paint::Shade(200, 0.9),
-    control_color_recessed_content_disabled: Paint::Color(Color(0x6a7090ff), 1.0),
-    control_color_recessed_content_hovered: Paint::Color(Color(0xf2f3faff), 1.0),
-    control_color_recessed_content_normal: Paint::Color(Color(0xf2f3faff), 1.0),
-    control_color_recessed_content_pressed: Paint::Color(Color(0xf2f3faff), 0.9),
-    control_color_recessed_surface_disabled: Paint::Color(Color(0x262a34ff), 1.0),
-    control_color_recessed_surface_hovered: Paint::Color(Color(0x262a34ff), 1.0),
-    control_color_recessed_surface_normal: Paint::Color(Color(0x1b1e26ff), 1.0),
-    control_color_recessed_surface_pressed: Paint::Color(Color(0x262a34ff), 0.9),
-    control_color_tinted_content_disabled: Paint::Color(Color(0x6a7090ff), 1.0),
+    control_color_recessed_content_disabled: Paint::Color(Color(0xf2f4ef61), 1.0),
+    control_color_recessed_content_hovered: Paint::Color(Color(0xf2f4efff), 1.0),
+    control_color_recessed_content_normal: Paint::Color(Color(0xf2f4efff), 1.0),
+    control_color_recessed_content_pressed: Paint::Color(Color(0xf2f4efff), 0.9),
+    control_color_recessed_surface_disabled: Paint::Color(Color(0x1c2734ff), 1.0),
+    control_color_recessed_surface_hovered: Paint::Color(Color(0x1c2734ff), 1.0),
+    control_color_recessed_surface_normal: Paint::Color(Color(0x16202cff), 1.0),
+    control_color_recessed_surface_pressed: Paint::Color(Color(0x1c2734ff), 0.9),
+    control_color_tinted_content_disabled: Paint::Color(Color(0xf2f4ef61), 1.0),
     control_color_tinted_content_hovered: Paint::Shade(200, 1.0),
     control_color_tinted_content_normal: Paint::Shade(300, 1.0),
     control_color_tinted_content_pressed: Paint::Shade(200, 0.9),
-    control_color_tinted_surface_disabled: Paint::Color(Color(0x262a34ff), 1.0),
-    dialog_scrim: Paint::Color(Color(0xf2f3faff), 0.25),
-    focus_ring: Paint::Shade(600, 0.5),
-    progress_gradient_from: Color(0x7c5cffff),
-    progress_gradient_to: Color(0xb9a8ffff),
+    control_color_tinted_surface_disabled: Paint::Color(Color(0x1c2734ff), 1.0),
+    dialog_scrim: Paint::Color(Color(0xf2f4efff), 0.25),
+    focus_ring: Paint::Shade(600, 0.55),
+    progress_gradient_from: Color(0xd6ff3fff),
     shadow_2xl: &[Shadow {
         color: Color(0x000000b3),
         x: 0.0,
@@ -15598,25 +17382,25 @@ pub const STUDIO_DARK: ThemeTokens = ThemeTokens {
         blur: 3.0,
         spread: 0.0,
     }],
-    ..STUDIO_LIGHT
+    ..BRIGHT_LIGHT
 };
 
 /// Every theme, by the name React selects it with (`data-theme`).
 pub static THEMES: &[ThemeEntry] = &[
-    ThemeEntry {
-        name: "studio-light",
-        dark: false,
-        tokens: &STUDIO_LIGHT,
-    },
     ThemeEntry {
         name: "bright-light",
         dark: false,
         tokens: &BRIGHT_LIGHT,
     },
     ThemeEntry {
-        name: "bright-dark",
+        name: "studio-light",
+        dark: false,
+        tokens: &STUDIO_LIGHT,
+    },
+    ThemeEntry {
+        name: "studio-dark",
         dark: true,
-        tokens: &BRIGHT_DARK,
+        tokens: &STUDIO_DARK,
     },
     ThemeEntry {
         name: "frost-light",
@@ -15959,8 +17743,8 @@ pub static THEMES: &[ThemeEntry] = &[
         tokens: &SPOTIFY_DARK,
     },
     ThemeEntry {
-        name: "studio-dark",
+        name: "bright-dark",
         dark: true,
-        tokens: &STUDIO_DARK,
+        tokens: &BRIGHT_DARK,
     },
 ];

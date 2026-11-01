@@ -411,7 +411,7 @@ let components: [String: ComponentBuilder] = [
   "Preferences": { n in AnyView(Preferences { n.kids }) },
   "PreferenceThemeSwatches": { n in
     let options: [PreferenceThemeOption<String>] = (n["options"].array ?? []).map { option in
-      let palette = option["theme"].map { ThemeName(rawValue: $0.text) ?? .studioLight }
+      let palette = option["theme"].map { ThemeName(rawValue: $0.text) ?? .brightLight }
       return PreferenceThemeOption(value: option["value"]?.text ?? "",
         label: option["label"]?.text ?? "", theme: palette)
     }

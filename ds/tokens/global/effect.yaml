@@ -6,6 +6,11 @@
 # a window. They are neutral and tight — AppKit surfaces separate by shadow,
 # not by a coloured glow.
 #
+# Bright, the default on `:root`, tints these with its ink rather than with
+# black, so a shadow over warm paper reads as the paper's own depth. Studio's
+# black set is the baseline every other theme is written over; see
+# `studio`'s mode.
+#
 # Dark carries its own set rather than reusing these at a higher alpha: a
 # shadow over a near-black canvas has to be both larger and much darker
 # before it separates anything at all.
@@ -17,15 +22,15 @@ shadow:
       offsetY: 1px
       blur: 2px
       spread: 0px
-      color: "#0000001a"
+      color: "#111c2e1f"
     $extensions:
       mode:
-        bright:
+        studio:
           offsetX: 0px
           offsetY: 1px
           blur: 2px
           spread: 0px
-          color: "#111c2e1f"
+          color: "#0000001a"
         dark:
           offsetX: 0px
           offsetY: 1px
@@ -38,15 +43,15 @@ shadow:
       offsetY: 1px
       blur: 3px
       spread: 0px
-      color: "#0000001f"
+      color: "#111c2e24"
     $extensions:
       mode:
-        bright:
+        studio:
           offsetX: 0px
           offsetY: 1px
           blur: 3px
           spread: 0px
-          color: "#111c2e24"
+          color: "#0000001f"
         dark:
           offsetX: 0px
           offsetY: 1px
@@ -59,15 +64,15 @@ shadow:
       offsetY: 4px
       blur: 12px
       spread: 0px
-      color: "#00000024"
+      color: "#111c2e24"
     $extensions:
       mode:
-        bright:
+        studio:
           offsetX: 0px
           offsetY: 4px
           blur: 12px
           spread: 0px
-          color: "#111c2e24"
+          color: "#00000024"
         dark:
           offsetX: 0px
           offsetY: 4px
@@ -80,15 +85,15 @@ shadow:
       offsetY: 8px
       blur: 24px
       spread: 0px
-      color: "#00000033"
+      color: "#111c2e2e"
     $extensions:
       mode:
-        bright:
+        studio:
           offsetX: 0px
           offsetY: 8px
           blur: 24px
           spread: 0px
-          color: "#111c2e2e"
+          color: "#00000033"
         dark:
           offsetX: 0px
           offsetY: 10px
@@ -101,15 +106,15 @@ shadow:
       offsetY: 10px
       blur: 30px
       spread: 0px
-      color: "#00000038"
+      color: "#111c2e2e"
     $extensions:
       mode:
-        bright:
+        studio:
           offsetX: 0px
           offsetY: 10px
           blur: 30px
           spread: 0px
-          color: "#111c2e2e"
+          color: "#00000038"
         dark:
           offsetX: 0px
           offsetY: 14px
@@ -122,15 +127,15 @@ shadow:
       offsetY: 12px
       blur: 32px
       spread: 0px
-      color: "#0000003d"
+      color: "#111c2e33"
     $extensions:
       mode:
-        bright:
+        studio:
           offsetX: 0px
           offsetY: 12px
           blur: 32px
           spread: 0px
-          color: "#111c2e33"
+          color: "#0000003d"
         dark:
           offsetX: 0px
           offsetY: 16px
@@ -143,15 +148,15 @@ shadow:
       offsetY: 24px
       blur: 56px
       spread: 0px
-      color: "#00000047"
+      color: "#111c2e3d"
     $extensions:
       mode:
-        bright:
+        studio:
           offsetX: 0px
           offsetY: 24px
           blur: 56px
           spread: 0px
-          color: "#111c2e3d"
+          color: "#00000047"
         dark:
           offsetX: 0px
           offsetY: 24px

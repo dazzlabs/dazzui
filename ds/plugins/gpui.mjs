@@ -7,11 +7,11 @@ import { resolveThemes, themeModes } from './resolve.mjs'
  * block of overrides — but it has something Dart and Swift lack: struct
  * update syntax in a `const`. Every theme is therefore resolved whole here,
  * by the same walk WinUI's snapshot takes, and written as only the fields
- * that differ from Studio Light's:
+ * that differ from Bright Light's — the default, and the whole base struct:
  *
- *     pub const STUDIO_DARK: ThemeTokens = ThemeTokens {
- *         color_canvas: Color(0x0f0f12ff),
- *         ..STUDIO_LIGHT
+ *     pub const STUDIO_LIGHT: ThemeTokens = ThemeTokens {
+ *         color_canvas: Color(0xeeecf6ff),
+ *         ..BRIGHT_LIGHT
  *     };
  *
  * so the diff a token change makes is the diff it reads as, and nothing is
@@ -44,10 +44,13 @@ const SHADES = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]
 const RAMP_STEP = /^(color\.[a-z]+)\.(\d+)$/
 const PAINT_LEAF = /^(.+)\.(shade|alpha|color)$/
 
+/** The theme `:root` holds: the fields a const names only the changes from. */
+const BASE = 'bright-light'
+
 export function generate(tokens, modeSelectors) {
   const themes = resolveThemes(tokens, modeSelectors)
   const modes = themeModes(modeSelectors)
-  const fields = describe(themes['studio-light'])
+  const fields = describe(themes[BASE])
   const values = Object.fromEntries(
     Object.entries(themes).map(([name, snapshot]) => [
       name,
@@ -79,16 +82,16 @@ export function generate(tokens, modeSelectors) {
     '',
   ]
 
-  const base = values['studio-light']
+  const base = values[BASE]
   for (const [name, fieldValues] of Object.entries(values)) {
     lines.push(`pub const ${constName(name)}: ThemeTokens = ThemeTokens {`)
     for (const field of fields) {
       const value = fieldValues[field.name]
-      if (name === 'studio-light' || value !== base[field.name]) {
+      if (name === BASE || value !== base[field.name]) {
         lines.push(`    ${field.name}: ${value},`)
       }
     }
-    if (name !== 'studio-light') lines.push('    ..STUDIO_LIGHT')
+    if (name !== BASE) lines.push(`    ..${constName(BASE)}`)
     lines.push('};', '')
   }
 

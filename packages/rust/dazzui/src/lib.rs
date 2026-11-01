@@ -24,12 +24,12 @@ pub use foundation::{
 pub use generated::{THEMES, ThemeTokens};
 pub use theme::{ActiveTheme, Theme, themed};
 
-/// Installs what the kit needs app-wide: the theme, Studio Light until one
+/// Installs what the kit needs app-wide: the theme, Bright Light until one
 /// is set, the keyboard watch that decides when focus is shown, and the keys
 /// a text field edits with.
 pub fn init(cx: &mut gpui::App) {
     if !cx.has_global::<Theme>() {
-        Theme::set("studio-light", cx);
+        Theme::set("bright-light", cx);
     }
     foundation::focus::init(cx);
     foundation::text_input::init(cx);

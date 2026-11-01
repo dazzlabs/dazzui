@@ -20,8 +20,8 @@ export const FAMILY_GROUPS: readonly FamilyGroup[] = [
   {
     title: 'DazzUI',
     families: [
-      { value: 'studio', title: 'Studio' },
       { value: 'bright', title: 'Bright' },
+      { value: 'studio', title: 'Studio' },
       { value: 'frost', title: 'Frost' },
       { value: 'graphite', title: 'Graphite' },
       { value: 'ember', title: 'Ember' },
@@ -84,7 +84,7 @@ export interface Theme {
   mode: Mode
 }
 
-export const DEFAULT_THEME: Theme = { family: 'studio', mode: 'system' }
+export const DEFAULT_THEME: Theme = { family: 'bright', mode: 'system' }
 
 export const PLATFORMS = [
   { value: 'both', label: 'Both' },
@@ -95,7 +95,7 @@ export const PLATFORMS = [
 export type Platforms = (typeof PLATFORMS)[number]['value']
 
 export function parseFamily(value: string | null): Family {
-  return FAMILIES.find(family => family.value === value)?.value ?? 'studio'
+  return FAMILIES.find(family => family.value === value)?.value ?? 'bright'
 }
 
 export function parseMode(value: string | null): Mode {
@@ -123,7 +123,7 @@ export function useSystemDark() {
 /**
  * The window around the phones is drawn with the desktop kit, whose
  * themes are chosen whole; `system` resolves to the half the OS is
- * showing. Studio Light is what the desktop sheet's `:root` holds, so it
+ * showing. Bright Light is what the desktop sheet's `:root` holds, so it
  * is applied by removing `data-theme` rather than writing it.
  */
 export function applyTheme(
@@ -134,6 +134,6 @@ export function applyTheme(
   const mode =
     theme.mode === 'system' ? (systemDark ? 'dark' : 'light') : theme.mode
   const id = `${theme.family}-${mode}`
-  if (id === 'studio-light') root.removeAttribute('data-theme')
+  if (id === 'bright-light') root.removeAttribute('data-theme')
   else root.setAttribute('data-theme', id)
 }

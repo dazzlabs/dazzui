@@ -16,12 +16,12 @@ pub const FAMILY_GROUPS: &[FamilyGroup] = &[
         title: "DazzUI",
         families: &[
             Family {
-                value: "studio",
-                title: "Studio",
-            },
-            Family {
                 value: "bright",
                 title: "Bright",
+            },
+            Family {
+                value: "studio",
+                title: "Studio",
             },
             Family {
                 value: "frost",

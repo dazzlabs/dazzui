@@ -21,7 +21,7 @@ struct ContentView: View {
       }
       .navigationTitle("Welcome")
     }
-    .mobileTheme(.studio)
+    .mobileTheme(.bright)
   }
 }
 ```

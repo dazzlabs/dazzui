@@ -6,10 +6,13 @@
 # carrying only `$extensions` is dropped without an error. The twelve themes,
 # as six families:
 #
-#   default        Studio Light   — white cards on a lilac-grey canvas
-#   dark           Studio Dark    — the same skeleton over a near-black canvas
-#   bright         Bright Light   — warm paper, ink navy, acid green marker
-#   bright-dark    Bright Dark    — the same pair with the roles swapped
+#   (no mode)      Bright Light  — warm paper, ink navy, acid green marker;
+#                                   the default, and what `:root` holds
+#   studio         Studio Light  — white cards on a lilac-grey canvas; the
+#                                   baseline, selected by every theme but
+#                                   Bright's pair
+#   dark           Studio Dark   — the same skeleton over a near-black canvas
+#   bright-dark    Bright Dark   — the same pair with the roles swapped
 #   frost          Frost Light    — slate-grey paper, teal accent
 #   frost-dark     Frost Dark     — that teal over a deep blue-slate canvas
 #   graphite       Graphite Light — monochrome: the accent is the ink itself
@@ -26,6 +29,13 @@
 # corner alone — and Frost, whose teal reads correctly in both directions,
 # needs no such mode for its ramp at all.
 #
+# Bright is the one family with no mode of its own: its values are the
+# `$value`s, so Bright Light is `:root` and every other theme is written over
+# it. That is why `studio` is here at all: a token Bright re-points carries
+# Studio's value under `studio`, and every theme but Bright's pair selects
+# that mode, so the rest of the design keeps the values it was drawn at
+# without each family restating them.
+#
 # The imported themes — Omarchy's and the desktops' — write nothing here.
 # Their modes are derived from `themes/*.yaml` by `scripts/themes.mjs` and
 # added to these tokens before the graph is parsed, so the file only ever
@@ -33,10 +43,10 @@
 color:
   primary:
     "50":
-      $value: "{base.color.brand.50}"
+      $value: "{base.color.ink.50}"
       $extensions:
         mode:
-          bright: "{base.color.ink.50}"
+          studio: "{base.color.brand.50}"
           bright-dark: "{base.color.acid.50}"
           frost: "{base.color.frost.50}"
           graphite: "{base.color.graphite.50}"
@@ -45,10 +55,10 @@ color:
           ember-dark: "{base.color.ember-dark.50}"
           nocturne: "{base.color.nocturne.50}"
     "100":
-      $value: "{base.color.brand.100}"
+      $value: "{base.color.ink.100}"
       $extensions:
         mode:
-          bright: "{base.color.ink.100}"
+          studio: "{base.color.brand.100}"
           bright-dark: "{base.color.acid.100}"
           frost: "{base.color.frost.100}"
           graphite: "{base.color.graphite.100}"
@@ -57,10 +67,10 @@ color:
           ember-dark: "{base.color.ember-dark.100}"
           nocturne: "{base.color.nocturne.100}"
     "200":
-      $value: "{base.color.brand.200}"
+      $value: "{base.color.ink.200}"
       $extensions:
         mode:
-          bright: "{base.color.ink.200}"
+          studio: "{base.color.brand.200}"
           bright-dark: "{base.color.acid.200}"
           frost: "{base.color.frost.200}"
           graphite: "{base.color.graphite.200}"
@@ -69,10 +79,10 @@ color:
           ember-dark: "{base.color.ember-dark.200}"
           nocturne: "{base.color.nocturne.200}"
     "300":
-      $value: "{base.color.brand.300}"
+      $value: "{base.color.ink.300}"
       $extensions:
         mode:
-          bright: "{base.color.ink.300}"
+          studio: "{base.color.brand.300}"
           bright-dark: "{base.color.acid.300}"
           frost: "{base.color.frost.300}"
           graphite: "{base.color.graphite.300}"
@@ -81,10 +91,10 @@ color:
           ember-dark: "{base.color.ember-dark.300}"
           nocturne: "{base.color.nocturne.300}"
     "400":
-      $value: "{base.color.brand.400}"
+      $value: "{base.color.ink.400}"
       $extensions:
         mode:
-          bright: "{base.color.ink.400}"
+          studio: "{base.color.brand.400}"
           bright-dark: "{base.color.acid.400}"
           frost: "{base.color.frost.400}"
           graphite: "{base.color.graphite.400}"
@@ -93,10 +103,10 @@ color:
           ember-dark: "{base.color.ember-dark.400}"
           nocturne: "{base.color.nocturne.400}"
     "500":
-      $value: "{base.color.brand.500}"
+      $value: "{base.color.ink.500}"
       $extensions:
         mode:
-          bright: "{base.color.ink.500}"
+          studio: "{base.color.brand.500}"
           bright-dark: "{base.color.acid.500}"
           frost: "{base.color.frost.500}"
           graphite: "{base.color.graphite.500}"
@@ -105,10 +115,10 @@ color:
           ember-dark: "{base.color.ember-dark.500}"
           nocturne: "{base.color.nocturne.500}"
     "600":
-      $value: "{base.color.brand.600}"
+      $value: "{base.color.ink.600}"
       $extensions:
         mode:
-          bright: "{base.color.ink.600}"
+          studio: "{base.color.brand.600}"
           bright-dark: "{base.color.acid.600}"
           frost: "{base.color.frost.600}"
           graphite: "{base.color.graphite.600}"
@@ -117,10 +127,10 @@ color:
           ember-dark: "{base.color.ember-dark.600}"
           nocturne: "{base.color.nocturne.600}"
     "700":
-      $value: "{base.color.brand.700}"
+      $value: "{base.color.ink.700}"
       $extensions:
         mode:
-          bright: "{base.color.ink.700}"
+          studio: "{base.color.brand.700}"
           bright-dark: "{base.color.acid.700}"
           frost: "{base.color.frost.700}"
           graphite: "{base.color.graphite.700}"
@@ -129,10 +139,10 @@ color:
           ember-dark: "{base.color.ember-dark.700}"
           nocturne: "{base.color.nocturne.700}"
     "800":
-      $value: "{base.color.brand.800}"
+      $value: "{base.color.ink.800}"
       $extensions:
         mode:
-          bright: "{base.color.ink.800}"
+          studio: "{base.color.brand.800}"
           bright-dark: "{base.color.acid.800}"
           frost: "{base.color.frost.800}"
           graphite: "{base.color.graphite.800}"
@@ -141,10 +151,10 @@ color:
           ember-dark: "{base.color.ember-dark.800}"
           nocturne: "{base.color.nocturne.800}"
     "900":
-      $value: "{base.color.brand.900}"
+      $value: "{base.color.ink.900}"
       $extensions:
         mode:
-          bright: "{base.color.ink.900}"
+          studio: "{base.color.brand.900}"
           bright-dark: "{base.color.acid.900}"
           frost: "{base.color.frost.900}"
           graphite: "{base.color.graphite.900}"
@@ -153,10 +163,10 @@ color:
           ember-dark: "{base.color.ember-dark.900}"
           nocturne: "{base.color.nocturne.900}"
     "950":
-      $value: "{base.color.brand.950}"
+      $value: "{base.color.ink.950}"
       $extensions:
         mode:
-          bright: "{base.color.ink.950}"
+          studio: "{base.color.brand.950}"
           bright-dark: "{base.color.acid.950}"
           frost: "{base.color.frost.950}"
           graphite: "{base.color.graphite.950}"
@@ -390,11 +400,11 @@ color:
   # own rail-to-paper interval one step under the rail, which lands it here.
   canvas:
     $type: color
-    $value: "#eeecf6"
+    $value: "#e6eade"
     $extensions:
       mode:
         dark: "#0a0b10"
-        bright: "#e6eade"
+        studio: "#eeecf6"
         bright-dark: "#060b12"
         frost: "#e5edf0"
         frost-dark: "#070d11"
@@ -407,11 +417,11 @@ color:
   # The paper: windows, popovers, the raised panel inside a tray.
   surface:
     $type: color
-    $value: "#ffffff"
+    $value: "#fbfaf7"
     $extensions:
       mode:
         dark: "#0d0f14"
-        bright: "#fbfaf7"
+        studio: "#ffffff"
         bright-dark: "#0c141e"
         frost: "#ffffff"
         frost-dark: "#0d151a"
@@ -434,11 +444,11 @@ color:
   # leans.
   surface-muted:
     $type: color
-    $value: "#f7f7fa"
+    $value: "#ffffff"
     $extensions:
       mode:
         dark: "#12141a"
-        bright: "#ffffff"
+        studio: "#f7f7fa"
         bright-dark: "#141d29"
         frost: "#f2f6f8"
         frost-dark: "#111a20"
@@ -453,11 +463,11 @@ color:
   # that matches the card it sits on stops reading as a track.
   surface-sunken:
     $type: color
-    $value: "#e3e3ec"
+    $value: "#e5e3db"
     $extensions:
       mode:
         dark: "#262a34"
-        bright: "#e5e3db"
+        studio: "#e3e3ec"
         bright-dark: "#1c2734"
         frost: "#dbe6ea"
         frost-dark: "#23333d"
@@ -479,11 +489,11 @@ color:
   # wash, and no more.
   surface-subtle:
     $type: color
-    $value: "#14162a0f"
+    $value: "#111c2e0f"
     $extensions:
       mode:
         dark: "#ffffff12"
-        bright: "#111c2e0f"
+        studio: "#14162a0f"
         bright-dark: "#f2f4ef12"
         frost: "#0e1f260f"
         frost-dark: "#ffffff12"
@@ -499,11 +509,11 @@ color:
   # too dark, or the pill stops separating from the card it sits on.
   surface-inset:
     $type: color
-    $value: "#f0f0f5"
+    $value: "#f0efe9"
     $extensions:
       mode:
         dark: "#1b1e26"
-        bright: "#f0efe9"
+        studio: "#f0f0f5"
         bright-dark: "#16202c"
         frost: "#ecf2f4"
         frost-dark: "#18262e"
@@ -522,7 +532,7 @@ color:
     $extensions:
       mode:
         dark: "#3a3f4d"
-        bright: "#ffffff"
+        studio: "#ffffff"
         bright-dark: "#2a3644"
         frost: "#ffffff"
         frost-dark: "#374b57"
@@ -544,11 +554,11 @@ color:
   # size of a word rather than a sheet.
   surface-overlay:
     $type: color
-    $value: "#ffffff"
+    $value: "#fbfaf7"
     $extensions:
       mode:
         dark: "#12141a"
-        bright: "#fbfaf7"
+        studio: "#ffffff"
         bright-dark: "#111a26"
         frost: "#ffffff"
         frost-dark: "#111a20"
@@ -566,11 +576,11 @@ color:
   # body it closes in exactly the theme where it should sit lighter.
   surface-chrome:
     $type: color
-    $value: "#f7f7fa"
+    $value: "#ffffff"
     $extensions:
       mode:
         dark: "#12141a"
-        bright: "#ffffff"
+        studio: "#f7f7fa"
         bright-dark: "#111a26"
         frost: "#f2f6f8"
         frost-dark: "#111a20"
@@ -591,11 +601,11 @@ color:
   # painted before this role existed.
   surface-column:
     $type: color
-    $value: "#fafafc"
+    $value: "#f4f3ee"
     $extensions:
       mode:
         dark: "#0a0c11"
-        bright: "#f4f3ee"
+        studio: "#fafafc"
         bright-dark: "#0a111a"
         frost: "#f2f6f8"
         frost-dark: "#111a20"
@@ -616,11 +626,11 @@ color:
   # over navy without a value per surface.
   content:
     $type: color
-    $value: "#12142a"
+    $value: "#111c2e"
     $extensions:
       mode:
         dark: "#f2f3fa"
-        bright: "#111c2e"
+        studio: "#12142a"
         bright-dark: "#f2f4ef"
         frost: "#0e1f26"
         frost-dark: "#eaf3f7"
@@ -635,11 +645,11 @@ color:
   # legible while conceding the room to whatever is selected.
   content-secondary:
     $type: color
-    $value: "#3c405c"
+    $value: "#111c2ec7"
     $extensions:
       mode:
         dark: "#c3c8dc"
-        bright: "#111c2ec7"
+        studio: "#3c405c"
         bright-dark: "#f2f4efc7"
         frost: "#2f4c58"
         frost-dark: "#bcd0d9"
@@ -661,11 +671,11 @@ color:
   # themes that do separate them can.
   content-nav:
     $type: color
-    $value: "#4a4f6b"
+    $value: "#111c2eb3"
     $extensions:
       mode:
         dark: "#9aa1bb"
-        bright: "#111c2eb3"
+        studio: "#4a4f6b"
         bright-dark: "#f2f4efb3"
         frost: "#3a5b68"
         frost-dark: "#93aab5"
@@ -677,11 +687,11 @@ color:
         nocturne-dark: "#b2b6ca"
   content-muted:
     $type: color
-    $value: "#565b78"
+    $value: "#111c2ea8"
     $extensions:
       mode:
         dark: "#9aa1bb"
-        bright: "#111c2ea8"
+        studio: "#565b78"
         bright-dark: "#f2f4efa8"
         frost: "#456573"
         frost-dark: "#93aab5"
@@ -696,11 +706,11 @@ color:
   # competes with the value it captions.
   content-subtle:
     $type: color
-    $value: "#8c92aa"
+    $value: "#111c2e73"
     $extensions:
       mode:
         dark: "#8b93b0"
-        bright: "#111c2e73"
+        studio: "#8c92aa"
         bright-dark: "#f2f4ef73"
         frost: "#7794a0"
         frost-dark: "#7f99a4"
@@ -712,11 +722,11 @@ color:
         nocturne-dark: "#75798c"
   content-faint:
     $type: color
-    $value: "#a2a7bd"
+    $value: "#111c2e61"
     $extensions:
       mode:
         dark: "#6a7090"
-        bright: "#111c2e61"
+        studio: "#a2a7bd"
         bright-dark: "#f2f4ef61"
         frost: "#9ab1ba"
         frost-dark: "#62808d"
@@ -738,11 +748,11 @@ color:
   # disagree, and each family follows the one it was read from.
   border:
     $type: color
-    $value: "#14162a12"
+    $value: "#111c2e14"
     $extensions:
       mode:
         dark: "#ffffff0f"
-        bright: "#111c2e14"
+        studio: "#14162a12"
         bright-dark: "#f2f4ef14"
         frost: "#0e1f2621"
         frost-dark: "#ffffff29"
@@ -765,11 +775,11 @@ color:
   # only one of them is a control.
   border-strong:
     $type: color
-    $value: "#14162a17"
+    $value: "#111c2e17"
     $extensions:
       mode:
         dark: "#ffffff17"
-        bright: "#111c2e17"
+        studio: "#14162a17"
         bright-dark: "#f2f4ef17"
         frost: "#0e1f262b"
         frost-dark: "#ffffff33"
@@ -789,11 +799,11 @@ color:
   # keeps the rung its mockups draw.
   border-muted:
     $type: color
-    $value: "#5f6478"
+    $value: "#111c2e40"
     $extensions:
       mode:
         dark: "#363c4d"
-        bright: "#111c2e40"
+        studio: "#5f6478"
         bright-dark: "#35414f"
         frost: "#456573"
         frost-dark: "#32454f"
@@ -810,10 +820,10 @@ color:
   # hardcoded white would be illegible on Bright Dark's acid fill.
   on-accent:
     $type: color
-    $value: "#ffffff"
+    $value: "#d6ff3f"
     $extensions:
       mode:
-        bright: "#d6ff3f"
+        studio: "#ffffff"
         bright-dark: "#111c2e"
         frost: "#ffffff"
         frost-dark: "#04171d"

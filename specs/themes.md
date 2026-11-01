@@ -7,20 +7,30 @@ Twelve drawn themes, as six families over one default, plus the imported
 themes below — defined once in `terrazzo.config.mjs` and passed to
 every plugin so the platforms cannot drift:
 
-| `data-theme`     | modes applied                     |
-| ---------------- | --------------------------------- |
-| *(none)*         | — Studio Light, `:root`           |
-| `studio-dark`    | `dark`                            |
-| `bright-light`   | `bright`                          |
-| `bright-dark`    | `bright`, `dark`, `bright-dark`   |
-| `frost-light`    | `frost`                           |
-| `frost-dark`     | `frost`, `dark`                   |
-| `graphite-light` | `graphite`                        |
-| `graphite-dark`  | `graphite`, `dark`, `graphite-dark` |
-| `ember-light`    | `ember`                           |
-| `ember-dark`     | `ember`, `dark`, `ember-dark`     |
-| `nocturne-light` | `nocturne`                        |
-| `nocturne-dark`  | `nocturne`, `dark`, `nocturne-dark` |
+| `data-theme`     | modes applied                                 |
+| ---------------- | --------------------------------------------- |
+| *(none)*         | — Bright Light, `:root`                       |
+| `studio-light`   | `studio`                                      |
+| `studio-dark`    | `studio`, `dark`                              |
+| `bright-dark`    | `dark`, `bright-dark`                         |
+| `frost-light`    | `studio`, `frost`                             |
+| `frost-dark`     | `studio`, `frost`, `dark`                     |
+| `graphite-light` | `studio`, `graphite`                          |
+| `graphite-dark`  | `studio`, `graphite`, `dark`, `graphite-dark`  |
+| `ember-light`    | `studio`, `ember`                             |
+| `ember-dark`     | `studio`, `ember`, `dark`, `ember-dark`        |
+| `nocturne-light` | `studio`, `nocturne`                          |
+| `nocturne-dark`  | `studio`, `nocturne`, `dark`, `nocturne-dark`  |
+
+Bright is the one family with no mode of its own: its values are the tokens'
+`$value`s, so Bright Light is `:root` and is applied by holding no attribute
+at all. `studio` is the **baseline** rather than a family mode — the values
+the design was drawn at first — and it is selected by every theme but
+Bright's pair, because every other theme is written as a re-pointing of
+Studio rather than as a second whole palette. That is how a token Bright
+moves keeps Studio's value for the rest of the design without each family
+restating it, and it is why `bright-dark` selects no baseline at all: what it
+does not carry is already Bright's.
 
 The modes compose rather than repeat, so a value shared along the light/dark
 axis or along a family is written once. A family whose accent reads correctly
@@ -30,8 +40,8 @@ Graphite and Ember each invert or lift their ramp and so carry a second
 ladder. Nocturne's blurple is written once the same way, and its dark corner
 carries only the surfaces and ink of the design system it is read off — the
 Tiller mockups' own ground, `#161826` under `#e9e9ed`. The order in that config is load bearing: every selector is a single
-attribute and so has equal specificity, and the later block wins — the family
-modes first, then `dark`, then the corners.
+attribute and so has equal specificity, and the later block wins — the
+baseline first, then the family modes, then `dark`, then the corners.
 
 Graphite and Nocturne are the two families that move geometry: `radius.small`
 through `radius.big` and both `frame` corners step down one rung of the same
@@ -210,37 +220,39 @@ mobile package carries a theme the web's way:
 `[data-family]` blocks, the dark one both under `[data-appearance='dark']`
 and under a `prefers-color-scheme: dark` media rule fenced to
 `:not([data-appearance='light'])`, so `MobileTheme` follows the OS unless
-told otherwise, exactly as `mobileTheme` and `DazzTheme` do. Each block
-also sets `color-scheme`, which is what lets the glass material pick its
-highlight with `light-dark()` rather than carry a dark block of its own. The React
-playground picks a theme in two steps, *style* then *mode*
-(`THEME_STYLES`, `splitTheme` and `joinTheme` in `themes.ts`; the URL still
-carries one `theme`), and a style that lacks a mode has it disabled. The
-Flutter playground does the same with a grouped `Select` and a brightness
-(`playgroundStyleGroups` in `example/lib/playground_theme.dart`), reading
-each theme off the generated `themeVariablesByName` map — every theme by
-its `data-theme` name — rather than a case per theme; a test holds that
-list to the map both ways, and draws the control pages under every imported
-theme. The imported styles stay out of `THEMES` and `PlaygroundTheme`, and
-so out of the conformance reference, the golden suite and the every-story test:
-the ports are held to the drawn families.
+told otherwise, exactly as `mobileTheme` and `DazzTheme` do; all three
+default to the Bright family. Each block also sets `color-scheme`, which is
+what lets the glass material pick its highlight with `light-dark()` rather
+than carry a dark block of its own. The React playground picks a theme in
+two steps, *family* then *mode* (`FAMILY_GROUPS` and `MODES` in `themes.ts`;
+the URL carries one `theme`). The Flutter playground does the same with a
+grouped `Select` and a brightness (`themeFamilyGroups` in
+`example/lib/lib/themes.dart`), reading each theme off the generated
+`themeVariablesByName` map — every theme by its `data-theme` name — rather
+than a case per theme; a test holds that list to the map both ways, and
+draws the control pages under every imported theme. The imported styles stay
+out of `THEMES` and `PlaygroundTheme`, and so out of the conformance
+reference, the golden suite and the every-story test: the ports are held to
+the drawn families.
 
-Studio Light sets **no attribute at all** — selecting it means removing
-`data-theme`, not writing `studio-light`. Writing it would leave the page
+Bright Light sets **no attribute at all** — selecting it means removing
+`data-theme`, not writing `bright-light`. Writing it would leave the page
 looking right for the wrong reason, since none of the theme blocks would
-match. The React playground does exactly this; see `packages/js/dazzui/example/src/lib/themes.ts`.
+match. Studio Light, by contrast, is an ordinary block (`studio`), so
+`studio-light` is written like any other theme. The React playground does
+exactly this; see `packages/js/dazzui/example/src/lib/themes.ts`.
 
 Flutter has no cascade, so `plugins/flutter.mjs` collapses each theme's mode
-chain into a whole `ThemeVariables` instance — `themeVariablesStudioDark`,
-`themeVariablesBrightLight`, `themeVariablesBrightDark` — beside the default
-`themeVariables`. It reads the themes back out of the same `modeSelectors`,
-so adding a theme reaches Dart without the plugin being touched. Swift does
-the same thing in its own idiom, an initialiser with defaults and computed
-properties. Rust has struct update syntax in a `const`, so
-`plugins/gpui.mjs` resolves every theme whole — by the walk WinUI's snapshot
-takes, shared in `plugins/resolve.mjs` — and writes each as the fields that
-differ from Studio Light's over `..STUDIO_LIGHT`. Only the tint is left
-open: a recipe cell that picks a shade off the control's ramp stays a
+chain into a whole `ThemeVariables` instance — `themeVariablesStudioLight`,
+`themeVariablesStudioDark`, `themeVariablesBrightDark` — beside the default
+`themeVariables`, which is Bright Light. It reads the themes back out of the
+same `modeSelectors`, so adding a theme reaches Dart without the plugin being
+touched. Swift does the same thing in its own idiom, an initialiser with
+defaults and computed properties. Rust has struct update syntax in a `const`,
+so `plugins/gpui.mjs` resolves every theme whole — by the walk WinUI's
+snapshot takes, shared in `plugins/resolve.mjs` — and writes each as the
+fields that differ from Bright Light's over `..BRIGHT_LIGHT`. Only the tint
+is left open: a recipe cell that picks a shade off the control's ramp stays a
 `Paint::Shade`, resolved where it is drawn.
 
 The Dart class also carries a generated `copyWith` over every stored field,

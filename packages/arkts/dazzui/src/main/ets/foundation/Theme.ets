@@ -10,7 +10,7 @@ import { hasWindowSidebars, toggleWindowSidebars, observeSidebarShortcuts, unobs
 
 @Component
 export struct DazzTheme {
-  @Prop @Watch('themeChanged') name: string = 'studio-light'
+  @Prop @Watch('themeChanged') name: string = 'bright-light'
   @Prop @Watch('themeChanged') sizing: DazzSizing = 'design'
   @Provide({ allowOverride: 'dazzui.theme' }) tokens: DazzTokens = new DazzTokens()
   @Provide({ allowOverride: 'dazzui.pointer' }) pointer: DazzPointerContext = new DazzPointerContext()

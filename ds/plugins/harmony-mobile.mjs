@@ -99,7 +99,7 @@ ${families.map(family => `  DazzThemeFamily.${pascal(family)}`).join(',\n')}
 ]
 
 /** Fresh scopes never share mutable color objects. ArkUI chooses the appearance. */
-export function dazzTheme(family: DazzThemeFamily = DazzThemeFamily.Studio): CustomTheme {
+export function dazzTheme(family: DazzThemeFamily = DazzThemeFamily.${pascal(families[0])}): CustomTheme {
   switch (family) {
 ${cases.join('\n')}
     default:

@@ -105,8 +105,8 @@ Two files come out of the generator:
 
 Swift has no cascade, so a theme is not a block of overrides layered on at
 render time: `plugins/swiftui.mjs` collapses each theme's mode chain into a
-whole `ThemeVariables` value — `.studioDark`, `.brightLight`, `.brightDark` —
-beside the `.studioLight` default. It reads the themes back out of the same
+whole `ThemeVariables` value — `.studioLight`, `.studioDark`, `.brightDark` —
+beside the `.brightLight` default. It reads the themes back out of the same
 `modeSelectors` the stylesheets use, so adding a theme reaches Swift without
 the plugin being touched.
 
@@ -116,9 +116,9 @@ a theme added to ds reaches it without an edit here.
 
 | `ThemeName`    | Feel |
 | -------------- | ---- |
-| `.studioLight` | White card, light grey canvas, violet accent. **The baseline** |
+| `.brightLight` | Warm paper, ink navy, acid-green marker, pill controls. **The default** |
+| `.studioLight` | White card, light grey canvas, violet accent; the baseline |
 | `.studioDark`  | The same skeleton over a near-black canvas |
-| `.brightLight` | Warm paper, ink navy, acid-green marker, pill controls |
 | `.brightDark`  | Ink-navy canvas, with acid green as the accent itself |
 
 ## Layout

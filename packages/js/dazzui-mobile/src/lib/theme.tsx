@@ -73,7 +73,7 @@ export function MobileTheme({
   }, [platform, parent])
 
   const value: ThemeContextValue = {
-    family: family ?? parent?.family ?? 'studio',
+    family: family ?? parent?.family ?? 'bright',
     appearance: appearance ?? parent?.appearance ?? 'system',
     platform: platform === 'auto' ? (parent?.platform ?? detected) : platform,
     container,

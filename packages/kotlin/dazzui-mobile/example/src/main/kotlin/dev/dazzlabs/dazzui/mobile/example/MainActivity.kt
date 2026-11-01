@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
 private fun Playground(initialStory: String?) {
     val context = LocalContext.current
     val stories = remember { JSONArray(context.assets.open("scenes.json").bufferedReader().use { it.readText() }).items().map { it as JSONObject } }
-    var family by rememberSaveable { mutableStateOf(DazzThemeFamily.Studio) }
+    var family by rememberSaveable { mutableStateOf(DazzThemeFamily.Bright) }
     val systemDark = isSystemInDarkTheme()
     var followSystem by rememberSaveable { mutableStateOf(true) }
     var dark by rememberSaveable { mutableStateOf(systemDark) }

@@ -6,10 +6,10 @@ frame:
   window:
     radius:
       $type: dimension
-      $value: "{base.corner.2xl}"
+      $value: "{base.corner.xl}"
       $extensions:
         mode:
-          bright: "{base.corner.xl}"
+          studio: "{base.corner.2xl}"
           graphite: "{base.corner.xl}"
           nocturne: "{base.corner.xl}"
     # The width a window opens at when the app names no size: a desktop
@@ -21,10 +21,10 @@ frame:
   popover:
     radius:
       $type: dimension
-      $value: "{base.corner.xl}"
+      $value: "{base.corner.xl-bright}"
       $extensions:
         mode:
-          bright: "{base.corner.xl-bright}"
+          studio: "{base.corner.xl}"
           graphite: "{base.corner.lg}"
           nocturne: "{base.corner.lg}"
   titlebar:

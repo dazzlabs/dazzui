@@ -13,7 +13,7 @@ use gpui::{
     LayoutId, Pixels, Window,
 };
 
-use crate::generated::{STUDIO_LIGHT, THEMES, ThemeTokens};
+use crate::generated::{BRIGHT_LIGHT, THEMES, ThemeTokens};
 use crate::tokens::ThemeEntry;
 
 /// The theme global: the app's theme and any subtree's pushed over it.
@@ -30,13 +30,13 @@ impl Theme {
         THEMES
     }
 
-    /// A theme by its `data-theme` name. Studio Light is `studio-light`,
+    /// A theme by its `data-theme` name. Bright Light is `bright-light`,
     /// though React writes no attribute for it.
     pub fn named(name: &str) -> Option<&'static ThemeEntry> {
         THEMES.iter().find(|entry| entry.name == name)
     }
 
-    /// Sets the app's theme, by name. An unknown name is Studio Light, as a
+    /// Sets the app's theme, by name. An unknown name is Bright Light, as a
     /// `data-theme` no block matches is on the web.
     pub fn set(name: &str, cx: &mut App) {
         let entry = Theme::named(name).unwrap_or(&THEMES[0]);
@@ -76,7 +76,7 @@ impl ActiveTheme for App {
         if self.has_global::<Theme>() {
             Theme::entry(self).tokens
         } else {
-            &STUDIO_LIGHT
+            &BRIGHT_LIGHT
         }
     }
 

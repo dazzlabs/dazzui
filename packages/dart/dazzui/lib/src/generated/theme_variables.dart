@@ -8,38 +8,38 @@ import 'colors.dart';
 /// DO NOT EDIT - This file is auto-generated
 class ThemeVariables {
   const ThemeVariables({
-    this.colorPrimary = Colors.brand,
+    this.colorPrimary = Colors.ink,
     this.colorNeutral = Colors.neutral,
     this.colorInfo = Colors.sky,
     this.colorSuccess = Colors.green,
     this.colorWarning = Colors.amber,
     this.colorDanger = Colors.red,
-    this.colorCanvas = const Color(0xFFEEECF6),
-    this.colorSurface = const Color(0xFFFFFFFF),
-    this.colorSurfaceMuted = const Color(0xFFF7F7FA),
-    this.colorSurfaceSunken = const Color(0xFFE3E3EC),
-    this.colorSurfaceSubtle = const Color(0x0F14162A),
-    this.colorSurfaceInset = const Color(0xFFF0F0F5),
+    this.colorCanvas = const Color(0xFFE6EADE),
+    this.colorSurface = const Color(0xFFFBFAF7),
+    this.colorSurfaceMuted = const Color(0xFFFFFFFF),
+    this.colorSurfaceSunken = const Color(0xFFE5E3DB),
+    this.colorSurfaceSubtle = const Color(0x0F111C2E),
+    this.colorSurfaceInset = const Color(0xFFF0EFE9),
     this.colorSurfaceRaised = const Color(0xFFFFFFFF),
-    this.colorSurfaceOverlay = const Color(0xFFFFFFFF),
-    this.colorSurfaceChrome = const Color(0xFFF7F7FA),
-    this.colorSurfaceColumn = const Color(0xFFFAFAFC),
-    this.colorContent = const Color(0xFF12142A),
-    this.colorContentSecondary = const Color(0xFF3C405C),
-    this.colorContentNav = const Color(0xFF4A4F6B),
-    this.colorContentMuted = const Color(0xFF565B78),
-    this.colorContentSubtle = const Color(0xFF8C92AA),
-    this.colorContentFaint = const Color(0xFFA2A7BD),
-    this.colorBorder = const Color(0x1214162A),
-    this.colorBorderStrong = const Color(0x1714162A),
-    this.colorBorderMuted = const Color(0xFF5F6478),
-    this.colorOnAccent = const Color(0xFFFFFFFF),
+    this.colorSurfaceOverlay = const Color(0xFFFBFAF7),
+    this.colorSurfaceChrome = const Color(0xFFFFFFFF),
+    this.colorSurfaceColumn = const Color(0xFFF4F3EE),
+    this.colorContent = const Color(0xFF111C2E),
+    this.colorContentSecondary = const Color(0xC7111C2E),
+    this.colorContentNav = const Color(0xB3111C2E),
+    this.colorContentMuted = const Color(0xA8111C2E),
+    this.colorContentSubtle = const Color(0x73111C2E),
+    this.colorContentFaint = const Color(0x61111C2E),
+    this.colorBorder = const Color(0x14111C2E),
+    this.colorBorderStrong = const Color(0x17111C2E),
+    this.colorBorderMuted = const Color(0x40111C2E),
+    this.colorOnAccent = const Color(0xFFD6FF3F),
     this.shadow2xs = const [
       BoxShadow(
         offset: Offset(0, 1),
         blurRadius: 2,
         spreadRadius: 0,
-        color: Color(0x1A000000),
+        color: Color(0x1F111C2E),
       ),
     ],
     this.shadowXs = const [
@@ -47,7 +47,7 @@ class ThemeVariables {
         offset: Offset(0, 1),
         blurRadius: 3,
         spreadRadius: 0,
-        color: Color(0x1F000000),
+        color: Color(0x24111C2E),
       ),
     ],
     this.shadowSm = const [
@@ -55,7 +55,7 @@ class ThemeVariables {
         offset: Offset(0, 4),
         blurRadius: 12,
         spreadRadius: 0,
-        color: Color(0x24000000),
+        color: Color(0x24111C2E),
       ),
     ],
     this.shadowMd = const [
@@ -63,7 +63,7 @@ class ThemeVariables {
         offset: Offset(0, 8),
         blurRadius: 24,
         spreadRadius: 0,
-        color: Color(0x33000000),
+        color: Color(0x2E111C2E),
       ),
     ],
     this.shadowLg = const [
@@ -71,7 +71,7 @@ class ThemeVariables {
         offset: Offset(0, 10),
         blurRadius: 30,
         spreadRadius: 0,
-        color: Color(0x38000000),
+        color: Color(0x2E111C2E),
       ),
     ],
     this.shadowXl = const [
@@ -79,7 +79,7 @@ class ThemeVariables {
         offset: Offset(0, 12),
         blurRadius: 32,
         spreadRadius: 0,
-        color: Color(0x3D000000),
+        color: Color(0x33111C2E),
       ),
     ],
     this.shadow2xl = const [
@@ -87,7 +87,7 @@ class ThemeVariables {
         offset: Offset(0, 24),
         blurRadius: 56,
         spreadRadius: 0,
-        color: Color(0x47000000),
+        color: Color(0x3D111C2E),
       ),
     ],
     this.focusWidth = 3,
@@ -96,9 +96,9 @@ class ThemeVariables {
     this.focusGlowAlpha = 0.14,
     this.focusRingShade = 600,
     this.focusRingAlpha = 0.45,
-    this.frameWindowRadius = 18,
+    this.frameWindowRadius = 16,
     this.frameWindowWidth = 840,
-    this.framePopoverRadius = 16,
+    this.framePopoverRadius = 14,
     this.frameTitlebarSize = 52,
     this.frameSidebarWidth = 172,
     this.frameSidebarIconWidth = 48,
@@ -112,10 +112,10 @@ class ThemeVariables {
     this.motionEasing = const Cubic(0.4, 0, 0.2, 1),
     this.radiusNone = 0,
     this.radiusTiny = 7,
-    this.radiusSmall = 8,
-    this.radiusMedium = 10,
+    this.radiusSmall = 9999,
+    this.radiusMedium = 9999,
     this.radiusLarge = 12,
-    this.radiusBig = 16,
+    this.radiusBig = 14,
     this.radiusFull = 9999,
     this.spacingPx = 1,
     this.spacing0 = 0,
@@ -224,8 +224,8 @@ class ThemeVariables {
       disabledColor: Colors.transparent,
     ),
     this.controlPressedAlpha = 0.9,
-    this.controlFieldRadius = 10,
-    this.controlContainerRadius = 10,
+    this.controlFieldRadius = 9999,
+    this.controlContainerRadius = 14,
     this.controlTinySize = 24,
     this.controlSmallSize = 26,
     this.controlMediumPaddingInline = 16,
@@ -247,8 +247,8 @@ class ThemeVariables {
     this.previewCardOpenDelay = const Duration(microseconds: 600000),
     this.previewCardCloseDelay = const Duration(microseconds: 300000),
     this.previewCardWidth = 320,
-    this.progressGradientFrom = const Color(0xFF6B4DFF),
-    this.progressGradientTo = const Color(0xFFA08CFF),
+    this.progressGradientFrom = const Color(0xFF111C2E),
+    this.progressGradientTo = const Color(0xFFD6FF3F),
     this.searchFieldInputWidth = 136,
     this.segmentedControlInset = 3,
     this.shortcutRecorderWidth = 132,
@@ -1372,40 +1372,40 @@ class ThemeVariables {
 /// Global instance of ThemeVariables
 const themeVariables = ThemeVariables();
 
-/// The `bright-light` counterpart of [themeVariables].
+/// The `studio-light` counterpart of [themeVariables].
 ///
 /// Every token that moves under this theme is named here; the rest fall
 /// through to the default, and the derived getters follow this instance.
 /// DO NOT EDIT - This file is auto-generated
-const themeVariablesBrightLight = ThemeVariables(
-  colorCanvas: Color(0xFFE6EADE),
-  colorSurface: Color(0xFFFBFAF7),
-  colorSurfaceMuted: Color(0xFFFFFFFF),
-  colorSurfaceSunken: Color(0xFFE5E3DB),
-  colorSurfaceSubtle: Color(0x0F111C2E),
-  colorSurfaceInset: Color(0xFFF0EFE9),
+const themeVariablesStudioLight = ThemeVariables(
+  colorCanvas: Color(0xFFEEECF6),
+  colorSurface: Color(0xFFFFFFFF),
+  colorSurfaceMuted: Color(0xFFF7F7FA),
+  colorSurfaceSunken: Color(0xFFE3E3EC),
+  colorSurfaceSubtle: Color(0x0F14162A),
+  colorSurfaceInset: Color(0xFFF0F0F5),
   colorSurfaceRaised: Color(0xFFFFFFFF),
-  colorSurfaceOverlay: Color(0xFFFBFAF7),
-  colorSurfaceChrome: Color(0xFFFFFFFF),
-  colorSurfaceColumn: Color(0xFFF4F3EE),
-  colorContent: Color(0xFF111C2E),
-  colorContentSecondary: Color(0xC7111C2E),
-  colorContentNav: Color(0xB3111C2E),
-  colorContentMuted: Color(0xA8111C2E),
-  colorContentSubtle: Color(0x73111C2E),
-  colorContentFaint: Color(0x61111C2E),
-  colorBorder: Color(0x14111C2E),
-  colorBorderStrong: Color(0x17111C2E),
-  colorBorderMuted: Color(0x40111C2E),
-  colorOnAccent: Color(0xFFD6FF3F),
-  controlFieldRadius: 9999,
-  controlContainerRadius: 14,
+  colorSurfaceOverlay: Color(0xFFFFFFFF),
+  colorSurfaceChrome: Color(0xFFF7F7FA),
+  colorSurfaceColumn: Color(0xFFFAFAFC),
+  colorContent: Color(0xFF12142A),
+  colorContentSecondary: Color(0xFF3C405C),
+  colorContentNav: Color(0xFF4A4F6B),
+  colorContentMuted: Color(0xFF565B78),
+  colorContentSubtle: Color(0xFF8C92AA),
+  colorContentFaint: Color(0xFFA2A7BD),
+  colorBorder: Color(0x1214162A),
+  colorBorderStrong: Color(0x1714162A),
+  colorBorderMuted: Color(0xFF5F6478),
+  colorOnAccent: Color(0xFFFFFFFF),
+  controlFieldRadius: 10,
+  controlContainerRadius: 10,
   shadow2xs: [
     BoxShadow(
       offset: Offset(0, 1),
       blurRadius: 2,
       spreadRadius: 0,
-      color: Color(0x1F111C2E),
+      color: Color(0x1A000000),
     ),
   ],
   shadowXs: [
@@ -1413,7 +1413,7 @@ const themeVariablesBrightLight = ThemeVariables(
       offset: Offset(0, 1),
       blurRadius: 3,
       spreadRadius: 0,
-      color: Color(0x24111C2E),
+      color: Color(0x1F000000),
     ),
   ],
   shadowSm: [
@@ -1421,7 +1421,7 @@ const themeVariablesBrightLight = ThemeVariables(
       offset: Offset(0, 4),
       blurRadius: 12,
       spreadRadius: 0,
-      color: Color(0x24111C2E),
+      color: Color(0x24000000),
     ),
   ],
   shadowMd: [
@@ -1429,7 +1429,7 @@ const themeVariablesBrightLight = ThemeVariables(
       offset: Offset(0, 8),
       blurRadius: 24,
       spreadRadius: 0,
-      color: Color(0x2E111C2E),
+      color: Color(0x33000000),
     ),
   ],
   shadowLg: [
@@ -1437,7 +1437,7 @@ const themeVariablesBrightLight = ThemeVariables(
       offset: Offset(0, 10),
       blurRadius: 30,
       spreadRadius: 0,
-      color: Color(0x2E111C2E),
+      color: Color(0x38000000),
     ),
   ],
   shadowXl: [
@@ -1445,7 +1445,7 @@ const themeVariablesBrightLight = ThemeVariables(
       offset: Offset(0, 12),
       blurRadius: 32,
       spreadRadius: 0,
-      color: Color(0x33111C2E),
+      color: Color(0x3D000000),
     ),
   ],
   shadow2xl: [
@@ -1453,194 +1453,47 @@ const themeVariablesBrightLight = ThemeVariables(
       offset: Offset(0, 24),
       blurRadius: 56,
       spreadRadius: 0,
-      color: Color(0x3D111C2E),
+      color: Color(0x47000000),
     ),
   ],
-  frameWindowRadius: 16,
-  framePopoverRadius: 14,
-  radiusSmall: 9999,
-  radiusMedium: 9999,
-  radiusBig: 14,
-  progressGradientFrom: Color(0xFF111C2E),
-  progressGradientTo: Color(0xFFD6FF3F),
-  colorPrimary: Colors.ink,
+  frameWindowRadius: 18,
+  framePopoverRadius: 16,
+  radiusSmall: 8,
+  radiusMedium: 10,
+  radiusBig: 16,
+  progressGradientFrom: Color(0xFF6B4DFF),
+  progressGradientTo: Color(0xFFA08CFF),
+  colorPrimary: Colors.brand,
 );
 
-/// The `bright-dark` counterpart of [themeVariables].
+/// The `studio-dark` counterpart of [themeVariables].
 ///
 /// Every token that moves under this theme is named here; the rest fall
 /// through to the default, and the derived getters follow this instance.
 /// DO NOT EDIT - This file is auto-generated
-const themeVariablesBrightDark = ThemeVariables(
-  colorCanvas: Color(0xFF060B12),
-  colorSurface: Color(0xFF0C141E),
-  colorSurfaceMuted: Color(0xFF141D29),
-  colorSurfaceSunken: Color(0xFF1C2734),
-  colorSurfaceSubtle: Color(0x12F2F4EF),
-  colorSurfaceInset: Color(0xFF16202C),
-  colorSurfaceRaised: Color(0xFF2A3644),
-  colorSurfaceOverlay: Color(0xFF111A26),
-  colorSurfaceChrome: Color(0xFF111A26),
-  colorSurfaceColumn: Color(0xFF0A111A),
-  colorContent: Color(0xFFF2F4EF),
-  colorContentSecondary: Color(0xC7F2F4EF),
-  colorContentNav: Color(0xB3F2F4EF),
-  colorContentMuted: Color(0xA8F2F4EF),
-  colorContentSubtle: Color(0x73F2F4EF),
-  colorContentFaint: Color(0x61F2F4EF),
-  colorBorder: Color(0x14F2F4EF),
-  colorBorderStrong: Color(0x17F2F4EF),
-  colorBorderMuted: Color(0xFF35414F),
-  colorOnAccent: Color(0xFF111C2E),
-  controlFieldRadius: 9999,
-  controlContainerRadius: 14,
-  shadow2xs: [
-    BoxShadow(
-      offset: Offset(0, 1),
-      blurRadius: 2,
-      spreadRadius: 0,
-      color: Color(0x66000000),
-    ),
-  ],
-  shadowXs: [
-    BoxShadow(
-      offset: Offset(0, 1),
-      blurRadius: 3,
-      spreadRadius: 0,
-      color: Color(0x73000000),
-    ),
-  ],
-  shadowSm: [
-    BoxShadow(
-      offset: Offset(0, 4),
-      blurRadius: 14,
-      spreadRadius: 0,
-      color: Color(0x73000000),
-    ),
-  ],
-  shadowMd: [
-    BoxShadow(
-      offset: Offset(0, 10),
-      blurRadius: 28,
-      spreadRadius: 0,
-      color: Color(0x8C000000),
-    ),
-  ],
-  shadowLg: [
-    BoxShadow(
-      offset: Offset(0, 14),
-      blurRadius: 36,
-      spreadRadius: 0,
-      color: Color(0x94000000),
-    ),
-  ],
-  shadowXl: [
-    BoxShadow(
-      offset: Offset(0, 16),
-      blurRadius: 40,
-      spreadRadius: 0,
-      color: Color(0x99000000),
-    ),
-  ],
-  shadow2xl: [
-    BoxShadow(
-      offset: Offset(0, 24),
-      blurRadius: 64,
-      spreadRadius: 0,
-      color: Color(0xB3000000),
-    ),
-  ],
-  focusRingAlpha: 0.55,
-  frameWindowRadius: 16,
-  framePopoverRadius: 14,
-  radiusSmall: 9999,
-  radiusMedium: 9999,
-  radiusBig: 14,
-  progressGradientFrom: Color(0xFFD6FF3F),
-  progressGradientTo: Color(0xFFD6FF3F),
-  colorDanger: Colors.redDark,
-  colorPrimary: Colors.acid,
-  colorSuccess: Colors.greenDark,
-  colorWarning: Colors.amberDark,
-  controlColorFilledSurfaceNormalShade: 500,
-  controlColorFilledSurfaceHoveredShade: 600,
-  controlColorFilledSurfacePressedShade: 600,
-  controlColorOutlinedBorder: ColorDescriptor(
-    normalShade: 400,
-    normalOpacity: 1.0,
-    hoveredShade: 300,
-    hoveredOpacity: 1.0,
-    pressedShade: 300,
-    pressedOpacity: 0.9,
-  ),
-  controlColorOutlinedContentNormalShade: 300,
-  controlColorOutlinedContentHoveredShade: 200,
-  controlColorOutlinedContentPressedShade: 200,
-  controlColorPlainContentNormalShade: 300,
-  controlColorPlainContentHoveredShade: 200,
-  controlColorPlainContentPressedShade: 200,
-  controlColorTintedContentNormalShade: 300,
-  controlColorTintedContentHoveredShade: 200,
-  controlColorTintedContentPressedShade: 200,
-);
-
-/// The `frost-light` counterpart of [themeVariables].
-///
-/// Every token that moves under this theme is named here; the rest fall
-/// through to the default, and the derived getters follow this instance.
-/// DO NOT EDIT - This file is auto-generated
-const themeVariablesFrostLight = ThemeVariables(
-  colorCanvas: Color(0xFFE5EDF0),
-  colorSurface: Color(0xFFFFFFFF),
-  colorSurfaceMuted: Color(0xFFF2F6F8),
-  colorSurfaceSunken: Color(0xFFDBE6EA),
-  colorSurfaceSubtle: Color(0x0F0E1F26),
-  colorSurfaceInset: Color(0xFFECF2F4),
-  colorSurfaceRaised: Color(0xFFFFFFFF),
-  colorSurfaceOverlay: Color(0xFFFFFFFF),
-  colorSurfaceChrome: Color(0xFFF2F6F8),
-  colorSurfaceColumn: Color(0xFFF2F6F8),
-  colorContent: Color(0xFF0E1F26),
-  colorContentSecondary: Color(0xFF2F4C58),
-  colorContentNav: Color(0xFF3A5B68),
-  colorContentMuted: Color(0xFF456573),
-  colorContentSubtle: Color(0xFF7794A0),
-  colorContentFaint: Color(0xFF9AB1BA),
-  colorBorder: Color(0x210E1F26),
-  colorBorderStrong: Color(0x2B0E1F26),
-  colorBorderMuted: Color(0xFF456573),
-  colorOnAccent: Color(0xFFFFFFFF),
-  progressGradientFrom: Color(0xFF0F7A92),
-  progressGradientTo: Color(0xFF74C9DC),
-  colorPrimary: Colors.frost,
-);
-
-/// The `frost-dark` counterpart of [themeVariables].
-///
-/// Every token that moves under this theme is named here; the rest fall
-/// through to the default, and the derived getters follow this instance.
-/// DO NOT EDIT - This file is auto-generated
-const themeVariablesFrostDark = ThemeVariables(
-  colorCanvas: Color(0xFF070D11),
-  colorSurface: Color(0xFF0D151A),
-  colorSurfaceMuted: Color(0xFF111A20),
-  colorSurfaceSunken: Color(0xFF23333D),
+const themeVariablesStudioDark = ThemeVariables(
+  colorCanvas: Color(0xFF0A0B10),
+  colorSurface: Color(0xFF0D0F14),
+  colorSurfaceMuted: Color(0xFF12141A),
+  colorSurfaceSunken: Color(0xFF262A34),
   colorSurfaceSubtle: Color(0x12FFFFFF),
-  colorSurfaceInset: Color(0xFF18262E),
-  colorSurfaceRaised: Color(0xFF374B57),
-  colorSurfaceOverlay: Color(0xFF111A20),
-  colorSurfaceChrome: Color(0xFF111A20),
-  colorSurfaceColumn: Color(0xFF111A20),
-  colorContent: Color(0xFFEAF3F7),
-  colorContentSecondary: Color(0xFFBCD0D9),
-  colorContentNav: Color(0xFF93AAB5),
-  colorContentMuted: Color(0xFF93AAB5),
-  colorContentSubtle: Color(0xFF7F99A4),
-  colorContentFaint: Color(0xFF62808D),
-  colorBorder: Color(0x29FFFFFF),
-  colorBorderStrong: Color(0x33FFFFFF),
-  colorBorderMuted: Color(0xFF32454F),
-  colorOnAccent: Color(0xFF04171D),
+  colorSurfaceInset: Color(0xFF1B1E26),
+  colorSurfaceRaised: Color(0xFF3A3F4D),
+  colorSurfaceOverlay: Color(0xFF12141A),
+  colorSurfaceChrome: Color(0xFF12141A),
+  colorSurfaceColumn: Color(0xFF0A0C11),
+  colorContent: Color(0xFFF2F3FA),
+  colorContentSecondary: Color(0xFFC3C8DC),
+  colorContentNav: Color(0xFF9AA1BB),
+  colorContentMuted: Color(0xFF9AA1BB),
+  colorContentSubtle: Color(0xFF8B93B0),
+  colorContentFaint: Color(0xFF6A7090),
+  colorBorder: Color(0x0FFFFFFF),
+  colorBorderStrong: Color(0x17FFFFFF),
+  colorBorderMuted: Color(0xFF363C4D),
+  colorOnAccent: Color(0xFFFFFFFF),
+  controlFieldRadius: 10,
+  controlContainerRadius: 10,
   shadow2xs: [
     BoxShadow(
       offset: Offset(0, 1),
@@ -1698,6 +1551,223 @@ const themeVariablesFrostDark = ThemeVariables(
     ),
   ],
   focusRingAlpha: 0.5,
+  frameWindowRadius: 18,
+  framePopoverRadius: 16,
+  radiusSmall: 8,
+  radiusMedium: 10,
+  radiusBig: 16,
+  progressGradientFrom: Color(0xFF7C5CFF),
+  progressGradientTo: Color(0xFFB9A8FF),
+  colorDanger: Colors.redDark,
+  colorPrimary: Colors.brand,
+  colorSuccess: Colors.greenDark,
+  colorWarning: Colors.amberDark,
+  controlColorFilledSurfaceNormalShade: 500,
+  controlColorFilledSurfaceHoveredShade: 600,
+  controlColorFilledSurfacePressedShade: 600,
+  controlColorOutlinedBorder: ColorDescriptor(
+    normalShade: 400,
+    normalOpacity: 1.0,
+    hoveredShade: 300,
+    hoveredOpacity: 1.0,
+    pressedShade: 300,
+    pressedOpacity: 0.9,
+  ),
+  controlColorOutlinedContentNormalShade: 300,
+  controlColorOutlinedContentHoveredShade: 200,
+  controlColorOutlinedContentPressedShade: 200,
+  controlColorPlainContentNormalShade: 300,
+  controlColorPlainContentHoveredShade: 200,
+  controlColorPlainContentPressedShade: 200,
+  controlColorTintedContentNormalShade: 300,
+  controlColorTintedContentHoveredShade: 200,
+  controlColorTintedContentPressedShade: 200,
+);
+
+/// The `frost-light` counterpart of [themeVariables].
+///
+/// Every token that moves under this theme is named here; the rest fall
+/// through to the default, and the derived getters follow this instance.
+/// DO NOT EDIT - This file is auto-generated
+const themeVariablesFrostLight = ThemeVariables(
+  colorCanvas: Color(0xFFE5EDF0),
+  colorSurface: Color(0xFFFFFFFF),
+  colorSurfaceMuted: Color(0xFFF2F6F8),
+  colorSurfaceSunken: Color(0xFFDBE6EA),
+  colorSurfaceSubtle: Color(0x0F0E1F26),
+  colorSurfaceInset: Color(0xFFECF2F4),
+  colorSurfaceRaised: Color(0xFFFFFFFF),
+  colorSurfaceOverlay: Color(0xFFFFFFFF),
+  colorSurfaceChrome: Color(0xFFF2F6F8),
+  colorSurfaceColumn: Color(0xFFF2F6F8),
+  colorContent: Color(0xFF0E1F26),
+  colorContentSecondary: Color(0xFF2F4C58),
+  colorContentNav: Color(0xFF3A5B68),
+  colorContentMuted: Color(0xFF456573),
+  colorContentSubtle: Color(0xFF7794A0),
+  colorContentFaint: Color(0xFF9AB1BA),
+  colorBorder: Color(0x210E1F26),
+  colorBorderStrong: Color(0x2B0E1F26),
+  colorBorderMuted: Color(0xFF456573),
+  colorOnAccent: Color(0xFFFFFFFF),
+  controlFieldRadius: 10,
+  controlContainerRadius: 10,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
+  frameWindowRadius: 18,
+  framePopoverRadius: 16,
+  radiusSmall: 8,
+  radiusMedium: 10,
+  radiusBig: 16,
+  progressGradientFrom: Color(0xFF0F7A92),
+  progressGradientTo: Color(0xFF74C9DC),
+  colorPrimary: Colors.frost,
+);
+
+/// The `frost-dark` counterpart of [themeVariables].
+///
+/// Every token that moves under this theme is named here; the rest fall
+/// through to the default, and the derived getters follow this instance.
+/// DO NOT EDIT - This file is auto-generated
+const themeVariablesFrostDark = ThemeVariables(
+  colorCanvas: Color(0xFF070D11),
+  colorSurface: Color(0xFF0D151A),
+  colorSurfaceMuted: Color(0xFF111A20),
+  colorSurfaceSunken: Color(0xFF23333D),
+  colorSurfaceSubtle: Color(0x12FFFFFF),
+  colorSurfaceInset: Color(0xFF18262E),
+  colorSurfaceRaised: Color(0xFF374B57),
+  colorSurfaceOverlay: Color(0xFF111A20),
+  colorSurfaceChrome: Color(0xFF111A20),
+  colorSurfaceColumn: Color(0xFF111A20),
+  colorContent: Color(0xFFEAF3F7),
+  colorContentSecondary: Color(0xFFBCD0D9),
+  colorContentNav: Color(0xFF93AAB5),
+  colorContentMuted: Color(0xFF93AAB5),
+  colorContentSubtle: Color(0xFF7F99A4),
+  colorContentFaint: Color(0xFF62808D),
+  colorBorder: Color(0x29FFFFFF),
+  colorBorderStrong: Color(0x33FFFFFF),
+  colorBorderMuted: Color(0xFF32454F),
+  colorOnAccent: Color(0xFF04171D),
+  controlFieldRadius: 10,
+  controlContainerRadius: 10,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x66000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x73000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 14,
+      spreadRadius: 0,
+      color: Color(0x73000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 28,
+      spreadRadius: 0,
+      color: Color(0x8C000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 14),
+      blurRadius: 36,
+      spreadRadius: 0,
+      color: Color(0x94000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 16),
+      blurRadius: 40,
+      spreadRadius: 0,
+      color: Color(0x99000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 64,
+      spreadRadius: 0,
+      color: Color(0xB3000000),
+    ),
+  ],
+  focusRingAlpha: 0.5,
+  frameWindowRadius: 18,
+  framePopoverRadius: 16,
+  radiusSmall: 8,
+  radiusMedium: 10,
+  radiusBig: 16,
   progressGradientFrom: Color(0xFF1690A9),
   progressGradientTo: Color(0xFF74C9DC),
   colorDanger: Colors.redDark,
@@ -1754,6 +1824,62 @@ const themeVariablesGraphiteLight = ThemeVariables(
   colorOnAccent: Color(0xFFFAFAFA),
   controlFieldRadius: 8,
   controlContainerRadius: 8,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 16,
   framePopoverRadius: 12,
   radiusSmall: 7,
@@ -1910,6 +2036,69 @@ const themeVariablesEmberLight = ThemeVariables(
   colorBorderStrong: Color(0x2B241A11),
   colorBorderMuted: Color(0xFF6A5747),
   colorOnAccent: Color(0xFFFFFAF3),
+  controlFieldRadius: 10,
+  controlContainerRadius: 10,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
+  frameWindowRadius: 18,
+  framePopoverRadius: 16,
+  radiusSmall: 8,
+  radiusMedium: 10,
+  radiusBig: 16,
   progressGradientFrom: Color(0xFFAD5717),
   progressGradientTo: Color(0xFFE9A969),
   colorPrimary: Colors.ember,
@@ -1941,6 +2130,8 @@ const themeVariablesEmberDark = ThemeVariables(
   colorBorderStrong: Color(0x33FFFFFF),
   colorBorderMuted: Color(0xFF443A2D),
   colorOnAccent: Color(0xFF241206),
+  controlFieldRadius: 10,
+  controlContainerRadius: 10,
   shadow2xs: [
     BoxShadow(
       offset: Offset(0, 1),
@@ -1998,6 +2189,11 @@ const themeVariablesEmberDark = ThemeVariables(
     ),
   ],
   focusRingAlpha: 0.5,
+  frameWindowRadius: 18,
+  framePopoverRadius: 16,
+  radiusSmall: 8,
+  radiusMedium: 10,
+  radiusBig: 16,
   progressGradientFrom: Color(0xFFD9832E),
   progressGradientTo: Color(0xFFF0B877),
   colorDanger: Colors.redDark,
@@ -2054,6 +2250,62 @@ const themeVariablesNocturneLight = ThemeVariables(
   colorOnAccent: Color(0xFFFFFFFF),
   controlFieldRadius: 8,
   controlContainerRadius: 8,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 16,
   framePopoverRadius: 12,
   radiusSmall: 7,
@@ -2214,6 +2466,62 @@ const themeVariablesOmarchyTokyoNightLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -2448,6 +2756,62 @@ const themeVariablesOmarchyCatppuccinLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -2682,6 +3046,62 @@ const themeVariablesOmarchyCatppuccinLatteLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -2916,6 +3336,62 @@ const themeVariablesOmarchyEtherealLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -3150,6 +3626,62 @@ const themeVariablesOmarchyEverforestLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -3384,6 +3916,62 @@ const themeVariablesOmarchyFlexokiLightLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -3618,6 +4206,62 @@ const themeVariablesOmarchyGruvboxLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -3852,6 +4496,62 @@ const themeVariablesOmarchyHackermanLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -4086,6 +4786,62 @@ const themeVariablesOmarchyKanagawaLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -4320,6 +5076,62 @@ const themeVariablesOmarchyLastHorizonLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -4554,6 +5366,62 @@ const themeVariablesOmarchyLumonLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -4788,6 +5656,62 @@ const themeVariablesOmarchyLupineLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -5022,6 +5946,62 @@ const themeVariablesOmarchyMatteBlackLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -5256,6 +6236,62 @@ const themeVariablesOmarchyMiasmaLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -5490,6 +6526,62 @@ const themeVariablesOmarchyNordLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -5724,6 +6816,62 @@ const themeVariablesOmarchyOsakaJadeLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -5958,6 +7106,62 @@ const themeVariablesOmarchyRetro82Light = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -6192,6 +7396,62 @@ const themeVariablesOmarchyRistrettoLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -6426,6 +7686,62 @@ const themeVariablesOmarchyRosePineLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -6660,6 +7976,62 @@ const themeVariablesOmarchySolitudeLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -6894,6 +8266,62 @@ const themeVariablesOmarchyVantablackLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -7128,6 +8556,62 @@ const themeVariablesOmarchyWhiteLight = ThemeVariables(
   controlContainerRadius: 0,
   controlMediumPaddingInline: 10,
   controlMediumSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 0,
   framePopoverRadius: 0,
   radiusTiny: 0,
@@ -7365,6 +8849,62 @@ const themeVariablesMacos27Light = ThemeVariables(
   controlMediumPaddingInline: 18,
   controlMediumSize: 28,
   controlLargeSize: 32,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 16,
   framePopoverRadius: 16,
   radiusTiny: 6,
@@ -7593,6 +9133,62 @@ const themeVariablesMacos15Light = ThemeVariables(
   controlMediumPaddingInline: 12,
   controlMediumSize: 22,
   controlLargeSize: 28,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 10,
   framePopoverRadius: 10,
   radiusTiny: 4,
@@ -7821,6 +9417,62 @@ const themeVariablesWindows11Light = ThemeVariables(
   controlMediumPaddingInline: 11,
   controlMediumSize: 32,
   controlLargeSize: 40,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 8,
   framePopoverRadius: 8,
   iconSmall: 14,
@@ -8055,6 +9707,62 @@ const themeVariablesUbuntuLight = ThemeVariables(
   controlMediumPaddingInline: 12,
   controlMediumSize: 34,
   controlLargeSize: 40,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 15,
   framePopoverRadius: 12,
   iconSmall: 14,
@@ -8289,6 +9997,62 @@ const themeVariablesDebianLight = ThemeVariables(
   controlMediumPaddingInline: 12,
   controlMediumSize: 34,
   controlLargeSize: 40,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 15,
   framePopoverRadius: 12,
   iconSmall: 14,
@@ -8523,6 +10287,62 @@ const themeVariablesFedoraLight = ThemeVariables(
   controlMediumPaddingInline: 12,
   controlMediumSize: 34,
   controlLargeSize: 40,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 15,
   framePopoverRadius: 12,
   iconSmall: 14,
@@ -8757,6 +10577,62 @@ const themeVariablesKdeLight = ThemeVariables(
   controlMediumPaddingInline: 6,
   controlMediumSize: 30,
   controlLargeSize: 36,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 5,
   framePopoverRadius: 5,
   radiusTiny: 3,
@@ -8985,6 +10861,62 @@ const themeVariablesSpotifyLight = ThemeVariables(
   controlMediumPaddingInline: 24,
   controlMediumSize: 40,
   controlLargeSize: 48,
+  shadow2xs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 2,
+      spreadRadius: 0,
+      color: Color(0x1A000000),
+    ),
+  ],
+  shadowXs: [
+    BoxShadow(
+      offset: Offset(0, 1),
+      blurRadius: 3,
+      spreadRadius: 0,
+      color: Color(0x1F000000),
+    ),
+  ],
+  shadowSm: [
+    BoxShadow(
+      offset: Offset(0, 4),
+      blurRadius: 12,
+      spreadRadius: 0,
+      color: Color(0x24000000),
+    ),
+  ],
+  shadowMd: [
+    BoxShadow(
+      offset: Offset(0, 8),
+      blurRadius: 24,
+      spreadRadius: 0,
+      color: Color(0x33000000),
+    ),
+  ],
+  shadowLg: [
+    BoxShadow(
+      offset: Offset(0, 10),
+      blurRadius: 30,
+      spreadRadius: 0,
+      color: Color(0x38000000),
+    ),
+  ],
+  shadowXl: [
+    BoxShadow(
+      offset: Offset(0, 12),
+      blurRadius: 32,
+      spreadRadius: 0,
+      color: Color(0x3D000000),
+    ),
+  ],
+  shadow2xl: [
+    BoxShadow(
+      offset: Offset(0, 24),
+      blurRadius: 56,
+      spreadRadius: 0,
+      color: Color(0x47000000),
+    ),
+  ],
   frameWindowRadius: 8,
   framePopoverRadius: 8,
   iconSmall: 14,
@@ -9186,31 +11118,32 @@ const themeVariablesSpotifyDark = ThemeVariables(
   controlColorTintedContentPressedShade: 200,
 );
 
-/// The `studio-dark` counterpart of [themeVariables].
+/// The `bright-dark` counterpart of [themeVariables].
 ///
 /// Every token that moves under this theme is named here; the rest fall
 /// through to the default, and the derived getters follow this instance.
 /// DO NOT EDIT - This file is auto-generated
-const themeVariablesStudioDark = ThemeVariables(
-  colorCanvas: Color(0xFF0A0B10),
-  colorSurface: Color(0xFF0D0F14),
-  colorSurfaceMuted: Color(0xFF12141A),
-  colorSurfaceSunken: Color(0xFF262A34),
-  colorSurfaceSubtle: Color(0x12FFFFFF),
-  colorSurfaceInset: Color(0xFF1B1E26),
-  colorSurfaceRaised: Color(0xFF3A3F4D),
-  colorSurfaceOverlay: Color(0xFF12141A),
-  colorSurfaceChrome: Color(0xFF12141A),
-  colorSurfaceColumn: Color(0xFF0A0C11),
-  colorContent: Color(0xFFF2F3FA),
-  colorContentSecondary: Color(0xFFC3C8DC),
-  colorContentNav: Color(0xFF9AA1BB),
-  colorContentMuted: Color(0xFF9AA1BB),
-  colorContentSubtle: Color(0xFF8B93B0),
-  colorContentFaint: Color(0xFF6A7090),
-  colorBorder: Color(0x0FFFFFFF),
-  colorBorderStrong: Color(0x17FFFFFF),
-  colorBorderMuted: Color(0xFF363C4D),
+const themeVariablesBrightDark = ThemeVariables(
+  colorCanvas: Color(0xFF060B12),
+  colorSurface: Color(0xFF0C141E),
+  colorSurfaceMuted: Color(0xFF141D29),
+  colorSurfaceSunken: Color(0xFF1C2734),
+  colorSurfaceSubtle: Color(0x12F2F4EF),
+  colorSurfaceInset: Color(0xFF16202C),
+  colorSurfaceRaised: Color(0xFF2A3644),
+  colorSurfaceOverlay: Color(0xFF111A26),
+  colorSurfaceChrome: Color(0xFF111A26),
+  colorSurfaceColumn: Color(0xFF0A111A),
+  colorContent: Color(0xFFF2F4EF),
+  colorContentSecondary: Color(0xC7F2F4EF),
+  colorContentNav: Color(0xB3F2F4EF),
+  colorContentMuted: Color(0xA8F2F4EF),
+  colorContentSubtle: Color(0x73F2F4EF),
+  colorContentFaint: Color(0x61F2F4EF),
+  colorBorder: Color(0x14F2F4EF),
+  colorBorderStrong: Color(0x17F2F4EF),
+  colorBorderMuted: Color(0xFF35414F),
+  colorOnAccent: Color(0xFF111C2E),
   shadow2xs: [
     BoxShadow(
       offset: Offset(0, 1),
@@ -9267,10 +11200,11 @@ const themeVariablesStudioDark = ThemeVariables(
       color: Color(0xB3000000),
     ),
   ],
-  focusRingAlpha: 0.5,
-  progressGradientFrom: Color(0xFF7C5CFF),
-  progressGradientTo: Color(0xFFB9A8FF),
+  focusRingAlpha: 0.55,
+  progressGradientFrom: Color(0xFFD6FF3F),
+  progressGradientTo: Color(0xFFD6FF3F),
   colorDanger: Colors.redDark,
+  colorPrimary: Colors.acid,
   colorSuccess: Colors.greenDark,
   colorWarning: Colors.amberDark,
   controlColorFilledSurfaceNormalShade: 500,
@@ -9298,9 +11232,9 @@ const themeVariablesStudioDark = ThemeVariables(
 /// Every theme, by the name `data-theme` gives it on the web.
 /// DO NOT EDIT - This file is auto-generated
 const Map<String, ThemeVariables> themeVariablesByName = {
-  'studio-light': themeVariables,
-  'bright-light': themeVariablesBrightLight,
-  'bright-dark': themeVariablesBrightDark,
+  'bright-light': themeVariables,
+  'studio-light': themeVariablesStudioLight,
+  'studio-dark': themeVariablesStudioDark,
   'frost-light': themeVariablesFrostLight,
   'frost-dark': themeVariablesFrostDark,
   'graphite-light': themeVariablesGraphiteLight,
@@ -9369,5 +11303,5 @@ const Map<String, ThemeVariables> themeVariablesByName = {
   'kde-dark': themeVariablesKdeDark,
   'spotify-light': themeVariablesSpotifyLight,
   'spotify-dark': themeVariablesSpotifyDark,
-  'studio-dark': themeVariablesStudioDark,
+  'bright-dark': themeVariablesBrightDark,
 };

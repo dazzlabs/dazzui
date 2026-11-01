@@ -46,7 +46,7 @@ impl fmt::Display for ThemeError {
 impl std::error::Error for ThemeError {}
 impl Default for Theme {
     fn default() -> Self {
-        Self("studio-light")
+        Self("bright-light")
     }
 }
 impl Theme {

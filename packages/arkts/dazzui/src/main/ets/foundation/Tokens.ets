@@ -45,7 +45,7 @@ export class DazzTokens {
     return this.system?.copy()
   }
 
-  constructor(name: string = 'studio-light', systemStyle?: DazzSystemStyle) {
+  constructor(name: string = 'bright-light', systemStyle?: DazzSystemStyle) {
     if (THEME_NAMES.indexOf(name) < 0)
       throw new Error('Unknown DazzUI theme: ' + name)
     this.name = name

@@ -13,7 +13,7 @@ export default class EntryAbility extends UIAbility {
     const family = want.parameters?.['family']
     const selected = DAZZ_THEME_FAMILIES.find(value => value === family)
     const appearance = want.parameters?.['appearance']
-    this.storage.setOrCreate('family', selected ?? DazzThemeFamily.Studio)
+    this.storage.setOrCreate('family', selected ?? DazzThemeFamily.Bright)
     this.storage.setOrCreate('appearance', appearance === 'dark' ? ThemeColorMode.DARK :
       appearance === 'light' ? ThemeColorMode.LIGHT : ThemeColorMode.SYSTEM)
     this.verification = want.parameters?.['verification'] === true

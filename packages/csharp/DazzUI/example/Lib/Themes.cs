@@ -10,7 +10,7 @@ public sealed record ThemeChoice(string Family, bool Dark = false)
 
     public Theme Theme => new(Id);
 
-    public static ThemeChoice Default { get; } = new("studio");
+    public static ThemeChoice Default { get; } = new("bright");
 }
 
 /// <summary>A theme family: one name, in light and in dark.</summary>
@@ -24,8 +24,8 @@ public static class Themes
     [
         new("DazzUI",
         [
-            new("studio", "Studio"),
             new("bright", "Bright"),
+            new("studio", "Studio"),
             new("frost", "Frost"),
             new("graphite", "Graphite"),
             new("ember", "Ember"),

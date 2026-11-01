@@ -19,7 +19,7 @@ import { DazzDateRangePicker, DazzDateRangeValue } from '@dazzlabs/dazzui'
 @Entry({ useSharedStorage: true })
 @Component
 struct PaintVerification {
-  @LocalStorageProp('themeName') themeName: string = 'studio-light'
+  @LocalStorageProp('themeName') themeName: string = 'bright-light'
   @LocalStorageProp('paintInactive') inactive: boolean = false
   @LocalStorageProp('paintOmarchy') omarchy: boolean = false
   @LocalStorageProp('paintWindowState') windowState: string = 'enabled'

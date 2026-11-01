@@ -29,7 +29,7 @@ use dazzui_gtk4::{gtk, prelude::*, *};
 
 gtk::init().unwrap();
 let window = gtk::Window::new();
-Theme::new("studio-light").unwrap().apply(&window);
+Theme::new("bright-light").unwrap().apply(&window);
 let column = box_(gtk::Orientation::Vertical, "3");
 let email = text_field("you@example.com", Size::Medium);
 column.append(&form_field("Email", &email, Some("Used for receipts")));

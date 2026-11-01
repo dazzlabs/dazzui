@@ -3,16 +3,16 @@ import { ThemeData } from '../foundation/TokenTypes'
 
 export const BASE: ThemeData = {
   "colors": {
-    "color.border": "#1214162A",
-    "color.border-muted": "#FF5F6478",
-    "color.border-strong": "#1714162A",
-    "color.canvas": "#FFEEECF6",
-    "color.content": "#FF12142A",
-    "color.content-faint": "#FFA2A7BD",
-    "color.content-muted": "#FF565B78",
-    "color.content-nav": "#FF4A4F6B",
-    "color.content-secondary": "#FF3C405C",
-    "color.content-subtle": "#FF8C92AA",
+    "color.border": "#14111C2E",
+    "color.border-muted": "#40111C2E",
+    "color.border-strong": "#17111C2E",
+    "color.canvas": "#FFE6EADE",
+    "color.content": "#FF111C2E",
+    "color.content-faint": "#61111C2E",
+    "color.content-muted": "#A8111C2E",
+    "color.content-nav": "#B3111C2E",
+    "color.content-secondary": "#C7111C2E",
+    "color.content-subtle": "#73111C2E",
     "color.danger.100": "#FFF9E2E2",
     "color.danger.200": "#FFF2C1C1",
     "color.danger.300": "#FFEBA1A1",
@@ -46,18 +46,18 @@ export const BASE: ThemeData = {
     "color.neutral.800": "#FF262626",
     "color.neutral.900": "#FF171717",
     "color.neutral.950": "#FF0A0A0A",
-    "color.on-accent": "#FFFFFFFF",
-    "color.primary.100": "#FFE6DFFF",
-    "color.primary.200": "#FFCDC0FF",
-    "color.primary.300": "#FFB9A8FF",
-    "color.primary.400": "#FF9A82FF",
-    "color.primary.50": "#FFF4F1FE",
-    "color.primary.500": "#FF7C5CFF",
-    "color.primary.600": "#FF6B4DFF",
-    "color.primary.700": "#FF5B3FE0",
-    "color.primary.800": "#FF4C33CC",
-    "color.primary.900": "#FF3D2AA3",
-    "color.primary.950": "#FF2A1C6B",
+    "color.on-accent": "#FFD6FF3F",
+    "color.primary.100": "#FFF1F7D2",
+    "color.primary.200": "#FFE6F77A",
+    "color.primary.300": "#FFD6FF3F",
+    "color.primary.400": "#FF8FA06A",
+    "color.primary.50": "#FFF6FAE2",
+    "color.primary.500": "#FF3D5470",
+    "color.primary.600": "#FF111C2E",
+    "color.primary.700": "#FF1C2A41",
+    "color.primary.800": "#FF263449",
+    "color.primary.900": "#FF0B1420",
+    "color.primary.950": "#FF060B12",
     "color.success.100": "#FFD7EDE2",
     "color.success.200": "#FFB2DDC7",
     "color.success.300": "#FF8DCDAD",
@@ -69,15 +69,15 @@ export const BASE: ThemeData = {
     "color.success.800": "#FF105B37",
     "color.success.900": "#FF093924",
     "color.success.950": "#FF06281A",
-    "color.surface": "#FFFFFFFF",
-    "color.surface-chrome": "#FFF7F7FA",
-    "color.surface-column": "#FFFAFAFC",
-    "color.surface-inset": "#FFF0F0F5",
-    "color.surface-muted": "#FFF7F7FA",
-    "color.surface-overlay": "#FFFFFFFF",
+    "color.surface": "#FFFBFAF7",
+    "color.surface-chrome": "#FFFFFFFF",
+    "color.surface-column": "#FFF4F3EE",
+    "color.surface-inset": "#FFF0EFE9",
+    "color.surface-muted": "#FFFFFFFF",
+    "color.surface-overlay": "#FFFBFAF7",
     "color.surface-raised": "#FFFFFFFF",
-    "color.surface-subtle": "#0F14162A",
-    "color.surface-sunken": "#FFE3E3EC",
+    "color.surface-subtle": "#0F111C2E",
+    "color.surface-sunken": "#FFE5E3DB",
     "color.warning.100": "#FFFEF1DE",
     "color.warning.200": "#FFFFE6C7",
     "color.warning.300": "#FFF7D1A0",
@@ -89,17 +89,17 @@ export const BASE: ThemeData = {
     "color.warning.800": "#FF8A5210",
     "color.warning.900": "#FF573409",
     "color.warning.950": "#FF3D2506",
-    "progress.gradient.from": "#FF6B4DFF",
-    "progress.gradient.to": "#FFA08CFF",
-    "focus.ring": "#736B4DFF",
-    "focus.glow": "#246B4DFF",
-    "focus.glow.primary": "#246B4DFF",
+    "progress.gradient.from": "#FF111C2E",
+    "progress.gradient.to": "#FFD6FF3F",
+    "focus.ring": "#73111C2E",
+    "focus.glow": "#24111C2E",
+    "focus.glow.primary": "#24111C2E",
     "focus.glow.neutral": "#24525252",
     "focus.glow.info": "#240084D1",
     "focus.glow.success": "#241F9D5E",
     "focus.glow.warning": "#24E0912A",
     "focus.glow.danger": "#24D64040",
-    "dialog.scrim": "#4012142A"
+    "dialog.scrim": "#40111C2E"
   },
   "metrics": {
     "calendar.cell-gap": 2,
@@ -110,34 +110,34 @@ export const BASE: ThemeData = {
     "checkbox.radius": 5,
     "checkbox.small.box": 14,
     "checkbox.thickness": 1.5,
-    "control.container.radius": 10,
-    "control.field.radius": 10,
+    "control.container.radius": 14,
+    "control.field.radius": 9999,
     "control.label-glyph.inset": 2,
     "control.label-glyph.shrink": 2,
     "control.large.gap": 8,
     "control.large.icon-size": 20,
     "control.large.padding.block": 6,
     "control.large.padding.inline": 16,
-    "control.large.radius": 10,
+    "control.large.radius": 9999,
     "control.large.size": 32,
     "control.medium.gap": 8,
     "control.medium.icon-size": 16,
     "control.medium.padding.block": 6,
     "control.medium.padding.inline": 16,
-    "control.medium.radius": 8,
+    "control.medium.radius": 9999,
     "control.medium.size": 28,
     "control.pressed.alpha": 0.9,
     "control.small.gap": 6,
     "control.small.icon-size": 16,
     "control.small.padding.block": 4,
     "control.small.padding.inline": 12,
-    "control.small.radius": 8,
+    "control.small.radius": 9999,
     "control.small.size": 26,
     "control.tiny.gap": 4,
     "control.tiny.icon-size": 12,
     "control.tiny.padding.block": 4,
     "control.tiny.padding.inline": 10,
-    "control.tiny.radius": 8,
+    "control.tiny.radius": 9999,
     "control.tiny.size": 24,
     "date-range-picker.key-tracking": 0.06,
     "date-range-picker.side-width": 192,
@@ -150,12 +150,12 @@ export const BASE: ThemeData = {
     "focus.width": 3,
     "frame.aside.width": 214,
     "frame.nav-gap": 3,
-    "frame.popover.radius": 16,
+    "frame.popover.radius": 14,
     "frame.rail.width": 150,
     "frame.sidebar.icon-width": 48,
     "frame.sidebar.width": 172,
     "frame.titlebar.size": 52,
-    "frame.window.radius": 18,
+    "frame.window.radius": 16,
     "frame.window.width": 840,
     "icon-button.tiny.icon-size": 16,
     "icon.large": 20,
@@ -186,12 +186,12 @@ export const BASE: ThemeData = {
     "radio.small.box": 14,
     "radio.small.dot": 6,
     "radio.thickness": 1.5,
-    "radius.big": 16,
+    "radius.big": 14,
     "radius.full": 9999,
     "radius.large": 12,
-    "radius.medium": 10,
+    "radius.medium": 9999,
     "radius.none": 0,
-    "radius.small": 8,
+    "radius.small": 9999,
     "radius.tiny": 7,
     "search-field.input-width": 136,
     "segmented-control.inset": 3,
@@ -384,27 +384,27 @@ export const BASE: ThemeData = {
     },
     "filled.surface.disabled": {
       "shade": 0,
-      "color": "#FFE3E3EC",
+      "color": "#FFE5E3DB",
       "alpha": 1
     },
     "filled.content.normal": {
       "shade": 0,
-      "color": "#FFFFFFFF",
+      "color": "#FFD6FF3F",
       "alpha": 1
     },
     "filled.content.hovered": {
       "shade": 0,
-      "color": "#FFFFFFFF",
+      "color": "#FFD6FF3F",
       "alpha": 1
     },
     "filled.content.pressed": {
       "shade": 0,
-      "color": "#FFFFFFFF",
+      "color": "#FFD6FF3F",
       "alpha": 0.9
     },
     "filled.content.disabled": {
       "shade": 0,
-      "color": "#FFA2A7BD",
+      "color": "#61111C2E",
       "alpha": 1
     },
     "filled.border.normal": {
@@ -444,7 +444,7 @@ export const BASE: ThemeData = {
     },
     "tinted.surface.disabled": {
       "shade": 0,
-      "color": "#FFE3E3EC",
+      "color": "#FFE5E3DB",
       "alpha": 1
     },
     "tinted.content.normal": {
@@ -464,7 +464,7 @@ export const BASE: ThemeData = {
     },
     "tinted.content.disabled": {
       "shade": 0,
-      "color": "#FFA2A7BD",
+      "color": "#61111C2E",
       "alpha": 1
     },
     "tinted.border.normal": {
@@ -504,7 +504,7 @@ export const BASE: ThemeData = {
     },
     "outlined.surface.disabled": {
       "shade": 0,
-      "color": "#FFE3E3EC",
+      "color": "#FFE5E3DB",
       "alpha": 1
     },
     "outlined.content.normal": {
@@ -524,7 +524,7 @@ export const BASE: ThemeData = {
     },
     "outlined.content.disabled": {
       "shade": 0,
-      "color": "#FFA2A7BD",
+      "color": "#61111C2E",
       "alpha": 1
     },
     "outlined.border.normal": {
@@ -549,57 +549,57 @@ export const BASE: ThemeData = {
     },
     "normal.surface.normal": {
       "shade": 0,
-      "color": "#FFFFFFFF",
+      "color": "#FFFBFAF7",
       "alpha": 1
     },
     "normal.surface.hovered": {
       "shade": 0,
-      "color": "#0F14162A",
+      "color": "#0F111C2E",
       "alpha": 1
     },
     "normal.surface.pressed": {
       "shade": 0,
-      "color": "#0F14162A",
+      "color": "#0F111C2E",
       "alpha": 0.9
     },
     "normal.surface.disabled": {
       "shade": 0,
-      "color": "#FFE3E3EC",
+      "color": "#FFE5E3DB",
       "alpha": 1
     },
     "normal.content.normal": {
       "shade": 0,
-      "color": "#FF12142A",
+      "color": "#FF111C2E",
       "alpha": 1
     },
     "normal.content.hovered": {
       "shade": 0,
-      "color": "#FF12142A",
+      "color": "#FF111C2E",
       "alpha": 1
     },
     "normal.content.pressed": {
       "shade": 0,
-      "color": "#FF12142A",
+      "color": "#FF111C2E",
       "alpha": 0.9
     },
     "normal.content.disabled": {
       "shade": 0,
-      "color": "#FFA2A7BD",
+      "color": "#61111C2E",
       "alpha": 1
     },
     "normal.border.normal": {
       "shade": 0,
-      "color": "#1714162A",
+      "color": "#17111C2E",
       "alpha": 1
     },
     "normal.border.hovered": {
       "shade": 0,
-      "color": "#1714162A",
+      "color": "#17111C2E",
       "alpha": 1
     },
     "normal.border.pressed": {
       "shade": 0,
-      "color": "#1714162A",
+      "color": "#17111C2E",
       "alpha": 0.9
     },
     "normal.border.disabled": {
@@ -609,42 +609,42 @@ export const BASE: ThemeData = {
     },
     "recessed.surface.normal": {
       "shade": 0,
-      "color": "#FFF0F0F5",
+      "color": "#FFF0EFE9",
       "alpha": 1
     },
     "recessed.surface.hovered": {
       "shade": 0,
-      "color": "#FFE3E3EC",
+      "color": "#FFE5E3DB",
       "alpha": 1
     },
     "recessed.surface.pressed": {
       "shade": 0,
-      "color": "#FFE3E3EC",
+      "color": "#FFE5E3DB",
       "alpha": 0.9
     },
     "recessed.surface.disabled": {
       "shade": 0,
-      "color": "#FFE3E3EC",
+      "color": "#FFE5E3DB",
       "alpha": 1
     },
     "recessed.content.normal": {
       "shade": 0,
-      "color": "#FF12142A",
+      "color": "#FF111C2E",
       "alpha": 1
     },
     "recessed.content.hovered": {
       "shade": 0,
-      "color": "#FF12142A",
+      "color": "#FF111C2E",
       "alpha": 1
     },
     "recessed.content.pressed": {
       "shade": 0,
-      "color": "#FF12142A",
+      "color": "#FF111C2E",
       "alpha": 0.9
     },
     "recessed.content.disabled": {
       "shade": 0,
-      "color": "#FFA2A7BD",
+      "color": "#61111C2E",
       "alpha": 1
     },
     "recessed.border.normal": {
@@ -704,7 +704,7 @@ export const BASE: ThemeData = {
     },
     "plain.content.disabled": {
       "shade": 0,
-      "color": "#FFA2A7BD",
+      "color": "#61111C2E",
       "alpha": 1
     },
     "plain.border.normal": {
@@ -734,7 +734,7 @@ export const BASE: ThemeData = {
         "x": 0,
         "y": 24,
         "radius": 56,
-        "color": "#47000000"
+        "color": "#3D111C2E"
       }
     ],
     "shadow.2xs": [
@@ -742,7 +742,7 @@ export const BASE: ThemeData = {
         "x": 0,
         "y": 1,
         "radius": 2,
-        "color": "#1A000000"
+        "color": "#1F111C2E"
       }
     ],
     "shadow.lg": [
@@ -750,7 +750,7 @@ export const BASE: ThemeData = {
         "x": 0,
         "y": 10,
         "radius": 30,
-        "color": "#38000000"
+        "color": "#2E111C2E"
       }
     ],
     "shadow.md": [
@@ -758,7 +758,7 @@ export const BASE: ThemeData = {
         "x": 0,
         "y": 8,
         "radius": 24,
-        "color": "#33000000"
+        "color": "#2E111C2E"
       }
     ],
     "shadow.sm": [
@@ -766,7 +766,7 @@ export const BASE: ThemeData = {
         "x": 0,
         "y": 4,
         "radius": 12,
-        "color": "#24000000"
+        "color": "#24111C2E"
       }
     ],
     "shadow.xl": [
@@ -774,7 +774,7 @@ export const BASE: ThemeData = {
         "x": 0,
         "y": 12,
         "radius": 32,
-        "color": "#3D000000"
+        "color": "#33111C2E"
       }
     ],
     "shadow.xs": [
@@ -782,216 +782,216 @@ export const BASE: ThemeData = {
         "x": 0,
         "y": 1,
         "radius": 3,
-        "color": "#1F000000"
+        "color": "#24111C2E"
       }
     ]
   }
 }
 export const THEMES: Record<string, ThemeData> = {
-  "studio-light": {
+  "bright-light": {
     "colors": {},
     "metrics": {},
     "typography": {},
     "recipes": {},
     "shadows": {}
   },
-  "bright-light": {
+  "studio-light": {
     "colors": {
-      "color.border": "#14111C2E",
-      "color.border-muted": "#40111C2E",
-      "color.border-strong": "#17111C2E",
-      "color.canvas": "#FFE6EADE",
-      "color.content": "#FF111C2E",
-      "color.content-faint": "#61111C2E",
-      "color.content-muted": "#A8111C2E",
-      "color.content-nav": "#B3111C2E",
-      "color.content-secondary": "#C7111C2E",
-      "color.content-subtle": "#73111C2E",
-      "color.on-accent": "#FFD6FF3F",
-      "color.primary.100": "#FFF1F7D2",
-      "color.primary.200": "#FFE6F77A",
-      "color.primary.300": "#FFD6FF3F",
-      "color.primary.400": "#FF8FA06A",
-      "color.primary.50": "#FFF6FAE2",
-      "color.primary.500": "#FF3D5470",
-      "color.primary.600": "#FF111C2E",
-      "color.primary.700": "#FF1C2A41",
-      "color.primary.800": "#FF263449",
-      "color.primary.900": "#FF0B1420",
-      "color.primary.950": "#FF060B12",
-      "color.surface": "#FFFBFAF7",
-      "color.surface-chrome": "#FFFFFFFF",
-      "color.surface-column": "#FFF4F3EE",
-      "color.surface-inset": "#FFF0EFE9",
-      "color.surface-muted": "#FFFFFFFF",
-      "color.surface-overlay": "#FFFBFAF7",
-      "color.surface-subtle": "#0F111C2E",
-      "color.surface-sunken": "#FFE5E3DB",
-      "progress.gradient.from": "#FF111C2E",
-      "progress.gradient.to": "#FFD6FF3F",
-      "focus.ring": "#73111C2E",
-      "focus.glow": "#24111C2E",
-      "focus.glow.primary": "#24111C2E",
-      "dialog.scrim": "#40111C2E"
+      "color.border": "#1214162A",
+      "color.border-muted": "#FF5F6478",
+      "color.border-strong": "#1714162A",
+      "color.canvas": "#FFEEECF6",
+      "color.content": "#FF12142A",
+      "color.content-faint": "#FFA2A7BD",
+      "color.content-muted": "#FF565B78",
+      "color.content-nav": "#FF4A4F6B",
+      "color.content-secondary": "#FF3C405C",
+      "color.content-subtle": "#FF8C92AA",
+      "color.on-accent": "#FFFFFFFF",
+      "color.primary.100": "#FFE6DFFF",
+      "color.primary.200": "#FFCDC0FF",
+      "color.primary.300": "#FFB9A8FF",
+      "color.primary.400": "#FF9A82FF",
+      "color.primary.50": "#FFF4F1FE",
+      "color.primary.500": "#FF7C5CFF",
+      "color.primary.600": "#FF6B4DFF",
+      "color.primary.700": "#FF5B3FE0",
+      "color.primary.800": "#FF4C33CC",
+      "color.primary.900": "#FF3D2AA3",
+      "color.primary.950": "#FF2A1C6B",
+      "color.surface": "#FFFFFFFF",
+      "color.surface-chrome": "#FFF7F7FA",
+      "color.surface-column": "#FFFAFAFC",
+      "color.surface-inset": "#FFF0F0F5",
+      "color.surface-muted": "#FFF7F7FA",
+      "color.surface-overlay": "#FFFFFFFF",
+      "color.surface-subtle": "#0F14162A",
+      "color.surface-sunken": "#FFE3E3EC",
+      "progress.gradient.from": "#FF6B4DFF",
+      "progress.gradient.to": "#FFA08CFF",
+      "focus.ring": "#736B4DFF",
+      "focus.glow": "#246B4DFF",
+      "focus.glow.primary": "#246B4DFF",
+      "dialog.scrim": "#4012142A"
     },
     "metrics": {
-      "control.container.radius": 14,
-      "control.field.radius": 9999,
-      "control.large.radius": 9999,
-      "control.medium.radius": 9999,
-      "control.small.radius": 9999,
-      "control.tiny.radius": 9999,
-      "frame.popover.radius": 14,
-      "frame.window.radius": 16,
-      "radius.big": 14,
-      "radius.medium": 9999,
-      "radius.small": 9999
+      "control.container.radius": 10,
+      "control.field.radius": 10,
+      "control.large.radius": 10,
+      "control.medium.radius": 8,
+      "control.small.radius": 8,
+      "control.tiny.radius": 8,
+      "frame.popover.radius": 16,
+      "frame.window.radius": 18,
+      "radius.big": 16,
+      "radius.medium": 10,
+      "radius.small": 8
     },
     "typography": {},
     "recipes": {
       "filled.surface.disabled": {
         "shade": 0,
-        "color": "#FFE5E3DB",
+        "color": "#FFE3E3EC",
         "alpha": 1
       },
       "filled.content.normal": {
         "shade": 0,
-        "color": "#FFD6FF3F",
+        "color": "#FFFFFFFF",
         "alpha": 1
       },
       "filled.content.hovered": {
         "shade": 0,
-        "color": "#FFD6FF3F",
+        "color": "#FFFFFFFF",
         "alpha": 1
       },
       "filled.content.pressed": {
         "shade": 0,
-        "color": "#FFD6FF3F",
+        "color": "#FFFFFFFF",
         "alpha": 0.9
       },
       "filled.content.disabled": {
         "shade": 0,
-        "color": "#61111C2E",
+        "color": "#FFA2A7BD",
         "alpha": 1
       },
       "tinted.surface.disabled": {
         "shade": 0,
-        "color": "#FFE5E3DB",
+        "color": "#FFE3E3EC",
         "alpha": 1
       },
       "tinted.content.disabled": {
         "shade": 0,
-        "color": "#61111C2E",
+        "color": "#FFA2A7BD",
         "alpha": 1
       },
       "outlined.surface.disabled": {
         "shade": 0,
-        "color": "#FFE5E3DB",
+        "color": "#FFE3E3EC",
         "alpha": 1
       },
       "outlined.content.disabled": {
         "shade": 0,
-        "color": "#61111C2E",
+        "color": "#FFA2A7BD",
         "alpha": 1
       },
       "normal.surface.normal": {
         "shade": 0,
-        "color": "#FFFBFAF7",
+        "color": "#FFFFFFFF",
         "alpha": 1
       },
       "normal.surface.hovered": {
         "shade": 0,
-        "color": "#0F111C2E",
+        "color": "#0F14162A",
         "alpha": 1
       },
       "normal.surface.pressed": {
         "shade": 0,
-        "color": "#0F111C2E",
+        "color": "#0F14162A",
         "alpha": 0.9
       },
       "normal.surface.disabled": {
         "shade": 0,
-        "color": "#FFE5E3DB",
+        "color": "#FFE3E3EC",
         "alpha": 1
       },
       "normal.content.normal": {
         "shade": 0,
-        "color": "#FF111C2E",
+        "color": "#FF12142A",
         "alpha": 1
       },
       "normal.content.hovered": {
         "shade": 0,
-        "color": "#FF111C2E",
+        "color": "#FF12142A",
         "alpha": 1
       },
       "normal.content.pressed": {
         "shade": 0,
-        "color": "#FF111C2E",
+        "color": "#FF12142A",
         "alpha": 0.9
       },
       "normal.content.disabled": {
         "shade": 0,
-        "color": "#61111C2E",
+        "color": "#FFA2A7BD",
         "alpha": 1
       },
       "normal.border.normal": {
         "shade": 0,
-        "color": "#17111C2E",
+        "color": "#1714162A",
         "alpha": 1
       },
       "normal.border.hovered": {
         "shade": 0,
-        "color": "#17111C2E",
+        "color": "#1714162A",
         "alpha": 1
       },
       "normal.border.pressed": {
         "shade": 0,
-        "color": "#17111C2E",
+        "color": "#1714162A",
         "alpha": 0.9
       },
       "recessed.surface.normal": {
         "shade": 0,
-        "color": "#FFF0EFE9",
+        "color": "#FFF0F0F5",
         "alpha": 1
       },
       "recessed.surface.hovered": {
         "shade": 0,
-        "color": "#FFE5E3DB",
+        "color": "#FFE3E3EC",
         "alpha": 1
       },
       "recessed.surface.pressed": {
         "shade": 0,
-        "color": "#FFE5E3DB",
+        "color": "#FFE3E3EC",
         "alpha": 0.9
       },
       "recessed.surface.disabled": {
         "shade": 0,
-        "color": "#FFE5E3DB",
+        "color": "#FFE3E3EC",
         "alpha": 1
       },
       "recessed.content.normal": {
         "shade": 0,
-        "color": "#FF111C2E",
+        "color": "#FF12142A",
         "alpha": 1
       },
       "recessed.content.hovered": {
         "shade": 0,
-        "color": "#FF111C2E",
+        "color": "#FF12142A",
         "alpha": 1
       },
       "recessed.content.pressed": {
         "shade": 0,
-        "color": "#FF111C2E",
+        "color": "#FF12142A",
         "alpha": 0.9
       },
       "recessed.content.disabled": {
         "shade": 0,
-        "color": "#61111C2E",
+        "color": "#FFA2A7BD",
         "alpha": 1
       },
       "plain.content.disabled": {
         "shade": 0,
-        "color": "#61111C2E",
+        "color": "#FFA2A7BD",
         "alpha": 1
       }
     },
@@ -1001,7 +1001,7 @@ export const THEMES: Record<string, ThemeData> = {
           "x": 0,
           "y": 24,
           "radius": 56,
-          "color": "#3D111C2E"
+          "color": "#47000000"
         }
       ],
       "shadow.2xs": [
@@ -1009,7 +1009,7 @@ export const THEMES: Record<string, ThemeData> = {
           "x": 0,
           "y": 1,
           "radius": 2,
-          "color": "#1F111C2E"
+          "color": "#1A000000"
         }
       ],
       "shadow.lg": [
@@ -1017,7 +1017,7 @@ export const THEMES: Record<string, ThemeData> = {
           "x": 0,
           "y": 10,
           "radius": 30,
-          "color": "#2E111C2E"
+          "color": "#38000000"
         }
       ],
       "shadow.md": [
@@ -1025,7 +1025,7 @@ export const THEMES: Record<string, ThemeData> = {
           "x": 0,
           "y": 8,
           "radius": 24,
-          "color": "#2E111C2E"
+          "color": "#33000000"
         }
       ],
       "shadow.sm": [
@@ -1033,7 +1033,7 @@ export const THEMES: Record<string, ThemeData> = {
           "x": 0,
           "y": 4,
           "radius": 12,
-          "color": "#24111C2E"
+          "color": "#24000000"
         }
       ],
       "shadow.xl": [
@@ -1041,7 +1041,7 @@ export const THEMES: Record<string, ThemeData> = {
           "x": 0,
           "y": 12,
           "radius": 32,
-          "color": "#33111C2E"
+          "color": "#3D000000"
         }
       ],
       "shadow.xs": [
@@ -1049,69 +1049,69 @@ export const THEMES: Record<string, ThemeData> = {
           "x": 0,
           "y": 1,
           "radius": 3,
-          "color": "#24111C2E"
+          "color": "#1F000000"
         }
       ]
     }
   },
-  "bright-dark": {
+  "studio-dark": {
     "colors": {
-      "color.border": "#14F2F4EF",
-      "color.border-muted": "#FF35414F",
-      "color.border-strong": "#17F2F4EF",
-      "color.canvas": "#FF060B12",
-      "color.content": "#FFF2F4EF",
-      "color.content-faint": "#61F2F4EF",
-      "color.content-muted": "#A8F2F4EF",
-      "color.content-nav": "#B3F2F4EF",
-      "color.content-secondary": "#C7F2F4EF",
-      "color.content-subtle": "#73F2F4EF",
+      "color.border": "#0FFFFFFF",
+      "color.border-muted": "#FF363C4D",
+      "color.border-strong": "#17FFFFFF",
+      "color.canvas": "#FF0A0B10",
+      "color.content": "#FFF2F3FA",
+      "color.content-faint": "#FF6A7090",
+      "color.content-muted": "#FF9AA1BB",
+      "color.content-nav": "#FF9AA1BB",
+      "color.content-secondary": "#FFC3C8DC",
+      "color.content-subtle": "#FF8B93B0",
       "color.danger.300": "#FFFF8F8F",
       "color.danger.500": "#FFFF6B6B",
-      "color.on-accent": "#FF111C2E",
-      "color.primary.100": "#FFF1F7D2",
-      "color.primary.200": "#FFE9FF8F",
-      "color.primary.300": "#FFD6FF3F",
-      "color.primary.400": "#FFB8E034",
-      "color.primary.50": "#FFF6FAE2",
-      "color.primary.500": "#FFD6FF3F",
-      "color.primary.600": "#FFC2EA2C",
-      "color.primary.700": "#FFA8CC22",
-      "color.primary.800": "#FF4A5C14",
-      "color.primary.900": "#FF24310F",
-      "color.primary.950": "#FF1A2410",
+      "color.on-accent": "#FFFFFFFF",
+      "color.primary.100": "#FFE6DFFF",
+      "color.primary.200": "#FFCDC0FF",
+      "color.primary.300": "#FFB9A8FF",
+      "color.primary.400": "#FF9A82FF",
+      "color.primary.50": "#FFF4F1FE",
+      "color.primary.500": "#FF7C5CFF",
+      "color.primary.600": "#FF6B4DFF",
+      "color.primary.700": "#FF5B3FE0",
+      "color.primary.800": "#FF4C33CC",
+      "color.primary.900": "#FF3D2AA3",
+      "color.primary.950": "#FF2A1C6B",
       "color.success.300": "#FF7FD7A8",
       "color.success.500": "#FF34D399",
-      "color.surface": "#FF0C141E",
-      "color.surface-chrome": "#FF111A26",
-      "color.surface-column": "#FF0A111A",
-      "color.surface-inset": "#FF16202C",
-      "color.surface-muted": "#FF141D29",
-      "color.surface-overlay": "#FF111A26",
-      "color.surface-raised": "#FF2A3644",
-      "color.surface-subtle": "#12F2F4EF",
-      "color.surface-sunken": "#FF1C2734",
+      "color.surface": "#FF0D0F14",
+      "color.surface-chrome": "#FF12141A",
+      "color.surface-column": "#FF0A0C11",
+      "color.surface-inset": "#FF1B1E26",
+      "color.surface-muted": "#FF12141A",
+      "color.surface-overlay": "#FF12141A",
+      "color.surface-raised": "#FF3A3F4D",
+      "color.surface-subtle": "#12FFFFFF",
+      "color.surface-sunken": "#FF262A34",
       "color.warning.300": "#FFFFCF9C",
       "color.warning.500": "#FFFFB86B",
-      "progress.gradient.from": "#FFD6FF3F",
-      "progress.gradient.to": "#FFD6FF3F",
-      "focus.ring": "#8CC2EA2C",
-      "focus.glow": "#24C2EA2C",
-      "focus.glow.primary": "#24C2EA2C",
-      "dialog.scrim": "#40F2F4EF"
+      "progress.gradient.from": "#FF7C5CFF",
+      "progress.gradient.to": "#FFB9A8FF",
+      "focus.ring": "#806B4DFF",
+      "focus.glow": "#246B4DFF",
+      "focus.glow.primary": "#246B4DFF",
+      "dialog.scrim": "#40F2F3FA"
     },
     "metrics": {
-      "control.container.radius": 14,
-      "control.field.radius": 9999,
-      "control.large.radius": 9999,
-      "control.medium.radius": 9999,
-      "control.small.radius": 9999,
-      "control.tiny.radius": 9999,
-      "frame.popover.radius": 14,
-      "frame.window.radius": 16,
-      "radius.big": 14,
-      "radius.medium": 9999,
-      "radius.small": 9999
+      "control.container.radius": 10,
+      "control.field.radius": 10,
+      "control.large.radius": 10,
+      "control.medium.radius": 8,
+      "control.small.radius": 8,
+      "control.tiny.radius": 8,
+      "frame.popover.radius": 16,
+      "frame.window.radius": 18,
+      "radius.big": 16,
+      "radius.medium": 10,
+      "radius.small": 8
     },
     "typography": {},
     "recipes": {
@@ -1132,32 +1132,32 @@ export const THEMES: Record<string, ThemeData> = {
       },
       "filled.surface.disabled": {
         "shade": 0,
-        "color": "#FF1C2734",
+        "color": "#FF262A34",
         "alpha": 1
       },
       "filled.content.normal": {
         "shade": 0,
-        "color": "#FF111C2E",
+        "color": "#FFFFFFFF",
         "alpha": 1
       },
       "filled.content.hovered": {
         "shade": 0,
-        "color": "#FF111C2E",
+        "color": "#FFFFFFFF",
         "alpha": 1
       },
       "filled.content.pressed": {
         "shade": 0,
-        "color": "#FF111C2E",
+        "color": "#FFFFFFFF",
         "alpha": 0.9
       },
       "filled.content.disabled": {
         "shade": 0,
-        "color": "#61F2F4EF",
+        "color": "#FF6A7090",
         "alpha": 1
       },
       "tinted.surface.disabled": {
         "shade": 0,
-        "color": "#FF1C2734",
+        "color": "#FF262A34",
         "alpha": 1
       },
       "tinted.content.normal": {
@@ -1177,12 +1177,12 @@ export const THEMES: Record<string, ThemeData> = {
       },
       "tinted.content.disabled": {
         "shade": 0,
-        "color": "#61F2F4EF",
+        "color": "#FF6A7090",
         "alpha": 1
       },
       "outlined.surface.disabled": {
         "shade": 0,
-        "color": "#FF1C2734",
+        "color": "#FF262A34",
         "alpha": 1
       },
       "outlined.content.normal": {
@@ -1202,7 +1202,7 @@ export const THEMES: Record<string, ThemeData> = {
       },
       "outlined.content.disabled": {
         "shade": 0,
-        "color": "#61F2F4EF",
+        "color": "#FF6A7090",
         "alpha": 1
       },
       "outlined.border.normal": {
@@ -1222,97 +1222,97 @@ export const THEMES: Record<string, ThemeData> = {
       },
       "normal.surface.normal": {
         "shade": 0,
-        "color": "#FF0C141E",
+        "color": "#FF0D0F14",
         "alpha": 1
       },
       "normal.surface.hovered": {
         "shade": 0,
-        "color": "#12F2F4EF",
+        "color": "#12FFFFFF",
         "alpha": 1
       },
       "normal.surface.pressed": {
         "shade": 0,
-        "color": "#12F2F4EF",
+        "color": "#12FFFFFF",
         "alpha": 0.9
       },
       "normal.surface.disabled": {
         "shade": 0,
-        "color": "#FF1C2734",
+        "color": "#FF262A34",
         "alpha": 1
       },
       "normal.content.normal": {
         "shade": 0,
-        "color": "#FFF2F4EF",
+        "color": "#FFF2F3FA",
         "alpha": 1
       },
       "normal.content.hovered": {
         "shade": 0,
-        "color": "#FFF2F4EF",
+        "color": "#FFF2F3FA",
         "alpha": 1
       },
       "normal.content.pressed": {
         "shade": 0,
-        "color": "#FFF2F4EF",
+        "color": "#FFF2F3FA",
         "alpha": 0.9
       },
       "normal.content.disabled": {
         "shade": 0,
-        "color": "#61F2F4EF",
+        "color": "#FF6A7090",
         "alpha": 1
       },
       "normal.border.normal": {
         "shade": 0,
-        "color": "#17F2F4EF",
+        "color": "#17FFFFFF",
         "alpha": 1
       },
       "normal.border.hovered": {
         "shade": 0,
-        "color": "#17F2F4EF",
+        "color": "#17FFFFFF",
         "alpha": 1
       },
       "normal.border.pressed": {
         "shade": 0,
-        "color": "#17F2F4EF",
+        "color": "#17FFFFFF",
         "alpha": 0.9
       },
       "recessed.surface.normal": {
         "shade": 0,
-        "color": "#FF16202C",
+        "color": "#FF1B1E26",
         "alpha": 1
       },
       "recessed.surface.hovered": {
         "shade": 0,
-        "color": "#FF1C2734",
+        "color": "#FF262A34",
         "alpha": 1
       },
       "recessed.surface.pressed": {
         "shade": 0,
-        "color": "#FF1C2734",
+        "color": "#FF262A34",
         "alpha": 0.9
       },
       "recessed.surface.disabled": {
         "shade": 0,
-        "color": "#FF1C2734",
+        "color": "#FF262A34",
         "alpha": 1
       },
       "recessed.content.normal": {
         "shade": 0,
-        "color": "#FFF2F4EF",
+        "color": "#FFF2F3FA",
         "alpha": 1
       },
       "recessed.content.hovered": {
         "shade": 0,
-        "color": "#FFF2F4EF",
+        "color": "#FFF2F3FA",
         "alpha": 1
       },
       "recessed.content.pressed": {
         "shade": 0,
-        "color": "#FFF2F4EF",
+        "color": "#FFF2F3FA",
         "alpha": 0.9
       },
       "recessed.content.disabled": {
         "shade": 0,
-        "color": "#61F2F4EF",
+        "color": "#FF6A7090",
         "alpha": 1
       },
       "plain.content.normal": {
@@ -1332,7 +1332,7 @@ export const THEMES: Record<string, ThemeData> = {
       },
       "plain.content.disabled": {
         "shade": 0,
-        "color": "#61F2F4EF",
+        "color": "#FF6A7090",
         "alpha": 1
       }
     },
@@ -1407,6 +1407,7 @@ export const THEMES: Record<string, ThemeData> = {
       "color.content-nav": "#FF3A5B68",
       "color.content-secondary": "#FF2F4C58",
       "color.content-subtle": "#FF7794A0",
+      "color.on-accent": "#FFFFFFFF",
       "color.primary.100": "#FFD7EFF4",
       "color.primary.200": "#FFB2E0EA",
       "color.primary.300": "#FF74C9DC",
@@ -1418,10 +1419,12 @@ export const THEMES: Record<string, ThemeData> = {
       "color.primary.800": "#FF0B4F61",
       "color.primary.900": "#FF0D3C4A",
       "color.primary.950": "#FF08262F",
+      "color.surface": "#FFFFFFFF",
       "color.surface-chrome": "#FFF2F6F8",
       "color.surface-column": "#FFF2F6F8",
       "color.surface-inset": "#FFECF2F4",
       "color.surface-muted": "#FFF2F6F8",
+      "color.surface-overlay": "#FFFFFFFF",
       "color.surface-subtle": "#0F0E1F26",
       "color.surface-sunken": "#FFDBE6EA",
       "progress.gradient.from": "#FF0F7A92",
@@ -1431,13 +1434,40 @@ export const THEMES: Record<string, ThemeData> = {
       "focus.glow.primary": "#240F7A92",
       "dialog.scrim": "#400E1F26"
     },
-    "metrics": {},
+    "metrics": {
+      "control.container.radius": 10,
+      "control.field.radius": 10,
+      "control.large.radius": 10,
+      "control.medium.radius": 8,
+      "control.small.radius": 8,
+      "control.tiny.radius": 8,
+      "frame.popover.radius": 16,
+      "frame.window.radius": 18,
+      "radius.big": 16,
+      "radius.medium": 10,
+      "radius.small": 8
+    },
     "typography": {},
     "recipes": {
       "filled.surface.disabled": {
         "shade": 0,
         "color": "#FFDBE6EA",
         "alpha": 1
+      },
+      "filled.content.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.hovered": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.pressed": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 0.9
       },
       "filled.content.disabled": {
         "shade": 0,
@@ -1462,6 +1492,11 @@ export const THEMES: Record<string, ThemeData> = {
       "outlined.content.disabled": {
         "shade": 0,
         "color": "#FF9AB1BA",
+        "alpha": 1
+      },
+      "normal.surface.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
         "alpha": 1
       },
       "normal.surface.hovered": {
@@ -1560,7 +1595,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "frost-dark": {
     "colors": {
@@ -1608,7 +1700,19 @@ export const THEMES: Record<string, ThemeData> = {
       "focus.glow.primary": "#240F7A92",
       "dialog.scrim": "#40EAF3F7"
     },
-    "metrics": {},
+    "metrics": {
+      "control.container.radius": 10,
+      "control.field.radius": 10,
+      "control.large.radius": 10,
+      "control.medium.radius": 8,
+      "control.small.radius": 8,
+      "control.tiny.radius": 8,
+      "frame.popover.radius": 16,
+      "frame.window.radius": 18,
+      "radius.big": 16,
+      "radius.medium": 10,
+      "radius.small": 8
+    },
     "typography": {},
     "recipes": {
       "filled.surface.normal": {
@@ -1915,10 +2019,12 @@ export const THEMES: Record<string, ThemeData> = {
       "color.primary.800": "#FF1C1C21",
       "color.primary.900": "#FF131317",
       "color.primary.950": "#FF0B0B0E",
+      "color.surface": "#FFFFFFFF",
       "color.surface-chrome": "#FFF6F6F8",
       "color.surface-column": "#FFF6F6F8",
       "color.surface-inset": "#FFEFEFF2",
       "color.surface-muted": "#FFF6F6F8",
+      "color.surface-overlay": "#FFFFFFFF",
       "color.surface-subtle": "#0F17171B",
       "color.surface-sunken": "#FFE2E2E7",
       "progress.gradient.from": "#FF3F3F46",
@@ -1936,7 +2042,6 @@ export const THEMES: Record<string, ThemeData> = {
       "control.small.radius": 7,
       "control.tiny.radius": 7,
       "frame.popover.radius": 12,
-      "frame.window.radius": 16,
       "radius.big": 12,
       "radius.large": 10,
       "radius.medium": 8,
@@ -1987,6 +2092,11 @@ export const THEMES: Record<string, ThemeData> = {
       "outlined.content.disabled": {
         "shade": 0,
         "color": "#FFA3A3AB",
+        "alpha": 1
+      },
+      "normal.surface.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
         "alpha": 1
       },
       "normal.surface.hovered": {
@@ -2085,7 +2195,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "graphite-dark": {
     "colors": {
@@ -2141,7 +2308,6 @@ export const THEMES: Record<string, ThemeData> = {
       "control.small.radius": 7,
       "control.tiny.radius": 7,
       "frame.popover.radius": 12,
-      "frame.window.radius": 16,
       "radius.big": 12,
       "radius.large": 10,
       "radius.medium": 8,
@@ -2469,7 +2635,19 @@ export const THEMES: Record<string, ThemeData> = {
       "focus.glow.primary": "#24AD5717",
       "dialog.scrim": "#40241A11"
     },
-    "metrics": {},
+    "metrics": {
+      "control.container.radius": 10,
+      "control.field.radius": 10,
+      "control.large.radius": 10,
+      "control.medium.radius": 8,
+      "control.small.radius": 8,
+      "control.tiny.radius": 8,
+      "frame.popover.radius": 16,
+      "frame.window.radius": 18,
+      "radius.big": 16,
+      "radius.medium": 10,
+      "radius.small": 8
+    },
     "typography": {},
     "recipes": {
       "filled.surface.disabled": {
@@ -2618,7 +2796,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "ember-dark": {
     "colors": {
@@ -2666,7 +2901,19 @@ export const THEMES: Record<string, ThemeData> = {
       "focus.glow.primary": "#24E0954A",
       "dialog.scrim": "#40F6EFE4"
     },
-    "metrics": {},
+    "metrics": {
+      "control.container.radius": 10,
+      "control.field.radius": 10,
+      "control.large.radius": 10,
+      "control.medium.radius": 8,
+      "control.small.radius": 8,
+      "control.tiny.radius": 8,
+      "frame.popover.radius": 16,
+      "frame.window.radius": 18,
+      "radius.big": 16,
+      "radius.medium": 10,
+      "radius.small": 8
+    },
     "typography": {},
     "recipes": {
       "filled.surface.normal": {
@@ -2961,6 +3208,7 @@ export const THEMES: Record<string, ThemeData> = {
       "color.content-nav": "#FF4C4E61",
       "color.content-secondary": "#FF383A49",
       "color.content-subtle": "#FF85889E",
+      "color.on-accent": "#FFFFFFFF",
       "color.primary.100": "#FFE7E5FE",
       "color.primary.200": "#FFD2CEFD",
       "color.primary.300": "#FFB5ABFC",
@@ -2972,10 +3220,12 @@ export const THEMES: Record<string, ThemeData> = {
       "color.primary.800": "#FF5B4BB4",
       "color.primary.900": "#FF453897",
       "color.primary.950": "#FF2D2465",
+      "color.surface": "#FFFFFFFF",
       "color.surface-chrome": "#FFF6F6FA",
       "color.surface-column": "#FFF6F6FA",
       "color.surface-inset": "#FFEEEEF5",
       "color.surface-muted": "#FFF6F6FA",
+      "color.surface-overlay": "#FFFFFFFF",
       "color.surface-subtle": "#0F23242E",
       "color.surface-sunken": "#FFE2E2EC",
       "progress.gradient.from": "#FF8375D1",
@@ -2993,7 +3243,6 @@ export const THEMES: Record<string, ThemeData> = {
       "control.small.radius": 7,
       "control.tiny.radius": 7,
       "frame.popover.radius": 12,
-      "frame.window.radius": 16,
       "radius.big": 12,
       "radius.large": 10,
       "radius.medium": 8,
@@ -3005,6 +3254,21 @@ export const THEMES: Record<string, ThemeData> = {
         "shade": 0,
         "color": "#FFE2E2EC",
         "alpha": 1
+      },
+      "filled.content.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.hovered": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.pressed": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 0.9
       },
       "filled.content.disabled": {
         "shade": 0,
@@ -3029,6 +3293,11 @@ export const THEMES: Record<string, ThemeData> = {
       "outlined.content.disabled": {
         "shade": 0,
         "color": "#FFADAFC1",
+        "alpha": 1
+      },
+      "normal.surface.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
         "alpha": 1
       },
       "normal.surface.hovered": {
@@ -3127,7 +3396,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "nocturne-dark": {
     "colors": {
@@ -3183,7 +3509,6 @@ export const THEMES: Record<string, ThemeData> = {
       "control.small.radius": 7,
       "control.tiny.radius": 7,
       "frame.popover.radius": 12,
-      "frame.window.radius": 16,
       "radius.big": 12,
       "radius.large": 10,
       "radius.medium": 8,
@@ -3743,7 +4068,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-tokyo-night-dark": {
     "colors": {
@@ -4429,7 +4811,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-catppuccin-dark": {
     "colors": {
@@ -5115,7 +5554,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-catppuccin-latte-dark": {
     "colors": {
@@ -5801,7 +6297,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-ethereal-dark": {
     "colors": {
@@ -6487,7 +7040,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-everforest-dark": {
     "colors": {
@@ -7173,7 +7783,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-flexoki-light-dark": {
     "colors": {
@@ -7859,7 +8526,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-gruvbox-dark": {
     "colors": {
@@ -8545,7 +9269,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-hackerman-dark": {
     "colors": {
@@ -9231,7 +10012,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-kanagawa-dark": {
     "colors": {
@@ -9917,7 +10755,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-last-horizon-dark": {
     "colors": {
@@ -10603,7 +11498,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-lumon-dark": {
     "colors": {
@@ -11289,7 +12241,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-lupine-dark": {
     "colors": {
@@ -11975,7 +12984,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-matte-black-dark": {
     "colors": {
@@ -12661,7 +13727,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-miasma-dark": {
     "colors": {
@@ -13347,7 +14470,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-nord-dark": {
     "colors": {
@@ -14033,7 +15213,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-osaka-jade-dark": {
     "colors": {
@@ -14719,7 +15956,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-retro-82-dark": {
     "colors": {
@@ -15405,7 +16699,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-ristretto-dark": {
     "colors": {
@@ -16091,7 +17442,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-rose-pine-dark": {
     "colors": {
@@ -16777,7 +18185,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-solitude-dark": {
     "colors": {
@@ -17203,6 +18668,7 @@ export const THEMES: Record<string, ThemeData> = {
       "color.content-nav": "#FF474747",
       "color.content-secondary": "#FF2E2E2E",
       "color.content-subtle": "#FF808080",
+      "color.on-accent": "#FFFFFFFF",
       "color.primary.100": "#FFEAEAEA",
       "color.primary.200": "#FFD4D4D4",
       "color.primary.300": "#FFB8B8B8",
@@ -17214,10 +18680,12 @@ export const THEMES: Record<string, ThemeData> = {
       "color.primary.800": "#FF3F3F3F",
       "color.primary.900": "#FF353535",
       "color.primary.950": "#FF262626",
+      "color.surface": "#FFFFFFFF",
       "color.surface-chrome": "#FFF7F7F7",
       "color.surface-column": "#FFFAFAFA",
       "color.surface-inset": "#FFEFEFEF",
       "color.surface-muted": "#FFF7F7F7",
+      "color.surface-overlay": "#FFFFFFFF",
       "color.surface-subtle": "#0F000000",
       "color.surface-sunken": "#FFE0E0E0",
       "progress.gradient.from": "#FF575757",
@@ -17318,6 +18786,21 @@ export const THEMES: Record<string, ThemeData> = {
         "color": "#FFE0E0E0",
         "alpha": 1
       },
+      "filled.content.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.hovered": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.pressed": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 0.9
+      },
       "filled.content.disabled": {
         "shade": 0,
         "color": "#FFA3A3A3",
@@ -17341,6 +18824,11 @@ export const THEMES: Record<string, ThemeData> = {
       "outlined.content.disabled": {
         "shade": 0,
         "color": "#FFA3A3A3",
+        "alpha": 1
+      },
+      "normal.surface.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
         "alpha": 1
       },
       "normal.surface.hovered": {
@@ -17439,7 +18927,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-vantablack-dark": {
     "colors": {
@@ -17865,6 +19410,7 @@ export const THEMES: Record<string, ThemeData> = {
       "color.content-nav": "#FF474747",
       "color.content-secondary": "#FF2E2E2E",
       "color.content-subtle": "#FF808080",
+      "color.on-accent": "#FFFFFFFF",
       "color.primary.100": "#FFECECEC",
       "color.primary.200": "#FFD9D9D9",
       "color.primary.300": "#FFC1C1C1",
@@ -17876,10 +19422,12 @@ export const THEMES: Record<string, ThemeData> = {
       "color.primary.800": "#FF4A4A4A",
       "color.primary.900": "#FF3B3B3B",
       "color.primary.950": "#FF262626",
+      "color.surface": "#FFFFFFFF",
       "color.surface-chrome": "#FFF7F7F7",
       "color.surface-column": "#FFFAFAFA",
       "color.surface-inset": "#FFEFEFEF",
       "color.surface-muted": "#FFF7F7F7",
+      "color.surface-overlay": "#FFFFFFFF",
       "color.surface-subtle": "#0F000000",
       "color.surface-sunken": "#FFE0E0E0",
       "progress.gradient.from": "#FF6E6E6E",
@@ -17980,6 +19528,21 @@ export const THEMES: Record<string, ThemeData> = {
         "color": "#FFE0E0E0",
         "alpha": 1
       },
+      "filled.content.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.hovered": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.pressed": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 0.9
+      },
       "filled.content.disabled": {
         "shade": 0,
         "color": "#FFA3A3A3",
@@ -18003,6 +19566,11 @@ export const THEMES: Record<string, ThemeData> = {
       "outlined.content.disabled": {
         "shade": 0,
         "color": "#FFA3A3A3",
+        "alpha": 1
+      },
+      "normal.surface.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
         "alpha": 1
       },
       "normal.surface.hovered": {
@@ -18101,7 +19669,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "omarchy-white-dark": {
     "colors": {
@@ -18527,6 +20152,7 @@ export const THEMES: Record<string, ThemeData> = {
       "color.content-nav": "#FF5F5F60",
       "color.content-secondary": "#FF4A4A4B",
       "color.content-subtle": "#FF8D8D8E",
+      "color.on-accent": "#FFFFFFFF",
       "color.primary.100": "#FFE4F0FF",
       "color.primary.200": "#FFCCE2FD",
       "color.primary.300": "#FFABD0FE",
@@ -18557,18 +20183,14 @@ export const THEMES: Record<string, ThemeData> = {
     "metrics": {
       "calendar.small.cell-size": 24,
       "checkbox.radius": 4,
+      "control.container.radius": 10,
       "control.field.radius": 8,
-      "control.large.radius": 9999,
       "control.medium.padding.inline": 18,
-      "control.medium.radius": 9999,
-      "control.small.radius": 9999,
       "control.small.size": 24,
-      "control.tiny.radius": 9999,
       "control.tiny.size": 20,
-      "frame.window.radius": 16,
+      "frame.popover.radius": 16,
+      "radius.big": 16,
       "radius.large": 10,
-      "radius.medium": 9999,
-      "radius.small": 9999,
       "radius.tiny": 6
     },
     "typography": {
@@ -18658,6 +20280,21 @@ export const THEMES: Record<string, ThemeData> = {
         "shade": 0,
         "color": "#FFD7D7D9",
         "alpha": 1
+      },
+      "filled.content.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.hovered": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.pressed": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 0.9
       },
       "filled.content.disabled": {
         "shade": 0,
@@ -18785,7 +20422,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "macos27-dark": {
     "colors": {
@@ -18801,6 +20495,7 @@ export const THEMES: Record<string, ThemeData> = {
       "color.content-subtle": "#FF818182",
       "color.danger.300": "#FFFF8F8F",
       "color.danger.500": "#FFFF6B6B",
+      "color.on-accent": "#FFFFFFFF",
       "color.primary.100": "#FFE1EFFE",
       "color.primary.200": "#FFC4DFFD",
       "color.primary.300": "#FF9CCAFE",
@@ -18835,18 +20530,14 @@ export const THEMES: Record<string, ThemeData> = {
     "metrics": {
       "calendar.small.cell-size": 24,
       "checkbox.radius": 4,
+      "control.container.radius": 10,
       "control.field.radius": 8,
-      "control.large.radius": 9999,
       "control.medium.padding.inline": 18,
-      "control.medium.radius": 9999,
-      "control.small.radius": 9999,
       "control.small.size": 24,
-      "control.tiny.radius": 9999,
       "control.tiny.size": 20,
-      "frame.window.radius": 16,
+      "frame.popover.radius": 16,
+      "radius.big": 16,
       "radius.large": 10,
-      "radius.medium": 9999,
-      "radius.small": 9999,
       "radius.tiny": 6
     },
     "typography": {
@@ -18951,6 +20642,21 @@ export const THEMES: Record<string, ThemeData> = {
         "shade": 0,
         "color": "#FF39393B",
         "alpha": 1
+      },
+      "filled.content.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.hovered": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.pressed": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 0.9
       },
       "filled.content.disabled": {
         "shade": 0,
@@ -19209,6 +20915,7 @@ export const THEMES: Record<string, ThemeData> = {
       "color.content-nav": "#FF5B5B5B",
       "color.content-secondary": "#FF474747",
       "color.content-subtle": "#FF888888",
+      "color.on-accent": "#FFFFFFFF",
       "color.primary.100": "#FFE4EFFE",
       "color.primary.200": "#FFCBDFFD",
       "color.primary.300": "#FFA8CCFE",
@@ -19347,6 +21054,21 @@ export const THEMES: Record<string, ThemeData> = {
         "color": "#FFCECECE",
         "alpha": 1
       },
+      "filled.content.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.hovered": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.pressed": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 0.9
+      },
       "filled.content.disabled": {
         "shade": 0,
         "color": "#FFA4A4A4",
@@ -19473,7 +21195,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "macos15-dark": {
     "colors": {
@@ -19489,6 +21268,7 @@ export const THEMES: Record<string, ThemeData> = {
       "color.content-subtle": "#FF898989",
       "color.danger.300": "#FFFF8F8F",
       "color.danger.500": "#FFFF6B6B",
+      "color.on-accent": "#FFFFFFFF",
       "color.primary.100": "#FFE1EEFF",
       "color.primary.200": "#FFC2DCFE",
       "color.primary.300": "#FF99C5FE",
@@ -19645,6 +21425,21 @@ export const THEMES: Record<string, ThemeData> = {
         "shade": 0,
         "color": "#FF494949",
         "alpha": 1
+      },
+      "filled.content.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.hovered": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.pressed": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 0.9
       },
       "filled.content.disabled": {
         "shade": 0,
@@ -19903,6 +21698,7 @@ export const THEMES: Record<string, ThemeData> = {
       "color.content-nav": "#FF555555",
       "color.content-secondary": "#FF3F3F3F",
       "color.content-subtle": "#FF858585",
+      "color.on-accent": "#FFFFFFFF",
       "color.primary.100": "#FFDEEDFF",
       "color.primary.200": "#FFBDD9FD",
       "color.primary.300": "#FF8FBFFC",
@@ -20057,6 +21853,21 @@ export const THEMES: Record<string, ThemeData> = {
         "color": "#FFD5D5D5",
         "alpha": 1
       },
+      "filled.content.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.hovered": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.pressed": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 0.9
+      },
       "filled.content.disabled": {
         "shade": 0,
         "color": "#FFA4A4A4",
@@ -20183,7 +21994,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "windows11-dark": {
     "colors": {
@@ -20645,6 +22513,7 @@ export const THEMES: Record<string, ThemeData> = {
       "color.content-nav": "#FF727272",
       "color.content-secondary": "#FF5F5F5F",
       "color.content-subtle": "#FF9C9C9C",
+      "color.on-accent": "#FFFFFFFF",
       "color.primary.100": "#FFFEEAE4",
       "color.primary.200": "#FFFDD6CA",
       "color.primary.300": "#FFFDBCA8",
@@ -20798,6 +22667,21 @@ export const THEMES: Record<string, ThemeData> = {
         "color": "#FFDCDCDC",
         "alpha": 1
       },
+      "filled.content.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.hovered": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.pressed": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 0.9
+      },
       "filled.content.disabled": {
         "shade": 0,
         "color": "#FFB6B6B6",
@@ -20924,7 +22808,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "ubuntu-dark": {
     "colors": {
@@ -20940,6 +22881,7 @@ export const THEMES: Record<string, ThemeData> = {
       "color.content-subtle": "#FF929292",
       "color.danger.300": "#FFFF8F8F",
       "color.danger.500": "#FFFF6B6B",
+      "color.on-accent": "#FFFFFFFF",
       "color.primary.100": "#FFFDE7E1",
       "color.primary.200": "#FFFECFC0",
       "color.primary.300": "#FFFDAE96",
@@ -21111,6 +23053,21 @@ export const THEMES: Record<string, ThemeData> = {
         "shade": 0,
         "color": "#FF434343",
         "alpha": 1
+      },
+      "filled.content.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.hovered": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.pressed": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 0.9
       },
       "filled.content.disabled": {
         "shade": 0,
@@ -21369,6 +23326,7 @@ export const THEMES: Record<string, ThemeData> = {
       "color.content-nav": "#FF6A6A6E",
       "color.content-secondary": "#FF56565A",
       "color.content-subtle": "#FF969699",
+      "color.on-accent": "#FFFFFFFF",
       "color.primary.100": "#FFE4EFFF",
       "color.primary.200": "#FFCAE1FF",
       "color.primary.300": "#FFAACDFC",
@@ -21522,6 +23480,21 @@ export const THEMES: Record<string, ThemeData> = {
         "color": "#FFDCDCDD",
         "alpha": 1
       },
+      "filled.content.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.hovered": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.pressed": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 0.9
+      },
       "filled.content.disabled": {
         "shade": 0,
         "color": "#FFB2B2B4",
@@ -21648,7 +23621,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "debian-dark": {
     "colors": {
@@ -21664,6 +23694,7 @@ export const THEMES: Record<string, ThemeData> = {
       "color.content-subtle": "#FF919193",
       "color.danger.300": "#FFFF8F8F",
       "color.danger.500": "#FFFF6B6B",
+      "color.on-accent": "#FFFFFFFF",
       "color.primary.100": "#FFE0EDFE",
       "color.primary.200": "#FFC1DBFC",
       "color.primary.300": "#FF98C3FC",
@@ -21835,6 +23866,21 @@ export const THEMES: Record<string, ThemeData> = {
         "shade": 0,
         "color": "#FF38383B",
         "alpha": 1
+      },
+      "filled.content.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.hovered": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.pressed": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 0.9
       },
       "filled.content.disabled": {
         "shade": 0,
@@ -22093,6 +24139,7 @@ export const THEMES: Record<string, ThemeData> = {
       "color.content-nav": "#FF6A6A6E",
       "color.content-secondary": "#FF56565A",
       "color.content-subtle": "#FF969699",
+      "color.on-accent": "#FFFFFFFF",
       "color.primary.100": "#FFE4EFFF",
       "color.primary.200": "#FFCAE1FF",
       "color.primary.300": "#FFAACDFC",
@@ -22246,6 +24293,21 @@ export const THEMES: Record<string, ThemeData> = {
         "color": "#FFDCDCDD",
         "alpha": 1
       },
+      "filled.content.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.hovered": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.pressed": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 0.9
+      },
       "filled.content.disabled": {
         "shade": 0,
         "color": "#FFB2B2B4",
@@ -22372,7 +24434,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "fedora-dark": {
     "colors": {
@@ -22388,6 +24507,7 @@ export const THEMES: Record<string, ThemeData> = {
       "color.content-subtle": "#FF919193",
       "color.danger.300": "#FFFF8F8F",
       "color.danger.500": "#FFFF6B6B",
+      "color.on-accent": "#FFFFFFFF",
       "color.primary.100": "#FFE0EDFE",
       "color.primary.200": "#FFC1DBFC",
       "color.primary.300": "#FF98C3FC",
@@ -22559,6 +24679,21 @@ export const THEMES: Record<string, ThemeData> = {
         "shade": 0,
         "color": "#FF38383B",
         "alpha": 1
+      },
+      "filled.content.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.hovered": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.pressed": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 0.9
       },
       "filled.content.disabled": {
         "shade": 0,
@@ -23105,7 +25240,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "kde-dark": {
     "colors": {
@@ -23559,6 +25751,7 @@ export const THEMES: Record<string, ThemeData> = {
       "color.content-nav": "#FF545454",
       "color.content-secondary": "#FF3D3D3D",
       "color.content-subtle": "#FF898989",
+      "color.on-accent": "#FFFFFFFF",
       "color.primary.100": "#FFDDF3E0",
       "color.primary.200": "#FFBCE4C2",
       "color.primary.300": "#FF92D09D",
@@ -23570,10 +25763,12 @@ export const THEMES: Record<string, ThemeData> = {
       "color.primary.800": "#FF0F5526",
       "color.primary.900": "#FF00461B",
       "color.primary.950": "#FF062F13",
+      "color.surface": "#FFFFFFFF",
       "color.surface-chrome": "#FFF7F7F7",
       "color.surface-column": "#FFFAFAFA",
       "color.surface-inset": "#FFEFEFEF",
       "color.surface-muted": "#FFF7F7F7",
+      "color.surface-overlay": "#FFFFFFFF",
       "color.surface-subtle": "#0F121212",
       "color.surface-sunken": "#FFE0E0E0",
       "progress.gradient.from": "#FF107C38",
@@ -23590,17 +25785,13 @@ export const THEMES: Record<string, ThemeData> = {
       "control.container.radius": 8,
       "control.field.radius": 4,
       "control.large.icon-size": 24,
-      "control.large.radius": 9999,
       "control.large.size": 48,
       "control.medium.icon-size": 20,
       "control.medium.padding.inline": 24,
-      "control.medium.radius": 9999,
       "control.medium.size": 40,
       "control.small.icon-size": 20,
-      "control.small.radius": 9999,
       "control.small.size": 32,
       "control.tiny.icon-size": 14,
-      "control.tiny.radius": 9999,
       "frame.popover.radius": 8,
       "frame.window.radius": 8,
       "icon.large": 24,
@@ -23608,8 +25799,6 @@ export const THEMES: Record<string, ThemeData> = {
       "icon.small": 14,
       "radius.big": 8,
       "radius.large": 8,
-      "radius.medium": 9999,
-      "radius.small": 9999,
       "radius.tiny": 4
     },
     "typography": {
@@ -23700,6 +25889,21 @@ export const THEMES: Record<string, ThemeData> = {
         "color": "#FFE0E0E0",
         "alpha": 1
       },
+      "filled.content.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.hovered": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 1
+      },
+      "filled.content.pressed": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
+        "alpha": 0.9
+      },
       "filled.content.disabled": {
         "shade": 0,
         "color": "#FFAAAAAA",
@@ -23723,6 +25927,11 @@ export const THEMES: Record<string, ThemeData> = {
       "outlined.content.disabled": {
         "shade": 0,
         "color": "#FFAAAAAA",
+        "alpha": 1
+      },
+      "normal.surface.normal": {
+        "shade": 0,
+        "color": "#FFFFFFFF",
         "alpha": 1
       },
       "normal.surface.hovered": {
@@ -23821,7 +26030,64 @@ export const THEMES: Record<string, ThemeData> = {
         "alpha": 1
       }
     },
-    "shadows": {}
+    "shadows": {
+      "shadow.2xl": [
+        {
+          "x": 0,
+          "y": 24,
+          "radius": 56,
+          "color": "#47000000"
+        }
+      ],
+      "shadow.2xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 2,
+          "color": "#1A000000"
+        }
+      ],
+      "shadow.lg": [
+        {
+          "x": 0,
+          "y": 10,
+          "radius": 30,
+          "color": "#38000000"
+        }
+      ],
+      "shadow.md": [
+        {
+          "x": 0,
+          "y": 8,
+          "radius": 24,
+          "color": "#33000000"
+        }
+      ],
+      "shadow.sm": [
+        {
+          "x": 0,
+          "y": 4,
+          "radius": 12,
+          "color": "#24000000"
+        }
+      ],
+      "shadow.xl": [
+        {
+          "x": 0,
+          "y": 12,
+          "radius": 32,
+          "color": "#3D000000"
+        }
+      ],
+      "shadow.xs": [
+        {
+          "x": 0,
+          "y": 1,
+          "radius": 3,
+          "color": "#1F000000"
+        }
+      ]
+    }
   },
   "spotify-dark": {
     "colors": {
@@ -23876,17 +26142,13 @@ export const THEMES: Record<string, ThemeData> = {
       "control.container.radius": 8,
       "control.field.radius": 4,
       "control.large.icon-size": 24,
-      "control.large.radius": 9999,
       "control.large.size": 48,
       "control.medium.icon-size": 20,
       "control.medium.padding.inline": 24,
-      "control.medium.radius": 9999,
       "control.medium.size": 40,
       "control.small.icon-size": 20,
-      "control.small.radius": 9999,
       "control.small.size": 32,
       "control.tiny.icon-size": 14,
-      "control.tiny.radius": 9999,
       "frame.popover.radius": 8,
       "frame.window.radius": 8,
       "icon.large": 24,
@@ -23894,8 +26156,6 @@ export const THEMES: Record<string, ThemeData> = {
       "icon.small": 14,
       "radius.big": 8,
       "radius.large": 8,
-      "radius.medium": 9999,
-      "radius.small": 9999,
       "radius.tiny": 4
     },
     "typography": {
@@ -24261,37 +26521,47 @@ export const THEMES: Record<string, ThemeData> = {
       ]
     }
   },
-  "studio-dark": {
+  "bright-dark": {
     "colors": {
-      "color.border": "#0FFFFFFF",
-      "color.border-muted": "#FF363C4D",
-      "color.border-strong": "#17FFFFFF",
-      "color.canvas": "#FF0A0B10",
-      "color.content": "#FFF2F3FA",
-      "color.content-faint": "#FF6A7090",
-      "color.content-muted": "#FF9AA1BB",
-      "color.content-nav": "#FF9AA1BB",
-      "color.content-secondary": "#FFC3C8DC",
-      "color.content-subtle": "#FF8B93B0",
+      "color.border": "#14F2F4EF",
+      "color.border-muted": "#FF35414F",
+      "color.border-strong": "#17F2F4EF",
+      "color.canvas": "#FF060B12",
+      "color.content": "#FFF2F4EF",
+      "color.content-faint": "#61F2F4EF",
+      "color.content-muted": "#A8F2F4EF",
+      "color.content-nav": "#B3F2F4EF",
+      "color.content-secondary": "#C7F2F4EF",
+      "color.content-subtle": "#73F2F4EF",
       "color.danger.300": "#FFFF8F8F",
       "color.danger.500": "#FFFF6B6B",
+      "color.on-accent": "#FF111C2E",
+      "color.primary.200": "#FFE9FF8F",
+      "color.primary.400": "#FFB8E034",
+      "color.primary.500": "#FFD6FF3F",
+      "color.primary.600": "#FFC2EA2C",
+      "color.primary.700": "#FFA8CC22",
+      "color.primary.800": "#FF4A5C14",
+      "color.primary.900": "#FF24310F",
+      "color.primary.950": "#FF1A2410",
       "color.success.300": "#FF7FD7A8",
       "color.success.500": "#FF34D399",
-      "color.surface": "#FF0D0F14",
-      "color.surface-chrome": "#FF12141A",
-      "color.surface-column": "#FF0A0C11",
-      "color.surface-inset": "#FF1B1E26",
-      "color.surface-muted": "#FF12141A",
-      "color.surface-overlay": "#FF12141A",
-      "color.surface-raised": "#FF3A3F4D",
-      "color.surface-subtle": "#12FFFFFF",
-      "color.surface-sunken": "#FF262A34",
+      "color.surface": "#FF0C141E",
+      "color.surface-chrome": "#FF111A26",
+      "color.surface-column": "#FF0A111A",
+      "color.surface-inset": "#FF16202C",
+      "color.surface-muted": "#FF141D29",
+      "color.surface-overlay": "#FF111A26",
+      "color.surface-raised": "#FF2A3644",
+      "color.surface-subtle": "#12F2F4EF",
+      "color.surface-sunken": "#FF1C2734",
       "color.warning.300": "#FFFFCF9C",
       "color.warning.500": "#FFFFB86B",
-      "progress.gradient.from": "#FF7C5CFF",
-      "progress.gradient.to": "#FFB9A8FF",
-      "focus.ring": "#806B4DFF",
-      "dialog.scrim": "#40F2F3FA"
+      "progress.gradient.from": "#FFD6FF3F",
+      "focus.ring": "#8CC2EA2C",
+      "focus.glow": "#24C2EA2C",
+      "focus.glow.primary": "#24C2EA2C",
+      "dialog.scrim": "#40F2F4EF"
     },
     "metrics": {},
     "typography": {},
@@ -24313,17 +26583,32 @@ export const THEMES: Record<string, ThemeData> = {
       },
       "filled.surface.disabled": {
         "shade": 0,
-        "color": "#FF262A34",
+        "color": "#FF1C2734",
         "alpha": 1
+      },
+      "filled.content.normal": {
+        "shade": 0,
+        "color": "#FF111C2E",
+        "alpha": 1
+      },
+      "filled.content.hovered": {
+        "shade": 0,
+        "color": "#FF111C2E",
+        "alpha": 1
+      },
+      "filled.content.pressed": {
+        "shade": 0,
+        "color": "#FF111C2E",
+        "alpha": 0.9
       },
       "filled.content.disabled": {
         "shade": 0,
-        "color": "#FF6A7090",
+        "color": "#61F2F4EF",
         "alpha": 1
       },
       "tinted.surface.disabled": {
         "shade": 0,
-        "color": "#FF262A34",
+        "color": "#FF1C2734",
         "alpha": 1
       },
       "tinted.content.normal": {
@@ -24343,12 +26628,12 @@ export const THEMES: Record<string, ThemeData> = {
       },
       "tinted.content.disabled": {
         "shade": 0,
-        "color": "#FF6A7090",
+        "color": "#61F2F4EF",
         "alpha": 1
       },
       "outlined.surface.disabled": {
         "shade": 0,
-        "color": "#FF262A34",
+        "color": "#FF1C2734",
         "alpha": 1
       },
       "outlined.content.normal": {
@@ -24368,7 +26653,7 @@ export const THEMES: Record<string, ThemeData> = {
       },
       "outlined.content.disabled": {
         "shade": 0,
-        "color": "#FF6A7090",
+        "color": "#61F2F4EF",
         "alpha": 1
       },
       "outlined.border.normal": {
@@ -24388,97 +26673,97 @@ export const THEMES: Record<string, ThemeData> = {
       },
       "normal.surface.normal": {
         "shade": 0,
-        "color": "#FF0D0F14",
+        "color": "#FF0C141E",
         "alpha": 1
       },
       "normal.surface.hovered": {
         "shade": 0,
-        "color": "#12FFFFFF",
+        "color": "#12F2F4EF",
         "alpha": 1
       },
       "normal.surface.pressed": {
         "shade": 0,
-        "color": "#12FFFFFF",
+        "color": "#12F2F4EF",
         "alpha": 0.9
       },
       "normal.surface.disabled": {
         "shade": 0,
-        "color": "#FF262A34",
+        "color": "#FF1C2734",
         "alpha": 1
       },
       "normal.content.normal": {
         "shade": 0,
-        "color": "#FFF2F3FA",
+        "color": "#FFF2F4EF",
         "alpha": 1
       },
       "normal.content.hovered": {
         "shade": 0,
-        "color": "#FFF2F3FA",
+        "color": "#FFF2F4EF",
         "alpha": 1
       },
       "normal.content.pressed": {
         "shade": 0,
-        "color": "#FFF2F3FA",
+        "color": "#FFF2F4EF",
         "alpha": 0.9
       },
       "normal.content.disabled": {
         "shade": 0,
-        "color": "#FF6A7090",
+        "color": "#61F2F4EF",
         "alpha": 1
       },
       "normal.border.normal": {
         "shade": 0,
-        "color": "#17FFFFFF",
+        "color": "#17F2F4EF",
         "alpha": 1
       },
       "normal.border.hovered": {
         "shade": 0,
-        "color": "#17FFFFFF",
+        "color": "#17F2F4EF",
         "alpha": 1
       },
       "normal.border.pressed": {
         "shade": 0,
-        "color": "#17FFFFFF",
+        "color": "#17F2F4EF",
         "alpha": 0.9
       },
       "recessed.surface.normal": {
         "shade": 0,
-        "color": "#FF1B1E26",
+        "color": "#FF16202C",
         "alpha": 1
       },
       "recessed.surface.hovered": {
         "shade": 0,
-        "color": "#FF262A34",
+        "color": "#FF1C2734",
         "alpha": 1
       },
       "recessed.surface.pressed": {
         "shade": 0,
-        "color": "#FF262A34",
+        "color": "#FF1C2734",
         "alpha": 0.9
       },
       "recessed.surface.disabled": {
         "shade": 0,
-        "color": "#FF262A34",
+        "color": "#FF1C2734",
         "alpha": 1
       },
       "recessed.content.normal": {
         "shade": 0,
-        "color": "#FFF2F3FA",
+        "color": "#FFF2F4EF",
         "alpha": 1
       },
       "recessed.content.hovered": {
         "shade": 0,
-        "color": "#FFF2F3FA",
+        "color": "#FFF2F4EF",
         "alpha": 1
       },
       "recessed.content.pressed": {
         "shade": 0,
-        "color": "#FFF2F3FA",
+        "color": "#FFF2F4EF",
         "alpha": 0.9
       },
       "recessed.content.disabled": {
         "shade": 0,
-        "color": "#FF6A7090",
+        "color": "#61F2F4EF",
         "alpha": 1
       },
       "plain.content.normal": {
@@ -24498,7 +26783,7 @@ export const THEMES: Record<string, ThemeData> = {
       },
       "plain.content.disabled": {
         "shade": 0,
-        "color": "#FF6A7090",
+        "color": "#61F2F4EF",
         "alpha": 1
       }
     },
@@ -24562,4 +26847,4 @@ export const THEMES: Record<string, ThemeData> = {
     }
   }
 }
-export const THEME_NAMES: string[] = ["studio-light","bright-light","bright-dark","frost-light","frost-dark","graphite-light","graphite-dark","ember-light","ember-dark","nocturne-light","nocturne-dark","omarchy-tokyo-night-light","omarchy-tokyo-night-dark","omarchy-catppuccin-light","omarchy-catppuccin-dark","omarchy-catppuccin-latte-light","omarchy-catppuccin-latte-dark","omarchy-ethereal-light","omarchy-ethereal-dark","omarchy-everforest-light","omarchy-everforest-dark","omarchy-flexoki-light-light","omarchy-flexoki-light-dark","omarchy-gruvbox-light","omarchy-gruvbox-dark","omarchy-hackerman-light","omarchy-hackerman-dark","omarchy-kanagawa-light","omarchy-kanagawa-dark","omarchy-last-horizon-light","omarchy-last-horizon-dark","omarchy-lumon-light","omarchy-lumon-dark","omarchy-lupine-light","omarchy-lupine-dark","omarchy-matte-black-light","omarchy-matte-black-dark","omarchy-miasma-light","omarchy-miasma-dark","omarchy-nord-light","omarchy-nord-dark","omarchy-osaka-jade-light","omarchy-osaka-jade-dark","omarchy-retro-82-light","omarchy-retro-82-dark","omarchy-ristretto-light","omarchy-ristretto-dark","omarchy-rose-pine-light","omarchy-rose-pine-dark","omarchy-solitude-light","omarchy-solitude-dark","omarchy-vantablack-light","omarchy-vantablack-dark","omarchy-white-light","omarchy-white-dark","macos27-light","macos27-dark","macos15-light","macos15-dark","windows11-light","windows11-dark","ubuntu-light","ubuntu-dark","debian-light","debian-dark","fedora-light","fedora-dark","kde-light","kde-dark","spotify-light","spotify-dark","studio-dark"]
+export const THEME_NAMES: string[] = ["bright-light","studio-light","studio-dark","frost-light","frost-dark","graphite-light","graphite-dark","ember-light","ember-dark","nocturne-light","nocturne-dark","omarchy-tokyo-night-light","omarchy-tokyo-night-dark","omarchy-catppuccin-light","omarchy-catppuccin-dark","omarchy-catppuccin-latte-light","omarchy-catppuccin-latte-dark","omarchy-ethereal-light","omarchy-ethereal-dark","omarchy-everforest-light","omarchy-everforest-dark","omarchy-flexoki-light-light","omarchy-flexoki-light-dark","omarchy-gruvbox-light","omarchy-gruvbox-dark","omarchy-hackerman-light","omarchy-hackerman-dark","omarchy-kanagawa-light","omarchy-kanagawa-dark","omarchy-last-horizon-light","omarchy-last-horizon-dark","omarchy-lumon-light","omarchy-lumon-dark","omarchy-lupine-light","omarchy-lupine-dark","omarchy-matte-black-light","omarchy-matte-black-dark","omarchy-miasma-light","omarchy-miasma-dark","omarchy-nord-light","omarchy-nord-dark","omarchy-osaka-jade-light","omarchy-osaka-jade-dark","omarchy-retro-82-light","omarchy-retro-82-dark","omarchy-ristretto-light","omarchy-ristretto-dark","omarchy-rose-pine-light","omarchy-rose-pine-dark","omarchy-solitude-light","omarchy-solitude-dark","omarchy-vantablack-light","omarchy-vantablack-dark","omarchy-white-light","omarchy-white-dark","macos27-light","macos27-dark","macos15-light","macos15-dark","windows11-light","windows11-dark","ubuntu-light","ubuntu-dark","debian-light","debian-dark","fedora-light","fedora-dark","kde-light","kde-dark","spotify-light","spotify-dark","bright-dark"]

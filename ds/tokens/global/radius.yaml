@@ -4,11 +4,12 @@
 # `frame`, since they belong to the chrome rather than to anything a
 # component draws.
 #
-# Bright makes its controls full pills, and that is exactly why `medium` and
-# `large` are separate axes rather than one shared corner: a pill is right
-# for a box whose height sets the curve, and wrong for a container that grows
-# with its content — a pill textarea reads as a lozenge. So the two control
-# steps go round in Bright while the container steps stay finite.
+# Bright, the default, makes its controls full pills, and that is exactly why
+# `medium` and `large` are separate axes rather than one shared corner: a pill
+# is right for a box whose height sets the curve, and wrong for a container
+# that grows with its content — a pill textarea reads as a lozenge. So the two
+# control steps go round in Bright while the container steps stay finite;
+# Studio's finite corners are the `studio` mode every other theme selects.
 #
 # Graphite goes the other way and is the reason this scale is re-pointed
 # rather than rewritten: every step moves down exactly one rung of the same
@@ -24,22 +25,22 @@ radius:
   $type: dimension
   none:
     $value: 0px
-  # `tiny` carries no Bright override on purpose: the chip corner is the one
-  # control step the pill theme leaves alone.
+  # `tiny` carries no mode at all on purpose: the chip corner is the one
+  # control step the pill default leaves alone, and Studio agrees with it.
   tiny:
     $value: "{base.corner.xs}"
   small:
-    $value: "{base.corner.sm}"
+    $value: 9999px
     $extensions:
       mode:
-        bright: 9999px
+        studio: "{base.corner.sm}"
         graphite: "{base.corner.xs}"
         nocturne: "{base.corner.xs}"
   medium:
-    $value: "{base.corner.md}"
+    $value: 9999px
     $extensions:
       mode:
-        bright: 9999px
+        studio: "{base.corner.md}"
         graphite: "{base.corner.sm}"
         nocturne: "{base.corner.sm}"
   large:
@@ -49,10 +50,10 @@ radius:
         graphite: "{base.corner.md}"
         nocturne: "{base.corner.md}"
   big:
-    $value: "{base.corner.xl}"
+    $value: "{base.corner.xl-bright}"
     $extensions:
       mode:
-        bright: "{base.corner.xl-bright}"
+        studio: "{base.corner.xl}"
         graphite: "{base.corner.lg}"
         nocturne: "{base.corner.lg}"
   full:

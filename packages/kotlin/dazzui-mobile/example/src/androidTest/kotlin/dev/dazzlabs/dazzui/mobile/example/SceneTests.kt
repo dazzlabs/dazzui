@@ -70,7 +70,7 @@ class SceneTests {
 
     @Test fun everySceneRendersInEveryTheme() {
         var current by mutableStateOf<SceneState?>(null)
-        var family by mutableStateOf(DazzThemeFamily.Studio)
+        var family by mutableStateOf(DazzThemeFamily.Bright)
         var dark by mutableStateOf(false)
         compose.setContent { DazzTheme(family, dark) { Surface { current?.let { state -> key(state) { Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) { GeneratedScene(state, running = false) } } } } } }
         val stories = stories()

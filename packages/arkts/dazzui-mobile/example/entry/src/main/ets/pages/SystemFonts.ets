@@ -54,12 +54,12 @@ struct NativeFontSpecimen {
 @Entry({ useSharedStorage: true })
 @Component
 struct SystemFonts {
-  @State family: DazzThemeFamily = DazzThemeFamily.Studio
+  @State family: DazzThemeFamily = DazzThemeFamily.Bright
   @LocalBuilder specimen() { NativeFontSpecimen() }
   build() {
     Column({ space: 16 }) {
       Button('Change theme').id('font-theme').onClick(() => {
-        this.family = this.family === DazzThemeFamily.Studio ? DazzThemeFamily.Ember : DazzThemeFamily.Studio
+        this.family = this.family === DazzThemeFamily.Bright ? DazzThemeFamily.Ember : DazzThemeFamily.Bright
       })
       DazzMobileTheme({ family: this.family, content: this.specimen })
     }

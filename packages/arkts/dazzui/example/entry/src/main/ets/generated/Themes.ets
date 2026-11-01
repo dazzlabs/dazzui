@@ -6,12 +6,12 @@ export const THEME_GROUPS: ThemeGroup[] = [
     "title": "DazzUI",
     "families": [
       {
-        "value": "studio",
-        "title": "Studio"
-      },
-      {
         "value": "bright",
         "title": "Bright"
+      },
+      {
+        "value": "studio",
+        "title": "Studio"
       },
       {
         "value": "frost",

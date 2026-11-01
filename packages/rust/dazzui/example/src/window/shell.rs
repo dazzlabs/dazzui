@@ -46,7 +46,7 @@ impl Shell {
         let cut = theme.rfind('-').unwrap_or(theme.len());
         let (family, mode) = theme.split_at(cut);
         let choice = ThemeChoice {
-            family: if family.is_empty() { "studio" } else { family }.to_string(),
+            family: if family.is_empty() { "bright" } else { family }.to_string(),
             dark: mode == "-dark",
         };
         Theme::set(&choice.id(), cx);

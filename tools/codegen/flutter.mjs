@@ -347,12 +347,12 @@ const camel = id =>
 
 /**
  * The themes, as the React window groups them, and the generated variables
- * each one is. Studio Light is the package's own `themeVariables`; every
+ * each one is. Bright Light is the package's own `themeVariables`; every
  * other theme is `themeVariables` and its name.
  */
 export function themesDart(groups, variables) {
   const constant = id =>
-    id === 'studio-light'
+    id === 'bright-light'
       ? 'themeVariables'
       : `themeVariables${camel(id).replace(/^./, c => c.toUpperCase())}`
   const ids = groups.flatMap(group =>
@@ -392,7 +392,7 @@ class ThemeChoice {
   int get hashCode => Object.hash(family, dark);
 }
 
-const defaultTheme = ThemeChoice('studio');
+const defaultTheme = ThemeChoice(${dart(groups[0].families[0].value)});
 
 /// A theme family: one name, in light and in dark.
 class ThemeFamily {

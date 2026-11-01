@@ -35,7 +35,7 @@ fn main() {
         return;
     }
     let page = arg("--story");
-    let theme = arg("--theme").unwrap_or_else(|| "studio-light".into());
+    let theme = arg("--theme").unwrap_or_else(|| "bright-light".into());
 
     Application::new()
         .with_assets(lib::assets::Assets)

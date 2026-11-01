@@ -851,9 +851,9 @@ void main() {
       tester,
     ) async {
       for (final (ThemeData theme, ThemeVariables themeVars) in [
-        (ThemeData.studioLight(), themeVariables),
+        (ThemeData.brightLight(), themeVariables),
+        (ThemeData.studioLight(), themeVariablesStudioLight),
         (ThemeData.studioDark(), themeVariablesStudioDark),
-        (ThemeData.brightLight(), themeVariablesBrightLight),
         (ThemeData.brightDark(), themeVariablesBrightDark),
         (ThemeData.frostLight(), themeVariablesFrostLight),
         (ThemeData.frostDark(), themeVariablesFrostDark),

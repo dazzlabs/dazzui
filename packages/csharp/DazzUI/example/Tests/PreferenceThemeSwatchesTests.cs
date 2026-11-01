@@ -84,14 +84,14 @@ internal static class PreferenceThemeSwatchesTests
         shell.UpdateLayout();
         var generated = Walk(scene).OfType<UI.PreferenceThemeSwatches>().Single();
         var generatedRadios = Walk(generated).OfType<RadioButton>().ToArray();
-        Check(generated.Options.Count == 6 && generated.Value == "studio-light",
+        Check(generated.Options.Count == 6 && generated.Value == "bright-light",
             "The generated React theme example lost its options or initial value.");
         for (var i = 0; i < generated.Options.Count; i++)
         {
             var option = generated.Options[i];
             var preview = Walk(generatedRadios[i]).OfType<Border>().First(border => border.Child is Grid);
             var id = option.Theme ?? option.Value;
-            var expected = new UI.Theme(id.Length == 0 ? "studio-light" : id);
+            var expected = new UI.Theme(id.Length == 0 ? "bright-light" : id);
             Check(((SolidColorBrush)preview.Background).Color == expected.Color("color.surface"),
                 $"The generated {option.Label} swatch did not resolve its own theme.");
         }

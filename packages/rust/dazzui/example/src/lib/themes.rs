@@ -16,12 +16,12 @@ pub static THEME_FAMILY_GROUPS: &[ThemeFamilyGroup] = &[
         title: "DazzUI",
         families: &[
             ThemeFamily {
-                value: "studio",
-                title: "Studio",
-            },
-            ThemeFamily {
                 value: "bright",
                 title: "Bright",
+            },
+            ThemeFamily {
+                value: "studio",
+                title: "Studio",
             },
             ThemeFamily {
                 value: "frost",

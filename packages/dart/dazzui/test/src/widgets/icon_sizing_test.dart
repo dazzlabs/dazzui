@@ -6,7 +6,8 @@ import '../../host.dart';
 
 void main() {
   final themes = <String, ThemeVariables>{
-    'studio': themeVariables,
+    'bright': themeVariables,
+    'studio': themeVariablesStudioLight,
     'windows': themeVariablesWindows11Light,
     'windows dark': themeVariablesWindows11Dark,
     'ubuntu': themeVariablesUbuntuLight,

@@ -51,7 +51,7 @@ export function resolveThemes(tokens, modeSelectors) {
 
 /** Each theme's mode chain, in the order the config applies it. */
 export function themeModes(modeSelectors) {
-  const themes = new Map([['studio-light', []]])
+  const themes = new Map([['bright-light', []]])
   for (const { mode, selectors } of modeSelectors) {
     for (const selector of selectors) {
       const name = /\[data-theme='([^']+)'\]/.exec(selector)?.[1]

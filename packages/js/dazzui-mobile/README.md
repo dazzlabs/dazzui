@@ -54,9 +54,9 @@ import {
 </MobileTheme>
 ```
 
-`MobileTheme` takes a `family` — Studio, Bright, Frost, Graphite, Ember,
-Nocturne, and the imported ones — and an `appearance` that follows the OS
-unless it is set to `light` or `dark`. Its `platform` is read off the user
+`MobileTheme` takes a `family` — Bright (the default), Studio, Frost,
+Graphite, Ember, Nocturne, and the imported ones — and an `appearance` that
+follows the OS unless it is set to `light` or `dark`. Its `platform` is read off the user
 agent by default; pass `ios` or `android` to choose. Every component reads
 the platform from the theme around it and carries it as `data-platform`,
 which is all the stylesheets select on, so one screen written once is

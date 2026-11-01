@@ -31,7 +31,7 @@ struct GallerySearch {
 @Entry({ useSharedStorage: true })
 @Component
 struct Index {
-  @LocalStorageProp('themeName') theme: string = 'studio-light'
+  @LocalStorageProp('themeName') theme: string = 'bright-light'
   @LocalStorageProp('sizing') sizing: DazzSizing = 'design'
   @LocalStorageProp('page') selected: string = ''
   @LocalBuilder gallery() {

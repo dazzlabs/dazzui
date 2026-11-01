@@ -25,7 +25,7 @@ public sealed class Theme
     public bool IsDark => Name.EndsWith("-dark", StringComparison.Ordinal);
     public FontFamily CodeFont => PlatformFonts.Code;
     public static IReadOnlyList<string> Names { get; } = Themes.EnumerateObject().Select(p => p.Name).ToArray();
-    public static Theme Default { get; } = new("studio-light");
+    public static Theme Default { get; } = new("bright-light");
 
     public Theme(string name, ThemeSizing sizing = ThemeSizing.Design)
     {

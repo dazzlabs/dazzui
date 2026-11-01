@@ -75,7 +75,7 @@ struct Verification {
   @LocalStorageProp('runId') runId: string = ''
   @State index: number = 0
   @State report: string = 'Running'
-  @State family: DazzThemeFamily = DazzThemeFamily.Studio
+  @State family: DazzThemeFamily = DazzThemeFamily.Bright
   @State appearance: ThemeColorMode = ThemeColorMode.LIGHT
   private outer: string[] = []
   private inner: string[] = []
@@ -121,7 +121,7 @@ struct Verification {
       this.family = DAZZ_THEME_FAMILIES[Math.floor(this.index / 2)]
       this.appearance = this.index % 2 === 1 ? ThemeColorMode.DARK : ThemeColorMode.LIGHT
     } else {
-      this.family = DazzThemeFamily.Studio
+      this.family = DazzThemeFamily.Bright
       this.appearance = ThemeColorMode.SYSTEM
       this.app?.setColorMode(this.index === explicit ?
         ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT : ConfigurationConstant.ColorMode.COLOR_MODE_DARK)

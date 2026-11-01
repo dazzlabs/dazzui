@@ -18,18 +18,29 @@ import { importedSelectors } from './scripts/themes.mjs'
  * Six drawn families over one default, and the imported ones — Omarchy,
  * desktops and applications, each light and dark.
  *
- * Studio Light is the default and needs no mode: it is what `:root` holds.
+ * Bright Light is the default and needs no mode: it is what `:root` holds.
  * Every other theme is selected by `data-theme`, and the modes compose rather
  * than repeat — a family mode is selected by both of its themes and `dark` by
  * every dark one, so a value shared along either axis is written once and a
  * `<family>-dark` mode carries only what is true of that corner alone.
  *
+ * `studio` is the baseline rather than a family mode, and it is selected by
+ * every theme but Bright's pair. Those are the values the design was drawn at
+ * first, and every other theme — the drawn families and the imported ones
+ * alike — is written as a re-pointing of them rather than as a second whole
+ * palette. Carrying that in one mode is what lets `:root` move to Bright
+ * without a copy of Studio in every theme: a token Bright moves keeps
+ * Studio's value under `studio`, the family mode after it re-points what that
+ * family changes, and nothing else moves. Studio's own two themes are simply
+ * where nothing overrides the baseline again.
+ *
  * The order is load bearing. All of these are single attribute selectors, so
- * they have equal specificity and the later block wins: the family modes
- * first, for the corners and the accent each family re-points; then `dark`,
- * so a dark theme takes the dark surfaces, the lifted status ramps and the
- * dark recipe shades rather than its family's light paper; then the four
- * dark corners, each for the accent that is its alone.
+ * they have equal specificity and the later block wins: the baseline first,
+ * for the tokens the default re-points; then the family modes, for the
+ * corners and the accent each family re-points; then `dark`, so a dark theme
+ * takes the dark surfaces, the lifted status ramps and the dark recipe shades
+ * rather than its family's light paper; then the four dark corners, each for
+ * the accent that is its alone.
  *
  * Frost is the one family whose accent is written once: a teal reads
  * correctly in both directions, so `frost` carries the whole ramp and
@@ -49,11 +60,31 @@ import { importedSelectors } from './scripts/themes.mjs'
  * mode beside the families (Hyprland's square corner, AppKit's capsule,
  * Adwaita's 9px button), `dark` for the dark ones, and a mode per theme
  * last, carrying the roles `scripts/themes.mjs` derives from its palette.
+ *
+ * These are the six drawn families. `bright` is the default and is applied by
+ * holding no attribute at all, so its pair is the only one the baseline
+ * leaves alone.
  */
-const modeSelectors = [
+const DRAWN = ['studio', 'bright', 'frost', 'graphite', 'ember', 'nocturne']
+
+const themeSelector = theme => `[data-theme='${theme}']`
+
+/**
+ * The baseline's selectors: every theme but Bright's pair, which is the
+ * default and so is not re-pointed at all. Studio's own themes are in it.
+ */
+const BASELINE = [
+  ...DRAWN.filter(family => family !== 'bright').flatMap(family => [
+    themeSelector(`${family}-light`),
+    themeSelector(`${family}-dark`),
+  ]),
+  ...importedSelectors.corners.map(corner => corner.selectors[0]),
+]
+
+export const modeSelectors = [
   {
-    mode: 'bright',
-    selectors: ["[data-theme='bright-light']", "[data-theme='bright-dark']"],
+    mode: 'studio',
+    selectors: BASELINE,
     scheme: 'light',
   },
   {
@@ -86,12 +117,7 @@ const modeSelectors = [
   {
     mode: 'dark',
     selectors: [
-      "[data-theme='studio-dark']",
-      "[data-theme='bright-dark']",
-      "[data-theme='frost-dark']",
-      "[data-theme='graphite-dark']",
-      "[data-theme='ember-dark']",
-      "[data-theme='nocturne-dark']",
+      ...DRAWN.map(family => `[data-theme='${family}-dark']`),
       ...importedSelectors.dark,
     ],
     scheme: 'dark',
@@ -130,11 +156,12 @@ const modeSelectors = [
  * half, so a theme without a `-light`/`-dark` counterpart would have nowhere
  * to go and stays on the desktop platforms, where a theme is chosen whole.
  * Every theme comes in pairs today; the filter keeps a future single-mode
- * import from breaking the mobile builds. Studio Light is `:root` and pairs with `studio-dark`.
+ * import from breaking the mobile builds. Bright Light is `:root` and pairs
+ * with `bright-dark`.
  */
 const themeOf = selector => /\[data-theme='([^']+)'\]/.exec(selector)?.[1]
 const allThemes = new Set([
-  'studio-light',
+  'bright-light',
   ...modeSelectors.flatMap(entry => entry.selectors.map(themeOf)),
 ])
 const paired = theme => {

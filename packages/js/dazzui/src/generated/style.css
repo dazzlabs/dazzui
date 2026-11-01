@@ -930,16 +930,16 @@
   --checkbox-radius: 0.3125rem;
   --checkbox-small-box: var(--spacing-3-5);
   --checkbox-thickness: var(--stroke-control);
-  --color-border: #14162a12;
-  --color-border-muted: #5f6478;
-  --color-border-strong: #14162a17;
-  --color-canvas: #eeecf6;
-  --color-content: #12142a;
-  --color-content-faint: #a2a7bd;
-  --color-content-muted: #565b78;
-  --color-content-nav: #4a4f6b;
-  --color-content-secondary: #3c405c;
-  --color-content-subtle: #8c92aa;
+  --color-border: #111c2e14;
+  --color-border-muted: #111c2e40;
+  --color-border-strong: #111c2e17;
+  --color-canvas: #e6eade;
+  --color-content: #111c2e;
+  --color-content-faint: #111c2e61;
+  --color-content-muted: #111c2ea8;
+  --color-content-nav: #111c2eb3;
+  --color-content-secondary: #111c2ec7;
+  --color-content-subtle: #111c2e73;
   --color-danger-50: var(--base-color-red-50);
   --color-danger-100: var(--base-color-red-100);
   --color-danger-200: var(--base-color-red-200);
@@ -973,18 +973,18 @@
   --color-neutral-800: var(--base-color-neutral-800);
   --color-neutral-900: var(--base-color-neutral-900);
   --color-neutral-950: var(--base-color-neutral-950);
-  --color-on-accent: #ffffff;
-  --color-primary-50: var(--base-color-brand-50);
-  --color-primary-100: var(--base-color-brand-100);
-  --color-primary-200: var(--base-color-brand-200);
-  --color-primary-300: var(--base-color-brand-300);
-  --color-primary-400: var(--base-color-brand-400);
-  --color-primary-500: var(--base-color-brand-500);
-  --color-primary-600: var(--base-color-brand-600);
-  --color-primary-700: var(--base-color-brand-700);
-  --color-primary-800: var(--base-color-brand-800);
-  --color-primary-900: var(--base-color-brand-900);
-  --color-primary-950: var(--base-color-brand-950);
+  --color-on-accent: #d6ff3f;
+  --color-primary-50: var(--base-color-ink-50);
+  --color-primary-100: var(--base-color-ink-100);
+  --color-primary-200: var(--base-color-ink-200);
+  --color-primary-300: var(--base-color-ink-300);
+  --color-primary-400: var(--base-color-ink-400);
+  --color-primary-500: var(--base-color-ink-500);
+  --color-primary-600: var(--base-color-ink-600);
+  --color-primary-700: var(--base-color-ink-700);
+  --color-primary-800: var(--base-color-ink-800);
+  --color-primary-900: var(--base-color-ink-900);
+  --color-primary-950: var(--base-color-ink-950);
   --color-success-50: var(--base-color-green-50);
   --color-success-100: var(--base-color-green-100);
   --color-success-200: var(--base-color-green-200);
@@ -996,15 +996,15 @@
   --color-success-800: var(--base-color-green-800);
   --color-success-900: var(--base-color-green-900);
   --color-success-950: var(--base-color-green-950);
-  --color-surface: #ffffff;
-  --color-surface-chrome: #f7f7fa;
-  --color-surface-column: #fafafc;
-  --color-surface-inset: #f0f0f5;
-  --color-surface-muted: #f7f7fa;
-  --color-surface-overlay: #ffffff;
+  --color-surface: #fbfaf7;
+  --color-surface-chrome: #ffffff;
+  --color-surface-column: #f4f3ee;
+  --color-surface-inset: #f0efe9;
+  --color-surface-muted: #ffffff;
+  --color-surface-overlay: #fbfaf7;
   --color-surface-raised: #ffffff;
-  --color-surface-subtle: #14162a0f;
-  --color-surface-sunken: #e3e3ec;
+  --color-surface-subtle: #111c2e0f;
+  --color-surface-sunken: #e5e3db;
   --color-warning-50: var(--base-color-amber-50);
   --color-warning-100: var(--base-color-amber-100);
   --color-warning-200: var(--base-color-amber-200);
@@ -1016,8 +1016,8 @@
   --color-warning-800: var(--base-color-amber-800);
   --color-warning-900: var(--base-color-amber-900);
   --color-warning-950: var(--base-color-amber-950);
-  --control-container-radius: var(--base-corner-md);
-  --control-field-radius: var(--base-corner-md);
+  --control-container-radius: var(--base-corner-xl-bright);
+  --control-field-radius: 9999px;
   --control-label-glyph-inset: var(--spacing-0-5);
   --control-label-glyph-shrink: var(--spacing-0-5);
   --control-large-content-font-family: var(--label-medium-font-family);
@@ -1072,12 +1072,12 @@
   --focus-width: 3px;
   --frame-aside-width: 13.375rem;
   --frame-nav-gap: 0.1875rem;
-  --frame-popover-radius: var(--base-corner-xl);
+  --frame-popover-radius: var(--base-corner-xl-bright);
   --frame-rail-width: 9.375rem;
   --frame-sidebar-icon-width: 3rem;
   --frame-sidebar-width: 10.75rem;
   --frame-titlebar-size: 3.25rem;
-  --frame-window-radius: var(--base-corner-2xl);
+  --frame-window-radius: var(--base-corner-xl);
   --frame-window-width: 52.5rem;
   --headline-large-font-family: var(--base-font-display);
   --headline-large-font-size: var(--base-type-3xl);
@@ -1130,8 +1130,8 @@
   --preview-card-close-delay: 300ms;
   --preview-card-open-delay: 600ms;
   --preview-card-width: 20rem;
-  --progress-gradient-from: var(--base-color-brand-600);
-  --progress-gradient-to: #a08cff;
+  --progress-gradient-from: var(--base-color-ink-600);
+  --progress-gradient-to: var(--base-color-ink-300);
   --radio-large-box: var(--spacing-5);
   --radio-large-dot: var(--spacing-2-5);
   --radio-medium-box: var(--spacing-4);
@@ -1139,22 +1139,22 @@
   --radio-small-box: var(--spacing-3-5);
   --radio-small-dot: var(--spacing-1-5);
   --radio-thickness: var(--stroke-control);
-  --radius-big: var(--base-corner-xl);
+  --radius-big: var(--base-corner-xl-bright);
   --radius-full: 9999px;
   --radius-large: var(--base-corner-lg);
-  --radius-medium: var(--base-corner-md);
+  --radius-medium: 9999px;
   --radius-none: 0;
-  --radius-small: var(--base-corner-sm);
+  --radius-small: 9999px;
   --radius-tiny: var(--base-corner-xs);
   --search-field-input-width: 8.5rem;
   --segmented-control-inset: 0.1875rem;
-  --shadow-2xl: 0 24px 56px 0 #00000047;
-  --shadow-2xs: 0 1px 2px 0 #0000001a;
-  --shadow-lg: 0 10px 30px 0 #00000038;
-  --shadow-md: 0 8px 24px 0 #00000033;
-  --shadow-sm: 0 4px 12px 0 #00000024;
-  --shadow-xl: 0 12px 32px 0 #0000003d;
-  --shadow-xs: 0 1px 3px 0 #0000001f;
+  --shadow-2xl: 0 24px 56px 0 #111c2e3d;
+  --shadow-2xs: 0 1px 2px 0 #111c2e1f;
+  --shadow-lg: 0 10px 30px 0 #111c2e2e;
+  --shadow-md: 0 8px 24px 0 #111c2e2e;
+  --shadow-sm: 0 4px 12px 0 #111c2e24;
+  --shadow-xl: 0 12px 32px 0 #111c2e33;
+  --shadow-xs: 0 1px 3px 0 #111c2e24;
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 8.25rem;
   --slider-large-thumb: var(--spacing-5);
@@ -1232,56 +1232,128 @@
   --wash-surface: 0.06;
 }
 
-[data-theme='bright-light'],
-[data-theme='bright-dark'] {
-  --color-border: #111c2e14;
-  --color-border-muted: #111c2e40;
-  --color-border-strong: #111c2e17;
-  --color-canvas: #e6eade;
-  --color-content: #111c2e;
-  --color-content-faint: #111c2e61;
-  --color-content-muted: #111c2ea8;
-  --color-content-nav: #111c2eb3;
-  --color-content-secondary: #111c2ec7;
-  --color-content-subtle: #111c2e73;
-  --color-on-accent: #d6ff3f;
-  --color-primary-50: var(--base-color-ink-50);
-  --color-primary-100: var(--base-color-ink-100);
-  --color-primary-200: var(--base-color-ink-200);
-  --color-primary-300: var(--base-color-ink-300);
-  --color-primary-400: var(--base-color-ink-400);
-  --color-primary-500: var(--base-color-ink-500);
-  --color-primary-600: var(--base-color-ink-600);
-  --color-primary-700: var(--base-color-ink-700);
-  --color-primary-800: var(--base-color-ink-800);
-  --color-primary-900: var(--base-color-ink-900);
-  --color-primary-950: var(--base-color-ink-950);
-  --color-surface: #fbfaf7;
-  --color-surface-chrome: #ffffff;
-  --color-surface-column: #f4f3ee;
-  --color-surface-inset: #f0efe9;
-  --color-surface-muted: #ffffff;
-  --color-surface-overlay: #fbfaf7;
+[data-theme='studio-light'],
+[data-theme='studio-dark'],
+[data-theme='frost-light'],
+[data-theme='frost-dark'],
+[data-theme='graphite-light'],
+[data-theme='graphite-dark'],
+[data-theme='ember-light'],
+[data-theme='ember-dark'],
+[data-theme='nocturne-light'],
+[data-theme='nocturne-dark'],
+[data-theme='omarchy-tokyo-night-light'],
+[data-theme='omarchy-tokyo-night-dark'],
+[data-theme='omarchy-catppuccin-light'],
+[data-theme='omarchy-catppuccin-dark'],
+[data-theme='omarchy-catppuccin-latte-light'],
+[data-theme='omarchy-catppuccin-latte-dark'],
+[data-theme='omarchy-ethereal-light'],
+[data-theme='omarchy-ethereal-dark'],
+[data-theme='omarchy-everforest-light'],
+[data-theme='omarchy-everforest-dark'],
+[data-theme='omarchy-flexoki-light-light'],
+[data-theme='omarchy-flexoki-light-dark'],
+[data-theme='omarchy-gruvbox-light'],
+[data-theme='omarchy-gruvbox-dark'],
+[data-theme='omarchy-hackerman-light'],
+[data-theme='omarchy-hackerman-dark'],
+[data-theme='omarchy-kanagawa-light'],
+[data-theme='omarchy-kanagawa-dark'],
+[data-theme='omarchy-last-horizon-light'],
+[data-theme='omarchy-last-horizon-dark'],
+[data-theme='omarchy-lumon-light'],
+[data-theme='omarchy-lumon-dark'],
+[data-theme='omarchy-lupine-light'],
+[data-theme='omarchy-lupine-dark'],
+[data-theme='omarchy-matte-black-light'],
+[data-theme='omarchy-matte-black-dark'],
+[data-theme='omarchy-miasma-light'],
+[data-theme='omarchy-miasma-dark'],
+[data-theme='omarchy-nord-light'],
+[data-theme='omarchy-nord-dark'],
+[data-theme='omarchy-osaka-jade-light'],
+[data-theme='omarchy-osaka-jade-dark'],
+[data-theme='omarchy-retro-82-light'],
+[data-theme='omarchy-retro-82-dark'],
+[data-theme='omarchy-ristretto-light'],
+[data-theme='omarchy-ristretto-dark'],
+[data-theme='omarchy-rose-pine-light'],
+[data-theme='omarchy-rose-pine-dark'],
+[data-theme='omarchy-solitude-light'],
+[data-theme='omarchy-solitude-dark'],
+[data-theme='omarchy-vantablack-light'],
+[data-theme='omarchy-vantablack-dark'],
+[data-theme='omarchy-white-light'],
+[data-theme='omarchy-white-dark'],
+[data-theme='macos27-light'],
+[data-theme='macos27-dark'],
+[data-theme='macos15-light'],
+[data-theme='macos15-dark'],
+[data-theme='windows11-light'],
+[data-theme='windows11-dark'],
+[data-theme='ubuntu-light'],
+[data-theme='ubuntu-dark'],
+[data-theme='debian-light'],
+[data-theme='debian-dark'],
+[data-theme='fedora-light'],
+[data-theme='fedora-dark'],
+[data-theme='kde-light'],
+[data-theme='kde-dark'],
+[data-theme='spotify-light'],
+[data-theme='spotify-dark'] {
+  --color-border: #14162a12;
+  --color-border-muted: #5f6478;
+  --color-border-strong: #14162a17;
+  --color-canvas: #eeecf6;
+  --color-content: #12142a;
+  --color-content-faint: #a2a7bd;
+  --color-content-muted: #565b78;
+  --color-content-nav: #4a4f6b;
+  --color-content-secondary: #3c405c;
+  --color-content-subtle: #8c92aa;
+  --color-on-accent: #ffffff;
+  --color-primary-50: var(--base-color-brand-50);
+  --color-primary-100: var(--base-color-brand-100);
+  --color-primary-200: var(--base-color-brand-200);
+  --color-primary-300: var(--base-color-brand-300);
+  --color-primary-400: var(--base-color-brand-400);
+  --color-primary-500: var(--base-color-brand-500);
+  --color-primary-600: var(--base-color-brand-600);
+  --color-primary-700: var(--base-color-brand-700);
+  --color-primary-800: var(--base-color-brand-800);
+  --color-primary-900: var(--base-color-brand-900);
+  --color-primary-950: var(--base-color-brand-950);
+  --color-surface: #ffffff;
+  --color-surface-chrome: #f7f7fa;
+  --color-surface-column: #fafafc;
+  --color-surface-inset: #f0f0f5;
+  --color-surface-muted: #f7f7fa;
+  --color-surface-overlay: #ffffff;
   --color-surface-raised: #ffffff;
-  --color-surface-subtle: #111c2e0f;
-  --color-surface-sunken: #e5e3db;
-  --control-container-radius: var(--base-corner-xl-bright);
-  --control-field-radius: 9999px;
+  --color-surface-subtle: #14162a0f;
+  --color-surface-sunken: #e3e3ec;
+  --control-container-radius: var(--base-corner-md);
+  --control-field-radius: var(--base-corner-md);
+  --control-large-radius: var(--radius-medium);
+  --control-medium-radius: var(--radius-small);
+  --control-small-radius: var(--radius-small);
+  --control-tiny-radius: var(--radius-small);
   --dialog-scrim-color: var(--color-content);
-  --frame-popover-radius: var(--base-corner-xl-bright);
-  --frame-window-radius: var(--base-corner-xl);
-  --progress-gradient-from: var(--base-color-ink-600);
-  --progress-gradient-to: var(--base-color-ink-300);
-  --radius-big: var(--base-corner-xl-bright);
-  --radius-medium: 9999px;
-  --radius-small: 9999px;
-  --shadow-2xl: 0 24px 56px 0 #111c2e3d;
-  --shadow-2xs: 0 1px 2px 0 #111c2e1f;
-  --shadow-lg: 0 10px 30px 0 #111c2e2e;
-  --shadow-md: 0 8px 24px 0 #111c2e2e;
-  --shadow-sm: 0 4px 12px 0 #111c2e24;
-  --shadow-xl: 0 12px 32px 0 #111c2e33;
-  --shadow-xs: 0 1px 3px 0 #111c2e24;
+  --frame-popover-radius: var(--base-corner-xl);
+  --frame-window-radius: var(--base-corner-2xl);
+  --progress-gradient-from: var(--base-color-brand-600);
+  --progress-gradient-to: #a08cff;
+  --radius-big: var(--base-corner-xl);
+  --radius-medium: var(--base-corner-md);
+  --radius-small: var(--base-corner-sm);
+  --shadow-2xl: 0 24px 56px 0 #00000047;
+  --shadow-2xs: 0 1px 2px 0 #0000001a;
+  --shadow-lg: 0 10px 30px 0 #00000038;
+  --shadow-md: 0 8px 24px 0 #00000033;
+  --shadow-sm: 0 4px 12px 0 #00000024;
+  --shadow-xl: 0 12px 32px 0 #0000003d;
+  --shadow-xs: 0 1px 3px 0 #0000001f;
   color-scheme: light;
 }
 
@@ -1359,6 +1431,10 @@
   --color-surface-sunken: #e2e2e7;
   --control-container-radius: var(--base-corner-sm);
   --control-field-radius: var(--base-corner-sm);
+  --control-large-radius: var(--radius-medium);
+  --control-medium-radius: var(--radius-small);
+  --control-small-radius: var(--radius-small);
+  --control-tiny-radius: var(--radius-small);
   --dialog-scrim-color: var(--color-content);
   --frame-popover-radius: var(--base-corner-lg);
   --frame-window-radius: var(--base-corner-xl);
@@ -1445,6 +1521,10 @@
   --color-surface-sunken: #e2e2ec;
   --control-container-radius: var(--base-corner-sm);
   --control-field-radius: var(--base-corner-sm);
+  --control-large-radius: var(--radius-medium);
+  --control-medium-radius: var(--radius-small);
+  --control-small-radius: var(--radius-small);
+  --control-tiny-radius: var(--radius-small);
   --dialog-scrim-color: var(--color-content);
   --frame-popover-radius: var(--base-corner-lg);
   --frame-window-radius: var(--base-corner-xl);
@@ -1528,8 +1608,12 @@
   --checkbox-radius: 0;
   --control-container-radius: 0;
   --control-field-radius: 0;
+  --control-large-radius: var(--radius-medium);
   --control-medium-padding-inline: 10px;
+  --control-medium-radius: var(--radius-small);
   --control-medium-size: 28px;
+  --control-small-radius: var(--radius-small);
+  --control-tiny-radius: var(--radius-small);
   --frame-popover-radius: 0;
   --frame-window-radius: 0;
   --label-large-font-family: var(--base-font-ui);
@@ -1607,10 +1691,14 @@
   --checkbox-radius: 4px;
   --control-container-radius: 10px;
   --control-field-radius: 8px;
+  --control-large-radius: var(--radius-medium);
   --control-large-size: 32px;
   --control-medium-padding-inline: 18px;
+  --control-medium-radius: var(--radius-small);
   --control-medium-size: 28px;
+  --control-small-radius: var(--radius-small);
   --control-small-size: 24px;
+  --control-tiny-radius: var(--radius-small);
   --control-tiny-size: 20px;
   --frame-popover-radius: 16px;
   --frame-window-radius: 16px;
@@ -1683,10 +1771,14 @@
   --checkbox-radius: 3px;
   --control-container-radius: 6px;
   --control-field-radius: 6px;
+  --control-large-radius: var(--radius-medium);
   --control-large-size: 28px;
   --control-medium-padding-inline: 12px;
+  --control-medium-radius: var(--radius-small);
   --control-medium-size: 22px;
+  --control-small-radius: var(--radius-small);
   --control-small-size: 19px;
+  --control-tiny-radius: var(--radius-small);
   --control-tiny-size: 16px;
   --frame-popover-radius: 10px;
   --frame-window-radius: 10px;
@@ -1759,10 +1851,14 @@
   --checkbox-radius: 4px;
   --control-container-radius: 4px;
   --control-field-radius: 4px;
+  --control-large-radius: var(--radius-medium);
   --control-large-size: 40px;
   --control-medium-padding-inline: 11px;
+  --control-medium-radius: var(--radius-small);
   --control-medium-size: 32px;
+  --control-small-radius: var(--radius-small);
   --control-small-size: 28px;
+  --control-tiny-radius: var(--radius-small);
   --control-tiny-size: 24px;
   --frame-popover-radius: 8px;
   --frame-window-radius: 8px;
@@ -1842,10 +1938,14 @@
   --checkbox-radius: 6px;
   --control-container-radius: 12px;
   --control-field-radius: 9px;
+  --control-large-radius: var(--radius-medium);
   --control-large-size: 40px;
   --control-medium-padding-inline: 12px;
+  --control-medium-radius: var(--radius-small);
   --control-medium-size: 34px;
+  --control-small-radius: var(--radius-small);
   --control-small-size: 28px;
+  --control-tiny-radius: var(--radius-small);
   --control-tiny-size: 24px;
   --frame-popover-radius: 12px;
   --frame-window-radius: 15px;
@@ -1921,10 +2021,14 @@
   --checkbox-radius: 3px;
   --control-container-radius: 5px;
   --control-field-radius: 5px;
+  --control-large-radius: var(--radius-medium);
   --control-large-size: 36px;
   --control-medium-padding-inline: 6px;
+  --control-medium-radius: var(--radius-small);
   --control-medium-size: 30px;
+  --control-small-radius: var(--radius-small);
   --control-small-size: 26px;
+  --control-tiny-radius: var(--radius-small);
   --control-tiny-size: 22px;
   --frame-popover-radius: 5px;
   --frame-window-radius: 5px;
@@ -1997,10 +2101,14 @@
   --checkbox-radius: 4px;
   --control-container-radius: 8px;
   --control-field-radius: 4px;
+  --control-large-radius: var(--radius-medium);
   --control-large-size: 48px;
   --control-medium-padding-inline: 24px;
+  --control-medium-radius: var(--radius-small);
   --control-medium-size: 40px;
+  --control-small-radius: var(--radius-small);
   --control-small-size: 32px;
+  --control-tiny-radius: var(--radius-small);
   --control-tiny-size: 24px;
   --frame-popover-radius: 8px;
   --frame-window-radius: 8px;

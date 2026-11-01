@@ -75,7 +75,7 @@ class SwiftUIPlugin {
         '  var accent: Color { colorPrimary[nativeTintShade] }\n}\n'
     )
     const themes = [
-      'studio-light',
+      'bright-light',
       ...collectThemes(this.mobileModeSelectors).keys(),
     ]
     const families = [
@@ -166,13 +166,13 @@ function generateColorsFile(tokens, sources) {
 /**
  * Every theme the graph carries, by the name \`data-theme\` gives it — the
  * drawn families first, each light then dark, then the imported ones in
- * their files' order. Studio Light is the baseline: its variables are the
+ * their files' order. Bright Light is the default: its variables are the
  * initialiser's own defaults.
  */
 function generateThemeNameFile(modeSelectors) {
   const seen = [
-    'studio-light',
-    'studio-dark',
+    'bright-light',
+    'bright-dark',
     ...collectThemes(modeSelectors).keys(),
   ]
   const families = [
@@ -442,7 +442,7 @@ function collectSemanticRamps(tokens) {
   return ramps
 }
 
-/** One `ThemeVariables` per theme, beside the Studio Light default. */
+/** One `ThemeVariables` per theme, beside the Bright Light default. */
 function generateThemeInstances(tokens, modeSelectors, stored) {
   const themes = collectThemes(modeSelectors)
   // Swift matches an initialiser's arguments in declaration order, so an
@@ -462,8 +462,8 @@ function generateThemeInstances(tokens, modeSelectors, stored) {
   const blocks = [
     `
 public extension ThemeVariables {
-  /// Studio Light — the baseline every other theme is written against.
-  static let studioLight = ThemeVariables()`,
+  /// Bright Light — the default every other theme is written against.
+  static let brightLight = ThemeVariables()`,
   ]
 
   for (const [theme, modes] of themes) {
@@ -585,7 +585,7 @@ public extension ThemeVariables {
     )
 
     blocks.push(`
-  /// The \`${theme}\` counterpart of \`\`studioLight\`\`.
+  /// The \`${theme}\` counterpart of \`\`brightLight\`\`.
   ///
   /// Every token that moves under this theme is named here; the rest fall
   /// through to the initialiser's defaults, and the computed properties

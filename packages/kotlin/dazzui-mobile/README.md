@@ -48,7 +48,7 @@ fun App() {
 }
 ```
 
-Studio is the default family. Studio, Bright, Frost, Graphite, Ember, and
+Bright is the default family. Studio, Bright, Frost, Graphite, Ember, and
 Nocturne each have light and dark schemes. Appearance follows the system
 unless `darkTheme` is supplied. Wallpaper dynamic colors are not enabled,
 so the selected ds palette remains authoritative.

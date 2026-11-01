@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process'
 
-const [scene = 'button/preview', theme = 'studio-light'] = process.argv.slice(2)
+const [scene = 'button/preview', theme = 'bright-light'] = process.argv.slice(2)
 const result = spawnSync(
   process.env.HDC ?? 'hdc',
   [

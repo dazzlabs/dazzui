@@ -37,7 +37,7 @@ export struct GalleryNavRow {
 @Component
 export struct GalleryThemeTile {
   @Consume('dazzui.theme') tokens: DazzTokens
-  @Prop themeName: string = 'studio-light'
+  @Prop themeName: string = 'bright-light'
   @Prop title: string = ''
   @Prop selected: boolean = false
   onChoose: () => void = () => {}

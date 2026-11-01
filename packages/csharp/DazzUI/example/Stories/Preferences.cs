@@ -374,13 +374,13 @@ static partial class Stories
                                     "aria-label": "Theme",
                                     "options": [
                                       {
-                                        "value": "studio-light",
-                                        "label": "Studio",
+                                        "value": "bright-light",
+                                        "label": "Bright",
                                         "theme": ""
                                       },
                                       {
-                                        "value": "bright-light",
-                                        "label": "Bright"
+                                        "value": "studio-light",
+                                        "label": "Studio"
                                       },
                                       {
                                         "value": "frost-light",
@@ -399,7 +399,7 @@ static partial class Stories
                                         "label": "Nocturne"
                                       }
                                     ],
-                                    "defaultValue": "studio-light"
+                                    "defaultValue": "bright-light"
                                   },
                                   "$at": 3
                                 }

@@ -1,9 +1,9 @@
 /**
  * Every theme the token graph carries, as families that each come in light
  * and dark: the six drawn ones, then the imported ones in the order of
- * `ds/themes/desktops.yaml` and `ds/themes/omarchy.yaml`. Studio Light is
+ * `ds/themes/desktops.yaml` and `ds/themes/omarchy.yaml`. Bright Light is
  * what `:root` holds, so it is applied by removing `data-theme` rather than
- * writing it.
+ * writing it, and it is the list's first family because it is the default.
  */
 export interface Family {
   value: string
@@ -19,8 +19,8 @@ export const FAMILY_GROUPS: readonly FamilyGroup[] = [
   {
     title: 'DazzUI',
     families: [
-      { value: 'studio', title: 'Studio' },
       { value: 'bright', title: 'Bright' },
+      { value: 'studio', title: 'Studio' },
       { value: 'frost', title: 'Frost' },
       { value: 'graphite', title: 'Graphite' },
       { value: 'ember', title: 'Ember' },
@@ -86,7 +86,7 @@ export interface Theme {
   mode: Mode
 }
 
-export const DEFAULT_THEME: Theme = { family: 'studio', mode: 'light' }
+export const DEFAULT_THEME: Theme = { family: 'bright', mode: 'light' }
 
 export const themeId = ({ family, mode }: Theme) => `${family}-${mode}`
 

@@ -1,7 +1,7 @@
 import SwiftUI
 
 private struct MobilePaletteKey: EnvironmentKey {
-  static let defaultValue = Palette.studioLight
+  static let defaultValue = Palette.brightLight
 }
 
 public extension EnvironmentValues {
@@ -30,7 +30,7 @@ public extension View {
   /// Apply ds colours to native controls. By default appearance follows the OS.
   /// Install at a scene's root so sheets and navigation inherit the theme.
   func mobileTheme(
-    _ family: ThemeFamily = .studio,
+    _ family: ThemeFamily = .bright,
     colorScheme: ColorScheme? = nil
   ) -> some View {
     modifier(MobileThemeModifier(family: family, colorScheme: colorScheme))

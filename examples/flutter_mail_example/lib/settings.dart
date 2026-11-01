@@ -86,7 +86,7 @@ enum AppearanceChoice {
       light => false,
       AppearanceChoice.dark => true,
     };
-    return dark ? ThemeData.studioDark() : ThemeData.studioLight();
+    return dark ? ThemeData.brightDark() : ThemeData.brightLight();
   }
 }
 

@@ -29,6 +29,22 @@ function rng(seed) {
 const pick = (r, list) => list[Math.floor(r() * list.length)]
 
 const THEMES = {
+  'bright-light': {
+    surface: '#fbfaf7',
+    column: '#f4f3ee',
+    ink: '#111c2e',
+    border: '#e5e3db',
+    accent: '#111c2e',
+    onAccent: '#d6ff3f',
+  },
+  'bright-dark': {
+    surface: '#0c141e',
+    column: '#060b12',
+    ink: '#f2f4ef',
+    border: '#1c2734',
+    accent: '#d6ff3f',
+    onAccent: '#111c2e',
+  },
   'studio-light': {
     surface: '#ffffff',
     column: '#f4f4f6',

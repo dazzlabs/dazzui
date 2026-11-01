@@ -5,10 +5,10 @@ import SwiftUI
 
 /// Every theme the token graph carries, named as `data-theme` names it.
 public enum ThemeName: String, CaseIterable, Sendable {
-  case studioLight = "studio-light"
-  case studioDark = "studio-dark"
   case brightLight = "bright-light"
   case brightDark = "bright-dark"
+  case studioLight = "studio-light"
+  case studioDark = "studio-dark"
   case frostLight = "frost-light"
   case frostDark = "frost-dark"
   case graphiteLight = "graphite-light"
@@ -80,10 +80,10 @@ public enum ThemeName: String, CaseIterable, Sendable {
 
   public var variables: ThemeVariables {
     switch self {
-    case .studioLight: return .studioLight
-    case .studioDark: return .studioDark
     case .brightLight: return .brightLight
     case .brightDark: return .brightDark
+    case .studioLight: return .studioLight
+    case .studioDark: return .studioDark
     case .frostLight: return .frostLight
     case .frostDark: return .frostDark
     case .graphiteLight: return .graphiteLight

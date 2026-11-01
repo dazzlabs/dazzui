@@ -102,7 +102,7 @@ internal sealed class ThemeSwatch : RadioButton
     {
         var outer = Appearance.GetTheme(this);
         var id = option.Theme ?? option.Value;
-        var vars = new Theme(id.Length == 0 ? "studio-light" : id);
+        var vars = new Theme(id.Length == 0 ? "bright-light" : id);
         var rule = vars.Number("stroke.hairline");
         // A swatch is a card, not a pill: Bright's radius-small is 9999.
         const double radius = 8;

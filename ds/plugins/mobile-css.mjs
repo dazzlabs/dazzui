@@ -39,9 +39,9 @@ export default function mobileCSSPlugin({ modeSelectors = [] } = {}) {
   }
 }
 
-/** Every theme by name, with the modes it applies, Studio Light first. */
+/** Every theme by name, with the modes it applies, Bright Light first. */
 export function collectThemes(modeSelectors) {
-  const themes = new Map([['studio-light', []]])
+  const themes = new Map([['bright-light', []]])
   for (const { mode, selectors = [] } of modeSelectors) {
     for (const selector of selectors) {
       const name = /\[data-theme='([^']+)'\]/.exec(selector)?.[1]

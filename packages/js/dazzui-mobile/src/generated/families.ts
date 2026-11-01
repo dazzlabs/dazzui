@@ -5,8 +5,8 @@
  * the same list `DazzMobileUI` and `dazzui-mobile` hand their hosts.
  */
 export const FAMILIES = [
-  'studio',
   'bright',
+  'studio',
   'frost',
   'graphite',
   'ember',

@@ -12,8 +12,8 @@ import type { StoryExtension } from '../../lib/story'
 // The native ports resolve each swatch's own palette from their token tables.
 
 const THEMES = [
-  { value: 'studio-light', label: 'Studio', theme: '' },
-  { value: 'bright-light', label: 'Bright' },
+  { value: 'bright-light', label: 'Bright', theme: '' },
+  { value: 'studio-light', label: 'Studio' },
   { value: 'frost-light', label: 'Frost' },
   { value: 'graphite-light', label: 'Graphite' },
   { value: 'ember-light', label: 'Ember' },
@@ -35,7 +35,7 @@ const extension: StoryExtension = {
                 <PreferenceThemeSwatches
                   aria-label="Theme"
                   options={THEMES}
-                  defaultValue="studio-light"
+                  defaultValue="bright-light"
                 />
               </PreferenceRow>
               <PreferenceRow title="Follow the system">

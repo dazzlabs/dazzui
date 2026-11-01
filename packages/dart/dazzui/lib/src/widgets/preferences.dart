@@ -497,7 +497,7 @@ class PreferenceRow extends StatelessWidget {
   }
 }
 
-/// One theme preview. An empty [theme] names Studio Light, as on React.
+/// One theme preview. An empty [theme] names Bright Light, as on React.
 @immutable
 class PreferenceThemeOption<T> {
   const PreferenceThemeOption({
@@ -512,7 +512,7 @@ class PreferenceThemeOption<T> {
 
   ThemeVariables get variables {
     final String id = theme ?? '$value';
-    return themeVariablesByName[id.isEmpty ? 'studio-light' : id] ??
+    return themeVariablesByName[id.isEmpty ? 'bright-light' : id] ??
         themeVariables;
   }
 }

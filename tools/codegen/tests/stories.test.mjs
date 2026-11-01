@@ -67,7 +67,7 @@ test('theme swatches compile only for the native ports that opt in', async () =>
     assert.equal(swatch.$el, 'PreferenceThemeSwatches')
     assert.equal(swatch.props.options.length, 6)
     assert.equal(swatch.props.options[0].theme, '')
-    assert.equal(swatch.props.defaultValue, 'studio-light')
+    assert.equal(swatch.props.defaultValue, 'bright-light')
   }
 })
 

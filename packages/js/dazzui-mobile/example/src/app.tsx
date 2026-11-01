@@ -17,7 +17,7 @@ import {
  * `?mode=` and `?platforms=` for the panel, the hash for the story.
  */
 export function App() {
-  const [familyValue, setFamily] = useQuery('family', 'studio')
+  const [familyValue, setFamily] = useQuery('family', 'bright')
   const [modeValue, setMode] = useQuery('mode', 'system')
   const [platformsValue, setPlatforms] = useQuery('platforms', 'both')
   const [story, open] = useStory()

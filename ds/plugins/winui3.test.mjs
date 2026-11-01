@@ -14,7 +14,7 @@ test('preserves semantic radius modes through real Terrazzo alias flattening', a
             $type: 'dimension',
             small: {
               $value: '{base.corner}',
-              $extensions: { mode: { bright: '9999px' } },
+              $extensions: { mode: { studio: '9999px' } },
             },
           },
           control: { $type: 'dimension', radius: { $value: '{radius.small}' } },
@@ -24,10 +24,10 @@ test('preserves semantic radius modes through real Terrazzo alias flattening', a
     { config }
   )
   const themes = generate(tokens, [
-    { mode: 'bright', selectors: ["[data-theme='bright-light']"] },
+    { mode: 'studio', selectors: ["[data-theme='studio-light']"] },
   ])
-  assert.equal(themes['studio-light']['control.radius'].value, 8)
-  assert.equal(themes['bright-light']['control.radius'].value, 9999)
+  assert.equal(themes['bright-light']['control.radius'].value, 8)
+  assert.equal(themes['studio-light']['control.radius'].value, 9999)
 })
 
 function generate(tokens, modeSelectors = []) {
@@ -64,12 +64,12 @@ test('theme aliases follow the last applicable mode, including referenced roles'
       selectors: ["[data-theme='family-dark']"],
     }))
   )
-  assert.deepEqual(themes['studio-light']['control.small.radius'], {
+  assert.deepEqual(themes['bright-light']['control.small.radius'], {
     value: 8,
     unit: 'px',
   })
   assert.equal(themes['family-dark']['control.small.radius'].value, 5)
-  assert.equal('base.size' in themes['studio-light'], false)
+  assert.equal('base.size' in themes['bright-light'], false)
 })
 
 test('exports sRGB alpha and converts OKLCH without treating it as sRGB', () => {
@@ -81,8 +81,8 @@ test('exports sRGB alpha and converts OKLCH without treating it as sRGB', () => 
       $value: { colorSpace: 'oklch', components: [0.5, 0, 0], alpha: 1 },
     },
   })
-  assert.deepEqual(themes['studio-light']['color.surface'], [128, 255, 128, 0])
-  assert.deepEqual(themes['studio-light']['color.content'], [255, 99, 99, 99])
+  assert.deepEqual(themes['bright-light']['color.surface'], [128, 255, 128, 0])
+  assert.deepEqual(themes['bright-light']['color.content'], [255, 99, 99, 99])
 })
 
 test('fails on missing aliases and cycles instead of silently emitting a value', () => {
