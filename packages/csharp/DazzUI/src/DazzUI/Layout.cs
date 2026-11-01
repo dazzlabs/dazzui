@@ -527,7 +527,7 @@ public sealed class SidebarGroup : Surface
     protected override void RefreshAppearance()
     {
         dirty = false;
-        Content = Skin.Column(Theme, (IsIconOnly ? Array.Empty<UIElement>() : new UIElement[] { new SectionLabel(label) }).Concat(items).ToArray());
+        Content = Skin.Column(Theme, (IsIconOnly ? Array.Empty<UIElement>() : new UIElement[] { new SectionLabel(label, Theme) }).Concat(items).ToArray());
     }
 }
 /// <summary>
@@ -561,14 +561,40 @@ public sealed class SidebarBadge : Surface
 /// </summary>
 public sealed class SidebarHeading : Surface
 {
-    public string Label { get; set; } = "";
+    private string label = "";
+    private bool dirty = true;
+    public string Label
+    {
+        get => label;
+        set
+        {
+            if (label == value) return;
+            label = value;
+            dirty = true;
+            if (XamlRoot is not null)
+            {
+                dirty = false;
+                RefreshAppearance();
+            }
+        }
+    }
+    protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize)
+    {
+        if (dirty && XamlRoot is not null)
+        {
+            dirty = false;
+            RefreshAppearance();
+        }
+        return base.MeasureOverride(availableSize);
+    }
     protected override void RefreshAppearance()
     {
+        dirty = false;
         Padding = new Thickness(Theme.Number("spacing.2.5"), Theme.Number("spacing.1"), Theme.Number("spacing.2.5"), Theme.Number("spacing.1"));
         Foreground = Theme.Brush("color.content-faint");
         Theme.Typography(this, "labelSmall");
         Skin.TextLine(this, Theme.Text("", "labelSmall").LineHeight);
-        Content = Label;
+        Content = label;
     }
 }
 public sealed class Aside : Card
