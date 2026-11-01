@@ -22,6 +22,13 @@ public sealed class SectionLabel : Surface
 {
     public SectionLabel() { }
     public SectionLabel(string text) => Content = text;
+    /// <summary>A label already set in the theme it will be measured under.</summary>
+    internal SectionLabel(string text, Theme theme)
+    {
+        Content = text;
+        Theme = theme;
+        RefreshAppearance();
+    }
     /// <summary>Set in a tint's ink rather than the subtle one.</summary>
     public WidgetTint? Accent { get; set; }
     /// <summary>Quieter still: the faint ink.</summary>

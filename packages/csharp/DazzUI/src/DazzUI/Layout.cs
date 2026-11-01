@@ -265,7 +265,7 @@ public sealed class PreferenceSection : Surface
     protected override void RefreshAppearance()
     {
         var column = new StackPanel();
-        if (Title.Length > 0) column.Children.Add(new SectionLabel(Title) { Margin = new Thickness(0, 0, 0, Theme.Number("preferences.heading-gap")) });
+        if (Title.Length > 0) column.Children.Add(new SectionLabel(Title, Theme) { Margin = new Thickness(0, 0, 0, Theme.Number("preferences.heading-gap")) });
         if (Description is not null) column.Children.Add(Theme.Text(Description, "bodySmall"));
         if (Body is not null) { Skin.Detach(Body); column.Children.Add(Body); }
         if (Footer is not null)
