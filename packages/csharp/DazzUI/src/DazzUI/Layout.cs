@@ -642,6 +642,6 @@ public sealed class Rail : Surface
     {
         dirty = false;
         Width = Theme.Number("frame.rail.width"); Background = Theme.Brush("color.surface-column");
-        Content = Skin.Column(Theme, items.ToArray()); Padding = new Thickness(Theme.Number("spacing.2"));
+        Content = Skin.Column(Theme, items.ToArray()); Padding = new Thickness(Theme.Number("spacing.2.5"));
     }
 }

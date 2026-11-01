@@ -22,14 +22,15 @@ public struct Rail<Content: View>: View {
           content()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        // The column's inset is one value on every side. A group carries its
+        // own leading step and CSS zeroes it on the first one with
+        // `:first-child`. SwiftUI has no such selector, so the column hands
+        // that much of its top padding over instead: a first group puts back
+        // exactly what was given up — landing on the same 10 as the sides —
+        // and every later group adds the step again on top of the gap.
         .padding(.horizontal, vars.spacing25)
-        // A group carries its own leading step and CSS zeroes it on the first
-        // one with `:first-child`. SwiftUI has no such selector, so the column
-        // hands that much of its top padding over instead: a first group puts
-        // back exactly what was given up, and every later group adds the step
-        // again on top of the gap.
-        .padding(.top, vars.spacing35 - railGroupStep(vars))
-        .padding(.bottom, vars.spacing35)
+        .padding(.top, vars.spacing25 - railGroupStep(vars))
+        .padding(.bottom, vars.spacing25)
         // A run that does not fill the column still has to let a trailing
         // `NavAction` sink to the foot, which needs a height to sink through.
         .frame(minHeight: proxy.size.height, alignment: .top)

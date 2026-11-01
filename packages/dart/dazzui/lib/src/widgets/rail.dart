@@ -26,10 +26,7 @@ class Rail extends StatelessWidget {
         ),
       ),
       child: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-          vertical: vars.spacing35,
-          horizontal: vars.spacing25,
-        ),
+        padding: EdgeInsets.all(vars.spacing25),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
