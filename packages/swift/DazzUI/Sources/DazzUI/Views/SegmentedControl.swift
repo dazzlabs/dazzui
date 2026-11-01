@@ -172,7 +172,7 @@ private struct Segment<Value: Hashable>: View {
       // Both active styles lift with the hairline shadow, and the label
       // takes the full label weight — selection is a weight shift as much
       // as a fill.
-      .tokenShadow(checked ? vars.shadow2xs : [])
+      .tokenShadow(checked ? vars.shadow2xs : [.none])
       .opacity(item.disabled ? Self.disabledOpacity : 1)
       .animation(vars.motion, value: state.controlState)
     }

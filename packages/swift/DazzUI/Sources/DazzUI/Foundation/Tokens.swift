@@ -196,6 +196,10 @@ public struct TokenShadow: Sendable, Equatable {
 
   /// CSS quotes a blur *diameter*; SwiftUI's modifier wants the radius.
   public var radius: CGFloat { blur / 2 }
+
+  /// A layer that paints nothing, so a control can drop its lift without
+  /// dropping the layer the lift is drawn on. See ``SwiftUI/View/tokenShadow(_:)``.
+  public static let none = TokenShadow(x: 0, y: 0, blur: 0, spread: 0, color: .clear)
 }
 
 /// A CSS `cubic-bezier(…)`, kept as data so the motion token can name one.
@@ -232,6 +236,14 @@ public extension Color {
 
 public extension View {
   /// Draws a token shadow.
+  ///
+  /// One `.shadow` per layer, and every layer given counts: a list that
+  /// *shrinks* between states takes modifiers away, and a view whose
+  /// structure changes is replaced rather than updated. A replaced view
+  /// cannot crossfade the colours drawn inside it — it is snapshotted and
+  /// faded, which is what macOS 15 draws as a button's fill being wiped away
+  /// from one edge. A control that has no shadow in this state therefore
+  /// keeps its layer and draws ``TokenShadow/none`` in it.
   func tokenShadow(_ shadows: [TokenShadow]) -> some View {
     shadows.reduce(AnyView(self)) { view, shadow in
       AnyView(

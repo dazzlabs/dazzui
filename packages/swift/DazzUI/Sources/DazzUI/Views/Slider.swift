@@ -149,7 +149,7 @@ public struct Slider: View {
       )
       .frame(width: thumb, height: thumb)
       .overlay(Circle().strokeBorder(edge, lineWidth: hairline))
-      .tokenShadow(enabled ? vars.shadowXs : [])
+      .tokenShadow(enabled ? vars.shadowXs : [.none])
   }
 
   private func drag(width: CGFloat) -> some Gesture {

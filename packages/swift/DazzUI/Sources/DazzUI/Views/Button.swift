@@ -107,6 +107,9 @@ public struct Button<Label: View>: View {
         tint: tint,
         state: state.controlState
       )
+      // The box, drawn twice: once filled behind the label and once stroked
+      // over it, so each colour has a layer of its own to crossfade on.
+      let shape = RoundedRectangle(cornerRadius: metrics.radius, style: .circular)
 
       HStack(spacing: metrics.gap) {
         Group {
@@ -127,6 +130,14 @@ public struct Button<Label: View>: View {
       .lineLimit(1)
       .frame(height: metrics.content.lineHeight)
       .foregroundStyle(colors.content)
+      // The ink crossfades with the surface, as `button.css` transitions
+      // `color` beside `background-color`. The rest of what a state touches
+      // is geometry — a filled label gives up its weight when the control
+      // flattens, and the box narrows with it. SwiftUI animates a subtree's
+      // layout along with its colours, so that transition is a resize as well
+      // as a crossfade; a box that landed while its fill was still crossing
+      // over would read as a clipping fault.
+      .animation(vars.motion, value: colors.content)
       .padding(.vertical, metrics.paddingBlock)
       // CSS's border participates in the intrinsic width; our stroke is an
       // overlay, so reserve its width in the content inset explicitly.
@@ -134,14 +145,25 @@ public struct Button<Label: View>: View {
       .padding(.trailing, trailingPadding)
       .frame(maxWidth: fullWidth ? .infinity : nil)
       .frame(height: metrics.size)
-      .background(colors.surface)
-      .clipShape(RoundedRectangle(cornerRadius: metrics.radius, style: .circular))
-      .border(colors.border, width: vars.spacingPx, cornerRadius: metrics.radius)
+      // The surface and the stroke are shapes rather than a clipped colour
+      // fill: a clip has nothing to do with a button — CSS draws the label
+      // over the box and lets it overflow — and pairing one with an animated
+      // background is what macOS 15 draws as the fill being wiped away from
+      // one edge. Each shape is keyed on its own colour, so a state change
+      // crossfades the two layers instead of replacing the box.
+      .background {
+        shape.fill(colors.surface)
+          .animation(vars.motion, value: colors.surface)
+      }
+      .overlay {
+        shape.strokeBorder(colors.border, lineWidth: vars.spacingPx)
+          .animation(vars.motion, value: colors.border)
+      }
       // The one action a view points at carries the hairline lift — flat like
       // every AppKit button, but separable from a tinted surface by that one
-      // pixel of shadow. It goes when the button is disabled and flattens.
+      // pixel of shadow. It goes when the button is disabled and flattens,
+      // and it is not a transitioned property in CSS either.
       .tokenShadow(liftedShadow(state: state))
-      .animation(vars.motion, value: state.controlState)
     }
     .focused($focused)
     .focusRing(
@@ -162,8 +184,15 @@ public struct Button<Label: View>: View {
     )
   }
 
+  /// The hairline lift the one action a view points at carries, and gives up
+  /// when it flattens.
+  ///
+  /// A flat button keeps the layer and draws nothing in it rather than
+  /// dropping it: see ``SwiftUI/View/tokenShadow(_:)``. Handing this an empty
+  /// list would make the whole button a new view the moment it was disabled,
+  /// and the fill would be swapped instead of crossfading.
   private func liftedShadow(state: PressableState) -> [TokenShadow] {
-    variant == .filled && state.enabled ? theme.vars.shadow2xs : []
+    variant == .filled && state.enabled ? theme.vars.shadow2xs : [.none]
   }
 }
 
