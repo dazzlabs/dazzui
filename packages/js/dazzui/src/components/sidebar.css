@@ -291,6 +291,27 @@
   overflow: hidden;
 }
 
+/*
+ * A rail — `collapsible: none`, the second column and the information column —
+ * is the column that stays. Its inset is one value: the content's block inset
+ * is the group's inline one, so the column's top edge sits on the same 10 as
+ * its sides. The first and last runs drop their own block padding at those
+ * edges, because that padding spaces runs apart and would otherwise stack on
+ * the column's inset — a rail that opens with a group started 6px lower than
+ * one that opens with bare rows.
+ */
+.dz-sidebar[data-collapsible='none'] .dz-sidebar__content {
+  padding-block: var(--spacing-2-5);
+}
+
+.dz-sidebar[data-collapsible='none'] .dz-sidebar__content > .dz-sidebar__group:first-child {
+  padding-block-start: 0;
+}
+
+.dz-sidebar[data-collapsible='none'] .dz-sidebar__content > .dz-sidebar__group:last-child {
+  padding-block-end: 0;
+}
+
 .dz-sidebar__input {
   width: 100%;
 }

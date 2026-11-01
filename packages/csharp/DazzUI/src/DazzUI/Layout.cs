@@ -512,6 +512,6 @@ public sealed class Rail : Surface
     protected override void RefreshAppearance()
     {
         Width = Theme.Number("frame.rail.width"); Background = Theme.Brush("color.surface-column");
-        Content = Skin.Column(Theme, Items.ToArray()); Padding = new Thickness(Theme.Number("spacing.2"));
+        Content = Skin.Column(Theme, Items.ToArray()); Padding = new Thickness(Theme.Number("spacing.2.5"));
     }
 }
