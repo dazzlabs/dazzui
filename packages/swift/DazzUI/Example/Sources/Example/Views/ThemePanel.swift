@@ -90,6 +90,7 @@ struct ThemePanel: View {
     return OptionCard(
       selected: family.value == theme.family,
       padding: EdgeInsets(),
+      cornerRadius: 8,
       action: { theme.family = family.value },
       title: {
         VStack(spacing: 0) {

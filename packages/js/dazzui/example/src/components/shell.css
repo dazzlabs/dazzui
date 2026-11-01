@@ -123,6 +123,10 @@
 /* The panel's own measures are held to the spacing scale, so choosing a
    theme that moves geometry does not move the tile that was just chosen. */
 .gk-themes__tile {
+  /* A theme's own `radius-large` is not the card's: the picker keeps one
+     radius across every family, including the square Omarchy themes. */
+  --radius-large: 8px;
+  border-radius: 8px;
   overflow: hidden;
   min-width: 0;
   gap: 0;

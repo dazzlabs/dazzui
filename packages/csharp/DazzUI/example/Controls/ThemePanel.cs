@@ -94,6 +94,7 @@ internal sealed class ThemeTile : Surface
     private readonly Styled name;
     private bool selected;
     private bool hovered;
+    private bool focused;
 
     public ThemeTile(ThemeFamily family, Action<string> choose)
     {
@@ -106,7 +107,11 @@ internal sealed class ThemeTile : Surface
         column.Children.Add(name);
         Content = column;
         IsTabStop = true;
-        UseSystemFocusVisuals = true;
+        // A tile is a twelve-pixel card; the platform's focus visual would
+        // give it a capsule, so the card marks focus in its own border.
+        UseSystemFocusVisuals = false;
+        GotFocus += (_, _) => { focused = true; Paint(); };
+        LostFocus += (_, _) => { focused = false; Paint(); };
         AutomationProperties.SetName(this, family.Title);
         Tapped += (_, _) => choose(family.Value);
         KeyDown += (_, args) =>
@@ -137,13 +142,16 @@ internal sealed class ThemeTile : Surface
     /// <summary>The option card's recipe: tinted and outlined in the accent when chosen.</summary>
     private void Paint()
     {
-        var radius = Theme.Number("radius.large");
+        // One radius for every family, whatever the family's own scale says.
+        const double radius = 8;
         var hairline = Theme.Number("stroke.control");
         CornerRadius = new CornerRadius(radius);
         BorderThickness = new Thickness(hairline);
         var state = hovered ? "hovered" : "normal";
         Background = Theme.Recipe(selected ? ControlVariant.Tinted : ControlVariant.Normal, WidgetTint.Primary, "surface", state);
-        BorderBrush = selected ? Theme.Recipe(ControlVariant.Outlined, WidgetTint.Primary, "border", state) : Theme.Brush("color.border");
+        BorderBrush = focused
+            ? Theme.Alpha($"color.primary.{Theme.Number("focus.ring.shade")}", Theme.Number("focus.ring.alpha"))
+            : selected ? Theme.Recipe(ControlVariant.Outlined, WidgetTint.Primary, "border", state) : Theme.Brush("color.border");
         preview.Corner = Math.Max(0, radius - hairline);
     }
 }

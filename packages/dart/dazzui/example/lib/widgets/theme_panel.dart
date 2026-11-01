@@ -246,6 +246,7 @@ class _Tile extends StatelessWidget {
       onPressed: onPressed,
       semanticsLabel: title,
       padding: EdgeInsets.zero,
+      cornerRadius: 8,
       titleContent: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

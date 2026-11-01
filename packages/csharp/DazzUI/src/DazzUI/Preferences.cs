@@ -75,6 +75,7 @@ internal sealed class ThemeSwatch : RadioButton
     private readonly Border window = new();
     private readonly Border ring = new() { IsHitTestVisible = false };
     private readonly Border gap = new() { IsHitTestVisible = false };
+    private bool focused;
 
     internal ThemeSwatch(PreferenceThemeOption option)
     {
@@ -89,6 +90,11 @@ internal sealed class ThemeSwatch : RadioButton
         Loaded += (_, _) => { Tooltip.Set(this, option.Label); Paint(); };
         Checked += (_, _) => Paint();
         Unchecked += (_, _) => Paint();
+        // The platform's radio focus visual is a capsule; the swatch draws
+        // its own ring so focus and selection share the swatch's radius.
+        UseSystemFocusVisuals = false;
+        GotFocus += (_, _) => { focused = true; Paint(); };
+        LostFocus += (_, _) => { focused = false; Paint(); };
         Paint();
     }
 
@@ -98,20 +104,21 @@ internal sealed class ThemeSwatch : RadioButton
         var id = option.Theme ?? option.Value;
         var vars = new Theme(id.Length == 0 ? "studio-light" : id);
         var rule = vars.Number("stroke.hairline");
+        // A swatch is a card, not a pill: Bright's radius-small is 9999.
+        const double radius = 8;
         Width = vars.Number("control.small.size") * 1.5;
         Height = vars.Number("control.small.size");
-        Skin.Focus(this, outer);
-        CornerRadius = new CornerRadius(outer.Number("radius.small"));
+        CornerRadius = new CornerRadius(radius);
         window.Background = vars.Brush("color.surface");
         window.BorderBrush = vars.Brush("color.border-strong");
         window.BorderThickness = new Thickness(rule);
-        window.CornerRadius = new CornerRadius(vars.Number("radius.small"));
+        window.CornerRadius = new CornerRadius(radius);
         var body = new Grid();
         body.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(30, GridUnitType.Star) });
         body.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(70, GridUnitType.Star) });
         body.Children.Add(new Border { Background = vars.Brush("color.surface-column"),
             BorderBrush = vars.Brush("color.border-strong"), BorderThickness = new Thickness(0, 0, rule, 0),
-            CornerRadius = new CornerRadius(Math.Max(0, vars.Number("radius.small") - rule), 0, 0, Math.Max(0, vars.Number("radius.small") - rule)) });
+            CornerRadius = new CornerRadius(Math.Max(0, radius - rule), 0, 0, Math.Max(0, radius - rule)) });
         var pad = vars.Number("spacing.1");
         var paper = new Grid { Margin = new Thickness(pad) };
         paper.Children.Add(new Border { Height = vars.Number("spacing.0.5"), Background = vars.Brush("color.content"),
@@ -125,15 +132,21 @@ internal sealed class ThemeSwatch : RadioButton
         window.Child = body;
         var space = outer.Number("stroke.hairline");
         var stroke = outer.Number("stroke.control");
-        ring.Margin = new Thickness(-space - stroke);
-        ring.BorderThickness = new Thickness(stroke);
-        ring.BorderBrush = outer.Recipe(ControlVariant.Outlined, WidgetTint.Primary, "border");
-        ring.CornerRadius = new CornerRadius(outer.Number("radius.small") + space + stroke);
+        var focusWidth = outer.Number("focus.width");
+        var line = focused ? focusWidth : stroke;
+        var standoff = focused ? outer.Number("focus.offset") : space + stroke;
+        ring.Margin = new Thickness(-standoff);
+        ring.BorderThickness = new Thickness(line);
+        ring.BorderBrush = focused
+            ? outer.Alpha($"color.primary.{outer.Number("focus.ring.shade")}", outer.Number("focus.ring.alpha"))
+            : outer.Recipe(ControlVariant.Outlined, WidgetTint.Primary, "border");
+        // The swatch, its chosen ring and its focus ring share one radius.
+        ring.CornerRadius = new CornerRadius(radius);
         gap.Margin = new Thickness(-space);
         gap.BorderThickness = new Thickness(space);
         gap.BorderBrush = outer.Brush("color.surface");
-        gap.CornerRadius = new CornerRadius(outer.Number("radius.small") + space);
-        ring.Visibility = gap.Visibility = IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+        gap.CornerRadius = new CornerRadius(radius);
+        ring.Visibility = gap.Visibility = IsChecked == true || focused ? Visibility.Visible : Visibility.Collapsed;
     }
 }
 

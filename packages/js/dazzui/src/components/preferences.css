@@ -279,7 +279,8 @@
   all: unset;
   display: block;
   box-sizing: border-box;
-  border-radius: var(--radius-small);
+  /* Bright's radius-small is a pill; the swatch keeps one card corner. */
+  border-radius: 8px;
   cursor: pointer;
 }
 
@@ -305,7 +306,7 @@
   height: var(--control-small-size);
   box-sizing: border-box;
   border: var(--stroke-hairline) solid var(--color-border-strong);
-  border-radius: var(--radius-small);
+  border-radius: 8px;
   background: var(--color-surface);
 }
 

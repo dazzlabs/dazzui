@@ -18,6 +18,8 @@ public struct OptionCard<Title: View, Description: View>: View {
   /// The inset of the card's content. A card whose title is a picture of
   /// the option takes zero, and the picture runs to the card's edge.
   public var padding: EdgeInsets?
+  /// A corner fixed by the host rather than the theme's own radius.
+  public var cornerRadius: CGFloat?
 
   @Environment(\.theme) private var theme
   @Environment(\.hairline) private var hairline
@@ -28,11 +30,13 @@ public struct OptionCard<Title: View, Description: View>: View {
     tint: Tint = .primary,
     enabled: Bool = true,
     padding: EdgeInsets? = nil,
+    cornerRadius: CGFloat? = nil,
     action: @escaping () -> Void,
     @ViewBuilder title: @escaping () -> Title,
     @ViewBuilder description: @escaping () -> Description
   ) {
     self.padding = padding
+    self.cornerRadius = cornerRadius
     self.selected = selected
     self.tint = tint
     self.enabled = enabled
@@ -43,8 +47,9 @@ public struct OptionCard<Title: View, Description: View>: View {
 
   public var body: some View {
     let vars = theme.vars
+    let radius = cornerRadius ?? vars.radiusLarge
 
-    Pressable(action: action, enabled: enabled, cornerRadius: vars.radiusLarge) { state in
+    Pressable(action: action, enabled: enabled, cornerRadius: radius) { state in
       VStack(alignment: .leading, spacing: padding == nil ? vars.spacing15 : 0) {
         title()
           .font(.system(size: vars.labelStrong.size, weight: vars.labelStrong.weight))
@@ -78,13 +83,13 @@ public struct OptionCard<Title: View, Description: View>: View {
       )
       .padding(hairline)
       .background(surface(state: state))
-      .clipShape(RoundedRectangle(cornerRadius: vars.radiusLarge, style: .circular))
+      .clipShape(RoundedRectangle(cornerRadius: radius, style: .circular))
       // Selection *thickens* the border as well as colouring it, which is what
       // makes the chosen card survive a glance across its neighbours.
       .border(
         border,
         width: selected ? vars.strokeControl : hairline,
-        cornerRadius: vars.radiusLarge
+        cornerRadius: radius
       )
       .animation(vars.motion, value: state.controlState)
     }
@@ -93,7 +98,7 @@ public struct OptionCard<Title: View, Description: View>: View {
     .focusRing(
       visible: focused && enabled,
       color: vars.focusRing,
-      cornerRadius: vars.radiusLarge,
+      cornerRadius: radius,
       width: vars.focusWidth
     )
   }

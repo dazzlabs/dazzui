@@ -452,15 +452,17 @@ private struct PreferenceSwatch<Value: Hashable>: View {
   var body: some View {
     let outer = page.vars
     let vars = option.variables
+    // A swatch is a card, not a pill: Bright's radius-small is 9999.
+    let radius: CGFloat = 8
     Tooltip {
       Text(option.label)
     } content: {
-      Pressable(action: action, cornerRadius: outer.radiusSmall) { _ in
+      Pressable(action: action, cornerRadius: radius) { _ in
         Canvas { context, size in
           let rect = CGRect(origin: .zero, size: size)
           let rule = vars.strokeHairline
           let column = (size.width - rule * 2) * 0.3
-          let window = Path(roundedRect: rect, cornerRadius: vars.radiusSmall)
+          let window = Path(roundedRect: rect, cornerRadius: radius)
           context.clip(to: window)
           context.fill(window, with: .color(vars.colorSurface))
           if direction == .rightToLeft {
@@ -483,17 +485,17 @@ private struct PreferenceSwatch<Value: Hashable>: View {
         }
         .frame(width: vars.controlSmallSize * 1.5, height: vars.controlSmallSize)
         .border(vars.colorBorderStrong, width: vars.strokeHairline,
-          cornerRadius: vars.radiusSmall)
+          cornerRadius: radius)
         .overlay {
           if selected {
             let gap = outer.strokeHairline
             let stroke = outer.strokeControl
-            RoundedRectangle(cornerRadius: outer.radiusSmall + gap + stroke / 2)
+            RoundedRectangle(cornerRadius: radius + gap + stroke / 2)
               .stroke(outer.resolve(outer.descriptor(.outlined, .border),
                 tint: .primary, state: .normal), lineWidth: stroke)
               .padding(-gap - stroke / 2)
               .background {
-                RoundedRectangle(cornerRadius: outer.radiusSmall + gap)
+                RoundedRectangle(cornerRadius: radius + gap)
                   .stroke(outer.colorSurface, lineWidth: gap)
                   .padding(-gap / 2)
               }
@@ -503,7 +505,7 @@ private struct PreferenceSwatch<Value: Hashable>: View {
       }
       .focused($focused)
       .focusRing(visible: focused, color: outer.focusRing,
-        cornerRadius: outer.radiusSmall, width: outer.focusWidth)
+        cornerRadius: radius, width: outer.focusWidth)
       .accessibilityLabel(option.label)
       .accessibilityAddTraits(selected ? [.isSelected] : [])
     }

@@ -36,6 +36,9 @@ internal static class PreferenceThemeSwatchesTests
         Check(AutomationProperties.GetName(radios[1]) == "Nocturne", "The swatch lost its accessible name.");
         var firstWindow = Walk(radios[0]).OfType<Border>().First(border => border.Child is Grid);
         var secondWindow = Walk(radios[1]).OfType<Border>().First(border => border.Child is Grid);
+        var firstEdges = Walk(radios[0]).OfType<Border>().Take(3).ToArray();
+        Check(firstEdges.Length == 3 && firstEdges.All(edge => edge.CornerRadius.TopLeft == radios[0].CornerRadius.TopLeft),
+            "A selected theme swatch drew its ring, gap and window with different corner radii.");
         var light = new UI.Theme("studio-light");
         var dark = new UI.Theme("nocturne-dark");
         Check(((SolidColorBrush)firstWindow.Background).Color == light.Color("color.surface")

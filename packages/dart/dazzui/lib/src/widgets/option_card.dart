@@ -34,6 +34,7 @@ class OptionCard extends StatelessWidget {
     this.semanticsLabel,
     this.titleContent,
     this.padding,
+    this.cornerRadius,
   });
 
   final String title;
@@ -45,6 +46,9 @@ class OptionCard extends StatelessWidget {
   /// its edge — a picture of what the option is — takes zero, and the
   /// content is clipped to the card's corner.
   final EdgeInsetsGeometry? padding;
+
+  /// A corner fixed by the host rather than the theme's own radius.
+  final double? cornerRadius;
   final String? description;
   final bool selected;
 
@@ -58,7 +62,9 @@ class OptionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeVariables vars = Theme.of(context).vars;
-    final BorderRadius radius = BorderRadius.circular(vars.radiusLarge);
+    final BorderRadius radius = BorderRadius.circular(
+      cornerRadius ?? vars.radiusLarge,
+    );
     final ColorSwatch<int> ramp = switch (tint.namedTint) {
       NamedTint.primary => vars.colorPrimary,
       NamedTint.neutral => vars.colorNeutral,

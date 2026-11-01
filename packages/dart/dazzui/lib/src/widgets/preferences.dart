@@ -517,6 +517,9 @@ class PreferenceThemeOption<T> {
   }
 }
 
+/// A swatch is a card, not a pill: Bright's radius-small is 9999.
+const double _themeSwatchRadius = 8;
+
 /// Theme previews in a preference row. Choosing one reports a value; the host
 /// decides where to apply it. Each preview keeps its own palette.
 class PreferenceThemeSwatches<T> extends StatefulWidget {
@@ -566,7 +569,9 @@ class _PreferenceThemeSwatchesState<T>
                   child: Pressable(
                     semanticsLabel: option.label,
                     checked: option.value == current,
-                    borderRadius: BorderRadius.circular(page.radiusSmall),
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(_themeSwatchRadius),
+                    ),
                     onPressed: () {
                       setState(() => _own = option.value);
                       widget.onValueChange?.call(option.value);
@@ -611,7 +616,7 @@ class _ThemeSwatchPainter extends CustomPainter {
     final Rect rect = Offset.zero & size;
     final RRect window = RRect.fromRectAndRadius(
       rect,
-      Radius.circular(vars.radiusSmall),
+      const Radius.circular(_themeSwatchRadius),
     );
     final Paint paint = Paint();
     if (selected) {
@@ -624,7 +629,7 @@ class _ThemeSwatchPainter extends CustomPainter {
               );
       final RRect outer = RRect.fromRectAndRadius(
         rect,
-        Radius.circular(page.radiusSmall),
+        const Radius.circular(_themeSwatchRadius),
       );
       canvas.drawRRect(
         outer.inflate(page.strokeHairline + page.strokeControl),
