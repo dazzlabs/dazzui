@@ -68,6 +68,15 @@ internal static class SmokeTest
                 Environment.Exit(0);
                 return;
             }
+            if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "window-chrome")
+            {
+                await WindowChromeTests.RunAsync(shell);
+                await File.WriteAllTextAsync(Path.Combine(output, "result.txt"), "PASS: titlebar band, compact band, caption sets, close request and inactive ink.\n");
+                finishing = true;
+                window.Close();
+                Environment.Exit(0);
+                return;
+            }
             await File.WriteAllTextAsync(Path.Combine(output, "stories.json"), System.Text.Json.JsonSerializer.Serialize(
                 Stories.All.Select(story => new { id = story.Id, name = story.Name, examples = story.Examples.Select(example => example.Title) })));
             if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "secure-field")
