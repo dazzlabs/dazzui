@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -463,12 +464,71 @@ public class Sidebar : Surface
         Padding = new Thickness(Theme.Number("spacing.2")); Content = grid;
     }
 }
+/// <summary>
+/// A run of navigation rows under a section heading. Its content is built
+/// before the group is attached, and rebuilt as its label or rows change, so
+/// the first measure already holds the heading and the row gaps.
+/// </summary>
 public sealed class SidebarGroup : Surface
 {
-    internal bool IsIconOnly { get; set; }
-    public string Label { get; set; } = "";
-    public IList<UIElement> Items { get; } = new List<UIElement>();
-    protected override void RefreshAppearance() { Content = Skin.Column(Theme, (IsIconOnly ? Array.Empty<UIElement>() : new UIElement[] { new SectionLabel(Label) }).Concat(Items).ToArray()); }
+    private readonly ObservableCollection<UIElement> items = [];
+    private string label = "";
+    private bool iconOnly;
+    private bool dirty;
+    internal bool IsIconOnly
+    {
+        get => iconOnly;
+        set
+        {
+            if (iconOnly == value) return;
+            iconOnly = value;
+            Prepare();
+        }
+    }
+    public string Label
+    {
+        get => label;
+        set
+        {
+            if (label == value) return;
+            label = value;
+            Prepare();
+        }
+    }
+    public IList<UIElement> Items => items;
+    public SidebarGroup()
+    {
+        items.CollectionChanged += (_, _) => Prepare();
+        Prepare();
+    }
+    /// <summary>
+    /// Build the group's content before it is attached, or at its next measure
+    /// when it has no XAML root yet — a native row cannot enter a tree before
+    /// the framework has one for it.
+    /// </summary>
+    public void Prepare()
+    {
+        dirty = true;
+        if (XamlRoot is not null)
+        {
+            dirty = false;
+            RefreshAppearance();
+        }
+    }
+    protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize)
+    {
+        if (dirty && XamlRoot is not null)
+        {
+            dirty = false;
+            RefreshAppearance();
+        }
+        return base.MeasureOverride(availableSize);
+    }
+    protected override void RefreshAppearance()
+    {
+        dirty = false;
+        Content = Skin.Column(Theme, (IsIconOnly ? Array.Empty<UIElement>() : new UIElement[] { new SectionLabel(label) }).Concat(items).ToArray());
+    }
 }
 /// <summary>
 /// A row's count at the row's end: a twenty-pixel chip in the navigation
@@ -515,12 +575,47 @@ public sealed class Aside : Card
 {
     protected override void RefreshAppearance() { base.RefreshAppearance(); Width = Theme.Number("frame.aside.width"); Background = Theme.Brush("color.surface-column"); }
 }
+/// <summary>
+/// The narrow column beside a page. Its content is built before attachment,
+/// and rebuilt synchronously as its rows change, so replacing the rows never
+/// leaves an empty intermediate measure.
+/// </summary>
 public sealed class Rail : Surface
 {
-    public IList<UIElement> Items { get; } = new List<UIElement>();
+    private readonly ObservableCollection<UIElement> items = [];
+    private bool dirty;
+    public IList<UIElement> Items => items;
+    public Rail()
+    {
+        items.CollectionChanged += (_, _) => Prepare();
+        Prepare();
+    }
+    /// <summary>
+    /// Build the rail's content before it is attached, or at its next measure
+    /// when it has no XAML root yet.
+    /// </summary>
+    public void Prepare()
+    {
+        dirty = true;
+        if (XamlRoot is not null)
+        {
+            dirty = false;
+            RefreshAppearance();
+        }
+    }
+    protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize)
+    {
+        if (dirty && XamlRoot is not null)
+        {
+            dirty = false;
+            RefreshAppearance();
+        }
+        return base.MeasureOverride(availableSize);
+    }
     protected override void RefreshAppearance()
     {
+        dirty = false;
         Width = Theme.Number("frame.rail.width"); Background = Theme.Brush("color.surface-column");
-        Content = Skin.Column(Theme, Items.ToArray()); Padding = new Thickness(Theme.Number("spacing.2"));
+        Content = Skin.Column(Theme, items.ToArray()); Padding = new Thickness(Theme.Number("spacing.2"));
     }
 }

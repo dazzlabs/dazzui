@@ -59,6 +59,15 @@ internal static class SmokeTest
                 Environment.Exit(0);
                 return;
             }
+            if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "sidebar")
+            {
+                await SidebarTests.RunAsync(shell);
+                await File.WriteAllTextAsync(Path.Combine(output, "result.txt"), "PASS: sidebar group and rail measure complete before attachment and on every row change.\n");
+                finishing = true;
+                window.Close();
+                Environment.Exit(0);
+                return;
+            }
             await File.WriteAllTextAsync(Path.Combine(output, "stories.json"), System.Text.Json.JsonSerializer.Serialize(
                 Stories.All.Select(story => new { id = story.Id, name = story.Name, examples = story.Examples.Select(example => example.Title) })));
             if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "secure-field")
