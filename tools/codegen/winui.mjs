@@ -17,6 +17,38 @@ SUPPORT.Table = ['tint', 'aria-label', CHILDREN]
 SUPPORT.TableHead = ['aria-label', CHILDREN]
 SUPPORT.TableRow = ['active', 'interactive', 'onClick', 'aria-label', CHILDREN]
 SUPPORT.TableCell = ['head', 'align', 'aria-label', CHILDREN]
+SUPPORT.Autocomplete = [
+  'items',
+  'value',
+  'defaultValue',
+  'onValueChange',
+  'placeholder',
+  'empty',
+  'size',
+  'state',
+  'tint',
+  'mono',
+  'disabled',
+  'required',
+  'readOnly',
+  'aria-label',
+]
+SUPPORT.Combobox = [
+  'options',
+  'value',
+  'defaultValue',
+  'onValueChange',
+  'placeholder',
+  'empty',
+  'clearable',
+  'size',
+  'state',
+  'tint',
+  'disabled',
+  'required',
+  'readOnly',
+  'aria-label',
+]
 
 /** Every component and prop a story sets that WinUI does not draw. */
 export const unsupported = stories => gaps(stories, SUPPORT, 'WinUI')

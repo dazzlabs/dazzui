@@ -49,8 +49,27 @@ public static class Mapping
             },
             ["Autocomplete"] = n =>
             {
-                var field = new Autocomplete { PlaceholderText = n.String("placeholder") ?? "", Size = n.Option("size", ControlSize.Medium) };
+                var field = new Autocomplete
+                {
+                    PlaceholderText = n.String("placeholder") ?? "", Size = n.Option("size", ControlSize.Medium),
+                    Empty = n.String("empty") ?? "No matches", Tint = n.Option("tint", WidgetTint.Primary),
+                    Invalid = n.String("state") == "error", Mono = n.Flag("mono"), ReadOnly = n.Flag("readOnly"), IsEnabled = !n.Flag("disabled"),
+                };
                 foreach (var item in n["items"].Strings()) field.Suggestions.Add(item);
+                field.Text = n.String("value") ?? n.String("defaultValue") ?? "";
+                var changed = n.Handler("onValueChange");
+                field.ValueChanged += (_, value) =>
+                {
+                    changed?.Invoke(JsonValue.Create(value));
+                    if (n.Has("value")) field.Text = n.String("value") ?? "";
+                };
+                n.Live(field, () =>
+                {
+                    if (n.Has("value") && field.Text != (n.String("value") ?? "")) field.Text = n.String("value") ?? "";
+                    field.IsEnabled = !n.Flag("disabled"); field.ReadOnly = n.Flag("readOnly");
+                });
+                AutomationProperties.SetIsRequiredForForm(field.Input, n.Flag("required"));
+                Name(field.Input, n.String("aria-label") ?? n.String("placeholder"));
                 return field;
             },
             ["Avatar"] = n => new Avatar
@@ -172,17 +191,35 @@ public static class Mapping
             },
             ["Combobox"] = n =>
             {
-                var field = new Combobox { PlaceholderText = n.String("placeholder") ?? "Search…" };
+                var field = new Combobox
+                {
+                    PlaceholderText = n.String("placeholder") ?? "Search…", Size = n.Option("size", ControlSize.Medium),
+                    Empty = n.String("empty") ?? "No matches", Clearable = !n.Has("clearable") || n.Flag("clearable"),
+                    Tint = n.Option("tint", WidgetTint.Primary), Invalid = n.String("state") == "error",
+                    IsEnabled = !n.Flag("disabled"), ReadOnly = n.Flag("readOnly"),
+                };
                 foreach (var entry in n["options"].Items())
                 {
                     if (entry?["options"] is JsonArray group)
                         foreach (var option in group)
-                            field.Options.Add(new SelectOption(option!["value"].Text(), option["label"].Text(), entry["label"].Text()));
+                            field.Options.Add(new SelectOption(option!["value"].Text(), option["label"].Text(), entry["label"].Text(), option["disabled"].Truthy()));
                     else
-                        field.Options.Add(new SelectOption(entry!["value"].Text(), entry["label"].Text()));
+                        field.Options.Add(new SelectOption(entry!["value"].Text(), entry["label"].Text(), Disabled: entry["disabled"].Truthy()));
                 }
-                var start = n.String("defaultValue");
-                if (field.Options.FirstOrDefault(option => option.Value == start) is SelectOption chosen) field.Text = chosen.Label;
+                field.Value = n.Has("value") ? n.String("value") : n.String("defaultValue");
+                var changed = n.Handler("onValueChange");
+                field.ValueChanged += (_, value) =>
+                {
+                    changed?.Invoke(JsonValue.Create(value));
+                    if (n.Has("value")) field.Value = n.String("value");
+                };
+                n.Live(field, () =>
+                {
+                    if (n.Has("value") && field.Value != n.String("value")) field.Value = n.String("value");
+                    field.IsEnabled = !n.Flag("disabled"); field.ReadOnly = n.Flag("readOnly");
+                });
+                AutomationProperties.SetIsRequiredForForm(field.Input, n.Flag("required"));
+                Name(field.Input, n.String("aria-label") ?? n.String("placeholder"));
                 return field;
             },
             ["ContextMenu"] = n =>
@@ -305,7 +342,7 @@ public static class Mapping
             },
             ["Menu"] = n =>
             {
-                var menu = new Menu();
+                var menu = new Menu { Side = n.Option("side", PopupSide.Bottom), Align = n.Option("align", PopupAlignment.End) };
                 foreach (var item in MenuItems(n, n["items"])) menu.Items.Add(item);
                 FrameworkElement? anchor = null;
                 anchor = n.Element("trigger", n.Context with { Press = () => { if (anchor is not null) menu.Show(anchor); } }) as FrameworkElement;
@@ -384,20 +421,29 @@ public static class Mapping
             },
             ["PillTabs"] = n =>
             {
-                var tabs = new PillTabs();
+                var tabs = new PillTabs { Tint = n.Option("tint", WidgetTint.Primary) };
                 var items = n["items"].Items();
                 foreach (var item in items)
                 {
                     if (item?["count"] is JsonNode count) tabs.Counts[tabs.Items.Count] = count.GetValue<int>();
-                    tabs.Items.Add(item?["label"].Text());
+                    if (item?["disabled"].Truthy() == true) tabs.DisabledItems.Add(tabs.Items.Count);
+                    tabs.Items.Add(item?["label"].Text() ?? "");
                 }
-                tabs.SelectedIndex = Math.Max(0, items.ToList().FindIndex(item => item?["value"].Text() == n.String("defaultValue")));
+                var values = items.Select(item => item?["value"].Text()).ToList();
+                tabs.SelectedIndex = values.IndexOf(n.String(n.Has("value") ? "value" : "defaultValue"));
+                var changed = n.Handler("onValueChange");
+                tabs.SelectionChanged += (_, _) =>
+                {
+                    if (tabs.SelectedIndex >= 0) changed?.Invoke(JsonValue.Create(values[tabs.SelectedIndex]));
+                    if (n.Has("value")) tabs.SelectedIndex = values.IndexOf(n.String("value"));
+                };
+                if (n.Has("value")) n.Live(tabs, () => tabs.SelectedIndex = values.IndexOf(n.String("value")));
                 Name(tabs, n.String("aria-label"));
                 return tabs;
             },
             ["Popover"] = n =>
             {
-                var popover = new Popover { Placement = Side(n.String("side"), FlyoutPlacementMode.Bottom) };
+                var popover = new Popover { Side = n.Option("side", PopupSide.Bottom), Align = n.Option("align", PopupAlignment.Center), Width = Length.Parse(n["width"])?.Points };
                 FrameworkElement? anchor = null;
                 anchor = n.Element("trigger", n.Context with
                 {
@@ -461,12 +507,11 @@ public static class Mapping
             },
             ["PreviewCard"] = n =>
             {
-                var card = new PreviewCard { Placement = FlyoutPlacementMode.Bottom };
+                var card = new PreviewCard { Side = n.Option("side", PopupSide.Bottom), Align = n.Option("align", PopupAlignment.Center), Width = Length.Parse(n["width"])?.Points };
                 var trigger = n.Element("trigger") as FrameworkElement;
                 if (trigger is null) return null;
                 var body = new Stack(Orientation.Vertical, "spacing.2");
                 foreach (var kid in n.Kids()) body.Add(kid);
-                if (Length.Parse(n["width"])?.Points is double width) body.Width = width;
                 card.Content = body;
                 card.Attach(trigger);
                 return trigger;
@@ -514,17 +559,22 @@ public static class Mapping
                     Size = n.Option("size", ControlSize.Medium),
                     IconOnly = n.Flag("iconOnly"),
                     Filled = n.String("activeStyle") == "filled",
+                    Stretch = n.Flag("stretch"),
+                    Tint = n.Option("tint", WidgetTint.Primary),
+                    IsEnabled = !n.Flag("disabled"),
                 };
                 var values = n["items"].Items().Select(item => item?["value"].Text()).ToList();
                 foreach (var item in n["items"].Items())
                 {
-                    control.Items.Add(item?["label"].Text());
+                    if (item?["disabled"].Truthy() == true) control.DisabledItems.Add(control.Items.Count);
+                    control.Items.Add(item?["label"].Text() ?? "");
                     control.Icons.Add(Nodes.GlyphOf(item?["icon"]) is string glyph ? Glyphs.All[glyph].Glyph : null);
                 }
                 var changed = n.Handler("onValueChange");
                 control.SelectionChanged += (_, _) =>
                 {
                     if (control.SelectedIndex >= 0) changed?.Invoke(JsonValue.Create(values[control.SelectedIndex]));
+                    control.SelectedIndex = values.IndexOf(n.String("value"));
                 };
                 n.Live(control, () => control.SelectedIndex = values.IndexOf(n.String("value")));
                 Name(control, n.String("aria-label"));
@@ -812,13 +862,16 @@ public static class Mapping
             ["ToastProvider"] = n =>
             {
                 var line = new Stack(Orientation.Horizontal, "spacing.0");
-                foreach (var kid in n.Kids(n.Context with { Toaster = new Toaster() })) line.Add(kid);
-                return line;
+                var provider = new Toaster { Content = line, Limit = (int)(n.Number("limit") ?? 3) };
+                foreach (var kid in n.Kids(n.Context with { Toaster = provider })) line.Add(kid);
+                return provider;
             },
             ["ToastViewport"] = n =>
             {
-                // The viewport is the window's edge; here it only says which one.
-                if (n.Context.Toaster is Toaster toaster) toaster.Placement = n.String("placement") ?? "bottom";
+                // Report the actual window-layer element, even while empty.
+                // It takes no room in the provider's in-flow story layout.
+                if (n.Context.Toaster is Toaster toaster)
+                    Nodes.Drawn(n.Source, toaster.CreateViewport(n.String("placement") == "top"));
                 return null;
             },
             ["Toggle"] = n =>
@@ -878,7 +931,7 @@ public static class Mapping
                     "right" => PlacementMode.Right,
                     _ => PlacementMode.Top,
                 };
-                if (target is FrameworkElement framed) framed.Loaded += (_, _) => Tooltip.Set(framed, label, side);
+                if (target is FrameworkElement framed) framed.Loaded += (_, _) => Tooltip.Set(framed, label, side, n.Option("align", PopupAlignment.Center));
                 return target;
             },
             ["Tree"] = n => TreeOf(n),
@@ -938,12 +991,12 @@ public static class Mapping
                 : Nodes.Build(child, n.Context);
             if (element is not null) Add(element);
         }
-        if (shortcut is not null)
-            Add(Nodes.Drawn(shortcut, new KeyCap(KeyText(shortcut)) { Variant = KeyCapVariant.Hint }));
+        if (shortcut is not null && Nodes.Build(shortcut, n.Context) is UIElement hint)
+            Add(Button.ShortcutHint(hint));
         return (object?)stack ?? panel;
     }
 
-    /// <summary>A KeyCap element's label, which is all a button or a menu row keeps.</summary>
+    /// <summary>A menu shortcut's printed label.</summary>
     private static string KeyText(JsonNode? value) =>
         value.String() ?? string.Concat(value?["children"].Items().Select(Json.Text) ?? []);
 
@@ -1101,7 +1154,6 @@ public static class Mapping
             panel.Add(head);
         }
         foreach (var kid in n.Kids(n.Context with { Close = close })) panel.Add(kid);
-        if (Length.Parse(n["width"])?.Points is double width) panel.Width = width - 2 * 18;
         return panel;
     }
 

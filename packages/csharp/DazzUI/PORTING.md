@@ -25,12 +25,33 @@ control height; and disabled fields, whose native template now takes the
 selected theme's disabled recipe. Graphite and Bright were measured with no
 non-width difference outside the platform's text measurement.
 
-Where the kit has no counterpart for a React prop, the mapping composes one
-from kit parts (a meter's label, a sidebar's collapsing column) or leaves it
-to the kit's native look (a tree row's glyph, a splitter panel's percentage
-limits). Remaining measured differences are text widths from Windows' face,
-the avatar group's ring, which is a CSS `box-shadow` string on the web rather
-than a token, and toast bodies, which exist only once a toast is raised.
+Intrinsic widths must be compared with React on the same Windows host, not
+with a reference collected in another system font. Avatar rings are measured
+from their actual outset borders. Empty ToastViewports are mounted in the
+real window overlay and measured there. The four Studio Light viewport
+specimens were collected at 1024 × 32, with 16px padding and an 8px gap,
+matching the same-host React reference.
+
+The detail fixtures additionally open the native Menu, Popover and Tooltip
+stories, and exercise search clear/Escape, selection state, button shortcuts,
+copy feedback, resizer keys and animation lifecycles. They complement the
+initial readings; they do not establish complete pixel or interaction parity.
+
+Select and suggestion lists now use the shared popup recipe over the native
+controls. Combobox separates its selected value from its query and maps empty
+results, clearing, initial selection and unmatched-query blur. Native fixtures
+cover menu traversal, live popup themes, placement and edge collisions.
+
+This is an implementation checkpoint, not a declaration of complete parity.
+The latest Select disabled-navigation adapter and typeahead assertions still
+need a fresh native run. Query fixtures reached a grouped-popup corner mismatch;
+the native joined-corner policy has since been disabled but not revalidated.
+Toast hover tests now use actual injected pointer movement and await hover
+events; their full timing run remains pending. The latest live prose-theme
+update also needs a rerun. Full all-theme collection and shadow/corner raster
+comparisons remain separate verification requirements. A long smoke run rendered
+691 of 708 pages before screenshot readback timed out; a separate process passed
+the remaining 17 overview renders and native behavior checks.
 
 Validation outputs belong under ignored `artifacts/`, not in the source tree.
 Keep design decisions in ds. Keep editing, selection, focus and popup behavior

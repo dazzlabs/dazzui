@@ -27,17 +27,19 @@ public partial class App : Application
             // The collector draws scenes on their own, not in the window's shell.
             var host = new Microsoft.UI.Xaml.Controls.ContentControl
             {
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top,
-                HorizontalContentAlignment = HorizontalAlignment.Left,
-                VerticalContentAlignment = VerticalAlignment.Top,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Stretch,
+                VerticalContentAlignment = VerticalAlignment.Stretch,
             };
             window = new Window { Title = "DazzUI — conformance", Content = host };
             host.Loaded += async (_, _) =>
             {
                 var scale = host.XamlRoot.RasterizationScale;
                 var work = DisplayArea.GetFromWindowId(window.AppWindow.Id, DisplayAreaFallback.Primary).WorkArea;
-                window.AppWindow.Resize(new Windows.Graphics.SizeInt32(Math.Min((int)(1024 * scale), work.Width), work.Height));
+                // Match the reference's client viewport, not the outer window
+                // including the native title bar and resize borders.
+                window.AppWindow.ResizeClient(new Windows.Graphics.SizeInt32(Math.Min((int)(1024 * scale), work.Width), Math.Min((int)(768 * scale), work.Height)));
                 await Collector.RunAsync(window, host);
             };
             window.Activate();

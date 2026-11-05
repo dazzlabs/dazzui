@@ -9,26 +9,27 @@ namespace DazzUI.Example;
 /// </summary>
 public static class Overlay
 {
-    private static ToastViewport? top;
-    private static ToastViewport? bottom;
-
+    private static readonly Dictionary<ToastViewport, FrameworkElement> owners = [];
     public static Grid Layer { get; } = new();
 
-    public static void Toast(ToastOptions options, bool atTop)
+    public static void Attach(FrameworkElement owner, ToastViewport viewport)
     {
-        var viewport = atTop ? top ??= Viewport(VerticalAlignment.Top) : bottom ??= Viewport(VerticalAlignment.Bottom);
-        viewport.Add(options);
+        owners[viewport] = owner;
+        if (!Layer.Children.Contains(viewport)) Layer.Children.Add(viewport);
     }
 
-    private static ToastViewport Viewport(VerticalAlignment edge)
+    public static void Detach(ToastViewport viewport)
     {
-        var viewport = new ToastViewport { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = edge };
-        viewport.Loaded += (_, _) =>
-        {
-            var gap = viewport.Theme.Number("spacing.4");
-            viewport.Margin = new Thickness(gap);
-        };
-        Layer.Children.Add(viewport);
-        return viewport;
+        owners.Remove(viewport);
+        Layer.Children.Remove(viewport);
+    }
+
+    /// <summary>The real out-of-flow viewport belongs to the provider in this scene.</summary>
+    internal static bool BelongsTo(FrameworkElement element, DependencyObject scene)
+    {
+        if (element is not ToastViewport viewport || !owners.TryGetValue(viewport, out var owner)) return false;
+        for (DependencyObject? node = owner; node is not null; node = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetParent(node))
+            if (ReferenceEquals(node, scene)) return true;
+        return false;
     }
 }

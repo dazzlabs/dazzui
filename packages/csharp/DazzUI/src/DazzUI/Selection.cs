@@ -57,9 +57,16 @@ public class Checkbox : CheckBox
             box.Background = marked ? Theme.Recipe(ControlVariant.Filled, Tint, "surface") : null;
             box.BorderBrush = marked ? box.Background : Theme.Brush("color.border-muted");
             var ink = Theme.Recipe(ControlVariant.Filled, Tint, "content");
-            box.Child = !marked ? null : IsChecked is null
-                ? new Border { Background = ink, Width = box.Width - Theme.Number("spacing.2"), Height = Theme.Number("stroke.control"), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center }
-                : new Icon { Glyph = FluentIcons.Common.Icon.Checkmark, GlyphSize = box.Width - Theme.Number("spacing.1"), Foreground = ink, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+            var markSize = Math.Min(Theme.Number("icon.small"), Math.Max(0, box.Width - 2 * box.BorderThickness.Left));
+            // React scales the filled twelve-pixel tick/dash inside the box's
+            // content area, rather than changing glyph grids with the box size.
+            var mark = Icon.Element(IsChecked is null ? FluentIcons.Common.Icon.Subtract : FluentIcons.Common.Icon.Checkmark, FluentIcons.Common.IconVariant.Filled);
+            mark.IconSize = FluentIcons.Common.IconSize.Size12;
+            mark.FontSize = mark.Width = mark.Height = markSize;
+            mark.Foreground = ink;
+            mark.HorizontalAlignment = HorizontalAlignment.Center;
+            mark.VerticalAlignment = VerticalAlignment.Center;
+            box.Child = marked ? mark : null;
         }
     }
 }
@@ -134,6 +141,7 @@ public class Toggle : ToggleButton
 {
     private bool hovered;
     private bool pressed;
+    private bool glyphWidth;
     protected string RecipeState => !IsEnabled ? "disabled" : pressed ? "pressed" : hovered ? "hovered" : "normal";
     public Theme Theme { get => Appearance.GetTheme(this); set => Appearance.SetTheme(this, value); }
     public ControlSize Size { get => Appearance.GetSize(this); set => Appearance.SetSize(this, value); }
@@ -156,9 +164,16 @@ public class Toggle : ToggleButton
     {
         Skin.Control(this, Theme, Size); Height = Theme.Number($"control.{Theme.Key(Size)}.size");
         // A glyph alone is a square control: the padding is for a label.
-        if (Content is Icon && this is not NavItem) { Padding = new Thickness(0); Width = Height; }
+        if (Content is Icon icon && this is not NavItem)
+        {
+            Padding = new Thickness(0); Width = Height;
+            glyphWidth = true;
+            icon.GlyphSize = Theme.Number($"control.{Theme.Key(Size)}.icon-size");
+            Appearance.Refresh(icon);
+        }
         else
         {
+            if (glyphWidth) { Width = double.NaN; glyphWidth = false; }
             var profile = $"control.{Theme.Key(Size)}";
             Padding = new Thickness(Theme.Number(profile + ".padding.inline"), Theme.Number(profile + ".padding.block"),
                 Theme.Number(profile + ".padding.inline"), Theme.Number(profile + ".padding.block"));
@@ -170,7 +185,7 @@ public class Toggle : ToggleButton
         BorderBrush = Theme.Recipe(variant, Tint, "border", state);
         BorderThickness = new Thickness(Theme.Number("spacing.px"));
         // Down is the tinted wash and the label a weight heavier.
-        if (IsChecked == true) FontWeight = Theme.Weight("labelStrong");
+        if (IsChecked == true && IsEnabled) FontWeight = Theme.Weight("labelStrong");
         Skin.Join(this, !Joined.Before, !Joined.After);
         Margin = new Thickness(Joined.Before ? -Theme.Number("spacing.px") : 0, 0, 0, 0);
     }
@@ -195,7 +210,7 @@ public sealed class Switch : Toggle
         Skin.SetCorner(this, Theme.Number("radius.full"));
         // A disabled switch keeps its colours and steps back as a whole.
         Opacity = IsEnabled ? 1 : 0.6;
-        Background = IsChecked == true ? Theme.Recipe(ControlVariant.Filled, Tint, "surface", IsEnabled ? RecipeState : "normal") : Theme.Brush("color.surface-sunken");
+        Background = IsChecked == true ? Theme.Recipe(ControlVariant.Filled, Tint, "surface") : Theme.Brush("color.surface-sunken");
         if (GetTemplateChild("Thumb") is Border thumb)
         {
             thumb.Width = thumb.Height = Theme.Number($"switch.{Skin.SizeKey(Size)}.thumb");
@@ -250,12 +265,16 @@ public class ToggleGroup : Surface
 /// </summary>
 public class SegmentedControl : Surface
 {
-    private const string SegmentTemplate = "<ControlTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' TargetType='RadioButton'><Border Background='{TemplateBinding Background}' CornerRadius='{TemplateBinding CornerRadius}' Padding='{TemplateBinding Padding}'><ContentPresenter Content='{TemplateBinding Content}' HorizontalAlignment='Center' VerticalAlignment='Center'/></Border></ControlTemplate>";
-    private readonly StackPanel row = new() { Orientation = Orientation.Horizontal };
+    private const string SegmentTemplate = "<ControlTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' TargetType='RadioButton'><Grid><Border x:Name='Lift' xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' IsHitTestVisible='False'/><Border Background='{TemplateBinding Background}' CornerRadius='{TemplateBinding CornerRadius}' Padding='{TemplateBinding Padding}'><ContentPresenter Content='{TemplateBinding Content}' HorizontalAlignment='Center' VerticalAlignment='Center'/></Border></Grid></ControlTemplate>";
+    private readonly Grid row = new();
     private readonly List<RadioButton> segments = [];
     private readonly string group = Guid.NewGuid().ToString("N");
     private int selectedIndex = -1;
     public IList<string> Items { get; } = new List<string>();
+    /// <summary>Indices unavailable for pointer, keyboard and automation activation.</summary>
+    public ISet<int> DisabledItems { get; } = new HashSet<int>();
+    /// <summary>Fill the available width and divide it equally among the segments.</summary>
+    public bool Stretch { get; set; }
     /// <summary>
     /// A glyph per segment, by index beside <see cref="Items"/>; a segment
     /// past its end, or with null, has none. A glyph is drawn before its
@@ -275,25 +294,58 @@ public class SegmentedControl : Surface
         if (segments.Count != Items.Count)
         {
             row.Children.Clear();
+            row.ColumnDefinitions.Clear();
             segments.Clear();
             for (var i = 0; i < Items.Count; i++)
             {
                 var index = i;
-                var segment = new RadioButton { Content = Face(i), GroupName = group, Template = (ControlTemplate)Microsoft.UI.Xaml.Markup.XamlReader.Load(SegmentTemplate), IsChecked = i == selectedIndex };
+                var segment = new ChoiceButton { Content = Face(i), GroupName = group, Template = (ControlTemplate)Microsoft.UI.Xaml.Markup.XamlReader.Load(SegmentTemplate), IsChecked = i == selectedIndex, AppearanceChanged = Paint };
                 if (IconOnly && GlyphAt(i) is not null) Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(segment, Items[i]);
                 segment.Checked += (_, _) => { if (selectedIndex == index) return; selectedIndex = index; Paint(); SelectionChanged?.Invoke(this, EventArgs.Empty); };
                 segment.KeyDown += (_, args) =>
                 {
                     var step = args.Key is VirtualKey.Right or VirtualKey.Down ? 1 : args.Key is VirtualKey.Left or VirtualKey.Up ? -1 : 0;
                     if (step == 0 || segments.Count == 0) return;
-                    var next = segments[(index + step + segments.Count) % segments.Count];
+                    var enabled = segments.Where(item => item.IsEnabled).ToArray();
+                    if (enabled.Length == 0) return;
+                    var next = enabled[(Array.IndexOf(enabled, segment) + step + enabled.Length) % enabled.Length];
                     next.IsChecked = true;
                     next.Focus(FocusState.Keyboard);
                     args.Handled = true;
                 };
                 segments.Add(segment);
+                row.ColumnDefinitions.Add(new ColumnDefinition());
+                Grid.SetColumn(segment, i);
                 row.Children.Add(segment);
             }
+        }
+        HorizontalAlignment = Stretch ? HorizontalAlignment.Stretch : HorizontalAlignment.Left;
+        for (var i = 0; i < segments.Count; i++)
+        {
+            segments[i].IsEnabled = !DisabledItems.Contains(i);
+            // RadioButton's native style aligns left; the segment must fill
+            // its grid cell when the track distributes space with star columns.
+            segments[i].HorizontalAlignment = HorizontalAlignment.Stretch;
+            row.ColumnDefinitions[i].Width = Stretch ? new GridLength(1, GridUnitType.Star) : GridLength.Auto;
+            var content = segments[i].Content;
+            var glyph = GlyphAt(i);
+            if (glyph is null)
+            {
+                if (content is TextBlock words) words.Text = Items[i];
+                else segments[i].Content = Items[i];
+            }
+            else if (IconOnly)
+            {
+                if (content is Icon icon) icon.Glyph = glyph.Value;
+                else segments[i].Content = Face(i);
+            }
+            else if (content is StackPanel { Children: [Icon icon, TextBlock words] })
+            {
+                icon.Glyph = glyph.Value;
+                words.Text = Items[i];
+            }
+            else segments[i].Content = Face(i);
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(segments[i], IconOnly && glyph is not null ? Items[i] : "");
         }
         Paint();
     }
@@ -327,6 +379,7 @@ public class SegmentedControl : Surface
         {
             var segment = segments[i];
             var chosen = i == selectedIndex;
+            var over = segment is ChoiceButton { Hovered: true } && segment.IsEnabled;
             segment.Height = height - 2 * inset;
             segment.MinWidth = segment.MinHeight = 0;
             // A glyph beside a label: drawn `control.label-glyph.shrink` under
@@ -348,20 +401,40 @@ public class SegmentedControl : Surface
             segment.FontSize = FontSize;
             segment.FontFamily = FontFamily;
             segment.FontWeight = Theme.Weight(chosen ? "labelMedium" : "labelQuiet");
-            Skin.TextLine(segment, Theme.Text("", $"control.{Theme.Key(Size)}.content").LineHeight);
+            Skin.TextLine(segment, segment.FontSize);
             if (segment.Content is StackPanel words)
-                foreach (var label in words.Children.OfType<TextBlock>()) Skin.TextWeight(label, segment);
+                foreach (var label in words.Children.OfType<TextBlock>())
+                {
+                    Theme.Text("", $"control.{Theme.Key(Size)}.content").CopyTo(label);
+                    label.LineHeight = segment.FontSize;
+                    Skin.TextWeight(label, segment);
+                }
             segment.Background = chosen ? Filled ? Theme.Recipe(ControlVariant.Filled, Tint, "surface") : Theme.Brush("color.surface-raised") : null;
-            segment.Foreground = chosen ? Filled ? Theme.Recipe(ControlVariant.Filled, Tint, "content") : Theme.Brush("color.content") : Theme.Brush("color.content-secondary");
+            segment.Foreground = chosen ? Filled ? Theme.Recipe(ControlVariant.Filled, Tint, "content") : Theme.Brush("color.content") : Theme.Brush(over ? "color.content" : "color.content-secondary");
+            segment.Opacity = segment.IsEnabled ? 1 : 0.5;
+            if (segment is ChoiceButton face) face.DrawShadow(Theme, chosen ? "2xs" : null);
             Skin.Focus(segment, Theme);
         }
     }
 
     private static void Lay(Icon icon, double size)
     {
-        if (icon.GlyphSize == size) return;
         icon.GlyphSize = size;
         Appearance.Refresh(icon);
+    }
+}
+/// <summary>Native radio mechanics with the state changes the shared drawing observes.</summary>
+internal sealed class ChoiceButton : RadioButton
+{
+    internal bool Hovered { get; private set; }
+    internal Action? AppearanceChanged { get; init; }
+    internal ChoiceButton() => IsEnabledChanged += (_, _) => AppearanceChanged?.Invoke();
+    protected override void OnApplyTemplate() { base.OnApplyTemplate(); AppearanceChanged?.Invoke(); }
+    protected override void OnPointerEntered(PointerRoutedEventArgs args) { base.OnPointerEntered(args); Hovered = true; AppearanceChanged?.Invoke(); }
+    protected override void OnPointerExited(PointerRoutedEventArgs args) { base.OnPointerExited(args); Hovered = false; AppearanceChanged?.Invoke(); }
+    internal void DrawShadow(Theme theme, string? token)
+    {
+        if (GetTemplateChild("Lift") is FrameworkElement host) Elevation.Draw(this, host, theme, token);
     }
 }
 /// <summary>
@@ -376,6 +449,10 @@ public sealed class PillTabs : Surface
     private readonly string group = Guid.NewGuid().ToString("N");
     private int selectedIndex = -1;
     public IList<string> Items { get; } = new List<string>();
+    /// <summary>Indices unavailable for pointer, keyboard and automation activation.</summary>
+    public ISet<int> DisabledItems { get; } = new HashSet<int>();
+    /// <summary>The native tabs, in order.</summary>
+    public IReadOnlyList<RadioButton> Tabs => row.Children.OfType<RadioButton>().ToArray();
     /// <summary>Optional trailing counts, keyed by item index.</summary>
     public IDictionary<int, int> Counts { get; } = new Dictionary<int, int>();
     public int SelectedIndex { get => selectedIndex; set { selectedIndex = value; Sync(); } }
@@ -397,20 +474,23 @@ public sealed class PillTabs : Surface
             for (var i = 0; i < Items.Count; i++)
             {
                 var index = i;
-                var pill = new RadioButton { Content = Items[i], GroupName = group, Template = (ControlTemplate)Microsoft.UI.Xaml.Markup.XamlReader.Load(PillTemplate), IsChecked = i == selectedIndex };
+                var pill = new ChoiceButton { Content = Items[i], GroupName = group, Template = (ControlTemplate)Microsoft.UI.Xaml.Markup.XamlReader.Load(PillTemplate), IsChecked = i == selectedIndex, AppearanceChanged = Paint };
                 pill.Checked += (_, _) => { if (selectedIndex == index) return; selectedIndex = index; Paint(); SelectionChanged?.Invoke(this, EventArgs.Empty); };
                 pill.KeyDown += (_, args) =>
                 {
                     var step = args.Key is VirtualKey.Right or VirtualKey.Down ? 1 : args.Key is VirtualKey.Left or VirtualKey.Up ? -1 : 0;
                     if (step == 0 || Items.Count == 0) return;
-                    var next = (index + step + Items.Count) % Items.Count;
-                    ((RadioButton)row.Children[next]).IsChecked = true;
-                    ((RadioButton)row.Children[next]).Focus(FocusState.Keyboard);
+                    var enabled = row.Children.OfType<RadioButton>().Where(item => item.IsEnabled).ToArray();
+                    if (enabled.Length == 0) return;
+                    var next = enabled[(Array.IndexOf(enabled, pill) + step + enabled.Length) % enabled.Length];
+                    next.IsChecked = true;
+                    next.Focus(FocusState.Keyboard);
                     args.Handled = true;
                 };
                 row.Children.Add(pill);
             }
         }
+        for (var i = 0; i < row.Children.Count; i++) ((RadioButton)row.Children[i]).IsEnabled = !DisabledItems.Contains(i);
         row.Spacing = Theme.Number("spacing.2");
         Paint();
     }
@@ -422,6 +502,7 @@ public sealed class PillTabs : Surface
         {
             if (row.Children[i] is not RadioButton pill) continue;
             var chosen = i == selectedIndex;
+            var over = pill is ChoiceButton { Hovered: true } && pill.IsEnabled;
             pill.Height = height;
             pill.MinWidth = pill.MinHeight = 0;
             pill.Padding = new Thickness(Theme.Number("spacing.3"), 0, Theme.Number("spacing.3"), 0);
@@ -449,12 +530,19 @@ public sealed class PillTabs : Surface
                     text.ClearValue(TextBlock.ForegroundProperty);
                 }
                 var countLabel = (TextBlock)words.Children[1];
+                ((TextBlock)words.Children[0]).Text = Items[i];
                 countLabel.Text = count.ToString();
                 Microsoft.UI.Xaml.Documents.Typography.SetNumeralAlignment(countLabel, FontNumeralAlignment.Tabular);
             }
-            else Skin.TextLine(pill, size);
-            pill.Background = chosen ? Theme.Recipe(ControlVariant.Filled, Tint, "surface") : Theme.Brush("color.surface-inset");
-            pill.Foreground = chosen ? Theme.Recipe(ControlVariant.Filled, Tint, "content") : Theme.Brush("color.content-nav");
+            else
+            {
+                if (pill.Content is StackPanel || pill.Content is string text && text != Items[i]) pill.Content = Items[i];
+                else if (pill.Content is TextBlock label && label.Text != Items[i]) label.Text = Items[i];
+                Skin.TextLine(pill, size);
+            }
+            pill.Background = chosen ? Theme.Recipe(ControlVariant.Filled, Tint, "surface") : Theme.Brush(over ? "color.surface-sunken" : "color.surface-inset");
+            pill.Foreground = chosen ? Theme.Recipe(ControlVariant.Filled, Tint, "content") : Theme.Brush(over ? "color.content" : "color.content-nav");
+            pill.Opacity = pill.IsEnabled ? 1 : 0.5;
             Skin.Focus(pill, Theme);
         }
     }

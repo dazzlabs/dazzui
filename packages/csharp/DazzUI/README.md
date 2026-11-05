@@ -262,3 +262,47 @@ Story/catalog alignment and native rendering tests complement the React
 conformance collector described above. A successful smoke run verifies the
 native controls and interactions; the conformance verdict separately reports
 the remaining differences from React.
+
+`DAZZUI_SMOKE_SUITES=parity` exercises details outside the initial-scene
+collector: search clearing and Escape, copy feedback, resizer keys, disabled
+selection, button shortcuts, menu keyboard navigation and controlled checks,
+tooltip/prose sheets, and feedback animation through resizing and remounting.
+The same fixtures are included in the default smoke run. Use `parity-search`,
+`parity-select`, `parity-query`, `parity-presentation`, `parity-selection`,
+`parity-buttons`, `parity-overlays`, `parity-placement`, `parity-menus`,
+`parity-open-scenes` or `parity-feedback` to isolate a family.
+Keyboard fixtures verify their native foreground window before sending input.
+Open-scene captures run the generated Menu, Popover and Tooltip stories in
+three palettes; native popup screenshots use the actual screen region because
+render-target readback does not cover every popup island.
+
+Menus retain native flyouts and menu items, with the shared quiet labels,
+per-item icon/check columns, transparent resting rows and neutral highlight.
+Disabled rows can receive focus while confirmation remains inert. Home/End
+visit the endpoints. Checked items use React's controlled radio-group rule:
+the first true item is selected, and activation proposes a different item
+without replacing the caller's model. Menubar keeps its trigger instances and
+keyboard destination through theme changes; arrows and pointer movement also
+switch between open menus without a second activation. Tooltip uses the raised surface
+and small label; prose sheets include their padding and border in an explicit
+width. Both draw shared shadows separately from their content.
+
+Menu, Popover and PreviewCard expose `Side` and `Align` through native placement
+modes. Menu defaults to bottom/end, a menubar to bottom/start, and prose sheets
+to bottom/center. The placement fixture checks actual popup and trigger bounds,
+including native edge collision handling.
+
+Select keeps its native ComboBox navigation and scrolling while drawing the
+shared popup sheet, option rows, group labels and checks. Autocomplete retains
+free-form text; Combobox separates its query from its selected option value,
+commits on confirmation, restores the selected label after an unmatched query
+loses focus, and supports a clear action and an empty-results message. Query
+fixtures type into the native editor and wait for its debounced input event.
+
+Search's native editor has a separately focusable clear button whose accessible
+label is `ClearLabel`. It remains visible for a
+nonempty query after blur. Escape clears a query first and requests dismissal
+only when already empty. CodeBlock copying is opt-in and reports successful
+copying for the shared feedback duration. Progress and Skeleton follow Windows'
+animation preference and stop their clocks when unloaded; Spinner retains the
+reference's slower reduced-motion turn.

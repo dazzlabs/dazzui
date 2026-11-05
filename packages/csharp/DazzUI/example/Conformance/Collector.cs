@@ -100,7 +100,10 @@ internal static class Collector
         // The frame every collector draws a scene in: 40rem wide, spacing-6
         // around it, on the surface, its content centred.
         var frame = new Grid { Width = 640, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
-        host.Content = frame;
+        var room = new Grid();
+        room.Children.Add(frame);
+        room.Children.Add(Overlay.Layer);
+        host.Content = room;
 
         foreach (var choice in themes)
         {
@@ -158,7 +161,7 @@ internal static class Collector
                 {
                     if (!built.TryGetValue(node, out var queue)) return null;
                     while (queue.TryDequeue(out var element))
-                        if (element is FrameworkElement root && root.XamlRoot is not null && IsInside(root, frame)) return PaintedRoot(root, node.Element()!);
+                        if (element is FrameworkElement root && root.XamlRoot is not null && (IsInside(root, frame) || Overlay.BelongsTo(root, frame))) return PaintedRoot(root, node.Element()!);
                     return null;
                 }
                 var roots = nodes
@@ -171,16 +174,26 @@ internal static class Collector
                         if (roots[i] is not null && ReferenceEquals(roots[i], roots[j])) roots[i] = null;
                 // One that is not in the window — a popup's, before it opens — has no reading.
                 for (var i = 0; i < roots.Length; i++)
-                    if (roots[i] is { } root && (root.XamlRoot is null || !IsInside(root, frame) || root.ActualWidth == 0 && root.ActualHeight == 0))
+                    if (roots[i] is { } root && (root.XamlRoot is null || !(IsInside(root, frame) || Overlay.BelongsTo(root, frame)) || root.ActualWidth == 0 && root.ActualHeight == 0))
                         roots[i] = null;
 
                 var file = id.Replace('/', '-');
                 var crops = new string?[roots.Length];
                 if (images)
                 {
-                    var rects = roots.Select(root => root is null ? (Rect?)null
+                    var rects = roots.Select(root => root is null || !IsInside(root, frame) ? (Rect?)null
                         : root.TransformToVisual(frame).TransformBounds(new Rect(0, 0, root.ActualWidth, root.ActualHeight))).ToArray();
                     crops = await DrawAsync(frame, rects, imageDir, file);
+                    // Fixed viewports live outside the stage, but they are real
+                    // specimens in the window. Capture their actual painted box
+                    // separately instead of inventing a reading or clipping it
+                    // to the 640px story screenshot.
+                    for (var i = 0; i < roots.Length; i++)
+                        if (roots[i] is { } overlay && Overlay.BelongsTo(overlay, frame))
+                        {
+                            var capture = await DrawAsync(overlay, [new Rect(0, 0, overlay.ActualWidth, overlay.ActualHeight)], imageDir, $"{file}-overlay-{i}");
+                            crops[i] = capture[0];
+                        }
                     scenesOf[id] = $"images/{choice.Id}/{file}.png";
                 }
 

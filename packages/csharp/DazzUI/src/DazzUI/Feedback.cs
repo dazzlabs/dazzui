@@ -4,8 +4,47 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Automation.Provider;
+using Windows.Foundation;
+using Windows.UI.ViewManagement;
 
 namespace DazzUI;
+
+/// <summary>The native animation preference, observed only by mounted feedback.</summary>
+internal static class FeedbackMotion
+{
+    private static readonly UISettings Settings = new();
+    private static int testEnabled = -1;
+    private static event Action? Changed;
+    internal static bool Enabled => Volatile.Read(ref testEnabled) is var value && value >= 0 ? value != 0 : Settings.AnimationsEnabled;
+    static FeedbackMotion() => Settings.AnimationsEnabledChanged += (_, _) => Changed?.Invoke();
+    internal static void Follow(FrameworkElement element, Action update, Action stop)
+    {
+        void ChangedOnDispatcher() => element.DispatcherQueue.TryEnqueue(() => { if (element.IsLoaded) update(); });
+        element.Loaded += (_, _) => { Changed += ChangedOnDispatcher; update(); };
+        element.Unloaded += (_, _) => { Changed -= ChangedOnDispatcher; stop(); };
+    }
+    internal static void SetEnabledForTest(bool? enabled)
+    {
+        Volatile.Write(ref testEnabled, enabled is null ? -1 : enabled.Value ? 1 : 0);
+        Changed?.Invoke();
+    }
+    internal static KeySpline EaseInOut() => new() { ControlPoint1 = new Point(.42, 0), ControlPoint2 = new Point(.58, 1) };
+    internal static KeySpline Easing(Theme theme)
+    {
+        var curve = theme.Token("motion.easing");
+        return new KeySpline { ControlPoint1 = new Point(curve[0].GetDouble(), curve[1].GetDouble()), ControlPoint2 = new Point(curve[2].GetDouble(), curve[3].GetDouble()) };
+    }
+    internal static Storyboard Between(DependencyObject target, string property, double from, double to, TimeSpan duration, KeySpline curve, bool repeat = false)
+    {
+        var animation = new DoubleAnimationUsingKeyFrames { EnableDependentAnimation = true, Duration = duration };
+        animation.KeyFrames.Add(new DiscreteDoubleKeyFrame { KeyTime = TimeSpan.Zero, Value = from });
+        animation.KeyFrames.Add(new SplineDoubleKeyFrame { KeyTime = duration, Value = to, KeySpline = curve });
+        if (repeat) animation.RepeatBehavior = RepeatBehavior.Forever;
+        Storyboard.SetTarget(animation, target);
+        Storyboard.SetTargetProperty(animation, property);
+        return new Storyboard { Children = { animation } };
+    }
+}
 
 /// <summary>
 /// A rule cut into the surface: a sunken groove with a soft square corner,
@@ -17,11 +56,16 @@ public class Progress : Surface
     private readonly Border fill = new() { HorizontalAlignment = HorizontalAlignment.Left };
     private readonly TranslateTransform sweep = new();
     private Storyboard? sweeping;
+    private Storyboard? changing;
+    private readonly System.Diagnostics.Stopwatch sweepClock = new();
+    private double sweepWidth;
+    private double targetWidth = double.NaN;
+    private int changeVersion;
     private double value, minimum, maximum = 100;
     private bool indeterminate = true;
-    public double Value { get => value; set { this.value = value; indeterminate = false; Arrange(); } }
-    public double Minimum { get => minimum; set { minimum = value; Arrange(); } }
-    public double Maximum { get => maximum; set { maximum = value; Arrange(); } }
+    public double Value { get => value; set { this.value = value; indeterminate = false; ValueChanged(); } }
+    public double Minimum { get => minimum; set { minimum = value; ValueChanged(); } }
+    public double Maximum { get => maximum; set { maximum = value; ValueChanged(); } }
     public bool IsIndeterminate { get => indeterminate; set { indeterminate = value; Arrange(); } }
     public bool Gradient { get; set; }
     public Progress()
@@ -31,10 +75,13 @@ public class Progress : Surface
         fill.RenderTransform = sweep;
         Content = track;
         track.SizeChanged += (_, _) => Arrange();
-        Unloaded += (_, _) => sweeping?.Stop();
+        FeedbackMotion.Follow(this, () => Arrange(), StopMotion);
     }
     /// <summary>The groove and fill, for a subclass that sets a head above them.</summary>
     protected FrameworkElement Track => track;
+    protected virtual bool AnimateValue => true;
+    protected virtual void UpdateReading() { }
+    private void ValueChanged() { Arrange(animate: true); if (IsLoaded) UpdateReading(); }
     protected override void RefreshAppearance()
     {
         track.Background = Theme.Brush("color.surface-sunken");
@@ -52,28 +99,71 @@ public class Progress : Surface
             : Theme.Brush($"color.{Theme.Key(Tint)}.600");
         Arrange();
     }
-    private void Arrange()
+    private void Arrange(bool animate = false)
     {
         var width = track.ActualWidth;
         if (indeterminate)
         {
             // An indeterminate bar has no width to show, so it sweeps instead.
+            StopChange();
+            targetWidth = double.NaN;
             fill.Width = width * 0.4;
-            if (sweeping is null && width > 0)
+            if (!IsLoaded || !FeedbackMotion.Enabled || width <= 0)
             {
-                var run = new DoubleAnimation { From = -width * 0.4, To = width, Duration = TimeSpan.FromSeconds(1.2), RepeatBehavior = RepeatBehavior.Forever, EasingFunction = new SineEase { EasingMode = EasingMode.EaseInOut } };
-                Storyboard.SetTarget(run, sweep);
-                Storyboard.SetTargetProperty(run, "X");
-                sweeping = new Storyboard { Children = { run } };
+                StopSweep();
+                return;
+            }
+            if (sweeping is null || sweepWidth != width)
+            {
+                sweeping?.Stop();
+                sweepWidth = width;
+                // The web's 1.2s ease-in-out sweep is relative to the current
+                // width. Resize preserves its phase instead of its old end.
+                var duration = TimeSpan.FromSeconds(1.2);
+                if (!sweepClock.IsRunning) sweepClock.Restart();
+                sweeping = FeedbackMotion.Between(sweep, "X", -width * .4, width, duration, FeedbackMotion.EaseInOut(), repeat: true);
                 sweeping.Begin();
+                sweeping.SeekAlignedToLastTick(TimeSpan.FromMilliseconds(sweepClock.Elapsed.TotalMilliseconds % duration.TotalMilliseconds));
             }
             return;
         }
+        StopSweep();
+        var span = maximum - minimum;
+        var next = span <= 0 ? 0 : width * Math.Clamp((value - minimum) / span, 0, 1);
+        if (next == targetWidth && FeedbackMotion.Enabled) return;
+        var from = fill.ActualWidth;
+        var hadValue = !double.IsNaN(targetWidth);
+        StopChange();
+        targetWidth = next;
+        if (animate && hadValue && AnimateValue && IsLoaded && FeedbackMotion.Enabled && from != next)
+        {
+            var duration = TimeSpan.FromMilliseconds(Theme.Milliseconds("motion.duration") * 2);
+            fill.Width = next;
+            changing = FeedbackMotion.Between(fill, "Width", from, next, duration, FeedbackMotion.Easing(Theme));
+            var version = changeVersion;
+            changing.Completed += (_, _) => { if (version == changeVersion) { StopChange(); fill.Width = next; } };
+            changing.Begin();
+        }
+        else fill.Width = next;
+    }
+    private void StopSweep()
+    {
         sweeping?.Stop();
         sweeping = null;
+        sweepClock.Reset();
         sweep.X = 0;
-        var span = maximum - minimum;
-        fill.Width = span <= 0 ? 0 : width * Math.Clamp((value - minimum) / span, 0, 1);
+    }
+    private void StopChange()
+    {
+        changeVersion++;
+        changing?.Stop();
+        changing = null;
+    }
+    private void StopMotion()
+    {
+        StopSweep();
+        StopChange();
+        targetWidth = double.NaN;
     }
     protected override AutomationPeer OnCreateAutomationPeer() => new ProgressPeer(this);
     private sealed class ProgressPeer(Progress owner) : FrameworkElementAutomationPeer(owner), IRangeValueProvider
@@ -105,6 +195,12 @@ public sealed class Meter : Progress
     public string? Label { get; set; }
     /// <summary>The reading, over the groove's end: the value as a percentage when this is on.</summary>
     public bool ShowValue { get; set; }
+    protected override bool AnimateValue => false;
+    protected override void UpdateReading()
+    {
+        var span = Maximum - Minimum;
+        reading.Text = ShowValue ? $"{Math.Round(span <= 0 ? 0 : Math.Clamp((Value - Minimum) / span, 0, 1) * 100)}%" : "";
+    }
     public Meter()
     {
         IsIndeterminate = false;
@@ -132,8 +228,7 @@ public sealed class Meter : Progress
         TextStyle.SetWeight(label, Theme.Weight("labelMedium"));
         label.LineHeight = label.FontSize;
         label.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
-        var span = Maximum - Minimum;
-        reading.Text = ShowValue ? $"{Math.Round(span <= 0 ? 0 : (Value - Minimum) / span * 100)}%" : "";
+        UpdateReading();
         reading.Foreground = Theme.Brush("color.content-muted");
         reading.FontSize = label.FontSize;
         reading.FontFamily = Theme.CodeFont;
@@ -152,6 +247,7 @@ public sealed class Spinner : Surface
     private readonly Grid ring = new();
     private readonly RotateTransform turn = new();
     private Storyboard? turning;
+    private double turnSeconds;
     /// <summary>Drawn on an accent fill, in the on-accent ink.</summary>
     public bool OnAccent { get; set; }
     public Spinner()
@@ -162,17 +258,24 @@ public sealed class Spinner : Surface
         ring.RenderTransform = turn;
         ring.RenderTransformOrigin = new Windows.Foundation.Point(.5, .5);
         Content = ring;
-        Loaded += (_, _) =>
-        {
-            var run = new DoubleAnimation { From = 0, To = 360, Duration = TimeSpan.FromSeconds(1), RepeatBehavior = RepeatBehavior.Forever };
-            Storyboard.SetTarget(run, turn);
-            Storyboard.SetTargetProperty(run, "Angle");
-            turning = new Storyboard { Children = { run } };
-            turning.Begin();
-        };
-        Unloaded += (_, _) => turning?.Stop();
+        FeedbackMotion.Follow(this, Turn, StopTurning);
         Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(this, "Loading");
     }
+    private void Turn()
+    {
+        // React keeps the spinner moving under reduced motion: 2.4s instead
+        // of 1s. A frozen ring otherwise looks like stalled work.
+        var seconds = FeedbackMotion.Enabled ? 1 : 2.4;
+        if (turning is not null && seconds == turnSeconds) return;
+        StopTurning();
+        turnSeconds = seconds;
+        var run = new DoubleAnimation { From = 0, To = 360, Duration = TimeSpan.FromSeconds(seconds), RepeatBehavior = RepeatBehavior.Forever };
+        Storyboard.SetTarget(run, turn);
+        Storyboard.SetTargetProperty(run, "Angle");
+        turning = new Storyboard { Children = { run } };
+        turning.Begin();
+    }
+    private void StopTurning() { turning?.Stop(); turning = null; }
     protected override void RefreshAppearance()
     {
         var size = Theme.Number(Size is ControlSize.Small or ControlSize.Tiny ? "spacing.3.5" : Size == ControlSize.Large ? "spacing.5" : "spacing.4");
@@ -199,10 +302,36 @@ public sealed class Spinner : Surface
 public enum SkeletonShape { Text, Circle, Rect, Rectangle = Rect }
 public class Skeleton : Surface
 {
+    private readonly Border highlight = new() { IsHitTestVisible = false };
+    private readonly TranslateTransform sweep = new();
+    private readonly GradientStop glint = new() { Offset = .5 };
+    private Storyboard? sweeping;
+    private double sweepMilliseconds;
     public SkeletonShape Shape { get; set; } = SkeletonShape.Text;
+    public Skeleton()
+    {
+        // CSS paints a gradient image twice the box's width. Relative brush
+        // coordinates keep that same image when the placeholder resizes.
+        highlight.Background = new LinearGradientBrush
+        {
+            StartPoint = new Point(0, .5), EndPoint = new Point(2, .5),
+            RelativeTransform = sweep,
+            GradientStops =
+            {
+                new GradientStop { Color = Microsoft.UI.Colors.Transparent, Offset = 0 },
+                glint,
+                new GradientStop { Color = Microsoft.UI.Colors.Transparent, Offset = 1 },
+            },
+        };
+        Content = highlight;
+        RegisterPropertyChangedCallback(CornerRadiusProperty, (_, _) => highlight.CornerRadius = CornerRadius);
+        FeedbackMotion.Follow(this, Sweep, StopSweep);
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetAccessibilityView(this, Microsoft.UI.Xaml.Automation.Peers.AccessibilityView.Raw);
+    }
     protected override void RefreshAppearance()
     {
         Background = Theme.Brush("color.surface-sunken");
+        glint.Color = Theme.Color("color.surface-subtle");
         Skin.SetCorner(this, Theme.Number(Shape == SkeletonShape.Circle ? "radius.full" : Shape == SkeletonShape.Text ? "radius.tiny" : "radius.small"));
         // A line of text is the height of a line of body copy, not a length of its own.
         if (Shape == SkeletonShape.Text) Height = Theme.Text("", "bodySmall").LineHeight;
@@ -211,6 +340,25 @@ public class Skeleton : Surface
             if (!double.IsNaN(Width)) Height = Width;
             else if (!double.IsNaN(Height)) Width = Height;
         }
+        Sweep();
+    }
+    private void Sweep()
+    {
+        if (!IsLoaded || !FeedbackMotion.Enabled) { StopSweep(); return; }
+        var duration = Theme.Milliseconds("skeleton.sweep-duration");
+        if (sweeping is not null && sweepMilliseconds == duration) return;
+        StopSweep();
+        sweepMilliseconds = duration;
+        // background-position runs 200% -> -200%. For an image twice the
+        // box's width these percentages place its start at -2w -> 2w.
+        sweeping = FeedbackMotion.Between(sweep, "X", -2, 2, TimeSpan.FromMilliseconds(duration), FeedbackMotion.EaseInOut(), repeat: true);
+        sweeping.Begin();
+    }
+    private void StopSweep()
+    {
+        sweeping?.Stop();
+        sweeping = null;
+        sweep.X = 0;
     }
 }
 public sealed class SkeletonText : Surface
@@ -220,8 +368,9 @@ public sealed class SkeletonText : Surface
     {
         // The gap is the leading between two lines; the last line stops short, as a paragraph's does.
         var lines = new Grid { RowSpacing = Theme.Number("spacing.1.5") };
-        lines.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(6, GridUnitType.Star) });
-        lines.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(4, GridUnitType.Star) });
+        var last = Theme.Number("skeleton.last-line-width");
+        lines.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(last, GridUnitType.Star) });
+        lines.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1 - last, GridUnitType.Star) });
         for (var i = 0; i < Lines; i++)
         {
             lines.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });

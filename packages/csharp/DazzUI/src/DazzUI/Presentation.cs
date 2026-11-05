@@ -74,7 +74,9 @@ public sealed class Avatar : Surface
         HorizontalContentAlignment = HorizontalAlignment.Center;
         VerticalContentAlignment = VerticalAlignment.Center;
         // Initials are read at a glance: the label's strong weight, one type step per size.
-        var initials = Theme.Text(string.Concat(NameText.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(n => n[0])).ToUpperInvariant(), type);
+        var words = NameText.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+        var monogram = words.Length == 0 ? "" : words[0][..1] + (words.Length > 1 ? words[^1][..1] : "");
+        var initials = Theme.Text(monogram.ToUpperInvariant(), type);
         TextStyle.SetWeight(initials, Theme.Weight("labelStrong"));
         initials.Foreground = Foreground;
         initials.LineHeight = initials.FontSize;
@@ -195,14 +197,59 @@ public sealed class Code : Surface
 /// </summary>
 public sealed class CodeBlock : Surface
 {
+    private readonly IconButton copy = new() { Glyph = FluentIcons.Common.Icon.Copy, Label = "Copy" };
+    private readonly DispatcherTimer copyFeedback = new();
+    private bool copied;
     public string Text { get; set; } = "";
     public string? Title { get; set; }
     /// <summary>The listing's language, in small caps in the head.</summary>
     public string? Syntax { get; set; }
     public bool LineNumbers { get; set; }
-    public bool Copyable { get; set; } = true;
+    public bool Copyable { get; set; }
     public bool Wrap { get; set; }
     public UIElement? Actions { get; set; }
+    public CodeBlock()
+    {
+        copy.Click += (_, _) => Copy(text =>
+        {
+            var data = new DataPackage();
+            data.SetText(text);
+            Clipboard.SetContent(data);
+        });
+        copyFeedback.Tick += (_, _) => ResetCopyFeedback();
+        Unloaded += (_, _) => ResetCopyFeedback();
+    }
+    // A clipboard failure leaves the action unchanged. Keep the writer at the
+    // boundary so native tests can verify success/refusal without replacing
+    // the user's clipboard.
+    internal void Copy(Action<string> write)
+    {
+        try { write(Text.TrimEnd('\n')); }
+        catch (Exception) { return; }
+        if (copied) return;
+        copied = true;
+        UpdateCopyFeedback();
+        copyFeedback.Interval = TimeSpan.FromMilliseconds(Theme.Milliseconds("code-block.copy-feedback-duration"));
+        copyFeedback.Start();
+    }
+    private void ResetCopyFeedback()
+    {
+        copyFeedback.Stop();
+        copied = false;
+        UpdateCopyFeedback();
+    }
+    private void UpdateCopyFeedback()
+    {
+        copy.Label = copied ? "Copied" : "Copy";
+        copy.Glyph = copied ? FluentIcons.Common.Icon.Checkmark : FluentIcons.Common.Icon.Copy;
+        if (copy.Content is Icon icon)
+        {
+            icon.Glyph = copy.Glyph;
+            Appearance.Refresh(icon);
+        }
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(copy, copy.Label);
+        if (copy.IsLoaded) Tooltip.Set(copy, copy.Label);
+    }
     protected override void RefreshAppearance()
     {
         var mono = Theme.CodeFont;
@@ -211,20 +258,20 @@ public sealed class CodeBlock : Surface
         var caption = Theme.Text("", "captionSmall").LineHeight;
         TextBlock Code(string text, double? line = null) => new() { IsTextScaleFactorEnabled = Theme.Sizing != ThemeSizing.System, Text = text, FontFamily = mono, FontSize = size, LineHeight = line ?? leading, LineStackingStrategy = LineStackingStrategy.BlockLineHeight };
         var column = new StackPanel();
-        if (Title is not null || Syntax is not null || Copyable || Actions is not null)
+        if (!string.IsNullOrEmpty(Title) || !string.IsNullOrEmpty(Syntax) || Copyable || Actions is not null)
         {
             var head = new Grid { ColumnSpacing = Theme.Number("spacing.2"), MinHeight = Theme.Number("spacing.8"), Padding = new Thickness(Theme.Number("spacing.3"), Theme.Number("spacing.1"), Theme.Number("spacing.3"), Theme.Number("spacing.1")), Background = Theme.Brush("color.surface-chrome"), BorderBrush = Theme.Brush("color.border"), BorderThickness = new Thickness(0, 0, 0, Theme.Number("stroke.hairline")) };
             head.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             head.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             head.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            if (Title is not null)
+            if (!string.IsNullOrEmpty(Title))
             {
                 var title = Code(Title, caption);
                 title.Foreground = Theme.Brush("color.content-secondary");
                 title.VerticalAlignment = VerticalAlignment.Center;
                 head.Children.Add(title);
             }
-            if (Syntax is not null)
+            if (!string.IsNullOrEmpty(Syntax))
             {
                 var language = Theme.Text(Syntax.ToUpperInvariant(), "labelSmall");
                 TextStyle.SetWeight(language, Theme.Weight("labelMedium"));
@@ -236,18 +283,19 @@ public sealed class CodeBlock : Surface
             if (Actions is not null) { Skin.Detach(Actions); actions.Children.Add(Actions); }
             if (Copyable)
             {
-                var copy = new IconButton { Glyph = FluentIcons.Common.Icon.Copy, Label = "Copy", Variant = ControlVariant.Plain, Tint = WidgetTint.Neutral };
-                copy.Click += (_, _) => { var data = new DataPackage(); data.SetText(Text); Clipboard.SetContent(data); };
+                Skin.Detach(copy);
+                UpdateCopyFeedback();
                 actions.Children.Add(copy);
             }
             Grid.SetColumn(actions, 2); head.Children.Add(actions);
             column.Children.Add(head);
         }
-        var lines = Text.Split('\n');
+        var source = Text.TrimEnd('\n');
+        var lines = source.Split('\n');
         var body = new Grid { Padding = new Thickness(0, Theme.Number("spacing.2.5"), 0, Theme.Number("spacing.2.5")) };
         body.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         body.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-        var code = Code(Text);
+        var code = Code(source);
         code.Foreground = Theme.Brush("color.content");
         code.IsTextSelectionEnabled = true;
         code.TextWrapping = Wrap ? TextWrapping.Wrap : TextWrapping.NoWrap;

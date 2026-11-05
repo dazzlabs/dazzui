@@ -32,6 +32,15 @@ internal static class SmokeTest
         };
         try
         {
+            if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES")?.StartsWith("parity", StringComparison.Ordinal) == true)
+            {
+                await ParityAsync(shell, output);
+                await File.WriteAllTextAsync(Path.Combine(output, "result.txt"), "PASS: React detail parity in native fields, presentation, selection, overlays and feedback.\n");
+                finishing = true;
+                window.Close();
+                Environment.Exit(0);
+                return;
+            }
             if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "geometry")
             {
                 await GeometryTests.RunAsync(shell, output);
@@ -118,6 +127,7 @@ internal static class SmokeTest
                 return;
             }
             await AppearanceTests.RunAsync(shell, output);
+            await ParityAsync(shell, output);
             await GeometryTests.RunAsync(shell, output);
             await SystemSizingTests.RunAsync(shell, output);
             if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "system-sizing")
@@ -209,7 +219,33 @@ internal static class SmokeTest
         }
     }
 
-    /// <summary>Every kit button on the page is the height its size says.</summary>
+    /// <summary>React's component details exercised through native controls.</summary>
+    private static async Task ParityAsync(Shell shell, string output)
+    {
+        var selection = Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES");
+        var only = selection?.StartsWith("parity-", StringComparison.Ordinal) == true ? selection[7..] : null;
+        (string Name, Func<Task> Run)[] suites =
+        [
+            ("search", () => SearchFieldTests.RunAsync(shell)),
+            ("select", () => SelectPopupTests.RunAsync(shell, output)),
+            ("query", () => QueryFieldTests.RunAsync(shell, output)),
+            ("presentation", () => PresentationParityTests.RunAsync(shell)),
+            ("selection", () => SelectionParityTests.RunAsync(shell, output)),
+            ("buttons", () => ButtonParityTests.RunAsync(shell, output)),
+            ("overlays", () => OverlayParityTests.RunAsync(shell, output)),
+            ("placement", () => OverlayPlacementTests.RunAsync(shell, output)),
+            ("menus", () => PopupParityTests.RunAsync(shell, output)),
+            ("open-scenes", () => OpenSceneTests.RunAsync(shell, output)),
+            ("feedback", () => FeedbackParityTests.RunAsync(shell)),
+        ];
+        if (only is not null && !suites.Any(suite => suite.Name == only)) throw new ArgumentException($"Unknown parity suite: {only}");
+        foreach (var suite in suites.Where(suite => only is null || suite.Name == only))
+        {
+            await File.WriteAllTextAsync(Path.Combine(output, "progress.txt"), $"React detail parity: {suite.Name}");
+            await suite.Run();
+        }
+    }
+
     private static void CheckButtons(Shell shell, string theme, string? page)
     {
         if (shell.CurrentPage is not DependencyObject root) return;

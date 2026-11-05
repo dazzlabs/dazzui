@@ -14,6 +14,16 @@ namespace DazzUI;
 /// </summary>
 public class Button : Microsoft.UI.Xaml.Controls.Button
 {
+    // Keep the shortcut out of glyph-end detection: React decides the trims
+    // from the label's children before appending its quieter hint slot.
+    private static readonly DependencyProperty IsShortcutProperty = DependencyProperty.RegisterAttached(
+        "IsShortcut", typeof(bool), typeof(Button), new PropertyMetadata(false));
+    internal static UIElement ShortcutHint(UIElement content)
+    {
+        var host = new Border { Child = content, Opacity = 0.7, VerticalAlignment = VerticalAlignment.Center };
+        host.SetValue(IsShortcutProperty, true);
+        return host;
+    }
     private readonly Dictionary<string, Microsoft.UI.Xaml.Media.SolidColorBrush> stateBrushes = [];
     public static readonly DependencyProperty ThemeProperty = DependencyProperty.Register(
         nameof(Theme), typeof(Theme), typeof(Button), new PropertyMetadata(null, Changed));
@@ -89,12 +99,7 @@ public class Button : Microsoft.UI.Xaml.Controls.Button
         Background = stateBrushes["ButtonBackground"];
         Foreground = stateBrushes[IsEnabled ? "ButtonForeground" : "ButtonForegroundDisabled"];
         BorderBrush = stateBrushes["ButtonBorderBrush"];
-        var focus = Theme.Color($"color.primary.{Theme.Number("focus.ring.shade")}");
-        focus.A = (byte)Math.Round(focus.A * Theme.Number("focus.ring.alpha"));
-        FocusVisualPrimaryBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(focus);
-        FocusVisualPrimaryThickness = new Thickness(Theme.Number("focus.width"));
-        FocusVisualSecondaryThickness = new Thickness(0);
-        FocusVisualMargin = new Thickness(0);
+        Skin.Focus(this, Theme);
         Tailor();
         Skin.TextLine(this, FontSize);
         AlignLabel();
@@ -130,14 +135,25 @@ public class Button : Microsoft.UI.Xaml.Controls.Button
             words.TextLineBounds = TextLineBounds.Tight;
             words.IsTextScaleFactorEnabled = Theme.Sizing != ThemeSizing.System;
         }
+        foreach (var hint in parts.OfType<Border>().Where(part => (bool)part.GetValue(IsShortcutProperty)))
+            if (hint.Child is TextBlock words)
+            {
+                words.FontFamily = Theme.Text("", "labelStrong").FontFamily;
+                words.LineHeight = Theme.Text("", profile + ".content").LineHeight;
+                words.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
+                words.TextLineBounds = TextLineBounds.Tight;
+                words.IsTextScaleFactorEnabled = Theme.Sizing != ThemeSizing.System;
+                Skin.TextWeight(words, this);
+            }
         foreach (var icon in parts.OfType<Icon>())
             if (icon.GlyphSize != glyph)
             {
                 icon.GlyphSize = glyph;
                 Appearance.Refresh(icon);
             }
-        var leading = parts.Count >= 2 && parts[0] is Icon;
-        var trailing = parts.Count >= 2 && parts[^1] is Icon;
+        var label = parts.Where(part => !(bool)part.GetValue(IsShortcutProperty)).ToArray();
+        var leading = label.Length >= 2 && label[0] is Icon;
+        var trailing = label.Length >= 2 && label[^1] is Icon;
         Padding = new Thickness(pad - (leading ? inset : 0), block, pad - (trailing ? inset : 0), block);
     }
 

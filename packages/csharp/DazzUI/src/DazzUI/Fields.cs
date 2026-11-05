@@ -118,14 +118,29 @@ public sealed class SearchField : TextField
 {
     private Icon? searchIcon;
     private KeyCap? hint;
-    public string? Hint { get; set; }
+    private Microsoft.UI.Xaml.Controls.Button? clear;
+    private Icon? clearIcon;
+    private bool clearHovered;
+    private string clearLabel = "Clear search";
+    private string? hintText;
+    public string? Hint { get => hintText; set { hintText = value; ApplySearchInsets(); } }
+    /// <summary>The accessible name of the trailing clear action.</summary>
+    public string ClearLabel { get => clearLabel; set { clearLabel = value; ApplySearchInsets(); } }
     public event EventHandler? Dismissed;
-    protected override bool NativeClear => true;
     public SearchField()
     {
         PlaceholderText = "Search";
-        TextChanged += (_, _) => { if (hint is not null) hint.Visibility = Text.Length == 0 ? Visibility.Visible : Visibility.Collapsed; };
-        KeyDown += (_, args) => { if (args.Key == VirtualKey.Escape) { Text = ""; Dismissed?.Invoke(this, EventArgs.Empty); args.Handled = true; } };
+        TextChanged += (_, _) => ApplySearchInsets();
+        RegisterPropertyChangedCallback(IsReadOnlyProperty, (_, _) => ApplySearchInsets());
+        PreviewKeyDown += (_, args) =>
+        {
+            if (args.Key != VirtualKey.Escape) return;
+            // Handle before the native editor consumes Escape. A first press
+            // clears the query; only an already empty search dismisses.
+            if (Text.Length > 0) Text = "";
+            else Dismissed?.Invoke(this, EventArgs.Empty);
+            args.Handled = true;
+        };
     }
     protected override void OnApplyTemplate()
     {
@@ -134,8 +149,41 @@ public sealed class SearchField : TextField
         {
             searchIcon = new Icon { Glyph = FluentIcons.Common.Icon.Search, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Center, IsHitTestVisible = false };
             Grid.SetRow(searchIcon, Grid.GetRow(editor)); grid.Children.Add(searchIcon);
-            hint = new KeyCap(Hint ?? "") { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center, IsHitTestVisible = false, Visibility = Text.Length == 0 ? Visibility.Visible : Visibility.Collapsed };
+            hint = new KeyCap(Hint ?? "") { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center, IsHitTestVisible = false, Visibility = Visibility.Collapsed };
+            hint.Loaded += (_, _) => ApplySearchInsets();
             Grid.SetRow(hint, Grid.GetRow(editor)); grid.Children.Add(hint);
+            // The native text-box delete affordance is focus-dependent and
+            // carries Windows geometry. This remains a native button, drawn
+            // as React's always-present trailing glyph while a query exists.
+            clearHovered = false;
+            clearIcon = new Icon { Glyph = FluentIcons.Common.Icon.Dismiss, IsHitTestVisible = false };
+            clear = new Microsoft.UI.Xaml.Controls.Button
+            {
+                Content = clearIcon,
+                MinWidth = 0,
+                MinHeight = 0,
+                Padding = new Thickness(0),
+                BorderThickness = new Thickness(0),
+                Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent),
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Center,
+                Template = (ControlTemplate)Microsoft.UI.Xaml.Markup.XamlReader.Load("""
+                    <ControlTemplate xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" TargetType="Button">
+                        <Grid Background="{TemplateBinding Background}" Control.IsTemplateFocusTarget="True">
+                            <ContentPresenter Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Grid>
+                    </ControlTemplate>
+                    """),
+            };
+            clear.PointerEntered += (_, _) => { clearHovered = true; ApplyClearInk(); };
+            clear.PointerExited += (_, _) => { clearHovered = false; ApplyClearInk(); };
+            clear.Click += (_, _) =>
+            {
+                if (!IsEnabled || IsReadOnly) return;
+                Text = "";
+                Focus(FocusState.Programmatic);
+            };
+            Grid.SetRow(clear, Grid.GetRow(editor)); grid.Children.Add(clear);
         }
         ApplySearchInsets();
     }
@@ -152,7 +200,37 @@ public sealed class SearchField : TextField
         var inset = Theme.Number("spacing.3");
         var glyph = Theme.Number($"control.{Theme.Key(Size)}.icon-size");
         var gap = Theme.Number($"control.{Theme.Key(Size)}.gap");
-        Padding = new Thickness(inset + glyph + gap, Padding.Top, Hint is null ? inset : inset + Theme.Number("spacing.10"), Padding.Bottom);
+        var trailing = inset;
+        if (clear is not null && clearIcon is not null)
+        {
+            var clearSize = Theme.Number("icon.small");
+            var showClear = Text.Length > 0;
+            clear.Visibility = showClear ? Visibility.Visible : Visibility.Collapsed;
+            clear.IsEnabled = IsEnabled && !IsReadOnly;
+            clear.Width = clear.Height = clearSize;
+            clear.Margin = new Thickness(0, 0, inset + BorderThickness.Right, 0);
+            clearIcon.GlyphSize = clearSize;
+            if (!showClear || !clear.IsEnabled) clearHovered = false;
+            ApplyClearInk();
+            Appearance.Refresh(clearIcon);
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(clear, ClearLabel);
+            Skin.Focus(clear, Theme);
+            if (showClear) trailing += clearSize + gap;
+        }
+        if (hint is not null)
+        {
+            hint.Content = Hint ?? "";
+            hint.Margin = new Thickness(0, 0, inset + BorderThickness.Right, 0);
+            var showHint = Text.Length == 0 && !string.IsNullOrEmpty(Hint);
+            hint.Visibility = showHint ? Visibility.Visible : Visibility.Collapsed;
+            if (showHint)
+            {
+                Appearance.Refresh(hint);
+                hint.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
+                trailing += hint.DesiredSize.Width - hint.Margin.Right + gap;
+            }
+        }
+        Padding = new Thickness(inset + glyph + gap, Padding.Top, trailing, Padding.Bottom);
         if (searchIcon is not null)
         {
             searchIcon.Margin = new Thickness(inset + BorderThickness.Left, 0, 0, 0);
@@ -160,7 +238,11 @@ public sealed class SearchField : TextField
             searchIcon.Foreground = Theme.Brush("color.content-faint");
             Appearance.Refresh(searchIcon);
         }
-        if (hint is not null) { hint.Content = Hint ?? ""; hint.Margin = new Thickness(0, 0, inset + BorderThickness.Right, 0); }
+    }
+    private void ApplyClearInk()
+    {
+        if (clear is null || clearIcon is null) return;
+        clear.Foreground = clearIcon.Foreground = Theme.Brush(clearHovered && clear.IsEnabled ? "color.content" : "color.content-faint");
     }
 }
 public record SelectOption(string Value, string Label, string? Group = null, bool Disabled = false)
@@ -169,6 +251,8 @@ public record SelectOption(string Value, string Label, string? Group = null, boo
 }
 public class Select : ComboBox
 {
+    private readonly Dictionary<ComboBoxItem, bool> groupHeaders = new();
+    private bool paintingPopup;
     public Theme Theme { get => Appearance.GetTheme(this); set => Appearance.SetTheme(this, value); }
     public ControlSize Size { get => Appearance.GetSize(this); set => Appearance.SetSize(this, value); }
     public WidgetTint Tint { get => Appearance.GetTint(this); set => Appearance.SetTint(this, value); }
@@ -181,13 +265,26 @@ public class Select : ComboBox
         Appearance.Bind(this, Apply);
         IsEnabledChanged += (_, _) => Apply();
         HorizontalAlignment = HorizontalAlignment.Stretch;
+        // The native popup still clamps itself to the available window. The
+        // shared sheet adds no independent 504px ceiling to that space.
+        MaxDropDownHeight = double.PositiveInfinity;
+        DropDownOpened += (_, _) =>
+        {
+            ApplyPopup();
+            DispatcherQueue.TryEnqueue(ApplyPopup);
+        };
+        SizeChanged += (_, _) => ApplyPopup();
         Apply();
     }
     protected override void OnApplyTemplate()
     {
-        Apply();
         base.OnApplyTemplate();
         Apply();
+    }
+    protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
+    {
+        base.PrepareContainerForItemOverride(element, item);
+        if (element is ComboBoxItem row) PaintRow(row);
     }
     private void Apply()
     {
@@ -205,136 +302,379 @@ public class Select : ComboBox
             if (VisualTreeHelper.GetParent(glyph) is Grid grid && grid.ColumnDefinitions.Count > 1)
                 grid.ColumnDefinitions[1].Width = new GridLength(icon + Theme.Number("spacing.2"));
         }
+        ApplyPopup();
+    }
+    private void PaintRow(ComboBoxItem row)
+    {
+        var heading = groupHeaders.TryGetValue(row, out var groupGap);
+        SelectionPopupSkin.Row(row, Theme, heading: heading, groupGap: groupGap);
+        row.PreviewKeyDown -= NavigateDisabledOption;
+        row.PreviewKeyDown += NavigateDisabledOption;
+    }
+    private void NavigateDisabledOption(object sender, KeyRoutedEventArgs args)
+    {
+        if (args.Handled || !IsDropDownOpen || sender is not ComboBoxItem current
+            || args.Key is not (VirtualKey.Up or VirtualKey.Down or VirtualKey.Home or VirtualKey.End)
+            || Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Menu)
+                .HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down)) return;
+        var index = IndexFromContainer(current);
+        if (index < 0) index = Items.IndexOf(current);
+        if (index < 0) return;
+        var step = args.Key is VirtualKey.Up or VirtualKey.End ? -1 : 1;
+        var next = args.Key == VirtualKey.Home ? 0 : args.Key == VirtualKey.End ? Items.Count - 1 : index + step;
+        while (next >= 0 && next < Items.Count)
+        {
+            var candidate = Items[next] as ComboBoxItem ?? ContainerFromIndex(next) as ComboBoxItem;
+            if (candidate is null) return;
+            if (groupHeaders.ContainsKey(candidate) || candidate.Visibility == Visibility.Collapsed)
+            {
+                next += step;
+                continue;
+            }
+            // Native ComboBox navigation skips disabled containers even when
+            // AllowFocusWhenDisabled is set. Bridge only that missing step;
+            // ordinary movement, scrolling and selection remain native.
+            if (!candidate.IsEnabled && candidate.AllowFocusWhenDisabled && candidate.Focus(FocusState.Keyboard))
+            {
+                candidate.StartBringIntoView(new BringIntoViewOptions { AnimationDesired = false });
+                args.Handled = true;
+            }
+            return;
+        }
+    }
+    private void ApplyPopup()
+    {
+        if (paintingPopup) return;
+        paintingPopup = true;
+        try
+        {
+            foreach (var row in Items.OfType<ComboBoxItem>()) PaintRow(row);
+            for (var index = 0; index < Items.Count; index++)
+                if (Items[index] is not ComboBoxItem && ContainerFromIndex(index) is ComboBoxItem generated) PaintRow(generated);
+            if (GetTemplateChild("Popup") is not Microsoft.UI.Xaml.Controls.Primitives.Popup popup
+                || GetTemplateChild("PopupBorder") is not Border border) return;
+            var width = ActualWidth > 0 ? ActualWidth : double.IsFinite(Width) ? Width : 0;
+            SelectionPopupSkin.Sheet(popup, border, Theme, width);
+            if (GetTemplateChild("ScrollViewer") is ScrollViewer scroll)
+            {
+                scroll.MinWidth = Math.Max(0, width - 2 * (Theme.Number("spacing.1") + Theme.Number("stroke.hairline")));
+                scroll.Margin = scroll.Padding = new Thickness(0);
+                scroll.Foreground = Theme.Brush("color.content");
+                foreach (var presenter in OverlaySkin.Walk(scroll).OfType<ItemsPresenter>())
+                    presenter.Margin = presenter.Padding = new Thickness(0);
+            }
+        }
+        finally { paintingPopup = false; }
     }
     public void SetOptions(IEnumerable<SelectOption> options)
     {
         Items.Clear();
+        groupHeaders.Clear();
         string? lastGroup = null;
         foreach (var option in options)
         {
             if (option.Group is not null && option.Group != lastGroup)
             {
-                Items.Add(new ComboBoxItem { Content = option.Group, IsEnabled = false });
+                var heading = new ComboBoxItem { Content = option.Group, IsEnabled = false, IsTabStop = false, IsHitTestVisible = false };
+                groupHeaders[heading] = lastGroup is not null;
+                Items.Add(heading);
             }
             lastGroup = option.Group;
             Items.Add(new ComboBoxItem { Content = option.Label, Tag = option.Value, IsEnabled = !option.Disabled });
         }
+        ApplyPopup();
     }
     public string? Value
     {
         get => (SelectedItem as ComboBoxItem)?.Tag as string ?? SelectedItem?.ToString();
-        set => SelectedItem = Items.OfType<ComboBoxItem>().FirstOrDefault(item => Equals(item.Tag, value));
+        set => SelectedItem = value is null ? null : Items.OfType<ComboBoxItem>().FirstOrDefault(item => !groupHeaders.ContainsKey(item) && Equals(item.Tag, value));
     }
 }
 public class Autocomplete : Surface
 {
-    private Style? nativeTextBoxStyle;
-    private bool painted;
-    public AutoSuggestBox Input { get; } = new();
+    public AutoSuggestBox Input { get; } = new() { UpdateTextOnSelect = false };
     public string Text { get => Input.Text; set => Input.Text = value; }
     public string PlaceholderText { get => Input.PlaceholderText; set => Input.PlaceholderText = value; }
     public bool IsSuggestionListOpen { get => Input.IsSuggestionListOpen; set => Input.IsSuggestionListOpen = value; }
     public event EventHandler<string>? ValueChanged;
     public IList<string> Suggestions { get; } = new List<string>();
     public IList<SelectOption> Options { get; } = new List<SelectOption>();
-    public string? SelectedValue { get; private set; }
-    public bool Invalid { get; set; }
-    public bool Mono { get; set; }
+    private string? selectedValue;
+    public string? SelectedValue { get => selectedValue; set => ShowSelection(value); }
+    private bool invalid;
+    public bool Invalid { get => invalid; set { invalid = value; RefreshAppearance(); } }
+    private bool mono;
+    public bool Mono { get => mono; set { mono = value; RefreshAppearance(); } }
+    private bool readOnly;
+    public bool ReadOnly { get => readOnly; set { readOnly = value; RefreshAppearance(); } }
+    public string Empty { get; set; } = "No matches";
+    protected virtual bool IsChoice => false;
+    private bool mounted;
+    private int mountVersion;
+    internal bool IsMounted => mounted;
     public Autocomplete()
     {
+        // The shared popup has a gap and its own round corners; WinUI's
+        // attached-panel treatment must not square the adjoining corners.
+        Microsoft.UI.Xaml.Controls.Primitives.AutoSuggestBoxHelper.SetKeepInteriorCornersSquare(Input, false);
         Content = Input;
-        Input.Loaded += (_, _) => RefreshAppearance();
-        Input.GotFocus += (_, _) => PaintPlaceholder();
-        Input.LostFocus += (_, _) => PaintPlaceholder();
-        Input.LayoutUpdated += (_, _) => { if (!painted && IsLoaded) { painted = true; PaintPlaceholder(); } };
-        Input.TextChanged += (_, args) =>
+        Loaded += (_, _) =>
         {
-            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
-                RefreshSuggestions(Text);
-            ValueChanged?.Invoke(this, Text);
+            if (mounted) return;
+            mounted = true;
+            mountVersion++;
+            Input.TextChanged += OnTextChanged;
+            RefreshAppearance();
+            RefreshSuggestions("");
+            Input.IsSuggestionListOpen = false;
         };
-        Input.SuggestionChosen += (_, args) => Choose(args.SelectedItem);
-        Input.QuerySubmitted += (_, args) => { if (args.ChosenSuggestion is not null) Choose(args.ChosenSuggestion); };
+        Unloaded += (_, _) =>
+        {
+            if (!mounted) return;
+            mounted = false;
+            mountVersion++;
+            Input.TextChanged -= OnTextChanged;
+            QueryPopupSkin.Detach(this);
+        };
+        Input.Loaded += (_, _) => RefreshInput();
+        Input.GotFocus += (_, _) => RefreshInput();
+        Input.LostFocus += (_, _) =>
+        {
+            if (!mounted) return;
+            var version = mountVersion;
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                if (mounted && version == mountVersion && IsChoice && !QueryPopupSkin.ContainsFocus(this)) RestoreSelection();
+            });
+        };
+        IsEnabledChanged += (_, _) => RefreshAppearance();
+        // Native suggestion highlighting must not commit the selection or
+        // rewrite the query. A click or Enter submits the chosen row once.
+        Input.QuerySubmitted += (_, args) =>
+        {
+            if (!mounted || !IsEnabled || ReadOnly || args.ChosenSuggestion is not ListViewItem { Tag: SelectOption option } || option.Disabled) return;
+            Choose(option);
+            Input.IsSuggestionListOpen = false;
+        };
+        Input.PreviewKeyDown += (_, args) =>
+        {
+            if (!mounted || !IsEnabled || ReadOnly) return;
+            if (args.Key is VirtualKey.Down or VirtualKey.Up && !IsSuggestionListOpen)
+            {
+                RefreshSuggestions(IsChoice ? "" : Text);
+                Input.IsSuggestionListOpen = true;
+            }
+            if (!IsSuggestionListOpen || QueryPopupSkin.List(Input) is not ListView list) return;
+            if (args.Key == VirtualKey.Enter && list.SelectedItem is ListViewItem row
+                && row.Tag is not SelectOption { Disabled: false })
+            {
+                // Disabled options stay discoverable by keyboard, as in Base
+                // UI, but native ASB would otherwise close on every Enter.
+                args.Handled = true;
+            }
+            else if (args.Key is VirtualKey.Down or VirtualKey.Up)
+            {
+                var step = args.Key == VirtualKey.Down ? 1 : -1;
+                var next = list.SelectedIndex < 0 ? step > 0 ? 0 : list.Items.Count - 1 : list.SelectedIndex + step;
+                if (next >= 0 && next < list.Items.Count && list.Items[next] is not ListViewItem { Tag: SelectOption })
+                {
+                    // Native ASB navigates raw indices. Group labels and the
+                    // empty message are decoration, not navigable options.
+                    while (next >= 0 && next < list.Items.Count && list.Items[next] is not ListViewItem { Tag: SelectOption }) next += step;
+                    list.SelectedIndex = next >= 0 && next < list.Items.Count ? next : -1;
+                    args.Handled = true;
+                }
+            }
+        };
+        Input.RegisterPropertyChangedCallback(AutoSuggestBox.IsSuggestionListOpenProperty, (_, _) =>
+        {
+            if (!mounted) return;
+            if (Input.IsSuggestionListOpen && (!IsEnabled || ReadOnly)) Input.IsSuggestionListOpen = false;
+            QueryPopupSkin.Sheet(this);
+            RefreshActions();
+            if (IsChoice && !Input.IsSuggestionListOpen) RestoreSelection();
+        });
         Skin.Input(Input, Theme, Size, Invalid);
     }
-    /// <summary>
-    /// The query box is the native control's own part, templated before a theme
-    /// is known: its placeholder presenter takes the faint ink directly.
-    /// </summary>
-    private void PaintPlaceholder()
+
+    private void OnTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
     {
-        var faint = Theme.Brush("color.content-faint");
-        foreach (var box in Parts<TextBox>(Input))
-        {
-            box.PlaceholderForeground = faint;
-            // The query box's template takes the placeholder ink from its
-            // own resources, not the outer suggest box's.
-            foreach (var key in new[] { "TextControlPlaceholderForeground", "TextControlPlaceholderForegroundPointerOver", "TextControlPlaceholderForegroundFocused", "TextControlPlaceholderForegroundDisabled" })
-                Skin.StateBrush(box, key, faint);
-        }
-        foreach (var words in Parts<TextBlock>(Input).Where(part =>
-            part.Name.Contains("Placeholder", StringComparison.OrdinalIgnoreCase) ||
-            Input.PlaceholderText.Length > 0 && part.Text == Input.PlaceholderText))
-            words.Foreground = faint;
+        // AutoSuggestBox's debounce timer can outlive native template disposal.
+        // Check managed lifetime state before reading any dependency property.
+        if (!mounted || !args.CheckCurrent()) return;
+        RefreshInput();
+        if (args.Reason != AutoSuggestionBoxTextChangeReason.UserInput || !IsEnabled || ReadOnly) return;
+        var wasOpen = Input.IsSuggestionListOpen;
+        UserTextChanged(Text);
+        RefreshSuggestions(Text);
+        if (Text.Trim().Length > 0) Input.IsSuggestionListOpen = true;
+        else Input.IsSuggestionListOpen = IsChoice && wasOpen;
     }
-    private static IEnumerable<T> Parts<T>(DependencyObject root) where T : DependencyObject
+
+    protected virtual void UserTextChanged(string text) => ValueChanged?.Invoke(this, text);
+    protected virtual void Choose(SelectOption option)
     {
-        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
-        {
-            var child = VisualTreeHelper.GetChild(root, i);
-            if (child is T part) yield return part;
-            foreach (var deeper in Parts<T>(child)) yield return deeper;
-        }
+        selectedValue = option.Value;
+        Text = option.Label;
+        ValueChanged?.Invoke(this, Text);
     }
-    private void Choose(object item)
+
+    protected void ShowSelection(string? value)
     {
-        if (item is ListViewItem { Tag: SelectOption option }) { SelectedValue = option.Value; Text = option.Label; }
-        else { SelectedValue = item.ToString(); Text = SelectedValue ?? ""; }
+        selectedValue = Options.FirstOrDefault(option => option.Value == value)?.Value;
+        RestoreSelection();
+        RefreshRows();
+        RefreshActions();
     }
+
+    protected void RestoreSelection()
+    {
+        var label = Options.FirstOrDefault(option => option.Value == selectedValue)?.Label ?? "";
+        if (Input.Text != label) Input.Text = label;
+    }
+
     protected void RefreshSuggestions(string query)
     {
-        if (Options.Count == 0) { Input.ItemsSource = Suggestions.Where(item => item.Contains(query, StringComparison.CurrentCultureIgnoreCase)).ToArray(); return; }
         var items = new List<ListViewItem>();
         string? group = null;
-        foreach (var option in Options.Where(option => option.Label.Contains(query, StringComparison.CurrentCultureIgnoreCase)))
+        var options = IsChoice || Options.Count > 0 ? Options : Suggestions.Select(text => new SelectOption(text, text));
+        foreach (var option in options.Where(option => System.Globalization.CultureInfo.CurrentCulture.CompareInfo.IndexOf(option.Label, query.Trim(),
+            System.Globalization.CompareOptions.IgnoreCase | System.Globalization.CompareOptions.IgnoreNonSpace) >= 0))
         {
             if (option.Group is not null && option.Group != group)
             {
+                var heading = new ListViewItem { Content = option.Group, Tag = QueryPopupSkin.RowKind.Heading, IsEnabled = false, IsTabStop = false };
+                SelectionPopupSkin.Row(heading, Theme, check: false, heading: true, groupGap: items.Count > 0);
                 group = option.Group;
-                items.Add(new ListViewItem { Content = group, IsEnabled = false, IsTabStop = false });
+                items.Add(heading);
             }
-            items.Add(new ListViewItem { Content = option.Label, Tag = option, IsEnabled = !option.Disabled });
+            var row = new ListViewItem { Content = option.Label, Tag = option, IsEnabled = !option.Disabled };
+            SelectionPopupSkin.Row(row, Theme, selected: IsChoice && option.Value == selectedValue, check: IsChoice);
+            items.Add(row);
+        }
+        if (items.Count == 0)
+        {
+            var empty = new ListViewItem { Content = Empty, Tag = QueryPopupSkin.RowKind.Empty, IsEnabled = false, IsTabStop = false };
+            SelectionPopupSkin.Row(empty, Theme, check: false, empty: true);
+            items.Add(empty);
         }
         Input.ItemsSource = items;
+        QueryPopupSkin.Sheet(this);
     }
+
+    private void RefreshRows()
+    {
+        if (!mounted) return;
+        if (Input.ItemsSource is not System.Collections.IEnumerable source) return;
+        var rows = source.Cast<object>().OfType<ListViewItem>().ToArray();
+        for (var index = 0; index < rows.Length; index++)
+        {
+            var row = rows[index];
+            var heading = Equals(row.Tag, QueryPopupSkin.RowKind.Heading);
+            var empty = Equals(row.Tag, QueryPopupSkin.RowKind.Empty);
+            SelectionPopupSkin.Row(row, Theme, selected: IsChoice && row.Tag is SelectOption option && option.Value == selectedValue,
+                check: IsChoice, heading: heading, empty: empty, groupGap: heading && index > 0);
+        }
+    }
+
+    protected void OpenSuggestions()
+    {
+        if (!mounted || !IsEnabled || ReadOnly) return;
+        RefreshSuggestions("");
+        QueryPopupSkin.Editor(Input)?.Focus(FocusState.Programmatic);
+        Input.IsSuggestionListOpen = true;
+    }
+
+    protected virtual void RefreshActions() { }
+    protected virtual double TrailingInset => Theme.Number("spacing.3");
+
+    protected void RefreshInput()
+    {
+        if (!mounted) return;
+        if (QueryPopupSkin.Editor(Input) is not TextBox editor) return;
+        Appearance.SetTint(editor, Tint);
+        Skin.Input(editor, Theme, Size, Invalid);
+        editor.Height = Theme.Number($"control.{Theme.Key(Size)}.size");
+        editor.IsReadOnly = ReadOnly;
+        editor.IsEnabled = IsEnabled;
+        if (Mono) editor.FontFamily = Theme.CodeFont;
+        editor.Padding = new Thickness(Theme.Number("spacing.3"), editor.Padding.Top, TrailingInset, editor.Padding.Bottom);
+        QueryPopupSkin.HideNativeActions(editor);
+        RefreshActions();
+    }
+
     protected override void RefreshAppearance()
     {
+        if (!mounted) return;
+        Input.IsEnabled = IsEnabled;
+        Appearance.SetTint(Input, Tint);
         Skin.Input(Input, Theme, Size, Invalid);
         if (Mono) Input.FontFamily = Theme.CodeFont;
-        PaintPlaceholder();
-        Skin.InputPadding(Input, Theme, Size);
-        nativeTextBoxStyle ??= Input.TextBoxStyle;
-        if (nativeTextBoxStyle is not null)
-        {
-            // Keep the native query/clear buttons and suggestion behavior.
-            var style = new Style(typeof(TextBox)) { BasedOn = nativeTextBoxStyle };
-            style.Setters.Add(new Setter(Control.PaddingProperty, Input.Padding));
-            style.Setters.Add(new Setter(TextBox.PlaceholderForegroundProperty, Theme.Brush("color.content-faint")));
-            style.Setters.Add(new Setter(FrameworkElement.MinHeightProperty, Input.MinHeight));
-            style.Setters.Add(new Setter(FrameworkElement.HeightProperty, Input.MinHeight));
-            Input.TextBoxStyle = style;
-        }
+        Input.Height = Theme.Number($"control.{Theme.Key(Size)}.size");
+        RefreshInput();
+        RefreshActions();
+        RefreshRows();
+        QueryPopupSkin.Sheet(this);
     }
 }
 public sealed class Combobox : Autocomplete
 {
+    private readonly StackPanel actions = new() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
+    private readonly QueryPopupSkin.ActionButton clear = new(FluentIcons.Common.Icon.Dismiss, "Clear");
+    private readonly QueryPopupSkin.ActionButton trigger = new(FluentIcons.Common.Icon.ChevronDown, "Open");
+    private bool clearable = true;
+    public bool Clearable { get => clearable; set { clearable = value; RefreshInput(); } }
+    public string? Value { get => SelectedValue; set => SelectedValue = value; }
+    public new event EventHandler<string?>? ValueChanged;
+    protected override bool IsChoice => true;
     public Combobox()
     {
-        // The list drops from a chevron at the trailing edge, as a Select's does.
-        var chevron = Icon.Element(FluentIcons.Common.Icon.ChevronDown);
-        chevron.FontSize = 12;
-        Input.QueryIcon = chevron;
-        GotFocus += (_, _) => { RefreshSuggestions(""); IsSuggestionListOpen = true; };
+        PlaceholderText = "Search…";
+        Content = null;
+        Content = new Grid { Children = { Input, actions } };
+        actions.Children.Add(clear);
+        actions.Children.Add(trigger);
+        clear.Click += (_, _) =>
+        {
+            if (!IsMounted || !IsEnabled || ReadOnly) return;
+            var open = IsSuggestionListOpen;
+            Commit(null);
+            // Replacing ItemsSource makes native ASB asynchronously reopen its
+            // popup. A closed clear only changes the value; the next explicit
+            // open will populate the complete list.
+            if (open) RefreshSuggestions("");
+            QueryPopupSkin.Editor(Input)?.Focus(FocusState.Programmatic);
+            IsSuggestionListOpen = open;
+        };
+        trigger.Click += (_, _) => { if (!IsMounted) return; if (IsSuggestionListOpen) IsSuggestionListOpen = false; else OpenSuggestions(); };
+        Input.Tapped += (_, args) =>
+        {
+            if (!IsMounted) return;
+            if (!IsSuggestionListOpen && QueryPopupSkin.Editor(Input) is TextBox editor
+                && QueryPopupSkin.Walk(editor).Any(element => ReferenceEquals(element, args.OriginalSource))) OpenSuggestions();
+        };
+    }
+
+    protected override void UserTextChanged(string text) { if (text.Length == 0) Commit(null); }
+    protected override void Choose(SelectOption option) => Commit(option.Value);
+    private void Commit(string? value)
+    {
+        if (Value == value) { RestoreSelection(); return; }
+        ShowSelection(value);
+        ValueChanged?.Invoke(this, Value);
+        RefreshInput();
+    }
+    protected override double TrailingInset => Theme.Number("spacing.1") * 2 + Theme.Number("spacing.5") * (Clearable && SelectedValue is not null ? 2 : 1);
+    protected override void RefreshActions()
+    {
+        // Base construction can resolve appearance before the action fields
+        // have been initialized.
+        if (actions is null || !IsMounted) return;
+        actions.Margin = new Thickness(0, 0, Theme.Number("spacing.1") + Theme.Number("stroke.hairline"), 0);
+        clear.Visibility = Clearable && SelectedValue is not null ? Visibility.Visible : Visibility.Collapsed;
+        foreach (var action in new[] { clear, trigger }) action.Apply(Theme, IsEnabled && !ReadOnly);
+        trigger.RenderTransformOrigin = new Windows.Foundation.Point(.5, .5);
+        trigger.RenderTransform = new RotateTransform { Angle = IsSuggestionListOpen ? 180 : 0 };
     }
 }
 /// <summary>

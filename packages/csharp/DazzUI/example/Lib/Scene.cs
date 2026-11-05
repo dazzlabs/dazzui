@@ -158,8 +158,15 @@ public static class Nodes
                     context.Resolve(toast["title"], args).Text(),
                     toast["description"] is null ? null : context.Resolve(toast["description"], args).Text(),
                     Mapping.Option(context.Resolve(toast["tint"], args).String(), WidgetTint.Neutral),
-                    act is null ? null : act["label"].Text(),
-                    act is null ? null : () => context.Run(act["onClick"])));
+                    act is null ? null : context.Resolve(act["label"], args).Text(),
+                    act is null ? null : () => context.Run(act["onClick"]),
+                    Duration: context.Resolve(toast["timeout"], args).Number() is double timeout ? TimeSpan.FromMilliseconds(timeout) : null,
+                    Dismissible: toast["dismissable"] is null ? null : context.Resolve(toast["dismissable"], args).Truthy(),
+                    DismissLabel: context.Resolve(toast["dismissLabel"], args).String() ?? "Dismiss",
+                    Id: context.Resolve(toast["id"], args).String(),
+                    HighPriority: toast["priority"] is null ? null : context.Resolve(toast["priority"], args).String() == "high",
+                    OnClose: toast["onClose"] is null ? null : () => context.Run(toast["onClose"]),
+                    Icon: toast["icon"] is null ? null : Nodes.Build(context.Resolve(toast["icon"], args), context)));
             }
         }
     }
@@ -225,9 +232,30 @@ public sealed class Node(JsonNode json, Context context)
 /// The toasts a <c>ToastProvider</c> raises: shown at the window's edge, as
 /// the web's fixed viewport shows them.
 /// </summary>
-public sealed class Toaster
+public sealed class Toaster : Surface
 {
-    public string Placement { get; set; } = "bottom";
+    private ToastViewport? viewport;
+    public int Limit { get; init; } = 3;
 
-    public void Add(ToastOptions options) => Overlay.Toast(options, Placement == "top");
+    public Toaster()
+    {
+        Loaded += (_, _) => { if (viewport is not null) Overlay.Attach(this, viewport); };
+        Unloaded += (_, _) => { if (viewport is not null) Overlay.Detach(viewport); };
+    }
+
+    public ToastViewport CreateViewport(bool atTop)
+    {
+        viewport ??= new ToastViewport { Limit = Limit };
+        viewport.AtTop = atTop;
+        viewport.Theme = Theme;
+        if (IsLoaded) Overlay.Attach(this, viewport);
+        return viewport;
+    }
+
+    protected override void RefreshAppearance()
+    {
+        if (viewport is not null) viewport.Theme = Theme;
+    }
+
+    public void Add(ToastOptions options) => viewport?.Add(options);
 }
