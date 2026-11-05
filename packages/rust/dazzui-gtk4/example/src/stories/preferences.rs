@@ -334,9 +334,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "preferences/2 preview: <PreferenceRow onOpen> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

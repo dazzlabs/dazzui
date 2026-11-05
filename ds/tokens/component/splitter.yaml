@@ -1,0 +1,8 @@
+splitter:
+  # Percent of the panels' run moved by an arrow key, as React draws it.
+  key-step:
+    $type: number
+    $value: 1
+  key-coarse-step:
+    $type: number
+    $value: 10

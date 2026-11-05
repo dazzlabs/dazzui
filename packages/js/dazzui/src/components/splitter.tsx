@@ -16,6 +16,10 @@ import {
 } from 'react'
 
 import { cx } from '../lib/cx'
+import {
+  SPLITTER_KEY_COARSE_STEP,
+  SPLITTER_KEY_STEP,
+} from '../generated/runtime'
 
 /** Which way the panels are laid out, not which way a handle runs. */
 export type SplitterOrientation = 'horizontal' | 'vertical'
@@ -61,10 +65,6 @@ export interface SplitterProps extends ComponentPropsWithoutRef<'div'> {
   onSizesChange?: (sizes: number[]) => void
   children?: ReactNode
 }
-
-/** How far one arrow key moves a handle, and one with shift held. */
-const STEP = 1
-const COARSE_STEP = 10
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max)
@@ -244,7 +244,9 @@ export function Splitter({
                 onKeyDown={event => {
                   const back = horizontal ? 'ArrowLeft' : 'ArrowUp'
                   const forward = horizontal ? 'ArrowRight' : 'ArrowDown'
-                  const step = event.shiftKey ? COARSE_STEP : STEP
+                  const step = event.shiftKey
+                    ? SPLITTER_KEY_COARSE_STEP
+                    : SPLITTER_KEY_STEP
                   if (event.key === back) resize(index, share(index) - step)
                   else if (event.key === forward)
                     resize(index, share(index) + step)

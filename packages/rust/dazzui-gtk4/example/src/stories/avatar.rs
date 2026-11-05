@@ -43,9 +43,7 @@ pub const STORY: &str = r#"{
       ],
       "$at": 0
     },
-    "gaps": [
-      "avatar/preview preview: <AvatarGroup> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -131,9 +129,7 @@ pub const STORY: &str = r#"{
         ],
         "$at": 0
       },
-      "gaps": [
-        "avatar/1 preview: <AvatarGroup> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

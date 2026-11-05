@@ -1,8 +1,8 @@
-use crate::{DazzWidgetExt, Size, Tint, Variant, styled};
+use crate::{DazzWidgetExt, Size, Theme, Tint, Variant, styled};
 use gtk::prelude::*;
 
 pub fn button(label: &str, variant: Variant, tint: Tint, size: Size) -> gtk::Button {
-    let w = styled(gtk::Button::with_label(label), "dz-button", tint, size);
+    let w = styled(super::button_layout::new(label), "dz-button", tint, size);
     w.set_dazz_variant(variant);
     w
 }
@@ -29,6 +29,7 @@ pub fn glyph_button(
     let glyph = |icon: &str| {
         let image = gtk::Image::from_icon_name(icon);
         image.add_css_class("dz-button-glyph");
+        image.set_valign(gtk::Align::Center);
         image
     };
     if let Some(icon) = leading {
@@ -54,7 +55,10 @@ pub fn icon_button(
 ) -> gtk::Button {
     let w = button("", variant, tint, size);
     w.add_css_class("dz-icon-button");
-    w.set_child(Some(&gtk::Image::from_icon_name(icon)));
+    let glyph = gtk::Image::from_icon_name(icon);
+    glyph.set_halign(gtk::Align::Center);
+    glyph.set_valign(gtk::Align::Center);
+    w.set_child(Some(&glyph));
     w.set_dazz_label(label);
     w.set_tooltip_text(Some(label));
     w
@@ -67,16 +71,31 @@ pub fn toggle(label: &str, tint: Tint, size: Size) -> gtk::ToggleButton {
         size,
     );
     w.add_css_class("dz-toggle");
+    super::button_layout::install(&w);
     w.set_dazz_variant(Variant::Normal);
     w
 }
 pub fn checkbox(label: &str, tint: Tint, size: Size) -> gtk::CheckButton {
-    styled(
+    let check = styled(
         gtk::CheckButton::with_label(label),
         "dz-checkbox",
         tint,
         size,
-    )
+    );
+    super::check_layout::install(&check);
+    check
+}
+/// A note is part of the same native paragraph, including its leading space.
+pub fn checkbox_with_note(label: &str, note: &str, tint: Tint, size: Size) -> gtk::CheckButton {
+    let check = checkbox(label, tint, size);
+    if !note.is_empty() {
+        let caption = super::check_caption::Caption::new(label, note);
+        check.set_child(Some(&caption));
+        check.update_relation(&[gtk::accessible::Relation::LabelledBy(&[caption
+            .label()
+            .upcast_ref()])]);
+    }
+    check
 }
 pub fn radio(
     label: &str,
@@ -127,19 +146,129 @@ pub fn text_area() -> gtk::TextView {
     w.set_wrap_mode(gtk::WrapMode::WordChar);
     w
 }
+/// A row-sized field and its native, scrolling text input. Content never
+/// increases the field's natural height; GTK scrolls it inside that viewport.
+pub fn text_area_with_rows(rows: u32) -> (gtk::ScrolledWindow, gtk::TextView) {
+    let input = text_area();
+    input.remove_css_class("dz-text-area");
+    input.add_css_class("dz-text-area-input");
+    let field = styled(
+        gtk::ScrolledWindow::builder()
+            .hscrollbar_policy(gtk::PolicyType::Never)
+            .vscrollbar_policy(gtk::PolicyType::Automatic)
+            .propagate_natural_height(false)
+            .child(&input)
+            .build(),
+        "dz-text-area",
+        Tint::Primary,
+        Size::Medium,
+    );
+    field.connect_map(move |field| {
+        let theme = Theme::of(field).unwrap_or_default();
+        let font = theme.dimension("control-medium-content-font-size").unwrap();
+        let padding = theme.dimension("spacing-2-5").unwrap();
+        let border = theme.dimension("stroke-hairline").unwrap();
+        let floor = theme.dimension("spacing-20").unwrap();
+        field.set_size_request(
+            -1,
+            floor
+                .max(f64::from(rows.max(1)) * font * 1.6 + 2. * (padding + border))
+                .round() as i32,
+        );
+    });
+    (field, input)
+}
 pub fn search_field(placeholder: &str, size: Size) -> gtk::SearchEntry {
     let w = styled(gtk::SearchEntry::new(), "dz-field", Tint::Primary, size);
     w.add_css_class("dz-search-field");
     w.set_placeholder_text(Some(placeholder));
     w
 }
-pub fn number_field(min: f64, max: f64, step: f64, size: Size) -> gtk::SpinButton {
-    styled(
-        gtk::SpinButton::with_range(min, max, step),
+/// The shared number-field drawing and its native input, without a unit.
+pub fn number_field(min: f64, max: f64, step: f64, size: Size) -> (gtk::Box, gtk::SpinButton) {
+    number_field_with_unit(min, max, step, None, size)
+}
+/// The field and its native numeric input. Two SpinButtons share one
+/// adjustment: one exposes the editable text, the other its original native
+/// repeat buttons in a vertical column. Parsing, stepping and bounds remain
+/// GTK's; neither control's layout manager or event machinery is replaced.
+pub fn number_field_with_unit(
+    min: f64,
+    max: f64,
+    step: f64,
+    unit: Option<&gtk::Widget>,
+    size: Size,
+) -> (gtk::Box, gtk::SpinButton) {
+    let root = styled(
+        crate::box_(gtk::Orientation::Horizontal, "1"),
         "dz-field",
         Tint::Primary,
         size,
-    )
+    );
+    root.add_css_class("dz-number-field");
+    root.set_accessible_role(gtk::AccessibleRole::Group);
+    let input = gtk::SpinButton::with_range(min, max, step);
+    input.add_css_class("dz-number-input");
+    input.set_width_chars(0);
+    input.set_hexpand(true);
+    let mut child = input.first_child();
+    while let Some(w) = child {
+        child = w.next_sibling();
+        if w.is::<gtk::Button>() {
+            w.set_visible(false);
+        }
+    }
+    root.append(&input);
+    if let Some(unit) = unit {
+        if let Some(label) = unit.downcast_ref::<gtk::Label>() {
+            label.set_wrap(false);
+        }
+        let slot = crate::box_(gtk::Orientation::Horizontal, "0");
+        slot.add_css_class("dz-number-unit");
+        slot.set_valign(gtk::Align::Center);
+        slot.append(unit);
+        root.append(&slot);
+    }
+    let stepper = gtk::SpinButton::new(Some(&input.adjustment()), step, input.digits());
+    stepper.set_orientation(gtk::Orientation::Vertical);
+    stepper.add_css_class("dz-number-stepper");
+    stepper.set_accessible_role(gtk::AccessibleRole::Presentation);
+    let mut child = stepper.first_child();
+    while let Some(w) = child {
+        child = w.next_sibling();
+        if let Some(button) = w.downcast_ref::<gtk::Button>() {
+            let up = button.has_css_class("up");
+            // An unmeasured glyph may extend beyond the compact half-height
+            // button, just as the web stepper's SVG does when its flex row
+            // shrinks. The native button still owns hit testing and repeats.
+            let face = gtk::Overlay::new();
+            face.set_child(Some(&gtk::Box::new(gtk::Orientation::Vertical, 0)));
+            let glyph = crate::icon(if up {
+                "ChevronUp12Regular"
+            } else {
+                "ChevronDown12Regular"
+            });
+            face.add_overlay(&glyph);
+            face.set_measure_overlay(&glyph, false);
+            face.set_clip_overlay(&glyph, false);
+            button.set_child(Some(&face));
+            button.set_vexpand(true);
+            button.set_dazz_label(if up { "Increase" } else { "Decrease" });
+            let focus = gtk::GestureClick::new();
+            focus.set_propagation_phase(gtk::PropagationPhase::Capture);
+            let weak = input.downgrade();
+            focus.connect_pressed(move |_, _, _, _| {
+                if let Some(input) = weak.upgrade() {
+                    input.grab_focus();
+                }
+            });
+            button.add_controller(focus);
+        } else {
+            w.set_visible(false);
+        }
+    }
+    root.append(&stepper);
+    (root, input)
 }
 pub fn select(labels: &[&str], size: Size) -> gtk::DropDown {
     styled(
@@ -192,15 +321,26 @@ pub fn select_options(items: &[SelectItem], placeholder: &str, size: Size) -> gt
         let setup_placeholder = placeholder.to_owned();
         factory.connect_setup(move |_, item| {
             let item = item.downcast_ref::<gtk::ListItem>().unwrap();
-            let label = gtk::Label::new(Some(&setup_placeholder));
-            label.set_xalign(0.);
-            item.set_child(Some(&label));
+            if popup {
+                let label = gtk::Label::new(Some(&setup_placeholder));
+                label.set_xalign(0.);
+                item.set_child(Some(&label));
+            } else {
+                let text = crate::TextBox::new(&setup_placeholder);
+                text.add_css_class("dz-select-label");
+                item.set_child(Some(&text));
+            }
         });
         let rows = rows.clone();
         let placeholder = placeholder.to_owned();
         factory.connect_bind(move |_, item| {
             let item = item.downcast_ref::<gtk::ListItem>().unwrap();
-            let label = item.child().unwrap().downcast::<gtk::Label>().unwrap();
+            let child = item.child().unwrap();
+            let label = if let Some(text) = child.downcast_ref::<crate::TextBox>() {
+                text.label()
+            } else {
+                child.clone().downcast::<gtk::Label>().unwrap()
+            };
             let row = rows.get(item.position() as usize);
             let empty = item.position() == 0;
             label.set_label(row.map(|row| row.0.as_str()).unwrap_or(&placeholder));
@@ -211,8 +351,10 @@ pub fn select_options(items: &[SelectItem], placeholder: &str, size: Size) -> gt
                 label.remove_css_class("dz-select-group");
             }
             if !popup && empty {
+                child.add_css_class("dz-select-placeholder");
                 label.add_css_class("dz-select-placeholder");
             } else {
+                child.remove_css_class("dz-select-placeholder");
                 label.remove_css_class("dz-select-placeholder");
             }
             if popup && let Some(parent) = label.parent() {
@@ -274,8 +416,8 @@ pub fn select_values(items: &[SelectItem]) -> Vec<Option<String>> {
     }
     values
 }
-/// A searchable selector. Text stays an option from the model; free-form
-/// autocomplete uses a host-owned Entry and Popover.
+/// A searchable native DropDown. For a query in the field itself, use
+/// [`crate::Combobox::new`] or [`crate::autocomplete`].
 pub fn combobox(labels: &[&str], size: Size) -> gtk::DropDown {
     let w = select(labels, size);
     w.set_enable_search(true);
@@ -309,14 +451,18 @@ pub fn meter(min: f64, max: f64, value: f64, tint: Tint, size: Size) -> gtk::Lev
 }
 pub fn spinner(size: Size) -> gtk::Spinner {
     let w = styled(gtk::Spinner::new(), "dz-spinner", Tint::Primary, size);
+    w.set_accessible_role(gtk::AccessibleRole::Status);
+    w.set_dazz_label("Loading");
     w.start();
     w
 }
 pub fn link(label: &str, uri: &str) -> gtk::LinkButton {
-    styled(
+    let w = styled(
         gtk::LinkButton::with_label(uri, label),
         "dz-link",
         Tint::Primary,
         Size::Medium,
-    )
+    );
+    super::button_layout::install(&w);
+    w
 }

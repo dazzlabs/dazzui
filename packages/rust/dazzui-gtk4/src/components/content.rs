@@ -1,4 +1,4 @@
-use crate::{DazzWidgetExt, Size, Tint, Variant, styled};
+use crate::{DazzWidgetExt, Size, TextBox, Tint, Variant, styled};
 use gtk::prelude::*;
 
 /// A Fluent glyph, with the same name and outline the React export uses.
@@ -6,6 +6,8 @@ use gtk::prelude::*;
 pub fn icon(name: &str) -> gtk::Image {
     let w = gtk::Image::from_icon_name(&format!("dazzui-{name}-symbolic"));
     w.add_css_class("dz-icon");
+    w.set_halign(gtk::Align::Center);
+    w.set_valign(gtk::Align::Center);
     w.set_accessible_role(gtk::AccessibleRole::Presentation);
     w
 }
@@ -18,8 +20,8 @@ pub fn label(text: &str, type_name: &str) -> gtk::Label {
     w.set_xalign(0.0);
     w
 }
-pub fn badge(text: &str, variant: Variant, tint: Tint, size: Size) -> gtk::Label {
-    let w = styled(label(text, "label-small"), "dz-badge", tint, size);
+pub fn badge(text: &str, variant: Variant, tint: Tint, size: Size) -> TextBox {
+    let w = styled(TextBox::new(text), "dz-badge", tint, size);
     w.set_dazz_variant(variant);
     w
 }
@@ -32,24 +34,25 @@ pub fn tag(text: &str, variant: Variant, tint: Tint, size: Size) -> gtk::ToggleB
     w.set_dazz_variant(variant);
     w
 }
-pub fn code(text: &str, block: bool) -> gtk::Label {
-    let w = label(text, "body-small");
-    w.add_css_class("dz-code");
-    w.set_selectable(true);
+/// Convenience form; use `inline_code` or `code_block` for their concrete
+/// GTK types and the block's header, gutter and clipboard options.
+pub fn code(text: &str, block: bool) -> gtk::Widget {
     if block {
-        w.add_css_class("dz-code-block");
-        w.set_wrap(true);
+        crate::code_block(text, None, None, None, crate::CodeBlockOptions::default()).upcast()
+    } else {
+        crate::inline_code(text).upcast()
     }
-    w
 }
-pub fn key_cap(text: &str) -> gtk::Label {
-    let w = label(text, "label-small");
+pub fn key_cap(text: &str) -> TextBox {
+    let w = TextBox::new(text);
     w.add_css_class("dz-key-cap");
+    w.set_valign(gtk::Align::Center);
     w.set_dazz_size(Size::Medium);
     w
 }
-pub fn section_label(text: &str) -> gtk::Label {
-    let w = label(text, "label-small");
+pub fn section_label(text: &str) -> TextBox {
+    let w = TextBox::new(text);
+    w.add_css_class("dz-type-label-small");
     w.add_css_class("dz-section-label");
     w
 }
@@ -60,6 +63,8 @@ pub fn avatar(initials: &str, size: Size) -> gtk::Label {
         Tint::Primary,
         size,
     );
+    w.set_accessible_role(gtk::AccessibleRole::Img);
+    w.set_dazz_label(initials);
     w.set_xalign(0.5);
     w
 }

@@ -37,10 +37,7 @@ pub const STORY: &str = r#"{
       ],
       "$at": 0
     },
-    "gaps": [
-      "step-list/preview preview: <StepList> is not drawn by GTK4",
-      "step-list/preview preview: <Step> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -94,10 +91,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "step-list/0 preview: <StepList> is not drawn by GTK4",
-        "step-list/0 preview: <Step> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

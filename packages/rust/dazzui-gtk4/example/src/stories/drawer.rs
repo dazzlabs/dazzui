@@ -90,10 +90,7 @@ pub const STORY: &str = r#"{
       ],
       "$at": 0
     },
-    "gaps": [
-      "drawer/preview preview: <Drawer> is not drawn by GTK4",
-      "drawer/preview preview: <DrawerClose> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -183,10 +180,7 @@ pub const STORY: &str = r#"{
         ],
         "$at": 0
       },
-      "gaps": [
-        "drawer/0 preview: <Drawer> is not drawn by GTK4",
-        "drawer/0 preview: <DrawerClose> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "drawer/1",
@@ -536,10 +530,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "drawer/1 preview: <Drawer> is not drawn by GTK4",
-        "drawer/1 preview: <DrawerClose> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

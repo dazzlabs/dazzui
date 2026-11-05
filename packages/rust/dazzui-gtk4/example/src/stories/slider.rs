@@ -99,9 +99,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "slider/1: range sliders are not yet mapped"
-      ]
+      "gaps": []
     }
   ]
 }"#;

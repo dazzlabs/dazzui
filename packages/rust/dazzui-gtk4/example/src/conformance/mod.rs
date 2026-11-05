@@ -30,12 +30,29 @@ pub fn scene_frame(content: &impl IsA<gtk::Widget>) -> (gtk::Fixed, gtk::Box) {
 }
 
 pub fn settle() {
-    let until = Instant::now() + Duration::from_millis(50);
+    let until = Instant::now() + Duration::from_millis(100);
     while Instant::now() < until {
-        while gtk::glib::MainContext::default().pending() {
+        while Instant::now() < until && gtk::glib::MainContext::default().pending() {
             gtk::glib::MainContext::default().iteration(false);
         }
         std::thread::sleep(Duration::from_millis(2));
+    }
+}
+fn clear_initial_selection(widget: &gtk::Widget) {
+    if let Ok(editable) = widget.clone().dynamic_cast::<gtk::Editable>() {
+        editable.select_region(-1, -1);
+    } else if let Some(label) = widget.downcast_ref::<gtk::Label>() {
+        if label.is_selectable() {
+            label.select_region(0, 0);
+        }
+    } else if let Some(view) = widget.downcast_ref::<gtk::TextView>() {
+        let buffer = view.buffer();
+        buffer.place_cursor(&buffer.end_iter());
+    }
+    let mut child = widget.first_child();
+    while let Some(node) = child {
+        child = node.next_sibling();
+        clear_initial_selection(&node);
     }
 }
 pub fn screenshot(
@@ -82,6 +99,13 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     let out = flag(&args, "--out").ok_or("--conformance requires --out <directory>")?;
     let requested = flag(&args, "--themes").unwrap_or("drawn".into());
     let story_filter = flag(&args, "--scenes");
+    if requested != "all" && requested != "drawn" {
+        for name in requested.split(',') {
+            if !THEMES.contains(&name) {
+                return Err(format!("Unknown conformance theme: {name}").into());
+            }
+        }
+    }
     let theme_names: Vec<_> = THEMES
         .iter()
         .copied()
@@ -112,7 +136,11 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     let settings = gtk::Settings::default().ok_or("No GTK settings")?;
     let animations = settings.is_gtk_enable_animations();
     settings.set_gtk_enable_animations(false);
-    let window = gtk::Window::builder().default_width(640).build();
+    let window = gtk::Window::builder()
+        .default_width(1024)
+        .default_height(768)
+        .focus_visible(false)
+        .build();
 
     std::fs::create_dir_all(&out)?;
     let mut themes = serde_json::Map::new();
@@ -146,14 +174,19 @@ pub fn run() -> Result<(), Box<dyn Error>> {
                 // collector's scene keeps the same 40rem measure regardless.
                 let (fixed, frame) = scene_frame(&content);
                 window.set_child(Some(&fixed));
-                // Reset the previous scene's taller allocation.
-                window.set_default_size(640, 1);
+                // Match the reference browser's viewport; the stage remains
+                // 640px wide inside the fixed container, including tall scenes.
+                window.set_default_size(1024, 768);
                 window.present();
                 settle();
                 // Native windows focus their first control when presented.
                 // The reference's initial scene has no focused control.
                 gtk::prelude::GtkWindowExt::set_focus(&window, None::<&gtk::Widget>);
+                clear_initial_selection(&content);
                 settle();
+                if !content.is_mapped() || content.width() <= 0 || content.height() <= 0 {
+                    return Err(format!("{id}: the scene was not allocated on the display; use an active desktop or xvfb-run").into());
+                }
                 if images {
                     let file = format!("{}.png", id.replace('/', "-"));
                     screenshot(
@@ -167,7 +200,13 @@ pub fn run() -> Result<(), Box<dyn Error>> {
                 }
                 let owned: Vec<_> = specimens.iter().map(|(_, widget)| widget.clone()).collect();
                 for (at, widget) in specimens {
-                    if widget.width() == 0 || widget.height() == 0 || !widget.is_mapped() {
+                    if !widget.is_mapped() {
+                        continue;
+                    }
+                    let bounds = widget.compute_bounds(&frame).ok_or("No widget bounds")?;
+                    // An empty portal can have padding and a real border box
+                    // even though GTK reports a zero-height content allocation.
+                    if bounds.width() <= 0. || bounds.height() <= 0. {
                         continue;
                     }
                     let text = first_text(&widget, &owned);
@@ -183,7 +222,7 @@ pub fn run() -> Result<(), Box<dyn Error>> {
                         )
                     });
                     let font = text.and_then(|node| node.pango_context().font_description());
-                    let mut reading = json!({"box":{"width":widget.compute_bounds(&frame).ok_or("No widget bounds")?.width(),"height":widget.compute_bounds(&frame).ok_or("No widget bounds")?.height()},"values":{
+                    let mut reading = json!({"box":{"width":bounds.width(),"height":bounds.height()},"values":{
                         "ink":ink, "fontSize":font.as_ref().map(|f|f.size() as f64 / gtk::pango::SCALE as f64),
                         "fontWeight":null,"lineHeight":null,"corner":paint::corners(&widget).map(|r| r[0]),"stroke":null,"fill":null,"strokeColor":null,"paddingX":null,"paddingY":null,"gap":null,"shadow":null
                     }});
@@ -204,6 +243,7 @@ pub fn run() -> Result<(), Box<dyn Error>> {
         }
         themes.insert(name.into(), Value::Object(readings));
         scene_images.insert(name.into(), Value::Object(rendered));
+        eprintln!("gtk4: {name}");
     }
     let commit = std::env::var("DAZZUI_CONFORMANCE_COMMIT")
         .ok()

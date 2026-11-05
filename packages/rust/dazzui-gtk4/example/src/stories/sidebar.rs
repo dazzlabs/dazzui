@@ -240,21 +240,7 @@ pub const STORY: &str = r#"{
         }
       ]
     },
-    "gaps": [
-      "sidebar/preview preview: <Frame> is not drawn by GTK4",
-      "sidebar/preview preview: <SidebarProvider> is not drawn by GTK4",
-      "sidebar/preview preview: <Sidebar> is not drawn by GTK4",
-      "sidebar/preview preview: <SidebarHeader> is not drawn by GTK4",
-      "sidebar/preview preview: <SidebarContent> is not drawn by GTK4",
-      "sidebar/preview preview: <SidebarGroup> is not drawn by GTK4",
-      "sidebar/preview preview: <SidebarGroupLabel> is not drawn by GTK4",
-      "sidebar/preview preview: <SidebarGroupContent> is not drawn by GTK4",
-      "sidebar/preview preview: <SidebarMenu> is not drawn by GTK4",
-      "sidebar/preview preview: <SidebarMenuItem> is not drawn by GTK4",
-      "sidebar/preview preview: <SidebarMenuButton> is not drawn by GTK4",
-      "sidebar/preview preview: <SidebarMenuBadge> is not drawn by GTK4",
-      "sidebar/preview preview: <SidebarInset> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -492,22 +478,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "sidebar/0 preview: <Frame> is not drawn by GTK4",
-        "sidebar/0 preview: <SidebarProvider> is not drawn by GTK4",
-        "sidebar/0 preview: <Sidebar> is not drawn by GTK4",
-        "sidebar/0 preview: <SidebarHeader> is not drawn by GTK4",
-        "sidebar/0 preview: <SidebarContent> is not drawn by GTK4",
-        "sidebar/0 preview: <SidebarGroup> is not drawn by GTK4",
-        "sidebar/0 preview: <SidebarGroupLabel> is not drawn by GTK4",
-        "sidebar/0 preview: <SidebarGroupContent> is not drawn by GTK4",
-        "sidebar/0 preview: <SidebarMenu> is not drawn by GTK4",
-        "sidebar/0 preview: <SidebarMenuItem> is not drawn by GTK4",
-        "sidebar/0 preview: <SidebarMenuButton> is not drawn by GTK4",
-        "sidebar/0 preview: <SidebarMenuBadge> is not drawn by GTK4",
-        "sidebar/0 preview: <SidebarInset> is not drawn by GTK4",
-        "sidebar/0 preview: <SidebarTrigger> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "sidebar/1",
@@ -746,22 +717,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "sidebar/1 preview: <Frame> is not drawn by GTK4",
-        "sidebar/1 preview: <SidebarProvider> is not drawn by GTK4",
-        "sidebar/1 preview: <Sidebar> is not drawn by GTK4",
-        "sidebar/1 preview: <SidebarHeader> is not drawn by GTK4",
-        "sidebar/1 preview: <SidebarContent> is not drawn by GTK4",
-        "sidebar/1 preview: <SidebarGroup> is not drawn by GTK4",
-        "sidebar/1 preview: <SidebarGroupLabel> is not drawn by GTK4",
-        "sidebar/1 preview: <SidebarGroupContent> is not drawn by GTK4",
-        "sidebar/1 preview: <SidebarMenu> is not drawn by GTK4",
-        "sidebar/1 preview: <SidebarMenuItem> is not drawn by GTK4",
-        "sidebar/1 preview: <SidebarMenuButton> is not drawn by GTK4",
-        "sidebar/1 preview: <SidebarMenuBadge> is not drawn by GTK4",
-        "sidebar/1 preview: <SidebarInset> is not drawn by GTK4",
-        "sidebar/1 preview: <SidebarTrigger> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "sidebar/2",
@@ -1240,22 +1196,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "sidebar/2 preview: <Frame> is not drawn by GTK4",
-        "sidebar/2 preview: <SidebarProvider> is not drawn by GTK4",
-        "sidebar/2 preview: <Sidebar> is not drawn by GTK4",
-        "sidebar/2 preview: <SidebarHeader> is not drawn by GTK4",
-        "sidebar/2 preview: <SidebarContent> is not drawn by GTK4",
-        "sidebar/2 preview: <SidebarGroup> is not drawn by GTK4",
-        "sidebar/2 preview: <SidebarGroupLabel> is not drawn by GTK4",
-        "sidebar/2 preview: <SidebarGroupContent> is not drawn by GTK4",
-        "sidebar/2 preview: <SidebarMenu> is not drawn by GTK4",
-        "sidebar/2 preview: <SidebarMenuItem> is not drawn by GTK4",
-        "sidebar/2 preview: <SidebarMenuButton> is not drawn by GTK4",
-        "sidebar/2 preview: <SidebarMenuBadge> is not drawn by GTK4",
-        "sidebar/2 preview: <SidebarInset> is not drawn by GTK4",
-        "sidebar/2 preview: <SidebarTrigger> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

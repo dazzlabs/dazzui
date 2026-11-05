@@ -118,6 +118,7 @@ public struct ThemeVariables: Sendable {
     washEdge: CGFloat = 0.2,
     calendarCellGap: CGFloat = 2.0,
     checkboxRadius: CGFloat = 5.0,
+    codeBlockCopyFeedbackDuration: Double = 1.6,
     dateRangePickerSideWidth: CGFloat = 192.0,
     dateRangePickerTriggerMinWidth: CGFloat = 256.0,
     dateRangePickerTimeMinWidth: CGFloat = 80.0,
@@ -126,6 +127,7 @@ public struct ThemeVariables: Sendable {
     dialogScrimAlpha: CGFloat = 0.25,
     dialogDangerBorderAlpha: CGFloat = 0.34,
     drawerSize: CGFloat = 352.0,
+    menuTypeaheadResetDuration: Double = 0.5,
     menuMinWidth: CGFloat = 176.0,
     menuItemPadding: CGFloat = 7.0,
     preferencesWidth: CGFloat = 480.0,
@@ -138,17 +140,24 @@ public struct ThemeVariables: Sendable {
     segmentedControlInset: CGFloat = 3.0,
     shortcutRecorderWidth: CGFloat = 132.0,
     shortcutRecorderRejectDuration: Double = 0.36,
+    skeletonSweepDuration: Double = 1.6,
+    skeletonLastLineWidth: CGFloat = 0.6,
     sliderMediumTrack: CGFloat = 6.0,
     sliderMediumThumb: CGFloat = 16.0,
     sliderThumbInk: Int = 0,
     sliderThumbLift: Int = 1,
     sliderThumbEdgeWidth: CGFloat = 1.0,
     sliderThumbHotScale: CGFloat = 1.0,
+    splitterKeyStep: Int = 1,
+    splitterKeyCoarseStep: Int = 10,
+    stepListDoneAlpha: CGFloat = 0.14,
+    stepListIdleOpacity: CGFloat = 0.8,
     switchMediumWidth: CGFloat = 32.0,
     switchMediumHeight: CGFloat = 18.0,
     switchMediumThumb: CGFloat = 14.0,
     tabsPulseDuration: Double = 1.4,
     tabsPulseOpacity: CGFloat = 0.35,
+    toastMessageLineHeight: CGFloat = 1.4,
     toastNoticeDuration: Double = 5.0,
     toastActionDuration: Double = 8.0,
     toastTransitionDuration: Double = 0.26,
@@ -327,6 +336,7 @@ public struct ThemeVariables: Sendable {
     self.washEdge = washEdge
     self.calendarCellGap = calendarCellGap
     self.checkboxRadius = checkboxRadius
+    self.codeBlockCopyFeedbackDuration = codeBlockCopyFeedbackDuration
     self.dateRangePickerSideWidth = dateRangePickerSideWidth
     self.dateRangePickerTriggerMinWidth = dateRangePickerTriggerMinWidth
     self.dateRangePickerTimeMinWidth = dateRangePickerTimeMinWidth
@@ -335,6 +345,7 @@ public struct ThemeVariables: Sendable {
     self.dialogScrimAlpha = dialogScrimAlpha
     self.dialogDangerBorderAlpha = dialogDangerBorderAlpha
     self.drawerSize = drawerSize
+    self.menuTypeaheadResetDuration = menuTypeaheadResetDuration
     self.menuMinWidth = menuMinWidth
     self.menuItemPadding = menuItemPadding
     self.preferencesWidth = preferencesWidth
@@ -347,17 +358,24 @@ public struct ThemeVariables: Sendable {
     self.segmentedControlInset = segmentedControlInset
     self.shortcutRecorderWidth = shortcutRecorderWidth
     self.shortcutRecorderRejectDuration = shortcutRecorderRejectDuration
+    self.skeletonSweepDuration = skeletonSweepDuration
+    self.skeletonLastLineWidth = skeletonLastLineWidth
     self.sliderMediumTrack = sliderMediumTrack
     self.sliderMediumThumb = sliderMediumThumb
     self.sliderThumbInk = sliderThumbInk
     self.sliderThumbLift = sliderThumbLift
     self.sliderThumbEdgeWidth = sliderThumbEdgeWidth
     self.sliderThumbHotScale = sliderThumbHotScale
+    self.splitterKeyStep = splitterKeyStep
+    self.splitterKeyCoarseStep = splitterKeyCoarseStep
+    self.stepListDoneAlpha = stepListDoneAlpha
+    self.stepListIdleOpacity = stepListIdleOpacity
     self.switchMediumWidth = switchMediumWidth
     self.switchMediumHeight = switchMediumHeight
     self.switchMediumThumb = switchMediumThumb
     self.tabsPulseDuration = tabsPulseDuration
     self.tabsPulseOpacity = tabsPulseOpacity
+    self.toastMessageLineHeight = toastMessageLineHeight
     self.toastNoticeDuration = toastNoticeDuration
     self.toastActionDuration = toastActionDuration
     self.toastTransitionDuration = toastTransitionDuration
@@ -502,6 +520,8 @@ public struct ThemeVariables: Sendable {
   public let washEdge: CGFloat
   public let calendarCellGap: CGFloat
   public let checkboxRadius: CGFloat
+  /// How long the copy action shows its successful state.
+  public let codeBlockCopyFeedbackDuration: Double
   public let dateRangePickerSideWidth: CGFloat
   public let dateRangePickerTriggerMinWidth: CGFloat
   public let dateRangePickerTimeMinWidth: CGFloat
@@ -510,6 +530,7 @@ public struct ThemeVariables: Sendable {
   public let dialogScrimAlpha: CGFloat
   public let dialogDangerBorderAlpha: CGFloat
   public let drawerSize: CGFloat
+  public let menuTypeaheadResetDuration: Double
   public let menuMinWidth: CGFloat
   public let menuItemPadding: CGFloat
   public let preferencesWidth: CGFloat
@@ -522,17 +543,28 @@ public struct ThemeVariables: Sendable {
   public let segmentedControlInset: CGFloat
   public let shortcutRecorderWidth: CGFloat
   public let shortcutRecorderRejectDuration: Double
+  /// A slow sweep behind content that has not arrived.
+  public let skeletonSweepDuration: Double
+  /// The final paragraph bar occupies three fifths of its measure.
+  public let skeletonLastLineWidth: CGFloat
   public let sliderMediumTrack: CGFloat
   public let sliderMediumThumb: CGFloat
   public let sliderThumbInk: Int
   public let sliderThumbLift: Int
   public let sliderThumbEdgeWidth: CGFloat
   public let sliderThumbHotScale: CGFloat
+  public let splitterKeyStep: Int
+  public let splitterKeyCoarseStep: Int
+  /// The success wash behind a completed step's marker.
+  public let stepListDoneAlpha: CGFloat
+  /// The opacity of a step that has not started.
+  public let stepListIdleOpacity: CGFloat
   public let switchMediumWidth: CGFloat
   public let switchMediumHeight: CGFloat
   public let switchMediumThumb: CGFloat
   public let tabsPulseDuration: Double
   public let tabsPulseOpacity: CGFloat
+  public let toastMessageLineHeight: CGFloat
   public let toastNoticeDuration: Double
   public let toastActionDuration: Double
   public let toastTransitionDuration: Double
@@ -848,6 +880,7 @@ public struct ThemeVariables: Sendable {
       washEdge: washEdge,
       calendarCellGap: calendarCellGap * scale,
       checkboxRadius: checkboxRadius,
+      codeBlockCopyFeedbackDuration: codeBlockCopyFeedbackDuration,
       dateRangePickerSideWidth: dateRangePickerSideWidth * scale,
       dateRangePickerTriggerMinWidth: dateRangePickerTriggerMinWidth * scale,
       dateRangePickerTimeMinWidth: dateRangePickerTimeMinWidth * scale,
@@ -856,6 +889,7 @@ public struct ThemeVariables: Sendable {
       dialogScrimAlpha: dialogScrimAlpha,
       dialogDangerBorderAlpha: dialogDangerBorderAlpha,
       drawerSize: drawerSize * scale,
+      menuTypeaheadResetDuration: menuTypeaheadResetDuration,
       menuMinWidth: menuMinWidth * scale,
       menuItemPadding: menuItemPadding * scale,
       preferencesWidth: preferencesWidth * scale,
@@ -868,17 +902,24 @@ public struct ThemeVariables: Sendable {
       segmentedControlInset: segmentedControlInset * scale,
       shortcutRecorderWidth: shortcutRecorderWidth * scale,
       shortcutRecorderRejectDuration: shortcutRecorderRejectDuration,
+      skeletonSweepDuration: skeletonSweepDuration,
+      skeletonLastLineWidth: skeletonLastLineWidth,
       sliderMediumTrack: sliderMediumTrack * scale,
       sliderMediumThumb: sliderMediumThumb * scale,
       sliderThumbInk: sliderThumbInk,
       sliderThumbLift: sliderThumbLift,
       sliderThumbEdgeWidth: sliderThumbEdgeWidth,
       sliderThumbHotScale: sliderThumbHotScale,
+      splitterKeyStep: splitterKeyStep,
+      splitterKeyCoarseStep: splitterKeyCoarseStep,
+      stepListDoneAlpha: stepListDoneAlpha,
+      stepListIdleOpacity: stepListIdleOpacity,
       switchMediumWidth: switchMediumWidth * scale,
       switchMediumHeight: switchMediumHeight * scale,
       switchMediumThumb: switchMediumThumb * scale,
       tabsPulseDuration: tabsPulseDuration,
       tabsPulseOpacity: tabsPulseOpacity,
+      toastMessageLineHeight: toastMessageLineHeight,
       toastNoticeDuration: toastNoticeDuration,
       toastActionDuration: toastActionDuration,
       toastTransitionDuration: toastTransitionDuration,

@@ -9,6 +9,9 @@ pub fn brand() -> gtk::Button {
     mark.set_valign(gtk::Align::Center);
     row.append(&mark);
     row.append(&label("DazzUI", "title-small"));
+    let implementation = badge("GTK4", Variant::Tinted, Tint::Primary, Size::Small);
+    implementation.set_valign(gtk::Align::Center);
+    row.append(&implementation);
     brand.set_child(Some(&row));
     brand.set_dazz_label("DazzUI — open Overview");
     brand

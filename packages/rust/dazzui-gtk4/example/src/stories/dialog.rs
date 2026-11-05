@@ -87,13 +87,7 @@ pub const STORY: &str = r#"{
         }
       ]
     },
-    "gaps": [
-      "dialog/preview preview: <Dialog> is not drawn by GTK4",
-      "dialog/preview preview: <DialogHeader> is not drawn by GTK4",
-      "dialog/preview preview: <DialogBody> is not drawn by GTK4",
-      "dialog/preview preview: <DialogFooter> is not drawn by GTK4",
-      "dialog/preview preview: <DialogClose> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -175,13 +169,7 @@ pub const STORY: &str = r#"{
         ],
         "$at": 0
       },
-      "gaps": [
-        "dialog/0 preview: <Dialog> is not drawn by GTK4",
-        "dialog/0 preview: <DialogHeader> is not drawn by GTK4",
-        "dialog/0 preview: <DialogBody> is not drawn by GTK4",
-        "dialog/0 preview: <DialogFooter> is not drawn by GTK4",
-        "dialog/0 preview: <DialogClose> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "dialog/1",
@@ -314,13 +302,7 @@ pub const STORY: &str = r#"{
         ],
         "$at": 0
       },
-      "gaps": [
-        "dialog/1 preview: <Dialog> is not drawn by GTK4",
-        "dialog/1 preview: <DialogHeader> is not drawn by GTK4",
-        "dialog/1 preview: <DialogBody> is not drawn by GTK4",
-        "dialog/1 preview: <DialogFooter> is not drawn by GTK4",
-        "dialog/1 preview: <DialogClose> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "dialog/2",
@@ -459,13 +441,7 @@ pub const STORY: &str = r#"{
         ],
         "$at": 0
       },
-      "gaps": [
-        "dialog/2 preview: <Dialog> is not drawn by GTK4",
-        "dialog/2 preview: <DialogHeader> is not drawn by GTK4",
-        "dialog/2 preview: <DialogBody> is not drawn by GTK4",
-        "dialog/2 preview: <DialogFooter> is not drawn by GTK4",
-        "dialog/2 preview: <DialogClose> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "dialog/3",
@@ -577,13 +553,7 @@ pub const STORY: &str = r#"{
         ],
         "$at": 0
       },
-      "gaps": [
-        "dialog/3 preview: <Dialog> is not drawn by GTK4",
-        "dialog/3 preview: <DialogHeader> is not drawn by GTK4",
-        "dialog/3 preview: <DialogBody> is not drawn by GTK4",
-        "dialog/3 preview: <DialogFooter> is not drawn by GTK4",
-        "dialog/3 preview: <DialogClose> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "dialog/4",
@@ -657,12 +627,7 @@ pub const STORY: &str = r#"{
         ],
         "$at": 0
       },
-      "gaps": [
-        "dialog/4 preview: <Dialog> is not drawn by GTK4",
-        "dialog/4 preview: <DialogHeader> is not drawn by GTK4",
-        "dialog/4 preview: <DialogFooter> is not drawn by GTK4",
-        "dialog/4 preview: <DialogClose> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

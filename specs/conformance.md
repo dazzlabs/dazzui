@@ -397,6 +397,10 @@ and measured differences are reviewed.
 
 The scene is allocated at 640 logical pixels inside a fixed container, so a
 tiling compositor may enlarge the native window without enlarging the stage.
+The collector requests the reference browser's 1024×768 client viewport;
+window-scoped regions such as ToastViewport use that actual window allocation.
+An empty region is measured from its border bounds even when its GTK content
+height is zero, so padding-only portals retain their readings.
 The collector clears the native window's automatic initial focus before
 measuring, matching the reference's unfocused initial scene. Ink and type
 come from the first mapped text node owned by the specimen (including a

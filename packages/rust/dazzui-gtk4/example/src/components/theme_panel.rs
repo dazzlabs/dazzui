@@ -26,6 +26,11 @@ impl Controller {
             theme.apply(&window);
         }
         self.mode.set_active(theme.is_dark());
+        self.mode.set_child(Some(&icon(if theme.is_dark() {
+            "WeatherMoon20Regular"
+        } else {
+            "WeatherSunny20Regular"
+        })));
         self.mode.set_dazz_label(if theme.is_dark() {
             "Switch to light"
         } else {
@@ -55,13 +60,15 @@ impl ThemePanel {
     pub fn new(window: &gtk::ApplicationWindow, theme: Theme) -> Self {
         let panel = box_(gtk::Orientation::Vertical, "0");
         panel.add_css_class("gk-themes");
-        panel.set_size_request(280, -1);
+        panel.set_size_request(336, -1);
         let head = box_(gtk::Orientation::Horizontal, "2");
         head.add_css_class("gk-toolbar");
         let title = label("Theme", "label-strong");
         title.set_hexpand(true);
         head.append(&title);
-        let mode = toggle("Dark", Tint::Neutral, Size::Small);
+        let mode = toggle("", Tint::Neutral, Size::Tiny);
+        mode.set_dazz_variant(Variant::Plain);
+        mode.add_css_class("dz-toggle-icon");
         mode.set_valign(gtk::Align::Center);
         head.append(&mode);
         panel.append(&head);
@@ -74,6 +81,16 @@ impl ThemePanel {
             section.append(&section_label(group.title));
             let grid = gtk::Grid::new();
             grid.set_column_homogeneous(true);
+            grid.add_css_class("gk-theme-grid");
+            for column in group.families.len()..3 {
+                grid.attach(
+                    &gtk::Box::new(gtk::Orientation::Horizontal, 0),
+                    column as i32,
+                    0,
+                    1,
+                    1,
+                );
+            }
             for (i, family) in group.families.iter().enumerate() {
                 let button = gtk::ToggleButton::builder()
                     .accessible_role(gtk::AccessibleRole::Radio)
@@ -86,6 +103,7 @@ impl ThemePanel {
                     button.set_group(Some(first));
                 }
                 button.add_css_class("gk-theme-tile");
+                button.set_overflow(gtk::Overflow::Hidden);
                 button.set_dazz_label(family.title);
                 if first.is_none() {
                     first = Some(button.clone());

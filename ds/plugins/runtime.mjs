@@ -1,8 +1,13 @@
 import { resolveThemes } from './resolve.mjs'
 
 const durations = {
+  CODE_COPY_FEEDBACK_MS: 'code-block.copy-feedback-duration',
   TOAST_NOTICE_MS: 'toast.notice-duration',
   TOAST_ACTION_MS: 'toast.action-duration',
+}
+const numbers = {
+  SPLITTER_KEY_STEP: 'splitter.key-step',
+  SPLITTER_KEY_COARSE_STEP: 'splitter.key-coarse-step',
 }
 
 // These APIs run before there is a DOM node to read a scoped CSS variable.
@@ -23,6 +28,15 @@ export function generate(themes) {
       if (tokens[id]?.unit !== value.unit || tokens[id]?.value !== value.value)
         throw new Error(`Runtime token must not vary by theme: ${id}/${theme}`)
     output.push(`export const ${name} = ${value.value}`)
+  }
+  for (const [name, id] of Object.entries(numbers)) {
+    const value = entries[0][1][id]
+    if (!Number.isFinite(value) || value <= 0)
+      throw new Error(`Invalid runtime number: ${id}`)
+    for (const [theme, tokens] of entries)
+      if (tokens[id] !== value)
+        throw new Error(`Runtime token must not vary by theme: ${id}/${theme}`)
+    output.push(`export const ${name} = ${value}`)
   }
   return output.join('\n') + '\n'
 }

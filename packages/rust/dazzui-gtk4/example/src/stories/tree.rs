@@ -168,9 +168,7 @@ pub const STORY: &str = r#"{
         }
       ]
     },
-    "gaps": [
-      "tree/preview preview: <Tree> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -338,9 +336,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "tree/0 preview: <Tree> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "tree/1",
@@ -460,9 +456,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "tree/1 preview: <Tree> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

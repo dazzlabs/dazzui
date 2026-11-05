@@ -69,9 +69,7 @@ pub const STORY: &str = r##"{
         }
       ]
     },
-    "gaps": [
-      "preview-card/preview preview: <PreviewCard> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -142,9 +140,7 @@ pub const STORY: &str = r##"{
           "three days ago."
         ]
       },
-      "gaps": [
-        "preview-card/0 preview: <PreviewCard> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "preview-card/1",
@@ -210,9 +206,7 @@ pub const STORY: &str = r##"{
         ],
         "$at": 0
       },
-      "gaps": [
-        "preview-card/1 preview: <PreviewCard> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"##;

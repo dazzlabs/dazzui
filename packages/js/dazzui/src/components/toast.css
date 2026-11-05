@@ -56,7 +56,7 @@
   font-family: var(--label-medium-font-family);
   font-size: var(--label-medium-font-size);
   font-weight: var(--label-medium-font-weight);
-  line-height: 1.4;
+  line-height: var(--toast-message-line-height);
 }
 
 .dz-toast__action {

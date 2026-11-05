@@ -17,7 +17,11 @@ fn main() -> gtk::glib::ExitCode {
     };
     let theme = option("--theme").map(|name| Theme::new(&name)).transpose();
     match theme {
-        Ok(theme) => app::run(option("--story"), theme.unwrap_or_default()),
+        Ok(theme) => app::run(
+            option("--story"),
+            theme.unwrap_or_default(),
+            args.iter().any(|arg| arg == "--new-instance"),
+        ),
         Err(error) => {
             eprintln!("{error}");
             gtk::glib::ExitCode::FAILURE

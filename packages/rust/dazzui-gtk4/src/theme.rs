@@ -63,6 +63,67 @@ impl Theme {
     pub fn is_dark(self) -> bool {
         self.0.ends_with("-dark")
     }
+    /// A resolved ds length in logical pixels, for native layout properties
+    /// that cannot read GTK CSS variables (for example FlowBox's row spacing).
+    pub fn dimension(self, name: &str) -> Option<f64> {
+        use std::{collections::HashMap, sync::LazyLock};
+        static DIMENSIONS: LazyLock<HashMap<&str, HashMap<&str, f64>>> = LazyLock::new(|| {
+            TOKENS_CSS
+                .split(".dz-theme-")
+                .skip(1)
+                .filter_map(|block| {
+                    let (theme, block) = block.split_once(" {\n")?;
+                    let block = block.split_once("\n}")?.0;
+                    let values = block
+                        .lines()
+                        .filter_map(|line| {
+                            let (key, value) = line.trim().strip_prefix("--")?.split_once(": ")?;
+                            Some((key, value.strip_suffix("px;")?.parse().ok()?))
+                        })
+                        .collect();
+                    Some((theme, values))
+                })
+                .collect()
+        });
+        DIMENSIONS.get(self.0)?.get(name).copied()
+    }
+    /// Resolved ds timing for native event controllers and hover timers.
+    pub fn duration(self, name: &str) -> Option<std::time::Duration> {
+        let selector = format!(".dz-theme-{} {{\n", self.0);
+        let block = TOKENS_CSS.split_once(&selector)?.1.split_once("\n}")?.0;
+        let key = format!("--{name}: ");
+        block.lines().find_map(|line| {
+            let ms = line
+                .trim()
+                .strip_prefix(&key)?
+                .strip_suffix("ms;")?
+                .parse()
+                .ok()?;
+            Some(std::time::Duration::from_millis(ms))
+        })
+    }
+    /// A resolved ds colour for native text attributes that cannot read CSS.
+    pub fn color(self, name: &str) -> Option<gdk::RGBA> {
+        let selector = format!(".dz-theme-{} {{\n", self.0);
+        let block = TOKENS_CSS.split_once(&selector)?.1.split_once("\n}")?.0;
+        let key = format!("--{name}: ");
+        block.lines().find_map(|line| {
+            gdk::RGBA::parse(line.trim().strip_prefix(&key)?.strip_suffix(';')?).ok()
+        })
+    }
+    /// A resolved unitless ds value for native layout proportions.
+    pub fn number(self, name: &str) -> Option<f64> {
+        let selector = format!(".dz-theme-{} {{\n", self.0);
+        let block = TOKENS_CSS.split_once(&selector)?.1.split_once("\n}")?.0;
+        let key = format!("--{name}: ");
+        block.lines().find_map(|line| {
+            line.trim()
+                .strip_prefix(&key)?
+                .strip_suffix(';')?
+                .parse()
+                .ok()
+        })
+    }
     /// Apply a complete palette and metrics to this subtree. Nested themes
     /// reset all tokens, and changing a theme retains the controls' state.
     pub fn apply(self, scope: &impl IsA<gtk::Widget>) {

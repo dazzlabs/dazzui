@@ -37,7 +37,7 @@
    plan is visible, the past and present are what read. */
 .dz-step[data-status='idle'] {
   color: var(--color-content-subtle);
-  opacity: 0.8;
+  opacity: var(--step-list-idle-opacity);
 }
 
 .dz-step__marker {
@@ -57,7 +57,7 @@
    fill is a wash of the hue rather than an opaque chip, so it sits as
    correctly on a card or a dark canvas as on the paper. */
 .dz-step[data-status='done'] .dz-step__marker {
-  background-color: color-mix(in srgb, var(--color-success-600) 14%, transparent);
+  background-color: color-mix(in srgb, var(--color-success-600) calc(var(--step-list-done-alpha) * 100%), transparent);
   color: var(--color-success-600);
 }
 

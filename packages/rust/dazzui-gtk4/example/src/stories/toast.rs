@@ -34,10 +34,7 @@ pub const STORY: &str = r#"{
       ],
       "$at": 0
     },
-    "gaps": [
-      "toast/preview preview: <ToastProvider> is not drawn by GTK4",
-      "toast/preview preview: <ToastViewport> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -184,10 +181,7 @@ pub const STORY: &str = r#"{
         ],
         "$at": 0
       },
-      "gaps": [
-        "toast/0 preview: <ToastProvider> is not drawn by GTK4",
-        "toast/0 preview: <ToastViewport> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "toast/1",
@@ -226,10 +220,7 @@ pub const STORY: &str = r#"{
         ],
         "$at": 0
       },
-      "gaps": [
-        "toast/1 preview: <ToastProvider> is not drawn by GTK4",
-        "toast/1 preview: <ToastViewport> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "toast/2",
@@ -265,10 +256,7 @@ pub const STORY: &str = r#"{
         ],
         "$at": 0
       },
-      "gaps": [
-        "toast/2 preview: <ToastProvider> is not drawn by GTK4",
-        "toast/2 preview: <ToastViewport> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

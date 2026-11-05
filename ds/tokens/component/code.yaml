@@ -1,0 +1,5 @@
+code-block:
+  copy-feedback-duration:
+    $type: duration
+    $value: 1600ms
+    $description: How long the copy action shows its successful state.

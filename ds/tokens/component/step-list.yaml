@@ -1,0 +1,11 @@
+step-list:
+  done:
+    alpha:
+      $type: number
+      $value: 0.14
+      $description: The success wash behind a completed step's marker.
+  idle:
+    opacity:
+      $type: number
+      $value: 0.8
+      $description: The opacity of a step that has not started.

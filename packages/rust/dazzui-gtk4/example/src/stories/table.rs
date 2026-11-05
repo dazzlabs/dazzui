@@ -174,12 +174,7 @@ pub const STORY: &str = r#"{
         }
       ]
     },
-    "gaps": [
-      "table/preview preview: <Table> is not drawn by GTK4",
-      "table/preview preview: <TableHead> is not drawn by GTK4",
-      "table/preview preview: <TableCell> is not drawn by GTK4",
-      "table/preview preview: <TableRow> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -353,12 +348,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "table/0 preview: <Table> is not drawn by GTK4",
-        "table/0 preview: <TableHead> is not drawn by GTK4",
-        "table/0 preview: <TableCell> is not drawn by GTK4",
-        "table/0 preview: <TableRow> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

@@ -68,9 +68,7 @@ pub const STORY: &str = r#"{
       },
       "$at": 0
     },
-    "gaps": [
-      "menu/preview preview: <Menu> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -138,9 +136,7 @@ pub const STORY: &str = r#"{
         },
         "$at": 0
       },
-      "gaps": [
-        "menu/0 preview: <Menu> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "menu/1",
@@ -220,9 +216,7 @@ pub const STORY: &str = r#"{
         ],
         "$at": 0
       },
-      "gaps": [
-        "menu/1 preview: <ContextMenu> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "menu/2",
@@ -311,9 +305,7 @@ pub const STORY: &str = r#"{
         },
         "$at": 0
       },
-      "gaps": [
-        "menu/2 preview: <Menubar> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

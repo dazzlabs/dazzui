@@ -19,3 +19,8 @@ harness = false
 name = "shell"
 path = "tests/shell.rs"
 harness = false
+
+[[test]]
+name = "interactions"
+path = "tests/interactions.rs"
+harness = false

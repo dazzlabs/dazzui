@@ -23,9 +23,7 @@ pub const STORY: &str = r#"{
         }
       ]
     },
-    "gaps": [
-      "number-field/preview preview: <NumberField> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -73,9 +71,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "number-field/0 preview: <NumberField> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

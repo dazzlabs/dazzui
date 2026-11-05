@@ -930,6 +930,7 @@
   --checkbox-radius: 0.3125rem;
   --checkbox-small-box: var(--spacing-3-5);
   --checkbox-thickness: var(--stroke-control);
+  --code-block-copy-feedback-duration: 1600ms; /* How long the copy action shows its successful state. */
   --color-border: #111c2e14;
   --color-border-muted: #111c2e40;
   --color-border-strong: #111c2e17;
@@ -1117,6 +1118,7 @@
   --label-strong-line-height: var(--base-type-small);
   --menu-item-padding: 0.4375rem;
   --menu-min-width: 11rem;
+  --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
   --preferences-footer-gap: var(--spacing-1);
@@ -1157,6 +1159,8 @@
   --shadow-xs: 0 1px 3px 0 #111c2e24;
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 8.25rem;
+  --skeleton-last-line-width: 0.6; /* The final paragraph bar occupies three fifths of its measure. */
+  --skeleton-sweep-duration: 1600ms; /* A slow sweep behind content that has not arrived. */
   --slider-large-thumb: var(--spacing-5);
   --slider-large-track: var(--spacing-2);
   --slider-medium-thumb: var(--spacing-4);
@@ -1188,6 +1192,10 @@
   --spacing-16: 4rem;
   --spacing-20: 5rem;
   --spacing-px: 1px;
+  --splitter-key-coarse-step: 10;
+  --splitter-key-step: 1;
+  --step-list-done-alpha: 0.14; /* The success wash behind a completed step's marker. */
+  --step-list-idle-opacity: 0.8; /* The opacity of a step that has not started. */
   --stroke-control: 0.09375rem;
   --stroke-hairline: 1px;
   --switch-large-height: var(--spacing-6);
@@ -1217,6 +1225,7 @@
   --title-small-line-height: var(--base-leading-body);
   --toast-action-duration: 8000ms;
   --toast-max-width: 26.25rem;
+  --toast-message-line-height: 1.4;
   --toast-notice-duration: 5000ms;
   --toast-transition-duration: 260ms;
   --toast-transition-offset: var(--spacing-2-5);

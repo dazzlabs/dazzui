@@ -46,9 +46,7 @@ pub const STORY: &str = r#"{
         }
       ]
     },
-    "gaps": [
-      "skeleton/preview preview: <Skeleton> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -88,9 +86,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "skeleton/0 preview: <Skeleton> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "skeleton/1",
@@ -110,9 +106,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "skeleton/1 preview: <SkeletonText> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "skeleton/2",
@@ -168,9 +162,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "skeleton/2 preview: <Skeleton> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

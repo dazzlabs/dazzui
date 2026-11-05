@@ -1,0 +1,9 @@
+skeleton:
+  sweep-duration:
+    $type: duration
+    $value: 1600ms
+    $description: A slow sweep behind content that has not arrived.
+  last-line-width:
+    $type: number
+    $value: 0.6
+    $description: The final paragraph bar occupies three fifths of its measure.

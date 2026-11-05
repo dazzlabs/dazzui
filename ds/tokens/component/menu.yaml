@@ -1,4 +1,9 @@
 menu:
+  # Base UI's menu search session; GTK supplies navigation and activation,
+  # and the port adds the same incremental label search.
+  typeahead-reset-duration:
+    $type: duration
+    $value: 500ms
   # A menu narrower than its trigger reads as broken, whatever its labels.
   min-width:
     $type: dimension

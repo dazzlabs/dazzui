@@ -74,9 +74,7 @@ pub const STORY: &str = r#"{
       },
       "$at": 0
     },
-    "gaps": [
-      "toggle/preview preview: <ToggleGroup> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -210,9 +208,7 @@ pub const STORY: &str = r#"{
         },
         "$at": 0
       },
-      "gaps": [
-        "toggle/1 preview: <ToggleGroup> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "toggle/2",
@@ -285,9 +281,7 @@ pub const STORY: &str = r#"{
         },
         "$at": 0
       },
-      "gaps": [
-        "toggle/2 preview: <ToggleGroup> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

@@ -62,10 +62,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "code/1 preview: <CodeBlock title> is not drawn by GTK4",
-        "code/1 preview: <CodeBlock language> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "code/2",
@@ -87,10 +84,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "code/2 preview: <CodeBlock lineNumbers> is not drawn by GTK4",
-        "code/2 preview: <CodeBlock copyable> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

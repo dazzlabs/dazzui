@@ -38,3 +38,15 @@ test('runtime constants reject theme-dependent or invalid durations', () => {
     /must not vary by theme/
   )
 })
+
+test('runtime steps reject invalid and theme-dependent numbers', () => {
+  const first = themes['studio-light']
+  assert.throws(
+    () => generate({ a: { ...first, 'splitter.key-step': 0 } }),
+    /Invalid runtime number/
+  )
+  assert.throws(
+    () => generate({ a: first, b: { ...first, 'splitter.key-step': 2 } }),
+    /must not vary by theme/
+  )
+})

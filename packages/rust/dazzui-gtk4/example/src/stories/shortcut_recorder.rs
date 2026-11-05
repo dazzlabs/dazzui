@@ -37,9 +37,7 @@ pub const STORY: &str = r#"{
       },
       "$at": 0
     },
-    "gaps": [
-      "shortcut-recorder/preview preview: <ShortcutRecorder> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -114,9 +112,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "shortcut-recorder/0 preview: <ShortcutRecorder> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "shortcut-recorder/1",
@@ -153,9 +149,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "shortcut-recorder/1 preview: <ShortcutRecorder> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

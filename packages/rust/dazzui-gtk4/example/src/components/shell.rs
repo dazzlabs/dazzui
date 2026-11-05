@@ -87,25 +87,25 @@ impl Shell {
         list_column.append(&search);
         let list = gtk::ListBox::new();
         list.add_css_class("gk-navigation");
+        list.set_dazz_tint(Tint::Primary);
+        list.set_activate_on_single_click(true);
         list.set_selection_mode(gtk::SelectionMode::Single);
         let overview_row = gtk::ListBoxRow::new();
         overview_row.set_widget_name("overview");
-        let overview_label = box_(gtk::Orientation::Horizontal, "2");
-        let name = label("Overview", "label-medium");
+        let overview_label = box_(gtk::Orientation::Horizontal, "1-5");
+        overview_label.append(&icon("Home20Regular"));
+        let name = gtk::Label::new(Some("Overview"));
+        name.set_xalign(0.);
         name.set_hexpand(true);
         overview_label.append(&name);
-        overview_label.append(&badge(
-            &stories::all().len().to_string(),
-            Variant::Tinted,
-            Tint::Neutral,
-            Size::Small,
-        ));
+        overview_label.append(&gtk::Label::new(Some(&stories::all().len().to_string())));
         overview_row.set_child(Some(&overview_label));
         list.append(&overview_row);
         let heading = section_label("Components");
         heading.add_css_class("gk-list-heading");
         let heading_row = gtk::ListBoxRow::new();
         heading_row.set_widget_name("components-heading");
+        heading_row.add_css_class("gk-list-heading-row");
         heading_row.set_selectable(false);
         heading_row.set_activatable(false);
         heading_row.set_child(Some(&heading));
@@ -113,7 +113,9 @@ impl Shell {
         for story in stories::all() {
             let row = gtk::ListBoxRow::new();
             row.set_widget_name(&story.id);
-            row.set_child(Some(&label(&story.name, "label-quiet")));
+            let label = gtk::Label::new(Some(&story.name));
+            label.set_xalign(0.);
+            row.set_child(Some(&label));
             list.append(&row);
         }
         let navigation = gtk::ScrolledWindow::builder()
@@ -128,18 +130,31 @@ impl Shell {
         middle.set_vexpand(true);
         let toolbar = box_(gtk::Orientation::Horizontal, "2");
         toolbar.add_css_class("gk-toolbar");
-        let list_toggle = button("☰", Variant::Plain, Tint::Neutral, Size::Small);
+        let list_toggle = icon_button(
+            "dazzui-PanelLeft20Regular-symbolic",
+            "Toggle sidebar",
+            Variant::Plain,
+            Tint::Neutral,
+            Size::Tiny,
+        );
         list_toggle.set_dazz_label("Toggle sidebar");
         list_toggle.set_tooltip_text(Some("Toggle sidebar  ⌘B"));
         list_toggle.set_valign(gtk::Align::Center);
         toolbar.append(&list_toggle);
-        let title = label("Overview", "label-strong");
+        let title = label("Overview", "body-medium");
+        title.add_css_class("gk-title");
         toolbar.append(&title);
         let count = label("", "caption-large");
         count.add_css_class("gk-quiet");
         count.set_hexpand(true);
         toolbar.append(&count);
-        let theme_toggle = button("◧", Variant::Plain, Tint::Neutral, Size::Small);
+        let theme_toggle = icon_button(
+            "dazzui-PanelRight20Regular-symbolic",
+            "Toggle theme panel",
+            Variant::Plain,
+            Tint::Neutral,
+            Size::Tiny,
+        );
         theme_toggle.set_dazz_label("Toggle theme panel");
         theme_toggle.set_tooltip_text(Some("Toggle theme panel"));
         theme_toggle.set_valign(gtk::Align::Center);
@@ -156,6 +171,20 @@ impl Shell {
         grid.set_min_children_per_line(1);
         grid.add_css_class("gk-grid");
         grid.set_valign(gtk::Align::Start);
+        let spacing_grid = grid.downgrade();
+        window.connect_css_classes_notify(move |window| {
+            if let Some(grid) = spacing_grid.upgrade() {
+                let spacing = Theme::of(window)
+                    .unwrap_or_default()
+                    .dimension("spacing-3")
+                    .unwrap() as u32;
+                grid.set_row_spacing(spacing);
+                grid.set_column_spacing(spacing);
+            }
+        });
+        let spacing = theme.dimension("spacing-3").unwrap() as u32;
+        grid.set_row_spacing(spacing);
+        grid.set_column_spacing(spacing);
         let overview = gtk::ScrolledWindow::builder()
             .child(&grid)
             .hscrollbar_policy(gtk::PolicyType::Never)
@@ -211,7 +240,6 @@ impl Shell {
         document_and_themes.set_end_child(Some(&themes.widget));
         document_and_themes.set_resize_end_child(false);
         document_and_themes.set_shrink_end_child(false);
-        document_and_themes.set_position(672);
         let shell = gtk::Paned::new(gtk::Orientation::Horizontal);
         shell.set_start_child(Some(&list_column));
         shell.set_end_child(Some(&document_and_themes));

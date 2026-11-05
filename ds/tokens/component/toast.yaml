@@ -1,4 +1,7 @@
 toast:
+  message-line-height:
+    $type: number
+    $value: 1.4
   # Shared with the native queue and the generated React runtime constants.
   notice-duration:
     $type: duration

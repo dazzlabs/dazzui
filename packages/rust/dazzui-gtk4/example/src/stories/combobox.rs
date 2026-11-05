@@ -43,9 +43,7 @@ pub const STORY: &str = r#"{
         }
       ]
     },
-    "gaps": [
-      "combobox/preview preview: <Combobox> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -89,9 +87,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "combobox/0 preview: <Combobox> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "combobox/1",
@@ -136,9 +132,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "combobox/1 preview: <Combobox> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "combobox/2",
@@ -165,9 +159,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "combobox/2 preview: <Autocomplete> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

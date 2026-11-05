@@ -33,9 +33,7 @@ pub const STORY: &str = r#"{
       ],
       "$at": 0
     },
-    "gaps": [
-      "tooltip/preview preview: <Tooltip> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -68,9 +66,7 @@ pub const STORY: &str = r#"{
         ],
         "$at": 0
       },
-      "gaps": [
-        "tooltip/0 preview: <Tooltip> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "tooltip/1",
@@ -148,9 +144,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "tooltip/1 preview: <Tooltip> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

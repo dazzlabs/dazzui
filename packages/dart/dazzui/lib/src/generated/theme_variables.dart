@@ -233,6 +233,7 @@ class ThemeVariables {
     this.controlLargeSize = 32,
     this.calendarCellGap = 2,
     this.checkboxRadius = 5,
+    this.codeBlockCopyFeedbackDuration = const Duration(microseconds: 1600000),
     this.dateRangePickerSideWidth = 192,
     this.dateRangePickerTriggerMinWidth = 256,
     this.dateRangePickerTimeMinWidth = 80,
@@ -241,6 +242,7 @@ class ThemeVariables {
     this.dialogScrimAlpha = 0.25,
     this.dialogDangerBorderAlpha = 0.34,
     this.drawerSize = 352,
+    this.menuTypeaheadResetDuration = const Duration(microseconds: 500000),
     this.menuMinWidth = 176,
     this.menuItemPadding = 7,
     this.preferencesWidth = 480,
@@ -253,17 +255,24 @@ class ThemeVariables {
     this.segmentedControlInset = 3,
     this.shortcutRecorderWidth = 132,
     this.shortcutRecorderRejectDuration = const Duration(microseconds: 360000),
+    this.skeletonSweepDuration = const Duration(microseconds: 1600000),
+    this.skeletonLastLineWidth = 0.6,
     this.sliderMediumTrack = 6,
     this.sliderMediumThumb = 16,
     this.sliderThumbInk = 0,
     this.sliderThumbLift = 1,
     this.sliderThumbEdgeWidth = 1,
     this.sliderThumbHotScale = 1,
+    this.splitterKeyStep = 1,
+    this.splitterKeyCoarseStep = 10,
+    this.stepListDoneAlpha = 0.14,
+    this.stepListIdleOpacity = 0.8,
     this.switchMediumWidth = 32,
     this.switchMediumHeight = 18,
     this.switchMediumThumb = 14,
     this.tabsPulseDuration = const Duration(microseconds: 1400000),
     this.tabsPulseOpacity = 0.35,
+    this.toastMessageLineHeight = 1.4,
     this.toastNoticeDuration = const Duration(microseconds: 5000000),
     this.toastActionDuration = const Duration(microseconds: 8000000),
     this.toastTransitionDuration = const Duration(microseconds: 260000),
@@ -804,6 +813,10 @@ class ThemeVariables {
   double get checkboxMediumBox => spacing4;
   double get checkboxLargeBox => spacing5;
 
+  // Code
+  /// How long the copy action shows its successful state.
+  final Duration codeBlockCopyFeedbackDuration;
+
   // Date Range Picker
   final double dateRangePickerSideWidth;
   final double dateRangePickerTriggerMinWidth;
@@ -823,6 +836,7 @@ class ThemeVariables {
   double get iconButtonTinyIconSize => spacing4;
 
   // Menu
+  final Duration menuTypeaheadResetDuration;
   final double menuMinWidth;
   final double menuItemPadding;
 
@@ -864,6 +878,13 @@ class ThemeVariables {
   final double shortcutRecorderWidth;
   final Duration shortcutRecorderRejectDuration;
 
+  // Skeleton
+  /// A slow sweep behind content that has not arrived.
+  final Duration skeletonSweepDuration;
+
+  /// The final paragraph bar occupies three fifths of its measure.
+  final double skeletonLastLineWidth;
+
   // Slider
   double get sliderSmallTrack => spacing1;
   double get sliderSmallThumb => spacing35;
@@ -875,6 +896,17 @@ class ThemeVariables {
   final int sliderThumbLift;
   final double sliderThumbEdgeWidth;
   final double sliderThumbHotScale;
+
+  // Splitter
+  final int splitterKeyStep;
+  final int splitterKeyCoarseStep;
+
+  // Step List
+  /// The success wash behind a completed step's marker.
+  final double stepListDoneAlpha;
+
+  /// The opacity of a step that has not started.
+  final double stepListIdleOpacity;
 
   // Switch
   double get switchSmallWidth => spacing7;
@@ -894,6 +926,7 @@ class ThemeVariables {
   final double tabsPulseOpacity;
 
   // Toast
+  final double toastMessageLineHeight;
   final Duration toastNoticeDuration;
   final Duration toastActionDuration;
   final Duration toastTransitionDuration;
@@ -1078,6 +1111,7 @@ class ThemeVariables {
     double? controlLargeSize,
     double? calendarCellGap,
     double? checkboxRadius,
+    Duration? codeBlockCopyFeedbackDuration,
     double? dateRangePickerSideWidth,
     double? dateRangePickerTriggerMinWidth,
     double? dateRangePickerTimeMinWidth,
@@ -1086,6 +1120,7 @@ class ThemeVariables {
     double? dialogScrimAlpha,
     double? dialogDangerBorderAlpha,
     double? drawerSize,
+    Duration? menuTypeaheadResetDuration,
     double? menuMinWidth,
     double? menuItemPadding,
     double? preferencesWidth,
@@ -1098,17 +1133,24 @@ class ThemeVariables {
     double? segmentedControlInset,
     double? shortcutRecorderWidth,
     Duration? shortcutRecorderRejectDuration,
+    Duration? skeletonSweepDuration,
+    double? skeletonLastLineWidth,
     double? sliderMediumTrack,
     double? sliderMediumThumb,
     int? sliderThumbInk,
     int? sliderThumbLift,
     double? sliderThumbEdgeWidth,
     double? sliderThumbHotScale,
+    int? splitterKeyStep,
+    int? splitterKeyCoarseStep,
+    double? stepListDoneAlpha,
+    double? stepListIdleOpacity,
     double? switchMediumWidth,
     double? switchMediumHeight,
     double? switchMediumThumb,
     Duration? tabsPulseDuration,
     double? tabsPulseOpacity,
+    double? toastMessageLineHeight,
     Duration? toastNoticeDuration,
     Duration? toastActionDuration,
     Duration? toastTransitionDuration,
@@ -1308,6 +1350,8 @@ class ThemeVariables {
       controlLargeSize: controlLargeSize ?? this.controlLargeSize,
       calendarCellGap: calendarCellGap ?? this.calendarCellGap,
       checkboxRadius: checkboxRadius ?? this.checkboxRadius,
+      codeBlockCopyFeedbackDuration:
+          codeBlockCopyFeedbackDuration ?? this.codeBlockCopyFeedbackDuration,
       dateRangePickerSideWidth:
           dateRangePickerSideWidth ?? this.dateRangePickerSideWidth,
       dateRangePickerTriggerMinWidth:
@@ -1321,6 +1365,8 @@ class ThemeVariables {
       dialogDangerBorderAlpha:
           dialogDangerBorderAlpha ?? this.dialogDangerBorderAlpha,
       drawerSize: drawerSize ?? this.drawerSize,
+      menuTypeaheadResetDuration:
+          menuTypeaheadResetDuration ?? this.menuTypeaheadResetDuration,
       menuMinWidth: menuMinWidth ?? this.menuMinWidth,
       menuItemPadding: menuItemPadding ?? this.menuItemPadding,
       preferencesWidth: preferencesWidth ?? this.preferencesWidth,
@@ -1338,17 +1384,28 @@ class ThemeVariables {
           shortcutRecorderWidth ?? this.shortcutRecorderWidth,
       shortcutRecorderRejectDuration:
           shortcutRecorderRejectDuration ?? this.shortcutRecorderRejectDuration,
+      skeletonSweepDuration:
+          skeletonSweepDuration ?? this.skeletonSweepDuration,
+      skeletonLastLineWidth:
+          skeletonLastLineWidth ?? this.skeletonLastLineWidth,
       sliderMediumTrack: sliderMediumTrack ?? this.sliderMediumTrack,
       sliderMediumThumb: sliderMediumThumb ?? this.sliderMediumThumb,
       sliderThumbInk: sliderThumbInk ?? this.sliderThumbInk,
       sliderThumbLift: sliderThumbLift ?? this.sliderThumbLift,
       sliderThumbEdgeWidth: sliderThumbEdgeWidth ?? this.sliderThumbEdgeWidth,
       sliderThumbHotScale: sliderThumbHotScale ?? this.sliderThumbHotScale,
+      splitterKeyStep: splitterKeyStep ?? this.splitterKeyStep,
+      splitterKeyCoarseStep:
+          splitterKeyCoarseStep ?? this.splitterKeyCoarseStep,
+      stepListDoneAlpha: stepListDoneAlpha ?? this.stepListDoneAlpha,
+      stepListIdleOpacity: stepListIdleOpacity ?? this.stepListIdleOpacity,
       switchMediumWidth: switchMediumWidth ?? this.switchMediumWidth,
       switchMediumHeight: switchMediumHeight ?? this.switchMediumHeight,
       switchMediumThumb: switchMediumThumb ?? this.switchMediumThumb,
       tabsPulseDuration: tabsPulseDuration ?? this.tabsPulseDuration,
       tabsPulseOpacity: tabsPulseOpacity ?? this.tabsPulseOpacity,
+      toastMessageLineHeight:
+          toastMessageLineHeight ?? this.toastMessageLineHeight,
       toastNoticeDuration: toastNoticeDuration ?? this.toastNoticeDuration,
       toastActionDuration: toastActionDuration ?? this.toastActionDuration,
       toastTransitionDuration:

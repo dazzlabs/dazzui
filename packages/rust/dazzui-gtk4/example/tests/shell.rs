@@ -5,8 +5,27 @@ use dazzui_gtk4_example::{
     stories,
     support::themes::FAMILY_GROUPS,
 };
+fn mapped(root: &gtk::Widget, class: &str) -> Vec<gtk::Widget> {
+    if !root.is_mapped() {
+        return vec![];
+    }
+    let mut result = if root.has_css_class(class) {
+        vec![root.clone()]
+    } else {
+        vec![]
+    };
+    let mut child = root.first_child();
+    while let Some(node) = child {
+        child = node.next_sibling();
+        result.extend(mapped(&node, class));
+    }
+    result
+}
 fn main() {
     gtk::init().expect("GTK display required");
+    gtk::Settings::default()
+        .unwrap()
+        .set_gtk_enable_animations(false);
     let application = gtk::Application::builder()
         .application_id("dev.dazzlabs.dazzui.gtk4.shelltest")
         .build();
@@ -23,7 +42,7 @@ fn main() {
     window.present();
     settle();
     assert_eq!(shell.page(), "overview");
-    assert_eq!(shell.visible_stories(), 51);
+    assert_eq!(shell.visible_stories(), stories::all().len());
     for story in stories::all() {
         assert_eq!(story.preview.id, format!("{}/preview", story.id));
         assert!(
@@ -86,6 +105,66 @@ fn main() {
         1.,
     )
     .unwrap();
+    shell.themes.select(Theme::new("studio-light").unwrap());
+    for width in [1120, 1000, 1280] {
+        window.set_default_size(width, 720);
+        settle();
+        let viewports = mapped(shell.widget.upcast_ref(), "gk-stage-viewport");
+        assert_eq!(
+            viewports.len(),
+            stories::story_of("button").unwrap().examples.len()
+        );
+        let mut checked = 0;
+        gtk::prelude::GtkWindowExt::set_focus(&window, None::<&gtk::Widget>);
+        assert!(
+            viewports[0]
+                .parent()
+                .unwrap()
+                .child_focus(gtk::DirectionType::TabForward),
+            "the scrolling frame retains native keyboard entry"
+        );
+        assert!(
+            gtk::prelude::GtkWindowExt::focus(&window)
+                .is_some_and(|focus| focus.is_ancestor(&viewports[0]))
+        );
+        for viewport in viewports {
+            for button in mapped(&viewport, "dz-button") {
+                let bounds = button.compute_bounds(&viewport).unwrap();
+                assert!(
+                    bounds.y() >= -0.5
+                        && bounds.y() + bounds.height() <= viewport.height() as f32 + 0.5,
+                    "wrapped button is clipped at window width {width}: {bounds:?}, viewport height {}",
+                    viewport.height()
+                );
+                checked += 1;
+            }
+        }
+        assert!(checked > 0);
+    }
+    window.set_default_size(1120, 720);
+    for story in stories::all() {
+        shell.open(Some(&story.id));
+        settle();
+        for viewport in mapped(shell.widget.upcast_ref(), "gk-stage-viewport") {
+            let child = viewport
+                .downcast_ref::<gtk::ScrolledWindow>()
+                .unwrap()
+                .child()
+                .unwrap();
+            let content = child
+                .downcast_ref::<gtk::Viewport>()
+                .and_then(|v| v.child())
+                .unwrap_or(child);
+            let bounds = content.compute_bounds(&viewport).unwrap();
+            assert!(
+                bounds.y() >= -0.5
+                    && bounds.y() + bounds.height() <= viewport.height() as f32 + 0.5,
+                "{} example content is clipped: {bounds:?}, viewport height {}",
+                story.id,
+                viewport.height()
+            );
+        }
+    }
     window.destroy();
     println!(
         "Registry, preview/examples split, search, navigation, theme modes and panel toggles passed"

@@ -89,11 +89,19 @@ pub fn empty_state(
 ) -> gtk::Box {
     let w = box_(gtk::Orientation::Vertical, "3");
     w.add_css_class("dz-empty-state");
-    w.append(&label(title, "title-medium"));
-    let body = label(description, "body-medium");
-    body.set_wrap(true);
-    w.append(&body);
+    w.set_hexpand(true);
+    let title = label(title, "body-medium");
+    title.add_css_class("dz-empty-state-title");
+    title.set_xalign(0.5);
+    w.append(&title);
+    if !description.is_empty() {
+        let body = label(description, "body-medium");
+        body.set_wrap(true);
+        body.set_xalign(0.5);
+        w.append(&body);
+    }
     if let Some(action) = action {
+        action.set_halign(gtk::Align::Center);
         w.append(action);
     }
     w
@@ -106,6 +114,7 @@ pub fn form_field(
     let w = box_(gtk::Orientation::Vertical, "2");
     w.add_css_class("dz-form-field");
     let title = label(text, "label-medium");
+    title.add_css_class("dz-form-field-label");
     title.set_mnemonic_widget(Some(control));
     control
         .as_ref()
@@ -114,12 +123,12 @@ pub fn form_field(
     w.append(control);
     if let Some(description) = description {
         let hint = label(description, "body-small");
-        hint.add_css_class("dz-muted");
+        hint.add_css_class("dz-form-field-hint");
         hint.set_wrap(true);
         control
             .as_ref()
             .update_relation(&[gtk::accessible::Relation::DescribedBy(&[hint.upcast_ref()])]);
-        w.append(&hint);
+        w.append(&super::hint_layout::wrap(&hint));
     }
     w
 }
@@ -131,7 +140,21 @@ pub fn preferences() -> gtk::Box {
 pub fn preference_group(title: &str) -> gtk::Box {
     let w = box_(gtk::Orientation::Vertical, "4");
     w.add_css_class("dz-preference-group");
-    w.append(&label(title, "title-small"));
+    let titles = box_(gtk::Orientation::Vertical, "0-5");
+    titles.add_css_class("dz-preference-group-titles");
+    titles.append(&label(title, "title-medium"));
+    w.append(&titles);
+    super::column_layout::install(&w, "preferences-title-gap");
+    w
+}
+pub fn preference_section(title: &str) -> gtk::Box {
+    let w = box_(gtk::Orientation::Vertical, "0");
+    w.add_css_class("dz-preference-section");
+    if !title.is_empty() {
+        let heading = crate::section_label(title);
+        heading.add_css_class("dz-preference-section-heading");
+        w.append(&heading);
+    }
     w
 }
 pub fn preference_row(
@@ -158,8 +181,53 @@ pub fn preference_row(
     w
 }
 pub fn collapsible(text: &str, child: &impl IsA<gtk::Widget>) -> gtk::Expander {
-    let w = gtk::Expander::new(Some(text));
+    collapsible_with_slots(&gtk::Label::new(Some(text)).upcast(), None, None, child)
+}
+/// A row that opens another view. GTK owns activation and keyboard focus;
+/// the same text column keeps inert and interactive rows aligned.
+pub fn preference_row_button(
+    text: &str,
+    description: Option<&str>,
+    control: &impl IsA<gtk::Widget>,
+) -> gtk::Button {
+    let content = preference_row(text, description, control);
+    content.remove_css_class("dz-preference-row");
+    let button = gtk::Button::new();
+    button.add_css_class("dz-preference-row");
+    button.set_dazz_tint(Tint::Neutral);
+    button.set_child(Some(&content));
+    button.set_dazz_label(text);
+    button
+}
+pub fn collapsible_with_slots(
+    title: &gtk::Widget,
+    leading: Option<&gtk::Widget>,
+    meta: Option<&gtk::Widget>,
+    child: &impl IsA<gtk::Widget>,
+) -> gtk::Expander {
+    let w = gtk::Expander::new(None);
     w.add_css_class("dz-collapsible");
+    let heading = box_(gtk::Orientation::Horizontal, "2");
+    heading.set_hexpand(true);
+    if let Some(icon) = leading {
+        heading.append(icon);
+    }
+    title.set_hexpand(true);
+    if let Some(label) = title.downcast_ref::<gtk::Label>() {
+        label.set_wrap(false);
+        label.set_ellipsize(gtk::pango::EllipsizeMode::End);
+        label.set_xalign(0.);
+    }
+    heading.append(title);
+    if let Some(meta) = meta {
+        let slot = box_(gtk::Orientation::Horizontal, "2");
+        slot.add_css_class("dz-disclosure-meta");
+        slot.append(meta);
+        heading.append(&slot);
+    }
+    w.set_label_widget(Some(&heading));
+    w.update_relation(&[gtk::accessible::Relation::LabelledBy(&[title.upcast_ref()])]);
+    child.add_css_class("dz-collapsible-content");
     w.set_child(Some(child));
     w
 }
@@ -188,9 +256,9 @@ pub struct PillTab<'a> {
     pub icon: Option<&'a str>,
     pub disabled: bool,
 }
-pub fn pill_tabs(items: &[PillTab<'_>], selected: Option<&str>, tint: Tint) -> gtk::Box {
+pub fn pill_tabs(items: &[PillTab<'_>], selected: Option<&str>, tint: Tint) -> crate::ButtonGroup {
     let root = styled(
-        box_(gtk::Orientation::Horizontal, "2"),
+        crate::ButtonGroup::new("2"),
         "dz-pill-tabs",
         tint,
         Size::Tiny,
@@ -200,6 +268,7 @@ pub fn pill_tabs(items: &[PillTab<'_>], selected: Option<&str>, tint: Tint) -> g
     let mut first: Option<gtk::ToggleButton> = None;
     for item in items {
         let tab = gtk::ToggleButton::new();
+        super::button_layout::install(&tab);
         tab.set_accessible_role(gtk::AccessibleRole::Tab);
         tab.add_css_class("dz-pill-tab");
         tab.set_valign(gtk::Align::Center);
@@ -216,7 +285,9 @@ pub fn pill_tabs(items: &[PillTab<'_>], selected: Option<&str>, tint: Tint) -> g
         }
         face.append(&gtk::Label::new(Some(item.label)));
         if let Some(count) = item.count {
-            face.append(&gtk::Label::new(Some(count)));
+            let count = gtk::Label::new(Some(count));
+            count.add_css_class("dz-pill-tab-count");
+            face.append(&count);
         }
         tab.set_child(Some(&face));
         tab.set_active(selected == Some(item.value));
@@ -229,7 +300,7 @@ pub fn pill_tabs(items: &[PillTab<'_>], selected: Option<&str>, tint: Tint) -> g
     root
 }
 /// Grouped toggles preserve GTK's navigation and exclusive selection.
-pub fn segmented_control(labels: &[&str], selected: usize) -> gtk::Box {
+pub fn segmented_control(labels: &[&str], selected: usize) -> crate::ButtonGroup {
     let items: Vec<_> = labels.iter().map(|label| (*label, None)).collect();
     glyph_segmented_control(&items, selected, false)
 }
@@ -245,9 +316,9 @@ pub fn glyph_segmented_control(
     items: &[(&str, Option<&str>)],
     selected: usize,
     icon_only: bool,
-) -> gtk::Box {
+) -> crate::ButtonGroup {
     let w = styled(
-        box_(gtk::Orientation::Horizontal, "0"),
+        crate::ButtonGroup::new("0"),
         "dz-segmented-control",
         Tint::Primary,
         Size::Medium,
@@ -258,6 +329,7 @@ pub fn glyph_segmented_control(
         // Segments inherit the track's profile. An independent button profile
         // would reset the nested radius and stop size changes reaching them.
         let item = gtk::ToggleButton::with_label(text);
+        super::button_layout::install(&item);
         item.add_css_class("dz-segment");
         if let Some(icon) = icon {
             let glyph = gtk::Image::from_icon_name(icon);
@@ -292,6 +364,7 @@ pub fn option_card(
     group: Option<&gtk::CheckButton>,
 ) -> gtk::CheckButton {
     let w = checkbox("", Tint::Primary, Size::Medium);
+    w.remove_css_class("dz-checkbox");
     w.add_css_class("dz-option-card");
     w.set_accessible_role(gtk::AccessibleRole::Radio);
     w.set_hexpand(true);
@@ -309,6 +382,7 @@ pub fn option_card(
         column.append(&description);
     }
     w.set_child(Some(&column));
+    super::option_card_layout::install(&w);
     w
 }
 pub fn popover(child: &impl IsA<gtk::Widget>) -> gtk::Popover {
@@ -329,7 +403,7 @@ pub fn menu_button(
         size,
     );
     w.set_label(text);
-    w.set_menu_model(Some(model));
+    w.set_popover(Some(&crate::menu_popup(model)));
     w
 }
 /// A transient modal window; GTK supplies focus and platform window behaviour.

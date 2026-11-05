@@ -47,10 +47,7 @@ pub const STORY: &str = r#"{
         }
       ]
     },
-    "gaps": [
-      "accordion/preview preview: <Accordion> is not drawn by GTK4",
-      "accordion/preview preview: <AccordionItem> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -109,10 +106,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "accordion/0 preview: <Accordion> is not drawn by GTK4",
-        "accordion/0 preview: <AccordionItem> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "accordion/1",
@@ -171,10 +165,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "accordion/1 preview: <Accordion> is not drawn by GTK4",
-        "accordion/1 preview: <AccordionItem> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "accordion/2",
@@ -232,10 +223,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "accordion/2 preview: <Accordion> is not drawn by GTK4",
-        "accordion/2 preview: <AccordionItem> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

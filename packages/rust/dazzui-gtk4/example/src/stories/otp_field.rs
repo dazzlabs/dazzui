@@ -14,9 +14,7 @@ pub const STORY: &str = r#"{
       },
       "$at": 0
     },
-    "gaps": [
-      "otp-field/preview preview: <OtpField> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -30,9 +28,7 @@ pub const STORY: &str = r#"{
         },
         "$at": 0
       },
-      "gaps": [
-        "otp-field/0 preview: <OtpField> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "otp-field/1",
@@ -46,9 +42,7 @@ pub const STORY: &str = r#"{
         },
         "$at": 0
       },
-      "gaps": [
-        "otp-field/1 preview: <OtpField> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "otp-field/2",
@@ -89,9 +83,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "otp-field/2 preview: <OtpField> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

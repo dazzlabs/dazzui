@@ -54,10 +54,7 @@ pub const STORY: &str = r#"{
         }
       ]
     },
-    "gaps": [
-      "form/preview preview: <Form> is not drawn by GTK4",
-      "form/preview preview: <Button type> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -146,10 +143,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "form/0 preview: <Form> is not drawn by GTK4",
-        "form/0 preview: <Button type> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "form/1",

@@ -24,7 +24,7 @@
   border-radius: var(--radius-small);
   /* Slower than the spinner's turn: this one is scenery behind a layout, and
      at the spinner's pace a page of bars reads as an alarm. */
-  animation: dz-skeleton-sweep 1.6s ease-in-out infinite;
+  animation: dz-skeleton-sweep var(--skeleton-sweep-duration) ease-in-out infinite;
 }
 
 /*
@@ -68,7 +68,7 @@
    measure, long enough not to read as a heading. It is a proportion rather
    than a length, so there is no step of the scale to compose it out of. */
 .dz-skeleton-text > .dz-skeleton[data-last='true'] {
-  width: 60%;
+  width: calc(var(--skeleton-last-line-width) * 100%);
 }
 
 @keyframes dz-skeleton-sweep {

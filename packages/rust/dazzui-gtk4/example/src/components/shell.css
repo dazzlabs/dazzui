@@ -1,30 +1,34 @@
-/* React example's three columns, document stages and theme previews. */
+/* Placement mirrors the React example; the controls read their ds recipes. */
 .gk { background: var(--color-surface); }
 .gk-list, .gk-themes { background: var(--color-surface-column); }
-.gk-toolbar { min-height: var(--frame-titlebar-size); padding: 0 var(--spacing-4); border-bottom: var(--stroke-hairline) solid var(--color-border); }
-.gk-brand { min-height: var(--frame-titlebar-size); padding: 0 var(--spacing-4); font-size: var(--title-small-font-size); }
-.gk-search { margin: var(--spacing-2) var(--spacing-4); }
-.gk-list-heading { margin: var(--spacing-2) var(--spacing-4); }
-.gk-navigation { background: none; }
-.gk-navigation row { border-radius: var(--control-container-radius); padding: var(--spacing-2) var(--spacing-4); color: var(--color-content-nav); }
-.gk-navigation row:hover { background: var(--color-surface-subtle); }
-.gk-navigation row:selected { background: var(--color-surface-subtle); color: var(--color-content); font-weight: var(--label-medium-font-weight); }
+.gk-toolbar { min-height: calc(var(--frame-titlebar-size) - var(--stroke-hairline)); padding: 0 var(--spacing-4); border-bottom: var(--stroke-hairline) solid var(--color-border); }
+.gk-title { margin-left: var(--spacing-1); font-weight: var(--label-strong-font-weight); }
+.gk-brand { min-height: var(--frame-titlebar-size); padding: 0 var(--spacing-2-5); border: 0; border-radius: 0; background: none; box-shadow: none; }
+.gk-search { margin: 0 var(--spacing-2-5) var(--spacing-3); }
+.gk-list-heading-row { margin: var(--spacing-1-5) 0 0; padding: var(--spacing-1) var(--spacing-2-5); }
+.gk-navigation { background: none; margin: 0 var(--spacing-2-5); }
+.gk-navigation row { min-height: 0; border-radius: var(--radius-small); padding: var(--menu-item-padding) var(--spacing-2-5); margin-bottom: var(--frame-nav-gap); color: var(--color-content-nav); font-family: var(--label-quiet-font-family); font-size: var(--label-quiet-font-size); font-weight: var(--label-quiet-font-weight); line-height: var(--label-quiet-line-height); }
+.gk-navigation row:hover:not(:selected) { background: var(--recipe-plain-surface-hovered); color: var(--color-content); }
+.gk-navigation row:selected { background: var(--recipe-filled-surface-normal); color: var(--recipe-filled-content-normal); font-weight: var(--label-medium-font-weight); }
+.gk-navigation .gk-list-heading-row { padding: var(--spacing-1) var(--spacing-2-5); background: none; }
 .gk-grid, .gk-page { padding: var(--spacing-5) var(--spacing-6) var(--spacing-10); }
-.gk-grid > flowboxchild { padding: var(--spacing-1-5); }
-.gk-tile { min-width: calc(var(--spacing-16) * 4); }
-.gk-stage { min-height: calc(var(--spacing-20) * 2); }
-.gk-preview-stage { min-height: calc(var(--spacing-16) * 2); padding: var(--spacing-3); border: none; }
+.gk-grid { border-spacing: var(--spacing-3); }
+.gk-grid > flowboxchild { padding: 0; }
+.gk-tile { min-width: calc(var(--spacing-16) * 4 - 2 * var(--spacing-3-5) - 2 * var(--stroke-hairline)); border-spacing: var(--spacing-2); }
+.gk-stage { min-height: calc(var(--spacing-20) * 2 - 2 * var(--spacing-4) - 2 * var(--stroke-hairline)); }
+.gk-preview-stage { min-height: calc(var(--spacing-16) * 2); padding: 0; border: none; }
 .gk-quiet { color: var(--color-content-secondary); }
 .gk-theme-group { padding: var(--spacing-2) var(--spacing-4); }
-.gk-theme-tile { padding: 0; margin: var(--spacing-1); min-width: 0; border-radius: var(--radius-medium); }
-.gk-theme-name { min-height: var(--spacing-6); padding: 0 var(--spacing-1-5); font-weight: var(--label-quiet-font-weight); }
-.g-preview { min-height: var(--spacing-10); border-bottom: var(--stroke-hairline) solid var(--color-border-strong); }
-.g-preview-column { min-width: var(--spacing-4); background: var(--color-surface-column); }
+.gk-theme-grid { border-spacing: var(--spacing-2); }
+.gk-theme-tile { min-height: 0; min-width: 0; padding: 0; margin: 0; background: var(--color-surface-muted); border: var(--stroke-hairline) solid var(--color-border); border-radius: var(--spacing-2); box-shadow: none; }
+.gk-theme-tile:checked { background: var(--color-surface); border-color: var(--recipe-primary-outlined-border-normal); box-shadow: inset 0 0 0 calc(var(--stroke-control) - var(--stroke-hairline)) var(--recipe-primary-outlined-border-normal); }
+.gk-theme-name { min-height: var(--spacing-6); padding: 0 var(--spacing-1-5); font-size: var(--label-small-font-size); font-weight: var(--label-quiet-font-weight); }
+.g-preview { min-height: var(--spacing-10); border-bottom: var(--stroke-hairline) solid var(--color-border); }
+.g-preview-column { min-width: var(--spacing-5); border-right: var(--stroke-hairline) solid var(--color-border-strong); background: var(--color-surface-column); }
 .g-preview-paper { background: var(--color-surface); padding: var(--spacing-1-5); }
-.g-preview-ink { min-width: var(--spacing-4); min-height: var(--spacing-0-5); background: var(--color-content); border-radius: var(--radius-full); }
-.g-preview-accent { min-width: var(--spacing-3); min-height: var(--spacing-2); background: var(--color-primary-500); border-radius: var(--radius-small); }
+.g-preview-ink { min-width: var(--spacing-6); min-height: var(--spacing-0-5); background: var(--color-content); border-radius: var(--spacing-px); }
+.g-preview-ink + .g-preview-ink { min-width: var(--spacing-4); opacity: 0.4; }
+.g-preview-accent { min-width: var(--spacing-6); min-height: var(--spacing-2-5); background: var(--color-primary-500); border-radius: var(--spacing-1); }
 .gk > separator, .gk paned > separator { min-width: var(--stroke-hairline); background: var(--color-border); }
-.gk-stage.gk-preview-stage { border: none; padding: var(--spacing-3); }
-.gk-theme-tile { min-height: 0; background: var(--color-surface-muted); border: var(--stroke-hairline) solid var(--color-border); box-shadow: none; }
-.gk-theme-tile:checked { background: var(--color-surface); border-color: var(--color-primary-600); }
+.gk-stage.gk-preview-stage { border: none; padding: 0; }
 .gk-brand-mark { min-width: var(--spacing-5); min-height: var(--spacing-5); border-radius: var(--radius-small); background: var(--color-primary-500); }

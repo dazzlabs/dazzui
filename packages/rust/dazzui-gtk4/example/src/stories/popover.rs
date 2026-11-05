@@ -55,10 +55,7 @@ pub const STORY: &str = r#"{
       ],
       "$at": 0
     },
-    "gaps": [
-      "popover/preview preview: <Popover> is not drawn by GTK4",
-      "popover/preview preview: <PopoverClose> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -113,10 +110,7 @@ pub const STORY: &str = r#"{
         ],
         "$at": 0
       },
-      "gaps": [
-        "popover/0 preview: <Popover> is not drawn by GTK4",
-        "popover/0 preview: <PopoverClose> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "popover/1",
@@ -186,9 +180,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "popover/1 preview: <Popover> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

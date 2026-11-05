@@ -3,6 +3,7 @@ import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 
 import { cx } from '../lib/cx'
+import { CODE_COPY_FEEDBACK_MS } from '../generated/runtime'
 import { IconButton } from './icon-button'
 
 export interface CodeProps extends ComponentPropsWithoutRef<'code'> {}
@@ -75,7 +76,7 @@ export function CodeBlock({
      on an element that has gone. */
   useEffect(() => {
     if (!copied) return
-    const timer = setTimeout(() => setCopied(false), 1600)
+    const timer = setTimeout(() => setCopied(false), CODE_COPY_FEEDBACK_MS)
     return () => clearTimeout(timer)
   }, [copied])
 

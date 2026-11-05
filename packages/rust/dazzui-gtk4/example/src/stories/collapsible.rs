@@ -94,9 +94,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "collapsible/1 preview: <Collapsible meta> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

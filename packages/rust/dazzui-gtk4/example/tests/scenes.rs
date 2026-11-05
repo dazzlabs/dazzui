@@ -17,18 +17,36 @@ fn main() {
                 let mut specimens = vec![];
                 let widget = scene::render_scene(scene, &mut specimens)
                     .unwrap_or_else(|e| panic!("{}: {e}", scene.id));
-                window.set_child(Some(&widget));
+                // Use the collector's frame so the previous scene's native
+                // window minimum cannot become this scene's layout width.
+                let (fixed, frame) = dazzui_gtk4_example::conformance::scene_frame(&widget);
+                window.set_child(Some(&fixed));
+                window.set_default_size(640, 1);
                 window.present();
                 settle();
-                assert!(widget.width() > 0 && widget.height() > 0, "{}", scene.id);
+                gtk::prelude::GtkWindowExt::set_focus(&window, None::<&gtk::Widget>);
+                settle();
+                assert!(
+                    widget.width() > 0 && widget.height() > 0,
+                    "{}: {}x{}, mapped={}",
+                    scene.id,
+                    widget.width(),
+                    widget.height(),
+                    widget.is_mapped()
+                );
                 let mut seen = std::collections::HashSet::new();
                 for (at, specimen) in specimens {
+                    assert!(seen.insert(at), "Duplicate address in {}", scene.id);
+                    // Closed disclosures and portals still have addresses,
+                    // but no initial reading until their native widget maps.
+                    if !specimen.is_mapped() {
+                        continue;
+                    }
                     assert!(
-                        specimen.compute_bounds(&widget).unwrap().width() > 0.0,
+                        specimen.compute_bounds(&frame).unwrap().width() > 0.0,
                         "{} / {at} has no width",
                         scene.id
                     );
-                    assert!(seen.insert(at), "Duplicate address in {}", scene.id);
                 }
                 count += 1;
             }
@@ -79,7 +97,7 @@ fn main() {
         .unwrap()
         .first_child()
         .unwrap()
-        .downcast::<gtk::Label>()
+        .downcast::<TextBox>()
         .unwrap();
     input.set_text("Typed");
     input.select_region(1, 3);
@@ -162,7 +180,7 @@ fn main() {
         .unwrap()
         .first_child()
         .unwrap()
-        .downcast::<gtk::Label>()
+        .downcast::<TextBox>()
         .unwrap();
     assert_eq!(select.selected(), 2);
     select.set_selected(3);
@@ -199,6 +217,93 @@ fn main() {
     assert!(
         dazzui_gtk4_example::conformance::first_text(outer.upcast_ref(), &specimens).is_none(),
         "a nested specimen owns its label"
+    );
+
+    // A story width is exact, rather than GTK's size-request minimum. Rows
+    // wrap unequal native controls while retaining their own widths and gap.
+    let row: dazzui_gtk4_example::support::story::Scene =
+        serde_json::from_value(serde_json::json!({
+            "id":"wrap", "title":"Wrap", "gaps":[],
+            "content":{"$el":"Row","props":{"width":"6rem","gap":"3"},"children":[
+                {"$el":"Button","$at":0,"children":["One"]},
+                {"$el":"Button","$at":1,"children":["Two"]},
+                {"$el":"Button","$at":2,"children":["Three"]}
+            ]}
+        }))
+        .unwrap();
+    let mut specimens = vec![];
+    let root = scene::render_scene(&row, &mut specimens).unwrap();
+    let (fixed, frame) = dazzui_gtk4_example::conformance::scene_frame(&root);
+    window.set_child(Some(&fixed));
+    settle();
+    assert_eq!(
+        root.width(),
+        96,
+        "explicit width survives a wider native window"
+    );
+    let first = specimens[0].1.compute_bounds(&root).unwrap();
+    let second = specimens[1].1.compute_bounds(&root).unwrap();
+    assert!(second.y() > first.y(), "the second button wraps");
+    assert_eq!(
+        second.y() - first.y() - first.height(),
+        12.,
+        "wrapped row gap"
+    );
+    for (_, child) in &specimens {
+        let bounds = child.compute_bounds(&root).unwrap();
+        assert!(bounds.x() >= 0. && bounds.x() + bounds.width() <= 96.);
+    }
+    assert_eq!(frame.compute_bounds(&frame).unwrap().width(), 640.);
+
+    for (story, index, expected) in [
+        ("preferences", None, 320.),
+        ("preferences", Some(0), 480.),
+        ("card", None, 240.),
+    ] {
+        let story = stories::story_of(story).unwrap();
+        let value = index.map(|i| &story.examples[i]).unwrap_or(&story.preview);
+        let mut specimens = vec![];
+        let root = scene::render_scene(value, &mut specimens).unwrap();
+        let (fixed, frame) = dazzui_gtk4_example::conformance::scene_frame(&root);
+        window.set_child(Some(&fixed));
+        settle();
+        assert_eq!(
+            specimens[0].1.compute_bounds(&frame).unwrap().width(),
+            expected,
+            "{}: measure",
+            value.id
+        );
+    }
+    let value = &stories::story_of("text-field").unwrap().examples[2];
+    let mut specimens = vec![];
+    let root = scene::render_scene(value, &mut specimens).unwrap();
+    let (fixed, _) = dazzui_gtk4_example::conformance::scene_frame(&root);
+    window.set_child(Some(&fixed));
+    settle();
+    for ((_, widget), height) in specimens.iter().zip([80., 118.]) {
+        assert_eq!(
+            widget.compute_bounds(&root).unwrap().height(),
+            height,
+            "textarea rows and floor"
+        );
+    }
+    let field = specimens[1]
+        .1
+        .clone()
+        .downcast::<gtk::ScrolledWindow>()
+        .unwrap();
+    let input = field.child().and_downcast::<gtk::TextView>().unwrap();
+    input
+        .buffer()
+        .set_text(&"Long content must scroll rather than increase the field height.\n".repeat(80));
+    input.buffer().place_cursor(&input.buffer().end_iter());
+    input.scroll_mark_onscreen(&input.buffer().get_insert());
+    settle();
+    assert_eq!(field.compute_bounds(&root).unwrap().height(), 118.);
+    assert!(field.vadjustment().upper() > field.vadjustment().page_size());
+    assert!(
+        input.grab_focus(),
+        "the scrolling field retains native editing focus"
     );
     window.destroy();
     println!("{count} generated scenes rendered in light and dark themes");

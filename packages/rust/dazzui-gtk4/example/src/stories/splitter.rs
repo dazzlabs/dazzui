@@ -75,11 +75,7 @@ pub const STORY: &str = r#"{
         }
       ]
     },
-    "gaps": [
-      "splitter/preview preview: <Frame> is not drawn by GTK4",
-      "splitter/preview preview: <Splitter> is not drawn by GTK4",
-      "splitter/preview preview: <SplitterPanel> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -183,11 +179,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "splitter/0 preview: <Frame> is not drawn by GTK4",
-        "splitter/0 preview: <Splitter> is not drawn by GTK4",
-        "splitter/0 preview: <SplitterPanel> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "splitter/1",
@@ -260,11 +252,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "splitter/1 preview: <Frame> is not drawn by GTK4",
-        "splitter/1 preview: <Splitter> is not drawn by GTK4",
-        "splitter/1 preview: <SplitterPanel> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

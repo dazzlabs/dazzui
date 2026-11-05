@@ -34,9 +34,7 @@ pub const STORY: &str = r#"{
       },
       "$at": 0
     },
-    "gaps": [
-      "date-range-picker/preview preview: <DateRangePicker> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -71,9 +69,7 @@ pub const STORY: &str = r#"{
         },
         "$at": 0
       },
-      "gaps": [
-        "date-range-picker/0 preview: <DateRangePicker> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "date-range-picker/1",
@@ -114,9 +110,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "date-range-picker/1 preview: <DateRangePicker> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "date-range-picker/2",
@@ -155,9 +149,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "date-range-picker/2 preview: <DateRangePicker> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "date-range-picker/3",
@@ -206,9 +198,7 @@ pub const STORY: &str = r#"{
         },
         "$at": 0
       },
-      "gaps": [
-        "date-range-picker/3 preview: <DateRangePicker> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "date-range-picker/4",
@@ -263,9 +253,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "date-range-picker/4 preview: <DateRangePicker> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;

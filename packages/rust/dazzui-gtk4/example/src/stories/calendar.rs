@@ -29,9 +29,7 @@ pub const STORY: &str = r#"{
       },
       "$at": 0
     },
-    "gaps": [
-      "calendar/preview preview: <Calendar> is not drawn by GTK4"
-    ]
+    "gaps": []
   },
   "examples": [
     {
@@ -61,9 +59,7 @@ pub const STORY: &str = r#"{
         },
         "$at": 0
       },
-      "gaps": [
-        "calendar/0 preview: <Calendar> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "calendar/1",
@@ -96,9 +92,7 @@ pub const STORY: &str = r#"{
         },
         "$at": 0
       },
-      "gaps": [
-        "calendar/1 preview: <Calendar> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "calendar/2",
@@ -117,9 +111,7 @@ pub const STORY: &str = r#"{
         },
         "$at": 0
       },
-      "gaps": [
-        "calendar/2 preview: <Calendar> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "calendar/3",
@@ -152,9 +144,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "calendar/3 preview: <Calendar> is not drawn by GTK4"
-      ]
+      "gaps": []
     },
     {
       "id": "calendar/4",
@@ -209,9 +199,7 @@ pub const STORY: &str = r#"{
           }
         ]
       },
-      "gaps": [
-        "calendar/4 preview: <Calendar> is not drawn by GTK4"
-      ]
+      "gaps": []
     }
   ]
 }"#;
