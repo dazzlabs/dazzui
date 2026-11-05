@@ -56,8 +56,13 @@ public class Button : Microsoft.UI.Xaml.Controls.Button
         // excluding asymmetric font leading. Keep full line spacing for prose
         // and leave consumer-provided visual content in charge of its layout.
         if (GetTemplateChild("Presenter") is Microsoft.UI.Xaml.Controls.ContentPresenter presenter)
-            presenter.TextLineBounds = Content is string text && !text.Contains('\n') && !text.Contains('\r')
+        {
+            Skin.TextWeight(presenter, this);
+            Skin.TextInk(this, presenter);
+            var text = Content is string plain ? plain : (Content as TextBlock)?.Text;
+            presenter.TextLineBounds = text is not null && !text.Contains('\n') && !text.Contains('\r')
                 ? TextLineBounds.Tight : TextLineBounds.Full;
+        }
     }
 
     private void ApplyTheme()
@@ -82,7 +87,7 @@ public class Button : Microsoft.UI.Xaml.Controls.Button
             SetBrush("ButtonBorderBrush" + suffix, Theme.Recipe(Variant, Tint, "border", state));
         }
         Background = stateBrushes["ButtonBackground"];
-        Foreground = stateBrushes["ButtonForeground"];
+        Foreground = stateBrushes[IsEnabled ? "ButtonForeground" : "ButtonForegroundDisabled"];
         BorderBrush = stateBrushes["ButtonBorderBrush"];
         var focus = Theme.Color($"color.primary.{Theme.Number("focus.ring.shade")}");
         focus.A = (byte)Math.Round(focus.A * Theme.Number("focus.ring.alpha"));
@@ -91,6 +96,8 @@ public class Button : Microsoft.UI.Xaml.Controls.Button
         FocusVisualSecondaryThickness = new Thickness(0);
         FocusVisualMargin = new Thickness(0);
         Tailor();
+        Skin.TextLine(this, FontSize);
+        AlignLabel();
     }
 
     /// <summary>
@@ -119,6 +126,7 @@ public class Button : Microsoft.UI.Xaml.Controls.Button
         // and baseline, as a lone label does, not on the face's full leading.
         foreach (var words in parts.OfType<TextBlock>())
         {
+            TextStyle.Features(words);
             words.TextLineBounds = TextLineBounds.Tight;
             words.IsTextScaleFactorEnabled = Theme.Sizing != ThemeSizing.System;
         }
@@ -142,7 +150,7 @@ public class Button : Microsoft.UI.Xaml.Controls.Button
     protected void Repaint(string key, Windows.UI.Color color)
     {
         if (stateBrushes.TryGetValue(key, out var brush)) brush.Color = color;
-        if (key == "ButtonForeground") Foreground = stateBrushes[key];
+        if (key == (IsEnabled ? "ButtonForeground" : "ButtonForegroundDisabled")) Foreground = stateBrushes[key];
         if (key == "ButtonBackground") Background = stateBrushes[key];
     }
     private void SetBrush(string key, Microsoft.UI.Xaml.Media.SolidColorBrush brush)

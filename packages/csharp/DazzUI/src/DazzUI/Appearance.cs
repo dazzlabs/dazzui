@@ -10,6 +10,8 @@ public static class Appearance
 {
     private sealed record Registration(Action Refresh);
     private static readonly ConditionalWeakTable<FrameworkElement, Registration> Registrations = new();
+    private sealed class TextScaling { }
+    private static readonly ConditionalWeakTable<DependencyObject, TextScaling> ResolvedText = new();
     public static readonly DependencyProperty ThemeProperty = DependencyProperty.RegisterAttached(
         "Theme", typeof(Theme), typeof(Appearance), new PropertyMetadata(null, Changed));
     public static readonly DependencyProperty TintProperty = DependencyProperty.RegisterAttached(
@@ -67,8 +69,20 @@ public static class Appearance
     {
         var theme = GetTheme(root);
         var automatic = theme.Sizing != ThemeSizing.System;
-        if (root is Control control && control.IsTextScaleFactorEnabled != automatic) control.IsTextScaleFactorEnabled = automatic;
-        if (root is TextBlock text && text.IsTextScaleFactorEnabled != automatic) text.IsTextScaleFactorEnabled = automatic;
+        // Native symbol fonts deliberately opt out of accessibility scaling.
+        // Restore only text that this traversal disabled, preserving that opt-out.
+        var enabled = root switch { Control control => control.IsTextScaleFactorEnabled, TextBlock text => text.IsTextScaleFactorEnabled, _ => false };
+        if (!automatic && enabled)
+        {
+            ResolvedText.GetOrCreateValue(root);
+            if (root is Control control) control.IsTextScaleFactorEnabled = false;
+            if (root is TextBlock text) text.IsTextScaleFactorEnabled = false;
+        }
+        else if (automatic && ResolvedText.Remove(root))
+        {
+            if (root is Control control) control.IsTextScaleFactorEnabled = true;
+            if (root is TextBlock text) text.IsTextScaleFactorEnabled = true;
+        }
         // Components own their subtrees; the parent does not overwrite a locally
         // themed component (including its native template descendants).
         for (var i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
@@ -116,6 +130,19 @@ public sealed class ThemeScope : Surface
 
 internal static class Skin
 {
+    private static readonly ConditionalWeakTable<Control, Dictionary<string, SolidColorBrush>> StateBrushes = new();
+    // Visual states retain the resource object they resolved. Updating its
+    // colour keeps an already focused, hovered or disabled template current.
+    internal static void StateBrush(Control control, string key, SolidColorBrush brush)
+    {
+        var brushes = StateBrushes.GetOrCreateValue(control);
+        if (brushes.TryGetValue(key, out var current)) current.Color = brush.Color;
+        else
+        {
+            brushes[key] = brush;
+            control.Resources[key] = brush;
+        }
+    }
     private sealed class WeightConverter(Control control) : Microsoft.UI.Xaml.Data.IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language) =>
@@ -123,11 +150,29 @@ internal static class Skin
         public object ConvertBack(object value, Type targetType, object parameter, string language) =>
             throw new NotSupportedException();
     }
+    internal static void TextWeight(FrameworkElement label, Control owner)
+    {
+        Microsoft.UI.Xaml.Documents.Typography.SetKerning(label, true);
+        if (label is TextBlock text) TextStyle.Features(text);
+        var property = label is TextBlock ? TextBlock.FontWeightProperty : ContentPresenter.FontWeightProperty;
+        label.SetBinding(property, new Microsoft.UI.Xaml.Data.Binding
+        {
+            Source = owner, Path = new PropertyPath("FontWeight"), Converter = new WeightConverter(owner),
+        });
+    }
     private sealed class LineBox(ContentControl control)
     {
         internal double Height;
         internal bool Wrap;
         private TextBlock? words;
+        internal void Ink(ContentPresenter presenter)
+        {
+            if (words is not null && ReferenceEquals(control.Content, words))
+                words.SetBinding(TextBlock.ForegroundProperty, new Microsoft.UI.Xaml.Data.Binding
+                {
+                    Source = presenter, Path = new PropertyPath("Foreground"),
+                });
+        }
         private void AlignBaseline()
         {
             if (words is null || words.ActualHeight <= 0 || !ReferenceEquals(control.Content, words)) return;
@@ -141,17 +186,20 @@ internal static class Skin
             if (control.Content is string text)
             {
                 words = new TextBlock { Text = text, TextWrapping = Wrap ? TextWrapping.Wrap : TextWrapping.NoWrap, LineStackingStrategy = LineStackingStrategy.BlockLineHeight };
+                Microsoft.UI.Xaml.Documents.Typography.SetKerning(words, true);
+                TextStyle.Features(words);
+                if (control is KeyCap) TextStyle.Keyboard(words);
                 words.SizeChanged += (_, _) => AlignBaseline();
                 words.LayoutUpdated += (_, _) => AlignBaseline();
                 foreach (var property in new[] { TextBlock.FontFamilyProperty, TextBlock.FontSizeProperty, TextBlock.FontWeightProperty })
                     words.RegisterPropertyChangedCallback(property, (_, _) => AlignBaseline());
-                foreach (var property in new[] { "FontFamily", "FontSize", "Foreground" })
+                foreach (var property in new[] { "FontFamily", "FontSize" })
                 {
                     var target = property switch
                     {
                         "FontFamily" => TextBlock.FontFamilyProperty,
                         "FontSize" => TextBlock.FontSizeProperty,
-                        _ => TextBlock.ForegroundProperty,
+                        _ => TextBlock.FontSizeProperty,
                     };
                     words.SetBinding(target, new Microsoft.UI.Xaml.Data.Binding { Source = control, Path = new PropertyPath(property) });
                 }
@@ -164,6 +212,7 @@ internal static class Skin
             }
             if (words is not null && ReferenceEquals(control.Content, words))
             {
+                if (control is KeyCap) TextStyle.Keyboard(words);
                 words.SetBinding(TextBlock.FontWeightProperty, new Microsoft.UI.Xaml.Data.Binding
                 {
                     Source = control, Path = new PropertyPath("FontWeight"), Converter = new WeightConverter(control),
@@ -175,6 +224,10 @@ internal static class Skin
         }
     }
     private static readonly ConditionalWeakTable<ContentControl, LineBox> Lines = new();
+    internal static void TextInk(ContentControl control, ContentPresenter presenter)
+    {
+        if (Lines.TryGetValue(control, out var line)) line.Ink(presenter);
+    }
     /// <summary>A string label with declared leading, retaining caller-owned rich content.</summary>
     internal static void TextLine(ContentControl control, double height, bool wrap = false)
     {
@@ -274,59 +327,34 @@ internal static class Skin
         control.FontWeight = new Windows.UI.Text.FontWeight { Weight = (ushort)theme.Token("bodySmall").GetProperty("fontWeight").GetInt32() };
         foreach (var prefix in new[] { "TextControl", "ComboBox" })
         {
-            control.Resources[prefix + "Background"] = control.Background;
-            control.Resources[prefix + "BackgroundPointerOver"] = control.Background;
-            control.Resources[prefix + "BackgroundFocused"] = theme.Brush("color.surface");
-            control.Resources[prefix + "BackgroundDisabled"] = theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "surface", "disabled");
-            control.Resources[prefix + "BorderBrush"] = control.BorderBrush;
-            control.Resources[prefix + "BorderBrushPointerOver"] = control.BorderBrush;
-            control.Resources[prefix + "BorderBrushDisabled"] = theme.Brush("color.border-strong");
-            control.Resources[prefix + "BorderBrushFocused"] = theme.Recipe(ControlVariant.Outlined, invalid ? WidgetTint.Danger : Appearance.GetTint(control), "border");
-            control.Resources[prefix + "Foreground"] = control.Foreground;
-            control.Resources[prefix + "ForegroundDisabled"] = theme.Brush("color.content-faint");
-        }
-        // A field that is already disabled has resolved its state resources
-        // against the theme it was built in, and WinUI does not re-resolve
-        // them when the brushes change. Paint the field's own parts with the
-        // current recipe so a dark disabled field does not keep the light
-        // template's fill and edge.
-        if (!control.IsEnabled)
-        {
-            void PaintDisabled()
-            {
-                if (control.IsEnabled) return;
-                void Paint(FrameworkElement edge)
-                {
-                    switch (edge)
-                    {
-                        case Border border:
-                            border.Background = control.Background;
-                            border.BorderBrush = control.BorderBrush;
-                            border.BorderThickness = control.BorderThickness;
-                            break;
-                        case ContentPresenter presenter:
-                            presenter.Background = control.Background;
-                            presenter.BorderBrush = control.BorderBrush;
-                            presenter.BorderThickness = control.BorderThickness;
-                            break;
-                    }
-                }
-                if (Named<Border>(control, "BorderElement") is { } named) Paint(named);
-                // The field's visible box is whichever primitive fills the
-                // control: a TextBox's border, a ComboBox's presenter.
-                foreach (var edge in Descendants<FrameworkElement>(control))
-                    if (edge is Border or ContentPresenter &&
-                        Math.Abs(edge.ActualWidth - control.ActualWidth) < .5 &&
-                        Math.Abs(edge.ActualHeight - control.ActualHeight) < .5)
-                        Paint(edge);
-                foreach (var words in Descendants<TextBlock>(control)) words.Foreground = control.Foreground;
-            }
-            PaintDisabled();
-            control.DispatcherQueue.TryEnqueue(PaintDisabled);
+            StateBrush(control, prefix + "Background", (SolidColorBrush)control.Background);
+            StateBrush(control, prefix + "BackgroundPointerOver", (SolidColorBrush)control.Background);
+            StateBrush(control, prefix + "BackgroundPressed", (SolidColorBrush)control.Background);
+            StateBrush(control, prefix + "BackgroundFocused", invalid ? theme.Brush("color.danger.50") : theme.Brush("color.surface"));
+            StateBrush(control, prefix + "BackgroundDisabled", theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "surface", "disabled"));
+            StateBrush(control, prefix + "BorderBrush", (SolidColorBrush)control.BorderBrush);
+            StateBrush(control, prefix + "BorderBrushPointerOver", (SolidColorBrush)control.BorderBrush);
+            StateBrush(control, prefix + "BorderBrushPressed", (SolidColorBrush)control.BorderBrush);
+            StateBrush(control, prefix + "BorderBrushDisabled", (SolidColorBrush)control.BorderBrush);
+            StateBrush(control, prefix + "BorderBrushFocused", theme.Recipe(ControlVariant.Outlined, invalid ? WidgetTint.Danger : Appearance.GetTint(control), "border"));
+            StateBrush(control, prefix + "Foreground", (SolidColorBrush)control.Foreground);
+            foreach (var state in new[] { "PointerOver", "Pressed", "Focused", "FocusedPressed" })
+                StateBrush(control, prefix + "Foreground" + state, (SolidColorBrush)control.Foreground);
+            StateBrush(control, prefix + "ForegroundDisabled", theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "content", "disabled"));
         }
         var faint = theme.Brush("color.content-faint");
         foreach (var state in new[] { "", "PointerOver", "Focused", "Disabled" })
-            control.Resources["TextControlPlaceholderForeground" + state] = faint;
+            StateBrush(control, "TextControlPlaceholderForeground" + state, faint);
+        if (control is ComboBox)
+        {
+            // The native focus border and selection pill otherwise keep the
+            // Windows accent even when the field wears another ds family.
+            StateBrush(control, "ComboBoxBackgroundBorderBrushFocused", theme.Alpha($"color.primary.{theme.Number("focus.ring.shade")}", theme.Number("focus.ring.alpha")));
+            StateBrush(control, "ComboBoxItemPillFillBrush", theme.Brush($"color.{Theme.Key(Appearance.GetTint(control))}.600"));
+            foreach (var state in new[] { "", "Focused", "FocusedPressed", "Disabled" })
+                StateBrush(control, "ComboBoxDropDownGlyphForeground" + state,
+                    state == "Disabled" ? theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "content", "disabled") : theme.Brush("color.content-subtle"));
+        }
         if (control is TextBox text) text.PlaceholderForeground = faint;
         if (control is ComboBox choice) choice.PlaceholderForeground = faint;
         control.Resources["TextControlBorderThemeThickness"] = control.BorderThickness;
@@ -346,25 +374,36 @@ internal static class Skin
         if (control is ComboBox) block += control.BorderThickness.Top;
         control.Padding = new Thickness(control.Padding.Left, block, control.Padding.Right, block);
     }
-    /// <summary>A template part by name, anywhere below the control's visual root.</summary>
-    private static T? Named<T>(DependencyObject root, string name) where T : FrameworkElement =>
-        Descendants<T>(root).FirstOrDefault(item => item.Name == name);
-    private static IEnumerable<T> Descendants<T>(DependencyObject root) where T : DependencyObject
-    {
-        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
-        {
-            var child = VisualTreeHelper.GetChild(root, i);
-            if (child is T found) yield return found;
-            foreach (var deeper in Descendants<T>(child)) yield return deeper;
-        }
-    }
     public static StackPanel Column(Theme theme, params UIElement[] children) => Stack(theme, Orientation.Vertical, children);
     public static StackPanel Row(Theme theme, params UIElement[] children) => Stack(theme, Orientation.Horizontal, children);
-    private static StackPanel Stack(Theme theme, Orientation direction, UIElement[] children)
+    internal static StackPanel Stack(Theme theme, Orientation direction, UIElement[] children, StackPanel? existing = null)
     {
-        var result = new StackPanel { Orientation = direction, Spacing = theme.Number("spacing.3") };
-        foreach (var child in children) { Detach(child); result.Children.Add(child); }
+        var result = existing ?? new StackPanel();
+        result.Orientation = direction;
+        result.Spacing = theme.Number("spacing.3");
+        Children(result, children);
         return result;
+    }
+    /// <summary>Update composition without detaching surviving native controls.</summary>
+    internal static void Children(Panel panel, IEnumerable<UIElement> children)
+    {
+        var desired = children.ToArray();
+        foreach (var child in panel.Children.Where(child => !desired.Contains(child)).ToArray()) panel.Children.Remove(child);
+        for (var i = 0; i < desired.Length; i++)
+        {
+            if (i < panel.Children.Count && ReferenceEquals(panel.Children[i], desired[i])) continue;
+            Detach(desired[i]);
+            panel.Children.Insert(i, desired[i]);
+        }
+    }
+    internal static void Content(ContentPresenter host, UIElement? content)
+    {
+        if (!ReferenceEquals(host.Content, content))
+        {
+            if (content is not null) Detach(content);
+            host.Content = content;
+        }
+        host.Visibility = content is null ? Visibility.Collapsed : Visibility.Visible;
     }
     internal static void Detach(UIElement child)
     {
@@ -410,6 +449,24 @@ public static class Elevation
             lift = new Lift();
             Lifts.Add(host, lift);
             host.SizeChanged += (_, _) => Render(host, lift);
+            XamlRoot? root = null;
+            var scale = 0d;
+            void Changed(XamlRoot sender, XamlRootChangedEventArgs args)
+            {
+                if (Math.Abs(scale - sender.RasterizationScale) < .001) return;
+                scale = sender.RasterizationScale;
+                Render(host, lift);
+            }
+            void Connect()
+            {
+                if (root == host.XamlRoot) return;
+                if (root is not null) root.Changed -= Changed;
+                root = host.XamlRoot;
+                if (root is not null) { scale = root.RasterizationScale; root.Changed += Changed; }
+            }
+            host.Loaded += (_, _) => Connect();
+            host.Unloaded += (_, _) => { if (root is not null) root.Changed -= Changed; root = null; };
+            if (host.IsLoaded) Connect();
         }
         lift.Theme = theme;
         lift.Token = token;
@@ -446,8 +503,12 @@ public static class Elevation
             var shadow = compositor.CreateDropShadow();
             shadow.Mask = compositor.CreateSurfaceBrush(surface);
             shadow.Color = layer.Color;
-            shadow.BlurRadius = (float)layer.Blur;
-            shadow.Offset = new System.Numerics.Vector3((float)layer.X, (float)layer.Y, 0);
+            // Composition's blur radius spans three standard deviations;
+            // CSS's blur length spans two.
+            shadow.BlurRadius = (float)(layer.Blur * 1.5);
+            var scale = host.XamlRoot?.RasterizationScale ?? 1;
+            float Offset(double value) => (float)(Math.Round(value * scale, MidpointRounding.AwayFromZero) / scale);
+            shadow.Offset = new System.Numerics.Vector3(Offset(layer.X), Offset(layer.Y), 0);
             var sprite = compositor.CreateSpriteVisual();
             sprite.Size = shapeSize;
             sprite.Offset = new System.Numerics.Vector3(-spread, -spread, 0);

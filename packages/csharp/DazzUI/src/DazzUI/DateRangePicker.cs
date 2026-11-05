@@ -241,7 +241,7 @@ public sealed class DateRangePicker : Surface
         trigger.IsEnabled = IsEnabled;
         Skin.Input(trigger, Theme, Size, Invalid);
         trigger.Height = Theme.Number($"control.{Theme.Key(Size)}.size");
-        trigger.MinWidth = 16 * 16;
+        trigger.MinWidth = Theme.Number("date-range-picker.trigger-min-width");
         var block = Theme.Number($"control.{Theme.Key(Size)}.padding.block");
         trigger.Padding = new Thickness(Theme.Number("spacing.3"), block, Theme.Number("spacing.3"), block);
         if ((focused || sheet.IsOpen) && IsEnabled)
@@ -257,11 +257,24 @@ public sealed class DateRangePicker : Surface
         var icon = new Icon { Glyph = FluentIcons.Common.Icon.Calendar, GlyphSize = Theme.Number("icon.small"), Foreground = glyphInk, VerticalAlignment = VerticalAlignment.Center };
         grid.Children.Add(icon);
         var words = new TextBlock { FontSize = trigger.FontSize, FontFamily = trigger.FontFamily, FontWeight = trigger.FontWeight, VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis, TextWrapping = TextWrapping.NoWrap, UseLayoutRounding = false };
+        Skin.TextWeight(words, trigger);
         Typography.SetNumeralAlignment(words, FontNumeralAlignment.Tabular);
-        if (value is DateRangeValue chosen) Summarize(words, chosen, trigger.Foreground);
+        FrameworkElement caption = words;
+        if (value is DateRangeValue chosen)
+        {
+            var line = new SummaryLine { VerticalAlignment = VerticalAlignment.Center };
+            foreach (var (text, separator) in SummaryParts(chosen))
+            {
+                var part = new TextBlock { Text = text, FontFamily = trigger.FontFamily, FontSize = trigger.FontSize, Foreground = separator ? Theme.Brush("color.content-faint") : trigger.Foreground, TextWrapping = TextWrapping.NoWrap, TextTrimming = TextTrimming.CharacterEllipsis, UseLayoutRounding = false, LineHeight = Theme.Text("", $"control.{Theme.Key(Size)}.content").LineHeight, LineStackingStrategy = LineStackingStrategy.BlockLineHeight, Margin = new Thickness(separator ? Theme.Number("spacing.1") : 0, 0, separator ? Theme.Number("spacing.1") : 0, 0) };
+                Skin.TextWeight(part, trigger);
+                Typography.SetNumeralAlignment(part, FontNumeralAlignment.Tabular);
+                line.Children.Add(part);
+            }
+            caption = line;
+        }
         else { words.Text = Strings.Placeholder; words.Foreground = Theme.Brush("color.content-faint"); }
-        Grid.SetColumn(words, 1);
-        grid.Children.Add(words);
+        Grid.SetColumn(caption, 1);
+        grid.Children.Add(caption);
         var chevron = new Icon { Glyph = FluentIcons.Common.Icon.ChevronDown, GlyphSize = Theme.Number("icon.small"), Foreground = glyphInk, VerticalAlignment = VerticalAlignment.Center };
         Grid.SetColumn(chevron, 2);
         grid.Children.Add(chevron);
@@ -276,25 +289,58 @@ public sealed class DateRangePicker : Surface
     private void Summarize(TextBlock words, DateRangeValue range, Brush ink)
     {
         var faint = Theme.Brush("color.content-faint");
-        var oneDay = range.Start.Date == range.End.Date;
-        string Day(DateTime at) => Strings.DayText(DateOnly.FromDateTime(at));
         words.Inlines.Clear();
         words.Foreground = ink;
-        void Word(string text) => words.Inlines.Add(new Run { Text = text });
-        void Sep(string glyph) => words.Inlines.Add(new Run { Text = $" {glyph} ", Foreground = faint });
+        foreach (var (text, separator) in SummaryParts(range))
+            words.Inlines.Add(new Run { Text = separator ? $" {text} " : text, Foreground = separator ? faint : ink });
+    }
+
+    private IEnumerable<(string Text, bool Separator)> SummaryParts(DateRangeValue range)
+    {
+        var oneDay = range.Start.Date == range.End.Date;
+        string Day(DateTime at) => Strings.DayText(DateOnly.FromDateTime(at));
         if (range.AllDay)
         {
-            Word(Day(range.Start));
-            if (oneDay) { Sep("·"); Word(Strings.AllDay); }
-            else { Sep("→"); Word(Day(range.End)); }
+            yield return (Day(range.Start), false);
+            yield return (oneDay ? "·" : "→", true);
+            yield return (oneDay ? Strings.AllDay : Day(range.End), false);
         }
         else if (oneDay)
         {
-            Word(Day(range.Start)); Sep("·"); Word(Clock(range.Start)); Sep("→"); Word(Clock(range.End));
+            yield return (Day(range.Start), false);
+            yield return ("·", true);
+            yield return (Clock(range.Start), false);
+            yield return ("→", true);
+            yield return (Clock(range.End), false);
         }
         else
         {
-            Word($"{Day(range.Start)} {Clock(range.Start)}"); Sep("→"); Word($"{Day(range.End)} {Clock(range.End)}");
+            yield return ($"{Day(range.Start)} {Clock(range.Start)}", false);
+            yield return ("→", true);
+            yield return ($"{Day(range.End)} {Clock(range.End)}", false);
+        }
+    }
+
+    // The separators have real inline margins, rather than font-dependent
+    // spaces. Let the final visible run ellipsize when a field is constrained.
+    private sealed class SummaryLine : Panel
+    {
+        protected override Size MeasureOverride(Size available)
+        {
+            foreach (var child in Children) child.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            return new Size(Children.Sum(child => child.DesiredSize.Width), Children.Max(child => child.DesiredSize.Height));
+        }
+        protected override Size ArrangeOverride(Size final)
+        {
+            Clip = new RectangleGeometry { Rect = new Rect(0, 0, final.Width, final.Height) };
+            double x = 0;
+            foreach (var child in Children)
+            {
+                var width = Math.Min(child.DesiredSize.Width, Math.Max(0, final.Width - x));
+                child.Arrange(new Rect(x, 0, width, final.Height));
+                x += width;
+            }
+            return final;
         }
     }
 

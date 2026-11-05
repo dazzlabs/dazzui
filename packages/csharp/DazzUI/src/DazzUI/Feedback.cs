@@ -128,8 +128,8 @@ public sealed class Meter : Progress
         label.Foreground = Theme.Brush("color.content");
         label.IsTextScaleFactorEnabled = reading.IsTextScaleFactorEnabled = Theme.Sizing != ThemeSizing.System;
         label.FontSize = Theme.Text("", "labelSmall").FontSize;
-        label.FontWeight = Theme.Text("", "labelMedium").FontWeight;
         label.FontFamily = PlatformFonts.Ui;
+        TextStyle.SetWeight(label, Theme.Weight("labelMedium"));
         label.LineHeight = label.FontSize;
         label.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
         var span = Maximum - Minimum;
@@ -284,6 +284,7 @@ public sealed class Step : Surface
                 marker.Child = new Icon { Glyph = FluentIcons.Common.Icon.Dismiss, GlyphSize = Theme.Number("icon.small"), Foreground = Theme.Brush("color.danger.600"), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
                 break;
             case StepStatus.Active:
+                marker.Width = marker.Height = Theme.Number("spacing.4");
                 marker.Child = new Spinner { Size = ControlSize.Medium, Tint = Tint };
                 break;
             default:
@@ -292,7 +293,7 @@ public sealed class Step : Surface
                 break;
         }
         var label = Theme.Text(Title, "labelQuiet");
-        if (Status == StepStatus.Active) label.FontWeight = Theme.Text("", "labelMedium").FontWeight;
+        if (Status == StepStatus.Active) TextStyle.SetWeight(label, Theme.Weight("labelMedium"));
         label.Foreground = Theme.Brush(Status switch { StepStatus.Complete => "color.content-muted", StepStatus.Active => "color.content", StepStatus.Error => "color.danger.700", _ => "color.content-subtle" });
         label.VerticalAlignment = VerticalAlignment.Center;
         var row = new Grid { ColumnSpacing = Theme.Number("spacing.2.5") };
@@ -304,7 +305,7 @@ public sealed class Step : Surface
         if (Detail is not null)
         {
             var meta = Theme.Text(Detail, "labelSmall");
-            meta.FontWeight = Theme.Text("", "captionSmall").FontWeight;
+            TextStyle.SetWeight(meta, Theme.Weight("captionSmall"));
             meta.Foreground = Status == StepStatus.Active ? Theme.Recipe(ControlVariant.Plain, Tint, "content") : Theme.Brush("color.content-faint");
             meta.VerticalAlignment = VerticalAlignment.Center;
             Grid.SetColumn(meta, 2); row.Children.Add(meta);
@@ -317,7 +318,7 @@ public sealed class Step : Surface
     public IList<Step> Steps { get; } = new List<Step>();
     protected override void RefreshAppearance()
     {
-        var column = Skin.Column(Theme, Steps.Cast<UIElement>().ToArray());
+        var column = Skin.Stack(Theme, Orientation.Vertical, Steps.Cast<UIElement>().ToArray(), Content as StackPanel);
         column.Spacing = Theme.Number("spacing.2");
         Content = column;
     }

@@ -345,7 +345,7 @@ public sealed class Calendar : Surface
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(cell) });
             var day = (DayOfWeek)(((int)WeekStartsOn + i) % 7);
             var name = Theme.Text(Strings.Narrow(day), "captionSmall");
-            name.FontWeight = Theme.Weight("labelSmall");
+            TextStyle.SetWeight(name, Theme.Weight("labelSmall"));
             name.Foreground = Theme.Brush("color.content-subtle");
             name.LineHeight = 0;
             name.TextLineBounds = TextLineBounds.Tight;
@@ -520,7 +520,7 @@ public sealed class Calendar : Surface
             // Today is a weight heavier, and a picked day the selection's
             // weight — the half of a selection that survives on a monochrome
             // theme.
-            label.FontWeight = theme.Weight(state.Today ? "labelStrong" : state.Picked ? "labelMedium" : "labelQuiet");
+            TextStyle.SetWeight(label, theme.Weight(state.Today ? "labelStrong" : state.Picked ? "labelMedium" : "labelQuiet"));
             dot.Fill = content;
             dot.Visibility = state.Today ? Visibility.Visible : Visibility.Collapsed;
             // The end a pending range is previewing against: dashed, because

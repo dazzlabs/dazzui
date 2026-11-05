@@ -32,6 +32,35 @@ internal static class SmokeTest
         };
         try
         {
+            if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "geometry")
+            {
+                await GeometryTests.RunAsync(shell, output);
+                await File.WriteAllTextAsync(Path.Combine(output, "result.txt"), "PASS: geometry.\n");
+                finishing = true;
+                window.Close();
+                Environment.Exit(0);
+                return;
+            }
+            if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "behavior")
+            {
+                await LiveState(shell);
+                await BehaviorTests.RunAsync(shell, output);
+                await CornerTests.RunAsync(shell, output);
+                await File.WriteAllTextAsync(Path.Combine(output, "result.txt"), "PASS: live scene state, native component and popup interactions, and corners.\n");
+                finishing = true;
+                window.Close();
+                Environment.Exit(0);
+                return;
+            }
+            if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "appearance")
+            {
+                await AppearanceTests.RunAsync(shell, output, comparePages: true);
+                await File.WriteAllTextAsync(Path.Combine(output, "result.txt"), "PASS: live appearance across themes, sizing and native states.\n");
+                finishing = true;
+                window.Close();
+                Environment.Exit(0);
+                return;
+            }
             if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "theme-swatches")
             {
                 await PreferenceThemeSwatchesTests.RunAsync(shell, output);
@@ -88,6 +117,8 @@ internal static class SmokeTest
                 Environment.Exit(0);
                 return;
             }
+            await AppearanceTests.RunAsync(shell, output);
+            await GeometryTests.RunAsync(shell, output);
             await SystemSizingTests.RunAsync(shell, output);
             if (Environment.GetEnvironmentVariable("DAZZUI_SMOKE_SUITES") == "system-sizing")
             {
@@ -145,8 +176,7 @@ internal static class SmokeTest
                     var opened = clock.ElapsedMilliseconds;
                     await Settle(shell);
                     var settled = clock.ElapsedMilliseconds;
-                    var bitmap = new RenderTargetBitmap();
-                    await bitmap.RenderAsync(shell).AsTask().WaitAsync(TimeSpan.FromSeconds(30));
+                    var bitmap = await CaptureAsync(shell);
                     File.AppendAllText(Path.Combine(output, "timings.txt"), $"{choice.Id} {page ?? "overview"} open={opened} settle={settled - opened} render={clock.ElapsedMilliseconds - settled} gc={GC.CollectionCount(2)}\n");
                     if (bitmap.PixelWidth == 0 || bitmap.PixelHeight == 0)
                         throw new InvalidOperationException($"Empty render: {choice.Id}, {page}");
@@ -200,12 +230,13 @@ internal static class SmokeTest
         shell.Open("sidebar");
         await Settle(shell);
         var rows = Descendants(shell.CurrentPage!).OfType<NavItem>().ToArray();
-        var glossaries = rows.FirstOrDefault(row => Equals(row.Content, "Glossaries"))
+        static string? Label(NavItem row) => row.Content is TextBlock text ? text.Text : row.Content as string;
+        var glossaries = rows.FirstOrDefault(row => Label(row) == "Glossaries")
             ?? throw new InvalidOperationException("The sidebar story drew no Glossaries row.");
         ((IToggleProvider)new ToggleButtonAutomationPeer(glossaries).GetPattern(PatternInterface.Toggle)).Toggle();
         await Settle(shell);
         var heading = Descendants(shell.CurrentPage!).OfType<StageText>().Any(text => text.Children.FirstOrDefault() is TextBlock { Text: "Glossaries" });
-        var documents = rows.First(row => Equals(row.Content, "Documents"));
+        var documents = rows.First(row => Label(row) == "Documents");
         if (!heading || glossaries.IsChecked != true || documents.IsChecked != false)
             throw new InvalidOperationException("Choosing a sidebar row did not update the scene's slot.");
     }
@@ -227,10 +258,25 @@ internal static class SmokeTest
         }
     }
 
-    internal static async Task SaveAsync(UIElement element, string directory, string name)
+    private static int captures;
+    internal static async Task<RenderTargetBitmap> CaptureAsync(UIElement element)
     {
+        // The wrappers are tiny, but every readback owns a full-window GPU
+        // surface. Release earlier batches before native surface memory fills
+        // up; the managed allocation alone does not trigger collection.
+        if (++captures % 8 == 0)
+        {
+            GC.Collect();
+            await Task.Delay(20);
+        }
         var bitmap = new RenderTargetBitmap();
         await bitmap.RenderAsync(element).AsTask().WaitAsync(TimeSpan.FromSeconds(30));
+        return bitmap;
+    }
+
+    internal static async Task SaveAsync(UIElement element, string directory, string name)
+    {
+        var bitmap = await CaptureAsync(element);
         var pixels = (await bitmap.GetPixelsAsync()).ToArray();
         var folder = await StorageFolder.GetFolderFromPathAsync(Path.GetFullPath(directory));
         var file = await folder.CreateFileAsync(name, CreationCollisionOption.ReplaceExisting);

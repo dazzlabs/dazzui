@@ -43,6 +43,20 @@ machine over SSH and copies back the readings of every scene in
 `tools/conformance/scenes.json` — see
 [`specs/conformance.md`](../../../specs/conformance.md).
 
+For intrinsic text widths, collect the React reference on the same Windows
+machine: `system-ui` resolves that machine's message font. From the repository
+root, after installing dependencies and building the React package:
+
+```powershell
+$env:DAZZUI_CHROMIUM_EXECUTABLE = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'
+node packages/js/dazzui/example/scripts/conformance.mjs --out packages/csharp/DazzUI/artifacts/react-windows --themes drawn --no-images
+```
+
+The browser collector fixes `en-US`, matching the examples' English labels
+and date strings. Keep this reference separate from a macOS collection;
+different system fonts have different advances. Both runs retain the usual
+geometry tolerances and read actual rendered bounds.
+
 ## Components
 
 - Actions and presentation: Button, IconButton, Toggle, ToggleGroup, Link,
@@ -73,9 +87,10 @@ check that scene by scene: an Icon takes the theme's `icon.medium` unless a
 size is named, a navigation row and its badge use the sidebar's own inset and
 ink, card and stage text carry their declared leading, sliders and fields use
 the design's block padding, and a disabled field repaints its native template
-with the theme's disabled recipe instead of keeping the light one. What is
-left is text measured by Windows rather than Chromium's `system-ui` face, and
-a glyph a control still draws from a `Glyph` value.
+with the theme's disabled recipe instead of keeping the light one. Intrinsic
+text widths use the host's system font; compare them with a browser reference
+from the same host. A glyph drawn from a `Glyph` value still has no separate
+specimen address.
 Sidebar and Aside animate their width over `motion.duration`, and the
 example's component list and theme panel do the same. The example lays the
 page into its final centre once, then slides the pane over (or into) it, so
@@ -112,6 +127,11 @@ returns a styled snapshot; keep host-owned text current with that callback.
 
 String annotation labels match missing font weights as CSS does and align
 their glyph baselines using the font's ascent, descent and declared leading.
+Text uses WinUI's OpenType formatter, including kerning and live text updates.
+Keyboard symbols use the Windows math fallback; embedded bitmap strike
+advances come from the installed font rather than theme-specific corrections.
+Pill counts have their own token gap and tabular figures. Avatar rings are
+outsets and do not enlarge their group's layout box.
 Interactive preference rows use a native button for keyboard
 and automation activation; adding or removing their action updates that role.
 Controls that WinUI does not support subclassing are composed and expose their
@@ -211,15 +231,32 @@ checkbox/radio automation, form validation and submission, OTP paste and
 masking, range constraints, inherited themes without resetting input, menu
 actions, popovers, dialog results and all four drawer edges.
 
-`DAZZUI_SMOKE_SUITES=system-sizing` runs only system-size fixtures. They drive
+`DAZZUI_SMOKE_SUITES=system-sizing` runs system-size fixtures. They drive
 the same text-scale notification and dispatcher path at 100%, 150% and 225%
 without modifying the user's OS settings, across drawn and Windows themes.
 They check label fit, native selection preservation, independent nested design
 scopes, host-panel notifications and unchanged palette/stroke values, then render
 all gallery pages at 225%.
 
+`DAZZUI_SMOKE_SUITES=geometry` runs the layout regressions on their own:
+OpenType text, disabled ink, avatar outsets, inline link boxes, pill counts,
+native shadow drawings and initial sidebar widths. The default suite includes
+these fixtures too. The shadow fixture also reads pixels from small and large
+shadows and checks CSS Gaussian decay at the display's rasterization scale.
+Composition's radius is converted from CSS blur at the rendering boundary;
+shadow offsets are snapped to physical pixels. Filled button backgrounds
+cover the outer border edge as CSS backgrounds do.
+
 Reports, the runtime story list, and PNG captures are written to a unique
 ignored `artifacts/smoke-*` directory.
+
+The default smoke run also keeps controls alive through theme and sizing
+changes, checking link and annotation typography, native editor state colours,
+and selection preservation. `DAZZUI_SMOKE_SUITES=appearance` additionally
+compares every gallery page after live theme/sizing changes with a freshly
+opened page in the same configuration, including visible text, glyphs and
+their ink. `DAZZUI_SMOKE_SUITES=behavior` runs the live-scene, native interaction
+and corner fixtures.
 
 Story/catalog alignment and native rendering tests complement the React
 conformance collector described above. A successful smoke run verifies the

@@ -294,7 +294,8 @@ public static class Mapping
             {
                 var link = new Link
                 {
-                    Content = n.Flag("external") ? n.Text + " ↗" : n.Text,
+                    Content = n.Text,
+                    External = n.Flag("external"),
                     Tint = n.Option("tint", WidgetTint.Primary),
                     Underline = n.Option("underline", LinkUnderline.Hover),
                 };
@@ -386,7 +387,10 @@ public static class Mapping
                 var tabs = new PillTabs();
                 var items = n["items"].Items();
                 foreach (var item in items)
-                    tabs.Items.Add(item?["count"] is JsonNode count ? $"{item["label"].Text()}  {count.Text()}" : item?["label"].Text());
+                {
+                    if (item?["count"] is JsonNode count) tabs.Counts[tabs.Items.Count] = count.GetValue<int>();
+                    tabs.Items.Add(item?["label"].Text());
+                }
                 tabs.SelectedIndex = Math.Max(0, items.ToList().FindIndex(item => item?["value"].Text() == n.String("defaultValue")));
                 Name(tabs, n.String("aria-label"));
                 return tabs;
@@ -572,11 +576,22 @@ public static class Mapping
             {
                 var content = new Stack(Orientation.Vertical, "spacing.0");
                 foreach (var kid in n.Kids()) content.Add(kid);
-                return new ScrollViewer { Content = content, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };
+                var scroll = new ScrollViewer { Content = content, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };
+                Themed.Follow(scroll, theme => scroll.Padding = new Thickness(0, theme.Number(n.Context.Sidebar?.Collapsible == "none" ? "spacing.2.5" : "spacing.2"), 0, theme.Number(n.Context.Sidebar?.Collapsible == "none" ? "spacing.2.5" : "spacing.2")));
+                return scroll;
             },
             ["SidebarGroup"] = n =>
             {
-                var group = new Stack(Orientation.Vertical, "spacing.0", theme => Inset(theme, "spacing.1.5", "spacing.2.5"));
+                var group = new Stack(Orientation.Vertical, "spacing.0", theme =>
+                {
+                    if (n.Context.Sidebar?.Collapsible == "none")
+                    {
+                        var siblings = n.Source.Parent as JsonArray;
+                        var index = siblings?.IndexOf(n.Source) ?? -1;
+                        return new Thickness(theme.Number("spacing.2.5"), index == 0 ? 0 : theme.Number("spacing.1.5"), theme.Number("spacing.2.5"), index == siblings?.Count - 1 ? 0 : theme.Number("spacing.1.5"));
+                    }
+                    return Inset(theme, "spacing.1.5", "spacing.2.5");
+                });
                 foreach (var kid in n.Kids()) group.Add(kid);
                 return group;
             },
@@ -838,8 +853,8 @@ public static class Mapping
                     // A label that is a glyph is a specimen of its own, so
                     // the element drawn for it is reported as that node.
                     toggle.Content = glyph is null ? item?["label"].Text()
-                        : item?["label"] is JsonNode label ? Nodes.Drawn(label, Glyphs.Draw(glyph, 16))
-                        : Glyphs.Draw(glyph, 16);
+                        : item?["label"] is JsonNode label ? Nodes.Drawn(label, Glyphs.Draw(glyph))
+                        : Glyphs.Draw(glyph);
                     if (item?["hint"].String() is string hint) { Name(toggle, hint); toggle.Loaded += (_, _) => Tooltip.Set(toggle, hint); }
                     toggle.Click += (_, _) =>
                     {
@@ -904,7 +919,7 @@ public static class Mapping
     /// </summary>
     private static object? Inline(Node n, JsonNode? shortcut, bool owned = false)
     {
-        double? size = owned ? null : 16;
+        double? size = null;
         if (shortcut is null && n.Children.Count == 1 && n.Children[0].String() is string only) return only;
         // A glyph alone is the control's whole face.
         if (shortcut is null && n.Children.Count == 1 && n.Children[0].Element() == "Icon")
@@ -1320,7 +1335,8 @@ public sealed class Styled : Grid
         block.FontSize = styled.FontSize;
         block.LineHeight = LeadingScale is double scale ? styled.FontSize * scale : styled.LineHeight;
         block.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
-        block.FontWeight = Weight is null ? styled.FontWeight : theme.Text("", Weight).FontWeight;
+        block.FontFamily = styled.FontFamily;
+        TextStyle.SetWeight(block, Weight is null ? TextStyle.RequestedWeight(styled) : theme.Weight(Weight));
         if (ink is not null) block.Foreground = theme.Brush(ink);
     }
 }

@@ -167,7 +167,7 @@ public sealed class Tree : Surface
             textLabel.Foreground = ink;
             textLabel.IsTextScaleFactorEnabled = Theme.Sizing != ThemeSizing.System;
             textLabel.FontSize = Theme.Text("", small ? "labelSmall" : "labelQuiet").FontSize;
-            textLabel.FontWeight = Theme.Text("", chosen ? "labelMedium" : "labelQuiet").FontWeight;
+            TextStyle.SetWeight(textLabel, Theme.Weight(chosen ? "labelMedium" : "labelQuiet"));
             textLabel.TextTrimming = TextTrimming.CharacterEllipsis;
         }
         label.VerticalAlignment = VerticalAlignment.Center;

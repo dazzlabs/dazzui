@@ -59,6 +59,9 @@ const failures = []
 
 try {
   const page = await browser.newPage({
+    // Scene labels and native example defaults are English. Keep intrinsic
+    // date widths independent of the machine's browser language.
+    locale: 'en-US',
     deviceScaleFactor: SCALE,
     viewport: { width: 1024, height: 768 },
     reducedMotion: 'reduce',

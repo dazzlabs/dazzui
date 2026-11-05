@@ -23,7 +23,7 @@ internal static class SystemSizingTests
     {
         await Task.Delay(120);
         shell.UpdateLayout();
-        await new RenderTargetBitmap().RenderAsync(shell).AsTask().WaitAsync(TimeSpan.FromSeconds(30));
+        await SmokeTest.CaptureAsync(shell);
     }
 
     internal static async Task RunAsync(Shell shell, string output)

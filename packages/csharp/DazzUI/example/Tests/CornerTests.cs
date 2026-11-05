@@ -46,7 +46,7 @@ internal static class CornerTests
             var theme = new UI.Theme(name); scope.Theme = theme;
             if (theme.Number("control.small.radius") != theme.Number("radius.small"))
                 throw new InvalidOperationException($"{name}: generated control radius bypassed its semantic alias.");
-            await Task.Delay(80); shell.UpdateLayout(); await new RenderTargetBitmap().RenderAsync(shell).AsTask().WaitAsync(TimeSpan.FromSeconds(30));
+            await Task.Delay(80); shell.UpdateLayout(); await SmokeTest.CaptureAsync(shell);
             foreach (var (control, token) in new (Control, string)[] {
                 (button, "radius.small"), (single, "control.field.radius"), (multiline, "radius.large"), (option, "radius.large"),
                 (small, "control.container.radius"), (medium, "radius.large"), (large, "radius.large"),
@@ -97,7 +97,7 @@ internal static class CornerTests
                 foreach (var height in new[] { 60d, 28d })
                 {
                     single.Height = height;
-                    await Task.Delay(40); shell.UpdateLayout(); await new RenderTargetBitmap().RenderAsync(shell).AsTask().WaitAsync(TimeSpan.FromSeconds(30));
+                    await Task.Delay(40); shell.UpdateLayout(); await SmokeTest.CaptureAsync(shell);
                     if (single.CornerRadius.TopLeft != height / 2) throw new InvalidOperationException("Pill corners did not follow a resize.");
                 }
             }

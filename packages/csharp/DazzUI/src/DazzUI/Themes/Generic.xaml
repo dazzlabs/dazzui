@@ -12,6 +12,7 @@
           <Grid>
             <Border x:Name="Lift" />
             <ContentPresenter x:Name="Presenter"
+                BackgroundSizing="OuterBorderEdge"
                 Content="{TemplateBinding Content}"
                 ContentTemplate="{TemplateBinding ContentTemplate}"
                 Padding="{TemplateBinding Padding}"
@@ -57,7 +58,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="ContentControl">
-          <Border Background="{TemplateBinding Background}"
+          <Border BackgroundSizing="OuterBorderEdge" Background="{TemplateBinding Background}"
               BorderBrush="{TemplateBinding BorderBrush}"
               BorderThickness="{TemplateBinding BorderThickness}"
               CornerRadius="{TemplateBinding CornerRadius}"
@@ -77,7 +78,7 @@
   <Style TargetType="ui:TableRow">
     <Setter Property="Template"><Setter.Value>
       <ControlTemplate TargetType="ui:TableRow">
-        <Border Background="{TemplateBinding Background}"
+        <Border BackgroundSizing="OuterBorderEdge" Background="{TemplateBinding Background}"
             BorderBrush="{TemplateBinding BorderBrush}"
             BorderThickness="{TemplateBinding BorderThickness}"
             CornerRadius="{TemplateBinding CornerRadius}"
@@ -93,7 +94,7 @@
     <Setter Property="Template"><Setter.Value>
       <ControlTemplate TargetType="ui:Checkbox">
         <StackPanel x:Name="Row" Orientation="Horizontal" Background="Transparent">
-          <Border x:Name="Box" VerticalAlignment="Center">
+          <Border x:Name="Box" BackgroundSizing="OuterBorderEdge" VerticalAlignment="Center">
             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" />
           </Border>
           <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="Center" />
@@ -105,7 +106,7 @@
     <Setter Property="Template"><Setter.Value>
       <ControlTemplate TargetType="ui:Radio">
         <StackPanel x:Name="Row" Orientation="Horizontal" Background="Transparent">
-          <Border x:Name="Box" VerticalAlignment="Center">
+          <Border x:Name="Box" BackgroundSizing="OuterBorderEdge" VerticalAlignment="Center">
             <Border HorizontalAlignment="Center" VerticalAlignment="Center" />
           </Border>
           <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="Center" />
@@ -117,7 +118,7 @@
     <Setter Property="Template"><Setter.Value>
       <ControlTemplate TargetType="ui:OptionCard">
         <Grid>
-          <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}">
+          <Border BackgroundSizing="OuterBorderEdge" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}">
             <ContentPresenter Content="{TemplateBinding Content}" />
           </Border>
           <Border x:Name="SelectionOutline" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="{TemplateBinding CornerRadius}" IsHitTestVisible="False" Visibility="Collapsed" />
@@ -128,7 +129,7 @@
   <Style TargetType="ui:Toggle">
     <Setter Property="Template"><Setter.Value>
       <ControlTemplate TargetType="ui:Toggle">
-        <ContentPresenter Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}"
+        <ContentPresenter x:Name="Presenter" BackgroundSizing="OuterBorderEdge" Content="{TemplateBinding Content}" Padding="{TemplateBinding Padding}"
             Background="{TemplateBinding Background}" Foreground="{TemplateBinding Foreground}"
             BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
             CornerRadius="{TemplateBinding CornerRadius}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
@@ -152,7 +153,7 @@
       <ControlTemplate TargetType="ui:RangeEndpoint">
         <Thumb x:Name="Handle" IsTabStop="False" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}">
           <Thumb.Template><ControlTemplate TargetType="Thumb">
-            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}" />
+            <Border BackgroundSizing="OuterBorderEdge" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}" />
           </ControlTemplate></Thumb.Template>
         </Thumb>
       </ControlTemplate>
@@ -161,7 +162,7 @@
   <Style TargetType="ui:Switch">
     <Setter Property="Template"><Setter.Value>
       <ControlTemplate TargetType="ui:Switch">
-        <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}">
+        <Border BackgroundSizing="OuterBorderEdge" Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}">
           <Border x:Name="Thumb" VerticalAlignment="Center" />
         </Border>
       </ControlTemplate>

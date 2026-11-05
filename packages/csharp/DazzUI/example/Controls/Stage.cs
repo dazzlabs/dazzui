@@ -278,6 +278,7 @@ public sealed class StageText : Grid
             }
             else if (Nodes.Build(child, node.Context) is UIElement element)
             {
+                if (element is Link link) link.IsInline = true;
                 if (element is FrameworkElement framed) framed.VerticalAlignment = VerticalAlignment.Center;
                 if (element is Control control) inline.Add(control);
                 line.Children.Add(element);
@@ -313,9 +314,7 @@ public sealed class StageText : Grid
             words.FontSize = body.FontSize;
             words.LineHeight = body.LineHeight;
             words.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
-            words.FontWeight = node.Flag("strong")
-                ? new Windows.UI.Text.FontWeight { Weight = (ushort)theme.Token("labelStrong").GetProperty("fontWeight").GetInt32() }
-                : body.FontWeight;
+            TextStyle.SetWeight(words, node.Flag("strong") ? theme.Weight("labelStrong") : TextStyle.RequestedWeight(body));
         }
         if (ink is not null) foreach (var control in inline.OfType<Icon>()) control.Foreground = ink;
     }

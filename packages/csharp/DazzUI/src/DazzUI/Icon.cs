@@ -98,26 +98,71 @@ public enum LinkUnderline { Hover, Always, None }
 public sealed class Link : HyperlinkButton
 {
     private bool hovered;
+    private StackPanel? externalRow;
+    private bool external;
     public Theme Theme { get => Appearance.GetTheme(this); set => Appearance.SetTheme(this, value); }
     public WidgetTint Tint { get => Appearance.GetTint(this); set => Appearance.SetTint(this, value); }
     /// <summary>When the underline shows: under the pointer by default, always, or never.</summary>
     public LinkUnderline Underline { get; set; }
+    /// <summary>Draws the Fluent arrow indicating a destination outside this window.</summary>
+    public bool External { get => external; set { external = value; Apply(); } }
+    internal bool IsInline { get; set; }
     public Link()
     {
         Appearance.Bind(this, Apply);
         PointerEntered += (_, _) => { hovered = true; Apply(); };
         PointerExited += (_, _) => { hovered = false; Apply(); };
+        IsEnabledChanged += (_, _) => Apply();
+        Apply();
+    }
+    protected override void OnApplyTemplate()
+    {
+        Apply();
+        base.OnApplyTemplate();
     }
     private void Apply()
     {
         Theme.Typography(this, "bodyMedium"); Foreground = Theme.Recipe(ControlVariant.Plain, Tint, "content"); Padding = new Thickness(0); Skin.Focus(this, Theme);
+        foreach (var (state, suffix) in new[] { ("normal", ""), ("hovered", "PointerOver"), ("pressed", "Pressed"), ("disabled", "Disabled") })
+            Skin.StateBrush(this, "HyperlinkButtonForeground" + suffix, Theme.Recipe(ControlVariant.Plain, Tint, "content", state));
+        RequestedTheme = Theme.IsDark ? ElementTheme.Dark : ElementTheme.Light;
         BorderThickness = new Thickness(0);
         Skin.SetCorner(this, Theme.Number("radius.tiny"));
         if (Content is string text) Content = Theme.Text(text, "bodyMedium");
-        if (Content is TextBlock words)
+        var words = Content as TextBlock ?? (ReferenceEquals(Content, externalRow) ? externalRow?.Children.OfType<TextBlock>().FirstOrDefault() : null);
+        if (words is not null)
         {
-            words.Foreground = Foreground;
-            words.TextDecorations = Underline == LinkUnderline.Always || Underline == LinkUnderline.Hover && hovered ? Windows.UI.Text.TextDecorations.Underline : Windows.UI.Text.TextDecorations.None;
+            Theme.Text("", "bodyMedium").CopyTo(words);
+            if (IsInline)
+            {
+                // The paragraph owns leading; the anchor owns only its font
+                // box, just as an inline CSS element's client rect does.
+                Height = PlatformFonts.InlineHeight(words.FontFamily, words.FontSize, words.FontWeight);
+                words.VerticalAlignment = VerticalAlignment.Center;
+            }
+            // Inherit the native presenter's active-state ink rather than
+            // pinning the label to the normal colour.
+            words.ClearValue(TextBlock.ForegroundProperty);
+            words.TextDecorations = IsEnabled && (Underline == LinkUnderline.Always || Underline == LinkUnderline.Hover && hovered) ? Windows.UI.Text.TextDecorations.Underline : Windows.UI.Text.TextDecorations.None;
+            if (External)
+            {
+                if (!ReferenceEquals(Content, externalRow))
+                {
+                    Content = null;
+                    externalRow = new StackPanel { Orientation = Orientation.Horizontal };
+                    externalRow.Children.Add(words);
+                    externalRow.Children.Add(new Icon { Glyph = FluentIcons.Common.Icon.ArrowUpRight, VerticalAlignment = VerticalAlignment.Center });
+                    Content = externalRow;
+                }
+                externalRow!.Spacing = Theme.Number("spacing.0.5");
+                ((Icon)externalRow.Children[1]).GlyphSize = Theme.Number("icon.small");
+            }
+            else if (ReferenceEquals(Content, externalRow))
+            {
+                externalRow!.Children.Clear();
+                Content = words;
+                externalRow = null;
+            }
         }
     }
 }

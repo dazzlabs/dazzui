@@ -25,9 +25,16 @@ internal static class Measure
     // A bound label retains the control's requested weight. Its converter
     // can choose an installed face (600 -> 700) just as CSS font matching
     // does without changing the computed font-weight reported by React.
-    private static int Weight(TextBlock text) =>
-        text.GetBindingExpression(TextBlock.FontWeightProperty)?.ParentBinding.Source is Control owner
-            ? owner.FontWeight.Weight : text.FontWeight.Weight;
+    private static int Weight(TextBlock text)
+    {
+        if (text.GetBindingExpression(TextBlock.FontWeightProperty)?.ParentBinding.Source is Control owner)
+            return owner.FontWeight.Weight;
+        if (text.ReadLocalValue(TextBlock.FontWeightProperty) == DependencyProperty.UnsetValue)
+            for (var current = VisualTreeHelper.GetParent(text); current is not null; current = VisualTreeHelper.GetParent(current))
+                if (current is ContentPresenter presenter && presenter.GetBindingExpression(ContentPresenter.FontWeightProperty)?.ParentBinding.Source is Control control)
+                    return control.FontWeight.Weight;
+        return TextStyle.RequestedWeight(text).Weight;
+    }
 
     public static string Hex(Windows.UI.Color colour, double opacity = 1)
     {
@@ -107,6 +114,15 @@ internal static class Measure
         var shortSide = Math.Min(root.ActualWidth, root.ActualHeight) / 2;
         var corner = Math.Min(surface?.Corner.TopLeft ?? 0, shortSide);
         string? Colour(Brush? brush) => brush is SolidColorBrush solid ? Hex(solid.Color, solid.Opacity) : null;
+        // Grouped avatars draw their unblurred spread in a surrounding border,
+        // outside the avatar's own box. Read that painted ring rather than
+        // treating the absence of a composition drop shadow as no effect.
+        string? ringShadow = null;
+        if (root is Avatar && root.Parent is Border avatarRing && ReferenceEquals(avatarRing.Child, root)
+            && avatarRing.Padding.Left > 0 && avatarRing.Padding.Left == avatarRing.Padding.Right
+            && avatarRing.Padding.Top == avatarRing.Padding.Left && avatarRing.Padding.Bottom == avatarRing.Padding.Left
+            && avatarRing.Background is SolidColorBrush { Color.A: 255 } ground)
+            ringShadow = FormattableString.Invariant($"rgb({ground.Color.R}, {ground.Color.G}, {ground.Color.B}) 0px 0px 0px {avatarRing.Padding.Left}px");
 
         var texts = own.OfType<TextBlock>().Where(t => t.ActualWidth > 0 || t.Text.Length > 0).ToList();
         var text = texts.FirstOrDefault(t => !Glyph(t) && t.Text.Trim().Length > 0);
@@ -175,7 +191,7 @@ internal static class Measure
                 ["paddingY"] = painted ? null : Round(Math.Max(0, top - stroke)),
                 ["gap"] = gap is null ? null : Round(gap.Value),
                 // A token shadow the kit draws says its name; a ThemeShadow has none.
-                ["shadow"] = painted ? null : Elevation.GetShadow(root) ?? (root.Shadow is null ? "none" : "theme"),
+                ["shadow"] = painted ? null : ringShadow ?? Elevation.GetShadow(root) ?? (root.Shadow is null ? "none" : "theme"),
             },
         };
     }

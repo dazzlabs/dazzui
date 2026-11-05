@@ -4,11 +4,14 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Input;
 using Windows.System;
+using Windows.UI.Text;
 
 namespace DazzUI;
 
 public class Checkbox : CheckBox
 {
+    private TextBlock? noteLabel;
+    private Microsoft.UI.Xaml.Documents.Run? noteRun;
     public Theme Theme { get => Appearance.GetTheme(this); set => Appearance.SetTheme(this, value); }
     public ControlSize Size { get => Appearance.GetSize(this); set => Appearance.SetSize(this, value); }
     public WidgetTint Tint { get => Appearance.GetTint(this); set => Appearance.SetTint(this, value); }
@@ -25,17 +28,23 @@ public class Checkbox : CheckBox
     {
         Skin.Focus(this, Theme); MinWidth = MinHeight = 0;
         Theme.Typography(this, "labelQuiet");
-        if (IsChecked == true) FontWeight = Theme.Text("", "labelMedium").FontWeight;
+        if (IsChecked == true) FontWeight = Theme.Weight("labelMedium");
         Foreground = Theme.Brush(IsChecked == true ? "color.content" : "color.content-muted");
         // A disabled row keeps its colours and steps back as a whole.
         Opacity = IsEnabled ? 1 : 0.6;
         if (GetTemplateChild("Row") is StackPanel row) row.Spacing = Theme.Number("spacing.2.5");
         if (Note is not null && Content is string label)
         {
-            var words = new TextBlock { Inlines = { new Microsoft.UI.Xaml.Documents.Run { Text = label + " " }, new Microsoft.UI.Xaml.Documents.Run { Text = Note, Foreground = Theme.Brush("color.content-faint") } } };
-            words.LineHeight = Theme.Text("", "labelQuiet").LineHeight;
-            words.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
-            Content = words;
+            noteRun = new Microsoft.UI.Xaml.Documents.Run();
+            noteLabel = new TextBlock { Inlines = { new Microsoft.UI.Xaml.Documents.Run { Text = label + " " }, noteRun } };
+            Content = noteLabel;
+        }
+        if (noteLabel is not null && ReferenceEquals(Content, noteLabel))
+        {
+            Theme.Text("", "labelQuiet").CopyTo(noteLabel);
+            Skin.TextWeight(noteLabel, this);
+            noteRun!.Text = Note ?? "";
+            noteRun.Foreground = Theme.Brush("color.content-faint");
         }
         else Skin.TextLine(this, Theme.Text("", "labelQuiet").LineHeight);
         if (GetTemplateChild("Box") is Border box)
@@ -64,7 +73,7 @@ public sealed class CheckboxGroup : Surface
     {
         if (Content is null)
             foreach (var item in Items) { item.Checked += (_, _) => SelectionChanged?.Invoke(this, EventArgs.Empty); item.Unchecked += (_, _) => SelectionChanged?.Invoke(this, EventArgs.Empty); }
-        var column = Skin.Column(Theme, Items.Cast<UIElement>().ToArray());
+        var column = Skin.Stack(Theme, Orientation.Vertical, Items.Cast<UIElement>().ToArray(), Content as StackPanel);
         column.Spacing = Theme.Number("spacing.2.5");
         Content = column;
     }
@@ -85,7 +94,7 @@ public class Radio : RadioButton
         Skin.Focus(this, Theme); MinWidth = MinHeight = 0;
         Theme.Typography(this, "labelQuiet");
         Skin.TextLine(this, Theme.Text("", "labelQuiet").LineHeight);
-        if (IsChecked == true) FontWeight = Theme.Text("", "labelMedium").FontWeight;
+        if (IsChecked == true) FontWeight = Theme.Weight("labelMedium");
         Foreground = Theme.Brush(IsChecked == true ? "color.content" : "color.content-muted");
         Opacity = IsEnabled || this is OptionCard ? 1 : 0.6;
         if (GetTemplateChild("Row") is StackPanel row) row.Spacing = Theme.Number("spacing.2.5");
@@ -116,7 +125,7 @@ public sealed class RadioGroup : Surface
     protected override void RefreshAppearance()
     {
         foreach (var item in Items) { item.GroupName = groupName; item.Size = Size; item.Tint = Tint; }
-        var panel = Orientation == Orientation.Horizontal ? Skin.Row(Theme, Items.Cast<UIElement>().ToArray()) : Skin.Column(Theme, Items.Cast<UIElement>().ToArray());
+        var panel = Skin.Stack(Theme, Orientation, Items.Cast<UIElement>().ToArray(), Content as StackPanel);
         panel.Spacing = Theme.Number("spacing.2.5");
         Content = panel;
     }
@@ -138,6 +147,11 @@ public class Toggle : ToggleButton
         Size = ControlSize.Tiny;
         Checked += (_, _) => Apply(); Unchecked += (_, _) => Apply(); IsEnabledChanged += (_, _) => Apply();
     }
+    protected override void OnApplyTemplate()
+    {
+        base.OnApplyTemplate();
+        if (GetTemplateChild("Presenter") is ContentPresenter presenter) Skin.TextWeight(presenter, this);
+    }
     protected virtual void Apply()
     {
         Skin.Control(this, Theme, Size); Height = Theme.Number($"control.{Theme.Key(Size)}.size");
@@ -156,7 +170,7 @@ public class Toggle : ToggleButton
         BorderBrush = Theme.Recipe(variant, Tint, "border", state);
         BorderThickness = new Thickness(Theme.Number("spacing.px"));
         // Down is the tinted wash and the label a weight heavier.
-        if (IsChecked == true) FontWeight = Theme.Text("", "labelStrong").FontWeight;
+        if (IsChecked == true) FontWeight = Theme.Weight("labelStrong");
         Skin.Join(this, !Joined.Before, !Joined.After);
         Margin = new Thickness(Joined.Before ? -Theme.Number("spacing.px") : 0, 0, 0, 0);
     }
@@ -223,7 +237,7 @@ public class ToggleGroup : Surface
                 };
             }
         }
-        var row = Skin.Row(Theme, Items.Cast<UIElement>().ToArray());
+        var row = Skin.Stack(Theme, Orientation.Horizontal, Items.Cast<UIElement>().ToArray(), Content as StackPanel);
         row.Spacing = 0;
         Content = row;
     }
@@ -332,7 +346,11 @@ public class SegmentedControl : Surface
             segment.CornerRadius = new CornerRadius(Math.Max(0, radius - inset));
             segment.IsTextScaleFactorEnabled = Theme.Sizing != ThemeSizing.System;
             segment.FontSize = FontSize;
-            segment.FontWeight = Theme.Text("", chosen ? "labelMedium" : "labelQuiet").FontWeight;
+            segment.FontFamily = FontFamily;
+            segment.FontWeight = Theme.Weight(chosen ? "labelMedium" : "labelQuiet");
+            Skin.TextLine(segment, Theme.Text("", $"control.{Theme.Key(Size)}.content").LineHeight);
+            if (segment.Content is StackPanel words)
+                foreach (var label in words.Children.OfType<TextBlock>()) Skin.TextWeight(label, segment);
             segment.Background = chosen ? Filled ? Theme.Recipe(ControlVariant.Filled, Tint, "surface") : Theme.Brush("color.surface-raised") : null;
             segment.Foreground = chosen ? Filled ? Theme.Recipe(ControlVariant.Filled, Tint, "content") : Theme.Brush("color.content") : Theme.Brush("color.content-secondary");
             Skin.Focus(segment, Theme);
@@ -358,6 +376,8 @@ public sealed class PillTabs : Surface
     private readonly string group = Guid.NewGuid().ToString("N");
     private int selectedIndex = -1;
     public IList<string> Items { get; } = new List<string>();
+    /// <summary>Optional trailing counts, keyed by item index.</summary>
+    public IDictionary<int, int> Counts { get; } = new Dictionary<int, int>();
     public int SelectedIndex { get => selectedIndex; set { selectedIndex = value; Sync(); } }
     public event EventHandler? SelectionChanged;
     // The root lays out one child — the row — so what a reader sees as the
@@ -408,7 +428,31 @@ public sealed class PillTabs : Surface
             pill.CornerRadius = new CornerRadius(height / 2);
             pill.IsTextScaleFactorEnabled = Theme.Sizing != ThemeSizing.System;
             pill.FontSize = size;
-            pill.FontWeight = Theme.Text("", chosen ? "labelStrong" : "labelSmall").FontWeight;
+            pill.FontFamily = PlatformFonts.Ui;
+            pill.FontWeight = Theme.Weight(chosen ? "labelStrong" : "labelSmall");
+            if (Counts.TryGetValue(i, out var count))
+            {
+                var words = pill.Content as StackPanel;
+                if (words is null)
+                {
+                    words = new StackPanel { Orientation = Orientation.Horizontal };
+                    words.Children.Add(new TextBlock { Text = Items[i] });
+                    words.Children.Add(new TextBlock());
+                    pill.Content = words;
+                }
+                words.Spacing = Theme.Number("control.tiny.gap");
+                foreach (var text in words.Children.OfType<TextBlock>())
+                {
+                    Theme.Text("", "labelSmall").CopyTo(text);
+                    Skin.TextWeight(text, pill);
+                    text.LineHeight = size;
+                    text.ClearValue(TextBlock.ForegroundProperty);
+                }
+                var countLabel = (TextBlock)words.Children[1];
+                countLabel.Text = count.ToString();
+                Microsoft.UI.Xaml.Documents.Typography.SetNumeralAlignment(countLabel, FontNumeralAlignment.Tabular);
+            }
+            else Skin.TextLine(pill, size);
             pill.Background = chosen ? Theme.Recipe(ControlVariant.Filled, Tint, "surface") : Theme.Brush("color.surface-inset");
             pill.Foreground = chosen ? Theme.Recipe(ControlVariant.Filled, Tint, "content") : Theme.Brush("color.content-nav");
             Skin.Focus(pill, Theme);
@@ -452,7 +496,7 @@ public sealed class OptionCard : Radio
         var title = Theme.Text(Title, "labelStrong");
         title.Foreground = Theme.Brush("color.content");
         var description = Theme.Text(Description, "labelSmall");
-        description.FontWeight = Theme.Text("", "captionSmall").FontWeight;
+        TextStyle.SetWeight(description, Theme.Weight("captionSmall"));
         description.LineHeight = description.FontSize * 1.5;
         description.Foreground = Theme.Brush(chosen ? "color.content-muted" : "color.content-subtle");
         var body = new StackPanel { Spacing = Theme.Number("spacing.1.5") };
@@ -505,7 +549,7 @@ public sealed class Tag : Surface
         Padding = new Thickness(inline, block, inline, block);
         Skin.SetCorner(this, Theme.Number("radius.tiny"));
         Theme.Typography(Selection, large ? "labelMedium" : "labelSmall");
-        Selection.FontWeight = Theme.Text("", "labelMedium").FontWeight;
+        Selection.FontWeight = Theme.Weight("labelMedium");
         Selection.Foreground = Foreground;
         Skin.TextLine(Selection, Selection.FontSize * 1.4);
         Skin.Focus(Selection, Theme);

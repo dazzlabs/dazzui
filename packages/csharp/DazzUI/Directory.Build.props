@@ -12,11 +12,11 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>12</LangVersion>
-    <!-- The conformance collector builds into bin-conformance/ beside a plain
-         build's bin/. Each build excludes only its own output from the default
+    <!-- Collectors and examples use bin-*/ beside a plain build's bin/.
+         Each build excludes only its own output from the default
          globs, so without this each copies the other's (Generic.xaml, assets)
          into itself, nesting deeper every run until the paths break. -->
-    <DefaultItemExcludes>$(DefaultItemExcludes);bin/**;bin-conformance/**</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);bin/**;bin-*/**</DefaultItemExcludes>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260804001" />

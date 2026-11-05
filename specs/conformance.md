@@ -335,7 +335,16 @@ Five collectors are written:
   spinner's ellipse and arc supply their actual corner and stroke.
   System UI type resolves Windows' message font, matching the browser's
   system-ui face on that machine. Text widths still differ from a React run
-  collected on another OS. `IconButton` and `NavItem` draw the story's
+  collected on another OS; diagnose intrinsic widths with a same-Windows
+  React reference. The browser collector fixes `en-US` so localized date
+  strings do not change scene content between hosts. WinUI retains declared
+  weights while matching installed faces, enables OpenType kerning, and
+  uses the installed bitmap strike advances for keyboard fallback glyphs.
+  Grouped avatar rings are measured from their painted outset borders.
+  The WinUI geometry smoke fixture separately checks small and large shadow
+  pixels against CSS's Gaussian sigma (half the blur length); submitted
+  shadow names alone do not establish the resulting paint.
+  `IconButton` and `NavItem` draw the story's
   `<Icon>` as an element of its own, so that glyph is read where React draws
   it. A glyph a kit control still takes as a `Glyph` value and draws inside
   itself — a `SegmentedControl`'s segments — has no element of its own, and

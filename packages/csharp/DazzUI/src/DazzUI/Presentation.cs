@@ -75,7 +75,7 @@ public sealed class Avatar : Surface
         VerticalContentAlignment = VerticalAlignment.Center;
         // Initials are read at a glance: the label's strong weight, one type step per size.
         var initials = Theme.Text(string.Concat(NameText.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(n => n[0])).ToUpperInvariant(), type);
-        initials.FontWeight = Theme.Text("", "labelStrong").FontWeight;
+        TextStyle.SetWeight(initials, Theme.Weight("labelStrong"));
         initials.Foreground = Foreground;
         initials.LineHeight = initials.FontSize;
         initials.TextLineBounds = TextLineBounds.Tight;
@@ -104,7 +104,7 @@ public sealed class Avatar : Surface
 /// </summary>
 public sealed class AvatarGroup : Surface
 {
-    private readonly StackPanel row = new() { Orientation = Orientation.Horizontal };
+    private readonly StackPanel row = new() { Orientation = Orientation.Horizontal, UseLayoutRounding = false };
     public IList<Avatar> Avatars { get; } = new List<Avatar>();
     /// <summary>How many more there are than are shown.</summary>
     public int Overflow { get; set; }
@@ -119,11 +119,14 @@ public sealed class AvatarGroup : Surface
         var ground = Theme.Brush("color.surface");
         UIElement Ringed(FrameworkElement face) => new Border
         {
+            UseLayoutRounding = false,
             Child = face,
             Background = ground,
             Padding = new Thickness(ring),
-            CornerRadius = new CornerRadius(Theme.Number("radius.full")),
-            Margin = new Thickness(row.Children.Count == 0 ? -ring : -overlap - ring * 2, -ring, 0, -ring),
+            CornerRadius = new CornerRadius(Math.Min(Theme.Number(face is Avatar { Shape: AvatarShape.Square } ? "radius.medium" : "radius.full"), Theme.Number(Avatar.Metrics(Size).Box) / 2) + ring),
+            // The ring is an outset, as CSS box-shadow is. Both ends stay
+            // outside layout so it never adds to the group's natural width.
+            Margin = new Thickness(row.Children.Count == 0 ? -ring : -overlap - ring, -ring, -ring, -ring),
         };
         foreach (var avatar in Avatars)
         {
@@ -135,7 +138,7 @@ public sealed class AvatarGroup : Surface
         if (Overflow <= 0) return;
         var box = Theme.Number(Avatar.Metrics(Size).Box);
         var count = Theme.Text($"+{Overflow}", "captionSmall");
-        count.FontWeight = Theme.Text("", "labelStrong").FontWeight;
+        TextStyle.SetWeight(count, Theme.Weight("labelStrong"));
         count.Foreground = Theme.Brush("color.content-muted");
         count.HorizontalAlignment = HorizontalAlignment.Center;
         count.VerticalAlignment = VerticalAlignment.Center;
@@ -165,7 +168,7 @@ public sealed class KeyCap : Surface
         BorderThickness = new Thickness(0);
         Skin.SetCorner(this, Raised ? Theme.Number("radius.tiny") : 0);
         Theme.Typography(this, Size == ControlSize.Large ? "labelMedium" : "labelSmall");
-        FontWeight = Theme.Text("", Raised ? "labelStrong" : "labelMedium").FontWeight;
+        FontWeight = Theme.Weight(Raised ? "labelStrong" : "labelMedium");
         Skin.TextLine(this, FontSize);
         Height = Raised ? Theme.Number("spacing.5") + Theme.Number("spacing.0.5") : double.NaN;
         VerticalContentAlignment = VerticalAlignment.Center;
@@ -224,7 +227,7 @@ public sealed class CodeBlock : Surface
             if (Syntax is not null)
             {
                 var language = Theme.Text(Syntax.ToUpperInvariant(), "labelSmall");
-                language.FontWeight = Theme.Text("", "labelMedium").FontWeight;
+                TextStyle.SetWeight(language, Theme.Weight("labelMedium"));
                 language.Foreground = Theme.Brush("color.content-faint");
                 language.VerticalAlignment = VerticalAlignment.Center;
                 Grid.SetColumn(language, 1); head.Children.Add(language);
@@ -270,28 +273,36 @@ public sealed class CodeBlock : Surface
 }/// <summary>What a pane shows before it has content: one muted line and at most one action.</summary>
 public sealed class EmptyState : Surface
 {
+    private readonly StackPanel body = new() { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+    private readonly ContentPresenter iconHost = new();
+    private readonly ContentPresenter actionsHost = new() { HorizontalAlignment = HorizontalAlignment.Center };
+    private readonly TextBlock title = new() { TextAlignment = TextAlignment.Center, TextWrapping = TextWrapping.Wrap };
+    private readonly TextBlock description = new() { TextAlignment = TextAlignment.Center, TextWrapping = TextWrapping.Wrap };
     public string Title { get; set; } = "Nothing here yet";
     public string? Description { get; set; }
     public UIElement? Icon { get; set; }
     public UIElement? Actions { get; set; }
+    public EmptyState()
+    {
+        body.Children.Add(iconHost);
+        body.Children.Add(title);
+        body.Children.Add(description);
+        body.Children.Add(actionsHost);
+        Content = body;
+    }
     protected override void RefreshAppearance()
     {
-        var body = new StackPanel { Spacing = Theme.Number("spacing.3"), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
-        if (Icon is not null) { Skin.Detach(Icon); body.Children.Add(Icon); }
-        var title = Theme.Text(Title, "bodyMedium");
+        body.Spacing = Theme.Number("spacing.3");
+        Skin.Content(iconHost, Icon);
+        Skin.Content(actionsHost, Actions);
+        Theme.Text("", "bodyMedium").CopyTo(title);
+        title.Text = Title;
         title.Foreground = Theme.Brush("color.content-subtle");
-        title.TextAlignment = TextAlignment.Center;
-        body.Children.Add(title);
-        if (Description is not null)
-        {
-            var description = Theme.Text(Description, "bodySmall");
-            description.Foreground = Theme.Brush("color.content-subtle");
-            description.TextAlignment = TextAlignment.Center;
-            body.Children.Add(description);
-        }
-        if (Actions is FrameworkElement actions) { Skin.Detach(actions); actions.HorizontalAlignment = HorizontalAlignment.Center; body.Children.Add(actions); }
+        Theme.Text("", "bodySmall").CopyTo(description);
+        description.Text = Description ?? "";
+        description.Foreground = Theme.Brush("color.content-subtle");
+        description.Visibility = Description is null ? Visibility.Collapsed : Visibility.Visible;
         Padding = new Thickness(Theme.Number("spacing.8"), Theme.Number("spacing.14"), Theme.Number("spacing.8"), Theme.Number("spacing.14"));
-        Content = body;
     }
 }/// <summary>
 /// A tinted notice: an optional glyph, the title over its description, and
@@ -300,41 +311,52 @@ public sealed class EmptyState : Surface
 /// </summary>
 public sealed class Callout : Surface
 {
+    private readonly Grid row = new();
+    private readonly StackPanel body = new() { VerticalAlignment = VerticalAlignment.Center };
+    private readonly ContentPresenter iconHost = new();
+    private readonly ContentPresenter actionHost = new();
+    private readonly TextBlock title = new() { TextWrapping = TextWrapping.Wrap };
+    private readonly TextBlock description = new() { TextWrapping = TextWrapping.Wrap };
     public string? Title { get; set; }
     public string Description { get; set; } = "";
     public UIElement? Icon { get; set; }
     public UIElement? Action { get; set; }
-    public Callout() { Size = ControlSize.Medium; }
-    protected override void RefreshAppearance()
+    public Callout()
     {
-        var row = new Grid { ColumnSpacing = Theme.Number("spacing.2.5") };
+        Size = ControlSize.Medium;
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        var ink = Theme.Brush($"color.{Theme.Key(Tint)}.600");
+        Grid.SetColumn(body, 1);
+        Grid.SetColumn(actionHost, 2);
+        body.Children.Add(title);
+        body.Children.Add(description);
+        row.Children.Add(iconHost);
+        row.Children.Add(body);
+        row.Children.Add(actionHost);
+        Content = row;
+    }
+    protected override void RefreshAppearance()
+    {
+        row.ColumnSpacing = Theme.Number("spacing.2.5");
+        body.Spacing = Theme.Number("spacing.1");
         var hasDescription = Description.Length > 0;
         var align = hasDescription ? VerticalAlignment.Top : VerticalAlignment.Center;
-        if (Icon is FrameworkElement icon) { Skin.Detach(icon); icon.VerticalAlignment = align; if (icon is Control glyph) glyph.Foreground = ink; row.Children.Add(icon); }
-        var body = new StackPanel { Spacing = Theme.Number("spacing.1"), VerticalAlignment = VerticalAlignment.Center };
-        if (Title is not null)
-        {
-            var title = Theme.Text(Title, "labelMedium");
-            title.Foreground = Theme.Recipe(ControlVariant.Tinted, Tint, "content", "hovered");
-            title.LineHeight = title.FontSize * 1.4;
-            body.Children.Add(title);
-        }
-        if (hasDescription)
-        {
-            var description = Theme.Text(Description, "labelQuiet");
-            description.FontWeight = Theme.Text("", "captionSmall").FontWeight;
-            description.Foreground = Theme.Recipe(ControlVariant.Tinted, Tint, "content");
-            description.LineHeight = description.FontSize * 1.5;
-            body.Children.Add(description);
-        }
-        Grid.SetColumn(body, 1);
-        row.Children.Add(body);
-        if (Action is FrameworkElement action) { Skin.Detach(action); action.VerticalAlignment = align; Grid.SetColumn(action, 2); row.Children.Add(action); }
-        Content = row;
+        Skin.Content(iconHost, Icon);
+        Skin.Content(actionHost, Action);
+        iconHost.VerticalAlignment = actionHost.VerticalAlignment = align;
+        if (Icon is Control glyph) glyph.Foreground = Theme.Brush($"color.{Theme.Key(Tint)}.600");
+        Theme.Text("", "labelMedium").CopyTo(title);
+        title.Text = Title ?? "";
+        title.Foreground = Theme.Recipe(ControlVariant.Tinted, Tint, "content", "hovered");
+        title.LineHeight = title.FontSize * 1.4;
+        title.Visibility = Title is null ? Visibility.Collapsed : Visibility.Visible;
+        Theme.Text("", "labelQuiet").CopyTo(description);
+        description.Text = Description;
+        TextStyle.SetWeight(description, Theme.Weight("captionSmall"));
+        description.Foreground = Theme.Recipe(ControlVariant.Tinted, Tint, "content");
+        description.LineHeight = description.FontSize * 1.5;
+        description.Visibility = hasDescription ? Visibility.Visible : Visibility.Collapsed;
         Background = Theme.Alpha($"color.{Theme.Key(Tint)}.600", Theme.Number("wash.surface"));
         BorderBrush = Theme.Alpha($"color.{Theme.Key(Tint)}.600", Theme.Number("wash.edge"));
         BorderThickness = new Thickness(Theme.Number("stroke.hairline"));

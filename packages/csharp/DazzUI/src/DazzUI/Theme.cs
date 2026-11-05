@@ -1,4 +1,6 @@
 using System.Text.Json;
+using System.Text;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Windows.UI;
@@ -101,6 +103,7 @@ public sealed class Theme
     public void Typography(Control control, string token)
     {
         control.UseLayoutRounding = false;
+        Microsoft.UI.Xaml.Documents.Typography.SetKerning(control, true);
         var style = values.GetProperty(token);
         control.IsTextScaleFactorEnabled = Sizing != ThemeSizing.System;
         control.FontSize = Number(style.GetProperty("fontSize")) * TypeScale(token);
@@ -111,7 +114,7 @@ public sealed class Theme
     public TextBlock Text(string text, string token = "bodyMedium")
     {
         var style = values.GetProperty(token);
-        return new TextBlock
+        var block = new TextBlock
         {
             UseLayoutRounding = false,
             Text = text,
@@ -124,6 +127,8 @@ public sealed class Theme
             Foreground = Brush("color.content"),
             TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
         };
+        TextStyle.SetWeight(block, Weight(token));
+        return block;
     }
 
     /// <summary>A shadow token's layers, outermost first, in device-independent pixels.</summary>
@@ -145,13 +150,109 @@ public sealed class Theme
 
 internal static class TextStyle
 {
+    private static readonly DependencyProperty FeaturesProperty = DependencyProperty.RegisterAttached(
+        "Features", typeof(bool), typeof(TextStyle), new PropertyMetadata(false));
+    private static readonly DependencyProperty UpdatingProperty = DependencyProperty.RegisterAttached(
+        "UpdatingFeatures", typeof(bool), typeof(TextStyle), new PropertyMetadata(false));
+    private static readonly DependencyProperty KeyboardProperty = DependencyProperty.RegisterAttached(
+        "KeyboardFeatures", typeof(bool), typeof(TextStyle), new PropertyMetadata(false));
+    internal static void Keyboard(TextBlock text)
+    {
+        text.SetValue(KeyboardProperty, true);
+        Features(text);
+    }
+    internal static void Features(TextBlock text)
+    {
+        if (!(bool)text.GetValue(FeaturesProperty))
+        {
+            text.SetValue(FeaturesProperty, true);
+            foreach (var property in new[] { TextBlock.TextProperty, TextBlock.FontFamilyProperty, TextBlock.FontSizeProperty, TextBlock.FontWeightProperty, TextBlock.IsTextScaleFactorEnabledProperty })
+                text.RegisterPropertyChangedCallback(property, (sender, _) => Features((TextBlock)sender));
+        }
+        if ((bool)text.GetValue(UpdatingProperty)) return;
+        text.SetValue(UpdatingProperty, true);
+        try
+        {
+            // XAML's plain-text fast path ignores kerning, even when enabled.
+            // A span uses its OpenType formatter and keeps caller-owned runs.
+            if ((bool)text.GetValue(KeyboardProperty))
+            {
+                var content = text.Text;
+                text.Inlines.Clear();
+                var formatted = new Microsoft.UI.Xaml.Documents.Span();
+                Microsoft.UI.Xaml.Documents.Typography.SetKerning(formatted, true);
+                var plain = new System.Text.StringBuilder();
+                var effectiveSize = text.FontSize * (text.IsTextScaleFactorEnabled ? SystemStyle.TextScale : 1);
+                var trailing = 0d;
+                void Flush()
+                {
+                    if (plain.Length == 0) return;
+                    formatted.Inlines.Add(new Microsoft.UI.Xaml.Documents.Run { Text = plain.ToString() });
+                    plain.Clear();
+                }
+                foreach (var rune in content.EnumerateRunes())
+                {
+                    var character = rune.Value;
+                    trailing = 0;
+                    if ((character is >= 0x2190 and <= 0x21ff or 0x2318 or 0x2325 or 0x238b or 0x232b or 0x2326) && PlatformFonts.MathFallback((char)character))
+                    {
+                        Flush();
+                        var tracking = PlatformFonts.BitmapTracking((char)character, effectiveSize, text.FontWeight);
+                        trailing = tracking * effectiveSize / 1000;
+                        formatted.Inlines.Add(new Microsoft.UI.Xaml.Documents.Run
+                        {
+                            Text = rune.ToString(), FontFamily = new FontFamily("Cambria Math"),
+                            CharacterSpacing = tracking,
+                        });
+                    }
+                    else plain.Append(rune.ToString());
+                }
+                Flush();
+                text.Inlines.Add(formatted);
+                // CharacterSpacing excludes the last character; retain the
+                // installed bitmap glyph's trailing advance in its line box.
+                text.Padding = new Thickness(0, 0, Math.Max(0, trailing), 0);
+                text.Margin = new Thickness(0, 0, Math.Min(0, trailing), 0);
+            }
+            else if (text.Inlines.Count == 1 && text.Inlines[0] is Microsoft.UI.Xaml.Documents.Span span)
+                Microsoft.UI.Xaml.Documents.Typography.SetKerning(span, true);
+            else if (text.Inlines.Count > 0)
+            {
+                var runs = text.Inlines.ToArray();
+                text.Inlines.Clear();
+                var formatted = new Microsoft.UI.Xaml.Documents.Span();
+                Microsoft.UI.Xaml.Documents.Typography.SetKerning(formatted, true);
+                foreach (var run in runs) formatted.Inlines.Add(run);
+                text.Inlines.Add(formatted);
+            }
+        }
+        finally { text.SetValue(UpdatingProperty, false); }
+    }
+    // Store this on the native object: traversing the visual tree can return
+    // another managed wrapper for the same TextBlock.
+    private static readonly DependencyProperty RequestedProperty = DependencyProperty.RegisterAttached(
+        "RequestedWeight", typeof(int), typeof(TextStyle), new PropertyMetadata(0));
+    private static readonly DependencyProperty MatchedProperty = DependencyProperty.RegisterAttached(
+        "MatchedWeight", typeof(int), typeof(TextStyle), new PropertyMetadata(0));
+    internal static FontWeight RequestedWeight(TextBlock text) =>
+        text.FontWeight.Weight == (int)text.GetValue(MatchedProperty)
+            ? new FontWeight { Weight = (ushort)(int)text.GetValue(RequestedProperty) } : text.FontWeight;
+    internal static void SetWeight(TextBlock text, FontWeight requested)
+    {
+        var matched = PlatformFonts.MatchWeight(text.FontFamily, requested);
+        text.SetValue(RequestedProperty, (int)requested.Weight);
+        text.SetValue(MatchedProperty, (int)matched.Weight);
+        Microsoft.UI.Xaml.Documents.Typography.SetKerning(text, true);
+        text.FontWeight = matched;
+        Features(text);
+    }
     /// <summary>Gives <paramref name="target"/> the face this styled text has, keeping its words and ink.</summary>
     public static void CopyTo(this TextBlock source, TextBlock target)
     {
         target.IsTextScaleFactorEnabled = source.IsTextScaleFactorEnabled;
         target.FontFamily = source.FontFamily;
         target.FontSize = source.FontSize;
-        target.FontWeight = source.FontWeight;
+        SetWeight(target, RequestedWeight(source));
         target.LineHeight = source.LineHeight;
         target.LineStackingStrategy = source.LineStackingStrategy;
     }

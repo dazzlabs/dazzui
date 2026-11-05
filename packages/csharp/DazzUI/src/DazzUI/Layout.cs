@@ -16,22 +16,33 @@ public sealed class ActionBar : Surface
         var gap = Theme.Number("control.small.gap");
         if (Alignment != ActionBarAlignment.Between)
         {
-            var row = Skin.Row(Theme, Items.ToArray());
+            // Keep live children attached during appearance changes; moving a
+            // focused native control between panels also resets its template.
+            var row = Content as StackPanel;
+            if (row is null || !row.Children.SequenceEqual(Items))
+            {
+                row = Skin.Row(Theme, Items.ToArray());
+                Content = row;
+            }
             row.Spacing = gap;
             row.HorizontalAlignment = Alignment == ActionBarAlignment.Start ? HorizontalAlignment.Left : HorizontalAlignment.Right;
-            Content = row;
         }
         else
         {
-            var grid = new Grid { ColumnSpacing = gap };
-            for (var i = 0; i < Items.Count; i++)
+            var grid = Content as Grid;
+            if (grid is null || !grid.Children.SequenceEqual(Items))
             {
-                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = i == 0 ? new GridLength(1, GridUnitType.Star) : GridLength.Auto });
-                Skin.Detach(Items[i]); Items[i].SetValue(Grid.ColumnProperty, i); grid.Children.Add(Items[i]);
-                // The first item keeps its own width at the start; the rest sit at the end.
-                if (i == 0 && Items[i] is FrameworkElement first) first.HorizontalAlignment = HorizontalAlignment.Left;
+                grid = new Grid();
+                for (var i = 0; i < Items.Count; i++)
+                {
+                    grid.ColumnDefinitions.Add(new ColumnDefinition { Width = i == 0 ? new GridLength(1, GridUnitType.Star) : GridLength.Auto });
+                    Skin.Detach(Items[i]); Items[i].SetValue(Grid.ColumnProperty, i); grid.Children.Add(Items[i]);
+                    // The first item keeps its own width at the start; the rest sit at the end.
+                    if (i == 0 && Items[i] is FrameworkElement first) first.HorizontalAlignment = HorizontalAlignment.Left;
+                }
+                Content = grid;
             }
-            Content = grid;
+            grid.ColumnSpacing = gap;
         }
     }
 }
@@ -107,6 +118,9 @@ public class Collapsible : Surface
         {
             if (title.Content is TextBlock headerText) Theme.Text("", "labelMedium").CopyTo(headerText);
             else title.Content = Theme.Text(words, "labelMedium");
+            // The trigger owns enabled/disabled ink; a text snapshot must not
+            // pin the heading to the palette in which it was first created.
+            ((TextBlock)title.Content).ClearValue(TextBlock.ForegroundProperty);
         }
         trigger.Foreground = Theme.Brush(trigger.IsEnabled ? "color.content" : "color.content-faint");
         row.ColumnSpacing = gap;
@@ -194,7 +208,9 @@ public sealed class PreferenceRow : Surface
     {
         // The gap sits only between what is there: a row without a glyph starts on the heading's edge.
         var gap = Theme.Number("spacing.2.5");
-        var grid = new Grid { ColumnSpacing = gap };
+        var grid = (Interactive ? action.Content as Grid : Content as Grid) ?? new Grid();
+        grid.ColumnSpacing = gap;
+        grid.ColumnDefinitions.Clear();
         if (Leading is not null) grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         var title = Theme.Text(Label, "labelQuiet");
@@ -209,8 +225,9 @@ public sealed class PreferenceRow : Surface
             subtitle.TextWrapping = TextWrapping.NoWrap;
             text.Children.Add(subtitle);
         }
-        Grid.SetColumn(text, Leading is null ? 0 : 1); grid.Children.Add(text);
-        if (Leading is not null) { Skin.Detach(Leading); Leading.SetValue(Grid.ColumnProperty, 0); grid.Children.Add(Leading); }
+        Grid.SetColumn(text, Leading is null ? 0 : 1);
+        var children = new List<UIElement> { text };
+        if (Leading is not null) { Leading.SetValue(Grid.ColumnProperty, 0); children.Add(Leading); }
         var trailing = Control;
         if (Interactive)
         {
@@ -222,9 +239,10 @@ public sealed class PreferenceRow : Surface
             var swatches = trailing is PreferenceThemeSwatches;
             if (swatches) grid.ColumnDefinitions[Leading is null ? 0 : 1].Width = GridLength.Auto;
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = swatches ? new GridLength(1, GridUnitType.Star) : GridLength.Auto });
-            Skin.Detach(end); end.VerticalAlignment = VerticalAlignment.Center;
-            Grid.SetColumn(end, grid.ColumnDefinitions.Count - 1); grid.Children.Add(end);
+            end.VerticalAlignment = VerticalAlignment.Center;
+            Grid.SetColumn(end, grid.ColumnDefinitions.Count - 1); children.Add(end);
         }
+        Skin.Children(grid, children);
         MinHeight = Theme.Number("control.medium.size");
         var inset = Interactive ? Theme.Number("spacing.2") : 0;
         Padding = new Thickness(0);
@@ -250,8 +268,8 @@ public sealed class PreferenceGroup : Surface
     public IList<PreferenceRow> Rows { get; } = new List<PreferenceRow>();
     protected override void RefreshAppearance()
     {
-        var rows = new StackPanel { Spacing = Theme.Number("preferences.row-gap") };
-        foreach (var row in Rows) { Skin.Detach(row); rows.Children.Add(row); }
+        var rows = Skin.Stack(Theme, Orientation.Vertical, Rows.Cast<UIElement>().ToArray(), Content as StackPanel);
+        rows.Spacing = Theme.Number("preferences.row-gap");
         Content = rows;
     }
 }/// <summary>A heading over its rows, and an optional footer under them in the caption face.</summary>
@@ -264,18 +282,20 @@ public sealed class PreferenceSection : Surface
     public string? Footer { get; set; }
     protected override void RefreshAppearance()
     {
-        var column = new StackPanel();
-        if (Title.Length > 0) column.Children.Add(new SectionLabel(Title, Theme) { Margin = new Thickness(0, 0, 0, Theme.Number("preferences.heading-gap")) });
-        if (Description is not null) column.Children.Add(Theme.Text(Description, "bodySmall"));
-        if (Body is not null) { Skin.Detach(Body); column.Children.Add(Body); }
+        var column = Content as StackPanel ?? new StackPanel();
+        var children = new List<UIElement>();
+        if (Title.Length > 0) children.Add(new SectionLabel(Title, Theme) { Margin = new Thickness(0, 0, 0, Theme.Number("preferences.heading-gap")) });
+        if (Description is not null) children.Add(Theme.Text(Description, "bodySmall"));
+        if (Body is not null) children.Add(Body);
         if (Footer is not null)
         {
             var footer = Theme.Text(Footer, "captionSmall");
             footer.Foreground = Theme.Brush("color.content-subtle");
             footer.LineHeight = footer.FontSize * 1.7;
             footer.Margin = new Thickness(0, Theme.Number("preferences.footer-gap"), 0, 0);
-            column.Children.Add(footer);
+            children.Add(footer);
         }
+        Skin.Children(column, children);
         Content = column;
     }
 }/// <summary>The settings column: groups of sections at the widest step, no wider than its width token.</summary>
@@ -289,8 +309,8 @@ public sealed class Preferences : Surface
         Width = double.NaN;
         MaxWidth = Theme.Number("preferences.width");
         HorizontalAlignment = HorizontalAlignment.Stretch;
-        var column = new StackPanel { Spacing = Theme.Number("preferences.group-gap") };
-        foreach (var section in Sections) { Skin.Detach(section); column.Children.Add(section); }
+        var column = Skin.Stack(Theme, Orientation.Vertical, Sections.ToArray(), Content as StackPanel);
+        column.Spacing = Theme.Number("preferences.group-gap");
         Content = column;
     }
 }public class NavItem : Toggle
@@ -357,7 +377,7 @@ public sealed class Preferences : Surface
             else if (Count is not null)
             {
                 var count = Theme.Text(Count, "captionSmall");
-                count.FontWeight = Theme.Text("", "labelMedium").FontWeight;
+                TextStyle.SetWeight(count, Theme.Weight("labelMedium"));
                 trailing.Content = count;
             }
             else trailing.Content = null;
@@ -549,7 +569,7 @@ public sealed class SidebarBadge : Surface
         Skin.SetCorner(this, Theme.Number("radius.small"));
         Foreground = Ink ?? Theme.Brush("color.content-nav");
         Theme.Typography(this, "captionSmall");
-        FontWeight = Theme.Text("", "labelMedium").FontWeight;
+        FontWeight = Theme.Weight("labelMedium");
         Skin.TextLine(this, Theme.Number("spacing.5"));
         Content = Text;
     }

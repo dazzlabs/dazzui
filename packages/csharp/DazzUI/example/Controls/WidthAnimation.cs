@@ -28,7 +28,15 @@ public sealed class WidthAnimation
     /// <summary>Width over the motion token, from where the element stands now.</summary>
     public void AnimateTo(double width, Theme theme, Action? completed = null)
     {
+        var wasAnimating = Animating;
         Stop();
+        // A Loaded callback can run before the explicit width is arranged.
+        // Reapplying that same state must not animate from its old layout.
+        if (!wasAnimating && !double.IsNaN(element.Width) && Math.Abs(element.Width - width) < 0.001)
+        {
+            completed?.Invoke();
+            return;
+        }
         var from = element.ActualWidth > 0 ? element.ActualWidth : element.Width;
         if (double.IsNaN(from) || Math.Abs(from - width) < 0.5 || !element.IsLoaded)
         {

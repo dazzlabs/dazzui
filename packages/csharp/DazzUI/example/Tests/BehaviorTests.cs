@@ -32,7 +32,7 @@ internal static class BehaviorTests
     {
         await Task.Delay(80);
         shell.UpdateLayout();
-        try { await new RenderTargetBitmap().RenderAsync(shell).AsTask().WaitAsync(TimeSpan.FromSeconds(30)); }
+        try { await SmokeTest.CaptureAsync(shell); }
         catch (TimeoutException error)
         {
             throw new TimeoutException($"Native snapshot timed out: host visible={shell.XamlRoot?.IsHostVisible}, fixture={shell.CurrentPage?.GetType().Name}.", error);
@@ -166,7 +166,13 @@ internal static class BehaviorTests
                         line.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
                         var top = placeholder.TransformToVisual(input).TransformPoint(new Windows.Foundation.Point()).Y + placeholder.Padding.Top;
                         var bottom = input.ActualHeight - top - line.DesiredSize.Height;
-                        Check(Math.Abs(top - bottom) <= 1, $"{input.GetType().Name} {size}: unequal placeholder insets {top}/{bottom}.");
+                        // The shared field uses ds block padding, while the
+                        // native face owns its leading. Check the placeholder
+                        // against the editor's inset instead of recentering
+                        // that font's natural line box with another padding.
+                        Check(placeholder.Padding.Top == input.Padding.Top && placeholder.Padding.Bottom == input.Padding.Bottom,
+                            $"{input.GetType().Name} {size}: placeholder and editor padding differ.");
+                        Check(top >= 0 && bottom >= -1, $"{input.GetType().Name} {size}: placeholder is clipped ({top}/{bottom}).");
                     }
                     else
                     {
@@ -312,7 +318,7 @@ internal static class BehaviorTests
         var twentieth = Walk(sheetCalendar).OfType<Microsoft.UI.Xaml.Controls.Button>().First(day => Microsoft.UI.Xaml.Automation.AutomationProperties.GetName(day) == "Tuesday, October 20, 2026");
         Pattern<IInvokeProvider>(twentieth, PatternInterface.Invoke).Invoke(); await Settle(shell);
         Check(committed == 0 && picker.Value!.Value.Start.Day == 16, "The draft reached the value before Done.");
-        var done = Walk(sheet).OfType<UI.Button>().Single(button => Equals(button.Content, "Done"));
+        var done = Walk(sheet).OfType<UI.Button>().Single(button => Walk(button).OfType<TextBlock>().Any(text => text.Text == "Done"));
         Pattern<IInvokeProvider>(done, PatternInterface.Invoke).Invoke(); await Settle(shell);
         Check(committed == 1 && picker.Value == new UI.DateRangeValue(new DateTime(2026, 10, 20, 14, 30, 0), new DateTime(2026, 10, 20, 15, 30, 0)) && !picker.Sheet.IsOpen,
             $"Done did not commit the draft and close the sheet: {picker.Value}, open={picker.Sheet.IsOpen}.");

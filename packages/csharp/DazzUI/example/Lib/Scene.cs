@@ -49,7 +49,7 @@ public sealed class SceneView : Grid
         if (Nodes.Build(scene.Content, new Context(new SceneState(scene.State))) is not UIElement content) return;
         if (align && content is FrameworkElement framed)
         {
-            framed.HorizontalAlignment = HorizontalAlignment.Center;
+            framed.HorizontalAlignment = content is EmptyState ? HorizontalAlignment.Stretch : HorizontalAlignment.Center;
             framed.VerticalAlignment = VerticalAlignment.Center;
         }
         Children.Add(content);
@@ -168,6 +168,7 @@ public static class Nodes
 /// <summary>A component in the tree, read the way its builder needs it.</summary>
 public sealed class Node(JsonNode json, Context context)
 {
+    internal JsonNode Source => json;
     public string Component { get; } = json.Element() ?? "";
     public JsonObject Props { get; } = json["props"]?.AsObject() ?? [];
     public IReadOnlyList<JsonNode?> Children { get; } = json["children"].Items();

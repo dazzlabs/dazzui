@@ -97,6 +97,11 @@ public sealed class Menubar : Surface
 /// <summary>A menubar trigger: a plain button at the menubar's own eight-pixel inline inset.</summary>
 public sealed class MenubarItem : Button
 {
+    protected override void Tailor()
+    {
+        BorderThickness = new Thickness(0);
+        Skin.SetCorner(this, Theme.Number("radius.small"));
+    }
     protected override void LayContent()
     {
         base.LayContent();

@@ -26,10 +26,14 @@ public class TextField : TextBox
         Loaded += (_, _) => HideClearSoon();
         GotFocus += (_, _) => HideClearSoon();
         TextChanged += (_, _) => HideClearSoon();
+        // Native templates can resolve resources before OnApplyTemplate.
+        // Install stable brush objects before the first template is expanded.
+        Skin.Input(this, Theme, Size);
     }
     protected override void OnApplyTemplate()
     {
         base.OnApplyTemplate();
+        Apply();
         HideClearSoon();
     }
     private void HideClearSoon()
@@ -92,6 +96,13 @@ public sealed class SecureTextField : Surface
     {
         Content = Input;
         IsEnabledChanged += (_, _) => RefreshAppearance();
+        RefreshAppearance();
+    }
+
+    protected override void OnApplyTemplate()
+    {
+        RefreshAppearance();
+        base.OnApplyTemplate();
     }
 
     protected override void RefreshAppearance()
@@ -170,12 +181,30 @@ public class Select : ComboBox
         Appearance.Bind(this, Apply);
         IsEnabledChanged += (_, _) => Apply();
         HorizontalAlignment = HorizontalAlignment.Stretch;
+        Apply();
+    }
+    protected override void OnApplyTemplate()
+    {
+        Apply();
+        base.OnApplyTemplate();
+        Apply();
     }
     private void Apply()
     {
         Skin.Input(this, Theme, Size, Invalid);
         if (Mono) FontFamily = Theme.CodeFont;
         Height = Theme.Number($"control.{Theme.Key(Size)}.size");
+        // Keep the native popup, focus and selection states; replace only
+        // its fixed 38px caption strip with the shared glyph and gap.
+        if (GetTemplateChild("DropDownGlyph") is FrameworkElement glyph)
+        {
+            var icon = Theme.Number("icon.small");
+            glyph.Width = glyph.Height = icon;
+            glyph.MinHeight = 0;
+            glyph.Margin = new Thickness(0, 0, Padding.Right, 0);
+            if (VisualTreeHelper.GetParent(glyph) is Grid grid && grid.ColumnDefinitions.Count > 1)
+                grid.ColumnDefinitions[1].Width = new GridLength(icon + Theme.Number("spacing.2"));
+        }
     }
     public void SetOptions(IEnumerable<SelectOption> options)
     {
@@ -226,6 +255,7 @@ public class Autocomplete : Surface
         };
         Input.SuggestionChosen += (_, args) => Choose(args.SelectedItem);
         Input.QuerySubmitted += (_, args) => { if (args.ChosenSuggestion is not null) Choose(args.ChosenSuggestion); };
+        Skin.Input(Input, Theme, Size, Invalid);
     }
     /// <summary>
     /// The query box is the native control's own part, templated before a theme
@@ -240,7 +270,7 @@ public class Autocomplete : Surface
             // The query box's template takes the placeholder ink from its
             // own resources, not the outer suggest box's.
             foreach (var key in new[] { "TextControlPlaceholderForeground", "TextControlPlaceholderForegroundPointerOver", "TextControlPlaceholderForegroundFocused", "TextControlPlaceholderForegroundDisabled" })
-                box.Resources[key] = faint;
+                Skin.StateBrush(box, key, faint);
         }
         foreach (var words in Parts<TextBlock>(Input).Where(part =>
             part.Name.Contains("Placeholder", StringComparison.OrdinalIgnoreCase) ||
@@ -369,6 +399,7 @@ public sealed class NumberField : Surface
             if (args.Key == Windows.System.VirtualKey.Enter) { Commit(Read()); args.Handled = true; }
             else if (step != 0) { Commit(Read() + step); args.Handled = true; }
         };
+        RefreshAppearance();
     }
     private static Microsoft.UI.Xaml.Controls.Button Step(FluentIcons.Common.Icon glyph) => new()
     {
@@ -403,8 +434,10 @@ public sealed class NumberField : Surface
         var height = Theme.Number($"control.{Theme.Key(Size)}.size");
         Skin.Input(editor, Theme, Size, Invalid);
         // The box draws; the editor disappears into it.
-        box.Background = focused && !Invalid ? Theme.Brush("color.surface") : editor.Background;
-        box.BorderBrush = focused || Invalid ? Theme.Brush($"color.{(Invalid ? "danger" : Theme.Key(Tint))}.600") : editor.BorderBrush;
+        // The editor's state brushes become transparent below. The group
+        // keeps independent copies of the field's resolved surface and edge.
+        box.Background = focused && !Invalid ? Theme.Brush("color.surface") : new SolidColorBrush(((SolidColorBrush)editor.Background).Color);
+        box.BorderBrush = focused || Invalid ? Theme.Brush($"color.{(Invalid ? "danger" : Theme.Key(Tint))}.600") : new SolidColorBrush(((SolidColorBrush)editor.BorderBrush).Color);
         box.BorderThickness = new Thickness(Theme.Number("stroke.hairline"));
         box.CornerRadius = new CornerRadius(Math.Min(Theme.Number("control.field.radius"), height / 2));
         box.Height = height;
@@ -419,7 +452,7 @@ public sealed class NumberField : Surface
         editor.Background = clear;
         editor.BorderThickness = new Thickness(0);
         foreach (var key in new[] { "TextControlBackground", "TextControlBackgroundPointerOver", "TextControlBackgroundFocused", "TextControlBorderBrush", "TextControlBorderBrushPointerOver", "TextControlBorderBrushFocused" })
-            editor.Resources[key] = clear;
+            Skin.StateBrush(editor, key, clear);
         editor.Height = height - 2 * Theme.Number("stroke.hairline");
         // The group owns the shared field insets. The native editor keeps its
         // full font bounds, centered through that line box, without charging
@@ -446,10 +479,10 @@ public sealed class NumberField : Surface
             step.CornerRadius = new CornerRadius(Theme.Number("radius.tiny"));
             step.Background = clear;
             step.Foreground = Theme.Brush("color.content-subtle");
-            step.Resources["ButtonBackgroundPointerOver"] = Theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "surface", "hovered");
-            step.Resources["ButtonBackgroundPressed"] = Theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "surface", "pressed");
-            step.Resources["ButtonBorderBrushPointerOver"] = clear;
-            step.Resources["ButtonBorderBrushPressed"] = clear;
+            Skin.StateBrush(step, "ButtonBackgroundPointerOver", Theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "surface", "hovered"));
+            Skin.StateBrush(step, "ButtonBackgroundPressed", Theme.Recipe(ControlVariant.Normal, WidgetTint.Neutral, "surface", "pressed"));
+            Skin.StateBrush(step, "ButtonBorderBrushPointerOver", clear);
+            Skin.StateBrush(step, "ButtonBorderBrushPressed", clear);
             if (step.Content is Icon glyph)
             {
                 glyph.GlyphSize = Math.Min(Theme.Number("icon.small"), Theme.Number("spacing.3"));
@@ -461,24 +494,34 @@ public sealed class NumberField : Surface
 }
 public sealed class FormField : Surface
 {
+    private readonly TextBlock label = new() { TextWrapping = TextWrapping.Wrap };
+    private readonly TextBlock message = new() { TextWrapping = TextWrapping.Wrap };
+    private readonly ContentPresenter fieldHost = new() { HorizontalContentAlignment = HorizontalAlignment.Stretch };
+    private readonly StackPanel body = new();
     public string Label { get; set; } = "";
     public string? Hint { get; set; }
     public string? Error { get; set; }
     public bool Required { get; set; }
     public UIElement? Field { get; set; }
+    public FormField()
+    {
+        body.Children.Add(label);
+        body.Children.Add(fieldHost);
+        body.Children.Add(message);
+        Content = body;
+    }
     protected override void RefreshAppearance()
     {
         var subtle = Theme.Brush("color.content-subtle");
         var danger = Theme.Brush("color.danger.700");
-        var label = Theme.Text(Label + (Required ? " *" : ""), "labelSmall");
+        Theme.Text("", "labelSmall").CopyTo(label);
+        label.Text = Label + (Required ? " *" : "");
         label.Foreground = Error is null ? subtle : danger;
-        var body = new StackPanel { Spacing = Theme.Number("spacing.1.5") };
-        body.Children.Add(label);
+        body.Spacing = Theme.Number("spacing.1.5");
+        // Keep the native editor attached through validation and theme changes.
+        Skin.Content(fieldHost, Field);
         if (Field is not null)
         {
-            // Reusing the input keeps editing state intact when a validation message changes.
-            Skin.Detach(Field);
-            body.Children.Add(Field);
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetLabeledBy(Field, label);
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetIsRequiredForForm(Field, Required);
             if (Field is SecureTextField secure)
@@ -487,14 +530,11 @@ public sealed class FormField : Surface
                 Microsoft.UI.Xaml.Automation.AutomationProperties.SetIsRequiredForForm(secure.Input, Required);
             }
         }
-        if ((Error ?? Hint) is string note)
-        {
-            var message = Theme.Text(note, "labelQuiet");
-            message.LineHeight = message.FontSize * 1.6;
-            message.Foreground = Error is null ? subtle : danger;
-            body.Children.Add(message);
-        }
-        Content = body;
+        Theme.Text("", "labelQuiet").CopyTo(message);
+        message.Text = Error ?? Hint ?? "";
+        message.LineHeight = message.FontSize * 1.6;
+        message.Foreground = Error is null ? subtle : danger;
+        message.Visibility = (Error ?? Hint) is null ? Visibility.Collapsed : Visibility.Visible;
     }
     public void SetError(string? error) { Error = error; RefreshAppearance(); }
 }
@@ -506,15 +546,15 @@ public sealed class Fieldset : Surface
     protected override void RefreshAppearance()
     {
         var legend = Theme.Text(Legend, "captionSmall");
-        legend.FontWeight = Theme.Text("", "labelSmall").FontWeight;
+        TextStyle.SetWeight(legend, Theme.Weight("labelSmall"));
         // The legend's own leading: one, as the web sets it, not the caption
         // step's.
         legend.LineHeight = legend.FontSize;
         legend.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
         legend.Foreground = Theme.Brush("color.content-subtle");
-        var body = new StackPanel { Spacing = Theme.Number("spacing.3") };
-        body.Children.Add(legend);
-        foreach (var field in Fields) { Skin.Detach(field); body.Children.Add(field); }
+        var body = Content as StackPanel ?? new StackPanel();
+        body.Spacing = Theme.Number("spacing.3");
+        Skin.Children(body, new UIElement[] { legend }.Concat(Fields));
         Content = body;
     }
 }
@@ -533,8 +573,9 @@ public sealed class Form : Surface
     }
     protected override void RefreshAppearance()
     {
-        var body = Skin.Column(Theme, Fields.Cast<UIElement>().ToArray());
-        if (Footer is not null) { Skin.Detach(Footer); body.Children.Add(Footer); }
+        var body = Content as StackPanel ?? new StackPanel();
+        body.Spacing = Theme.Number("spacing.3");
+        Skin.Children(body, Fields.Cast<UIElement>().Concat(Footer is null ? [] : new[] { Footer }));
         Content = body;
     }
 }

@@ -11,12 +11,26 @@ namespace DazzUI;
 public sealed record SplitterPanel(UIElement Content, double Weight = 1, double Minimum = 0, double Maximum = double.PositiveInfinity);
 public sealed class Splitter : Surface
 {
+    private SplitterPanel[] mounted = [];
+    private Orientation mountedOrientation;
     public IList<SplitterPanel> Panels { get; } = new List<SplitterPanel>();
     public Orientation Orientation { get; set; }
     public Splitter() { HorizontalContentAlignment = HorizontalAlignment.Stretch; VerticalContentAlignment = VerticalAlignment.Stretch; }
     protected override void RefreshAppearance()
     {
         var previous = Content as Grid;
+        if (previous is not null && mountedOrientation == Orientation && mounted.SequenceEqual(Panels))
+        {
+            foreach (var grip in previous.Children.OfType<SplitterGrip>())
+            {
+                grip.Rule = Theme.Brush("color.border");
+                grip.Hairline = Theme.Number("stroke.hairline");
+                if (Orientation == Orientation.Horizontal) grip.Width = Theme.Number("spacing.2");
+                else grip.Height = Theme.Number("spacing.2");
+                Skin.Focus(grip, Theme);
+            }
+            return;
+        }
         var weights = Panels.Select((panel, i) => previous is null ? panel.Weight : Orientation == Orientation.Horizontal && previous.ColumnDefinitions.Count > i * 2 ? previous.ColumnDefinitions[i * 2].ActualWidth : Orientation == Orientation.Vertical && previous.RowDefinitions.Count > i * 2 ? previous.RowDefinitions[i * 2].ActualHeight : panel.Weight).ToArray();
         var grid = new Grid();
         for (var i = 0; i < Panels.Count; i++)
@@ -64,6 +78,8 @@ public sealed class Splitter : Surface
             grip.SetValue(Orientation == Orientation.Horizontal ? Grid.ColumnProperty : Grid.RowProperty, index + 1); grid.Children.Add(grip);
         }
         Content = grid;
+        mounted = Panels.ToArray();
+        mountedOrientation = Orientation;
     }
 }
 internal sealed class SplitterGrip : Surface

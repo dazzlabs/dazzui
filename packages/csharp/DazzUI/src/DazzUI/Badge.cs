@@ -36,7 +36,7 @@ public sealed class Badge : Surface
         var inline = Theme.Number(Size is ControlSize.Small or ControlSize.Tiny ? "spacing.1.5" : "spacing.2");
         Padding = new Thickness(inline, block, inline, block);
         Theme.Typography(this, Size == ControlSize.Large ? "labelMedium" : "labelSmall");
-        FontWeight = Theme.Text("", "labelMedium").FontWeight;
+        FontWeight = Theme.Weight("labelMedium");
         Skin.TextLine(this, FontSize * 1.4);
     }
 }

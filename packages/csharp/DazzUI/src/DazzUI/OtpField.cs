@@ -69,6 +69,7 @@ public sealed class OtpField : Surface
                     else if (args.Key == VirtualKey.Right && position + 1 < Length)
                     { inputs[position + 1].Focus(FocusState.Keyboard); args.Handled = true; }
                 };
+                Skin.Input(field, Theme, Size);
                 inputs.Add(field); row.Children.Add(field);
             }
             Value = previous;

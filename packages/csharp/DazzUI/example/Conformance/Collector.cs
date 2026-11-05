@@ -203,7 +203,7 @@ internal static class Collector
             ["collected"] = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
             ["commit"] = Env("COMMIT") ?? "",
             ["scale"] = Scale,
-            // Windows sets type in Segoe UI Variable, not React's system face.
+            // System fonts are host-specific; no cross-platform test font.
             ["font"] = null,
             ["themes"] = readingsThemes,
             ["scenes"] = readingsScenes,
