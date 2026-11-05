@@ -1,0 +1,310 @@
+{
+  "id": "menu",
+  "name": "Menu",
+  "summary": "Actions kept out of the way until they are asked for.",
+  "preview": {
+    "id": "menu/preview",
+    "title": "Preview",
+    "content": {
+      "$el": "Menu",
+      "props": {
+        "trigger": {
+          "$el": "Button",
+          "children": [
+            "Actions"
+          ],
+          "$at": 1
+        },
+        "items": [
+          {
+            "label": "Rename",
+            "icon": {
+              "$el": "Icon",
+              "props": {
+                "icon": {
+                  "$icon": "Edit20Regular"
+                }
+              },
+              "$at": 2
+            }
+          },
+          {
+            "label": "Duplicate",
+            "icon": {
+              "$el": "Icon",
+              "props": {
+                "icon": {
+                  "$icon": "Copy20Regular"
+                }
+              },
+              "$at": 3
+            },
+            "shortcut": {
+              "$el": "KeyCap",
+              "props": {
+                "variant": "hint"
+              },
+              "children": [
+                "⌘D"
+              ],
+              "$at": 4
+            }
+          },
+          {
+            "label": "Delete",
+            "icon": {
+              "$el": "Icon",
+              "props": {
+                "icon": {
+                  "$icon": "Delete20Regular"
+                }
+              },
+              "$at": 5
+            },
+            "disabled": true
+          }
+        ]
+      },
+      "$at": 0
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "menu/0",
+      "title": "From a button",
+      "content": {
+        "$el": "Menu",
+        "props": {
+          "trigger": {
+            "$el": "Button",
+            "children": [
+              "Actions"
+            ],
+            "$at": 1
+          },
+          "items": [
+            {
+              "label": "Rename",
+              "icon": {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Edit20Regular"
+                  }
+                },
+                "$at": 2
+              }
+            },
+            {
+              "label": "Duplicate",
+              "icon": {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Copy20Regular"
+                  }
+                },
+                "$at": 3
+              },
+              "shortcut": {
+                "$el": "KeyCap",
+                "props": {
+                  "variant": "hint"
+                },
+                "children": [
+                  "⌘D"
+                ],
+                "$at": 4
+              }
+            },
+            {
+              "label": "Delete",
+              "icon": {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Delete20Regular"
+                  }
+                },
+                "$at": 5
+              },
+              "disabled": true
+            }
+          ]
+        },
+        "$at": 0
+      },
+      "gaps": []
+    },
+    {
+      "id": "menu/1",
+      "title": "From a right click",
+      "content": {
+        "$el": "ContextMenu",
+        "props": {
+          "items": [
+            {
+              "label": "Rename",
+              "icon": {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Edit20Regular"
+                  }
+                },
+                "$at": 1
+              }
+            },
+            {
+              "label": "Duplicate",
+              "icon": {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Copy20Regular"
+                  }
+                },
+                "$at": 2
+              },
+              "shortcut": {
+                "$el": "KeyCap",
+                "props": {
+                  "variant": "hint"
+                },
+                "children": [
+                  "⌘D"
+                ],
+                "$at": 3
+              }
+            },
+            {
+              "label": "Delete",
+              "icon": {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Delete20Regular"
+                  }
+                },
+                "$at": 4
+              },
+              "disabled": true
+            }
+          ]
+        },
+        "children": [
+          {
+            "$el": "Col",
+            "props": {
+              "width": "16rem"
+            },
+            "children": [
+              {
+                "$el": "Card",
+                "props": {
+                  "variant": "outlined"
+                },
+                "children": [
+                  "Right-click this card"
+                ],
+                "$at": 5
+              }
+            ]
+          }
+        ],
+        "$at": 0
+      },
+      "gaps": []
+    },
+    {
+      "id": "menu/2",
+      "title": "A menubar",
+      "content": {
+        "$el": "Menubar",
+        "props": {
+          "menus": [
+            {
+              "label": "File",
+              "items": [
+                {
+                  "label": "Rename",
+                  "icon": {
+                    "$el": "Icon",
+                    "props": {
+                      "icon": {
+                        "$icon": "Edit20Regular"
+                      }
+                    },
+                    "$at": 1
+                  }
+                },
+                {
+                  "label": "Duplicate",
+                  "icon": {
+                    "$el": "Icon",
+                    "props": {
+                      "icon": {
+                        "$icon": "Copy20Regular"
+                      }
+                    },
+                    "$at": 2
+                  },
+                  "shortcut": {
+                    "$el": "KeyCap",
+                    "props": {
+                      "variant": "hint"
+                    },
+                    "children": [
+                      "⌘D"
+                    ],
+                    "$at": 3
+                  }
+                },
+                {
+                  "label": "Delete",
+                  "icon": {
+                    "$el": "Icon",
+                    "props": {
+                      "icon": {
+                        "$icon": "Delete20Regular"
+                      }
+                    },
+                    "$at": 4
+                  },
+                  "disabled": true
+                }
+              ]
+            },
+            {
+              "label": "View",
+              "items": [
+                {
+                  "label": "Sidebar",
+                  "checked": true
+                },
+                {
+                  "label": "Theme panel",
+                  "checked": true
+                },
+                {
+                  "label": "Full screen"
+                }
+              ]
+            },
+            {
+              "label": "Help",
+              "items": [
+                {
+                  "label": "Documentation"
+                }
+              ]
+            }
+          ]
+        },
+        "$at": 0
+      },
+      "gaps": []
+    }
+  ]
+}

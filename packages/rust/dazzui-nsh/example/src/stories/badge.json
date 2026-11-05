@@ -1,0 +1,176 @@
+{
+  "id": "badge",
+  "name": "Badge",
+  "summary": "A status or a count, read at a glance and never pressed.",
+  "preview": {
+    "id": "badge/preview",
+    "title": "Preview",
+    "content": {
+      "$el": "Row",
+      "props": {
+        "gap": "2"
+      },
+      "children": [
+        {
+          "$el": "Badge",
+          "props": {
+            "tint": "success"
+          },
+          "children": [
+            "Live"
+          ],
+          "$at": 0
+        },
+        {
+          "$el": "Badge",
+          "props": {
+            "tint": "warning"
+          },
+          "children": [
+            "Draft"
+          ],
+          "$at": 1
+        },
+        {
+          "$el": "Badge",
+          "props": {
+            "variant": "filled"
+          },
+          "children": [
+            "12"
+          ],
+          "$at": 2
+        }
+      ]
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "badge/0",
+      "title": "Variants",
+      "content": {
+        "$el": "Row",
+        "props": {
+          "gap": "2"
+        },
+        "children": [
+          {
+            "$el": "Badge",
+            "props": {
+              "variant": "filled"
+            },
+            "children": [
+              "filled"
+            ],
+            "$at": 0
+          },
+          {
+            "$el": "Badge",
+            "props": {
+              "variant": "tinted"
+            },
+            "children": [
+              "tinted"
+            ],
+            "$at": 1
+          },
+          {
+            "$el": "Badge",
+            "props": {
+              "variant": "outlined"
+            },
+            "children": [
+              "outlined"
+            ],
+            "$at": 2
+          },
+          {
+            "$el": "Badge",
+            "props": {
+              "variant": "raised"
+            },
+            "children": [
+              "raised"
+            ],
+            "$at": 3
+          }
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "badge/1",
+      "title": "Tints",
+      "content": {
+        "$el": "Row",
+        "props": {
+          "gap": "2"
+        },
+        "children": [
+          {
+            "$el": "Badge",
+            "props": {
+              "tint": "primary"
+            },
+            "children": [
+              "primary"
+            ],
+            "$at": 0
+          },
+          {
+            "$el": "Badge",
+            "props": {
+              "tint": "neutral"
+            },
+            "children": [
+              "neutral"
+            ],
+            "$at": 1
+          },
+          {
+            "$el": "Badge",
+            "props": {
+              "tint": "info"
+            },
+            "children": [
+              "info"
+            ],
+            "$at": 2
+          },
+          {
+            "$el": "Badge",
+            "props": {
+              "tint": "success"
+            },
+            "children": [
+              "success"
+            ],
+            "$at": 3
+          },
+          {
+            "$el": "Badge",
+            "props": {
+              "tint": "warning"
+            },
+            "children": [
+              "warning"
+            ],
+            "$at": 4
+          },
+          {
+            "$el": "Badge",
+            "props": {
+              "tint": "danger"
+            },
+            "children": [
+              "danger"
+            ],
+            "$at": 5
+          }
+        ]
+      },
+      "gaps": []
+    }
+  ]
+}

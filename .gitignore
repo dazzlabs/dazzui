@@ -43,3 +43,7 @@ packages/js/dazzui/example/tests/goldens/
 /tools/conformance/data/
 /tools/conformance/fixtures/
 .wrangler
+
+# Native Shell development hosts and generated test bundles
+**/.nsh/
+**/.capture.test.ts

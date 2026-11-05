@@ -153,7 +153,7 @@
   min-height: var(--spacing-20);
   padding-block: var(--spacing-2-5);
   border-radius: var(--radius-large);
-  line-height: 1.6;
+  line-height: var(--text-field-multiline-leading);
   resize: vertical;
 }
 

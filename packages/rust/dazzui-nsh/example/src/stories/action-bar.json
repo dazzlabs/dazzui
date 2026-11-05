@@ -1,0 +1,189 @@
+{
+  "id": "action-bar",
+  "name": "ActionBar",
+  "summary": "The row of actions a view ends on.",
+  "preview": {
+    "id": "action-bar/preview",
+    "title": "Preview",
+    "content": {
+      "$el": "Col",
+      "props": {
+        "width": "16rem"
+      },
+      "children": [
+        {
+          "$el": "ActionBar",
+          "children": [
+            {
+              "$el": "Button",
+              "props": {
+                "variant": "outlined"
+              },
+              "children": [
+                "Cancel"
+              ],
+              "$at": 1
+            },
+            {
+              "$el": "Button",
+              "props": {
+                "variant": "filled"
+              },
+              "children": [
+                "Save"
+              ],
+              "$at": 2
+            }
+          ],
+          "$at": 0
+        }
+      ]
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "action-bar/0",
+      "title": "Alignment",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "width": "28rem",
+          "gap": "5"
+        },
+        "children": [
+          {
+            "$el": "ActionBar",
+            "props": {
+              "align": "start"
+            },
+            "children": [
+              {
+                "$el": "Button",
+                "props": {
+                  "variant": "plain"
+                },
+                "children": [
+                  "start"
+                ],
+                "$at": 1
+              },
+              {
+                "$el": "Button",
+                "props": {
+                  "variant": "filled"
+                },
+                "children": [
+                  "Save"
+                ],
+                "$at": 2
+              }
+            ],
+            "$at": 0
+          },
+          {
+            "$el": "ActionBar",
+            "props": {
+              "align": "end"
+            },
+            "children": [
+              {
+                "$el": "Button",
+                "props": {
+                  "variant": "plain"
+                },
+                "children": [
+                  "end"
+                ],
+                "$at": 4
+              },
+              {
+                "$el": "Button",
+                "props": {
+                  "variant": "filled"
+                },
+                "children": [
+                  "Save"
+                ],
+                "$at": 5
+              }
+            ],
+            "$at": 3
+          },
+          {
+            "$el": "ActionBar",
+            "props": {
+              "align": "between"
+            },
+            "children": [
+              {
+                "$el": "Button",
+                "props": {
+                  "variant": "plain"
+                },
+                "children": [
+                  "between"
+                ],
+                "$at": 7
+              },
+              {
+                "$el": "Button",
+                "props": {
+                  "variant": "filled"
+                },
+                "children": [
+                  "Save"
+                ],
+                "$at": 8
+              }
+            ],
+            "$at": 6
+          }
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "action-bar/1",
+      "title": "With a key hint",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "width": "28rem"
+        },
+        "children": [
+          {
+            "$el": "ActionBar",
+            "props": {
+              "align": "between"
+            },
+            "children": [
+              {
+                "$el": "KeyCap",
+                "props": {
+                  "variant": "hint"
+                },
+                "children": [
+                  "⌘↵ to send"
+                ],
+                "$at": 1
+              },
+              {
+                "$el": "Button",
+                "props": {
+                  "variant": "filled"
+                },
+                "children": [
+                  "Send"
+                ],
+                "$at": 2
+              }
+            ],
+            "$at": 0
+          }
+        ]
+      },
+      "gaps": []
+    }
+  ]
+}

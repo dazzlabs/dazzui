@@ -241,6 +241,12 @@ class ThemeVariables {
     this.dialogScrimAlpha = 0.25,
     this.dialogDangerBorderAlpha = 0.34,
     this.drawerSize = 352,
+    this.spinnerDuration = const Duration(microseconds: 1000000),
+    this.spinnerReducedDuration = const Duration(microseconds: 2400000),
+    this.spinnerTrackAlpha = 0.25,
+    this.spinnerOnAccentTrackAlpha = 0.35,
+    this.skeletonDuration = const Duration(microseconds: 1600000),
+    this.skeletonLastLineWidth = 0.6,
     this.menuMinWidth = 176,
     this.menuItemPadding = 7,
     this.preferencesWidth = 480,
@@ -264,6 +270,13 @@ class ThemeVariables {
     this.switchMediumThumb = 14,
     this.tabsPulseDuration = const Duration(microseconds: 1400000),
     this.tabsPulseOpacity = 0.35,
+    this.badgeLineHeight = 1.4,
+    this.calloutTitleLeading = 1.4,
+    this.calloutDescriptionLeading = 1.5,
+    this.textFieldMultilineLeading = 1.6,
+    this.optionCardDescriptionLeading = 1.5,
+    this.formFieldHintLeading = 1.6,
+    this.preferencesDescriptionLeading = 1.7,
     this.toastNoticeDuration = const Duration(microseconds: 5000000),
     this.toastActionDuration = const Duration(microseconds: 8000000),
     this.toastTransitionDuration = const Duration(microseconds: 260000),
@@ -822,6 +835,14 @@ class ThemeVariables {
   // Icon Button
   double get iconButtonTinyIconSize => spacing4;
 
+  // Loading
+  final Duration spinnerDuration;
+  final Duration spinnerReducedDuration;
+  final double spinnerTrackAlpha;
+  final double spinnerOnAccentTrackAlpha;
+  final Duration skeletonDuration;
+  final double skeletonLastLineWidth;
+
   // Menu
   final double menuMinWidth;
   final double menuItemPadding;
@@ -892,6 +913,15 @@ class ThemeVariables {
   double get tabsCloseIconSize => spacing3;
   final Duration tabsPulseDuration;
   final double tabsPulseOpacity;
+
+  // Text Leading
+  final double badgeLineHeight;
+  final double calloutTitleLeading;
+  final double calloutDescriptionLeading;
+  final double textFieldMultilineLeading;
+  final double optionCardDescriptionLeading;
+  final double formFieldHintLeading;
+  final double preferencesDescriptionLeading;
 
   // Toast
   final Duration toastNoticeDuration;
@@ -1086,6 +1116,12 @@ class ThemeVariables {
     double? dialogScrimAlpha,
     double? dialogDangerBorderAlpha,
     double? drawerSize,
+    Duration? spinnerDuration,
+    Duration? spinnerReducedDuration,
+    double? spinnerTrackAlpha,
+    double? spinnerOnAccentTrackAlpha,
+    Duration? skeletonDuration,
+    double? skeletonLastLineWidth,
     double? menuMinWidth,
     double? menuItemPadding,
     double? preferencesWidth,
@@ -1109,6 +1145,13 @@ class ThemeVariables {
     double? switchMediumThumb,
     Duration? tabsPulseDuration,
     double? tabsPulseOpacity,
+    double? badgeLineHeight,
+    double? calloutTitleLeading,
+    double? calloutDescriptionLeading,
+    double? textFieldMultilineLeading,
+    double? optionCardDescriptionLeading,
+    double? formFieldHintLeading,
+    double? preferencesDescriptionLeading,
     Duration? toastNoticeDuration,
     Duration? toastActionDuration,
     Duration? toastTransitionDuration,
@@ -1321,6 +1364,15 @@ class ThemeVariables {
       dialogDangerBorderAlpha:
           dialogDangerBorderAlpha ?? this.dialogDangerBorderAlpha,
       drawerSize: drawerSize ?? this.drawerSize,
+      spinnerDuration: spinnerDuration ?? this.spinnerDuration,
+      spinnerReducedDuration:
+          spinnerReducedDuration ?? this.spinnerReducedDuration,
+      spinnerTrackAlpha: spinnerTrackAlpha ?? this.spinnerTrackAlpha,
+      spinnerOnAccentTrackAlpha:
+          spinnerOnAccentTrackAlpha ?? this.spinnerOnAccentTrackAlpha,
+      skeletonDuration: skeletonDuration ?? this.skeletonDuration,
+      skeletonLastLineWidth:
+          skeletonLastLineWidth ?? this.skeletonLastLineWidth,
       menuMinWidth: menuMinWidth ?? this.menuMinWidth,
       menuItemPadding: menuItemPadding ?? this.menuItemPadding,
       preferencesWidth: preferencesWidth ?? this.preferencesWidth,
@@ -1349,6 +1401,17 @@ class ThemeVariables {
       switchMediumThumb: switchMediumThumb ?? this.switchMediumThumb,
       tabsPulseDuration: tabsPulseDuration ?? this.tabsPulseDuration,
       tabsPulseOpacity: tabsPulseOpacity ?? this.tabsPulseOpacity,
+      badgeLineHeight: badgeLineHeight ?? this.badgeLineHeight,
+      calloutTitleLeading: calloutTitleLeading ?? this.calloutTitleLeading,
+      calloutDescriptionLeading:
+          calloutDescriptionLeading ?? this.calloutDescriptionLeading,
+      textFieldMultilineLeading:
+          textFieldMultilineLeading ?? this.textFieldMultilineLeading,
+      optionCardDescriptionLeading:
+          optionCardDescriptionLeading ?? this.optionCardDescriptionLeading,
+      formFieldHintLeading: formFieldHintLeading ?? this.formFieldHintLeading,
+      preferencesDescriptionLeading:
+          preferencesDescriptionLeading ?? this.preferencesDescriptionLeading,
       toastNoticeDuration: toastNoticeDuration ?? this.toastNoticeDuration,
       toastActionDuration: toastActionDuration ?? this.toastActionDuration,
       toastTransitionDuration:

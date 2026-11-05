@@ -1,0 +1,119 @@
+{
+  "id": "progress",
+  "name": "Progress",
+  "summary": "How far along something is, or that it is under way at all.",
+  "preview": {
+    "id": "progress/preview",
+    "title": "Preview",
+    "content": {
+      "$el": "Col",
+      "props": {
+        "width": "15rem"
+      },
+      "children": [
+        {
+          "$el": "Progress",
+          "props": {
+            "value": 64,
+            "aria-label": "Uploading"
+          },
+          "$at": 0
+        }
+      ]
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "progress/0",
+      "title": "Sizes",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "width": "20rem",
+          "gap": "4"
+        },
+        "children": [
+          {
+            "$el": "Progress",
+            "props": {
+              "size": "small",
+              "value": 48,
+              "aria-label": "small"
+            },
+            "$at": 0
+          },
+          {
+            "$el": "Progress",
+            "props": {
+              "size": "medium",
+              "value": 48,
+              "aria-label": "medium"
+            },
+            "$at": 1
+          },
+          {
+            "$el": "Progress",
+            "props": {
+              "size": "large",
+              "value": 48,
+              "aria-label": "large"
+            },
+            "$at": 2
+          }
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "progress/1",
+      "title": "Tints and gradient",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "width": "20rem",
+          "gap": "4"
+        },
+        "children": [
+          {
+            "$el": "Progress",
+            "props": {
+              "value": 80,
+              "tint": "success",
+              "aria-label": "Success"
+            },
+            "$at": 0
+          },
+          {
+            "$el": "Progress",
+            "props": {
+              "value": 55,
+              "tint": "warning",
+              "aria-label": "Warning"
+            },
+            "$at": 1
+          },
+          {
+            "$el": "Progress",
+            "props": {
+              "value": 30,
+              "tint": "danger",
+              "aria-label": "Danger"
+            },
+            "$at": 2
+          },
+          {
+            "$el": "Progress",
+            "props": {
+              "value": 70,
+              "gradient": true,
+              "aria-label": "Gradient"
+            },
+            "$at": 3
+          }
+        ]
+      },
+      "gaps": []
+    }
+  ]
+}

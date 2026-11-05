@@ -3,6 +3,7 @@
  * ------------------------------------------- */
 
 :root {
+  --badge-line-height: 1.4;
   --base-color-acid-50: #f6fae2;
   --base-color-acid-100: #f1f7d2;
   --base-color-acid-200: #e9ff8f;
@@ -913,6 +914,8 @@
   --calendar-cell-gap: 0.125rem;
   --calendar-medium-cell-size: var(--control-medium-size);
   --calendar-small-cell-size: var(--control-small-size);
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: var(--base-font-ui);
   --caption-large-font-size: var(--base-type-body);
   --caption-large-font-weight: var(--base-font-weight-normal);
@@ -1070,6 +1073,7 @@
   --drawer-size: 22rem;
   --focus-offset: 0;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 13.375rem;
   --frame-nav-gap: 0.1875rem;
   --frame-popover-radius: var(--base-corner-xl-bright);
@@ -1119,6 +1123,8 @@
   --menu-min-width: 11rem;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: var(--spacing-1);
   --preferences-group-gap: var(--spacing-10);
   --preferences-heading-gap: var(--spacing-2);
@@ -1157,6 +1163,8 @@
   --shadow-xs: 0 1px 3px 0 #111c2e24;
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 8.25rem;
+  --skeleton-duration: 1600ms;
+  --skeleton-last-line-width: 0.6;
   --slider-large-thumb: var(--spacing-5);
   --slider-large-track: var(--spacing-2);
   --slider-medium-thumb: var(--spacing-4);
@@ -1188,6 +1196,10 @@
   --spacing-16: 4rem;
   --spacing-20: 5rem;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --stroke-control: 0.09375rem;
   --stroke-hairline: 1px;
   --switch-large-height: var(--spacing-6);
@@ -1203,6 +1215,7 @@
   --tabs-icon-size: var(--spacing-3-5);
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: var(--base-font-ui);
   --title-large-font-size: var(--base-type-title);
   --title-large-font-weight: var(--base-font-weight-semibold);

@@ -56,6 +56,7 @@ const COLLECTORS = [
   ['flutter', 'tool/conformance.sh', [], 'packages/dart/dazzui/example'],
   ['swiftui', 'tool/conformance.sh', [], 'packages/swift/DazzUI/Example'],
   ['gpui', 'example/tool/conformance.sh', [], 'packages/rust/dazzui'],
+  ['nsh', 'node', ['example/tool/conformance.mjs'], 'packages/rust/dazzui-nsh'],
   ['winui', 'scripts/conformance.sh', [], 'packages/csharp/DazzUI'],
   // GTK4 remains opt-in until its mapping gaps join the default baselines.
   [

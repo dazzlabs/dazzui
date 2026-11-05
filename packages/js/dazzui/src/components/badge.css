@@ -20,7 +20,7 @@
   white-space: nowrap;
   font-family: var(--label-strong-font-family);
   font-weight: var(--label-medium-font-weight);
-  line-height: 1.4;
+  line-height: var(--badge-line-height);
 }
 
 /* Sizes -------------------------------------------------------------------

@@ -14,6 +14,9 @@ importers:
       oxlint:
         specifier: ^1.31.0
         version: 1.31.0
+      wrangler:
+        specifier: ^4.152.0
+        version: 4.152.0(@types/node@24.13.3)
 
   ds:
     devDependencies:
@@ -187,6 +190,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.2.0
         version: 19.2.5(@types/react@19.2.18)
+      sharp:
+        specifier: 0.35.5
+        version: 0.35.5(@types/node@24.13.3)
       typescript:
         specifier: ~6.0.3
         version: 6.0.3

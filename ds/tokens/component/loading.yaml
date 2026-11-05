@@ -1,0 +1,21 @@
+# The existing React loading motion, shared with native renderers.
+spinner:
+  duration:
+    $type: duration
+    $value: 1000ms
+  reduced-duration:
+    $type: duration
+    $value: 2400ms
+  track-alpha:
+    $type: number
+    $value: 0.25
+  on-accent-track-alpha:
+    $type: number
+    $value: 0.35
+skeleton:
+  duration:
+    $type: duration
+    $value: 1600ms
+  last-line-width:
+    $type: number
+    $value: 0.6

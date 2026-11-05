@@ -1,0 +1,88 @@
+{
+  "id": "otp-field",
+  "name": "OtpField",
+  "summary": "A code, a character to a box.",
+  "preview": {
+    "id": "otp-field/preview",
+    "title": "Preview",
+    "content": {
+      "$el": "OtpField",
+      "props": {
+        "length": 6,
+        "aria-label": "Code"
+      },
+      "$at": 0
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "otp-field/0",
+      "title": "Six digits",
+      "content": {
+        "$el": "OtpField",
+        "props": {
+          "length": 6,
+          "aria-label": "Code"
+        },
+        "$at": 0
+      },
+      "gaps": []
+    },
+    {
+      "id": "otp-field/1",
+      "title": "In two groups",
+      "content": {
+        "$el": "OtpField",
+        "props": {
+          "length": 6,
+          "groupAfter": 3,
+          "aria-label": "Code"
+        },
+        "$at": 0
+      },
+      "gaps": []
+    },
+    {
+      "id": "otp-field/2",
+      "title": "Sizes and error",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "align": "start",
+          "gap": "4"
+        },
+        "children": [
+          {
+            "$el": "OtpField",
+            "props": {
+              "length": 4,
+              "size": "small",
+              "aria-label": "Small"
+            },
+            "$at": 0
+          },
+          {
+            "$el": "OtpField",
+            "props": {
+              "length": 4,
+              "size": "large",
+              "aria-label": "Large"
+            },
+            "$at": 1
+          },
+          {
+            "$el": "OtpField",
+            "props": {
+              "length": 4,
+              "state": "error",
+              "aria-label": "Error"
+            },
+            "$at": 2
+          }
+        ]
+      },
+      "gaps": []
+    }
+  ]
+}

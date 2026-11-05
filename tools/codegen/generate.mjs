@@ -12,6 +12,7 @@ import {
 } from './flutter.mjs'
 import { formatOutputs } from './format.mjs'
 import * as gpui from './gpui.mjs'
+import * as nsh from './nsh.mjs'
 import * as gtk4 from './gtk4.mjs'
 import * as harmony from './harmony.mjs'
 import { readHarmonyReactStories } from './harmony-react.mjs'
@@ -30,6 +31,12 @@ const [flutterStories, swiftStories, winuiStories] = await Promise.all(
   )
 )
 const gaps = [
+  ...nsh
+    .unsupported(stories)
+    .map(
+      gap =>
+        `${gap} — map it in packages/rust/dazzui-nsh/example/src/lib/scene/ and list it in tools/codegen/nsh.mjs`
+    ),
   ...unsupported(flutterStories).map(
     gap =>
       `${gap} — map it in packages/dart/dazzui/example/lib/lib/mapping.dart and list it in tools/codegen/flutter.mjs`
@@ -233,6 +240,8 @@ ${iconFiles.map(file => `  <file>${file}</file>`).join('\n')}
 </gresource></gresources>
 `
 )
+for (const [file, content] of nsh.outputs(root, stories, themes))
+  outputs.set(file, content)
 formatOutputs(outputs)
 
 /*

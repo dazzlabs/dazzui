@@ -1,0 +1,942 @@
+[
+  {
+    "id": "accordion/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "accordion/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "accordion/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "accordion/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "action-bar/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "action-bar/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "action-bar/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "avatar/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "avatar/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "avatar/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "badge/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "badge/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "badge/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "button/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "button/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "button/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "button/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "button/3",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "button/4",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "button/5",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "button/6",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "button/7",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "calendar/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "calendar/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "calendar/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "calendar/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "calendar/3",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "calendar/4",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "callout/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "callout/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "callout/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "card/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "card/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "card/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "checkbox/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "checkbox/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "checkbox/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "checkbox/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "code/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "code/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "code/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "code/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "collapsible/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "collapsible/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "collapsible/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "combobox/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "combobox/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "combobox/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "combobox/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "date-range-picker/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "date-range-picker/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "date-range-picker/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "date-range-picker/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "date-range-picker/3",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "date-range-picker/4",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "dialog/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "dialog/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "dialog/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "dialog/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "dialog/3",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "dialog/4",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "divider/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "divider/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "divider/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "drawer/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "drawer/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "drawer/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "empty-state/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "empty-state/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "empty-state/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "form/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "form/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "form/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "form-field/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "form-field/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "form-field/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "form-field/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "icon/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "icon/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "icon/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "icon/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "icon-button/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "icon-button/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "icon-button/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "key-cap/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "key-cap/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "key-cap/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "link/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "link/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "link/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "menu/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "menu/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "menu/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "menu/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "meter/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "meter/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "meter/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "meter/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "number-field/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "number-field/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "option-card/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "option-card/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "option-card/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "otp-field/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "otp-field/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "otp-field/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "otp-field/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "pill-tabs/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "pill-tabs/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "popover/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "popover/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "popover/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "preferences/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "preferences/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "preferences/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "preferences/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "preview-card/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "preview-card/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "preview-card/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "progress/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "progress/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "progress/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "radio/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "radio/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "radio/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "search-field/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "search-field/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "section-label/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "section-label/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "section-label/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "segmented-control/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "segmented-control/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "segmented-control/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "segmented-control/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "segmented-control/3",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "select/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "select/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "select/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "select/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "shortcut-recorder/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "shortcut-recorder/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "shortcut-recorder/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "sidebar/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "sidebar/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "sidebar/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "sidebar/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "skeleton/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "skeleton/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "skeleton/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "skeleton/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "slider/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "slider/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "slider/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "spinner/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "spinner/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "spinner/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "splitter/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "splitter/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "splitter/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "step-list/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "step-list/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "switch/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "switch/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "switch/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "switch/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "table/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "table/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "tag/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "tag/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "tag/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "text-field/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "text-field/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "text-field/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "text-field/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "toast/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "toast/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "toast/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "toast/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "toggle/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "toggle/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "toggle/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "toggle/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "tooltip/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "tooltip/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "tooltip/1",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "tree/preview",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "tree/0",
+    "supported": true,
+    "gaps": []
+  },
+  {
+    "id": "tree/1",
+    "supported": true,
+    "gaps": []
+  }
+]

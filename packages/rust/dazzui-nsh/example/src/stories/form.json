@@ -1,0 +1,197 @@
+{
+  "id": "form",
+  "name": "Form",
+  "summary": "Fields that are sent together, and checked before they are.",
+  "preview": {
+    "id": "form/preview",
+    "title": "Preview",
+    "content": {
+      "$el": "Col",
+      "props": {
+        "width": "16rem"
+      },
+      "children": [
+        {
+          "$el": "Form",
+          "props": {
+            "onSubmit": {
+              "$do": []
+            }
+          },
+          "children": [
+            {
+              "$el": "FormField",
+              "props": {
+                "label": "Email"
+              },
+              "children": [
+                {
+                  "$el": "TextField",
+                  "props": {
+                    "type": "email",
+                    "placeholder": "you@example.com"
+                  },
+                  "$at": 2
+                }
+              ],
+              "$at": 1
+            },
+            {
+              "$el": "Button",
+              "props": {
+                "type": "submit",
+                "variant": "filled",
+                "fullWidth": true
+              },
+              "children": [
+                "Subscribe"
+              ],
+              "$at": 3
+            }
+          ],
+          "$at": 0
+        }
+      ]
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "form/0",
+      "title": "A sign-up",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "width": "24rem"
+        },
+        "children": [
+          {
+            "$el": "Form",
+            "props": {
+              "onSubmit": {
+                "$do": []
+              }
+            },
+            "children": [
+              {
+                "$el": "FormField",
+                "props": {
+                  "label": "Name"
+                },
+                "children": [
+                  {
+                    "$el": "TextField",
+                    "props": {
+                      "required": true,
+                      "placeholder": "Ada Lovelace"
+                    },
+                    "$at": 2
+                  }
+                ],
+                "$at": 1
+              },
+              {
+                "$el": "FormField",
+                "props": {
+                  "label": "Email",
+                  "hint": "Only used to sign in."
+                },
+                "children": [
+                  {
+                    "$el": "TextField",
+                    "props": {
+                      "type": "email",
+                      "required": true,
+                      "placeholder": "you@example.com"
+                    },
+                    "$at": 4
+                  }
+                ],
+                "$at": 3
+              },
+              {
+                "$el": "ActionBar",
+                "children": [
+                  {
+                    "$el": "Button",
+                    "props": {
+                      "type": "reset",
+                      "variant": "outlined"
+                    },
+                    "children": [
+                      "Clear"
+                    ],
+                    "$at": 6
+                  },
+                  {
+                    "$el": "Button",
+                    "props": {
+                      "type": "submit",
+                      "variant": "filled"
+                    },
+                    "children": [
+                      "Create account"
+                    ],
+                    "$at": 7
+                  }
+                ],
+                "$at": 5
+              }
+            ],
+            "$at": 0
+          }
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "form/1",
+      "title": "A fieldset",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "width": "24rem"
+        },
+        "children": [
+          {
+            "$el": "Fieldset",
+            "props": {
+              "legend": "Notify me about"
+            },
+            "children": [
+              {
+                "$el": "Checkbox",
+                "props": {
+                  "defaultChecked": true
+                },
+                "children": [
+                  "Mentions"
+                ],
+                "$at": 1
+              },
+              {
+                "$el": "Checkbox",
+                "props": {
+                  "defaultChecked": true
+                },
+                "children": [
+                  "Replies"
+                ],
+                "$at": 2
+              },
+              {
+                "$el": "Checkbox",
+                "children": [
+                  "Everything else"
+                ],
+                "$at": 3
+              }
+            ],
+            "$at": 0
+          }
+        ]
+      },
+      "gaps": []
+    }
+  ]
+}

@@ -126,6 +126,12 @@ public struct ThemeVariables: Sendable {
     dialogScrimAlpha: CGFloat = 0.25,
     dialogDangerBorderAlpha: CGFloat = 0.34,
     drawerSize: CGFloat = 352.0,
+    spinnerDuration: Double = 1.0,
+    spinnerReducedDuration: Double = 2.4,
+    spinnerTrackAlpha: CGFloat = 0.25,
+    spinnerOnAccentTrackAlpha: CGFloat = 0.35,
+    skeletonDuration: Double = 1.6,
+    skeletonLastLineWidth: CGFloat = 0.6,
     menuMinWidth: CGFloat = 176.0,
     menuItemPadding: CGFloat = 7.0,
     preferencesWidth: CGFloat = 480.0,
@@ -149,6 +155,13 @@ public struct ThemeVariables: Sendable {
     switchMediumThumb: CGFloat = 14.0,
     tabsPulseDuration: Double = 1.4,
     tabsPulseOpacity: CGFloat = 0.35,
+    badgeLineHeight: CGFloat = 1.4,
+    calloutTitleLeading: CGFloat = 1.4,
+    calloutDescriptionLeading: CGFloat = 1.5,
+    textFieldMultilineLeading: CGFloat = 1.6,
+    optionCardDescriptionLeading: CGFloat = 1.5,
+    formFieldHintLeading: CGFloat = 1.6,
+    preferencesDescriptionLeading: CGFloat = 1.7,
     toastNoticeDuration: Double = 5.0,
     toastActionDuration: Double = 8.0,
     toastTransitionDuration: Double = 0.26,
@@ -335,6 +348,12 @@ public struct ThemeVariables: Sendable {
     self.dialogScrimAlpha = dialogScrimAlpha
     self.dialogDangerBorderAlpha = dialogDangerBorderAlpha
     self.drawerSize = drawerSize
+    self.spinnerDuration = spinnerDuration
+    self.spinnerReducedDuration = spinnerReducedDuration
+    self.spinnerTrackAlpha = spinnerTrackAlpha
+    self.spinnerOnAccentTrackAlpha = spinnerOnAccentTrackAlpha
+    self.skeletonDuration = skeletonDuration
+    self.skeletonLastLineWidth = skeletonLastLineWidth
     self.menuMinWidth = menuMinWidth
     self.menuItemPadding = menuItemPadding
     self.preferencesWidth = preferencesWidth
@@ -358,6 +377,13 @@ public struct ThemeVariables: Sendable {
     self.switchMediumThumb = switchMediumThumb
     self.tabsPulseDuration = tabsPulseDuration
     self.tabsPulseOpacity = tabsPulseOpacity
+    self.badgeLineHeight = badgeLineHeight
+    self.calloutTitleLeading = calloutTitleLeading
+    self.calloutDescriptionLeading = calloutDescriptionLeading
+    self.textFieldMultilineLeading = textFieldMultilineLeading
+    self.optionCardDescriptionLeading = optionCardDescriptionLeading
+    self.formFieldHintLeading = formFieldHintLeading
+    self.preferencesDescriptionLeading = preferencesDescriptionLeading
     self.toastNoticeDuration = toastNoticeDuration
     self.toastActionDuration = toastActionDuration
     self.toastTransitionDuration = toastTransitionDuration
@@ -510,6 +536,12 @@ public struct ThemeVariables: Sendable {
   public let dialogScrimAlpha: CGFloat
   public let dialogDangerBorderAlpha: CGFloat
   public let drawerSize: CGFloat
+  public let spinnerDuration: Double
+  public let spinnerReducedDuration: Double
+  public let spinnerTrackAlpha: CGFloat
+  public let spinnerOnAccentTrackAlpha: CGFloat
+  public let skeletonDuration: Double
+  public let skeletonLastLineWidth: CGFloat
   public let menuMinWidth: CGFloat
   public let menuItemPadding: CGFloat
   public let preferencesWidth: CGFloat
@@ -533,6 +565,13 @@ public struct ThemeVariables: Sendable {
   public let switchMediumThumb: CGFloat
   public let tabsPulseDuration: Double
   public let tabsPulseOpacity: CGFloat
+  public let badgeLineHeight: CGFloat
+  public let calloutTitleLeading: CGFloat
+  public let calloutDescriptionLeading: CGFloat
+  public let textFieldMultilineLeading: CGFloat
+  public let optionCardDescriptionLeading: CGFloat
+  public let formFieldHintLeading: CGFloat
+  public let preferencesDescriptionLeading: CGFloat
   public let toastNoticeDuration: Double
   public let toastActionDuration: Double
   public let toastTransitionDuration: Double
@@ -856,6 +895,12 @@ public struct ThemeVariables: Sendable {
       dialogScrimAlpha: dialogScrimAlpha,
       dialogDangerBorderAlpha: dialogDangerBorderAlpha,
       drawerSize: drawerSize * scale,
+      spinnerDuration: spinnerDuration,
+      spinnerReducedDuration: spinnerReducedDuration,
+      spinnerTrackAlpha: spinnerTrackAlpha,
+      spinnerOnAccentTrackAlpha: spinnerOnAccentTrackAlpha,
+      skeletonDuration: skeletonDuration,
+      skeletonLastLineWidth: skeletonLastLineWidth,
       menuMinWidth: menuMinWidth * scale,
       menuItemPadding: menuItemPadding * scale,
       preferencesWidth: preferencesWidth * scale,
@@ -879,6 +924,13 @@ public struct ThemeVariables: Sendable {
       switchMediumThumb: switchMediumThumb * scale,
       tabsPulseDuration: tabsPulseDuration,
       tabsPulseOpacity: tabsPulseOpacity,
+      badgeLineHeight: badgeLineHeight,
+      calloutTitleLeading: calloutTitleLeading,
+      calloutDescriptionLeading: calloutDescriptionLeading,
+      textFieldMultilineLeading: textFieldMultilineLeading,
+      optionCardDescriptionLeading: optionCardDescriptionLeading,
+      formFieldHintLeading: formFieldHintLeading,
+      preferencesDescriptionLeading: preferencesDescriptionLeading,
       toastNoticeDuration: toastNoticeDuration,
       toastActionDuration: toastActionDuration,
       toastTransitionDuration: toastTransitionDuration,

@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "check": "node scripts/check.ts",
     "test": "node --test tests/*.test.ts tests/*.test.mjs",
-    "test:collect": "node --test tests/collection.browser.mjs"
+    "test:collect": "node --test tests/collection.browser.mjs",
+    "test:nsh": "node --test tests/collection.native.mjs"
   },
   "dependencies": {
     "@dazzlabs/dazzui": "workspace:*",
@@ -23,6 +24,7 @@
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "sharp": "0.35.5",
     "typescript": "~6.0.3",
     "vite": "^8.1.5"
   }

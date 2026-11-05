@@ -5,6 +5,7 @@ import composePlugin from './plugins/compose.mjs'
 import controlPlugin from './plugins/control.mjs'
 import flutterPlugin from './plugins/flutter.mjs'
 import gpuiPlugin from './plugins/gpui.mjs'
+import nshPlugin from './plugins/nsh.mjs'
 import gtk4Plugin from './plugins/gtk4.mjs'
 import harmonyPlugin from './plugins/harmony.mjs'
 import harmonyMobilePlugin from './plugins/harmony-mobile.mjs'
@@ -198,6 +199,8 @@ export default defineConfig({
     './tokens/component/dialog.yaml',
     './tokens/component/drawer.yaml',
     './tokens/component/icon-button.yaml',
+    './tokens/component/loading.yaml',
+    './tokens/component/text-leading.yaml',
     './tokens/component/menu.yaml',
     './tokens/component/preferences.yaml',
     './tokens/component/preview-card.yaml',
@@ -255,6 +258,7 @@ export default defineConfig({
     swiftUIPlugin({ modeSelectors, mobileModeSelectors: pairedModeSelectors }),
     winUI3Plugin({ modeSelectors }),
     gpuiPlugin({ modeSelectors }),
+    nshPlugin({ modeSelectors }),
     gtk4Plugin({ modeSelectors }),
     harmonyPlugin({ modeSelectors }),
     harmonyMobilePlugin({ modeSelectors: pairedModeSelectors }),

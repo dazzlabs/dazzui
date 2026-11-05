@@ -1,0 +1,130 @@
+{
+  "id": "key-cap",
+  "name": "KeyCap",
+  "summary": "A key, drawn the way the keyboard shows it.",
+  "preview": {
+    "id": "key-cap/preview",
+    "title": "Preview",
+    "content": {
+      "$el": "Row",
+      "props": {
+        "gap": "1"
+      },
+      "children": [
+        {
+          "$el": "KeyCap",
+          "props": {
+            "variant": "key"
+          },
+          "children": [
+            "⌘"
+          ],
+          "$at": 0
+        },
+        {
+          "$el": "KeyCap",
+          "props": {
+            "variant": "key"
+          },
+          "children": [
+            "⇧"
+          ],
+          "$at": 1
+        },
+        {
+          "$el": "KeyCap",
+          "props": {
+            "variant": "key"
+          },
+          "children": [
+            "P"
+          ],
+          "$at": 2
+        }
+      ]
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "key-cap/0",
+      "title": "Variants",
+      "content": {
+        "$el": "Row",
+        "children": [
+          {
+            "$el": "KeyCap",
+            "props": {
+              "variant": "hint"
+            },
+            "children": [
+              "⌘K"
+            ],
+            "$at": 0
+          },
+          {
+            "$el": "KeyCap",
+            "props": {
+              "variant": "strong"
+            },
+            "children": [
+              "⌘K"
+            ],
+            "$at": 1
+          },
+          {
+            "$el": "KeyCap",
+            "props": {
+              "variant": "key"
+            },
+            "children": [
+              "⌘K"
+            ],
+            "$at": 2
+          }
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "key-cap/1",
+      "title": "Sizes",
+      "content": {
+        "$el": "Row",
+        "children": [
+          {
+            "$el": "KeyCap",
+            "props": {
+              "size": "small"
+            },
+            "children": [
+              "Esc"
+            ],
+            "$at": 0
+          },
+          {
+            "$el": "KeyCap",
+            "props": {
+              "size": "medium"
+            },
+            "children": [
+              "Esc"
+            ],
+            "$at": 1
+          },
+          {
+            "$el": "KeyCap",
+            "props": {
+              "size": "large"
+            },
+            "children": [
+              "Esc"
+            ],
+            "$at": 2
+          }
+        ]
+      },
+      "gaps": []
+    }
+  ]
+}

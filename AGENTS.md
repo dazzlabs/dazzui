@@ -150,6 +150,29 @@ rather than four designs that resemble each other.
   example's window, drawn with this package, whose stories `pnpm codegen`
   compiles from the React ones.
 
+- `packages/rust/dazzui-nsh` (`dazzui-nsh`) — the Native Shell Rust desktop
+  implementation, a separate Cargo workspace outside pnpm. It uses NSH 0.4.0
+  native views and `nsh-base` behavior with ds geometry and recipes.
+  `src/generated/theme_tokens.rs` comes from `ds/plugins/nsh.mjs`; regenerate
+  with `pnpm tokens`. `pnpm codegen` writes Fluent glyphs, JSON stories, theme
+  families and `example/coverage.json`. All 188 shared scenes are mapped; new
+  unsupported props or shapes remain explicit gaps. Calendar uses NSH focus
+  and key events with DazzUI day navigation, range state and hover preview.
+  A documented macOS renderer patch preserves numeric system-font weights.
+  `pnpm nsh` runs the native gallery; `pnpm nsh:test` runs desktop engine tests,
+  `pnpm nsh:test:native` runs real-window checks with the `nsh` CLI.
+  `pnpm nsh:web:build` packages the same Rust gallery as a static Wasm/HTML site;
+  `pnpm nsh:web:deploy` publishes it through Workers Static Assets, and
+  `pnpm nsh:web:test <url>` checks the served build in a real browser.
+  NSH participates in the default conformance collection/check and codegen's
+  full-support gate. `pnpm nsh:conformance` collects actual native boxes,
+  scene screenshots and specimen crops across the twelve drawn themes;
+  `--no-images` advances scenes automatically for faster geometry checks.
+  decoration and text metrics remain unread. `tools/conformance/expectations/nsh.txt`
+  records remaining measured differences and may only shrink.
+  Native launch is verified on macOS, Windows x64 and
+  Linux x64; native interaction/layout checks are verified on macOS. See its README.
+
 - `packages/rust/dazzui-gtk4` (`dazzui-gtk4`) — the GTK4 implementation,
   a separate Rust workspace using gtk4-rs and GTK >= 4.16. Native widgets own
   behaviour; `src/components.css` draws their CSS nodes with ds tokens.
@@ -248,7 +271,7 @@ pnpm mobile             # build the tokens and the mobile package, then serve th
 ```
 
 ```bash
-pnpm conformance       # collect readings into tools/conformance/data/ — React, Flutter, SwiftUI, and WinUI over SSH
+pnpm conformance       # collect readings into tools/conformance/data/ — React, Flutter, SwiftUI, GPUI, NSH, and WinUI over SSH
 ```
 
 ```bash

@@ -1,0 +1,69 @@
+{
+  "id": "empty-state",
+  "name": "EmptyState",
+  "summary": "What a list says when there is nothing in it.",
+  "preview": {
+    "id": "empty-state/preview",
+    "title": "Preview",
+    "content": {
+      "$el": "EmptyState",
+      "props": {
+        "title": "No projects yet"
+      },
+      "$at": 0
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "empty-state/0",
+      "title": "On its own",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "width": "24rem"
+        },
+        "children": [
+          {
+            "$el": "EmptyState",
+            "props": {
+              "title": "Nothing matches that search"
+            },
+            "$at": 0
+          }
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "empty-state/1",
+      "title": "With a way out",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "width": "24rem"
+        },
+        "children": [
+          {
+            "$el": "EmptyState",
+            "props": {
+              "title": "No projects yet",
+              "action": {
+                "$el": "Button",
+                "props": {
+                  "variant": "filled"
+                },
+                "children": [
+                  "New project"
+                ],
+                "$at": 1
+              }
+            },
+            "$at": 0
+          }
+        ]
+      },
+      "gaps": []
+    }
+  ]
+}
