@@ -47,7 +47,7 @@ const PAINT_LEAF = /^(.+)\.(shade|alpha|color)$/
 /** The theme `:root` holds: the fields a const names only the changes from. */
 const BASE = 'bright-light'
 
-export function generate(tokens, modeSelectors) {
+export function generate(tokens, modeSelectors, { generator = 'gpui' } = {}) {
   const themes = resolveThemes(tokens, modeSelectors)
   const modes = themeModes(modeSelectors)
   const fields = describe(themes[BASE])
@@ -61,7 +61,7 @@ export function generate(tokens, modeSelectors) {
   )
 
   const lines = [
-    HEADER,
+    HEADER.replace('gpui.mjs', `${generator}.mjs`),
     '',
     '#![allow(clippy::all)]',
     '',

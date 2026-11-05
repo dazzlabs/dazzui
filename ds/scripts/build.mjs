@@ -23,6 +23,11 @@ import { checkMetrics, expandThemes } from './themes.mjs'
  */
 const TARGETS = [
   {
+    package: 'dazzui (Native Shell)',
+    dir: path.join('..', 'packages', 'rust', 'dazzui-nsh', 'src', 'generated'),
+    files: ['nsh/theme_tokens.rs'],
+  },
+  {
     package: 'dazzui-mobile (HarmonyOS)',
     dir: path.join(
       '..',

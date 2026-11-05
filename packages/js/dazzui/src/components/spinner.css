@@ -9,16 +9,16 @@
   /* A wash rather than a ramp step, so the track sits as correctly over a
      tinted chip or a dark canvas as over the paper. */
   border: var(--spacing-0-5) solid
-    color-mix(in srgb, var(--tint-600) 25%, transparent);
+    color-mix(in srgb, var(--tint-600) calc(var(--spinner-track-alpha) * 100%), transparent);
   border-top-color: var(--tint-600);
   border-radius: var(--radius-full);
-  animation: dz-spinner-turn 1s linear infinite;
+  animation: dz-spinner-turn var(--spinner-duration) linear infinite;
 }
 
 /* On a filled control the ring goes white — a tinted spinner on its own
    tint's fill is invisible. */
 .dz-spinner[data-on-accent='true'] {
-  border-color: color-mix(in srgb, var(--color-on-accent) 35%, transparent);
+  border-color: color-mix(in srgb, var(--color-on-accent) calc(var(--spinner-on-accent-track-alpha) * 100%), transparent);
   border-top-color: var(--color-on-accent);
 }
 
@@ -49,7 +49,7 @@
    it — the exception has to outrank the rule it excepts itself from. */
 @media (prefers-reduced-motion: reduce) {
   .dz-spinner {
-    animation-duration: 2.4s !important;
+    animation-duration: var(--spinner-reduced-duration) !important;
     animation-iteration-count: infinite !important;
   }
 }

@@ -57,7 +57,7 @@
   font-family: var(--caption-small-font-family);
   font-size: var(--caption-small-font-size);
   font-weight: var(--caption-small-font-weight);
-  line-height: 1.7;
+  line-height: var(--preferences-description-leading);
 }
 
 /*
@@ -109,7 +109,7 @@
   font-family: var(--caption-small-font-family);
   font-size: var(--caption-small-font-size);
   font-weight: var(--caption-small-font-weight);
-  line-height: 1.7;
+  line-height: var(--preferences-description-leading);
 }
 
 .dz-preference-group__sections {

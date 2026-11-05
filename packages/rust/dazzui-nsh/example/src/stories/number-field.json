@@ -1,0 +1,76 @@
+{
+  "id": "number-field",
+  "name": "NumberField",
+  "summary": "A number, stepped or typed, with the unit it is counted in.",
+  "preview": {
+    "id": "number-field/preview",
+    "title": "Preview",
+    "content": {
+      "$el": "Col",
+      "props": {
+        "width": "10rem"
+      },
+      "children": [
+        {
+          "$el": "NumberField",
+          "props": {
+            "defaultValue": 12,
+            "unit": "px",
+            "aria-label": "Size"
+          },
+          "$at": 0
+        }
+      ]
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "number-field/0",
+      "title": "With a unit and bounds",
+      "content": {
+        "$el": "Row",
+        "children": [
+          {
+            "$el": "Col",
+            "props": {
+              "width": "10rem"
+            },
+            "children": [
+              {
+                "$el": "NumberField",
+                "props": {
+                  "defaultValue": 12,
+                  "unit": "px",
+                  "aria-label": "Size"
+                },
+                "$at": 0
+              }
+            ]
+          },
+          {
+            "$el": "Col",
+            "props": {
+              "width": "10rem"
+            },
+            "children": [
+              {
+                "$el": "NumberField",
+                "props": {
+                  "defaultValue": 80,
+                  "min": 0,
+                  "max": 100,
+                  "step": 5,
+                  "unit": "%",
+                  "aria-label": "Opacity"
+                },
+                "$at": 1
+              }
+            ]
+          }
+        ]
+      },
+      "gaps": []
+    }
+  ]
+}

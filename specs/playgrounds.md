@@ -75,7 +75,7 @@ other platforms' examples.
   what codegen owns and the hash it wrote; `pnpm codegen:check` fails on any
   drift, and a file codegen stops writing is deleted only while it still
   matches that hash. Generation needs Dart to format its output.
-- **Flutter, SwiftUI, WinUI and GPUI are compiled today.** The iOS and Android
+- **Flutter, SwiftUI, WinUI, GPUI and Native Shell are compiled today.** The iOS and Android
   examples keep the generated sources the previous pipeline wrote, frozen:
   codegen no longer owns or rewrites them. Each is brought back by giving it
   a mapping and a support list of its own.
@@ -85,6 +85,27 @@ other platforms' examples.
   draw every story's preview and every example in light and dark, and
   drive the interactions the interpreters carry; the WinUI example's
   `--smoke-test` draws every page in every theme in a real window.
+
+## Native Shell
+
+`tools/codegen/nsh.mjs` writes one JSON story per React page, a Rust registry,
+Fluent SVGs and theme families into `packages/rust/dazzui-nsh`. Its Rust scene
+interpreter binds portable state and actions to NSH signals, so editing and
+theme changes retain native control identity. Each generated scene carries
+its unmapped props or behaviors in `gaps`; the same list is committed as
+`example/coverage.json`. The gallery presents these gaps explicitly.
+
+All 188 shared scenes are mapped. Each JSON node is created in its mounted
+component scope so provider-owned state reaches its descendants. NSH calendar
+and shortcut-recorder differences remain documented in the package README;
+codegen's full-support gate now rejects any new unmapped scene or prop, including
+previews. The Rust suite
+renders every mapped scene in two themes, checks button geometry in all
+families and exercises native interaction primitives. A separate NSH CLI
+suite opens the real desktop host. The default conformance collector records
+actual layout boxes through component refs on specimen roots, scene screenshots
+and specimen crops; decoration and text metrics are not yet read. No headless text measurements enter the native
+conformance output.
 
 ## GTK4
 

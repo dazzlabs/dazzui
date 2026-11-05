@@ -1,0 +1,134 @@
+{
+  "id": "avatar",
+  "name": "Avatar",
+  "summary": "A person, by their picture or by their initials.",
+  "preview": {
+    "id": "avatar/preview",
+    "title": "Preview",
+    "content": {
+      "$el": "AvatarGroup",
+      "props": {
+        "max": 3
+      },
+      "children": [
+        {
+          "$el": "Avatar",
+          "props": {
+            "name": "Ada Lovelace"
+          },
+          "$at": 1
+        },
+        {
+          "$el": "Avatar",
+          "props": {
+            "name": "Grace Hopper"
+          },
+          "$at": 2
+        },
+        {
+          "$el": "Avatar",
+          "props": {
+            "name": "Alan Turing"
+          },
+          "$at": 3
+        },
+        {
+          "$el": "Avatar",
+          "props": {
+            "name": "Edsger Dijkstra"
+          },
+          "$at": 4
+        }
+      ],
+      "$at": 0
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "avatar/0",
+      "title": "Sizes and shapes",
+      "content": {
+        "$el": "Row",
+        "children": [
+          {
+            "$el": "Avatar",
+            "props": {
+              "size": "small",
+              "name": "Ada Lovelace"
+            },
+            "$at": 0
+          },
+          {
+            "$el": "Avatar",
+            "props": {
+              "size": "medium",
+              "name": "Ada Lovelace"
+            },
+            "$at": 1
+          },
+          {
+            "$el": "Avatar",
+            "props": {
+              "size": "large",
+              "name": "Ada Lovelace"
+            },
+            "$at": 2
+          },
+          {
+            "$el": "Avatar",
+            "props": {
+              "size": "large",
+              "shape": "square",
+              "name": "Ada Lovelace"
+            },
+            "$at": 3
+          }
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "avatar/1",
+      "title": "A group",
+      "content": {
+        "$el": "AvatarGroup",
+        "props": {
+          "max": 3
+        },
+        "children": [
+          {
+            "$el": "Avatar",
+            "props": {
+              "name": "Ada Lovelace"
+            },
+            "$at": 1
+          },
+          {
+            "$el": "Avatar",
+            "props": {
+              "name": "Grace Hopper"
+            },
+            "$at": 2
+          },
+          {
+            "$el": "Avatar",
+            "props": {
+              "name": "Alan Turing"
+            },
+            "$at": 3
+          },
+          {
+            "$el": "Avatar",
+            "props": {
+              "name": "Edsger Dijkstra"
+            },
+            "$at": 4
+          }
+        ],
+        "$at": 0
+      },
+      "gaps": []
+    }
+  ]
+}

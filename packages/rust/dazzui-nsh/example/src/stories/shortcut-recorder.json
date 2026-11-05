@@ -1,0 +1,154 @@
+{
+  "id": "shortcut-recorder",
+  "name": "ShortcutRecorder",
+  "summary": "A field that takes the keys pressed in it as its value.",
+  "preview": {
+    "id": "shortcut-recorder/preview",
+    "title": "Preview",
+    "state": {
+      "s0": "⌘K"
+    },
+    "content": {
+      "$el": "ShortcutRecorder",
+      "props": {
+        "value": {
+          "$state": "s0"
+        },
+        "onValueChange": {
+          "$do": [
+            {
+              "set": "s0",
+              "to": {
+                "$arg": 0
+              }
+            }
+          ]
+        },
+        "onClear": {
+          "$do": [
+            {
+              "set": "s0",
+              "to": ""
+            }
+          ]
+        },
+        "aria-label": "Shortcut"
+      },
+      "$at": 0
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "shortcut-recorder/0",
+      "title": "Empty and set",
+      "note": "Click one, then press the keys.",
+      "state": {
+        "s0": "",
+        "s1": "⌥ Space"
+      },
+      "content": {
+        "$el": "Col",
+        "props": {
+          "align": "start"
+        },
+        "children": [
+          {
+            "$el": "ShortcutRecorder",
+            "props": {
+              "value": {
+                "$state": "s0"
+              },
+              "onValueChange": {
+                "$do": [
+                  {
+                    "set": "s0",
+                    "to": {
+                      "$arg": 0
+                    }
+                  }
+                ]
+              },
+              "onClear": {
+                "$do": [
+                  {
+                    "set": "s0",
+                    "to": ""
+                  }
+                ]
+              },
+              "aria-label": "Shortcut"
+            },
+            "$at": 0
+          },
+          {
+            "$el": "ShortcutRecorder",
+            "props": {
+              "value": {
+                "$state": "s1"
+              },
+              "onValueChange": {
+                "$do": [
+                  {
+                    "set": "s1",
+                    "to": {
+                      "$arg": 0
+                    }
+                  }
+                ]
+              },
+              "onClear": {
+                "$do": [
+                  {
+                    "set": "s1",
+                    "to": ""
+                  }
+                ]
+              },
+              "aria-label": "Shortcut"
+            },
+            "$at": 1
+          }
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "shortcut-recorder/1",
+      "title": "In error and disabled",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "align": "start"
+        },
+        "children": [
+          {
+            "$el": "ShortcutRecorder",
+            "props": {
+              "value": "⌘C",
+              "state": "error",
+              "onValueChange": {
+                "$do": []
+              },
+              "aria-label": "Taken"
+            },
+            "$at": 0
+          },
+          {
+            "$el": "ShortcutRecorder",
+            "props": {
+              "value": "⌥⇧2",
+              "disabled": true,
+              "onValueChange": {
+                "$do": []
+              },
+              "aria-label": "Disabled"
+            },
+            "$at": 1
+          }
+        ]
+      },
+      "gaps": []
+    }
+  ]
+}

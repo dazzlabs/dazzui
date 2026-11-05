@@ -242,6 +242,10 @@ class ThemeVariables {
     this.dialogScrimAlpha = 0.25,
     this.dialogDangerBorderAlpha = 0.34,
     this.drawerSize = 352,
+    this.spinnerDuration = const Duration(microseconds: 1000000),
+    this.spinnerReducedDuration = const Duration(microseconds: 2400000),
+    this.spinnerTrackAlpha = 0.25,
+    this.spinnerOnAccentTrackAlpha = 0.35,
     this.menuTypeaheadResetDuration = const Duration(microseconds: 500000),
     this.menuMinWidth = 176,
     this.menuItemPadding = 7,
@@ -272,6 +276,13 @@ class ThemeVariables {
     this.switchMediumThumb = 14,
     this.tabsPulseDuration = const Duration(microseconds: 1400000),
     this.tabsPulseOpacity = 0.35,
+    this.badgeLineHeight = 1.4,
+    this.calloutTitleLeading = 1.4,
+    this.calloutDescriptionLeading = 1.5,
+    this.textFieldMultilineLeading = 1.6,
+    this.optionCardDescriptionLeading = 1.5,
+    this.formFieldHintLeading = 1.6,
+    this.preferencesDescriptionLeading = 1.7,
     this.toastMessageLineHeight = 1.4,
     this.toastNoticeDuration = const Duration(microseconds: 5000000),
     this.toastActionDuration = const Duration(microseconds: 8000000),
@@ -835,6 +846,12 @@ class ThemeVariables {
   // Icon Button
   double get iconButtonTinyIconSize => spacing4;
 
+  // Loading
+  final Duration spinnerDuration;
+  final Duration spinnerReducedDuration;
+  final double spinnerTrackAlpha;
+  final double spinnerOnAccentTrackAlpha;
+
   // Menu
   final Duration menuTypeaheadResetDuration;
   final double menuMinWidth;
@@ -924,6 +941,15 @@ class ThemeVariables {
   double get tabsCloseIconSize => spacing3;
   final Duration tabsPulseDuration;
   final double tabsPulseOpacity;
+
+  // Text Leading
+  final double badgeLineHeight;
+  final double calloutTitleLeading;
+  final double calloutDescriptionLeading;
+  final double textFieldMultilineLeading;
+  final double optionCardDescriptionLeading;
+  final double formFieldHintLeading;
+  final double preferencesDescriptionLeading;
 
   // Toast
   final double toastMessageLineHeight;
@@ -1120,6 +1146,10 @@ class ThemeVariables {
     double? dialogScrimAlpha,
     double? dialogDangerBorderAlpha,
     double? drawerSize,
+    Duration? spinnerDuration,
+    Duration? spinnerReducedDuration,
+    double? spinnerTrackAlpha,
+    double? spinnerOnAccentTrackAlpha,
     Duration? menuTypeaheadResetDuration,
     double? menuMinWidth,
     double? menuItemPadding,
@@ -1150,6 +1180,13 @@ class ThemeVariables {
     double? switchMediumThumb,
     Duration? tabsPulseDuration,
     double? tabsPulseOpacity,
+    double? badgeLineHeight,
+    double? calloutTitleLeading,
+    double? calloutDescriptionLeading,
+    double? textFieldMultilineLeading,
+    double? optionCardDescriptionLeading,
+    double? formFieldHintLeading,
+    double? preferencesDescriptionLeading,
     double? toastMessageLineHeight,
     Duration? toastNoticeDuration,
     Duration? toastActionDuration,
@@ -1365,6 +1402,12 @@ class ThemeVariables {
       dialogDangerBorderAlpha:
           dialogDangerBorderAlpha ?? this.dialogDangerBorderAlpha,
       drawerSize: drawerSize ?? this.drawerSize,
+      spinnerDuration: spinnerDuration ?? this.spinnerDuration,
+      spinnerReducedDuration:
+          spinnerReducedDuration ?? this.spinnerReducedDuration,
+      spinnerTrackAlpha: spinnerTrackAlpha ?? this.spinnerTrackAlpha,
+      spinnerOnAccentTrackAlpha:
+          spinnerOnAccentTrackAlpha ?? this.spinnerOnAccentTrackAlpha,
       menuTypeaheadResetDuration:
           menuTypeaheadResetDuration ?? this.menuTypeaheadResetDuration,
       menuMinWidth: menuMinWidth ?? this.menuMinWidth,
@@ -1404,6 +1447,17 @@ class ThemeVariables {
       switchMediumThumb: switchMediumThumb ?? this.switchMediumThumb,
       tabsPulseDuration: tabsPulseDuration ?? this.tabsPulseDuration,
       tabsPulseOpacity: tabsPulseOpacity ?? this.tabsPulseOpacity,
+      badgeLineHeight: badgeLineHeight ?? this.badgeLineHeight,
+      calloutTitleLeading: calloutTitleLeading ?? this.calloutTitleLeading,
+      calloutDescriptionLeading:
+          calloutDescriptionLeading ?? this.calloutDescriptionLeading,
+      textFieldMultilineLeading:
+          textFieldMultilineLeading ?? this.textFieldMultilineLeading,
+      optionCardDescriptionLeading:
+          optionCardDescriptionLeading ?? this.optionCardDescriptionLeading,
+      formFieldHintLeading: formFieldHintLeading ?? this.formFieldHintLeading,
+      preferencesDescriptionLeading:
+          preferencesDescriptionLeading ?? this.preferencesDescriptionLeading,
       toastMessageLineHeight:
           toastMessageLineHeight ?? this.toastMessageLineHeight,
       toastNoticeDuration: toastNoticeDuration ?? this.toastNoticeDuration,

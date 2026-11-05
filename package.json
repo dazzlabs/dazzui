@@ -45,11 +45,21 @@
     "harmony:mobile:test:device": "node packages/arkts/dazzui-mobile/scripts/test-device.mjs",
     "harmony:test:system": "node tools/harmony/system-fonts.mjs desktop",
     "harmony:mobile:test:system": "node tools/harmony/system-fonts.mjs mobile",
-    "harmony:test:device": "node tools/harmony/gallery-test.mjs --all"
+    "harmony:test:device": "node tools/harmony/gallery-test.mjs --all",
+    "nsh": "cargo run --manifest-path packages/rust/dazzui-nsh/Cargo.toml -p dazzui-nsh-example",
+    "nsh:build": "cargo build --manifest-path packages/rust/dazzui-nsh/Cargo.toml --workspace",
+    "nsh:test": "cargo test --manifest-path packages/rust/dazzui-nsh/Cargo.toml --workspace",
+    "nsh:test:native": "node packages/rust/dazzui-nsh/example/tool/native-test.mjs",
+    "nsh:conformance": "node packages/rust/dazzui-nsh/example/tool/conformance.mjs",
+    "nsh:web": "nsh run packages/rust/dazzui-nsh/example --target web",
+    "nsh:web:build": "node packages/rust/dazzui-nsh/example/tool/web-build.mjs",
+    "nsh:web:deploy": "pnpm nsh:web:build && wrangler deploy --config packages/rust/dazzui-nsh/example/wrangler.jsonc",
+    "nsh:web:test": "node packages/rust/dazzui-nsh/example/tool/web-test.mjs"
   },
   "devDependencies": {
     "oxfmt": "^0.16.0",
-    "oxlint": "^1.31.0"
+    "oxlint": "^1.31.0",
+    "wrangler": "^4.152.0"
   },
   "packageManager": "pnpm@11.24.0",
   "engines": {

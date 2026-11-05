@@ -1,0 +1,3 @@
+# Native macOS collection at display scale 2; actual boxes, not token-derived geometry.
+# Decoration and text metrics are unread, not passes. See specs/conformance.md.
+# All 188 scenes across the twelve drawn themes pass with no geometry exceptions.

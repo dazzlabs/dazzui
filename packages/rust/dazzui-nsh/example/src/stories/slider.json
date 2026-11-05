@@ -1,0 +1,104 @@
+{
+  "id": "slider",
+  "name": "Slider",
+  "summary": "A value along a range, where the feel matters more than the figure.",
+  "preview": {
+    "id": "slider/preview",
+    "title": "Preview",
+    "content": {
+      "$el": "Col",
+      "props": {
+        "width": "15rem"
+      },
+      "children": [
+        {
+          "$el": "Slider",
+          "props": {
+            "defaultValue": 60,
+            "aria-label": "Volume"
+          },
+          "$at": 0
+        }
+      ]
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "slider/0",
+      "title": "Sizes",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "width": "20rem",
+          "gap": "5"
+        },
+        "children": [
+          {
+            "$el": "Slider",
+            "props": {
+              "size": "small",
+              "defaultValue": 40,
+              "aria-label": "small"
+            },
+            "$at": 0
+          },
+          {
+            "$el": "Slider",
+            "props": {
+              "size": "medium",
+              "defaultValue": 40,
+              "aria-label": "medium"
+            },
+            "$at": 1
+          },
+          {
+            "$el": "Slider",
+            "props": {
+              "size": "large",
+              "defaultValue": 40,
+              "aria-label": "large"
+            },
+            "$at": 2
+          }
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "slider/1",
+      "title": "With its value, and a range",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "width": "20rem",
+          "gap": "5"
+        },
+        "children": [
+          {
+            "$el": "Slider",
+            "props": {
+              "defaultValue": 72,
+              "showValue": true,
+              "aria-label": "Quality"
+            },
+            "$at": 0
+          },
+          {
+            "$el": "Slider",
+            "props": {
+              "defaultValue": [
+                20,
+                80
+              ],
+              "showValue": true,
+              "aria-label": "Range"
+            },
+            "$at": 1
+          }
+        ]
+      },
+      "gaps": []
+    }
+  ]
+}

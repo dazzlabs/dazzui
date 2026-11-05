@@ -1,0 +1,139 @@
+{
+  "id": "form-field",
+  "name": "FormField",
+  "summary": "A control with the label that names it and the hint under it.",
+  "preview": {
+    "id": "form-field/preview",
+    "title": "Preview",
+    "content": {
+      "$el": "Col",
+      "props": {
+        "width": "15rem"
+      },
+      "children": [
+        {
+          "$el": "FormField",
+          "props": {
+            "label": "Project name",
+            "hint": "Shown in the sidebar."
+          },
+          "children": [
+            {
+              "$el": "TextField",
+              "props": {
+                "defaultValue": "Quarterly report"
+              },
+              "$at": 1
+            }
+          ],
+          "$at": 0
+        }
+      ]
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "form-field/0",
+      "title": "With a hint",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "width": "22rem"
+        },
+        "children": [
+          {
+            "$el": "FormField",
+            "props": {
+              "label": "Email",
+              "hint": "Only used to sign in."
+            },
+            "children": [
+              {
+                "$el": "TextField",
+                "props": {
+                  "type": "email",
+                  "placeholder": "you@example.com"
+                },
+                "$at": 1
+              }
+            ],
+            "$at": 0
+          }
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "form-field/1",
+      "title": "In error",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "width": "22rem"
+        },
+        "children": [
+          {
+            "$el": "FormField",
+            "props": {
+              "label": "Email",
+              "state": "error",
+              "hint": "That does not look like an address."
+            },
+            "children": [
+              {
+                "$el": "TextField",
+                "props": {
+                  "state": "error",
+                  "defaultValue": "ada@"
+                },
+                "$at": 1
+              }
+            ],
+            "$at": 0
+          }
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "form-field/2",
+      "title": "Over any control",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "width": "22rem"
+        },
+        "children": [
+          {
+            "$el": "FormField",
+            "props": {
+              "label": "Language"
+            },
+            "children": [
+              {
+                "$el": "Select",
+                "props": {
+                  "defaultValue": "en",
+                  "options": [
+                    {
+                      "value": "en",
+                      "label": "English"
+                    },
+                    {
+                      "value": "zh",
+                      "label": "Chinese"
+                    }
+                  ]
+                },
+                "$at": 1
+              }
+            ],
+            "$at": 0
+          }
+        ]
+      },
+      "gaps": []
+    }
+  ]
+}

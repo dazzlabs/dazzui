@@ -1,0 +1,213 @@
+{
+  "id": "tag",
+  "name": "Tag",
+  "summary": "A label a person can pick, or take away.",
+  "preview": {
+    "id": "tag/preview",
+    "title": "Preview",
+    "state": {
+      "s0": true,
+      "s1": false,
+      "s2": false
+    },
+    "content": {
+      "$el": "Row",
+      "props": {
+        "gap": "2"
+      },
+      "children": [
+        {
+          "$el": "Tag",
+          "props": {
+            "selected": {
+              "$state": "s0"
+            },
+            "onSelectedChange": {
+              "$do": [
+                {
+                  "set": "s0",
+                  "to": {
+                    "$arg": 0
+                  }
+                }
+              ]
+            }
+          },
+          "children": [
+            "Design"
+          ],
+          "$at": 0
+        },
+        {
+          "$el": "Tag",
+          "props": {
+            "selected": {
+              "$state": "s1"
+            },
+            "onSelectedChange": {
+              "$do": [
+                {
+                  "set": "s1",
+                  "to": {
+                    "$arg": 0
+                  }
+                }
+              ]
+            }
+          },
+          "children": [
+            "Engineering"
+          ],
+          "$at": 1
+        },
+        {
+          "$el": "Tag",
+          "props": {
+            "selected": {
+              "$state": "s2"
+            },
+            "onSelectedChange": {
+              "$do": [
+                {
+                  "set": "s2",
+                  "to": {
+                    "$arg": 0
+                  }
+                }
+              ]
+            }
+          },
+          "children": [
+            "Research"
+          ],
+          "$at": 2
+        }
+      ]
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "tag/0",
+      "title": "Selectable",
+      "state": {
+        "s0": true,
+        "s1": false,
+        "s2": false
+      },
+      "content": {
+        "$el": "Row",
+        "props": {
+          "gap": "2"
+        },
+        "children": [
+          {
+            "$el": "Tag",
+            "props": {
+              "selected": {
+                "$state": "s0"
+              },
+              "onSelectedChange": {
+                "$do": [
+                  {
+                    "set": "s0",
+                    "to": {
+                      "$arg": 0
+                    }
+                  }
+                ]
+              }
+            },
+            "children": [
+              "Design"
+            ],
+            "$at": 0
+          },
+          {
+            "$el": "Tag",
+            "props": {
+              "selected": {
+                "$state": "s1"
+              },
+              "onSelectedChange": {
+                "$do": [
+                  {
+                    "set": "s1",
+                    "to": {
+                      "$arg": 0
+                    }
+                  }
+                ]
+              }
+            },
+            "children": [
+              "Engineering"
+            ],
+            "$at": 1
+          },
+          {
+            "$el": "Tag",
+            "props": {
+              "selected": {
+                "$state": "s2"
+              },
+              "onSelectedChange": {
+                "$do": [
+                  {
+                    "set": "s2",
+                    "to": {
+                      "$arg": 0
+                    }
+                  }
+                ]
+              }
+            },
+            "children": [
+              "Research"
+            ],
+            "$at": 2
+          }
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "tag/1",
+      "title": "Removable",
+      "content": {
+        "$el": "Row",
+        "props": {
+          "gap": "2"
+        },
+        "children": [
+          {
+            "$el": "Tag",
+            "props": {
+              "onRemove": {
+                "$do": []
+              }
+            },
+            "children": [
+              "alice@example.com"
+            ],
+            "$at": 0
+          },
+          {
+            "$el": "Tag",
+            "props": {
+              "onRemove": {
+                "$do": []
+              },
+              "tint": "info"
+            },
+            "children": [
+              "bob@example.com"
+            ],
+            "$at": 1
+          }
+        ]
+      },
+      "gaps": []
+    }
+  ]
+}

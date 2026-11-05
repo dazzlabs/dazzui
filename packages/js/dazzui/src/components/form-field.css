@@ -28,7 +28,7 @@
   font-family: var(--label-quiet-font-family);
   font-size: var(--label-quiet-font-size);
   font-weight: var(--label-quiet-font-weight);
-  line-height: 1.6;
+  line-height: var(--form-field-hint-leading);
 }
 
 /* Erroring, the label and the hint join the control on the danger ramp, which

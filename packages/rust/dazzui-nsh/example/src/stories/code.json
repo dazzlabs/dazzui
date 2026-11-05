@@ -1,0 +1,89 @@
+{
+  "id": "code",
+  "name": "Code",
+  "summary": "Something to be typed exactly, in a line or as a block.",
+  "preview": {
+    "id": "code/preview",
+    "title": "Preview",
+    "content": {
+      "$el": "Text",
+      "children": [
+        "Run ",
+        {
+          "$el": "Code",
+          "children": [
+            "pnpm install"
+          ],
+          "$at": 0
+        },
+        " first."
+      ]
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "code/0",
+      "title": "In a line",
+      "content": {
+        "$el": "Text",
+        "children": [
+          "Set ",
+          {
+            "$el": "Code",
+            "children": [
+              "data-theme"
+            ],
+            "$at": 0
+          },
+          " on the root, or remove it for the default."
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "code/1",
+      "title": "A block",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "width": "32rem"
+        },
+        "children": [
+          {
+            "$el": "CodeBlock",
+            "props": {
+              "code": "import { Button } from '@dazzlabs/dazzui'\n\nexport function Save() {\n  return <Button variant=\"filled\">Save changes</Button>\n}",
+              "title": "save.tsx",
+              "language": "tsx"
+            },
+            "$at": 0
+          }
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "code/2",
+      "title": "With line numbers",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "width": "32rem"
+        },
+        "children": [
+          {
+            "$el": "CodeBlock",
+            "props": {
+              "code": "import { Button } from '@dazzlabs/dazzui'\n\nexport function Save() {\n  return <Button variant=\"filled\">Save changes</Button>\n}",
+              "lineNumbers": true,
+              "copyable": true
+            },
+            "$at": 0
+          }
+        ]
+      },
+      "gaps": []
+    }
+  ]
+}

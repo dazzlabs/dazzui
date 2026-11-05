@@ -85,6 +85,18 @@ The Storybook reads the generated `style.css` rather than the token sources, so
 it always shows what a consumer actually gets — including how each token
 resolves once its `var()` chain is followed.
 
+## Native Shell
+
+`packages/rust/dazzui-nsh` is the Rust desktop implementation for
+[Native Shell](https://nsh.dev/). Run `pnpm nsh` for its native gallery,
+`pnpm nsh:test` for engine tests, or `pnpm nsh:test:native` for real-window
+checks. `pnpm nsh:web:build` compiles the same Rust gallery for browsers;
+`pnpm nsh:web:deploy` publishes its independent Cloudflare Worker.
+It embeds all ds themes and maps all 188 shared scenes across 53 pages.
+It participates in the default conformance check and codegen support gate.
+The native collector records actual boxes and screenshots; remaining differences
+and measurement limits are documented in its [README](packages/rust/dazzui-nsh/README.md).
+
 ## GTK4
 
 The Rust/gtk4-rs implementation lives in

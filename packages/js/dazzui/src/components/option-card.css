@@ -91,6 +91,6 @@
   font-family: var(--caption-small-font-family);
   font-size: var(--label-small-font-size);
   font-weight: var(--caption-small-font-weight);
-  line-height: 1.5;
+  line-height: var(--option-card-description-leading);
   transition: color var(--motion-duration) var(--motion-easing);
 }

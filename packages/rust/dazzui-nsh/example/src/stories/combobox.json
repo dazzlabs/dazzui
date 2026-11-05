@@ -1,0 +1,164 @@
+{
+  "id": "combobox",
+  "name": "Combobox",
+  "summary": "One value out of a list long enough to be searched.",
+  "preview": {
+    "id": "combobox/preview",
+    "title": "Preview",
+    "content": {
+      "$el": "Col",
+      "props": {
+        "width": "15rem"
+      },
+      "children": [
+        {
+          "$el": "Combobox",
+          "props": {
+            "options": [
+              {
+                "value": "cn",
+                "label": "China"
+              },
+              {
+                "value": "de",
+                "label": "Germany"
+              },
+              {
+                "value": "jp",
+                "label": "Japan"
+              },
+              {
+                "value": "nz",
+                "label": "New Zealand"
+              },
+              {
+                "value": "us",
+                "label": "United States"
+              }
+            ],
+            "defaultValue": "jp"
+          },
+          "$at": 0
+        }
+      ]
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "combobox/0",
+      "title": "Searching a list",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "width": "20rem"
+        },
+        "children": [
+          {
+            "$el": "Combobox",
+            "props": {
+              "options": [
+                {
+                  "value": "cn",
+                  "label": "China"
+                },
+                {
+                  "value": "de",
+                  "label": "Germany"
+                },
+                {
+                  "value": "jp",
+                  "label": "Japan"
+                },
+                {
+                  "value": "nz",
+                  "label": "New Zealand"
+                },
+                {
+                  "value": "us",
+                  "label": "United States"
+                }
+              ],
+              "placeholder": "Choose a country",
+              "empty": "No country by that name"
+            },
+            "$at": 0
+          }
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "combobox/1",
+      "title": "Grouped, and clearable",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "width": "20rem"
+        },
+        "children": [
+          {
+            "$el": "Combobox",
+            "props": {
+              "options": [
+                {
+                  "label": "Asia",
+                  "options": [
+                    {
+                      "value": "cn",
+                      "label": "China"
+                    },
+                    {
+                      "value": "jp",
+                      "label": "Japan"
+                    }
+                  ]
+                },
+                {
+                  "label": "Europe",
+                  "options": [
+                    {
+                      "value": "de",
+                      "label": "Germany"
+                    }
+                  ]
+                }
+              ],
+              "defaultValue": "cn",
+              "clearable": true
+            },
+            "$at": 0
+          }
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "combobox/2",
+      "title": "Autocomplete",
+      "note": "The same list, offered to a field that also takes what was typed.",
+      "content": {
+        "$el": "Col",
+        "props": {
+          "width": "20rem"
+        },
+        "children": [
+          {
+            "$el": "Autocomplete",
+            "props": {
+              "items": [
+                "Inter",
+                "IBM Plex Sans",
+                "JetBrains Mono",
+                "Source Serif"
+              ],
+              "placeholder": "Font family"
+            },
+            "$at": 0
+          }
+        ]
+      },
+      "gaps": []
+    }
+  ]
+}

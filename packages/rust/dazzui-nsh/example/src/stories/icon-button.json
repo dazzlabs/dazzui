@@ -1,0 +1,284 @@
+{
+  "id": "icon-button",
+  "name": "IconButton",
+  "summary": "A button that is only its glyph, with the label kept for a reader.",
+  "preview": {
+    "id": "icon-button/preview",
+    "title": "Preview",
+    "content": {
+      "$el": "Row",
+      "children": [
+        {
+          "$el": "IconButton",
+          "props": {
+            "label": "Add"
+          },
+          "children": [
+            {
+              "$el": "Icon",
+              "props": {
+                "icon": {
+                  "$icon": "Add20Regular"
+                }
+              },
+              "$at": 1
+            }
+          ],
+          "$at": 0
+        },
+        {
+          "$el": "IconButton",
+          "props": {
+            "label": "Settings",
+            "variant": "tinted"
+          },
+          "children": [
+            {
+              "$el": "Icon",
+              "props": {
+                "icon": {
+                  "$icon": "Settings20Regular"
+                }
+              },
+              "$at": 3
+            }
+          ],
+          "$at": 2
+        },
+        {
+          "$el": "IconButton",
+          "props": {
+            "label": "Delete",
+            "variant": "filled",
+            "tint": "danger"
+          },
+          "children": [
+            {
+              "$el": "Icon",
+              "props": {
+                "icon": {
+                  "$icon": "Delete20Regular"
+                }
+              },
+              "$at": 5
+            }
+          ],
+          "$at": 4
+        }
+      ]
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "icon-button/0",
+      "title": "Variants",
+      "content": {
+        "$el": "Row",
+        "children": [
+          {
+            "$el": "IconButton",
+            "props": {
+              "label": "filled",
+              "variant": "filled"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Settings20Regular"
+                  }
+                },
+                "$at": 1
+              }
+            ],
+            "$at": 0
+          },
+          {
+            "$el": "IconButton",
+            "props": {
+              "label": "tinted",
+              "variant": "tinted"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Settings20Regular"
+                  }
+                },
+                "$at": 3
+              }
+            ],
+            "$at": 2
+          },
+          {
+            "$el": "IconButton",
+            "props": {
+              "label": "outlined",
+              "variant": "outlined"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Settings20Regular"
+                  }
+                },
+                "$at": 5
+              }
+            ],
+            "$at": 4
+          },
+          {
+            "$el": "IconButton",
+            "props": {
+              "label": "normal",
+              "variant": "normal"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Settings20Regular"
+                  }
+                },
+                "$at": 7
+              }
+            ],
+            "$at": 6
+          },
+          {
+            "$el": "IconButton",
+            "props": {
+              "label": "recessed",
+              "variant": "recessed"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Settings20Regular"
+                  }
+                },
+                "$at": 9
+              }
+            ],
+            "$at": 8
+          },
+          {
+            "$el": "IconButton",
+            "props": {
+              "label": "plain",
+              "variant": "plain"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Settings20Regular"
+                  }
+                },
+                "$at": 11
+              }
+            ],
+            "$at": 10
+          }
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "icon-button/1",
+      "title": "Sizes",
+      "content": {
+        "$el": "Row",
+        "children": [
+          {
+            "$el": "IconButton",
+            "props": {
+              "label": "tiny",
+              "size": "tiny"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Add20Regular"
+                  }
+                },
+                "$at": 1
+              }
+            ],
+            "$at": 0
+          },
+          {
+            "$el": "IconButton",
+            "props": {
+              "label": "small",
+              "size": "small"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Add20Regular"
+                  }
+                },
+                "$at": 3
+              }
+            ],
+            "$at": 2
+          },
+          {
+            "$el": "IconButton",
+            "props": {
+              "label": "medium",
+              "size": "medium"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Add20Regular"
+                  }
+                },
+                "$at": 5
+              }
+            ],
+            "$at": 4
+          },
+          {
+            "$el": "IconButton",
+            "props": {
+              "label": "large",
+              "size": "large"
+            },
+            "children": [
+              {
+                "$el": "Icon",
+                "props": {
+                  "icon": {
+                    "$icon": "Add20Regular"
+                  }
+                },
+                "$at": 7
+              }
+            ],
+            "$at": 6
+          }
+        ]
+      },
+      "gaps": []
+    }
+  ]
+}

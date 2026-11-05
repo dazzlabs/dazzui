@@ -1,0 +1,203 @@
+{
+  "id": "switch",
+  "name": "Switch",
+  "summary": "A setting that takes effect the moment it is flipped.",
+  "preview": {
+    "id": "switch/preview",
+    "title": "Preview",
+    "content": {
+      "$el": "Col",
+      "props": {
+        "width": "14rem"
+      },
+      "children": [
+        {
+          "$el": "Row",
+          "props": {
+            "justify": "between",
+            "gap": "4"
+          },
+          "children": [
+            {
+              "$el": "Text",
+              "children": [
+                "Notifications"
+              ]
+            },
+            {
+              "$el": "Switch",
+              "props": {
+                "defaultChecked": true,
+                "aria-label": "Notifications"
+              },
+              "$at": 0
+            }
+          ]
+        },
+        {
+          "$el": "Row",
+          "props": {
+            "justify": "between",
+            "gap": "4"
+          },
+          "children": [
+            {
+              "$el": "Text",
+              "children": [
+                "Sync over cellular"
+              ]
+            },
+            {
+              "$el": "Switch",
+              "props": {
+                "defaultChecked": false,
+                "aria-label": "Sync over cellular"
+              },
+              "$at": 1
+            }
+          ]
+        }
+      ]
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "switch/0",
+      "title": "Sizes",
+      "content": {
+        "$el": "Row",
+        "props": {
+          "gap": "5"
+        },
+        "children": [
+          {
+            "$el": "Switch",
+            "props": {
+              "size": "small",
+              "defaultChecked": true,
+              "aria-label": "Small"
+            },
+            "$at": 0
+          },
+          {
+            "$el": "Switch",
+            "props": {
+              "size": "medium",
+              "defaultChecked": true,
+              "aria-label": "Medium"
+            },
+            "$at": 1
+          },
+          {
+            "$el": "Switch",
+            "props": {
+              "size": "large",
+              "defaultChecked": true,
+              "aria-label": "Large"
+            },
+            "$at": 2
+          }
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "switch/1",
+      "title": "Tints",
+      "content": {
+        "$el": "Row",
+        "props": {
+          "gap": "5"
+        },
+        "children": [
+          {
+            "$el": "Switch",
+            "props": {
+              "tint": "primary",
+              "defaultChecked": true,
+              "aria-label": "primary"
+            },
+            "$at": 0
+          },
+          {
+            "$el": "Switch",
+            "props": {
+              "tint": "neutral",
+              "defaultChecked": true,
+              "aria-label": "neutral"
+            },
+            "$at": 1
+          },
+          {
+            "$el": "Switch",
+            "props": {
+              "tint": "info",
+              "defaultChecked": true,
+              "aria-label": "info"
+            },
+            "$at": 2
+          },
+          {
+            "$el": "Switch",
+            "props": {
+              "tint": "success",
+              "defaultChecked": true,
+              "aria-label": "success"
+            },
+            "$at": 3
+          },
+          {
+            "$el": "Switch",
+            "props": {
+              "tint": "warning",
+              "defaultChecked": true,
+              "aria-label": "warning"
+            },
+            "$at": 4
+          },
+          {
+            "$el": "Switch",
+            "props": {
+              "tint": "danger",
+              "defaultChecked": true,
+              "aria-label": "danger"
+            },
+            "$at": 5
+          }
+        ]
+      },
+      "gaps": []
+    },
+    {
+      "id": "switch/2",
+      "title": "Disabled",
+      "content": {
+        "$el": "Row",
+        "props": {
+          "gap": "5"
+        },
+        "children": [
+          {
+            "$el": "Switch",
+            "props": {
+              "disabled": true,
+              "aria-label": "Off"
+            },
+            "$at": 0
+          },
+          {
+            "$el": "Switch",
+            "props": {
+              "disabled": true,
+              "defaultChecked": true,
+              "aria-label": "On"
+            },
+            "$at": 1
+          }
+        ]
+      },
+      "gaps": []
+    }
+  ]
+}

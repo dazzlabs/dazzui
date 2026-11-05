@@ -1,0 +1,65 @@
+{
+  "id": "pill-tabs",
+  "name": "PillTabs",
+  "summary": "Tabs that carry a count, for a list cut several ways.",
+  "preview": {
+    "id": "pill-tabs/preview",
+    "title": "Preview",
+    "content": {
+      "$el": "PillTabs",
+      "props": {
+        "items": [
+          {
+            "value": "all",
+            "label": "All",
+            "count": 24
+          },
+          {
+            "value": "unread",
+            "label": "Unread",
+            "count": 3
+          },
+          {
+            "value": "archived",
+            "label": "Archived"
+          }
+        ],
+        "defaultValue": "all",
+        "aria-label": "Inbox"
+      },
+      "$at": 0
+    },
+    "gaps": []
+  },
+  "examples": [
+    {
+      "id": "pill-tabs/0",
+      "title": "With counts",
+      "content": {
+        "$el": "PillTabs",
+        "props": {
+          "items": [
+            {
+              "value": "all",
+              "label": "All",
+              "count": 24
+            },
+            {
+              "value": "unread",
+              "label": "Unread",
+              "count": 3
+            },
+            {
+              "value": "archived",
+              "label": "Archived"
+            }
+          ],
+          "defaultValue": "unread",
+          "aria-label": "Inbox"
+        },
+        "$at": 0
+      },
+      "gaps": []
+    }
+  ]
+}

@@ -43,6 +43,14 @@ runtime module. Its transition still reads scoped CSS variables. HarmonyOS's
 queue receives the same resolved durations from its theme tokens; neither
 package imports ds at runtime.
 
+Spinner duration (including reduced motion) and its two track opacities live
+in `tokens/component/loading.yaml`. Skeleton sweep duration and last-line
+proportion live in `tokens/component/skeleton.yaml`.
+These preserve the original React values and are also consumed by Native Shell.
+The unitless Badge, Callout title/description, multiline TextField, OptionCard
+description, FormField hint and Preferences description leading ratios live in `tokens/component/text-leading.yaml`. React multiplies them by
+the selected font size through CSS; Native Shell uses the same resolved ratio.
+
 Tooltip's native hover-rest and close defaults live in
 `tokens/component/tooltip.yaml`. The runtime tests compare the generated values
 in every palette with the installed Base UI Tooltip defaults; React retains

@@ -3,6 +3,7 @@
 .dz-scope { --base-font-code: monospace, "SF Mono", "Menlo", monospace; }
 
 .dz-theme-bright-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 15px;
   --body-large-font-weight: 400;
@@ -18,6 +19,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 13px;
   --caption-large-font-weight: 400;
@@ -176,6 +179,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 14px;
@@ -226,6 +230,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -297,6 +303,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -316,6 +326,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 17px;
   --title-large-font-weight: 600;
@@ -783,6 +794,7 @@
 }
 
 .dz-theme-studio-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 15px;
   --body-large-font-weight: 400;
@@ -798,6 +810,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 13px;
   --caption-large-font-weight: 400;
@@ -956,6 +970,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 16px;
@@ -1006,6 +1021,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -1077,6 +1094,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -1096,6 +1117,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 17px;
   --title-large-font-weight: 600;
@@ -1563,6 +1585,7 @@
 }
 
 .dz-theme-studio-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 15px;
   --body-large-font-weight: 400;
@@ -1578,6 +1601,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 13px;
   --caption-large-font-weight: 400;
@@ -1736,6 +1761,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 16px;
@@ -1786,6 +1812,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -1857,6 +1885,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -1876,6 +1908,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 17px;
   --title-large-font-weight: 600;
@@ -2343,6 +2376,7 @@
 }
 
 .dz-theme-frost-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 15px;
   --body-large-font-weight: 400;
@@ -2358,6 +2392,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 13px;
   --caption-large-font-weight: 400;
@@ -2516,6 +2552,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 16px;
@@ -2566,6 +2603,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -2637,6 +2676,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -2656,6 +2699,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 17px;
   --title-large-font-weight: 600;
@@ -3123,6 +3167,7 @@
 }
 
 .dz-theme-frost-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 15px;
   --body-large-font-weight: 400;
@@ -3138,6 +3183,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 13px;
   --caption-large-font-weight: 400;
@@ -3296,6 +3343,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 16px;
@@ -3346,6 +3394,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -3417,6 +3467,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -3436,6 +3490,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 17px;
   --title-large-font-weight: 600;
@@ -3903,6 +3958,7 @@
 }
 
 .dz-theme-graphite-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 15px;
   --body-large-font-weight: 400;
@@ -3918,6 +3974,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 13px;
   --caption-large-font-weight: 400;
@@ -4076,6 +4134,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 12px;
@@ -4126,6 +4185,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -4197,6 +4258,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -4216,6 +4281,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 17px;
   --title-large-font-weight: 600;
@@ -4683,6 +4749,7 @@
 }
 
 .dz-theme-graphite-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 15px;
   --body-large-font-weight: 400;
@@ -4698,6 +4765,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 13px;
   --caption-large-font-weight: 400;
@@ -4856,6 +4925,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 12px;
@@ -4906,6 +4976,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -4977,6 +5049,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -4996,6 +5072,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 17px;
   --title-large-font-weight: 600;
@@ -5463,6 +5540,7 @@
 }
 
 .dz-theme-ember-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 15px;
   --body-large-font-weight: 400;
@@ -5478,6 +5556,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 13px;
   --caption-large-font-weight: 400;
@@ -5636,6 +5716,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 16px;
@@ -5686,6 +5767,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -5757,6 +5840,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -5776,6 +5863,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 17px;
   --title-large-font-weight: 600;
@@ -6243,6 +6331,7 @@
 }
 
 .dz-theme-ember-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 15px;
   --body-large-font-weight: 400;
@@ -6258,6 +6347,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 13px;
   --caption-large-font-weight: 400;
@@ -6416,6 +6507,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 16px;
@@ -6466,6 +6558,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -6537,6 +6631,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -6556,6 +6654,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 17px;
   --title-large-font-weight: 600;
@@ -7023,6 +7122,7 @@
 }
 
 .dz-theme-nocturne-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 15px;
   --body-large-font-weight: 400;
@@ -7038,6 +7138,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 13px;
   --caption-large-font-weight: 400;
@@ -7196,6 +7298,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 12px;
@@ -7246,6 +7349,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -7317,6 +7422,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -7336,6 +7445,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 17px;
   --title-large-font-weight: 600;
@@ -7803,6 +7913,7 @@
 }
 
 .dz-theme-nocturne-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 15px;
   --body-large-font-weight: 400;
@@ -7818,6 +7929,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 13px;
   --caption-large-font-weight: 400;
@@ -7976,6 +8089,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 12px;
@@ -8026,6 +8140,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -8097,6 +8213,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -8116,6 +8236,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 17px;
   --title-large-font-weight: 600;
@@ -8583,6 +8704,7 @@
 }
 
 .dz-theme-omarchy-tokyo-night-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -8598,6 +8720,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -8756,6 +8880,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -8806,6 +8931,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -8877,6 +9004,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -8896,6 +9027,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -9363,6 +9495,7 @@
 }
 
 .dz-theme-omarchy-tokyo-night-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -9378,6 +9511,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -9536,6 +9671,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -9586,6 +9722,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -9657,6 +9795,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -9676,6 +9818,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -10143,6 +10286,7 @@
 }
 
 .dz-theme-omarchy-catppuccin-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -10158,6 +10302,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -10316,6 +10462,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -10366,6 +10513,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -10437,6 +10586,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -10456,6 +10609,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -10923,6 +11077,7 @@
 }
 
 .dz-theme-omarchy-catppuccin-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -10938,6 +11093,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -11096,6 +11253,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -11146,6 +11304,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -11217,6 +11377,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -11236,6 +11400,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -11703,6 +11868,7 @@
 }
 
 .dz-theme-omarchy-catppuccin-latte-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -11718,6 +11884,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -11876,6 +12044,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -11926,6 +12095,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -11997,6 +12168,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -12016,6 +12191,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -12483,6 +12659,7 @@
 }
 
 .dz-theme-omarchy-catppuccin-latte-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -12498,6 +12675,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -12656,6 +12835,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -12706,6 +12886,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -12777,6 +12959,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -12796,6 +12982,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -13263,6 +13450,7 @@
 }
 
 .dz-theme-omarchy-ethereal-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -13278,6 +13466,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -13436,6 +13626,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -13486,6 +13677,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -13557,6 +13750,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -13576,6 +13773,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -14043,6 +14241,7 @@
 }
 
 .dz-theme-omarchy-ethereal-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -14058,6 +14257,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -14216,6 +14417,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -14266,6 +14468,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -14337,6 +14541,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -14356,6 +14564,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -14823,6 +15032,7 @@
 }
 
 .dz-theme-omarchy-everforest-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -14838,6 +15048,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -14996,6 +15208,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -15046,6 +15259,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -15117,6 +15332,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -15136,6 +15355,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -15603,6 +15823,7 @@
 }
 
 .dz-theme-omarchy-everforest-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -15618,6 +15839,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -15776,6 +15999,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -15826,6 +16050,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -15897,6 +16123,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -15916,6 +16146,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -16383,6 +16614,7 @@
 }
 
 .dz-theme-omarchy-flexoki-light-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -16398,6 +16630,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -16556,6 +16790,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -16606,6 +16841,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -16677,6 +16914,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -16696,6 +16937,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -17163,6 +17405,7 @@
 }
 
 .dz-theme-omarchy-flexoki-light-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -17178,6 +17421,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -17336,6 +17581,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -17386,6 +17632,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -17457,6 +17705,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -17476,6 +17728,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -17943,6 +18196,7 @@
 }
 
 .dz-theme-omarchy-gruvbox-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -17958,6 +18212,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -18116,6 +18372,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -18166,6 +18423,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -18237,6 +18496,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -18256,6 +18519,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -18723,6 +18987,7 @@
 }
 
 .dz-theme-omarchy-gruvbox-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -18738,6 +19003,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -18896,6 +19163,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -18946,6 +19214,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -19017,6 +19287,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -19036,6 +19310,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -19503,6 +19778,7 @@
 }
 
 .dz-theme-omarchy-hackerman-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -19518,6 +19794,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -19676,6 +19954,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -19726,6 +20005,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -19797,6 +20078,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -19816,6 +20101,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -20283,6 +20569,7 @@
 }
 
 .dz-theme-omarchy-hackerman-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -20298,6 +20585,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -20456,6 +20745,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -20506,6 +20796,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -20577,6 +20869,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -20596,6 +20892,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -21063,6 +21360,7 @@
 }
 
 .dz-theme-omarchy-kanagawa-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -21078,6 +21376,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -21236,6 +21536,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -21286,6 +21587,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -21357,6 +21660,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -21376,6 +21683,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -21843,6 +22151,7 @@
 }
 
 .dz-theme-omarchy-kanagawa-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -21858,6 +22167,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -22016,6 +22327,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -22066,6 +22378,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -22137,6 +22451,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -22156,6 +22474,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -22623,6 +22942,7 @@
 }
 
 .dz-theme-omarchy-last-horizon-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -22638,6 +22958,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -22796,6 +23118,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -22846,6 +23169,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -22917,6 +23242,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -22936,6 +23265,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -23403,6 +23733,7 @@
 }
 
 .dz-theme-omarchy-last-horizon-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -23418,6 +23749,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -23576,6 +23909,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -23626,6 +23960,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -23697,6 +24033,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -23716,6 +24056,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -24183,6 +24524,7 @@
 }
 
 .dz-theme-omarchy-lumon-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -24198,6 +24540,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -24356,6 +24700,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -24406,6 +24751,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -24477,6 +24824,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -24496,6 +24847,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -24963,6 +25315,7 @@
 }
 
 .dz-theme-omarchy-lumon-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -24978,6 +25331,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -25136,6 +25491,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -25186,6 +25542,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -25257,6 +25615,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -25276,6 +25638,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -25743,6 +26106,7 @@
 }
 
 .dz-theme-omarchy-lupine-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -25758,6 +26122,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -25916,6 +26282,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -25966,6 +26333,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -26037,6 +26406,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -26056,6 +26429,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -26523,6 +26897,7 @@
 }
 
 .dz-theme-omarchy-lupine-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -26538,6 +26913,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -26696,6 +27073,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -26746,6 +27124,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -26817,6 +27197,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -26836,6 +27220,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -27303,6 +27688,7 @@
 }
 
 .dz-theme-omarchy-matte-black-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -27318,6 +27704,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -27476,6 +27864,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -27526,6 +27915,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -27597,6 +27988,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -27616,6 +28011,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -28083,6 +28479,7 @@
 }
 
 .dz-theme-omarchy-matte-black-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -28098,6 +28495,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -28256,6 +28655,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -28306,6 +28706,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -28377,6 +28779,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -28396,6 +28802,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -28863,6 +29270,7 @@
 }
 
 .dz-theme-omarchy-miasma-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -28878,6 +29286,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -29036,6 +29446,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -29086,6 +29497,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -29157,6 +29570,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -29176,6 +29593,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -29643,6 +30061,7 @@
 }
 
 .dz-theme-omarchy-miasma-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -29658,6 +30077,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -29816,6 +30237,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -29866,6 +30288,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -29937,6 +30361,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -29956,6 +30384,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -30423,6 +30852,7 @@
 }
 
 .dz-theme-omarchy-nord-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -30438,6 +30868,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -30596,6 +31028,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -30646,6 +31079,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -30717,6 +31152,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -30736,6 +31175,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -31203,6 +31643,7 @@
 }
 
 .dz-theme-omarchy-nord-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -31218,6 +31659,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -31376,6 +31819,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -31426,6 +31870,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -31497,6 +31943,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -31516,6 +31966,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -31983,6 +32434,7 @@
 }
 
 .dz-theme-omarchy-osaka-jade-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -31998,6 +32450,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -32156,6 +32610,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -32206,6 +32661,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -32277,6 +32734,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -32296,6 +32757,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -32763,6 +33225,7 @@
 }
 
 .dz-theme-omarchy-osaka-jade-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -32778,6 +33241,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -32936,6 +33401,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -32986,6 +33452,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -33057,6 +33525,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -33076,6 +33548,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -33543,6 +34016,7 @@
 }
 
 .dz-theme-omarchy-retro-82-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -33558,6 +34032,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -33716,6 +34192,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -33766,6 +34243,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -33837,6 +34316,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -33856,6 +34339,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -34323,6 +34807,7 @@
 }
 
 .dz-theme-omarchy-retro-82-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -34338,6 +34823,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -34496,6 +34983,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -34546,6 +35034,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -34617,6 +35107,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -34636,6 +35130,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -35103,6 +35598,7 @@
 }
 
 .dz-theme-omarchy-ristretto-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -35118,6 +35614,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -35276,6 +35774,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -35326,6 +35825,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -35397,6 +35898,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -35416,6 +35921,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -35883,6 +36389,7 @@
 }
 
 .dz-theme-omarchy-ristretto-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -35898,6 +36405,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -36056,6 +36565,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -36106,6 +36616,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -36177,6 +36689,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -36196,6 +36712,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -36663,6 +37180,7 @@
 }
 
 .dz-theme-omarchy-rose-pine-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -36678,6 +37196,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -36836,6 +37356,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -36886,6 +37407,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -36957,6 +37480,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -36976,6 +37503,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -37443,6 +37971,7 @@
 }
 
 .dz-theme-omarchy-rose-pine-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -37458,6 +37987,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -37616,6 +38147,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -37666,6 +38198,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -37737,6 +38271,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -37756,6 +38294,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -38223,6 +38762,7 @@
 }
 
 .dz-theme-omarchy-solitude-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -38238,6 +38778,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -38396,6 +38938,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -38446,6 +38989,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -38517,6 +39062,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -38536,6 +39085,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -39003,6 +39553,7 @@
 }
 
 .dz-theme-omarchy-solitude-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -39018,6 +39569,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -39176,6 +39729,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -39226,6 +39780,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -39297,6 +39853,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -39316,6 +39876,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -39783,6 +40344,7 @@
 }
 
 .dz-theme-omarchy-vantablack-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -39798,6 +40360,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -39956,6 +40520,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -40006,6 +40571,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -40077,6 +40644,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -40096,6 +40667,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -40563,6 +41135,7 @@
 }
 
 .dz-theme-omarchy-vantablack-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -40578,6 +41151,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -40736,6 +41311,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -40786,6 +41362,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -40857,6 +41435,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -40876,6 +41458,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -41343,6 +41926,7 @@
 }
 
 .dz-theme-omarchy-white-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -41358,6 +41942,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -41516,6 +42102,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -41566,6 +42153,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -41637,6 +42226,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -41656,6 +42249,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -42123,6 +42717,7 @@
 }
 
 .dz-theme-omarchy-white-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 13px;
   --body-large-font-weight: 400;
@@ -42138,6 +42733,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 12px;
   --caption-large-font-weight: 400;
@@ -42296,6 +42893,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 0px;
@@ -42346,6 +42944,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -42417,6 +43017,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -42436,6 +43040,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 14px;
   --title-large-font-weight: 600;
@@ -42903,6 +43508,7 @@
 }
 
 .dz-theme-macos27-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 15px;
   --body-large-font-weight: 400;
@@ -42918,6 +43524,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 24px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 13px;
   --caption-large-font-weight: 400;
@@ -43076,6 +43684,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 16px;
@@ -43126,6 +43735,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -43197,6 +43808,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -43216,6 +43831,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 17px;
   --title-large-font-weight: 600;
@@ -43683,6 +44299,7 @@
 }
 
 .dz-theme-macos27-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 15px;
   --body-large-font-weight: 400;
@@ -43698,6 +44315,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 24px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 13px;
   --caption-large-font-weight: 400;
@@ -43856,6 +44475,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 16px;
@@ -43906,6 +44526,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -43977,6 +44599,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -43996,6 +44622,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 17px;
   --title-large-font-weight: 600;
@@ -44463,6 +45090,7 @@
 }
 
 .dz-theme-macos15-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 15px;
   --body-large-font-weight: 400;
@@ -44478,6 +45106,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 22px;
   --calendar-small-cell-size: 19px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 13px;
   --caption-large-font-weight: 400;
@@ -44636,6 +45266,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 10px;
@@ -44686,6 +45317,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -44757,6 +45390,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -44776,6 +45413,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 17px;
   --title-large-font-weight: 600;
@@ -45243,6 +45881,7 @@
 }
 
 .dz-theme-macos15-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 15px;
   --body-large-font-weight: 400;
@@ -45258,6 +45897,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 22px;
   --calendar-small-cell-size: 19px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 13px;
   --caption-large-font-weight: 400;
@@ -45416,6 +46057,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 10px;
@@ -45466,6 +46108,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -45537,6 +46181,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -45556,6 +46204,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 17px;
   --title-large-font-weight: 600;
@@ -46023,6 +46672,7 @@
 }
 
 .dz-theme-windows11-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 18px;
   --body-large-font-weight: 400;
@@ -46038,6 +46688,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 32px;
   --calendar-small-cell-size: 28px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 14px;
   --caption-large-font-weight: 400;
@@ -46196,6 +46848,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 8px;
@@ -46246,6 +46899,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -46317,6 +46972,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -46336,6 +46995,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 20px;
   --title-large-font-weight: 600;
@@ -46803,6 +47463,7 @@
 }
 
 .dz-theme-windows11-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 18px;
   --body-large-font-weight: 400;
@@ -46818,6 +47479,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 32px;
   --calendar-small-cell-size: 28px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 14px;
   --caption-large-font-weight: 400;
@@ -46976,6 +47639,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 8px;
@@ -47026,6 +47690,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -47097,6 +47763,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -47116,6 +47786,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 20px;
   --title-large-font-weight: 600;
@@ -47583,6 +48254,7 @@
 }
 
 .dz-theme-ubuntu-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 16.5px;
   --body-large-font-weight: 400;
@@ -47598,6 +48270,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 34px;
   --calendar-small-cell-size: 28px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 14.5px;
   --caption-large-font-weight: 400;
@@ -47756,6 +48430,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 12px;
@@ -47806,6 +48481,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -47877,6 +48554,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -47896,6 +48577,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 20px;
   --title-large-font-weight: 600;
@@ -48363,6 +49045,7 @@
 }
 
 .dz-theme-ubuntu-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 16.5px;
   --body-large-font-weight: 400;
@@ -48378,6 +49061,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 34px;
   --calendar-small-cell-size: 28px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 14.5px;
   --caption-large-font-weight: 400;
@@ -48536,6 +49221,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 12px;
@@ -48586,6 +49272,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -48657,6 +49345,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -48676,6 +49368,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 20px;
   --title-large-font-weight: 600;
@@ -49143,6 +49836,7 @@
 }
 
 .dz-theme-debian-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 16.5px;
   --body-large-font-weight: 400;
@@ -49158,6 +49852,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 34px;
   --calendar-small-cell-size: 28px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 14.5px;
   --caption-large-font-weight: 400;
@@ -49316,6 +50012,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 12px;
@@ -49366,6 +50063,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -49437,6 +50136,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -49456,6 +50159,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 20px;
   --title-large-font-weight: 600;
@@ -49923,6 +50627,7 @@
 }
 
 .dz-theme-debian-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 16.5px;
   --body-large-font-weight: 400;
@@ -49938,6 +50643,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 34px;
   --calendar-small-cell-size: 28px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 14.5px;
   --caption-large-font-weight: 400;
@@ -50096,6 +50803,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 12px;
@@ -50146,6 +50854,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -50217,6 +50927,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -50236,6 +50950,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 20px;
   --title-large-font-weight: 600;
@@ -50703,6 +51418,7 @@
 }
 
 .dz-theme-fedora-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 16.5px;
   --body-large-font-weight: 400;
@@ -50718,6 +51434,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 34px;
   --calendar-small-cell-size: 28px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 14.5px;
   --caption-large-font-weight: 400;
@@ -50876,6 +51594,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 12px;
@@ -50926,6 +51645,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -50997,6 +51718,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -51016,6 +51741,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 20px;
   --title-large-font-weight: 600;
@@ -51483,6 +52209,7 @@
 }
 
 .dz-theme-fedora-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 16.5px;
   --body-large-font-weight: 400;
@@ -51498,6 +52225,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 34px;
   --calendar-small-cell-size: 28px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 14.5px;
   --caption-large-font-weight: 400;
@@ -51656,6 +52385,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 12px;
@@ -51706,6 +52436,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -51777,6 +52509,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -51796,6 +52532,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 20px;
   --title-large-font-weight: 600;
@@ -52263,6 +53000,7 @@
 }
 
 .dz-theme-kde-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 16px;
   --body-large-font-weight: 400;
@@ -52278,6 +53016,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 30px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 13.33px;
   --caption-large-font-weight: 400;
@@ -52436,6 +53176,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 5px;
@@ -52486,6 +53227,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -52557,6 +53300,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -52576,6 +53323,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 18.67px;
   --title-large-font-weight: 600;
@@ -53043,6 +53791,7 @@
 }
 
 .dz-theme-kde-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 16px;
   --body-large-font-weight: 400;
@@ -53058,6 +53807,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 30px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 13.33px;
   --caption-large-font-weight: 400;
@@ -53216,6 +53967,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 5px;
@@ -53266,6 +54018,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -53337,6 +54091,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -53356,6 +54114,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 18.67px;
   --title-large-font-weight: 600;
@@ -53823,6 +54582,7 @@
 }
 
 .dz-theme-spotify-light {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 16px;
   --body-large-font-weight: 400;
@@ -53838,6 +54598,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 40px;
   --calendar-small-cell-size: 32px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 14px;
   --caption-large-font-weight: 400;
@@ -53996,6 +54758,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 8px;
@@ -54046,6 +54809,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -54117,6 +54882,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -54136,6 +54905,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 24px;
   --title-large-font-weight: 600;
@@ -54603,6 +55373,7 @@
 }
 
 .dz-theme-spotify-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 16px;
   --body-large-font-weight: 400;
@@ -54618,6 +55389,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 40px;
   --calendar-small-cell-size: 32px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 14px;
   --caption-large-font-weight: 400;
@@ -54776,6 +55549,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 8px;
@@ -54826,6 +55600,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -54897,6 +55673,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -54916,6 +55696,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 24px;
   --title-large-font-weight: 600;
@@ -55383,6 +56164,7 @@
 }
 
 .dz-theme-bright-dark {
+  --badge-line-height: 1.4;
   --body-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --body-large-font-size: 15px;
   --body-large-font-weight: 400;
@@ -55398,6 +56180,8 @@
   --calendar-cell-gap: 2px;
   --calendar-medium-cell-size: 28px;
   --calendar-small-cell-size: 26px;
+  --callout-description-leading: 1.5;
+  --callout-title-leading: 1.4;
   --caption-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --caption-large-font-size: 13px;
   --caption-large-font-weight: 400;
@@ -55556,6 +56340,7 @@
   --drawer-size: 352px;
   --focus-offset: 0px;
   --focus-width: 3px;
+  --form-field-hint-leading: 1.6;
   --frame-aside-width: 214px;
   --frame-nav-gap: 3px;
   --frame-popover-radius: 14px;
@@ -55606,6 +56391,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --option-card-description-leading: 1.5;
+  --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
   --preferences-group-gap: 40px;
   --preferences-heading-gap: 8px;
@@ -55677,6 +56464,10 @@
   --spacing-8: 32px;
   --spacing-9: 36px;
   --spacing-px: 1px;
+  --spinner-duration: 1000ms;
+  --spinner-on-accent-track-alpha: 0.35;
+  --spinner-reduced-duration: 2400ms;
+  --spinner-track-alpha: 0.25;
   --splitter-key-coarse-step: 10;
   --splitter-key-step: 1;
   --step-list-done-alpha: 0.14;
@@ -55696,6 +56487,7 @@
   --tabs-icon-size: 14px;
   --tabs-pulse-duration: 1400ms;
   --tabs-pulse-opacity: 0.35;
+  --text-field-multiline-leading: 1.6;
   --title-large-font-family: ".AppleSystemUIFont", "SF Pro Text", sans-serif, "PingFang SC", "Noto Sans CJK SC", monospace, sans-serif;
   --title-large-font-size: 17px;
   --title-large-font-weight: 600;
