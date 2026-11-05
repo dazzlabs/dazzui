@@ -1,0 +1,27 @@
+name: flutter_spotify_example
+description: A Spotify-inspired desktop player built with DazzUI and local original audio.
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  audioplayers: ^6.8.1
+  dazzui:
+    path: ../../packages/dart/dazzui
+  fluentui_system_icons: ^1.1.255
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  integration_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: false
+  assets:
+    - assets/audio/

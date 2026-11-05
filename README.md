@@ -59,6 +59,14 @@ pnpm winui3
 smoke tests. It can also build without pnpm; see
 [`packages/csharp/DazzUI`](packages/csharp/DazzUI/README.md).
 
+## App examples
+
+[`examples/flutter_spotify_example`](examples/flutter_spotify_example/README.md)
+is a Spotify-inspired desktop player built with the Flutter package and the
+existing Spotify theme. It includes original local audio, playlists, search,
+likes, a playback queue and both appearances. From its directory, run
+`flutter pub get` and `flutter run -d macos` (or `windows`, `linux`, `chrome`).
+
 ## Scripts
 
 | Script                 | What it does                                            |

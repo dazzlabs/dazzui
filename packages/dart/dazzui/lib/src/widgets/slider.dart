@@ -228,6 +228,7 @@ class _SliderState extends State<Slider> {
                                 // travel, and a slider is not going anywhere
                                 // on its own.
                                 width: width * (end - start),
+                                height: track,
                                 child: ColoredBox(color: fill),
                               ),
                             ),

@@ -55,6 +55,13 @@ WinUI 3: build the example and start `Example.exe --theme spotify-dark`.
 Select **Applications → Spotify** in any desktop example to switch between
 the two appearances.
 
+The standalone Flutter player lives in
+[`examples/flutter_spotify_example`](../examples/flutter_spotify_example/README.md).
+Run `flutter pub get` and `flutter run -d macos` there for a complete app
+composition with the existing theme, DazzUI controls and original bundled
+audio. Its appearance button switches between the generated Spotify themes.
+It has its own app tests and does not add gallery stories or conformance scenes.
+
 The Flutter gallery scales its preview tracks with the theme's regular
 control height. When the window cannot fit three columns, it folds a side
 panel; the toolbar can exchange the list and theme panel. This keeps the
