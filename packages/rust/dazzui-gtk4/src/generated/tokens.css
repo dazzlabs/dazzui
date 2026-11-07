@@ -175,6 +175,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -971,6 +972,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -1767,6 +1769,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -2563,6 +2566,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -3359,6 +3363,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -4155,6 +4160,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -4951,6 +4957,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -5747,6 +5754,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -6543,6 +6551,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -7339,6 +7348,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -8135,6 +8145,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -8931,6 +8942,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -9727,6 +9739,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -10523,6 +10536,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -11319,6 +11333,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -12115,6 +12130,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -12911,6 +12927,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -13707,6 +13724,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -14503,6 +14521,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -15299,6 +15318,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -16095,6 +16115,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -16891,6 +16912,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -17687,6 +17709,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -18483,6 +18506,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -19279,6 +19303,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -20075,6 +20100,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -20871,6 +20897,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -21667,6 +21694,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -22463,6 +22491,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -23259,6 +23288,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -24055,6 +24085,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -24851,6 +24882,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -25647,6 +25679,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -26443,6 +26476,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -27239,6 +27273,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -28035,6 +28070,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -28831,6 +28867,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -29627,6 +29664,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -30423,6 +30461,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -31219,6 +31258,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -32015,6 +32055,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -32811,6 +32852,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -33607,6 +33649,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -34403,6 +34446,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -35199,6 +35243,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -35995,6 +36040,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -36791,6 +36837,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -37587,6 +37634,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -38383,6 +38431,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -39179,6 +39228,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -39975,6 +40025,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -40771,6 +40822,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -41567,6 +41619,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -42363,6 +42416,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -43159,6 +43213,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -43955,6 +44010,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -44751,6 +44807,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -45547,6 +45604,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -46343,6 +46401,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -47139,6 +47198,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -47935,6 +47995,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -48731,6 +48792,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -49527,6 +49589,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -50323,6 +50386,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -51119,6 +51183,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -51915,6 +51980,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -52711,6 +52777,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -53507,6 +53574,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -54303,6 +54371,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -55099,6 +55168,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -55895,6 +55965,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;
@@ -56691,6 +56762,7 @@
   --date-range-picker-time-min-width: 80px;
   --date-range-picker-trigger-min-width: 256px;
   --dialog-danger-border-alpha: 0.34;
+  --dialog-transition-scale: 0.97;
   --dialog-width: 440px;
   --drawer-size: 352px;
   --focus-offset: 0px;

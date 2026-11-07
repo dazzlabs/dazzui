@@ -1243,12 +1243,14 @@ float4 fill_color(Background background,
 struct CompositeVertexOutput {
   float4 position [[position]];
   float2 texture_position;
+  float2 local_position;
   float clip_distance [[clip_distance]][4];
 };
 
 struct CompositeFragmentInput {
   float4 position [[position]];
   float2 texture_position;
+  float2 local_position;
 };
 
 vertex CompositeVertexOutput composite_vertex(
@@ -1257,11 +1259,11 @@ vertex CompositeVertexOutput composite_vertex(
     constant CompositeUniforms *uniforms [[buffer(1)]],
     constant Size_DevicePixels *viewport [[buffer(2)]]) {
   float2 unit = vertices[vertex_id];
-  float4 clip = distance_from_clip_rect(unit, uniforms->bounds, uniforms->content_mask.bounds);
+  float4 clip = distance_from_clip_rect_transformed(unit, uniforms->bounds, uniforms->content_mask.bounds, uniforms->transformation);
   float2 screen = float2(uniforms->bounds.origin.x, uniforms->bounds.origin.y)
     + unit * float2(uniforms->bounds.size.width, uniforms->bounds.size.height);
   float2 uv = screen / float2(viewport->width, viewport->height);
-  return { to_device_position(unit, uniforms->bounds, viewport), uv,
+  return { to_device_position_transformed(unit, uniforms->bounds, uniforms->transformation, viewport), uv, screen,
     {clip.x, clip.y, clip.z, clip.w} };
 }
 
@@ -1270,7 +1272,7 @@ fragment float4 composite_fragment(
     constant CompositeUniforms *uniforms [[buffer(1)]],
     texture2d<float> texture [[texture(0)]]) {
   constexpr sampler sampling(mag_filter::linear, min_filter::linear);
-  float distance = quad_sdf(input.position.xy, uniforms->bounds, uniforms->corner_radii);
+  float distance = quad_sdf(input.local_position, uniforms->bounds, uniforms->corner_radii);
   return texture.sample(sampling, input.texture_position)
     * (uniforms->opacity * saturate(0.5 - distance));
 }

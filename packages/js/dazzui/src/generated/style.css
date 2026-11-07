@@ -1070,6 +1070,7 @@
   --date-range-picker-trigger-min-width: 16rem;
   --dialog-danger-border-alpha: 0.34;
   --dialog-scrim-color: var(--color-content);
+  --dialog-transition-scale: 0.97;
   --dialog-width: 27.5rem;
   --drawer-size: 22rem;
   --focus-offset: 0;

@@ -174,6 +174,27 @@ fn moving_controls_receive_pointer_events_at_their_painted_position(cx: &mut Tes
     assert_eq!(view.read_with(cx, |view, _| view.changes), 2);
 }
 
+#[cfg(target_os = "macos")]
+#[gpui::test]
+fn dialog_scales_the_whole_sheet_around_its_centre(cx: &mut TestAppContext) {
+    let (view, _, cx) = setup(cx, None);
+    let starting = cx.debug_bounds("dz-dialog").unwrap();
+    seek(cx, 75);
+    let midway = cx.debug_bounds("dz-dialog").unwrap();
+    seek(cx, 150);
+    let settled = cx.debug_bounds("dz-dialog").unwrap();
+    assert!((f32::from(starting.size.width / settled.size.width) - 0.97).abs() < 0.0001);
+    assert!(
+        (f32::from(midway.size.width / settled.size.width) - (0.97 + 0.03 * 0.775561)).abs()
+            < 0.0001
+    );
+    assert!((f32::from(starting.center().x - settled.center().x)).abs() < 0.001);
+    assert!((f32::from(starting.center().y - settled.center().y)).abs() < 0.001);
+    let close = cx.debug_bounds("motion-close").unwrap();
+    cx.simulate_click(close.center(), Modifiers::none());
+    assert!(!view.read_with(cx, |view, _| view.open));
+}
+
 #[gpui::test]
 fn an_interrupted_entry_uses_css_reversal_duration(cx: &mut TestAppContext) {
     let (view, opener, cx) = setup(cx, None);

@@ -838,6 +838,7 @@ pub struct Window {
     pub(crate) rendered_entity_stack: Vec<EntityId>,
     pub(crate) element_offset_stack: Vec<Point<Pixels>>,
     pub(crate) element_opacity: f32,
+    pub(crate) input_transform: TransformationMatrix,
     pub(crate) content_mask_stack: Vec<ContentMask<Pixels>>,
     pub(crate) requested_autoscroll: Option<Bounds<Pixels>>,
     pub(crate) image_cache_stack: Vec<AnyImageCache>,
@@ -1223,6 +1224,7 @@ impl Window {
             element_offset_stack: Vec::new(),
             content_mask_stack: Vec::new(),
             element_opacity: 1.0,
+            input_transform: TransformationMatrix::unit(),
             requested_autoscroll: None,
             rendered_frame: Frame::new(DispatchTree::new(cx.keymap.clone(), cx.actions.clone())),
             next_frame: Frame::new(DispatchTree::new(cx.keymap.clone(), cx.actions.clone())),
@@ -1891,7 +1893,15 @@ impl Window {
 
     /// The position of the mouse relative to the window.
     pub fn mouse_position(&self) -> Point<Pixels> {
-        self.mouse_position
+        self.input_transform
+            .inverse()
+            .unwrap_or_default()
+            .apply(self.mouse_position)
+    }
+
+    /// Map a layout box into the coordinates where the subtree is painted.
+    pub fn painted_bounds(&self, bounds: Bounds<Pixels>) -> Bounds<Pixels> {
+        self.input_transform.apply_bounds(bounds)
     }
 
     /// The current state of the keyboard's modifiers
@@ -2447,6 +2457,7 @@ impl Window {
                 Bounds::new(Point::default(), self.viewport_size()),
                 Corners::default(),
                 opacity,
+                TransformationMatrix::unit(),
                 f,
             );
         }
@@ -2456,6 +2467,49 @@ impl Window {
         let result = f(self);
         self.element_opacity = previous_opacity;
         result
+    }
+
+    /// Scale a subtree around a window-relative origin without changing layout.
+    /// Call with the same values during both prepaint and paint. Metal composes
+    /// the entire subtree; its hitboxes, pointer events and IME boxes follow it.
+    /// Other backends currently retain their unscaled upstream drawing.
+    pub fn with_element_scale<R>(
+        &mut self,
+        origin: Point<Pixels>,
+        factor: f32,
+        f: impl FnOnce(&mut Self) -> R,
+    ) -> R {
+        self.invalidator.debug_assert_paint_or_prepaint();
+        assert!(
+            factor.is_finite() && factor > 0.,
+            "element scale must be finite and positive"
+        );
+        #[cfg(all(target_os = "macos", not(feature = "macos-blade")))]
+        if factor != 1. {
+            let transform = TransformationMatrix {
+                rotation_scale: [[factor, 0.], [0., factor]],
+                translation: [origin.x.0 * (1. - factor), origin.y.0 * (1. - factor)],
+            };
+            let previous = self.input_transform;
+            self.input_transform = previous.compose(transform);
+            let painting = self.invalidator.inner.borrow().draw_phase == DrawPhase::Paint;
+            let result = if painting {
+                self.paint_composite(
+                    Bounds::new(Point::default(), self.viewport_size()),
+                    Corners::default(),
+                    1.,
+                    transform,
+                    f,
+                )
+            } else {
+                f(self)
+            };
+            self.input_transform = previous;
+            return result;
+        }
+        #[cfg(not(all(target_os = "macos", not(feature = "macos-blade"))))]
+        let _ = origin;
+        f(self)
     }
 
     /// Clip painted children to a rounded overflow edge on the Metal backend.
@@ -2470,7 +2524,13 @@ impl Window {
             #[cfg(all(target_os = "macos", not(feature = "macos-blade")))]
             if let Some(mask) = mask {
                 if radii.max() > px(0.) {
-                    return window.paint_composite(mask.bounds, radii, 1.0, f);
+                    return window.paint_composite(
+                        mask.bounds,
+                        radii,
+                        1.0,
+                        TransformationMatrix::unit(),
+                        f,
+                    );
                 }
             }
             #[cfg(not(all(target_os = "macos", not(feature = "macos-blade"))))]
@@ -2485,6 +2545,7 @@ impl Window {
         bounds: Bounds<Pixels>,
         radii: Corners<Pixels>,
         opacity: f32,
+        transform: TransformationMatrix,
         f: impl FnOnce(&mut Self) -> R,
     ) -> R {
         self.invalidator.debug_assert_paint();
@@ -2495,6 +2556,10 @@ impl Window {
             mask,
             radii.map(|radius| radius.scale(scale)),
             opacity.clamp(0.0, 1.0),
+            TransformationMatrix {
+                translation: transform.translation.map(|v| v * scale),
+                ..transform
+            },
         );
         let result = f(self);
         self.next_frame.scene.pop_composite();
@@ -3367,7 +3432,10 @@ impl Window {
             content_mask,
             behavior,
         };
-        self.next_frame.hitboxes.push(hitbox.clone());
+        let mut painted = hitbox.clone();
+        painted.bounds = self.painted_bounds(bounds);
+        painted.content_mask.bounds = self.painted_bounds(painted.content_mask.bounds);
+        self.next_frame.hitboxes.push(painted);
         hitbox
     }
 
@@ -3460,9 +3528,10 @@ impl Window {
 
         if focus_handle.is_focused(self) {
             let cx = self.to_async(cx);
-            self.next_frame
-                .input_handlers
-                .push(Some(PlatformInputHandler::new(cx, Box::new(input_handler))));
+            self.next_frame.input_handlers.push(Some(
+                PlatformInputHandler::new(cx, Box::new(input_handler))
+                    .with_transform(self.input_transform),
+            ));
         }
     }
 
@@ -3477,10 +3546,20 @@ impl Window {
     ) {
         self.invalidator.debug_assert_paint();
 
+        let transform = self.input_transform;
+        let inverse = transform.inverse().unwrap_or_default();
         self.next_frame.mouse_listeners.push(Some(Box::new(
             move |event: &dyn Any, phase: DispatchPhase, window: &mut Window, cx: &mut App| {
-                if let Some(event) = event.downcast_ref() {
-                    handler(event, phase, window, cx)
+                if let Some(event) = event.downcast_ref::<Event>() {
+                    let previous = window.input_transform;
+                    window.input_transform = transform;
+                    if transform == TransformationMatrix::unit() {
+                        handler(event, phase, window, cx);
+                    } else {
+                        let event = event.with_position_transform(inverse);
+                        handler(&event, phase, window, cx);
+                    }
+                    window.input_transform = previous;
                 }
             },
         )));

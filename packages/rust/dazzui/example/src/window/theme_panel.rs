@@ -40,6 +40,7 @@ pub fn theme_panel(
     width: f32,
     set_theme: SetTheme,
     set_native_menus: SetNativeMenus,
+    scroll: gpui::ScrollHandle,
     resizer: AnyElement,
     window: &mut Window,
     cx: &mut App,
@@ -91,8 +92,10 @@ pub fn theme_panel(
         });
 
     div()
+        .id("theme-panel")
         .relative()
         .h_full()
+        .min_h_0()
         .flex_none()
         .child(
             Sidebar::new()
@@ -119,12 +122,12 @@ pub fn theme_panel(
                     ),
                 )
                 .child(
-                    SidebarContent::new().child(
+                    SidebarContent::new().scroll_handle(scroll).child(
                         div()
                             .id("themes")
                             .flex()
                             .flex_col()
-                            .overflow_y_scroll()
+                            .flex_none()
                             .child(
                                 SidebarGroup::new()
                                     .child(SidebarGroupLabel::new().child("Behavior"))

@@ -1,10 +1,13 @@
 //! Native button key phases, cancellation and real click bounds.
 
-use dazzui::{Button, IconButton, Theme};
+use dazzui::foundation::ControlColors;
+use dazzui::{ActiveTheme, Button, IconButton, State, Theme, Tint, Variant};
 use gpui::{
     App, ClickEvent, Context, Entity, InteractiveElement, IntoElement, KeyUpEvent, Keystroke,
-    Modifiers, ParentElement, Render, Styled, TestAppContext, VisualTestContext, Window, div,
+    Modifiers, ParentElement, Render, Styled, TestAppContext, TextStyle, VisualTestContext, Window,
+    canvas, div, px,
 };
+use std::{cell::RefCell, rc::Rc};
 
 struct Harness {
     icon: bool,
@@ -12,6 +15,8 @@ struct Harness {
     prevent_down: bool,
     prevent_up: bool,
     clicks: Vec<ClickEvent>,
+    variant: Variant,
+    typography: Option<Rc<RefCell<Vec<TextStyle>>>>,
 }
 
 impl Render for Harness {
@@ -30,11 +35,23 @@ impl Render for Harness {
                 .child("+")
                 .into_any_element()
         } else {
-            Button::new("tested")
+            let mut button = Button::new("tested")
+                .variant(self.variant)
                 .disabled(self.disabled)
                 .on_click(clicked)
-                .child("Action")
-                .into_any_element()
+                .child("Action");
+            if let Some(typography) = self.typography.clone() {
+                button = button.child(
+                    canvas(
+                        |_, _, _| (),
+                        move |_, _, window, _| {
+                            typography.borrow_mut().push(window.text_style());
+                        },
+                    )
+                    .size(px(1.)),
+                );
+            }
+            button.into_any_element()
         };
         let prevent_down = self.prevent_down;
         let prevent_up = self.prevent_up;
@@ -74,6 +91,8 @@ fn setup(cx: &mut TestAppContext, icon: bool) -> (Entity<Harness>, &mut VisualTe
         prevent_down: false,
         prevent_up: false,
         clicks: vec![],
+        variant: Variant::Recessed,
+        typography: None,
     });
     cx.run_until_parked();
     cx.simulate_keystrokes("tab");
@@ -190,5 +209,68 @@ fn prevented_keys_cancel_native_activation(cx: &mut TestAppContext) {
             0,
             "prevented release also clears the press"
         );
+    }
+}
+
+#[gpui::test]
+fn pointer_press_keeps_the_button_type_and_dimensions(cx: &mut TestAppContext) {
+    for variant in [Variant::Recessed, Variant::Outlined, Variant::Filled] {
+        let (view, cx) = setup(cx, false);
+        view.update(cx, |view, cx| {
+            view.variant = variant;
+            cx.notify();
+        });
+        cx.run_until_parked();
+        let before = cx.debug_bounds("tested-box").unwrap();
+        cx.simulate_mouse_down(before.center(), gpui::MouseButton::Left, Modifiers::none());
+        cx.run_until_parked();
+        assert_eq!(
+            cx.debug_bounds("tested-box").unwrap().size,
+            before.size,
+            "{variant:?}: changing pressed ink must retain the button's typography"
+        );
+        cx.simulate_mouse_up(before.center(), gpui::MouseButton::Left, Modifiers::none());
+        cx.run_until_parked();
+        assert_eq!(cx.debug_bounds("tested-box").unwrap().size, before.size);
+    }
+}
+
+#[gpui::test]
+fn hovered_and_pressed_ink_keep_the_painted_font(cx: &mut TestAppContext) {
+    let (view, cx) = setup(cx, false);
+    let painted = Rc::new(RefCell::new(Vec::new()));
+    view.update(cx, |view, cx| {
+        view.typography = Some(painted.clone());
+        cx.notify();
+    });
+    cx.run_until_parked();
+    let original = painted.borrow().last().unwrap().clone();
+    let bounds = cx.debug_bounds("tested-box").unwrap();
+    for pressed in [false, true] {
+        if pressed {
+            cx.simulate_mouse_down(bounds.center(), gpui::MouseButton::Left, Modifiers::none());
+        } else {
+            cx.simulate_mouse_move(bounds.center(), None, Modifiers::none());
+        }
+        cx.run_until_parked();
+        let actual = painted.borrow().last().unwrap().clone();
+        assert_eq!(actual.font_family, original.font_family);
+        assert_eq!(actual.font_size, original.font_size);
+        assert_eq!(actual.font_weight, original.font_weight);
+        assert_eq!(actual.line_height, original.line_height);
+        let expected = cx.update(|_, cx| {
+            ControlColors::resolve(
+                cx.theme(),
+                Variant::Recessed,
+                Tint::Primary,
+                if pressed {
+                    State::Pressed
+                } else {
+                    State::Hovered
+                },
+            )
+            .content
+        });
+        assert_eq!(actual.color, expected, "the state must still apply its ink");
     }
 }

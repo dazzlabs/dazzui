@@ -211,6 +211,7 @@ impl RenderOnce for SidebarProvider {
                 .flex_1()
                 .w_full()
                 .min_w_0()
+                .min_h_0()
                 .on_key_down(move |event: &KeyDownEvent, window, cx| {
                     let stroke = &event.keystroke;
                     if stroke.key == "b" && (stroke.modifiers.platform || stroke.modifiers.control)
@@ -411,7 +412,13 @@ impl RenderOnce for SidebarInset {
     fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
         let t = cx.theme();
         let column = SidebarContext::current(cx).and_then(|context| context.column.get());
-        let main = div().relative().flex().flex_1().flex_col().min_w_0();
+        let main = div()
+            .relative()
+            .flex()
+            .flex_1()
+            .flex_col()
+            .min_w_0()
+            .min_h_0();
         match column {
             // The raised sheet, set in by the sidebar's step and sharing its
             // edge: its box is the sheet's, as React's margin leaves it. The
@@ -519,11 +526,18 @@ impl RenderOnce for SidebarFooter {
 #[derive(IntoElement, Default)]
 pub struct SidebarContent {
     children: Vec<AnyElement>,
+    scroll_handle: Option<gpui::ScrollHandle>,
 }
 
 impl SidebarContent {
     pub fn new() -> Self {
         SidebarContent::default()
+    }
+
+    /// Track or control this column's own scroll position.
+    pub fn scroll_handle(mut self, handle: gpui::ScrollHandle) -> Self {
+        self.scroll_handle = Some(handle);
+        self
     }
 }
 
@@ -542,6 +556,9 @@ impl RenderOnce for SidebarContent {
         let count = self.children.len();
         div()
             .id("dz-sidebar-content")
+            .when_some(self.scroll_handle, |this, handle| {
+                this.track_scroll(&handle)
+            })
             .flex()
             .flex_col()
             .flex_1()

@@ -633,6 +633,7 @@ impl MetalRenderer {
             content_mask: composite.content_mask.clone(),
             corner_radii: composite.corner_radii,
             opacity: composite.opacity,
+            transformation: composite.transformation,
         };
         encoder.set_render_pipeline_state(&self.composite_pipeline_state);
         encoder.set_vertex_buffer(0, Some(&self.unit_vertices), 0);
@@ -1469,4 +1470,5 @@ pub struct CompositeUniforms {
     pub content_mask: ContentMask<ScaledPixels>,
     pub corner_radii: crate::Corners<ScaledPixels>,
     pub opacity: f32,
+    pub transformation: crate::TransformationMatrix,
 }

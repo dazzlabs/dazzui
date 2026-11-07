@@ -399,6 +399,9 @@ after starting its exit. GPUI posts native AppKit pointer and key events;
 modal interaction capture is currently macOS-only. React remeasures the live
 tree without remounting it. Native sheets report their actual surface through
 `wrap_with`, rather than reporting the trigger's in-flow wrapper as the sheet.
+GPUI records fresh bounds on each frame, including subtree transforms, while
+keeping the first duplicate specimen within that frame. An explicit detached
+surface overrides its trigger wrapper at the same address.
 
 Adding a platform is a collector and an expectations
 file; the viewer and the check learn of it from `run.json`.

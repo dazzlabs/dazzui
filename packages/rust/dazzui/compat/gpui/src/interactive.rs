@@ -15,7 +15,10 @@ pub trait InputEvent: Sealed + 'static {
 pub trait KeyEvent: InputEvent {}
 
 /// A mouse event from the platform.
-pub trait MouseEvent: InputEvent {}
+pub trait MouseEvent: InputEvent {
+    /// Copy an event with its pointer position mapped into an element's coordinates.
+    fn with_position_transform(&self, transform: crate::TransformationMatrix) -> Self;
+}
 
 /// The key down event equivalent for the platform.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -113,7 +116,14 @@ impl InputEvent for MouseDownEvent {
         PlatformInput::MouseDown(self)
     }
 }
-impl MouseEvent for MouseDownEvent {}
+impl MouseEvent for MouseDownEvent {
+    fn with_position_transform(&self, transform: crate::TransformationMatrix) -> Self {
+        Self {
+            position: transform.apply(self.position),
+            ..self.clone()
+        }
+    }
+}
 
 /// A mouse up event from the platform
 #[derive(Clone, Debug, Default)]
@@ -137,7 +147,14 @@ impl InputEvent for MouseUpEvent {
         PlatformInput::MouseUp(self)
     }
 }
-impl MouseEvent for MouseUpEvent {}
+impl MouseEvent for MouseUpEvent {
+    fn with_position_transform(&self, transform: crate::TransformationMatrix) -> Self {
+        Self {
+            position: transform.apply(self.position),
+            ..self.clone()
+        }
+    }
+}
 
 /// A click event, generated when a mouse button is pressed and released.
 #[derive(Clone, Debug, Default)]
@@ -349,7 +366,14 @@ impl InputEvent for MouseMoveEvent {
         PlatformInput::MouseMove(self)
     }
 }
-impl MouseEvent for MouseMoveEvent {}
+impl MouseEvent for MouseMoveEvent {
+    fn with_position_transform(&self, transform: crate::TransformationMatrix) -> Self {
+        Self {
+            position: transform.apply(self.position),
+            ..self.clone()
+        }
+    }
+}
 
 impl MouseMoveEvent {
     /// Returns true if the left mouse button is currently held down.
@@ -380,7 +404,14 @@ impl InputEvent for ScrollWheelEvent {
         PlatformInput::ScrollWheel(self)
     }
 }
-impl MouseEvent for ScrollWheelEvent {}
+impl MouseEvent for ScrollWheelEvent {
+    fn with_position_transform(&self, transform: crate::TransformationMatrix) -> Self {
+        Self {
+            position: transform.apply(self.position),
+            ..self.clone()
+        }
+    }
+}
 
 impl Deref for ScrollWheelEvent {
     type Target = Modifiers;
@@ -482,7 +513,14 @@ impl InputEvent for MouseExitEvent {
         PlatformInput::MouseExited(self)
     }
 }
-impl MouseEvent for MouseExitEvent {}
+impl MouseEvent for MouseExitEvent {
+    fn with_position_transform(&self, transform: crate::TransformationMatrix) -> Self {
+        Self {
+            position: transform.apply(self.position),
+            ..self.clone()
+        }
+    }
+}
 
 impl Deref for MouseExitEvent {
     type Target = Modifiers;
@@ -540,7 +578,23 @@ impl InputEvent for FileDropEvent {
         PlatformInput::FileDrop(self)
     }
 }
-impl MouseEvent for FileDropEvent {}
+impl MouseEvent for FileDropEvent {
+    fn with_position_transform(&self, transform: crate::TransformationMatrix) -> Self {
+        match self {
+            Self::Entered { position, paths } => Self::Entered {
+                position: transform.apply(*position),
+                paths: paths.clone(),
+            },
+            Self::Pending { position } => Self::Pending {
+                position: transform.apply(*position),
+            },
+            Self::Submit { position } => Self::Submit {
+                position: transform.apply(*position),
+            },
+            Self::Exited => Self::Exited,
+        }
+    }
+}
 
 /// An enum corresponding to all kinds of platform input events.
 #[derive(Clone, Debug)]

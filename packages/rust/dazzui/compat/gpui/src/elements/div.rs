@@ -1798,10 +1798,11 @@ impl Interactivity {
 
                 #[cfg(any(feature = "test-support", test))]
                 if let Some(debug_selector) = &self.debug_selector {
+                    let painted_bounds = window.painted_bounds(bounds);
                     window
                         .next_frame
                         .debug_bounds
-                        .insert(debug_selector.clone(), bounds);
+                        .insert(debug_selector.clone(), painted_bounds);
                 }
 
                 self.paint_hover_group_handler(window, cx);
@@ -2488,19 +2489,19 @@ impl Interactivity {
         cx: &mut App,
     ) -> Style {
         let mut style = Style::default();
-        style.refine(&self.base_style);
+        refine_interaction_style(&mut style, &self.base_style);
 
         if let Some(focus_handle) = self.tracked_focus_handle.as_ref() {
             if let Some(in_focus_style) = self.in_focus_style.as_ref()
                 && focus_handle.within_focused(window, cx)
             {
-                style.refine(in_focus_style);
+                refine_interaction_style(&mut style, in_focus_style);
             }
 
             if let Some(focus_style) = self.focus_style.as_ref()
                 && focus_handle.is_focused(window)
             {
-                style.refine(focus_style);
+                refine_interaction_style(&mut style, focus_style);
             }
         }
 
@@ -2510,13 +2511,13 @@ impl Interactivity {
                     && let Some(group_hitbox_id) = GroupHitboxes::get(&group_hover.group, cx)
                     && group_hitbox_id.is_hovered(window)
                 {
-                    style.refine(&group_hover.style);
+                    refine_interaction_style(&mut style, &group_hover.style);
                 }
 
                 if let Some(hover_style) = self.hover_style.as_ref()
                     && hitbox.is_hovered(window)
                 {
-                    style.refine(hover_style);
+                    refine_interaction_style(&mut style, hover_style);
                 }
             }
 
@@ -2533,14 +2534,17 @@ impl Interactivity {
                             && *state_type == drag.value.as_ref().type_id()
                             && group_hitbox_id.is_hovered(window)
                         {
-                            style.refine(&group_drag_style.style);
+                            refine_interaction_style(&mut style, &group_drag_style.style);
                         }
                     }
 
                     for (state_type, build_drag_over_style) in &self.drag_over_styles {
                         if *state_type == drag.value.as_ref().type_id() && hitbox.is_hovered(window)
                         {
-                            style.refine(&build_drag_over_style(drag.value.as_ref(), window, cx));
+                            refine_interaction_style(
+                                &mut style,
+                                &build_drag_over_style(drag.value.as_ref(), window, cx),
+                            );
                         }
                     }
                 }
@@ -2558,17 +2562,31 @@ impl Interactivity {
             if clicked_state.group
                 && let Some(group) = self.group_active_style.as_ref()
             {
-                style.refine(&group.style)
+                refine_interaction_style(&mut style, &group.style)
             }
 
             if let Some(active_style) = self.active_style.as_ref()
                 && clicked_state.element
             {
-                style.refine(active_style)
+                refine_interaction_style(&mut style, active_style)
             }
         }
 
         style
+    }
+}
+
+// A pseudo-state supplies individual text properties. Replacing the whole
+// TextStyleRefinement would discard the base font, size, weight and leading
+// when hover or active only changes ink, causing controls to reflow on press.
+fn refine_interaction_style(style: &mut Style, refinement: &StyleRefinement) {
+    let text = refinement
+        .text
+        .as_ref()
+        .map(|next| style.text.clone().refined(next.clone()));
+    style.refine(refinement);
+    if let Some(text) = text {
+        style.text = text;
     }
 }
 

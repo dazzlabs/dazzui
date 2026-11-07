@@ -120,6 +120,9 @@ once on release. Losing focus, becoming disabled or preventing the key's
 default cancels the pending activation. Keyboard clicks carry the actual
 control bounds. Dialog and Drawer trigger/close wrappers share that timing,
 so releasing an opening Enter cannot click the newly focused close button.
+Hover, focus and pressed ink merge with the control's base text properties;
+they keep its face, size, weight and leading instead of inheriting the page's
+typography and changing the control's width.
 
 Skeleton sweeps, Spinner turns and Progress sweeps share a loading clock and
 the CSS cubic Bézier curves. Determinate progress transitions over twice the
@@ -148,8 +151,12 @@ The committed GPUI compatibility patch gives the Metal renderer isolated
 subtree opacity and rounded overflow clipping. Dialog's header, body and
 footer compose before fading, and its child backgrounds stay inside the
 rounded padding edge. Cached views retain their original paint ranges.
-The reference's subtree scale remains to be implemented; other renderer
-backends still use upstream opacity and rectangular clipping. See
+Dialog scales the whole sheet around its centre from `dialog.transition-scale`
+to one. Hitboxes and pointer coordinates follow that transform, including
+nested scales and cached views; input-method rectangles and character probes
+map between the same coordinates. Detached menus anchor to painted trigger
+boxes. Other renderer backends still use upstream opacity, rectangular
+clipping and unscaled layout. See
 [`compat/gpui/DAZZUI-PATCH.md`](compat/gpui/DAZZUI-PATCH.md).
 
 ## The example
@@ -158,6 +165,11 @@ backends still use upstream opacity and rectangular clipping. See
 component list, the document, the theme panel. Its stories are compiled from
 the React ones by `pnpm codegen` into `example/src/stories/`; see
 [`specs/playgrounds.md`](../../../specs/playgrounds.md).
+
+The shell constrains all three columns to the window's height. Each owns its
+scroll handle; the theme panel uses SidebarContent's scroll container. A
+SidebarContent host may pass `.scroll_handle(handle)` to retain or control a
+column's position.
 
 ```bash
 cargo run -p dazzui-example --features runtime-shaders

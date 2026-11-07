@@ -135,8 +135,8 @@ impl Scene {
                 PaintOperation::StartLayer(bounds) => self.push_layer(*bounds),
                 PaintOperation::EndLayer => self.pop_layer(),
                 #[cfg(target_os = "macos")]
-                PaintOperation::StartComposite(bounds, mask, radii, opacity) => {
-                    self.push_composite(*bounds, mask.clone(), *radii, *opacity)
+                PaintOperation::StartComposite(bounds, mask, radii, opacity, transform) => {
+                    self.push_composite(*bounds, mask.clone(), *radii, *opacity, *transform)
                 }
                 #[cfg(target_os = "macos")]
                 PaintOperation::EndComposite => self.pop_composite(),
@@ -151,10 +151,12 @@ impl Scene {
         mask: ContentMask<ScaledPixels>,
         radii: Corners<ScaledPixels>,
         opacity: f32,
+        transform: TransformationMatrix,
     ) {
         self.has_composites = true;
-        self.paint_operations
-            .push(PaintOperation::StartComposite(bounds, mask, radii, opacity));
+        self.paint_operations.push(PaintOperation::StartComposite(
+            bounds, mask, radii, opacity, transform,
+        ));
     }
 
     #[cfg(target_os = "macos")]
@@ -202,12 +204,16 @@ impl Scene {
                 PaintOperation::Primitive(primitive) => scene.insert_primitive(primitive.clone()),
                 PaintOperation::StartLayer(bounds) => scene.push_layer(*bounds),
                 PaintOperation::EndLayer => scene.pop_layer(),
-                PaintOperation::StartComposite(bounds, mask, radii, opacity) => {
+                PaintOperation::StartComposite(bounds, mask, radii, opacity, transform) => {
                     let child = Self::materialize(operations);
                     if child.len() > 0 {
                         scene.insert_primitive(Composite {
                             order: 0,
                             bounds: *bounds,
+                            painted_bounds: transform
+                                .apply_bounds(bounds.map(|p| Pixels(p.0)))
+                                .map(|p| ScaledPixels(p.0)),
+                            transformation: *transform,
                             content_mask: mask.clone(),
                             corner_radii: *radii,
                             opacity: *opacity,
@@ -289,6 +295,7 @@ pub(crate) enum PaintOperation {
         ContentMask<ScaledPixels>,
         Corners<ScaledPixels>,
         f32,
+        TransformationMatrix,
     ),
     #[cfg(target_os = "macos")]
     EndComposite,
@@ -318,7 +325,7 @@ impl Primitive {
             Primitive::PolychromeSprite(sprite) => &sprite.bounds,
             Primitive::Surface(surface) => &surface.bounds,
             #[cfg(target_os = "macos")]
-            Primitive::Composite(composite) => &composite.bounds,
+            Primitive::Composite(composite) => &composite.painted_bounds,
         }
     }
 
@@ -719,6 +726,50 @@ impl TransformationMatrix {
         }
     }
 
+    /// Invert a nonsingular affine transformation.
+    pub fn inverse(self) -> Option<Self> {
+        let [[a, b], [c, d]] = self.rotation_scale;
+        let determinant = a * d - b * c;
+        if !determinant.is_finite() || determinant.abs() <= f32::EPSILON {
+            return None;
+        }
+        let inverse = Self {
+            rotation_scale: [
+                [d / determinant, -b / determinant],
+                [-c / determinant, a / determinant],
+            ],
+            translation: [0., 0.],
+        };
+        let translated = inverse.apply(point(
+            Pixels(-self.translation[0]),
+            Pixels(-self.translation[1]),
+        ));
+        Some(Self {
+            translation: [translated.x.0, translated.y.0],
+            ..inverse
+        })
+    }
+
+    /// The axis-aligned bounds containing all four transformed corners.
+    pub fn apply_bounds(self, bounds: Bounds<Pixels>) -> Bounds<Pixels> {
+        let points = [
+            bounds.origin,
+            bounds.top_right(),
+            bounds.bottom_left(),
+            bounds.bottom_right(),
+        ]
+        .map(|p| self.apply(p));
+        let mut min = points[0];
+        let mut max = points[0];
+        for p in points.into_iter().skip(1) {
+            min.x = min.x.min(p.x);
+            min.y = min.y.min(p.y);
+            max.x = max.x.max(p.x);
+            max.y = max.y.max(p.y);
+        }
+        Bounds::from_corners(min, max)
+    }
+
     /// Apply transformation to a point, mainly useful for debugging
     pub fn apply(&self, point: Point<Pixels>) -> Point<Pixels> {
         let input = [point.x.0, point.y.0];
@@ -960,6 +1011,8 @@ impl PathVertex<Pixels> {
 pub(crate) struct Composite {
     pub order: DrawOrder,
     pub bounds: Bounds<ScaledPixels>,
+    pub painted_bounds: Bounds<ScaledPixels>,
+    pub transformation: TransformationMatrix,
     pub content_mask: ContentMask<ScaledPixels>,
     pub corner_radii: Corners<ScaledPixels>,
     pub opacity: f32,
@@ -1008,6 +1061,7 @@ mod compositor_tests {
             ContentMask { bounds: bounds() },
             Corners::default(),
             opacity,
+            TransformationMatrix::unit(),
         );
     }
 
@@ -1079,11 +1133,47 @@ mod compositor_tests {
             ContentMask { bounds: clip },
             Corners::all(ScaledPixels(12.)),
             1.,
+            TransformationMatrix::unit(),
         );
         scene.insert_primitive(quad());
         scene.pop_composite();
         scene.finish();
         assert_eq!(scene.composites[0].bounds, bounds());
         assert_eq!(scene.composites[0].content_mask.bounds, clip);
+    }
+
+    #[test]
+    fn cached_scale_groups_retain_their_source_and_painted_bounds() {
+        let transform = TransformationMatrix {
+            rotation_scale: [[0.5, 0.], [0., 0.5]],
+            translation: [10., 20.],
+        };
+        let mut previous = Scene::default();
+        previous.push_composite(
+            bounds(),
+            ContentMask { bounds: bounds() },
+            Corners::default(),
+            1.,
+            transform,
+        );
+        previous.insert_primitive(quad());
+        previous.pop_composite();
+        previous.finish();
+        let mut next = Scene::default();
+        next.replay(0..previous.len(), &previous);
+        next.finish();
+        let group = &next.composites[0];
+        assert_eq!(group.bounds, bounds());
+        assert_eq!(
+            group.painted_bounds.origin,
+            point(ScaledPixels(10.), ScaledPixels(20.))
+        );
+        assert_eq!(group.painted_bounds.size.width, ScaledPixels(50.));
+        assert_eq!(group.transformation, transform);
+        let local = point(Pixels(30.), Pixels(40.));
+        assert_eq!(
+            transform.inverse().unwrap().apply(transform.apply(local)),
+            local
+        );
     }
 }

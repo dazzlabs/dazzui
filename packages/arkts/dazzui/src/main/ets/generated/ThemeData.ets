@@ -148,6 +148,7 @@ export const BASE: ThemeData = {
     "date-range-picker.time-min-width": 80,
     "date-range-picker.trigger-min-width": 256,
     "dialog.danger-border-alpha": 0.34,
+    "dialog.transition-scale": 0.97,
     "dialog.width": 440,
     "drawer.size": 352,
     "focus.offset": 0,

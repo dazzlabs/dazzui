@@ -238,7 +238,7 @@ impl Element for Measured {
         window: &mut Window,
         cx: &mut App,
     ) {
-        self.anchor.set(bounds);
+        self.anchor.set(window.painted_bounds(bounds));
         self.child.prepaint(window, cx);
     }
 

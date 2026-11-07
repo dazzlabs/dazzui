@@ -136,7 +136,7 @@
 .dz-dialog[data-starting-style],
 .dz-dialog[data-ending-style] {
   opacity: 0;
-  transform: scale(0.97);
+  transform: scale(var(--dialog-transition-scale));
 }
 
 .dz-dialog-scrim {

@@ -1,4 +1,7 @@
 dialog:
+  transition-scale:
+    $type: number
+    $value: 0.97
   width:
     $type: dimension
     $value: 27.5rem

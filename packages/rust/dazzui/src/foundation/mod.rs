@@ -10,6 +10,7 @@ pub mod scope;
 pub mod style;
 mod text;
 pub mod text_input;
+pub(crate) mod transform;
 
 pub use axes::*;
 pub use focus::{focus_visible, focusable, outline, pointer_down, ring, ring_color, with_outline};

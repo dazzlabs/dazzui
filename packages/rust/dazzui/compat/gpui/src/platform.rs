@@ -853,6 +853,7 @@ impl From<TileId> for etagere::AllocId {
 pub(crate) struct PlatformInputHandler {
     cx: AsyncWindowContext,
     handler: Box<dyn InputHandler>,
+    transform: crate::TransformationMatrix,
 }
 
 #[cfg_attr(
@@ -864,7 +865,16 @@ pub(crate) struct PlatformInputHandler {
 )]
 impl PlatformInputHandler {
     pub fn new(cx: AsyncWindowContext, handler: Box<dyn InputHandler>) -> Self {
-        Self { cx, handler }
+        Self {
+            cx,
+            handler,
+            transform: crate::TransformationMatrix::unit(),
+        }
+    }
+
+    pub(crate) fn with_transform(mut self, transform: crate::TransformationMatrix) -> Self {
+        self.transform = transform;
+        self
     }
 
     fn selected_text_range(&mut self, ignore_disabled_input: bool) -> Option<UTF16Selection> {
@@ -943,6 +953,7 @@ impl PlatformInputHandler {
             .update(|window, cx| self.handler.bounds_for_range(range_utf16, window, cx))
             .ok()
             .flatten()
+            .map(|bounds| self.transform.apply_bounds(bounds))
     }
 
     #[allow(dead_code)]
@@ -956,19 +967,22 @@ impl PlatformInputHandler {
 
     pub fn selected_bounds(&mut self, window: &mut Window, cx: &mut App) -> Option<Bounds<Pixels>> {
         let selection = self.handler.selected_text_range(true, window, cx)?;
-        self.handler.bounds_for_range(
-            if selection.reversed {
-                selection.range.start..selection.range.start
-            } else {
-                selection.range.end..selection.range.end
-            },
-            window,
-            cx,
-        )
+        self.handler
+            .bounds_for_range(
+                if selection.reversed {
+                    selection.range.start..selection.range.start
+                } else {
+                    selection.range.end..selection.range.end
+                },
+                window,
+                cx,
+            )
+            .map(|bounds| self.transform.apply_bounds(bounds))
     }
 
     #[allow(unused)]
     pub fn character_index_for_point(&mut self, point: Point<Pixels>) -> Option<usize> {
+        let point = self.transform.inverse()?.apply(point);
         self.cx
             .update(|window, cx| self.handler.character_index_for_point(point, window, cx))
             .ok()
@@ -1858,5 +1872,106 @@ impl From<String> for ClipboardString {
             text: value,
             metadata: None,
         }
+    }
+}
+
+#[cfg(all(test, target_os = "macos"))]
+mod compositor_input_tests {
+    use super::*;
+    use crate::{TestAppContext, TransformationMatrix, point, px, size};
+    use std::{cell::Cell, rc::Rc};
+
+    struct Probe {
+        point: Rc<Cell<Point<Pixels>>>,
+    }
+    impl InputHandler for Probe {
+        fn selected_text_range(
+            &mut self,
+            _: bool,
+            _: &mut Window,
+            _: &mut App,
+        ) -> Option<UTF16Selection> {
+            Some(UTF16Selection {
+                range: 0..0,
+                reversed: false,
+            })
+        }
+        fn marked_text_range(&mut self, _: &mut Window, _: &mut App) -> Option<Range<usize>> {
+            None
+        }
+        fn text_for_range(
+            &mut self,
+            _: Range<usize>,
+            _: &mut Option<Range<usize>>,
+            _: &mut Window,
+            _: &mut App,
+        ) -> Option<String> {
+            None
+        }
+        fn replace_text_in_range(
+            &mut self,
+            _: Option<Range<usize>>,
+            _: &str,
+            _: &mut Window,
+            _: &mut App,
+        ) {
+        }
+        fn replace_and_mark_text_in_range(
+            &mut self,
+            _: Option<Range<usize>>,
+            _: &str,
+            _: Option<Range<usize>>,
+            _: &mut Window,
+            _: &mut App,
+        ) {
+        }
+        fn unmark_text(&mut self, _: &mut Window, _: &mut App) {}
+        fn bounds_for_range(
+            &mut self,
+            _: Range<usize>,
+            _: &mut Window,
+            _: &mut App,
+        ) -> Option<Bounds<Pixels>> {
+            Some(Bounds::new(point(px(100.), px(80.)), size(px(2.), px(20.))))
+        }
+        fn character_index_for_point(
+            &mut self,
+            point: Point<Pixels>,
+            _: &mut Window,
+            _: &mut App,
+        ) -> Option<usize> {
+            self.point.set(point);
+            Some(3)
+        }
+    }
+
+    #[gpui::test]
+    fn compositor_maps_ime_bounds_and_character_probes(cx: &mut TestAppContext) {
+        let cx = cx.add_empty_window();
+        let point_seen = Rc::new(Cell::new(Point::default()));
+        let transform = TransformationMatrix {
+            rotation_scale: [[0.5, 0.], [0., 0.5]],
+            translation: [20., 30.],
+        };
+        let mut handler = cx.update(|window, cx| {
+            PlatformInputHandler::new(
+                window.to_async(cx),
+                Box::new(Probe {
+                    point: point_seen.clone(),
+                }),
+            )
+            .with_transform(transform)
+        });
+        let expected = Bounds::new(point(px(70.), px(70.)), size(px(1.), px(10.)));
+        assert_eq!(handler.bounds_for_range(0..0), Some(expected));
+        assert_eq!(
+            cx.update(|window, cx| handler.selected_bounds(window, cx)),
+            Some(expected)
+        );
+        assert_eq!(
+            handler.character_index_for_point(point(px(75.), px(80.))),
+            Some(3)
+        );
+        assert_eq!(point_seen.get(), point(px(110.), px(100.)));
     }
 }

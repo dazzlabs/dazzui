@@ -74,6 +74,11 @@ fn recorded(node: &Node) -> impl FnOnce(AnyElement) -> AnyElement + 'static {
     move |element| crate::lib::specimen::wrap(at.as_ref(), element, &path)
 }
 
+fn recorded_surface(node: &Node) -> impl FnOnce(AnyElement) -> AnyElement + 'static {
+    let at = node.json.get("$at").cloned();
+    move |element| crate::lib::specimen::surface(at.as_ref(), element)
+}
+
 fn strings(value: &Value) -> Vec<SharedString> {
     value
         .as_array()
@@ -435,7 +440,7 @@ fn dialog(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
         .element("trigger", window, cx);
     let kids = with_close(hide.clone(), || node.kids(window, cx));
     let mut dialog = Dialog::new(node.id())
-        .wrap_with(recorded(node))
+        .wrap_with(recorded_surface(node))
         .open(open)
         .on_open_change(move |next, window, cx| {
             if !next {
@@ -485,7 +490,7 @@ fn drawer(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
         (node.kids(window, cx), node.element("footer", window, cx))
     });
     let mut drawer = Drawer::new(node.id())
-        .wrap_with(recorded(node))
+        .wrap_with(recorded_surface(node))
         .open(open)
         .on_open_change(move |next, window, cx| {
             if !next {

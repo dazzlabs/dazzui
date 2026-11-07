@@ -14,8 +14,8 @@ use dazzui::{
 };
 use gpui::{
     AnyElement, App, Context, ElementId, Entity, InteractiveElement, IntoElement, MouseButton,
-    MouseMoveEvent, ParentElement, Render, StatefulInteractiveElement, Styled, Window, div,
-    prelude::*, px,
+    MouseMoveEvent, ParentElement, Render, ScrollHandle, StatefulInteractiveElement, Styled,
+    Window, div, prelude::*, px,
 };
 
 use crate::lib::scene::SceneView;
@@ -36,6 +36,9 @@ pub struct Shell {
     themes_width: f32,
     theme: ThemeChoice,
     native_menus: bool,
+    list_scroll: ScrollHandle,
+    document_scroll: ScrollHandle,
+    themes_scroll: ScrollHandle,
     drag: Option<Drag>,
     /// A scene's view, kept while it is on screen so its slots survive a
     /// redraw.
@@ -60,6 +63,9 @@ impl Shell {
             themes_width: THEMES.initial,
             theme: choice,
             native_menus: false,
+            list_scroll: ScrollHandle::new(),
+            document_scroll: ScrollHandle::new(),
+            themes_scroll: ScrollHandle::new(),
             drag: None,
             scenes: HashMap::new(),
         }
@@ -131,6 +137,7 @@ impl Render for Shell {
             .child(SidebarHeader::new().child(Brand::new(open_page(None))))
             .child(
                 SidebarContent::new()
+                    .scroll_handle(self.list_scroll.clone())
                     .child(SidebarGroup::new().child(search))
                     .child(
                         SidebarGroup::new().child(
@@ -246,6 +253,7 @@ impl Render for Shell {
                 .child(
                     div()
                         .id("document")
+                        .track_scroll(&self.document_scroll)
                         .flex_1()
                         .min_h_0()
                         .overflow_y_scroll()
@@ -287,6 +295,7 @@ impl Render for Shell {
                 self.themes_width,
                 set_theme,
                 set_native_menus,
+                self.themes_scroll.clone(),
                 resizer,
                 window,
                 cx,
@@ -313,6 +322,10 @@ impl Render for Shell {
             page_type(div(), cx)
                 .id("shell")
                 .size_full()
+                .flex()
+                .flex_col()
+                .min_h_0()
+                .overflow_hidden()
                 .bg(t.color_surface.hsla())
                 .on_mouse_move(cx.listener(|shell, event: &MouseMoveEvent, _, cx| {
                     let Some(drag) = shell.drag else { return };
@@ -336,7 +349,7 @@ impl Render for Shell {
                     SidebarProvider::new("window")
                         .open(self.list_open)
                         .on_open_change(on_open_change)
-                        .child(list)
+                        .child(div().id("source-list").h_full().flex_none().child(list))
                         .child(inset)
                         .children(panel),
                 ),
@@ -463,4 +476,55 @@ fn quiet(text: impl Into<gpui::SharedString>, cx: &App) -> AnyElement {
         .text_size(px(t.caption_large.size))
         .child(text.into())
         .into_any_element()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use gpui::{Modifiers, ScrollDelta, ScrollWheelEvent, TestAppContext, TouchPhase, point, size};
+
+    #[gpui::test]
+    fn all_three_columns_scroll_independently_inside_the_window(cx: &mut TestAppContext) {
+        cx.update(dazzui::init);
+        let (view, cx) =
+            cx.add_window_view(|_, cx| Shell::new(Some("button".into()), "studio-light", cx));
+        cx.simulate_resize(size(px(1280.), px(480.)));
+        cx.run_until_parked();
+        let handles = view.read_with(cx, |shell, _| {
+            [
+                shell.list_scroll.clone(),
+                shell.document_scroll.clone(),
+                shell.themes_scroll.clone(),
+            ]
+        });
+        for (index, handle) in handles.iter().enumerate() {
+            let bounds = handle.bounds();
+            assert!(
+                bounds.size.height <= px(480.),
+                "column {index} escaped the window: {bounds:?}"
+            );
+            let before = handles.each_ref().map(|handle| handle.offset());
+            cx.simulate_event(ScrollWheelEvent {
+                position: bounds.center(),
+                delta: ScrollDelta::Pixels(point(px(0.), px(-160.))),
+                modifiers: Modifiers::none(),
+                touch_phase: TouchPhase::Moved,
+            });
+            cx.run_until_parked();
+            assert!(
+                handle.offset().y < before[index].y,
+                "column {index} did not scroll: {:?}",
+                handle.offset()
+            );
+            for other in 0..3 {
+                if other != index {
+                    assert_eq!(
+                        handles[other].offset(),
+                        before[other],
+                        "scrolling column {index} moved column {other}"
+                    );
+                }
+            }
+        }
+    }
 }

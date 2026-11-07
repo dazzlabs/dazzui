@@ -454,8 +454,11 @@ impl RenderOnce for ContextMenu {
         let wrapped = div()
             .id(self.id)
             .on_mouse_down(MouseButton::Right, move |event, window, cx| {
+                let position = window
+                    .painted_bounds(Bounds::new(event.position, size(px(0.), px(0.))))
+                    .origin;
                 right.update(cx, |state, cx| {
-                    state.point = Some(event.position);
+                    state.point = Some(position);
                     if native_click {
                         // No sheet to hand the keyboard to.
                         state.open = true;
@@ -466,7 +469,7 @@ impl RenderOnce for ContextMenu {
                 });
                 if native_click {
                     // The list is the OS's, at the pointer.
-                    let at = Anchor::at(Bounds::new(event.position, size(px(0.), px(0.))));
+                    let at = Anchor::at(Bounds::new(position, size(px(0.), px(0.))));
                     present_native_menu(
                         right_entries.clone(),
                         &at,

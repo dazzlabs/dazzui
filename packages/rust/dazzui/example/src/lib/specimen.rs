@@ -24,17 +24,36 @@ pub fn start() {
     FRAMES.with(|frames| *frames.borrow_mut() = Some(BTreeMap::new()));
 }
 
+/// Keep addresses within one painted frame; animated boxes move between frames.
+pub fn begin_frame() {
+    FRAMES.with(|frames| {
+        if let Some(frames) = frames.borrow_mut().as_mut() {
+            frames.clear();
+        }
+    });
+}
+
 /// What has been recorded since [`start`].
 pub fn frames() -> BTreeMap<usize, Bounds<Pixels>> {
     FRAMES.with(|frames| frames.borrow().clone().unwrap_or_default())
 }
 
 pub fn wrap(at: Option<&Value>, element: impl IntoElement, _path: &str) -> AnyElement {
+    wrap_as(at, element, false)
+}
+
+/// A detached sheet's actual surface takes precedence over its in-flow trigger.
+pub fn surface(at: Option<&Value>, element: impl IntoElement) -> AnyElement {
+    wrap_as(at, element, true)
+}
+
+fn wrap_as(at: Option<&Value>, element: impl IntoElement, surface: bool) -> AnyElement {
     let collecting = FRAMES.with(|frames| frames.borrow().is_some());
     match at.and_then(Value::as_u64) {
         Some(index) if collecting => Specimen {
             index: index as usize,
             child: element.into_any_element(),
+            surface,
         }
         .into_any_element(),
         _ => element.into_any_element(),
@@ -46,6 +65,7 @@ pub fn wrap(at: Option<&Value>, element: impl IntoElement, _path: &str) -> AnyEl
 struct Specimen {
     index: usize,
     child: AnyElement,
+    surface: bool,
 }
 
 impl IntoElement for Specimen {
@@ -88,11 +108,16 @@ impl Element for Specimen {
         window: &mut Window,
         cx: &mut App,
     ) {
+        let bounds = window.painted_bounds(bounds);
         FRAMES.with(|frames| {
             if let Some(frames) = frames.borrow_mut().as_mut() {
                 // A specimen drawn twice (a trigger inside an open popup's
                 // twin) keeps the first box, as the walk addresses it.
-                frames.entry(self.index).or_insert(bounds);
+                if self.surface {
+                    frames.insert(self.index, bounds);
+                } else {
+                    frames.entry(self.index).or_insert(bounds);
+                }
             }
         });
         self.child.prepaint(window, cx);

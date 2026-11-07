@@ -125,6 +125,7 @@ public struct ThemeVariables: Sendable {
     dateRangePickerTriggerMinWidth: CGFloat = 256.0,
     dateRangePickerTimeMinWidth: CGFloat = 80.0,
     dateRangePickerKeyTracking: CGFloat = 0.06,
+    dialogTransitionScale: CGFloat = 0.97,
     dialogWidth: CGFloat = 440.0,
     dialogScrimAlpha: CGFloat = 0.25,
     dialogDangerBorderAlpha: CGFloat = 0.34,
@@ -359,6 +360,7 @@ public struct ThemeVariables: Sendable {
     self.dateRangePickerTriggerMinWidth = dateRangePickerTriggerMinWidth
     self.dateRangePickerTimeMinWidth = dateRangePickerTimeMinWidth
     self.dateRangePickerKeyTracking = dateRangePickerKeyTracking
+    self.dialogTransitionScale = dialogTransitionScale
     self.dialogWidth = dialogWidth
     self.dialogScrimAlpha = dialogScrimAlpha
     self.dialogDangerBorderAlpha = dialogDangerBorderAlpha
@@ -562,6 +564,7 @@ public struct ThemeVariables: Sendable {
   public let dateRangePickerTriggerMinWidth: CGFloat
   public let dateRangePickerTimeMinWidth: CGFloat
   public let dateRangePickerKeyTracking: CGFloat
+  public let dialogTransitionScale: CGFloat
   public let dialogWidth: CGFloat
   public let dialogScrimAlpha: CGFloat
   public let dialogDangerBorderAlpha: CGFloat
@@ -937,6 +940,7 @@ public struct ThemeVariables: Sendable {
       dateRangePickerTriggerMinWidth: dateRangePickerTriggerMinWidth * scale,
       dateRangePickerTimeMinWidth: dateRangePickerTimeMinWidth * scale,
       dateRangePickerKeyTracking: dateRangePickerKeyTracking,
+      dialogTransitionScale: dialogTransitionScale,
       dialogWidth: dialogWidth * scale,
       dialogScrimAlpha: dialogScrimAlpha,
       dialogDangerBorderAlpha: dialogDangerBorderAlpha,

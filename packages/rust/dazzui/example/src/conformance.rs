@@ -127,6 +127,7 @@ struct Stage {
 
 impl Render for Stage {
     fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        specimen::begin_frame();
         let scene = self.scene.clone();
         themed(self.theme, Framed { scene })
     }
@@ -354,17 +355,21 @@ async fn collect(
                 .get(&FRAME)
                 .map(|b| f32::from(b.size.height))
                 .unwrap_or(400.0);
-            specimen::start();
-            window
+            let viewport = size(px(VIEWPORT_WIDTH), px(height.ceil().max(VIEWPORT_HEIGHT)));
+            let resized = window
                 .update(cx, |_, window, cx| {
-                    window.resize(size(
-                        px(VIEWPORT_WIDTH),
-                        px(height.ceil().max(VIEWPORT_HEIGHT)),
-                    ));
+                    if window.viewport_size() == viewport {
+                        return false;
+                    }
+                    specimen::start();
+                    window.resize(viewport);
                     cx.notify();
+                    true
                 })
                 .map_err(|e| e.to_string())?;
-            settle(window, cx, options.images).await?;
+            if resized {
+                settle(window, cx, options.images).await?;
+            }
             if let Some(mode) = &options.modal {
                 let index = specimens
                     .iter()

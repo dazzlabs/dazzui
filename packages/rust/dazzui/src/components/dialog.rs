@@ -405,6 +405,10 @@ impl RenderOnce for Dialog {
                 Some(wrap) => wrap(sheet.into_any_element()),
                 None => sheet.into_any_element(),
             };
+            let sheet = crate::foundation::transform::scaled(
+                sheet,
+                t.dialog_transition_scale + (1. - t.dialog_transition_scale) * modal.amount,
+            );
             let centred = div()
                 .absolute()
                 .inset_0()

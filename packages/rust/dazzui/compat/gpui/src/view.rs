@@ -23,6 +23,7 @@ struct ViewCacheKey {
     bounds: Bounds<Pixels>,
     content_mask: ContentMask<Pixels>,
     text_style: TextStyle,
+    input_transform: crate::TransformationMatrix,
 }
 
 impl<V: Render> Element for Entity<V> {
@@ -209,6 +210,7 @@ impl Element for AnyView {
                         && element_state.cache_key.bounds == bounds
                         && element_state.cache_key.content_mask == content_mask
                         && element_state.cache_key.text_style == text_style
+                        && element_state.cache_key.input_transform == window.input_transform
                         && !window.dirty_views.contains(&self.entity_id())
                         && !window.refreshing
                     {
@@ -244,6 +246,7 @@ impl Element for AnyView {
                                 bounds,
                                 content_mask,
                                 text_style,
+                                input_transform: window.input_transform,
                             },
                         },
                     )

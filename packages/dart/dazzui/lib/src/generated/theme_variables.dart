@@ -240,6 +240,7 @@ class ThemeVariables {
     this.dateRangePickerTriggerMinWidth = 256,
     this.dateRangePickerTimeMinWidth = 80,
     this.dateRangePickerKeyTracking = 0.06,
+    this.dialogTransitionScale = 0.97,
     this.dialogWidth = 440,
     this.dialogScrimAlpha = 0.25,
     this.dialogDangerBorderAlpha = 0.34,
@@ -845,6 +846,7 @@ class ThemeVariables {
   final double dateRangePickerKeyTracking;
 
   // Dialog
+  final double dialogTransitionScale;
   final double dialogWidth;
   Color get dialogScrimColor => colorContent;
   final double dialogScrimAlpha;
@@ -1157,6 +1159,7 @@ class ThemeVariables {
     double? dateRangePickerTriggerMinWidth,
     double? dateRangePickerTimeMinWidth,
     double? dateRangePickerKeyTracking,
+    double? dialogTransitionScale,
     double? dialogWidth,
     double? dialogScrimAlpha,
     double? dialogDangerBorderAlpha,
@@ -1418,6 +1421,8 @@ class ThemeVariables {
           dateRangePickerTimeMinWidth ?? this.dateRangePickerTimeMinWidth,
       dateRangePickerKeyTracking:
           dateRangePickerKeyTracking ?? this.dateRangePickerKeyTracking,
+      dialogTransitionScale:
+          dialogTransitionScale ?? this.dialogTransitionScale,
       dialogWidth: dialogWidth ?? this.dialogWidth,
       dialogScrimAlpha: dialogScrimAlpha ?? this.dialogScrimAlpha,
       dialogDangerBorderAlpha:
