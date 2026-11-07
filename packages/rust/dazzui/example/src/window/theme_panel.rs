@@ -1,8 +1,8 @@
-//! The theme, and nothing else: which half of it, then which family.
+//! Theme families and the shell's menu presentation preference.
 
 use dazzui::{
     ActiveTheme, Icon, OptionCard, Sidebar, SidebarCollapsible, SidebarContent, SidebarGroup,
-    SidebarGroupContent, SidebarGroupLabel, SidebarSide, Theme, Toggle, themed,
+    SidebarGroupContent, SidebarGroupLabel, SidebarSide, Size, Switch, Theme, Toggle, themed,
 };
 use gpui::{
     AnyElement, App, ClickEvent, ElementId, FontWeight, IntoElement, ParentElement, Styled, Window,
@@ -31,12 +31,15 @@ impl ThemeChoice {
 }
 
 type SetTheme = Rc<dyn Fn(ThemeChoice, &mut Window, &mut App)>;
+type SetNativeMenus = Rc<dyn Fn(bool, &mut Window, &mut App)>;
 
 /// The panel, its width set by the shell that keeps it.
 pub fn theme_panel(
     theme: &ThemeChoice,
+    native_menus: bool,
     width: f32,
     set_theme: SetTheme,
+    set_native_menus: SetNativeMenus,
     resizer: AnyElement,
     window: &mut Window,
     cx: &mut App,
@@ -122,6 +125,31 @@ pub fn theme_panel(
                             .flex()
                             .flex_col()
                             .overflow_y_scroll()
+                            .child(
+                                SidebarGroup::new()
+                                    .child(SidebarGroupLabel::new().child("Behavior"))
+                                    .child(
+                                        SidebarGroupContent::new().child(
+                                            div()
+                                                .flex()
+                                                .items_center()
+                                                .justify_between()
+                                                .gap(px(t.spacing_2))
+                                                .child("Native menus")
+                                                .child(
+                                                    Switch::new("native-menus")
+                                                        .size(Size::Small)
+                                                        .checked(native_menus)
+                                                        .disabled(!cfg!(feature = "native-menus"))
+                                                        .on_checked_change(
+                                                            move |native, window, cx| {
+                                                                set_native_menus(native, window, cx)
+                                                            },
+                                                        ),
+                                                ),
+                                        ),
+                                    ),
+                            )
                             .children(groups),
                     ),
                 ),

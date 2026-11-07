@@ -1,8 +1,12 @@
 //! The shape of something that has not arrived.
 
-use gpui::{App, IntoElement, ParentElement, RenderOnce, Styled, Window, div, px, relative};
+use gpui::{
+    App, Bounds, ContentMask, IntoElement, ParentElement, RenderOnce, Styled, Window, canvas, div,
+    fill, linear_color_stop, linear_gradient, point, px, relative, size,
+};
 
 use crate::foundation::Length;
+use crate::foundation::motion::{Motion, cubic_bezier};
 use crate::theme::ActiveTheme;
 
 /// `text` is a bar on the line box of the type it stands in for; `circle` is
@@ -29,8 +33,8 @@ impl SkeletonShape {
 /// A place where a control or a line of type will be, drawn in the dead
 /// `surface-sunken` step a disabled control flattens to.
 ///
-/// React sweeps a `surface-subtle` highlight across it; here the groove is
-/// drawn still, which is what the web draws under reduced motion.
+/// A `surface-subtle` highlight sweeps across it, unless reduced motion
+/// stops the decorative animation.
 #[derive(IntoElement, Default)]
 pub struct Skeleton {
     shape: SkeletonShape,
@@ -65,7 +69,81 @@ impl Skeleton {
 impl RenderOnce for Skeleton {
     fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
         let t = cx.theme();
-        let bar = div().flex_none().bg(t.color_surface_sunken.hsla());
+        let radius = match self.shape {
+            SkeletonShape::Text => t.radius_tiny,
+            SkeletonShape::Circle => t.radius_full,
+            SkeletonShape::Rect => t.radius_small,
+        };
+        let bar = div()
+            .relative()
+            .flex_none()
+            .bg(t.color_surface_sunken.hsla());
+        let bar = bar.child(
+            canvas(
+                |_, _, _| {},
+                move |bounds, _, window, cx| {
+                    let frame = Motion::frame(cx);
+                    let phase = frame.cycle(t.skeleton_sweep_duration, t.skeleton_sweep_duration);
+                    let progress = if frame.reduced {
+                        // The clamped CSS animation has no fill mode: once it
+                        // finishes, background-position returns to its 0% base.
+                        if frame.frozen
+                            && frame.elapsed.as_secs_f64() * 1000.
+                                < t.motion_reduced_duration as f64
+                        {
+                            0.
+                        } else {
+                            0.5
+                        }
+                    } else {
+                        cubic_bezier(t.motion_loop_easing, phase)
+                    };
+                    let peak = -1. + 4. * progress;
+                    let highlight = t.color_surface_subtle.hsla();
+                    let invisible = gpui::Hsla { a: 0., ..highlight };
+                    let corner =
+                        radius.min(f32::from(bounds.size.width.min(bounds.size.height)) / 2.);
+                    // CSS's 200%-wide, three-stop background is two gradients.
+                    // Paint each through a rectangular mask, retaining the bar's
+                    // rounded silhouette on both halves of the highlight.
+                    for (start, end, from, to) in [
+                        (0., peak.clamp(0., 1.), invisible, highlight),
+                        (peak.clamp(0., 1.), 1., highlight, invisible),
+                    ] {
+                        if end <= start {
+                            continue;
+                        }
+                        let (a, b) = if from.a == 0. {
+                            (peak - 1., peak)
+                        } else {
+                            (peak, peak + 1.)
+                        };
+                        let mask = Bounds::new(
+                            point(bounds.origin.x + bounds.size.width * start, bounds.origin.y),
+                            size(bounds.size.width * (end - start), bounds.size.height),
+                        );
+                        window.with_content_mask(Some(ContentMask { bounds: mask }), |window| {
+                            window.paint_quad(
+                                fill(
+                                    bounds,
+                                    linear_gradient(
+                                        90.,
+                                        linear_color_stop(from, a),
+                                        linear_color_stop(to, b),
+                                    ),
+                                )
+                                .corner_radii(px(corner)),
+                            );
+                        });
+                    }
+                    if !frame.frozen && !frame.reduced {
+                        window.request_animation_frame();
+                    }
+                },
+            )
+            .absolute()
+            .inset_0(),
+        );
         match self.shape {
             SkeletonShape::Text => bar
                 .w(self.width.unwrap_or(Length::Fraction(1.0)).definite())
@@ -131,7 +209,7 @@ impl RenderOnce for SkeletonText {
                 if index + 1 == lines {
                     // A proportion rather than a length: there is no step of
                     // the scale to compose three fifths out of.
-                    div().w(relative(0.6)).child(bar)
+                    div().w(relative(t.skeleton_last_line_width)).child(bar)
                 } else {
                     div().w_full().child(bar)
                 }

@@ -26,6 +26,27 @@ impl Color {
         color.a *= alpha;
         color
     }
+
+    /// CSS `color-mix(in srgb, self weight, other)`, including alpha.
+    pub fn mix(self, other: Color, weight: f32) -> Hsla {
+        let a = gpui::Rgba::from(self.hsla());
+        let b = gpui::Rgba::from(other.hsla());
+        let weight = weight.clamp(0., 1.);
+        let alpha = a.a * weight + b.a * (1. - weight);
+        if alpha == 0. {
+            return gpui::transparent_black();
+        }
+        let channel = |a_channel, b_channel| {
+            (a_channel * a.a * weight + b_channel * b.a * (1. - weight)) / alpha
+        };
+        gpui::Rgba {
+            r: channel(a.r, b.r),
+            g: channel(a.g, b.g),
+            b: channel(a.b, b.b),
+            a: alpha,
+        }
+        .into()
+    }
 }
 
 impl From<Color> for Hsla {
@@ -150,11 +171,11 @@ pub struct TypeStyle {
 
 impl TypeStyle {
     pub fn font_weight(self) -> FontWeight {
-        // Core Text's system and SF Mono Medium report trait 0.23. font-kit's inverse
-        // CSS mapping calls that 530, so GPUI's CSS-500 matching rule otherwise
-        // chooses Regular (400) before this slightly-higher Medium candidate.
+        // SF Mono Medium reports trait 0.23. font-kit's inverse CSS mapping
+        // calls that 530, so its CSS-500 matching rule would choose Regular.
+        // The system UI family is normalized by compat/font-kit instead.
         #[cfg(target_os = "macos")]
-        if self.weight == 500 && (self.face != Face::Mono || self.face.family() == "SF Mono") {
+        if self.weight == 500 && self.face == Face::Mono && self.face.family() == "SF Mono" {
             return FontWeight(530.);
         }
         FontWeight(self.weight as f32)
@@ -181,7 +202,9 @@ impl Shadow {
         BoxShadow {
             color: self.color.hsla(),
             offset: point(px(self.x), px(self.y)),
-            blur_radius: px(self.blur),
+            // CSS stores the blur length; GPUI's shader consumes Gaussian
+            // sigma directly. CSS sigma is half that length.
+            blur_radius: px(self.blur / 2.),
             spread_radius: px(self.spread),
         }
     }

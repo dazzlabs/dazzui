@@ -16,10 +16,10 @@ use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    AlignItems, AnyElement, App, Bounds, Context, Deferred, Display, Div, Element, ElementId,
-    Entity, FocusHandle, GlobalElementId, InspectorElementId, InteractiveElement, IntoElement,
+    AlignItems, AnyElement, App, Bounds, Context, Display, Div, Element, ElementId, Entity,
+    FocusHandle, GlobalElementId, InspectorElementId, InteractiveElement, IntoElement,
     KeyDownEvent, LayoutId, ParentElement, Pixels, Point, Position, RenderOnce, SharedString,
-    Stateful, Style, Styled, Task, Window, deferred, div, point, prelude::*, px, size,
+    Stateful, Style, Styled, Task, Window, div, point, prelude::*, px, size,
 };
 
 use crate::StyledExt;
@@ -259,14 +259,17 @@ impl Element for Measured {
 /// `sheet`, drawn above everything and placed against `anchor` — Base UI's
 /// portal and positioner. The sheet is laid out at its own size, then put on
 /// its side, flipped when that side has no room, and kept inside the window.
-pub fn positioned(anchor: &Anchor, placement: Placement, sheet: impl IntoElement) -> Deferred {
-    deferred(Positioned {
-        anchor: anchor.clone(),
-        placement,
-        child: sheet.into_any_element(),
-        nest: None,
-    })
-    .priority(1)
+pub fn positioned(anchor: &Anchor, placement: Placement, sheet: impl IntoElement) -> AnyElement {
+    crate::foundation::portal::portal(
+        Positioned {
+            anchor: anchor.clone(),
+            placement,
+            child: sheet.into_any_element(),
+            nest: None,
+        },
+        1,
+    )
+    .into_any_element()
 }
 
 struct Positioned {
@@ -473,6 +476,7 @@ pub struct PopupState {
     restore: Option<FocusHandle>,
     typed: String,
     typed_at: Option<Instant>,
+    typeahead_timeout: Duration,
     hovered: [bool; 2],
     timer: Option<Task<()>>,
 }
@@ -488,6 +492,9 @@ impl PopupState {
             restore: None,
             typed: String::new(),
             typed_at: None,
+            typeahead_timeout: Duration::from_secs_f32(
+                cx.theme().menu_typeahead_reset_duration / 1000.,
+            ),
             hovered: [false; 2],
             timer: None,
         }
@@ -495,11 +502,14 @@ impl PopupState {
 
     /// The state kept for the popup `id` names, opened at first if `open`.
     pub fn keyed(id: &ElementId, open: bool, window: &mut Window, cx: &mut App) -> Entity<Self> {
-        window.use_keyed_state(part_id(id, "popup"), cx, |_, cx| {
+        let state = window.use_keyed_state(part_id(id, "popup"), cx, |_, cx| {
             let mut state = PopupState::new(cx);
             state.open = open;
             state
-        })
+        });
+        let timeout = Duration::from_secs_f32(cx.theme().menu_typeahead_reset_duration / 1000.);
+        state.update(cx, |state, _| state.typeahead_timeout = timeout);
+        state
     }
 
     /// Opens it and hands it the keyboard, remembering who had it.
@@ -563,7 +573,7 @@ impl PopupState {
         let now = Instant::now();
         if self
             .typed_at
-            .is_none_or(|at| now.duration_since(at) > Duration::from_millis(750))
+            .is_none_or(|at| now.duration_since(at) >= self.typeahead_timeout)
         {
             self.typed.clear();
         }
@@ -634,6 +644,9 @@ pub fn dismissable(
     cx: &App,
 ) -> Provide {
     let focus = state.read(cx).focus.clone();
+    if let Some(scope) = scoped::<Rc<crate::foundation::focus::ModalScope>>(cx) {
+        scope.add_popup(&focus);
+    }
     let outside = state.clone();
     let escape = state.clone();
     let keep = keep.clone();

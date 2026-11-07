@@ -108,8 +108,10 @@ class ThemeVariables {
     this.iconSmall = 12,
     this.iconMedium = 16,
     this.iconLarge = 20,
+    this.motionReducedDuration = const Duration(microseconds: 10),
     this.motionDuration = const Duration(microseconds: 150000),
     this.motionEasing = const Cubic(0.4, 0, 0.2, 1),
+    this.motionLoopEasing = const Cubic(0.42, 0, 0.58, 1),
     this.radiusNone = 0,
     this.radiusTiny = 7,
     this.radiusSmall = 9999,
@@ -253,6 +255,9 @@ class ThemeVariables {
     this.previewCardOpenDelay = const Duration(microseconds: 600000),
     this.previewCardCloseDelay = const Duration(microseconds: 300000),
     this.previewCardWidth = 320,
+    this.progressSweepDuration = const Duration(microseconds: 1200000),
+    this.progressReducedSweepDuration = const Duration(microseconds: 3000000),
+    this.progressSweepWidth = 0.4,
     this.progressGradientFrom = const Color(0xFF111C2E),
     this.progressGradientTo = const Color(0xFFD6FF3F),
     this.searchFieldInputWidth = 136,
@@ -371,8 +376,13 @@ class ThemeVariables {
   final double iconLarge;
 
   // Motion
+  /// Finish decorative motion once under the reduced-motion clamp.
+  final Duration motionReducedDuration;
   final Duration motionDuration;
   final Cubic motionEasing;
+
+  /// CSS ease-in-out for the loading sweeps.
+  final Cubic motionLoopEasing;
 
   // Radius
   final double radiusNone;
@@ -873,6 +883,9 @@ class ThemeVariables {
   final double previewCardWidth;
 
   // Progress
+  final Duration progressSweepDuration;
+  final Duration progressReducedSweepDuration;
+  final double progressSweepWidth;
   final Color progressGradientFrom;
   final Color progressGradientTo;
 
@@ -1047,8 +1060,10 @@ class ThemeVariables {
     double? iconSmall,
     double? iconMedium,
     double? iconLarge,
+    Duration? motionReducedDuration,
     Duration? motionDuration,
     Cubic? motionEasing,
+    Cubic? motionLoopEasing,
     double? radiusNone,
     double? radiusTiny,
     double? radiusSmall,
@@ -1157,6 +1172,9 @@ class ThemeVariables {
     Duration? previewCardOpenDelay,
     Duration? previewCardCloseDelay,
     double? previewCardWidth,
+    Duration? progressSweepDuration,
+    Duration? progressReducedSweepDuration,
+    double? progressSweepWidth,
     Color? progressGradientFrom,
     Color? progressGradientTo,
     double? searchFieldInputWidth,
@@ -1258,8 +1276,11 @@ class ThemeVariables {
       iconSmall: iconSmall ?? this.iconSmall,
       iconMedium: iconMedium ?? this.iconMedium,
       iconLarge: iconLarge ?? this.iconLarge,
+      motionReducedDuration:
+          motionReducedDuration ?? this.motionReducedDuration,
       motionDuration: motionDuration ?? this.motionDuration,
       motionEasing: motionEasing ?? this.motionEasing,
+      motionLoopEasing: motionLoopEasing ?? this.motionLoopEasing,
       radiusNone: radiusNone ?? this.radiusNone,
       radiusTiny: radiusTiny ?? this.radiusTiny,
       radiusSmall: radiusSmall ?? this.radiusSmall,
@@ -1417,6 +1438,11 @@ class ThemeVariables {
       previewCardCloseDelay:
           previewCardCloseDelay ?? this.previewCardCloseDelay,
       previewCardWidth: previewCardWidth ?? this.previewCardWidth,
+      progressSweepDuration:
+          progressSweepDuration ?? this.progressSweepDuration,
+      progressReducedSweepDuration:
+          progressReducedSweepDuration ?? this.progressReducedSweepDuration,
+      progressSweepWidth: progressSweepWidth ?? this.progressSweepWidth,
       progressGradientFrom: progressGradientFrom ?? this.progressGradientFrom,
       progressGradientTo: progressGradientTo ?? this.progressGradientTo,
       searchFieldInputWidth:

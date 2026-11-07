@@ -4,17 +4,19 @@
 //!
 //! Escape and a press on the scrim close it (unless it is not `dismissible`);
 //! focus moves into the sheet when it opens and back to where it was when it
-//! closes. Tab is not yet trapped inside the sheet.
+//! closes. Tab and Shift-Tab stay inside the sheet.
 
 use std::rc::Rc;
 
 use gpui::{
     AnchoredPositionMode, AnyElement, App, Div, ElementId, Entity, FocusHandle, InteractiveElement,
     IntoElement, KeyDownEvent, ParentElement, RenderOnce, Stateful, StatefulInteractiveElement,
-    Styled, Window, anchored, deferred, div, point, prelude::FluentBuilder, px,
+    Styled, Window, anchored, div, point, prelude::FluentBuilder, px,
 };
 
 use crate::components::collapsible::{OnOpenChange, part_id};
+use crate::foundation::motion::{Motion, Presence};
+use crate::foundation::press::ButtonPress;
 use crate::foundation::{Length, StyledExt, Tint, provide, scoped};
 use crate::theme::ActiveTheme;
 use crate::tokens::shadows;
@@ -57,17 +59,22 @@ impl DialogHandle {
 
 pub(crate) struct ModalState {
     open: bool,
-    was_open: bool,
+    was_mounted: bool,
     restore: Option<FocusHandle>,
     focus: FocusHandle,
+    scope: Rc<crate::foundation::focus::ModalScope>,
+    presence: Presence,
 }
 
 /// The open state of a modal — controlled or kept — and the setter every
 /// press that opens or shuts it goes through.
 pub(crate) struct Modal {
     pub open: bool,
+    pub mounted: bool,
+    pub amount: f32,
     pub set_open: OnOpenChange,
     pub focus: FocusHandle,
+    scope: Rc<crate::foundation::focus::ModalScope>,
 }
 
 pub(crate) fn modal(
@@ -75,29 +82,49 @@ pub(crate) fn modal(
     controlled: Option<bool>,
     default_open: bool,
     on_open_change: Option<OnOpenChange>,
+    focus_first: bool,
     window: &mut Window,
     cx: &mut App,
 ) -> Modal {
+    let frame = Motion::frame(cx);
+    let initially_open = controlled.unwrap_or(default_open);
     let state: Entity<ModalState> =
-        window.use_keyed_state(part_id(id, "modal"), cx, move |_, cx| ModalState {
-            open: default_open,
-            was_open: false,
-            restore: None,
-            focus: cx.focus_handle(),
+        window.use_keyed_state(part_id(id, "modal"), cx, move |window, cx| {
+            let focus = cx.focus_handle();
+            ModalState {
+                open: default_open,
+                was_mounted: false,
+                restore: None,
+                scope: crate::foundation::focus::ModalScope::new(focus.clone(), window),
+                focus,
+                presence: Presence::new(initially_open, frame.elapsed),
+            }
         });
     let open = controlled.unwrap_or(state.read(cx).open);
+    let t = cx.theme();
+    let presence = state.update(cx, |state, _| {
+        state
+            .presence
+            .sample(open, frame, t.motion_duration, t.motion_easing)
+    });
+    if presence.animating {
+        window.request_animation_frame();
+    }
+    let scope = state.read(cx).scope.clone();
+    scope.set_open(presence.mounted, cx);
 
     // Focus goes into the sheet as it opens, and back where it came from as
-    // it shuts.
-    let (was_open, focus) = {
+    // its exit finishes.
+    let (was_mounted, focus) = {
         let state = state.read(cx);
-        (state.was_open, state.focus.clone())
+        (state.was_mounted, state.focus.clone())
     };
-    if open != was_open {
-        let restore = if open { window.focused(cx) } else { None };
+    if presence.mounted != was_mounted {
+        let mounted = presence.mounted;
+        let restore = if mounted { window.focused(cx) } else { None };
         let back = state.update(cx, |state, _| {
-            state.was_open = open;
-            if open {
+            state.was_mounted = mounted;
+            if mounted {
                 state.restore = restore;
                 None
             } else {
@@ -105,9 +132,12 @@ pub(crate) fn modal(
             }
         });
         let into = focus.clone();
-        window.defer(cx, move |window, _| {
-            if open {
+        window.defer(cx, move |window, cx| {
+            if mounted {
                 window.focus(&into);
+                if focus_first {
+                    crate::foundation::focus::cycle_in(&into, false, window, cx);
+                }
             } else if let Some(back) = back {
                 window.focus(&back);
             }
@@ -116,6 +146,9 @@ pub(crate) fn modal(
 
     let kept = controlled.is_none();
     let set_open: OnOpenChange = Rc::new(move |next, window, cx| {
+        if next == if kept { state.read(cx).open } else { open } {
+            return;
+        }
         if kept {
             state.update(cx, |state, cx| {
                 state.open = next;
@@ -129,19 +162,35 @@ pub(crate) fn modal(
     });
     Modal {
         open,
+        mounted: presence.mounted,
+        amount: presence.amount,
         set_open,
         focus,
+        scope,
     }
 }
 
 /// A trigger, drawn in place and wired to open the sheet.
-pub(crate) fn trigger(id: ElementId, trigger: AnyElement, set_open: OnOpenChange) -> Stateful<Div> {
-    div()
-        .id(id)
-        .flex()
-        .flex_none()
-        .on_click(move |_, window, cx| set_open(true, window, cx))
-        .child(trigger)
+pub(crate) fn trigger(
+    id: ElementId,
+    trigger: AnyElement,
+    set_open: OnOpenChange,
+    window: &mut Window,
+    cx: &mut App,
+) -> AnyElement {
+    let focus = crate::components::checkbox::kit::focus_handle(&id, window, cx);
+    let press = ButtonPress::new(&id, &focus, false, window, cx);
+    press
+        .bind(
+            div()
+                .id(id)
+                .track_focus(&focus)
+                .flex()
+                .flex_none()
+                .child(trigger),
+            Some(Box::new(move |_, window, cx| set_open(true, window, cx))),
+        )
+        .into_any_element()
 }
 
 /// The layer a modal is drawn on: over everything, covering the window, the
@@ -163,6 +212,7 @@ pub(crate) fn modal_layer(
     };
     let dismiss = modal.set_open.clone();
     let escape = modal.set_open.clone();
+    let open = modal.open;
 
     let layer = div()
         .id(part_id(id, "layer"))
@@ -171,10 +221,21 @@ pub(crate) fn modal_layer(
         .h(viewport.height)
         .type_style(t.body_medium)
         .text_color(t.color_content.hsla())
-        .track_focus(&modal.focus)
         .on_key_down(move |event: &KeyDownEvent, window, cx| {
-            if dismissible && event.keystroke.key == "escape" {
-                escape(false, window, cx);
+            let stroke = &event.keystroke;
+            if stroke.key == "tab"
+                && !stroke.modifiers.control
+                && !stroke.modifiers.alt
+                && !stroke.modifiers.platform
+            {
+                crate::foundation::focus::keyboard_down(window, cx);
+                crate::foundation::focus::tab(stroke.modifiers.shift, window, cx);
+                window.prevent_default();
+                cx.stop_propagation();
+            } else if dismissible && stroke.key == "escape" {
+                if open {
+                    escape(false, window, cx);
+                }
                 cx.stop_propagation();
             }
         })
@@ -183,21 +244,21 @@ pub(crate) fn modal_layer(
                 .id(part_id(id, "scrim"))
                 .absolute()
                 .inset_0()
-                .bg(scrim)
+                .bg(crate::foundation::fade(scrim, modal.amount))
                 .occlude()
-                .when(dismissible, |this| {
+                .when(dismissible && open, |this| {
                     this.on_click(move |_, window, cx| dismiss(false, window, cx))
                 }),
         )
         .child(provide(handle, sheet));
 
-    deferred(
+    crate::foundation::portal::portal(
         anchored()
             .position_mode(AnchoredPositionMode::Window)
             .position(point(px(0.), px(0.)))
-            .child(layer),
+            .child(provide(modal.scope.clone(), layer)),
+        1,
     )
-    .with_priority(1)
     .into_any_element()
 }
 
@@ -213,6 +274,7 @@ pub struct Dialog {
     dismissible: bool,
     trigger: Option<AnyElement>,
     children: Vec<AnyElement>,
+    wrap: Option<Box<dyn FnOnce(AnyElement) -> AnyElement>>,
 }
 
 impl Dialog {
@@ -227,6 +289,7 @@ impl Dialog {
             dismissible: true,
             trigger: None,
             children: Vec::new(),
+            wrap: None,
         }
     }
 
@@ -238,6 +301,12 @@ impl Dialog {
 
     pub fn default_open(mut self, open: bool) -> Self {
         self.default_open = open;
+        self
+    }
+
+    /// Wrap the painted sheet, for decoration or native bounds collection.
+    pub fn wrap_with(mut self, wrap: impl FnOnce(AnyElement) -> AnyElement + 'static) -> Self {
+        self.wrap = Some(Box::new(wrap));
         self
     }
 
@@ -287,18 +356,28 @@ impl RenderOnce for Dialog {
             self.open,
             self.default_open,
             self.on_open_change.clone(),
+            true,
             window,
             cx,
         );
-        let trigger_el = self
-            .trigger
-            .map(|el| trigger(part_id(&self.id, "trigger"), el, modal.set_open.clone()));
+        let trigger_el = self.trigger.map(|el| {
+            trigger(
+                part_id(&self.id, "trigger"),
+                el,
+                modal.set_open.clone(),
+                window,
+                cx,
+            )
+        });
 
-        let sheet = modal.open.then(|| {
+        let sheet = modal.mounted.then(|| {
             let t = cx.theme();
             let border = match self.tone {
                 DialogTone::Default => t.color_border_strong.hsla(),
-                DialogTone::Danger => t.color_danger.shade(600).alpha(0.34),
+                DialogTone::Danger => t
+                    .color_danger
+                    .shade(600)
+                    .alpha(t.dialog_danger_border_alpha),
             };
             let width = self
                 .width
@@ -307,6 +386,8 @@ impl RenderOnce for Dialog {
             let sheet = div()
                 .id(part_id(&self.id, "sheet"))
                 .debug_selector(|| "dz-dialog".into())
+                .track_focus(&modal.focus)
+                .opacity(modal.amount)
                 .flex()
                 .flex_col()
                 .overflow_hidden()
@@ -320,6 +401,10 @@ impl RenderOnce for Dialog {
                 .shadow(shadows(t.shadow_lg))
                 .occlude()
                 .children(self.children);
+            let sheet = match self.wrap {
+                Some(wrap) => wrap(sheet.into_any_element()),
+                None => sheet.into_any_element(),
+            };
             let centred = div()
                 .absolute()
                 .inset_0()
@@ -510,15 +595,25 @@ impl DialogClose {
 }
 
 impl RenderOnce for DialogClose {
-    fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let handle = DialogHandle::current(cx);
-        div()
-            .id(self.id)
-            .flex()
-            .flex_none()
-            .when_some(handle, |this, handle| {
-                this.on_click(move |_, window, cx| handle.close(window, cx))
-            })
-            .child(self.child)
+        let focus = crate::components::checkbox::kit::focus_handle(&self.id, window, cx);
+        let press = ButtonPress::new(&self.id, &focus, false, window, cx);
+        let on_click: Option<crate::foundation::press::OnClick> = handle.map(|handle| {
+            Box::new(
+                move |_: &gpui::ClickEvent, window: &mut Window, cx: &mut App| {
+                    handle.close(window, cx)
+                },
+            ) as _
+        });
+        press.bind(
+            div()
+                .id(self.id)
+                .track_focus(&focus)
+                .flex()
+                .flex_none()
+                .child(self.child),
+            on_click,
+        )
     }
 }

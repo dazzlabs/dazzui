@@ -42,6 +42,24 @@ pub fn provide<T: Clone + 'static>(value: T, child: impl IntoElement) -> Provide
     }
 }
 
+/// Carry the current providers across a portal's detached layout pass.
+pub(crate) fn preserve(child: impl IntoElement, cx: &App) -> AnyElement {
+    let mut child = child.into_any_element();
+    if let Some(scopes) = cx.try_global::<Scopes>() {
+        for (&key, stack) in &scopes.stacks {
+            if let Some(value) = stack.last() {
+                child = Provide {
+                    key,
+                    value: value.clone(),
+                    child,
+                }
+                .into_any_element();
+            }
+        }
+    }
+    child
+}
+
 pub struct Provide {
     key: TypeId,
     value: Rc<dyn std::any::Any>,

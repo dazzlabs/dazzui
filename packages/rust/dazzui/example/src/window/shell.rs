@@ -6,11 +6,11 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use dazzui::{
-    ActiveTheme, Button, Card, CardVariant, Icon, IconButton, SearchField, SectionLabel, Sidebar,
-    SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader,
-    SidebarInset, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuButtonSize,
-    SidebarMenuItem, SidebarProvider, SidebarTrigger, Size, Theme, Tooltip, Variant,
-    popup::Side as PopupSide,
+    ActiveTheme, Button, Card, CardVariant, Icon, IconButton, MenuPresentation, SearchField,
+    SectionLabel, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
+    SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuBadge, SidebarMenuButton,
+    SidebarMenuButtonSize, SidebarMenuItem, SidebarProvider, SidebarTrigger, Size, Theme, Tooltip,
+    Variant, popup::Side as PopupSide, provide_menu_presentation,
 };
 use gpui::{
     AnyElement, App, Context, ElementId, Entity, InteractiveElement, IntoElement, MouseButton,
@@ -35,6 +35,7 @@ pub struct Shell {
     list_width: f32,
     themes_width: f32,
     theme: ThemeChoice,
+    native_menus: bool,
     drag: Option<Drag>,
     /// A scene's view, kept while it is on screen so its slots survive a
     /// redraw.
@@ -58,6 +59,7 @@ impl Shell {
             list_width: LIST.initial,
             themes_width: THEMES.initial,
             theme: choice,
+            native_menus: false,
             drag: None,
             scenes: HashMap::new(),
         }
@@ -79,6 +81,11 @@ impl Shell {
     fn set_theme(&mut self, theme: ThemeChoice, cx: &mut Context<Self>) {
         Theme::set(&theme.id(), cx);
         self.theme = theme;
+        cx.notify();
+    }
+
+    fn set_native_menus(&mut self, native: bool, cx: &mut Context<Self>) {
+        self.native_menus = native;
         cx.notify();
     }
 }
@@ -253,6 +260,12 @@ impl Render for Shell {
                     entity.update(cx, |shell, cx| shell.set_theme(theme, cx))
                 })
             };
+            let set_native_menus = {
+                let entity = entity.clone();
+                Rc::new(move |native: bool, _: &mut Window, cx: &mut App| {
+                    entity.update(cx, |shell, cx| shell.set_native_menus(native, cx))
+                })
+            };
             let resizer = {
                 let entity = entity.clone();
                 let width = self.themes_width;
@@ -270,8 +283,10 @@ impl Render for Shell {
             };
             theme_panel(
                 &self.theme,
+                self.native_menus,
                 self.themes_width,
                 set_theme,
+                set_native_menus,
                 resizer,
                 window,
                 cx,
@@ -287,36 +302,45 @@ impl Render for Shell {
                 })
             }
         };
-        page_type(div(), cx)
-            .id("shell")
-            .size_full()
-            .bg(t.color_surface.hsla())
-            .on_mouse_move(cx.listener(|shell, event: &MouseMoveEvent, _, cx| {
-                let Some(drag) = shell.drag else { return };
-                if event.pressed_button != Some(MouseButton::Left) {
-                    shell.drag = None;
-                    return;
-                }
-                let moved = f32::from(event.position.x) - drag.start;
-                match drag.side {
-                    Side::Left => shell.list_width = LIST.clamp(drag.width + moved),
-                    Side::Right => shell.themes_width = THEMES.clamp(drag.width - moved),
-                }
-                cx.notify();
-            }))
-            .on_mouse_up(
-                MouseButton::Left,
-                cx.listener(|shell, _, _, _| shell.drag = None),
-            )
-            .when(self.drag.is_some(), |this| this.cursor_col_resize())
-            .child(
-                SidebarProvider::new("window")
-                    .open(self.list_open)
-                    .on_open_change(on_open_change)
-                    .child(list)
-                    .child(inset)
-                    .children(panel),
-            )
+        // The theme panel's choice, in force for every dropdown in the
+        // window — the scope a nearer one may override.
+        provide_menu_presentation(
+            if self.native_menus {
+                MenuPresentation::Native
+            } else {
+                MenuPresentation::Custom
+            },
+            page_type(div(), cx)
+                .id("shell")
+                .size_full()
+                .bg(t.color_surface.hsla())
+                .on_mouse_move(cx.listener(|shell, event: &MouseMoveEvent, _, cx| {
+                    let Some(drag) = shell.drag else { return };
+                    if event.pressed_button != Some(MouseButton::Left) {
+                        shell.drag = None;
+                        return;
+                    }
+                    let moved = f32::from(event.position.x) - drag.start;
+                    match drag.side {
+                        Side::Left => shell.list_width = LIST.clamp(drag.width + moved),
+                        Side::Right => shell.themes_width = THEMES.clamp(drag.width - moved),
+                    }
+                    cx.notify();
+                }))
+                .on_mouse_up(
+                    MouseButton::Left,
+                    cx.listener(|shell, _, _, _| shell.drag = None),
+                )
+                .when(self.drag.is_some(), |this| this.cursor_col_resize())
+                .child(
+                    SidebarProvider::new("window")
+                        .open(self.list_open)
+                        .on_open_change(on_open_change)
+                        .child(list)
+                        .child(inset)
+                        .children(panel),
+                ),
+        )
     }
 }
 

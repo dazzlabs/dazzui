@@ -15,6 +15,10 @@ use gpui::{
 };
 
 use crate::components::icon::{Icon, icon_slot};
+use crate::components::native_menu::{
+    NativeMenuEntry, arm_native_menu, close_native_menu, native_mode_active, native_press,
+    native_state_for,
+};
 use crate::components::popup::{
     Placement, PopupRow, PopupState, Press, dismissable, group_label, group_label_height,
     max_sheet_height, measured, part_id, positioned, row_height, sheet, toggle_press,
@@ -194,6 +198,12 @@ impl RenderOnce for Select {
         let state = PopupState::keyed(&id, false, window, cx);
         let open = state.read(cx).open && !self.disabled;
         let anchor = state.read(cx).anchor.clone();
+        let native = native_state_for(&id, window, cx);
+        let native_mode = native_mode_active(cx);
+        let failed = native.read(cx).failed;
+        if !open || !native_mode {
+            close_native_menu(&native, cx);
+        }
         let scroll: ScrollHandle = window
             .use_keyed_state(part_id(&id, "scroll"), cx, |_, _| ScrollHandle::new())
             .read(cx)
@@ -241,6 +251,38 @@ impl RenderOnce for Select {
             })
         };
 
+        // The rows an OS popup wears: the options flattened, group captions
+        // and all. Choosing runs the same `choose` the sheet's rows do, so a
+        // native pick moves the value and closes the list the way a drawn
+        // one does.
+        let native_entries = native_mode.then(|| -> Vec<NativeMenuEntry> {
+            let mut entries = Vec::new();
+            let mut index = 0;
+            let mut push = |entries: &mut Vec<NativeMenuEntry>, option: &SelectOption| {
+                let choose = choose.clone();
+                let at = index;
+                index += 1;
+                entries.push(
+                    NativeMenuEntry::new(option.label.to_string())
+                        .enabled(!option.disabled)
+                        .checked(current.as_ref().map(|value| value == &option.value))
+                        .on_select(Some(Rc::new(move |window, cx| choose(at, window, cx)))),
+                );
+            };
+            for entry in &self.options {
+                match entry {
+                    SelectEntry::Option(option) => push(&mut entries, option),
+                    SelectEntry::Group { label, options } => {
+                        entries.push(NativeMenuEntry::heading(label.to_string()));
+                        for option in options {
+                            push(&mut entries, option);
+                        }
+                    }
+                }
+            }
+            entries
+        });
+
         // The trigger.
         let label = match selected {
             Some(index) => Some(flat[index].label.clone()),
@@ -248,7 +290,19 @@ impl RenderOnce for Select {
         };
         let placeholder = label.is_none();
         let lifted = open || focus_visible(&focus, window, cx);
-        let toggle: Press = {
+        let native_open = native_mode && !failed;
+        let toggle: Press = if native_open {
+            // The trigger presents the OS popup itself, under where the last
+            // frame drew it.
+            native_press(
+                &state,
+                &native,
+                native_entries.clone().unwrap_or_default(),
+                anchor.clone(),
+                false,
+                None,
+            )
+        } else {
             let toggle = toggle_press(&state, selected, None);
             let scroll = scroll.clone();
             Rc::new(move |window, cx| {
@@ -288,143 +342,189 @@ impl RenderOnce for Select {
                     .text_color(t.color_content_subtle.hsla())
                     .child(Icon::new(glyphs::CHEVRON_DOWN_12_REGULAR)),
             ));
+        let armed = window.use_keyed_state(part_id(&self.id, "space"), cx, |_, _| false);
+        if self.disabled || !focus.is_focused(window) {
+            armed.update(cx, |armed, _| *armed = false);
+        }
         if self.disabled {
             trigger = trigger.cursor_not_allowed();
         } else {
             let click = toggle.clone();
             let keys = toggle.clone();
+            let release = toggle.clone();
+            let press_space = armed.clone();
             let is_open = state.clone();
             trigger = trigger
                 .cursor_pointer()
                 .track_focus(&focus.clone().tab_stop(true))
                 .on_mouse_down(MouseButton::Left, |_, window, cx| pointer_down(window, cx))
-                .on_click(move |_, window, cx| click(window, cx))
+                .on_click(move |event, window, cx| {
+                    if matches!(event, gpui::ClickEvent::Mouse(_)) {
+                        click(window, cx);
+                    }
+                })
                 .on_key_down(move |event: &KeyDownEvent, window, cx| {
-                    if matches!(event.keystroke.key.as_str(), "down" | "up")
+                    if event.keystroke.key == "space" {
+                        press_space.update(cx, |armed, _| *armed = true);
+                        cx.stop_propagation();
+                    } else if matches!(event.keystroke.key.as_str(), "enter" | "down" | "up")
                         && !is_open.read(cx).open
                     {
                         keys(window, cx);
+                        cx.stop_propagation();
+                    }
+                })
+                .on_key_up(move |event, window, cx| {
+                    if event.keystroke.key == "space" {
+                        let activate = armed.update(cx, |armed, _| std::mem::take(armed));
+                        if activate {
+                            release(window, cx);
+                        }
                         cx.stop_propagation();
                     }
                 });
         }
 
         // The list.
-        let popup = open.then(|| {
-            let highlighted = state.read(cx).highlighted;
-            let enabled: Rc<Vec<bool>> = Rc::new(flat.iter().map(|o| !o.disabled).collect());
-            let labels: Rc<Vec<SharedString>> =
-                Rc::new(flat.iter().map(|o| o.label.clone()).collect());
-            let mut index = 0;
-            let mut rows: Vec<AnyElement> = Vec::new();
-            let mut previous_group = false;
-            // Where the chosen row sits in the sheet, to lay it over the value.
-            let mut y = t.stroke_hairline + t.spacing_1;
-            let mut chosen_top = None;
-            let aligned = selected.unwrap_or(0);
-            let mut row = |option: &SelectOption, index: &mut usize, y: &mut f32| {
-                let at = *index;
-                if at == aligned {
-                    chosen_top = Some(*y);
-                }
-                *y += row_height(t);
-                *index += 1;
-                let hover = state.clone();
-                let choose = choose.clone();
-                PopupRow::new(("option", at), option.label.clone())
-                    .tint(self.tint)
-                    .check(selected == Some(at))
-                    .highlighted(highlighted == Some(at))
-                    .disabled(option.disabled)
-                    .on_hover(move |hovered, _, cx| {
-                        hover.update(cx, |state, cx| {
-                            if hovered {
-                                state.highlighted = Some(at);
-                            } else if state.highlighted == Some(at) {
-                                state.highlighted = None;
-                            }
-                            cx.notify();
+        let popup = if open && native_open {
+            // The list is the OS's, under the trigger. A `default_value`
+            // never opens it; a programmatic open arrives with no press to
+            // present from — the next frame does it.
+            arm_native_menu(
+                &state,
+                &native,
+                native_entries.unwrap_or_default(),
+                anchor.clone(),
+                false,
+                window,
+                cx,
+            );
+            None
+        } else {
+            open.then(|| {
+                let highlighted = state.read(cx).highlighted;
+                let enabled: Rc<Vec<bool>> = Rc::new(flat.iter().map(|o| !o.disabled).collect());
+                let labels: Rc<Vec<SharedString>> =
+                    Rc::new(flat.iter().map(|o| o.label.clone()).collect());
+                let mut index = 0;
+                let mut rows: Vec<AnyElement> = Vec::new();
+                let mut previous_group = false;
+                // Where the chosen row sits in the sheet, to lay it over the value.
+                let mut y = t.stroke_hairline + t.spacing_1;
+                let mut chosen_top = None;
+                let aligned = selected.unwrap_or(0);
+                let mut row = |option: &SelectOption, index: &mut usize, y: &mut f32| {
+                    let at = *index;
+                    if at == aligned {
+                        chosen_top = Some(*y);
+                    }
+                    *y += row_height(t);
+                    *index += 1;
+                    let hover = state.clone();
+                    let choose = choose.clone();
+                    PopupRow::new(("option", at), option.label.clone())
+                        .tint(self.tint)
+                        .check(selected == Some(at))
+                        .highlighted(highlighted == Some(at))
+                        .disabled(option.disabled)
+                        .on_hover(move |hovered, _, cx| {
+                            hover.update(cx, |state, cx| {
+                                if hovered {
+                                    state.highlighted = Some(at);
+                                } else if state.highlighted == Some(at) {
+                                    state.highlighted = None;
+                                }
+                                cx.notify();
+                            })
                         })
-                    })
-                    .on_press(move |window, cx| choose(at, window, cx))
-                    .into_any_element()
-            };
-            for entry in &self.options {
-                match entry {
-                    SelectEntry::Option(option) => {
-                        rows.push(row(option, &mut index, &mut y));
-                        previous_group = false;
-                    }
-                    SelectEntry::Group { label, options } => {
-                        let gap = if previous_group { t.spacing_1 } else { 0. };
-                        y += gap + group_label_height(t);
-                        let group = div()
-                            .flex()
-                            .flex_col()
-                            .mt(px(gap))
-                            .child(group_label(t, label.clone()))
-                            .children(
-                                options
-                                    .iter()
-                                    .map(|option| row(option, &mut index, &mut y))
-                                    .collect::<Vec<_>>(),
-                            );
-                        rows.push(group.into_any_element());
-                        previous_group = true;
+                        .on_press(move |window, cx| choose(at, window, cx))
+                        .into_any_element()
+                };
+                for entry in &self.options {
+                    match entry {
+                        SelectEntry::Option(option) => {
+                            rows.push(row(option, &mut index, &mut y));
+                            previous_group = false;
+                        }
+                        SelectEntry::Group { label, options } => {
+                            let gap = if previous_group { t.spacing_1 } else { 0. };
+                            y += gap + group_label_height(t);
+                            let group = div()
+                                .flex()
+                                .flex_col()
+                                .mt(px(gap))
+                                .child(group_label(t, label.clone()))
+                                .children(
+                                    options
+                                        .iter()
+                                        .map(|option| row(option, &mut index, &mut y))
+                                        .collect::<Vec<_>>(),
+                                );
+                            rows.push(group.into_any_element());
+                            previous_group = true;
+                        }
                     }
                 }
-            }
 
-            // `alignItemWithTrigger`: the chosen row's label over the value.
-            let label_inset = t.spacing_1 + t.spacing_2 + t.icon_small + t.spacing_2;
-            let shift_x = t.spacing_3 - label_inset;
-            let shift_y = (self.size.profile(t).size - row_height(t)) / 2.
-                - chosen_top.unwrap_or(t.stroke_hairline + t.spacing_1);
-            let trigger_width = anchor
-                .bounds()
-                .map(|b| f32::from(b.size.width))
-                .unwrap_or(0.);
+                // `alignItemWithTrigger`: the chosen row's label over the value.
+                let label_inset = t.spacing_1 + t.spacing_2 + t.icon_small + t.spacing_2;
+                let shift_x = t.spacing_3 - label_inset;
+                let shift_y = (self.size.profile(t).size - row_height(t)) / 2.
+                    - chosen_top.unwrap_or(t.stroke_hairline + t.spacing_1);
+                let trigger_width = anchor
+                    .bounds()
+                    .map(|b| f32::from(b.size.width))
+                    .unwrap_or(0.);
 
-            let keys = state.clone();
-            let choose_key = choose.clone();
-            let list = sheet(t)
-                .id("list")
-                .min_w(px(trigger_width - shift_x))
-                // A list longer than the window scrolls inside it rather
-                // than running off it.
-                .max_h(px(max_sheet_height(window)))
-                .overflow_y_scroll()
-                .track_scroll(&scroll)
-                .children(rows)
-                .on_key_down(move |event: &KeyDownEvent, window, cx| {
-                    let key = event.keystroke.key.as_str();
-                    let handled = match key {
-                        "enter" | "space" => {
-                            if let Some(index) = keys.read(cx).highlighted {
-                                choose_key(index, window, cx);
+                let keys = state.clone();
+                let choose_key = choose.clone();
+                let list = sheet(t)
+                    .id("list")
+                    .min_w(px(trigger_width - shift_x))
+                    // A list longer than the window scrolls inside it rather
+                    // than running off it.
+                    .max_h(px(max_sheet_height(window)))
+                    .overflow_y_scroll()
+                    .track_scroll(&scroll)
+                    .children(rows)
+                    .on_key_down(move |event: &KeyDownEvent, window, cx| {
+                        let key = event.keystroke.key.as_str();
+                        let handled = match key {
+                            "tab"
+                                if !event.keystroke.modifiers.control
+                                    && !event.keystroke.modifiers.alt
+                                    && !event.keystroke.modifiers.platform =>
+                            {
+                                keys.update(cx, |state, cx| state.hide(window, cx));
+                                false
                             }
-                            true
+                            "enter" | "space" => {
+                                if let Some(index) = keys.read(cx).highlighted {
+                                    choose_key(index, window, cx);
+                                }
+                                true
+                            }
+                            _ => keys.update(cx, |state, cx| {
+                                let text = event.keystroke.key_char.as_deref().unwrap_or(key);
+                                let handled = state.step(key, &enabled)
+                                    || (!event.keystroke.modifiers.modified()
+                                        && state.type_ahead(text, &labels, &enabled));
+                                cx.notify();
+                                handled
+                            }),
+                        };
+                        if handled {
+                            cx.stop_propagation();
                         }
-                        _ => keys.update(cx, |state, cx| {
-                            let text = event.keystroke.key_char.as_deref().unwrap_or(key);
-                            let handled = state.step(key, &enabled)
-                                || (!event.keystroke.modifiers.modified()
-                                    && state.type_ahead(text, &labels, &enabled));
-                            cx.notify();
-                            handled
-                        }),
-                    };
-                    if handled {
-                        cx.stop_propagation();
-                    }
-                });
-            let list = dismissable(list, &state, &anchor, None, cx);
-            positioned(
-                &anchor,
-                Placement::Over(point(px(shift_x), px(shift_y))),
-                list,
-            )
-        });
+                    });
+                let list = dismissable(list, &state, &anchor, None, cx);
+                positioned(
+                    &anchor,
+                    Placement::Over(point(px(shift_x), px(shift_y))),
+                    list,
+                )
+            })
+        };
 
         div()
             .id(id)

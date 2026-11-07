@@ -6,11 +6,12 @@ use std::collections::HashSet;
 use std::rc::Rc;
 use std::time::Duration;
 
-use dazzui::{Menu, MenuItem, Popover, PopoverClose, PreviewCard, Select, SelectOption, Side};
+use dazzui::{
+    Button, Menu, MenuItem, Popover, PopoverClose, PreviewCard, Select, SelectOption, Side,
+};
 use gpui::{
     AnyElement, App, Context, InteractiveElement, IntoElement, Modifiers, ParentElement, Render,
-    StatefulInteractiveElement, Styled, TestAppContext, VisualTestContext, Window, canvas, div,
-    point, px,
+    Styled, TestAppContext, VisualTestContext, Window, canvas, div, point, px,
 };
 
 type Log = Rc<RefCell<Vec<String>>>;
@@ -19,14 +20,17 @@ type Log = Rc<RefCell<Vec<String>>>;
 /// a sheet has gone: gpui 0.2.2 never clears it between frames.
 type Painted = Rc<RefCell<HashSet<&'static str>>>;
 
-/// A plain pressable box standing in for a `Button`, found by `selector`.
+/// Use the real button so trigger focus and keyboard activation are exercised.
 fn trigger(selector: &'static str, press: Rc<dyn Fn(&mut Window, &mut App)>) -> AnyElement {
     div()
-        .id(selector)
         .debug_selector(move || selector.into())
         .w(px(80.))
-        .h(px(24.))
-        .on_click(move |_, window, cx| press(window, cx))
+        .flex()
+        .child(
+            Button::new(selector)
+                .on_click(move |_, window, cx| press(window, cx))
+                .child("Open"),
+        )
         .into_any_element()
 }
 
@@ -148,6 +152,51 @@ fn click(cx: &mut VisualTestContext, selector: &'static str) {
     let bounds = cx.debug_bounds(selector).expect(selector);
     cx.simulate_click(bounds.center(), Modifiers::none());
     cx.run_until_parked();
+}
+
+#[gpui::test]
+fn real_buttons_open_and_close_popups_at_the_native_key_phase(cx: &mut TestAppContext) {
+    let Setup { log, painted, cx } = setup(cx);
+    cx.simulate_keystrokes("tab enter");
+    assert!(drawn(&painted, cx, "menu-row"));
+    cx.simulate_event(gpui::KeyUpEvent {
+        keystroke: gpui::Keystroke::parse("enter").unwrap(),
+    });
+    assert!(
+        drawn(&painted, cx, "menu-row"),
+        "opening keyup must not choose a row"
+    );
+    assert_eq!(*log.borrow(), ["open:true"]);
+    cx.simulate_keystrokes("escape tab space");
+    assert!(
+        !drawn(&painted, cx, "popover-body"),
+        "Space arms without opening"
+    );
+    cx.simulate_event(gpui::KeyUpEvent {
+        keystroke: gpui::Keystroke::parse("space").unwrap(),
+    });
+    assert!(drawn(&painted, cx, "popover-body"));
+    cx.simulate_keystrokes("tab enter");
+    assert!(
+        !drawn(&painted, cx, "popover-body"),
+        "PopoverClose activates on Enter down"
+    );
+    cx.simulate_event(gpui::KeyUpEvent {
+        keystroke: gpui::Keystroke::parse("enter").unwrap(),
+    });
+    assert!(!drawn(&painted, cx, "popover-body"));
+}
+
+#[gpui::test]
+fn menu_typeahead_starts_a_new_word_after_half_a_second(cx: &mut TestAppContext) {
+    let Setup { log, cx, .. } = setup(cx);
+    click(cx, "menu-trigger");
+    cx.simulate_keystrokes("r");
+    // Base UI's useTypeahead clears the prefix at 500ms. The former
+    // 750ms window incorrectly joined this D to R and kept Rename selected.
+    std::thread::sleep(Duration::from_millis(600));
+    cx.simulate_keystrokes("d enter");
+    assert_eq!(log.borrow().last().map(String::as_str), Some("duplicate"));
 }
 
 #[gpui::test]

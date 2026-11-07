@@ -4,8 +4,9 @@
 //! still inside the view.
 
 use gpui::{
-    AnyElement, App, ElementId, InteractiveElement, IntoElement, ParentElement, RenderOnce, Styled,
-    Window, div, prelude::FluentBuilder, px,
+    AnyElement, App, Bounds, Element, ElementId, GlobalElementId, InspectorElementId,
+    InteractiveElement, IntoElement, LayoutId, ParentElement, Pixels, RenderOnce, Styled, Window,
+    div, point, prelude::FluentBuilder, px,
 };
 
 use crate::components::collapsible::{OnOpenChange, part_id};
@@ -50,6 +51,7 @@ pub struct Drawer {
     footer: Option<AnyElement>,
     trigger: Option<AnyElement>,
     children: Vec<AnyElement>,
+    wrap: Option<Box<dyn FnOnce(AnyElement) -> AnyElement>>,
 }
 
 impl Drawer {
@@ -66,6 +68,7 @@ impl Drawer {
             footer: None,
             trigger: None,
             children: Vec::new(),
+            wrap: None,
         }
     }
 
@@ -88,6 +91,12 @@ impl Drawer {
 
     pub fn default_open(mut self, open: bool) -> Self {
         self.default_open = open;
+        self
+    }
+
+    /// Wrap the painted sheet, for decoration or native bounds collection.
+    pub fn wrap_with(mut self, wrap: impl FnOnce(AnyElement) -> AnyElement + 'static) -> Self {
+        self.wrap = Some(Box::new(wrap));
         self
     }
 
@@ -135,14 +144,21 @@ impl RenderOnce for Drawer {
             self.open,
             self.default_open,
             self.on_open_change.clone(),
+            false,
             window,
             cx,
         );
-        let trigger_el = self
-            .trigger
-            .map(|el| trigger(part_id(&self.id, "trigger"), el, modal.set_open.clone()));
+        let trigger_el = self.trigger.map(|el| {
+            trigger(
+                part_id(&self.id, "trigger"),
+                el,
+                modal.set_open.clone(),
+                window,
+                cx,
+            )
+        });
 
-        let sheet = modal.open.then(|| {
+        let sheet = modal.mounted.then(|| {
             let t = cx.theme();
             let side = self.side;
             let size = self
@@ -157,6 +173,7 @@ impl RenderOnce for Drawer {
             let panel = div()
                 .id(part_id(&self.id, "sheet"))
                 .debug_selector(|| "dz-drawer".into())
+                .track_focus(&modal.focus)
                 .absolute()
                 .flex()
                 .flex_col()
@@ -225,7 +242,18 @@ impl RenderOnce for Drawer {
                 .when_some(self.footer, |this, footer| {
                     this.child(sheet_footer(vec![footer], cx))
                 });
-            modal_layer(&self.id, &modal, true, panel, window, cx)
+            let panel = match self.wrap {
+                Some(wrap) => wrap(panel.into_any_element()),
+                None => panel.into_any_element(),
+            };
+            modal_layer(
+                &self.id,
+                &modal,
+                true,
+                slide(panel, side, modal.amount),
+                window,
+                cx,
+            )
         });
 
         div().children(trigger_el).children(sheet)
@@ -234,3 +262,74 @@ impl RenderOnce for Drawer {
 
 /// Wraps a control so pressing it closes the drawer it sits in.
 pub type DrawerClose = DialogClose;
+
+fn slide(child: impl IntoElement, side: DrawerSide, amount: f32) -> Slide {
+    Slide {
+        child: child.into_any_element(),
+        side,
+        amount,
+    }
+}
+
+struct Slide {
+    child: AnyElement,
+    side: DrawerSide,
+    amount: f32,
+}
+
+impl IntoElement for Slide {
+    type Element = Self;
+    fn into_element(self) -> Self {
+        self
+    }
+}
+
+impl Element for Slide {
+    type RequestLayoutState = ();
+    type PrepaintState = ();
+    fn id(&self) -> Option<ElementId> {
+        None
+    }
+    fn source_location(&self) -> Option<&'static std::panic::Location<'static>> {
+        None
+    }
+    fn request_layout(
+        &mut self,
+        _: Option<&GlobalElementId>,
+        _: Option<&InspectorElementId>,
+        window: &mut Window,
+        cx: &mut App,
+    ) -> (LayoutId, ()) {
+        (self.child.request_layout(window, cx), ())
+    }
+    fn prepaint(
+        &mut self,
+        _: Option<&GlobalElementId>,
+        _: Option<&InspectorElementId>,
+        bounds: Bounds<Pixels>,
+        _: &mut (),
+        window: &mut Window,
+        cx: &mut App,
+    ) {
+        let remaining = 1. - self.amount;
+        let offset = match self.side {
+            DrawerSide::Left => point(-bounds.size.width * remaining, px(0.)),
+            DrawerSide::Right => point(bounds.size.width * remaining, px(0.)),
+            DrawerSide::Top => point(px(0.), -bounds.size.height * remaining),
+            DrawerSide::Bottom => point(px(0.), bounds.size.height * remaining),
+        };
+        window.with_element_offset(offset, |window| self.child.prepaint(window, cx));
+    }
+    fn paint(
+        &mut self,
+        _: Option<&GlobalElementId>,
+        _: Option<&InspectorElementId>,
+        _: Bounds<Pixels>,
+        _: &mut (),
+        _: &mut (),
+        window: &mut Window,
+        cx: &mut App,
+    ) {
+        self.child.paint(window, cx);
+    }
+}

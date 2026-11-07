@@ -95,7 +95,7 @@ theme changes retain native control identity. Each generated scene carries
 its unmapped props or behaviors in `gaps`; the same list is committed as
 `example/coverage.json`. The gallery presents these gaps explicitly.
 
-All 188 shared scenes are mapped. Each JSON node is created in its mounted
+All 189 shared scenes are mapped. Each JSON node is created in its mounted
 component scope so provider-owned state reaches its descendants. NSH calendar
 and shortcut-recorder differences remain documented in the package README;
 codegen's full-support gate now rejects any new unmapped scene or prop, including

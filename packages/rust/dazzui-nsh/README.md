@@ -121,7 +121,7 @@ indeterminate progress and skeleton motion use native animation. Loading
 motion and track opacity come from ds; reduced motion stops the skeleton
 and slows the spinner, as in React.
 
-The generated [coverage report](example/coverage.json) maps **188 of 188 shared
+The generated [coverage report](example/coverage.json) maps **189 of 189 shared
 scenes**. This is scene coverage, not a claim of full geometry or behavior
 conformance. Unknown components, props, item data and actions still fail closed
 as explicit gaps. `icon` embeds React's Fluent paths, such as

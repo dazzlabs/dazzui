@@ -1,0 +1,589 @@
+//! Native dropdowns: the preference that hands a menu's list to the OS.
+//!
+//! The sheet every dropdown draws is the kit's own;
+//! [`MenuPresentation::Native`] keeps the trigger's DazzUI drawing and lets
+//! the desktop OS draw the list instead — AppKit on macOS, Win32 on Windows,
+//! GTK on Linux — through nativeapi. The preference scopes like a CSS custom
+//! property, [`provide_menu_presentation`]; a nearer scope overrides the
+//! root; changing it dismisses an open menu. The feature off, an unsupported
+//! platform, or a backend that refuses to present all fall back to the drawn
+//! sheet.
+//!
+//! The OS popup runs outside gpui's frames — AppKit inside its tracking
+//! loop, Win32 inside `TrackPopupMenu`'s modal pump, GTK on a thread that
+//! owns the GLib context no gpui app iterates. Its events therefore land in
+//! a queue any thread may push to, and a drain task re-enters the window
+//! through its handle to run them. AppKit and Win32 both report the close
+//! before the chosen item's action, so a batch dispatches its clicks first
+//! and the listeners outlive the close by a grace period — the same
+//! accommodation the Flutter backend makes.
+//!
+//! Shortcut strings stay hints — display text in the native row, never an
+//! accelerator registered with the OS. An item's element slots (its icon, a
+//! `KeyCap`) are dropped: gpui cannot rasterize an element into the bitmap a
+//! native row wears, so native rows carry the label, the check, the disabled
+//! state and the plain-text hint only.
+
+use std::cell::RefCell;
+use std::rc::Rc;
+use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
+
+use gpui::{
+    AnyWindowHandle, App, AsyncApp, Bounds, Entity, IntoElement, Pixels, Point, Task, Window,
+};
+
+use crate::components::popup::{Anchor, OnOpenChange, PopupState, Press, part_id};
+use crate::foundation::scope::{Provide, provide, scoped};
+
+/// How long the listeners stay registered after the OS reports the menu
+/// closed, for the platforms that deliver the chosen item's action after it.
+const DISMISS_GRACE: Duration = Duration::from_millis(50);
+
+/// How often the drain task looks at the queue.
+const POLL_INTERVAL: Duration = Duration::from_millis(20);
+
+/// How a scope's dropdowns present themselves — the sheet the kit draws, or
+/// the OS's own popup.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum MenuPresentation {
+    /// The kit draws the sheet. The default.
+    #[default]
+    Custom,
+    /// The trigger keeps its DazzUI drawing; the OS draws the list.
+    Native,
+}
+
+/// The innermost [`MenuPresentation`] a [`provide_menu_presentation`] put in
+/// force — [`MenuPresentation::Custom`] where none has.
+pub fn menu_presentation(cx: &App) -> MenuPresentation {
+    scoped::<MenuPresentation>(cx).unwrap_or(MenuPresentation::Custom)
+}
+
+/// `child`, with `presentation` in force for every dropdown inside it —
+/// Flutter's `MenuConfiguration`, SwiftUI's `.menuPresentation(_:)`.
+pub fn provide_menu_presentation(
+    presentation: MenuPresentation,
+    child: impl IntoElement,
+) -> Provide {
+    provide(presentation, child)
+}
+
+/// One row of a menu, flattened for the OS popup. A heading is a group's
+/// caption; it presents disabled. This is the seam a [`NativeMenuBackend`]
+/// reads and a test drives.
+#[derive(Clone)]
+pub struct NativeMenuEntry {
+    pub label: String,
+    pub enabled: bool,
+    /// Radio-style check state; `Some` puts a checkbox column on the row.
+    pub checked: Option<bool>,
+    /// The plain-text form of the shortcut slot — a hint appended to the
+    /// label for display, never an accelerator.
+    pub hint: Option<String>,
+    pub heading: bool,
+    /// Run on the main thread when the row is chosen.
+    pub on_select: Option<Press>,
+}
+
+impl NativeMenuEntry {
+    pub fn new(label: impl Into<String>) -> Self {
+        NativeMenuEntry {
+            label: label.into(),
+            enabled: true,
+            checked: None,
+            hint: None,
+            heading: false,
+            on_select: None,
+        }
+    }
+
+    pub fn heading(label: impl Into<String>) -> Self {
+        NativeMenuEntry {
+            heading: true,
+            enabled: false,
+            ..NativeMenuEntry::new(label)
+        }
+    }
+
+    pub fn enabled(mut self, enabled: bool) -> Self {
+        self.enabled = enabled;
+        self
+    }
+
+    pub fn checked(mut self, checked: Option<bool>) -> Self {
+        self.checked = checked;
+        self
+    }
+
+    pub fn hint(mut self, hint: Option<String>) -> Self {
+        self.hint = hint;
+        self
+    }
+
+    pub fn on_select(mut self, on_select: Option<Press>) -> Self {
+        self.on_select = on_select;
+        self
+    }
+}
+
+/// One report from a native popup: a row was chosen, or the menu closed.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum NativeMenuEvent {
+    Clicked(usize),
+    Dismissed,
+}
+
+/// Where a backend puts its events. Any thread the OS calls back on may
+/// push; the drain task on the main thread takes them out.
+#[derive(Clone, Default)]
+pub struct EventQueue(Arc<Mutex<Vec<NativeMenuEvent>>>);
+
+impl EventQueue {
+    pub fn new() -> Self {
+        EventQueue(Arc::new(Mutex::new(Vec::new())))
+    }
+
+    pub fn push(&self, event: NativeMenuEvent) {
+        self.0.lock().unwrap().push(event);
+    }
+
+    fn drain(&self) -> Vec<NativeMenuEvent> {
+        std::mem::take(&mut self.0.lock().unwrap())
+    }
+}
+
+/// What a component asks a backend to present.
+pub struct NativeMenuRequest {
+    pub entries: Vec<NativeMenuEntry>,
+    /// The trigger, or the right-click point, in window coordinates.
+    pub anchor: Bounds<Pixels>,
+    /// The menu's right edge at the anchor's right, not its left at the
+    /// anchor's left.
+    pub align_end: bool,
+    /// The window to present over.
+    pub window: AnyWindowHandle,
+    /// The platform window behind it, resolved while `&Window` was in hand.
+    pub window_ptr: usize,
+}
+
+/// The OS popup behind a scope's dropdowns. One method set, three
+/// implementations: the platform backend the `native-menus` feature compiles,
+/// and a stand-in for tests. Presenting is synchronous; events arrive later
+/// through the queue.
+pub trait NativeMenuBackend: 'static {
+    /// Whether this platform can present at all.
+    fn supported(&self) -> bool;
+
+    /// Presents the menu anchored as `request` asks. `false` means it did
+    /// not present and the caller falls back to the drawn sheet. Events go
+    /// to `events` from whatever thread the OS calls back on.
+    fn present(&self, request: &NativeMenuRequest, events: &EventQueue) -> bool;
+
+    /// Dismisses the live menu, if there is one.
+    fn close(&self);
+
+    /// The pointer, in `window`'s coordinates — for a bar that follows the
+    /// pointer to the next menu once one closes.
+    fn pointer_position(&self, request: &NativeMenuRequest) -> Option<Point<Pixels>>;
+}
+
+thread_local! {
+    static DEBUG_BACKEND: RefCell<Option<Rc<dyn NativeMenuBackend>>> =
+        const { RefCell::new(None) };
+    static PLATFORM_BACKEND: RefCell<Option<Rc<dyn NativeMenuBackend>>> =
+        const { RefCell::new(None) };
+}
+
+/// Puts a stand-in backend in force — the seam the behavior tests drive,
+/// the way Flutter's `debugNativeMenuBackend` does. `None` restores the
+/// platform's.
+#[doc(hidden)]
+pub fn set_debug_native_menu_backend(backend: Option<Rc<dyn NativeMenuBackend>>) {
+    DEBUG_BACKEND.with_borrow_mut(|slot| *slot = backend);
+}
+
+fn backend() -> Rc<dyn NativeMenuBackend> {
+    if let Some(backend) = DEBUG_BACKEND.with_borrow(|backend| backend.clone()) {
+        return backend;
+    }
+    #[cfg(feature = "native-menus")]
+    {
+        if let Some(backend) = PLATFORM_BACKEND.with_borrow(|backend| backend.clone()) {
+            return backend;
+        }
+        let backend: Rc<dyn NativeMenuBackend> = Rc::new(platform::PlatformBackend::default());
+        PLATFORM_BACKEND.with_borrow_mut(|slot| *slot = Some(backend.clone()));
+        return backend;
+    }
+    #[cfg(not(feature = "native-menus"))]
+    Rc::new(UnsupportedBackend)
+}
+
+/// The backend a build without `native-menus` carries: never supported, so
+/// every dropdown keeps its drawn sheet.
+#[allow(dead_code)]
+pub(crate) struct UnsupportedBackend;
+
+impl NativeMenuBackend for UnsupportedBackend {
+    fn supported(&self) -> bool {
+        false
+    }
+
+    fn present(&self, _: &NativeMenuRequest, _: &EventQueue) -> bool {
+        false
+    }
+
+    fn close(&self) {}
+
+    fn pointer_position(&self, _: &NativeMenuRequest) -> Option<Point<Pixels>> {
+        None
+    }
+}
+
+/// The native half of a dropdown's bookkeeping, keyed beside its
+/// [`PopupState`]: the live OS popup, whether one is on its way, and whether
+/// the last present was refused — that open falls back to the sheet.
+#[derive(Default)]
+pub(crate) struct NativeMenuState {
+    live: Option<Live>,
+    pending: bool,
+    /// The last present was refused: that open falls back to the sheet.
+    pub(crate) failed: bool,
+    /// What a dismissal from the OS runs — the owner's `on_open_change`, or
+    /// the bar's follow-the-pointer onto the next menu. Weakly tied back to
+    /// this state, so the closure and the state do not pin each other.
+    on_dismiss: Option<OnOpenChange>,
+}
+
+struct Live {
+    queue: EventQueue,
+    /// Row actions parallel to the entries the backend was given.
+    selects: Rc<Vec<Option<Press>>>,
+    dismissed: bool,
+    notified: bool,
+    deadline: Option<Instant>,
+    task: Task<()>,
+}
+
+impl NativeMenuState {
+    /// Whether an OS popup is out there right now.
+    fn presented(&self) -> bool {
+        self.live.is_some()
+    }
+
+    /// Forgets the live session, reporting whether there was one.
+    fn take(&mut self) -> bool {
+        self.pending = false;
+        self.failed = false;
+        self.on_dismiss = None;
+        self.live.take().is_some()
+    }
+
+    fn select_of(&self, index: usize) -> Option<Press> {
+        self.live
+            .as_ref()
+            .and_then(|live| live.selects.get(index))
+            .and_then(|select| select.clone())
+    }
+
+    /// Drains one batch, its clicks ordered before its dismissal — AppKit
+    /// and Win32 report the close before the chosen item's action — and
+    /// says whether the session is finished.
+    fn poll(&mut self) -> (Vec<NativeMenuEvent>, bool) {
+        let Some(live) = self.live.as_mut() else {
+            return (Vec::new(), true);
+        };
+        let mut events = Vec::new();
+        let mut dismissed = false;
+        for event in live.queue.drain() {
+            match event {
+                NativeMenuEvent::Clicked(_) => events.push(event),
+                NativeMenuEvent::Dismissed => dismissed = true,
+            }
+        }
+        if dismissed && !live.dismissed {
+            live.dismissed = true;
+            live.deadline = Some(Instant::now() + DISMISS_GRACE);
+        }
+        if dismissed && !live.notified {
+            live.notified = true;
+            events.push(NativeMenuEvent::Dismissed);
+        }
+        let done = live.dismissed && live.deadline.is_some_and(|at| Instant::now() >= at);
+        (events, done)
+    }
+}
+
+/// The native-menu state keyed beside the popup `id` names.
+pub(crate) fn native_state_for(
+    id: &gpui::ElementId,
+    window: &mut Window,
+    cx: &mut App,
+) -> Entity<NativeMenuState> {
+    window.use_keyed_state(part_id(id, "native"), cx, |_, _| NativeMenuState::default())
+}
+
+/// Whether the scope asks for native dropdowns and this build can present
+/// them. A refused present falls back to the sheet through `failed`, not
+/// through here.
+pub(crate) fn native_mode_active(cx: &App) -> bool {
+    menu_presentation(cx) == MenuPresentation::Native && backend().supported()
+}
+
+/// Opens without the drawn sheet's focus handoff — nothing is drawn for the
+/// OS popup to take the keyboard from.
+pub(crate) fn set_open(state: &Entity<PopupState>, open: bool, cx: &mut App) {
+    state.update(cx, |state, cx| {
+        state.open = open;
+        if !open {
+            state.highlighted = None;
+        }
+        cx.notify();
+    });
+}
+
+/// Dismisses the OS popup a dropdown holds, if it holds one — a close, or a
+/// scope that changed its mind about native.
+pub(crate) fn close_native_menu(native: &Entity<NativeMenuState>, cx: &mut App) {
+    if native.update(cx, |state, _| state.take()) {
+        backend().close();
+        cx.refresh_windows();
+    }
+}
+
+/// Installs what a dismissal from the OS runs — the owner sets it while it
+/// holds an open native popup.
+pub(crate) fn set_on_dismiss(
+    native: &Entity<NativeMenuState>,
+    on_dismiss: Option<OnOpenChange>,
+    cx: &mut App,
+) {
+    native.update(cx, |state, _| state.on_dismiss = on_dismiss);
+}
+
+/// The press a native dropdown's trigger gets: it presents the OS popup —
+/// whose anchor is where the last frame drew the trigger — or dismisses it,
+/// and reports the change either way, the way the drawn toggle does. Run
+/// from a press handler, outside any frame.
+pub(crate) fn native_press(
+    state: &Entity<PopupState>,
+    native: &Entity<NativeMenuState>,
+    entries: Vec<NativeMenuEntry>,
+    anchor: Anchor,
+    align_end: bool,
+    on_change: Option<OnOpenChange>,
+) -> Press {
+    let state = state.clone();
+    let native = native.clone();
+    Rc::new(move |window, cx| {
+        let open = !state.read(cx).open;
+        if open {
+            set_open(&state, true, cx);
+            if let Some(on_change) = &on_change {
+                on_change(true, window, cx);
+            }
+            present_native_menu(
+                entries.clone(),
+                &anchor,
+                align_end,
+                &state,
+                &native,
+                window,
+                cx,
+            );
+        } else {
+            close_native_menu(&native, cx);
+            set_open(&state, false, cx);
+            if let Some(on_change) = &on_change {
+                on_change(false, window, cx);
+            }
+        }
+    })
+}
+
+/// Arms a present for the next frame — the path of an open set
+/// programmatically, a `default_open` or a host's controlled `open`, where
+/// no press handler is running. A press-driven open never gets here.
+pub(crate) fn arm_native_menu(
+    state: &Entity<PopupState>,
+    native: &Entity<NativeMenuState>,
+    entries: Vec<NativeMenuEntry>,
+    anchor: Anchor,
+    align_end: bool,
+    window: &mut Window,
+    cx: &mut App,
+) {
+    let armed = {
+        let state = native.read(cx);
+        state.pending || state.presented()
+    };
+    if armed {
+        return;
+    }
+    native.update(cx, |state, _| state.pending = true);
+    let native = native.clone();
+    let state = state.clone();
+    window.on_next_frame(move |window, cx| {
+        present_native_menu(entries, &anchor, align_end, &state, &native, window, cx);
+    });
+}
+
+/// Presents the OS popup now — the frame the anchor was written by has
+/// already painted. Refused, the open falls back to the sheet; accepted, a
+/// drain task carries the popup's events into the window.
+pub(crate) fn present_native_menu(
+    entries: Vec<NativeMenuEntry>,
+    anchor: &Anchor,
+    align_end: bool,
+    state: &Entity<PopupState>,
+    native: &Entity<NativeMenuState>,
+    window: &mut Window,
+    cx: &mut App,
+) {
+    native.update(cx, |state, _| state.pending = false);
+    if !state.read(cx).open {
+        return;
+    }
+    let request = NativeMenuRequest {
+        anchor: anchor.bounds().unwrap_or_default(),
+        align_end,
+        window: window.window_handle(),
+        window_ptr: native_window_ptr(window),
+        entries,
+    };
+    let selects: Rc<Vec<Option<Press>>> = Rc::new(
+        request
+            .entries
+            .iter()
+            .map(|entry| {
+                (!entry.heading)
+                    .then_some(entry.on_select.clone())
+                    .flatten()
+            })
+            .collect(),
+    );
+    let queue = EventQueue::new();
+    if !backend().present(&request, &queue) {
+        native.update(cx, |state, _| state.failed = true);
+        cx.refresh_windows();
+        return;
+    }
+    let window_handle = request.window;
+    native.update(cx, |state, _| {
+        state.failed = false;
+        state.live = Some(Live {
+            queue: queue.clone(),
+            selects,
+            dismissed: false,
+            notified: false,
+            deadline: None,
+            task: Task::ready(()),
+        });
+    });
+    let drain_native = native.clone();
+    let drain_state = state.clone();
+    let task = cx.spawn(async move |cx: &mut AsyncApp| {
+        loop {
+            cx.background_executor().timer(POLL_INTERVAL).await;
+            let Ok((events, done)) = drain_native.update(cx, |state, _| state.poll()) else {
+                break;
+            };
+            for event in events {
+                let dispatched = window_handle.update(cx, |_, window, cx| {
+                    dispatch_native_event(event, &drain_native, &drain_state, window, cx);
+                });
+                if dispatched.is_err() {
+                    return;
+                }
+            }
+            if done {
+                let _ = window_handle.update(cx, |_, _, cx| {
+                    drain_native.update(cx, |state, _| {
+                        state.live = None;
+                    });
+                    cx.refresh_windows();
+                });
+                break;
+            }
+        }
+    });
+    native.update(cx, |state, _| {
+        if let Some(live) = state.live.as_mut() {
+            live.task = task;
+        }
+    });
+}
+
+/// Runs one popup event inside the window: a choice runs its row's press; a
+/// dismissal closes the kit's bookkeeping and then hears the owner's
+/// `on_dismiss` — which may keep the bar going onto the next menu.
+fn dispatch_native_event(
+    event: NativeMenuEvent,
+    native: &Entity<NativeMenuState>,
+    state: &Entity<PopupState>,
+    window: &mut Window,
+    cx: &mut App,
+) {
+    match event {
+        NativeMenuEvent::Clicked(index) => {
+            if let Some(select) = native.read(cx).select_of(index) {
+                select(window, cx);
+            }
+        }
+        NativeMenuEvent::Dismissed => {
+            // An uncontrolled popup flips its own state; a controlled one
+            // writes through its host on the next render.
+            state.update(cx, |state, cx| {
+                state.open = false;
+                state.highlighted = None;
+                cx.notify();
+            });
+            let on_dismiss = native.read(cx).on_dismiss.clone();
+            if let Some(on_dismiss) = on_dismiss {
+                on_dismiss(false, window, cx);
+            }
+        }
+    }
+}
+
+/// The platform window behind `window`, resolved while `&Window` is in
+/// hand. Linux positions from the pointer and never asks. The stand-in
+/// backend never asks either — and a test window has no platform behind it
+/// to ask.
+#[allow(unused_variables)]
+pub(crate) fn native_window_ptr(window: &Window) -> usize {
+    if DEBUG_BACKEND.with_borrow(|backend| backend.is_some()) {
+        return 0;
+    }
+    #[cfg(all(
+        feature = "native-menus",
+        any(target_os = "macos", target_os = "windows")
+    ))]
+    {
+        platform::window_ptr(window)
+    }
+    #[cfg(not(all(
+        feature = "native-menus",
+        any(target_os = "macos", target_os = "windows")
+    )))]
+    {
+        0
+    }
+}
+
+/// Where the pointer sits, in `window`'s coordinates.
+pub(crate) fn native_pointer(window: &Window) -> Option<Point<Pixels>> {
+    let request = NativeMenuRequest {
+        entries: Vec::new(),
+        anchor: Bounds::default(),
+        align_end: false,
+        window: window.window_handle(),
+        window_ptr: native_window_ptr(window),
+    };
+    backend().pointer_position(&request)
+}
+
+#[cfg(feature = "native-menus")]
+#[path = "native_menu_platform.rs"]
+mod platform;

@@ -23,6 +23,7 @@ image = { version = "0.25", default-features = false, features = ["png"] }
 [target.'cfg(target_os = "macos")'.dependencies]
 # The collector names its window to `screencapture` by its AppKit number.
 objc = "0.2"
+cocoa = "0.26"
 raw-window-handle = "0.6"
 
 [dev-dependencies]
@@ -30,6 +31,9 @@ gpui = { version = "0.2.2", features = ["test-support"] }
 
 [features]
 runtime-shaders = ["dazzui/runtime-shaders"]
+# The theme panel's "Native menus" toggle does something: the example is the
+# place the OS popups are seen.
+native-menus = ["dazzui/native-menus"]
 
 [lints.rust]
 # `objc`'s `msg_send!` asks for a cfg Cargo does not declare.

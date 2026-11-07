@@ -24,8 +24,8 @@ pub struct PreviewCard {
     trigger: Option<AnyElement>,
     side: Side,
     align: Align,
-    delay: Duration,
-    close_delay: Duration,
+    delay: Option<Duration>,
+    close_delay: Option<Duration>,
     width: Option<Length>,
     default_open: bool,
     children: Vec<AnyElement>,
@@ -38,8 +38,8 @@ impl PreviewCard {
             trigger: None,
             side: Side::Bottom,
             align: Align::Center,
-            delay: Duration::from_millis(600),
-            close_delay: Duration::from_millis(300),
+            delay: None,
+            close_delay: None,
             width: None,
             default_open: false,
             children: Vec::new(),
@@ -64,13 +64,13 @@ impl PreviewCard {
 
     /// How long the pointer has to rest before it opens.
     pub fn delay(mut self, delay: Duration) -> Self {
-        self.delay = delay;
+        self.delay = Some(delay);
         self
     }
 
     /// How long it stays after the pointer leaves.
     pub fn close_delay(mut self, delay: Duration) -> Self {
-        self.close_delay = delay;
+        self.close_delay = Some(delay);
         self
     }
 
@@ -98,7 +98,12 @@ impl RenderOnce for PreviewCard {
         let state = PopupState::keyed(&self.id, self.default_open, window, cx);
         let anchor = state.read(cx).anchor.clone();
         let open = state.read(cx).open;
-        let (delay, close_delay) = (self.delay, self.close_delay);
+        let delay = self
+            .delay
+            .unwrap_or_else(|| Duration::from_secs_f32(t.preview_card_open_delay / 1000.));
+        let close_delay = self
+            .close_delay
+            .unwrap_or_else(|| Duration::from_secs_f32(t.preview_card_close_delay / 1000.));
         let hover = move |part: usize| {
             let state = state.clone();
             move |hovered: &bool, window: &mut Window, cx: &mut App| {

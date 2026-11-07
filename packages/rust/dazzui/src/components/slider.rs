@@ -5,7 +5,7 @@ use std::rc::Rc;
 use gpui::{
     App, Bounds, ElementId, InteractiveElement, IntoElement, MouseButton, MouseMoveEvent,
     MouseUpEvent, ParentElement, Pixels, RenderOnce, SharedString, Styled, Window, canvas, div,
-    prelude::*, px, relative,
+    fill, point, prelude::*, px, relative, size,
 };
 
 use crate::components::checkbox::kit;
@@ -16,7 +16,13 @@ use crate::theme::ActiveTheme;
 use crate::tokens::{Face, shadows};
 
 type OnValueChange = Rc<dyn Fn(&[f64], &mut Window, &mut App) + 'static>;
-type Commit = Rc<dyn Fn(usize, f64, &mut Window, &mut App) + 'static>;
+type Commit = Rc<dyn Fn(usize, f64, Input, &mut Window, &mut App) + 'static>;
+
+#[derive(Clone, Copy)]
+enum Input {
+    Pointer,
+    Keyboard,
+}
 
 /// What a slider keeps between frames: its values when uncontrolled, the
 /// thumb a drag holds, and where the track was last laid out.
@@ -24,6 +30,8 @@ struct SliderState {
     values: Vec<f64>,
     dragging: Option<usize>,
     track: Bounds<Pixels>,
+    hovered: Option<usize>,
+    grab_offset: Pixels,
 }
 
 /// A groove with a thumb on it. The row is as tall as the control profile
@@ -151,13 +159,24 @@ impl RenderOnce for Slider {
                 values,
                 dragging: None,
                 track: Bounds::default(),
+                hovered: None,
+                grab_offset: px(0.),
             }
         });
         let values = self
             .value
             .clone()
             .unwrap_or_else(|| state.read(cx).values.clone());
+        if self.disabled
+            || state
+                .read(cx)
+                .dragging
+                .is_some_and(|index| index >= values.len())
+        {
+            state.update(cx, |state, _| state.dragging = None);
+        }
         let dragging = state.read(cx).dragging;
+        let hovered = state.read(cx).hovered;
         let handles = kit::focus_handles(&self.id, values.len(), window, cx);
         let (min, max, step) = (self.min, self.max, self.step);
         let span = (max - min).max(f64::EPSILON);
@@ -179,34 +198,54 @@ impl RenderOnce for Slider {
             ),
         };
         let accent = self.tint.ramp(t).shade(600).hsla();
+        let thumb_fill = t.color_content.mix(t.color_surface, t.slider_thumb_ink);
+        let thumb_border = t
+            .color_surface
+            .mix(t.color_border_strong, t.slider_thumb_ink);
+        let thumb_hot_border = t
+            .color_surface
+            .mix(self.tint.ramp(t).shade(600), t.slider_thumb_ink);
         let disabled_colors =
             ControlColors::resolve(t, Variant::Normal, self.tint, State::Disabled);
 
-        // Sets thumb `index` to `value`: snapped to the step, kept inside the
-        // range and short of its neighbours.
+        // Keyboard changes stop at the neighbours. Base UI's default pointer
+        // collision policy pushes them instead, retaining the active thumb.
         let commit: Commit = {
             let values = values.clone();
             let controlled = self.value.is_some();
             let state = state.clone();
             let handler = self.on_value_change.clone();
-            Rc::new(move |index, value, window, cx| {
-                let mut value = (((value - min) / step).round() * step + min).clamp(min, max);
-                if index > 0 {
-                    value = value.max(values[index - 1]);
-                }
-                if index + 1 < values.len() {
-                    value = value.min(values[index + 1]);
-                }
+            Rc::new(move |index, value, input, window, cx| {
                 let current = if controlled {
                     values.clone()
                 } else {
                     state.read(cx).values.clone()
                 };
-                if current.get(index) == Some(&value) {
+                if index >= current.len() {
                     return;
                 }
-                let mut next = current;
+                let mut value = (((value - min) / step).round() * step + min).clamp(min, max);
+                if matches!(input, Input::Keyboard) {
+                    if index > 0 {
+                        value = value.max(current[index - 1]);
+                    }
+                    if index + 1 < current.len() {
+                        value = value.min(current[index + 1]);
+                    }
+                }
+                let mut next = current.clone();
                 next[index] = value;
+                if matches!(input, Input::Pointer) {
+                    for index in index + 1..next.len() {
+                        next[index] = next[index].max(next[index - 1]);
+                    }
+                    for index in (0..index).rev() {
+                        next[index] = next[index].min(next[index + 1]);
+                    }
+                }
+                if current == next {
+                    return;
+                }
                 if !controlled {
                     let next = next.clone();
                     state.update(cx, |state, cx| {
@@ -249,33 +288,110 @@ impl RenderOnce for Slider {
             .map(|(index, value)| {
                 let focus = handles[index].clone();
                 let visible = !self.disabled && focus_visible(&focus, window, cx);
+                let hot = !self.disabled && (hovered == Some(index) || dragging == Some(index));
+                let scale = if hot { t.slider_thumb_hot_scale } else { 1. };
+                let disabled = self.disabled;
+                let border = if disabled {
+                    t.color_border.hsla()
+                } else if hot {
+                    thumb_hot_border
+                } else {
+                    thumb_border
+                };
+                let surface = if disabled {
+                    disabled_colors.surface
+                } else {
+                    thumb_fill
+                };
+                let mut lift = shadows(t.shadow_xs);
+                for shadow in &mut lift {
+                    shadow.color.a *= t.slider_thumb_lift;
+                }
                 let mut knob = div()
                     .id(kit::child_id(&self.id, &format!("thumb-{index}")))
+                    .debug_selector(move || format!("dz-slider-thumb-{index}").into())
                     .absolute()
                     .left(relative(fraction(*value)))
                     .ml(px(-thumb / 2.))
                     .top(px((track - thumb) / 2.))
                     .size(px(thumb))
                     .rounded(px(t.radius_full))
-                    .border(px(t.stroke_hairline))
+                    // Paint the scale around the centre without changing the
+                    // thumb's layout, value position or keyboard focus target.
+                    .child(
+                        canvas(
+                            |_, _, _| {},
+                            move |bounds, _, window, _| {
+                                let edge = bounds.size.width * scale;
+                                let bounds = Bounds::new(
+                                    point(
+                                        bounds.center().x - edge / 2.,
+                                        bounds.center().y - edge / 2.,
+                                    ),
+                                    size(edge, edge),
+                                );
+                                if !disabled {
+                                    window.paint_shadows(bounds, (edge / 2.).into(), &lift);
+                                }
+                                window.paint_quad(
+                                    fill(bounds, surface)
+                                        .corner_radii(edge / 2.)
+                                        .border_widths(
+                                            px(crate::foundation::border_width(
+                                                t.slider_thumb_edge_width,
+                                            )) * scale,
+                                        )
+                                        .border_color(border),
+                                );
+                            },
+                        )
+                        .size_full(),
+                    )
                     .when(visible, |this| this.child(kit::outline(t, thumb / 2.)));
-                if self.disabled {
-                    knob = knob
-                        .bg(disabled_colors.surface)
-                        .border_color(t.color_border.hsla());
-                } else {
+                if !self.disabled {
                     let commit = commit.clone();
                     let current = *value;
                     let large = self.large_step;
+                    let hovered_state = state.clone();
+                    let pressed_state = state.clone();
+                    let pressed_handles = handles.clone();
+                    let pressed_values = values.clone();
+                    let pressed_focus = focus.clone();
                     knob = knob
-                        .bg(t.color_surface.hsla())
-                        .border_color(if dragging == Some(index) {
-                            accent
-                        } else {
-                            t.color_border_strong.hsla()
+                        .on_hover(move |hovered, _, cx| {
+                            hovered_state.update(cx, |state, cx| {
+                                if *hovered {
+                                    state.hovered = Some(index);
+                                } else if state.hovered == Some(index) {
+                                    state.hovered = None;
+                                }
+                                cx.notify();
+                            });
                         })
-                        .shadow(shadows(t.shadow_xs))
-                        .hover(move |style| style.border_color(accent))
+                        .on_mouse_down(MouseButton::Left, move |event, window, cx| {
+                            pointer_down(window, cx);
+                            // At the maximum, overlapping thumbs must be able
+                            // to move back into the range from the first end.
+                            let mut active = index;
+                            if current == max {
+                                while active > 0 && pressed_values[active - 1] == max {
+                                    active -= 1;
+                                }
+                            }
+                            window.focus(if active == index {
+                                &pressed_focus
+                            } else {
+                                &pressed_handles[active]
+                            });
+                            pressed_state.update(cx, |state, cx| {
+                                let center = state.track.left()
+                                    + state.track.size.width * (((current - min) / span) as f32);
+                                state.grab_offset = event.position.x - center;
+                                state.dragging = Some(active);
+                                cx.notify();
+                            });
+                            cx.stop_propagation();
+                        })
                         .track_focus(&focus.tab_stop(true))
                         .on_key_down(move |event, window, cx| {
                             let keystroke = &event.keystroke;
@@ -293,7 +409,7 @@ impl RenderOnce for Slider {
                                 "end" => max,
                                 _ => return,
                             };
-                            commit(index, next, window, cx);
+                            commit(index, next, Input::Keyboard, window, cx);
                             cx.stop_propagation();
                         });
                 }
@@ -340,7 +456,8 @@ impl RenderOnce for Slider {
                                         return;
                                     }
                                     let track = moved.read(cx).track;
-                                    commit(index, value_at(event.position.x, track), window, cx);
+                                    let x = event.position.x - moved.read(cx).grab_offset;
+                                    commit(index, value_at(x, track), Input::Pointer, window, cx);
                                 },
                             );
                             window.on_mouse_event(move |_: &MouseUpEvent, phase, _, cx| {
@@ -381,32 +498,26 @@ impl RenderOnce for Slider {
                     if f32::from(track.size.width) <= 0.0 {
                         return;
                     }
+                    if values.is_empty() {
+                        return;
+                    }
                     let value = value_at(event.position.x, track);
                     // The nearest thumb; of two on one spot, the one the
                     // press is past.
                     let index = values
                         .iter()
                         .enumerate()
+                        .rev()
                         .min_by(|(_, a), (_, b)| (*a - value).abs().total_cmp(&(*b - value).abs()))
                         .map(|(index, _)| index)
-                        .map(|index| {
-                            let next = index + 1;
-                            if next < values.len()
-                                && values[next] == values[index]
-                                && value > values[index]
-                            {
-                                next
-                            } else {
-                                index
-                            }
-                        })
                         .unwrap_or(0);
                     window.focus(&handles[index]);
                     state.update(cx, |state, cx| {
                         state.dragging = Some(index);
+                        state.grab_offset = px(0.);
                         cx.notify();
                     });
-                    commit(index, value, window, cx);
+                    commit(index, value, Input::Pointer, window, cx);
                 },
             );
         }

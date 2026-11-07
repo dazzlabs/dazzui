@@ -4228,6 +4228,22 @@
               "axes": {}
             }
           ]
+        },
+        {
+          "id": "progress/2",
+          "title": "Indeterminate",
+          "specimens": [
+            {
+              "address": "progress/2/0",
+              "component": "progress",
+              "axes": {}
+            },
+            {
+              "address": "progress/2/1",
+              "component": "progress",
+              "axes": {}
+            }
+          ]
         }
       ]
     },

@@ -65,8 +65,10 @@ public struct ThemeVariables: Sendable {
     iconSmall: CGFloat = 12.0,
     iconMedium: CGFloat = 16.0,
     iconLarge: CGFloat = 20.0,
+    motionReducedDuration: Double = 0.00001,
     motionDuration: Double = 0.15,
     motionEasing: BezierCurve = BezierCurve(0.4, 0.0, 0.2, 1.0),
+    motionLoopEasing: BezierCurve = BezierCurve(0.42, 0.0, 0.58, 1.0),
     radiusNone: CGFloat = 0.0,
     radiusTiny: CGFloat = 7.0,
     radiusSmall: CGFloat = 9999.0,
@@ -138,6 +140,9 @@ public struct ThemeVariables: Sendable {
     previewCardOpenDelay: Double = 0.6,
     previewCardCloseDelay: Double = 0.3,
     previewCardWidth: CGFloat = 320.0,
+    progressSweepDuration: Double = 1.2,
+    progressReducedSweepDuration: Double = 3.0,
+    progressSweepWidth: CGFloat = 0.4,
     progressGradientFrom: Color = Colors.ink[600],
     progressGradientTo: Color = Colors.ink[300],
     searchFieldInputWidth: CGFloat = 136.0,
@@ -294,8 +299,10 @@ public struct ThemeVariables: Sendable {
     self.iconSmall = iconSmall
     self.iconMedium = iconMedium
     self.iconLarge = iconLarge
+    self.motionReducedDuration = motionReducedDuration
     self.motionDuration = motionDuration
     self.motionEasing = motionEasing
+    self.motionLoopEasing = motionLoopEasing
     self.radiusNone = radiusNone
     self.radiusTiny = radiusTiny
     self.radiusSmall = radiusSmall
@@ -367,6 +374,9 @@ public struct ThemeVariables: Sendable {
     self.previewCardOpenDelay = previewCardOpenDelay
     self.previewCardCloseDelay = previewCardCloseDelay
     self.previewCardWidth = previewCardWidth
+    self.progressSweepDuration = progressSweepDuration
+    self.progressReducedSweepDuration = progressReducedSweepDuration
+    self.progressSweepWidth = progressSweepWidth
     self.progressGradientFrom = progressGradientFrom
     self.progressGradientTo = progressGradientTo
     self.searchFieldInputWidth = searchFieldInputWidth
@@ -489,8 +499,12 @@ public struct ThemeVariables: Sendable {
   public let iconSmall: CGFloat
   public let iconMedium: CGFloat
   public let iconLarge: CGFloat
+  /// Finish decorative motion once under the reduced-motion clamp.
+  public let motionReducedDuration: Double
   public let motionDuration: Double
   public let motionEasing: BezierCurve
+  /// CSS ease-in-out for the loading sweeps.
+  public let motionLoopEasing: BezierCurve
   public let radiusNone: CGFloat
   public let radiusTiny: CGFloat
   public let radiusSmall: CGFloat
@@ -563,6 +577,9 @@ public struct ThemeVariables: Sendable {
   public let previewCardOpenDelay: Double
   public let previewCardCloseDelay: Double
   public let previewCardWidth: CGFloat
+  public let progressSweepDuration: Double
+  public let progressReducedSweepDuration: Double
+  public let progressSweepWidth: CGFloat
   public let progressGradientFrom: Color
   public let progressGradientTo: Color
   public let searchFieldInputWidth: CGFloat
@@ -860,8 +877,10 @@ public struct ThemeVariables: Sendable {
       iconSmall: iconSmall * scale,
       iconMedium: iconMedium * scale,
       iconLarge: iconLarge * scale,
+      motionReducedDuration: motionReducedDuration,
       motionDuration: motionDuration,
       motionEasing: motionEasing,
+      motionLoopEasing: motionLoopEasing,
       radiusNone: radiusNone,
       radiusTiny: radiusTiny,
       radiusSmall: radiusSmall,
@@ -933,6 +952,9 @@ public struct ThemeVariables: Sendable {
       previewCardOpenDelay: previewCardOpenDelay,
       previewCardCloseDelay: previewCardCloseDelay,
       previewCardWidth: previewCardWidth * scale,
+      progressSweepDuration: progressSweepDuration,
+      progressReducedSweepDuration: progressReducedSweepDuration,
+      progressSweepWidth: progressSweepWidth,
       progressGradientFrom: progressGradientFrom,
       progressGradientTo: progressGradientTo,
       searchFieldInputWidth: searchFieldInputWidth * scale,

@@ -573,9 +573,8 @@ impl RenderOnce for DateRangePicker {
             .disabled(self.disabled)
             .style(div().id("trigger"), t)
             .w_auto()
-            .min_w(px(16. * 16.))
+            .min_w(px(t.date_range_picker_trigger_min_width))
             .gap(px(t.spacing_2))
-            .tabular_nums()
             .child(icon_slot(
                 t.icon_small,
                 div()
@@ -732,23 +731,26 @@ impl RenderOnce for DateRangePicker {
                                         ))),
                                 )
                                 .child(
-                                    div().flex_none().min_w(px(5. * 16.)).child(
-                                        Select::new(kit::child_id(&id, part))
-                                            .size(Size::Small)
-                                            .tint(self.tint)
-                                            .options(options)
-                                            .value(current)
-                                            .disabled(draft.value.all_day)
-                                            .on_value_change(move |time, _, cx| {
-                                                let mut parts =
-                                                    time.split(':').map(|n| n.parse::<u32>());
-                                                if let (Some(Ok(h)), Some(Ok(m))) =
-                                                    (parts.next(), parts.next())
-                                                {
-                                                    on_time(h, m, cx);
-                                                }
-                                            }),
-                                    ),
+                                    div()
+                                        .flex_none()
+                                        .min_w(px(t.date_range_picker_time_min_width))
+                                        .child(
+                                            Select::new(kit::child_id(&id, part))
+                                                .size(Size::Small)
+                                                .tint(self.tint)
+                                                .options(options)
+                                                .value(current)
+                                                .disabled(draft.value.all_day)
+                                                .on_value_change(move |time, _, cx| {
+                                                    let mut parts =
+                                                        time.split(':').map(|n| n.parse::<u32>());
+                                                    if let (Some(Ok(h)), Some(Ok(m))) =
+                                                        (parts.next(), parts.next())
+                                                    {
+                                                        on_time(h, m, cx);
+                                                    }
+                                                }),
+                                        ),
                                 ),
                         )
                 };

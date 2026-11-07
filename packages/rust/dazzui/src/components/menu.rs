@@ -15,6 +15,10 @@ use gpui::{
     Styled, Window, div, prelude::*, px, size,
 };
 
+use crate::components::native_menu::{
+    NativeMenuEntry, arm_native_menu, close_native_menu, native_mode_active, native_pointer,
+    native_press, native_state_for, present_native_menu, set_on_dismiss, set_open,
+};
 use crate::components::popup::{
     Align, Anchor, OnOpenChange, Placement, PopupRow, PopupState, Press, Side, TriggerFn,
     dismissable, measured, open_state, part_id, positioned, sheet, toggle_press,
@@ -28,6 +32,9 @@ pub struct MenuItem {
     label: SharedString,
     icon: Option<AnyElement>,
     shortcut: Option<AnyElement>,
+    /// The plain-text form of the shortcut slot — what a native popup row
+    /// wears for display. A hint, never an accelerator.
+    shortcut_hint: Option<SharedString>,
     checked: Option<bool>,
     disabled: bool,
     on_select: Option<Press>,
@@ -39,6 +46,7 @@ impl MenuItem {
             label: label.into(),
             icon: None,
             shortcut: None,
+            shortcut_hint: None,
             checked: None,
             disabled: false,
             on_select: None,
@@ -53,6 +61,14 @@ impl MenuItem {
     /// Trailing hint — a `KeyCap`, or the glyphs to set in one.
     pub fn shortcut(mut self, shortcut: impl IntoElement) -> Self {
         self.shortcut = Some(shortcut.into_any_element());
+        self
+    }
+
+    /// The shortcut slot as plain display text, what a native popup row
+    /// carries when `MenuPresentation::Native` is in force. Display only —
+    /// never an accelerator registered with the OS.
+    pub fn shortcut_hint(mut self, hint: impl Into<SharedString>) -> Self {
+        self.shortcut_hint = Some(hint.into());
         self
     }
 
@@ -78,6 +94,22 @@ impl MenuItem {
 /// A key the sheet does not handle itself, offered to whoever holds it — the
 /// bar's left and right arrows. Whether it was taken.
 type ExtraKey = Rc<dyn Fn(&str, &mut Window, &mut App) -> bool>;
+
+/// The rows an OS popup wears: the items flattened, in order. Element slots
+/// — an icon, a `KeyCap` — do not survive the trip to a native row; the
+/// plain-text hint does.
+pub(crate) fn native_entries(items: &[MenuItem]) -> Vec<NativeMenuEntry> {
+    items
+        .iter()
+        .map(|item| {
+            NativeMenuEntry::new(item.label.to_string())
+                .enabled(!item.disabled)
+                .checked(item.checked)
+                .hint(item.shortcut_hint.as_ref().map(|hint| hint.to_string()))
+                .on_select(item.on_select.clone())
+        })
+        .collect()
+}
 
 /// The rows, in the sheet every menu wears, wired to `state`: the pointer
 /// and the keyboard highlight, a choice closes the menu and then runs.
@@ -148,6 +180,7 @@ fn menu_sheet(
     });
 
     let keys = state.clone();
+    let tab_notify = on_open_change.clone();
     let sheet =
         sheet(t)
             .id("menu")
@@ -161,6 +194,19 @@ fn menu_sheet(
                     return;
                 }
                 let handled = match key {
+                    "tab"
+                        if !event.keystroke.modifiers.control
+                            && !event.keystroke.modifiers.alt
+                            && !event.keystroke.modifiers.platform =>
+                    {
+                        keys.update(cx, |state, cx| state.hide(window, cx));
+                        if let Some(notify) = &tab_notify {
+                            notify(false, window, cx);
+                        }
+                        // Leave traversal to the enclosing modal or the kit's
+                        // unhandled-Tab fallback, starting at the trigger.
+                        false
+                    }
                     "enter" | "space" => {
                         if let Some(index) = keys.read(cx).highlighted {
                             choose(index, window, cx);
@@ -267,22 +313,71 @@ impl RenderOnce for Menu {
         let state = PopupState::keyed(&self.id, self.default_open, window, cx);
         let open = open_state(&state, self.open, cx);
         let anchor = state.read(cx).anchor.clone();
-        let press = toggle_press(&state, None, self.on_open_change.clone());
+        let native = native_state_for(&self.id, window, cx);
+        let native_mode = native_mode_active(cx);
+        let failed = native.read(cx).failed;
+        // A close — or a scope that changed its mind about native — takes
+        // the OS popup with it.
+        if !open || !native_mode {
+            close_native_menu(&native, cx);
+        }
+        let entries = native_entries(&self.items);
+        // What the OS's dismissal runs: the host hears the close.
+        set_on_dismiss(
+            &native,
+            if native_mode {
+                self.on_open_change.clone()
+            } else {
+                None
+            },
+            cx,
+        );
+        let native_open = native_mode && !failed;
+        let press = if native_open {
+            // The trigger presents the OS popup itself, at where the last
+            // frame drew it.
+            native_press(
+                &state,
+                &native,
+                entries.clone(),
+                anchor.clone(),
+                self.align == Align::End,
+                self.on_open_change.clone(),
+            )
+        } else {
+            toggle_press(&state, None, self.on_open_change.clone())
+        };
         let trigger = self
             .trigger
             .map(|trigger| measured(&anchor, trigger(press, open, window, cx)));
-        let popup = open.then(|| {
-            let sheet = menu_sheet(
-                self.items,
+        let popup = if open && native_open {
+            // The list is the OS's; the trigger is all this element draws. A
+            // `default_open` or a host's controlled open arrives with no
+            // press to present from — the next frame does it.
+            arm_native_menu(
                 &state,
-                self.tint,
-                &anchor,
-                self.on_open_change,
-                None,
+                &native,
+                entries,
+                anchor,
+                self.align == Align::End,
+                window,
                 cx,
             );
-            positioned(&anchor, Placement::side(self.side, self.align, t), sheet)
-        });
+            None
+        } else {
+            open.then(|| {
+                let sheet = menu_sheet(
+                    self.items,
+                    &state,
+                    self.tint,
+                    &anchor,
+                    self.on_open_change,
+                    None,
+                    cx,
+                );
+                positioned(&anchor, Placement::side(self.side, self.align, t), sheet)
+            })
+        };
         div().id(self.id).flex().children(trigger).children(popup)
     }
 }
@@ -328,24 +423,60 @@ impl RenderOnce for ContextMenu {
     fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let t = cx.theme();
         let state = PopupState::keyed(&self.id, false, window, cx);
+        let native = native_state_for(&self.id, window, cx);
+        let native_mode = native_mode_active(cx);
+        let failed = native.read(cx).failed;
         let (open, point, region) = {
             let state = state.read(cx);
             (state.open, state.point, state.anchor.clone())
         };
-        let popup = open.then(|| {
-            let at = Anchor::at(Bounds::new(point.unwrap_or_default(), size(px(0.), px(0.))));
-            let sheet = menu_sheet(self.items, &state, self.tint, &region, None, None, cx);
-            positioned(&at, Placement::side(Side::Bottom, Align::Start, t), sheet)
-        });
+        if !open || !native_mode {
+            close_native_menu(&native, cx);
+        }
+        let entries = native_entries(&self.items);
+        let popup = if open && native_mode && !failed {
+            // The list is the OS's, at the right-click point; the press
+            // below presents it, and this element stops drawing its own.
+            None
+        } else {
+            open.then(|| {
+                let at = Anchor::at(Bounds::new(point.unwrap_or_default(), size(px(0.), px(0.))));
+                let sheet = menu_sheet(self.items, &state, self.tint, &region, None, None, cx);
+                positioned(&at, Placement::side(Side::Bottom, Align::Start, t), sheet)
+            })
+        };
         let right = state.clone();
+        let right_state = state.clone();
+        let right_native = native.clone();
+        let right_entries = entries;
         let left = state.clone();
+        let native_click = native_mode && !failed;
         let wrapped = div()
             .id(self.id)
             .on_mouse_down(MouseButton::Right, move |event, window, cx| {
                 right.update(cx, |state, cx| {
                     state.point = Some(event.position);
-                    state.show(None, window, cx);
+                    if native_click {
+                        // No sheet to hand the keyboard to.
+                        state.open = true;
+                        cx.notify();
+                    } else {
+                        state.show(None, window, cx);
+                    }
                 });
+                if native_click {
+                    // The list is the OS's, at the pointer.
+                    let at = Anchor::at(Bounds::new(event.position, size(px(0.), px(0.))));
+                    present_native_menu(
+                        right_entries.clone(),
+                        &at,
+                        false,
+                        &right_state,
+                        &right_native,
+                        window,
+                        cx,
+                    );
+                }
                 cx.stop_propagation();
             })
             .on_mouse_down(MouseButton::Left, move |_, window, cx| {
@@ -445,10 +576,9 @@ impl RenderOnce for Menubar {
                 bar.focus.push(cx.focus_handle());
             }
         });
-        let open = state.read(cx).open;
-        let (active, names, focus) = {
+        let (names, focus) = {
             let bar = bar.read(cx);
-            (bar.active, bar.names.clone(), bar.focus.clone())
+            (bar.names.clone(), bar.focus.clone())
         };
         let whole = state.read(cx).anchor.clone();
         let disabled: Vec<bool> = self
@@ -456,6 +586,69 @@ impl RenderOnce for Menubar {
             .iter()
             .map(|menu| self.disabled || menu.disabled)
             .collect();
+
+        let native = native_state_for(&self.id, window, cx);
+        let native_mode = native_mode_active(cx);
+        if !native_mode {
+            close_native_menu(&native, cx);
+        }
+
+        // What the OS's dismissal runs: the slide the drawn bar does while a
+        // menu is open. The OS owns the tracking loop, so the pointer can
+        // only be followed between its menus — when one closes, whichever
+        // name the pointer has come to rest on opens next. Weakly tied to
+        // the state, which is what holds the closure.
+        if native_mode {
+            let follow: OnOpenChange = {
+                let state = state.downgrade();
+                let bar = bar.clone();
+                let native = native.downgrade();
+                let names = names.clone();
+                let disabled = disabled.clone();
+                let entries: Vec<Vec<NativeMenuEntry>> = self
+                    .menus
+                    .iter()
+                    .map(|menu| native_entries(&menu.items))
+                    .collect();
+                Rc::new(move |open, window, cx| {
+                    if open {
+                        return;
+                    }
+                    let (Some(state), Some(native)) = (state.upgrade(), native.upgrade()) else {
+                        return;
+                    };
+                    let active = bar.read(cx).active;
+                    let at = native_pointer(window);
+                    let next = at.and_then(|at| {
+                        names
+                            .iter()
+                            .enumerate()
+                            .find(|(index, name)| {
+                                *index != active && !disabled[*index] && name.contains(at)
+                            })
+                            .map(|(index, _)| index)
+                    });
+                    let Some(next) = next else {
+                        return;
+                    };
+                    bar.update(cx, |bar, _| bar.active = next);
+                    set_open(&state, true, cx);
+                    present_native_menu(
+                        entries[next].clone(),
+                        &names[next],
+                        false,
+                        &state,
+                        &native,
+                        window,
+                        cx,
+                    );
+                })
+            };
+            set_on_dismiss(&native, Some(follow), cx);
+        }
+
+        let open = state.read(cx).open;
+        let active = bar.read(cx).active;
 
         // Opens menu `index` — or closes it, when it is the one open.
         let switch: Rc<dyn Fn(usize, bool, &mut Window, &mut App)> = {
@@ -485,6 +678,7 @@ impl RenderOnce for Menubar {
             let visible = focus_visible(&focus[index], window, cx);
             let mut name = div()
                 .id(("menubar-item", index))
+                .debug_selector(move || format!("dz-menubar-name-{index}").into())
                 .flex()
                 .flex_none()
                 .items_center()
@@ -496,67 +690,109 @@ impl RenderOnce for Menubar {
                 .text_size(px(t.control_small_content.size))
                 .font_weight(t.control_small_content.font_weight())
                 .line_height(px(t.control_small_content.size))
-                .child(crate::foundation::text_child(menu.label));
+                .child(crate::foundation::text_child(menu.label.clone()));
             let ramp = self.tint.ramp(t);
             let wash = t.control_color_normal_surface_hovered.resolve(ramp);
             if disabled {
                 name = name.text_color(t.control_color_normal_content_disabled.resolve(ramp));
             } else {
-                let click = switch.clone();
-                let follow = switch.clone();
-                let bar_open = state.clone();
-                let bar_active = bar.clone();
                 name = name
                     .text_color(t.color_content.hsla())
                     .track_focus(&focus[index].clone().tab_stop(true))
                     .when(visible, |this| with_outline(this, t))
                     .when(is_open, |this| this.bg(wash))
                     .hover(move |style| style.bg(wash))
-                    .on_mouse_down(MouseButton::Left, |_, window, cx| pointer_down(window, cx))
-                    .on_click(move |_, window, cx| click(index, true, window, cx))
-                    .on_hover(move |hovered, window, cx| {
-                        if *hovered && bar_open.read(cx).open && bar_active.read(cx).active != index
-                        {
-                            follow(index, false, window, cx);
+                    .on_mouse_down(MouseButton::Left, |_, window, cx| pointer_down(window, cx));
+                if native_mode {
+                    // The name hands its items to the OS; there is no sheet
+                    // open for a hover to slide from, so the pointer only
+                    // ever follows between the OS's own menus — the
+                    // dismissal hook above does that.
+                    let state = state.clone();
+                    let bar = bar.clone();
+                    let native = native.clone();
+                    let entries = native_entries(&menu.items);
+                    let anchor = names[index].clone();
+                    name = name.on_click(move |_, window, cx| {
+                        let already = state.read(cx).open && bar.read(cx).active == index;
+                        bar.update(cx, |bar, _| bar.active = index);
+                        if already {
+                            close_native_menu(&native, cx);
+                            set_open(&state, false, cx);
+                        } else {
+                            // Whatever else is out — a menu on another name
+                            // — goes away first.
+                            close_native_menu(&native, cx);
+                            set_open(&state, true, cx);
+                            present_native_menu(
+                                entries.clone(),
+                                &anchor,
+                                false,
+                                &state,
+                                &native,
+                                window,
+                                cx,
+                            );
                         }
                     });
+                } else {
+                    let click = switch.clone();
+                    let follow = switch.clone();
+                    let bar_open = state.clone();
+                    let bar_active = bar.clone();
+                    name = name
+                        .on_click(move |_, window, cx| click(index, true, window, cx))
+                        .on_hover(move |hovered, window, cx| {
+                            if *hovered
+                                && bar_open.read(cx).open
+                                && bar_active.read(cx).active != index
+                            {
+                                follow(index, false, window, cx);
+                            }
+                        });
+                }
             }
             names_row.push(measured(&names[index], name).into_any_element());
             sheets.push((index, menu.items));
         }
 
-        let popup = sheets
-            .into_iter()
-            .find(|(index, _)| open && *index == active)
-            .map(|(index, items)| {
-                let walk: ExtraKey = {
-                    let switch = switch.clone();
-                    let disabled = disabled.clone();
-                    Rc::new(move |key, window, cx| {
-                        let step: isize = match key {
-                            "right" => 1,
-                            "left" => -1,
-                            _ => return false,
+        let popup = (!native_mode)
+            .then(|| {
+                sheets
+                    .into_iter()
+                    .find(|(index, _)| open && *index == active)
+                    .map(|(index, items)| {
+                        let walk: ExtraKey = {
+                            let switch = switch.clone();
+                            let disabled = disabled.clone();
+                            Rc::new(move |key, window, cx| {
+                                let step: isize = match key {
+                                    "right" => 1,
+                                    "left" => -1,
+                                    _ => return false,
+                                };
+                                let count = disabled.len() as isize;
+                                let mut next = index as isize;
+                                for _ in 0..count {
+                                    next = (next + step).rem_euclid(count);
+                                    if !disabled[next as usize] {
+                                        break;
+                                    }
+                                }
+                                switch(next as usize, false, window, cx);
+                                true
+                            })
                         };
-                        let count = disabled.len() as isize;
-                        let mut next = index as isize;
-                        for _ in 0..count {
-                            next = (next + step).rem_euclid(count);
-                            if !disabled[next as usize] {
-                                break;
-                            }
-                        }
-                        switch(next as usize, false, window, cx);
-                        true
+                        let sheet =
+                            menu_sheet(items, &state, self.tint, &whole, None, Some(walk), cx);
+                        positioned(
+                            &names[index],
+                            Placement::side(Side::Bottom, Align::Start, t),
+                            sheet,
+                        )
                     })
-                };
-                let sheet = menu_sheet(items, &state, self.tint, &whole, None, Some(walk), cx);
-                positioned(
-                    &names[index],
-                    Placement::side(Side::Bottom, Align::Start, t),
-                    sheet,
-                )
-            });
+            })
+            .flatten();
 
         measured(
             &whole,

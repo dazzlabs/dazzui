@@ -99,7 +99,7 @@ function values(snapshot) {
           )
           .join(', ')
       )
-    } else if (id === 'motion.easing')
+    } else if (id.startsWith('motion.') && id.endsWith('easing'))
       result.set(key, `cubic-bezier(${value.join(', ')})`)
     else if (Array.isArray(value) && value.length === 4)
       result.set(key, color(value))

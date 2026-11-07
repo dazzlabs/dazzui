@@ -53,10 +53,10 @@
 }
 
 /* An indeterminate bar has no width to animate, so it sweeps instead. */
-.dz-progress[data-indeterminate='true'] .dz-progress__fill {
-  width: 40%;
+.dz-progress[data-indeterminate] .dz-progress__fill {
+  width: calc(var(--progress-sweep-width) * 100%);
   transition: none;
-  animation: dz-progress-sweep 1.2s ease-in-out infinite;
+  animation: dz-progress-sweep var(--progress-sweep-duration) var(--motion-loop-easing) infinite;
 }
 
 @keyframes dz-progress-sweep {
@@ -73,7 +73,9 @@
     transition: none;
   }
 
-  .dz-progress[data-indeterminate='true'] .dz-progress__fill {
-    animation-duration: 3s;
+  .dz-progress[data-indeterminate] .dz-progress__fill {
+    /* Like Spinner, retain a slow indication of work over the base clamp. */
+    animation-duration: var(--progress-reduced-sweep-duration) !important;
+    animation-iteration-count: infinite !important;
   }
 }

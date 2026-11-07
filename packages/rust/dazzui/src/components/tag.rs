@@ -189,7 +189,7 @@ impl RenderOnce for Tag {
             .font_family(t.label_strong.face.family())
             .font_weight(t.label_medium.font_weight())
             .text_size(px(font_size))
-            .line_height(px(font_size * 1.4));
+            .line_height(px(font_size * t.badge_line_height));
 
         // The ink at rest, which the dismiss button's hover wash is mixed from.
         let ink;

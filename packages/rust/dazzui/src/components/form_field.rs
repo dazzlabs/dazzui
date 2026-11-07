@@ -99,7 +99,7 @@ impl RenderOnce for FormField {
                     .font_family(quiet.face.family())
                     .text_size(px(quiet.size))
                     .font_weight(quiet.font_weight())
-                    .line_height(relative(1.6))
+                    .line_height(relative(t.form_field_hint_leading))
                     .child(hint)
             }));
         provide(FormFieldScope { invalid }, field)

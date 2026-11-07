@@ -2,11 +2,12 @@
 
 use gpui::{
     AnyElement, App, ClickEvent, ElementId, InteractiveElement, IntoElement, ParentElement,
-    RenderOnce, StatefulInteractiveElement, Styled, Window, div, prelude::*, px,
+    RenderOnce, Styled, Window, div, prelude::*, px,
 };
 
 use crate::components::icon::icon_slot;
-use crate::foundation::{Size, StyledExt, Tint, Variant, control, focusable};
+use crate::foundation::press::ButtonPress;
+use crate::foundation::{ControlColors, Size, State, StyledExt, Tint, Variant, control, focusable};
 use crate::theme::ActiveTheme;
 use crate::tokens::shadows;
 
@@ -129,6 +130,7 @@ impl RenderOnce for Button {
             .read(cx)
             .clone();
         let filled = self.variant == Variant::Filled && !self.disabled;
+        let press = ButtonPress::new(&self.id, &focus, self.disabled, window, cx);
         let (leading, trailing) = self.glyph_ends();
         let trimmed = px(profile.padding_inline - t.control_label_glyph_inset);
 
@@ -148,14 +150,20 @@ impl RenderOnce for Button {
                 this.font_weight(t.label_strong.font_weight())
                     .shadow(shadows(t.shadow_2xs))
             });
-        button = control(button, t, self.variant, self.tint, self.disabled);
+        button = if press.pressed(cx) {
+            button.control_colors(ControlColors::resolve(
+                t,
+                self.variant,
+                self.tint,
+                State::Pressed,
+            ))
+        } else {
+            control(button, t, self.variant, self.tint, self.disabled)
+        };
         button = focusable(button, &focus, self.disabled, window, cx);
 
         if !self.disabled {
             button = button.cursor_pointer();
-            if let Some(on_click) = self.on_click {
-                button = button.on_click(on_click);
-            }
         } else {
             button = button.cursor_not_allowed();
         }
@@ -168,7 +176,10 @@ impl RenderOnce for Button {
         });
         icon_slot(
             profile.icon_size - t.control_label_glyph_shrink,
-            button.children(self.children).children(shortcut),
+            press.bind(
+                button.children(self.children).children(shortcut),
+                self.on_click,
+            ),
         )
     }
 }

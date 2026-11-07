@@ -33,6 +33,15 @@ const story: Story = {
         </Col>
       ),
     },
+    {
+      title: 'Indeterminate',
+      Demo: () => (
+        <Col width="20rem" gap="4">
+          <Progress aria-label="Loading" />
+          <Progress gradient aria-label="Loading with gradient" />
+        </Col>
+      ),
+    },
   ],
 }
 

@@ -1,14 +1,13 @@
 //! A ring with one segment picked out, turning once a second.
 
 use std::f32::consts::{FRAC_PI_2, PI, TAU};
-use std::sync::OnceLock;
-use std::time::Instant;
 
 use gpui::{
     App, Bounds, Hsla, IntoElement, ParentElement, PathBuilder, Pixels, RenderOnce, Styled, Window,
     canvas, div, point, px,
 };
 
+use crate::foundation::motion::Motion;
 use crate::foundation::{Size, Tint};
 use crate::theme::ActiveTheme;
 
@@ -55,13 +54,6 @@ impl Default for Spinner {
     }
 }
 
-/// Every spinner turns against one clock, as every CSS animation on a page
-/// started together would — two side by side never drift apart.
-fn epoch() -> Instant {
-    static EPOCH: OnceLock<Instant> = OnceLock::new();
-    *EPOCH.get_or_init(Instant::now)
-}
-
 impl RenderOnce for Spinner {
     fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
         let t = cx.theme();
@@ -71,19 +63,25 @@ impl RenderOnce for Spinner {
             Size::Large => t.spacing_5,
         };
         let (track, head) = if self.on_accent {
-            (t.color_on_accent.alpha(0.35), t.color_on_accent.hsla())
+            (
+                t.color_on_accent.alpha(t.spinner_on_accent_track_alpha),
+                t.color_on_accent.hsla(),
+            )
         } else {
             let tint = self.tint.ramp(t).shade(600);
-            (tint.alpha(0.25), tint.hsla())
+            (tint.alpha(t.spinner_track_alpha), tint.hsla())
         };
         let width = t.spacing_0_5;
         div().flex_none().size(px(edge)).child(
             canvas(
                 |_, _, _| {},
-                move |bounds, _, window, _| {
-                    let turn = epoch().elapsed().as_secs_f32().fract();
+                move |bounds, _, window, cx| {
+                    let frame = Motion::frame(cx);
+                    let turn = frame.cycle(t.spinner_duration, t.spinner_reduced_duration);
                     paint_ring(bounds, width, track, head, turn * TAU, window);
-                    window.request_animation_frame();
+                    if !frame.frozen {
+                        window.request_animation_frame();
+                    }
                 },
             )
             .size_full(),

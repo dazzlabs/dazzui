@@ -13,9 +13,6 @@ use crate::foundation::StyledExt;
 use crate::theme::ActiveTheme;
 use crate::tokens::shadows;
 
-/// Base UI's default wait before a tooltip opens.
-const DELAY: Duration = Duration::from_millis(600);
-
 /// A tooltip over its one child.
 #[derive(IntoElement)]
 pub struct Tooltip {
@@ -23,8 +20,8 @@ pub struct Tooltip {
     label: SharedString,
     side: Side,
     align: Align,
-    delay: Duration,
-    close_delay: Duration,
+    delay: Option<Duration>,
+    close_delay: Option<Duration>,
     disabled: bool,
     child: Option<AnyElement>,
 }
@@ -36,8 +33,8 @@ impl Tooltip {
             label: label.into(),
             side: Side::Top,
             align: Align::Center,
-            delay: DELAY,
-            close_delay: Duration::ZERO,
+            delay: None,
+            close_delay: None,
             disabled: false,
             child: None,
         }
@@ -55,13 +52,13 @@ impl Tooltip {
 
     /// How long the pointer rests before it opens.
     pub fn delay(mut self, delay: Duration) -> Self {
-        self.delay = delay;
+        self.delay = Some(delay);
         self
     }
 
     /// How long it stays once the pointer leaves.
     pub fn close_delay(mut self, delay: Duration) -> Self {
-        self.close_delay = delay;
+        self.close_delay = Some(delay);
         self
     }
 
@@ -86,7 +83,12 @@ impl RenderOnce for Tooltip {
         let state = PopupState::keyed(&self.id, false, window, cx);
         let anchor = state.read(cx).anchor.clone();
         let open = state.read(cx).open && !self.disabled;
-        let (delay, close_delay) = (self.delay, self.close_delay);
+        let delay = self
+            .delay
+            .unwrap_or_else(|| Duration::from_secs_f32(t.tooltip_open_delay / 1000.));
+        let close_delay = self
+            .close_delay
+            .unwrap_or_else(|| Duration::from_secs_f32(t.tooltip_close_delay / 1000.));
 
         let popup = open.then(|| {
             // `.dz-tooltip`: the raised card, a hairline, the small label.

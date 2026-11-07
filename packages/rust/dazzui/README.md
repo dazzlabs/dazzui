@@ -83,6 +83,75 @@ On Windows and Linux, use `cargo build --workspace` and
 platform's own selection, word movement and clipboard shortcuts. Linux's
 UI and code fonts follow the host's Fontconfig generic-family settings.
 
+On macOS, `compat/font-kit` keeps GPUI's system UI font instances at the
+CSS weights React uses. Core Text's native Medium and Semibold instances
+have variable weights 510 and 590; matching their names alone does not
+produce CSS 500 and 600. The adapter changes the native fonts used for
+both shaping and painting, leaving other families and platforms upstream.
+It wraps the exact upstream commit shipped as `0.14.1-zed`, pinned in
+`Cargo.lock`. Cargo applies patches
+only from the workspace root; an app embedding this crate from another
+workspace must include the same patch, with the path adjusted:
+
+```toml
+[patch.crates-io]
+zed-font-kit = { path = "path/to/dazzui/compat/font-kit" }
+gpui = { path = "path/to/dazzui/compat/gpui" }
+```
+
+Geometry collection reads native boxes; paint and interaction need separate
+verification. Shadows translate CSS blur lengths to GPUI's Gaussian sigma,
+and Slider reads the theme's thumb ink, edge, lift and hover scale. Popup
+type-ahead, hover delays, feedback timers and text leading use the generated
+tokens rather than copies of their current values.
+
+Unhandled Tab and Shift-Tab traverse GPUI's native tab order; a host can
+consume them first. Dialog focuses the first eligible control; Drawer
+initially focuses its panel. Both contain traversal and restore the previous
+focus after the exit finishes, including nested sheets and dropdowns.
+Kit portals enqueue nested layers together rather than
+nesting SDK deferred draws; detached layout preserves namespaces, providers
+and subtree themes. Slider pointer changes push neighbouring thumbs while
+keyboard changes stop at them, and a drag retains its initial grab offset.
+
+Button and IconButton follow native web button timing: Enter activates on
+keydown, including repeats; Space holds the pressed recipe and activates
+once on release. Losing focus, becoming disabled or preventing the key's
+default cancels the pending activation. Keyboard clicks carry the actual
+control bounds. Dialog and Drawer trigger/close wrappers share that timing,
+so releasing an opening Enter cannot click the newly focused close button.
+
+Skeleton sweeps, Spinner turns and Progress sweeps share a loading clock and
+the CSS cubic Bézier curves. Determinate progress transitions over twice the
+theme's motion duration and reverses from its current painted width. Give
+progress bars built at the same call site in a loop a distinct `.id(...)`.
+
+`MotionPreference::System` follows macOS Reduce Motion, including changes
+while the window is idle. Other hosts can forward their accessibility
+setting with `Motion::set_preference(MotionPreference::Reduced, cx)`.
+Reduced motion settles Skeleton's highlight, slows Spinner and the
+indeterminate bar, and jumps directly to a determinate value.
+`Motion::freeze_at(duration, cx)` fixes loading at an exact time and settles
+value transitions; `Motion::resume(cx)` resumes the loading clock. The
+native and React collectors accept `--motion-ms 400` and optionally
+`--reduced-motion` for matching animation snapshots when called directly.
+
+Drawer translates its measured sheet and hitboxes from the selected edge;
+the scrim fades independently. Closing sheets stay mounted and retain focus
+until the last frame. Reopening during exit preserves the original return
+focus. Interrupted transitions use the
+[CSS reversal shortening rule](https://www.w3.org/TR/css-transitions-1/#reversing).
+An initially open sheet starts at rest. `Motion::seek(time, cx)` pauses a
+transition timeline without settling its values.
+
+The committed GPUI compatibility patch gives the Metal renderer isolated
+subtree opacity and rounded overflow clipping. Dialog's header, body and
+footer compose before fading, and its child backgrounds stay inside the
+rounded padding edge. Cached views retain their original paint ranges.
+The reference's subtree scale remains to be implemented; other renderer
+backends still use upstream opacity and rectangular clipping. See
+[`compat/gpui/DAZZUI-PATCH.md`](compat/gpui/DAZZUI-PATCH.md).
+
 ## The example
 
 `example/` is the React example's window, drawn with this package: the

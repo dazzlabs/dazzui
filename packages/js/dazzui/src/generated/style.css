@@ -1125,6 +1125,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1); /* CSS ease-in-out for the loading sweeps. */
+  --motion-reduced-duration: 0.01ms; /* Finish decorative motion once under the reduced-motion clamp. */
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: var(--spacing-1);
@@ -1140,6 +1142,9 @@
   --preview-card-width: 20rem;
   --progress-gradient-from: var(--base-color-ink-600);
   --progress-gradient-to: var(--base-color-ink-300);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: var(--spacing-5);
   --radio-large-dot: var(--spacing-2-5);
   --radio-medium-box: var(--spacing-4);

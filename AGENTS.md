@@ -155,7 +155,7 @@ rather than four designs that resemble each other.
   native views and `nsh-base` behavior with ds geometry and recipes.
   `src/generated/theme_tokens.rs` comes from `ds/plugins/nsh.mjs`; regenerate
   with `pnpm tokens`. `pnpm codegen` writes Fluent glyphs, JSON stories, theme
-  families and `example/coverage.json`. All 188 shared scenes are mapped; new
+  families and `example/coverage.json`. All 189 shared scenes are mapped; new
   unsupported props or shapes remain explicit gaps. Calendar uses NSH focus
   and key events with DazzUI day navigation, range state and hover preview.
   A documented macOS renderer patch preserves numeric system-font weights.

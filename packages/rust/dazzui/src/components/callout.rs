@@ -95,7 +95,7 @@ impl RenderOnce for Callout {
                 .font_family(style.face.family())
                 .text_size(px(style.size))
                 .font_weight(style.font_weight())
-                .line_height(px(style.size * 1.4))
+                .line_height(px(style.size * t.callout_title_leading))
                 .child(crate::foundation::text_child(title))
         });
         let description = (!self.children.is_empty()).then(|| {
@@ -105,7 +105,7 @@ impl RenderOnce for Callout {
                 .font_family(t.label_quiet.face.family())
                 .text_size(px(size))
                 .font_weight(t.caption_small.font_weight())
-                .line_height(px(size * 1.5))
+                .line_height(px(size * t.callout_description_leading))
                 .children(self.children)
         });
 

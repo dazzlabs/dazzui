@@ -34,10 +34,6 @@ impl SplitterOrientation {
     }
 }
 
-/// How far one arrow key moves a handle, and one with shift held.
-const STEP: f32 = 1.0;
-const COARSE_STEP: f32 = 10.0;
-
 /// One region of a [`Splitter`]. The sizes are shares of the run: they are
 /// normalised, so `50, 25, 25` and `2, 1, 1` lay out alike. `min_size` and
 /// `max_size` are percentages of the whole run.
@@ -404,9 +400,9 @@ impl RenderOnce for Splitter {
                         ("up", "down")
                     };
                     let step = if stroke.modifiers.shift {
-                        COARSE_STEP
+                        t.splitter_key_coarse_step
                     } else {
-                        STEP
+                        t.splitter_key_step
                     };
                     let share = resizer.share(index, cx);
                     let (min, max) = resizer.bounds[index];

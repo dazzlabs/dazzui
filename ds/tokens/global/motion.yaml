@@ -5,9 +5,17 @@
 # enough that a fast pointer never waits on it. A drag never reads it: a
 # width the hand is drawing is applied on the spot.
 motion:
+  reduced-duration:
+    $type: duration
+    $value: 0.01ms
+    $description: Finish decorative motion once under the reduced-motion clamp.
   duration:
     $type: duration
     $value: 150ms
   easing:
     $type: cubicBezier
     $value: [0.4, 0, 0.2, 1]
+  loop-easing:
+    $type: cubicBezier
+    $value: [0.42, 0, 0.58, 1]
+    $description: CSS ease-in-out for the loading sweeps.

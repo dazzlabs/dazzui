@@ -115,6 +115,35 @@ pub const STORY: &str = r#"
           ]
         }
       }
+    },
+    {
+      "title": "Indeterminate",
+      "demo": {
+        "content": {
+          "$el": "Col",
+          "props": {
+            "width": "20rem",
+            "gap": "4"
+          },
+          "children": [
+            {
+              "$el": "Progress",
+              "props": {
+                "aria-label": "Loading"
+              },
+              "$at": 0
+            },
+            {
+              "$el": "Progress",
+              "props": {
+                "gradient": true,
+                "aria-label": "Loading with gradient"
+              },
+              "$at": 1
+            }
+          ]
+        }
+      }
     }
   ]
 }

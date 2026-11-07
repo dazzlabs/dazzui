@@ -8,7 +8,10 @@ use gpui::{
 
 use crate::components::checkbox::kit;
 use crate::components::icon::icon_slot;
-use crate::foundation::{Size, Tint, Variant, control, focus_visible, pointer_down};
+use crate::foundation::press::ButtonPress;
+use crate::foundation::{
+    ControlColors, Size, State, StyledExt, Tint, Variant, control, focus_visible, pointer_down,
+};
 use crate::theme::ActiveTheme;
 
 type OnClick = Box<dyn Fn(&ClickEvent, &mut Window, &mut App) + 'static>;
@@ -86,6 +89,7 @@ impl RenderOnce for IconButton {
         let profile = self.size.profile(t);
         let focus = kit::focus_handle(&self.id, window, cx);
         let visible = !self.disabled && focus_visible(&focus, window, cx);
+        let press = ButtonPress::new(&self.id, &focus, self.disabled, window, cx);
 
         let mut button = div()
             .id(self.id)
@@ -106,8 +110,20 @@ impl RenderOnce for IconButton {
                 .text_color(t.color_content_subtle.hsla())
                 .hover(move |style| style.bg(subtle).text_color(content))
                 .active(move |style| style.bg(subtle).text_color(content));
+            if press.pressed(cx) {
+                button = button.bg(subtle).text_color(content);
+            }
         } else {
-            button = control(button, t, self.variant, self.tint, self.disabled);
+            button = if press.pressed(cx) {
+                button.control_colors(ControlColors::resolve(
+                    t,
+                    self.variant,
+                    self.tint,
+                    State::Pressed,
+                ))
+            } else {
+                control(button, t, self.variant, self.tint, self.disabled)
+            };
         }
         button = kit::hint(button, Some(self.label));
 
@@ -118,9 +134,6 @@ impl RenderOnce for IconButton {
                 .cursor_pointer()
                 .track_focus(&focus.tab_stop(true))
                 .on_mouse_down(MouseButton::Left, |_, window, cx| pointer_down(window, cx));
-            if let Some(on_click) = self.on_click {
-                button = button.on_click(on_click);
-            }
         }
 
         // Alone in the tiny square the profile's small glyph is half the
@@ -132,9 +145,12 @@ impl RenderOnce for IconButton {
         };
         icon_slot(
             icon_size,
-            button
-                .children(self.children)
-                .when(visible, |this| this.child(kit::outline(t, profile.radius))),
+            press.bind(
+                button
+                    .children(self.children)
+                    .when(visible, |this| this.child(kit::outline(t, profile.radius))),
+                self.on_click,
+            ),
         )
     }
 }

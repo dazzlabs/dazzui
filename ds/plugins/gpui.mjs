@@ -174,7 +174,7 @@ function scalar(id, value) {
   if (value?.unit === 'px' || value?.unit === 'rem') {
     return { name, type: 'f32', emit: s => number(px(s[id])) }
   }
-  if (id === 'motion.easing') {
+  if (id.startsWith('motion.') && id.endsWith('easing')) {
     return {
       name,
       type: '[f32; 4]',

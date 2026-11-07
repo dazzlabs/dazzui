@@ -49,7 +49,7 @@ export function snapshot(values) {
           radius: dimension(shadow.blur),
           color: color(shadow.color),
         }))
-    else if (id === 'motion.easing') {
+    else if (id.startsWith('motion.') && id.endsWith('easing')) {
       for (const [index, coordinate] of ['x1', 'y1', 'x2', 'y2'].entries())
         result.metrics[`${id}.${coordinate}`] = value[index]
     } else if (Array.isArray(value) && value.length === 4)

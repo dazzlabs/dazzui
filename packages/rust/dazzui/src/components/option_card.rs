@@ -95,7 +95,7 @@ impl RenderOnce for OptionCard {
                 .font_family(caption.face.family())
                 .text_size(px(small))
                 .font_weight(caption.font_weight())
-                .line_height(px(small * 1.5))
+                .line_height(px(small * t.option_card_description_leading))
                 .child(crate::foundation::text_child(description))
         });
 

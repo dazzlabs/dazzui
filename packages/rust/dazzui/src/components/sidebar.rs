@@ -113,6 +113,15 @@ impl SidebarContext {
 #[derive(Clone, Copy)]
 struct IconColumn(bool);
 
+#[derive(Clone, Copy)]
+struct FixedColumn(bool);
+
+#[derive(Clone, Copy)]
+struct ContentEdge {
+    first: bool,
+    last: bool,
+}
+
 fn icon_column(cx: &App) -> bool {
     scoped::<IconColumn>(cx).is_some_and(|column| column.0)
 }
@@ -308,7 +317,11 @@ impl RenderOnce for Sidebar {
                             this.border_l(rule)
                         }
                     })
-                    .children(self.children),
+                    .children(
+                        self.children
+                            .into_iter()
+                            .map(|child| provide(FixedColumn(true), child)),
+                    ),
             )
             .into_any_element();
         }
@@ -345,7 +358,11 @@ impl RenderOnce for Sidebar {
                     .rounded(px(t.radius_large))
                     .shadow(shadows(t.shadow_sm))
             })
-            .children(self.children);
+            .children(
+                self.children
+                    .into_iter()
+                    .map(|child| provide(FixedColumn(false), child)),
+            );
 
         provide(
             IconColumn(icon),
@@ -521,13 +538,15 @@ impl RenderOnce for SidebarContent {
     fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
         let t = cx.theme();
         let icon = icon_column(cx);
+        let fixed = scoped::<FixedColumn>(cx).is_some_and(|column| column.0);
+        let count = self.children.len();
         div()
             .id("dz-sidebar-content")
             .flex()
             .flex_col()
             .flex_1()
             .min_h_0()
-            .py(px(t.spacing_2))
+            .py(px(if fixed { t.spacing_2_5 } else { t.spacing_2 }))
             .map(|this| {
                 if icon {
                     this.overflow_hidden()
@@ -535,7 +554,15 @@ impl RenderOnce for SidebarContent {
                     this.overflow_y_scroll()
                 }
             })
-            .children(self.children)
+            .children(self.children.into_iter().enumerate().map(|(index, child)| {
+                provide(
+                    ContentEdge {
+                        first: fixed && index == 0,
+                        last: fixed && index + 1 == count,
+                    },
+                    child,
+                )
+            }))
     }
 }
 
@@ -584,6 +611,7 @@ impl ParentElement for SidebarGroup {
 impl RenderOnce for SidebarGroup {
     fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
         let t = cx.theme();
+        let edge = scoped::<ContentEdge>(cx);
         div()
             .relative()
             .flex()
@@ -591,8 +619,18 @@ impl RenderOnce for SidebarGroup {
             .w_full()
             .min_w_0()
             .py(px(t.spacing_1_5))
+            .when(edge.is_some_and(|edge| edge.first), |this| this.pt_0())
+            .when(edge.is_some_and(|edge| edge.last), |this| this.pb_0())
             .px(px(t.spacing_2_5))
-            .children(self.children)
+            .children(self.children.into_iter().map(|child| {
+                provide(
+                    ContentEdge {
+                        first: false,
+                        last: false,
+                    },
+                    child,
+                )
+            }))
     }
 }
 

@@ -3,6 +3,9 @@
 pub mod axes;
 pub mod focus;
 pub mod lengths;
+pub mod motion;
+pub(crate) mod portal;
+pub(crate) mod press;
 pub mod scope;
 pub mod style;
 mod text;

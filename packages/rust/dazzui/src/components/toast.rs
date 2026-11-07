@@ -12,7 +12,7 @@ use std::time::Duration;
 use gpui::{
     AnchoredPositionMode, AnyElement, App, AppContext, Corner, Entity, InteractiveElement,
     IntoElement, ParentElement, RenderOnce, SharedString, StatefulInteractiveElement, Styled,
-    Window, anchored, deferred, div, point, prelude::FluentBuilder, px,
+    Window, anchored, div, point, prelude::FluentBuilder, px,
 };
 
 use crate::components::button::Button;
@@ -21,9 +21,6 @@ use crate::foundation::{Size, StyledExt, Tint, Variant, provide, scoped};
 use crate::glyphs;
 use crate::theme::ActiveTheme;
 use crate::tokens::shadows;
-
-const NOTICE: Duration = Duration::from_millis(5000);
-const ACTION: Duration = Duration::from_millis(8000);
 
 /// A toast's trailing affordance — undo, retry. Pressing it closes the toast.
 #[derive(Clone)]
@@ -114,12 +111,13 @@ impl Toaster {
 
     /// Raises a toast and returns its id.
     pub fn add(&self, options: ToastOptions, cx: &mut App) -> u64 {
+        let t = cx.theme();
         let timeout = options.timeout.unwrap_or(if options.tint == Tint::Danger {
             Duration::ZERO
         } else if options.action.is_some() {
-            ACTION
+            Duration::from_secs_f32(t.toast_action_duration / 1000.)
         } else {
-            NOTICE
+            Duration::from_secs_f32(t.toast_notice_duration / 1000.)
         });
         let id = self.0.update(cx, |queue, cx| {
             let id = queue.next;
@@ -270,14 +268,14 @@ impl RenderOnce for ToastViewport {
             ToastPlacement::Bottom => (Corner::BottomLeft, point(px(0.), viewport.height)),
             ToastPlacement::Top => (Corner::TopLeft, point(px(0.), px(0.))),
         };
-        deferred(
+        crate::foundation::portal::portal(
             anchored()
                 .position_mode(AnchoredPositionMode::Window)
                 .anchor(corner)
                 .position(origin)
                 .child(stack),
+            2,
         )
-        .with_priority(2)
         .into_any_element()
     }
 }
@@ -324,7 +322,7 @@ fn toast(toaster: &Toaster, id: u64, options: ToastOptions, cx: &App) -> AnyElem
                 .py(px(t.spacing_0_5))
                 .text_color(t.color_content.hsla())
                 .type_style(t.label_medium)
-                .line_height(px(t.label_medium.size * 1.4))
+                .line_height(px(t.label_medium.size * t.toast_message_line_height))
                 .child(crate::foundation::text_child(options.title)),
         )
         .when_some(options.action, |this, action| {

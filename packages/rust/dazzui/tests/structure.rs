@@ -26,6 +26,7 @@ struct Stage {
     drawer: bool,
     sidebar: bool,
     selected: Option<SharedString>,
+    trigger_disabled: bool,
 }
 
 /// A setter for one of the stage's flags, as an `on_open_change`.
@@ -57,9 +58,11 @@ impl Render for Stage {
                     .open(self.dialog)
                     .on_open_change(setter(&view, |stage| &mut stage.dialog))
                     .trigger(
-                        div()
-                            .debug_selector(|| "dialog-trigger".into())
-                            .child(Button::new("open-dialog").child("Rename…")),
+                        div().debug_selector(|| "dialog-trigger".into()).child(
+                            Button::new("open-dialog")
+                                .disabled(self.trigger_disabled)
+                                .child("Rename…"),
+                        ),
                     )
                     .child(DialogHeader::new("Rename project"))
                     .child(DialogBody::new().child("Body"))
@@ -133,6 +136,7 @@ impl Render for Stage {
 fn stage(cx: &mut TestAppContext) -> (Entity<Stage>, &mut VisualTestContext) {
     cx.update(|cx: &mut App| {
         dazzui::init(cx);
+        dazzui::Motion::set_preference(dazzui::MotionPreference::Reduced, cx);
         Theme::set("studio-light", cx);
     });
     let (view, cx) = cx.add_window_view(|_, cx| Stage {
@@ -141,6 +145,7 @@ fn stage(cx: &mut TestAppContext) -> (Entity<Stage>, &mut VisualTestContext) {
         drawer: false,
         sidebar: true,
         selected: None,
+        trigger_disabled: false,
     });
     cx.simulate_resize(size(px(1000.), px(800.)));
     cx.run_until_parked();
@@ -157,6 +162,78 @@ fn click(cx: &mut VisualTestContext, selector: &'static str) {
 
 fn read<T>(view: &Entity<Stage>, cx: &mut VisualTestContext, f: impl FnOnce(&Stage) -> T) -> T {
     view.read_with(cx, |stage, _| f(stage))
+}
+
+fn release(cx: &mut VisualTestContext, key: &str) {
+    cx.simulate_event(gpui::KeyUpEvent {
+        keystroke: gpui::Keystroke::parse(key).unwrap(),
+    });
+    cx.run_until_parked();
+}
+
+#[gpui::test]
+fn dialog_and_drawer_use_native_button_key_phases(cx: &mut TestAppContext) {
+    for drawer in [false, true] {
+        let (view, cx) = stage(cx);
+        cx.simulate_keystrokes(if drawer { "tab tab" } else { "tab" });
+        cx.simulate_keystrokes("enter");
+        assert!(
+            read(&view, cx, |stage| if drawer {
+                stage.drawer
+            } else {
+                stage.dialog
+            }),
+            "Enter opens on keydown through the trigger's wrapper"
+        );
+        release(cx, "enter");
+        assert!(
+            read(&view, cx, |stage| if drawer {
+                stage.drawer
+            } else {
+                stage.dialog
+            }),
+            "the opening key's release does not activate the newly focused close button"
+        );
+        if drawer {
+            cx.simulate_keystrokes("tab");
+        }
+        cx.simulate_keystrokes("space");
+        assert!(read(&view, cx, |stage| if drawer {
+            stage.drawer
+        } else {
+            stage.dialog
+        }));
+        release(cx, "space");
+        assert!(
+            !read(&view, cx, |stage| if drawer {
+                stage.drawer
+            } else {
+                stage.dialog
+            }),
+            "Space closes on release through the close wrapper"
+        );
+        release(cx, "space");
+        assert!(
+            !read(&view, cx, |stage| if drawer {
+                stage.drawer
+            } else {
+                stage.dialog
+            }),
+            "a stray release after focus returns does not reopen the sheet"
+        );
+    }
+}
+
+#[gpui::test]
+fn a_disabled_button_does_not_activate_its_dialog_wrapper(cx: &mut TestAppContext) {
+    let (view, cx) = stage(cx);
+    view.update(cx, |stage, cx| {
+        stage.trigger_disabled = true;
+        cx.notify();
+    });
+    cx.run_until_parked();
+    click(cx, "dialog-trigger");
+    assert!(!read(&view, cx, |stage| stage.dialog));
 }
 
 #[gpui::test]

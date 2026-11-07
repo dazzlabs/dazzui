@@ -338,7 +338,6 @@ fn sidebar_menu_button(node: &Node, window: &mut Window, cx: &mut App) -> AnyEle
     if let Some(icon) = node.element("icon", window, cx) {
         button = button.icon(icon);
     }
-    // Accepted and not yet drawn: the kit's Tooltip is not written yet.
     if let Some(tooltip) = node.string("tooltip") {
         button = button.tooltip(tooltip);
     }
@@ -436,6 +435,7 @@ fn dialog(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
         .element("trigger", window, cx);
     let kids = with_close(hide.clone(), || node.kids(window, cx));
     let mut dialog = Dialog::new(node.id())
+        .wrap_with(recorded(node))
         .open(open)
         .on_open_change(move |next, window, cx| {
             if !next {
@@ -485,6 +485,7 @@ fn drawer(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
         (node.kids(window, cx), node.element("footer", window, cx))
     });
     let mut drawer = Drawer::new(node.id())
+        .wrap_with(recorded(node))
         .open(open)
         .on_open_change(move |next, window, cx| {
             if !next {

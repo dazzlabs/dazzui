@@ -11,5 +11,6 @@
   "arrowParens": "avoid",
   "endOfLine": "lf",
   "importOrderSeparation": false,
-  "importOrderSortSpecifiers": true
+  "importOrderSortSpecifiers": true,
+  "ignorePatterns": ["**/target/**", "packages/rust/dazzui/compat/gpui/**"]
 }

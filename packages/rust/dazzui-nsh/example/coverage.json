@@ -610,6 +610,11 @@
     "gaps": []
   },
   {
+    "id": "progress/2",
+    "supported": true,
+    "gaps": []
+  },
+  {
     "id": "radio/preview",
     "supported": true,
     "gaps": []

@@ -212,6 +212,7 @@ fn progress(node: &Node, _: &mut Window, _: &mut App) -> AnyElement {
     // accessibility tree to hand it to, so it is read and set aside.
     let _ = node.string("aria-label");
     let mut progress = Progress::new()
+        .id(node.id())
         .size(node.option("size", Size::parse).unwrap_or(Size::Small))
         .tint(node.option("tint", Tint::parse).unwrap_or_default())
         .gradient(node.flag("gradient"));

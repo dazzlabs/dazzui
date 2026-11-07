@@ -131,7 +131,7 @@ impl RenderOnce for PreferenceSection {
                         .mt(px(t.preferences_footer_gap))
                         .text_color(t.color_content_subtle.hsla())
                         .type_style(t.caption_small)
-                        .line_height(px(t.caption_small.size * 1.7))
+                        .line_height(px(t.caption_small.size * t.preferences_description_leading))
                         .child(footer),
                 )
             })
@@ -205,7 +205,8 @@ impl RenderOnce for PreferenceGroup {
                                     div()
                                         .text_color(t.color_content_subtle.hsla())
                                         .type_style(t.caption_small)
-                                        .line_height(px(t.caption_small.size * 1.7))
+                                        .line_height(px(t.caption_small.size
+                                            * t.preferences_description_leading))
                                         .child(crate::foundation::text_child(description)),
                                 )
                             }),

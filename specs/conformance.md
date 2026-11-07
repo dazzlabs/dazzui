@@ -363,7 +363,9 @@ Five collectors are written:
   Linux and Windows collect boxes with `--no-images`;
   that mode explicitly generates native window frames, so an occluded window
   does not depend on its compositor requesting presentation. A missing or
-  unstable scene frame fails collection. Every node codegen addressed is
+  unstable scene frame fails collection. A change from the initial display
+  scale also fails collection instead of publishing boxes rounded on
+  different pixel grids. Every node codegen addressed is
   drawn through `lib/specimen.rs`, which while collecting records the bounds
   its element laid out at. A node the mapping hands a kit component as
   data — an accordion's item, a splitter's panel, a sidebar row's count —
@@ -375,10 +377,28 @@ Five collectors are written:
   at display-pixel precision instead of the SDK's whole logical-pixel ceiling. GPUI still
   aligns layout to display pixels — half logical pixels on the collector's
   2x Mac display. Wrapping, truncation and text painting remain the SDK's.
+  On macOS, the workspace's font-kit adapter supplies system UI variable
+  font instances at CSS weights, rather than Core Text's nearby native UI
+  weights. The same instances shape and paint the text; no control-specific
+  width compensation is applied.
   On Linux, UI and code faces resolve Fontconfig's `system-ui` and `monospace`
   aliases, rather than GPUI's hardcoded IBM Plex Sans and fallback list.
   Remaining font families come from ds's generated stacks, keeping graphemes
   intact when an explicit fallback supplies a glyph the UI face lacks.
+
+The React and GPUI collector entrypoints also accept `--motion-ms <time>`
+for fixed-time loading snapshots. This selects full motion unless
+`--reduced-motion` is supplied too. The ordinary capture remains reduced
+motion paused at zero. Call these entrypoints directly into isolated output
+directories; the shared multi-platform runner retains its motion-off contract.
+
+For modal snapshots, the direct entrypoints accept `--modal open|close`,
+`--modal-index <ordinal>` (default zero) and `--motion-ms <time>`. These
+capture the full viewport after opening the selected Dialog or Drawer, or
+after starting its exit. GPUI posts native AppKit pointer and key events;
+modal interaction capture is currently macOS-only. React remeasures the live
+tree without remounting it. Native sheets report their actual surface through
+`wrap_with`, rather than reporting the trigger's in-flow wrapper as the sheet.
 
 Adding a platform is a collector and an expectations
 file; the viewer and the check learn of it from `run.json`.
@@ -459,7 +479,7 @@ also rejects new unsupported NSH scenes, including previews.
 `pnpm nsh:conformance` runs the isolated capture stage in the current desktop
 backend through the NSH 0.4.0 CLI. It accepts the common `--out`, `--themes`
 (`drawn`, `all` or comma-separated names), `--scenes` (story or scene selectors)
-and `--no-images` flags. The default is all 188 scenes in the twelve drawn
+and `--no-images` flags. The default is all 189 scenes in the twelve drawn
 themes. Use `pnpm conformance --platforms react,nsh` for a reference comparison,
 or add `--incremental --themes bright-light --scenes sidebar` for a focused
 update. Incremental publication and failed-run retention use the shared storage

@@ -230,6 +230,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -245,6 +247,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(17, 28, 46, 1);
   --progress-gradient-to: rgba(214, 255, 63, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -1021,6 +1026,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -1036,6 +1043,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(107, 77, 255, 1);
   --progress-gradient-to: rgba(160, 140, 255, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -1812,6 +1822,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -1827,6 +1839,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(124, 92, 255, 1);
   --progress-gradient-to: rgba(185, 168, 255, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -2603,6 +2618,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -2618,6 +2635,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(15, 122, 146, 1);
   --progress-gradient-to: rgba(116, 201, 220, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -3394,6 +3414,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -3409,6 +3431,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(22, 144, 169, 1);
   --progress-gradient-to: rgba(116, 201, 220, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -4185,6 +4210,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -4200,6 +4227,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(63, 63, 70, 1);
   --progress-gradient-to: rgba(143, 143, 153, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -4976,6 +5006,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -4991,6 +5023,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(237, 237, 240, 1);
   --progress-gradient-to: rgba(161, 161, 170, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -5767,6 +5802,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -5782,6 +5819,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(173, 87, 23, 1);
   --progress-gradient-to: rgba(233, 169, 105, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -6558,6 +6598,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -6573,6 +6615,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(217, 131, 46, 1);
   --progress-gradient-to: rgba(240, 184, 119, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -7349,6 +7394,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -7364,6 +7411,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(131, 117, 209, 1);
   --progress-gradient-to: rgba(181, 171, 252, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -8140,6 +8190,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -8155,6 +8207,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(145, 132, 217, 1);
   --progress-gradient-to: rgba(181, 171, 252, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -8931,6 +8986,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -8946,6 +9003,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(76, 100, 153, 1);
   --progress-gradient-to: rgba(170, 190, 231, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -9722,6 +9782,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -9737,6 +9799,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(122, 162, 247, 1);
   --progress-gradient-to: rgba(186, 208, 253, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -10513,6 +10578,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -10528,6 +10595,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(85, 112, 155, 1);
   --progress-gradient-to: rgba(174, 195, 229, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -11304,6 +11374,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -11319,6 +11391,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(137, 180, 250, 1);
   --progress-gradient-to: rgba(193, 216, 253, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -12095,6 +12170,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -12110,6 +12187,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(30, 102, 245, 1);
   --progress-gradient-to: rgba(167, 197, 251, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -12886,6 +12966,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -12901,6 +12983,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(116, 160, 249, 1);
   --progress-gradient-to: rgba(183, 207, 254, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -13677,6 +13762,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -13692,6 +13779,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(78, 81, 135, 1);
   --progress-gradient-to: rgba(176, 180, 223, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -14468,6 +14558,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -14483,6 +14575,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(125, 130, 217, 1);
   --progress-gradient-to: rgba(184, 190, 255, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -15259,6 +15354,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -15274,6 +15371,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(79, 116, 111, 1);
   --progress-gradient-to: rgba(172, 199, 195, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -16050,6 +16150,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -16065,6 +16167,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(127, 187, 179, 1);
   --progress-gradient-to: rgba(181, 222, 216, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -16841,6 +16946,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -16856,6 +16963,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(32, 94, 166, 1);
   --progress-gradient-to: rgba(146, 190, 245, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -17632,6 +17742,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -17647,6 +17759,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(117, 155, 200, 1);
   --progress-gradient-to: rgba(177, 205, 238, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -18423,6 +18538,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -18438,6 +18555,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(78, 108, 101, 1);
   --progress-gradient-to: rgba(173, 195, 190, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -19214,6 +19334,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -19229,6 +19351,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(125, 174, 163, 1);
   --progress-gradient-to: rgba(181, 216, 207, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -20005,6 +20130,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -20020,6 +20147,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(81, 156, 97, 1);
   --progress-gradient-to: rgba(168, 220, 176, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -20796,6 +20926,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -20811,6 +20943,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(130, 251, 156, 1);
   --progress-gradient-to: rgba(189, 253, 199, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -21587,6 +21722,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -21602,6 +21739,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(136, 133, 115, 1);
   --progress-gradient-to: rgba(205, 203, 190, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -22378,6 +22518,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -22393,6 +22535,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(220, 215, 186, 1);
   --progress-gradient-to: rgba(236, 232, 212, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -23169,6 +23314,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -23184,6 +23331,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(112, 94, 89, 1);
   --progress-gradient-to: rgba(199, 185, 181, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -23960,6 +24110,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -23975,6 +24127,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(181, 151, 144, 1);
   --progress-gradient-to: rgba(222, 200, 194, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -24751,6 +24906,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -24766,6 +24923,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(86, 125, 146, 1);
   --progress-gradient-to: rgba(174, 202, 218, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -25542,6 +25702,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -25557,6 +25719,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(139, 201, 235, 1);
   --progress-gradient-to: rgba(185, 228, 252, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -26333,6 +26498,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -26348,6 +26515,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(50, 100, 235, 1);
   --progress-gradient-to: rgba(167, 195, 253, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -27124,6 +27294,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -27139,6 +27311,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(128, 159, 243, 1);
   --progress-gradient-to: rgba(189, 207, 251, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -27915,6 +28090,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -27930,6 +28107,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(143, 88, 8, 1);
   --progress-gradient-to: rgba(224, 181, 137, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -28706,6 +28886,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -28721,6 +28903,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(230, 142, 13, 1);
   --progress-gradient-to: rgba(253, 196, 137, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -29497,6 +29682,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -29512,6 +29699,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(74, 81, 47, 1);
   --progress-gradient-to: rgba(177, 183, 157, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -30288,6 +30478,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -30303,6 +30495,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(120, 130, 75, 1);
   --progress-gradient-to: rgba(185, 193, 154, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -31079,6 +31274,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -31094,6 +31291,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(80, 100, 120, 1);
   --progress-gradient-to: rgba(175, 190, 206, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -31870,6 +32070,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -31885,6 +32087,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(129, 161, 193, 1);
   --progress-gradient-to: rgba(184, 207, 231, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -32661,6 +32866,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -32676,6 +32883,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(50, 92, 73, 1);
   --progress-gradient-to: rgba(159, 190, 174, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -33452,6 +33662,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -33467,6 +33679,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(80, 148, 117, 1);
   --progress-gradient-to: rgba(158, 205, 181, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -34243,6 +34458,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -34258,6 +34475,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(155, 105, 64, 1);
   --progress-gradient-to: rgba(227, 188, 158, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -35034,6 +35254,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -35049,6 +35271,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(250, 169, 104, 1);
   --progress-gradient-to: rgba(253, 211, 179, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -35825,6 +36050,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -35840,6 +36067,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(151, 87, 69, 1);
   --progress-gradient-to: rgba(229, 179, 164, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -36616,6 +36846,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -36631,6 +36863,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(243, 141, 112, 1);
   --progress-gradient-to: rgba(252, 197, 181, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -37407,6 +37642,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -37422,6 +37659,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(86, 148, 159, 1);
   --progress-gradient-to: rgba(170, 213, 221, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -38198,6 +38438,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -38213,6 +38455,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(150, 189, 195, 1);
   --progress-gradient-to: rgba(194, 222, 226, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -38989,6 +39234,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -39004,6 +39251,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(75, 80, 83, 1);
   --progress-gradient-to: rgba(177, 181, 183, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -39780,6 +40030,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -39795,6 +40047,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(121, 129, 134, 1);
   --progress-gradient-to: rgba(185, 191, 195, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -40571,6 +40826,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -40586,6 +40843,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(87, 87, 87, 1);
   --progress-gradient-to: rgba(184, 184, 184, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -41362,6 +41622,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -41377,6 +41639,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(141, 141, 141, 1);
   --progress-gradient-to: rgba(196, 196, 196, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -42153,6 +42418,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -42168,6 +42435,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(110, 110, 110, 1);
   --progress-gradient-to: rgba(193, 193, 193, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -42944,6 +43214,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -42959,6 +43231,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(165, 165, 165, 1);
   --progress-gradient-to: rgba(208, 208, 208, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -43735,6 +44010,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -43750,6 +44027,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(0, 136, 255, 1);
   --progress-gradient-to: rgba(171, 208, 254, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -44526,6 +44806,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -44541,6 +44823,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(0, 145, 255, 1);
   --progress-gradient-to: rgba(156, 202, 254, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -45317,6 +45602,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -45332,6 +45619,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(0, 122, 255, 1);
   --progress-gradient-to: rgba(168, 204, 254, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -46108,6 +46398,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -46123,6 +46415,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(10, 132, 255, 1);
   --progress-gradient-to: rgba(153, 197, 254, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -46899,6 +47194,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -46914,6 +47211,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(0, 95, 184, 1);
   --progress-gradient-to: rgba(143, 191, 252, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -47690,6 +47990,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -47705,6 +48007,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(96, 205, 255, 1);
   --progress-gradient-to: rgba(179, 229, 255, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -48481,6 +48786,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -48496,6 +48803,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(233, 84, 32, 1);
   --progress-gradient-to: rgba(253, 188, 168, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -49272,6 +49582,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -49287,6 +49599,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(233, 84, 32, 1);
   --progress-gradient-to: rgba(253, 174, 150, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -50063,6 +50378,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -50078,6 +50395,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(53, 132, 228, 1);
   --progress-gradient-to: rgba(170, 205, 252, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -50854,6 +51174,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -50869,6 +51191,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(53, 132, 228, 1);
   --progress-gradient-to: rgba(152, 195, 252, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -51645,6 +51970,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -51660,6 +51987,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(53, 132, 228, 1);
   --progress-gradient-to: rgba(170, 205, 252, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -52436,6 +52766,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -52451,6 +52783,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(53, 132, 228, 1);
   --progress-gradient-to: rgba(152, 195, 252, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -53227,6 +53562,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -53242,6 +53579,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(61, 174, 233, 1);
   --progress-gradient-to: rgba(173, 222, 253, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -54018,6 +54358,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -54033,6 +54375,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(61, 174, 233, 1);
   --progress-gradient-to: rgba(154, 216, 254, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -54809,6 +55154,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -54824,6 +55171,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(16, 124, 56, 1);
   --progress-gradient-to: rgba(146, 208, 157, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -55600,6 +55950,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -55615,6 +55967,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(30, 215, 96, 1);
   --progress-gradient-to: rgba(141, 243, 160, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;
@@ -56391,6 +56746,8 @@
   --menu-typeahead-reset-duration: 500ms;
   --motion-duration: 150ms;
   --motion-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-loop-easing: cubic-bezier(0.42, 0, 0.58, 1);
+  --motion-reduced-duration: 0.01ms;
   --option-card-description-leading: 1.5;
   --preferences-description-leading: 1.7;
   --preferences-footer-gap: 4px;
@@ -56406,6 +56763,9 @@
   --preview-card-width: 320px;
   --progress-gradient-from: rgba(214, 255, 63, 1);
   --progress-gradient-to: rgba(214, 255, 63, 1);
+  --progress-reduced-sweep-duration: 3000ms;
+  --progress-sweep-duration: 1200ms;
+  --progress-sweep-width: 0.4;
   --radio-large-box: 20px;
   --radio-large-dot: 10px;
   --radio-medium-box: 16px;

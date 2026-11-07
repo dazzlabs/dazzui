@@ -56,10 +56,12 @@ const box = (rect: DOMRect) => ({
   width: rect.width,
   height: rect.height,
 })
+let activeScene: string | undefined
 
 async function show(scene: string, theme: string): Promise<Drawn> {
   const Demo = SCENES.get(scene)
   if (!Demo) throw new Error(`No scene ${scene}`)
+  activeScene = scene
   applyTheme(document.documentElement, parseTheme(theme))
   flushSync(() =>
     root.render(
@@ -73,6 +75,12 @@ async function show(scene: string, theme: string): Promise<Drawn> {
   await document.fonts.ready
   await frame()
   await frame()
+  return read()
+}
+
+function read(): Drawn {
+  const Demo = activeScene && SCENES.get(activeScene)
+  if (!Demo) throw new Error('No scene is drawn')
   const stageNode = container.querySelector<HTMLElement>('.c-scene')!
   const found = walk(container, Demo)
   const nested = new Set<Element>(found.flatMap(({ node }) => node ?? []))
@@ -128,6 +136,7 @@ const conformance = {
   themes: themes(FAMILIES),
   drawn: themes(FAMILY_GROUPS[0]!.families),
   show,
+  read,
   crop,
 }
 

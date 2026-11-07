@@ -30,9 +30,24 @@ const { values: args } = parseArgs({
     themes: { type: 'string', default: 'drawn' },
     scenes: { type: 'string' },
     'no-images': { type: 'boolean', default: false },
+    'motion-ms': { type: 'string' },
+    'reduced-motion': { type: 'boolean', default: false },
+    modal: { type: 'string' },
+    'modal-index': { type: 'string', default: '0' },
   },
 })
 const images = !args['no-images']
+const motionTime =
+  args['motion-ms'] === undefined ? 0 : Number(args['motion-ms'])
+if (!Number.isFinite(motionTime) || motionTime < 0)
+  throw new Error('--motion-ms must be nonnegative and finite')
+if (args.modal && !['open', 'close'].includes(args.modal))
+  throw new Error('--modal must be open or close')
+const modalIndex = Number(args['modal-index'])
+if (!Number.isInteger(modalIndex) || modalIndex < 0)
+  throw new Error('--modal-index must be an unsigned integer')
+const reducedMotion =
+  (args['motion-ms'] === undefined && !args.modal) || args['reduced-motion']
 const out = resolve(args.out)
 
 const contract = JSON.parse(
@@ -64,13 +79,23 @@ try {
     locale: 'en-US',
     deviceScaleFactor: SCALE,
     viewport: { width: 1024, height: 768 },
-    reducedMotion: 'reduce',
+    reducedMotion: reducedMotion ? 'reduce' : 'no-preference',
   })
   page.on('pageerror', error => failures.push(`page: ${error.message}`))
   await page.goto(
     new URL('conformance.html', server.resolvedUrls.local[0]).href
   )
   await page.waitForFunction(() => window.conformance)
+  if (args.modal) {
+    await page.addStyleTag({
+      content: `
+      .dz-dialog,.dz-dialog-scrim,.dz-drawer,.dz-drawer-scrim {
+        transition: opacity var(--motion-duration) var(--motion-easing),
+          transform var(--motion-duration) var(--motion-easing) !important;
+      }
+    `,
+    })
+  }
   const known = await page.evaluate(() => ({
     scenes: window.conformance.scenes,
     themes: window.conformance.themes,
@@ -110,10 +135,68 @@ try {
         failures.push(`${scene.id}: the example has no such scene`)
         continue
       }
-      const drawn = await page.evaluate(
+      let drawn = await page.evaluate(
         ([id, theme]) => window.conformance.show(id, theme),
         [scene.id, theme]
       )
+      if (args.modal) {
+        const target = page.locator('[aria-haspopup="dialog"]').nth(modalIndex)
+        await target.click()
+        if (!reducedMotion) {
+          await page.waitForFunction(() =>
+            document
+              .getAnimations()
+              .some(
+                animation =>
+                  animation instanceof CSSTransition &&
+                  animation.effect.target.matches('.dz-dialog,.dz-drawer')
+              )
+          )
+        }
+        if (args.modal === 'close') {
+          await page.evaluate(() => {
+            for (const animation of document.getAnimations()) {
+              if (
+                animation instanceof CSSTransition &&
+                animation.effect.target.matches(
+                  '.dz-dialog,.dz-dialog-scrim,.dz-drawer,.dz-drawer-scrim'
+                )
+              )
+                animation.finish()
+            }
+          })
+          await page.keyboard.press('Escape')
+          if (!reducedMotion) {
+            await page.waitForFunction(() =>
+              document
+                .getAnimations()
+                .some(
+                  animation =>
+                    animation instanceof CSSTransition &&
+                    animation.playState !== 'finished' &&
+                    animation.effect.target.matches('.dz-dialog,.dz-drawer')
+                )
+            )
+          }
+        }
+        await page.evaluate(time => {
+          for (const animation of document.getAnimations()) {
+            animation.pause()
+            animation.currentTime = time
+          }
+        }, motionTime)
+        await page.evaluate(
+          () => new Promise(resolve => requestAnimationFrame(resolve))
+        )
+        drawn = await page.evaluate(() => window.conformance.read())
+        drawn.rect = { x: 0, y: 0, width: 1024, height: 768 }
+      }
+      await page.evaluate(time => {
+        for (const animation of document.getAnimations()) {
+          animation.pause()
+          animation.currentTime = time
+        }
+      }, motionTime)
       // The walk here and codegen's must agree, or every address is wrong.
       const want = scene.specimens.map(s => s.component)
       const got = drawn.specimens.map(s => kebab(s.component))

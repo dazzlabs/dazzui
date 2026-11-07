@@ -82,12 +82,14 @@ test('native motion uses the shared duration and each Bezier coordinate', () => 
       output.metrics['motion.duration'],
       dimension(values['motion.duration'])
     )
-    for (const [index, coordinate] of ['x1', 'y1', 'x2', 'y2'].entries())
-      assert.equal(
-        output.metrics[`motion.easing.${coordinate}`],
-        values['motion.easing'][index]
-      )
-    assert.equal(output.colors['motion.easing'], undefined)
+    for (const role of ['motion.easing', 'motion.loop-easing']) {
+      for (const [index, coordinate] of ['x1', 'y1', 'x2', 'y2'].entries())
+        assert.equal(
+          output.metrics[`${role}.${coordinate}`],
+          values[role][index]
+        )
+      assert.equal(output.colors[role], undefined)
+    }
   }
 })
 

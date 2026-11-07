@@ -1,4 +1,13 @@
 progress:
+  sweep-duration:
+    $type: duration
+    $value: 1200ms
+  reduced-sweep-duration:
+    $type: duration
+    $value: 3000ms
+  sweep-width:
+    $type: number
+    $value: 0.4
   # The document-progress fill is a two-stop ramp of the accent, and the
   # stops are the theme's to pick: Studio runs violet into a lighter violet,
   # Bright runs ink into acid, and Bright Dark holds solid acid (two equal

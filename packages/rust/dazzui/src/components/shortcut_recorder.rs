@@ -347,7 +347,9 @@ impl RenderOnce for ShortcutRecorder {
                         let weak = entity.downgrade();
                         cx.spawn(async move |cx| {
                             cx.background_executor()
-                                .timer(Duration::from_millis(360))
+                                .timer(Duration::from_secs_f32(
+                                    t.shortcut_recorder_reject_duration / 1000.,
+                                ))
                                 .await;
                             weak.update(cx, |state, cx| {
                                 state.rejected = false;

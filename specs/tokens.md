@@ -63,6 +63,13 @@ and HarmonyOS read the same roles. System sizing scales the lengths and applies
 tracking relative to the resolved native font size; the tracking ratio itself
 does not scale.
 
+Loading sweeps use `motion.loop-easing`, the CSS ease-in-out curve, while
+value changes retain `motion.easing`. Progress's sweep duration, reduced
+duration and width live in `tokens/component/progress.yaml`; Skeleton and
+Spinner retain their own shared durations. The base reduced-motion clamp
+reads `motion.reduced-duration`, with slow looping exceptions for Spinner
+and indeterminate Progress.
+
 Nothing writes a token file: every source, `_base.yaml` included, is
 hand-authored. (The Tailwind sync that used to write `_base.yaml` is gone —
 the design is drawn to BeyondTranslate, so there is no upstream to track, and

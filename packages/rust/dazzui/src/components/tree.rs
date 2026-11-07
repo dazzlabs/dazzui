@@ -22,9 +22,6 @@ use crate::foundation::{Tint, focus_visible, pointer_down, ring_color};
 use crate::glyphs;
 use crate::theme::ActiveTheme;
 
-/// How long a run of keystrokes counts as one word for type-ahead.
-const TYPEAHEAD_WINDOW: Duration = Duration::from_millis(600);
-
 /// The row height: `small` in a narrow column, `medium` by default.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum TreeSize {
@@ -335,10 +332,11 @@ impl Wiring {
                 // Type-ahead over the visible rows only.
                 let now = Instant::now();
                 let key = key.to_lowercase();
+                let timeout = Duration::from_secs_f32(cx.theme().tree_typeahead_window / 1000.);
                 let prefix = self.state.update(cx, |state, _| {
                     let recent = state
                         .typed_at
-                        .is_some_and(|at| now.duration_since(at) < TYPEAHEAD_WINDOW);
+                        .is_some_and(|at| now.duration_since(at) < timeout);
                     state.typed = if recent {
                         format!("{}{key}", state.typed)
                     } else {

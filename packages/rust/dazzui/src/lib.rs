@@ -18,6 +18,7 @@ pub use assets::Assets;
 /// The dates the kit's calendar components take and give back.
 pub use chrono;
 pub use components::*;
+pub use foundation::motion::{Motion, MotionPreference};
 pub use foundation::{
     Length, Profile, Size, State, StyledExt, Tint, Variant, baseline, content_area,
 };
@@ -32,5 +33,6 @@ pub fn init(cx: &mut gpui::App) {
         Theme::set("bright-light", cx);
     }
     foundation::focus::init(cx);
+    foundation::motion::Motion::init(cx);
     foundation::text_input::init(cx);
 }

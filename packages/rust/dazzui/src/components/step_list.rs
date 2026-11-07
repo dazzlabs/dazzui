@@ -121,7 +121,7 @@ impl RenderOnce for Step {
                         .rounded(px(t.radius_full))
                         .map(|this| match status {
                             StepStatus::Done => this
-                                .bg(success.alpha(0.14))
+                                .bg(success.alpha(t.step_list_done_alpha))
                                 .text_color(success.hsla())
                                 .child(Icon::new(glyphs::CHECKMARK_12_FILLED)),
                             _ => this
@@ -163,7 +163,9 @@ impl RenderOnce for Step {
             .line_height(px(style.line_height))
             .font_weight(weight)
             .text_color(color)
-            .when(self.status == StepStatus::Idle, |this| this.opacity(0.8))
+            .when(self.status == StepStatus::Idle, |this| {
+                this.opacity(t.step_list_idle_opacity)
+            })
             .child(marker)
             .child(
                 div()

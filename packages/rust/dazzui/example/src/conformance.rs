@@ -42,6 +42,10 @@ pub struct Options {
     scenes: Option<Vec<String>>,
     images: bool,
     commit: String,
+    motion_time: Option<Duration>,
+    reduced_motion: bool,
+    modal: Option<String>,
+    modal_index: usize,
 }
 
 impl Options {
@@ -67,6 +71,29 @@ impl Options {
                 .map(|s| s.split(',').map(str::to_string).collect()),
             images: !args.iter().any(|arg| arg == "--no-images"),
             commit: value("--commit").unwrap_or_default(),
+            motion_time: value("--motion-ms").map(|value| {
+                let milliseconds: f64 = value.parse().expect("--motion-ms must be a number");
+                assert!(
+                    milliseconds.is_finite() && milliseconds >= 0.,
+                    "--motion-ms must be nonnegative and finite"
+                );
+                Duration::from_secs_f64(milliseconds / 1000.)
+            }),
+            reduced_motion: args.iter().any(|arg| arg == "--reduced-motion"),
+            modal: value("--modal").map(|mode| {
+                assert!(
+                    matches!(mode.as_str(), "open" | "close"),
+                    "--modal must be open or close"
+                );
+                mode
+            }),
+            modal_index: value("--modal-index")
+                .map(|value| {
+                    value
+                        .parse()
+                        .expect("--modal-index must be an unsigned integer")
+                })
+                .unwrap_or(0),
         })
     }
 
@@ -130,6 +157,21 @@ impl gpui::RenderOnce for Framed {
 }
 
 pub fn run(options: Options, cx: &mut App) {
+    let reduced =
+        (options.motion_time.is_none() && options.modal.is_none()) || options.reduced_motion;
+    dazzui::Motion::set_preference(
+        if reduced {
+            dazzui::MotionPreference::Reduced
+        } else {
+            dazzui::MotionPreference::Full
+        },
+        cx,
+    );
+    if options.modal.is_some() {
+        dazzui::Motion::seek(Duration::ZERO, cx);
+    } else {
+        dazzui::Motion::freeze_at(options.motion_time.unwrap_or_default(), cx);
+    }
     let bounds = Bounds::new(
         point(px(40.), px(40.)),
         size(px(VIEWPORT_WIDTH), px(VIEWPORT_HEIGHT)),
@@ -206,6 +248,9 @@ async fn collect(
     window: WindowHandle<Stage>,
     cx: &mut AsyncApp,
 ) -> Result<(), String> {
+    let scale = window
+        .update(cx, |_, window, _| window.scale_factor())
+        .map_err(|error| error.to_string())?;
     let text = std::fs::read_to_string(&options.contract)
         .map_err(|e| format!("{}: {e}", options.contract.display()))?;
     let contract: Value = serde_json::from_str(&text).map_err(|e| e.to_string())?;
@@ -292,6 +337,10 @@ async fn collect(
             }
 
             // Draw the scene, then size the window to it and draw again.
+            if options.modal.is_some() {
+                cx.update(|cx| dazzui::Motion::seek(Duration::ZERO, cx))
+                    .map_err(|e| e.to_string())?;
+            }
             specimen::start();
             window
                 .update(cx, |stage, _, cx| {
@@ -316,7 +365,61 @@ async fn collect(
                 })
                 .map_err(|e| e.to_string())?;
             settle(window, cx, options.images).await?;
+            if let Some(mode) = &options.modal {
+                let index = specimens
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, specimen)| {
+                        matches!(specimen["component"].as_str(), Some("dialog" | "drawer"))
+                    })
+                    .nth(options.modal_index)
+                    .map(|(index, _)| index)
+                    .ok_or_else(|| format!("{id}: no modal {}", options.modal_index))?;
+                let bounds = specimen::frames()
+                    .get(&index)
+                    .copied()
+                    .ok_or_else(|| format!("{id}: modal trigger has no bounds"))?;
+                let (number, height) = window
+                    .update(cx, |_, window, _| {
+                        (
+                            window_number(window),
+                            f32::from(window.viewport_size().height),
+                        )
+                    })
+                    .map_err(|e| e.to_string())?;
+                let number = number.ok_or("the window has no native input number")?;
+                modal_click(number, height, bounds.center())?;
+                settle(window, cx, options.images).await?;
+                let offset = if mode == "close" {
+                    let duration = window
+                        .update(cx, |_, _, cx| {
+                            Duration::from_secs_f32(cx.theme().motion_duration / 1000.)
+                        })
+                        .map_err(|e| e.to_string())?;
+                    cx.update(|cx| dazzui::Motion::seek(duration, cx))
+                        .map_err(|e| e.to_string())?;
+                    settle(window, cx, options.images).await?;
+                    modal_escape(number)?;
+                    settle(window, cx, options.images).await?;
+                    duration
+                } else {
+                    Duration::ZERO
+                };
+                cx.update(|cx| {
+                    dazzui::Motion::seek(offset + options.motion_time.unwrap_or_default(), cx)
+                })
+                .map_err(|e| e.to_string())?;
+                settle(window, cx, options.images).await?;
+            }
             let frames = specimen::frames();
+            let current_scale = window
+                .update(cx, |_, window, _| window.scale_factor())
+                .map_err(|error| error.to_string())?;
+            if current_scale != scale {
+                return Err(format!(
+                    "{theme_id} {id}: display scale changed from {scale} to {current_scale}; refusing mixed-scale readings"
+                ));
+            }
 
             let file = id.replace('/', "-");
             let mut crops: BTreeMap<usize, String> = BTreeMap::new();
@@ -329,8 +432,20 @@ async fn collect(
                 capture(number, &path)?;
                 let picture = image::open(&path).map_err(|e| e.to_string())?;
                 let scale = picture.width() as f32 / VIEWPORT_WIDTH;
-                let scene_height = (height * scale).round() as u32;
-                let scene_width = (WIDTH * scale).round() as u32;
+                let capture_height = if options.modal.is_some() {
+                    window
+                        .update(cx, |_, window, _| f32::from(window.viewport_size().height))
+                        .map_err(|e| e.to_string())?
+                } else {
+                    height
+                };
+                let scene_height = (capture_height * scale).round() as u32;
+                let scene_width = ((if options.modal.is_some() {
+                    VIEWPORT_WIDTH
+                } else {
+                    WIDTH
+                }) * scale)
+                    .round() as u32;
                 let picture = picture.crop_imm(
                     0,
                     0,
@@ -377,9 +492,6 @@ async fn collect(
         readings_scenes.insert(theme_id.clone(), Value::Object(scenes_of));
     }
 
-    let scale = window
-        .update(cx, |_, window, _| window.scale_factor())
-        .map_err(|error| error.to_string())?;
     let readings = json!({
         "platform": "gpui",
         "title": "GPUI",
@@ -460,6 +572,67 @@ fn crop(
 
 fn write(path: &Path, text: &str) -> Result<(), String> {
     std::fs::write(path, text).map_err(|e| format!("{}: {e}", path.display()))
+}
+
+// Queue real AppKit events rather than re-entering GPUI while App is borrowed.
+#[cfg(target_os = "macos")]
+fn modal_click(number: i64, height: f32, position: gpui::Point<Pixels>) -> Result<(), String> {
+    use cocoa::{
+        appkit::{NSApp, NSApplication, NSEvent, NSEventModifierFlags, NSEventType},
+        base::{NO, nil},
+        foundation::NSPoint,
+    };
+    unsafe {
+        let location = NSPoint::new(
+            f32::from(position.x) as f64,
+            (height - f32::from(position.y)) as f64,
+        );
+        for kind in [
+            NSEventType::NSMouseMoved,
+            NSEventType::NSLeftMouseDown,
+            NSEventType::NSLeftMouseUp,
+        ] {
+            let event = NSEvent::mouseEventWithType_location_modifierFlags_timestamp_windowNumber_context_eventNumber_clickCount_pressure_(
+                nil, kind, location, NSEventModifierFlags::empty(), 0., number, nil, 0, 1, 1.);
+            if event == nil {
+                return Err("could not create modal pointer event".into());
+            }
+            NSApp().postEvent_atStart_(event, NO);
+        }
+    }
+    Ok(())
+}
+
+#[cfg(target_os = "macos")]
+fn modal_escape(number: i64) -> Result<(), String> {
+    use cocoa::{
+        appkit::{NSApp, NSApplication, NSEvent, NSEventModifierFlags, NSEventType},
+        base::{NO, nil},
+        foundation::{NSPoint, NSString},
+    };
+    use objc::{msg_send, sel, sel_impl};
+    unsafe {
+        let characters = NSString::alloc(nil).init_str("\u{1b}");
+        for kind in [NSEventType::NSKeyDown, NSEventType::NSKeyUp] {
+            let event = NSEvent::keyEventWithType_location_modifierFlags_timestamp_windowNumber_context_characters_charactersIgnoringModifiers_isARepeat_keyCode_(
+                nil, kind, NSPoint::new(0., 0.), NSEventModifierFlags::empty(), 0., number, nil, characters, characters, NO, 53);
+            if event == nil {
+                return Err("could not create modal keyboard event".into());
+            }
+            NSApp().postEvent_atStart_(event, NO);
+        }
+        let _: () = msg_send![characters, release];
+    }
+    Ok(())
+}
+
+#[cfg(not(target_os = "macos"))]
+fn modal_click(_: i64, _: f32, _: gpui::Point<Pixels>) -> Result<(), String> {
+    Err("modal capture currently requires macOS native input".into())
+}
+#[cfg(not(target_os = "macos"))]
+fn modal_escape(_: i64) -> Result<(), String> {
+    Err("modal capture currently requires macOS native input".into())
 }
 
 fn now() -> String {

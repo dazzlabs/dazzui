@@ -310,7 +310,9 @@ fn copy_button(
             let copied = copied.clone();
             cx.spawn(async move |cx| {
                 cx.background_executor()
-                    .timer(Duration::from_millis(1600))
+                    .timer(Duration::from_secs_f32(
+                        t.code_block_copy_feedback_duration / 1000.,
+                    ))
                     .await;
                 let _ = copied.update(cx, |copied, cx| {
                     *copied = false;
