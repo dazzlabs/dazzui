@@ -199,6 +199,10 @@ pub struct Style {
     /// Sets the preferred aspect ratio for the item. The ratio is calculated as width divided by height.
     pub aspect_ratio: Option<f32>,
 
+    /// The first vertical baseline relative to this element's border box.
+    /// Unset elements use the baseline their layout algorithm derives.
+    pub baseline_offset: Option<AbsoluteLength>,
+
     // Spacing Properties
     /// How large should the margin be on each side?
     #[refineable]
@@ -749,6 +753,7 @@ impl Default for Style {
             min_size: Size::auto(),
             max_size: Size::auto(),
             aspect_ratio: None,
+            baseline_offset: None,
             gap: Size::default(),
             // Alignment
             align_items: None,

@@ -118,6 +118,11 @@ pub struct WrappedLine {
 }
 
 impl WrappedLine {
+    /// The line's default baseline relative to its top, before glyph offsets.
+    pub fn baseline_offset(&self, line_height: Pixels) -> Pixels {
+        (line_height - self.ascent() - self.descent()) / 2. + self.ascent()
+    }
+
     /// Override foreground ink while retaining shaping, backgrounds and
     /// explicitly colored decorations. Useful for cached, single-color labels.
     pub fn set_color(&mut self, color: Hsla) {
@@ -377,7 +382,7 @@ fn paint_line(
 
                 let content_mask = window.content_mask();
                 if max_glyph_bounds.intersects(&content_mask.bounds) {
-                    window.observe_text(run.font_id, layout.font_size, line_height, color);
+                    window.observe_text(run.font_id, layout.font_size, line_height, color, glyph_origin + baseline_offset);
                     if glyph.is_emoji {
                         window.paint_emoji(
                             glyph_origin + baseline_offset,

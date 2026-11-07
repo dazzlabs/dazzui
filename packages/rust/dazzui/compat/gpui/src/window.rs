@@ -839,6 +839,8 @@ pub struct ObservedText {
     pub font_weight: Option<crate::FontWeight>,
     /// The line height passed to the text painter.
     pub line_height: Pixels,
+    /// The submitted baseline mapped into painted window coordinates.
+    pub baseline: Point<Pixels>,
 }
 
 /// An element's actual paint inputs. Nested observed elements are excluded.
@@ -1921,6 +1923,18 @@ impl Window {
         self.text_style().line_height_in_pixels(self.rem_size())
     }
 
+    /// The first-line baseline of the current text style, using whole font
+    /// content metrics and distributing the remaining leading above and below.
+    pub fn text_baseline(&self) -> Pixels {
+        let style = self.text_style();
+        let font = self.text_system().resolve_font(&style.font());
+        let size = style.font_size.to_pixels(self.rem_size());
+        let ascent = self.text_system().ascent(font, size).abs().round();
+        let descent = self.text_system().descent(font, size).abs().round();
+        let leading = style.line_height.to_pixels(style.font_size, self.rem_size());
+        ((leading - ascent - descent) / 2.).floor() + ascent
+    }
+
     /// Call to prevent the default action of an event. Currently only used to prevent
     /// parent elements from becoming focused on mouse down.
     pub fn prevent_default(&mut self) {
@@ -2011,6 +2025,7 @@ impl Window {
         size: Pixels,
         leading: Pixels,
         color: Hsla,
+        baseline: Point<Pixels>,
     ) {
         if self
             .paint_observations
@@ -2020,12 +2035,14 @@ impl Window {
             return;
         }
         let font_weight = self.text_system().observed_font_weight(font);
+        let baseline = self.input_transform.apply(baseline);
         self.paint_observations.last_mut().unwrap().paint.text = Some(ObservedText {
             font_id: font,
             color,
             font_size: size,
             font_weight,
             line_height: leading,
+            baseline,
         });
     }
 

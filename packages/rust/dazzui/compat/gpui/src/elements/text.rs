@@ -340,7 +340,10 @@ impl TextLayout {
             vec![text_style.to_run(text.len())]
         };
 
-        window.request_measured_layout(Default::default(), {
+        window.request_measured_layout(crate::Style {
+            baseline_offset: Some(window.text_baseline().into()),
+            ..Default::default()
+        }, {
             let element_state = self.clone();
 
             move |known_dimensions, available_space, window, cx| {
@@ -456,9 +459,12 @@ impl TextLayout {
         let line_height = element_state.line_height;
         let mut line_origin = bounds.origin;
         let text_style = window.text_style();
+        let baseline = window.text_baseline();
         for line in &element_state.lines {
+            let mut paint_origin = line_origin;
+            paint_origin.y += baseline - line.baseline_offset(line_height);
             line.paint_background(
-                line_origin,
+                paint_origin,
                 line_height,
                 text_style.text_align,
                 Some(bounds),
@@ -467,7 +473,7 @@ impl TextLayout {
             )
             .log_err();
             line.paint(
-                line_origin,
+                paint_origin,
                 line_height,
                 text_style.text_align,
                 Some(bounds),

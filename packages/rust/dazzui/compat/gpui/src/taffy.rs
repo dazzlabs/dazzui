@@ -61,18 +61,23 @@ impl TaffyLayoutEngine {
     ) -> LayoutId {
         let taffy_style = style.to_taffy(rem_size, scale_factor);
 
-        if children.is_empty() {
-            self.taffy
-                .new_leaf(taffy_style)
-                .expect(EXPECT_MESSAGE)
-                .into()
+        let layout = if children.is_empty() {
+            self.taffy.new_leaf(taffy_style).expect(EXPECT_MESSAGE)
         } else {
             self.taffy
                 // This is safe because LayoutId is repr(transparent) to taffy::tree::NodeId.
                 .new_with_children(taffy_style, LayoutId::to_taffy_slice(children))
                 .expect(EXPECT_MESSAGE)
-                .into()
-        }
+        };
+        self.taffy
+            .set_vertical_baseline(
+                layout,
+                style
+                    .baseline_offset
+                    .map(|value| f32::from(value.to_pixels(rem_size)) * scale_factor),
+            )
+            .expect(EXPECT_MESSAGE);
+        layout.into()
     }
 
     pub fn request_measured_layout(
@@ -90,15 +95,24 @@ impl TaffyLayoutEngine {
     ) -> LayoutId {
         let taffy_style = style.to_taffy(rem_size, scale_factor);
 
-        self.taffy
+        let layout = self
+            .taffy
             .new_leaf_with_context(
                 taffy_style,
                 NodeContext {
                     measure: StackSafe::new(Box::new(measure)),
                 },
             )
-            .expect(EXPECT_MESSAGE)
-            .into()
+            .expect(EXPECT_MESSAGE);
+        self.taffy
+            .set_vertical_baseline(
+                layout,
+                style
+                    .baseline_offset
+                    .map(|value| f32::from(value.to_pixels(rem_size)) * scale_factor),
+            )
+            .expect(EXPECT_MESSAGE);
+        layout.into()
     }
 
     // Used to understand performance
@@ -459,6 +473,49 @@ impl ToTaffy<taffy::style::LengthPercentage> for AbsoluteLength {
                 taffy::style::LengthPercentage::length(pixels * scale_factor)
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod baseline_tests {
+    use taffy::prelude::*;
+
+    #[test]
+    fn baseline_changes_invalidate_cached_parent_layout_and_can_be_cleared() {
+        let mut tree = TaffyTree::<()>::new();
+        let sized = |edge| Style {
+            size: Size {
+                width: Dimension::length(edge),
+                height: Dimension::length(edge),
+            },
+            ..Default::default()
+        };
+        let text = tree.new_leaf(sized(20.)).unwrap();
+        let graphic = tree.new_leaf(sized(16.)).unwrap();
+        tree.set_vertical_baseline(text, Some(15.)).unwrap();
+        let parent = tree
+            .new_with_children(
+                Style {
+                    display: Display::Flex,
+                    align_items: Some(AlignItems::Baseline),
+                    ..Default::default()
+                },
+                &[text, graphic],
+            )
+            .unwrap();
+        tree.compute_layout(parent, Size::MAX_CONTENT).unwrap();
+        assert_eq!(tree.layout(parent).unwrap().size.height, 21.);
+        assert_eq!(tree.layout(text).unwrap().location.y, 1.);
+
+        tree.set_vertical_baseline(text, Some(10.)).unwrap();
+        tree.compute_layout(parent, Size::MAX_CONTENT).unwrap();
+        assert_eq!(tree.layout(parent).unwrap().size.height, 26.);
+        assert_eq!(tree.layout(text).unwrap().location.y, 6.);
+
+        tree.set_vertical_baseline(text, None).unwrap();
+        tree.compute_layout(parent, Size::MAX_CONTENT).unwrap();
+        assert_eq!(tree.layout(parent).unwrap().size.height, 20.);
+        assert_eq!(tree.layout(graphic).unwrap().location.y, 4.);
     }
 }
 

@@ -163,6 +163,13 @@ impl RenderOnce for Link {
         });
         // The underline on hover is set on the link's own text style, which
         // the label inherits.
-        link.child(label.children(self.children)).children(arrow)
+        let children = self.children.into_iter().map(|child| {
+            if crate::foundation::scoped::<crate::foundation::style::InlineContext>(cx).is_some() {
+                crate::foundation::inline_text(child)
+            } else {
+                child
+            }
+        });
+        link.child(label.children(children)).children(arrow)
     }
 }

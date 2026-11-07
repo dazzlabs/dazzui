@@ -648,6 +648,12 @@ pub trait Styled: Sized {
         self
     }
 
+    /// Sets the first vertical baseline relative to this element's border box.
+    fn baseline_offset(mut self, baseline: impl Into<AbsoluteLength>) -> Self {
+        self.style().baseline_offset = Some(baseline.into());
+        self
+    }
+
     /// Sets the opacity of this element and its children.
     fn opacity(mut self, opacity: f32) -> Self {
         self.style().opacity = Some(opacity);

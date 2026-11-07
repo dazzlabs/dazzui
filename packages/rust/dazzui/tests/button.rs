@@ -488,28 +488,20 @@ fn inline_boxes_preserve_inherited_painted_leading(cx: &mut TestAppContext) {
 struct InlineBaseline(Rc<RefCell<Vec<ObservedPaint>>>);
 
 impl Render for InlineBaseline {
-    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let face = cx.theme().body_medium.face;
-        let content = dazzui::content_area(face, 26., window);
-        let drop =
-            dazzui::baseline(face, 26., 40., window) - dazzui::baseline(face, 26., content, window);
         div()
             .flex()
-            .items_start()
+            .items_baseline()
             .font_family(face.family())
             .text_size(gpui::px(26.))
             .line_height(gpui::px(40.))
             .debug_selector(|| "prose-row".into())
             .child(dazzui::foundation::text_child("Run "))
-            .child(
-                div()
-                    .flex()
-                    .mt(gpui::px(drop))
-                    .child(dazzui::foundation::inline_context(PaintProbe {
-                        child: Code::new().child("code").into_any_element(),
-                        paints: self.0.clone(),
-                    })),
-            )
+            .child(dazzui::foundation::inline_context(PaintProbe {
+                child: Code::new().child("code").into_any_element(),
+                paints: self.0.clone(),
+            }))
     }
 }
 
@@ -534,5 +526,18 @@ fn inline_code_aligns_its_smaller_font_with_the_surrounding_baseline(cx: &mut Te
     assert_eq!(
         code.bounds.origin.y + gpui::px(own),
         row.origin.y + gpui::px(parent)
+    );
+    let submitted = paints
+        .borrow()
+        .last()
+        .unwrap()
+        .text
+        .as_ref()
+        .unwrap()
+        .baseline
+        .y;
+    assert!(
+        (f32::from(submitted - row.origin.y - gpui::px(parent))).abs() < 0.0001,
+        "the glyph painter must use the baseline advertised to layout"
     );
 }

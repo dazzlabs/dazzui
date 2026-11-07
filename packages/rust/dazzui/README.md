@@ -109,6 +109,10 @@ interaction needs separate checks.
 the font's content height there, while retaining inherited glyph leading.
 Code likewise separates its inline chip height from text leading, aligning
 its smaller mono face against the surrounding font's baseline.
+Inline flex containers use baseline alignment and retain a font strut beside
+each run, so icons and chips preserve the surrounding line's descent. Text
+layout and glyph paint share the same baseline, including fractional leading;
+the conformance collector reads the actual painted baseline and box origin.
 Plain labels refresh their cached foreground at paint time so hover ink
 reaches the glyphs. Shadows translate CSS blur lengths to GPUI's Gaussian sigma,
 and Slider reads the theme's thumb ink, edge, lift and hover scale. Popup

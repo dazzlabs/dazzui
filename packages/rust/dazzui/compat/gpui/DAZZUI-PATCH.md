@@ -43,6 +43,14 @@ substitute a desired style for the text that was drawn.
 reshaping it. This lets hover ink reach the glyph painter, rather than only
 changing the parent element's style.
 
+`Styled::baseline_offset` gives measured elements an explicit baseline relative
+to their border box. Text supplies its font baseline to layout and paints at
+that same baseline. `Window::text_baseline` uses the requested, unrounded line
+height so fractional leading does not move glyphs by a logical pixel.
+`WrappedLine::baseline_offset` exposes the shaped line's original baseline for
+that translation. Paint observations include the actual submitted baseline in
+transformed window coordinates.
+
 Pointer down and release handlers are registered together in every frame.
 A click that completes before the next paint therefore clears active styling
 immediately, rather than leaving the control pressed until another release.

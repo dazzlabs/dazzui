@@ -40,7 +40,6 @@ pub struct Options {
     themes: String,
     scenes: Option<Vec<String>>,
     images: bool,
-    positions: bool,
     commit: String,
     motion_time: Option<Duration>,
     reduced_motion: bool,
@@ -70,7 +69,6 @@ impl Options {
                 .filter(|s| !s.is_empty())
                 .map(|s| s.split(',').map(str::to_string).collect()),
             images: !args.iter().any(|arg| arg == "--no-images"),
-            positions: args.iter().any(|arg| arg == "--positions"),
             commit: value("--commit").unwrap_or_default(),
             motion_time: value("--motion-ms").map(|value| {
                 let milliseconds: f64 = value.parse().expect("--motion-ms must be a number");
@@ -488,7 +486,7 @@ async fn collect(
                     "box": { "width": round(width), "height": round(height) },
                     "values": styles.get(&index).cloned().unwrap_or_else(|| json!({})),
                 });
-                if options.positions {
+                {
                     let origin = if options.modal.is_some() {
                         gpui::Point::default()
                     } else {
@@ -499,6 +497,10 @@ async fn collect(
                     };
                     reading["values"]["left"] = json!(round(f32::from(bounds.origin.x - origin.x)));
                     reading["values"]["top"] = json!(round(f32::from(bounds.origin.y - origin.y)));
+                    if let Some(baseline) = reading["values"]["baseline"].as_f64() {
+                        reading["values"]["baseline"] =
+                            json!(round(baseline as f32 - f32::from(origin.y)));
+                    }
                 }
                 if let Some(crop) = crops.get(&index) {
                     reading["image"] = json!(format!("images/{theme_id}/{crop}"));

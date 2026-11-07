@@ -26,12 +26,22 @@ pub(crate) fn precise_text(mut element: AnyElement) -> AnyElement {
             .map(|text| SharedString::from(*text))
     });
     match text {
-        Some(text) => LabelText(text).into_any_element(),
+        Some(text) => LabelText(text, false).into_any_element(),
         None => element,
     }
 }
 
-struct LabelText(SharedString);
+struct LabelText(SharedString, bool);
+
+/// An inline font-content box retains its inherited leading for painting.
+/// Rich children keep their own layout model.
+pub(crate) fn inline_text(element: AnyElement) -> AnyElement {
+    let mut element = precise_text(element);
+    if let Some(text) = element.downcast_mut::<LabelText>() {
+        text.1 = true;
+    }
+    element
+}
 
 /// A note's leading space shares its text run rather than rounding alone.
 pub(crate) fn text_with_prefix(
@@ -76,6 +86,8 @@ impl IntoElement for LabelText {
 pub(crate) struct LabelLayout {
     lines: Rc<RefCell<Vec<WrappedLine>>>,
     line_height: Pixels,
+    box_line_height: Pixels,
+    baseline: Pixels,
     align: TextAlign,
 }
 
@@ -102,6 +114,14 @@ impl Element for LabelText {
         let line_height = style
             .line_height
             .to_pixels(font_size.into(), window.rem_size());
+        let (box_line_height, baseline) = if self.1 {
+            let font = window.text_system().resolve_font(&style.font());
+            let ascent = window.text_system().ascent(font, font_size).abs().round();
+            let descent = window.text_system().descent(font, font_size).abs().round();
+            (ascent + descent, ascent)
+        } else {
+            (line_height, window.text_baseline())
+        };
         #[cfg(target_os = "linux")]
         let runs = crate::platform_fonts::runs(&self.0, &style, font_size, window);
         #[cfg(not(target_os = "linux"))]
@@ -111,10 +131,15 @@ impl Element for LabelText {
         let layout = LabelLayout {
             lines: lines.clone(),
             line_height,
+            box_line_height,
+            baseline,
             align: style.text_align,
         };
         let id = window.request_measured_layout(
-            Default::default(),
+            gpui::Style {
+                baseline_offset: Some(baseline.into()),
+                ..Default::default()
+            },
             move |known, available, window, cx| {
                 let available_width = known.width.or(match available.width {
                     AvailableSpace::Definite(width) => Some(width),
@@ -152,7 +177,7 @@ impl Element for LabelText {
                             height: px(0.),
                         };
                         for line in &shaped {
-                            let line_size = line.size(line_height);
+                            let line_size = line.size(box_line_height);
                             size.width = size.width.max(line_size.width);
                             size.height += line_size.height;
                         }
@@ -205,8 +230,10 @@ impl Element for LabelText {
         let color = window.text_style().color;
         for line in layout.lines.borrow_mut().iter_mut() {
             line.set_color(color);
+            let mut paint_origin = origin;
+            paint_origin.y += layout.baseline - line.baseline_offset(layout.line_height);
             if let Err(error) = line.paint_background(
-                origin,
+                paint_origin,
                 layout.line_height,
                 layout.align,
                 Some(bounds),
@@ -216,7 +243,7 @@ impl Element for LabelText {
                 eprintln!("label background: {error}");
             }
             if let Err(error) = line.paint(
-                origin,
+                paint_origin,
                 layout.line_height,
                 layout.align,
                 Some(bounds),
@@ -225,7 +252,7 @@ impl Element for LabelText {
             ) {
                 eprintln!("label paint: {error}");
             }
-            origin.y += line.size(layout.line_height).height;
+            origin.y += line.size(layout.box_line_height).height;
         }
     }
 }

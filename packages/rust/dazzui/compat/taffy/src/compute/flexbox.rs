@@ -399,10 +399,8 @@ fn compute_preliminary(tree: &mut impl LayoutFlexboxContainer, node: NodeId, inp
             .iter()
             .find(|item| constants.is_column || item.align_self == AlignSelf::Baseline)
             .or_else(|| flex_lines[0].items.iter().next())
-            .map(|child| {
-                let offset_vertical = if constants.is_row { child.offset_cross } else { child.offset_main };
-                offset_vertical + child.baseline
-            })
+            // The laid-out child baseline already includes its alignment offset.
+            .map(|child| child.baseline)
     };
 
     LayoutOutput::from_sizes_and_baselines(
@@ -1917,7 +1915,7 @@ fn calculate_flex_item(
         + (item.inset.cross_start(direction).or(item.inset.cross_end(direction).map(|pos| -pos)).unwrap_or(0.0));
 
     if direction.is_row() {
-        let baseline_offset_cross = total_offset_cross + item.offset_cross + item.margin.cross_start(direction);
+        let baseline_offset_cross = total_offset_cross + item.offset_cross + line_offset_cross + item.margin.cross_start(direction);
         let inner_baseline = layout_output.first_baselines.y.unwrap_or(size.height);
         item.baseline = baseline_offset_cross + inner_baseline;
     } else {

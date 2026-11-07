@@ -273,6 +273,7 @@ fn values(
         ),
     );
     if let Some(text) = &paint.text {
+        values.insert("baseline".into(), json!(f32::from(text.baseline.y)));
         values.insert("fontSize".into(), json!(f32::from(text.font_size)));
         values.insert(
             "fontWeight".into(),

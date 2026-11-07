@@ -6,7 +6,7 @@
  *
  *   node scripts/conformance.mjs [--out <dir>] [--themes drawn|all|<id,…>]
  *                                [--scenes <story,…>] [--no-images]
- *                                [--container-values] [--positions]
+ *                                [--container-values]
  *
  * The kit must be built (`pnpm packages`); the example is served from source.
  */
@@ -32,7 +32,8 @@ const { values: args } = parseArgs({
     scenes: { type: 'string' },
     'no-images': { type: 'boolean', default: false },
     'container-values': { type: 'boolean', default: false },
-    positions: { type: 'boolean', default: false },
+    // Accepted for older callers; positions are part of ordinary collection.
+    positions: { type: 'boolean' },
     'motion-ms': { type: 'string' },
     'reduced-motion': { type: 'boolean', default: false },
     modal: { type: 'string' },
@@ -240,13 +241,16 @@ try {
         if (scene.specimens[index].container && !args['container-values'])
           entry.values = {}
         const rect = drawn.specimens[index].rect
-        if (args.positions && rect) {
+        if (rect) {
           entry.values = {
             ...entry.values,
             left: Math.round((rect.x - drawn.rect.x) * 100) / 100,
             top: Math.round((rect.y - drawn.rect.y) * 100) / 100,
           }
         }
+        if (typeof entry.values.baseline === 'number')
+          entry.values.baseline =
+            Math.round((entry.values.baseline - drawn.rect.y) * 100) / 100
         if (crops[index]) {
           const name = `images/${theme}/${file}-${index}.png`
           writeFileSync(join(out, name), Buffer.from(crops[index], 'base64'))

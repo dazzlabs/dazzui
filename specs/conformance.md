@@ -65,7 +65,7 @@ so the viewer can name it and a reader can find it.
 
 Elements that hold other kit elements — a `Card` around a heading, a
 `Button` with a glyph in it — are addressed too and marked `container`, but
-only their box is compared: what is inside them is the story's, and belongs
+only their box and position are compared: what is inside them is the story's, and belongs
 to the specimens inside. The stage — `Row`, `Col`, `Frame`, `Text` — is
 never a specimen.
 
@@ -135,11 +135,13 @@ read the same thing:
 | Property | What is read |
 | --- | --- |
 | `width`, `height` | the specimen's own box |
+| `left`, `top` | its origin relative to the scene's capture rectangle; the viewport for modal captures |
 | `corner` | its top-left radius, no more than half its short side |
 | `stroke`, `strokeColor` | its top edge's width, and colour when there is one |
 | `fill` | its surface colour; clear is `#00000000` |
 | `shadow` | the shadow token its surface carries (`2xs` … `2xl`), or `none` |
 | `ink`, `fontSize`, `fontWeight`, `lineHeight` | the first run of text the specimen draws itself — not one inside a specimen nested in it; with no text, a glyph's colour for `ink` and nothing for the rest |
+| `baseline` | that first text run's painted baseline, relative to the same capture origin as `top`; unread when the text renderer cannot expose it |
 | `paddingX`, `paddingY` | the inset from its box's edge to its content, less the stroke — CSS's padding |
 | `gap` | the spacing of the first row or column it lays out |
 
@@ -386,7 +388,14 @@ Five collectors are written:
   Plain text measures shaped advances at 1/64px layout precision instead of
   rounding each run to display pixels, avoiding accumulated shifts in rows. GPUI still
   aligns layout to display pixels — half logical pixels on the collector's
-  2x Mac display. Wrapping, truncation and text painting remain the SDK's.
+  2x Mac display. Text advertises its font baseline to layout and translates
+  its glyph origin to match. Inline prose pairs each run with a zero-width
+  font strut, preserving line descent when a taller icon or chip determines
+  the baseline. Shaping, wrapping and truncation use the SDK.
+  The baseline reading comes from submitted glyph origins, including subtree
+  transforms. React derives it from the first visible text rectangle and
+  browser font metrics; inputs, incompatible fallback metrics and rotated or
+  skewed text remain unread.
   On macOS, the workspace's font-kit adapter supplies system UI variable
   font instances at CSS weights, rather than Core Text's nearby native UI
   weights. The same instances shape and paint the text; no control-specific
@@ -408,11 +417,11 @@ specimens remain excluded from their parents' text and glyph readings.
 Use an isolated output directory for these readings: the shared contract
 continues to compare containers' boxes alone.
 
-Both direct entrypoints accept `--positions` for targeted layout diagnosis.
-This adds `left` and `top` readings relative to the scene's capture rectangle,
-including containers, with the ordinary length tolerance. Modal captures
-use the viewport as their origin. Use isolated output directories; ordinary
-collection retains its existing box-and-paint vocabulary.
+React and GPUI include `left` and `top` in ordinary collection, including
+containers, with the ordinary length tolerance. Both direct entrypoints
+still accept the former `--positions` diagnostic flag for older callers.
+Other collectors leave positions unread until they expose their scene-relative
+origins; missing position properties never stand for zero.
 
 For modal snapshots, the direct entrypoints accept `--modal open|close`,
 `--modal-index <ordinal>` (default zero) and `--motion-ms <time>`. These

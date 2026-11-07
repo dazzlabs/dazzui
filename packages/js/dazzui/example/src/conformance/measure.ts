@@ -86,6 +86,46 @@ function shadow(value: string) {
   return shadowNames().get(value) ?? value
 }
 
+/* Read a visible text run's baseline from its actual first line rectangle
+   and the browser's metrics for that font. Inputs expose no text rectangle;
+   rotated/skewed runs and incompatible fallback metrics remain unread. */
+function textBaseline(node: Node, style: CSSStyleDeclaration): number | null {
+  const range = document.createRange()
+  range.selectNodeContents(node)
+  const rect = [...range.getClientRects()].find(
+    rect => rect.width > 0 && rect.height > 0
+  )
+  if (!rect) return null
+  let scale = 1
+  for (
+    let element = node.parentElement;
+    element;
+    element = element.parentElement
+  ) {
+    const inherited = getComputedStyle(element)
+    if (inherited.transform !== 'none') {
+      const matrix = new DOMMatrixReadOnly(inherited.transform)
+      if (
+        !matrix.is2D ||
+        Math.abs(matrix.b) > 1e-6 ||
+        Math.abs(matrix.c) > 1e-6 ||
+        matrix.a <= 0 ||
+        Math.abs(matrix.a - matrix.d) > 1e-6
+      )
+        return null
+      scale *= matrix.d
+    }
+    if (inherited.scale !== 'none' && inherited.scale !== '1') return null
+    const zoom = Number(inherited.zoom)
+    if (Number.isFinite(zoom) && zoom > 0) scale *= zoom
+  }
+  context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`
+  const metrics = context.measureText(node.textContent ?? '')
+  const height = metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent
+  if (!height || Math.abs(rect.height - height * scale) > 0.1) return null
+  return round(rect.top + metrics.fontBoundingBoxAscent * scale)
+}
+
 /**
  * The first run of text a specimen draws itself — not one inside a
  * specimen nested in it, which is read on its own — and failing that, a
@@ -150,8 +190,10 @@ function firstText(node: HTMLElement, nested: ReadonlySet<Element>) {
     const input = inputStyle(current)
     if (input) return { text: input, glyph }
     if (current.nodeType === Node.TEXT_NODE) {
-      if (current.textContent?.trim() && current.parentElement)
-        return { text: getComputedStyle(current.parentElement), glyph }
+      if (current.textContent?.trim() && current.parentElement) {
+        const text = getComputedStyle(current.parentElement)
+        return { text, glyph, baseline: textBaseline(current, text) }
+      }
     } else if (!glyph && current instanceof SVGSVGElement) glyph = current
   }
   return { text: undefined, glyph }
@@ -171,7 +213,7 @@ export function measure(
         node)
       : node
   const style = getComputedStyle(surface)
-  const { text, glyph } = firstText(node, nested)
+  const { text, glyph, baseline } = firstText(node, nested)
   const ink = text?.color ?? (glyph && getComputedStyle(glyph).color)
   const border =
     style.borderTopStyle === 'none' ? 0 : (px(style.borderTopWidth) ?? 0)
@@ -201,6 +243,7 @@ export function measure(
       strokeColor: stroke ? hex(strokeStyle.borderTopColor) : null,
       fill: hex(style.backgroundColor),
       ink: ink ? hex(ink) : null,
+      baseline: baseline ?? null,
       fontSize: text ? px(text.fontSize) : null,
       fontWeight: text ? Number(text.fontWeight) : null,
       lineHeight:

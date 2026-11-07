@@ -95,31 +95,23 @@ pub fn text(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
         }
         None => None,
     };
-    // A component in the run is an inline box, whose height on the web is
-    // its face's own rather than the line's leading. Inline components keep
-    // that box separate from inherited text leading. GPUI aligns no
-    // baselines, so lower the box by the leading above the run's own area.
-    let body = t.body_medium;
-    let inline = dazzui::content_area(body.face, body.size, window);
-    let drop = dazzui::baseline(body.face, body.size, body.line_height, window)
-        - dazzui::baseline(body.face, body.size, inline, window);
+    // The line strut keeps the surrounding font's ascent/descent in the
+    // baseline group even when the line contains only a replaced element.
+    // Text and Code supply measured baselines; an SVG uses its bottom edge.
     let kids = node
         .children()
         .iter()
         .zip(node.kids(window, cx))
         .map(|(json, kid)| {
             if json.is_object() && (json.get("$el").is_some() || json.get("$icon").is_some()) {
-                div()
-                    .flex()
-                    .mt(px(drop))
-                    .child(dazzui::foundation::inline_context(kid))
+                InlineSlot(dazzui::foundation::inline_context(kid).into_any_element())
                     .into_any_element()
             } else {
                 // A run of words is free to narrow to the line it is given
                 // and wrap there, as the web's inline text does: GPUI
                 // measures text's min-content as its whole line, so a flex
                 // item holding it would otherwise never shrink.
-                div().min_w_0().child(kid).into_any_element()
+                InlineSlot(InlineText(kid).into_any_element()).into_any_element()
             }
         })
         .collect::<Vec<_>>();
@@ -127,13 +119,58 @@ pub fn text(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
         .flex()
         .flex_row()
         .flex_wrap()
-        .items_start()
+        .items_baseline()
         .when_some(color, |this, color| this.text_color(color))
         .when(node.flag("strong"), |this| {
             this.font_weight(t.label_strong.font_weight())
         })
         .children(kids)
         .into_any_element()
+}
+
+#[derive(gpui::IntoElement)]
+struct InlineSlot(AnyElement);
+
+impl gpui::RenderOnce for InlineSlot {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        // Keep the strut with its run: an overlong word must not wrap away
+        // from a separate zero-width strut and leave an empty first line.
+        div()
+            .flex()
+            .min_w_0()
+            .items_baseline()
+            .child(LineStrut)
+            .child(self.0)
+    }
+}
+
+#[derive(gpui::IntoElement)]
+struct LineStrut;
+
+impl gpui::RenderOnce for LineStrut {
+    fn render(self, window: &mut Window, _: &mut App) -> impl IntoElement {
+        let style = window.text_style();
+        let leading = style
+            .line_height
+            .to_pixels(style.font_size, window.rem_size());
+        div()
+            .flex_none()
+            .w_0()
+            .h(leading)
+            .baseline_offset(window.text_baseline())
+    }
+}
+
+#[derive(gpui::IntoElement)]
+struct InlineText(AnyElement);
+
+impl gpui::RenderOnce for InlineText {
+    fn render(self, window: &mut Window, _: &mut App) -> impl IntoElement {
+        div()
+            .min_w_0()
+            .baseline_offset(window.text_baseline())
+            .child(self.0)
+    }
 }
 
 /// The type a story's page is set in, which a scene inherits — the React

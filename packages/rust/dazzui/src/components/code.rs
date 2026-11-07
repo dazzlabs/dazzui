@@ -32,7 +32,7 @@ impl Code {
 impl ParentElement for Code {
     fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
         self.children
-            .extend(elements.into_iter().map(crate::foundation::precise_text));
+            .extend(elements.into_iter().map(crate::foundation::inline_text));
     }
 }
 
@@ -46,27 +46,18 @@ impl RenderOnce for Code {
         // is the face's own height plus the half-step inset, never the
         // line's leading, which it would push around.
         let line = crate::foundation::content_area(Face::Mono, style.size, window);
-        let leading = window.line_height();
-        let baseline_shift =
-            crate::foundation::scoped::<crate::foundation::style::InlineContext>(cx).map(|_| {
-                let parent = window.text_style();
-                let font = window.text_system().resolve_font(&parent.font());
-                let size = parent.font_size.to_pixels(window.rem_size());
-                let ascent = f32::from(window.text_system().ascent(font, size))
-                    .abs()
-                    .round();
-                // Inline glyphs share a baseline even when the code face is
-                // smaller. Its padding is outside that font's content area.
-                ascent
-                    - crate::foundation::baseline(Face::Mono, style.size, line, window)
-                    - t.spacing_0_5
-            });
+        let inherited = window.text_style();
+        let leading = inherited
+            .line_height
+            .to_pixels(inherited.font_size, window.rem_size());
+        let baseline =
+            t.spacing_0_5 + crate::foundation::baseline(Face::Mono, style.size, line, window);
         div()
             .flex()
             .flex_none()
             .items_center()
             .h(px(line + 2. * t.spacing_0_5))
-            .when_some(baseline_shift, |this, shift| this.mt(px(shift)))
+            .baseline_offset(px(baseline))
             .py(px(t.spacing_0_5))
             .px(px(t.spacing_1))
             .bg(t.color_surface_sunken.hsla())

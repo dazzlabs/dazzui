@@ -104,6 +104,9 @@ struct NodeData {
     /// Whether the node has context data associated with it or not
     pub(crate) has_context: bool,
 
+    /// An externally measured first vertical baseline, relative to the border box.
+    pub(crate) vertical_baseline: Option<f32>,
+
     /// The cached results of the layout computation
     pub(crate) cache: Cache,
 
@@ -122,6 +125,7 @@ impl NodeData {
             unrounded_layout: Layout::new(),
             final_layout: Layout::new(),
             has_context: false,
+            vertical_baseline: None,
             #[cfg(feature = "detailed_layout_info")]
             detailed_layout_info: DetailedLayoutInfo::None,
         }
@@ -373,7 +377,7 @@ where
             );
 
             // Dispatch to a layout algorithm based on the node's display style and whether the node has children or not.
-            match (display_mode, has_children) {
+            let mut output = match (display_mode, has_children) {
                 (Display::None, _) => compute_hidden_layout(tree, node),
                 #[cfg(feature = "block_layout")]
                 (Display::Block, true) => compute_block_layout(tree, node, inputs),
@@ -392,7 +396,13 @@ where
                     // TODO: implement calc() in high-level API
                     compute_leaf_layout(inputs, style, |_, _| 0.0, measure_function)
                 }
+            };
+            if display_mode != Display::None {
+                if let Some(baseline) = tree.taffy.nodes[node.into()].vertical_baseline {
+                    output.first_baselines.y = Some(baseline);
+                }
             }
+            output
         })
     }
 }
@@ -831,6 +841,16 @@ impl<NodeContext> TaffyTree<NodeContext> {
     pub fn set_style(&mut self, node: NodeId, style: Style) -> TaffyResult<()> {
         self.nodes[node.into()].style = style;
         self.mark_dirty(node)?;
+        Ok(())
+    }
+
+    /// Sets a measured first vertical baseline relative to the node's border box.
+    /// `None` restores the layout algorithm's own baseline calculation.
+    pub fn set_vertical_baseline(&mut self, node: NodeId, baseline: Option<f32>) -> TaffyResult<()> {
+        if self.nodes[node.into()].vertical_baseline != baseline {
+            self.nodes[node.into()].vertical_baseline = baseline;
+            self.mark_dirty(node)?;
+        }
         Ok(())
     }
 
