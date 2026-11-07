@@ -1,6 +1,7 @@
 use crate::{FontId, FontRun, Pixels, PlatformTextSystem, SharedString, TextRun, px};
 use collections::HashMap;
 use std::{iter, sync::Arc};
+use unicode_segmentation::UnicodeSegmentation;
 
 /// The GPUI line wrapper, used to wrap lines of text to a given width.
 pub struct LineWrapper {
@@ -136,30 +137,22 @@ impl LineWrapper {
         truncation_suffix: &str,
         runs: &mut Vec<TextRun>,
     ) -> SharedString {
-        let mut width = px(0.);
-        let mut suffix_width = truncation_suffix
-            .chars()
-            .map(|c| self.width_for_char(c))
-            .fold(px(0.0), |a, x| a + x);
-        let mut char_indices = line.char_indices();
-        let mut truncate_ix = 0;
-        for (ix, c) in char_indices {
-            if width + suffix_width < truncate_width {
-                truncate_ix = ix;
-            }
-
-            let char_width = self.width_for_char(c);
-            width += char_width;
-
-            if width.floor() > truncate_width {
-                let result =
-                    SharedString::from(format!("{}{}", &line[..truncate_ix], truncation_suffix));
-                update_runs_after_truncation(&result, truncation_suffix, runs);
-
-                return result;
-            }
+        let result = truncate_shaped(&line, truncate_width, truncation_suffix, |text| {
+            self.platform_text_system
+                .layout_line(
+                    text,
+                    self.font_size,
+                    &[FontRun {
+                        len: text.len(),
+                        font_id: self.font_id,
+                    }],
+                )
+                .width
+        });
+        if let Some(result) = result {
+            update_runs_after_truncation(&result, truncation_suffix, runs);
+            return result.into();
         }
-
         line
     }
 
@@ -222,6 +215,47 @@ impl LineWrapper {
             )
             .width
     }
+}
+
+// Character advances do not add up to a shaped run: kerning and ligatures
+// can make a complete label fit when isolated characters appear to overflow.
+// Test the actual run first, then retain complete graphemes in the longest
+// fitting prefix. Every candidate includes the suffix in the shaping pass.
+fn truncate_shaped(
+    text: &str,
+    width: Pixels,
+    suffix: &str,
+    mut measure: impl FnMut(&str) -> Pixels,
+) -> Option<String> {
+    // Compare at the layout engine's CSS-sized precision. Native shaping can
+    // exceed its own rounded intrinsic width by less than 1/128px.
+    let fits = |advance: Pixels| (advance * 64.).round() / 64. <= width;
+    if text.is_empty() || fits(measure(text)) {
+        return None;
+    }
+    let ends = std::iter::once(0)
+        .chain(
+            text.grapheme_indices(true)
+                .map(|(index, cluster)| index + cluster.len()),
+        )
+        .collect::<Vec<_>>();
+    if ends.len() == 2 {
+        return None;
+    }
+    // CSS retains the first grapheme and clips it when even that does not
+    // fit. The suffix can be partially clipped too; do not replace the first
+    // character with an ellipsis merely because the box is very narrow.
+    let (mut low, mut high) = (1, ends.len() - 1);
+    while low < high {
+        let middle = (low + high + 1) / 2;
+        let candidate = format!("{}{}", &text[..ends[middle]], suffix);
+        if fits(measure(&candidate)) {
+            low = middle;
+        } else {
+            high = middle - 1;
+        }
+    }
+    Some(format!("{}{}", &text[..ends[low]], suffix))
 }
 
 fn update_runs_after_truncation(result: &str, ellipsis: &str, runs: &mut Vec<TextRun>) {
@@ -326,6 +360,93 @@ mod tests {
         let cx = TestAppContext::build(dispatcher, None);
         let id = cx.text_system().resolve_font(&font(".ZedMono"));
         LineWrapper::new(id, px(16.), cx.text_system().platform_text_system.clone())
+    }
+
+    #[test]
+    fn ellipsis_uses_shaped_runs_instead_of_isolated_character_advances() {
+        let measure = |text: &str| {
+            let base = text.chars().count() as f32 * 10.;
+            px(base
+                - text.matches("AV").count() as f32 * 3.
+                - text.matches("A…").count() as f32 * 4.)
+        };
+        assert_eq!(truncate_shaped("AVATAR", px(57.), "…", measure), None);
+        assert_eq!(
+            truncate_shaped("AVAfishTail", px(16.), "…", measure),
+            Some("A…".into())
+        );
+        assert_eq!(
+            truncate_shaped("abcde", px(30.), "…", measure),
+            Some("ab…".into())
+        );
+    }
+
+    #[test]
+    fn ellipsis_preserves_extended_graphemes_and_fitting_fractional_advances() {
+        let measure = |text: &str| px(text.graphemes(true).count() as f32 * 10.);
+        assert_eq!(
+            truncate_shaped("A👩‍👩‍👧‍👦BCDEF", px(40.), "…", measure),
+            Some("A👩‍👩‍👧‍👦B…".into()),
+        );
+        assert_eq!(
+            truncate_shaped("e\u{301}e\u{301}e\u{301}e\u{301}", px(30.), "…", measure),
+            Some("e\u{301}e\u{301}…".into()),
+        );
+        assert_eq!(
+            truncate_shaped("Avatar", px(36.84375), "…", |_| px(36.846)),
+            None,
+            "a label must fit the rounded intrinsic width it measured itself",
+        );
+        for width in [0., 5., 10., 15.] {
+            assert_eq!(
+                truncate_shaped("abcdef", px(width), "…", measure),
+                Some("a…".into()),
+                "the first grapheme and then the suffix are clipped, not removed",
+            );
+        }
+        assert_eq!(truncate_shaped("", px(-1.), "…", measure), None);
+        assert_eq!(truncate_shaped("A", px(1.), "…", measure), None);
+        assert_eq!(truncate_shaped("👩‍👩‍👧‍👦", px(1.), "…", measure), None);
+    }
+
+    #[cfg(target_os = "macos")]
+    #[test]
+    fn native_system_font_labels_fit_their_own_intrinsic_advances() {
+        let platform = Arc::new(crate::platform::MacTextSystem::new());
+        for weight in [400., 500., 600.] {
+            let mut descriptor = font(".SystemUIFont");
+            descriptor.weight = FontWeight(weight);
+            let id = platform.font_id(&descriptor).unwrap();
+            let mut wrapper = LineWrapper::new(id, px(12.), platform.clone());
+            for text in [
+                "Overview",
+                "Avatar",
+                "AVATAR",
+                "office",
+                "e\u{301}legant",
+                "👩‍👩‍👧‍👦 family",
+            ] {
+                let width = platform
+                    .layout_line(
+                        text,
+                        px(12.),
+                        &[FontRun {
+                            len: text.len(),
+                            font_id: id,
+                        }],
+                    )
+                    .width;
+                let width = (width * 64.).round() / 64.;
+                let mut runs = generate_test_runs(&[text.len()]);
+                runs[0].font = descriptor.clone();
+                assert_eq!(
+                    wrapper.truncate_line(text.into(), width, "…", &mut runs),
+                    text,
+                    "native font weight {weight}, intrinsic width {width:?}",
+                );
+                assert_eq!(runs[0].len, text.len());
+            }
+        }
     }
 
     fn generate_test_runs(input_run_len: &[usize]) -> Vec<TextRun> {

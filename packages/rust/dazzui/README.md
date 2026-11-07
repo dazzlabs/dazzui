@@ -113,6 +113,9 @@ Inline flex containers use baseline alignment and retain a font strut beside
 each run, so icons and chips preserve the surrounding line's descent. Text
 layout and glyph paint share the same baseline, including fractional leading;
 the conformance collector reads the actual painted baseline and box origin.
+Ellipsis fitting uses shaped advances at the same layout precision, preserving
+kerning, ligatures and complete grapheme clusters. A fitted label therefore
+retains its full text even when isolated glyph widths would appear too wide.
 Plain labels refresh their cached foreground at paint time so hover ink
 reaches the glyphs. Shadows translate CSS blur lengths to GPUI's Gaussian sigma,
 and Slider reads the theme's thumb ink, edge, lift and hover scale. Popup

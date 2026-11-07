@@ -316,6 +316,7 @@ struct TextLayoutInner {
     lines: SmallVec<[WrappedLine; 1]>,
     line_height: Pixels,
     wrap_width: Option<Pixels>,
+    truncate_width: Option<Pixels>,
     size: Option<Size<Pixels>>,
     bounds: Option<Bounds<Pixels>>,
 }
@@ -334,16 +335,17 @@ impl TextLayout {
             .line_height
             .to_pixels(font_size.into(), window.rem_size());
 
-        let mut runs = if let Some(runs) = runs {
+        let runs = if let Some(runs) = runs {
             runs
         } else {
             vec![text_style.to_run(text.len())]
         };
 
-        window.request_measured_layout(crate::Style {
+        let layout_style = crate::Style {
             baseline_offset: Some(window.text_baseline().into()),
             ..Default::default()
-        }, {
+        };
+        window.request_measured_layout(layout_style, {
             let element_state = self.clone();
 
             move |known_dimensions, available_space, window, cx| {
@@ -375,12 +377,16 @@ impl TextLayout {
 
                 if let Some(text_layout) = element_state.0.borrow().as_ref()
                     && text_layout.size.is_some()
-                    && (wrap_width.is_none() || wrap_width == text_layout.wrap_width)
+                    && wrap_width == text_layout.wrap_width
+                    && truncate_width == text_layout.truncate_width
                 {
                     return text_layout.size.unwrap();
                 }
 
                 let mut line_wrapper = cx.text_system().line_wrapper(text_style.font(), font_size);
+                // Intrinsic and constrained passes must each start with the
+                // original runs; truncation changes their UTF-8 lengths.
+                let mut runs = runs.clone();
                 let text = if let Some(truncate_width) = truncate_width {
                     line_wrapper.truncate_line(
                         text.clone(),
@@ -409,6 +415,7 @@ impl TextLayout {
                         len: 0,
                         line_height,
                         wrap_width,
+                        truncate_width,
                         size: Some(Size::default()),
                         bounds: None,
                     });
@@ -427,6 +434,7 @@ impl TextLayout {
                     len,
                     line_height,
                     wrap_width,
+                    truncate_width,
                     size: Some(size),
                     bounds: None,
                 });
@@ -916,5 +924,120 @@ impl IntoElement for InteractiveText {
 
     fn into_element(self) -> Self::Element {
         self
+    }
+}
+
+#[cfg(test)]
+mod truncation_tests {
+    use super::*;
+    use crate::{Context, ParentElement, Render, Styled, TestAppContext, div, px};
+
+    struct Probe {
+        text: &'static str,
+        painted: Rc<RefCell<String>>,
+    }
+
+    impl IntoElement for Probe {
+        type Element = Self;
+        fn into_element(self) -> Self {
+            self
+        }
+    }
+
+    impl Element for Probe {
+        type RequestLayoutState = TextLayout;
+        type PrepaintState = ();
+        fn id(&self) -> Option<ElementId> {
+            None
+        }
+        fn source_location(&self) -> Option<&'static std::panic::Location<'static>> {
+            None
+        }
+        fn request_layout(
+            &mut self,
+            id: Option<&GlobalElementId>,
+            inspector: Option<&InspectorElementId>,
+            window: &mut Window,
+            cx: &mut App,
+        ) -> (LayoutId, TextLayout) {
+            self.text.request_layout(id, inspector, window, cx)
+        }
+        fn prepaint(
+            &mut self,
+            id: Option<&GlobalElementId>,
+            inspector: Option<&InspectorElementId>,
+            bounds: Bounds<Pixels>,
+            layout: &mut TextLayout,
+            window: &mut Window,
+            cx: &mut App,
+        ) {
+            self.text
+                .prepaint(id, inspector, bounds, layout, window, cx);
+        }
+        fn paint(
+            &mut self,
+            id: Option<&GlobalElementId>,
+            inspector: Option<&InspectorElementId>,
+            bounds: Bounds<Pixels>,
+            layout: &mut TextLayout,
+            prepaint: &mut (),
+            window: &mut Window,
+            cx: &mut App,
+        ) {
+            *self.painted.borrow_mut() = layout
+                .0
+                .borrow()
+                .as_ref()
+                .unwrap()
+                .lines
+                .iter()
+                .map(|line| line.text.as_ref())
+                .collect();
+            self.text
+                .paint(id, inspector, bounds, layout, prepaint, window, cx);
+        }
+    }
+
+    struct Harness {
+        width: Pixels,
+        painted: Rc<RefCell<String>>,
+    }
+
+    impl Render for Harness {
+        fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+            div()
+                .w(self.width)
+                .flex()
+                .text_size(px(16.))
+                .child(div().min_w_0().truncate().child(Probe {
+                    text: "abcdefghij",
+                    painted: self.painted.clone(),
+                }))
+        }
+    }
+
+    #[crate::test]
+    fn nowrap_text_remeasures_truncation_after_intrinsic_passes_and_resize(
+        cx: &mut TestAppContext,
+    ) {
+        let painted = Rc::new(RefCell::new(String::new()));
+        let (view, cx) = cx.add_window_view(|_, _| Harness {
+            width: px(200.),
+            painted: painted.clone(),
+        });
+        for (width, expected) in [
+            (200., "abcdefghij"),
+            (50., "abcd…"),
+            (200., "abcdefghij"),
+            (10., "a…"),
+            (200., "abcdefghij"),
+        ] {
+            view.update(cx, |view, cx| {
+                view.width = px(width);
+                cx.notify();
+            });
+            cx.run_until_parked();
+            assert_eq!(*painted.borrow(), expected, "width {width}");
+        }
     }
 }

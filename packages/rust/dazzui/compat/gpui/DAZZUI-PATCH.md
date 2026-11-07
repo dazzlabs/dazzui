@@ -43,6 +43,18 @@ substitute a desired style for the text that was drawn.
 reshaping it. This lets hover ink reach the glyph painter, rather than only
 changing the parent element's style.
 
+Line truncation measures complete shaped strings, including the suffix,
+instead of summing isolated character advances. Kerning and ligatures can
+otherwise cause a label to truncate at its own intrinsic width. Comparisons
+use 1/64px layout precision and retain extended grapheme clusters, including
+combining accents and joined emoji. This shared path covers both kit labels
+and ordinary GPUI text.
+Ordinary text's layout cache includes truncation width as well as wrapping
+width. Each measurement starts with the original style runs; otherwise an
+intrinsic measurement can suppress a later ellipsis, or a previously shortened
+run can leak into a wider measurement. A flex-layout regression checks the
+painted text while narrowing and widening the same view.
+
 `InteractiveElement::map_paint_style` lets the kit interpolate the resolved
 interaction colors immediately before surface and child paint. It does not
 replace hover/active state or change layout. Paint observations receive this
