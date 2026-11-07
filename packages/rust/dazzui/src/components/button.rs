@@ -135,7 +135,7 @@ impl RenderOnce for Button {
         let trimmed = px(profile.padding_inline - t.control_label_glyph_inset);
 
         let mut button = div()
-            .id(self.id)
+            .id(self.id.clone())
             .flex()
             .flex_none()
             .items_center()
@@ -161,6 +161,14 @@ impl RenderOnce for Button {
             control(button, t, self.variant, self.tint, self.disabled)
         };
         button = focusable(button, &focus, self.disabled, window, cx);
+        button = crate::foundation::motion::color_transitions(
+            button,
+            self.id,
+            t,
+            Some((self.variant, self.tint)),
+            window,
+            cx,
+        );
 
         if !self.disabled {
             button = button.cursor_pointer();

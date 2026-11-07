@@ -396,6 +396,11 @@ Five collectors are written:
   transforms. React derives it from the first visible text rectangle and
   browser font metrics; inputs, incompatible fallback metrics and rotated or
   skewed text remain unread.
+  Native control-motion tests separately sample Button, IconButton and Toggle
+  paint at the same transition times as Chromium, including inherited glyph
+  ink. Color interpolation follows the CSS recipe's legacy/modern color form,
+  with premultiplied alpha and shortened reversals. These checks do not imply
+  that every other component's state transition has been verified.
   On macOS, the workspace's font-kit adapter supplies system UI variable
   font instances at CSS weights, rather than Core Text's nearby native UI
   weights. The same instances shape and paint the text; no control-specific

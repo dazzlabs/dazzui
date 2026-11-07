@@ -97,6 +97,7 @@ function textBaseline(node: Node, style: CSSStyleDeclaration): number | null {
   )
   if (!rect) return null
   let scale = 1
+  let zoom = 1
   for (
     let element = node.parentElement;
     element;
@@ -116,10 +117,13 @@ function textBaseline(node: Node, style: CSSStyleDeclaration): number | null {
       scale *= matrix.d
     }
     if (inherited.scale !== 'none' && inherited.scale !== '1') return null
-    const zoom = Number(inherited.zoom)
-    if (Number.isFinite(zoom) && zoom > 0) scale *= zoom
+    const localZoom = Number(inherited.zoom)
+    if (Number.isFinite(localZoom) && localZoom > 0) zoom *= localZoom
   }
-  context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`
+  // Layout zoom resolves font metrics at the effective font size, including
+  // their rounding. A transform only scales those already resolved metrics.
+  const size = parseFloat(style.fontSize) * zoom
+  context.font = `${style.fontStyle} ${style.fontWeight} ${size}px ${style.fontFamily}`
   const metrics = context.measureText(node.textContent ?? '')
   const height = metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent
   if (!height || Math.abs(rect.height - height * scale) > 0.1) return null

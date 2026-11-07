@@ -145,7 +145,7 @@ impl RenderOnce for Toggle {
         let visible = !self.disabled && crate::foundation::focus_visible(&focus, window, cx);
 
         let mut toggle = div()
-            .id(self.id)
+            .id(self.id.clone())
             .relative()
             .flex()
             .flex_none()
@@ -179,6 +179,14 @@ impl RenderOnce for Toggle {
         };
         toggle = control(toggle, t, variant, self.tint, self.disabled);
         toggle = kit::hint(toggle, self.label);
+        toggle = crate::foundation::motion::color_transitions(
+            toggle,
+            self.id,
+            t,
+            Some((variant, self.tint)),
+            window,
+            cx,
+        );
 
         if self.disabled {
             toggle = toggle.cursor_not_allowed();

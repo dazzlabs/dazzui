@@ -43,6 +43,11 @@ substitute a desired style for the text that was drawn.
 reshaping it. This lets hover ink reach the glyph painter, rather than only
 changing the parent element's style.
 
+`InteractiveElement::map_paint_style` lets the kit interpolate the resolved
+interaction colors immediately before surface and child paint. It does not
+replace hover/active state or change layout. Paint observations receive this
+final style, so they report the actual intermediate colors.
+
 `Styled::baseline_offset` gives measured elements an explicit baseline relative
 to their border box. Text supplies its font baseline to layout and paints at
 that same baseline. `Window::text_baseline` uses the requested, unrounded line

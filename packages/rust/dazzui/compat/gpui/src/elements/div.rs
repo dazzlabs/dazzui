@@ -676,6 +676,13 @@ pub trait InteractiveElement: Sized {
         self
     }
 
+    /// Adjust the resolved paint style after interaction states are applied.
+    /// This runs only when painting; it must not change layout properties.
+    fn map_paint_style(mut self, f: impl Fn(&mut Style, &mut Window, &mut App) + 'static) -> Self {
+        self.interactivity().paint_style = Some(Box::new(f));
+        self
+    }
+
     /// Apply the given style to this element when the mouse hovers over a group member
     fn group_hover(
         mut self,
@@ -1500,6 +1507,7 @@ pub struct Interactivity {
     pub(crate) hover_style: Option<Box<StyleRefinement>>,
     pub(crate) group_hover_style: Option<GroupStyle>,
     pub(crate) active_style: Option<Box<StyleRefinement>>,
+    pub(crate) paint_style: Option<Box<dyn Fn(&mut Style, &mut Window, &mut App)>>,
     pub(crate) group_active_style: Option<GroupStyle>,
     pub(crate) drag_over_styles: Vec<(
         TypeId,
@@ -1794,7 +1802,11 @@ impl Interactivity {
                 let mut element_state =
                     element_state.map(|element_state| element_state.unwrap_or_default());
 
-                let style = self.compute_style_internal(hitbox, element_state.as_mut(), window, cx);
+                let mut style =
+                    self.compute_style_internal(hitbox, element_state.as_mut(), window, cx);
+                if let Some(map_style) = &self.paint_style {
+                    map_style(&mut style, window, cx);
+                }
 
                 #[cfg(any(feature = "test-support", test))]
                 if let Some(debug_selector) = &self.debug_selector {

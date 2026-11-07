@@ -4,6 +4,82 @@ import { test } from 'node:test'
 import { chromium } from 'playwright'
 import { createServer } from 'vite'
 
+test('painted text baselines follow the browser inline baseline through scaling', async () => {
+  const server = await createServer({
+    root: fileURLToPath(new URL('..', import.meta.url)),
+    logLevel: 'silent',
+    server: { host: '127.0.0.1', port: 0 },
+  })
+  await server.listen()
+  const browser = await chromium.launch({
+    executablePath: process.env.DAZZUI_CHROMIUM_EXECUTABLE || undefined,
+  })
+  try {
+    const page = await browser.newPage({ deviceScaleFactor: 2 })
+    await page.goto(
+      new URL('conformance.html', server.resolvedUrls.local[0]).href
+    )
+    await page.waitForFunction(() => window.conformance)
+    const results = await page.evaluate(async () => {
+      const { measure } = await import('/src/conformance/measure.ts')
+      const fixture = document.createElement('div')
+      fixture.style.cssText = 'position:fixed;top:30px;left:20px'
+      fixture.innerHTML = `
+        <div class="outer"><div class="inner" style="font:600 12px/16.8px system-ui">
+          <span class="run">Actual baseline</span><i class="marker" style="display:inline-block;width:0;height:0;vertical-align:baseline"></i>
+        </div></div>
+        <input value="no DOM text rectangle">
+      `
+      document.body.append(fixture)
+      const outer = fixture.querySelector('.outer')
+      const inner = fixture.querySelector('.inner')
+      const run = fixture.querySelector('.run')
+      const marker = fixture.querySelector('.marker')
+      const result = []
+      for (const [transform, nested, zoom] of [
+        ['none', 'none', '1'],
+        ['translate(7.5px,13.25px) scale(.93)', 'scale(.91)', '1'],
+        ['translate(3px,8px) scale(.95)', 'none', '1.25'],
+      ]) {
+        outer.style.transform = transform
+        inner.style.transform = nested
+        outer.style.zoom = zoom
+        result.push({
+          actual: measure(run, new Set()).values.baseline,
+          expected: marker.getBoundingClientRect().top,
+        })
+      }
+      outer.style.zoom = '1'
+      outer.style.transform = 'rotate(3deg)'
+      result.push({ unread: measure(run, new Set()).values.baseline })
+      outer.style.transform = 'scale(1,.9)'
+      result.push({ unread: measure(run, new Set()).values.baseline })
+      outer.style.transform = 'none'
+      outer.style.scale = '.9'
+      result.push({ unread: measure(run, new Set()).values.baseline })
+      result.push({
+        unread: measure(fixture.querySelector('input'), new Set()).values
+          .baseline,
+      })
+      fixture.remove()
+      return result
+    })
+    for (const result of results) {
+      if ('unread' in result) assert.equal(result.unread, null)
+      else {
+        assert.equal(typeof result.actual, 'number', JSON.stringify(results))
+        assert.ok(
+          Math.abs(result.actual - result.expected) < 0.02,
+          `painted baseline ${result.actual} differs from inline alignment ${result.expected}`
+        )
+      }
+    }
+  } finally {
+    await browser.close()
+    await server.close()
+  }
+})
+
 test('modal exit retains content and focus until its transitions finish', async () => {
   const server = await createServer({
     root: fileURLToPath(new URL('..', import.meta.url)),

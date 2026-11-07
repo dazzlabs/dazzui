@@ -137,6 +137,12 @@ so releasing an opening Enter cannot click the newly focused close button.
 Hover, focus and pressed ink merge with the control's base text properties;
 they keep its face, size, weight and leading instead of inheriting the page's
 typography and changing the control's width.
+Button, IconButton and Toggle interpolate their surface, border and inherited
+ink over the theme's motion duration and easing. Interruptions start at the
+current paint; reversals use CSS's shortened return duration. Legacy colors
+interpolate in sRGB, while recipe `color-mix()` values opt into Oklab; both
+premultiply alpha. Reduced motion settles immediately. The deterministic
+clock can sample these transitions without scheduling more frames.
 
 Skeleton sweeps, Spinner turns and Progress sweeps share a loading clock and
 the CSS cubic Bézier curves. Determinate progress transitions over twice the

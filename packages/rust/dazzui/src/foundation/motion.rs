@@ -1,6 +1,12 @@
 //! Shared loading clock, accessibility policy and deterministic capture time.
 
-use gpui::App;
+mod color;
+
+use crate::foundation::axes::{Part, State, Tint, Variant, recipe};
+use crate::generated::ThemeTokens;
+use color::{Color, ColorTransition};
+use gpui::{App, Div, ElementId, Hsla, InteractiveElement, Stateful, Window};
+use std::cell::RefCell;
 use std::time::{Duration, Instant};
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -203,6 +209,95 @@ impl Transition {
             && now.saturating_sub(self.started).as_secs_f32() * 1000.
                 < duration_ms * self.shortening
     }
+}
+
+struct PaintTransitions {
+    surface: ColorTransition,
+    border: ColorTransition,
+    ink: ColorTransition,
+}
+
+/// Animate the final interaction colors while leaving the SDK's hover,
+/// pointer capture, keyboard press and focus behavior in charge of state.
+pub(crate) fn color_transitions(
+    element: Stateful<Div>,
+    id: ElementId,
+    t: &ThemeTokens,
+    source: Option<(Variant, Tint)>,
+    window: &mut Window,
+    cx: &mut App,
+) -> Stateful<Div> {
+    let duration = t.motion_duration;
+    let curve = t.motion_easing;
+    // The CSS recipe compiler emits legacy colors at alpha 0/1, and
+    // color-mix() otherwise. The latter opts transitions into Oklab.
+    let modern = [Part::Surface, Part::Border, Part::Content].map(|part| {
+        source
+            .map(|(variant, tint)| {
+                [
+                    State::Normal,
+                    State::Hovered,
+                    State::Pressed,
+                    State::Disabled,
+                ]
+                .into_iter()
+                .filter_map(|state| {
+                    let paint = recipe(t, variant, part, state);
+                    (paint.opacity() > 0. && paint.opacity() < 1.)
+                        .then(|| paint.resolve(tint.ramp(t)))
+                })
+                .collect::<Vec<_>>()
+            })
+            .unwrap_or_default()
+    });
+    let state = window.use_keyed_state(
+        ElementId::NamedChild(Box::new(id), "paint-transitions".into()),
+        cx,
+        |_, _| RefCell::<Option<PaintTransitions>>::new(None),
+    );
+    element.map_paint_style(move |style, window, cx| {
+        let surface = match style.background.as_ref() {
+            Some(fill) => match fill.color().and_then(|background| background.solid_color()) {
+                Some(color) => color,
+                None => return,
+            },
+            None => Hsla::transparent_black(),
+        };
+        let border = style.border_color.unwrap_or_else(Hsla::transparent_black);
+        let ink = style
+            .text
+            .color
+            .unwrap_or_else(|| window.text_style().color);
+        let values = [surface, border, ink];
+        let [surface, border, ink] = std::array::from_fn(|index| Color {
+            value: values[index],
+            modern: modern[index].contains(&values[index]),
+        });
+        let frame = Motion::frame(cx);
+        let mut state = state.read(cx).borrow_mut();
+        let transitions = state.get_or_insert_with(|| PaintTransitions {
+            surface: ColorTransition::new(surface, frame.elapsed),
+            border: ColorTransition::new(border, frame.elapsed),
+            ink: ColorTransition::new(ink, frame.elapsed),
+        });
+        let surface = transitions.surface.sample(surface, frame, duration, curve);
+        let border = transitions.border.sample(border, frame, duration, curve);
+        let ink = transitions.ink.sample(ink, frame, duration, curve);
+        if style.background.is_some() || surface.a > 0. {
+            style.background = Some(surface.into());
+        }
+        if style.border_color.is_some() || border.a > 0. {
+            style.border_color = Some(border);
+        }
+        style.text.color = Some(ink);
+        if !frame.frozen
+            && [&transitions.surface, &transitions.border, &transitions.ink]
+                .into_iter()
+                .any(|color| color.running(frame, duration))
+        {
+            window.request_animation_frame();
+        }
+    })
 }
 
 pub(crate) struct Presence(Transition);

@@ -242,6 +242,9 @@ fn hovered_and_pressed_ink_keep_the_painted_font(cx: &mut TestAppContext) {
         Variant::Filled,
     ] {
         let (view, cx) = setup(cx, false);
+        // This assertion checks the final state's typography and ink. Motion
+        // timing is exercised separately with the deterministic seek clock.
+        cx.update(|_, cx| dazzui::Motion::freeze_at(std::time::Duration::ZERO, cx));
         let painted = Rc::new(RefCell::new(Vec::new()));
         view.update(cx, |view, cx| {
             view.variant = variant;
@@ -540,4 +543,223 @@ fn inline_code_aligns_its_smaller_font_with_the_surrounding_baseline(cx: &mut Te
         (f32::from(submitted - row.origin.y - gpui::px(parent))).abs() < 0.0001,
         "the glyph painter must use the baseline advertised to layout"
     );
+}
+
+struct FractionalLeading {
+    paints: [Rc<RefCell<Vec<ObservedPaint>>>; 2],
+    ascent: Rc<RefCell<gpui::Pixels>>,
+}
+
+impl Render for FractionalLeading {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let family = cx.theme().body_medium.face.family();
+        let mut font = gpui::font(family);
+        font.weight = gpui::FontWeight::SEMIBOLD;
+        let font = window.text_system().resolve_font(&font);
+        let size = gpui::px(12.);
+        let ascent = window.text_system().ascent(font, size).abs().round();
+        let descent = window.text_system().descent(font, size).abs().round();
+        *self.ascent.borrow_mut() = ascent;
+        // There is less than one pixel above the font content. Rounding the
+        // requested leading first would incorrectly add a whole pixel there.
+        let leading = ascent + descent + gpui::px(1.8);
+        div()
+            .flex()
+            .flex_col()
+            .items_start()
+            .font_family(family)
+            .font_weight(gpui::FontWeight::SEMIBOLD)
+            .text_size(size)
+            .line_height(leading)
+            .children(self.paints.iter().enumerate().map(|(index, paints)| {
+                PaintProbe {
+                    child: div()
+                        .child(if index == 0 {
+                            "SDK glyphs".into_any_element()
+                        } else {
+                            dazzui::foundation::text_child("Kit glyphs")
+                        })
+                        .into_any_element(),
+                    paints: paints.clone(),
+                }
+            }))
+    }
+}
+
+#[gpui::test]
+fn fractional_leading_does_not_round_the_painted_baseline_up(cx: &mut TestAppContext) {
+    cx.update(dazzui::init);
+    let paints = std::array::from_fn(|_| Rc::new(RefCell::new(Vec::new())));
+    let ascent = Rc::new(RefCell::new(gpui::px(0.)));
+    let (_, cx) = cx.add_window_view(|_, _| FractionalLeading {
+        paints: paints.clone(),
+        ascent: ascent.clone(),
+    });
+    cx.run_until_parked();
+    for paints in paints {
+        let paints = paints.borrow();
+        let paint = paints.last().unwrap();
+        let top = paint.surface.as_ref().unwrap().bounds.origin.y;
+        let baseline = paint.text.as_ref().unwrap().baseline.y;
+        assert!(
+            (f32::from(baseline - top - *ascent.borrow())).abs() < 0.0001,
+            "fractional leading changed the baseline: {baseline:?}, top {top:?}"
+        );
+    }
+}
+
+struct MotionControl {
+    kind: usize,
+    paints: Rc<RefCell<Vec<ObservedPaint>>>,
+}
+
+impl Render for MotionControl {
+    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        let child = match self.kind {
+            0 => Button::new("motion")
+                .variant(Variant::Plain)
+                .child("Run")
+                .into_any_element(),
+            1 => IconButton::new("motion", "Action")
+                .child("+")
+                .into_any_element(),
+            _ => dazzui::Toggle::new("motion")
+                .variant(Variant::Outlined)
+                .pressed(false)
+                .child("Run")
+                .into_any_element(),
+        };
+        div()
+            .size_full()
+            .p(gpui::px(24.))
+            .flex()
+            .items_start()
+            .child(
+                div()
+                    .flex()
+                    .debug_selector(|| "motion-control".into())
+                    .child(PaintProbe {
+                        child,
+                        paints: self.paints.clone(),
+                    }),
+            )
+    }
+}
+
+fn paint_colors(paints: &Rc<RefCell<Vec<ObservedPaint>>>) -> [gpui::Hsla; 3] {
+    let paints = paints.borrow();
+    let paint = paints.last().unwrap();
+    let style = &paint.surface.as_ref().unwrap().style;
+    [
+        style
+            .background
+            .as_ref()
+            .and_then(|fill| fill.color())
+            .and_then(|background| background.solid_color())
+            .unwrap_or_else(gpui::transparent_black),
+        style.border_color.unwrap_or_else(gpui::transparent_black),
+        paint.text.as_ref().unwrap().color,
+    ]
+}
+
+fn assert_color_bytes(actual: [gpui::Hsla; 3], expected: [u32; 3]) {
+    for (actual, expected) in actual.into_iter().zip(expected) {
+        let actual = gpui::Rgba::from(actual);
+        let expected = expected.to_be_bytes();
+        let transparent = expected[3] == 0;
+        for (index, (actual, expected)) in [actual.r, actual.g, actual.b, actual.a]
+            .into_iter()
+            .zip(expected)
+            .enumerate()
+        {
+            if index < 3 && transparent {
+                continue;
+            }
+            assert!(
+                (actual * 255. - expected as f32).abs() <= 1.1,
+                "painted channel {index}: {} vs {expected}",
+                actual * 255.,
+            );
+        }
+    }
+}
+
+#[gpui::test]
+fn button_icon_button_and_toggle_paint_chromiums_transition_midpoints(cx: &mut TestAppContext) {
+    use dazzui::{Motion, MotionPreference};
+    use std::time::Duration;
+    // Actual computed colors at 75ms in Chromium, from the React Button/0,
+    // IconButton preview and outlined Toggle/0. Alpha is rounded to one byte.
+    let cases = [
+        (
+            "bright-light",
+            0,
+            [0x111c2e10, 0, 0x243247ff],
+            [0x111c2e1c, 0, 0x263449eb],
+        ),
+        (
+            "bright-light",
+            1,
+            [0x111c2e0c, 0, 0x111c2ee0],
+            [0x111c2e0f, 0, 0x111c2eff],
+        ),
+        (
+            "bright-light",
+            2,
+            [0x52525210, 0x444444ff, 0x2c2c2cff],
+            [0x5252521c, 0x404040eb, 0x262626eb],
+        ),
+        (
+            "studio-dark",
+            0,
+            [0x6b4dff10, 0, 0xc9bbffff],
+            [0x6b4dff1c, 0, 0xcdc0ffeb],
+        ),
+        (
+            "studio-dark",
+            1,
+            [0xffffff0e, 0, 0xdbdde9ff],
+            [0xffffff12, 0, 0xf2f3faff],
+        ),
+        (
+            "studio-dark",
+            2,
+            [0x52525210, 0xc9c9c9ff, 0xe1e1e1ff],
+            [0x5252521c, 0xd4d4d4eb, 0xe5e5e5eb],
+        ),
+    ];
+    for (theme, kind, hover, press) in cases {
+        cx.update(|cx| {
+            dazzui::init(cx);
+            Theme::set(theme, cx);
+            Motion::set_preference(MotionPreference::Full, cx);
+            Motion::seek(Duration::ZERO, cx);
+        });
+        let paints = Rc::new(RefCell::new(Vec::new()));
+        let (_, cx) = cx.add_window_view(|_, _| MotionControl {
+            kind,
+            paints: paints.clone(),
+        });
+        cx.run_until_parked();
+        let initial = paint_colors(&paints);
+        let bounds = cx.debug_bounds("motion-control").unwrap();
+        cx.simulate_mouse_move(bounds.center(), None, Modifiers::none());
+        cx.run_until_parked();
+        assert_eq!(
+            paint_colors(&paints),
+            initial,
+            "the first hover frame must not jump"
+        );
+        cx.update(|_, cx| Motion::seek(Duration::from_millis(75), cx));
+        cx.run_until_parked();
+        assert_color_bytes(paint_colors(&paints), hover);
+        cx.update(|_, cx| Motion::seek(Duration::from_millis(150), cx));
+        cx.run_until_parked();
+        cx.simulate_mouse_down(bounds.center(), gpui::MouseButton::Left, Modifiers::none());
+        cx.run_until_parked();
+        cx.update(|_, cx| Motion::seek(Duration::from_millis(225), cx));
+        cx.run_until_parked();
+        assert_color_bytes(paint_colors(&paints), press);
+        assert_eq!(cx.debug_bounds("motion-control").unwrap(), bounds);
+    }
 }

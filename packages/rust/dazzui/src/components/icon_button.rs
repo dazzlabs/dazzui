@@ -92,7 +92,7 @@ impl RenderOnce for IconButton {
         let press = ButtonPress::new(&self.id, &focus, self.disabled, window, cx);
 
         let mut button = div()
-            .id(self.id)
+            .id(self.id.clone())
             .relative()
             .flex()
             .flex_none()
@@ -126,6 +126,15 @@ impl RenderOnce for IconButton {
             };
         }
         button = kit::hint(button, Some(self.label));
+        button = crate::foundation::motion::color_transitions(
+            button,
+            self.id,
+            t,
+            (self.variant != Variant::Plain || self.tint != Tint::Neutral || self.disabled)
+                .then_some((self.variant, self.tint)),
+            window,
+            cx,
+        );
 
         if self.disabled {
             button = button.cursor_not_allowed();
