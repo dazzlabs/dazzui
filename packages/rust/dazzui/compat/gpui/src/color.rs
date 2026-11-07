@@ -808,6 +808,11 @@ impl LinearColorStop {
 }
 
 impl Background {
+    /// Read the color of a solid background. Gradients and patterns return `None`.
+    pub fn solid_color(&self) -> Option<Hsla> {
+        (self.tag == BackgroundTag::Solid).then_some(self.solid)
+    }
+
     /// Use specified color space for color interpolation.
     ///
     /// <https://developer.mozilla.org/en-US/docs/Web/CSS/color-interpolation-method>

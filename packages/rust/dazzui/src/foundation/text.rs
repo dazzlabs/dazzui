@@ -200,7 +200,9 @@ impl Element for LabelText {
         cx: &mut App,
     ) {
         let mut origin = bounds.origin;
-        for line in layout.lines.borrow().iter() {
+        let color = window.text_style().color;
+        for line in layout.lines.borrow_mut().iter_mut() {
+            line.set_color(color);
             if let Err(error) = line.paint_background(
                 origin,
                 layout.line_height,

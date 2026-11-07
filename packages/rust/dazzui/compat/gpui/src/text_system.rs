@@ -141,6 +141,15 @@ impl TextSystem {
             .next()
     }
 
+    pub(crate) fn observed_font_weight(&self, id: FontId) -> Option<crate::FontWeight> {
+        let fonts = self.font_ids_by_font.read();
+        let mut weights = fonts.iter().filter_map(|(font, result)| {
+            matches!(result, Ok(found) if *found == id).then_some(font.weight)
+        });
+        let weight = weights.next()?;
+        weights.all(|other| other == weight).then_some(weight)
+    }
+
     /// Resolves the specified font, falling back to the default font stack if
     /// the font fails to load.
     ///

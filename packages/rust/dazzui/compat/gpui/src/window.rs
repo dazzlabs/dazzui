@@ -815,6 +815,48 @@ impl Frame {
     }
 }
 
+/// A styled surface observed while GPUI submits its drawing.
+#[derive(Clone, Debug)]
+pub struct ObservedSurface {
+    /// The original layout box, before a subtree transform.
+    pub bounds: Bounds<Pixels>,
+    /// The style computed for this frame's actual interaction state.
+    pub style: Style,
+    /// The rem size used to resolve this surface's lengths.
+    pub rem_size: Pixels,
+}
+
+/// The first text run submitted by an observed element itself.
+#[derive(Clone, Debug)]
+pub struct ObservedText {
+    /// The native font used by the submitted glyph run.
+    pub font_id: FontId,
+    /// Foreground of the submitted text run, before ancestor opacity.
+    pub color: Hsla,
+    /// The size used to shape and draw the run.
+    pub font_size: Pixels,
+    /// An unambiguous requested weight for the submitted native font.
+    pub font_weight: Option<crate::FontWeight>,
+    /// The line height passed to the text painter.
+    pub line_height: Pixels,
+}
+
+/// An element's actual paint inputs. Nested observed elements are excluded.
+#[derive(Clone, Debug, Default)]
+pub struct ObservedPaint {
+    /// A directly styled surface with the observed element's box.
+    pub surface: Option<ObservedSurface>,
+    /// The first text painted outside nested observation scopes.
+    pub text: Option<ObservedText>,
+    /// The first SVG ink, used when there is no own text.
+    pub glyph_ink: Option<Hsla>,
+}
+
+struct PaintObservation {
+    bounds: Bounds<Pixels>,
+    paint: ObservedPaint,
+}
+
 /// Holds the state for a specific window.
 pub struct Window {
     pub(crate) handle: AnyWindowHandle,
@@ -839,6 +881,7 @@ pub struct Window {
     pub(crate) element_offset_stack: Vec<Point<Pixels>>,
     pub(crate) element_opacity: f32,
     pub(crate) input_transform: TransformationMatrix,
+    paint_observations: Vec<PaintObservation>,
     pub(crate) content_mask_stack: Vec<ContentMask<Pixels>>,
     pub(crate) requested_autoscroll: Option<Bounds<Pixels>>,
     pub(crate) image_cache_stack: Vec<AnyImageCache>,
@@ -1225,6 +1268,7 @@ impl Window {
             content_mask_stack: Vec::new(),
             element_opacity: 1.0,
             input_transform: TransformationMatrix::unit(),
+            paint_observations: Vec::new(),
             requested_autoscroll: None,
             rendered_frame: Frame::new(DispatchTree::new(cx.keymap.clone(), cx.actions.clone())),
             next_frame: Frame::new(DispatchTree::new(cx.keymap.clone(), cx.actions.clone())),
@@ -1902,6 +1946,63 @@ impl Window {
     /// Map a layout box into the coordinates where the subtree is painted.
     pub fn painted_bounds(&self, bounds: Bounds<Pixels>) -> Bounds<Pixels> {
         self.input_transform.apply_bounds(bounds)
+    }
+
+    /// Observe the paint inputs of a subtree without changing its drawing.
+    /// The first matching surface and first own text/glyph are recorded;
+    /// nested observation scopes belong to their own elements.
+    pub fn observe_element_paint<R>(
+        &mut self,
+        bounds: Bounds<Pixels>,
+        f: impl FnOnce(&mut Self) -> R,
+    ) -> (R, ObservedPaint) {
+        self.invalidator.debug_assert_paint();
+        self.paint_observations.push(PaintObservation {
+            bounds: self.painted_bounds(bounds),
+            paint: ObservedPaint::default(),
+        });
+        let result = f(self);
+        (result, self.paint_observations.pop().unwrap().paint)
+    }
+
+    pub(crate) fn observe_surface(&mut self, bounds: Bounds<Pixels>, style: &Style) {
+        if self.paint_observations.is_empty() {
+            return;
+        }
+        let painted = self.painted_bounds(bounds);
+        let rem_size = self.rem_size();
+        let observation = self.paint_observations.last_mut().unwrap();
+        if observation.paint.surface.is_none() && observation.bounds == painted {
+            observation.paint.surface = Some(ObservedSurface {
+                bounds,
+                style: style.clone(),
+                rem_size,
+            });
+        }
+    }
+
+    pub(crate) fn observe_text(
+        &mut self,
+        font: FontId,
+        size: Pixels,
+        leading: Pixels,
+        color: Hsla,
+    ) {
+        if self
+            .paint_observations
+            .last()
+            .is_none_or(|o| o.paint.text.is_some())
+        {
+            return;
+        }
+        let font_weight = self.text_system().observed_font_weight(font);
+        self.paint_observations.last_mut().unwrap().paint.text = Some(ObservedText {
+            font_id: font,
+            color,
+            font_size: size,
+            font_weight,
+            line_height: leading,
+        });
     }
 
     /// The current state of the keyboard's modifiers
@@ -3225,6 +3326,9 @@ impl Window {
                 .map(|value| ScaledPixels(value.0 as f32 / SMOOTH_SVG_SCALE_FACTOR)),
         };
 
+        if let Some(observation) = self.paint_observations.last_mut() {
+            observation.paint.glyph_ink.get_or_insert(color);
+        }
         self.next_frame.scene.insert_primitive(MonochromeSprite {
             order: 0,
             pad: 0,

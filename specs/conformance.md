@@ -371,9 +371,15 @@ Five collectors are written:
   data — an accordion's item, a splitter's panel, a sidebar row's count —
   is recorded on the element the kit draws for it, which the kit hands back
   through the item's `wrap_with` (or takes as an element) for the purpose.
-  It reads the box, and only the box: what GPUI painted
-  goes into a scene an app cannot read back, so every other property is
-  unread and the pictures carry the rest. Plain text measures shaped advances
+  The committed GPUI compatibility patch also observes paint inputs without
+  changing the drawing. Button, IconButton and KeyCap report the surface's
+  actual corner, edge, solid fill, padding, gap and shadow, and the first own text
+  run's submitted ink, size, unambiguous font weight and leading. Icon reports
+  its SVG ink. Nested specimen scopes are excluded from their parents' text
+  and glyph readings. Shadow names are identified by comparing the observed
+  layers; unknown shadows, non-solid fills and ambiguous font weights remain
+  unread. Other components still report only boxes and pictures.
+  Plain text measures shaped advances
   at display-pixel precision instead of the SDK's whole logical-pixel ceiling. GPUI still
   aligns layout to display pixels — half logical pixels on the collector's
   2x Mac display. Wrapping, truncation and text painting remain the SDK's.
@@ -391,6 +397,12 @@ for fixed-time loading snapshots. This selects full motion unless
 `--reduced-motion` is supplied too. The ordinary capture remains reduced
 motion paused at zero. Call these entrypoints directly into isolated output
 directories; the shared multi-platform runner retains its motion-off contract.
+
+The React entrypoint's `--container-values` additionally reads containers'
+own surface and text properties for targeted paint diagnosis. Nested
+specimens remain excluded from their parents' text and glyph readings.
+Use an isolated output directory for these readings: the shared contract
+continues to compare containers' boxes alone.
 
 For modal snapshots, the direct entrypoints accept `--modal open|close`,
 `--modal-index <ordinal>` (default zero) and `--motion-ms <time>`. These

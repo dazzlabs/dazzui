@@ -6,6 +6,7 @@
  *
  *   node scripts/conformance.mjs [--out <dir>] [--themes drawn|all|<id,…>]
  *                                [--scenes <story,…>] [--no-images]
+ *                                [--container-values]
  *
  * The kit must be built (`pnpm packages`); the example is served from source.
  */
@@ -30,6 +31,7 @@ const { values: args } = parseArgs({
     themes: { type: 'string', default: 'drawn' },
     scenes: { type: 'string' },
     'no-images': { type: 'boolean', default: false },
+    'container-values': { type: 'boolean', default: false },
     'motion-ms': { type: 'string' },
     'reduced-motion': { type: 'boolean', default: false },
     modal: { type: 'string' },
@@ -234,7 +236,8 @@ try {
         const entry = { ...reading }
         // The contract compares a container's box only; its children are
         // independent specimens with their own decoration and typography.
-        if (scene.specimens[index].container) entry.values = {}
+        if (scene.specimens[index].container && !args['container-values'])
+          entry.values = {}
         if (crops[index]) {
           const name = `images/${theme}/${file}-${index}.png`
           writeFileSync(join(out, name), Buffer.from(crops[index], 'base64'))

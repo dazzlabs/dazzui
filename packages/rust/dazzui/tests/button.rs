@@ -1,11 +1,12 @@
 //! Native button key phases, cancellation and real click bounds.
 
 use dazzui::foundation::ControlColors;
-use dazzui::{ActiveTheme, Button, IconButton, State, Theme, Tint, Variant};
+use dazzui::{ActiveTheme, Button, IconButton, KeyCap, State, Theme, Tint, Variant};
 use gpui::{
-    App, ClickEvent, Context, Entity, InteractiveElement, IntoElement, KeyUpEvent, Keystroke,
-    Modifiers, ParentElement, Render, Styled, TestAppContext, TextStyle, VisualTestContext, Window,
-    canvas, div, px,
+    AnyElement, App, Bounds, ClickEvent, Context, Element, ElementId, Entity, GlobalElementId,
+    InspectorElementId, InteractiveElement, IntoElement, KeyUpEvent, Keystroke, LayoutId,
+    Modifiers, ObservedPaint, ParentElement, Pixels, Render, Styled, TestAppContext,
+    VisualTestContext, Window, div,
 };
 use std::{cell::RefCell, rc::Rc};
 
@@ -16,7 +17,7 @@ struct Harness {
     prevent_up: bool,
     clicks: Vec<ClickEvent>,
     variant: Variant,
-    typography: Option<Rc<RefCell<Vec<TextStyle>>>>,
+    typography: Option<Rc<RefCell<Vec<ObservedPaint>>>>,
 }
 
 impl Render for Harness {
@@ -35,23 +36,20 @@ impl Render for Harness {
                 .child("+")
                 .into_any_element()
         } else {
-            let mut button = Button::new("tested")
+            Button::new("tested")
                 .variant(self.variant)
                 .disabled(self.disabled)
                 .on_click(clicked)
-                .child("Action");
-            if let Some(typography) = self.typography.clone() {
-                button = button.child(
-                    canvas(
-                        |_, _, _| (),
-                        move |_, _, window, _| {
-                            typography.borrow_mut().push(window.text_style());
-                        },
-                    )
-                    .size(px(1.)),
-                );
+                .child("Action")
+                .into_any_element()
+        };
+        let button = match self.typography.clone() {
+            Some(paints) => PaintProbe {
+                child: button,
+                paints,
             }
-            button.into_any_element()
+            .into_any_element(),
+            None => button,
         };
         let prevent_down = self.prevent_down;
         let prevent_up = self.prevent_up;
@@ -237,40 +235,168 @@ fn pointer_press_keeps_the_button_type_and_dimensions(cx: &mut TestAppContext) {
 
 #[gpui::test]
 fn hovered_and_pressed_ink_keep_the_painted_font(cx: &mut TestAppContext) {
-    let (view, cx) = setup(cx, false);
-    let painted = Rc::new(RefCell::new(Vec::new()));
-    view.update(cx, |view, cx| {
-        view.typography = Some(painted.clone());
-        cx.notify();
+    for variant in [
+        Variant::Recessed,
+        Variant::Plain,
+        Variant::Outlined,
+        Variant::Filled,
+    ] {
+        let (view, cx) = setup(cx, false);
+        let painted = Rc::new(RefCell::new(Vec::new()));
+        view.update(cx, |view, cx| {
+            view.variant = variant;
+            view.typography = Some(painted.clone());
+            cx.notify();
+        });
+        cx.run_until_parked();
+        let original = painted
+            .borrow()
+            .last()
+            .unwrap()
+            .text
+            .clone()
+            .expect("actual glyph paint");
+        // The test platform aliases native fonts; real-window collection
+        // additionally verifies the unambiguous font weights.
+        let bounds = cx.debug_bounds("tested-box").unwrap();
+        for pressed in [false, true] {
+            if pressed {
+                cx.simulate_mouse_down(bounds.center(), gpui::MouseButton::Left, Modifiers::none());
+            } else {
+                cx.simulate_mouse_move(bounds.center(), None, Modifiers::none());
+            }
+            cx.run_until_parked();
+            let actual = painted
+                .borrow()
+                .last()
+                .unwrap()
+                .text
+                .clone()
+                .expect("actual glyph paint");
+            assert_eq!(actual.font_id, original.font_id);
+            assert_eq!(actual.font_size, original.font_size);
+            assert_eq!(actual.font_weight, original.font_weight);
+            assert_eq!(actual.line_height, original.line_height);
+            let expected = cx.update(|_, cx| {
+                ControlColors::resolve(
+                    cx.theme(),
+                    variant,
+                    Tint::Primary,
+                    if pressed {
+                        State::Pressed
+                    } else {
+                        State::Hovered
+                    },
+                )
+                .content
+            });
+            assert_eq!(
+                actual.color, expected,
+                "{variant:?}: the actual glyph must use the state's ink"
+            );
+        }
+    }
+}
+
+struct PaintProbe {
+    child: AnyElement,
+    paints: Rc<RefCell<Vec<ObservedPaint>>>,
+}
+impl IntoElement for PaintProbe {
+    type Element = Self;
+    fn into_element(self) -> Self {
+        self
+    }
+}
+impl Element for PaintProbe {
+    type RequestLayoutState = ();
+    type PrepaintState = ();
+    fn id(&self) -> Option<ElementId> {
+        None
+    }
+    fn source_location(&self) -> Option<&'static std::panic::Location<'static>> {
+        None
+    }
+    fn request_layout(
+        &mut self,
+        _: Option<&GlobalElementId>,
+        _: Option<&InspectorElementId>,
+        window: &mut Window,
+        cx: &mut App,
+    ) -> (LayoutId, ()) {
+        (self.child.request_layout(window, cx), ())
+    }
+    fn prepaint(
+        &mut self,
+        _: Option<&GlobalElementId>,
+        _: Option<&InspectorElementId>,
+        _: Bounds<Pixels>,
+        _: &mut (),
+        window: &mut Window,
+        cx: &mut App,
+    ) {
+        self.child.prepaint(window, cx);
+    }
+    fn paint(
+        &mut self,
+        _: Option<&GlobalElementId>,
+        _: Option<&InspectorElementId>,
+        bounds: Bounds<Pixels>,
+        _: &mut (),
+        _: &mut (),
+        window: &mut Window,
+        cx: &mut App,
+    ) {
+        let (_, paint) =
+            window.observe_element_paint(bounds, |window| self.child.paint(window, cx));
+        self.paints.borrow_mut().push(paint);
+    }
+}
+
+struct NestedPaint {
+    parent: Rc<RefCell<Vec<ObservedPaint>>>,
+    child: Rc<RefCell<Vec<ObservedPaint>>>,
+}
+
+impl Render for NestedPaint {
+    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        let button = Button::new("parent")
+            .child(PaintProbe {
+                child: KeyCap::new().child("K").into_any_element(),
+                paints: self.child.clone(),
+            })
+            .child("Save");
+        PaintProbe {
+            child: button.into_any_element(),
+            paints: self.parent.clone(),
+        }
+    }
+}
+
+#[gpui::test]
+fn paint_observation_excludes_text_inside_nested_specimens(cx: &mut TestAppContext) {
+    cx.update(dazzui::init);
+    let parent = Rc::new(RefCell::new(Vec::new()));
+    let child = Rc::new(RefCell::new(Vec::new()));
+    let (_, cx) = cx.add_window_view(|_, _| NestedPaint {
+        parent: parent.clone(),
+        child: child.clone(),
     });
     cx.run_until_parked();
-    let original = painted.borrow().last().unwrap().clone();
-    let bounds = cx.debug_bounds("tested-box").unwrap();
-    for pressed in [false, true] {
-        if pressed {
-            cx.simulate_mouse_down(bounds.center(), gpui::MouseButton::Left, Modifiers::none());
-        } else {
-            cx.simulate_mouse_move(bounds.center(), None, Modifiers::none());
-        }
-        cx.run_until_parked();
-        let actual = painted.borrow().last().unwrap().clone();
-        assert_eq!(actual.font_family, original.font_family);
-        assert_eq!(actual.font_size, original.font_size);
-        assert_eq!(actual.font_weight, original.font_weight);
-        assert_eq!(actual.line_height, original.line_height);
-        let expected = cx.update(|_, cx| {
-            ControlColors::resolve(
-                cx.theme(),
-                Variant::Recessed,
-                Tint::Primary,
-                if pressed {
-                    State::Pressed
-                } else {
-                    State::Hovered
-                },
-            )
-            .content
-        });
-        assert_eq!(actual.color, expected, "the state must still apply its ink");
-    }
+    let parent = parent.borrow().last().unwrap().clone();
+    let child = child.borrow().last().unwrap().clone();
+    assert!(
+        parent.text.as_ref().unwrap().font_size > child.text.as_ref().unwrap().font_size,
+        "the parent's first text is Save, after the separately observed key cap"
+    );
+    let root = parent.surface.as_ref().unwrap();
+    let nested = child.surface.as_ref().unwrap();
+    assert_eq!(
+        root.style.border_widths.top.to_pixels(root.rem_size),
+        gpui::px(1.)
+    );
+    assert_eq!(
+        nested.style.border_widths.top.to_pixels(nested.rem_size),
+        gpui::px(0.)
+    );
 }

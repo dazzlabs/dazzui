@@ -118,6 +118,14 @@ pub struct WrappedLine {
 }
 
 impl WrappedLine {
+    /// Override foreground ink while retaining shaping, backgrounds and
+    /// explicitly colored decorations. Useful for cached, single-color labels.
+    pub fn set_color(&mut self, color: Hsla) {
+        for run in &mut self.decoration_runs {
+            run.color = color;
+        }
+    }
+
     /// The length of the underlying, unwrapped layout, in utf-8 bytes.
     #[allow(clippy::len_without_is_empty)]
     pub fn len(&self) -> usize {
@@ -369,6 +377,7 @@ fn paint_line(
 
                 let content_mask = window.content_mask();
                 if max_glyph_bounds.intersects(&content_mask.bounds) {
+                    window.observe_text(run.font_id, layout.font_size, line_height, color);
                     if glyph.is_emoji {
                         window.paint_emoji(
                             glyph_origin + baseline_offset,

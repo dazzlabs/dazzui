@@ -1810,6 +1810,7 @@ impl Interactivity {
                 if style.visibility == Visibility::Hidden {
                     return ((), element_state);
                 }
+                window.observe_surface(bounds, &style);
 
                 let mut tab_group = None;
                 if self.tab_group {
@@ -2330,34 +2331,37 @@ impl Interactivity {
                 .clicked_state
                 .get_or_insert_with(Default::default)
                 .clone();
-            if active_state.borrow().is_clicked() {
-                window.on_mouse_event(move |_: &MouseUpEvent, phase, window, _cx| {
-                    if phase == DispatchPhase::Capture {
-                        *active_state.borrow_mut() = ElementClickedState::default();
+            // Both handlers must exist in every frame: a full click can
+            // arrive before GPUI has painted the intermediate pressed state.
+            let released = active_state.clone();
+            window.on_mouse_event(move |_: &MouseUpEvent, phase, window, _cx| {
+                if phase == DispatchPhase::Capture {
+                    let was_clicked = released.borrow().is_clicked();
+                    if was_clicked {
+                        *released.borrow_mut() = ElementClickedState::default();
                         window.refresh();
                     }
-                });
-            } else {
-                let active_group_hitbox = self
-                    .group_active_style
-                    .as_ref()
-                    .and_then(|group_active| GroupHitboxes::get(&group_active.group, cx));
-                let hitbox = hitbox.clone();
-                window.on_mouse_event(move |_: &MouseDownEvent, phase, window, _cx| {
-                    if phase == DispatchPhase::Bubble && !window.default_prevented() {
-                        let group_hovered = active_group_hitbox
-                            .is_some_and(|group_hitbox_id| group_hitbox_id.is_hovered(window));
-                        let element_hovered = hitbox.is_hovered(window);
-                        if group_hovered || element_hovered {
-                            *active_state.borrow_mut() = ElementClickedState {
-                                group: group_hovered,
-                                element: element_hovered,
-                            };
-                            window.refresh();
-                        }
+                }
+            });
+            let active_group_hitbox = self
+                .group_active_style
+                .as_ref()
+                .and_then(|group_active| GroupHitboxes::get(&group_active.group, cx));
+            let hitbox = hitbox.clone();
+            window.on_mouse_event(move |_: &MouseDownEvent, phase, window, _cx| {
+                if phase == DispatchPhase::Bubble && !window.default_prevented() {
+                    let group_hovered = active_group_hitbox
+                        .is_some_and(|group_hitbox_id| group_hitbox_id.is_hovered(window));
+                    let element_hovered = hitbox.is_hovered(window);
+                    if group_hovered || element_hovered {
+                        *active_state.borrow_mut() = ElementClickedState {
+                            group: group_hovered,
+                            element: element_hovered,
+                        };
+                        window.refresh();
                     }
-                });
-            }
+                }
+            });
         }
     }
 
@@ -3274,5 +3278,84 @@ impl ScrollHandle {
     /// Get the count of children for scrollable item.
     pub fn children_count(&self) -> usize {
         self.0.borrow().child_bounds.len()
+    }
+}
+
+#[cfg(test)]
+mod interaction_tests {
+    use super::*;
+    use crate::{
+        Context, InputEvent, Modifiers, PlatformInput, TestAppContext, black, canvas, red,
+    };
+    use std::cell::Cell;
+
+    struct RapidClick {
+        ink: Rc<Cell<crate::Hsla>>,
+    }
+    impl Render for RapidClick {
+        fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+            let ink = self.ink.clone();
+            div()
+                .id("rapid-button")
+                .w(px(100.))
+                .h(px(40.))
+                .text_color(black())
+                .active(|style| style.text_color(red()))
+                .on_click(|_, _, _| {})
+                .child(
+                    canvas(
+                        |_, _, _| (),
+                        move |_, _, window, _| {
+                            ink.set(window.text_style().color);
+                        },
+                    )
+                    .size(px(1.)),
+                )
+        }
+    }
+
+    #[gpui::test]
+    fn a_click_completed_before_the_next_frame_clears_active_style(cx: &mut TestAppContext) {
+        let ink = Rc::new(Cell::new(black()));
+        let (_, cx) = cx.add_window_view(|_, _| RapidClick { ink: ink.clone() });
+        cx.run_until_parked();
+        cx.update(|window, cx| {
+            let position = point(px(20.), px(20.));
+            window.dispatch_event(
+                PlatformInput::MouseMove(MouseMoveEvent {
+                    position,
+                    pressed_button: None,
+                    modifiers: Modifiers::none(),
+                }),
+                cx,
+            );
+            window.dispatch_event(
+                MouseDownEvent {
+                    position,
+                    button: MouseButton::Left,
+                    modifiers: Modifiers::none(),
+                    click_count: 1,
+                    first_mouse: false,
+                }
+                .to_platform_input(),
+                cx,
+            );
+            window.dispatch_event(
+                MouseUpEvent {
+                    position,
+                    button: MouseButton::Left,
+                    modifiers: Modifiers::none(),
+                    click_count: 1,
+                }
+                .to_platform_input(),
+                cx,
+            );
+        });
+        cx.run_until_parked();
+        assert_eq!(
+            ink.get(),
+            black(),
+            "release must clear active state without waiting for an intervening paint"
+        );
     }
 }

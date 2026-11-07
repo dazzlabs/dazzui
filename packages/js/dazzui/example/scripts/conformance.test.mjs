@@ -35,6 +35,16 @@ test('modal exit retains content and focus until its transitions finish', async 
       const opener = page.locator('[aria-haspopup="dialog"]').first()
       await opener.click()
       await page.locator(selector).waitFor()
+      await page.waitForFunction(
+        selector =>
+          document
+            .getAnimations()
+            .some(
+              a =>
+                a instanceof CSSTransition && a.effect.target.matches(selector)
+            ),
+        selector
+      )
       await page.evaluate(() => {
         for (const a of document.getAnimations())
           if (
@@ -46,6 +56,11 @@ test('modal exit retains content and focus until its transitions finish', async 
             a.finish()
       })
       if (scene === 'drawer/0') {
+        await page.waitForFunction(
+          selector =>
+            document.activeElement === document.querySelector(selector),
+          selector
+        )
         assert.ok(
           await page
             .locator(selector)
@@ -267,6 +282,8 @@ test('collector reads compound surfaces and editable text', async () => {
         </div>
         <style>.collector-placeholder::placeholder { color:rgb(70,80,90) }</style>
         <input class="collector-placeholder" placeholder="Email" style="font-size:15px;color:red">
+        <svg class="collector-icon" style="color:rgb(20,40,60)" width="16" height="16"><path d="M0 0h16v16H0z" fill="currentColor" /></svg>
+        <button class="collector-button" style="color:rgb(80,90,100)"><svg class="collector-nested-icon" style="color:red" width="16" height="16"></svg>Save</button>
       `
       document.body.append(fixture)
       const read = selector =>
@@ -275,6 +292,11 @@ test('collector reads compound surfaces and editable text', async () => {
         read('.dz-number-field'),
         read('.dz-shortcut-recorder'),
         read('.collector-placeholder'),
+        read('.collector-icon'),
+        measure(
+          fixture.querySelector('.collector-button'),
+          new Set([fixture.querySelector('.collector-nested-icon')])
+        ),
       ]
     })
     assert.equal(readings[0].values.corner, 13)
@@ -285,6 +307,9 @@ test('collector reads compound surfaces and editable text', async () => {
     assert.equal(readings[1].values.corner, 9)
     assert.equal(readings[2].values.fontSize, 15)
     assert.equal(readings[2].values.ink, '#46505a')
+    assert.equal(readings[3].values.ink, '#14283c')
+    assert.equal(readings[3].values.fontSize, null)
+    assert.equal(readings[4].values.ink, '#505a64')
   } finally {
     await browser.close()
     await server.close()

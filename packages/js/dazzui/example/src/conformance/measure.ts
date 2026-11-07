@@ -135,7 +135,9 @@ function firstText(node: HTMLElement, nested: ReadonlySet<Element>) {
           : NodeFilter.FILTER_ACCEPT,
     }
   )
-  let glyph: Element | undefined
+  // A standalone Icon is itself the SVG; TreeWalker starts at its children.
+  let glyph: Element | undefined =
+    node instanceof SVGSVGElement ? node : undefined
   for (let current = walker.nextNode(); current; current = walker.nextNode()) {
     const input = inputStyle(current)
     if (input) return { text: input, glyph }

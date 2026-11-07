@@ -25,6 +25,21 @@ only a color, dropping a control's font size, weight and leading. The patch
 keeps those properties while applying the state's ink, so pressing a button
 cannot change its text width.
 
+`Window::observe_element_paint` records an element's computed surface style
+and actual submitted text/SVG paint inputs. Nested observation scopes own
+their own text and glyphs. Text size and leading come from the painter;
+font weights remain unknown when a font ID aliases different requested
+weights. The observer does not reconstruct values from design tokens or
+substitute a desired style for the text that was drawn.
+
+`WrappedLine::set_color` updates a cached plain label's foreground without
+reshaping it. This lets hover ink reach the glyph painter, rather than only
+changing the parent element's style.
+
+Pointer down and release handlers are registered together in every frame.
+A click that completes before the next paint therefore clears active styling
+immediately, rather than leaving the control pressed until another release.
+
 Keep local edits limited to this rendering seam. Do not edit an installed
 Cargo registry cache: the committed copy is the build input.
 

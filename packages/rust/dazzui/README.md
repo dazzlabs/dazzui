@@ -99,8 +99,11 @@ zed-font-kit = { path = "path/to/dazzui/compat/font-kit" }
 gpui = { path = "path/to/dazzui/compat/gpui" }
 ```
 
-Geometry collection reads native boxes; paint and interaction need separate
-verification. Shadows translate CSS blur lengths to GPUI's Gaussian sigma,
+Geometry collection reads native boxes. Button, IconButton and KeyCap also
+observe actual surface styles and submitted text runs; Icon reports SVG ink.
+Other paint properties remain unread, and interaction needs separate checks.
+Plain labels refresh their cached foreground at paint time so hover ink
+reaches the glyphs. Shadows translate CSS blur lengths to GPUI's Gaussian sigma,
 and Slider reads the theme's thumb ink, edge, lift and hover scale. Popup
 type-ahead, hover delays, feedback timers and text leading use the generated
 tokens rather than copies of their current values.
