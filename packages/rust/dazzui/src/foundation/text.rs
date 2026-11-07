@@ -156,9 +156,11 @@ impl Element for LabelText {
                             size.width = size.width.max(line_size.width);
                             size.height += line_size.height;
                         }
-                        // Quantize after shaping, without a containing box that
-                        // would feed a narrower width back into text wrapping.
-                        let scale = window.scale_factor();
+                        // Keep CSS layout precision after shaping. Rounding
+                        // each run to display pixels accumulates across a row
+                        // and shifts centred or trailing controls. Taffy still
+                        // aligns the final boxes to the display pixel grid.
+                        let scale = 64.;
                         size.width = if style.white_space == WhiteSpace::Normal {
                             (size.width * scale).ceil() / scale
                         } else {

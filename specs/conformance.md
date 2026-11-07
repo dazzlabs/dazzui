@@ -383,8 +383,8 @@ Five collectors are written:
   Custom vector meshes without a styled surface do not retain their source
   radius or stroke, so their surface properties remain unread, as do unknown
   shadows, non-solid fills and ambiguous font weights.
-  Plain text measures shaped advances
-  at display-pixel precision instead of the SDK's whole logical-pixel ceiling. GPUI still
+  Plain text measures shaped advances at 1/64px layout precision instead of
+  rounding each run to display pixels, avoiding accumulated shifts in rows. GPUI still
   aligns layout to display pixels — half logical pixels on the collector's
   2x Mac display. Wrapping, truncation and text painting remain the SDK's.
   On macOS, the workspace's font-kit adapter supplies system UI variable
@@ -408,6 +408,12 @@ specimens remain excluded from their parents' text and glyph readings.
 Use an isolated output directory for these readings: the shared contract
 continues to compare containers' boxes alone.
 
+Both direct entrypoints accept `--positions` for targeted layout diagnosis.
+This adds `left` and `top` readings relative to the scene's capture rectangle,
+including containers, with the ordinary length tolerance. Modal captures
+use the viewport as their origin. Use isolated output directories; ordinary
+collection retains its existing box-and-paint vocabulary.
+
 For modal snapshots, the direct entrypoints accept `--modal open|close`,
 `--modal-index <ordinal>` (default zero) and `--motion-ms <time>`. These
 capture the full viewport after opening the selected Dialog or Drawer, or
@@ -415,6 +421,8 @@ after starting its exit. GPUI posts native AppKit pointer and key events;
 modal interaction capture is currently macOS-only. React remeasures the live
 tree without remounting it. Native sheets report their actual surface through
 `wrap_with`, rather than reporting the trigger's in-flow wrapper as the sheet.
+ToastViewport likewise wraps its actual window-anchored stack, so positions
+refer to the stack rather than its in-flow portal placeholder.
 GPUI records fresh bounds on each frame, including subtree transforms, while
 keeping the first duplicate specimen within that frame. An explicit detached
 surface overrides its trigger wrapper at the same address.

@@ -750,3 +750,4 @@ priority = 0
 
 [patch.crates-io]
 zed-font-kit = { path = "../font-kit" }
+taffy = { path = "../taffy" }

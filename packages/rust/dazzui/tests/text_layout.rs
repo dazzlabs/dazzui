@@ -152,3 +152,47 @@ fn labels_keep_geometry_through_type_erasure(cx: &mut TestAppContext) {
         );
     }
 }
+
+struct PackedLabels;
+
+impl Render for PackedLabels {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        div()
+            .flex()
+            .flex_col()
+            .items_start()
+            .font_family(cx.theme().body_medium.face.family())
+            .text_size(px(13.1))
+            .line_height(px(20.))
+            .child(
+                div()
+                    .flex()
+                    .flex_none()
+                    .debug_selector(|| "packed-labels".into())
+                    .children((0..16).map(|_| dazzui::foundation::text_child("i"))),
+            )
+    }
+}
+
+#[gpui::test]
+fn separate_labels_do_not_accumulate_pixel_rounding_in_a_row(cx: &mut TestAppContext) {
+    cx.update(dazzui::init);
+    let (_, cx) = cx.add_window_view(|_, _| PackedLabels);
+    cx.run_until_parked();
+    let shaped = cx.update(|window, cx| {
+        let style = gpui::TextStyle {
+            font_family: cx.theme().body_medium.face.family().into(),
+            ..Default::default()
+        };
+        window
+            .text_system()
+            .shape_line("i".into(), px(13.1), &[style.to_run(1)], None)
+            .width
+            * 16.
+    });
+    let actual = cx.debug_bounds("packed-labels").unwrap().size.width;
+    assert!(
+        (f32::from(actual - shaped)).abs() < 0.5,
+        "separate runs should occupy their shaped advances: {actual:?}, {shaped:?}"
+    );
+}

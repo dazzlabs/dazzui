@@ -206,8 +206,14 @@ impl Element for Anchored {
             desired.origin.y = limits.origin.y + edges.top;
         }
 
-        let offset = desired.origin - bounds.origin;
-        let offset = point(offset.x.round(), offset.y.round());
+        // Snap the window position, not the local translation. Rounding a
+        // translation from a half-pixel parent can move a window edge by
+        // half a logical pixel on high-density displays.
+        let scale = window.scale_factor();
+        let target = desired
+            .origin
+            .map(|coordinate| (coordinate * scale).round() / scale);
+        let offset = target - bounds.origin;
 
         window.with_element_offset(offset, |window| {
             for child in &mut self.children {

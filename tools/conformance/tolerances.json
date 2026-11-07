@@ -5,6 +5,8 @@
   "kinds": {
     "width": "length",
     "height": "length",
+    "left": "length",
+    "top": "length",
     "corner": "length",
     "stroke": "length",
     "paddingX": "length",

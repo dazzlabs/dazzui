@@ -217,6 +217,7 @@ impl ToastPlacement {
 #[derive(IntoElement, Default)]
 pub struct ToastViewport {
     placement: ToastPlacement,
+    wrap: Option<Box<dyn FnOnce(AnyElement) -> AnyElement>>,
 }
 
 impl ToastViewport {
@@ -226,6 +227,12 @@ impl ToastViewport {
 
     pub fn placement(mut self, placement: ToastPlacement) -> Self {
         self.placement = placement;
+        self
+    }
+
+    /// Wrap the actual detached stack, for decoration or bounds collection.
+    pub fn wrap_with(mut self, wrap: impl FnOnce(AnyElement) -> AnyElement + 'static) -> Self {
+        self.wrap = Some(Box::new(wrap));
         self
     }
 }
@@ -264,6 +271,11 @@ impl RenderOnce for ToastViewport {
             .type_style(t.body_medium)
             .text_color(t.color_content.hsla())
             .children(toasts);
+        let stack = stack.into_any_element();
+        let stack = match self.wrap {
+            Some(wrap) => wrap(stack),
+            None => stack,
+        };
         let (corner, origin) = match self.placement {
             ToastPlacement::Bottom => (Corner::BottomLeft, point(px(0.), viewport.height)),
             ToastPlacement::Top => (Corner::TopLeft, point(px(0.), px(0.))),

@@ -19,6 +19,10 @@ cannot reuse stale hitboxes. Other
 renderers retain their upstream behavior. This is a renderer compatibility
 patch; design decisions and dimensions remain in `ds`.
 
+Window-anchored elements snap their final position to display pixels before
+subtracting their parent's origin. Rounding the local translation to whole
+logical pixels shifted window edges when the parent started on a half pixel.
+
 Interaction styles merge individual text properties with the base style.
 Upstream replaces the entire text refinement when hover or active supplies
 only a color, dropping a control's font size, weight and leading. The patch

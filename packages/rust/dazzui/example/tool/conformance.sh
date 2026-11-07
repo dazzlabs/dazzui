@@ -12,7 +12,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --out) out="$2"; shift 2 ;;
     --themes|--scenes|--motion-ms|--modal|--modal-index) passed+=("$1" "$2"); shift 2 ;;
-    --no-images|--reduced-motion) passed+=("$1"); shift ;;
+    --no-images|--reduced-motion|--positions) passed+=("$1"); shift ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
 done

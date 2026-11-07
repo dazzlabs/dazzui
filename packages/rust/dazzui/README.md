@@ -97,6 +97,7 @@ workspace must include the same patch, with the path adjusted:
 [patch.crates-io]
 zed-font-kit = { path = "path/to/dazzui/compat/font-kit" }
 gpui = { path = "path/to/dazzui/compat/gpui" }
+taffy = { path = "path/to/dazzui/compat/taffy" }
 ```
 
 Collection reads native boxes, observed surface styles and submitted text
@@ -106,7 +107,8 @@ non-solid fills, unknown shadows and ambiguous font weights remain unread;
 interaction needs separate checks.
 `foundation::inline_context` marks components embedded in prose: Link uses
 the font's content height there, while retaining inherited glyph leading.
-Code likewise separates its inline chip height from text leading.
+Code likewise separates its inline chip height from text leading, aligning
+its smaller mono face against the surrounding font's baseline.
 Plain labels refresh their cached foreground at paint time so hover ink
 reaches the glyphs. Shadows translate CSS blur lengths to GPUI's Gaussian sigma,
 and Slider reads the theme's thumb ink, edge, lift and hover scale. Popup
@@ -166,6 +168,10 @@ map between the same coordinates. Detached menus anchor to painted trigger
 boxes. Other renderer backends still use upstream opacity, rectangular
 clipping and unscaled layout. See
 [`compat/gpui/DAZZUI-PATCH.md`](compat/gpui/DAZZUI-PATCH.md).
+The pinned Taffy layout engine also has a committed compatibility patch:
+auto margins absorb free space while preserving gaps, so trailing controls
+reach the row's edge. See
+[`compat/taffy/DAZZUI-PATCH.md`](compat/taffy/DAZZUI-PATCH.md).
 
 ## The example
 

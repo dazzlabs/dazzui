@@ -484,3 +484,55 @@ fn inline_boxes_preserve_inherited_painted_leading(cx: &mut TestAppContext) {
         "inline box height is the font's content area, not its leading"
     );
 }
+
+struct InlineBaseline(Rc<RefCell<Vec<ObservedPaint>>>);
+
+impl Render for InlineBaseline {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let face = cx.theme().body_medium.face;
+        let content = dazzui::content_area(face, 26., window);
+        let drop =
+            dazzui::baseline(face, 26., 40., window) - dazzui::baseline(face, 26., content, window);
+        div()
+            .flex()
+            .items_start()
+            .font_family(face.family())
+            .text_size(gpui::px(26.))
+            .line_height(gpui::px(40.))
+            .debug_selector(|| "prose-row".into())
+            .child(dazzui::foundation::text_child("Run "))
+            .child(
+                div()
+                    .flex()
+                    .mt(gpui::px(drop))
+                    .child(dazzui::foundation::inline_context(PaintProbe {
+                        child: Code::new().child("code").into_any_element(),
+                        paints: self.0.clone(),
+                    })),
+            )
+    }
+}
+
+#[gpui::test]
+fn inline_code_aligns_its_smaller_font_with_the_surrounding_baseline(cx: &mut TestAppContext) {
+    cx.update(dazzui::init);
+    let paints = Rc::new(RefCell::new(Vec::new()));
+    let (_, cx) = cx.add_window_view(|_, _| InlineBaseline(paints.clone()));
+    cx.run_until_parked();
+    let code = paints.borrow().last().unwrap().surface.clone().unwrap();
+    let row = cx.debug_bounds("prose-row").unwrap();
+    let (parent, own) = cx.update(|window, cx| {
+        let t = cx.theme();
+        let size = t.caption_small.size;
+        let face = dazzui::tokens::Face::Mono;
+        (
+            dazzui::baseline(t.body_medium.face, 26., 40., window),
+            t.spacing_0_5
+                + dazzui::baseline(face, size, dazzui::content_area(face, size, window), window),
+        )
+    });
+    assert_eq!(
+        code.bounds.origin.y + gpui::px(own),
+        row.origin.y + gpui::px(parent)
+    );
+}

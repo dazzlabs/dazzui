@@ -170,6 +170,7 @@ impl RenderOnce for Button {
 
         let shortcut = self.shortcut.map(|shortcut| {
             div()
+                .min_h(px(profile.content.line_height))
                 .font_family(t.label_strong.face.family())
                 .opacity(0.7)
                 .child(shortcut)

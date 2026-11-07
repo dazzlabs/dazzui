@@ -47,11 +47,26 @@ impl RenderOnce for Code {
         // line's leading, which it would push around.
         let line = crate::foundation::content_area(Face::Mono, style.size, window);
         let leading = window.line_height();
+        let baseline_shift =
+            crate::foundation::scoped::<crate::foundation::style::InlineContext>(cx).map(|_| {
+                let parent = window.text_style();
+                let font = window.text_system().resolve_font(&parent.font());
+                let size = parent.font_size.to_pixels(window.rem_size());
+                let ascent = f32::from(window.text_system().ascent(font, size))
+                    .abs()
+                    .round();
+                // Inline glyphs share a baseline even when the code face is
+                // smaller. Its padding is outside that font's content area.
+                ascent
+                    - crate::foundation::baseline(Face::Mono, style.size, line, window)
+                    - t.spacing_0_5
+            });
         div()
             .flex()
             .flex_none()
             .items_center()
             .h(px(line + 2. * t.spacing_0_5))
+            .when_some(baseline_shift, |this, shift| this.mt(px(shift)))
             .py(px(t.spacing_0_5))
             .px(px(t.spacing_1))
             .bg(t.color_surface_sunken.hsla())

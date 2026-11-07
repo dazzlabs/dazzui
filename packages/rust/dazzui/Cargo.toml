@@ -15,11 +15,12 @@ publish = false
 
 [workspace]
 members = ["example", "compat/font-kit"]
-exclude = ["compat/gpui"]
+exclude = ["compat/gpui", "compat/taffy"]
 
 [patch.crates-io]
 gpui = { path = "compat/gpui" }
 zed-font-kit = { path = "compat/font-kit" }
+taffy = { path = "compat/taffy" }
 
 [dependencies]
 gpui = "0.2.2"

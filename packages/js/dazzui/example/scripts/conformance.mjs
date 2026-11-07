@@ -6,7 +6,7 @@
  *
  *   node scripts/conformance.mjs [--out <dir>] [--themes drawn|all|<id,…>]
  *                                [--scenes <story,…>] [--no-images]
- *                                [--container-values]
+ *                                [--container-values] [--positions]
  *
  * The kit must be built (`pnpm packages`); the example is served from source.
  */
@@ -32,6 +32,7 @@ const { values: args } = parseArgs({
     scenes: { type: 'string' },
     'no-images': { type: 'boolean', default: false },
     'container-values': { type: 'boolean', default: false },
+    positions: { type: 'boolean', default: false },
     'motion-ms': { type: 'string' },
     'reduced-motion': { type: 'boolean', default: false },
     modal: { type: 'string' },
@@ -238,6 +239,14 @@ try {
         // independent specimens with their own decoration and typography.
         if (scene.specimens[index].container && !args['container-values'])
           entry.values = {}
+        const rect = drawn.specimens[index].rect
+        if (args.positions && rect) {
+          entry.values = {
+            ...entry.values,
+            left: Math.round((rect.x - drawn.rect.x) * 100) / 100,
+            top: Math.round((rect.y - drawn.rect.y) * 100) / 100,
+          }
+        }
         if (crops[index]) {
           const name = `images/${theme}/${file}-${index}.png`
           writeFileSync(join(out, name), Buffer.from(crops[index], 'base64'))

@@ -537,6 +537,7 @@ fn toast_provider(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement 
 
 fn toast_viewport(node: &Node, _: &mut Window, _: &mut App) -> AnyElement {
     ToastViewport::new()
+        .wrap_with(recorded_surface(node))
         .placement(
             node.option("placement", ToastPlacement::parse)
                 .unwrap_or_default(),
