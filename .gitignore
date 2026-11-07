@@ -47,3 +47,6 @@ packages/js/dazzui/example/tests/goldens/
 # Native Shell development hosts and generated test bundles
 **/.nsh/
 **/.capture.test.ts
+
+# Rust (the root Cargo workspace)
+/target

@@ -3,8 +3,9 @@
 # The example is a package of its own rather than an `[[example]]` target,
 # for the reason the Flutter and SwiftUI examples are separate apps: the
 # library carries no entry point, no window and no dependency only the
-# example needs. It is a workspace member so the two share one lockfile and
-# one `target/`.
+# example needs. Both are members of the repository's root workspace, so the
+# packages of this repository share one lockfile and one `target/` — and a
+# git dependency finds `dazzui` from the repository root.
 [package]
 name = "dazzui"
 version = "0.1.0"
@@ -12,9 +13,6 @@ edition = "2024"
 description = "The GPUI implementation of the DazzUI design system."
 license = "MIT"
 publish = false
-
-[workspace]
-members = ["example"]
 
 [dependencies]
 gpui = "0.2.2"

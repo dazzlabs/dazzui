@@ -1,0 +1,15 @@
+# The root Cargo workspace: it exists so a project can depend on the Rust
+# packages of this repository directly —
+#
+#   dazzui = { git = "https://github.com/dazzlabs/dazzui" }
+#
+# — which Cargo can only resolve when the package it wants is reachable from
+# the workspace root. The NSH and GTK4 packages keep their own workspaces
+# (their platform dependencies do not share this lockfile); a package with its
+# own `[workspace]` table is its own root and needs no `exclude` here.
+[workspace]
+resolver = "3"
+members = [
+    "packages/rust/dazzui",
+    "packages/rust/dazzui/example",
+]
