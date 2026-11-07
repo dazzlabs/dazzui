@@ -284,6 +284,8 @@ test('collector reads compound surfaces and editable text', async () => {
         <input class="collector-placeholder" placeholder="Email" style="font-size:15px;color:red">
         <svg class="collector-icon" style="color:rgb(20,40,60)" width="16" height="16"><path d="M0 0h16v16H0z" fill="currentColor" /></svg>
         <button class="collector-button" style="color:rgb(80,90,100)"><svg class="collector-nested-icon" style="color:red" width="16" height="16"></svg>Save</button>
+        <div class="collector-sentinel"><span style="clip-path:inset(50%);position:fixed;width:1px;height:1px">x</span></div>
+        <input class="collector-empty" value="">
       `
       document.body.append(fixture)
       const read = selector =>
@@ -297,6 +299,8 @@ test('collector reads compound surfaces and editable text', async () => {
           fixture.querySelector('.collector-button'),
           new Set([fixture.querySelector('.collector-nested-icon')])
         ),
+        read('.collector-sentinel'),
+        read('.collector-empty'),
       ]
     })
     assert.equal(readings[0].values.corner, 13)
@@ -310,6 +314,10 @@ test('collector reads compound surfaces and editable text', async () => {
     assert.equal(readings[3].values.ink, '#14283c')
     assert.equal(readings[3].values.fontSize, null)
     assert.equal(readings[4].values.ink, '#505a64')
+    assert.equal(readings[5].values.ink, null)
+    assert.equal(readings[5].values.fontSize, null)
+    assert.equal(readings[6].values.ink, null)
+    assert.equal(readings[6].values.fontSize, null)
   } finally {
     await browser.close()
     await server.close()

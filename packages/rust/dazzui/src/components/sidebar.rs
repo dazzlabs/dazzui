@@ -1211,7 +1211,6 @@ impl RenderOnce for SidebarMenuBadge {
             .rounded(px(t.radius_small))
             .font_family(t.caption_small.face.family())
             .text_size(px(t.caption_small.size))
-            .line_height(px(t.caption_small.line_height))
             .font_weight(t.label_medium.font_weight())
             .tabular_nums()
             .map(|this| match selected_ink {

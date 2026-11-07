@@ -111,6 +111,11 @@ impl RenderOnce for Link {
         let hovered = t.control_color_plain_content_hovered.resolve(ramp);
         let pressed = t.control_color_plain_content_pressed.resolve(ramp);
         let underline = self.underline;
+        let text_style = window.text_style();
+        let font_size = text_style.font_size.to_pixels(window.rem_size());
+        let font = window.text_system().resolve_font(&text_style.font());
+        let height = window.text_system().ascent(font, font_size).abs().round()
+            + window.text_system().descent(font, font_size).abs().round();
 
         let label = div()
             .flex()
@@ -120,6 +125,10 @@ impl RenderOnce for Link {
             .flex()
             .flex_none()
             .items_center()
+            .when(
+                crate::foundation::scoped::<crate::foundation::style::InlineContext>(cx).is_some(),
+                |this| this.h(height),
+            )
             .cursor_pointer()
             .rounded(px(t.radius_tiny))
             .text_color(t.control_color_plain_content_normal.resolve(ramp))

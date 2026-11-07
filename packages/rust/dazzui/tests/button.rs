@@ -1,7 +1,7 @@
 //! Native button key phases, cancellation and real click bounds.
 
 use dazzui::foundation::ControlColors;
-use dazzui::{ActiveTheme, Button, IconButton, KeyCap, State, Theme, Tint, Variant};
+use dazzui::{ActiveTheme, Button, Code, IconButton, KeyCap, Link, State, Theme, Tint, Variant};
 use gpui::{
     AnyElement, App, Bounds, ClickEvent, Context, Element, ElementId, Entity, GlobalElementId,
     InspectorElementId, InteractiveElement, IntoElement, KeyUpEvent, Keystroke, LayoutId,
@@ -398,5 +398,89 @@ fn paint_observation_excludes_text_inside_nested_specimens(cx: &mut TestAppConte
     assert_eq!(
         nested.style.border_widths.top.to_pixels(nested.rem_size),
         gpui::px(0.)
+    );
+}
+
+struct WrappedPaint(Rc<RefCell<Vec<ObservedPaint>>>);
+
+impl Render for WrappedPaint {
+    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        PaintProbe {
+            child: div()
+                .flex()
+                .child(
+                    Button::new("field")
+                        .variant(Variant::Outlined)
+                        .child("Choose"),
+                )
+                .into_any_element(),
+            paints: self.0.clone(),
+        }
+    }
+}
+
+#[gpui::test]
+fn paint_observation_keeps_layout_root_and_inner_control_separate(cx: &mut TestAppContext) {
+    cx.update(dazzui::init);
+    let paints = Rc::new(RefCell::new(Vec::new()));
+    let (_, cx) = cx.add_window_view(|_, _| WrappedPaint(paints.clone()));
+    cx.run_until_parked();
+    let paints = paints.borrow();
+    let paint = paints.last().unwrap();
+    let root = paint.surface.as_ref().unwrap();
+    let field = paint.decorated_surface.as_ref().unwrap();
+    assert_eq!(
+        root.style.border_widths.top.to_pixels(root.rem_size),
+        gpui::px(0.)
+    );
+    assert_eq!(
+        field.style.border_widths.top.to_pixels(field.rem_size),
+        gpui::px(1.)
+    );
+    assert!(paint.text.is_some());
+}
+
+struct InlinePaint([Rc<RefCell<Vec<ObservedPaint>>>; 3]);
+
+impl Render for InlinePaint {
+    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        let probe = |index: usize, child: AnyElement| PaintProbe {
+            child,
+            paints: self.0[index].clone(),
+        };
+        div()
+            .flex()
+            .flex_col()
+            .items_start()
+            .text_size(gpui::px(13.))
+            .line_height(gpui::px(20.))
+            .child(probe(
+                0,
+                Link::new("block").child("Read").into_any_element(),
+            ))
+            .child(dazzui::foundation::inline_context(probe(
+                1,
+                Link::new("inline").child("Read").into_any_element(),
+            )))
+            .child(probe(2, Code::new().child("code").into_any_element()))
+    }
+}
+
+#[gpui::test]
+fn inline_boxes_preserve_inherited_painted_leading(cx: &mut TestAppContext) {
+    cx.update(dazzui::init);
+    let paints = std::array::from_fn(|_| Rc::new(RefCell::new(Vec::new())));
+    let (_, cx) = cx.add_window_view(|_, _| InlinePaint(paints.clone()));
+    cx.run_until_parked();
+    let readings = paints.map(|paints| paints.borrow().last().unwrap().clone());
+    for reading in &readings {
+        assert_eq!(reading.text.as_ref().unwrap().line_height, gpui::px(20.));
+    }
+    let block = readings[0].surface.as_ref().unwrap().bounds.size.height;
+    let inline = readings[1].surface.as_ref().unwrap().bounds.size.height;
+    assert_eq!(block, gpui::px(20.));
+    assert!(
+        inline < block,
+        "inline box height is the font's content area, not its leading"
     );
 }

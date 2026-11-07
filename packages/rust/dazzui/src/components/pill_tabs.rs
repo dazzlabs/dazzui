@@ -201,7 +201,7 @@ impl RenderOnce for PillTabs {
             })
             .collect::<Vec<_>>();
 
-        icon_slot(
+        div().flex().child(icon_slot(
             t.icon_medium,
             div()
                 .id(self.id)
@@ -221,6 +221,6 @@ impl RenderOnce for PillTabs {
                     cx.stop_propagation();
                 })
                 .children(pills),
-        )
+        ))
     }
 }

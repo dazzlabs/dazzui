@@ -6,6 +6,15 @@ use crate::foundation::axes::{ControlColors, Profile, State, Tint, Variant};
 use crate::generated::ThemeTokens;
 use crate::tokens::{Face, TypeStyle};
 
+#[derive(Clone)]
+pub(crate) struct InlineContext;
+
+/// Marks components embedded in a line of prose. Inline boxes use the
+/// font's content height while their glyphs retain the inherited leading.
+pub fn inline_context(child: impl gpui::IntoElement) -> super::scope::Provide {
+    super::provide(InlineContext, child)
+}
+
 /// The height of an inline box set in `face` at `size`: the face's ascent
 /// and descent, each whole, as a browser sizes a `<span>` in a line — the
 /// box a run of type has when it is not a block with a line height of its

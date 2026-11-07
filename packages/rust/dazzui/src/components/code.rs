@@ -46,9 +46,12 @@ impl RenderOnce for Code {
         // is the face's own height plus the half-step inset, never the
         // line's leading, which it would push around.
         let line = crate::foundation::content_area(Face::Mono, style.size, window);
+        let leading = window.line_height();
         div()
             .flex()
             .flex_none()
+            .items_center()
+            .h(px(line + 2. * t.spacing_0_5))
             .py(px(t.spacing_0_5))
             .px(px(t.spacing_1))
             .bg(t.color_surface_sunken.hsla())
@@ -56,7 +59,7 @@ impl RenderOnce for Code {
             .text_color(t.color_content.hsla())
             .font_family(Face::Mono.family())
             .text_size(px(style.size))
-            .line_height(px(line))
+            .line_height(leading)
             .whitespace_nowrap()
             .children(self.children)
     }

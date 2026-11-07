@@ -846,10 +846,16 @@ pub struct ObservedText {
 pub struct ObservedPaint {
     /// A directly styled surface with the observed element's box.
     pub surface: Option<ObservedSurface>,
+    /// The first own surface with fill, a visible border or a shadow. A
+    /// collector can use it when the layout root only wraps a control.
+    pub decorated_surface: Option<ObservedSurface>,
     /// The first text painted outside nested observation scopes.
     pub text: Option<ObservedText>,
     /// The first SVG ink, used when there is no own text.
     pub glyph_ink: Option<Hsla>,
+    /// Own custom vector paths were submitted. Their tessellated geometry
+    /// does not retain CSS surface radii or stroke widths.
+    pub custom_paths: bool,
 }
 
 struct PaintObservation {
@@ -1972,6 +1978,24 @@ impl Window {
         let painted = self.painted_bounds(bounds);
         let rem_size = self.rem_size();
         let observation = self.paint_observations.last_mut().unwrap();
+        let decorated = style.background.as_ref().is_some_and(|fill| {
+            fill.color().is_none_or(|background| {
+                background
+                    .solid_color()
+                    .is_none_or(|color| !color.is_transparent())
+            })
+        }) || (style
+            .border_color
+            .is_some_and(|color| !color.is_transparent())
+            && style.border_widths.to_pixels(rem_size).max() > Pixels::ZERO)
+            || !style.box_shadow.is_empty();
+        if observation.paint.decorated_surface.is_none() && decorated {
+            observation.paint.decorated_surface = Some(ObservedSurface {
+                bounds,
+                style: style.clone(),
+                rem_size,
+            });
+        }
         if observation.paint.surface.is_none() && observation.bounds == painted {
             observation.paint.surface = Some(ObservedSurface {
                 bounds,
@@ -3078,6 +3102,10 @@ impl Window {
     /// This method should only be called as part of the paint phase of element drawing.
     pub fn paint_path(&mut self, mut path: Path<Pixels>, color: impl Into<Background>) {
         self.invalidator.debug_assert_paint();
+
+        if let Some(observation) = self.paint_observations.last_mut() {
+            observation.paint.custom_paths = true;
+        }
 
         let scale_factor = self.scale_factor();
         let content_mask = self.content_mask();

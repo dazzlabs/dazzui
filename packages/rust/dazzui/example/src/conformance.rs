@@ -4,9 +4,8 @@
 //! specs/conformance.md; `tool/conformance.sh` is its front door.
 //!
 //! A specimen's box is read from the bounds the element built for its node
-//! laid out at (`lib/specimen.rs`). Button, IconButton and KeyCap observe their
-//! actual surface style and submitted text runs; Icon observes SVG ink.
-//! Other components keep unsupported paint properties unread.
+//! laid out at (`lib/specimen.rs`). Components also observe their own surface
+//! styles and submitted text/SVG runs. Unsupported paint properties stay unread.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -417,7 +416,7 @@ async fn collect(
                 settle(window, cx, options.images).await?;
             }
             let frames = specimen::frames();
-            let styles = specimen::styles();
+            let styles = specimen::styles(&specimens);
             let current_scale = window
                 .update(cx, |_, window, _| window.scale_factor())
                 .map_err(|error| error.to_string())?;
@@ -485,9 +484,7 @@ async fn collect(
                 }
                 let mut reading = json!({
                     "box": { "width": round(width), "height": round(height) },
-                    "values": if matches!(specimen["component"].as_str(), Some("button" | "icon-button" | "icon" | "key-cap")) {
-                        styles.get(&index).cloned().unwrap_or_else(|| json!({}))
-                    } else { json!({}) },
+                    "values": styles.get(&index).cloned().unwrap_or_else(|| json!({})),
                 });
                 if let Some(crop) = crops.get(&index) {
                     reading["image"] = json!(format!("images/{theme_id}/{crop}"));

@@ -143,7 +143,6 @@ impl RenderOnce for Step {
             div()
                 .flex_none()
                 .whitespace_nowrap()
-                .pl(px(t.spacing_2_5))
                 .ml_auto()
                 .text_color(meta_color)
                 .font_family(t.caption_small.face.family())
@@ -153,11 +152,10 @@ impl RenderOnce for Step {
                 .child(meta)
         });
 
-        // Margins rather than `gap`: beside the meta's auto margin, taffy
-        // lays the row out without its gaps.
         div()
             .flex()
             .items_center()
+            .gap(px(t.spacing_2_5))
             .font_family(style.face.family())
             .text_size(px(style.size))
             .line_height(px(style.line_height))
@@ -170,7 +168,6 @@ impl RenderOnce for Step {
             .child(
                 div()
                     .min_w_0()
-                    .ml(px(t.spacing_2_5))
                     .child(crate::foundation::text_child(self.label)),
             )
             .children(meta)

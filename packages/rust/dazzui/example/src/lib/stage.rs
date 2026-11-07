@@ -96,10 +96,9 @@ pub fn text(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
         None => None,
     };
     // A component in the run is an inline box, whose height on the web is
-    // its face's own rather than the line's leading: what it inherits here
-    // is that height, so a link in a sentence is as tall as its type. GPUI
-    // aligns no baselines, so the box is lowered by what the line's leading
-    // puts above the run's own, and the two baselines meet.
+    // its face's own rather than the line's leading. Inline components keep
+    // that box separate from inherited text leading. GPUI aligns no
+    // baselines, so lower the box by the leading above the run's own area.
     let body = t.body_medium;
     let inline = dazzui::content_area(body.face, body.size, window);
     let drop = dazzui::baseline(body.face, body.size, body.line_height, window)
@@ -113,8 +112,7 @@ pub fn text(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
                 div()
                     .flex()
                     .mt(px(drop))
-                    .line_height(px(inline))
-                    .child(kid)
+                    .child(dazzui::foundation::inline_context(kid))
                     .into_any_element()
             } else {
                 // A run of words is free to narrow to the line it is given

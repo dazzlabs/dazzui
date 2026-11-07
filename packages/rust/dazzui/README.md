@@ -99,9 +99,14 @@ zed-font-kit = { path = "path/to/dazzui/compat/font-kit" }
 gpui = { path = "path/to/dazzui/compat/gpui" }
 ```
 
-Geometry collection reads native boxes. Button, IconButton and KeyCap also
-observe actual surface styles and submitted text runs; Icon reports SVG ink.
-Other paint properties remain unread, and interaction needs separate checks.
+Collection reads native boxes, observed surface styles and submitted text
+and SVG runs across components. Layout-only control wrappers report their
+inner painted field. Custom vector shapes without a styled surface,
+non-solid fills, unknown shadows and ambiguous font weights remain unread;
+interaction needs separate checks.
+`foundation::inline_context` marks components embedded in prose: Link uses
+the font's content height there, while retaining inherited glyph leading.
+Code likewise separates its inline chip height from text leading.
 Plain labels refresh their cached foreground at paint time so hover ink
 reaches the glyphs. Shadows translate CSS blur lengths to GPUI's Gaussian sigma,
 and Slider reads the theme's thumb ink, edge, lift and hover scale. Popup

@@ -109,12 +109,10 @@ impl RenderOnce for Callout {
                 .children(self.children)
         });
 
-        // Margins rather than `gap`: beside the action's auto margin, taffy
-        // lays the row out without its gaps.
-        let has_icon = self.icon.is_some();
         div()
             .flex()
             .flex_row()
+            .gap(px(t.spacing_2_5))
             .map(|this| {
                 if has_description {
                     this.items_start()
@@ -139,21 +137,13 @@ impl RenderOnce for Callout {
                     .flex()
                     .flex_col()
                     .gap(px(t.spacing_1))
-                    .when(has_icon, |this| this.ml(px(t.spacing_2_5)))
                     .min_w_0()
                     .flex_shrink()
                     .children(title)
                     .children(description),
             )
             .when_some(self.action, |this, action| {
-                this.child(
-                    div()
-                        .flex()
-                        .flex_none()
-                        .pl(px(t.spacing_2_5))
-                        .ml_auto()
-                        .child(action),
-                )
+                this.child(div().flex().flex_none().ml_auto().child(action))
             })
     }
 }

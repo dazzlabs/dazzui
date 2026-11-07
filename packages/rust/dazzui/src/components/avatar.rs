@@ -164,7 +164,7 @@ impl RenderOnce for Avatar {
             .rounded(px(radius))
             .overflow_hidden()
             .when_some(group_ring, |this, AvatarRing(color)| {
-                this.shadow(vec![ring(color, t)])
+                this.bg(color).shadow(vec![ring(color, t)])
             })
             .child(
                 div()

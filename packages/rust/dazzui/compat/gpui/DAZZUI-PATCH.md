@@ -27,8 +27,11 @@ cannot change its text width.
 
 `Window::observe_element_paint` records an element's computed surface style
 and actual submitted text/SVG paint inputs. Nested observation scopes own
-their own text and glyphs. Text size and leading come from the painter;
-font weights remain unknown when a font ID aliases different requested
+their own surface, text and glyphs. It records both the layout root and the
+first decorated surface for collectors that need to look through an unstyled
+control wrapper. Custom path submission is flagged separately: tessellated
+meshes do not preserve CSS radii or stroke widths. Text size and leading
+come from the painter; font weights remain unknown when a font ID aliases different requested
 weights. The observer does not reconstruct values from design tokens or
 substitute a desired style for the text that was drawn.
 

@@ -372,13 +372,17 @@ Five collectors are written:
   is recorded on the element the kit draws for it, which the kit hands back
   through the item's `wrap_with` (or takes as an element) for the purpose.
   The committed GPUI compatibility patch also observes paint inputs without
-  changing the drawing. Button, IconButton and KeyCap report the surface's
-  actual corner, edge, solid fill, padding, gap and shadow, and the first own text
-  run's submitted ink, size, unambiguous font weight and leading. Icon reports
-  its SVG ink. Nested specimen scopes are excluded from their parents' text
-  and glyph readings. Shadow names are identified by comparing the observed
-  layers; unknown shadows, non-solid fills and ambiguous font weights remain
-  unread. Other components still report only boxes and pictures.
+  changing the drawing. Components report the surface's actual corner,
+  edge, solid fill, padding, gap and shadow, and the first own text run's
+  submitted ink, size, unambiguous font weight and leading; SVGs supply ink
+  when there is no own text. Select, Combobox, Autocomplete, DateRangePicker
+  and ShortcutRecorder have layout-only wrappers; their first decorated
+  surface supplies the field's properties instead of the wrapper's zeros.
+  Nested specimen scopes are excluded from their parents' surface, text and
+  glyph readings. Shadow names are identified by comparing observed layers.
+  Custom vector meshes without a styled surface do not retain their source
+  radius or stroke, so their surface properties remain unread, as do unknown
+  shadows, non-solid fills and ambiguous font weights.
   Plain text measures shaped advances
   at display-pixel precision instead of the SDK's whole logical-pixel ceiling. GPUI still
   aligns layout to display pixels — half logical pixels on the collector's

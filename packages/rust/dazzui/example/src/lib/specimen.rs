@@ -11,14 +11,20 @@ use std::collections::BTreeMap;
 use dazzui::{ActiveTheme, ThemeTokens};
 use gpui::{
     AnyElement, App, Bounds, DefiniteLength, Display, Element, ElementId, GlobalElementId, Hsla,
-    InspectorElementId, IntoElement, LayoutId, ObservedPaint, Pixels, Rgba, Window,
+    InspectorElementId, IntoElement, LayoutId, ObservedPaint, ObservedSurface, Pixels, Rgba,
+    Window,
 };
 use serde_json::{Value, json};
 
 thread_local! {
     /// `Some` while collecting: every specimen's bounds, by its index.
     static FRAMES: RefCell<Option<BTreeMap<usize, Bounds<Pixels>>>> = const { RefCell::new(None) };
-    static STYLES: RefCell<BTreeMap<usize, Value>> = const { RefCell::new(BTreeMap::new()) };
+    static STYLES: RefCell<BTreeMap<usize, PaintReading>> = const { RefCell::new(BTreeMap::new()) };
+}
+
+struct PaintReading {
+    root: Value,
+    decorated: Option<Value>,
 }
 
 /// Starts recording, clearing what an earlier scene recorded.
@@ -43,8 +49,36 @@ pub fn frames() -> BTreeMap<usize, Bounds<Pixels>> {
 }
 
 /// Paint properties observed in the current frame, independently from boxes.
-pub fn styles() -> BTreeMap<usize, Value> {
-    STYLES.with(|styles| styles.borrow().clone())
+pub fn styles(specimens: &[Value]) -> BTreeMap<usize, Value> {
+    STYLES.with(|styles| {
+        styles
+            .borrow()
+            .iter()
+            .map(|(&index, reading)| {
+                // These native controls have a layout-only popup/clear-button
+                // wrapper. Read the field it actually paints, as React reads
+                // a NumberField's group or a ShortcutRecorder's inner button.
+                let inner = matches!(
+                    specimens
+                        .get(index)
+                        .and_then(|specimen| specimen["component"].as_str()),
+                    Some(
+                        "select"
+                            | "combobox"
+                            | "autocomplete"
+                            | "date-range-picker"
+                            | "shortcut-recorder"
+                    )
+                );
+                let value = if inner {
+                    reading.decorated.as_ref().unwrap_or(&reading.root)
+                } else {
+                    &reading.root
+                };
+                (index, value.clone())
+            })
+            .collect()
+    })
 }
 
 pub fn wrap(at: Option<&Value>, element: impl IntoElement, _path: &str) -> AnyElement {
@@ -145,7 +179,13 @@ impl Element for Specimen {
         let painted = window.painted_bounds(bounds);
         let (_, paint) =
             window.observe_element_paint(bounds, |window| self.child.paint(window, cx));
-        let values = values(&paint, painted, cx.theme());
+        let values = PaintReading {
+            root: values(&paint, paint.surface.as_ref(), painted, cx.theme()),
+            decorated: paint
+                .decorated_surface
+                .as_ref()
+                .map(|surface| values(&paint, Some(surface), painted, cx.theme())),
+        };
         STYLES.with(|styles| {
             let mut styles = styles.borrow_mut();
             if self.surface {
@@ -168,9 +208,18 @@ fn hex(color: Hsla) -> String {
     }
 }
 
-fn values(paint: &ObservedPaint, bounds: Bounds<Pixels>, theme: &ThemeTokens) -> Value {
+fn values(
+    paint: &ObservedPaint,
+    surface: Option<&ObservedSurface>,
+    bounds: Bounds<Pixels>,
+    theme: &ThemeTokens,
+) -> Value {
     let mut values = serde_json::Map::new();
-    if let Some(surface) = &paint.surface {
+    // An unstyled canvas host is not the custom shape it draws. The path
+    // mesh has lost its source stroke/radius, so those surface properties
+    // remain unread rather than reporting the host's square, borderless box.
+    let surface = surface.filter(|_| !paint.custom_paths || paint.decorated_surface.is_some());
+    if let Some(surface) = surface {
         let style = &surface.style;
         let rem = surface.rem_size;
         let pixels = |length: DefiniteLength| match length {

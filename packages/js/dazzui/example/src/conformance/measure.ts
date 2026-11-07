@@ -98,6 +98,7 @@ function firstText(node: HTMLElement, nested: ReadonlySet<Element>) {
       element instanceof HTMLTextAreaElement
     ) {
       if (
+        (!element.value && !element.placeholder) ||
         element.getAttribute('aria-hidden') === 'true' ||
         (element instanceof HTMLInputElement &&
           ![
@@ -129,10 +130,17 @@ function firstText(node: HTMLElement, nested: ReadonlySet<Element>) {
     node,
     NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
     {
-      acceptNode: current =>
-        current !== node && nested.has(current as Element)
-          ? NodeFilter.FILTER_REJECT
-          : NodeFilter.FILTER_ACCEPT,
+      acceptNode: current => {
+        if (nested.has(current as Element)) return NodeFilter.FILTER_REJECT
+        // Base UI's clipped announcement sentinel contains text for assistive
+        // technology, but submits no visible glyphs. It is not a painted run.
+        if (
+          current instanceof Element &&
+          getComputedStyle(current).clipPath === 'inset(50%)'
+        )
+          return NodeFilter.FILTER_REJECT
+        return NodeFilter.FILTER_ACCEPT
+      },
     }
   )
   // A standalone Icon is itself the SVG; TreeWalker starts at its children.
