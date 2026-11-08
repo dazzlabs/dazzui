@@ -4,7 +4,7 @@ import { test } from 'node:test'
 import { chromium } from 'playwright'
 import { createServer } from 'vite'
 
-test('sidebar surfaces and independent collapse preserve both edge layouts', async () => {
+test('sidebar geometry, hints and keyboard activation follow React', async () => {
   const server = await createServer({
     root: fileURLToPath(new URL('..', import.meta.url)),
     cacheDir: 'node_modules/.vite-test-sidebar',
@@ -27,12 +27,17 @@ test('sidebar surfaces and independent collapse preserve both edge layouts', asy
         host.style.cssText = 'position:fixed;left:24px;top:24px;width:420px;height:180px;display:flex'
         document.body.append(host)
         const root = createRoot(host)
-        export function mount({open, rowDisabled = false, ...props}) {
-          flushSync(() => root.render(h(SidebarProvider, {open},
+        export const changes = []
+        export const nextChanges = []
+        export function mount({open, rowDisabled = false, hint = true, preventDown = false, preventUp = false, ...props}) {
+          flushSync(() => root.render(h(SidebarProvider, {open,
+            onKeyDownCapture(event) { if (preventDown && ['Enter', ' '].includes(event.key)) event.preventDefault() },
+            onKeyUpCapture(event) { if (preventUp && event.key === ' ') event.preventDefault() },
+          },
             h(Sidebar, {...props, width:'172px'},
               h(SidebarMenu, null, h(SidebarMenuItem, null,
-                h(SidebarMenuButton, {tooltip:'Documents', disabled:rowDisabled}, 'Documents')))),
-            h(SidebarInset, null, h(Button, null, 'Next')))))
+                h(SidebarMenuButton, {tooltip:hint ? 'Documents' : undefined, disabled:rowDisabled, onClick() { changes.push('click') }}, 'Documents')))),
+            h(SidebarInset, null, h(Button, {onClick() { nextChanges.push('click') }}, 'Next')))))
         }
       `
             : undefined,
@@ -210,6 +215,97 @@ test('sidebar surfaces and independent collapse preserve both edge layouts', asy
     await page.mouse.move(0, 0)
     await row.hover()
     await hint.waitFor()
+    await mount({ open: false, preventUp: true })
+    await page
+      .locator('#sidebar-fixture')
+      .getByRole('button', { name: 'Next' })
+      .focus()
+    await page.keyboard.down('Space')
+    await page.keyboard.up('Space')
+    const blockedNext = await page
+      .locator('#sidebar-fixture')
+      .getByRole('button', { name: 'Next' })
+      .evaluate(el => ({
+        count: window.sidebarFixture.nextChanges.length,
+        active: el.matches(':active'),
+      }))
+    await mount({ open: false })
+    await page.keyboard.up('Space')
+    assert.deepEqual(blockedNext, { count: 0, active: true })
+    assert.equal(
+      await page.evaluate(() => window.sidebarFixture.nextChanges.length),
+      1
+    )
+    for (const enabledHint of [true, false]) {
+      await page.mouse.move(0, 0)
+      await mount({ open: false, hint: enabledHint })
+      await page.evaluate(() => {
+        window.sidebarFixture.changes.length = 0
+      })
+      const next = page
+        .locator('#sidebar-fixture')
+        .getByRole('button', { name: 'Next' })
+      const focus = async () => {
+        await next.focus()
+        await page.keyboard.press('Shift+Tab')
+        if (enabledHint) await hint.waitFor()
+      }
+      const count = async expected =>
+        assert.equal(
+          await page.evaluate(() => window.sidebarFixture.changes.length),
+          expected
+        )
+      await focus()
+      await page.keyboard.up('Enter')
+      await page.keyboard.up('Space')
+      await count(0)
+      await page.keyboard.down('Enter')
+      await count(1)
+      if (enabledHint) await hint.waitFor({ state: 'detached' })
+      await page.keyboard.down('Enter')
+      await count(2)
+      await page.keyboard.up('Enter')
+      await count(2)
+      await focus()
+      await page.keyboard.down('Space')
+      await page.keyboard.down('Space')
+      await count(2)
+      if (enabledHint) assert.equal(await hint.count(), 1)
+      await page.keyboard.up('Space')
+      await count(3)
+      if (enabledHint) await hint.waitFor({ state: 'detached' })
+      await page.keyboard.up('Space')
+      await count(3)
+      await focus()
+      await mount({ open: false, hint: enabledHint, preventDown: true })
+      await page.keyboard.press('Enter')
+      await page.keyboard.press('Space')
+      await count(3)
+      if (enabledHint) assert.equal(await hint.count(), 1)
+      await mount({ open: false, hint: enabledHint, preventUp: true })
+      await page.keyboard.press('Space')
+      await count(3)
+      if (enabledHint) assert.equal(await hint.count(), 1)
+      await mount({ open: false, hint: enabledHint })
+      await page.keyboard.up('Space')
+      await count(4)
+      if (enabledHint) await hint.waitFor({ state: 'detached' })
+      await page.keyboard.down('Space')
+      await page.keyboard.press('Tab')
+      await page.keyboard.up('Space')
+      await focus()
+      await page.keyboard.up('Space')
+      await count(4)
+      await page.keyboard.down('Space')
+      await mount({ open: false, hint: enabledHint, rowDisabled: true })
+      await page.keyboard.up('Space')
+      await mount({ open: false, hint: enabledHint })
+      await focus()
+      await page.keyboard.up('Space')
+      await count(4)
+      await row.click()
+      await count(5)
+    }
     // Disabling cancels the hint; enabling alone does not reopen it.
     await mount({ open: true })
     await hint.waitFor({ state: 'detached' })

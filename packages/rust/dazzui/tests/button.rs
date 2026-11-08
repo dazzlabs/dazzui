@@ -178,7 +178,7 @@ fn space_cancels_on_blur_and_when_disabled_mid_press(cx: &mut TestAppContext) {
 }
 
 #[gpui::test]
-fn prevented_keys_cancel_native_activation(cx: &mut TestAppContext) {
+fn prevented_keyup_retains_native_space_until_an_allowed_release(cx: &mut TestAppContext) {
     for icon in [false, true] {
         let (view, cx) = setup(cx, icon);
         view.update(cx, |view, cx| {
@@ -207,8 +207,8 @@ fn prevented_keys_cancel_native_activation(cx: &mut TestAppContext) {
         up(cx, "space");
         assert_eq!(
             count(&view, cx),
-            0,
-            "prevented release also clears the press"
+            1,
+            "an allowed release completes the retained native press"
         );
     }
 }

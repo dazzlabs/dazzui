@@ -153,6 +153,12 @@ impl ButtonPress {
                     if event.keystroke.key != "space" || composite {
                         return;
                     }
+                    // The browser's native default action also releases
+                    // its armed state. Preventing that action retains the
+                    // press until an unprevented release or blur.
+                    if window.default_prevented() {
+                        return;
+                    }
                     let armed = release.update(cx, |state, cx| {
                         let armed = std::mem::take(&mut state.armed);
                         if armed {
@@ -160,7 +166,7 @@ impl ButtonPress {
                         }
                         armed
                     });
-                    if (armed || !native) && !window.default_prevented() {
+                    if armed || !native {
                         if let Some(click) = &on_click {
                             click(
                                 &keyboard(KeyboardButton::Space, up_bounds.get()),

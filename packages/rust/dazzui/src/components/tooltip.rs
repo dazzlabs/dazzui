@@ -4,13 +4,14 @@
 use std::{cell::Cell, rc::Rc, time::Duration};
 
 use gpui::{
-    AnyElement, App, Div, ElementId, FocusHandle, InteractiveElement, IntoElement, MouseButton,
-    ParentElement, RenderOnce, Stateful, StatefulInteractiveElement, Styled, Subscription, Window,
-    div, prelude::*, px,
+    AnyElement, App, Div, ElementId, Entity, FocusHandle, InteractiveElement, IntoElement,
+    MouseButton, ParentElement, RenderOnce, Stateful, StatefulInteractiveElement, Styled,
+    Subscription, Window, div, prelude::*, px,
 };
 
 use crate::components::collapsible::{kept_focus, part_id};
 use crate::components::popup::{Align, Placement, PopupState, Side, measured, positioned};
+use crate::foundation::press::{ButtonPress, OnClick};
 use crate::foundation::{StyledExt, focus_visible};
 use crate::theme::ActiveTheme;
 use crate::tokens::shadows;
@@ -77,6 +78,55 @@ impl Tooltip {
         focus: &FocusHandle,
         window: &mut Window,
         cx: &mut App,
+    ) -> AnyElement {
+        let enabled = !self.disabled;
+        self.bind_with(element, focus, window, cx, move |element, state| {
+            element
+                .when(enabled, |element| {
+                    element.on_click(move |_, window, cx| {
+                        state.update(cx, |state, cx| state.hide(window, cx))
+                    })
+                })
+                .into_any_element()
+        })
+    }
+
+    /// Close from the control's actual activation, including native Enter
+    /// keydown and an armed Space release, rather than GPUI's keyup click.
+    pub(crate) fn bind_button(
+        self,
+        element: Stateful<Div>,
+        focus: &FocusHandle,
+        press: ButtonPress,
+        on_click: Option<OnClick>,
+        window: &mut Window,
+        cx: &mut App,
+    ) -> AnyElement {
+        let enabled = !self.disabled;
+        self.bind_with(element, focus, window, cx, move |element, state| {
+            press
+                .bind(
+                    element,
+                    Some(Box::new(move |event, window, cx| {
+                        if enabled {
+                            state.update(cx, |state, cx| state.hide(window, cx));
+                        }
+                        if let Some(on_click) = &on_click {
+                            on_click(event, window, cx);
+                        }
+                    })),
+                )
+                .into_any_element()
+        })
+    }
+
+    fn bind_with(
+        self,
+        element: Stateful<Div>,
+        focus: &FocusHandle,
+        window: &mut Window,
+        cx: &mut App,
+        bind: impl FnOnce(Stateful<Div>, Entity<PopupState>) -> AnyElement,
     ) -> AnyElement {
         let t = cx.theme();
         let state = PopupState::keyed(&self.id, false, window, cx);
@@ -154,7 +204,6 @@ impl Tooltip {
 
         let hover = state.clone();
         let press = state.clone();
-        let click = state;
         let element = element
             .when(!self.disabled, |this| {
                 this.on_hover(move |hovered, window, cx| {
@@ -166,10 +215,9 @@ impl Tooltip {
                 .on_mouse_down(MouseButton::Left, move |_, window, cx| {
                     press.update(cx, |state, cx| state.hide(window, cx))
                 })
-                .on_click(move |_, window, cx| click.update(cx, |state, cx| state.hide(window, cx)))
             })
             .children(popup);
-        measured(&anchor, element).into_any_element()
+        measured(&anchor, bind(element, state)).into_any_element()
     }
 }
 

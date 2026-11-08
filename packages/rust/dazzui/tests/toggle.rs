@@ -148,7 +148,7 @@ fn keyboard_activation_and_transient_press_match_the_react_toggle(cx: &mut TestA
 }
 
 #[gpui::test]
-fn pending_space_cancels_on_blur_disabling_and_prevented_key_events(cx: &mut TestAppContext) {
+fn native_space_tracks_prevention_blur_and_disabling(cx: &mut TestAppContext) {
     let (view, cx) = setup(cx, true);
     cx.simulate_keystrokes("space tab");
     up(cx, "space");
@@ -183,7 +183,7 @@ fn pending_space_cancels_on_blur_disabling_and_prevented_key_events(cx: &mut Tes
     cx.simulate_keystrokes("space");
     up(cx, "space");
     assert!(changes(&view, cx).is_empty());
-    assert_ink(&view, cx, Variant::Outlined, State::Normal);
+    assert_ink(&view, cx, Variant::Outlined, State::Pressed);
 }
 
 #[gpui::test]

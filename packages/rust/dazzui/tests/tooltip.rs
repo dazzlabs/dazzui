@@ -8,9 +8,9 @@ use dazzui::{
     SidebarProvider, Theme, Tooltip,
 };
 use gpui::{
-    AnyElement, Bounds, Context, Entity, IntoElement, Modifiers, MouseButton, ObservedPaint,
-    ParentElement, Pixels, Render, Styled, TestAppContext, VisualTestContext, Window, canvas, div,
-    point, prelude::*, px,
+    AnyElement, Bounds, Context, Entity, InteractiveElement, IntoElement, KeyUpEvent, Keystroke,
+    Modifiers, MouseButton, ObservedPaint, ParentElement, Pixels, Render, Styled, TestAppContext,
+    VisualTestContext, Window, canvas, div, point, prelude::*, px,
 };
 use std::{
     cell::{Cell, RefCell},
@@ -23,17 +23,25 @@ struct Harness {
     open: bool,
     collapsed: Option<bool>,
     standalone: bool,
+    hint: bool,
+    disabled: bool,
+    prevent_down: bool,
+    prevent_up: bool,
+    clicks: usize,
     painted: Rc<Cell<bool>>,
     label_bounds: Rc<Cell<Bounds<Pixels>>>,
     rows: Rc<RefCell<Vec<ObservedPaint>>>,
 }
 
 impl Render for Harness {
-    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         self.painted.set(false);
         self.rows.borrow_mut().clear();
         let painted = self.painted.clone();
         let bounds = self.label_bounds.clone();
+        let view = cx.entity().downgrade();
+        let prevent_down = self.prevent_down;
+        let prevent_up = self.prevent_up;
         let label = div()
             .relative()
             .child(dazzui::foundation::text_child("Documents"))
@@ -65,7 +73,14 @@ impl Render for Harness {
                             SidebarMenu::new().child(
                                 SidebarMenuItem::new().child(PaintProbe {
                                     child: SidebarMenuButton::new("target")
-                                        .tooltip(label)
+                                        .disabled(self.disabled)
+                                        .when(self.hint, |row| row.tooltip(label))
+                                        .on_click(move |_, _, cx| {
+                                            let _ = view.update(cx, |view, cx| {
+                                                view.clicks += 1;
+                                                cx.notify();
+                                            });
+                                        })
                                         .child("Documents")
                                         .into_any_element(),
                                     paints: self.rows.clone(),
@@ -89,6 +104,16 @@ impl Render for Harness {
             .p(px(24.))
             .flex()
             .flex_col()
+            .capture_key_down(move |event, window, _| {
+                if prevent_down && matches!(event.keystroke.key.as_str(), "enter" | "space") {
+                    window.prevent_default();
+                }
+            })
+            .capture_key_up(move |event, window, _| {
+                if prevent_up && event.keystroke.key == "space" {
+                    window.prevent_default();
+                }
+            })
             .child(
                 div()
                     .w(px(420.))
@@ -110,6 +135,11 @@ fn setup(cx: &mut TestAppContext, standalone: bool) -> (Entity<Harness>, &mut Vi
         open: false,
         collapsed: None,
         standalone,
+        hint: true,
+        disabled: false,
+        prevent_down: false,
+        prevent_up: false,
+        clicks: 0,
         painted: Rc::default(),
         label_bounds: Rc::default(),
         rows: Rc::default(),
@@ -238,4 +268,120 @@ fn delayed_hint_cancels_before_open_and_focus_opens_without_delay(cx: &mut TestA
     cx.simulate_keystrokes("tab shift-tab");
     cx.run_until_parked();
     assert!(drawn(&view, cx), "keyboard focus has no hover delay");
+}
+
+fn up(cx: &mut VisualTestContext, key: &str) {
+    cx.simulate_event(KeyUpEvent {
+        keystroke: Keystroke::parse(key).unwrap(),
+    });
+    cx.run_until_parked();
+}
+
+fn clicks(view: &Entity<Harness>, cx: &VisualTestContext) -> usize {
+    view.read_with(cx, |view, _| view.clicks)
+}
+
+#[gpui::test]
+fn sidebar_rows_activate_on_native_key_phases_and_close_hints_on_activation(
+    cx: &mut TestAppContext,
+) {
+    let (view, cx) = setup(cx, false);
+    cx.simulate_keystrokes("tab");
+    for hint in [true, false] {
+        view.update(cx, |view, cx| {
+            view.hint = hint;
+            view.clicks = 0;
+            cx.notify();
+        });
+        cx.run_until_parked();
+        cx.simulate_keystrokes("tab shift-tab");
+        up(cx, "enter");
+        up(cx, "space");
+        assert_eq!(clicks(&view, cx), 0);
+        assert_eq!(drawn(&view, cx), hint);
+        cx.simulate_keystrokes("enter");
+        assert_eq!(clicks(&view, cx), 1, "Enter activates on keydown");
+        assert!(
+            !drawn(&view, cx),
+            "activation closes the hint on that same phase"
+        );
+        cx.simulate_keystrokes("enter");
+        assert_eq!(clicks(&view, cx), 2, "held Enter repeats");
+        up(cx, "enter");
+        assert_eq!(clicks(&view, cx), 2);
+        cx.simulate_keystrokes("tab shift-tab space space");
+        assert_eq!(
+            clicks(&view, cx),
+            2,
+            "Space repeats only arm one activation"
+        );
+        assert_eq!(drawn(&view, cx), hint);
+        up(cx, "space");
+        assert_eq!(clicks(&view, cx), 3);
+        assert!(!drawn(&view, cx));
+        up(cx, "space");
+        assert_eq!(clicks(&view, cx), 3, "a second release is inert");
+        let target = row(&view, cx);
+        cx.simulate_mouse_down(target.center(), MouseButton::Left, Modifiers::none());
+        cx.simulate_mouse_up(target.center(), MouseButton::Left, Modifiers::none());
+        assert_eq!(clicks(&view, cx), 4, "the pointer still activates once");
+    }
+}
+
+#[gpui::test]
+fn sidebar_rows_preserve_prevented_release_but_cancel_on_blur_and_disabling(
+    cx: &mut TestAppContext,
+) {
+    let (view, cx) = setup(cx, false);
+    cx.simulate_keystrokes("tab");
+    view.update(cx, |view, cx| {
+        view.prevent_down = true;
+        cx.notify();
+    });
+    cx.run_until_parked();
+    cx.simulate_keystrokes("enter space");
+    up(cx, "enter");
+    up(cx, "space");
+    assert_eq!(clicks(&view, cx), 0);
+    assert!(drawn(&view, cx), "prevented keys do not dismiss the hint");
+    view.update(cx, |view, cx| {
+        view.prevent_down = false;
+        view.prevent_up = true;
+        cx.notify();
+    });
+    cx.run_until_parked();
+    cx.simulate_keystrokes("space");
+    up(cx, "space");
+    assert_eq!(clicks(&view, cx), 0);
+    view.update(cx, |view, cx| {
+        view.prevent_up = false;
+        cx.notify();
+    });
+    cx.run_until_parked();
+    up(cx, "space");
+    assert_eq!(
+        clicks(&view, cx),
+        1,
+        "an allowed release completes the retained press"
+    );
+    assert!(!drawn(&view, cx));
+    cx.simulate_keystrokes("space tab");
+    up(cx, "space");
+    cx.simulate_keystrokes("shift-tab");
+    up(cx, "space");
+    assert_eq!(clicks(&view, cx), 1, "blur cancels a pending Space");
+    cx.simulate_keystrokes("space");
+    view.update(cx, |view, cx| {
+        view.disabled = true;
+        cx.notify();
+    });
+    cx.run_until_parked();
+    up(cx, "space");
+    view.update(cx, |view, cx| {
+        view.disabled = false;
+        cx.notify();
+    });
+    cx.run_until_parked();
+    up(cx, "space");
+    assert_eq!(clicks(&view, cx), 1, "disabling cancels a pending Space");
 }

@@ -20,6 +20,7 @@ use crate::components::collapsible::{OnOpenChange, kept_focus, part_id};
 use crate::components::icon::{Icon, icon_slot};
 use crate::components::popup::Side;
 use crate::components::tooltip::Tooltip;
+use crate::foundation::press::ButtonPress;
 use crate::foundation::{
     Size, StyledExt, Tint, Variant, focus_visible, pointer_down, provide, ring, scoped,
 };
@@ -1068,6 +1069,7 @@ impl RenderOnce for SidebarMenuButton {
         }
         let has_badge = slot.is_some_and(|slot| slot.has_badge);
         let focus = kept_focus(part_id(&self.id, "focus"), window, cx);
+        let press = ButtonPress::new(&self.id, &focus, self.disabled, window, cx);
         let visible = !self.disabled && focus_visible(&focus, window, cx);
         let hairline = t.stroke_hairline;
 
@@ -1149,9 +1151,6 @@ impl RenderOnce for SidebarMenuButton {
             row = row
                 .track_focus(&focus.clone().tab_stop(true))
                 .on_mouse_down(MouseButton::Left, |_, window, cx| pointer_down(window, cx));
-            if let Some(on_click) = self.on_click {
-                row = row.on_click(move |event, window, cx| on_click(event, window, cx));
-            }
         }
         if visible {
             shadow.push(ring(t));
@@ -1184,13 +1183,20 @@ impl RenderOnce for SidebarMenuButton {
                 ))
             })
             .child(crate::foundation::text_child(label));
+        let on_click = self.on_click.map(|handler| {
+            Box::new(
+                move |event: &ClickEvent, window: &mut Window, cx: &mut App| {
+                    handler(event, window, cx)
+                },
+            ) as crate::foundation::press::OnClick
+        });
         match self.tooltip {
             Some(label) => Tooltip::new(part_id(&self.id, "tooltip"), label)
                 .side(Side::Right)
                 .delay(std::time::Duration::ZERO)
                 .disabled(SidebarContext::current(cx).is_none_or(|context| context.open))
-                .bind(row, &focus, window, cx),
-            None => row.into_any_element(),
+                .bind_button(row, &focus, press, on_click, window, cx),
+            None => press.bind(row, on_click).into_any_element(),
         }
     }
 }
