@@ -34,6 +34,8 @@
   flex: 1;
   width: var(--search-field-input-width);
   min-width: 0;
+  /* Preserve the input's existing browser inset explicitly across resets. */
+  padding: var(--spacing-px) var(--spacing-0-5);
   border: 0;
   background: none;
   color: inherit;

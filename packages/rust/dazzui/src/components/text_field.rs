@@ -71,7 +71,7 @@ pub struct FieldBox {
     pub focused: bool,
     pub disabled: bool,
     pub mono: bool,
-    /// Grows with its text, rather than sitting at the control height.
+    /// A multiline viewport rather than the single-line control height.
     pub multiline: bool,
 }
 
@@ -220,7 +220,7 @@ impl FieldBox {
         } else {
             profile.content
         };
-        let element = self
+        let mut element = self
             .paint(element, t)
             .w_full()
             .flex()
@@ -229,11 +229,10 @@ impl FieldBox {
             .text_size(px(content.size))
             .font_weight(t.body_small.font_weight());
         if self.multiline {
-            // A box that grows takes the container corner — a theme that
-            // makes controls pills would turn it into a lozenge — a floor
-            // rather than a height, and real leading, since its text wraps.
+            element.style().align_items = Some(gpui::AlignItems::Stretch);
+            // Multiline fields take the container corner, a height floor and
+            // prose leading. Rows size the viewport; extra text scrolls.
             element
-                .items_start()
                 .min_h(px(t.spacing_20))
                 .py(px(t.spacing_2_5))
                 .rounded(px(t.radius_large))
@@ -452,7 +451,8 @@ impl TextField {
         self
     }
 
-    /// The rows a multiline field is tall at least.
+    /// The preferred number of visible rows. Extra text scrolls inside the
+    /// field, whose minimum height still comes from the theme.
     pub fn rows(mut self, rows: usize) -> Self {
         self.rows = rows;
         self
@@ -503,6 +503,7 @@ impl RenderOnce for TextField {
             .read_only(self.read_only)
             .disabled(self.disabled)
             .multiline(self.multiline)
+            .scroll_padding(px(t.spacing_2_5))
             .rows(self.rows);
         if let Some(value) = self.value {
             text = text.value(value);
@@ -523,15 +524,23 @@ impl RenderOnce for TextField {
         let disabled = self.disabled;
         chrome
             .animated_style(div().id(part_id(&self.id, "field")), self.id, t, window, cx)
-            // The editor rounds its preferred line box. Preserve the full
-            // declared leading across the minimum rows, as textarea rows do.
+            // Rows count content lines; padding and border surround them.
+            // Preserve fractional leading before resolving the outer box.
             .when(self.multiline, |this| {
-                this.min_h(px(t.spacing_20.max(
+                this.h(px(t.spacing_20.max(
                     self.rows.max(1) as f32
                         * self.size.profile(t).content.size
                         * t.text_field_multiline_leading
                         + 2. * (t.spacing_2_5 + t.stroke_hairline),
                 )))
+            })
+            .when(self.multiline, |this| {
+                let input = input.downgrade();
+                this.on_scroll_wheel(move |event, window, cx| {
+                    input
+                        .update(cx, |input, cx| input.scroll_wheel(event, window, cx))
+                        .ok();
+                })
             })
             .map(|this| {
                 if disabled {

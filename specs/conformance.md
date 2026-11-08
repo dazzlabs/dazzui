@@ -382,6 +382,36 @@ Five collectors are written:
   surface supplies the field's properties instead of the wrapper's zeros.
   Nested specimen scopes are excluded from their parents' surface, text and
   glyph readings. Shadow names are identified by comparing observed layers.
+  `--caret-focus <index>` additionally focuses a zero-based Tab stop, collapses
+  its selection to the start and writes `carets.json` with submitted caret
+  quads, their clips and specimen bounds. This opt-in trace uses the real
+  window's platform fonts. Ordinary collection does not record these quads.
+  `--caret-input <text>` replaces the focused editor's text before tracing
+  the caret at its end, including any scroll needed to reveal it.
+  `--caret-keys <key,…>` then dispatches navigation keys, settling a native
+  frame after each, so wrapped-row Home/End positions can also be checked.
+  GPUI's `TestAppContext` instead uses `NoopTextSystem`, whose fixed metrics
+  cannot establish native font or caret parity. After building the example,
+  `node packages/rust/dazzui/example/tool/field-caret.mjs --out /tmp/field-caret`
+  compares browser caret pixels with these native submissions for the six
+  single-line editor families, text-field/OTP sizes, a mono text field and
+  empty/filled multiline text fields, including an overflowing twenty-line
+  value whose caret must remain visible without growing the field.
+  Wrapped-row cases exercise the caret's side of a soft wrap; `--cases <id,…>`
+  selects individual cases when investigating a difference.
+  It saves the raster references and raw native traces; `--themes all` covers
+  imported themes too. The browser control adopts the native outer box for
+  this comparison, including its fractional position; ordinary conformance
+  still owns outer-box parity. This checks caret geometry and clipping,
+  independently of the ordinary unfocused component readings.
+  `example/tool/font-metrics.mjs` pairs widths from the example's
+  `font-metrics` binary with browser canvas widths. It creates an unfocused,
+  hidden native window and uses the same text system as normal rendering;
+  build it with `cargo build -p dazzui-example --bins`. Its matrix includes
+  fractional sizes, weights, combining marks, bidirectional text, CJK and
+  emoji. Native JSON retains glyph indices and positions, so width and
+  positioning differences remain visible rather than becoming test-font
+  assumptions.
   Custom vector meshes without a styled surface do not retain their source
   radius or stroke, so their surface properties remain unread, as do unknown
   shadows, non-solid fills and ambiguous font weights.

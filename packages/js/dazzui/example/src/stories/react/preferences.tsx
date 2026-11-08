@@ -22,7 +22,7 @@ const THEMES = [
 
 const extension: StoryExtension = {
   id: 'preferences',
-  platforms: ['flutter', 'swiftui', 'winui'],
+  platforms: ['flutter', 'swiftui', 'winui', 'gpui'],
   examples: [
     {
       title: 'Choosing a theme',

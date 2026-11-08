@@ -82,6 +82,11 @@ Pointer down and release handlers are registered together in every frame.
 A click that completes before the next paint therefore clears active styling
 immediately, rather than leaving the control pressed until another release.
 
+Default scroll handling honors `Window::prevent_default` without suppressing
+ordinary ancestor wheel listeners. A focused NumberField can consume wheel
+input for stepping while the gallery's document stays still; default fields,
+unfocused fields and Ctrl-wheel retain the enclosing page's scrolling path.
+
 Keep local edits limited to this rendering seam. Do not edit an installed
 Cargo registry cache: the committed copy is the build input.
 

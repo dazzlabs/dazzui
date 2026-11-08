@@ -1,6 +1,548 @@
 {
   "stories": [
     {
+      "id": "number-field",
+      "name": "NumberField",
+      "summary": "A number, stepped or typed, with the unit it is counted in.",
+      "scenes": [
+        {
+          "id": "number-field/1",
+          "title": "Stepping",
+          "specimens": [
+            {
+              "address": "number-field/1/0",
+              "component": "number-field",
+              "axes": {}
+            },
+            {
+              "address": "number-field/1/1",
+              "component": "number-field",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "number-field/2",
+          "title": "Controlled",
+          "specimens": [
+            {
+              "address": "number-field/2/0",
+              "component": "number-field",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "number-field/3",
+          "title": "States and precision",
+          "specimens": [
+            {
+              "address": "number-field/3/0",
+              "component": "number-field",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "number-field/3/1",
+              "component": "number-field",
+              "axes": {}
+            },
+            {
+              "address": "number-field/3/2",
+              "component": "number-field",
+              "axes": {
+                "disabled": "true"
+              }
+            },
+            {
+              "address": "number-field/3/3",
+              "component": "number-field",
+              "axes": {
+                "state": "error"
+              }
+            }
+          ]
+        },
+        {
+          "id": "number-field/4",
+          "title": "Wheel input",
+          "specimens": [
+            {
+              "address": "number-field/4/0",
+              "component": "number-field",
+              "axes": {}
+            },
+            {
+              "address": "number-field/4/1",
+              "component": "number-field",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "number-field/5",
+          "title": "Changes and commits",
+          "specimens": [
+            {
+              "address": "number-field/5/0",
+              "component": "number-field",
+              "axes": {}
+            },
+            {
+              "address": "number-field/5/1",
+              "component": "number-field",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "preferences",
+      "name": "Preferences",
+      "summary": "Settings, a row to each, in the sections they belong to.",
+      "scenes": [
+        {
+          "id": "preferences/3",
+          "title": "Choosing a theme",
+          "specimens": [
+            {
+              "address": "preferences/3/0",
+              "component": "preferences",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/3/1",
+              "component": "preference-section",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/3/2",
+              "component": "preference-row",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/3/3",
+              "component": "preference-theme-swatches",
+              "axes": {}
+            },
+            {
+              "address": "preferences/3/4",
+              "component": "preference-row",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "preferences/3/5",
+              "component": "switch",
+              "axes": {
+                "defaultChecked": "true"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sidebar",
+      "name": "Sidebar",
+      "summary": "The column a window is navigated from.",
+      "scenes": [
+        {
+          "id": "sidebar/3",
+          "title": "Nested navigation",
+          "specimens": [
+            {
+              "address": "sidebar/3/0",
+              "component": "sidebar-provider",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/3/1",
+              "component": "sidebar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/3/2",
+              "component": "sidebar-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/3/3",
+              "component": "sidebar-group",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/3/4",
+              "component": "sidebar-group-label",
+              "axes": {},
+              "text": "Library"
+            },
+            {
+              "address": "sidebar/3/5",
+              "component": "sidebar-menu",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/3/6",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/3/7",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Documents"
+            },
+            {
+              "address": "sidebar/3/8",
+              "component": "sidebar-menu-badge",
+              "axes": {},
+              "text": "3"
+            },
+            {
+              "address": "sidebar/3/9",
+              "component": "sidebar-menu-sub",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/3/10",
+              "component": "sidebar-menu-sub-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/3/11",
+              "component": "sidebar-menu-sub-button",
+              "axes": {},
+              "text": "Inbox"
+            },
+            {
+              "address": "sidebar/3/12",
+              "component": "sidebar-menu-sub-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/3/13",
+              "component": "sidebar-menu-sub-button",
+              "axes": {
+                "size": "medium",
+                "variant": "tinted",
+                "tint": "success"
+              },
+              "text": "Archive"
+            },
+            {
+              "address": "sidebar/3/14",
+              "component": "sidebar-menu-sub-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/3/15",
+              "component": "sidebar-menu-sub-button",
+              "axes": {
+                "disabled": "true"
+              },
+              "text": "Deleted"
+            },
+            {
+              "address": "sidebar/3/16",
+              "component": "sidebar-inset",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/3/17",
+              "component": "sidebar-header",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/3/18",
+              "component": "sidebar-trigger",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "sidebar/4",
+          "title": "Group and row actions",
+          "specimens": [
+            {
+              "address": "sidebar/4/0",
+              "component": "sidebar-provider",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/4/1",
+              "component": "sidebar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/4/2",
+              "component": "sidebar-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/4/3",
+              "component": "sidebar-group",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/4/4",
+              "component": "sidebar-group-label",
+              "axes": {},
+              "text": "Library"
+            },
+            {
+              "address": "sidebar/4/5",
+              "component": "sidebar-group-action",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/4/6",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/4/7",
+              "component": "sidebar-menu",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/4/8",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/4/9",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Documents",
+              "container": true
+            },
+            {
+              "address": "sidebar/4/10",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/4/11",
+              "component": "sidebar-menu-action",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/4/12",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/4/13",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/4/14",
+              "component": "sidebar-menu-button",
+              "axes": {
+                "size": "large"
+              },
+              "text": "Shared library",
+              "container": true
+            },
+            {
+              "address": "sidebar/4/15",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/4/16",
+              "component": "sidebar-menu-action",
+              "axes": {
+                "size": "small",
+                "variant": "tinted",
+                "tint": "success"
+              },
+              "container": true
+            },
+            {
+              "address": "sidebar/4/17",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/4/18",
+              "component": "sidebar-inset",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/4/19",
+              "component": "sidebar-header",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/4/20",
+              "component": "sidebar-trigger",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "sidebar/5",
+          "title": "Input and edge toggle",
+          "specimens": [
+            {
+              "address": "sidebar/5/0",
+              "component": "sidebar-provider",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/5/1",
+              "component": "sidebar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/5/2",
+              "component": "sidebar-header",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/5/3",
+              "component": "sidebar-input",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/5/4",
+              "component": "sidebar-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/5/5",
+              "component": "sidebar-group",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/5/6",
+              "component": "sidebar-menu",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/5/7",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/5/8",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Documents",
+              "container": true
+            },
+            {
+              "address": "sidebar/5/9",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/5/10",
+              "component": "sidebar-rail",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/5/11",
+              "component": "sidebar-inset",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/5/12",
+              "component": "sidebar-header",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "sidebar/5/13",
+              "component": "sidebar-trigger",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "sidebar/6",
+          "title": "Sidebar input states",
+          "specimens": [
+            {
+              "address": "sidebar/6/0",
+              "component": "sidebar-input",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/6/1",
+              "component": "sidebar-input",
+              "axes": {
+                "size": "medium"
+              }
+            },
+            {
+              "address": "sidebar/6/2",
+              "component": "sidebar-input",
+              "axes": {
+                "state": "error"
+              }
+            },
+            {
+              "address": "sidebar/6/3",
+              "component": "sidebar-input",
+              "axes": {}
+            },
+            {
+              "address": "sidebar/6/4",
+              "component": "sidebar-input",
+              "axes": {
+                "disabled": "true"
+              }
+            },
+            {
+              "address": "sidebar/6/5",
+              "component": "sidebar-input",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "tabs",
       "name": "Tabs",
       "summary": "The navigation of a view or a toolbar: names in a row, the one showing over a rule.",
@@ -72,6 +614,1514 @@
             {
               "address": "tabs/3/2",
               "component": "icon",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "window-frame",
+      "name": "WindowFrame",
+      "summary": "A top-level window, in the chrome of the desktop it names.",
+      "scenes": [
+        {
+          "id": "window-frame/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "window-frame/preview/0",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/preview/1",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "normal"
+              },
+              "text": "Later"
+            },
+            {
+              "address": "window-frame/preview/2",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "Install"
+            }
+          ]
+        },
+        {
+          "id": "window-frame/0",
+          "title": "Platforms",
+          "specimens": [
+            {
+              "address": "window-frame/0/0",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/0/1",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "normal"
+              },
+              "text": "Later"
+            },
+            {
+              "address": "window-frame/0/2",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "Install"
+            },
+            {
+              "address": "window-frame/0/3",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/0/4",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "normal"
+              },
+              "text": "Later"
+            },
+            {
+              "address": "window-frame/0/5",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "Install"
+            },
+            {
+              "address": "window-frame/0/6",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/0/7",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "normal"
+              },
+              "text": "Later"
+            },
+            {
+              "address": "window-frame/0/8",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "Install"
+            },
+            {
+              "address": "window-frame/0/9",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/0/10",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "normal"
+              },
+              "text": "Later"
+            },
+            {
+              "address": "window-frame/0/11",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "Install"
+            },
+            {
+              "address": "window-frame/0/12",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/0/13",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "normal"
+              },
+              "text": "Later"
+            },
+            {
+              "address": "window-frame/0/14",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "Install"
+            },
+            {
+              "address": "window-frame/0/15",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/0/16",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "normal"
+              },
+              "text": "Later"
+            },
+            {
+              "address": "window-frame/0/17",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "Install"
+            },
+            {
+              "address": "window-frame/0/18",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/0/19",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "normal"
+              },
+              "text": "Later"
+            },
+            {
+              "address": "window-frame/0/20",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "Install"
+            }
+          ]
+        },
+        {
+          "id": "window-frame/1",
+          "title": "Inactive",
+          "specimens": [
+            {
+              "address": "window-frame/1/0",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/1/1",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "normal"
+              },
+              "text": "Later"
+            },
+            {
+              "address": "window-frame/1/2",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "Install"
+            },
+            {
+              "address": "window-frame/1/3",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/1/4",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "normal"
+              },
+              "text": "Later"
+            },
+            {
+              "address": "window-frame/1/5",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "Install"
+            },
+            {
+              "address": "window-frame/1/6",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/1/7",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "normal"
+              },
+              "text": "Later"
+            },
+            {
+              "address": "window-frame/1/8",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "Install"
+            },
+            {
+              "address": "window-frame/1/9",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/1/10",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "normal"
+              },
+              "text": "Later"
+            },
+            {
+              "address": "window-frame/1/11",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "Install"
+            },
+            {
+              "address": "window-frame/1/12",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/1/13",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "normal"
+              },
+              "text": "Later"
+            },
+            {
+              "address": "window-frame/1/14",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "Install"
+            },
+            {
+              "address": "window-frame/1/15",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/1/16",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "normal"
+              },
+              "text": "Later"
+            },
+            {
+              "address": "window-frame/1/17",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "Install"
+            },
+            {
+              "address": "window-frame/1/18",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/1/19",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "normal"
+              },
+              "text": "Later"
+            },
+            {
+              "address": "window-frame/1/20",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "Install"
+            }
+          ]
+        },
+        {
+          "id": "window-frame/2",
+          "title": "Fixed size",
+          "specimens": [
+            {
+              "address": "window-frame/2/0",
+              "component": "window-frame",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/2/1",
+              "component": "window-frame",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/2/2",
+              "component": "window-frame",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "window-frame/3",
+          "title": "Controls",
+          "specimens": [
+            {
+              "address": "window-frame/3/0",
+              "component": "window-frame",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/3/1",
+              "component": "window-frame",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/3/2",
+              "component": "window-frame",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/3/3",
+              "component": "window-frame",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/3/4",
+              "component": "window-frame",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/3/5",
+              "component": "window-frame",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "window-frame/4",
+          "title": "Titlebar slots",
+          "specimens": [
+            {
+              "address": "window-frame/4/0",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/4/1",
+              "component": "icon-button",
+              "axes": {
+                "size": "small"
+              },
+              "container": true
+            },
+            {
+              "address": "window-frame/4/2",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/4/3",
+              "component": "toggle",
+              "axes": {
+                "size": "small"
+              },
+              "container": true
+            },
+            {
+              "address": "window-frame/4/4",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/4/5",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "plain"
+              },
+              "text": "Export"
+            },
+            {
+              "address": "window-frame/4/6",
+              "component": "icon-button",
+              "axes": {
+                "size": "small"
+              },
+              "container": true
+            },
+            {
+              "address": "window-frame/4/7",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/4/8",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/4/9",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/4/10",
+              "component": "icon-button",
+              "axes": {
+                "size": "small"
+              },
+              "container": true
+            },
+            {
+              "address": "window-frame/4/11",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/4/12",
+              "component": "toggle",
+              "axes": {
+                "size": "small"
+              },
+              "container": true
+            },
+            {
+              "address": "window-frame/4/13",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/4/14",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "plain"
+              },
+              "text": "Export"
+            },
+            {
+              "address": "window-frame/4/15",
+              "component": "icon-button",
+              "axes": {
+                "size": "small"
+              },
+              "container": true
+            },
+            {
+              "address": "window-frame/4/16",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/4/17",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/4/18",
+              "component": "icon-button",
+              "axes": {
+                "size": "small"
+              },
+              "container": true
+            },
+            {
+              "address": "window-frame/4/19",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/4/20",
+              "component": "toggle",
+              "axes": {
+                "size": "small"
+              },
+              "container": true
+            },
+            {
+              "address": "window-frame/4/21",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/4/22",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "plain"
+              },
+              "text": "Export"
+            },
+            {
+              "address": "window-frame/4/23",
+              "component": "icon-button",
+              "axes": {
+                "size": "small"
+              },
+              "container": true
+            },
+            {
+              "address": "window-frame/4/24",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "window-frame/5",
+          "title": "Accessory",
+          "specimens": [
+            {
+              "address": "window-frame/5/0",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/5/1",
+              "component": "segmented-control",
+              "axes": {
+                "size": "small"
+              }
+            }
+          ]
+        },
+        {
+          "id": "window-frame/6",
+          "title": "Application window",
+          "specimens": [
+            {
+              "address": "window-frame/6/0",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/1",
+              "component": "window-body",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/2",
+              "component": "sidebar-provider",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/3",
+              "component": "sidebar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/4",
+              "component": "sidebar-header",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/5",
+              "component": "sidebar-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/6",
+              "component": "sidebar-group",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/7",
+              "component": "sidebar-group-label",
+              "axes": {},
+              "text": "Library"
+            },
+            {
+              "address": "window-frame/6/8",
+              "component": "sidebar-group-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/9",
+              "component": "sidebar-menu",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/10",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/11",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Documents",
+              "container": true
+            },
+            {
+              "address": "window-frame/6/12",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/13",
+              "component": "sidebar-menu-badge",
+              "axes": {},
+              "text": "12"
+            },
+            {
+              "address": "window-frame/6/14",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/15",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Glossaries",
+              "container": true
+            },
+            {
+              "address": "window-frame/6/16",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/17",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/18",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Settings",
+              "container": true
+            },
+            {
+              "address": "window-frame/6/19",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/20",
+              "component": "window-main",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/21",
+              "component": "window-titlebar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/22",
+              "component": "sidebar-trigger",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/23",
+              "component": "search-field",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "window-frame/6/24",
+              "component": "window-content",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/25",
+              "component": "window-footer",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/26",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "New document"
+            },
+            {
+              "address": "window-frame/6/27",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/28",
+              "component": "window-body",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/29",
+              "component": "sidebar-provider",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/30",
+              "component": "sidebar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/31",
+              "component": "sidebar-header",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/32",
+              "component": "sidebar-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/33",
+              "component": "sidebar-group",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/34",
+              "component": "sidebar-group-label",
+              "axes": {},
+              "text": "Library"
+            },
+            {
+              "address": "window-frame/6/35",
+              "component": "sidebar-group-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/36",
+              "component": "sidebar-menu",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/37",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/38",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Documents",
+              "container": true
+            },
+            {
+              "address": "window-frame/6/39",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/40",
+              "component": "sidebar-menu-badge",
+              "axes": {},
+              "text": "12"
+            },
+            {
+              "address": "window-frame/6/41",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/42",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Glossaries",
+              "container": true
+            },
+            {
+              "address": "window-frame/6/43",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/44",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/45",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Settings",
+              "container": true
+            },
+            {
+              "address": "window-frame/6/46",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/47",
+              "component": "window-main",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/48",
+              "component": "window-titlebar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/49",
+              "component": "sidebar-trigger",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/50",
+              "component": "search-field",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "window-frame/6/51",
+              "component": "window-content",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/52",
+              "component": "window-footer",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/53",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "New document"
+            },
+            {
+              "address": "window-frame/6/54",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/55",
+              "component": "window-body",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/56",
+              "component": "sidebar-provider",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/57",
+              "component": "sidebar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/58",
+              "component": "sidebar-header",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/59",
+              "component": "sidebar-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/60",
+              "component": "sidebar-group",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/61",
+              "component": "sidebar-group-label",
+              "axes": {},
+              "text": "Library"
+            },
+            {
+              "address": "window-frame/6/62",
+              "component": "sidebar-group-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/63",
+              "component": "sidebar-menu",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/64",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/65",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Documents",
+              "container": true
+            },
+            {
+              "address": "window-frame/6/66",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/67",
+              "component": "sidebar-menu-badge",
+              "axes": {},
+              "text": "12"
+            },
+            {
+              "address": "window-frame/6/68",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/69",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Glossaries",
+              "container": true
+            },
+            {
+              "address": "window-frame/6/70",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/71",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/72",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Settings",
+              "container": true
+            },
+            {
+              "address": "window-frame/6/73",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/74",
+              "component": "window-main",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/75",
+              "component": "window-titlebar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/76",
+              "component": "sidebar-trigger",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/77",
+              "component": "search-field",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "window-frame/6/78",
+              "component": "window-content",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/79",
+              "component": "window-footer",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/80",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "New document"
+            },
+            {
+              "address": "window-frame/6/81",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/82",
+              "component": "window-body",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/83",
+              "component": "sidebar-provider",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/84",
+              "component": "sidebar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/85",
+              "component": "sidebar-header",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/86",
+              "component": "sidebar-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/87",
+              "component": "sidebar-group",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/88",
+              "component": "sidebar-group-label",
+              "axes": {},
+              "text": "Library"
+            },
+            {
+              "address": "window-frame/6/89",
+              "component": "sidebar-group-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/90",
+              "component": "sidebar-menu",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/91",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/92",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Documents",
+              "container": true
+            },
+            {
+              "address": "window-frame/6/93",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/94",
+              "component": "sidebar-menu-badge",
+              "axes": {},
+              "text": "12"
+            },
+            {
+              "address": "window-frame/6/95",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/96",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Glossaries",
+              "container": true
+            },
+            {
+              "address": "window-frame/6/97",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/98",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/99",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Settings",
+              "container": true
+            },
+            {
+              "address": "window-frame/6/100",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/101",
+              "component": "window-main",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/102",
+              "component": "window-titlebar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/103",
+              "component": "sidebar-trigger",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/104",
+              "component": "search-field",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "window-frame/6/105",
+              "component": "window-content",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/106",
+              "component": "window-footer",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/107",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "New document"
+            },
+            {
+              "address": "window-frame/6/108",
+              "component": "window-frame",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/109",
+              "component": "window-body",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/110",
+              "component": "sidebar-provider",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/111",
+              "component": "sidebar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/112",
+              "component": "sidebar-header",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/113",
+              "component": "sidebar-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/114",
+              "component": "sidebar-group",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/115",
+              "component": "sidebar-group-label",
+              "axes": {},
+              "text": "Library"
+            },
+            {
+              "address": "window-frame/6/116",
+              "component": "sidebar-group-content",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/117",
+              "component": "sidebar-menu",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/118",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/119",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Documents",
+              "container": true
+            },
+            {
+              "address": "window-frame/6/120",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/121",
+              "component": "sidebar-menu-badge",
+              "axes": {},
+              "text": "12"
+            },
+            {
+              "address": "window-frame/6/122",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/123",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Glossaries",
+              "container": true
+            },
+            {
+              "address": "window-frame/6/124",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/125",
+              "component": "sidebar-menu-item",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/126",
+              "component": "sidebar-menu-button",
+              "axes": {},
+              "text": "Settings",
+              "container": true
+            },
+            {
+              "address": "window-frame/6/127",
+              "component": "icon",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/128",
+              "component": "window-main",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/129",
+              "component": "window-titlebar",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/130",
+              "component": "sidebar-trigger",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/131",
+              "component": "search-field",
+              "axes": {
+                "size": "small"
+              }
+            },
+            {
+              "address": "window-frame/6/132",
+              "component": "window-content",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/6/133",
+              "component": "window-footer",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "window-frame/6/134",
+              "component": "button",
+              "axes": {
+                "size": "small",
+                "variant": "filled"
+              },
+              "text": "New document"
+            }
+          ]
+        },
+        {
+          "id": "window-frame/7",
+          "title": "Content only",
+          "specimens": [
+            {
+              "address": "window-frame/7/0",
+              "component": "window-frame",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/7/1",
+              "component": "window-frame",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/7/2",
+              "component": "window-frame",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "window-frame/8",
+          "title": "Sizing",
+          "specimens": [
+            {
+              "address": "window-frame/8/0",
+              "component": "window-frame",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/8/1",
+              "component": "window-frame",
+              "axes": {}
+            },
+            {
+              "address": "window-frame/8/2",
+              "component": "window-frame",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "window-frame/9",
+          "title": "Hidden title",
+          "specimens": [
+            {
+              "address": "window-frame/9/0",
+              "component": "window-frame",
               "axes": {}
             }
           ]

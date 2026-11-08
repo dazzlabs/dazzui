@@ -202,6 +202,141 @@ impl Ctx {
 mod tests {
     use super::*;
     #[gpui::test]
+    fn generated_window_frames_keep_natural_height_when_a_sized_row_wraps(
+        cx: &mut gpui::TestAppContext,
+    ) {
+        cx.update(|cx| {
+            dazzui::init(cx);
+            dazzui::Motion::set_preference(dazzui::MotionPreference::Reduced, cx);
+            dazzui::Theme::set("bright-light", cx);
+        });
+        let scene = &crate::lib::story::story("window-frame").unwrap().examples[8].demo;
+        crate::lib::specimen::start();
+        let (_, cx) = cx.add_window_view(|_, _| SceneView::of(scene));
+        for width in [640., 900.] {
+            cx.simulate_resize(gpui::size(gpui::px(width), gpui::px(800.)));
+            cx.run_until_parked();
+            let frames = crate::lib::specimen::frames();
+            assert_eq!(frames[&0].size.height, gpui::px(72.));
+            assert_eq!(frames[&1].size.height, gpui::px(72.));
+            assert_eq!(frames[&2].size.height, gpui::px(100.));
+        }
+        crate::lib::specimen::stop();
+    }
+    #[gpui::test]
+    fn generated_window_toolbar_keeps_the_pin_toggle_controlled(cx: &mut gpui::TestAppContext) {
+        cx.update(|cx| {
+            dazzui::init(cx);
+            dazzui::Motion::set_preference(dazzui::MotionPreference::Reduced, cx);
+        });
+        let scene = &crate::lib::story::story("window-frame").unwrap().examples[4].demo;
+        let (view, cx) = cx.add_window_view(|_, _| SceneView::of(scene));
+        cx.run_until_parked();
+        cx.simulate_keystrokes("tab tab space");
+        assert_eq!(
+            view.read_with(cx, |view, _| view
+                .slots
+                .values()
+                .filter(|v| v.as_bool() == Some(true))
+                .count()),
+            0
+        );
+        cx.simulate_event(gpui::KeyUpEvent {
+            keystroke: gpui::Keystroke::parse("space").unwrap(),
+        });
+        cx.run_until_parked();
+        assert_eq!(
+            view.read_with(cx, |view, _| view
+                .slots
+                .values()
+                .filter(|v| v.as_bool() == Some(true))
+                .count()),
+            1
+        );
+    }
+    #[gpui::test]
+    fn generated_number_fields_forward_controlled_numeric_changes(cx: &mut gpui::TestAppContext) {
+        cx.update(|cx| {
+            dazzui::init(cx);
+            dazzui::Motion::set_preference(dazzui::MotionPreference::Reduced, cx);
+        });
+        let scene = &crate::lib::story::story("number-field").unwrap().examples[2].demo;
+        let (view, cx) = cx.add_window_view(|_, _| SceneView::of(scene));
+        cx.run_until_parked();
+        cx.simulate_keystrokes("tab shift-up alt-down");
+        cx.run_until_parked();
+        assert!(view.read_with(cx, |view, _| {
+            view.slots
+                .values()
+                .any(|value| value.as_f64() == Some(31.75))
+        }));
+        cx.simulate_keystrokes(if cfg!(target_os = "macos") {
+            "cmd-a backspace"
+        } else {
+            "ctrl-a backspace"
+        });
+        cx.run_until_parked();
+        assert!(view.read_with(cx, |view, _| view.slots.values().any(Value::is_null)));
+        cx.simulate_keystrokes("up end home");
+        cx.run_until_parked();
+        assert!(view.read_with(cx, |view, _| {
+            view.slots.values().any(|value| value.as_f64() == Some(0.))
+        }));
+    }
+    #[gpui::test]
+    fn generated_number_fields_distinguish_live_and_committed_values(
+        cx: &mut gpui::TestAppContext,
+    ) {
+        cx.update(|cx| {
+            dazzui::init(cx);
+            dazzui::Motion::set_preference(dazzui::MotionPreference::Reduced, cx);
+        });
+        let scene = &crate::lib::story::story("number-field").unwrap().examples[5].demo;
+        let (view, cx) = cx.add_window_view(|_, _| SceneView::of(scene));
+        cx.update(|window, _| window.activate_window());
+        cx.run_until_parked();
+        cx.simulate_keystrokes(if cfg!(target_os = "macos") {
+            "tab cmd-a"
+        } else {
+            "tab ctrl-a"
+        });
+        cx.simulate_input("105");
+        cx.run_until_parked();
+        let values = view.read_with(cx, |view, _| {
+            view.slots
+                .values()
+                .filter_map(Value::as_f64)
+                .collect::<Vec<_>>()
+        });
+        assert_eq!(values.len(), 2);
+        assert!(values.contains(&12.) && values.contains(&105.));
+        cx.simulate_keystrokes("enter");
+        assert!(view.read_with(cx, |view, _| {
+            view.slots.values().any(|value| value.as_f64() == Some(12.))
+        }));
+        cx.simulate_keystrokes("tab");
+        cx.run_until_parked();
+        assert!(view.read_with(cx, |view, _| {
+            view.slots
+                .values()
+                .all(|value| value.as_f64() == Some(105.))
+        }));
+        cx.simulate_keystrokes("shift-tab up");
+        cx.run_until_parked();
+        assert!(view.read_with(cx, |view, _| {
+            view.slots
+                .values()
+                .all(|value| value.as_f64() == Some(100.))
+        }));
+        cx.simulate_keystrokes(if cfg!(target_os = "macos") {
+            "cmd-a backspace tab"
+        } else {
+            "ctrl-a backspace tab"
+        });
+        cx.run_until_parked();
+        assert!(view.read_with(cx, |view, _| view.slots.values().all(Value::is_null)));
+    }
+    #[gpui::test]
     fn generated_document_close_removes_the_proposed_item(cx: &mut gpui::TestAppContext) {
         cx.update(|cx| {
             dazzui::init(cx);

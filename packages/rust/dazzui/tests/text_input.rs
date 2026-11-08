@@ -8,18 +8,23 @@ use support::keys;
 
 use dazzui::foundation::text_input::{InputState, TextInput};
 use gpui::{
-    AppContext, ClipboardItem, Context, Entity, EntityInputHandler, IntoElement, ParentElement,
-    Render, Styled, TestAppContext, VisualTestContext, Window, div, prelude::FluentBuilder, px,
+    AppContext, ClipboardItem, Context, Entity, EntityInputHandler, IntoElement, ObservedPaint,
+    ParentElement, Render, Styled, TestAppContext, VisualTestContext, Window, div,
+    prelude::FluentBuilder, px,
 };
+use support::paint::PaintProbe;
 
 struct Harness {
     input: Entity<InputState>,
     multiline: bool,
+    centered: bool,
+    offset_y: f32,
     masked: bool,
     max_length: Option<usize>,
     line_height: Option<f32>,
     changes: Rc<RefCell<Vec<String>>>,
     submits: Rc<RefCell<Vec<String>>>,
+    paints: Rc<RefCell<Vec<ObservedPaint>>>,
 }
 
 impl Render for Harness {
@@ -28,8 +33,9 @@ impl Render for Harness {
         let submits = self.submits.clone();
         let mut input = TextInput::new("input")
             .state(self.input.clone())
-            .placeholder("Type here")
+            .placeholder(if self.centered { "" } else { "Type here" })
             .multiline(self.multiline)
+            .centered(self.centered)
             .masked(self.masked)
             .on_change(move |text, _, _| changes.borrow_mut().push(text.to_string()))
             .on_submit(move |text, _, _| submits.borrow_mut().push(text.to_string()));
@@ -37,17 +43,23 @@ impl Render for Harness {
             input = input.max_length(max);
         }
         div()
-            .w(px(240.))
+            .w(px(if self.centered { 19. } else { 240. }))
+            .pt(px(self.offset_y))
             .text_size(px(13.))
             .when_some(self.line_height, |this, height| {
                 this.line_height(px(height))
             })
-            .child(input)
+            .child(PaintProbe {
+                child: input.into_any_element(),
+                paints: self.paints.clone(),
+            })
     }
 }
 
 struct Setup {
     multiline: bool,
+    centered: bool,
+    offset_y: f32,
     masked: bool,
     max_length: Option<usize>,
     line_height: Option<f32>,
@@ -61,11 +73,14 @@ fn open(
     let (harness, cx) = cx.add_window_view(|window, cx| Harness {
         input: cx.new(|cx| InputState::new(window, cx)),
         multiline: setup.multiline,
+        centered: setup.centered,
+        offset_y: setup.offset_y,
         masked: setup.masked,
         max_length: setup.max_length,
         line_height: setup.line_height,
         changes: Rc::default(),
         submits: Rc::default(),
+        paints: Rc::default(),
     });
     let input = harness.read_with(cx, |harness, _| harness.input.clone());
     cx.run_until_parked();
@@ -77,6 +92,8 @@ fn open(
 fn single() -> Setup {
     Setup {
         multiline: false,
+        centered: false,
+        offset_y: 0.,
         masked: false,
         max_length: None,
         line_height: None,
@@ -89,21 +106,26 @@ fn value(input: &Entity<InputState>, cx: &mut VisualTestContext) -> String {
 
 #[gpui::test]
 fn multiline_ime_rectangles_keep_fractional_leading(cx: &mut TestAppContext) {
-    let (_, input, cx) = open(
+    let (harness, input, cx) = open(
         cx,
         Setup {
             multiline: true,
             line_height: Some(20.8),
+            offset_y: 0.5,
             ..single()
         },
     );
     cx.simulate_input("a\nb\nc");
+    cx.simulate_keystrokes("left left left");
     cx.run_until_parked();
-    let (first, second) = cx.update(|window, cx| {
+    let (first, second, cursor) = cx.update(|window, cx| {
         input.update(cx, |input, cx| {
             (
                 input
-                    .bounds_for_range(0..0, Default::default(), window, cx)
+                    .bounds_for_range(0..1, Default::default(), window, cx)
+                    .unwrap(),
+                input
+                    .bounds_for_range(2..3, Default::default(), window, cx)
                     .unwrap(),
                 input
                     .bounds_for_range(2..2, Default::default(), window, cx)
@@ -111,8 +133,68 @@ fn multiline_ime_rectangles_keep_fractional_leading(cx: &mut TestAppContext) {
             )
         })
     });
-    assert!((f32::from(second.origin.y - first.origin.y) - 20.8).abs() < 0.001);
-    assert!((f32::from(second.size.height) - 20.8).abs() < 0.001);
+    assert_eq!(second.origin.y - first.origin.y, px(20.796875));
+    // NoopTextSystem supplies a 17px content box at 13px, independent of
+    // leading. Only the collapsed caret snaps to a whole logical pixel.
+    assert_eq!(second.size.height, px(17.));
+    assert_eq!(cursor.origin.y, second.origin.y.round());
+    assert_eq!(cursor.size.height, second.size.height);
+    let paint = harness.read_with(cx, |view, _| view.paints.borrow().last().unwrap().clone());
+    let quad = paint
+        .quads
+        .iter()
+        .find(|quad| quad.bounds.size.width == px(1.))
+        .unwrap();
+    assert_eq!(quad.bounds.origin, cursor.origin);
+    assert_eq!(quad.bounds.size.height, cursor.size.height);
+}
+
+#[gpui::test]
+fn centered_caret_and_ime_rectangles_snap_an_odd_width(cx: &mut TestAppContext) {
+    let (harness, input, cx) = open(
+        cx,
+        Setup {
+            centered: true,
+            ..single()
+        },
+    );
+    let caret = cx.update(|window, cx| {
+        input.update(cx, |input, cx| {
+            input
+                .bounds_for_range(0..0, Default::default(), window, cx)
+                .unwrap()
+        })
+    });
+    assert_eq!(caret.origin.x, px(10.));
+    let paint = harness.read_with(cx, |view, _| view.paints.borrow().last().unwrap().clone());
+    let quad = paint
+        .quads
+        .iter()
+        .find(|quad| quad.bounds.size.width == px(1.))
+        .unwrap();
+    assert_eq!(quad.bounds.origin, caret.origin);
+}
+
+#[gpui::test]
+fn typed_caret_and_ime_snap_without_moving_the_shaped_text(cx: &mut TestAppContext) {
+    let (harness, input, cx) = open(cx, single());
+    cx.simulate_input("a");
+    let caret = cx.update(|window, cx| {
+        input.update(cx, |input, cx| {
+            input
+                .bounds_for_range(1..1, Default::default(), window, cx)
+                .unwrap()
+        })
+    });
+    // The synthetic glyph advances 7.8px at 13px; the caret uses its pixel.
+    assert_eq!(caret.origin.x, px(7.));
+    let paint = harness.read_with(cx, |view, _| view.paints.borrow().last().unwrap().clone());
+    let quad = paint
+        .quads
+        .iter()
+        .find(|quad| quad.bounds.size.width == px(1.))
+        .unwrap();
+    assert_eq!(quad.bounds.origin, caret.origin);
 }
 
 #[gpui::test]

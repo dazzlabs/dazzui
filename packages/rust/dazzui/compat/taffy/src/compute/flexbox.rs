@@ -218,8 +218,24 @@ pub fn compute_flexbox_layout(
 
     debug_log!("FLEX:", dbg:style.flex_direction());
     drop(style);
-
-    compute_preliminary(tree, node, LayoutInput { known_dimensions: styled_based_known_dimensions, ..inputs })
+    let measured_inputs = LayoutInput { known_dimensions: styled_based_known_dimensions, ..inputs };
+    let result = compute_preliminary(tree, node, measured_inputs);
+    // A min-content pass may discover its min-width only after
+    // measuring wrapped children at their intrinsic minimum. Once that
+    // minimum determines the final width, measure height at the used width
+    // instead of retaining the narrower wrapping height.
+    if run_mode == RunMode::ComputeSize
+        && known_dimensions.width.is_none()
+        && matches!(inputs.available_space.width, AvailableSpace::MinContent)
+        && min_size.width.is_some_and(|min| min > 0.0 && result.size.width == min)
+    {
+        return compute_preliminary(tree, node, LayoutInput {
+            known_dimensions: Size { width: Some(result.size.width), ..styled_based_known_dimensions },
+            available_space: Size { width: AvailableSpace::Definite(result.size.width), ..inputs.available_space },
+            ..inputs
+        });
+    }
+    result
 }
 
 /// Compute a preliminary size for an item

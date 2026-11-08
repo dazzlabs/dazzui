@@ -47,19 +47,27 @@ other platforms' examples.
   WindowFrame story draws presentation windows inside the gallery's real OS
   window. Moving a story up out of `react/` is the claim that every platform
   now maps it.
-  GPUI also opts into Tabs, reusing the sealed header and array-removal
-  grammar. Its additional contract is `packages/rust/dazzui/example/react-scenes.json`;
+  GPUI also opts into Tabs and WindowFrame, reusing the sealed header,
+  content inset and array-removal grammar. Its WindowFrame keeps typed titlebar
+  slots, control states and callbacks inside the gallery's real OS window;
+  `WindowPane` is a layout helper, not a specimen. Its additional contract is
+  `packages/rust/dazzui/example/react-scenes.json`;
   it leaves the shared scene list unchanged. Header wrappers arrange the
   scene rather than count as components. Both collectors accept that
-  contract explicitly; the React measurement page includes the Tabs scenes.
+  contract explicitly; the React measurement page includes both pages.
   A file there may instead export a `StoryExtension` — an `id` and
   `examples` alone — under a compiled story's id, and its examples join that
-  page on React. An extension can explicitly opt into `flutter`, `swiftui`
-  and `winui` through its `platforms` list once those mappings exist. The
-  generator checks each selected platform and gives its extra scenes stable
+  page on React. An extension can explicitly opt into `flutter`, `swiftui`,
+  `winui` and `gpui` through its `platforms` list once those mappings exist.
+  The generator checks each selected platform and gives its extra scenes stable
   addresses, without adding them to shared conformance or claiming support
-  on another platform. The Preferences theme row uses this route: each native
-  swatch reads its own palette from the generated theme table.
+  on another platform. GPUI records its extra examples alongside Tabs in
+  `example/react-scenes.json`, leaving existing shared addresses intact.
+  The nested Sidebar rows use this route on GPUI. The Preferences theme row
+  uses this route: each native swatch reads its own palette from the generated
+  theme table. NumberField's additional examples keep relative/grid steps,
+  controlled nullable values, field states and display precision in the same
+  source on React and GPUI.
 - **A platform's example mirrors the React one's layout.** On Flutter:
   `lib/stories/` holds a generated file per story and `index.dart`;
   `lib/lib/` holds the story type, the scene interpreter and its component

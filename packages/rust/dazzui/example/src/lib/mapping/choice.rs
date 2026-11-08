@@ -155,6 +155,13 @@ fn toggle(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
     if let Some(label) = node.string("label") {
         toggle = toggle.label(label);
     }
+    if node.has("pressed") {
+        toggle = toggle.pressed(node.flag("pressed"));
+    }
+    if let Some(change) = node.handler("onPressedChange") {
+        toggle = toggle
+            .on_pressed_change(move |pressed, window, cx| change(Value::Bool(pressed), window, cx));
+    }
     toggle.into_any_element()
 }
 

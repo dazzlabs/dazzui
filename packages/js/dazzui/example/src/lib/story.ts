@@ -28,6 +28,6 @@ export interface Story {
 export interface StoryExtension {
   id: string
   /** Native mappings that also compile these examples, outside conformance. */
-  platforms?: readonly ('flutter' | 'swiftui' | 'winui')[]
+  platforms?: readonly ('flutter' | 'swiftui' | 'winui' | 'gpui')[]
   examples: readonly Example[]
 }

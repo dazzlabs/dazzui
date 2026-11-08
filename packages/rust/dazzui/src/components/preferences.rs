@@ -16,6 +16,9 @@ use crate::components::collapsible::{kept_focus, part_id};
 use crate::foundation::{StyledExt, Tint, focus_visible, pointer_down, ring};
 use crate::theme::ActiveTheme;
 
+mod swatches;
+pub use swatches::{PreferenceThemeOption, PreferenceThemeSwatches};
+
 /// The column the groups run down, at the design's width and never wider
 /// than its pane.
 #[derive(IntoElement, Default)]
@@ -287,13 +290,15 @@ impl ParentElement for PreferenceRow {
 }
 
 impl RenderOnce for PreferenceRow {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(mut self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let t = cx.theme();
         let interactive = self.on_open.is_some();
+        let wraps = self.children.iter_mut().any(swatches::is_swatches);
         let trailing = (!self.children.is_empty() || interactive).then(|| {
             div()
                 .flex()
-                .flex_none()
+                .when(!wraps, |trailing| trailing.flex_none())
+                .when(wraps, |trailing| trailing.flex_shrink().min_w_0())
                 .items_center()
                 .gap(px(t.spacing_2_5))
                 .ml_auto()
@@ -319,6 +324,7 @@ impl RenderOnce for PreferenceRow {
                     .flex_col()
                     .gap(px(t.spacing_1))
                     .min_w_0()
+                    .when(wraps, |text| text.flex_none())
                     .py(px(t.preferences_row_padding))
                     .child(
                         div()

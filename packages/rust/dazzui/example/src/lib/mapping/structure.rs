@@ -9,11 +9,14 @@ use std::rc::Rc;
 use dazzui::{
     Accordion, AccordionItem, Collapsible, Dialog, DialogBody, DialogClose, DialogFooter,
     DialogHeader, DialogTone, Drawer, DrawerSide, Length, PreferenceGroup, PreferenceRow,
-    PreferenceSection, Preferences, Sidebar, SidebarCollapsible, SidebarContent, SidebarGroup,
-    SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarMenu,
-    SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger,
-    SidebarVariant, Splitter, SplitterOrientation, SplitterPanel, Tint, ToastOptions,
-    ToastPlacement, ToastProvider, ToastViewport, Toaster, Tree, TreeNode, TreeSize,
+    PreferenceSection, PreferenceThemeOption, PreferenceThemeSwatches, Preferences, Sidebar,
+    SidebarCollapsible, SidebarContent, SidebarGroup, SidebarGroupAction, SidebarGroupContent,
+    SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuAction,
+    SidebarMenuBadge, SidebarMenuButton, SidebarMenuButtonSize, SidebarMenuItem, SidebarMenuSub,
+    SidebarMenuSubButton, SidebarMenuSubButtonSize, SidebarMenuSubItem, SidebarProvider,
+    SidebarRail, SidebarTrigger, SidebarVariant, Size, Splitter, SplitterOrientation,
+    SplitterPanel, Tint, ToastOptions, ToastPlacement, ToastProvider, ToastViewport, Toaster, Tree,
+    TreeNode, TreeSize, Variant,
 };
 use gpui::{AnyElement, App, IntoElement, ParentElement, SharedString, Window, div};
 use serde_json::Value;
@@ -34,17 +37,24 @@ pub fn register(map: &mut HashMap<&'static str, BuildFn>) {
     map.insert("SidebarContent", sidebar_content);
     map.insert("SidebarGroup", sidebar_group);
     map.insert("SidebarGroupLabel", sidebar_group_label);
+    map.insert("SidebarGroupAction", sidebar_group_action);
+    map.insert("SidebarMenuAction", sidebar_menu_action);
     map.insert("SidebarGroupContent", sidebar_group_content);
     map.insert("SidebarMenu", sidebar_menu);
     map.insert("SidebarMenuItem", sidebar_menu_item);
     map.insert("SidebarMenuButton", sidebar_menu_button);
     map.insert("SidebarMenuBadge", sidebar_menu_badge);
+    map.insert("SidebarMenuSub", sidebar_menu_sub);
+    map.insert("SidebarMenuSubItem", sidebar_menu_sub_item);
+    map.insert("SidebarMenuSubButton", sidebar_menu_sub_button);
     map.insert("SidebarInset", sidebar_inset);
     map.insert("SidebarTrigger", sidebar_trigger);
+    map.insert("SidebarRail", sidebar_rail);
     map.insert("Preferences", preferences);
     map.insert("PreferenceGroup", preference_group);
     map.insert("PreferenceSection", preference_section);
     map.insert("PreferenceRow", preference_row);
+    map.insert("PreferenceThemeSwatches", preference_theme_swatches);
     map.insert("Dialog", dialog);
     map.insert("DialogHeader", dialog_header);
     map.insert("DialogBody", dialog_body);
@@ -285,6 +295,8 @@ container!(sidebar_group, SidebarGroup);
 container!(sidebar_group_label, SidebarGroupLabel);
 container!(sidebar_group_content, SidebarGroupContent);
 container!(sidebar_menu, SidebarMenu);
+container!(sidebar_menu_sub, SidebarMenuSub);
+container!(sidebar_menu_sub_item, SidebarMenuSubItem);
 container!(sidebar_inset, SidebarInset);
 container!(preferences, Preferences);
 container!(dialog_body, DialogBody);
@@ -321,12 +333,16 @@ fn sidebar_menu_badge(node: &Node, window: &mut Window, cx: &mut App) -> AnyElem
 /// The count is the row's sibling in React; the kit takes it as the item's
 /// badge, so the row can keep its label clear of it and hand it its ink.
 fn sidebar_menu_item(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
-    let mut item = SidebarMenuItem::new();
+    let mut item = SidebarMenuItem::new().id(node.id());
     for (index, json) in node.children().iter().enumerate() {
         let part = child(node, index, json);
         if part.component() == "SidebarMenuBadge" {
             let badge = sidebar_menu_badge_of(&part, window, cx);
             item = item.badge(recorded(&part)(badge.into_any_element()));
+        } else if part.component() == "SidebarMenuAction" {
+            item = item.action(crate::lib::scene::draw(
+                json, &node.ctx, &part.path, window, cx,
+            ));
         } else {
             item = item.child(crate::lib::scene::draw(
                 json, &node.ctx, &part.path, window, cx,
@@ -339,6 +355,16 @@ fn sidebar_menu_item(node: &Node, window: &mut Window, cx: &mut App) -> AnyEleme
 fn sidebar_menu_button(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
     let mut button = SidebarMenuButton::new(node.id())
         .active(node.flag("active"))
+        .disabled(node.flag("disabled"))
+        .size(
+            node.option("size", SidebarMenuButtonSize::parse)
+                .unwrap_or_default(),
+        )
+        .variant(
+            node.option("variant", Variant::parse)
+                .unwrap_or(Variant::Filled),
+        )
+        .tint(node.option("tint", Tint::parse).unwrap_or(Tint::Primary))
         .children(node.kids(window, cx));
     if let Some(icon) = node.element("icon", window, cx) {
         button = button.icon(icon);
@@ -354,6 +380,47 @@ fn sidebar_menu_button(node: &Node, window: &mut Window, cx: &mut App) -> AnyEle
 
 fn sidebar_trigger(node: &Node, _: &mut Window, _: &mut App) -> AnyElement {
     SidebarTrigger::new(node.id()).into_any_element()
+}
+
+macro_rules! sidebar_action {
+    ($function:ident, $component:ident $(, $method:ident: $prop:literal)*) => {
+        fn $function(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
+            let mut button = $component::new(node.id(), node.string("label").unwrap_or_default())
+                .size(node.option("size", Size::parse).unwrap_or(Size::Tiny))
+                .variant(node.option("variant", Variant::parse).unwrap_or(Variant::Plain))
+                .tint(node.option("tint", Tint::parse).unwrap_or(Tint::Neutral))
+                .disabled(node.flag("disabled"))
+                $(.$method(node.flag($prop)))*
+                .children(node.kids(window, cx));
+            if let Some(press) = node.press("onClick") {button = button.on_click(move |_, window, cx| press(window, cx));}
+            button.into_any_element()
+        }
+    }
+}
+sidebar_action!(sidebar_group_action, SidebarGroupAction);
+sidebar_action!(sidebar_menu_action, SidebarMenuAction, show_on_hover: "showOnHover");
+
+fn sidebar_menu_sub_button(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
+    let mut button = SidebarMenuSubButton::new(node.id())
+        .active(node.flag("active"))
+        .disabled(node.flag("disabled"))
+        .size(
+            node.option("size", SidebarMenuSubButtonSize::parse)
+                .unwrap_or_default(),
+        )
+        .variant(
+            node.option("variant", Variant::parse)
+                .unwrap_or(Variant::Filled),
+        )
+        .tint(node.option("tint", Tint::parse).unwrap_or(Tint::Primary))
+        .children(node.kids(window, cx));
+    if let Some(icon) = node.element("icon", window, cx) {
+        button = button.icon(icon);
+    }
+    if let Some(press) = node.press("onClick") {
+        button = button.on_click(move |_, window, cx| press(window, cx));
+    }
+    button.into_any_element()
 }
 
 // Preferences -----------------------------------------------------------------------
@@ -543,4 +610,48 @@ fn toast_viewport(node: &Node, _: &mut Window, _: &mut App) -> AnyElement {
                 .unwrap_or_default(),
         )
         .into_any_element()
+}
+
+fn sidebar_rail(node: &Node, _: &mut Window, _: &mut App) -> AnyElement {
+    let mut rail = SidebarRail::new(node.id()).disabled(node.flag("disabled"));
+    if let Some(label) = node.string("label") {
+        rail = rail.label(label);
+    }
+    if let Some(press) = node.press("onClick") {
+        rail = rail.on_click(move |_, window, cx| press(window, cx));
+    }
+    rail.into_any_element()
+}
+
+fn preference_theme_swatches(node: &Node, _: &mut Window, _: &mut App) -> AnyElement {
+    let options = node
+        .get("options")
+        .as_array()
+        .into_iter()
+        .flatten()
+        .map(|option| {
+            let mut result = PreferenceThemeOption::new(
+                option["value"].as_str().unwrap_or_default().to_owned(),
+                option["label"].as_str().unwrap_or_default().to_owned(),
+            );
+            if let Some(theme) = option["theme"].as_str() {
+                result = result.theme(theme.to_owned());
+            }
+            result
+        })
+        .collect();
+    let mut swatches = PreferenceThemeSwatches::new(node.id(), options)
+        .aria_label(node.string("aria-label").unwrap_or_default());
+    if let Some(value) = node.string("value") {
+        swatches = swatches.value(value);
+    }
+    if let Some(value) = node.string("defaultValue") {
+        swatches = swatches.default_value(value);
+    }
+    if let Some(change) = node.handler("onValueChange") {
+        swatches = swatches.on_value_change(move |value, window, cx| {
+            change(Value::String(value.to_string()), window, cx)
+        });
+    }
+    swatches.into_any_element()
 }

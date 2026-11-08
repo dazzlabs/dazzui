@@ -635,6 +635,40 @@ impl PopupState {
             });
         }));
     }
+
+    /// A rest-only trigger needs actual pointer motion to start its timer,
+    /// even when layout has placed the trigger beneath a stationary pointer.
+    pub(crate) fn hover_rest(
+        &mut self,
+        hovered: bool,
+        moved: bool,
+        delay: Duration,
+        close_delay: Duration,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        if hovered && !moved && !delay.is_zero() && !self.open {
+            self.hovered[0] = true;
+            self.timer = None;
+        } else {
+            self.hover(0, hovered, delay, close_delay, window, cx);
+        }
+    }
+
+    /// Restart a hover open on motion, tolerating jitter while a timer is
+    /// already pending. Explicit dismissal clears the hover flags so motion
+    /// inside the trigger cannot undo it.
+    pub(crate) fn restart_hover_open(
+        &mut self,
+        delay: Duration,
+        jitter: bool,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        if self.hovered[0] && !self.open && !delay.is_zero() && (!jitter || self.timer.is_none()) {
+            self.hover(0, true, delay, Duration::ZERO, window, cx);
+        }
+    }
 }
 
 /// A sheet that goes away on its own: an outside press closes it — except a

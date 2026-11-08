@@ -176,6 +176,17 @@ function firstText(node: HTMLElement, nested: ReadonlySet<Element>) {
     {
       acceptNode: current => {
         if (nested.has(current as Element)) return NodeFilter.FILTER_REJECT
+        if (current instanceof Element) {
+          const style = getComputedStyle(current)
+          if (style.display === 'none') return NodeFilter.FILTER_REJECT
+          // A descendant can restore visibility, so still walk this subtree.
+          if (style.visibility === 'hidden') return NodeFilter.FILTER_SKIP
+        } else if (
+          current.parentElement &&
+          getComputedStyle(current.parentElement).visibility === 'hidden'
+        ) {
+          return NodeFilter.FILTER_REJECT
+        }
         // Base UI's clipped announcement sentinel contains text for assistive
         // technology, but submits no visible glyphs. It is not a painted run.
         if (
@@ -218,7 +229,19 @@ export function measure(
       : node
   const style = getComputedStyle(surface)
   const { text, glyph, baseline } = firstText(node, nested)
-  const ink = text?.color ?? (glyph && getComputedStyle(glyph).color)
+  // Stroked platform chrome can use its own ink rather than currentColor.
+  const shape =
+    glyph?.querySelector('path,rect,circle,ellipse,line,polyline,polygon') ??
+    glyph
+  const glyphStyle = shape && getComputedStyle(shape)
+  const glyphInk =
+    glyphStyle &&
+    (glyphStyle.fill !== 'none'
+      ? glyphStyle.fill
+      : glyphStyle.stroke !== 'none'
+        ? glyphStyle.stroke
+        : undefined)
+  const ink = text?.color ?? glyphInk
   const border =
     style.borderTopStyle === 'none' ? 0 : (px(style.borderTopWidth) ?? 0)
   // A heavier stroke laid over the border on a layer of its own — the way a

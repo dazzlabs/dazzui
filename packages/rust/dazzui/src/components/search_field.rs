@@ -182,7 +182,7 @@ impl RenderOnce for SearchField {
             .focused(focused || (has_value && clear_focus.is_focused(window)));
         let body = chrome
             .animated_paint(div().id(part_id(&self.id, "field")), self.id, t, window, cx)
-            .w_full()
+            .min_w_0()
             .flex()
             .items_center()
             .h(px(profile.size))
@@ -223,7 +223,15 @@ impl RenderOnce for SearchField {
                     .text_color(t.color_content_faint.hsla())
                     .child(Icon::new(glyphs::SEARCH_16_REGULAR).size(profile.icon_size)),
             )
-            .child(text)
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .w(px(t.search_field_input_width))
+                    .px(px(t.spacing_0_5))
+                    .py(px(t.spacing_px))
+                    .child(text),
+            )
             .when_some(trailing, |this, trailing| this.child(trailing));
         icon_slot(profile.icon_size, body)
     }

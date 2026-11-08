@@ -72,6 +72,296 @@ pub const STORY: &str = r#"
           ]
         }
       }
+    },
+    {
+      "title": "Stepping",
+      "note": "Arrow keys add the step; Shift and Alt use the large and small steps. Grid snapping is explicit.",
+      "demo": {
+        "content": {
+          "$el": "Row",
+          "children": [
+            {
+              "$el": "Col",
+              "props": {
+                "width": "10rem"
+              },
+              "children": [
+                {
+                  "$el": "NumberField",
+                  "props": {
+                    "defaultValue": 12,
+                    "step": 5,
+                    "aria-label": "Relative steps"
+                  },
+                  "$at": 0
+                }
+              ]
+            },
+            {
+              "$el": "Col",
+              "props": {
+                "width": "10rem"
+              },
+              "children": [
+                {
+                  "$el": "NumberField",
+                  "props": {
+                    "defaultValue": 12,
+                    "step": 5,
+                    "min": 0,
+                    "snapOnStep": true,
+                    "aria-label": "Snapped steps"
+                  },
+                  "$at": 1
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "title": "Controlled",
+      "note": "The parent holds the number, including an empty value. Home and End reach the bounds.",
+      "demo": {
+        "state": {
+          "s0": 12
+        },
+        "content": {
+          "$el": "Col",
+          "props": {
+            "width": "10rem"
+          },
+          "children": [
+            {
+              "$el": "NumberField",
+              "props": {
+                "value": {
+                  "$state": "s0"
+                },
+                "onValueChange": {
+                  "$do": [
+                    {
+                      "set": "s0",
+                      "to": {
+                        "$arg": 0
+                      }
+                    }
+                  ]
+                },
+                "step": 5,
+                "smallStep": 0.25,
+                "largeStep": 20,
+                "min": 0,
+                "max": 100,
+                "aria-label": "Controlled number"
+              },
+              "$at": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "title": "States and precision",
+      "note": "Formatting the display preserves the number used for the next step.",
+      "demo": {
+        "content": {
+          "$el": "Row",
+          "children": [
+            {
+              "$el": "Col",
+              "props": {
+                "width": "10rem"
+              },
+              "children": [
+                {
+                  "$el": "NumberField",
+                  "props": {
+                    "defaultValue": 0.123456789,
+                    "step": 1e-8,
+                    "size": "small",
+                    "aria-label": "Precision"
+                  },
+                  "$at": 0
+                }
+              ]
+            },
+            {
+              "$el": "Col",
+              "props": {
+                "width": "10rem"
+              },
+              "children": [
+                {
+                  "$el": "NumberField",
+                  "props": {
+                    "defaultValue": 12,
+                    "readOnly": true,
+                    "aria-label": "Read only"
+                  },
+                  "$at": 1
+                }
+              ]
+            },
+            {
+              "$el": "Col",
+              "props": {
+                "width": "10rem"
+              },
+              "children": [
+                {
+                  "$el": "NumberField",
+                  "props": {
+                    "defaultValue": 12,
+                    "disabled": true,
+                    "aria-label": "Disabled"
+                  },
+                  "$at": 2
+                }
+              ]
+            },
+            {
+              "$el": "Col",
+              "props": {
+                "width": "10rem"
+              },
+              "children": [
+                {
+                  "$el": "NumberField",
+                  "props": {
+                    "defaultValue": 12,
+                    "state": "error",
+                    "aria-label": "Error"
+                  },
+                  "$at": 3
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "title": "Wheel input",
+      "note": "Wheel stepping is opt-in and requires focus. Ctrl-wheel stays available for zoom; the other field keeps normal page scrolling.",
+      "demo": {
+        "content": {
+          "$el": "Row",
+          "children": [
+            {
+              "$el": "Col",
+              "props": {
+                "width": "10rem"
+              },
+              "children": [
+                {
+                  "$el": "NumberField",
+                  "props": {
+                    "defaultValue": 12,
+                    "step": 5,
+                    "allowWheelScrub": true,
+                    "aria-label": "Wheel stepping"
+                  },
+                  "$at": 0
+                }
+              ]
+            },
+            {
+              "$el": "Col",
+              "props": {
+                "width": "10rem"
+              },
+              "children": [
+                {
+                  "$el": "NumberField",
+                  "props": {
+                    "defaultValue": 12,
+                    "step": 5,
+                    "aria-label": "Page scrolling"
+                  },
+                  "$at": 1
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "title": "Changes and commits",
+      "note": "The read-only field follows committed edits. Text entry may exceed 0–100; stepping still clamps to those bounds. A held stepper commits on release.",
+      "demo": {
+        "state": {
+          "s0": 12,
+          "s1": 12
+        },
+        "content": {
+          "$el": "Row",
+          "children": [
+            {
+              "$el": "Col",
+              "props": {
+                "width": "10rem"
+              },
+              "children": [
+                {
+                  "$el": "NumberField",
+                  "props": {
+                    "value": {
+                      "$state": "s0"
+                    },
+                    "onValueChange": {
+                      "$do": [
+                        {
+                          "set": "s0",
+                          "to": {
+                            "$arg": 0
+                          }
+                        }
+                      ]
+                    },
+                    "onValueCommitted": {
+                      "$do": [
+                        {
+                          "set": "s1",
+                          "to": {
+                            "$arg": 0
+                          }
+                        }
+                      ]
+                    },
+                    "min": 0,
+                    "max": 100,
+                    "allowOutOfRange": true,
+                    "aria-label": "Editable value"
+                  },
+                  "$at": 0
+                }
+              ]
+            },
+            {
+              "$el": "Col",
+              "props": {
+                "width": "10rem"
+              },
+              "children": [
+                {
+                  "$el": "NumberField",
+                  "props": {
+                    "value": {
+                      "$state": "s1"
+                    },
+                    "readOnly": true,
+                    "aria-label": "Committed value"
+                  },
+                  "$at": 1
+                }
+              ]
+            }
+          ]
+        }
+      }
     }
   ]
 }

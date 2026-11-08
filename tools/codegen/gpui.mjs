@@ -4,6 +4,7 @@ import path from 'node:path'
 import { SUPPORT as FLUTTER_SUPPORT } from './flutter.mjs'
 import { gaps } from './support.mjs'
 import { HarmonyReactCompiler } from './harmony-react.mjs'
+import { scenesJson } from './scenes.mjs'
 
 /*
  * The GPUI example's generated sources: the stories as data, the glyphs
@@ -15,8 +16,91 @@ import { HarmonyReactCompiler } from './harmony-react.mjs'
  * its own.
  */
 export const SUPPORT = structuredClone(FLUTTER_SUPPORT)
-delete SUPPORT.PreferenceThemeSwatches
+SUPPORT.WindowFrame = [
+  '#children',
+  'title',
+  'subtitle',
+  'platform',
+  'titleHidden',
+  'titlebar',
+  'fullSizeContent',
+  'controls',
+  'inactive',
+  'width',
+  'height',
+  'minWidth',
+  'maxWidth',
+  'minHeight',
+  'maxHeight',
+  'onClose',
+  'onMinimize',
+  'onMaximize',
+]
+SUPPORT.WindowTitlebar = [
+  'title',
+  'subtitle',
+  'titleHidden',
+  'controls',
+  'leading',
+  'toolbar',
+  'trailing',
+  'accessory',
+  'onClose',
+  'onMinimize',
+  'onMaximize',
+]
+for (const name of [
+  'WindowBody',
+  'WindowMain',
+  'WindowContent',
+  'WindowFooter',
+  'WindowPane',
+])
+  SUPPORT[name] = ['#children']
+SUPPORT.Toggle.push('pressed', 'onPressedChange')
+SUPPORT.SearchField.push('size')
+SUPPORT.NumberField.push(
+  'value',
+  'onValueChange',
+  'onValueCommitted',
+  'smallStep',
+  'largeStep',
+  'snapOnStep',
+  'allowWheelScrub',
+  'allowOutOfRange',
+  'size',
+  'state',
+  'tint',
+  'disabled',
+  'readOnly',
+  'placeholder'
+)
 SUPPORT.FieldValue = ['size', 'mono', '#children']
+SUPPORT.SidebarMenuSub = ['#children']
+SUPPORT.SidebarInput = [...SUPPORT.TextField, 'tint', 'value', 'onValueChange']
+SUPPORT.SidebarRail = ['label', 'disabled', 'onClick']
+SUPPORT.SidebarMenuSubItem = ['#children']
+SUPPORT.SidebarGroupAction = [
+  'label',
+  'size',
+  'variant',
+  'tint',
+  'disabled',
+  'onClick',
+  '#children',
+]
+SUPPORT.SidebarMenuAction = [...SUPPORT.SidebarGroupAction, 'showOnHover']
+SUPPORT.SidebarMenuSubButton = [
+  'icon',
+  'active',
+  'size',
+  'variant',
+  'tint',
+  'disabled',
+  'onClick',
+  '#children',
+]
+SUPPORT.SidebarMenuButton.push('size', 'variant', 'tint', 'disabled')
 SUPPORT.Tabs = [
   'items',
   'value',
@@ -53,6 +137,25 @@ SUPPORT.PreferenceGroup = ['title', 'description', '#children']
 SUPPORT.PreferenceRow = ['title', 'subtitle', 'onOpen', '#children']
 SUPPORT.PreferenceSection = ['label', 'footer', '#children']
 
+/** Addresses for opted-in examples, without widening shared conformance. */
+export function extensionScenes(stories, shared) {
+  const contract = JSON.parse(
+    scenesJson(stories, { stage: ['ChromeBar', 'WindowPane'] })
+  )
+  const sharedIds = new Set(
+    JSON.parse(shared).stories.flatMap(story =>
+      story.scenes.map(scene => scene.id)
+    )
+  )
+  contract.stories = contract.stories
+    .map(story => ({
+      ...story,
+      scenes: story.scenes.filter(scene => !sharedIds.has(scene.id)),
+    }))
+    .filter(story => story.scenes.length)
+  return JSON.stringify(contract, null, 2) + '\n'
+}
+
 /** Every component and prop a story sets that GPUI does not draw. */
 export function unsupported(stories) {
   const found = gaps(stories, SUPPORT, 'GPUI')
@@ -60,6 +163,84 @@ export function unsupported(stories) {
     if (Array.isArray(value))
       return value.forEach(item => visit(item, scene, where))
     if (!value || typeof value !== 'object') return
+    if (value.$el === 'PreferenceThemeSwatches') {
+      const prop = value.props?.options
+      const options = prop?.$state ? scene.state?.[prop.$state] : prop
+      if (
+        !Array.isArray(options) ||
+        !options.every(
+          option =>
+            option &&
+            typeof option.value === 'string' &&
+            typeof option.label === 'string' &&
+            (option.theme === undefined || typeof option.theme === 'string') &&
+            Object.keys(option).every(key =>
+              ['value', 'label', 'theme'].includes(key)
+            )
+        )
+      )
+        found.push(`${where}: unmapped PreferenceThemeSwatches options`)
+    }
+    if (['WindowFrame', 'WindowTitlebar'].includes(value.$el)) {
+      const props = value.props ?? {}
+      if (
+        props.platform !== undefined &&
+        ![
+          'macos',
+          'macos15',
+          'windows',
+          'gnome',
+          'ubuntu',
+          'kde',
+          'omarchy',
+        ].includes(props.platform)
+      )
+        found.push(`${where}: unmapped window platform`)
+      if (
+        props.controls !== undefined &&
+        props.controls !== false &&
+        (!props.controls ||
+          typeof props.controls !== 'object' ||
+          Array.isArray(props.controls) ||
+          Object.entries(props.controls).some(
+            ([key, state]) =>
+              !['close', 'minimize', 'maximize'].includes(key) ||
+              ![true, false, 'enabled', 'disabled', 'hidden'].includes(state)
+          ))
+      )
+        found.push(`${where}: unmapped window controls`)
+      if (
+        props.titlebar !== undefined &&
+        props.titlebar !== false &&
+        (!props.titlebar ||
+          typeof props.titlebar !== 'object' ||
+          Array.isArray(props.titlebar) ||
+          Object.keys(props.titlebar).some(
+            key =>
+              !['leading', 'toolbar', 'trailing', 'accessory'].includes(key)
+          ))
+      )
+        found.push(`${where}: unmapped window titlebar`)
+      for (const key of [
+        'width',
+        'height',
+        'minWidth',
+        'maxWidth',
+        'minHeight',
+        'maxHeight',
+      ])
+        if (
+          props[key] !== undefined &&
+          !(
+            (typeof props[key] === 'number' &&
+              Number.isFinite(props[key]) &&
+              props[key] >= 0) ||
+            (typeof props[key] === 'string' &&
+              /^\d+(?:\.\d+)?(?:px|rem|%)$/.test(props[key]))
+          )
+        )
+          found.push(`${where}: unmapped window ${key}`)
+    }
     if (value.$el === 'Tabs') {
       const prop = value.props?.items
       const items = prop?.$state ? scene.state?.[prop.$state] : prop
@@ -118,19 +299,21 @@ export function unsupported(stories) {
   return found
 }
 
-/** Opt into Tabs alone, using the existing sealed header/array-removal grammar. */
+/** React-only pages, each read by the sealed native grammar. */
 export function readReactStories(root) {
-  const sourceFile = 'react/tabs.tsx'
-  const source = fs.readFileSync(
-    path.join(root, 'packages/js/dazzui/example/src/stories', sourceFile),
-    'utf8'
-  )
-  const story = new HarmonyReactCompiler(`stories/${sourceFile}`, source, {
-    kitValues: {},
-  }).story()
-  if (story.id !== 'tabs')
-    throw new Error('The GPUI React-only reader expects Tabs')
-  return [{ ...story, sourceFile }]
+  return ['tabs', 'window-frame'].map(id => {
+    const sourceFile = `react/${id}.tsx`
+    const source = fs.readFileSync(
+      path.join(root, 'packages/js/dazzui/example/src/stories', sourceFile),
+      'utf8'
+    )
+    const story = new HarmonyReactCompiler(`stories/${sourceFile}`, source, {
+      kitValues: {},
+    }).story()
+    if (story.id !== id)
+      throw new Error(`The GPUI React-only reader expects ${id}`)
+    return { ...story, sourceFile }
+  })
 }
 
 const header =

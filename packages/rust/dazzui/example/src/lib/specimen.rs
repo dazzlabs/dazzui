@@ -20,6 +20,7 @@ thread_local! {
     /// `Some` while collecting: every specimen's bounds, by its index.
     static FRAMES: RefCell<Option<BTreeMap<usize, Bounds<Pixels>>>> = const { RefCell::new(None) };
     static STYLES: RefCell<BTreeMap<usize, PaintReading>> = const { RefCell::new(BTreeMap::new()) };
+    static CARETS: RefCell<Option<BTreeMap<usize, Value>>> = const { RefCell::new(None) };
 }
 
 struct PaintReading {
@@ -35,12 +36,30 @@ pub fn start() {
 
 /// Keep addresses within one painted frame; animated boxes move between frames.
 pub fn begin_frame() {
+    CARETS.with(|carets| {
+        if let Some(carets) = carets.borrow_mut().as_mut() {
+            carets.clear();
+        }
+    });
     STYLES.with(|styles| styles.borrow_mut().clear());
     FRAMES.with(|frames| {
         if let Some(frames) = frames.borrow_mut().as_mut() {
             frames.clear();
         }
     });
+}
+
+/// Opt-in raw paint trace for focused editor verification.
+pub fn trace_carets() {
+    CARETS.with(|carets| *carets.borrow_mut() = Some(BTreeMap::new()));
+}
+
+pub fn carets() -> BTreeMap<usize, Value> {
+    CARETS.with(|carets| carets.borrow().clone().unwrap_or_default())
+}
+
+fn box_value(bounds: Bounds<Pixels>) -> Value {
+    json!({"left": f32::from(bounds.left()), "top": f32::from(bounds.top()), "width": f32::from(bounds.size.width), "height": f32::from(bounds.size.height)})
 }
 
 /// What has been recorded since [`start`].
@@ -181,8 +200,27 @@ impl Element for Specimen {
         cx: &mut App,
     ) {
         let painted = window.painted_bounds(bounds);
-        let (_, paint) =
-            window.observe_element_paint(bounds, |window| self.child.paint(window, cx));
+        let trace = CARETS.with(|carets| carets.borrow().is_some());
+        let (_, paint) = if trace {
+            window
+                .observe_element_paint_with_surfaces(bounds, |window| self.child.paint(window, cx))
+        } else {
+            window.observe_element_paint(bounds, |window| self.child.paint(window, cx))
+        };
+        if trace {
+            let quads: Vec<_> = paint.quads.iter()
+                .filter(|quad| quad.bounds.size.width == gpui::px(1.) && quad.bounds.size.height > gpui::px(5.))
+                .map(|quad| json!({"bounds": box_value(quad.bounds), "clip": box_value(quad.content_mask)})).collect();
+            if !quads.is_empty() {
+                CARETS.with(|carets| {
+                    carets.borrow_mut().as_mut().unwrap().insert(self.index, json!({
+                        "root": box_value(painted),
+                        "surface": box_value(paint.decorated_surface.as_ref().map_or(painted, |surface| surface.bounds)),
+                        "quads": quads,
+                    }));
+                });
+            }
+        }
         let values = PaintReading {
             root: values(&paint, paint.surface.as_ref(), painted, cx.theme()),
             decorated: paint
@@ -286,4 +324,10 @@ fn values(
         values.insert("lineHeight".into(), json!(f32::from(text.line_height)));
     }
     Value::Object(values)
+}
+
+#[cfg(test)]
+pub fn stop() {
+    FRAMES.with(|frames| *frames.borrow_mut() = None);
+    STYLES.with(|styles| styles.borrow_mut().clear());
 }

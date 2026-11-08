@@ -14,6 +14,7 @@ impl Assets {
     /// A kit glyph's SVG, by its asset path.
     pub fn get(path: &str) -> Option<&'static str> {
         SVGS.iter()
+            .chain(crate::components::window_frame::SVGS.iter())
             .find(|(name, _)| *name == path)
             .map(|(_, svg)| *svg)
     }
@@ -27,6 +28,7 @@ impl AssetSource for Assets {
     fn list(&self, path: &str) -> Result<Vec<SharedString>> {
         Ok(SVGS
             .iter()
+            .chain(crate::components::window_frame::SVGS.iter())
             .filter(|(name, _)| name.starts_with(path))
             .map(|(name, _)| SharedString::from(*name))
             .collect())

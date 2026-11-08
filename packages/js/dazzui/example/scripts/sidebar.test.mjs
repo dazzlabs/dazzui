@@ -314,6 +314,149 @@ test('sidebar geometry, hints and keyboard activation follow React', async () =>
     await page.mouse.move(0, 0)
     await row.hover()
     await hint.waitFor()
+    await page.evaluate(async () => {
+      document.getElementById('sidebar-fixture').remove()
+      document.getElementById('root').style.visibility = 'visible'
+      await window.conformance.show('sidebar/3', 'studio-light')
+    })
+    const nested = page.locator('#root .dz-sidebar__menu-sub')
+    const inbox = nested.getByRole('button', { name: 'Inbox' })
+    const archive = nested.getByRole('button', { name: 'Archive' })
+    const content = page.locator('#root .dz-sidebar-inset')
+    assert.equal(
+      await nested.getByRole('button', { name: 'Deleted' }).isDisabled(),
+      true
+    )
+    await archive.click()
+    assert.equal((await content.textContent()).trim(), 'Archive')
+    await inbox.focus()
+    await page.keyboard.down('Enter')
+    assert.equal((await content.textContent()).trim(), 'Inbox')
+    await page.keyboard.up('Enter')
+    await page.keyboard.press('Tab')
+    assert.equal(
+      await archive.evaluate(button => button === document.activeElement),
+      true
+    )
+    await page.keyboard.down('Space')
+    assert.equal((await content.textContent()).trim(), 'Inbox')
+    await page.keyboard.up('Space')
+    assert.equal((await content.textContent()).trim(), 'Archive')
+    await page.keyboard.press('Tab')
+    const toggle = page.locator('#root .dz-sidebar__trigger')
+    assert.equal(
+      await toggle.evaluate(button => button === document.activeElement),
+      true
+    )
+    await toggle.click()
+    assert.equal(await nested.isVisible(), false)
+    await page.mouse.move(0, 0)
+    await page.evaluate(() =>
+      window.conformance.show('sidebar/4', 'studio-light')
+    )
+    const action = page.getByRole('button', { name: 'More document actions' })
+    const add = page.getByRole('button', { name: 'Add document' })
+    const documentRow = page.getByRole('button', {
+      name: 'Documents',
+      exact: true,
+    })
+    const otherRow = page.getByRole('button', {
+      name: 'Shared library',
+      exact: true,
+    })
+    const finish = () =>
+      page.evaluate(async () => {
+        await new Promise(resolve => requestAnimationFrame(resolve))
+        for (const animation of document.getAnimations()) animation.finish()
+      })
+    const opacity = () =>
+      action.evaluate(button => Number(getComputedStyle(button).opacity))
+    assert.equal(await opacity(), 0)
+    await documentRow.focus()
+    await finish()
+    assert.equal(await opacity(), 1)
+    await page.keyboard.press('Tab')
+    assert.equal(
+      await action.evaluate(button => button === document.activeElement),
+      true
+    )
+    await page.keyboard.down('Enter')
+    assert.equal((await content.textContent()).trim(), 'Document actions')
+    await page.keyboard.up('Enter')
+    await otherRow.focus()
+    await finish()
+    assert.equal(await opacity(), 0)
+    await documentRow.hover()
+    await finish()
+    assert.equal(await opacity(), 1)
+    await page.mouse.move(0, 0)
+    await finish()
+    assert.equal(await opacity(), 0)
+    await action.evaluate(button => button.setAttribute('data-popup-open', ''))
+    await finish()
+    assert.equal(await opacity(), 1)
+    await action.evaluate(button => button.removeAttribute('data-popup-open'))
+    await finish()
+    assert.equal(await opacity(), 0)
+    await add.click()
+    assert.equal((await content.textContent()).trim(), 'Added document')
+    await action.focus()
+    await page.keyboard.down('Space')
+    assert.equal((await content.textContent()).trim(), 'Added document')
+    await page.keyboard.up('Space')
+    assert.equal((await content.textContent()).trim(), 'Document actions')
+    await toggle.click()
+    assert.equal(await add.isVisible(), false)
+    assert.equal(await action.isVisible(), false)
+    await page.evaluate(async () => {
+      await window.conformance.show('sidebar/5', 'studio-light')
+      const outside = document.createElement('button')
+      outside.id = 'outside-shortcut'
+      outside.textContent = 'Outside sidebar'
+      outside.addEventListener('keydown', event => {
+        if (window.blockSidebarShortcut) event.stopPropagation()
+      })
+      document.body.append(outside)
+    })
+    const input = page.getByRole('textbox', { name: 'Filter library' })
+    const rail = page.locator('#root .dz-sidebar__rail')
+    const column = page.locator('#root .dz-sidebar')
+    const outside = page.locator('#outside-shortcut')
+    assert.equal(await input.getAttribute('data-size'), 'small')
+    assert.equal((await input.boundingBox()).height, 26)
+    await input.fill('Documents filter')
+    assert.equal((await content.textContent()).trim(), 'Documents filter')
+    assert.equal(await rail.evaluate(button => button.tabIndex), -1)
+    await input.focus()
+    await page.keyboard.press('Tab')
+    assert.equal(
+      await documentRow.evaluate(button => button === document.activeElement),
+      true
+    )
+    await page.keyboard.press('Tab')
+    assert.equal(
+      await toggle.evaluate(button => button === document.activeElement),
+      true
+    )
+    await outside.focus()
+    await page.keyboard.press('Control+b')
+    assert.equal(await column.getAttribute('data-state'), 'collapsed')
+    await page.keyboard.press('Meta+b')
+    assert.equal(await column.getAttribute('data-state'), 'expanded')
+    await page.keyboard.press('Meta+Shift+B')
+    assert.equal(await column.getAttribute('data-state'), 'expanded')
+    await page.evaluate(() => {
+      window.blockSidebarShortcut = true
+    })
+    await page.keyboard.press('Control+b')
+    assert.equal(await column.getAttribute('data-state'), 'expanded')
+    await page.evaluate(() => {
+      window.blockSidebarShortcut = false
+    })
+    await rail.click()
+    assert.equal(await column.getAttribute('data-state'), 'collapsed')
+    await page.keyboard.press('Space')
+    assert.equal(await column.getAttribute('data-state'), 'expanded')
   } finally {
     await browser.close()
     await server.close()

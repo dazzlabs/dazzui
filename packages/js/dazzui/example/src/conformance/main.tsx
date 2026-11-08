@@ -28,10 +28,11 @@ import { walk } from './walk'
  */
 
 const SCENES = new Map<string, ComponentType>()
-for (const story of [
-  ...COMPILED,
-  ...STORIES.filter(story => story.id === 'tabs'),
-]) {
+const compiledIds = new Set(COMPILED.map(story => story.id))
+for (const story of STORIES.filter(
+  story =>
+    compiledIds.has(story.id) || ['tabs', 'window-frame'].includes(story.id)
+)) {
   SCENES.set(`${story.id}/preview`, story.Preview)
   story.examples.forEach(({ Demo }, index) =>
     SCENES.set(`${story.id}/${index}`, Demo)

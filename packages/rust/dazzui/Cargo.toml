@@ -26,6 +26,8 @@ taffy = { path = "compat/taffy" }
 gpui = "0.2.2"
 # A calendar's value is a date, and `chrono` is the date a Rust program has.
 chrono = "0.4"
+# Number editing accepts the same Unicode format controls as the source input.
+unicode-properties = { version = "0.1", default-features = false, features = ["general-category"] }
 # Optional: the native dropdown backend behind the `native-menus` feature.
 # Same pin dazzdesk carries; the binding vendors the C++ core and builds it
 # with CMake (Linux needs the gtk3, x11 and xi dev packages installed).

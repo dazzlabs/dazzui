@@ -4,7 +4,8 @@ use std::collections::HashMap;
 
 use dazzui::{
     Autocomplete, Combobox, FieldState, FieldValue, Fieldset, Form, FormField, NumberField,
-    OtpField, SearchField, SelectEntry, SelectOption, ShortcutRecorder, Size, TextField,
+    OtpField, SearchField, SelectEntry, SelectOption, ShortcutRecorder, SidebarInput, Size,
+    TextField,
 };
 use gpui::{AnyElement, App, IntoElement, ParentElement, Window};
 use serde_json::Value;
@@ -14,6 +15,7 @@ use crate::lib::scene::{Node, text, truthy};
 
 pub fn register(map: &mut HashMap<&'static str, BuildFn>) {
     map.insert("TextField", text_field);
+    map.insert("SidebarInput", sidebar_input);
     map.insert("FieldValue", field_value);
     map.insert("SearchField", search_field);
     map.insert("NumberField", number_field);
@@ -65,6 +67,7 @@ fn field_value(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
 
 fn search_field(node: &Node, _: &mut Window, _: &mut App) -> AnyElement {
     let mut field = SearchField::new(node.id(), node.string("value").unwrap_or_default())
+        .size(node.option("size", Size::parse).unwrap_or(Size::Medium))
         .aria_label(node.string("aria-label").unwrap_or_default());
     if let Some(placeholder) = node.string("placeholder") {
         field = field.placeholder(placeholder);
@@ -78,8 +81,40 @@ fn search_field(node: &Node, _: &mut Window, _: &mut App) -> AnyElement {
 }
 
 fn number_field(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
-    let mut field =
-        NumberField::new(node.id()).aria_label(node.string("aria-label").unwrap_or_default());
+    let mut field = NumberField::new(node.id())
+        .aria_label(node.string("aria-label").unwrap_or_default())
+        .size(size(node))
+        .state(state(node))
+        .disabled(node.flag("disabled"))
+        .read_only(node.flag("readOnly"))
+        .allow_wheel_scrub(node.flag("allowWheelScrub"))
+        .allow_out_of_range(node.flag("allowOutOfRange"))
+        .snap_on_step(node.flag("snapOnStep"));
+    if let Some(value) = node.option("tint", dazzui::Tint::parse) {
+        field = field.tint(value);
+    }
+    if let Some(value) = node.string("placeholder") {
+        field = field.placeholder(value);
+    }
+    if node.has("value") {
+        field = field.value(node.number("value"));
+    }
+    if let Some(change) = node.handler("onValueChange") {
+        field = field.on_value_change(move |value, window, cx| {
+            change(value.map(Value::from).unwrap_or(Value::Null), window, cx)
+        });
+    }
+    if let Some(commit) = node.handler("onValueCommitted") {
+        field = field.on_value_committed(move |value, _, window, cx| {
+            commit(value.map(Value::from).unwrap_or(Value::Null), window, cx)
+        });
+    }
+    if let Some(value) = node.number("smallStep") {
+        field = field.small_step(value);
+    }
+    if let Some(value) = node.number("largeStep") {
+        field = field.large_step(value);
+    }
     if let Some(value) = node.number("defaultValue") {
         field = field.default_value(value);
     }
@@ -211,4 +246,38 @@ fn autocomplete(node: &Node, _: &mut Window, _: &mut App) -> AnyElement {
         autocomplete = autocomplete.placeholder(placeholder);
     }
     autocomplete.into_any_element()
+}
+
+fn sidebar_input(node: &Node, _: &mut Window, _: &mut App) -> AnyElement {
+    let mut field = SidebarInput::new(node.id())
+        .placeholder(node.string("placeholder").unwrap_or_default())
+        .input_type(node.string("type").as_deref().unwrap_or("text"))
+        .required(node.flag("required"))
+        .state(state(node))
+        .read_only(node.flag("readOnly"))
+        .mono(node.flag("mono"))
+        .disabled(node.flag("disabled"))
+        .multiline(node.flag("multiline"))
+        .aria_label(node.string("aria-label").unwrap_or_default());
+    if let Some(size) = node.option("size", Size::parse) {
+        field = field.size(size);
+    }
+    if let Some(tint) = node.option("tint", dazzui::Tint::parse) {
+        field = field.tint(tint);
+    }
+    if let Some(value) = node.string("defaultValue") {
+        field = field.default_value(value);
+    }
+    if let Some(value) = node.string("value") {
+        field = field.value(value);
+    }
+    if let Some(rows) = node.number("rows") {
+        field = field.rows(rows.max(1.) as usize);
+    }
+    if let Some(change) = node.handler("onValueChange") {
+        field = field.on_change(move |value, window, cx| {
+            change(Value::String(value.to_string()), window, cx)
+        });
+    }
+    field.into_any_element()
 }

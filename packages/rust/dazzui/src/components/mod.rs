@@ -56,6 +56,7 @@ pub mod toast;
 pub mod toggle;
 pub mod tooltip;
 pub mod tree;
+pub mod window_frame;
 
 pub use accordion::*;
 pub use action_bar::*;
@@ -113,3 +114,4 @@ pub use toast::*;
 pub use toggle::*;
 pub use tooltip::*;
 pub use tree::*;
+pub use window_frame::*;

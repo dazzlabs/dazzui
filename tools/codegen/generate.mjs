@@ -25,8 +25,9 @@ const root = fileURLToPath(new URL('../../', import.meta.url))
 const check = process.argv.includes('--check')
 
 const stories = await readStories(root)
+const gpuiPortable = await readStories(root, { platform: 'gpui' })
 const gpuiOnly = gpui.readReactStories(root)
-const gpuiStories = [...stories, ...gpuiOnly].sort((a, b) =>
+const gpuiStories = [...gpuiPortable, ...gpuiOnly].sort((a, b) =>
   a.name.localeCompare(b.name)
 )
 const [flutterStories, swiftStories, winuiStories] = await Promise.all(
@@ -74,7 +75,7 @@ if (gaps.length)
  * are emitted from.
  */
 const scenes = scenesJson(stories)
-const gpuiReactScenes = scenesJson(gpuiOnly, { stage: ['ChromeBar'] })
+const gpuiReactScenes = gpui.extensionScenes(gpuiStories, scenes)
 // Native extensions keep stable specimen addresses without entering the
 // shared conformance contract or claiming mappings on other platforms.
 for (const platformStories of [flutterStories, swiftStories, winuiStories])

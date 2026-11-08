@@ -69,6 +69,7 @@ const scenes = contract.stories
 
 const server = await createServer({
   root: example,
+  cacheDir: 'node_modules/.vite-conformance',
   logLevel: 'warn',
   server: { host: '127.0.0.1', port: 0 },
 })

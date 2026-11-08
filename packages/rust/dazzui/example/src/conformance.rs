@@ -45,11 +45,15 @@ pub struct Options {
     reduced_motion: bool,
     modal: Option<String>,
     modal_index: usize,
+    caret_focus: Option<usize>,
+    caret_input: Option<String>,
+    caret_keys: Vec<String>,
 }
 
 impl Options {
     /// `--conformance --out <dir> --contract <scenes.json> [--themes …]
-    /// [--scenes …] [--no-images] [--positions] [--commit …]`, or `None` without
+    /// [--scenes …] [--no-images] [--positions] [--caret-focus <index>] [--caret-input <text>]
+    /// [--caret-keys <key,…>] [--commit …]`, or `None` without
     /// `--conformance`.
     pub fn parse(args: &[String]) -> Option<Options> {
         if !args.iter().any(|arg| arg == "--conformance") {
@@ -93,6 +97,15 @@ impl Options {
                         .expect("--modal-index must be an unsigned integer")
                 })
                 .unwrap_or(0),
+            caret_focus: value("--caret-focus").map(|value| {
+                value
+                    .parse()
+                    .expect("--caret-focus must be an unsigned integer")
+            }),
+            caret_input: value("--caret-input"),
+            caret_keys: value("--caret-keys")
+                .map(|keys| keys.split(',').map(str::to_owned).collect())
+                .unwrap_or_default(),
         })
     }
 
@@ -157,6 +170,9 @@ impl gpui::RenderOnce for Framed {
 }
 
 pub fn run(options: Options, cx: &mut App) {
+    if options.caret_focus.is_some() {
+        specimen::trace_carets();
+    }
     let reduced =
         (options.motion_time.is_none() && options.modal.is_none()) || options.reduced_motion;
     dazzui::Motion::set_preference(
@@ -288,6 +304,7 @@ async fn collect(
     std::fs::create_dir_all(&options.out).map_err(|e| e.to_string())?;
     let mut readings_themes = Map::new();
     let mut readings_scenes = Map::new();
+    let mut caret_themes = Map::new();
     let mut failures = Vec::new();
 
     for theme_id in options.theme_ids() {
@@ -298,6 +315,7 @@ async fn collect(
         }
         let mut readings_of = Map::new();
         let mut scenes_of = Map::new();
+        let mut carets_of = Map::new();
 
         for contracted in &scenes {
             let id = contracted["id"].as_str().unwrap_or_default();
@@ -343,7 +361,10 @@ async fn collect(
             }
             specimen::start();
             window
-                .update(cx, |stage, _, cx| {
+                .update(cx, |stage, window, cx| {
+                    if options.caret_focus.is_some() {
+                        window.blur();
+                    }
                     stage.theme = entry;
                     stage.scene = Some(SceneView::new(scene, cx));
                     cx.notify();
@@ -368,6 +389,57 @@ async fn collect(
                 .map_err(|e| e.to_string())?;
             if resized {
                 settle(window, cx, options.images).await?;
+            }
+            if let Some(index) = options.caret_focus {
+                cx.update_window(window.into(), |_, window, _| {
+                    window.activate_window();
+                    for _ in 0..=index {
+                        window.focus_next();
+                    }
+                })
+                .map_err(|error| error.to_string())?;
+                settle(window, cx, options.images).await?;
+                cx.update_window(window.into(), |_, window, cx| {
+                    let select = if cfg!(target_os = "macos") {
+                        "cmd-a"
+                    } else {
+                        "ctrl-a"
+                    };
+                    window.dispatch_keystroke(gpui::Keystroke::parse(select).unwrap(), cx);
+                    if let Some(text) = &options.caret_input {
+                        window.dispatch_keystroke(
+                            gpui::Keystroke {
+                                key: "unidentified".into(),
+                                key_char: Some(text.clone()),
+                                ..Default::default()
+                            },
+                            cx,
+                        );
+                    } else {
+                        window.dispatch_keystroke(gpui::Keystroke::parse("left").unwrap(), cx);
+                    }
+                })
+                .map_err(|error| error.to_string())?;
+                settle(window, cx, options.images).await?;
+                for key in &options.caret_keys {
+                    cx.update_window(window.into(), |_, window, cx| {
+                        window.dispatch_keystroke(
+                            gpui::Keystroke::parse(key).expect("invalid --caret-keys keystroke"),
+                            cx,
+                        );
+                    })
+                    .map_err(|error| error.to_string())?;
+                    settle(window, cx, options.images).await?;
+                }
+                let traces = specimen::carets();
+                for (index, trace) in traces {
+                    if let Some(address) = specimens
+                        .get(index)
+                        .and_then(|specimen| specimen["address"].as_str())
+                    {
+                        carets_of.insert(address.into(), trace);
+                    }
+                }
             }
             if let Some(mode) = &options.modal {
                 let index = specimens
@@ -510,6 +582,9 @@ async fn collect(
         }
         readings_themes.insert(theme_id.clone(), Value::Object(readings_of));
         readings_scenes.insert(theme_id.clone(), Value::Object(scenes_of));
+        if options.caret_focus.is_some() {
+            caret_themes.insert(theme_id, Value::Object(carets_of));
+        }
     }
 
     let readings = json!({
@@ -525,6 +600,12 @@ async fn collect(
         "scenes": readings_scenes,
     });
     write(&options.out.join("readings.json"), &readings.to_string())?;
+    if let Some(focus) = options.caret_focus {
+        write(
+            &options.out.join("carets.json"),
+            &json!({"scaleFactor": scale, "focusIndex": focus, "themes": caret_themes}).to_string(),
+        )?;
+    }
     if !failures.is_empty() {
         write(
             &options.out.join("failures.txt"),

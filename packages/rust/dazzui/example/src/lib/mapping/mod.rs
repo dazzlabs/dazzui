@@ -18,6 +18,7 @@ mod input;
 mod navigation;
 mod overlay;
 mod structure;
+mod window_frame;
 
 pub type Build = fn(&Node, &mut Window, &mut App) -> AnyElement;
 
@@ -37,6 +38,7 @@ fn registry() -> &'static HashMap<&'static str, Build> {
         navigation::register(&mut map);
         overlay::register(&mut map);
         structure::register(&mut map);
+        window_frame::register(&mut map);
         map
     })
 }

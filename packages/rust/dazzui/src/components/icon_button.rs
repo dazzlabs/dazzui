@@ -1,9 +1,9 @@
 //! A square button holding one glyph.
 
 use gpui::{
-    AnyElement, App, ClickEvent, ElementId, FocusHandle, InteractiveElement, IntoElement,
-    MouseButton, ParentElement, RenderOnce, SharedString, StatefulInteractiveElement, Styled,
-    Window, div, prelude::*, px,
+    AnyElement, App, ClickEvent, Div, ElementId, FocusHandle, InteractiveElement, IntoElement,
+    MouseButton, ParentElement, RenderOnce, SharedString, Stateful, StatefulInteractiveElement,
+    Styled, Window, div, prelude::*, px,
 };
 
 use crate::components::checkbox::kit;
@@ -17,6 +17,7 @@ use crate::foundation::{
 use crate::theme::ActiveTheme;
 
 type OnClick = Box<dyn Fn(&ClickEvent, &mut Window, &mut App) + 'static>;
+type Decorate = Box<dyn FnOnce(Stateful<Div>, &mut Window, &mut App) -> Stateful<Div>>;
 
 /// A square at the control height. The default posture — `plain`,
 /// `neutral` — is quiet chrome: a subtle-ink glyph that washes grey and
@@ -33,6 +34,7 @@ pub struct IconButton {
     children: Vec<AnyElement>,
     on_click: Option<OnClick>,
     focus: Option<FocusHandle>,
+    decorate: Option<Decorate>,
 }
 
 impl IconButton {
@@ -48,6 +50,7 @@ impl IconButton {
             children: Vec::new(),
             on_click: None,
             focus: None,
+            decorate: None,
         }
     }
 
@@ -73,6 +76,16 @@ impl IconButton {
 
     pub(crate) fn focus_handle(mut self, focus: FocusHandle) -> Self {
         self.focus = Some(focus);
+        self
+    }
+
+    /// Position a composed control on the original button, preserving its
+    /// hit box, focus, tooltip anchor and native press behavior.
+    pub(crate) fn decorate(
+        mut self,
+        decorate: impl FnOnce(Stateful<Div>, &mut Window, &mut App) -> Stateful<Div> + 'static,
+    ) -> Self {
+        self.decorate = Some(Box::new(decorate));
         self
     }
 
@@ -157,6 +170,9 @@ impl RenderOnce for IconButton {
 
         // Alone in the tiny square the profile's small glyph is half the
         // box; the square takes its own, `icon-button.tiny.icon-size`.
+        if let Some(decorate) = self.decorate {
+            button = decorate(button, window, cx);
+        }
         let icon_size = if self.size == Size::Tiny {
             t.icon_button_tiny_icon_size
         } else {

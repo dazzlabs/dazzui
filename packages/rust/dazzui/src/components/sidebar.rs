@@ -9,17 +9,18 @@
 
 use std::cell::Cell;
 use std::rc::Rc;
+use std::time::Duration;
 
 use gpui::{
-    AnyElement, App, ClickEvent, ElementId, Hsla, InteractiveElement, IntoElement, KeyDownEvent,
-    MouseButton, ParentElement, RenderOnce, StatefulInteractiveElement, Styled, Window, div,
-    prelude::FluentBuilder, px,
+    AnyElement, App, ClickEvent, Component, ElementId, FocusHandle, Hsla, InteractiveElement,
+    IntoElement, MouseButton, ParentElement, RenderOnce, StatefulInteractiveElement, Styled,
+    Window, div, prelude::FluentBuilder, px,
 };
 
 use crate::components::collapsible::{OnOpenChange, kept_focus, part_id};
 use crate::components::icon::{Icon, icon_slot};
 use crate::components::popup::Side;
-use crate::components::tooltip::Tooltip;
+use crate::components::tooltip::{Tooltip, TooltipProvider};
 use crate::foundation::press::ButtonPress;
 use crate::foundation::{
     Size, StyledExt, Tint, Variant, focus_visible, pointer_down, provide, ring, scoped,
@@ -27,6 +28,14 @@ use crate::foundation::{
 use crate::glyphs;
 use crate::theme::ActiveTheme;
 use crate::tokens::shadows;
+
+mod actions;
+mod input;
+mod rail;
+pub use actions::{SidebarGroupAction, SidebarMenuAction};
+pub use input::SidebarInput;
+use rail::RailColumn;
+pub use rail::SidebarRail;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum SidebarSide {
@@ -96,6 +105,7 @@ pub struct SidebarContext {
     /// Whether any preceding inset sidebar is collapsed. The provider also
     /// reads this after layout to paint the ground beneath all its children.
     inset: Rc<Cell<Option<bool>>>,
+    chrome_inset: Rc<Cell<Option<bool>>>,
 }
 
 impl SidebarContext {
@@ -133,7 +143,7 @@ fn icon_column(cx: &App) -> bool {
 // The window ------------------------------------------------------------------
 
 /// The window row. It holds whether the sidebar is open, binds ⌘B to it
-/// while focus is inside, and is the flex row every column and the inset sit
+/// throughout its window, and is the flex row every column and the inset sit
 /// in.
 #[derive(IntoElement)]
 pub struct SidebarProvider {
@@ -142,6 +152,12 @@ pub struct SidebarProvider {
     default_open: bool,
     on_open_change: Option<OnOpenChange>,
     children: Vec<AnyElement>,
+}
+
+struct SidebarShortcut {
+    open: bool,
+    set_open: OnOpenChange,
+    _subscription: gpui::Subscription,
 }
 
 impl SidebarProvider {
@@ -205,34 +221,60 @@ impl RenderOnce for SidebarProvider {
             open,
             set_open: set_open.clone(),
             inset: Rc::new(Cell::new(None)),
+            chrome_inset: Rc::new(Cell::new(None)),
         };
+        let shortcut = window.use_keyed_state(part_id(&self.id, "shortcut"), cx, |window, cx| {
+            let window_id = window.window_handle().window_id();
+            let subscription =
+                cx.observe_keystrokes(move |shortcut: &mut SidebarShortcut, event, window, cx| {
+                    let stroke = &event.keystroke;
+                    if event.action.is_none()
+                        && window.window_handle().window_id() == window_id
+                        && stroke.key == "b"
+                        && stroke
+                            .key_char
+                            .as_deref()
+                            .map_or(!stroke.modifiers.shift, |character| character == "b")
+                        && (stroke.modifiers.platform || stroke.modifiers.control)
+                    {
+                        window.prevent_default();
+                        (shortcut.set_open)(!shortcut.open, window, cx);
+                    }
+                });
+            SidebarShortcut {
+                open,
+                set_open: set_open.clone(),
+                _subscription: subscription,
+            }
+        });
+        shortcut.update(cx, |shortcut, _| {
+            shortcut.open = open;
+            shortcut.set_open = set_open;
+        });
         let inset = context.inset.clone();
         let ground = cx.theme().color_surface_column.hsla();
 
-        provide(
-            context,
-            div()
-                .id(self.id)
-                .flex()
-                .flex_1()
-                .w_full()
-                .min_w_0()
-                .min_h_0()
-                .map_paint_style(move |style, _, _| {
-                    if inset.get().is_some() {
-                        style.background = Some(ground.into());
-                    }
-                })
-                .on_key_down(move |event: &KeyDownEvent, window, cx| {
-                    let stroke = &event.keystroke;
-                    if stroke.key == "b" && (stroke.modifiers.platform || stroke.modifiers.control)
-                    {
-                        set_open(!open, window, cx);
-                        cx.stop_propagation();
-                    }
-                })
-                .children(self.children),
+        let tooltip_id = part_id(&self.id, "tooltips");
+        TooltipProvider::new(
+            tooltip_id,
+            provide(
+                context,
+                div()
+                    .id(self.id)
+                    .flex()
+                    .flex_1()
+                    .w_full()
+                    .min_w_0()
+                    .min_h_0()
+                    .map_paint_style(move |style, _, _| {
+                        if inset.get().is_some() {
+                            style.background = Some(ground.into());
+                        }
+                    })
+                    .children(self.children),
+            ),
         )
+        .delay(Duration::ZERO)
     }
 }
 
@@ -315,6 +357,13 @@ impl RenderOnce for Sidebar {
         let rule = px(t.stroke_hairline);
         let border = t.color_border.hsla();
         let collapsed = !open && self.collapsible != SidebarCollapsible::None;
+        if let Some(context) = &context {
+            if left && collapsed {
+                context
+                    .chrome_inset
+                    .set(Some(self.collapsible == SidebarCollapsible::Icon));
+            }
+        }
         if self.variant == SidebarVariant::Inset {
             if let Some(context) = &context {
                 context
@@ -333,27 +382,34 @@ impl RenderOnce for Sidebar {
             };
             let width = self.width.unwrap_or(width);
             return provide(
-                IconColumn(false),
-                div()
-                    .flex()
-                    .flex_col()
-                    .flex_none()
-                    .h_full()
-                    .w(px(width))
-                    .bg(surface)
-                    .border_color(border)
-                    .map(|this| {
-                        if left {
-                            this.border_r(rule)
-                        } else {
-                            this.border_l(rule)
-                        }
-                    })
-                    .children(
-                        self.children
-                            .into_iter()
-                            .map(|child| provide(FixedColumn(true), child)),
-                    ),
+                RailColumn {
+                    side: self.side,
+                    collapsed: false,
+                },
+                provide(
+                    IconColumn(false),
+                    div()
+                        .relative()
+                        .flex()
+                        .flex_col()
+                        .flex_none()
+                        .h_full()
+                        .w(px(width))
+                        .bg(surface)
+                        .border_color(border)
+                        .map(|this| {
+                            if left {
+                                this.border_r(rule)
+                            } else {
+                                this.border_l(rule)
+                            }
+                        })
+                        .children(
+                            self.children
+                                .into_iter()
+                                .map(|child| provide(FixedColumn(true), child)),
+                        ),
+                ),
             )
             .into_any_element();
         }
@@ -399,6 +455,7 @@ impl RenderOnce for Sidebar {
                 0.
             };
         let container = div()
+            .relative()
             .flex()
             .flex_none()
             .h_full()
@@ -415,14 +472,20 @@ impl RenderOnce for Sidebar {
             })
             .child(inner);
         provide(
-            IconColumn(icon),
-            div()
-                .flex()
-                .flex_none()
-                .h_full()
-                .w(px(width))
-                .when(!left, |this| this.justify_end())
-                .child(container),
+            RailColumn {
+                side: self.side,
+                collapsed,
+            },
+            provide(
+                IconColumn(icon),
+                div()
+                    .flex()
+                    .flex_none()
+                    .h_full()
+                    .w(px(width))
+                    .when(!left, |this| this.justify_end())
+                    .child(container),
+            ),
         )
         .into_any_element()
     }
@@ -783,6 +846,23 @@ struct RowMark {
 struct ItemSlot {
     mark: Rc<Cell<Option<RowMark>>>,
     has_badge: bool,
+    focus: Option<FocusHandle>,
+    hovered: Option<Rc<Cell<bool>>>,
+    parent: Option<Rc<ItemSlot>>,
+}
+
+impl ItemSlot {
+    fn revealed(&self, window: &Window, cx: &App) -> bool {
+        self.hovered.as_ref().is_some_and(|hovered| hovered.get())
+            || self
+                .focus
+                .as_ref()
+                .is_some_and(|focus| focus.contains_focused(window, cx))
+            || self
+                .parent
+                .as_ref()
+                .is_some_and(|parent| parent.revealed(window, cx))
+    }
 }
 
 const ITEM_GROUP: &str = "dz-sidebar-menu-item";
@@ -790,13 +870,28 @@ const ITEM_GROUP: &str = "dz-sidebar-menu-item";
 /// One entry of a menu: a row, and anything on its trailing edge.
 #[derive(IntoElement, Default)]
 pub struct SidebarMenuItem {
+    id: Option<ElementId>,
     badge: Option<AnyElement>,
+    action: Option<AnyElement>,
     children: Vec<AnyElement>,
 }
 
 impl SidebarMenuItem {
     pub fn new() -> Self {
         SidebarMenuItem::default()
+    }
+
+    /// Stable identity for an item with custom child views. Ordinary items
+    /// derive it from their row or action button's identity.
+    pub fn id(mut self, id: impl Into<ElementId>) -> Self {
+        self.id = Some(id.into());
+        self
+    }
+
+    /// A button on the trailing edge, reserving space in the row's label.
+    pub fn action(mut self, action: impl IntoElement) -> Self {
+        self.action = Some(crate::foundation::precise_text(action.into_any_element()));
+        self
     }
 
     /// A count on the row's trailing edge. The row keeps its label clear of
@@ -816,30 +911,99 @@ impl ParentElement for SidebarMenuItem {
 }
 
 impl RenderOnce for SidebarMenuItem {
-    fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(mut self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let t = cx.theme();
+        let trailing = self.action.is_some() || self.children.iter_mut().any(has_action);
+        let identity = self
+            .id
+            .or_else(|| self.children.iter_mut().find_map(item_identity))
+            .or_else(|| self.action.as_mut().and_then(item_identity));
+        let state = identity.as_ref().map(|id| {
+            let state = window.use_keyed_state(part_id(&id, "item-focus"), cx, |window, cx| {
+                let focus = cx.focus_handle();
+                let enter = window.on_focus_in(&focus, cx, refresh_item);
+                let exit =
+                    window.on_focus_out(&focus, cx, |_, window, cx| refresh_item(window, cx));
+                (focus, Rc::new(Cell::new(false)), enter, exit)
+            });
+            (state.read(cx).0.clone(), state.read(cx).1.clone())
+        });
+        let focus = state.as_ref().map(|state| state.0.clone());
+        let hovered = state.map(|state| state.1);
         let slot = ItemSlot {
             mark: Rc::new(Cell::new(None)),
-            has_badge: self.badge.is_some(),
+            has_badge: self.badge.is_some() || trailing,
+            focus: focus.clone(),
+            hovered: hovered.clone(),
+            parent: scoped::<ItemSlot>(cx).map(Rc::new),
         };
-        provide(
-            slot,
-            div()
-                .relative()
-                .group(ITEM_GROUP)
-                .children(self.children)
-                .children(self.badge.map(|badge| {
-                    div()
-                        .absolute()
-                        .top_0()
-                        .bottom_0()
-                        .right(px(t.spacing_1))
-                        .flex()
-                        .items_center()
-                        .child(badge)
-                })),
-        )
+        let item = div()
+            .relative()
+            .group(ITEM_GROUP)
+            .when_some(focus, |item, focus| item.track_focus(&focus))
+            .children(self.children)
+            .children(self.action)
+            .children(self.badge.map(|badge| {
+                div()
+                    .absolute()
+                    .top_0()
+                    .bottom_0()
+                    .right(px(t.spacing_1))
+                    .flex()
+                    .items_center()
+                    .child(badge)
+            }));
+        let item = match identity {
+            Some(id) => item
+                .id(part_id(&id, "item"))
+                .when_some(hovered, |item, hovered| {
+                    item.on_hover(move |next, window, cx| {
+                        if hovered.replace(*next) != *next {
+                            refresh_item(window, cx);
+                        }
+                    })
+                })
+                .into_any_element(),
+            None => item.into_any_element(),
+        };
+        provide(slot, item)
     }
+}
+
+fn refresh_item(window: &mut Window, cx: &mut App) {
+    window
+        .spawn(cx, async move |cx| {
+            let _ = cx.update(|window, _| window.refresh());
+        })
+        .detach();
+}
+
+fn item_identity(element: &mut AnyElement) -> Option<ElementId> {
+    if element.downcast_mut::<AnyElement>().is_some() {
+        return item_identity(element.downcast_mut::<AnyElement>().unwrap());
+    }
+    if element.transparent_child_mut().is_some() {
+        return item_identity(element.transparent_child_mut().unwrap());
+    }
+    if let Some(row) = element.downcast_mut::<Component<SidebarMenuButton>>() {
+        return row.component_mut().map(|row| row.id.clone());
+    }
+    element
+        .downcast_mut::<Component<SidebarMenuAction>>()?
+        .component_mut()
+        .map(|action| action.identity())
+}
+
+fn has_action(element: &mut AnyElement) -> bool {
+    if element.downcast_mut::<AnyElement>().is_some() {
+        return has_action(element.downcast_mut::<AnyElement>().unwrap());
+    }
+    if element.transparent_child_mut().is_some() {
+        return has_action(element.transparent_child_mut().unwrap());
+    }
+    element
+        .downcast_mut::<Component<SidebarMenuAction>>()
+        .is_some()
 }
 
 /// `medium` in a sidebar, `small` in a narrower second column, `large` for
@@ -1335,4 +1499,154 @@ impl RenderOnce for SidebarTrigger {
                 })),
         )
     }
+}
+
+/// The nested rows under a menu entry, set in beneath its glyph and joined
+/// by a hairline. Hidden when its sidebar shows only icons.
+#[derive(IntoElement, Default)]
+pub struct SidebarMenuSub {
+    children: Vec<AnyElement>,
+}
+
+impl SidebarMenuSub {
+    pub fn new() -> Self {
+        Self::default()
+    }
+}
+impl ParentElement for SidebarMenuSub {
+    fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
+    }
+}
+impl RenderOnce for SidebarMenuSub {
+    fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
+        if icon_column(cx) {
+            return div().into_any_element();
+        }
+        let t = cx.theme();
+        div()
+            .flex()
+            .flex_col()
+            .min_w_0()
+            .gap(px(t.frame_nav_gap))
+            .mx(px(t.spacing_3_5))
+            .py(px(t.spacing_0_5))
+            .pl(px(t.spacing_2_5))
+            .border_l(px(t.stroke_hairline))
+            .border_color(t.color_border.hsla())
+            .children(self.children)
+            .into_any_element()
+    }
+}
+
+/// One nested entry. Its row state belongs to this entry, so it cannot
+/// recolour a badge on the parent entry.
+#[derive(IntoElement, Default)]
+pub struct SidebarMenuSubItem {
+    children: Vec<AnyElement>,
+}
+impl SidebarMenuSubItem {
+    pub fn new() -> Self {
+        Self::default()
+    }
+}
+impl ParentElement for SidebarMenuSubItem {
+    fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
+    }
+}
+impl RenderOnce for SidebarMenuSubItem {
+    fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
+        provide(
+            ItemSlot {
+                mark: Rc::new(Cell::new(None)),
+                has_badge: false,
+                focus: None,
+                hovered: None,
+                parent: scoped::<ItemSlot>(cx).map(Rc::new),
+            },
+            div().relative().children(self.children),
+        )
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum SidebarMenuSubButtonSize {
+    #[default]
+    Small,
+    Medium,
+}
+impl SidebarMenuSubButtonSize {
+    pub fn parse(value: &str) -> Option<Self> {
+        match value {
+            "small" => Some(Self::Small),
+            "medium" => Some(Self::Medium),
+            _ => None,
+        }
+    }
+}
+
+/// A nested row uses the same recipes and native keyboard behavior as a
+/// top-level row, at the small size by default.
+#[derive(IntoElement)]
+pub struct SidebarMenuSubButton {
+    button: SidebarMenuButton,
+}
+impl SidebarMenuSubButton {
+    pub fn new(id: impl Into<ElementId>) -> Self {
+        Self {
+            button: SidebarMenuButton::new(id).size(SidebarMenuButtonSize::Small),
+        }
+    }
+    pub fn size(mut self, size: SidebarMenuSubButtonSize) -> Self {
+        self.button = self.button.size(match size {
+            SidebarMenuSubButtonSize::Small => SidebarMenuButtonSize::Small,
+            SidebarMenuSubButtonSize::Medium => SidebarMenuButtonSize::Medium,
+        });
+        self
+    }
+    pub fn active(mut self, active: bool) -> Self {
+        self.button = self.button.active(active);
+        self
+    }
+    pub fn icon(mut self, icon: impl IntoElement) -> Self {
+        self.button = self.button.icon(icon);
+        self
+    }
+    pub fn variant(mut self, variant: Variant) -> Self {
+        self.button = self.button.variant(variant);
+        self
+    }
+    pub fn tint(mut self, tint: Tint) -> Self {
+        self.button = self.button.tint(tint);
+        self
+    }
+    pub fn disabled(mut self, disabled: bool) -> Self {
+        self.button = self.button.disabled(disabled);
+        self
+    }
+    pub fn on_click(
+        mut self,
+        handler: impl Fn(&ClickEvent, &mut Window, &mut App) + 'static,
+    ) -> Self {
+        self.button = self.button.on_click(handler);
+        self
+    }
+}
+impl ParentElement for SidebarMenuSubButton {
+    fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
+        self.button.extend(elements);
+    }
+}
+impl RenderOnce for SidebarMenuSubButton {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        self.button
+    }
+}
+
+/// The collapsed leading rail's titlebar clearance, read by WindowMain.
+pub(crate) fn window_chrome_inset(cx: &App) -> Option<bool> {
+    SidebarContext::current(cx).and_then(|context| context.chrome_inset.get())
 }

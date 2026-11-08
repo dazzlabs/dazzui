@@ -843,9 +843,22 @@ pub struct ObservedText {
     pub baseline: Point<Pixels>,
 }
 
+/// A submitted rectangle and its effective clip, for editor/selection QA.
+#[derive(Clone, Debug)]
+pub struct ObservedQuad {
+    /// The rectangle's effective logical bounds.
+    pub bounds: Bounds<Pixels>,
+    /// The active clip in logical coordinates.
+    pub content_mask: Bounds<Pixels>,
+    /// The submitted fill with inherited opacity applied.
+    pub background: Background,
+}
+
 /// An element's actual paint inputs. Nested observed elements are excluded.
 #[derive(Clone, Debug, Default)]
 pub struct ObservedPaint {
+    /// Actual quad submissions, populated with the optional surface trace.
+    pub quads: Vec<ObservedQuad>,
     /// Every own surface in submission order, populated only by
     /// `Window::observe_element_paint_with_surfaces`.
     pub surfaces: Vec<ObservedSurface>,
@@ -3133,6 +3146,16 @@ impl Window {
         let scale_factor = self.scale_factor();
         let content_mask = self.content_mask();
         let opacity = self.element_opacity();
+        let bounds = self.painted_bounds(quad.bounds);
+        if let Some(observation) = self.paint_observations.last_mut() {
+            if observation.record_surfaces {
+                observation.paint.quads.push(ObservedQuad {
+                    bounds,
+                    content_mask: content_mask.bounds,
+                    background: quad.background.clone().opacity(opacity),
+                });
+            }
+        }
         self.next_frame.scene.insert_primitive(Quad {
             order: 0,
             bounds: quad.bounds.scale(scale_factor),

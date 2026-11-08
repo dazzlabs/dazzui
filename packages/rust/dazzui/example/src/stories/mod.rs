@@ -54,6 +54,7 @@ mod toast;
 mod toggle;
 mod tooltip;
 mod tree;
+mod window_frame;
 
 /// Every story's JSON, in the order the React example lists them.
 pub static SOURCES: &[&str] = &[
@@ -111,4 +112,5 @@ pub static SOURCES: &[&str] = &[
     toggle::STORY,
     tooltip::STORY,
     tree::STORY,
+    window_frame::STORY,
 ];

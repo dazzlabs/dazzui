@@ -1335,6 +1335,7 @@ dependencies = [
  "nativeapi",
  "objc",
  "raw-window-handle",
+ "unicode-properties",
  "unicode-segmentation",
  "yeslogic-fontconfig-sys",
 ]

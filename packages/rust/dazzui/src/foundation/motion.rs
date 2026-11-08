@@ -295,6 +295,38 @@ pub(crate) fn field_transitions(
     })
 }
 
+/// A platform chrome shadow has its own timing, independent of control motion.
+pub(crate) fn shadow_transition(
+    element: Stateful<Div>,
+    id: ElementId,
+    duration: f32,
+    curve: [f32; 4],
+    window: &mut Window,
+    cx: &mut App,
+) -> Stateful<Div> {
+    let state = window.use_keyed_state(id, cx, |_, _| {
+        RefCell::<Option<ShadowTransition>>::new(None)
+    });
+    element.map_paint_style(move |style, window, cx| {
+        let target = Shadows(
+            style
+                .box_shadow
+                .iter()
+                .cloned()
+                .map(|shadow| (shadow, false))
+                .collect(),
+        );
+        let frame = Motion::frame(cx);
+        let mut state = state.read(cx).borrow_mut();
+        let transition =
+            state.get_or_insert_with(|| ShadowTransition::new(target.clone(), frame.elapsed));
+        style.box_shadow = transition.sample(target, frame, duration, curve);
+        if !frame.frozen && transition.running(frame, duration) {
+            window.request_animation_frame();
+        }
+    })
+}
+
 /// A standalone background transition, for parts such as a switch's track
 /// and thumb whose position and other paint properties change immediately.
 pub(crate) fn background_transition(

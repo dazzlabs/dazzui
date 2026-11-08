@@ -6,10 +6,11 @@ use crate::{
 };
 use anyhow::anyhow;
 use cocoa::appkit::CGFloat;
-use collections::HashMap;
+use collections::{HashMap, HashSet};
 use core_foundation::{
     attributed_string::CFMutableAttributedString,
     base::{CFRange, TCFType},
+    dictionary::CFDictionary,
     number::CFNumber,
     string::CFString,
 };
@@ -25,6 +26,7 @@ use core_text::{
         kCTFontSlantTrait, kCTFontSymbolicTrait, kCTFontWeightTrait, kCTFontWidthTrait,
     },
     line::CTLine,
+    run::CTRunRef,
     string_attributes::kCTFontAttributeName,
 };
 use font_kit::{
@@ -35,6 +37,7 @@ use font_kit::{
     properties::{Style as FontkitStyle, Weight as FontkitWeight},
     source::SystemSource,
     sources::mem::MemSource,
+    tracking::Tracking,
 };
 use parking_lot::{RwLock, RwLockUpgradableReadGuard};
 use pathfinder_geometry::{
@@ -44,11 +47,17 @@ use pathfinder_geometry::{
 };
 use smallvec::SmallVec;
 use std::{borrow::Cow, char, convert::TryFrom, sync::Arc};
+use unicode_segmentation::UnicodeSegmentation;
 
 use super::open_type::apply_features_and_fallbacks;
 
 #[allow(non_upper_case_globals)]
 const kCGImageAlphaOnly: u32 = 7;
+
+#[link(name = "CoreText", kind = "framework")]
+unsafe extern "C" {
+    fn CTRunGetStringRange(run: CTRunRef) -> CFRange;
+}
 
 pub(crate) struct MacTextSystem(RwLock<MacTextSystemState>);
 
@@ -69,6 +78,8 @@ struct MacTextSystemState {
     postscript_names_by_font_id: HashMap<FontId, String>,
     /// UTF-16 indices of ZWNJS
     zwnjs_scratch_space: Vec<usize>,
+    tracking: HashMap<FontId, Option<(Tracking, u32)>>,
+    native_only_tracking: HashSet<FontId>,
 }
 
 impl MacTextSystem {
@@ -82,6 +93,8 @@ impl MacTextSystem {
             font_ids_by_font_key: HashMap::default(),
             postscript_names_by_font_id: HashMap::default(),
             zwnjs_scratch_space: Vec::new(),
+            tracking: HashMap::default(),
+            native_only_tracking: HashSet::default(),
         }))
     }
 }
@@ -434,6 +447,25 @@ impl MacTextSystemState {
         }
     }
 
+    fn tracking_adjustment(&mut self, font_id: FontId, font_size: Pixels) -> f32 {
+        self.tracking
+            .entry(font_id)
+            .or_insert_with(|| {
+                let font = self.fonts[font_id.0].native_font();
+                let tracking = font
+                    .get_font_table(u32::from_be_bytes(*b"trak"))
+                    .and_then(|data| Tracking::from_bytes(data.bytes()))?;
+                // HarfBuzz gates AAT tracking on STAT, unlike Core Text.
+                if font.get_font_table(u32::from_be_bytes(*b"STAT")).is_none() {
+                    self.native_only_tracking.insert(font_id);
+                    return None;
+                }
+                Some((tracking, self.fonts[font_id.0].metrics().units_per_em))
+            })
+            .as_ref()
+            .map_or(0., |(track, units)| track.adjustment(font_size.0, *units))
+    }
+
     fn layout_line(&mut self, text: &str, font_size: Pixels, font_runs: &[FontRun]) -> LineLayout {
         const ZWNJ: char = '\u{200C}';
         const ZWNJ_STR: &str = "\u{200C}";
@@ -487,10 +519,54 @@ impl MacTextSystemState {
             }
         }
         // Retrieve the glyphs from the shaped line, converting UTF16 offsets to UTF8 offsets.
-        let line = CTLine::new_with_attributed_string(string.as_concrete_TypeRef());
+        let mut line = CTLine::new_with_attributed_string(string.as_concrete_TypeRef());
+        let mut changed = false;
+        // Fallback fonts are known only after shaping. Suppress Core Text's
+        // tracking on fonts such as Apple Color Emoji before shaping again.
+        for run in line.glyph_runs().into_iter() {
+            let attributes = run.attributes().unwrap();
+            let font = unsafe {
+                attributes
+                    .get(kCTFontAttributeName)
+                    .downcast::<CTFont>()
+                    .unwrap()
+            };
+            let font_id = self.id_for_native_font(font.clone());
+            self.tracking_adjustment(font_id, font_size);
+            if self.native_only_tracking.contains(&font_id) {
+                let attributes = CFDictionary::from_CFType_pairs(&[(
+                    CFString::from_static_string("NSCTFontUnscaledTrackingAttribute"),
+                    CFNumber::from(0),
+                )]);
+                let Ok(descriptor) = font
+                    .copy_descriptor()
+                    .create_copy_with_attributes(attributes.into_untyped())
+                else {
+                    continue;
+                };
+                let replacement = core_text::font::new_from_descriptor(&descriptor, font.pt_size());
+                unsafe {
+                    string.set_attribute(
+                        CTRunGetStringRange(run.as_concrete_TypeRef()),
+                        kCTFontAttributeName,
+                        &replacement,
+                    );
+                }
+                changed = true;
+            }
+        }
+        if changed {
+            line = CTLine::new_with_attributed_string(string.as_concrete_TypeRef());
+        }
         let glyph_runs = line.glyph_runs();
         let mut runs = <Vec<ShapedRun>>::with_capacity(glyph_runs.len() as usize);
         let mut ix_converter = StringIndexConverter::new(text);
+        // Core Text truncates AAT tracking to integral design units, whereas
+        // browser shaping interpolates before scaling. Allocate cluster
+        // boundaries only when a font's tracking actually needs correction.
+        let mut graphemes: Option<Vec<usize>> = None;
+        let mut tracking_shift = 0.;
+        let mut tracked_cluster: Option<(usize, f32)> = None;
         for run in glyph_runs.into_iter() {
             let attributes = run.attributes().unwrap();
             let font = unsafe {
@@ -500,6 +576,10 @@ impl MacTextSystemState {
                     .unwrap()
             };
             let font_id = self.id_for_native_font(font);
+            let adjustment = self.tracking_adjustment(font_id, font_size);
+            if adjustment != 0. && graphemes.is_none() {
+                graphemes = Some(text.grapheme_indices(true).map(|(at, _)| at).collect());
+            }
 
             let mut glyphs = match runs.last_mut() {
                 Some(run) if run.font_id == font_id => &mut run.glyphs,
@@ -532,19 +612,33 @@ impl MacTextSystemState {
                     ix_converter = StringIndexConverter::new(text);
                 }
                 ix_converter.advance_to_utf16_ix(glyph_utf16_ix);
+                if let Some(graphemes) = &graphemes {
+                    let cluster = graphemes
+                        .partition_point(|&at| at <= ix_converter.utf8_ix)
+                        .saturating_sub(1);
+                    if tracked_cluster.is_none_or(|(previous, _)| previous != cluster) {
+                        if let Some((_, adjustment)) = tracked_cluster {
+                            tracking_shift += adjustment;
+                        }
+                        tracked_cluster = Some((cluster, adjustment));
+                    }
+                }
                 glyphs.push(ShapedGlyph {
                     id: GlyphId(glyph_id as u32),
-                    position: point(position.x as f32, position.y as f32).map(px),
+                    position: point(position.x as f32 + tracking_shift, position.y as f32).map(px),
                     index: ix_converter.utf8_ix,
                     is_emoji: self.is_emoji(font_id),
                 });
             }
         }
         let typographic_bounds = line.get_typographic_bounds();
+        if let Some((_, adjustment)) = tracked_cluster {
+            tracking_shift += adjustment;
+        }
         LineLayout {
             runs,
             font_size,
-            width: typographic_bounds.width.into(),
+            width: (typographic_bounds.width as f32 + tracking_shift).into(),
             ascent: max_ascent.into(),
             descent: max_descent.into(),
             len: text.len(),

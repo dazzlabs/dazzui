@@ -699,6 +699,8 @@ test('collector reads compound surfaces and editable text', async () => {
         <button class="collector-button" style="color:rgb(80,90,100)"><svg class="collector-nested-icon" style="color:red" width="16" height="16"></svg>Save</button>
         <div class="collector-sentinel"><span style="clip-path:inset(50%);position:fixed;width:1px;height:1px">x</span></div>
         <input class="collector-empty" value="">
+        <svg class="collector-stroke" width="12" height="12" style="fill:none;stroke:rgba(0,0,0,0.55);color:red"><path d="M2 2l8 8" /></svg>
+        <div class="collector-hidden"><span style="visibility:hidden;color:red">Hidden title</span><span style="color:rgb(10,20,30)">Visible body</span></div>
       `
       document.body.append(fixture)
       const read = selector =>
@@ -714,6 +716,8 @@ test('collector reads compound surfaces and editable text', async () => {
         ),
         read('.collector-sentinel'),
         read('.collector-empty'),
+        read('.collector-stroke'),
+        read('.collector-hidden'),
       ]
     })
     assert.equal(readings[0].values.corner, 13)
@@ -731,6 +735,8 @@ test('collector reads compound surfaces and editable text', async () => {
     assert.equal(readings[5].values.fontSize, null)
     assert.equal(readings[6].values.ink, null)
     assert.equal(readings[6].values.fontSize, null)
+    assert.equal(readings[7].values.ink, '#0000008c')
+    assert.equal(readings[8].values.ink, '#0a141e')
   } finally {
     await browser.close()
     await server.close()

@@ -1197,6 +1197,648 @@ pub const STORY: &str = r#"
           ]
         }
       }
+    },
+    {
+      "title": "Nested navigation",
+      "note": "Nested rows share the row recipes and disappear when the column collapses to icons.",
+      "demo": {
+        "state": {
+          "s0": "Inbox"
+        },
+        "content": {
+          "$el": "Frame",
+          "props": {
+            "width": "100%",
+            "height": "18rem"
+          },
+          "children": [
+            {
+              "$el": "SidebarProvider",
+              "children": [
+                {
+                  "$el": "Sidebar",
+                  "props": {
+                    "collapsible": "icon"
+                  },
+                  "children": [
+                    {
+                      "$el": "SidebarContent",
+                      "children": [
+                        {
+                          "$el": "SidebarGroup",
+                          "children": [
+                            {
+                              "$el": "SidebarGroupLabel",
+                              "children": [
+                                "Library"
+                              ],
+                              "$at": 4
+                            },
+                            {
+                              "$el": "SidebarMenu",
+                              "children": [
+                                {
+                                  "$el": "SidebarMenuItem",
+                                  "children": [
+                                    {
+                                      "$el": "SidebarMenuButton",
+                                      "props": {
+                                        "active": true
+                                      },
+                                      "children": [
+                                        "Documents"
+                                      ],
+                                      "$at": 7
+                                    },
+                                    {
+                                      "$el": "SidebarMenuBadge",
+                                      "children": [
+                                        "3"
+                                      ],
+                                      "$at": 8
+                                    },
+                                    {
+                                      "$el": "SidebarMenuSub",
+                                      "children": [
+                                        {
+                                          "$el": "SidebarMenuSubItem",
+                                          "children": [
+                                            {
+                                              "$el": "SidebarMenuSubButton",
+                                              "props": {
+                                                "active": {
+                                                  "$eq": [
+                                                    {
+                                                      "$state": "s0"
+                                                    },
+                                                    "Inbox"
+                                                  ]
+                                                },
+                                                "onClick": {
+                                                  "$do": [
+                                                    {
+                                                      "set": "s0",
+                                                      "to": "Inbox"
+                                                    }
+                                                  ]
+                                                }
+                                              },
+                                              "children": [
+                                                "Inbox"
+                                              ],
+                                              "$at": 11
+                                            }
+                                          ],
+                                          "$at": 10
+                                        },
+                                        {
+                                          "$el": "SidebarMenuSubItem",
+                                          "children": [
+                                            {
+                                              "$el": "SidebarMenuSubButton",
+                                              "props": {
+                                                "size": "medium",
+                                                "variant": "tinted",
+                                                "tint": "success",
+                                                "active": {
+                                                  "$eq": [
+                                                    {
+                                                      "$state": "s0"
+                                                    },
+                                                    "Archive"
+                                                  ]
+                                                },
+                                                "onClick": {
+                                                  "$do": [
+                                                    {
+                                                      "set": "s0",
+                                                      "to": "Archive"
+                                                    }
+                                                  ]
+                                                }
+                                              },
+                                              "children": [
+                                                "Archive"
+                                              ],
+                                              "$at": 13
+                                            }
+                                          ],
+                                          "$at": 12
+                                        },
+                                        {
+                                          "$el": "SidebarMenuSubItem",
+                                          "children": [
+                                            {
+                                              "$el": "SidebarMenuSubButton",
+                                              "props": {
+                                                "disabled": true
+                                              },
+                                              "children": [
+                                                "Deleted"
+                                              ],
+                                              "$at": 15
+                                            }
+                                          ],
+                                          "$at": 14
+                                        }
+                                      ],
+                                      "$at": 9
+                                    }
+                                  ],
+                                  "$at": 6
+                                }
+                              ],
+                              "$at": 5
+                            }
+                          ],
+                          "$at": 3
+                        }
+                      ],
+                      "$at": 2
+                    }
+                  ],
+                  "$at": 1
+                },
+                {
+                  "$el": "SidebarInset",
+                  "children": [
+                    {
+                      "$el": "SidebarHeader",
+                      "children": [
+                        {
+                          "$el": "Row",
+                          "props": {
+                            "gap": "2"
+                          },
+                          "children": [
+                            {
+                              "$el": "SidebarTrigger",
+                              "$at": 18
+                            },
+                            {
+                              "$el": "Text",
+                              "props": {
+                                "strong": true
+                              },
+                              "children": [
+                                {
+                                  "$state": "s0"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ],
+                      "$at": 17
+                    }
+                  ],
+                  "$at": 16
+                }
+              ],
+              "$at": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "title": "Group and row actions",
+      "note": "Row actions appear on hover or focus. Collapsing the column removes its actions.",
+      "demo": {
+        "state": {
+          "s0": "Choose an action"
+        },
+        "content": {
+          "$el": "Frame",
+          "props": {
+            "width": "100%",
+            "height": "14rem"
+          },
+          "children": [
+            {
+              "$el": "SidebarProvider",
+              "children": [
+                {
+                  "$el": "Sidebar",
+                  "props": {
+                    "collapsible": "icon"
+                  },
+                  "children": [
+                    {
+                      "$el": "SidebarContent",
+                      "children": [
+                        {
+                          "$el": "SidebarGroup",
+                          "children": [
+                            {
+                              "$el": "SidebarGroupLabel",
+                              "children": [
+                                "Library"
+                              ],
+                              "$at": 4
+                            },
+                            {
+                              "$el": "SidebarGroupAction",
+                              "props": {
+                                "label": "Add document",
+                                "onClick": {
+                                  "$do": [
+                                    {
+                                      "set": "s0",
+                                      "to": "Added document"
+                                    }
+                                  ]
+                                }
+                              },
+                              "children": [
+                                {
+                                  "$el": "Icon",
+                                  "props": {
+                                    "icon": {
+                                      "$icon": "Add20Regular"
+                                    }
+                                  },
+                                  "$at": 6
+                                }
+                              ],
+                              "$at": 5
+                            },
+                            {
+                              "$el": "SidebarMenu",
+                              "children": [
+                                {
+                                  "$el": "SidebarMenuItem",
+                                  "children": [
+                                    {
+                                      "$el": "SidebarMenuButton",
+                                      "props": {
+                                        "icon": {
+                                          "$el": "Icon",
+                                          "props": {
+                                            "icon": {
+                                              "$icon": "Document20Regular"
+                                            }
+                                          },
+                                          "$at": 10
+                                        },
+                                        "onClick": {
+                                          "$do": [
+                                            {
+                                              "set": "s0",
+                                              "to": "Documents"
+                                            }
+                                          ]
+                                        }
+                                      },
+                                      "children": [
+                                        "Documents"
+                                      ],
+                                      "$at": 9
+                                    },
+                                    {
+                                      "$el": "SidebarMenuAction",
+                                      "props": {
+                                        "label": "More document actions",
+                                        "showOnHover": true,
+                                        "onClick": {
+                                          "$do": [
+                                            {
+                                              "set": "s0",
+                                              "to": "Document actions"
+                                            }
+                                          ]
+                                        }
+                                      },
+                                      "children": [
+                                        {
+                                          "$el": "Icon",
+                                          "props": {
+                                            "icon": {
+                                              "$icon": "MoreHorizontal20Regular"
+                                            }
+                                          },
+                                          "$at": 12
+                                        }
+                                      ],
+                                      "$at": 11
+                                    }
+                                  ],
+                                  "$at": 8
+                                },
+                                {
+                                  "$el": "SidebarMenuItem",
+                                  "children": [
+                                    {
+                                      "$el": "SidebarMenuButton",
+                                      "props": {
+                                        "size": "large",
+                                        "icon": {
+                                          "$el": "Icon",
+                                          "props": {
+                                            "icon": {
+                                              "$icon": "Document20Regular"
+                                            }
+                                          },
+                                          "$at": 15
+                                        }
+                                      },
+                                      "children": [
+                                        "Shared library"
+                                      ],
+                                      "$at": 14
+                                    },
+                                    {
+                                      "$el": "SidebarMenuAction",
+                                      "props": {
+                                        "label": "Shared library actions",
+                                        "size": "small",
+                                        "variant": "tinted",
+                                        "tint": "success",
+                                        "onClick": {
+                                          "$do": [
+                                            {
+                                              "set": "s0",
+                                              "to": "Shared library actions"
+                                            }
+                                          ]
+                                        }
+                                      },
+                                      "children": [
+                                        {
+                                          "$el": "Icon",
+                                          "props": {
+                                            "icon": {
+                                              "$icon": "MoreHorizontal20Regular"
+                                            }
+                                          },
+                                          "$at": 17
+                                        }
+                                      ],
+                                      "$at": 16
+                                    }
+                                  ],
+                                  "$at": 13
+                                }
+                              ],
+                              "$at": 7
+                            }
+                          ],
+                          "$at": 3
+                        }
+                      ],
+                      "$at": 2
+                    }
+                  ],
+                  "$at": 1
+                },
+                {
+                  "$el": "SidebarInset",
+                  "children": [
+                    {
+                      "$el": "SidebarHeader",
+                      "children": [
+                        {
+                          "$el": "Row",
+                          "props": {
+                            "gap": "2"
+                          },
+                          "children": [
+                            {
+                              "$el": "SidebarTrigger",
+                              "$at": 20
+                            },
+                            {
+                              "$el": "Text",
+                              "props": {
+                                "strong": true
+                              },
+                              "children": [
+                                {
+                                  "$state": "s0"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ],
+                      "$at": 19
+                    }
+                  ],
+                  "$at": 18
+                }
+              ],
+              "$at": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "title": "Input and edge toggle",
+      "note": "The input defaults to small. The edge strip toggles the column without joining Tab traversal.",
+      "demo": {
+        "state": {
+          "s0": ""
+        },
+        "content": {
+          "$el": "Frame",
+          "props": {
+            "width": "100%",
+            "height": "14rem"
+          },
+          "children": [
+            {
+              "$el": "SidebarProvider",
+              "children": [
+                {
+                  "$el": "Sidebar",
+                  "props": {
+                    "collapsible": "icon"
+                  },
+                  "children": [
+                    {
+                      "$el": "SidebarHeader",
+                      "children": [
+                        {
+                          "$el": "SidebarInput",
+                          "props": {
+                            "aria-label": "Filter library",
+                            "placeholder": "Filter library",
+                            "value": {
+                              "$state": "s0"
+                            },
+                            "onValueChange": {
+                              "$do": [
+                                {
+                                  "set": "s0",
+                                  "to": {
+                                    "$arg": 0
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "$at": 3
+                        }
+                      ],
+                      "$at": 2
+                    },
+                    {
+                      "$el": "SidebarContent",
+                      "children": [
+                        {
+                          "$el": "SidebarGroup",
+                          "children": [
+                            {
+                              "$el": "SidebarMenu",
+                              "children": [
+                                {
+                                  "$el": "SidebarMenuItem",
+                                  "children": [
+                                    {
+                                      "$el": "SidebarMenuButton",
+                                      "props": {
+                                        "icon": {
+                                          "$el": "Icon",
+                                          "props": {
+                                            "icon": {
+                                              "$icon": "Document20Regular"
+                                            }
+                                          },
+                                          "$at": 9
+                                        }
+                                      },
+                                      "children": [
+                                        "Documents"
+                                      ],
+                                      "$at": 8
+                                    }
+                                  ],
+                                  "$at": 7
+                                }
+                              ],
+                              "$at": 6
+                            }
+                          ],
+                          "$at": 5
+                        }
+                      ],
+                      "$at": 4
+                    },
+                    {
+                      "$el": "SidebarRail",
+                      "$at": 10
+                    }
+                  ],
+                  "$at": 1
+                },
+                {
+                  "$el": "SidebarInset",
+                  "children": [
+                    {
+                      "$el": "SidebarHeader",
+                      "children": [
+                        {
+                          "$el": "Row",
+                          "props": {
+                            "gap": "2"
+                          },
+                          "children": [
+                            {
+                              "$el": "SidebarTrigger",
+                              "$at": 13
+                            },
+                            {
+                              "$el": "Text",
+                              "children": [
+                                {
+                                  "$state": "s0"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ],
+                      "$at": 12
+                    }
+                  ],
+                  "$at": 11
+                }
+              ],
+              "$at": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "title": "Sidebar input states",
+      "demo": {
+        "content": {
+          "$el": "Col",
+          "props": {
+            "width": "20rem",
+            "gap": "3"
+          },
+          "children": [
+            {
+              "$el": "SidebarInput",
+              "props": {
+                "aria-label": "Small default",
+                "defaultValue": "Small by default"
+              },
+              "$at": 0
+            },
+            {
+              "$el": "SidebarInput",
+              "props": {
+                "aria-label": "Medium override",
+                "size": "medium",
+                "defaultValue": "Medium override"
+              },
+              "$at": 1
+            },
+            {
+              "$el": "SidebarInput",
+              "props": {
+                "aria-label": "Error field",
+                "state": "error",
+                "defaultValue": "Needs attention"
+              },
+              "$at": 2
+            },
+            {
+              "$el": "SidebarInput",
+              "props": {
+                "aria-label": "Read only field",
+                "readOnly": true,
+                "defaultValue": "Read only",
+                "mono": true
+              },
+              "$at": 3
+            },
+            {
+              "$el": "SidebarInput",
+              "props": {
+                "aria-label": "Disabled field",
+                "disabled": true,
+                "defaultValue": "Disabled"
+              },
+              "$at": 4
+            },
+            {
+              "$el": "SidebarInput",
+              "props": {
+                "aria-label": "Multiline field",
+                "multiline": true,
+                "rows": 3,
+                "defaultValue": "A longer note"
+              },
+              "$at": 5
+            }
+          ]
+        }
+      }
     }
   ]
 }

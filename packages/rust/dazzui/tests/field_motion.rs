@@ -31,13 +31,20 @@ impl Render for Harness {
             FieldState::Default
         };
         self.input = match self.kind {
-            0 | 1 | 2 => Some(input_state("tested", window, cx)),
-            4 | 5 => Some(input_state(
-                ElementId::NamedChild(Box::new("tested".into()), "text".into()),
+            0 => Some(editor::<TextField>("tested".into(), window, cx)),
+            1 => Some(editor::<SearchField>("tested".into(), window, cx)),
+            2 => Some(editor::<NumberField>("tested".into(), window, cx)),
+            4 => Some(editor::<Combobox>(
+                ElementId::NamedChild(Box::new("tested".into()), "input".into()),
                 window,
                 cx,
             )),
-            7 => Some(input_state(
+            5 => Some(editor::<Autocomplete>(
+                ElementId::NamedChild(Box::new("tested".into()), "input".into()),
+                window,
+                cx,
+            )),
+            7 => Some(editor::<OtpField>(
                 ElementId::NamedChild(Box::new("tested".into()), "cell-0".into()),
                 window,
                 cx,
@@ -91,6 +98,43 @@ impl Render for Harness {
                 paints: self.paints.clone(),
             }))
             .child(Button::new("next").child("Next"))
+    }
+}
+
+fn editor<T: 'static>(
+    id: ElementId,
+    window: &mut Window,
+    cx: &mut gpui::App,
+) -> Entity<InputState> {
+    window.with_id(
+        ElementId::Name(std::any::type_name::<T>().into()),
+        |window| input_state(id, window, cx),
+    )
+}
+fn assert_editor(view: &Entity<Harness>, cx: &mut VisualTestContext, kind: usize) {
+    let input = view.read_with(cx, |view, _| view.input.clone());
+    if let Some(input) = input {
+        let expected = match kind {
+            2 => "42",
+            4 => "Alpha",
+            7 => "",
+            _ => "Value",
+        };
+        cx.update(|window, cx| {
+            assert!(
+                input.read(cx).is_focused(window),
+                "field {kind}: test must observe the focused editor"
+            );
+            assert_eq!(
+                input.read(cx).value(),
+                expected,
+                "field {kind}: test must observe the displayed value"
+            );
+        });
+        assert!(
+            caret(view, cx).is_some(),
+            "field {kind}: actual caret geometry must be measured"
+        );
     }
 }
 
@@ -156,8 +200,42 @@ fn shared_field_focus_transitions_keep_text_and_caret_geometry(cx: &mut TestAppC
         let (view, cx) = setup(cx, "studio-light", kind);
         let rest = sample(&view, cx).decorated_surface.unwrap();
         cx.simulate_keystrokes("tab");
+        assert_editor(&view, cx, kind);
+        if let Some(input) = view.read_with(cx, |view, _| view.input.clone()) {
+            cx.update(|_, cx| input.update(cx, |input, cx| input.select_all(cx)));
+            cx.simulate_keystrokes("left");
+            cx.run_until_parked();
+        }
         let initial_caret = caret(&view, cx);
         let first = sample(&view, cx);
+        if let Some(caret) = initial_caret {
+            assert_eq!(caret.top() - rest.bounds.top(), px(7.));
+            // GPUI's NoopTextSystem supplies one synthetic font for every
+            // family. Real-font caret parity is collected in a native window.
+            assert_eq!(caret.size.height, px(15.));
+            assert_eq!(
+                caret.left() - rest.bounds.left(),
+                px(match kind {
+                    1 => 39.,
+                    7 => 14.,
+                    _ => 13.,
+                })
+            );
+            let quads: Vec<_> = first
+                .quads
+                .iter()
+                .filter(|quad| quad.bounds.size.width == px(1.) && quad.bounds.size.height > px(5.))
+                .collect();
+            assert_eq!(
+                quads.len(),
+                1,
+                "field {kind}: an actual caret must be submitted"
+            );
+            assert_eq!(quads[0].bounds.origin, caret.origin);
+            assert_eq!(quads[0].bounds.size.height, caret.size.height);
+            assert!(quads[0].bounds.top() >= quads[0].content_mask.top());
+            assert!(quads[0].bounds.bottom() <= quads[0].content_mask.bottom());
+        }
         assert_eq!(
             first.decorated_surface.as_ref().unwrap().style.border_color,
             rest.style.border_color,
@@ -208,6 +286,7 @@ fn focused_field_error_retargets_the_whole_shadow_and_changes_ink_immediately(
     ] {
         let (view, cx) = setup(cx, theme, 0);
         cx.simulate_keystrokes("tab");
+        assert_editor(&view, cx, 0);
         let initial_caret = caret(&view, cx);
         seek(cx, 75);
         let before = sample(&view, cx);
