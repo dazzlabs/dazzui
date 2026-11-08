@@ -132,9 +132,13 @@ impl PlatformTextSystem for MacTextSystem {
                 lock.font_ids_by_font_key[&font_key].as_ref()
             };
 
+            // Match on the weight each face draws at rather than the one its
+            // file declares: a variable instance's trait still names the
+            // face's own weight, and CSS face matching given a 500 it cannot
+            // find in the traits prefers Regular over a nearer Medium.
             let candidate_properties = candidates
                 .iter()
-                .map(|font_id| lock.fonts[font_id.0].properties())
+                .map(|font_id| font_kit::css_properties(&lock.fonts[font_id.0]))
                 .collect::<SmallVec<[_; 4]>>();
 
             let ix = font_kit::matching::find_best_match(

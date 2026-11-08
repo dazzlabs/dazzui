@@ -29,6 +29,13 @@ only a color, dropping a control's font size, weight and leading. The patch
 keeps those properties while applying the state's ink, so pressing a button
 cannot change its text width.
 
+Font selection matches on the weight each face draws at, read from the
+`wght` variation axis, rather than on the weight its file declares. A
+variable instance keeps its face's own trait — SF Pro's Medium is 530 on
+macOS 15 — and CSS face matching handed a 500 it cannot find among the
+traits prefers a 400 face over the nearer one, so medium text drew regular
+there. The candidates' weights come from `font_kit::css_properties`.
+
 `Window::observe_element_paint` records an element's computed surface style
 and actual submitted text/SVG paint inputs. Nested observation scopes own
 their own surface, text and glyphs. It records both the layout root and the
