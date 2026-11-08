@@ -7,7 +7,9 @@ use gpui::{
 };
 
 use crate::components::checkbox::kit;
+use crate::components::collapsible::part_id;
 use crate::components::icon::icon_slot;
+use crate::components::tooltip::Tooltip;
 use crate::foundation::press::ButtonPress;
 use crate::foundation::{
     ControlColors, Size, State, StyledExt, Tint, Variant, control, focus_visible, pointer_down,
@@ -134,10 +136,9 @@ impl RenderOnce for IconButton {
                 control(button, t, self.variant, self.tint, self.disabled)
             };
         }
-        button = kit::hint(button, Some(self.label));
         button = crate::foundation::motion::color_transitions(
             button,
-            self.id,
+            self.id.clone(),
             t,
             (self.variant != Variant::Plain || self.tint != Tint::Neutral || self.disabled)
                 .then_some((self.variant, self.tint)),
@@ -150,7 +151,7 @@ impl RenderOnce for IconButton {
         } else {
             button = button
                 .cursor_pointer()
-                .track_focus(&focus.tab_stop(true))
+                .track_focus(&focus.clone().tab_stop(true))
                 .on_mouse_down(MouseButton::Left, |_, window, cx| pointer_down(window, cx));
         }
 
@@ -163,12 +164,18 @@ impl RenderOnce for IconButton {
         };
         icon_slot(
             icon_size,
-            press.bind(
-                button
-                    .children(self.children)
-                    .when(visible, |this| this.child(kit::outline(t, profile.radius))),
-                self.on_click,
-            ),
+            Tooltip::new(part_id(&self.id, "tooltip"), self.label)
+                .disabled(self.disabled)
+                .bind_button(
+                    button
+                        .children(self.children)
+                        .when(visible, |this| this.child(kit::outline(t, profile.radius))),
+                    &focus,
+                    press,
+                    self.on_click,
+                    window,
+                    cx,
+                ),
         )
     }
 }

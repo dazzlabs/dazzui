@@ -4,7 +4,7 @@ import { test } from 'node:test'
 import { chromium } from 'playwright'
 import { createServer } from 'vite'
 
-test('ordinary hints close on their child control activation phases', async () => {
+test('tooltips follow activation, icon hints and nested ownership', async () => {
   const server = await createServer({
     root: fileURLToPath(new URL('..', import.meta.url)),
     cacheDir: 'node_modules/.vite-test-tooltip',
@@ -21,25 +21,29 @@ test('ordinary hints close on their child control activation phases', async () =
         import {createElement as h} from 'react'
         import {createRoot} from 'react-dom/client'
         import {flushSync} from 'react-dom'
-        import {Button, Toggle, Switch, Tooltip} from '@dazzlabs/dazzui'
+        import {Button, IconButton, Toggle, Switch, Tooltip} from '@dazzlabs/dazzui'
         const host = document.createElement('div')
         host.id = 'tooltip-fixture'
         host.style.cssText = 'position:fixed;left:24px;top:64px;display:flex;gap:24px'
         document.body.append(host)
         const root = createRoot(host)
         export const changes = []
-        export function mount({kind, preventDown, preventUp, noHandler}) {
+        export function mount({kind, preventDown, preventUp, noHandler, nested, innerDisabled, richLabel, disabled}) {
           const change = noHandler ? undefined : () => changes.push('activate')
-          const control = kind === 'switch'
+          let control = kind === 'icon'
+            ? h(IconButton, {label:'Target', disabled, onClick:change}, 'X')
+            : kind === 'switch'
             ? h(Switch, {'aria-label':'Target', onCheckedChange:change})
             : kind === 'toggle'
               ? h(Toggle, {onPressedChange:change}, 'Target')
               : h(Button, {onClick:change}, 'Target')
+          if(nested) control = h(Tooltip, {label:'Inner', delay:0, disabled:innerDisabled}, control)
+          const label = richLabel ? h('span', null, 'Hint', h(Tooltip, {label:'Label hint'}, h('span', null, ' detail'))) : 'Hint'
           flushSync(() => root.render(h('div', {
             style:{display:'flex',gap:24},
             onKeyDownCapture(event) { if(preventDown && ['Enter',' '].includes(event.key)) event.preventDefault() },
             onKeyUpCapture(event) { if(preventUp && event.key === ' ') event.preventDefault() },
-          }, h(Tooltip, {label:'Hint', delay:0}, control), h(Button, null, 'Next'))))
+          }, h(Tooltip, {label, delay:0}, control), h(Button, null, 'Next'))))
         }
       `
             : undefined,
@@ -139,6 +143,65 @@ test('ordinary hints close on their child control activation phases', async () =
       await page.keyboard.up('Enter')
       assert.ok(await control.evaluate(el => el === document.activeElement))
     }
+    const mount = async options => {
+      await page.evaluate(options => window.tooltipFixture.mount(options), {
+        kind: 'button',
+        ...options,
+      })
+      await page.evaluate(
+        () =>
+          new Promise(resolve =>
+            requestAnimationFrame(() => requestAnimationFrame(resolve))
+          )
+      )
+    }
+    const focus = async () => {
+      await fixture.getByRole('button', { name: 'Next' }).focus()
+      await page.keyboard.press('Shift+Tab')
+    }
+    for (const [options, label] of [
+      [{ nested: true }, 'Inner'],
+      [{ nested: true, innerDisabled: true }, null],
+      [{}, 'Hint'],
+      [{ richLabel: true }, 'Hint detail'],
+      [{ kind: 'icon' }, 'Target'],
+      [{ kind: 'icon', nested: true }, 'Target'],
+    ]) {
+      await mount(options)
+      await focus()
+      if (label) {
+        await page.waitForFunction(label => {
+          const nodes = [...document.querySelectorAll('.dz-tooltip')]
+          return nodes.length === 1 && nodes[0].textContent === label
+        }, label)
+        assert.deepEqual(await hint.allTextContents(), [label])
+      } else await hint.waitFor({ state: 'detached' })
+    }
+    await mount({ kind: 'icon' })
+    await fixture.getByRole('button', { name: 'Next' }).focus()
+    await page.mouse.move(0, 0)
+    const icon = fixture.getByRole('button', { name: 'Target' })
+    const before = await icon.boundingBox()
+    await icon.hover()
+    await hint.waitFor()
+    assert.deepEqual(await hint.allTextContents(), ['Target'])
+    const popup = await hint.boundingBox()
+    assert.equal(Math.round(before.y - popup.y - popup.height), 4)
+    assert.ok(
+      Math.abs(popup.x + popup.width / 2 - before.x - before.width / 2) <= 0.5
+    )
+    await page.mouse.move(0, 0)
+    await hint.waitFor({ state: 'detached' })
+    await focus()
+    await hint.waitFor()
+    await page.keyboard.down('Enter')
+    await hint.waitFor({ state: 'detached' })
+    await page.keyboard.up('Enter')
+    await page.mouse.move(0, 0)
+    await mount({ kind: 'icon', disabled: true })
+    await icon.hover()
+    await page.waitForTimeout(650)
+    assert.equal(await hint.count(), 0)
   } finally {
     await browser.close()
     await server.close()
