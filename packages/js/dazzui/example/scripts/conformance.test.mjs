@@ -4,6 +4,168 @@ import { test } from 'node:test'
 import { chromium } from 'playwright'
 import { createServer } from 'vite'
 
+test('standalone toggles, grouped toggles and switches retain their distinct key phases', async () => {
+  const server = await createServer({
+    root: fileURLToPath(new URL('..', import.meta.url)),
+    logLevel: 'silent',
+    server: { host: '127.0.0.1', port: 0 },
+  })
+  await server.listen()
+  const browser = await chromium.launch({
+    executablePath: process.env.DAZZUI_CHROMIUM_EXECUTABLE || undefined,
+  })
+  try {
+    const page = await browser.newPage()
+    await page.goto(
+      new URL('conformance.html', server.resolvedUrls.local[0]).href
+    )
+    await page.waitForFunction(() => window.conformance)
+    for (const [scene, name, property, phases] of [
+      [
+        'toggle/0',
+        'Wrap lines',
+        'aria-pressed',
+        [
+          ['Space', false, false, false],
+          ['Enter', true, true, false],
+          ['Enter', false, true, false],
+          ['Space', true, true, true],
+          ['Space', true, true, true],
+          ['Space', false, false, false],
+        ],
+      ],
+      [
+        'toggle/1',
+        'Italic',
+        'aria-pressed',
+        [
+          ['Space', true, true, false],
+          ['Space', true, false, false],
+          ['Space', false, false, false],
+          ['Enter', true, true, false],
+          ['Enter', false, true, false],
+        ],
+      ],
+      [
+        'switch/preview',
+        'Sync over cellular',
+        'aria-checked',
+        [
+          ['Space', false, true, false],
+          ['Enter', true, false, false],
+          ['Enter', false, false, false],
+          ['Space', true, false, false],
+          ['Space', true, false, false],
+          ['Space', false, true, false],
+        ],
+      ],
+    ]) {
+      await page.evaluate(
+        scene => window.conformance.show(scene, 'studio-light'),
+        scene
+      )
+      const control = page.getByRole(
+        property === 'aria-checked' ? 'switch' : 'button',
+        { name, exact: true }
+      )
+      await control.focus()
+      assert.equal(await control.getAttribute(property), 'false')
+      for (const [key, down, checked, active] of phases) {
+        await page.keyboard[down ? 'down' : 'up'](key)
+        assert.equal(
+          await control.getAttribute(property),
+          String(checked),
+          `${scene} ${key} ${down ? 'down' : 'up'}`
+        )
+        assert.equal(
+          await control.evaluate(el => el.matches(':active')),
+          active
+        )
+      }
+    }
+  } finally {
+    await browser.close()
+    await server.close()
+  }
+})
+
+test('switch transitions change backgrounds while its thumb position switches immediately', async () => {
+  const server = await createServer({
+    root: fileURLToPath(new URL('..', import.meta.url)),
+    logLevel: 'silent',
+    server: { host: '127.0.0.1', port: 0 },
+  })
+  await server.listen()
+  const browser = await chromium.launch({
+    executablePath: process.env.DAZZUI_CHROMIUM_EXECUTABLE || undefined,
+  })
+  try {
+    const page = await browser.newPage({ reducedMotion: 'no-preference' })
+    await page.goto(
+      new URL('conformance.html', server.resolvedUrls.local[0]).href
+    )
+    await page.waitForFunction(() => window.conformance)
+    await page.evaluate(() => {
+      for (const sheet of document.styleSheets)
+        for (const rule of sheet.cssRules)
+          if (
+            rule instanceof CSSStyleRule &&
+            rule.style.caretColor === 'transparent'
+          )
+            rule.style.removeProperty('transition')
+    })
+    for (const theme of ['bright-light', 'studio-dark']) {
+      await page.evaluate(
+        theme => window.conformance.show('switch/preview', theme),
+        theme
+      )
+      const control = page.getByRole('switch', { name: 'Sync over cellular' })
+      const read = time =>
+        control.evaluate((el, time) => {
+          const animations = el.getAnimations({ subtree: true })
+          if (time !== null)
+            for (const animation of animations) {
+              animation.pause()
+              animation.currentTime = time
+            }
+          const thumb = el.querySelector('.dz-switch__thumb')
+          const trackBox = el.getBoundingClientRect()
+          const thumbBox = thumb.getBoundingClientRect()
+          return {
+            track: getComputedStyle(el).backgroundColor,
+            thumb: getComputedStyle(thumb).backgroundColor,
+            offset: thumbBox.x - trackBox.x,
+            end:
+              trackBox.width -
+              parseFloat(getComputedStyle(el).paddingRight) -
+              thumbBox.width,
+            properties: animations.map(a => a.transitionProperty),
+          }
+        }, time)
+      const off = await read(null)
+      await control.click()
+      const first = await read(0)
+      const middle = await read(75)
+      const end = await read(150)
+      assert.deepEqual(first.properties, [
+        'background-color',
+        'background-color',
+      ])
+      assert.equal(first.offset, first.end)
+      assert.equal(first.offset, middle.offset)
+      assert.equal(first.offset, end.offset)
+      assert.deepEqual([first.track, first.thumb], [off.track, off.thumb])
+      for (const property of ['track', 'thumb']) {
+        assert.notEqual(middle[property], off[property])
+        assert.notEqual(middle[property], end[property])
+      }
+    }
+  } finally {
+    await browser.close()
+    await server.close()
+  }
+})
+
 test('painted text baselines follow the browser inline baseline through scaling', async () => {
   const server = await createServer({
     root: fileURLToPath(new URL('..', import.meta.url)),

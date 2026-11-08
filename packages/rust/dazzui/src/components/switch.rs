@@ -4,11 +4,13 @@ use std::rc::Rc;
 
 use gpui::{
     App, ElementId, InteractiveElement, IntoElement, MouseButton, ParentElement, RenderOnce,
-    SharedString, StatefulInteractiveElement, Styled, Window, div, prelude::*, px,
+    SharedString, Styled, Window, div, prelude::*, px,
 };
 
 use crate::components::checkbox::kit;
-use crate::foundation::{ControlColors, Size, State, Tint, Variant, pointer_down};
+use crate::foundation::motion::background_transition;
+use crate::foundation::press::ButtonPress;
+use crate::foundation::{ControlColors, Part, Size, State, Tint, Variant, pointer_down, recipe};
 use crate::theme::ActiveTheme;
 
 type OnCheckedChange = Rc<dyn Fn(bool, &mut Window, &mut App) + 'static>;
@@ -88,6 +90,7 @@ impl RenderOnce for Switch {
             move |_, _| default
         });
         let focus = kit::focus_handle(&self.id, window, cx);
+        let activation = ButtonPress::new(&self.id, &focus, self.disabled, window, cx).non_native();
         let checked = self.checked.unwrap_or(*state.read(cx));
         let visible = !self.disabled && crate::foundation::focus_visible(&focus, window, cx);
         let (width, height, thumb) = match self.size {
@@ -108,9 +111,31 @@ impl RenderOnce for Switch {
             ),
         };
         let filled = ControlColors::resolve(t, Variant::Filled, self.tint, State::Normal);
+        let modern = |part| {
+            let opacity = recipe(t, Variant::Filled, part, State::Normal).opacity();
+            checked && opacity > 0. && opacity < 1.
+        };
+        let thumb_id = kit::child_id(&self.id, "thumb");
+        let thumb = background_transition(
+            div()
+                .id(thumb_id.clone())
+                .flex_none()
+                .size(px(thumb))
+                .rounded(px(t.radius_full))
+                .bg(if checked {
+                    filled.content
+                } else {
+                    t.color_content_faint.hsla()
+                }),
+            thumb_id,
+            t,
+            modern(Part::Content),
+            window,
+            cx,
+        );
 
         let mut track = div()
-            .id(self.id)
+            .id(self.id.clone())
             .relative()
             .flex()
             .flex_none()
@@ -125,44 +150,32 @@ impl RenderOnce for Switch {
             } else {
                 t.color_surface_sunken.hsla()
             })
-            .child(
-                div()
-                    .flex_none()
-                    .size(px(thumb))
-                    .rounded(px(t.radius_full))
-                    .bg(if checked {
-                        filled.content
-                    } else {
-                        t.color_content_faint.hsla()
-                    }),
-            )
+            .child(thumb)
             .when(visible, |this| this.child(kit::outline(t, height / 2.)));
+        track = background_transition(track, self.id, t, modern(Part::Surface), window, cx);
 
         if self.disabled {
             track = track.opacity(0.6).cursor_not_allowed();
         } else {
-            let controlled = self.checked.is_some();
-            let handler = self.on_checked_change;
             track = track
                 .cursor_pointer()
                 .track_focus(&focus.tab_stop(true))
-                .on_mouse_down(MouseButton::Left, |_, window, cx| pointer_down(window, cx))
-                .on_click(move |event, window, cx| {
-                    if kit::is_enter(event) {
-                        return;
-                    }
-                    let next = !checked;
-                    if !controlled {
-                        state.update(cx, |value, cx| {
-                            *value = next;
-                            cx.notify();
-                        });
-                    }
-                    if let Some(handler) = &handler {
-                        handler(next, window, cx);
-                    }
-                });
+                .on_mouse_down(MouseButton::Left, |_, window, cx| pointer_down(window, cx));
         }
-        track
+        let controlled = self.checked.is_some();
+        let handler = self.on_checked_change;
+        let change: crate::foundation::press::OnClick = Box::new(move |_, window, cx| {
+            let next = !checked;
+            if !controlled {
+                state.update(cx, |value, cx| {
+                    *value = next;
+                    cx.notify();
+                });
+            }
+            if let Some(handler) = &handler {
+                handler(next, window, cx);
+            }
+        });
+        activation.bind(track, Some(change))
     }
 }

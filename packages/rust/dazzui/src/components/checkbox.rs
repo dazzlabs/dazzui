@@ -304,7 +304,7 @@ pub(crate) mod kit {
         handles.iter().position(|handle| handle.is_focused(window))
     }
 
-    /// A keyboard click from Enter, which a checkbox, a radio and a switch
+    /// A keyboard click from Enter, which a checkbox and a radio
     /// ignore — only Space presses them.
     pub fn is_enter(event: &ClickEvent) -> bool {
         matches!(

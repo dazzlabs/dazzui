@@ -217,6 +217,45 @@ struct PaintTransitions {
     ink: ColorTransition,
 }
 
+/// A standalone background transition, for parts such as a switch's track
+/// and thumb whose position and other paint properties change immediately.
+pub(crate) fn background_transition(
+    element: Stateful<Div>,
+    id: ElementId,
+    t: &ThemeTokens,
+    modern: bool,
+    window: &mut Window,
+    cx: &mut App,
+) -> Stateful<Div> {
+    let duration = t.motion_duration;
+    let curve = t.motion_easing;
+    let state = window.use_keyed_state(
+        ElementId::NamedChild(Box::new(id), "background-transition".into()),
+        cx,
+        |_, _| RefCell::<Option<ColorTransition>>::new(None),
+    );
+    element.map_paint_style(move |style, window, cx| {
+        let value = match style.background.as_ref() {
+            Some(fill) => match fill.color().and_then(|background| background.solid_color()) {
+                Some(color) => color,
+                None => return,
+            },
+            None => Hsla::transparent_black(),
+        };
+        let target = Color { value, modern };
+        let frame = Motion::frame(cx);
+        let mut state = state.read(cx).borrow_mut();
+        let transition = state.get_or_insert_with(|| ColorTransition::new(target, frame.elapsed));
+        let value = transition.sample(target, frame, duration, curve);
+        if style.background.is_some() || value.a > 0. {
+            style.background = Some(value.into());
+        }
+        if !frame.frozen && transition.running(frame, duration) {
+            window.request_animation_frame();
+        }
+    })
+}
+
 /// Animate the final interaction colors while leaving the SDK's hover,
 /// pointer capture, keyboard press and focus behavior in charge of state.
 pub(crate) fn color_transitions(

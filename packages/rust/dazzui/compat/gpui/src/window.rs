@@ -846,6 +846,9 @@ pub struct ObservedText {
 /// An element's actual paint inputs. Nested observed elements are excluded.
 #[derive(Clone, Debug, Default)]
 pub struct ObservedPaint {
+    /// Every own surface in submission order, populated only by
+    /// `Window::observe_element_paint_with_surfaces`.
+    pub surfaces: Vec<ObservedSurface>,
     /// A directly styled surface with the observed element's box.
     pub surface: Option<ObservedSurface>,
     /// The first own surface with fill, a visible border or a shadow. A
@@ -863,6 +866,7 @@ pub struct ObservedPaint {
 struct PaintObservation {
     bounds: Bounds<Pixels>,
     paint: ObservedPaint,
+    record_surfaces: bool,
 }
 
 /// Holds the state for a specific window.
@@ -1976,10 +1980,30 @@ impl Window {
         bounds: Bounds<Pixels>,
         f: impl FnOnce(&mut Self) -> R,
     ) -> (R, ObservedPaint) {
+        self.observe_element_paint_internal(bounds, false, f)
+    }
+
+    /// Also retain all own surfaces, for inspecting compound controls.
+    /// Nested observation scopes remain excluded from their parents.
+    pub fn observe_element_paint_with_surfaces<R>(
+        &mut self,
+        bounds: Bounds<Pixels>,
+        f: impl FnOnce(&mut Self) -> R,
+    ) -> (R, ObservedPaint) {
+        self.observe_element_paint_internal(bounds, true, f)
+    }
+
+    fn observe_element_paint_internal<R>(
+        &mut self,
+        bounds: Bounds<Pixels>,
+        record_surfaces: bool,
+        f: impl FnOnce(&mut Self) -> R,
+    ) -> (R, ObservedPaint) {
         self.invalidator.debug_assert_paint();
         self.paint_observations.push(PaintObservation {
             bounds: self.painted_bounds(bounds),
             paint: ObservedPaint::default(),
+            record_surfaces,
         });
         let result = f(self);
         (result, self.paint_observations.pop().unwrap().paint)
@@ -1992,6 +2016,13 @@ impl Window {
         let painted = self.painted_bounds(bounds);
         let rem_size = self.rem_size();
         let observation = self.paint_observations.last_mut().unwrap();
+        if observation.record_surfaces {
+            observation.paint.surfaces.push(ObservedSurface {
+                bounds,
+                style: style.clone(),
+                rem_size,
+            });
+        }
         let decorated = style.background.as_ref().is_some_and(|fill| {
             fill.color().is_none_or(|background| {
                 background

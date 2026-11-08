@@ -38,6 +38,9 @@ meshes do not preserve CSS radii or stroke widths. Text size and leading
 come from the painter; font weights remain unknown when a font ID aliases different requested
 weights. The observer does not reconstruct values from design tokens or
 substitute a desired style for the text that was drawn.
+An opt-in `observe_element_paint_with_surfaces` records every own surface in
+submission order for compound-control checks, including a Switch's track and
+thumb. Ordinary collection retains the smaller first-surface observation.
 
 `WrappedLine::set_color` updates a cached plain label's foreground without
 reshaping it. This lets hover ink reach the glyph painter, rather than only

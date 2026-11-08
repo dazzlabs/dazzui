@@ -4,13 +4,15 @@ use std::rc::Rc;
 
 use gpui::{
     AnyElement, App, ElementId, FocusHandle, InteractiveElement, IntoElement, MouseButton,
-    ParentElement, RenderOnce, SharedString, StatefulInteractiveElement, Styled, Window, div,
-    prelude::*, px,
+    ParentElement, RenderOnce, SharedString, Styled, Window, div, prelude::*, px,
 };
 
 use crate::components::checkbox::kit;
 use crate::components::icon::icon_slot;
-use crate::foundation::{Size, StyledExt, Tint, Variant, control, pointer_down};
+use crate::foundation::press::ButtonPress;
+use crate::foundation::{
+    ControlColors, Size, State, StyledExt, Tint, Variant, control, pointer_down,
+};
 use crate::theme::ActiveTheme;
 
 type OnPressedChange = Rc<dyn Fn(bool, &mut Window, &mut App) + 'static>;
@@ -142,6 +144,12 @@ impl RenderOnce for Toggle {
             None => (kit::focus_handle(&self.id, window, cx), true),
         };
         let pressed = self.pressed.unwrap_or(*state.read(cx));
+        let activation = ButtonPress::new(&self.id, &focus, self.disabled, window, cx);
+        let activation = if self.grouped.is_some() {
+            activation.composite()
+        } else {
+            activation
+        };
         let visible = !self.disabled && crate::foundation::focus_visible(&focus, window, cx);
 
         let mut toggle = div()
@@ -177,7 +185,16 @@ impl RenderOnce for Toggle {
         } else {
             self.variant
         };
-        toggle = control(toggle, t, variant, self.tint, self.disabled);
+        toggle = if activation.pressed(cx) {
+            toggle.control_colors(ControlColors::resolve(
+                t,
+                variant,
+                self.tint,
+                State::Pressed,
+            ))
+        } else {
+            control(toggle, t, variant, self.tint, self.disabled)
+        };
         toggle = kit::hint(toggle, self.label);
         toggle = crate::foundation::motion::color_transitions(
             toggle,
@@ -191,31 +208,35 @@ impl RenderOnce for Toggle {
         if self.disabled {
             toggle = toggle.cursor_not_allowed();
         } else {
-            let controlled = self.pressed.is_some();
-            let handler = self.on_pressed_change;
             toggle = toggle
                 .cursor_pointer()
                 .track_focus(&focus.tab_stop(tab_stop))
-                .on_mouse_down(MouseButton::Left, |_, window, cx| pointer_down(window, cx))
-                .on_click(move |_, window, cx| {
-                    let next = !pressed;
-                    if !controlled {
-                        state.update(cx, |value, cx| {
-                            *value = next;
-                            cx.notify();
-                        });
-                    }
-                    if let Some(handler) = &handler {
-                        handler(next, window, cx);
-                    }
-                });
+                .on_mouse_down(MouseButton::Left, |_, window, cx| pointer_down(window, cx));
         }
+
+        let controlled = self.pressed.is_some();
+        let handler = self.on_pressed_change;
+        let change: crate::foundation::press::OnClick = Box::new(move |_, window, cx| {
+            let next = !pressed;
+            if !controlled {
+                state.update(cx, |value, cx| {
+                    *value = next;
+                    cx.notify();
+                });
+            }
+            if let Some(handler) = &handler {
+                handler(next, window, cx);
+            }
+        });
 
         icon_slot(
             profile.icon_size,
-            toggle
-                .children(self.children)
-                .when(visible, |this| this.child(kit::outline(t, profile.radius))),
+            activation.bind(
+                toggle
+                    .children(self.children)
+                    .when(visible, |this| this.child(kit::outline(t, profile.radius))),
+                Some(change),
+            ),
         )
     }
 }

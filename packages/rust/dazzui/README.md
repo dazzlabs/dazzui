@@ -131,7 +131,7 @@ nesting SDK deferred draws; detached layout preserves namespaces, providers
 and subtree themes. Slider pointer changes push neighbouring thumbs while
 keyboard changes stop at them, and a drag retains its initial grab offset.
 
-Button and IconButton follow native web button timing: Enter activates on
+Button, IconButton and standalone Toggle follow native web button timing: Enter activates on
 keydown, including repeats; Space holds the pressed recipe and activates
 once on release. Losing focus, becoming disabled or preventing the key's
 default cancels the pending activation. Keyboard clicks carry the actual
@@ -140,6 +140,13 @@ so releasing an opening Enter cannot click the newly focused close button.
 Hover, focus and pressed ink merge with the control's base text properties;
 they keep its face, size, weight and leading instead of inheriting the page's
 typography and changing the control's width.
+Grouped toggles follow Base UI's composite timing: Space activates on
+keydown, including repeats, and keyup does not activate again. Switch uses
+Base UI's non-native button timing: Enter activates on keydown, while Space
+activates on keyup without a retained keydown latch. Checkbox and Radio
+continue to ignore Enter. Switch track and thumb backgrounds transition over
+the theme's motion; its thumb position changes immediately with the checked
+state, matching React's `justify-content` switch.
 Button, IconButton and Toggle interpolate their surface, border and inherited
 ink over the theme's motion duration and easing. Interruptions start at the
 current paint; reversals use CSS's shortened return duration. Legacy colors

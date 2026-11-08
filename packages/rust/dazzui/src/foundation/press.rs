@@ -21,6 +21,8 @@ pub(crate) struct ButtonPress {
     state: Entity<PressState>,
     bounds: Rc<Cell<Bounds<Pixels>>>,
     disabled: bool,
+    native: bool,
+    composite: bool,
 }
 
 impl ButtonPress {
@@ -55,15 +57,32 @@ impl ButtonPress {
             state,
             bounds,
             disabled,
+            native: true,
+            composite: false,
         }
     }
 
+    /// Base UI's non-native button path dispatches Enter on keydown and
+    /// Space on keyup without retaining a preceding Space keydown.
+    pub fn non_native(mut self) -> Self {
+        self.native = false;
+        self
+    }
+
+    /// Composite buttons activate Space on keydown and suppress keyup.
+    pub fn composite(mut self) -> Self {
+        self.composite = true;
+        self
+    }
+
     pub fn pressed(&self, cx: &App) -> bool {
-        !self.disabled && self.state.read(cx).armed
+        self.native && !self.composite && !self.disabled && self.state.read(cx).armed
     }
 
     pub fn bind(self, element: Stateful<Div>, on_click: Option<OnClick>) -> impl IntoElement {
         let bounds = self.bounds;
+        let native = self.native;
+        let composite = self.composite;
         let element = if self.disabled {
             element.on_click(|_, _, cx| cx.stop_propagation())
         } else {
@@ -91,6 +110,21 @@ impl ButtonPress {
                     }
                     let stroke = &event.keystroke;
                     if stroke.key == "space" {
+                        if composite {
+                            window.prevent_default();
+                            if let Some(click) = &down {
+                                click(
+                                    &keyboard(KeyboardButton::Space, down_bounds.get()),
+                                    window,
+                                    cx,
+                                );
+                            }
+                            return;
+                        }
+                        if !native {
+                            window.prevent_default();
+                            return;
+                        }
                         armed.update(cx, |state, cx| {
                             if !state.armed {
                                 state.armed = true;
@@ -98,10 +132,14 @@ impl ButtonPress {
                             }
                         });
                     } else if stroke.key == "enter"
-                        && !stroke.modifiers.control
-                        && !stroke.modifiers.alt
-                        && !stroke.modifiers.platform
+                        && (!native
+                            || (!stroke.modifiers.control
+                                && !stroke.modifiers.alt
+                                && !stroke.modifiers.platform))
                     {
+                        if !native {
+                            window.prevent_default();
+                        }
                         if let Some(click) = &down {
                             click(
                                 &keyboard(KeyboardButton::Enter, down_bounds.get()),
@@ -112,17 +150,17 @@ impl ButtonPress {
                     }
                 })
                 .on_key_up(move |event, window, cx| {
-                    if event.keystroke.key != "space" {
+                    if event.keystroke.key != "space" || composite {
                         return;
                     }
-                    let activate = release.update(cx, |state, cx| {
+                    let armed = release.update(cx, |state, cx| {
                         let armed = std::mem::take(&mut state.armed);
                         if armed {
                             cx.notify();
                         }
                         armed
                     });
-                    if activate && !window.default_prevented() {
+                    if (armed || !native) && !window.default_prevented() {
                         if let Some(click) = &on_click {
                             click(
                                 &keyboard(KeyboardButton::Space, up_bounds.get()),
