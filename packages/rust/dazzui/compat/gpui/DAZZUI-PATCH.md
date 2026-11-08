@@ -95,9 +95,13 @@ and decorations agree. Otherwise a same-color fallback run silently keeps the
 preceding font. On macOS, fallback families match the requested weight and
 style independently of the primary face's variable axes. Logical font IDs and
 attributed-string boundaries preserve requests that share a physical face.
-AAT tracking replaces Core Text's tracking with browser-precision advances per
-grapheme, so Indic conjuncts receive one advance rather than one per native
-cluster. Fonts without STAT receive no browser tracking. Emoji uses the
+AAT tracking replaces Core Text's tracking with browser-precision advances.
+Continuation marks retain their glyph order after shaping, including Indic
+pre-base marks, instead of using logical Unicode graphemes as painted groups.
+Tracked variable outlines round their hmtx variation deltas in design units
+before scaling, matching the browser's HarfBuzz advances; bitmap fonts and
+fonts without tracking retain Core Text's fractional metrics. Fonts without
+STAT receive no browser tracking. Emoji uses the
 public fallback face, matching browser metrics rather than the scaled system
 UI face. Its bitmap strikes and ink bounds are resolved at device size, with
 fractional glyph positioning, rather than enlarged from a logical-size strike.

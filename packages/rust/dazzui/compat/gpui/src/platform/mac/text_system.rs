@@ -19,14 +19,15 @@ use core_graphics::{
     color_space::CGColorSpace,
     context::{CGContext, CGTextDrawingMode},
     display::CGPoint,
+    geometry::CGSize,
 };
 use core_text::{
     font::CTFont,
     font_descriptor::{
         TraitAccessors, kCTFontBoldTrait, kCTFontCondensedTrait, kCTFontExpandedTrait,
         kCTFontFamilyNameAttribute, kCTFontFeatureSettingsAttribute, kCTFontItalicTrait,
-        kCTFontSlantTrait, kCTFontSymbolicTrait, kCTFontTraitsAttribute, kCTFontWeightTrait,
-        kCTFontWidthTrait,
+        kCTFontOrientationHorizontal, kCTFontSlantTrait, kCTFontSymbolicTrait,
+        kCTFontTraitsAttribute, kCTFontWeightTrait, kCTFontWidthTrait,
     },
     line::CTLine,
     run::CTRunRef,
@@ -50,6 +51,7 @@ use pathfinder_geometry::{
 };
 use smallvec::SmallVec;
 use std::{borrow::Cow, char, convert::TryFrom, sync::Arc};
+use unicode_properties::{GeneralCategoryGroup, UnicodeGeneralCategory};
 use unicode_segmentation::UnicodeSegmentation;
 
 use super::open_type::apply_features_and_fallbacks;
@@ -60,6 +62,7 @@ const kCGImageAlphaOnly: u32 = 7;
 #[link(name = "CoreText", kind = "framework")]
 unsafe extern "C" {
     fn CTRunGetStringRange(run: CTRunRef) -> CFRange;
+    fn CTRunGetAdvances(run: CTRunRef, range: CFRange, advances: *mut CGSize);
 }
 
 pub(crate) struct MacTextSystem(RwLock<MacTextSystemState>);
@@ -85,6 +88,7 @@ struct MacTextSystemState {
     tracking: HashMap<FontId, Option<(Tracking, u32)>>,
     suppressed_tracking: HashSet<FontId>,
     fallback_fonts: HashMap<(FontId, String), Option<CTFont>>,
+    integer_advances: HashMap<FontId, Option<Vec<u16>>>,
 }
 
 impl MacTextSystem {
@@ -102,6 +106,7 @@ impl MacTextSystem {
             tracking: HashMap::default(),
             suppressed_tracking: HashSet::default(),
             fallback_fonts: HashMap::default(),
+            integer_advances: HashMap::default(),
         }))
     }
 }
@@ -740,11 +745,10 @@ impl MacTextSystemState {
         let glyph_runs = line.glyph_runs();
         let mut runs = <Vec<ShapedRun>>::with_capacity(glyph_runs.len() as usize);
         let mut ix_converter = StringIndexConverter::new(text);
-        // Core Text truncates AAT tracking to integral design units, whereas
-        // browser shaping interpolates before scaling. Allocate cluster
-        // boundaries only when a font's tracking actually needs correction.
-        let mut graphemes: Option<Vec<usize>> = None;
-        let mut tracking_shift = 0.;
+        // Browser tracking follows grapheme boundaries independently of
+        // Core Text's glyph clusters. Resolve boundaries only when needed.
+        let mut continuations: Option<Vec<(usize, bool)>> = None;
+        let mut advance_shift = 0.;
         let mut tracked_cluster: Option<(usize, f32)> = None;
         for run in glyph_runs.into_iter() {
             let attributes = run.attributes().unwrap();
@@ -772,12 +776,74 @@ impl MacTextSystemState {
                 {
                     source
                 }
-                _ => self.id_for_native_font(font),
+                _ => self.id_for_native_font(font.clone()),
             };
-            let adjustment = self.tracking_advance(font_id, font_size);
-            if adjustment != 0. && graphemes.is_none() {
-                graphemes = Some(text.grapheme_indices(true).map(|(at, _)| at).collect());
+            let integer_advances = self.integer_advances.entry(font_id).or_insert_with(|| {
+                // Blink uses HarfBuzz advances for tracked outline fonts;
+                // other fonts retain Skia/Core Text's fractional metrics.
+                if font.get_font_table(u32::from_be_bytes(*b"fvar")).is_none()
+                    || font.get_font_table(u32::from_be_bytes(*b"trak")).is_none()
+                    || font.get_font_table(u32::from_be_bytes(*b"sbix")).is_some()
+                {
+                    return None;
+                }
+                let hhea = font.get_font_table(u32::from_be_bytes(*b"hhea"))?;
+                let count = u16::from_be_bytes(hhea.bytes().get(34..36)?.try_into().ok()?);
+                let hmtx = font.get_font_table(u32::from_be_bytes(*b"hmtx"))?;
+                let metrics = hmtx.bytes().get(..usize::from(count) * 4)?;
+                Some(
+                    metrics
+                        .chunks_exact(4)
+                        .map(|record| u16::from_be_bytes([record[0], record[1]]))
+                        .collect(),
+                )
+            });
+            let glyph_count = run.glyph_count() as usize;
+            let mut corrections = SmallVec::<[f32; 32]>::new();
+            if let Some(metrics) = integer_advances
+                .as_ref()
+                .filter(|metrics| !metrics.is_empty())
+            {
+                corrections.resize(glyph_count, 0.);
+                let mut advances = vec![CGSize::new(0., 0.); glyph_count];
+                let mut shaped = advances.clone();
+                unsafe {
+                    font.get_advances_for_glyphs(
+                        kCTFontOrientationHorizontal,
+                        run.glyphs().as_ptr(),
+                        advances.as_mut_ptr(),
+                        glyph_count as _,
+                    );
+                    CTRunGetAdvances(
+                        run.as_concrete_TypeRef(),
+                        CFRange::init(0, 0),
+                        shaped.as_mut_ptr(),
+                    );
+                }
+                for (((correction, advance), shaped), glyph) in corrections
+                    .iter_mut()
+                    .zip(advances)
+                    .zip(shaped)
+                    .zip(run.glyphs().iter())
+                {
+                    // GPOS can zero a mark's advance after hmtx lookup.
+                    if shaped.width != 0. {
+                        // The final hmtx advance repeats for remaining glyphs.
+                        let base = metrics[usize::from(*glyph).min(metrics.len() - 1)];
+                        *correction = variable_advance_correction(
+                            advance.width,
+                            font.pt_size(),
+                            font.units_per_em(),
+                            base,
+                        );
+                    }
+                }
             }
+            let adjustment = self.tracking_advance(font_id, font_size);
+            if adjustment != 0. && continuations.is_none() {
+                continuations = Some(tracking_continuations(text));
+            }
+            let mut first_glyph = true;
 
             let mut glyphs = match runs.last_mut() {
                 Some(run) if run.font_id == font_id => &mut run.glyphs,
@@ -789,11 +855,12 @@ impl MacTextSystemState {
                     &mut runs.last_mut().unwrap().glyphs
                 }
             };
-            for ((&glyph_id, position), &glyph_utf16_ix) in run
+            for (((&glyph_id, position), &glyph_utf16_ix), correction) in run
                 .glyphs()
                 .iter()
                 .zip(run.positions().iter())
                 .zip(run.string_indices().iter())
+                .zip(corrections.into_iter().chain(std::iter::repeat(0.)))
             {
                 let mut glyph_utf16_ix = usize::try_from(glyph_utf16_ix).unwrap();
                 let r = self
@@ -810,38 +877,78 @@ impl MacTextSystemState {
                     ix_converter = StringIndexConverter::new(text);
                 }
                 ix_converter.advance_to_utf16_ix(glyph_utf16_ix);
-                if let Some(graphemes) = &graphemes {
-                    let cluster = graphemes
-                        .partition_point(|&at| at <= ix_converter.utf8_ix)
-                        .saturating_sub(1);
-                    if tracked_cluster.is_none_or(|(previous, _)| previous != cluster) {
+                if let Some(continuations) = &continuations {
+                    let at = ix_converter.utf8_ix;
+                    let continued = continuations
+                        .binary_search_by_key(&at, |&(at, _)| at)
+                        .ok()
+                        .is_some_and(|index| continuations[index].1);
+                    if first_glyph
+                        || tracked_cluster.is_none_or(|(previous, _)| previous != at && !continued)
+                    {
                         if let Some((_, adjustment)) = tracked_cluster {
-                            tracking_shift += adjustment;
+                            advance_shift += adjustment;
                         }
-                        tracked_cluster = Some((cluster, adjustment));
+                        tracked_cluster = Some((at, adjustment));
                     }
                 }
+                first_glyph = false;
                 glyphs.push(ShapedGlyph {
                     id: GlyphId(glyph_id as u32),
-                    position: point(position.x as f32 + tracking_shift, position.y as f32).map(px),
+                    position: point(position.x as f32 + advance_shift, position.y as f32).map(px),
                     index: ix_converter.utf8_ix,
                     is_emoji: self.is_emoji(font_id),
                 });
+                advance_shift += correction;
             }
         }
         let typographic_bounds = line.get_typographic_bounds();
         if let Some((_, adjustment)) = tracked_cluster {
-            tracking_shift += adjustment;
+            advance_shift += adjustment;
         }
         LineLayout {
             runs,
             font_size,
-            width: (typographic_bounds.width as f32 + tracking_shift).into(),
+            width: (typographic_bounds.width as f32 + advance_shift).into(),
             ascent: max_ascent.into(),
             descent: max_descent.into(),
             len: text.len(),
         }
     }
+}
+
+/// HarfBuzz keeps continuation flags on glyphs through reordering. Full
+/// Unicode grapheme boundaries cannot replace these: a pre-base Indic mark
+/// can precede the base that starts its tracking group in visual order.
+fn tracking_continuations(text: &str) -> Vec<(usize, bool)> {
+    let graphemes: Vec<_> = text.grapheme_indices(true).map(|(at, _)| at).collect();
+    let mut previous = None;
+    let mut previous_continued = false;
+    text.char_indices().map(|(at, ch)| {
+        let regional = |ch: char| matches!(ch, '\u{1f1e6}'..='\u{1f1ff}');
+        let continued = ch.general_category_group() == GeneralCategoryGroup::Mark
+            || matches!(ch, '\u{200d}' | '\u{1f3fb}'..='\u{1f3ff}' | '\u{ff9e}'..='\u{ff9f}' | '\u{e0020}'..='\u{e007f}')
+            || (previous == Some('\u{200d}') && graphemes.binary_search(&at).is_err())
+            || (regional(ch) && previous.is_some_and(regional) && !previous_continued);
+        previous = Some(ch);
+        previous_continued = continued;
+        (at, continued)
+    }).collect()
+}
+
+/// HarfBuzz rounds variable hmtx deltas in design units before scaling;
+/// Core Text returns fractional design-unit advances. Keep positioning and
+/// kerning from the shaped run, correcting only that unpositioned advance.
+fn variable_advance_correction(advance: f64, point_size: f64, units_per_em: u32, base: u16) -> f32 {
+    if !advance.is_finite() || !point_size.is_finite() || point_size <= 0. || units_per_em == 0 {
+        return 0.;
+    }
+    let units = f64::from(units_per_em);
+    let base = f64::from(base);
+    let design = base + (advance * units / point_size - base).round();
+    let scale = (point_size * 65536.).round();
+    let browser = (design * scale / units).round() / 65536.;
+    (browser - advance) as f32
 }
 
 /// CSS weights map to Core Text traits independently of the primary face
@@ -1018,6 +1125,24 @@ mod lenient_font_attributes {
 #[cfg(test)]
 mod tests {
     use crate::{FontRun, FontWeight, GlyphId, MacTextSystem, PlatformTextSystem, font, px};
+
+    #[test]
+    fn variable_metric_ties_round_the_delta_in_both_directions() {
+        // hmtx's base advance is integral. HVAR rounds its signed delta,
+        // so a negative half unit differs from rounding the final width.
+        assert_eq!(
+            super::variable_advance_correction(1002.5, 1024., 1024, 1000),
+            0.5
+        );
+        assert_eq!(
+            super::variable_advance_correction(997.5, 1024., 1024, 1000),
+            -0.5
+        );
+        assert_eq!(
+            super::variable_advance_correction(f64::NAN, 12., 2048, 1000),
+            0.
+        );
+    }
 
     #[test]
     fn fallback_weights_survive_primary_face_aliases_in_one_line() {

@@ -233,6 +233,19 @@ const batches = [
   },
   {
     focus: 0,
+    inputText: 'क्षि कर्मि',
+    cases: [
+      field(
+        'text-field/indic-end',
+        'text-field/preview',
+        0,
+        '.dz-text-field',
+        '.dz-text-field'
+      ),
+    ],
+  },
+  {
+    focus: 0,
     inputText: 'DazzUI 世界 end '.repeat(12),
     keys: rowKeys,
     cases: [

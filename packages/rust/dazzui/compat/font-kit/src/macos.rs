@@ -3,7 +3,10 @@ use std::any::Any;
 use core_foundation::{
     base::TCFType, dictionary::CFDictionary, number::CFNumber, string::CFString,
 };
-use core_text::{font, font_descriptor::kCTFontVariationAttribute};
+use core_text::{
+    font,
+    font_descriptor::{TraitAccessors, kCTFontVariationAttribute},
+};
 use upstream::{
     error::SelectionError, family_handle::FamilyHandle, family_name::FamilyName, font::Font,
     handle::Handle, matching, properties::Properties, properties::Weight, source::Source,
@@ -141,10 +144,25 @@ impl SystemSource {
             }
             // Core Text's UI Semibold is wght=590, although its CSS property
             // is 600; Chromium sets the actual variable axis to CSS 600.
-            let weight = (loaded.properties().weight.0 / 100.).round() * 100.;
+            // font-kit's older inverse mapping places current Light and Black
+            // traits between CSS steps. Match Apple's named UI traits so
+            // those faces retain CSS 300 and 900 rather than 200 and 800.
+            const UI_WEIGHTS: [f64; 9] = [-0.8, -0.6, -0.4, 0., 0.23, 0.3, 0.4, 0.56, 0.62];
+            let trait_weight = native.all_traits().normalized_weight();
+            let index = UI_WEIGHTS
+                .iter()
+                .enumerate()
+                .min_by(|(_, a), (_, b)| {
+                    (**a - trait_weight)
+                        .abs()
+                        .total_cmp(&(**b - trait_weight).abs())
+                })
+                .unwrap()
+                .0;
+            let weight = (index + 1) as f64 * 100.;
             let variations = CFDictionary::from_CFType_pairs(&[(
                 CFNumber::from(weight_axis),
-                CFNumber::from(weight as f64),
+                CFNumber::from(weight),
             )]);
             let variation_key = unsafe { CFString::wrap_under_get_rule(kCTFontVariationAttribute) };
             let attrs = CFDictionary::from_CFType_pairs(&[(
@@ -212,7 +230,7 @@ mod tests {
     #[test]
     fn system_family_matches_and_preserves_css_weight_instances() {
         let source = SystemSource::new();
-        for weight in [400., 500., 600., 700.] {
+        for weight in [100., 200., 300., 400., 500., 600., 700., 800., 900.] {
             let handle = source
                 .select_best_match(
                     &[FamilyName::Title(".AppleSystemUIFont".into())],

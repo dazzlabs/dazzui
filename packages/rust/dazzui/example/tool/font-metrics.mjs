@@ -27,7 +27,13 @@ await mkdir(out, { recursive: true })
 const texts = [
   ['latin', 'abc def ghi jkl mno pqr '.repeat(2)],
   ['ligatures', 'office affine AV To ffi'],
+  [
+    'variable-glyphs',
+    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+  ],
+  ['kerning', 'AV WA To Yo Ta Ty Va Vo LT LY PA FA AT AY'],
   ['combining', 'cafe\u0301 fi\u0301x'],
+  ['positioned-marks', 'a\u0323\u0301 a\u0301\u0323 क्षि कर्मि'],
   ['hebrew', 'שלום עולם'],
   ['mixed-bidi', 'abאבcd'],
   ['arabic', 'مرحبا بالعالم'],
@@ -48,7 +54,10 @@ if (selected) {
 const requests = ['text', 'mono'].flatMap(face =>
   [
     ...[12, 13, 13.33, 14, 25, 26].map(size => ({ size, weight: 400 })),
-    ...[500, 600, 700].map(weight => ({ size: 13.33, weight })),
+    ...[100, 200, 300, 500, 600, 700, 800, 900].map(weight => ({
+      size: 13.33,
+      weight,
+    })),
   ].flatMap(style =>
     texts
       .filter(([id]) => !selected || selected.includes(id))

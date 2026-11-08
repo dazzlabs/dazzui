@@ -397,7 +397,7 @@ Five collectors are written:
   `node packages/rust/dazzui/example/tool/field-caret.mjs --out /tmp/field-caret`
   compares browser caret pixels with these native submissions for the six
   single-line editor families, text-field/OTP sizes, a mono text field and
-  empty/filled multiline text fields, including CJK and emoji values and an
+  empty/filled multiline text fields, including CJK, Indic and emoji values and an
   overflowing twenty-line value whose caret must remain visible without
   growing the field.
   Wrapped-row cases exercise the caret's side of a soft wrap; `--cases <id,…>`
@@ -411,8 +411,9 @@ Five collectors are written:
   `font-metrics` binary with browser canvas widths. It creates an unfocused,
   hidden native window and uses the same text system as normal rendering;
   build it with `cargo build -p dazzui-example --bins`. Its matrix includes
-  fractional sizes, weights, combining marks, Arabic, Indic conjuncts, CJK and
-  emoji. Native JSON retains glyph indices and positions, so width and
+  fractional sizes, weights, variable advances, kerning, positioned marks,
+  Arabic, Indic conjuncts, CJK and emoji. Native JSON retains glyph indices and
+  positions, so width and
   positioning differences remain visible rather than becoming test-font
   assumptions. Runs use `foundation::text_runs`, the same authored fallback
   resolution as labels and editable text. The report includes requested native

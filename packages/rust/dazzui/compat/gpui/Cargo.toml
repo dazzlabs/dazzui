@@ -647,6 +647,11 @@ optional = true
 version = "0.3"
 optional = true
 
+[target.'cfg(target_os = "macos")'.dependencies.unicode-properties]
+version = "0.1"
+default-features = false
+features = ["general-category"]
+
 [target.'cfg(target_os = "macos")'.build-dependencies.bindgen]
 version = "0.71"
 
