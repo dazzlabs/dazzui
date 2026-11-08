@@ -9,7 +9,18 @@ use gpui::{
     Window,
 };
 
+use crate::foundation::scoped;
+
 pub(crate) type OnClick = Box<dyn Fn(&ClickEvent, &mut Window, &mut App)>;
+
+/// A trigger wrapper can observe the control's real activation without
+/// depending on the SDK's synthetic keyboard click or adding a handler to
+/// the control's public callback.
+#[derive(Clone)]
+pub(crate) struct ActivationObserver {
+    pub attached: Rc<Cell<bool>>,
+    pub on_click: Rc<dyn Fn(&ClickEvent, &mut Window, &mut App)>,
+}
 
 struct PressState {
     armed: bool,
@@ -23,6 +34,7 @@ pub(crate) struct ButtonPress {
     disabled: bool,
     native: bool,
     composite: bool,
+    observer: Option<ActivationObserver>,
 }
 
 impl ButtonPress {
@@ -53,12 +65,17 @@ impl ButtonPress {
             state.update(cx, |state, _| state.armed = false);
         }
         let bounds = state.read(cx).bounds.clone();
+        let observer = scoped::<ActivationObserver>(cx);
+        if let Some(observer) = &observer {
+            observer.attached.set(true);
+        }
         Self {
             state,
             bounds,
             disabled,
             native: true,
             composite: false,
+            observer,
         }
     }
 
@@ -88,6 +105,18 @@ impl ButtonPress {
         } else {
             let on_click: Option<Rc<dyn Fn(&ClickEvent, &mut Window, &mut App)>> =
                 on_click.map(Rc::from);
+            let on_click = match self.observer {
+                Some(observer) => Some(Rc::new(
+                    move |event: &ClickEvent, window: &mut Window, cx: &mut App| {
+                        if let Some(on_click) = &on_click {
+                            on_click(event, window, cx);
+                        }
+                        (observer.on_click)(event, window, cx);
+                    },
+                )
+                    as Rc<dyn Fn(&ClickEvent, &mut Window, &mut App)>),
+                None => on_click,
+            };
             let mouse = on_click.clone();
             let down = on_click.clone();
             let armed = self.state.clone();

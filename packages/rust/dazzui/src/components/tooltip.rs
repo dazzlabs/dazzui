@@ -1,5 +1,5 @@
-//! The label a control surfaces on hover. It never carries anything a
-//! reader has to have: a tooltip is a reminder of what an icon means.
+//! The label a control surfaces on hover or keyboard focus. It never carries
+//! anything essential: it is a reminder of what an icon means.
 
 use std::{cell::Cell, rc::Rc, time::Duration};
 
@@ -11,8 +11,8 @@ use gpui::{
 
 use crate::components::collapsible::{kept_focus, part_id};
 use crate::components::popup::{Align, Placement, PopupState, Side, measured, positioned};
-use crate::foundation::press::{ButtonPress, OnClick};
-use crate::foundation::{StyledExt, focus_visible};
+use crate::foundation::press::{ActivationObserver, ButtonPress, OnClick};
+use crate::foundation::{StyledExt, focus_visible, provide};
 use crate::theme::ActiveTheme;
 use crate::tokens::shadows;
 
@@ -75,16 +75,30 @@ impl Tooltip {
     pub(crate) fn bind(
         self,
         element: Stateful<Div>,
+        child: Option<AnyElement>,
         focus: &FocusHandle,
         window: &mut Window,
         cx: &mut App,
     ) -> AnyElement {
         let enabled = !self.disabled;
         self.bind_with(element, focus, window, cx, move |element, state| {
+            let attached = Rc::new(Cell::new(false));
+            let activated = state.clone();
+            let observer = ActivationObserver {
+                attached: attached.clone(),
+                on_click: Rc::new(move |_, window, cx| {
+                    if enabled {
+                        activated.update(cx, |state, cx| state.hide(window, cx));
+                    }
+                }),
+            };
             element
+                .children(child.map(|child| provide(observer, child)))
                 .when(enabled, |element| {
-                    element.on_click(move |_, window, cx| {
-                        state.update(cx, |state, cx| state.hide(window, cx))
+                    element.on_click(move |event, window, cx| {
+                        if !event.is_keyboard() || !attached.get() {
+                            state.update(cx, |state, cx| state.hide(window, cx));
+                        }
                     })
                 })
                 .into_any_element()
@@ -247,11 +261,8 @@ impl ParentElement for Tooltip {
 impl RenderOnce for Tooltip {
     fn render(mut self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let focus = kept_focus(part_id(&self.id, "scope-focus"), window, cx);
-        let element = div()
-            .id(self.id.clone())
-            .flex()
-            .track_focus(&focus)
-            .children(self.child.take());
-        self.bind(element, &focus, window, cx)
+        let element = div().id(self.id.clone()).flex().track_focus(&focus);
+        let child = self.child.take();
+        self.bind(element, child, &focus, window, cx)
     }
 }

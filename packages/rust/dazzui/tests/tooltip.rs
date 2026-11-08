@@ -5,7 +5,7 @@ mod support;
 
 use dazzui::{
     Button, Sidebar, SidebarCollapsible, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
-    SidebarProvider, Theme, Tooltip,
+    SidebarProvider, Switch, Theme, Toggle, Tooltip,
 };
 use gpui::{
     AnyElement, Bounds, Context, Entity, InteractiveElement, IntoElement, KeyUpEvent, Keystroke,
@@ -23,6 +23,8 @@ struct Harness {
     open: bool,
     collapsed: Option<bool>,
     standalone: bool,
+    control: usize,
+    has_handler: bool,
     hint: bool,
     disabled: bool,
     prevent_down: bool,
@@ -40,6 +42,13 @@ impl Render for Harness {
         let painted = self.painted.clone();
         let bounds = self.label_bounds.clone();
         let view = cx.entity().downgrade();
+        let control_view = view.clone();
+        let activate = move |_: &mut Window, cx: &mut gpui::App| {
+            let _ = control_view.update(cx, |view, cx| {
+                view.clicks += 1;
+                cx.notify();
+            });
+        };
         let prevent_down = self.prevent_down;
         let prevent_up = self.prevent_up;
         let label = div()
@@ -57,8 +66,30 @@ impl Render for Harness {
                 .inset_0(),
             );
         let row: AnyElement = if self.standalone {
+            let control = match self.control {
+                1 => Toggle::new("target")
+                    .disabled(self.disabled)
+                    .when(self.has_handler, |toggle| {
+                        toggle.on_pressed_change(move |_, window, cx| activate(window, cx))
+                    })
+                    .child("Target")
+                    .into_any_element(),
+                2 => Switch::new("target")
+                    .disabled(self.disabled)
+                    .when(self.has_handler, |switch| {
+                        switch.on_checked_change(move |_, window, cx| activate(window, cx))
+                    })
+                    .into_any_element(),
+                _ => Button::new("target")
+                    .disabled(self.disabled)
+                    .when(self.has_handler, |button| {
+                        button.on_click(move |_, window, cx| activate(window, cx))
+                    })
+                    .child("Target")
+                    .into_any_element(),
+            };
             Tooltip::new("hint", label)
-                .child(Button::new("target").child("Target"))
+                .child(control)
                 .into_any_element()
         } else {
             SidebarProvider::new("provider")
@@ -135,6 +166,8 @@ fn setup(cx: &mut TestAppContext, standalone: bool) -> (Entity<Harness>, &mut Vi
         open: false,
         collapsed: None,
         standalone,
+        control: 0,
+        has_handler: true,
         hint: true,
         disabled: false,
         prevent_down: false,
@@ -279,6 +312,97 @@ fn up(cx: &mut VisualTestContext, key: &str) {
 
 fn clicks(view: &Entity<Harness>, cx: &VisualTestContext) -> usize {
     view.read_with(cx, |view, _| view.clicks)
+}
+
+#[gpui::test]
+fn ordinary_hints_follow_button_toggle_and_switch_activation(cx: &mut TestAppContext) {
+    for control in 0..3 {
+        let (view, cx) = setup(cx, true);
+        view.update(cx, |view, cx| {
+            view.control = control;
+            cx.notify();
+        });
+        cx.run_until_parked();
+        cx.simulate_keystrokes("tab");
+        assert!(drawn(&view, cx));
+        up(cx, "enter");
+        assert_eq!(clicks(&view, cx), 0);
+        assert!(drawn(&view, cx), "a stray Enter release is inert");
+        up(cx, "space");
+        let stray = usize::from(control == 2);
+        assert_eq!(clicks(&view, cx), stray);
+        assert_eq!(drawn(&view, cx), stray == 0);
+        if stray != 0 {
+            cx.simulate_keystrokes("tab shift-tab");
+        }
+        cx.simulate_keystrokes("enter");
+        assert_eq!(clicks(&view, cx), stray + 1);
+        assert!(
+            !drawn(&view, cx),
+            "Enter closes on keydown for control {control}"
+        );
+        up(cx, "enter");
+        assert_eq!(clicks(&view, cx), stray + 1);
+        cx.simulate_keystrokes("tab shift-tab space");
+        assert_eq!(clicks(&view, cx), stray + 1);
+        assert!(drawn(&view, cx), "Space down is not activation");
+        up(cx, "space");
+        assert_eq!(clicks(&view, cx), stray + 2);
+        assert!(!drawn(&view, cx));
+        cx.simulate_keystrokes("tab shift-tab");
+        view.update(cx, |view, cx| {
+            view.prevent_down = true;
+            cx.notify();
+        });
+        cx.run_until_parked();
+        cx.simulate_keystrokes("enter");
+        up(cx, "enter");
+        assert_eq!(clicks(&view, cx), stray + 2);
+        assert!(
+            drawn(&view, cx),
+            "a prevented Enter must not dismiss on keyup"
+        );
+        cx.simulate_keystrokes("space");
+        up(cx, "space");
+        let base = stray + 2 + usize::from(control == 2);
+        assert_eq!(clicks(&view, cx), base);
+        assert_eq!(drawn(&view, cx), control != 2);
+        if control == 2 {
+            cx.simulate_keystrokes("tab shift-tab");
+        }
+        view.update(cx, |view, cx| {
+            view.prevent_down = false;
+            view.prevent_up = true;
+            cx.notify();
+        });
+        cx.run_until_parked();
+        cx.simulate_keystrokes("space");
+        up(cx, "space");
+        assert_eq!(clicks(&view, cx), base);
+        assert!(drawn(&view, cx));
+        view.update(cx, |view, cx| {
+            view.prevent_up = false;
+            cx.notify();
+        });
+        cx.run_until_parked();
+        up(cx, "space");
+        assert_eq!(clicks(&view, cx), base + 1);
+        assert!(!drawn(&view, cx));
+        view.update(cx, |view, cx| {
+            view.has_handler = false;
+            cx.notify();
+        });
+        cx.run_until_parked();
+        cx.simulate_keystrokes("tab shift-tab");
+        assert!(drawn(&view, cx));
+        cx.simulate_keystrokes("enter");
+        assert_eq!(clicks(&view, cx), base + 1);
+        assert!(
+            !drawn(&view, cx),
+            "a control without a callback still activates"
+        );
+        up(cx, "enter");
+    }
 }
 
 #[gpui::test]
