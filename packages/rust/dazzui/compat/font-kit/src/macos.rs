@@ -32,10 +32,29 @@ pub fn css_weight(font: &Font) -> Option<f64> {
 /// A face's properties with its drawn weight in place of its trait.
 pub fn css_properties(font: &Font) -> Properties {
     let mut properties = font.properties();
-    if let Some(weight) = css_weight(font) {
+    if let Some(weight) = css_weight(font).or_else(|| static_css_weight(font)) {
         properties.weight = Weight(weight as f32);
     }
     properties
+}
+
+fn static_css_weight(font: &Font) -> Option<f64> {
+    let native = font.native_font();
+    // Named variable instances share OS/2's default weight. Their axis or
+    // Core Text trait is authoritative; static faces declare CSS in OS/2.
+    if native
+        .get_font_table(u32::from_be_bytes(*b"fvar"))
+        .is_some()
+    {
+        return None;
+    }
+    let table = native.get_font_table(u32::from_be_bytes(*b"OS/2"))?;
+    let weight = u16::from_be_bytes(table.bytes().get(4..6)?.try_into().ok()?);
+    match weight {
+        1..=9 => Some(f64::from(weight * 100)),
+        10..=1000 => Some(f64::from(weight)),
+        _ => None,
+    }
 }
 
 pub struct SystemSource(CoreTextSource);
@@ -222,6 +241,21 @@ mod tests {
                 Some(weight),
                 "native shaping and rasterization must retain CSS {weight}"
             );
+        }
+    }
+
+    #[test]
+    fn static_fallback_faces_use_their_declared_css_weights() {
+        let source = SystemSource::new();
+        for weight in [400., 500., 600.] {
+            let handle = source
+                .select_best_match(
+                    &[FamilyName::Title("PingFang SC".into())],
+                    &Properties::new().weight(Weight(weight as f32)),
+                )
+                .unwrap();
+            let selected = handle.load().unwrap();
+            assert_eq!(f64::from(css_properties(&selected).weight.0), weight);
         }
     }
 }

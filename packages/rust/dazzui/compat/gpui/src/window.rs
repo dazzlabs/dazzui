@@ -1948,7 +1948,9 @@ impl Window {
         let size = style.font_size.to_pixels(self.rem_size());
         let ascent = self.text_system().ascent(font, size).abs().round();
         let descent = self.text_system().descent(font, size).abs().round();
-        let leading = style.line_height.to_pixels(style.font_size, self.rem_size());
+        let leading = style
+            .line_height
+            .to_pixels(style.font_size, self.rem_size());
         ((leading - ascent - descent) / 2.).floor() + ascent
     }
 
@@ -3336,12 +3338,18 @@ impl Window {
 
         let scale_factor = self.scale_factor();
         let glyph_origin = origin.scale(scale_factor);
+        #[cfg(target_os = "macos")]
+        let subpixel_variant = Point {
+            x: (glyph_origin.x.0.fract() * SUBPIXEL_VARIANTS_X as f32).floor() as u8,
+            y: (glyph_origin.y.0.fract() * SUBPIXEL_VARIANTS_Y as f32).floor() as u8,
+        };
+        #[cfg(not(target_os = "macos"))]
+        let subpixel_variant = Default::default();
         let params = RenderGlyphParams {
             font_id,
             glyph_id,
             font_size,
-            // We don't render emojis with subpixel variants.
-            subpixel_variant: Default::default(),
+            subpixel_variant,
             scale_factor,
             is_emoji: true,
         };

@@ -1,13 +1,14 @@
-//! Resolve CSS's generic families through the host's Fontconfig settings.
+//! Resolve authored font stacks before falling back to the platform shaper.
 //!
 //! GPUI 0.2 maps `.SystemUIFont` to IBM Plex Sans on Linux. If that face is
 //! absent it searches its own fallback list, which can pick a different face
 //! than the browser. `monospace` also needs a concrete family: GPUI's Linux
 //! loader matches family names literally rather than resolving aliases.
 
-use std::ffi::CStr;
-use std::sync::OnceLock;
+#[cfg(target_os = "linux")]
+use std::{ffi::CStr, sync::OnceLock};
 
+#[cfg(target_os = "linux")]
 pub(crate) fn family(monospace: bool) -> &'static str {
     static UI: OnceLock<Option<String>> = OnceLock::new();
     static CODE: OnceLock<Option<String>> = OnceLock::new();
@@ -22,6 +23,7 @@ pub(crate) fn family(monospace: bool) -> &'static str {
         .unwrap_or(fallback)
 }
 
+#[cfg(target_os = "linux")]
 fn resolve(generic: &CStr) -> Option<String> {
     use fontconfig_sys::{FcMatchPattern, FcResultMatch, constants::FC_FAMILY};
     let fc = fontconfig_sys::statics::LIB_RESULT.as_ref().ok()?;
@@ -59,8 +61,8 @@ fn resolve(generic: &CStr) -> Option<String> {
     }
 }
 
-/// Cosmic Text's automatic fallback does not see the remaining families in
-/// the ds stack. Supply those runs explicitly, keeping each grapheme intact.
+/// Native automatic fallback does not see the remaining families in the ds
+/// stack. Supply those runs explicitly, keeping each grapheme intact.
 pub(crate) fn runs(
     text: &str,
     style: &gpui::TextStyle,
@@ -118,7 +120,7 @@ pub(crate) fn runs(
     runs
 }
 
-#[cfg(test)]
+#[cfg(all(test, target_os = "linux"))]
 mod tests {
     struct Probe;
 

@@ -8,11 +8,11 @@ use anyhow::anyhow;
 use cocoa::appkit::CGFloat;
 use collections::{HashMap, HashSet};
 use core_foundation::{
-    attributed_string::CFMutableAttributedString,
+    attributed_string::{CFAttributedStringGetString, CFMutableAttributedString},
     base::{CFRange, TCFType},
     dictionary::CFDictionary,
     number::CFNumber,
-    string::CFString,
+    string::{CFString, CFStringGetCharacters},
 };
 use core_graphics::{
     base::{CGGlyph, kCGImageAlphaPremultipliedLast},
@@ -23,7 +23,10 @@ use core_graphics::{
 use core_text::{
     font::CTFont,
     font_descriptor::{
-        kCTFontSlantTrait, kCTFontSymbolicTrait, kCTFontWeightTrait, kCTFontWidthTrait,
+        TraitAccessors, kCTFontBoldTrait, kCTFontCondensedTrait, kCTFontExpandedTrait,
+        kCTFontFamilyNameAttribute, kCTFontFeatureSettingsAttribute, kCTFontItalicTrait,
+        kCTFontSlantTrait, kCTFontSymbolicTrait, kCTFontTraitsAttribute, kCTFontWeightTrait,
+        kCTFontWidthTrait,
     },
     line::CTLine,
     run::CTRunRef,
@@ -73,13 +76,15 @@ struct MacTextSystemState {
     system_source: SystemSource,
     fonts: Vec<FontKitFont>,
     font_selections: HashMap<Font, FontId>,
+    font_queries: HashMap<FontId, Font>,
     font_ids_by_postscript_name: HashMap<String, FontId>,
     font_ids_by_font_key: HashMap<FontKey, SmallVec<[FontId; 4]>>,
     postscript_names_by_font_id: HashMap<FontId, String>,
     /// UTF-16 indices of ZWNJS
     zwnjs_scratch_space: Vec<usize>,
     tracking: HashMap<FontId, Option<(Tracking, u32)>>,
-    native_only_tracking: HashSet<FontId>,
+    suppressed_tracking: HashSet<FontId>,
+    fallback_fonts: HashMap<(FontId, String), Option<CTFont>>,
 }
 
 impl MacTextSystem {
@@ -89,12 +94,14 @@ impl MacTextSystem {
             system_source: SystemSource::new(),
             fonts: Vec::new(),
             font_selections: HashMap::default(),
+            font_queries: HashMap::default(),
             font_ids_by_postscript_name: HashMap::default(),
             font_ids_by_font_key: HashMap::default(),
             postscript_names_by_font_id: HashMap::default(),
             zwnjs_scratch_space: Vec::new(),
             tracking: HashMap::default(),
-            native_only_tracking: HashSet::default(),
+            suppressed_tracking: HashSet::default(),
+            fallback_fonts: HashMap::default(),
         }))
     }
 }
@@ -163,7 +170,21 @@ impl PlatformTextSystem for MacTextSystem {
                 },
             )?;
 
-            let font_id = candidates[ix];
+            let mut font_id = candidates[ix];
+            if lock
+                .font_queries
+                .get(&font_id)
+                .is_some_and(|query| query != font)
+            {
+                // Different CSS requests can select the same primary face,
+                // yet require different fallback faces (Menlo 500 and 600).
+                let instance = lock.fonts[font_id.0].clone();
+                let name = instance.postscript_name().unwrap();
+                font_id = FontId(lock.fonts.len());
+                lock.fonts.push(instance);
+                lock.postscript_names_by_font_id.insert(font_id, name);
+            }
+            lock.font_queries.insert(font_id, font.clone());
             lock.font_selections.insert(font.clone(), font_id);
             Ok(font_id)
         }
@@ -346,6 +367,27 @@ impl MacTextSystemState {
 
     fn raster_bounds(&self, params: &RenderGlyphParams) -> Result<Bounds<DevicePixels>> {
         let font = &self.fonts[params.font_id.0];
+        if params.is_emoji {
+            // Bitmap strikes are selected at device size, not by scaling a
+            // logical-size glyph. Their ink bounds need not scale linearly.
+            let native = font.native_font().clone_with_font_size(
+                (f32::from(params.font_size) * params.scale_factor) as CGFloat,
+            );
+            let rect = native.get_bounding_rects_for_glyphs(
+                core_text::font_descriptor::kCTFontDefaultOrientation,
+                &[params.glyph_id.0 as CGGlyph],
+            );
+            return Ok(RectF::new(
+                Vector2F::new(
+                    rect.origin.x as f32,
+                    (-rect.origin.y - rect.size.height) as f32,
+                ),
+                Vector2F::new(rect.size.width as f32, rect.size.height as f32),
+            )
+            .round_out()
+            .to_i32()
+            .into());
+        }
         let scale = Transform2F::from_scale(params.scale_factor);
         Ok(font
             .raster_bounds(
@@ -408,10 +450,12 @@ impl MacTextSystemState {
                 -glyph_bounds.origin.x.0 as CGFloat,
                 (glyph_bounds.origin.y.0 + glyph_bounds.size.height.0) as CGFloat,
             );
-            cx.scale(
-                params.scale_factor as CGFloat,
-                params.scale_factor as CGFloat,
-            );
+            let render_scale = if params.is_emoji {
+                1.
+            } else {
+                params.scale_factor
+            };
+            cx.scale(render_scale as CGFloat, render_scale as CGFloat);
 
             let subpixel_shift = params
                 .subpixel_variant
@@ -426,12 +470,20 @@ impl MacTextSystemState {
             cx.set_should_subpixel_quantize_fonts(false);
             self.fonts[params.font_id.0]
                 .native_font()
-                .clone_with_font_size(f32::from(params.font_size) as CGFloat)
+                .clone_with_font_size(
+                    (f32::from(params.font_size)
+                        * if params.is_emoji {
+                            params.scale_factor
+                        } else {
+                            1.
+                        }) as CGFloat,
+                )
                 .draw_glyphs(
                     &[params.glyph_id.0 as CGGlyph],
                     &[CGPoint::new(
-                        (subpixel_shift.x / params.scale_factor) as CGFloat,
-                        (subpixel_shift.y / params.scale_factor) as CGFloat,
+                        (subpixel_shift.x / render_scale) as CGFloat,
+                        (subpixel_shift.y / render_scale * if params.is_emoji { -1. } else { 1. })
+                            as CGFloat,
                     )],
                     cx,
                 );
@@ -447,7 +499,7 @@ impl MacTextSystemState {
         }
     }
 
-    fn tracking_adjustment(&mut self, font_id: FontId, font_size: Pixels) -> f32 {
+    fn tracking_advance(&mut self, font_id: FontId, font_size: Pixels) -> f32 {
         self.tracking
             .entry(font_id)
             .or_insert_with(|| {
@@ -455,15 +507,100 @@ impl MacTextSystemState {
                 let tracking = font
                     .get_font_table(u32::from_be_bytes(*b"trak"))
                     .and_then(|data| Tracking::from_bytes(data.bytes()))?;
+                // Apply tracking ourselves: Core Text and HarfBuzz may use
+                // different cluster boundaries for complex scripts.
+                self.suppressed_tracking.insert(font_id);
                 // HarfBuzz gates AAT tracking on STAT, unlike Core Text.
                 if font.get_font_table(u32::from_be_bytes(*b"STAT")).is_none() {
-                    self.native_only_tracking.insert(font_id);
                     return None;
                 }
                 Some((tracking, self.fonts[font_id.0].metrics().units_per_em))
             })
             .as_ref()
-            .map_or(0., |(track, units)| track.adjustment(font_size.0, *units))
+            .map_or(0., |(track, units)| track.advance(font_size.0, *units))
+    }
+
+    fn matching_fallback(&mut self, source_id: FontId, font: &CTFont) -> Option<CTFont> {
+        let source = self.fonts[source_id.0].native_font();
+        let family = font.family_name();
+        if source.family_name() == family
+            || matches!(
+                font.postscript_name().as_str(),
+                "AppleColorEmoji" | ".AppleColorEmojiUI"
+            )
+        {
+            return None;
+        }
+        self.fallback_fonts
+            .entry((source_id, family.clone()))
+            .or_insert_with(|| {
+                // A variable UI font can pass its axes to an unrelated
+                // fallback face. Match that family independently instead.
+                let traits = source.all_traits();
+                let mask = kCTFontItalicTrait
+                    | kCTFontBoldTrait
+                    | kCTFontExpandedTrait
+                    | kCTFontCondensedTrait;
+                let query = self.font_queries.get(&source_id);
+                let mut symbolic = source.symbolic_traits() & mask;
+                if let Some(query) = query {
+                    symbolic &= !(kCTFontItalicTrait | kCTFontBoldTrait);
+                    if query.style != FontStyle::Normal {
+                        symbolic |= kCTFontItalicTrait;
+                    }
+                    if query.weight.0 >= 600. {
+                        symbolic |= kCTFontBoldTrait;
+                    }
+                }
+                let weight = query.map_or_else(
+                    || traits.normalized_weight(),
+                    |query| core_text_weight(query.weight),
+                );
+                let desired = unsafe {
+                    CFDictionary::from_CFType_pairs(&[
+                        (
+                            CFString::wrap_under_get_rule(kCTFontSymbolicTrait),
+                            CFNumber::from(i64::from(symbolic)),
+                        ),
+                        (
+                            CFString::wrap_under_get_rule(kCTFontWeightTrait),
+                            CFNumber::from(weight),
+                        ),
+                        (
+                            CFString::wrap_under_get_rule(kCTFontWidthTrait),
+                            CFNumber::from(traits.normalized_width()),
+                        ),
+                        (
+                            CFString::wrap_under_get_rule(kCTFontSlantTrait),
+                            CFNumber::from(traits.normalized_slant()),
+                        ),
+                    ])
+                };
+                let mut attributes = unsafe {
+                    vec![
+                        (
+                            CFString::wrap_under_get_rule(kCTFontFamilyNameAttribute),
+                            CFString::new(&family).as_CFType(),
+                        ),
+                        (
+                            CFString::wrap_under_get_rule(kCTFontTraitsAttribute),
+                            desired.as_CFType(),
+                        ),
+                    ]
+                };
+                let features_key =
+                    unsafe { CFString::wrap_under_get_rule(kCTFontFeatureSettingsAttribute) };
+                if let Some(features) = source.copy_descriptor().attributes().find(&features_key) {
+                    attributes.push((features_key, (*features).clone()));
+                }
+                let descriptor = core_text::font_descriptor::new_from_attributes(
+                    &CFDictionary::from_CFType_pairs(&attributes),
+                );
+                let matched = core_text::font::new_from_descriptor(&descriptor, source.pt_size());
+                (matched.family_name() == family).then_some(matched)
+            })
+            .as_ref()
+            .map(|matched| matched.clone_with_font_size(font.pt_size()))
     }
 
     fn layout_line(&mut self, text: &str, font_size: Pixels, font_runs: &[FontRun]) -> LineLayout {
@@ -476,6 +613,7 @@ impl MacTextSystemState {
         let mut string = CFMutableAttributedString::new();
         let mut max_ascent = 0.0f32;
         let mut max_descent = 0.0f32;
+        let mut source_runs = Vec::with_capacity(font_runs.len());
 
         {
             let mut ix_converter = StringIndexConverter::new(&text);
@@ -502,6 +640,7 @@ impl MacTextSystemState {
                 let utf16_end = string.char_len();
 
                 let cf_range = CFRange::init(utf16_start, utf16_end - utf16_start);
+                source_runs.push((cf_range, run.font_id));
                 let font = &self.fonts[run.font_id.0];
 
                 let font_metrics = font.metrics();
@@ -515,25 +654,66 @@ impl MacTextSystemState {
                         kCTFontAttributeName,
                         &font.native_font().clone_with_font_size(font_size.into()),
                     );
+                    // Keep logical style boundaries even when Core Text
+                    // resolves two requested weights to the same physical face.
+                    string.set_attribute(
+                        cf_range,
+                        CFString::from_static_string("GPUIRequestedFontID").as_concrete_TypeRef(),
+                        &CFNumber::from(run.font_id.0 as i64),
+                    );
                 }
             }
         }
         // Retrieve the glyphs from the shaped line, converting UTF16 offsets to UTF8 offsets.
         let mut line = CTLine::new_with_attributed_string(string.as_concrete_TypeRef());
         let mut changed = false;
-        // Fallback fonts are known only after shaping. Suppress Core Text's
-        // tracking on fonts such as Apple Color Emoji before shaping again.
+        // Fallback fonts are known only after shaping. Resolve their requested
+        // style and suppress native tracking before applying browser tracking.
         for run in line.glyph_runs().into_iter() {
             let attributes = run.attributes().unwrap();
-            let font = unsafe {
+            let mut font = unsafe {
                 attributes
                     .get(kCTFontAttributeName)
                     .downcast::<CTFont>()
                     .unwrap()
             };
+            let range = unsafe { CTRunGetStringRange(run.as_concrete_TypeRef()) };
+            let mut replace = false;
+            if let Some((_, source)) = source_runs.iter().find(|(source, _)| {
+                source.location <= range.location
+                    && range.location < source.location + source.length
+            }) && let Some(matched) = self.matching_fallback(*source, &font)
+            {
+                let mut characters = vec![0; range.length as usize];
+                unsafe {
+                    CFStringGetCharacters(
+                        CFAttributedStringGetString(string.as_concrete_TypeRef()),
+                        range,
+                        characters.as_mut_ptr(),
+                    );
+                }
+                let loaded = unsafe { FontKitFont::from_native_font(&matched) };
+                if String::from_utf16(&characters).is_ok_and(|text| text.chars().all(|ch| {
+                    ch.is_control()
+                        || matches!(ch, '\u{200c}'..='\u{200d}' | '\u{fe00}'..='\u{fe0f}' | '\u{e0100}'..='\u{e01ef}')
+                        || loaded.glyph_for_char(ch).is_some()
+                })) {
+                    font = matched;
+                    replace = true;
+                }
+            }
+            // Browser emoji fallback uses the public face, whose metrics
+            // differ from the system UI cascade's scaled emoji face.
+            if font.postscript_name() == ".AppleColorEmojiUI"
+                && let Ok(emoji) =
+                    core_text::font::new_from_name("Apple Color Emoji", font.pt_size())
+            {
+                font = emoji;
+                replace = true;
+            }
             let font_id = self.id_for_native_font(font.clone());
-            self.tracking_adjustment(font_id, font_size);
-            if self.native_only_tracking.contains(&font_id) {
+            self.tracking_advance(font_id, font_size);
+            if self.suppressed_tracking.contains(&font_id) {
                 let attributes = CFDictionary::from_CFType_pairs(&[(
                     CFString::from_static_string("NSCTFontUnscaledTrackingAttribute"),
                     CFNumber::from(0),
@@ -544,13 +724,12 @@ impl MacTextSystemState {
                 else {
                     continue;
                 };
-                let replacement = core_text::font::new_from_descriptor(&descriptor, font.pt_size());
+                font = core_text::font::new_from_descriptor(&descriptor, font.pt_size());
+                replace = true;
+            }
+            if replace {
                 unsafe {
-                    string.set_attribute(
-                        CTRunGetStringRange(run.as_concrete_TypeRef()),
-                        kCTFontAttributeName,
-                        &replacement,
-                    );
+                    string.set_attribute(range, kCTFontAttributeName, &font);
                 }
                 changed = true;
             }
@@ -575,8 +754,27 @@ impl MacTextSystemState {
                     .downcast::<CTFont>()
                     .unwrap()
             };
-            let font_id = self.id_for_native_font(font);
-            let adjustment = self.tracking_adjustment(font_id, font_size);
+            let range = unsafe { CTRunGetStringRange(run.as_concrete_TypeRef()) };
+            let source = source_runs
+                .iter()
+                .find(|(source, _)| {
+                    source.location <= range.location
+                        && range.location < source.location + source.length
+                })
+                .map(|(_, source)| *source);
+            let font_id = match source {
+                Some(source)
+                    if self.fonts[source.0]
+                        .native_font()
+                        .clone_with_font_size(font.pt_size())
+                        .postscript_name()
+                        == font.postscript_name() =>
+                {
+                    source
+                }
+                _ => self.id_for_native_font(font),
+            };
+            let adjustment = self.tracking_advance(font_id, font_size);
             if adjustment != 0. && graphemes.is_none() {
                 graphemes = Some(text.grapheme_indices(true).map(|(at, _)| at).collect());
             }
@@ -644,6 +842,18 @@ impl MacTextSystemState {
             len: text.len(),
         }
     }
+}
+
+/// CSS weights map to Core Text traits independently of the primary face
+/// a particular family happened to supply. This is a platform protocol,
+/// not a design-system weight scale.
+fn core_text_weight(weight: FontWeight) -> f64 {
+    let weight = weight.0;
+    if !weight.is_finite() || weight <= 50. || weight >= 950. {
+        return 0.;
+    }
+    const WEIGHTS: [f64; 9] = [-0.8, -0.6, -0.4, 0., 0.23, 0.3, 0.4, 0.56, 0.62];
+    WEIGHTS[(weight as usize - 50) / 100]
 }
 
 #[derive(Debug, Clone)]
@@ -807,7 +1017,49 @@ mod lenient_font_attributes {
 
 #[cfg(test)]
 mod tests {
-    use crate::{FontRun, GlyphId, MacTextSystem, PlatformTextSystem, font, px};
+    use crate::{FontRun, FontWeight, GlyphId, MacTextSystem, PlatformTextSystem, font, px};
+
+    #[test]
+    fn fallback_weights_survive_primary_face_aliases_in_one_line() {
+        let fonts = MacTextSystem::new();
+        for (left, right) in [(400., 500.), (600., 700.)] {
+            let mut requested = font("Menlo");
+            requested.weight = FontWeight(left);
+            let left_id = fonts.font_id(&requested).unwrap();
+            requested.weight = FontWeight(right);
+            let right_id = fonts.font_id(&requested).unwrap();
+            assert_ne!(left_id, right_id);
+            {
+                let state = fonts.0.read();
+                assert_eq!(
+                    state.fonts[left_id.0].postscript_name(),
+                    state.fonts[right_id.0].postscript_name(),
+                );
+            }
+            let left = "नमस्ते ";
+            let right = "दुनिया";
+            let styles = [
+                FontRun {
+                    font_id: left_id,
+                    len: left.len(),
+                },
+                FontRun {
+                    font_id: right_id,
+                    len: right.len(),
+                },
+            ];
+            let size = px(13.33);
+            let expected = fonts.layout_line(left, size, &styles[..1]).width
+                + fonts.layout_line(right, size, &styles[1..]).width;
+            let actual = fonts
+                .layout_line(&format!("{left}{right}"), size, &styles)
+                .width;
+            assert!(
+                (actual - expected).abs() < px(0.001),
+                "{actual:?} != {expected:?}"
+            );
+        }
+    }
 
     #[test]
     fn test_layout_line_bom_char() {

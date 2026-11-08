@@ -90,6 +90,20 @@ unfocused fields and Ctrl-wheel retain the enclosing page's scrolling path.
 Keep local edits limited to this rendering seam. Do not edit an installed
 Cargo registry cache: the committed copy is the build input.
 
+Single-line shaping coalesces adjacent runs only when their resolved fonts
+and decorations agree. Otherwise a same-color fallback run silently keeps the
+preceding font. On macOS, fallback families match the requested weight and
+style independently of the primary face's variable axes. Logical font IDs and
+attributed-string boundaries preserve requests that share a physical face.
+AAT tracking replaces Core Text's tracking with browser-precision advances per
+grapheme, so Indic conjuncts receive one advance rather than one per native
+cluster. Fonts without STAT receive no browser tracking. Emoji uses the
+public fallback face, matching browser metrics rather than the scaled system
+UI face. Its bitmap strikes and ink bounds are resolved at device size, with
+fractional glyph positioning, rather than enlarged from a logical-size strike.
+The font-kit compatibility layer reads static CSS weights from OS/2
+and variable instance weights from their axes.
+
 `Window::unrounded_layout_size` exposes Taffy's intrinsic size before display
 pixel snapping. Tabs rounds that value once to logical CSS pixels for its
 hidden ruler; rounding an already snapped rectangle changes overflow choices

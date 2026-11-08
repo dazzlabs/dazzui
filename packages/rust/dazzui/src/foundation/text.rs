@@ -7,6 +7,23 @@ use gpui::{
 };
 use std::{cell::RefCell, rc::Rc};
 
+/// Prepare shaping runs with the authored DazzUI font stack, preserving
+/// grapheme clusters and the style's weight, features and decorations.
+pub fn text_runs(
+    text: &str,
+    style: &gpui::TextStyle,
+    size: Pixels,
+    window: &Window,
+) -> Vec<gpui::TextRun> {
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    return crate::platform_fonts::runs(text, style, size, window);
+    #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+    {
+        let _ = (size, window);
+        vec![style.to_run(text.len())]
+    }
+}
+
 /// Prepare a plain string with the kit's font stack and display-pixel
 /// measurement. Rich elements pass through unchanged. Controls do this for
 /// their own children; use it for surrounding text drawn directly with GPUI.
@@ -122,10 +139,7 @@ impl Element for LabelText {
         } else {
             (line_height, window.text_baseline())
         };
-        #[cfg(target_os = "linux")]
-        let runs = crate::platform_fonts::runs(&self.0, &style, font_size, window);
-        #[cfg(not(target_os = "linux"))]
-        let runs = vec![style.to_run(self.0.len())];
+        let runs = text_runs(&self.0, &style, font_size, window);
         let text = self.0.clone();
         let lines = Rc::new(RefCell::new(Vec::new()));
         let layout = LabelLayout {

@@ -218,6 +218,60 @@ const batches = [
       ),
     ],
   },
+  {
+    focus: 0,
+    inputText: 'DazzUI 世界 end',
+    cases: [
+      field(
+        'text-field/cjk-end',
+        'text-field/preview',
+        0,
+        '.dz-text-field',
+        '.dz-text-field'
+      ),
+    ],
+  },
+  {
+    focus: 0,
+    inputText: 'DazzUI 世界 end '.repeat(12),
+    keys: rowKeys,
+    cases: [
+      field(
+        'text-field/cjk-wrapped-end',
+        'text-field/2',
+        0,
+        '.dz-text-field',
+        '.dz-text-field'
+      ),
+    ],
+  },
+  {
+    focus: 0,
+    inputText: 'Hello 👨‍👩‍👧‍👦 end',
+    cases: [
+      field(
+        'text-field/emoji-end',
+        'text-field/preview',
+        0,
+        '.dz-text-field',
+        '.dz-text-field'
+      ),
+    ],
+  },
+  {
+    focus: 2,
+    inputText: 'Hello 👨‍👩‍👧‍👦 end',
+    cases: [
+      field(
+        'text-field/mono-emoji-end',
+        'text-field/1',
+        3,
+        '.dz-text-field',
+        '.dz-text-field',
+        3
+      ),
+    ],
+  },
   ...[false, true].map(home => ({
     focus: 0,
     inputText: 'abc def ghi jkl mno pqr '.repeat(8),
@@ -358,6 +412,10 @@ try {
         )
         if (batch.inputText) await input.fill(batch.inputText)
         for (const key of batch.keys || []) await input.press(key.browser)
+        font.selection = await input.evaluate(node => [
+          node.selectionStart,
+          node.selectionEnd,
+        ])
         const png = await page
           .locator('[data-caret-crop]')
           .screenshot({ caret: 'initial' })

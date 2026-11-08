@@ -1,6 +1,6 @@
 //! Inspect the platform text system without TestAppContext's synthetic fonts.
 use dazzui::tokens::Face;
-use gpui::{AppContext, Application, Empty, FontWeight, TextRun, WindowOptions, black, font, px};
+use gpui::{AppContext, Application, Empty, FontWeight, TextStyle, WindowOptions, px};
 use serde_json::{Value, json};
 
 fn main() {
@@ -26,19 +26,16 @@ fn main() {
                         Face::Text
                     };
                     let size = request["size"].as_f64().unwrap() as f32;
-                    let mut font = font(face.family());
-                    font.weight = FontWeight(request["weight"].as_f64().unwrap_or(400.) as f32);
+                    let style = TextStyle {
+                        font_family: face.family().into(),
+                        font_weight: FontWeight(request["weight"].as_f64().unwrap_or(400.) as f32),
+                        ..Default::default()
+                    };
+                    let runs = dazzui::foundation::text_runs(text, &style, px(size), window);
                     let line = system.shape_line(
                         text.to_owned().into(),
                         px(size),
-                        &[TextRun {
-                            len: text.len(),
-                            font,
-                            color: black(),
-                            background_color: None,
-                            underline: None,
-                            strikethrough: None,
-                        }],
+                        &runs,
                         None,
                     );
                     let glyphs = line
@@ -52,6 +49,7 @@ fn main() {
                     readings.push(json!({
                         "request": request,
                         "family": face.family(),
+                        "families": runs.iter().map(|run| run.font.family.as_ref()).collect::<Vec<_>>(),
                         "width": f32::from(line.width),
                         "glyphs": glyphs,
                     }));

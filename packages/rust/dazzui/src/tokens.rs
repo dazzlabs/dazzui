@@ -112,7 +112,7 @@ pub enum Face {
 }
 
 impl Face {
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
     pub(crate) fn families(self) -> &'static [&'static str] {
         match self {
             Face::Text => crate::generated::FONT_UI,
@@ -171,13 +171,6 @@ pub struct TypeStyle {
 
 impl TypeStyle {
     pub fn font_weight(self) -> FontWeight {
-        // SF Mono Medium reports trait 0.23. font-kit's inverse CSS mapping
-        // calls that 530, so its CSS-500 matching rule would choose Regular.
-        // The system UI family is normalized by compat/font-kit instead.
-        #[cfg(target_os = "macos")]
-        if self.weight == 500 && self.face == Face::Mono && self.face.family() == "SF Mono" {
-            return FontWeight(530.);
-        }
         FontWeight(self.weight as f32)
     }
 

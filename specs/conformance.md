@@ -390,13 +390,16 @@ Five collectors are written:
   the caret at its end, including any scroll needed to reveal it.
   `--caret-keys <key,…>` then dispatches navigation keys, settling a native
   frame after each, so wrapped-row Home/End positions can also be checked.
+  Selection and replacement occupy separate native event turns, and focused
+  collection waits for caret submissions as well as outer boxes to stabilize.
   GPUI's `TestAppContext` instead uses `NoopTextSystem`, whose fixed metrics
   cannot establish native font or caret parity. After building the example,
   `node packages/rust/dazzui/example/tool/field-caret.mjs --out /tmp/field-caret`
   compares browser caret pixels with these native submissions for the six
   single-line editor families, text-field/OTP sizes, a mono text field and
-  empty/filled multiline text fields, including an overflowing twenty-line
-  value whose caret must remain visible without growing the field.
+  empty/filled multiline text fields, including CJK and emoji values and an
+  overflowing twenty-line value whose caret must remain visible without
+  growing the field.
   Wrapped-row cases exercise the caret's side of a soft wrap; `--cases <id,…>`
   selects individual cases when investigating a difference.
   It saves the raster references and raw native traces; `--themes all` covers
@@ -408,10 +411,14 @@ Five collectors are written:
   `font-metrics` binary with browser canvas widths. It creates an unfocused,
   hidden native window and uses the same text system as normal rendering;
   build it with `cargo build -p dazzui-example --bins`. Its matrix includes
-  fractional sizes, weights, combining marks, bidirectional text, CJK and
+  fractional sizes, weights, combining marks, Arabic, Indic conjuncts, CJK and
   emoji. Native JSON retains glyph indices and positions, so width and
   positioning differences remain visible rather than becoming test-font
-  assumptions.
+  assumptions. Runs use `foundation::text_runs`, the same authored fallback
+  resolution as labels and editable text. The report includes requested native
+  run families and the browser's actual platform font names. `--cases` selects
+  named specimens such as `mixed-cjk,cjk,mixed-emoji,emoji`; the default matrix
+  retains every specimen, including unresolved weight and shaping differences.
   Custom vector meshes without a styled surface do not retain their source
   radius or stroke, so their surface properties remain unread, as do unknown
   shadows, non-solid fills and ambiguous font weights.

@@ -3,6 +3,8 @@
 //! Core Text truncates an interpolated tracking value to whole design units.
 //! Browser shaping keeps its fraction, then resolves it in 16.16 pixel units.
 //! The difference belongs to each shaped grapheme cluster, including the last.
+//! Native tracking can also be disabled and replaced with the complete browser
+//! advance when the two shapers disagree about cluster boundaries.
 //!
 //! Format: https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6trak.html
 //! Browser interpolation: HarfBuzz's `hb-aat-layout-trak-table.hh`.
@@ -71,7 +73,7 @@ impl Tracking {
         let mut samples = Vec::with_capacity(sizes);
         for index in 0..sizes {
             let size = (u32_at(data, size_offset + index * 4)? as i32) as f64 / 65536.;
-            if size <= 0.
+            if size < 0.
                 || samples
                     .last()
                     .is_some_and(|&(previous, _)| previous >= size)
@@ -111,6 +113,16 @@ impl Tracking {
         let browser = (units * browser_scale / scale).round() / 65536.;
         (browser - native) as f32
     }
+
+    /// Browser tracking for one grapheme when native tracking is disabled.
+    pub fn advance(&self, point_size: f32, units_per_em: u32) -> f32 {
+        if !point_size.is_finite() || point_size <= 0. || units_per_em == 0 {
+            return 0.;
+        }
+        let point_size = f64::from(point_size);
+        let scale = (point_size * 65536.).round();
+        ((self.units(point_size) * scale / f64::from(units_per_em)).round() / 65536.) as f32
+    }
 }
 
 #[cfg(test)]
@@ -144,6 +156,16 @@ mod tests {
         assert!((corrected - 290.952942).abs() < 0.001, "{corrected}");
         assert_eq!(track.adjustment(f32::NAN, 2048), 0.);
         assert_eq!(track.adjustment(13.33, 0), 0.);
+    }
+
+    #[test]
+    fn full_tracking_uses_browser_precision_without_native_cluster_assumptions() {
+        let track = Tracking::from_bytes(&table()).unwrap();
+        assert_eq!(track.advance(12., 2048), 0.);
+        assert_eq!(track.advance(13., 2048), -0.076171875);
+        assert_eq!(track.advance(13.33, 2048), -0.09957886);
+        assert_eq!(track.advance(f32::NAN, 2048), 0.);
+        assert_eq!(track.advance(13.33, 0), 0.);
     }
 
     #[test]
@@ -191,5 +213,14 @@ mod tests {
         let tracking = Tracking::from_bytes(&data).unwrap();
         assert_eq!(tracking.units(25.), 11.5);
         assert_eq!(tracking.adjustment(25., 2048), 0.0061035156);
+    }
+
+    #[test]
+    fn tracking_tables_can_start_at_zero_points() {
+        let mut data = table();
+        data[28..32].copy_from_slice(&0u32.to_be_bytes());
+        let tracking = Tracking::from_bytes(&data).unwrap();
+        assert_eq!(tracking.units(0.), 0.);
+        assert_eq!(tracking.units(6.5), -6.);
     }
 }

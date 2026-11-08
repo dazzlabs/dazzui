@@ -5,7 +5,7 @@
 
 use crate::tokens::*;
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 pub const FONT_UI: &[&str] = &[
     "-apple-system",
     "SF Pro Text",
@@ -15,7 +15,7 @@ pub const FONT_UI: &[&str] = &[
     "sans-serif",
 ];
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 pub const FONT_DISPLAY: &[&str] = &[
     "-apple-system",
     "SF Pro Display",

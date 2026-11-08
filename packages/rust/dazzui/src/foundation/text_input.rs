@@ -45,11 +45,33 @@ fn editor_line_height(window: &Window) -> Pixels {
 /// Input and textarea carets use the font's content box, independently of
 /// the declared line-height that spaces their text rows.
 fn font_content_height(window: &Window) -> Pixels {
+    let (ascent, descent) = font_content_metrics(window);
+    ascent + descent
+}
+
+fn font_content_metrics(window: &Window) -> (Pixels, Pixels) {
     let style = window.text_style();
     let font = window.text_system().resolve_font(&style.font());
     let size = style.font_size.to_pixels(window.rem_size());
-    window.text_system().ascent(font, size).abs().round()
-        + window.text_system().descent(font, size).abs().round()
+    (
+        window.text_system().ascent(font, size).abs().round(),
+        window.text_system().descent(font, size).abs().round(),
+    )
+}
+
+fn row_content_metrics(lines: &[WrappedLine], window: &Window) -> (Pixels, Pixels) {
+    let system = window.text_system();
+    let style = window.text_style();
+    let size = style.font_size.to_pixels(window.rem_size());
+    lines.iter().flat_map(|line| line.runs()).fold(
+        font_content_metrics(window),
+        |(ascent, descent), run| {
+            (
+                ascent.max(system.ascent(run.font_id, size).abs().round()),
+                descent.max(system.descent(run.font_id, size).abs().round()),
+            )
+        },
+    )
 }
 
 fn caret_offset(line_height: Pixels, caret_height: Pixels, multiline: bool) -> Pixels {
@@ -86,7 +108,15 @@ fn text_position(
             }
         }
     }
-    line.position_for_index(offset, line_height)
+    let mut position = line.position_for_index(offset, line_height)?;
+    if affinity == CaretAffinity::Upstream
+        && (0..line.wrap_boundaries().len()).any(|row| wrap_index(line, row) == offset)
+    {
+        // At a soft wrap the upstream caret uses the text fragment's layout
+        // width, rounded up to CSS's 1/64px units before display snapping.
+        position.x = (position.x * 64.).ceil() / 64.;
+    }
+    Some(position)
 }
 
 actions!(
@@ -249,6 +279,7 @@ pub struct InputState {
     lines: Vec<WrappedLine>,
     line_height: Pixels,
     caret_height: Pixels,
+    caret_top: Pixels,
     centered: bool,
     text_origin: Point<Pixels>,
     bounds: Option<Bounds<Pixels>>,
@@ -314,6 +345,7 @@ impl InputState {
             lines: Vec::new(),
             line_height: px(0.),
             caret_height: px(0.),
+            caret_top: px(0.),
             centered: false,
             text_origin: Point::default(),
             bounds: None,
@@ -1213,8 +1245,7 @@ impl EntityInputHandler for InputState {
         } else {
             end
         };
-        let offset = caret_offset(self.line_height, self.caret_height, self.multiline);
-        let mut origin = self.text_origin + start + point(px(0.), offset);
+        let mut origin = self.text_origin + start + point(px(0.), self.caret_top);
         if range.is_empty() {
             origin.y = origin.y.round();
             if self.centered {
@@ -1590,6 +1621,8 @@ struct BodyLayout {
     lines: Vec<WrappedLine>,
     line_height: Pixels,
     caret_height: Pixels,
+    caret_top: Pixels,
+    baseline: Option<Pixels>,
     origin: Point<Pixels>,
     caret: Option<Bounds<Pixels>>,
     selection: Vec<Bounds<Pixels>>,
@@ -1632,7 +1665,7 @@ fn shape(
         .as_ref()
         .filter(|_| !empty)
         .map(|range| input.display_offset(range.start)..input.display_offset(range.end));
-    let runs = match marked {
+    let runs: Vec<TextRun> = match marked {
         Some(marked) => [
             TextRun {
                 len: marked.start,
@@ -1658,6 +1691,22 @@ fn shape(
         None => vec![run],
     };
     let font_size = style.font_size.to_pixels(window.rem_size());
+    let mut offset = 0;
+    let runs = runs
+        .into_iter()
+        .flat_map(|run| {
+            let fragment = &text[offset..offset + run.len];
+            offset += run.len;
+            let mut pieces = super::text_runs(fragment, style, font_size, window);
+            for piece in &mut pieces {
+                piece.color = run.color;
+                piece.background_color = run.background_color;
+                piece.underline = run.underline;
+                piece.strikethrough = run.strikethrough;
+            }
+            pieces
+        })
+        .collect::<Vec<_>>();
     let lines = window
         .text_system()
         .shape_text(text, font_size, &runs, wrap_width, None)
@@ -1699,7 +1748,17 @@ impl Element for TextBody {
         style.size.width = relative(1.).into();
 
         if self.rows <= 1 && !self.input.read(cx).multiline {
-            style.size.height = line_height.max(font_content_height(window)).into();
+            // A single-line input's inner editor uses normal leading. Font
+            // fallback can enlarge that line without enlarging the control.
+            let (lines, _) = shape(
+                self.input.read(cx),
+                &text_style,
+                self.placeholder_color.unwrap_or(text_style.color),
+                None,
+                window,
+            );
+            let (ascent, descent) = row_content_metrics(&lines, window);
+            style.size.height = line_height.max(ascent + descent).into();
             return (window.request_layout(style, [], cx), text_style);
         }
 
@@ -1720,7 +1779,7 @@ impl Element for TextBody {
         window: &mut Window,
         cx: &mut App,
     ) -> BodyLayout {
-        let line_height = editor_line_height(window);
+        let mut line_height = editor_line_height(window);
         let placeholder_color = self
             .placeholder_color
             .unwrap_or_else(|| crate::foundation::fade(text_style.color, 0.5));
@@ -1732,6 +1791,18 @@ impl Element for TextBody {
             placeholder_color,
             wraps.then_some(bounds.size.width),
             window,
+        );
+        let baseline = if wraps {
+            None
+        } else {
+            let (ascent, descent) = row_content_metrics(&lines, window);
+            line_height = line_height.max(ascent + descent);
+            Some(ascent + (line_height - ascent - descent) / 2.)
+        };
+        let caret_height = font_content_height(window);
+        let caret_top = baseline.map_or_else(
+            || caret_offset(line_height, caret_height, true),
+            |baseline| baseline - font_content_metrics(window).0,
         );
 
         let display_cursor = if empty {
@@ -1813,7 +1884,6 @@ impl Element for TextBody {
         // A single line longer than its room scrolls to keep the caret in
         // view; one shorter than its room may be centred in it.
         let mut origin = bounds.origin;
-        let caret_height = font_content_height(window);
         let scroll_max_y = if wraps {
             (y - bounds.size.height).max(px(0.))
         } else {
@@ -1886,10 +1956,12 @@ impl Element for TextBody {
             lines,
             line_height,
             caret_height,
+            caret_top,
+            baseline,
             origin,
             caret: caret.map(|at| {
                 let mut at = origin + at;
-                at.y = (at.y + caret_offset(line_height, caret_height, wraps)).round();
+                at.y = (at.y + caret_top).round();
                 if self.centered {
                     at.x = at.x.round();
                 } else {
@@ -1953,10 +2025,19 @@ impl Element for TextBody {
                 }
             }
             let mut origin = layout.origin;
+            let paint_line_height = if layout.baseline.is_some() {
+                editor_line_height(window)
+            } else {
+                layout.line_height
+            };
             for line in &layout.lines {
+                let mut glyph_origin = origin;
+                if let Some(baseline) = layout.baseline {
+                    glyph_origin.y += baseline - line.baseline_offset(paint_line_height);
+                }
                 line.paint(
-                    origin,
-                    layout.line_height,
+                    glyph_origin,
+                    paint_line_height,
                     TextAlign::Left,
                     None,
                     window,
@@ -1996,6 +2077,7 @@ impl Element for TextBody {
             input.lines = lines;
             input.line_height = line_height;
             input.caret_height = layout.caret_height;
+            input.caret_top = layout.caret_top;
             input.text_origin = origin;
             input.bounds = Some(bounds);
         });

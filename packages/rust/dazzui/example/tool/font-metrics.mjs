@@ -19,24 +19,41 @@ const { values: args } = parseArgs({
       type: 'string',
       default: join(repo, 'packages/rust/dazzui/target/debug/font-metrics'),
     },
+    cases: { type: 'string' },
   },
 })
 const out = resolve(args.out)
 await mkdir(out, { recursive: true })
 const texts = [
-  'abc def ghi jkl mno pqr '.repeat(2),
-  'office affine AV To ffi',
-  'cafe\u0301 fi\u0301x',
-  'שלום עולם',
-  'abאבcd',
-  'DazzUI 世界 end',
-  'Hello 👨‍👩‍👧‍👦 end',
+  ['latin', 'abc def ghi jkl mno pqr '.repeat(2)],
+  ['ligatures', 'office affine AV To ffi'],
+  ['combining', 'cafe\u0301 fi\u0301x'],
+  ['hebrew', 'שלום עולם'],
+  ['mixed-bidi', 'abאבcd'],
+  ['arabic', 'مرحبا بالعالم'],
+  ['devanagari', 'नमस्ते दुनिया'],
+  ['mixed-cjk', 'DazzUI 世界 end'],
+  ['cjk', '世界'],
+  ['mixed-emoji', 'Hello 👨‍👩‍👧‍👦 end'],
+  ['emoji', '👨‍👩‍👧‍👦'],
 ]
+const selected = args.cases?.split(',')
+if (selected) {
+  for (const id of selected)
+    assert(
+      texts.some(([name]) => name === id),
+      id
+    )
+}
 const requests = ['text', 'mono'].flatMap(face =>
   [
     ...[12, 13, 13.33, 14, 25, 26].map(size => ({ size, weight: 400 })),
     ...[500, 600, 700].map(weight => ({ size: 13.33, weight })),
-  ].flatMap(style => texts.map(text => ({ face, ...style, text })))
+  ].flatMap(style =>
+    texts
+      .filter(([id]) => !selected || selected.includes(id))
+      .map(([id, text]) => ({ face, ...style, id, text }))
+  )
 )
 const file = join(out, 'requests.json')
 await writeFile(file, JSON.stringify(requests))
@@ -82,8 +99,15 @@ try {
       mono: getComputedStyle(fields[3]).fontFamily,
     }
     const context = document.createElement('canvas').getContext('2d')
-    return requests.map(request => {
+    return requests.map((request, index) => {
       context.font = `${request.weight} ${request.size}px ${families[request.face]}`
+      const specimen = document.createElement('span')
+      specimen.id = `font-metrics-${index}`
+      specimen.className = 'font-metrics-probe'
+      specimen.style.cssText = 'position:absolute;white-space:pre;'
+      specimen.style.font = context.font
+      specimen.textContent = request.text
+      document.body.append(specimen)
       return {
         font: context.font,
         width: context.measureText(request.text).width,
@@ -91,12 +115,28 @@ try {
     })
   }, requests)
   assert.equal(reference.length, native.readings.length)
+  const session = await page.context().newCDPSession(page)
+  await session.send('DOM.enable')
+  await session.send('CSS.enable')
+  const { root } = await session.send('DOM.getDocument')
+  const { nodeIds } = await session.send('DOM.querySelectorAll', {
+    nodeId: root.nodeId,
+    selector: '.font-metrics-probe',
+  })
+  assert.equal(nodeIds.length, reference.length)
+  const platformFonts = await Promise.all(
+    nodeIds.map(nodeId =>
+      session.send('CSS.getPlatformFontsForNode', { nodeId })
+    )
+  )
   for (const [index, actual] of native.readings.entries()) {
     const browser = reference[index]
     readings.push({
       ...actual.request,
       family: actual.family,
+      families: actual.families,
       browserFont: browser.font,
+      browserFonts: platformFonts[index].fonts,
       reference: browser.width,
       actual: actual.width,
       difference: actual.width - browser.width,

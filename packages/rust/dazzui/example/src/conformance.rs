@@ -251,10 +251,11 @@ async fn settle(
         if !frames.contains_key(&FRAME) {
             continue;
         }
-        if previous.as_ref() == Some(&frames) {
+        let snapshot = (frames, specimen::carets());
+        if previous.as_ref() == Some(&snapshot) {
             return Ok(());
         }
-        previous = Some(frames);
+        previous = Some(snapshot);
     }
     Err("the window did not draw a stable scene frame".into())
 }
@@ -406,6 +407,12 @@ async fn collect(
                         "ctrl-a"
                     };
                     window.dispatch_keystroke(gpui::Keystroke::parse(select).unwrap(), cx);
+                })
+                .map_err(|error| error.to_string())?;
+                // Keep selection and replacement in distinct native event
+                // turns, committing the current input handler between them.
+                settle(window, cx, options.images).await?;
+                cx.update_window(window.into(), |_, window, cx| {
                     if let Some(text) = &options.caret_input {
                         window.dispatch_keystroke(
                             gpui::Keystroke {
