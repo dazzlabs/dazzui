@@ -3,8 +3,8 @@
 use std::collections::HashMap;
 
 use dazzui::{
-    Autocomplete, Combobox, FieldState, Fieldset, Form, FormField, NumberField, OtpField,
-    SearchField, SelectEntry, SelectOption, ShortcutRecorder, Size, TextField,
+    Autocomplete, Combobox, FieldState, FieldValue, Fieldset, Form, FormField, NumberField,
+    OtpField, SearchField, SelectEntry, SelectOption, ShortcutRecorder, Size, TextField,
 };
 use gpui::{AnyElement, App, IntoElement, ParentElement, Window};
 use serde_json::Value;
@@ -14,6 +14,7 @@ use crate::lib::scene::{Node, text, truthy};
 
 pub fn register(map: &mut HashMap<&'static str, BuildFn>) {
     map.insert("TextField", text_field);
+    map.insert("FieldValue", field_value);
     map.insert("SearchField", search_field);
     map.insert("NumberField", number_field);
     map.insert("OtpField", otp_field);
@@ -52,6 +53,14 @@ fn text_field(node: &Node, _: &mut Window, _: &mut App) -> AnyElement {
         field = field.rows(rows.max(1.0) as usize);
     }
     field.into_any_element()
+}
+
+fn field_value(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
+    FieldValue::new(node.id())
+        .size(size(node))
+        .mono(node.flag("mono"))
+        .children(node.kids(window, cx))
+        .into_any_element()
 }
 
 fn search_field(node: &Node, _: &mut Window, _: &mut App) -> AnyElement {

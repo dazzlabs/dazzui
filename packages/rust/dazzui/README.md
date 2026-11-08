@@ -154,6 +154,15 @@ interpolate in sRGB, while recipe `color-mix()` values opt into Oklab; both
 premultiply alpha. Reduced motion settles immediately. The deterministic
 clock can sample these transitions without scheduling more frames.
 
+TextField, SearchField, NumberField, Select, Combobox, Autocomplete,
+DateRangePicker and OTP cells transition their background, border and entire
+focus shadow. Retargeting a shadow changes its spread and color together;
+ink updates immediately, and text and caret geometry stay fixed. SearchField
+retains its focus wash while its clear button holds focus.
+`FieldValue::new(id).child(value)` reports a value in the same field box,
+with `.size(...)` and `.mono(...)`. Its block text starts at the padding,
+including at large size; it creates neither an editor nor a Tab stop.
+
 Skeleton sweeps, Spinner turns and Progress sweeps share a loading clock and
 the CSS cubic Bézier curves. Determinate progress transitions over twice the
 theme's motion duration and reverses from its current painted width. Give

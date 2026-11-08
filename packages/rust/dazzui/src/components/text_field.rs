@@ -2,7 +2,7 @@
 //! control wears.
 
 use gpui::{
-    App, BoxShadow, Div, ElementId, Hsla, InteractiveElement, IntoElement, MouseButton,
+    AnyElement, App, BoxShadow, Div, ElementId, Hsla, InteractiveElement, IntoElement, MouseButton,
     ParentElement, RenderOnce, SharedString, Stateful, Styled, Window, div, point,
     prelude::FluentBuilder, px, relative,
 };
@@ -246,6 +246,56 @@ impl FieldBox {
                 .rounded(px(t.control_field_radius))
                 .line_height(px(content.line_height))
         }
+    }
+}
+
+/// A reported value in the shape of a field. It has no editor or tab stop;
+/// its normal ink communicates a value that was never editable.
+#[derive(IntoElement)]
+pub struct FieldValue {
+    id: ElementId,
+    size: Size,
+    mono: bool,
+    children: Vec<AnyElement>,
+}
+
+impl FieldValue {
+    pub fn new(id: impl Into<ElementId>) -> Self {
+        Self {
+            id: id.into(),
+            size: Size::Medium,
+            mono: false,
+            children: Vec::new(),
+        }
+    }
+
+    pub fn size(mut self, size: Size) -> Self {
+        self.size = size;
+        self
+    }
+
+    pub fn mono(mut self, mono: bool) -> Self {
+        self.mono = mono;
+        self
+    }
+}
+
+impl ParentElement for FieldValue {
+    fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
+        self.children
+            .extend(elements.into_iter().map(crate::foundation::precise_text));
+    }
+}
+
+impl RenderOnce for FieldValue {
+    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+        FieldBox::new(self.size)
+            .mono(self.mono)
+            .animated_style(div().id(self.id.clone()), self.id, cx.theme(), window, cx)
+            // The reference is a block div: its line starts at the padding,
+            // even when the line box does not fill the control's height.
+            .block()
+            .children(self.children)
     }
 }
 
