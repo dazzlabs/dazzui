@@ -48,6 +48,12 @@ jobs:
             echo "::error::tag $GITHUB_REF_NAME does not match pubspec.yaml version $version"
             exit 1
           fi
+      # `nativeapi` (the kit's native menu presentation) ships a C++ build
+      # hook that links GTK 3 on Linux; the tests build it before they run.
+      - name: Install the native toolchain the menu hook links against
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes libgtk-3-dev libx11-dev libxi-dev
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test
