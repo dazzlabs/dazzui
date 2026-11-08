@@ -8,6 +8,7 @@ import { createServer } from 'vite'
 test('navigation tabs measure, promote, close and select through their real controls', async () => {
   const server = await createServer({
     root: fileURLToPath(new URL('..', import.meta.url)),
+    cacheDir: 'node_modules/.vite-test-tabs',
     logLevel: 'silent',
     server: { host: '127.0.0.1', port: 0 },
     plugins: [

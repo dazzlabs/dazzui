@@ -663,6 +663,22 @@ test('collector reads compound surfaces and editable text', async () => {
       tree[9],
       'the closed branch must not take the README icon address'
     )
+    for (const scene of ['toast/preview', 'toast/0', 'toast/1', 'toast/2']) {
+      const specimens = await page.evaluate(
+        async scene =>
+          (await window.conformance.show(scene, 'studio-light')).specimens,
+        scene
+      )
+      assert.equal(specimens[0].component, 'ToastProvider')
+      assert.equal(
+        specimens[0].reading,
+        null,
+        'a context provider must not claim the layout helper its child draws'
+      )
+      const buttons = specimens.filter(s => s.component === 'Button')
+      assert.equal(buttons.length, scene === 'toast/0' ? 6 : 1)
+      assert.ok(buttons.every(s => s.reading))
+    }
     const readings = await page.evaluate(async () => {
       const { measure } = await import('/src/conformance/measure.ts')
       const fixture = document.createElement('div')

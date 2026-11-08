@@ -240,6 +240,7 @@ pub struct Sidebar {
     side: SidebarSide,
     variant: SidebarVariant,
     collapsible: SidebarCollapsible,
+    collapsed: Option<bool>,
     width: Option<f32>,
     children: Vec<AnyElement>,
 }
@@ -250,6 +251,7 @@ impl Sidebar {
             side: SidebarSide::Left,
             variant: SidebarVariant::Sidebar,
             collapsible: SidebarCollapsible::Offcanvas,
+            collapsed: None,
             width: None,
             children: Vec::new(),
         }
@@ -276,6 +278,13 @@ impl Sidebar {
         self.collapsible = collapsible;
         self
     }
+
+    /// Override the provider for a column controlled independently, such as
+    /// the trailing inspector. A fixed column still cannot collapse.
+    pub fn collapsed(mut self, collapsed: bool) -> Self {
+        self.collapsed = Some(collapsed);
+        self
+    }
 }
 
 impl Default for Sidebar {
@@ -295,7 +304,10 @@ impl RenderOnce for Sidebar {
     fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
         let t = cx.theme();
         let context = SidebarContext::current(cx);
-        let open = context.as_ref().is_none_or(|context| context.open);
+        let open = self
+            .collapsed
+            .map(|collapsed| !collapsed)
+            .unwrap_or_else(|| context.as_ref().is_none_or(|context| context.open));
         let left = self.side == SidebarSide::Left;
         let rule = px(t.stroke_hairline);
         let border = t.color_border.hsla();
