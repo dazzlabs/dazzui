@@ -34,10 +34,11 @@ jobs:
         shell: bash
         working-directory: .
         run: |
-          git init "$RUNNER_TEMP/flutter"
-          git -C "$RUNNER_TEMP/flutter" remote add origin https://github.com/flutter/flutter.git
-          git -C "$RUNNER_TEMP/flutter" fetch --depth 1 origin c8c5e3bd7542962ee8b09a12ac469d7d1ff823e0
-          git -C "$RUNNER_TEMP/flutter" checkout --detach FETCH_HEAD
+          # A release tag rather than a commit: `flutter` reads its own version
+          # off a git tag, and a bare commit describes as `0.0.0-unknown`, which
+          # pub then cannot solve `flutter_test`'s own SDK constraint against.
+          git clone --depth 1 --branch 3.47.6 \
+            https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
           echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
       - name: The tag names the version pubspec.yaml carries
         shell: bash
