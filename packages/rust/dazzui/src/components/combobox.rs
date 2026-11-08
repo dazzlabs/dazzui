@@ -632,7 +632,7 @@ impl RenderOnce for Combobox {
             .child(chevron);
 
         let mut field = chrome
-            .style(div().id("field"), t)
+            .animated_style(div().id("field"), id.clone(), t, window, cx)
             .gap(px(t.spacing_1))
             .pr(px(t.spacing_1))
             .child(text)
@@ -896,7 +896,9 @@ impl RenderOnce for Autocomplete {
             text = text.on_blur(move |window, cx| close(window, cx));
         }
 
-        let mut field = chrome.style(div().id("field"), t).child(text);
+        let mut field = chrome
+            .animated_style(div().id("field"), id.clone(), t, window, cx)
+            .child(text);
         if self.disabled {
             field = field.cursor_not_allowed();
         } else {

@@ -401,7 +401,7 @@ impl RenderOnce for NumberField {
         let up = step_by.clone();
         let down = step_by;
         chrome
-            .style(div(), t)
+            .animated_style(div().id(part_id(&self.id, "field")), self.id, t, window, cx)
             .tabular_nums()
             .gap(px(t.spacing_1))
             // The trailing inset is the stepper's own: it is a control rather

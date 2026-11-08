@@ -1,11 +1,13 @@
 //! Shared loading clock, accessibility policy and deterministic capture time.
 
 mod color;
+mod shadow;
 
 use crate::foundation::axes::{Part, State, Tint, Variant, recipe};
 use crate::generated::ThemeTokens;
 use color::{Color, ColorTransition};
 use gpui::{App, Div, ElementId, Hsla, InteractiveElement, Stateful, Window};
+use shadow::{ShadowTransition, Shadows};
 use std::cell::RefCell;
 use std::time::{Duration, Instant};
 
@@ -215,6 +217,82 @@ struct PaintTransitions {
     surface: ColorTransition,
     border: ColorTransition,
     ink: ColorTransition,
+}
+
+struct FieldTransitions {
+    surface: ColorTransition,
+    border: ColorTransition,
+    shadow: ShadowTransition,
+}
+
+/// Field CSS transitions background, border and box-shadow, leaving ink and
+/// layout at their new values immediately.
+pub(crate) fn field_transitions(
+    element: Stateful<Div>,
+    id: ElementId,
+    t: &ThemeTokens,
+    modern_surface: bool,
+    modern_glow: Option<Hsla>,
+    window: &mut Window,
+    cx: &mut App,
+) -> Stateful<Div> {
+    let duration = t.motion_duration;
+    let curve = t.motion_easing;
+    let state = window.use_keyed_state(
+        ElementId::NamedChild(Box::new(id), "field-transitions".into()),
+        cx,
+        |_, _| RefCell::<Option<FieldTransitions>>::new(None),
+    );
+    element.map_paint_style(move |style, window, cx| {
+        let surface = match style.background.as_ref() {
+            Some(fill) => match fill.color().and_then(|background| background.solid_color()) {
+                Some(color) => color,
+                None => return,
+            },
+            None => Hsla::transparent_black(),
+        };
+        let surface = Color {
+            value: surface,
+            modern: modern_surface,
+        };
+        let border = Color {
+            value: style.border_color.unwrap_or_else(Hsla::transparent_black),
+            modern: false,
+        };
+        let shadows = Shadows(
+            style
+                .box_shadow
+                .iter()
+                .cloned()
+                .map(|shadow| {
+                    let modern = modern_glow == Some(shadow.color);
+                    (shadow, modern)
+                })
+                .collect(),
+        );
+        let frame = Motion::frame(cx);
+        let mut state = state.read(cx).borrow_mut();
+        let transitions = state.get_or_insert_with(|| FieldTransitions {
+            surface: ColorTransition::new(surface, frame.elapsed),
+            border: ColorTransition::new(border, frame.elapsed),
+            shadow: ShadowTransition::new(shadows.clone(), frame.elapsed),
+        });
+        style.background = Some(
+            transitions
+                .surface
+                .sample(surface, frame, duration, curve)
+                .into(),
+        );
+        style.border_color = Some(transitions.border.sample(border, frame, duration, curve));
+        style.box_shadow = transitions.shadow.sample(shadows, frame, duration, curve);
+        if !frame.frozen
+            && (transitions.surface.running(frame, duration)
+                || transitions.border.running(frame, duration)
+                || transitions.shadow.running(frame, duration))
+        {
+            window.request_animation_frame();
+        }
+    })
 }
 
 /// A standalone background transition, for parts such as a switch's track

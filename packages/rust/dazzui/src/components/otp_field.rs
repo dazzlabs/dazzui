@@ -221,11 +221,12 @@ impl RenderOnce for OtpField {
             let group_end = self.group_after.is_some_and(|after| {
                 after > 0 && index > 0 && index % after == 0 && index != length - 1
             });
-            let mut colors = FieldBox::new(self.size)
+            let chrome = FieldBox::new(self.size)
                 .tint(self.tint)
+                .state(self.state)
                 .focused(focused)
-                .disabled(self.disabled)
-                .colors(t);
+                .disabled(self.disabled);
+            let mut colors = chrome.colors(t);
             // A filled cell lifts to the paper and keeps it, so the run reads
             // as how far through the code the reader is. An error repaints it
             // and disabled greys it, over the lift.
@@ -319,6 +320,13 @@ impl RenderOnce for OtpField {
                     )
                 })
                 .child(text)
+                .map(|cell| {
+                    let cell_id = ElementId::NamedChild(
+                        Box::new(self.id.clone()),
+                        format!("cell-{index}").into(),
+                    );
+                    chrome.animate(cell.id(cell_id.clone()), cell_id, t, window, cx)
+                })
         });
         let row = div()
             .flex()

@@ -571,7 +571,7 @@ impl RenderOnce for DateRangePicker {
             .state(self.state)
             .focused(lifted)
             .disabled(self.disabled)
-            .style(div().id("trigger"), t)
+            .animated_style(div().id("trigger"), self.id.clone(), t, window, cx)
             .w_auto()
             .min_w(px(t.date_range_picker_trigger_min_width))
             .gap(px(t.spacing_2))

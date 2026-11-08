@@ -2,13 +2,14 @@
 //! control wears.
 
 use gpui::{
-    App, BoxShadow, ElementId, Hsla, InteractiveElement, IntoElement, MouseButton, ParentElement,
-    RenderOnce, SharedString, Styled, Window, div, point, prelude::FluentBuilder, px, relative,
+    App, BoxShadow, Div, ElementId, Hsla, InteractiveElement, IntoElement, MouseButton,
+    ParentElement, RenderOnce, SharedString, Stateful, Styled, Window, div, point,
+    prelude::FluentBuilder, px, relative,
 };
 
 use crate::components::form_field::FormFieldScope;
 use crate::foundation::text_input::{OnEvent, OnText, TextInput, input_state};
-use crate::foundation::{ControlColors, Size, State, Tint, Variant, ring_color};
+use crate::foundation::{ControlColors, Part, Size, State, Tint, Variant, ring_color};
 use crate::generated::ThemeTokens;
 use crate::theme::ActiveTheme;
 use crate::tokens::Face;
@@ -145,6 +146,56 @@ impl FieldBox {
             colors.content = disabled.content;
         }
         colors
+    }
+
+    /// The shared field box with state transitions. `id` identifies this
+    /// particular field across redraws, independently of its editor.
+    pub fn animated_style(
+        &self,
+        element: Stateful<Div>,
+        id: impl Into<ElementId>,
+        t: &ThemeTokens,
+        window: &mut Window,
+        cx: &mut App,
+    ) -> Stateful<Div> {
+        self.animate(self.style(element, t), id.into(), t, window, cx)
+    }
+
+    /// Apply the same transitions to a field with its own geometry.
+    pub fn animated_paint(
+        &self,
+        element: Stateful<Div>,
+        id: impl Into<ElementId>,
+        t: &ThemeTokens,
+        window: &mut Window,
+        cx: &mut App,
+    ) -> Stateful<Div> {
+        self.animate(self.paint(element, t), id.into(), t, window, cx)
+    }
+
+    pub(crate) fn animate(
+        &self,
+        element: Stateful<Div>,
+        id: ElementId,
+        t: &ThemeTokens,
+        window: &mut Window,
+        cx: &mut App,
+    ) -> Stateful<Div> {
+        let tint = self.state.tint(self.tint);
+        let alpha =
+            crate::foundation::recipe(t, Variant::Normal, Part::Surface, State::Disabled).opacity();
+        let modern_surface = self.disabled && alpha > 0. && alpha < 1.;
+        let alpha = t.focus_glow.opacity();
+        let modern_glow = (alpha > 0. && alpha < 1.).then(|| glow(t, tint).color);
+        crate::foundation::motion::field_transitions(
+            element,
+            id,
+            t,
+            modern_surface,
+            modern_glow,
+            window,
+            cx,
+        )
     }
 
     /// The colours alone, on a box that brings its own geometry — the
@@ -393,7 +444,7 @@ impl RenderOnce for TextField {
             .mono(self.mono)
             .multiline(self.multiline);
 
-        let mut text = TextInput::new(self.id)
+        let mut text = TextInput::new(self.id.clone())
             .state(input.clone())
             .placeholder(self.placeholder)
             .placeholder_color(placeholder_color(t))
@@ -421,7 +472,7 @@ impl RenderOnce for TextField {
 
         let disabled = self.disabled;
         chrome
-            .style(div(), t)
+            .animated_style(div().id(part_id(&self.id, "field")), self.id, t, window, cx)
             // The editor rounds its preferred line box. Preserve the full
             // declared leading across the minimum rows, as textarea rows do.
             .when(self.multiline, |this| {

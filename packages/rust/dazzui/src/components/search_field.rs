@@ -4,12 +4,12 @@ use std::rc::Rc;
 
 use gpui::{
     AnyElement, App, ElementId, Focusable, InteractiveElement, IntoElement, MouseButton,
-    ParentElement, RenderOnce, SharedString, StatefulInteractiveElement, Styled, Window, div,
-    prelude::FluentBuilder, px,
+    ParentElement, RenderOnce, SharedString, Styled, Window, div, prelude::FluentBuilder, px,
 };
 
 use crate::components::icon::{Icon, icon_slot};
 use crate::components::text_field::{FieldBox, part_id, placeholder_color, selection_color};
+use crate::foundation::press::ButtonPress;
 use crate::foundation::text_input::{OnEvent, OnText, TextInput, input_state};
 use crate::foundation::{Size, Tint, focusable, pointer_down};
 use crate::glyphs;
@@ -142,8 +142,10 @@ impl RenderOnce for SearchField {
 
         let trailing = if has_value {
             let clear = self.on_value_change.clone();
+            let clear_id = part_id(&self.id, "clear");
+            let activation = ButtonPress::new(&clear_id, &clear_focus, false, window, cx);
             let button = div()
-                .id(part_id(&self.id, "clear"))
+                .id(clear_id.clone())
                 .flex()
                 .flex_none()
                 .items_center()
@@ -155,20 +157,31 @@ impl RenderOnce for SearchField {
                     pointer_down(window, cx);
                     cx.stop_propagation();
                 })
-                .on_click(move |_, window, cx| {
-                    if let Some(clear) = &clear {
-                        clear("", window, cx);
-                    }
-                })
                 .child(Icon::new(glyphs::DISMISS_12_REGULAR).size(t.icon_small));
-            Some(focusable(button, &clear_focus, false, window, cx).into_any_element())
+            let button = focusable(button, &clear_focus, false, window, cx);
+            let button =
+                crate::foundation::motion::color_transitions(button, clear_id, t, None, window, cx);
+            Some(
+                activation
+                    .bind(
+                        button,
+                        Some(Box::new(move |_, window, cx| {
+                            if let Some(clear) = &clear {
+                                clear("", window, cx);
+                            }
+                        })),
+                    )
+                    .into_any_element(),
+            )
         } else {
             self.hint
         };
 
-        let chrome = FieldBox::new(self.size).tint(self.tint).focused(focused);
+        let chrome = FieldBox::new(self.size)
+            .tint(self.tint)
+            .focused(focused || (has_value && clear_focus.is_focused(window)));
         let body = chrome
-            .paint(div(), t)
+            .animated_paint(div().id(part_id(&self.id, "field")), self.id, t, window, cx)
             .w_full()
             .flex()
             .items_center()

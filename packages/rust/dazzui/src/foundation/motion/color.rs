@@ -13,7 +13,7 @@ pub(super) struct Color {
 }
 
 impl Color {
-    fn mix(self, other: Self, amount: f32) -> Self {
+    pub(super) fn mix(self, other: Self, amount: f32) -> Self {
         let modern = self.modern || other.modern;
         let left = Rgba::from(self.value);
         let right = Rgba::from(other.value);

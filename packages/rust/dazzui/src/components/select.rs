@@ -320,7 +320,7 @@ impl RenderOnce for Select {
             .focused(lifted)
             .disabled(self.disabled)
             .mono(self.mono)
-            .style(div().id("trigger"), t)
+            .animated_style(div().id("trigger"), id.clone(), t, window, cx)
             .gap(px(t.spacing_2))
             .child(
                 div()
