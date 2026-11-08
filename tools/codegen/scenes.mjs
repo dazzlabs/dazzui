@@ -61,7 +61,7 @@ function nodes(value, state) {
   return [resolved]
 }
 
-function scene(storyId, id, title, compiled) {
+function scene(storyId, id, title, compiled, stage = STAGE) {
   const state = compiled.state ?? {}
   const specimens = []
   const address = `${storyId}/${id}`
@@ -81,7 +81,7 @@ function scene(storyId, id, title, compiled) {
     if (!node || typeof node !== 'object' || !('$el' in node)) return false
     const before = specimens.length
     let specimen
-    if (!STAGE.has(node.$el)) {
+    if (!stage.has(node.$el)) {
       // The compiled scene carries its own addresses, so a port that cannot
       // repeat this walk — SwiftUI keeps no order among an element's props —
       // still knows which specimen each component is.
@@ -120,7 +120,8 @@ function scene(storyId, id, title, compiled) {
  * `tools/conformance/scenes.json`. It also writes each specimen's index into
  * its node as `$at`, so it runs before the platforms' sources are emitted.
  */
-export function scenesJson(stories) {
+export function scenesJson(stories, { stage = [] } = {}) {
+  const stages = new Set([...STAGE, ...stage])
   return (
     JSON.stringify(
       {
@@ -129,9 +130,15 @@ export function scenesJson(stories) {
           name: story.name,
           summary: story.summary,
           scenes: [
-            scene(story.id, 'preview', 'Preview', story.preview),
+            scene(story.id, 'preview', 'Preview', story.preview, stages),
             ...story.examples.map((example, index) =>
-              scene(story.id, String(index), example.title, example.scene)
+              scene(
+                story.id,
+                String(index),
+                example.title,
+                example.scene,
+                stages
+              )
             ),
           ],
         })),

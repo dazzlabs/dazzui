@@ -47,6 +47,11 @@ other platforms' examples.
   WindowFrame story draws presentation windows inside the gallery's real OS
   window. Moving a story up out of `react/` is the claim that every platform
   now maps it.
+  GPUI also opts into Tabs, reusing the sealed header and array-removal
+  grammar. Its additional contract is `packages/rust/dazzui/example/react-scenes.json`;
+  it leaves the shared scene list unchanged. Header wrappers arrange the
+  scene rather than count as components. Both collectors accept that
+  contract explicitly; the React measurement page includes the Tabs scenes.
   A file there may instead export a `StoryExtension` — an `id` and
   `examples` alone — under a compiled story's id, and its examples join that
   page on React. An extension can explicitly opt into `flutter`, `swiftui`

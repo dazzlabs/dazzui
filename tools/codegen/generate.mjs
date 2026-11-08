@@ -25,6 +25,10 @@ const root = fileURLToPath(new URL('../../', import.meta.url))
 const check = process.argv.includes('--check')
 
 const stories = await readStories(root)
+const gpuiOnly = gpui.readReactStories(root)
+const gpuiStories = [...stories, ...gpuiOnly].sort((a, b) =>
+  a.name.localeCompare(b.name)
+)
 const [flutterStories, swiftStories, winuiStories] = await Promise.all(
   ['flutter', 'swiftui', 'winui'].map(platform =>
     readStories(root, { platform })
@@ -54,7 +58,7 @@ const gaps = [
         `${gap} — map it in packages/csharp/DazzUI/example/Lib/Mapping.cs and list it in tools/codegen/winui.mjs`
     ),
   ...gpui
-    .unsupported(stories)
+    .unsupported(gpuiStories)
     .map(
       gap =>
         `${gap} — map it in packages/rust/dazzui/example/src/lib/mapping/ and list it in tools/codegen/gpui.mjs`
@@ -70,6 +74,7 @@ if (gaps.length)
  * are emitted from.
  */
 const scenes = scenesJson(stories)
+const gpuiReactScenes = scenesJson(gpuiOnly, { stage: ['ChromeBar'] })
 // Native extensions keep stable specimen addresses without entering the
 // shared conformance contract or claiming mappings on other platforms.
 for (const platformStories of [flutterStories, swiftStories, winuiStories])
@@ -149,13 +154,14 @@ outputs.set(`${csharp}/Lib/Themes.cs`, winui.themesCs(themes, tokens))
  * into the kit itself: the glyphs its components import.
  */
 const rust = 'packages/rust/dazzui/example/src'
-for (const story of stories)
+for (const story of gpuiStories)
   outputs.set(
     `${rust}/stories/${gpui.storyFile(story.id)}`,
     gpui.storyRs(story)
   )
-outputs.set(`${rust}/stories/mod.rs`, gpui.storiesIndexRs(stories))
-outputs.set(`${rust}/lib/glyphs.rs`, gpui.glyphsRs(root, stories))
+outputs.set(`${rust}/stories/mod.rs`, gpui.storiesIndexRs(gpuiStories))
+outputs.set(`${rust}/lib/glyphs.rs`, gpui.glyphsRs(root, gpuiStories))
+outputs.set('packages/rust/dazzui/example/react-scenes.json', gpuiReactScenes)
 outputs.set(
   `${rust}/lib/themes.rs`,
   gpui.themesRs(

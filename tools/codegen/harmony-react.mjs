@@ -46,7 +46,7 @@ function daysFormula(days, compiler, node) {
   return range
 }
 
-/** Only HarmonyOS opts into these React-only forms; portable grammar stays strict. */
+/** Platform opt-ins reuse these sealed forms; portable grammar stays strict. */
 export class HarmonyReactCompiler extends StoryCompiler {
   json(value, node) {
     if (

@@ -1,0 +1,82 @@
+{
+  "stories": [
+    {
+      "id": "tabs",
+      "name": "Tabs",
+      "summary": "The navigation of a view or a toolbar: names in a row, the one showing over a rule.",
+      "scenes": [
+        {
+          "id": "tabs/preview",
+          "title": "Preview",
+          "specimens": [
+            {
+              "address": "tabs/preview/0",
+              "component": "tabs",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "tabs/0",
+          "title": "Sections",
+          "specimens": [
+            {
+              "address": "tabs/0/0",
+              "component": "tabs",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "tabs/1",
+          "title": "Compact",
+          "specimens": [
+            {
+              "address": "tabs/1/0",
+              "component": "tabs",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "tabs/2",
+          "title": "Overflowing",
+          "specimens": [
+            {
+              "address": "tabs/2/0",
+              "component": "tabs",
+              "axes": {}
+            }
+          ]
+        },
+        {
+          "id": "tabs/3",
+          "title": "Documents",
+          "specimens": [
+            {
+              "address": "tabs/3/0",
+              "component": "tabs",
+              "axes": {},
+              "container": true
+            },
+            {
+              "address": "tabs/3/1",
+              "component": "icon-button",
+              "axes": {
+                "size": "tiny",
+                "variant": "plain",
+                "tint": "neutral"
+              },
+              "container": true
+            },
+            {
+              "address": "tabs/3/2",
+              "component": "icon",
+              "axes": {}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

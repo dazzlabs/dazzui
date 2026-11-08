@@ -47,6 +47,7 @@ mod splitter;
 mod step_list;
 mod switch;
 mod table;
+mod tabs;
 mod tag;
 mod text_field;
 mod toast;
@@ -103,6 +104,7 @@ pub static SOURCES: &[&str] = &[
     step_list::STORY,
     switch::STORY,
     table::STORY,
+    tabs::STORY,
     tag::STORY,
     text_field::STORY,
     toast::STORY,

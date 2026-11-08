@@ -78,6 +78,11 @@ immediately, rather than leaving the control pressed until another release.
 Keep local edits limited to this rendering seam. Do not edit an installed
 Cargo registry cache: the committed copy is the build input.
 
+`Window::unrounded_layout_size` exposes Taffy's intrinsic size before display
+pixel snapping. Tabs rounds that value once to logical CSS pixels for its
+hidden ruler; rounding an already snapped rectangle changes overflow choices
+at exact-fit boundaries. Painting continues to use the ordinary snapped boxes.
+
 The compositor's scene tests run from the repository root with:
 
 ```sh

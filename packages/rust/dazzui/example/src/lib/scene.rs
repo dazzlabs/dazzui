@@ -155,6 +155,19 @@ impl Ctx {
                     view.slots.insert(slot, value);
                     cx.notify();
                 });
+            } else if let Some(slot) = step["remove"].as_str() {
+                let slot = slot.to_string();
+                let key = step["key"]
+                    .as_str()
+                    .expect("a compiled removal key")
+                    .to_string();
+                let matched = self.resolve(&step["match"], args);
+                let _ = self.view.update(cx, |view, cx| {
+                    if let Some(items) = view.slots.get_mut(&slot).and_then(Value::as_array_mut) {
+                        items.retain(|item| item.get(&key) != Some(&matched));
+                        cx.notify();
+                    }
+                });
             } else if step.get("toast").is_some() {
                 let toast = &step["toast"];
                 let Some(raise) = self.toast.clone() else {
@@ -182,6 +195,32 @@ impl Ctx {
                 );
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[gpui::test]
+    fn generated_document_close_removes_the_proposed_item(cx: &mut gpui::TestAppContext) {
+        cx.update(|cx| {
+            dazzui::init(cx);
+            dazzui::Motion::set_preference(dazzui::MotionPreference::Reduced, cx);
+        });
+        let scene = &crate::lib::story::story("tabs").unwrap().examples[3].demo;
+        let (view, cx) = cx.add_window_view(|_, _| SceneView::of(scene));
+        cx.run_until_parked();
+        cx.simulate_keystrokes("tab tab enter");
+        let arrays = view.read_with(cx, |view, _| {
+            view.slots
+                .values()
+                .filter_map(Value::as_array)
+                .cloned()
+                .collect::<Vec<_>>()
+        });
+        assert_eq!(arrays.len(), 1);
+        assert_eq!(arrays[0].len(), 3);
+        assert!(arrays[0].iter().all(|item| item["value"] != "a"));
     }
 }
 

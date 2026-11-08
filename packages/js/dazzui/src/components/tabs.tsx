@@ -228,6 +228,7 @@ export function Tabs<T extends string = string>({
   return (
     <div
       className={cx('dz-tabs', className)}
+      data-tint="primary"
       ref={root}
       // What the row would take whole: it is that wide when there is room and gives way when there is not.
       style={{

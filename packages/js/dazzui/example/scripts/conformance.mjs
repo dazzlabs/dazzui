@@ -30,6 +30,10 @@ const { values: args } = parseArgs({
     },
     themes: { type: 'string', default: 'drawn' },
     scenes: { type: 'string' },
+    contract: {
+      type: 'string',
+      default: join(repo, 'tools/conformance/scenes.json'),
+    },
     'no-images': { type: 'boolean', default: false },
     'container-values': { type: 'boolean', default: false },
     // Accepted for older callers; positions are part of ordinary collection.
@@ -54,9 +58,7 @@ const reducedMotion =
   (args['motion-ms'] === undefined && !args.modal) || args['reduced-motion']
 const out = resolve(args.out)
 
-const contract = JSON.parse(
-  readFileSync(join(repo, 'tools/conformance/scenes.json'), 'utf8')
-)
+const contract = JSON.parse(readFileSync(resolve(args.contract), 'utf8'))
 const only = args.scenes?.split(',')
 const scenes = contract.stories
   .flatMap(story => story.scenes)

@@ -15,6 +15,7 @@ mod calendar;
 mod choice;
 mod display;
 mod input;
+mod navigation;
 mod overlay;
 mod structure;
 
@@ -33,6 +34,7 @@ fn registry() -> &'static HashMap<&'static str, Build> {
         display::register(&mut map);
         choice::register(&mut map);
         input::register(&mut map);
+        navigation::register(&mut map);
         overlay::register(&mut map);
         structure::register(&mut map);
         map

@@ -1,9 +1,9 @@
 //! A square button holding one glyph.
 
 use gpui::{
-    AnyElement, App, ClickEvent, ElementId, InteractiveElement, IntoElement, MouseButton,
-    ParentElement, RenderOnce, SharedString, StatefulInteractiveElement, Styled, Window, div,
-    prelude::*, px,
+    AnyElement, App, ClickEvent, ElementId, FocusHandle, InteractiveElement, IntoElement,
+    MouseButton, ParentElement, RenderOnce, SharedString, StatefulInteractiveElement, Styled,
+    Window, div, prelude::*, px,
 };
 
 use crate::components::checkbox::kit;
@@ -30,6 +30,7 @@ pub struct IconButton {
     disabled: bool,
     children: Vec<AnyElement>,
     on_click: Option<OnClick>,
+    focus: Option<FocusHandle>,
 }
 
 impl IconButton {
@@ -44,6 +45,7 @@ impl IconButton {
             disabled: false,
             children: Vec::new(),
             on_click: None,
+            focus: None,
         }
     }
 
@@ -67,6 +69,11 @@ impl IconButton {
         self
     }
 
+    pub(crate) fn focus_handle(mut self, focus: FocusHandle) -> Self {
+        self.focus = Some(focus);
+        self
+    }
+
     pub fn on_click(
         mut self,
         handler: impl Fn(&ClickEvent, &mut Window, &mut App) + 'static,
@@ -87,7 +94,9 @@ impl RenderOnce for IconButton {
     fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let t = cx.theme();
         let profile = self.size.profile(t);
-        let focus = kit::focus_handle(&self.id, window, cx);
+        let focus = self
+            .focus
+            .unwrap_or_else(|| kit::focus_handle(&self.id, window, cx));
         let visible = !self.disabled && focus_visible(&focus, window, cx);
         let press = ButtonPress::new(&self.id, &focus, self.disabled, window, cx);
 

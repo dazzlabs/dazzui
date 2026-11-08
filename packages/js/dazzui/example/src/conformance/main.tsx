@@ -5,7 +5,7 @@ import { createRoot } from 'react-dom/client'
 import '@dazzlabs/dazzui/style.css'
 import '@dazzlabs/dazzui/components.css'
 
-import { COMPILED } from '../stories'
+import { COMPILED, STORIES } from '../stories'
 import {
   applyTheme,
   FAMILIES,
@@ -28,7 +28,10 @@ import { walk } from './walk'
  */
 
 const SCENES = new Map<string, ComponentType>()
-for (const story of COMPILED) {
+for (const story of [
+  ...COMPILED,
+  ...STORIES.filter(story => story.id === 'tabs'),
+]) {
   SCENES.set(`${story.id}/preview`, story.Preview)
   story.examples.forEach(({ Demo }, index) =>
     SCENES.set(`${story.id}/${index}`, Demo)

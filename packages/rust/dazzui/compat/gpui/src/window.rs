@@ -3577,6 +3577,16 @@ impl Window {
         self.layout_engine = Some(layout_engine);
     }
 
+    /// Layout size before display-pixel snapping. Intrinsic rulers use this
+    /// when reproducing CSS offsetWidth's rounding to whole logical pixels.
+    pub fn unrounded_layout_size(&self, layout_id: LayoutId) -> Size<Pixels> {
+        self.invalidator.debug_assert_prepaint();
+        self.layout_engine
+            .as_ref()
+            .unwrap()
+            .unrounded_layout_size(layout_id, self.scale_factor())
+    }
+
     /// Obtain the bounds computed for the given LayoutId relative to the window. This method will usually be invoked by
     /// GPUI itself automatically in order to pass your element its `Bounds` automatically.
     ///

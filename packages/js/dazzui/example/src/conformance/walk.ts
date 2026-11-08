@@ -212,7 +212,11 @@ export function walk(container: HTMLElement, Demo: ComponentType): Found[] {
   }
 
   const rendered = (fiber: Fiber, scope: Fiber): void => {
-    if (HOST.has(fiber.tag) || fiber.tag === TEXT) return
+    if (fiber.tag === TEXT) return
+    if (HOST.has(fiber.tag)) {
+      children(fiber).forEach(child => rendered(child, scope))
+      return
+    }
     const type = fiber.elementType
     if (typeof type === 'function' || (typeof type === 'object' && type))
       return visit(
