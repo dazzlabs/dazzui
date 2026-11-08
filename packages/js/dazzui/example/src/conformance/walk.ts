@@ -69,11 +69,18 @@ function rootOf(container: HTMLElement): Fiber {
   return (fiber.stateNode as { current: Fiber }).current
 }
 
-/** The first DOM node a fiber draws, or null for one that draws none. */
-function hostOf(fiber: Fiber): HTMLElement | null {
+/** A provider may only forward a declared child, including a layout helper.
+ * That child's DOM is not a surface the provider draws itself. */
+function ownHostOf(
+  fiber: Fiber,
+  declared: Set<unknown>,
+  props: unknown
+): HTMLElement | null {
+  if (fiber.memoizedProps !== props && declared.has(fiber.memoizedProps))
+    return null
   if (HOST.has(fiber.tag)) return fiber.stateNode as HTMLElement
   for (const child of children(fiber)) {
-    const host = hostOf(child)
+    const host = ownHostOf(child, declared, props)
     if (host) return host
   }
   return null
@@ -181,7 +188,7 @@ export function walk(container: HTMLElement, Demo: ComponentType): Found[] {
       const fiber = fiberOf(element, scope)
       const specimen: Found = {
         component: KIT.get(type)!,
-        node: fiber ? hostOf(fiber) : null,
+        node: fiber ? ownHostOf(fiber, declared, element.props) : null,
       }
       const start = found.push(specimen)
       props(element, fiber ?? scope)

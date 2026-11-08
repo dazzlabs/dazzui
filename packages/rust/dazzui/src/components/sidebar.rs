@@ -90,8 +90,9 @@ impl SidebarCollapsible {
 pub struct SidebarContext {
     pub open: bool,
     set_open: OnOpenChange,
-    /// The last column drawn in this row, read by the inset beside it.
-    column: Rc<Cell<Option<(SidebarVariant, bool)>>>,
+    /// Whether any preceding inset sidebar is collapsed. The provider also
+    /// reads this after layout to paint the ground beneath all its children.
+    inset: Rc<Cell<Option<bool>>>,
 }
 
 impl SidebarContext {
@@ -200,8 +201,10 @@ impl RenderOnce for SidebarProvider {
         let context = SidebarContext {
             open,
             set_open: set_open.clone(),
-            column: Rc::new(Cell::new(None)),
+            inset: Rc::new(Cell::new(None)),
         };
+        let inset = context.inset.clone();
+        let ground = cx.theme().color_surface_column.hsla();
 
         provide(
             context,
@@ -212,6 +215,11 @@ impl RenderOnce for SidebarProvider {
                 .w_full()
                 .min_w_0()
                 .min_h_0()
+                .map_paint_style(move |style, _, _| {
+                    if inset.get().is_some() {
+                        style.background = Some(ground.into());
+                    }
+                })
                 .on_key_down(move |event: &KeyDownEvent, window, cx| {
                     let stroke = &event.keystroke;
                     if stroke.key == "b" && (stroke.modifiers.platform || stroke.modifiers.control)
@@ -291,6 +299,14 @@ impl RenderOnce for Sidebar {
         let left = self.side == SidebarSide::Left;
         let rule = px(t.stroke_hairline);
         let border = t.color_border.hsla();
+        let collapsed = !open && self.collapsible != SidebarCollapsible::None;
+        if self.variant == SidebarVariant::Inset {
+            if let Some(context) = &context {
+                context
+                    .inset
+                    .set(Some(context.inset.get().unwrap_or(false) || collapsed));
+            }
+        }
 
         // The column that cannot collapse is the one nearer the content, and
         // takes the frame's width for where it stands.
@@ -327,10 +343,6 @@ impl RenderOnce for Sidebar {
             .into_any_element();
         }
 
-        let collapsed = !open;
-        if let Some(context) = &context {
-            context.column.set(Some((self.variant, collapsed)));
-        }
         if collapsed && self.collapsible == SidebarCollapsible::Offcanvas {
             return div().flex_none().w(px(0.)).into_any_element();
         }
@@ -365,6 +377,28 @@ impl RenderOnce for Sidebar {
                     .map(|child| provide(FixedColumn(false), child)),
             );
 
+        let container_width = width
+            + if icon && inset_by {
+                2. * t.stroke_hairline
+            } else {
+                0.
+            };
+        let container = div()
+            .flex()
+            .flex_none()
+            .h_full()
+            .w(px(container_width))
+            .when(inset_by, |this| this.p(px(t.spacing_2)))
+            .when(self.variant == SidebarVariant::Sidebar, |this| {
+                this.border_color(border).map(|this| {
+                    if left {
+                        this.border_r(rule)
+                    } else {
+                        this.border_l(rule)
+                    }
+                })
+            })
+            .child(inner);
         provide(
             IconColumn(icon),
             div()
@@ -372,17 +406,8 @@ impl RenderOnce for Sidebar {
                 .flex_none()
                 .h_full()
                 .w(px(width))
-                .when(inset_by, |this| this.p(px(t.spacing_2)))
-                .when(self.variant == SidebarVariant::Sidebar, |this| {
-                    this.border_color(border).map(|this| {
-                        if left {
-                            this.border_r(rule)
-                        } else {
-                            this.border_l(rule)
-                        }
-                    })
-                })
-                .child(inner),
+                .when(!left, |this| this.justify_end())
+                .child(container),
         )
         .into_any_element()
     }
@@ -411,7 +436,7 @@ impl ParentElement for SidebarInset {
 impl RenderOnce for SidebarInset {
     fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
         let t = cx.theme();
-        let column = SidebarContext::current(cx).and_then(|context| context.column.get());
+        let inset = SidebarContext::current(cx).and_then(|context| context.inset.get());
         let main = div()
             .relative()
             .flex()
@@ -419,34 +444,15 @@ impl RenderOnce for SidebarInset {
             .flex_col()
             .min_w_0()
             .min_h_0();
-        match column {
-            // The raised sheet, set in by the sidebar's step and sharing its
-            // edge: its box is the sheet's, as React's margin leaves it. The
-            // ground the step shows is the column's, drawn under the sheet
-            // out to the edges the margin keeps clear, since the provider
-            // cannot know the variant before the sidebar draws.
-            Some((SidebarVariant::Inset, collapsed)) => {
+        match inset {
+            Some(collapsed) => {
                 let step = t.spacing_2;
                 let lead = if collapsed { step } else { 0.0 };
                 main.m(px(step))
                     .ml(px(lead))
-                    .child(
-                        div()
-                            .absolute()
-                            .top(px(-step))
-                            .bottom(px(-step))
-                            .right(px(-step))
-                            .left(px(-lead))
-                            .bg(t.color_surface_column.hsla()),
-                    )
-                    .child(
-                        div()
-                            .absolute()
-                            .inset_0()
-                            .rounded(px(t.radius_large))
-                            .shadow(shadows(t.shadow_sm))
-                            .bg(t.color_surface.hsla()),
-                    )
+                    .rounded(px(t.radius_large))
+                    .shadow(shadows(t.shadow_sm))
+                    .bg(t.color_surface.hsla())
                     .children(self.children)
             }
             _ => main.bg(t.color_surface.hsla()).children(self.children),
