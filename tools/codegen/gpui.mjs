@@ -16,6 +16,21 @@ import { gaps } from './support.mjs'
 export const SUPPORT = structuredClone(FLUTTER_SUPPORT)
 delete SUPPORT.PreferenceThemeSwatches
 SUPPORT.FieldValue = ['size', 'mono', '#children']
+SUPPORT.Checkbox.push(
+  'value',
+  'parent',
+  'readOnly',
+  'checked',
+  'onCheckedChange'
+)
+SUPPORT.CheckboxGroup = [
+  'value',
+  'defaultValue',
+  'allValues',
+  'disabled',
+  'onValueChange',
+  '#children',
+]
 SUPPORT.PreferenceGroup = ['title', 'description', '#children']
 SUPPORT.PreferenceRow = ['title', 'subtitle', 'onOpen', '#children']
 SUPPORT.PreferenceSection = ['label', 'footer', '#children']

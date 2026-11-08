@@ -3,9 +3,9 @@
 use std::collections::HashMap;
 
 use dazzui::{
-    ActiveStyle, Checkbox, IconButton, OptionCard, PillTabItem, PillTabs, RadioGroup,
-    RadioGroupOption, SegmentedControl, SegmentedItem, Size, Slider, Switch, Tag, Tint, Toggle,
-    ToggleGroup, ToggleItem, Variant,
+    ActiveStyle, Checkbox, CheckboxGroup, IconButton, OptionCard, PillTabItem, PillTabs,
+    RadioGroup, RadioGroupOption, SegmentedControl, SegmentedItem, Size, Slider, Switch, Tag, Tint,
+    Toggle, ToggleGroup, ToggleItem, Variant,
 };
 use gpui::{AnyElement, App, IntoElement, ParentElement, SharedString, Window};
 use serde_json::Value;
@@ -15,6 +15,7 @@ use crate::lib::scene::{Node, text};
 
 pub fn register(map: &mut HashMap<&'static str, BuildFn>) {
     map.insert("Checkbox", checkbox);
+    map.insert("CheckboxGroup", checkbox_group);
     map.insert("RadioGroup", radio_group);
     map.insert("Switch", switch);
     map.insert("Toggle", toggle);
@@ -52,13 +53,57 @@ fn checkbox(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
         .default_checked(node.flag("defaultChecked"))
         .indeterminate(node.flag("indeterminate"))
         .disabled(node.flag("disabled"))
+        .read_only(node.flag("readOnly"))
+        .parent(node.flag("parent"))
         .tint(node.option("tint", Tint::parse).unwrap_or_default())
         .size(node.option("size", Size::parse).unwrap_or(Size::Medium))
         .children(node.kids(window, cx));
     if let Some(note) = node.element("note", window, cx) {
         checkbox = checkbox.note(note);
     }
+    if let Some(value) = node.string("value") {
+        checkbox = checkbox.value(value);
+    }
+    if node.raw("checked").is_some() {
+        checkbox = checkbox.checked(node.flag("checked"));
+    }
+    if let Some(change) = node.handler("onCheckedChange") {
+        checkbox = checkbox.on_checked_change(move |value, window, cx| {
+            change(Value::Bool(value), window, cx);
+        });
+    }
     checkbox.into_any_element()
+}
+
+fn checkbox_group(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {
+    let mut group = CheckboxGroup::new(node.id())
+        .disabled(node.flag("disabled"))
+        .children(node.kids(window, cx));
+    for name in ["defaultValue", "value", "allValues"] {
+        if node.raw(name).is_some() {
+            let values = items(node, name).iter().map(text).collect::<Vec<_>>();
+            group = match name {
+                "value" => group.value(values),
+                "allValues" => group.all_values(values),
+                _ => group.default_value(values),
+            };
+        }
+    }
+    if let Some(change) = node.handler("onValueChange") {
+        group = group.on_value_change(move |values, window, cx| {
+            change(
+                Value::Array(
+                    values
+                        .into_iter()
+                        .map(|value| Value::String(value.to_string()))
+                        .collect(),
+                ),
+                window,
+                cx,
+            );
+        });
+    }
+    group.into_any_element()
 }
 
 fn radio_group(node: &Node, window: &mut Window, cx: &mut App) -> AnyElement {

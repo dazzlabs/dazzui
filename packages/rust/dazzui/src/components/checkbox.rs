@@ -1,10 +1,13 @@
 //! A choice that stands on its own, or one of several that may all hold.
 
+mod group;
+pub use group::CheckboxGroup;
+
 use std::rc::Rc;
 
 use gpui::{
     AnyElement, App, ElementId, InteractiveElement, IntoElement, MouseButton, ParentElement,
-    RenderOnce, StatefulInteractiveElement, Styled, Window, div, prelude::*, px,
+    RenderOnce, SharedString, StatefulInteractiveElement, Styled, Window, div, prelude::*, px,
 };
 
 use crate::components::icon::Icon;
@@ -26,6 +29,10 @@ pub struct Checkbox {
     default_checked: bool,
     indeterminate: bool,
     disabled: bool,
+    read_only: bool,
+    value: Option<SharedString>,
+    parent: bool,
+    indented: bool,
     note: Option<AnyElement>,
     children: Vec<AnyElement>,
     on_checked_change: Option<OnCheckedChange>,
@@ -41,6 +48,10 @@ impl Checkbox {
             default_checked: false,
             indeterminate: false,
             disabled: false,
+            read_only: false,
+            value: None,
+            parent: false,
+            indented: false,
             note: None,
             children: Vec::new(),
             on_checked_change: None,
@@ -81,6 +92,24 @@ impl Checkbox {
         self
     }
 
+    /// The value this checkbox contributes to its nearest group.
+    pub fn value(mut self, value: impl Into<SharedString>) -> Self {
+        self.value = Some(value.into());
+        self
+    }
+
+    /// Counts and toggles a group's children when that group has `all_values`.
+    pub fn parent(mut self, parent: bool) -> Self {
+        self.parent = parent;
+        self
+    }
+
+    /// Keeps focus and drawing, while refusing selection changes.
+    pub fn read_only(mut self, read_only: bool) -> Self {
+        self.read_only = read_only;
+        self
+    }
+
     /// A de-emphasised aside on the label — a count, a size.
     pub fn note(mut self, note: impl IntoElement) -> Self {
         self.note = Some(note.into_any_element());
@@ -104,15 +133,40 @@ impl ParentElement for Checkbox {
 }
 
 impl RenderOnce for Checkbox {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    fn render(mut self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let t = cx.theme();
+        let group = group::GroupScope::current(cx);
+        self.disabled |= group.as_ref().is_some_and(|group| group.disabled);
+        if let (Some(group), Some(value)) = (&group, &self.value) {
+            group
+                .disabled_states
+                .borrow_mut()
+                .insert(value.clone(), self.disabled);
+        }
         let state = window.use_keyed_state(kit::child_id(&self.id, "checked"), cx, {
             let default = self.default_checked;
             move |_, _| default
         });
         let focus = kit::focus_handle(&self.id, window, cx);
-        let checked = self.checked.unwrap_or(*state.read(cx));
-        let marked = checked || self.indeterminate;
+        let mut checked = self.checked.unwrap_or(*state.read(cx));
+        let mut indeterminate = self.indeterminate;
+        let grouped_parent = self.parent
+            && group
+                .as_ref()
+                .is_some_and(|group| group.all_values.is_some());
+        let grouped_child = !self.parent && self.value.is_some() && group.is_some();
+        if let Some(group) = &group {
+            if grouped_parent {
+                let count = group.all_values.as_ref().unwrap().len();
+                checked = group.value.len() == count;
+                indeterminate |= !group.value.is_empty() && group.value.len() != count;
+            } else if grouped_child {
+                checked = group.value.contains(self.value.as_ref().unwrap());
+            } else if group.all_values.is_some() {
+                checked = self.checked.unwrap_or(false);
+            }
+        }
+        let marked = checked || indeterminate;
         let visible = !self.disabled && crate::foundation::focus_visible(&focus, window, cx);
 
         let edge = match self.size {
@@ -121,7 +175,7 @@ impl RenderOnce for Checkbox {
             Size::Large => t.checkbox_large_box,
         };
         let filled = ControlColors::resolve(t, Variant::Filled, self.tint, State::Normal);
-        let glyph = if self.indeterminate {
+        let glyph = if indeterminate {
             glyphs::SUBTRACT_12_FILLED
         } else {
             glyphs::CHECKMARK_12_FILLED
@@ -169,6 +223,9 @@ impl RenderOnce for Checkbox {
             .flex()
             .items_center()
             .gap(px(t.spacing_2_5))
+            .when(self.indented, |this| {
+                this.pl(px(t.checkbox_medium_box + t.spacing_2_5))
+            })
             .type_style(t.label_quiet)
             .text_color(if checked {
                 t.color_content.hsla()
@@ -187,23 +244,34 @@ impl RenderOnce for Checkbox {
         } else {
             let controlled = self.checked.is_some();
             let handler = self.on_checked_change;
+            let read_only = self.read_only;
+            let value = self.value;
             row = row
                 .cursor_pointer()
                 .track_focus(&focus.tab_stop(true))
                 .on_mouse_down(MouseButton::Left, |_, window, cx| pointer_down(window, cx))
                 .on_click(move |event, window, cx| {
-                    if kit::is_enter(event) {
+                    if kit::is_enter(event) || read_only {
                         return;
                     }
                     let next = !checked;
-                    if !controlled {
+                    if let Some(handler) = &handler {
+                        handler(next, window, cx);
+                    }
+                    if grouped_parent {
+                        group.as_ref().unwrap().parent_change(window, cx);
+                    } else if grouped_child {
+                        group.as_ref().unwrap().child_change(
+                            value.as_ref().unwrap(),
+                            next,
+                            window,
+                            cx,
+                        );
+                    } else if !controlled {
                         state.update(cx, |value, cx| {
                             *value = next;
                             cx.notify();
                         });
-                    }
-                    if let Some(handler) = &handler {
-                        handler(next, window, cx);
                     }
                 });
         }

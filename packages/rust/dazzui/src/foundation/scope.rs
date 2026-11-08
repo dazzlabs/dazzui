@@ -101,6 +101,10 @@ impl Element for Provide {
         None
     }
 
+    fn transparent_child_mut(&mut self) -> Option<&mut AnyElement> {
+        Some(&mut self.child)
+    }
+
     fn request_layout(
         &mut self,
         _: Option<&GlobalElementId>,

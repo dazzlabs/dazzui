@@ -163,6 +163,15 @@ retains its focus wash while its clear button holds focus.
 with `.size(...)` and `.mono(...)`. Its block text starts at the padding,
 including at large size; it creates neither an editor nor a Tab stop.
 
+`CheckboxGroup::new(id)` shares controlled `.value(...)` or uncontrolled
+`.default_value(...)` among value-bearing Checkbox children. Supplying
+`.all_values(...)` enables a `.parent(true)` checkbox: a mixed selection
+cycles through all, none and its remembered subset, preserving disabled
+children. Group disabling applies to its own children; nested groups retain
+their own scope. Direct children indent to the parent's label, including
+through providers and collection wrappers. Checkbox `.read_only(true)` keeps
+its focus and drawing while refusing changes.
+
 Skeleton sweeps, Spinner turns and Progress sweeps share a loading clock and
 the CSS cubic Bézier curves. Determinate progress transitions over twice the
 theme's motion duration and reverses from its current painted width. Give

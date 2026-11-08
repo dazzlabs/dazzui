@@ -4,6 +4,165 @@ import { test } from 'node:test'
 import { chromium } from 'playwright'
 import { createServer } from 'vite'
 
+test('checkbox groups restore mixed selections and preserve disabled children', async () => {
+  const fixture = '/checkbox-group-fixture.js'
+  const server = await createServer({
+    root: fileURLToPath(new URL('..', import.meta.url)),
+    logLevel: 'silent',
+    server: { host: '127.0.0.1', port: 0 },
+    plugins: [
+      {
+        name: 'checkbox-group-fixture',
+        resolveId: id =>
+          id === fixture ? '\0checkbox-group-fixture' : undefined,
+        load: id =>
+          id === '\0checkbox-group-fixture'
+            ? `
+        import {createElement as h, useState} from 'react'
+        import {createRoot} from 'react-dom/client'
+        import {flushSync} from 'react-dom'
+        import {Checkbox, CheckboxGroup} from '@dazzlabs/dazzui'
+        const host = document.createElement('div')
+        host.id = 'checkbox-fixture'
+        host.style.cssText = 'position:fixed;top:24px;left:24px;width:240px'
+        document.body.append(host)
+        const root = createRoot(host)
+        let sequence = 0
+        export const changes = []
+        function Fixture({options}) {
+          const [value, setValue] = useState(options.initial)
+          return h(CheckboxGroup, {
+            allValues: options.plain ? undefined : ['a', 'b', 'c'],
+            defaultValue: options.initial,
+            value: options.controlled ? value : undefined,
+            disabled: options.groupDisabled,
+            onValueChange(next) {
+              changes.push(next)
+              if (options.accept !== false) setValue(next)
+            },
+          },
+          h(Checkbox, {parent: true}, 'All'),
+          ...['a', 'b', 'c'].map(value => h(Checkbox, {
+            key: value, value,
+            disabled: options.disabled?.includes(value),
+            readOnly: options.readOnly?.includes(value),
+          }, value)))
+        }
+        export function mount(options) {
+          changes.length = 0
+          flushSync(() => root.render(h(Fixture, {key: ++sequence, options})))
+        }
+      `
+            : undefined,
+      },
+    ],
+  })
+  await server.listen()
+  const browser = await chromium.launch({
+    executablePath: process.env.DAZZUI_CHROMIUM_EXECUTABLE || undefined,
+  })
+  try {
+    const page = await browser.newPage()
+    await page.goto(
+      new URL('conformance.html', server.resolvedUrls.local[0]).href
+    )
+    await page.waitForFunction(() => window.conformance)
+    await page.evaluate(() =>
+      window.conformance.show('checkbox/preview', 'studio-light')
+    )
+    await page.evaluate(async () => {
+      window.checkboxFixture = await import('/checkbox-group-fixture.js')
+    })
+    const group = page.locator('#checkbox-fixture')
+    const controls = group.getByRole('checkbox')
+    const checked = () =>
+      controls.evaluateAll(nodes =>
+        nodes.map(node => node.getAttribute('aria-checked'))
+      )
+    for (const theme of await page.evaluate(() => window.conformance.drawn)) {
+      await page.evaluate(
+        theme => window.conformance.show('checkbox/preview', theme),
+        theme
+      )
+      for (const [initial, disabled, proposals, states] of [
+        [
+          ['a'],
+          ['b'],
+          [['a', 'c'], [], ['a']],
+          ['mixed', 'mixed', 'false', 'mixed'],
+        ],
+        [
+          ['a', 'b'],
+          ['b'],
+          [['a', 'b', 'c'], ['b'], ['a', 'b']],
+          ['mixed', 'true', 'mixed', 'mixed'],
+        ],
+      ]) {
+        await page.evaluate(options => window.checkboxFixture.mount(options), {
+          initial,
+          disabled,
+        })
+        assert.equal((await checked())[0], states[0])
+        for (let i = 0; i < 3; i++) {
+          await controls.first().click()
+          assert.equal((await checked())[0], states[i + 1])
+        }
+        assert.deepEqual(
+          await page.evaluate(() => window.checkboxFixture.changes),
+          proposals
+        )
+        const geometry = await controls.evaluateAll(nodes =>
+          nodes.map(node => ({
+            box: node.getBoundingClientRect().toJSON(),
+            mark: node
+              .querySelector('.dz-checkbox__box')
+              .getBoundingClientRect()
+              .toJSON(),
+          }))
+        )
+        assert.equal(geometry[1].mark.x - geometry[0].mark.x, 26)
+        assert.equal(geometry[1].box.y - geometry[0].box.y, 26)
+      }
+    }
+    await page.evaluate(() =>
+      window.checkboxFixture.mount({
+        initial: ['a'],
+        controlled: true,
+        accept: false,
+      })
+    )
+    await controls.nth(2).click()
+    assert.deepEqual(await checked(), ['mixed', 'true', 'false', 'false'])
+    assert.deepEqual(
+      await page.evaluate(() => window.checkboxFixture.changes),
+      [['a', 'b']]
+    )
+    await page.evaluate(() =>
+      window.checkboxFixture.mount({
+        initial: [],
+        plain: true,
+        readOnly: ['a'],
+      })
+    )
+    await controls.nth(1).click()
+    await controls.nth(2).click()
+    assert.deepEqual(await checked(), ['false', 'false', 'true', 'false'])
+    assert.deepEqual(
+      await page.evaluate(() => window.checkboxFixture.changes),
+      [['b']]
+    )
+    await controls.nth(2).focus()
+    await page.keyboard.press('Enter')
+    assert.deepEqual(
+      await page.evaluate(() => window.checkboxFixture.changes),
+      [['b']]
+    )
+  } finally {
+    await browser.close()
+    await server.close()
+  }
+})
+
 test('standalone toggles, grouped toggles and switches retain their distinct key phases', async () => {
   const server = await createServer({
     root: fileURLToPath(new URL('..', import.meta.url)),

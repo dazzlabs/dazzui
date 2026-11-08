@@ -68,6 +68,13 @@ pub trait Element: 'static + IntoElement {
     /// inspector and navigate to their source code.
     fn source_location(&self) -> Option<&'static panic::Location<'static>>;
 
+    /// The child of a wrapper that contributes no layout node of its own.
+    /// Parents can inspect logical direct children through providers and
+    /// instrumentation without treating ordinary containers as transparent.
+    fn transparent_child_mut(&mut self) -> Option<&mut AnyElement> {
+        None
+    }
+
     /// Before an element can be painted, we need to know where it's going to be and how big it is.
     /// Use this method to request a layout from Taffy and initialize the element's state.
     fn request_layout(
@@ -195,6 +202,12 @@ impl<C: RenderOnce> Component<C> {
             source: core::panic::Location::caller(),
         }
     }
+
+    /// Access the component before layout consumes it. A parent may inspect
+    /// or refine a direct child without rendering that child ahead of layout.
+    pub fn component_mut(&mut self) -> Option<&mut C> {
+        self.component.as_mut()
+    }
 }
 
 impl<C: RenderOnce> Element for Component<C> {
@@ -289,6 +302,8 @@ impl Display for GlobalElementId {
 
 trait ElementObject {
     fn inner_element(&mut self) -> &mut dyn Any;
+
+    fn transparent_child_mut(&mut self) -> Option<&mut AnyElement>;
 
     fn request_layout(&mut self, window: &mut Window, cx: &mut App) -> LayoutId;
 
@@ -548,6 +563,10 @@ where
         &mut self.element
     }
 
+    fn transparent_child_mut(&mut self) -> Option<&mut AnyElement> {
+        self.element.transparent_child_mut()
+    }
+
     fn request_layout(&mut self, window: &mut Window, cx: &mut App) -> LayoutId {
         Drawable::request_layout(self, window, cx)
     }
@@ -588,6 +607,11 @@ impl AnyElement {
     /// Attempt to downcast a reference to the boxed element to a specific type.
     pub fn downcast_mut<T: 'static>(&mut self) -> Option<&mut T> {
         self.0.inner_element().downcast_mut::<T>()
+    }
+
+    /// The child of an explicitly transparent layout wrapper, if any.
+    pub fn transparent_child_mut(&mut self) -> Option<&mut AnyElement> {
+        self.0.transparent_child_mut()
     }
 
     /// Request the layout ID of the element stored in this `AnyElement`.
