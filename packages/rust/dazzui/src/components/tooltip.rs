@@ -1,15 +1,17 @@
 //! The label a control surfaces on hover. It never carries anything a
 //! reader has to have: a tooltip is a reminder of what an icon means.
 
-use std::time::Duration;
+use std::{cell::Cell, rc::Rc, time::Duration};
 
 use gpui::{
-    AnyElement, App, ElementId, InteractiveElement, IntoElement, MouseButton, ParentElement,
-    RenderOnce, SharedString, StatefulInteractiveElement, Styled, Window, div, prelude::*, px,
+    AnyElement, App, Div, ElementId, FocusHandle, InteractiveElement, IntoElement, MouseButton,
+    ParentElement, RenderOnce, Stateful, StatefulInteractiveElement, Styled, Subscription, Window,
+    div, prelude::*, px,
 };
 
+use crate::components::collapsible::{kept_focus, part_id};
 use crate::components::popup::{Align, Placement, PopupState, Side, measured, positioned};
-use crate::foundation::StyledExt;
+use crate::foundation::{StyledExt, focus_visible};
 use crate::theme::ActiveTheme;
 use crate::tokens::shadows;
 
@@ -17,7 +19,7 @@ use crate::tokens::shadows;
 #[derive(IntoElement)]
 pub struct Tooltip {
     id: ElementId,
-    label: SharedString,
+    label: AnyElement,
     side: Side,
     align: Align,
     delay: Option<Duration>,
@@ -27,10 +29,10 @@ pub struct Tooltip {
 }
 
 impl Tooltip {
-    pub fn new(id: impl Into<ElementId>, label: impl Into<SharedString>) -> Self {
+    pub fn new(id: impl Into<ElementId>, label: impl IntoElement) -> Self {
         Tooltip {
             id: id.into(),
-            label: label.into(),
+            label: crate::foundation::text_child(label),
             side: Side::Top,
             align: Align::Center,
             delay: None,
@@ -66,29 +68,72 @@ impl Tooltip {
         self.disabled = disabled;
         self
     }
-}
 
-impl ParentElement for Tooltip {
-    fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
-        // One control: the last one given is the one it describes.
-        if let Some(element) = elements.into_iter().last() {
-            self.child = Some(element);
-        }
-    }
-}
-
-impl RenderOnce for Tooltip {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+    /// Attach to a control without inserting another layout box. Its focus,
+    /// width and clipping still belong to the original control.
+    pub(crate) fn bind(
+        self,
+        element: Stateful<Div>,
+        focus: &FocusHandle,
+        window: &mut Window,
+        cx: &mut App,
+    ) -> AnyElement {
         let t = cx.theme();
         let state = PopupState::keyed(&self.id, false, window, cx);
+        let watched = window.use_keyed_state(part_id(&self.id, "events"), cx, |window, cx| {
+            let enabled = Rc::new(Cell::new(true));
+            let focus_enabled = enabled.clone();
+            let entered = state.downgrade();
+            let enter = window.on_focus_in(focus, cx, move |window, cx| {
+                if focus_enabled.get()
+                    && window
+                        .focused(cx)
+                        .is_some_and(|focus| focus_visible(&focus, window, cx))
+                {
+                    let _ = entered.update(cx, |state, cx| {
+                        state.cancel_hover();
+                        state.open = true;
+                        cx.notify();
+                    });
+                    refresh_after_focus(window, cx);
+                }
+            });
+            let blur_enabled = enabled.clone();
+            let blurred = state.downgrade();
+            let blur = window.on_focus_out(focus, cx, move |_, window, cx| {
+                if blur_enabled.get() {
+                    let _ = blurred.update(cx, |state, cx| state.hide(window, cx));
+                    refresh_after_focus(window, cx);
+                }
+            });
+            let escape_enabled = enabled.clone();
+            let escape = state.downgrade();
+            let window_id = window.window_handle().window_id();
+            let key = cx.intercept_keystrokes(move |event, window, cx| {
+                if event.keystroke.key == "escape"
+                    && window.window_handle().window_id() == window_id
+                    && escape_enabled.get()
+                {
+                    let _ = escape.update(cx, |state, cx| state.hide(window, cx));
+                }
+            });
+            TriggerEvents {
+                enabled,
+                _subscriptions: [enter, blur, key],
+            }
+        });
+        watched.read(cx).enabled.set(!self.disabled);
+        if self.disabled {
+            state.update(cx, |state, cx| state.hide(window, cx));
+        }
         let anchor = state.read(cx).anchor.clone();
         let open = state.read(cx).open && !self.disabled;
         let delay = self
             .delay
-            .unwrap_or_else(|| Duration::from_secs_f32(t.tooltip_open_delay / 1000.));
+            .unwrap_or_else(|| Duration::from_secs_f64(f64::from(t.tooltip_open_delay) / 1000.));
         let close_delay = self
             .close_delay
-            .unwrap_or_else(|| Duration::from_secs_f32(t.tooltip_close_delay / 1000.));
+            .unwrap_or_else(|| Duration::from_secs_f64(f64::from(t.tooltip_close_delay) / 1000.));
 
         let popup = open.then(|| {
             // `.dz-tooltip`: the raised card, a hairline, the small label.
@@ -103,15 +148,14 @@ impl RenderOnce for Tooltip {
                 .shadow(shadows(t.shadow_sm))
                 .text_color(t.color_content.hsla())
                 .type_style(t.label_small)
-                .child(crate::foundation::text_child(self.label));
+                .child(self.label);
             positioned(&anchor, Placement::side(self.side, self.align, t), label)
         });
 
         let hover = state.clone();
         let press = state.clone();
-        div()
-            .id(self.id)
-            .flex()
+        let click = state;
+        let element = element
             .when(!self.disabled, |this| {
                 this.on_hover(move |hovered, window, cx| {
                     hover.update(cx, |state, cx| {
@@ -119,14 +163,47 @@ impl RenderOnce for Tooltip {
                     })
                 })
                 // A press is the control being used, not read about.
-                .on_mouse_down(MouseButton::Left, move |_, _, cx| {
-                    press.update(cx, |state, cx| {
-                        state.open = false;
-                        cx.notify();
-                    })
+                .on_mouse_down(MouseButton::Left, move |_, window, cx| {
+                    press.update(cx, |state, cx| state.hide(window, cx))
                 })
+                .on_click(move |_, window, cx| click.update(cx, |state, cx| state.hide(window, cx)))
             })
-            .children(self.child.map(|child| measured(&anchor, child)))
-            .children(popup)
+            .children(popup);
+        measured(&anchor, element).into_any_element()
+    }
+}
+
+struct TriggerEvents {
+    enabled: Rc<Cell<bool>>,
+    _subscriptions: [Subscription; 3],
+}
+
+// Focus changes arrive at the end of a draw. A refresh requested inside
+// that phase is consumed by the frame that is already finishing.
+fn refresh_after_focus(window: &Window, cx: &App) {
+    window
+        .spawn(cx, async move |cx| {
+            let _ = cx.update(|window, _| window.refresh());
+        })
+        .detach();
+}
+
+impl ParentElement for Tooltip {
+    fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
+        if let Some(element) = elements.into_iter().last() {
+            self.child = Some(element);
+        }
+    }
+}
+
+impl RenderOnce for Tooltip {
+    fn render(mut self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+        let focus = kept_focus(part_id(&self.id, "scope-focus"), window, cx);
+        let element = div()
+            .id(self.id.clone())
+            .flex()
+            .track_focus(&focus)
+            .children(self.child.take());
+        self.bind(element, &focus, window, cx)
     }
 }

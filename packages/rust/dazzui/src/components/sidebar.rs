@@ -12,12 +12,14 @@ use std::rc::Rc;
 
 use gpui::{
     AnyElement, App, ClickEvent, ElementId, Hsla, InteractiveElement, IntoElement, KeyDownEvent,
-    MouseButton, ParentElement, RenderOnce, SharedString, StatefulInteractiveElement, Styled,
-    Window, div, prelude::FluentBuilder, px,
+    MouseButton, ParentElement, RenderOnce, StatefulInteractiveElement, Styled, Window, div,
+    prelude::FluentBuilder, px,
 };
 
 use crate::components::collapsible::{OnOpenChange, kept_focus, part_id};
 use crate::components::icon::{Icon, icon_slot};
+use crate::components::popup::Side;
+use crate::components::tooltip::Tooltip;
 use crate::foundation::{
     Size, StyledExt, Tint, Variant, focus_visible, pointer_down, provide, ring, scoped,
 };
@@ -873,6 +875,7 @@ pub struct SidebarMenuButton {
     variant: Variant,
     tint: Tint,
     disabled: bool,
+    tooltip: Option<AnyElement>,
     on_click: Option<OnClick>,
     children: Vec<AnyElement>,
 }
@@ -887,6 +890,7 @@ impl SidebarMenuButton {
             variant: Variant::Filled,
             tint: Tint::Primary,
             disabled: false,
+            tooltip: None,
             on_click: None,
             children: Vec::new(),
         }
@@ -924,10 +928,9 @@ impl SidebarMenuButton {
         self
     }
 
-    /// What the row says once the column has collapsed to its icons. The
-    /// tooltip is not drawn yet: this is accepted so callers can write it
-    /// now, and will be wired once the kit's `Tooltip` lands.
-    pub fn tooltip(self, _label: impl Into<SharedString>) -> Self {
+    /// The reminder shown to the right while the provider is collapsed.
+    pub fn tooltip(mut self, label: impl IntoElement) -> Self {
+        self.tooltip = Some(crate::foundation::text_child(label));
         self
     }
 
@@ -1164,22 +1167,31 @@ impl RenderOnce for SidebarMenuButton {
             .text_ellipsis()
             .children(self.children);
 
-        row.when_some(self.icon, |this, icon| {
-            // Boxed to the row's line so the taller glyph overflows rather
-            // than stretching the row.
-            this.child(icon_slot(
-                t.icon_medium,
-                div()
-                    .flex()
-                    .flex_none()
-                    .items_center()
-                    .justify_center()
-                    .w(px(t.icon_medium))
-                    .h(px(t.label_quiet.size))
-                    .child(icon),
-            ))
-        })
-        .child(crate::foundation::text_child(label))
+        let row = row
+            .when_some(self.icon, |this, icon| {
+                // Boxed to the row's line so the taller glyph overflows rather
+                // than stretching the row.
+                this.child(icon_slot(
+                    t.icon_medium,
+                    div()
+                        .flex()
+                        .flex_none()
+                        .items_center()
+                        .justify_center()
+                        .w(px(t.icon_medium))
+                        .h(px(t.label_quiet.size))
+                        .child(icon),
+                ))
+            })
+            .child(crate::foundation::text_child(label));
+        match self.tooltip {
+            Some(label) => Tooltip::new(part_id(&self.id, "tooltip"), label)
+                .side(Side::Right)
+                .delay(std::time::Duration::ZERO)
+                .disabled(SidebarContext::current(cx).is_none_or(|context| context.open))
+                .bind(row, &focus, window, cx),
+            None => row.into_any_element(),
+        }
     }
 }
 

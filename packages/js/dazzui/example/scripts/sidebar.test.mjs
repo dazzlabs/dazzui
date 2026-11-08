@@ -21,16 +21,18 @@ test('sidebar surfaces and independent collapse preserve both edge layouts', asy
         import {createElement as h} from 'react'
         import {createRoot} from 'react-dom/client'
         import {flushSync} from 'react-dom'
-        import {SidebarProvider, Sidebar, SidebarInset} from '@dazzlabs/dazzui'
+        import {SidebarProvider, Sidebar, SidebarInset, SidebarMenu, SidebarMenuItem, SidebarMenuButton, Button} from '@dazzlabs/dazzui'
         const host = document.createElement('div')
         host.id = 'sidebar-fixture'
         host.style.cssText = 'position:fixed;left:24px;top:24px;width:420px;height:180px;display:flex'
         document.body.append(host)
         const root = createRoot(host)
-        export function mount({open, ...props}) {
+        export function mount({open, rowDisabled = false, ...props}) {
           flushSync(() => root.render(h(SidebarProvider, {open},
-            h(Sidebar, {...props, width:'172px'}, h('div', null, 'Column')),
-            h(SidebarInset, null, 'Content'))))
+            h(Sidebar, {...props, width:'172px'},
+              h(SidebarMenu, null, h(SidebarMenuItem, null,
+                h(SidebarMenuButton, {tooltip:'Documents', disabled:rowDisabled}, 'Documents')))),
+            h(SidebarInset, null, h(Button, null, 'Next')))))
         }
       `
             : undefined,
@@ -49,6 +51,7 @@ test('sidebar surfaces and independent collapse preserve both edge layouts', asy
     await page.waitForFunction(() => window.conformance)
     await page.evaluate(async () => {
       window.sidebarFixture = await import('/sidebar-fixture.js')
+      document.getElementById('root').style.visibility = 'hidden'
     })
     for (const theme of ['bright-light', 'studio-dark']) {
       await page.evaluate(
@@ -148,6 +151,73 @@ test('sidebar surfaces and independent collapse preserve both edge layouts', asy
                 }
               }
     }
+    const row = page
+      .locator('#sidebar-fixture')
+      .getByRole('button', { name: 'Documents' })
+    const hint = page.locator('.dz-tooltip')
+    const mount = options =>
+      page.evaluate(
+        options =>
+          window.sidebarFixture.mount({
+            side: 'left',
+            variant: 'sidebar',
+            collapsible: 'icon',
+            ...options,
+          }),
+        options
+      )
+    for (const [open, collapsed, enabled] of [
+      [false, undefined, true],
+      [true, undefined, false],
+      [true, true, false],
+      [false, false, true],
+    ]) {
+      await page.mouse.move(0, 0)
+      await mount({ open, collapsed })
+      const before = await row.boundingBox()
+      await row.hover()
+      if (!enabled) {
+        assert.equal(await hint.count(), 0)
+        continue
+      }
+      await hint.waitFor({ timeout: 2000 })
+      const popup = await hint.boundingBox()
+      assert.deepEqual(
+        await row.boundingBox(),
+        before,
+        'a hint does not change its trigger box'
+      )
+      assert.equal(popup.x - before.x - before.width, 4)
+      assert.ok(
+        Math.abs(popup.y + popup.height / 2 - before.y - before.height / 2) <=
+          0.5,
+        JSON.stringify({ before, popup })
+      )
+      await page.mouse.move(0, 0)
+      await hint.waitFor({ state: 'detached' })
+    }
+    await mount({ open: false })
+    await row.focus()
+    await hint.waitFor()
+    await page.keyboard.press('Escape')
+    await hint.waitFor({ state: 'detached' })
+    assert.ok(await row.evaluate(el => el === document.activeElement))
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Shift+Tab')
+    await hint.waitFor()
+    await row.click()
+    await hint.waitFor({ state: 'detached' })
+    await page.mouse.move(0, 0)
+    await row.hover()
+    await hint.waitFor()
+    // Disabling cancels the hint; enabling alone does not reopen it.
+    await mount({ open: true })
+    await hint.waitFor({ state: 'detached' })
+    await mount({ open: false })
+    assert.equal(await hint.count(), 0)
+    await page.mouse.move(0, 0)
+    await row.hover()
+    await hint.waitFor()
   } finally {
     await browser.close()
     await server.close()

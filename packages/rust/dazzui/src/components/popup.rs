@@ -532,19 +532,24 @@ impl PopupState {
 
     /// Closes it and gives the keyboard back.
     pub fn hide(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        self.cancel_hover();
         if !self.open {
             return;
         }
         self.open = false;
         self.highlighted = None;
-        self.timer = None;
-        self.hovered = [false; 2];
         if let Some(restore) = self.restore.take()
             && self.focus.contains_focused(window, cx)
         {
             window.focus(&restore);
         }
         cx.notify();
+    }
+
+    /// Cancel a pending hover even when the popup has not opened yet.
+    pub(crate) fn cancel_hover(&mut self) {
+        self.timer = None;
+        self.hovered = [false; 2];
     }
 
     /// Moves the highlight for a navigation key — the arrows, Home and End —
