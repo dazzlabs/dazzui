@@ -1,0 +1,2462 @@
+{
+  "font": {
+    "family": "monospace",
+    "size": 12,
+    "lineHeight": 19.2,
+    "width": 400,
+    "height": 153.6,
+    "inputHeight": 30
+  },
+  "cases": [
+    {
+      "id": "word-right",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          40,
+          10,
+          2,
+          false
+        ],
+        [
+          "click",
+          110,
+          10,
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "word-left",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          40,
+          10,
+          2,
+          false
+        ],
+        [
+          "click",
+          10,
+          10,
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "word-gap-left",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          40,
+          10,
+          2,
+          false
+        ],
+        [
+          "click",
+          25,
+          10,
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "word-gap-right",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          40,
+          10,
+          2,
+          false
+        ],
+        [
+          "click",
+          97,
+          10,
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "word-return",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          40,
+          10,
+          2,
+          false
+        ],
+        [
+          "click",
+          110,
+          10,
+          1,
+          true
+        ],
+        [
+          "click",
+          10,
+          10,
+          1,
+          true
+        ],
+        [
+          "click",
+          76,
+          10,
+          1,
+          true
+        ],
+        [
+          "click",
+          40,
+          10,
+          1,
+          true
+        ],
+        [
+          "key",
+          "shift-right"
+        ]
+      ]
+    },
+    {
+      "id": "word-forward-drag",
+      "text": "one two three four",
+      "ops": [
+        [
+          "down",
+          40,
+          10,
+          2,
+          false
+        ],
+        [
+          "move",
+          110,
+          10
+        ],
+        [
+          "up",
+          110,
+          10,
+          2
+        ],
+        [
+          "click",
+          10,
+          10,
+          1,
+          true
+        ],
+        [
+          "click",
+          76,
+          10,
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "word-backward-drag",
+      "text": "one two three four",
+      "ops": [
+        [
+          "down",
+          76,
+          10,
+          2,
+          false
+        ],
+        [
+          "move",
+          10,
+          10
+        ],
+        [
+          "up",
+          10,
+          10,
+          2
+        ],
+        [
+          "click",
+          110,
+          10,
+          1,
+          true
+        ],
+        [
+          "click",
+          40,
+          10,
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "word-shift-drag",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          40,
+          10,
+          2,
+          false
+        ],
+        [
+          "down",
+          110,
+          10,
+          1,
+          true
+        ],
+        [
+          "move",
+          10,
+          10
+        ],
+        [
+          "move",
+          76,
+          10
+        ],
+        [
+          "up",
+          76,
+          10,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "word-key-barrier",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          40,
+          10,
+          2,
+          false
+        ],
+        [
+          "key",
+          "right"
+        ],
+        [
+          "click",
+          110,
+          10,
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "word-all-barrier",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          40,
+          10,
+          2,
+          false
+        ],
+        [
+          "key",
+          "all"
+        ],
+        [
+          "click",
+          76,
+          10,
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "word-click-barrier",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          40,
+          10,
+          2,
+          false
+        ],
+        [
+          "click",
+          76,
+          10,
+          1,
+          false
+        ],
+        [
+          "click",
+          10,
+          10,
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "shift-double",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          40,
+          10,
+          1,
+          false
+        ],
+        [
+          "click",
+          110,
+          10,
+          2,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "shift-triple",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          40,
+          10,
+          1,
+          false
+        ],
+        [
+          "click",
+          110,
+          10,
+          3,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "character-left",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          76,
+          10,
+          1,
+          false
+        ],
+        [
+          "click",
+          10,
+          10,
+          1,
+          true
+        ],
+        [
+          "click",
+          110,
+          10,
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "character-drag",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          76,
+          10,
+          1,
+          false
+        ],
+        [
+          "down",
+          10,
+          10,
+          1,
+          true
+        ],
+        [
+          "move",
+          40,
+          10
+        ],
+        [
+          "move",
+          110,
+          10
+        ],
+        [
+          "up",
+          110,
+          10,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "paragraph-left",
+      "text": "one\ntwo\nthree four\nfive",
+      "multiline": true,
+      "ops": [
+        [
+          "click",
+          10,
+          29,
+          3,
+          false
+        ],
+        [
+          "click",
+          10,
+          10,
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "paragraph-right",
+      "text": "one\ntwo\nthree four\nfive",
+      "multiline": true,
+      "ops": [
+        [
+          "click",
+          10,
+          29,
+          3,
+          false
+        ],
+        [
+          "click",
+          60,
+          48,
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "paragraph-return",
+      "text": "one\ntwo\nthree four\nfive",
+      "multiline": true,
+      "ops": [
+        [
+          "click",
+          10,
+          29,
+          3,
+          false
+        ],
+        [
+          "click",
+          10,
+          67,
+          1,
+          true
+        ],
+        [
+          "click",
+          10,
+          10,
+          1,
+          true
+        ],
+        [
+          "click",
+          40,
+          48,
+          1,
+          true
+        ],
+        [
+          "click",
+          10,
+          29,
+          1,
+          true
+        ],
+        [
+          "key",
+          "shift-right"
+        ]
+      ]
+    },
+    {
+      "id": "paragraph-drag",
+      "text": "one\ntwo\nthree four\nfive",
+      "multiline": true,
+      "ops": [
+        [
+          "down",
+          10,
+          29,
+          3,
+          false
+        ],
+        [
+          "move",
+          30,
+          48
+        ],
+        [
+          "up",
+          30,
+          48,
+          3
+        ],
+        [
+          "click",
+          10,
+          10,
+          1,
+          true
+        ],
+        [
+          "click",
+          10,
+          67,
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "paragraph-shift-drag",
+      "text": "one\ntwo\nthree four\nfive",
+      "multiline": true,
+      "ops": [
+        [
+          "click",
+          10,
+          29,
+          3,
+          false
+        ],
+        [
+          "down",
+          10,
+          67,
+          1,
+          true
+        ],
+        [
+          "move",
+          10,
+          10
+        ],
+        [
+          "move",
+          20,
+          48
+        ],
+        [
+          "up",
+          20,
+          48,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "paragraph-key-barrier",
+      "text": "one\ntwo\nthree four\nfive",
+      "multiline": true,
+      "ops": [
+        [
+          "click",
+          10,
+          29,
+          3,
+          false
+        ],
+        [
+          "key",
+          "right"
+        ],
+        [
+          "click",
+          40,
+          48,
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "readonly-word",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          40,
+          10,
+          2,
+          false
+        ],
+        [
+          "click",
+          110,
+          10,
+          1,
+          true
+        ],
+        [
+          "click",
+          10,
+          10,
+          1,
+          true
+        ],
+        [
+          "click",
+          76,
+          10,
+          1,
+          true
+        ],
+        [
+          "click",
+          40,
+          10,
+          1,
+          true
+        ],
+        [
+          "key",
+          "shift-right"
+        ]
+      ],
+      "readOnly": true
+    },
+    {
+      "id": "masked-word",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          40,
+          10,
+          2,
+          false
+        ],
+        [
+          "click",
+          110,
+          10,
+          1,
+          true
+        ],
+        [
+          "click",
+          10,
+          10,
+          1,
+          true
+        ],
+        [
+          "click",
+          76,
+          10,
+          1,
+          true
+        ],
+        [
+          "click",
+          40,
+          10,
+          1,
+          true
+        ],
+        [
+          "key",
+          "shift-right"
+        ]
+      ],
+      "type": "password"
+    },
+    {
+      "id": "empty-word",
+      "text": "",
+      "ops": [
+        [
+          "click",
+          10,
+          10,
+          2,
+          false
+        ],
+        [
+          "click",
+          40,
+          10,
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "wrapped-paragraph",
+      "text": "one two three four\nnext para\nend",
+      "width": 74,
+      "multiline": true,
+      "ops": [
+        [
+          "click",
+          10,
+          29,
+          3,
+          false
+        ],
+        [
+          "click",
+          10,
+          86,
+          1,
+          true
+        ],
+        [
+          "click",
+          10,
+          10,
+          1,
+          true
+        ],
+        [
+          "key",
+          "shift-right"
+        ]
+      ]
+    },
+    {
+      "id": "word-left-return",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          40,
+          10,
+          2,
+          false
+        ],
+        [
+          "click",
+          10,
+          10,
+          1,
+          true
+        ],
+        [
+          "click",
+          40,
+          10,
+          1,
+          true
+        ],
+        [
+          "key",
+          "shift-right"
+        ]
+      ]
+    },
+    {
+      "id": "paragraph-left-return",
+      "text": "one\ntwo\nthree four\nfive",
+      "multiline": true,
+      "ops": [
+        [
+          "click",
+          10,
+          29,
+          3,
+          false
+        ],
+        [
+          "click",
+          10,
+          10,
+          1,
+          true
+        ],
+        [
+          "click",
+          10,
+          29,
+          1,
+          true
+        ],
+        [
+          "key",
+          "shift-right"
+        ]
+      ]
+    },
+    {
+      "id": "word-tie",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          10,
+          10,
+          2,
+          false
+        ],
+        [
+          "click",
+          110,
+          10,
+          1,
+          true
+        ],
+        [
+          "click",
+          65,
+          10,
+          1,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "word-shift-double",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          40,
+          10,
+          2,
+          false
+        ],
+        [
+          "click",
+          110,
+          10,
+          2,
+          true
+        ]
+      ]
+    },
+    {
+      "id": "character-return-anchor",
+      "text": "one two three four",
+      "ops": [
+        [
+          "click",
+          76,
+          10,
+          1,
+          false
+        ],
+        [
+          "down",
+          10,
+          10,
+          1,
+          true
+        ],
+        [
+          "move",
+          79,
+          10
+        ],
+        [
+          "up",
+          79,
+          10,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "word-held-all",
+      "text": "one two three four",
+      "ops": [
+        [
+          "down",
+          40,
+          10,
+          2,
+          false
+        ],
+        [
+          "key",
+          "all"
+        ],
+        [
+          "move",
+          110,
+          10
+        ],
+        [
+          "up",
+          110,
+          10,
+          2
+        ]
+      ]
+    },
+    {
+      "id": "word-held-arrow",
+      "text": "one two three four",
+      "ops": [
+        [
+          "down",
+          40,
+          10,
+          2,
+          false
+        ],
+        [
+          "key",
+          "right"
+        ],
+        [
+          "move",
+          110,
+          10
+        ],
+        [
+          "up",
+          110,
+          10,
+          2
+        ]
+      ]
+    }
+  ],
+  "platforms": {
+    "macos": {
+      "browser": {
+        "protocolVersion": "1.3",
+        "product": "HeadlessChrome/153.0.8010.12",
+        "revision": "@971a7443b0c9b0a9b2860529b33331b76077ec62",
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36",
+        "jsVersion": "15.3.76.4"
+      },
+      "results": [
+        {
+          "id": "word-right",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              4,
+              18,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-left",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              0,
+              7,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-gap-left",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              3,
+              7,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-gap-right",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              4,
+              14,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-return",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              4,
+              18,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              0,
+              13,
+              false
+            ],
+            [
+              4,
+              13,
+              false
+            ],
+            [
+              4,
+              14,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-forward-drag",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              4,
+              18,
+              false
+            ],
+            [
+              4,
+              18,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              0,
+              13,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-backward-drag",
+          "states": [
+            [
+              8,
+              13,
+              false
+            ],
+            [
+              0,
+              13,
+              false
+            ],
+            [
+              0,
+              13,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              4,
+              18,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-shift-drag",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              4,
+              18,
+              false
+            ],
+            [
+              0,
+              7,
+              false
+            ],
+            [
+              4,
+              13,
+              false
+            ],
+            [
+              4,
+              13,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-key-barrier",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              7,
+              7,
+              false
+            ],
+            [
+              7,
+              15,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-all-barrier",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              0,
+              11,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-click-barrier",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              11,
+              11,
+              false
+            ],
+            [
+              1,
+              11,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "shift-double",
+          "states": [
+            [
+              6,
+              6,
+              false
+            ],
+            [
+              6,
+              15,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "shift-triple",
+          "states": [
+            [
+              6,
+              6,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "character-left",
+          "states": [
+            [
+              11,
+              11,
+              false
+            ],
+            [
+              1,
+              11,
+              false
+            ],
+            [
+              1,
+              15,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "character-drag",
+          "states": [
+            [
+              11,
+              11,
+              false
+            ],
+            [
+              1,
+              11,
+              false
+            ],
+            [
+              6,
+              11,
+              false
+            ],
+            [
+              11,
+              15,
+              false
+            ],
+            [
+              11,
+              15,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "paragraph-left",
+          "states": [
+            [
+              4,
+              8,
+              false
+            ],
+            [
+              0,
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "paragraph-right",
+          "states": [
+            [
+              4,
+              8,
+              false
+            ],
+            [
+              4,
+              19,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "paragraph-return",
+          "states": [
+            [
+              4,
+              8,
+              false
+            ],
+            [
+              4,
+              23,
+              false
+            ],
+            [
+              0,
+              23,
+              false
+            ],
+            [
+              0,
+              19,
+              false
+            ],
+            [
+              4,
+              19,
+              false
+            ],
+            [
+              4,
+              20,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "paragraph-drag",
+          "states": [
+            [
+              4,
+              8,
+              false
+            ],
+            [
+              4,
+              19,
+              false
+            ],
+            [
+              4,
+              19,
+              false
+            ],
+            [
+              0,
+              19,
+              false
+            ],
+            [
+              0,
+              23,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "paragraph-shift-drag",
+          "states": [
+            [
+              4,
+              8,
+              false
+            ],
+            [
+              4,
+              23,
+              false
+            ],
+            [
+              0,
+              8,
+              false
+            ],
+            [
+              4,
+              19,
+              false
+            ],
+            [
+              4,
+              19,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "paragraph-key-barrier",
+          "states": [
+            [
+              4,
+              8,
+              false
+            ],
+            [
+              8,
+              8,
+              false
+            ],
+            [
+              8,
+              14,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "readonly-word",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              4,
+              18,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              0,
+              13,
+              false
+            ],
+            [
+              4,
+              13,
+              false
+            ],
+            [
+              4,
+              14,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "masked-word",
+          "states": [
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "empty-word",
+          "states": [
+            [
+              0,
+              0,
+              false
+            ],
+            [
+              0,
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "wrapped-paragraph",
+          "states": [
+            [
+              0,
+              19,
+              false
+            ],
+            [
+              0,
+              32,
+              false
+            ],
+            [
+              0,
+              32,
+              false
+            ],
+            [
+              0,
+              32,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-left-return",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              0,
+              7,
+              false
+            ],
+            [
+              0,
+              7,
+              false
+            ],
+            [
+              0,
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "paragraph-left-return",
+          "states": [
+            [
+              4,
+              8,
+              false
+            ],
+            [
+              0,
+              8,
+              false
+            ],
+            [
+              0,
+              8,
+              false
+            ],
+            [
+              0,
+              9,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-tie",
+          "states": [
+            [
+              0,
+              3,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              8,
+              18,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-shift-double",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              4,
+              18,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "character-return-anchor",
+          "states": [
+            [
+              11,
+              11,
+              false
+            ],
+            [
+              1,
+              11,
+              false
+            ],
+            [
+              11,
+              11,
+              false
+            ],
+            [
+              11,
+              11,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-held-all",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              0,
+              15,
+              false
+            ],
+            [
+              0,
+              15,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-held-arrow",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              7,
+              7,
+              false
+            ],
+            [
+              15,
+              15,
+              false
+            ],
+            [
+              15,
+              15,
+              false
+            ]
+          ]
+        }
+      ]
+    },
+    "linux": {
+      "browser": {
+        "protocolVersion": "1.3",
+        "product": "Chrome/153.0.8010.12",
+        "revision": "@971a7443b0c9b0a9b2860529b33331b76077ec62",
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+        "jsVersion": "15.3.76.4"
+      },
+      "results": [
+        {
+          "id": "word-right",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              4,
+              18,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-left",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              0,
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "id": "word-gap-left",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              3,
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "id": "word-gap-right",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              4,
+              14,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-return",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              4,
+              18,
+              false
+            ],
+            [
+              0,
+              7,
+              true
+            ],
+            [
+              4,
+              13,
+              false
+            ],
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              4,
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-forward-drag",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              4,
+              18,
+              false
+            ],
+            [
+              4,
+              18,
+              false
+            ],
+            [
+              0,
+              7,
+              true
+            ],
+            [
+              4,
+              13,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-backward-drag",
+          "states": [
+            [
+              8,
+              13,
+              false
+            ],
+            [
+              0,
+              13,
+              true
+            ],
+            [
+              0,
+              13,
+              true
+            ],
+            [
+              8,
+              18,
+              false
+            ],
+            [
+              4,
+              13,
+              true
+            ]
+          ]
+        },
+        {
+          "id": "word-shift-drag",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              4,
+              18,
+              false
+            ],
+            [
+              0,
+              7,
+              true
+            ],
+            [
+              4,
+              13,
+              false
+            ],
+            [
+              4,
+              13,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-key-barrier",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              7,
+              7,
+              false
+            ],
+            [
+              7,
+              15,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-all-barrier",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              0,
+              11,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-click-barrier",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              11,
+              11,
+              false
+            ],
+            [
+              1,
+              11,
+              true
+            ]
+          ]
+        },
+        {
+          "id": "shift-double",
+          "states": [
+            [
+              6,
+              6,
+              false
+            ],
+            [
+              6,
+              15,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "shift-triple",
+          "states": [
+            [
+              6,
+              6,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "character-left",
+          "states": [
+            [
+              11,
+              11,
+              false
+            ],
+            [
+              1,
+              11,
+              true
+            ],
+            [
+              11,
+              15,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "character-drag",
+          "states": [
+            [
+              11,
+              11,
+              false
+            ],
+            [
+              1,
+              11,
+              true
+            ],
+            [
+              6,
+              11,
+              true
+            ],
+            [
+              11,
+              15,
+              false
+            ],
+            [
+              11,
+              15,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "paragraph-left",
+          "states": [
+            [
+              4,
+              8,
+              false
+            ],
+            [
+              0,
+              8,
+              true
+            ]
+          ]
+        },
+        {
+          "id": "paragraph-right",
+          "states": [
+            [
+              4,
+              8,
+              false
+            ],
+            [
+              4,
+              19,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "paragraph-return",
+          "states": [
+            [
+              4,
+              8,
+              false
+            ],
+            [
+              4,
+              23,
+              false
+            ],
+            [
+              0,
+              8,
+              true
+            ],
+            [
+              4,
+              19,
+              false
+            ],
+            [
+              4,
+              8,
+              false
+            ],
+            [
+              4,
+              9,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "paragraph-drag",
+          "states": [
+            [
+              4,
+              8,
+              false
+            ],
+            [
+              4,
+              19,
+              false
+            ],
+            [
+              4,
+              19,
+              false
+            ],
+            [
+              0,
+              8,
+              true
+            ],
+            [
+              4,
+              23,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "paragraph-shift-drag",
+          "states": [
+            [
+              4,
+              8,
+              false
+            ],
+            [
+              4,
+              23,
+              false
+            ],
+            [
+              0,
+              8,
+              true
+            ],
+            [
+              4,
+              19,
+              false
+            ],
+            [
+              4,
+              19,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "paragraph-key-barrier",
+          "states": [
+            [
+              4,
+              8,
+              false
+            ],
+            [
+              8,
+              8,
+              false
+            ],
+            [
+              8,
+              14,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "readonly-word",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              4,
+              18,
+              false
+            ],
+            [
+              0,
+              7,
+              true
+            ],
+            [
+              4,
+              13,
+              false
+            ],
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              4,
+              8,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "masked-word",
+          "states": [
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "empty-word",
+          "states": [
+            [
+              0,
+              0,
+              false
+            ],
+            [
+              0,
+              0,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "wrapped-paragraph",
+          "states": [
+            [
+              0,
+              19,
+              false
+            ],
+            [
+              0,
+              32,
+              false
+            ],
+            [
+              0,
+              19,
+              false
+            ],
+            [
+              0,
+              20,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-left-return",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              0,
+              7,
+              true
+            ],
+            [
+              4,
+              7,
+              true
+            ],
+            [
+              5,
+              7,
+              true
+            ]
+          ]
+        },
+        {
+          "id": "paragraph-left-return",
+          "states": [
+            [
+              4,
+              8,
+              false
+            ],
+            [
+              0,
+              8,
+              true
+            ],
+            [
+              4,
+              8,
+              true
+            ],
+            [
+              5,
+              8,
+              true
+            ]
+          ]
+        },
+        {
+          "id": "word-tie",
+          "states": [
+            [
+              0,
+              3,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              0,
+              13,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-shift-double",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              4,
+              18,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "character-return-anchor",
+          "states": [
+            [
+              11,
+              11,
+              false
+            ],
+            [
+              1,
+              11,
+              true
+            ],
+            [
+              11,
+              11,
+              false
+            ],
+            [
+              11,
+              11,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-held-all",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              0,
+              18,
+              false
+            ],
+            [
+              0,
+              15,
+              false
+            ],
+            [
+              0,
+              15,
+              false
+            ]
+          ]
+        },
+        {
+          "id": "word-held-arrow",
+          "states": [
+            [
+              4,
+              7,
+              false
+            ],
+            [
+              7,
+              7,
+              false
+            ],
+            [
+              15,
+              15,
+              false
+            ],
+            [
+              15,
+              15,
+              false
+            ]
+          ]
+        }
+      ]
+    }
+  }
+}

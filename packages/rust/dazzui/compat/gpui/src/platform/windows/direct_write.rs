@@ -26,7 +26,10 @@ use crate::*;
 struct FontInfo {
     font_family: String,
     font_face: IDWriteFontFace3,
+    requested_weight: FontWeight,
+    requested_style: FontStyle,
     features: IDWriteTypography,
+    pair_kerning: bool,
     fallbacks: Option<IDWriteFontFallback>,
     is_system_font: bool,
 }
@@ -67,6 +70,8 @@ struct FontIdentifier {
     postscript_name: String,
     weight: i32,
     style: i32,
+    simulations: i32,
+    axes: Vec<(u32, u32)>,
 }
 
 impl DirectWriteComponent {
@@ -432,7 +437,14 @@ impl DirectWriteState {
             let font_info = FontInfo {
                 font_family: family_name.to_owned(),
                 font_face,
+                requested_weight: font_weight,
+                requested_style: font_style,
                 features: direct_write_features,
+                pair_kerning: font_features
+                    .tag_value_list()
+                    .iter()
+                    .find(|(tag, _)| tag.as_str() == "kern")
+                    .is_none_or(|(_, value)| *value != 0),
                 fallbacks,
                 is_system_font,
             };
@@ -575,8 +587,8 @@ impl DirectWriteState {
                     .CreateTextFormat(
                         &HSTRING::from(&font_info.font_family),
                         collection,
-                        font_info.font_face.GetWeight(),
-                        font_info.font_face.GetStyle(),
+                        font_info.requested_weight.into(),
+                        font_info.requested_style.into(),
                         DWRITE_FONT_STRETCH_NORMAL,
                         font_size.0,
                         &HSTRING::from(&self.components.locale),
@@ -586,12 +598,11 @@ impl DirectWriteState {
                     format.SetFontFallback(fallbacks)?;
                 }
 
-                let layout = self.components.factory.CreateTextLayout(
-                    &text_wide,
-                    &format,
-                    f32::INFINITY,
-                    f32::INFINITY,
-                )?;
+                let layout: IDWriteTextLayout1 = self
+                    .components
+                    .factory
+                    .CreateTextLayout(&text_wide, &format, f32::INFINITY, f32::INFINITY)?
+                    .cast()?;
                 let current_text = &text[utf8_offset..(utf8_offset + first_run.len)];
                 utf8_offset += first_run.len;
                 let current_text_utf16_length = current_text.encode_utf16().count() as u32;
@@ -600,6 +611,7 @@ impl DirectWriteState {
                     length: current_text_utf16_length,
                 };
                 layout.SetTypography(&font_info.features, text_range)?;
+                layout.SetPairKerning(font_info.pair_kerning, text_range)?;
                 utf16_offset += current_text_utf16_length;
 
                 layout
@@ -637,9 +649,10 @@ impl DirectWriteState {
                 text_layout
                     .SetFontFamilyName(&HSTRING::from(&font_info.font_family), text_range)?;
                 text_layout.SetFontSize(font_size.0, text_range)?;
-                text_layout.SetFontStyle(font_info.font_face.GetStyle(), text_range)?;
-                text_layout.SetFontWeight(font_info.font_face.GetWeight(), text_range)?;
+                text_layout.SetFontStyle(font_info.requested_style.into(), text_range)?;
+                text_layout.SetFontWeight(font_info.requested_weight.into(), text_range)?;
                 text_layout.SetTypography(&font_info.features, text_range)?;
+                text_layout.SetPairKerning(font_info.pair_kerning, text_range)?;
             }
 
             let mut runs = Vec::new();
@@ -657,12 +670,58 @@ impl DirectWriteState {
             )?;
             let width = px(renderer_context.width);
 
+            let mut carets = Vec::new();
+            if unicode_bidi::BidiInfo::new(text, Some(unicode_bidi::Level::ltr())).has_rtl() {
+                let mut utf16 = 0u32;
+                let mut previous_utf16 = 0u32;
+                for (index, ch) in text
+                    .char_indices()
+                    .map(|(i, ch)| (i, Some(ch)))
+                    .chain([(text.len(), None)])
+                {
+                    let mut leading = width.0;
+                    let mut trailing = 0.;
+                    let mut y = 0.;
+                    let mut before = DWRITE_HIT_TEST_METRICS::default();
+                    let mut after = DWRITE_HIT_TEST_METRICS::default();
+                    if index > 0 {
+                        text_layout.HitTestTextPosition(
+                            previous_utf16,
+                            true,
+                            &mut trailing,
+                            &mut y,
+                            &mut before,
+                        )?;
+                    }
+                    if index < text.len() {
+                        text_layout.HitTestTextPosition(
+                            utf16,
+                            false,
+                            &mut leading,
+                            &mut y,
+                            &mut after,
+                        )?;
+                    }
+                    carets.push(CaretStop::new(
+                        index,
+                        px(leading),
+                        px(trailing),
+                        before.bidiLevel as u8,
+                        after.bidiLevel as u8,
+                    ));
+                    previous_utf16 = utf16;
+                    if let Some(ch) = ch {
+                        utf16 += ch.len_utf16() as u32;
+                    }
+                }
+            }
             Ok(LineLayout {
                 font_size,
                 width,
                 ascent,
                 descent,
                 runs,
+                carets,
                 len: text.len(),
             })
         }
@@ -796,7 +855,8 @@ impl DirectWriteState {
                 .GetGlyphIndices(codepoints.as_ptr(), 1, glyph_indices.as_mut_ptr())
                 .log_err()
         }
-        .map(|_| GlyphId(glyph_indices[0] as u32))
+        // DirectWrite succeeds for absent characters but returns .notdef.
+        .and_then(|_| (glyph_indices[0] != 0).then_some(GlyphId(glyph_indices[0] as u32)))
     }
 
     fn rasterize_glyph(
@@ -903,7 +963,8 @@ impl DirectWriteState {
         }?;
 
         let mut glyph_layers = Vec::new();
-        loop {
+        // The enumerator starts before its first color layer.
+        while unsafe { color_enumerator.MoveNext()? }.as_bool() {
             let color_run = unsafe { color_enumerator.GetCurrentRun() }?;
             let color_run = unsafe { &*color_run };
             let image_format = color_run.glyphImageFormat & !DWRITE_GLYPH_IMAGE_FORMATS_TRUETYPE;
@@ -955,13 +1016,6 @@ impl DirectWriteState {
                         &alpha_data,
                     )?);
                 }
-            }
-
-            let has_next = unsafe { color_enumerator.MoveNext() }
-                .map(|e| e.as_bool())
-                .unwrap_or(false);
-            if !has_next {
-                break;
             }
         }
 
@@ -1139,18 +1193,12 @@ impl DirectWriteState {
             };
         }
 
-        // Convert from premultiplied to straight alpha
+        unsafe { device_context.Unmap(&staging_texture, 0) };
+
+        // The atlas accepts straight BGRA, with the same rounded conversion
+        // as renderer readback and the other native color-font backends.
         for chunk in rasterized.chunks_exact_mut(4) {
-            let b = chunk[0] as f32;
-            let g = chunk[1] as f32;
-            let r = chunk[2] as f32;
-            let a = chunk[3] as f32;
-            if a > 0.0 {
-                let inv_a = 255.0 / a;
-                chunk[0] = (b * inv_a).clamp(0.0, 255.0) as u8;
-                chunk[1] = (g * inv_a).clamp(0.0, 255.0) as u8;
-                chunk[2] = (r * inv_a).clamp(0.0, 255.0) as u8;
-            }
+            crate::unpremultiply_alpha(chunk);
         }
 
         Ok(rasterized)
@@ -1351,60 +1399,20 @@ struct RendererContext<'t, 'a, 'b> {
     width: f32,
 }
 
-#[derive(Debug)]
-struct ClusterAnalyzer<'t> {
-    utf16_idx: usize,
-    glyph_idx: usize,
-    glyph_count: usize,
-    cluster_map: &'t [u16],
-}
-
-impl<'t> ClusterAnalyzer<'t> {
-    pub fn new(cluster_map: &'t [u16], glyph_count: usize) -> Self {
-        ClusterAnalyzer {
-            utf16_idx: 0,
-            glyph_idx: 0,
-            glyph_count,
-            cluster_map,
+fn glyph_source_indices(cluster_map: &[u16], glyph_count: usize) -> Vec<usize> {
+    let mut starts = std::collections::BTreeMap::new();
+    for (index, &glyph) in cluster_map.iter().enumerate() {
+        starts.entry(usize::from(glyph)).or_insert(index);
+    }
+    starts.insert(glyph_count, cluster_map.len());
+    let starts: Vec<_> = starts.into_iter().collect();
+    let mut sources = vec![0; glyph_count];
+    for pair in starts.windows(2) {
+        for source in &mut sources[pair[0].0..pair[1].0] {
+            *source = pair[0].1;
         }
     }
-}
-
-impl Iterator for ClusterAnalyzer<'_> {
-    type Item = (usize, usize);
-
-    fn next(&mut self) -> Option<(usize, usize)> {
-        if self.utf16_idx >= self.cluster_map.len() {
-            return None; // No more clusters
-        }
-        let start_utf16_idx = self.utf16_idx;
-        let current_glyph = self.cluster_map[start_utf16_idx] as usize;
-
-        // Find the end of current cluster (where glyph index changes)
-        let mut end_utf16_idx = start_utf16_idx + 1;
-        while end_utf16_idx < self.cluster_map.len()
-            && self.cluster_map[end_utf16_idx] as usize == current_glyph
-        {
-            end_utf16_idx += 1;
-        }
-
-        let utf16_len = end_utf16_idx - start_utf16_idx;
-
-        // Calculate glyph count for this cluster
-        let next_glyph = if end_utf16_idx < self.cluster_map.len() {
-            self.cluster_map[end_utf16_idx] as usize
-        } else {
-            self.glyph_count
-        };
-
-        let glyph_count = next_glyph - current_glyph;
-
-        // Update state for next call
-        self.utf16_idx = end_utf16_idx;
-        self.glyph_idx = next_glyph;
-
-        Some((utf16_len, glyph_count))
-    }
+    sources
 }
 
 #[allow(non_snake_case)]
@@ -1447,7 +1455,7 @@ impl IDWriteTextRenderer_Impl for TextRenderer_Impl {
     fn DrawGlyphRun(
         &self,
         clientdrawingcontext: *const ::core::ffi::c_void,
-        _baselineoriginx: f32,
+        baselineoriginx: f32,
         _baselineoriginy: f32,
         _measuringmode: DWRITE_MEASURING_MODE,
         glyphrun: *const DWRITE_GLYPH_RUN,
@@ -1480,7 +1488,36 @@ impl IDWriteTextRenderer_Impl for TextRenderer_Impl {
         {
             *id
         } else {
-            context.text_system.select_font(&font_struct)
+            // Retain the exact face DirectWrite shaped, including variable
+            // axes and synthetic styles. Selecting its family again can
+            // rasterize a different outline for the submitted glyph IDs.
+            let features = unsafe { context.text_system.components.factory.CreateTypography()? };
+            unsafe {
+                features.AddFontFeature(make_direct_write_feature("kern", 1))?;
+            }
+            let is_system_font = unsafe {
+                context
+                    .text_system
+                    .system_font_collection
+                    .GetFontFromFontFace(font_face)
+                    .is_ok()
+            };
+            let id = FontId(context.text_system.fonts.len());
+            context.text_system.fonts.push(FontInfo {
+                font_family: font_struct.family.to_string(),
+                font_face: font_face.clone(),
+                requested_weight: font_struct.weight,
+                requested_style: font_struct.style,
+                features,
+                pair_kerning: true,
+                fallbacks: None,
+                is_system_font,
+            });
+            context
+                .text_system
+                .font_id_by_identifier
+                .insert(font_identifier, id);
+            id
         };
 
         let glyph_ids = unsafe { std::slice::from_raw_parts(glyphrun.glyphIndices, glyph_count) };
@@ -1491,35 +1528,32 @@ impl IDWriteTextRenderer_Impl for TextRenderer_Impl {
         let cluster_map =
             unsafe { std::slice::from_raw_parts(desc.clusterMap, desc.stringLength as usize) };
 
-        let mut cluster_analyzer = ClusterAnalyzer::new(cluster_map, glyph_count);
-        let mut utf16_idx = desc.textPosition as usize;
-        let mut glyph_idx = 0;
+        let sources = glyph_source_indices(cluster_map, glyph_count);
+        let rtl = glyphrun.bidiLevel % 2 != 0;
+        let mut advance = 0.;
         let mut glyphs = Vec::with_capacity(glyph_count);
-        for (cluster_utf16_len, cluster_glyph_count) in cluster_analyzer {
-            context.index_converter.advance_to_utf16_ix(utf16_idx);
-            utf16_idx += cluster_utf16_len;
-            for (cluster_glyph_idx, glyph_id) in glyph_ids
-                [glyph_idx..(glyph_idx + cluster_glyph_count)]
-                .iter()
-                .enumerate()
-            {
-                let id = GlyphId(*glyph_id as u32);
-                let is_emoji = color_font
-                    && is_color_glyph(font_face, id, &context.text_system.components.factory);
-                let this_glyph_idx = glyph_idx + cluster_glyph_idx;
-                glyphs.push(ShapedGlyph {
-                    id,
-                    position: point(
-                        px(context.width + glyph_offsets[this_glyph_idx].advanceOffset),
-                        px(0.0),
-                    ),
-                    index: context.index_converter.utf8_ix,
-                    is_emoji,
-                });
-                context.width += glyph_advances[this_glyph_idx];
-            }
-            glyph_idx += cluster_glyph_count;
+        for (index, &glyph_id) in glyph_ids.iter().enumerate() {
+            context
+                .index_converter
+                .advance_to_utf16_ix(desc.textPosition as usize + sources[index]);
+            let id = GlyphId(glyph_id as u32);
+            let is_emoji = color_font
+                && is_color_glyph(font_face, id, &context.text_system.components.factory);
+            let offset = glyph_offsets[index].advanceOffset;
+            let x = if rtl {
+                baselineoriginx - advance - glyph_advances[index] - offset
+            } else {
+                baselineoriginx + advance + offset
+            };
+            glyphs.push(ShapedGlyph {
+                id,
+                position: point(px(x), px(-glyph_offsets[index].ascenderOffset)),
+                index: context.index_converter.utf8_ix,
+                is_emoji,
+            });
+            advance += glyph_advances[index];
         }
+        context.width += advance;
         context.runs.push(ShapedRun { font_id, glyphs });
         Ok(())
     }
@@ -1597,6 +1631,10 @@ impl<'a> StringIndexConverter<'a> {
     }
 
     fn advance_to_utf16_ix(&mut self, utf16_target: usize) {
+        if utf16_target < self.utf16_ix {
+            self.utf8_ix = 0;
+            self.utf16_ix = 0;
+        }
         for (ix, c) in self.text[self.utf8_ix..].char_indices() {
             if self.utf16_ix >= utf16_target {
                 self.utf8_ix += ix;
@@ -1669,16 +1707,11 @@ fn get_font_identifier_and_font_struct(
     font_face: &IDWriteFontFace3,
     locale: &str,
 ) -> Option<(FontIdentifier, Font, bool)> {
-    let postscript_name = get_postscript_name(font_face, locale).log_err()?;
+    let identifier = get_font_identifier(font_face, locale)?;
     let localized_family_name = unsafe { font_face.GetFamilyNames().log_err() }?;
     let family_name = get_name(localized_family_name, locale).log_err()?;
     let weight = unsafe { font_face.GetWeight() };
     let style = unsafe { font_face.GetStyle() };
-    let identifier = FontIdentifier {
-        postscript_name,
-        weight: weight.0,
-        style: style.0,
-    };
     let font_struct = Font {
         family: family_name.into(),
         features: FontFeatures::default(),
@@ -1694,12 +1727,30 @@ fn get_font_identifier_and_font_struct(
 fn get_font_identifier(font_face: &IDWriteFontFace3, locale: &str) -> Option<FontIdentifier> {
     let weight = unsafe { font_face.GetWeight().0 };
     let style = unsafe { font_face.GetStyle().0 };
+    let simulations = unsafe { font_face.GetSimulations().0 };
+    let mut axes = Vec::new();
+    if let Ok(face) = font_face.cast::<IDWriteFontFace5>() {
+        let mut values = vec![
+            DWRITE_FONT_AXIS_VALUE::default();
+            unsafe { face.GetFontAxisValueCount() } as usize
+        ];
+        if unsafe { face.GetFontAxisValues(&mut values) }.is_ok() {
+            axes.extend(
+                values
+                    .into_iter()
+                    .map(|axis| (axis.axisTag.0, axis.value.to_bits())),
+            );
+            axes.sort_unstable();
+        }
+    }
     get_postscript_name(font_face, locale)
         .log_err()
         .map(|postscript_name| FontIdentifier {
             postscript_name,
             weight,
             style,
+            simulations,
+            axes,
         })
 }
 
@@ -1727,6 +1778,11 @@ fn apply_font_features(
     features: &FontFeatures,
 ) -> Result<()> {
     let tag_values = features.tag_value_list();
+    if !tag_values.iter().any(|(tag, _)| tag.as_str() == "kern") {
+        unsafe {
+            direct_write_features.AddFontFeature(make_direct_write_feature("kern", 1))?;
+        }
+    }
     if tag_values.is_empty() {
         return Ok(());
     }
@@ -1882,42 +1938,26 @@ const DEFAULT_LOCALE_NAME: PCWSTR = windows::core::w!("en-US");
 
 #[cfg(test)]
 mod tests {
-    use crate::platform::windows::direct_write::ClusterAnalyzer;
+    use super::{StringIndexConverter, glyph_source_indices};
 
     #[test]
-    fn test_cluster_map() {
-        let cluster_map = [0];
-        let mut analyzer = ClusterAnalyzer::new(&cluster_map, 1);
-        let next = analyzer.next();
-        assert_eq!(next, Some((1, 1)));
-        let next = analyzer.next();
-        assert_eq!(next, None);
+    fn glyph_clusters_support_both_logical_orders_and_multi_glyph_clusters() {
+        assert_eq!(glyph_source_indices(&[0], 1), vec![0]);
+        assert_eq!(glyph_source_indices(&[0, 1, 2], 3), vec![0, 1, 2]);
+        assert_eq!(
+            glyph_source_indices(&[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4], 5),
+            vec![0, 0, 0, 0, 11]
+        );
+        assert_eq!(glyph_source_indices(&[2, 1, 0], 3), vec![2, 1, 0]);
+        assert_eq!(glyph_source_indices(&[3, 3, 1, 0], 4), vec![3, 2, 2, 0]);
+    }
 
-        let cluster_map = [0, 1, 2];
-        let mut analyzer = ClusterAnalyzer::new(&cluster_map, 3);
-        let next = analyzer.next();
-        assert_eq!(next, Some((1, 1)));
-        let next = analyzer.next();
-        assert_eq!(next, Some((1, 1)));
-        let next = analyzer.next();
-        assert_eq!(next, Some((1, 1)));
-        let next = analyzer.next();
-        assert_eq!(next, None);
-        // 👨‍👩‍👧‍👦👩‍💻
-        let cluster_map = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4];
-        let mut analyzer = ClusterAnalyzer::new(&cluster_map, 5);
-        let next = analyzer.next();
-        assert_eq!(next, Some((11, 4)));
-        let next = analyzer.next();
-        assert_eq!(next, Some((5, 1)));
-        let next = analyzer.next();
-        assert_eq!(next, None);
-        // 👩‍💻
-        let cluster_map = [0, 0, 0, 0, 0];
-        let mut analyzer = ClusterAnalyzer::new(&cluster_map, 1);
-        let next = analyzer.next();
-        assert_eq!(next, Some((5, 1)));
-        let next = analyzer.next();
-        assert_eq!(next, None);
+    #[test]
+    fn source_indices_can_seek_back_between_visual_runs() {
+        let mut index = StringIndexConverter::new("abאבcd");
+        for (utf16, utf8) in [(4, 6), (2, 2), (5, 7), (0, 0)] {
+            index.advance_to_utf16_ix(utf16);
+            assert_eq!(index.utf8_ix, utf8);
+        }
     }
 }

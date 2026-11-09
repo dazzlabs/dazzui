@@ -5,6 +5,8 @@ cbuffer GlobalParams: register(b0) {
     float2 global_viewport_size;
     float grayscale_enhanced_contrast;
     uint _pad;
+    float2 path_texture_size;
+    uint2 _pad2;
 };
 
 Texture2D<float4> t_sprite: register(t0);
@@ -247,6 +249,14 @@ float2 to_tile_position(float2 unit_vertex, AtlasTile tile) {
     float2 atlas_size;
     t_sprite.GetDimensions(atlas_size.x, atlas_size.y);
     return (float2(tile.bounds.origin) + unit_vertex * float2(tile.bounds.size)) / atlas_size;
+}
+
+float2 clamp_tile_position(float2 position, AtlasTile tile) {
+    float2 atlas_size;
+    t_sprite.GetDimensions(atlas_size.x, atlas_size.y);
+    float2 first = (float2(tile.bounds.origin) + 0.5) / atlas_size;
+    float2 last = (float2(tile.bounds.origin + tile.bounds.size) - 0.5) / atlas_size;
+    return clamp(position, first, last);
 }
 
 // Selects corner radius based on quadrant.
@@ -978,7 +988,7 @@ PathSpriteVertexOutput path_sprite_vertex(uint vertex_id: SV_VertexID, uint spri
     float4 device_position = to_device_position(unit_vertex, sprite.bounds);
 
     float2 screen_position = sprite.bounds.origin + unit_vertex * sprite.bounds.size;
-    float2 texture_coords = screen_position / global_viewport_size;
+    float2 texture_coords = screen_position / path_texture_size;
 
     PathSpriteVertexOutput output;
     output.position = device_position;
@@ -1081,6 +1091,7 @@ struct MonochromeSprite {
 };
 
 struct MonochromeSpriteVertexOutput {
+    nointerpolation uint sprite_id: TEXCOORD0;
     float4 position: SV_Position;
     float2 tile_position: POSITION;
     nointerpolation float4 color: COLOR;
@@ -1088,6 +1099,7 @@ struct MonochromeSpriteVertexOutput {
 };
 
 struct MonochromeSpriteFragmentInput {
+    nointerpolation uint sprite_id: TEXCOORD0;
     float4 position: SV_Position;
     float2 tile_position: POSITION;
     nointerpolation float4 color: COLOR;
@@ -1106,6 +1118,7 @@ MonochromeSpriteVertexOutput monochrome_sprite_vertex(uint vertex_id: SV_VertexI
     float4 color = hsla_to_rgba(sprite.color);
 
     MonochromeSpriteVertexOutput output;
+    output.sprite_id = sprite_id;
     output.position = device_position;
     output.tile_position = tile_position;
     output.color = color;
@@ -1114,7 +1127,8 @@ MonochromeSpriteVertexOutput monochrome_sprite_vertex(uint vertex_id: SV_VertexI
 }
 
 float4 monochrome_sprite_fragment(MonochromeSpriteFragmentInput input): SV_Target {
-    float sample = t_sprite.Sample(s_sprite, input.tile_position).r;
+    float2 uv = clamp_tile_position(input.tile_position, mono_sprites[input.sprite_id].tile);
+    float sample = t_sprite.Sample(s_sprite, uv).r;
     float alpha_corrected = apply_contrast_and_gamma_correction(sample, input.color.rgb, grayscale_enhanced_contrast, gamma_ratios);
     return float4(input.color.rgb, input.color.a * alpha_corrected);
 }
@@ -1169,14 +1183,119 @@ PolychromeSpriteVertexOutput polychrome_sprite_vertex(uint vertex_id: SV_VertexI
 
 float4 polychrome_sprite_fragment(PolychromeSpriteFragmentInput input): SV_Target {
     PolychromeSprite sprite = poly_sprites[input.sprite_id];
-    float4 sample = t_sprite.Sample(s_sprite, input.tile_position);
+    float2 uv = clamp_tile_position(input.tile_position, sprite.tile);
+    float4 sample = t_sprite.Sample(s_sprite, uv);
     float distance = quad_sdf(input.position.xy, sprite.bounds, sprite.corner_radii);
 
     float4 color = sample;
+    color.rgb = color.a > 0.0 ? color.rgb / color.a : float3(0.0, 0.0, 0.0);
     if ((sprite.grayscale & 0xFFu) != 0u) {
         float3 grayscale = dot(color.rgb, GRAYSCALE_FACTORS);
         color = float4(grayscale, sample.a);
     }
     color.a *= sprite.opacity * saturate(0.5 - distance);
     return color;
+}
+
+// Isolated subtree pixels are premultiplied. Apply group opacity once.
+float ellipse_corner_distance(float2 delta, float2 radii) {
+  if (radii.x == radii.y) return length(delta) - radii.x;
+  float2 normalized = delta / radii;
+  float implicit = dot(normalized, normalized) - 1.0;
+  float gradient = 2.0 * length(delta / (radii * radii));
+  return gradient > 0.0 ? implicit / gradient : -min(radii.x, radii.y);
+}
+float elliptical_clip_distance(float2 position, Bounds bounds,
+                              Corners rx, Corners ry) {
+  float2 p = position - float2(bounds.origin.x, bounds.origin.y);
+  float2 size = float2(bounds.size.x, bounds.size.y);
+  float distance = max(max(-p.x, -p.y), max(p.x - size.x, p.y - size.y));
+  float2 r = float2(rx.top_left, ry.top_left);
+  if (all(r > 0.0) && p.x < r.x && p.y < r.y)
+    distance = max(distance, ellipse_corner_distance(p - r, r));
+  r = float2(rx.top_right, ry.top_right);
+  if (all(r > 0.0) && p.x > size.x - r.x && p.y < r.y)
+    distance = max(distance, ellipse_corner_distance(p - float2(size.x - r.x, r.y), r));
+  r = float2(rx.bottom_right, ry.bottom_right);
+  if (all(r > 0.0) && p.x > size.x - r.x && p.y > size.y - r.y)
+    distance = max(distance, ellipse_corner_distance(p - (size - r), r));
+  r = float2(rx.bottom_left, ry.bottom_left);
+  if (all(r > 0.0) && p.x < r.x && p.y > size.y - r.y)
+    distance = max(distance, ellipse_corner_distance(p - float2(r.x, size.y - r.y), r));
+  return distance;
+}
+
+
+struct CompositeInstance {
+    Bounds bounds;
+    Bounds content_mask;
+    Corners corner_radii;
+    Corners corner_radii_y;
+    TransformationMatrix transformation;
+    float2 source_origin;
+    float opacity;
+};
+StructuredBuffer<CompositeInstance> composites: register(t1);
+struct CompositeVertexOutput {
+    nointerpolation uint instance_id: TEXCOORD0;
+    float4 position: SV_Position;
+    float2 local_position: TEXCOORD1;
+    float2 texture_position: TEXCOORD2;
+    float4 clip_distance: SV_ClipDistance;
+};
+CompositeVertexOutput composite_vertex(uint vertex_id: SV_VertexID, uint instance_id: SV_InstanceID) {
+    float2 unit = float2(float(vertex_id & 1u), 0.5 * float(vertex_id & 2u));
+    CompositeInstance layer = composites[instance_id];
+    CompositeVertexOutput output;
+    output.instance_id = instance_id;
+    output.position = to_device_position_transformed(unit, layer.bounds, layer.transformation);
+    output.local_position = layer.bounds.origin + unit * layer.bounds.size;
+    output.texture_position = output.local_position - layer.source_origin;
+    output.clip_distance = distance_from_clip_rect_transformed(unit, layer.bounds, layer.content_mask, layer.transformation);
+    return output;
+}
+float4 composite_fragment(CompositeVertexOutput input): SV_Target {
+    CompositeInstance layer = composites[input.instance_id];
+    float distance = elliptical_clip_distance(input.local_position, layer.bounds, layer.corner_radii, layer.corner_radii_y);
+    float2 texture_size;
+    t_sprite.GetDimensions(texture_size.x, texture_size.y);
+    return t_sprite.Sample(s_sprite, input.texture_position / texture_size)
+        * (layer.opacity * saturate(0.5 - distance));
+}
+
+// FillRRectOp coverage mesh; see the crate-root LICENSE-SKIA for source licensing.
+struct SolidRRectVertex {
+    float2 position;
+    float2 arc;
+    float2 gradient;
+    Hsla color;
+    Bounds content_mask;
+    uint hardware_derivatives;
+    uint pad;
+};
+StructuredBuffer<SolidRRectVertex> solid_rrect_vertices: register(t1);
+struct SolidCompositeOutput {
+    float4 position: SV_Position;
+    float4 arc: TEXCOORD0;
+    nointerpolation float4 color: COLOR0;
+    nointerpolation uint hardware_derivatives: TEXCOORD1;
+    float4 clip_distance: SV_ClipDistance;
+};
+SolidCompositeOutput solid_composite_vertex(uint vertex_id: SV_VertexID) {
+    SolidRRectVertex vertex = solid_rrect_vertices[vertex_id];
+    SolidCompositeOutput output;
+    output.position = to_device_position_impl(vertex.position);
+    output.arc = float4(vertex.arc, vertex.gradient);
+    output.color = hsla_to_rgba(vertex.color);
+    output.hardware_derivatives = vertex.hardware_derivatives;
+    output.clip_distance = distance_from_clip_rect_impl(vertex.position, vertex.content_mask);
+    return output;
+}
+float4 solid_composite_fragment(SolidCompositeOutput input): SV_Target {
+    float fn = input.arc.x * (input.arc.x - 2.0) + input.arc.y * input.arc.y;
+    float width = fwidth(fn);
+    if (input.hardware_derivatives == 0) width = abs(input.arc.z) + abs(input.arc.w);
+    float coverage = input.arc.x == 0.0 ? input.arc.y : saturate(0.5 - fn / max(width, 0.000001));
+    float alpha = input.color.a * coverage;
+    return float4(input.color.rgb * alpha, alpha);
 }

@@ -15,11 +15,22 @@ pub fn text_runs(
     size: Pixels,
     window: &Window,
 ) -> Vec<gpui::TextRun> {
-    #[cfg(any(target_os = "linux", target_os = "macos"))]
-    return crate::platform_fonts::runs(text, style, size, window);
-    #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+    text_runs_with_system(text, style, size, window.text_system())
+}
+
+/// Resolve the kit's font stack using the native text system without a window.
+/// Font measurement tools use the same fallback path as rendered controls.
+pub fn text_runs_with_system(
+    text: &str,
+    style: &gpui::TextStyle,
+    size: Pixels,
+    system: &gpui::TextSystem,
+) -> Vec<gpui::TextRun> {
+    #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
+    return crate::platform_fonts::runs(text, style, size, system);
+    #[cfg(not(any(target_os = "linux", target_os = "macos", target_os = "windows")))]
     {
-        let _ = (size, window);
+        let _ = (size, system);
         vec![style.to_run(text.len())]
     }
 }

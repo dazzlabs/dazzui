@@ -4,7 +4,7 @@ import { test } from 'node:test'
 import { chromium } from 'playwright'
 import { createServer } from 'vite'
 
-test('multiline rows keep a viewport with caret reveal and nested wheel scrolling', async () => {
+test('multiline rows keep a viewport with caret reveal and nested wheel scrolling', async t => {
   const server = await createServer({
     root: fileURLToPath(new URL('..', import.meta.url)),
     cacheDir: 'node_modules/.vite-test-text-field-scroll',
@@ -43,8 +43,8 @@ test('multiline rows keep a viewport with caret reveal and nested wheel scrollin
       window.textFieldScroll.mount()
     })
     const input = page.locator('#text-field-scroll textarea')
-    const measure = () =>
-      input.evaluate(n => ({
+    const measure = (target = input) =>
+      target.evaluate(n => ({
         height: n.getBoundingClientRect().height,
         top: n.scrollTop,
         max: n.scrollHeight - n.clientHeight,
@@ -54,28 +54,87 @@ test('multiline rows keep a viewport with caret reveal and nested wheel scrollin
     const text = Array.from({ length: 20 }, (_, i) => `Line ${i + 1}`).join(
       '\n'
     )
+    // Native caret metrics depend on the host font. Keep the exact browser
+    // behavior as the oracle, independently of the component's event wiring.
+    await input.evaluate(n => {
+      const native = document.createElement('textarea')
+      native.id = 'native-scroll-oracle'
+      const style = getComputedStyle(n)
+      for (const property of style) {
+        if (!property.startsWith('--'))
+          native.style.setProperty(property, style.getPropertyValue(property))
+      }
+      Object.assign(native.style, {
+        position: 'fixed',
+        top: '16px',
+        right: '16px',
+      })
+      document.body.append(native)
+    })
+    const native = page.locator('#native-scroll-oracle')
+    await native.fill(text)
+    const nativeEnd = await measure(native)
     await input.fill(text)
     const end = await measure()
     assert.equal(end.height, 80)
-    assert.equal(end.top, 314)
+    assert.deepEqual(
+      end,
+      nativeEnd,
+      'caret reveal matches the same styled native textarea'
+    )
     assert.equal(end.max, 326)
-    await input.press(
+    t.diagnostic(
+      `native caret scroll=${nativeEnd.top}, viewport=${end.height}, max=${end.max}`
+    )
+    const press = async key => {
+      const before = await measure()
+      const replay = async target => {
+        await target.focus()
+        await target.evaluate((n, before) => {
+          n.setSelectionRange(...before.selection)
+          n.scrollTop = before.top
+        }, before)
+        await page.keyboard.press(key)
+        return measure(target)
+      }
+      const expected = await replay(native)
+      assert.deepEqual(
+        await replay(input),
+        expected,
+        `${key} matches native caret reveal`
+      )
+      return expected
+    }
+    const start = await press(
       process.platform === 'darwin' ? 'Meta+ArrowUp' : 'Control+Home'
     )
-    assert.equal((await measure()).top, 0)
-    await input.press(process.platform === 'darwin' ? 'Meta+a' : 'Control+a')
-    assert.equal((await measure()).top, 0)
-    await input.press('ArrowLeft')
+    t.diagnostic(`native document-start scroll=${start.top}`)
+    assert.deepEqual(start.selection, [0, 0])
+    assert.equal(
+      (await press(process.platform === 'darwin' ? 'Meta+a' : 'Control+a')).top,
+      start.top
+    )
+    await press('ArrowLeft')
     await input.hover()
     await page.mouse.wheel(0, 60)
     await page.waitForFunction(
-      () =>
-        document.querySelector('#text-field-scroll textarea').scrollTop === 60
+      top =>
+        document.querySelector('#text-field-scroll textarea').scrollTop === top,
+      start.top + 60
     )
     assert.deepEqual((await measure()).selection, [0, 0])
     assert.equal((await measure()).page, 0)
-    await input.press('ArrowRight')
-    assert.equal((await measure()).top, 0)
+    assert.equal((await press('ArrowRight')).top, start.top)
+    await page.mouse.wheel(0, 7)
+    await page.waitForFunction(
+      top =>
+        document.querySelector('#text-field-scroll textarea').scrollTop === top,
+      start.top + 7
+    )
+    const nearStart = await press(
+      process.platform === 'darwin' ? 'Meta+ArrowUp' : 'Control+Home'
+    )
+    t.diagnostic(`native near-start navigation scroll=${nearStart.top}`)
     await page.mouse.wheel(0, 10000)
     await page.waitForFunction(
       () =>
@@ -86,6 +145,29 @@ test('multiline rows keep a viewport with caret reveal and nested wheel scrollin
     await page.waitForFunction(
       () => document.getElementById('scroll-parent').scrollTop > 0
     )
+    await input.evaluate(n => {
+      document.getElementById('scroll-parent').scrollTop = 0
+      n.focus()
+      n.setSelectionRange(0, 0)
+      n.scrollTop = 40
+    })
+    await native.evaluate(n => {
+      n.setSelectionRange(0, 0)
+      n.scrollTop = 40
+    })
+    for (const target of [native, input]) {
+      const box = await target.boundingBox()
+      await page.mouse.move(box.x + box.width - 3, box.y + box.height - 3)
+      await page.mouse.down()
+      await page.mouse.move(box.x + box.width - 3, box.y + box.height + 41)
+      await page.mouse.up()
+      const resized = await measure(target)
+      assert.equal(resized.height, 124)
+      assert.equal(resized.top, 40, 'dragging the grip retains manual scroll')
+    }
+    const resizedStart = await press('ArrowRight')
+    assert.equal(resizedStart.top, start.top)
+    t.diagnostic(`native post-resize caret scroll=${resizedStart.top}`)
     for (const props of [{ readOnly: true }, { disabled: true }]) {
       await page.evaluate(
         ({ props, text }) =>

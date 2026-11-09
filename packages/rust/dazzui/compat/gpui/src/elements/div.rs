@@ -1678,21 +1678,47 @@ impl Interactivity {
                 }
 
                 window.with_text_style(style.text_style().cloned(), |window| {
-                    window.with_content_mask(
-                        style.overflow_mask(bounds, window.rem_size()),
-                        |window| {
-                            let hitbox = if self.should_insert_hitbox(&style, window, cx) {
-                                Some(window.insert_hitbox(bounds, self.hitbox_behavior))
-                            } else {
-                                None
-                            };
-
+                    let input_bounds =
+                        Style::layout_unit_bounds(window.unrounded_paint_bounds(bounds));
+                    let curve_bounds = Style::pixel_snapped_bounds(input_bounds);
+                    // The element's border is interactive independently of its
+                    // padding-edge overflow clip. Only descendants inherit it.
+                    let hitbox = if self.should_insert_hitbox(&style, window, cx) {
+                        let radii = style
+                            .border_corner_radii(curve_bounds, window.rem_size())
+                            .map(|r| crate::size(*r, *r));
+                        Some(
+                            window.with_rounded_input_mask(curve_bounds, radii, |window| {
+                                window.insert_hitbox(input_bounds, self.hitbox_behavior)
+                            }),
+                        )
+                    } else {
+                        None
+                    };
+                    let mask = style.overflow_mask_with_parent(
+                        input_bounds,
+                        window.rem_size(),
+                        window.content_mask().bounds,
+                    );
+                    let curve_mask = style.paint_overflow_mask(
+                        input_bounds,
+                        window.rem_size(),
+                        window.content_mask().bounds,
+                    );
+                    let radii = style.paint_overflow_corner_radii(input_bounds, window.rem_size());
+                    window.with_content_mask(mask.clone(), |window| {
+                        let draw = |window: &mut Window| {
                             let scroll_offset =
                                 self.clamp_scroll_position(bounds, &style, window, cx);
                             let result = f(&style, scroll_offset, hitbox, window, cx);
                             (result, element_state)
-                        },
-                    )
+                        };
+                        if let Some(mask) = curve_mask {
+                            window.with_rounded_input_mask(mask.bounds, radii, draw)
+                        } else {
+                            draw(window)
+                        }
+                    })
                 })
             },
         )
@@ -1835,21 +1861,14 @@ impl Interactivity {
                 window.with_element_opacity(style.opacity, |window| {
                     style.paint(bounds, window, cx, |window: &mut Window, cx: &mut App| {
                         window.with_text_style(style.text_style().cloned(), |window| {
-                            let mask = style.overflow_mask(bounds, window.rem_size());
-                            let radii = style
-                                .corner_radii
-                                .to_pixels(window.rem_size())
-                                .clamp_radii_for_quad_size(bounds.size);
-                            // Overflow clips at the padding edge, inside the border.
-                            let inset = mask
-                                .as_ref()
-                                .map(|mask| {
-                                    (bounds.size.width - mask.bounds.size.width)
-                                        .max(bounds.size.height - mask.bounds.size.height)
-                                        / 2.0
-                                })
-                                .unwrap_or(px(0.));
-                            let radii = radii.map(|radius| (*radius - inset).max(px(0.)));
+                            let paint_bounds = window.unrounded_paint_bounds(bounds);
+                            let mask = style.paint_overflow_mask(
+                                paint_bounds,
+                                window.rem_size(),
+                                window.content_mask().bounds,
+                            );
+                            let radii =
+                                style.paint_overflow_corner_radii(paint_bounds, window.rem_size());
                             window.with_rounded_content_mask(mask, radii, |window| {
                                 window.with_tab_group(tab_group, |window| {
                                     if let Some(hitbox) = hitbox {

@@ -512,7 +512,12 @@ impl HitboxId {
     /// `is_hovered` should be used. See the documentation of `Hitbox::is_hovered` for details about
     /// this distinction.
     pub fn should_handle_scroll(self, window: &Window) -> bool {
-        window.mouse_hit_test.ids.contains(&self)
+        window
+            .scroll_hit_test
+            .as_ref()
+            .unwrap_or(&window.mouse_hit_test)
+            .ids
+            .contains(&self)
     }
 
     fn next(mut self) -> HitboxId {
@@ -533,6 +538,76 @@ pub struct Hitbox {
     pub content_mask: ContentMask<Pixels>,
     /// Flags that specify hitbox behavior.
     pub behavior: HitboxBehavior,
+    pub(crate) rounded_mask: Option<Arc<RoundedHitClip>>,
+}
+
+/// A persistent chain shared by hitboxes and cached views. Each clip keeps
+/// the transform in effect when it was established, rather than the child's.
+#[derive(Clone, Debug, PartialEq)]
+pub(crate) struct RoundedHitClip {
+    bounds: Bounds<Pixels>,
+    radii: Corners<Size<Pixels>>,
+    inverse: TransformationMatrix,
+    parent: Option<Arc<RoundedHitClip>>,
+}
+
+impl RoundedHitClip {
+    fn intersects(&self, aperture: Bounds<Pixels>) -> bool {
+        let query = self.inverse.apply_bounds(aperture);
+        // Rounded geometry uses inclusive quad intersection, even when a
+        // snapped clip collapses to a line. The hitbox's layout rectangle is
+        // checked separately and keeps its ordinary nonempty intersection.
+        if query.right() < self.bounds.left()
+            || query.left() > self.bounds.right()
+            || query.bottom() < self.bounds.top()
+            || query.top() > self.bounds.bottom()
+        {
+            return false;
+        }
+        let query = query.intersect(&self.bounds);
+        // A point hit in Chromium carries a 1x1 layout-pixel query rectangle.
+        // For a corner query, its nearest point to the ellipse center decides
+        // intersection. Crossing a tangent enters the straight interior.
+        for (r, left, top) in [
+            (self.radii.top_left, true, true),
+            (self.radii.top_right, false, true),
+            (self.radii.bottom_right, false, false),
+            (self.radii.bottom_left, true, false),
+        ] {
+            if r.width <= px(0.) || r.height <= px(0.) {
+                continue;
+            }
+            let x = if left {
+                query.right() - self.bounds.left()
+            } else {
+                self.bounds.right() - query.left()
+            };
+            let y = if top {
+                query.bottom() - self.bounds.top()
+            } else {
+                self.bounds.bottom() - query.top()
+            };
+            if x < r.width && y < r.height {
+                let dx = (r.width - x) / r.width;
+                let dy = (r.height - y) / r.height;
+                if dx * dx + dy * dy > 1. {
+                    return false;
+                }
+            }
+        }
+        true
+    }
+
+    fn chain_intersects(&self, aperture: Bounds<Pixels>) -> bool {
+        let mut mask = Some(self);
+        while let Some(clip) = mask {
+            if !clip.intersects(aperture) {
+                return false;
+            }
+            mask = clip.parent.as_deref();
+        }
+        true
+    }
 }
 
 impl Hitbox {
@@ -775,9 +850,18 @@ impl Frame {
     pub(crate) fn hit_test(&self, position: Point<Pixels>) -> HitTest {
         let mut set_hover_hitbox_count = false;
         let mut hit_test = HitTest::default();
+        // Mouse event targeting rounds to LayoutUnit before constructing its
+        // aperture. Keep the event's original coordinates for callbacks.
+        let position = position.map(|v| px((v.0 * 64.).round() / 64.));
+        let aperture = Bounds::new(position, size(px(1.), px(1.)));
         for hitbox in self.hitboxes.iter().rev() {
             let bounds = hitbox.bounds.intersect(&hitbox.content_mask.bounds);
-            if bounds.contains(&position) {
+            if !bounds.intersect(&aperture).is_empty()
+                && hitbox
+                    .rounded_mask
+                    .as_ref()
+                    .is_none_or(|clip| clip.chain_intersects(aperture))
+            {
                 hit_test.ids.push(hitbox.id);
                 if !set_hover_hitbox_count
                     && hitbox.behavior == HitboxBehavior::BlockMouseExceptScroll
@@ -904,8 +988,10 @@ pub struct Window {
     pub(crate) text_style_stack: Vec<TextStyleRefinement>,
     pub(crate) rendered_entity_stack: Vec<EntityId>,
     pub(crate) element_offset_stack: Vec<Point<Pixels>>,
+    unrounded_bounds: Option<(Bounds<Pixels>, Bounds<Pixels>)>,
     pub(crate) element_opacity: f32,
     pub(crate) input_transform: TransformationMatrix,
+    pub(crate) rounded_input_mask: Option<Arc<RoundedHitClip>>,
     paint_observations: Vec<PaintObservation>,
     pub(crate) content_mask_stack: Vec<ContentMask<Pixels>>,
     pub(crate) requested_autoscroll: Option<Bounds<Pixels>>,
@@ -922,6 +1008,7 @@ pub struct Window {
     default_prevented: bool,
     mouse_position: Point<Pixels>,
     mouse_hit_test: HitTest,
+    scroll_hit_test: Option<HitTest>,
     modifiers: Modifiers,
     capslock: Capslock,
     scale_factor: f32,
@@ -1290,9 +1377,11 @@ impl Window {
             text_style_stack: Vec::new(),
             rendered_entity_stack: Vec::new(),
             element_offset_stack: Vec::new(),
+            unrounded_bounds: None,
             content_mask_stack: Vec::new(),
             element_opacity: 1.0,
             input_transform: TransformationMatrix::unit(),
+            rounded_input_mask: None,
             paint_observations: Vec::new(),
             requested_autoscroll: None,
             rendered_frame: Frame::new(DispatchTree::new(cx.keymap.clone(), cx.actions.clone())),
@@ -1307,6 +1396,7 @@ impl Window {
             default_prevented: true,
             mouse_position,
             mouse_hit_test: HitTest::default(),
+            scroll_hit_test: None,
             modifiers,
             capslock,
             scale_factor,
@@ -1341,8 +1431,11 @@ impl Window {
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
-pub(crate) struct DispatchEventResult {
+/// Whether a dispatched platform event propagates or keeps its default action.
+pub struct DispatchEventResult {
+    /// The event may continue to another handler.
     pub propagate: bool,
+    /// A handler consumed the event's default behavior.
     pub default_prevented: bool,
 }
 
@@ -2208,6 +2301,14 @@ impl Window {
         profiling::finish_frame!();
     }
 
+    /// Render the most recently laid-out scene into a straight-alpha sRGB image.
+    /// This diagnostic operation waits for the GPU and captures only this
+    /// window's own content. Backends without readback support return an error.
+    pub fn capture_scene(&self) -> Result<image::RgbaImage> {
+        self.platform_window
+            .capture_scene(&self.rendered_frame.scene)
+    }
+
     fn draw_roots(&mut self, cx: &mut App) {
         self.invalidator.set_phase(DrawPhase::Prepaint);
         self.tooltip_bounds.take();
@@ -2639,10 +2740,9 @@ impl Window {
             return f(self);
         };
 
-        #[cfg(all(target_os = "macos", not(feature = "macos-blade")))]
         if self.invalidator.inner.borrow().draw_phase == DrawPhase::Paint && opacity < 1.0 {
             return self.paint_composite(
-                Bounds::new(Point::default(), self.viewport_size()),
+                self.content_mask().bounds,
                 Corners::default(),
                 opacity,
                 TransformationMatrix::unit(),
@@ -2658,9 +2758,8 @@ impl Window {
     }
 
     /// Scale a subtree around a window-relative origin without changing layout.
-    /// Call with the same values during both prepaint and paint. Metal composes
+    /// Call with the same values during both prepaint and paint. The renderers compose
     /// the entire subtree; its hitboxes, pointer events and IME boxes follow it.
-    /// Other backends currently retain their unscaled upstream drawing.
     pub fn with_element_scale<R>(
         &mut self,
         origin: Point<Pixels>,
@@ -2672,7 +2771,6 @@ impl Window {
             factor.is_finite() && factor > 0.,
             "element scale must be finite and positive"
         );
-        #[cfg(all(target_os = "macos", not(feature = "macos-blade")))]
         if factor != 1. {
             let transform = TransformationMatrix {
                 rotation_scale: [[factor, 0.], [0., factor]],
@@ -2681,53 +2779,86 @@ impl Window {
             let previous = self.input_transform;
             self.input_transform = previous.compose(transform);
             let painting = self.invalidator.inner.borrow().draw_phase == DrawPhase::Paint;
+            // The parent's clip is in destination coordinates. Children
+            // render in the layer's source coordinates before it is scaled.
+            let mask = self.content_mask();
+            let source_mask = ContentMask {
+                bounds: transform
+                    .inverse()
+                    .map_or(mask.bounds, |inverse| inverse.apply_bounds(mask.bounds)),
+            };
+            let source_bounds = source_mask.bounds;
+            let draw = |window: &mut Self| {
+                window.content_mask_stack.push(source_mask);
+                let result = f(window);
+                window.content_mask_stack.pop();
+                result
+            };
             let result = if painting {
-                self.paint_composite(
-                    Bounds::new(Point::default(), self.viewport_size()),
-                    Corners::default(),
-                    1.,
-                    transform,
-                    f,
-                )
+                self.paint_composite(source_bounds, Corners::default(), 1., transform, draw)
             } else {
-                f(self)
+                draw(self)
             };
             self.input_transform = previous;
             return result;
         }
-        #[cfg(not(all(target_os = "macos", not(feature = "macos-blade"))))]
-        let _ = origin;
         f(self)
     }
 
-    /// Clip painted children to a rounded overflow edge on the Metal backend.
-    /// Other backends retain their rectangular content mask.
+    pub(crate) fn with_rounded_input_mask<R>(
+        &mut self,
+        bounds: Bounds<Pixels>,
+        radii: Corners<Size<Pixels>>,
+        f: impl FnOnce(&mut Self) -> R,
+    ) -> R {
+        self.invalidator.debug_assert_prepaint();
+        if !bounds.is_empty()
+            && (radii.map(|r| r.width).max() <= px(0.) || radii.map(|r| r.height).max() <= px(0.))
+        {
+            return f(self);
+        }
+        let previous = self.rounded_input_mask.clone();
+        self.rounded_input_mask = Some(Arc::new(RoundedHitClip {
+            bounds,
+            radii,
+            inverse: self.input_transform.inverse().unwrap_or_default(),
+            parent: previous.clone(),
+        }));
+        let result = f(self);
+        self.rounded_input_mask = previous;
+        result
+    }
+
+    /// Clip painted children to a rounded overflow edge.
     pub(crate) fn with_rounded_content_mask<R>(
         &mut self,
         mask: Option<ContentMask<Pixels>>,
-        radii: Corners<Pixels>,
+        radii: Corners<Size<Pixels>>,
         f: impl FnOnce(&mut Self) -> R,
     ) -> R {
+        // The rrect supplies its own antialiased edge. Keep the ancestor's
+        // rectangular clip separate so the raster fringe is not cut off.
+        let parent_mask = self.content_mask();
         self.with_content_mask(mask.clone(), |window| {
-            #[cfg(all(target_os = "macos", not(feature = "macos-blade")))]
             if let Some(mask) = mask {
-                if radii.max() > px(0.) {
-                    return window.paint_composite(
+                let x = radii.map(|radius| radius.width);
+                let y = radii.map(|radius| radius.height);
+                if x.max() > px(0.) && y.max() > px(0.) {
+                    return window.paint_elliptical_composite(
                         mask.bounds,
-                        radii,
+                        x,
+                        y,
                         1.0,
                         TransformationMatrix::unit(),
+                        parent_mask,
                         f,
                     );
                 }
             }
-            #[cfg(not(all(target_os = "macos", not(feature = "macos-blade"))))]
-            let _ = radii;
             f(window)
         })
     }
 
-    #[cfg(all(target_os = "macos", not(feature = "macos-blade")))]
     fn paint_composite<R>(
         &mut self,
         bounds: Bounds<Pixels>,
@@ -2736,13 +2867,35 @@ impl Window {
         transform: TransformationMatrix,
         f: impl FnOnce(&mut Self) -> R,
     ) -> R {
+        self.paint_elliptical_composite(
+            bounds,
+            radii,
+            radii,
+            opacity,
+            transform,
+            self.content_mask(),
+            f,
+        )
+    }
+
+    fn paint_elliptical_composite<R>(
+        &mut self,
+        bounds: Bounds<Pixels>,
+        radii: Corners<Pixels>,
+        radii_y: Corners<Pixels>,
+        opacity: f32,
+        transform: TransformationMatrix,
+        mask: ContentMask<Pixels>,
+        f: impl FnOnce(&mut Self) -> R,
+    ) -> R {
         self.invalidator.debug_assert_paint();
         let scale = self.scale_factor();
-        let mask = self.content_mask().scale(scale);
-        self.next_frame.scene.push_composite(
+        let mask = mask.scale(scale);
+        self.next_frame.scene.push_elliptical_composite(
             bounds.scale(scale),
             mask,
             radii.map(|radius| radius.scale(scale)),
+            radii_y.map(|radius| radius.scale(scale)),
             opacity.clamp(0.0, 1.0),
             TransformationMatrix {
                 translation: transform.translation.map(|v| v * scale),
@@ -3608,6 +3761,34 @@ impl Window {
         self.layout_engine = Some(layout_engine);
     }
 
+    pub(crate) fn unrounded_layout_bounds(&self, layout_id: LayoutId) -> Bounds<Pixels> {
+        let mut bounds = self
+            .layout_engine
+            .as_ref()
+            .unwrap()
+            .unrounded_layout_bounds(layout_id, self.scale_factor());
+        bounds.origin += self.element_offset();
+        bounds
+    }
+
+    pub(crate) fn unrounded_paint_bounds(&self, bounds: Bounds<Pixels>) -> Bounds<Pixels> {
+        self.unrounded_bounds
+            .filter(|(rounded, _)| *rounded == bounds)
+            .map_or(bounds, |(_, precise)| precise)
+    }
+
+    pub(crate) fn with_unrounded_bounds<R>(
+        &mut self,
+        bounds: Bounds<Pixels>,
+        precise: Bounds<Pixels>,
+        f: impl FnOnce(&mut Self) -> R,
+    ) -> R {
+        let previous = self.unrounded_bounds.replace((bounds, precise));
+        let result = f(self);
+        self.unrounded_bounds = previous;
+        result
+    }
+
     /// Layout size before display-pixel snapping. Intrinsic rulers use this
     /// when reproducing CSS offsetWidth's rounding to whole logical pixels.
     pub fn unrounded_layout_size(&self, layout_id: LayoutId) -> Size<Pixels> {
@@ -3652,6 +3833,7 @@ impl Window {
             bounds,
             content_mask,
             behavior,
+            rounded_mask: self.rounded_input_mask.clone(),
         };
         let mut painted = hitbox.clone();
         painted.bounds = self.painted_bounds(bounds);
@@ -3729,6 +3911,18 @@ impl Window {
         } else {
             f(self)
         }
+    }
+
+    /// Read the focused editor through the installed native input handler.
+    /// The selection uses UTF-16 offsets, as platform input methods do.
+    pub fn focused_input_snapshot(
+        &mut self,
+        cx: &mut App,
+    ) -> Option<(String, crate::UTF16Selection)> {
+        let mut handler = self.platform_window.take_input_handler()?;
+        let snapshot = handler.text_snapshot(self, cx);
+        self.platform_window.set_input_handler(handler);
+        snapshot
     }
 
     /// Sets an input handler, such as [`ElementInputHandler`][element_input_handler], which interfaces with the
@@ -4028,7 +4222,21 @@ impl Window {
     }
 
     fn dispatch_mouse_event(&mut self, event: &dyn Any, cx: &mut App) {
-        let hit_test = self.rendered_frame.hit_test(self.mouse_position());
+        // Wheel targeting uses an integer query independently of subpixel
+        // hover/click targeting. Preserve the event's original coordinates
+        // and restore the override after nested event dispatch. Frame hitboxes
+        // are in window space, even if dispatch begins in a scaled listener.
+        let previous = self.scroll_hit_test.take();
+        if event.is::<crate::ScrollWheelEvent>() {
+            let position = self.mouse_position.map(|p| px(f32::from(p).floor()));
+            self.scroll_hit_test = Some(self.rendered_frame.hit_test(position));
+        }
+        self.dispatch_mouse_event_inner(event, cx);
+        self.scroll_hit_test = previous;
+    }
+
+    fn dispatch_mouse_event_inner(&mut self, event: &dyn Any, cx: &mut App) {
+        let hit_test = self.rendered_frame.hit_test(self.mouse_position);
         if hit_test != self.mouse_hit_test {
             self.mouse_hit_test = hit_test;
             self.reset_cursor_style(cx);
@@ -5452,5 +5660,229 @@ pub fn outline(
         border_widths: (1.).into(),
         border_color: border_color.into(),
         border_style,
+    }
+}
+
+#[cfg(test)]
+mod rounded_hit_tests {
+    use super::*;
+    use crate::{Context, Render, Styled, TestAppContext, canvas};
+
+    #[gpui::test]
+    fn redispatched_mouse_input_uses_window_coordinates_inside_a_scaled_listener(
+        cx: &mut TestAppContext,
+    ) {
+        struct Probe {
+            observations: Rc<RefCell<Vec<(bool, Point<Pixels>)>>>,
+        }
+        impl Render for Probe {
+            fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+                let observations = self.observations.clone();
+                canvas(
+                    |_, window, _| {
+                        window.with_element_scale(point(px(8.), px(12.)), 0.5, |window| {
+                            window.insert_hitbox(
+                                Bounds::new(point(px(24.), px(24.)), size(px(80.), px(80.))),
+                                HitboxBehavior::BlockMouse,
+                            )
+                        })
+                    },
+                    move |_, host, window, _| {
+                        window.with_element_scale(point(px(8.), px(12.)), 0.5, |window| {
+                            window.on_mouse_event(
+                                move |_: &crate::MouseDownEvent, phase, window, cx| {
+                                    if phase == DispatchPhase::Bubble {
+                                        window.dispatch_event(
+                                            PlatformInput::MouseMove(crate::MouseMoveEvent {
+                                                position: point(px(40.), px(42.)),
+                                                pressed_button: Some(crate::MouseButton::Left),
+                                                modifiers: Modifiers::none(),
+                                            }),
+                                            cx,
+                                        );
+                                        observations.borrow_mut().push((
+                                            host.is_hovered(window),
+                                            window.mouse_position(),
+                                        ));
+                                    }
+                                },
+                            );
+                        });
+                    },
+                )
+                .size_full()
+            }
+        }
+        let observations = Rc::new(RefCell::new(Vec::new()));
+        let (_, cx) = cx.add_window_view(|_, _| Probe {
+            observations: observations.clone(),
+        });
+        cx.simulate_resize(size(px(160.), px(160.)));
+        cx.run_until_parked();
+        cx.simulate_event(crate::MouseDownEvent {
+            position: point(px(30.), px(32.)),
+            button: crate::MouseButton::Left,
+            modifiers: Modifiers::none(),
+            click_count: 1,
+            first_mouse: false,
+        });
+        cx.run_until_parked();
+        assert_eq!(
+            *observations.borrow(),
+            vec![(true, point(px(72.), px(72.)))]
+        );
+        cx.update(|window, _| {
+            assert_eq!(window.input_transform, TransformationMatrix::unit());
+            assert_eq!(window.mouse_position(), point(px(40.), px(42.)));
+        });
+    }
+
+    #[gpui::test]
+    fn wheel_query_floors_window_coordinates_before_entering_a_scaled_listener(
+        cx: &mut TestAppContext,
+    ) {
+        type Snapshot = (bool, bool, bool, bool, Point<Pixels>, Point<Pixels>);
+        struct Probe {
+            observations: Rc<RefCell<Vec<Snapshot>>>,
+            transform: Rc<Cell<TransformationMatrix>>,
+        }
+        impl Render for Probe {
+            fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+                let observations = self.observations.clone();
+                let transform = self.transform.clone();
+                canvas(
+                    move |_, window, _| {
+                        let behind = window.insert_hitbox(
+                            Bounds::new(Point::default(), size(px(160.), px(160.))),
+                            HitboxBehavior::Normal,
+                        );
+                        let host =
+                            window.with_element_scale(point(px(8.), px(12.)), 0.5, |window| {
+                                transform.set(window.input_transform);
+                                window.insert_hitbox(
+                                    Bounds::new(point(px(24.), px(24.)), size(px(80.), px(80.))),
+                                    HitboxBehavior::BlockMouse,
+                                )
+                            });
+                        (behind, host)
+                    },
+                    move |_, (behind, host), window, _| {
+                        window.with_element_scale(point(px(8.), px(12.)), 0.5, |window| {
+                            window.on_mouse_event(
+                                move |event: &crate::ScrollWheelEvent, phase, window, _| {
+                                    if phase == DispatchPhase::Bubble {
+                                        observations.borrow_mut().push((
+                                            host.is_hovered(window),
+                                            behind.is_hovered(window),
+                                            host.should_handle_scroll(window),
+                                            behind.should_handle_scroll(window),
+                                            event.position,
+                                            window.mouse_position(),
+                                        ));
+                                    }
+                                },
+                            );
+                        });
+                    },
+                )
+                .size_full()
+            }
+        }
+        let observations = Rc::new(RefCell::new(Vec::new()));
+        let transform = Rc::new(Cell::new(TransformationMatrix::unit()));
+        let (_, cx) = cx.add_window_view(|_, _| Probe {
+            observations: observations.clone(),
+            transform: transform.clone(),
+        });
+        cx.simulate_resize(size(px(160.), px(160.)));
+        cx.run_until_parked();
+        cx.update(|window, cx| {
+            // A redispatch can begin inside another listener's layout space.
+            let previous = window.input_transform;
+            window.input_transform = transform.get();
+            window.dispatch_event(
+                PlatformInput::ScrollWheel(crate::ScrollWheelEvent {
+                    position: point(px(15.5), px(32.)),
+                    delta: crate::ScrollDelta::Pixels(point(px(0.), px(-20.))),
+                    modifiers: Modifiers::none(),
+                    touch_phase: crate::TouchPhase::Moved,
+                }),
+                cx,
+            );
+            assert_eq!(window.input_transform, transform.get());
+            assert!(window.scroll_hit_test.is_none());
+            window.input_transform = previous;
+        });
+        assert_eq!(
+            *observations.borrow(),
+            vec![(
+                true,
+                false,
+                false,
+                true,
+                point(px(23.), px(52.)),
+                point(px(23.), px(52.)),
+            )]
+        );
+    }
+
+    #[gpui::test]
+    fn wheel_query_keeps_subpixel_hover_and_restores_its_scoped_override(cx: &mut TestAppContext) {
+        type Snapshot = (bool, bool, bool, bool, Point<Pixels>);
+        struct Probe {
+            observations: Rc<RefCell<Vec<Snapshot>>>,
+        }
+        impl Render for Probe {
+            fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+                let observations = self.observations.clone();
+                canvas(
+                    |_, window, _| {
+                        let behind = window.insert_hitbox(
+                            Bounds::new(Point::default(), size(px(160.), px(160.))),
+                            HitboxBehavior::Normal,
+                        );
+                        let host = window.insert_hitbox(
+                            Bounds::new(point(px(24.), px(24.)), size(px(80.), px(80.))),
+                            HitboxBehavior::BlockMouse,
+                        );
+                        (behind, host)
+                    },
+                    move |_, (behind, host), window, _| {
+                        window.on_mouse_event(
+                            move |_: &crate::ScrollWheelEvent, phase, window, _| {
+                                if phase == DispatchPhase::Bubble {
+                                    observations.borrow_mut().push((
+                                        host.is_hovered(window),
+                                        behind.is_hovered(window),
+                                        host.should_handle_scroll(window),
+                                        behind.should_handle_scroll(window),
+                                        window.mouse_position(),
+                                    ));
+                                }
+                            },
+                        );
+                    },
+                )
+                .size_full()
+            }
+        }
+        let observations = Rc::new(RefCell::new(Vec::new()));
+        let (_, cx) = cx.add_window_view(|_, _| Probe {
+            observations: observations.clone(),
+        });
+        cx.simulate_resize(size(px(160.), px(160.)));
+        cx.run_until_parked();
+        cx.simulate_event(crate::ScrollWheelEvent {
+            position: point(px(23.5), px(64.)),
+            delta: crate::ScrollDelta::Pixels(point(px(0.), px(-20.))),
+            modifiers: Modifiers::none(),
+            touch_phase: crate::TouchPhase::Moved,
+        });
+        cx.run_until_parked();
+        assert_eq!(
+            *observations.borrow(),
+            vec![(true, false, false, true, point(px(23.5), px(64.)))]
+        );
+        cx.update(|window, _| assert!(window.scroll_hit_test.is_none()));
     }
 }

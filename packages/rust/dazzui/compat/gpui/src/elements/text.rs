@@ -621,10 +621,8 @@ impl TextLayout {
         let mut lines = Vec::new();
         for wrapped in self.0.borrow().as_ref().unwrap().lines.iter() {
             let mut seen = 0;
-            for boundary in wrapped.layout.wrap_boundaries.iter() {
-                let index = wrapped.layout.unwrapped_layout.runs[boundary.run_ix].glyphs
-                    [boundary.glyph_ix]
-                    .index;
+            for row in 0..wrapped.layout.wrap_boundaries.len() {
+                let index = wrapped.layout.wrap_source_index(row);
 
                 lines.push(wrapped.text[seen..index].to_string());
                 seen = index;

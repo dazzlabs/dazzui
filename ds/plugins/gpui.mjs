@@ -68,9 +68,11 @@ export function generate(tokens, modeSelectors, { generator = 'gpui' } = {}) {
     'use crate::tokens::*;',
     '',
     ...['ui', 'display', 'code'].flatMap(role => [
-      role === 'code' || generator === 'gpui'
-        ? '#[cfg(any(target_os = "linux", target_os = "macos"))]'
-        : '#[cfg(target_os = "linux")]',
+      generator === 'gpui'
+        ? '#[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]'
+        : role === 'code'
+          ? '#[cfg(any(target_os = "linux", target_os = "macos"))]'
+          : '#[cfg(target_os = "linux")]',
       `pub const FONT_${role.toUpperCase()}: &[&str] = &[${tokens[`base.font.${role}`].$value.map(name => JSON.stringify(name)).join(', ')}];`,
       '',
     ]),

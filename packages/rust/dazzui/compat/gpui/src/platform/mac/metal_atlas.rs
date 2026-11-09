@@ -47,9 +47,17 @@ impl PlatformAtlas for MetalAtlas {
             let Some((size, bytes)) = build()? else {
                 return Ok(None);
             };
-            let tile = lock
-                .allocate(size, key.texture_kind())
-                .context("failed to allocate")?;
+            let kind = key.texture_kind();
+            let bytes = if matches!(kind, AtlasTextureKind::Polychrome) {
+                let mut bytes = bytes.into_owned();
+                // Filter transparent color images in premultiplied space,
+                // matching the browser and the Blade atlas.
+                crate::premultiply_alpha(&mut bytes);
+                Cow::Owned(bytes)
+            } else {
+                bytes
+            };
+            let tile = lock.allocate(size, kind).context("failed to allocate")?;
             let texture = lock.texture(tile.texture_id);
             texture.upload(tile.bounds, &bytes);
             lock.tiles_by_key.insert(key.clone(), tile.clone());

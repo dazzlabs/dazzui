@@ -63,6 +63,41 @@ recipe cell that picks a shade off the control's ramp stays a
 `src/glyphs.rs` is written by `pnpm codegen` from the Fluent icons the
 React components import. **Never hand-edit either.**
 
+## Native menus
+
+`MenuPresentation::Native` hands a dropdown's list to the desktop OS — the
+trigger keeps its DazzUI drawing, and the OS draws the rows, the way the
+SwiftUI and Flutter packages do. The preference scopes like a theme:
+`provide_menu_presentation(presentation, child)` puts it in force for the
+`Menu`, `ContextMenu`, `Menubar` and `Select` inside; a nearer scope
+overrides the root, and changing it dismisses an open menu. Searchable
+Combobox and Autocomplete suggestions and the date-range picker keep their
+drawn panels.
+
+```rust
+use dazzui::{MenuPresentation, provide_menu_presentation};
+
+provide_menu_presentation(MenuPresentation::Native, shell)
+```
+
+It is the `native-menus` cargo feature, off by default; without it — or on a
+platform the backend cannot present on — every dropdown keeps its drawn
+sheet. The backend is nativeapi's Rust binding, which vendors the C++ core
+and builds it with CMake (Linux needs the gtk3, x11 and xi development
+packages installed). A native row carries the label, the check state, the
+disabled state and a group heading; the shortcut hint is display text in the
+row, never an accelerator registered with the OS, and an item's element
+slots — an icon, a `KeyCap` — are dropped, since gpui cannot rasterize an
+element into the bitmap a native row wears.
+
+Verified on macOS. Windows compiles and follows the same path but is
+unverified here. Linux presents from the pointer rather than the trigger,
+since a Wayland compositor declines to hand out global window coordinates,
+and runs a thread of its own to iterate the GLib context no gpui app
+iterates. In native mode the Menubar's left and right arrows do not walk the
+bar — the OS owns the keyboard — and the pointer's slide onto the next menu
+happens when one closes, between the OS's own menus.
+
 ## Building
 
 ```bash

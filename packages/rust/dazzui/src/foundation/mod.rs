@@ -19,4 +19,4 @@ pub use scope::{provide, scoped};
 pub use style::*;
 pub(crate) use text::inline_text;
 pub(crate) use text::{precise_text, text_with_prefix};
-pub use text::{text_child, text_runs};
+pub use text::{text_child, text_runs, text_runs_with_system};

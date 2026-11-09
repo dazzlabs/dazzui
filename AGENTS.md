@@ -145,7 +145,11 @@ rather than four designs that resemble each other.
   from Bright Light's, over `..BRIGHT_LIGHT`. `src/glyphs.rs` — the Fluent
   glyphs the kit draws, rendered from the icons React imports — is written
   by `pnpm codegen`. A theme is a global the app sets and a subtree may
-  override with `themed`; a component reads it with `cx.theme()`.
+  override with `themed`; a component reads it with `cx.theme()`. Native
+  dropdowns are the `native-menus` cargo feature: `provide_menu_presentation`
+  scopes Menu, ContextMenu, Menubar and Select to hand their list to the OS
+  popup through nativeapi's Rust binding, the way the SwiftUI and Flutter
+  packages do, and fall back to the drawn sheet without the feature.
   `example/` is the GPUI example (`cargo run -p dazzui-example`): the React
   example's window, drawn with this package, whose stories `pnpm codegen`
   compiles from the React ones.

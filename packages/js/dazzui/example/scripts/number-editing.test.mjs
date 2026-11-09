@@ -9,7 +9,10 @@ test('number editing distinguishes typed text, partial values and selection-awar
     root: fileURLToPath(new URL('..', import.meta.url)),
     cacheDir: 'node_modules/.vite-test-number-editing',
     logLevel: 'silent',
-    server: { host: '127.0.0.1', port: 0 },
+    server: {
+      host: '127.0.0.1',
+      port: Number(process.env.DAZZUI_HISTORY_PORT || 0),
+    },
     plugins: [
       {
         name: 'number-editing-fixture',
@@ -28,9 +31,11 @@ test('number editing distinguishes typed text, partial values and selection-awar
     ],
   })
   await server.listen()
-  const browser = await chromium.launch({
-    executablePath: process.env.DAZZUI_CHROMIUM_EXECUTABLE || undefined,
-  })
+  const browser = process.env.DAZZUI_CHROMIUM_CDP
+    ? await chromium.connectOverCDP(process.env.DAZZUI_CHROMIUM_CDP)
+    : await chromium.launch({
+        executablePath: process.env.DAZZUI_CHROMIUM_EXECUTABLE || undefined,
+      })
   try {
     const page = await browser.newPage()
     await page.goto(
@@ -254,6 +259,50 @@ test('number editing distinguishes typed text, partial values and selection-awar
     ])
     await input.blur()
     assert.equal((await commits()).length, 1)
+    const mac = ['darwin', 'macos'].includes(
+      process.env.DAZZUI_HISTORY_PLATFORM || process.platform
+    )
+    const undo = mac ? 'Meta+z' : 'Control+z'
+    const redo = mac ? 'Meta+Shift+z' : 'Control+Shift+z'
+    for (const [draft, controlled, expectedChanges, stepped] of [
+      ['20', false, [20, 12, 20], 21],
+      ['-', false, [12], 13],
+      ['20', true, [20, 12, 20], 21],
+    ]) {
+      await mount({ controlled })
+      await input.fill(draft)
+      await input.press(undo)
+      assert.equal(await input.inputValue(), '12')
+      await input.press(redo)
+      assert.equal(await input.inputValue(), draft)
+      assert.deepEqual(await changes(), expectedChanges)
+      assert.deepEqual(await commits(), [])
+      await input.press('ArrowUp')
+      const displayAfterStep = controlled ? '12' : String(stepped)
+      assert.equal(await input.inputValue(), displayAfterStep)
+      assert.deepEqual(await commits(), [[stepped, 'keyboard']])
+      await input.press(undo)
+      assert.equal(await input.inputValue(), displayAfterStep)
+      await input.press(redo)
+      assert.equal(await input.inputValue(), displayAfterStep)
+    }
+    for (const controlled of [false, true]) {
+      await mount({ controlled })
+      await input.selectText()
+      await page.keyboard.type('345')
+      for (const expected of controlled
+        ? ['12', '12', '12']
+        : ['34', '3', '12']) {
+        await input.press(undo)
+        assert.equal(await input.inputValue(), expected)
+      }
+      for (const expected of controlled
+        ? ['345', '345', '345']
+        : ['3', '34', '345']) {
+        await input.press(redo)
+        assert.equal(await input.inputValue(), expected)
+      }
+    }
     const clockStart = new Date('2025-02-01T00:00:00Z')
     await page.clock.install({ time: clockStart })
     await page.clock.pauseAt(clockStart)

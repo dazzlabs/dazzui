@@ -75,7 +75,7 @@ impl Element for Scale {
     }
 }
 
-#[cfg(all(test, target_os = "macos"))]
+#[cfg(all(test, not(target_os = "windows")))]
 mod tests {
     use super::*;
     use gpui::{
@@ -120,6 +120,7 @@ mod tests {
         target: Entity<Target>,
         factor: f32,
         nested: bool,
+        clipped: bool,
     }
     impl Render for Harness {
         fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
@@ -134,6 +135,7 @@ mod tests {
                 child: child.into_any_element(),
                 factor: self.factor,
                 nested: self.nested,
+                clipped: self.clipped,
             }
         }
     }
@@ -142,6 +144,7 @@ mod tests {
         child: AnyElement,
         factor: f32,
         nested: bool,
+        clipped: bool,
     }
     impl IntoElement for OriginScale {
         type Element = Self;
@@ -176,13 +179,20 @@ mod tests {
             window: &mut Window,
             cx: &mut App,
         ) {
-            window.with_element_scale(point(px(0.), px(0.)), self.factor, |window| {
-                window.with_element_scale(
-                    point(px(0.), px(0.)),
-                    if self.nested { 0.5 } else { 1. },
-                    |window| self.child.prepaint(window, cx),
-                );
-            });
+            window.with_content_mask(
+                self.clipped.then_some(gpui::ContentMask {
+                    bounds: Bounds::new(point(px(32.), px(0.)), gpui::size(px(64.), px(100.))),
+                }),
+                |window| {
+                    window.with_element_scale(point(px(0.), px(0.)), self.factor, |window| {
+                        window.with_element_scale(
+                            point(px(0.), px(0.)),
+                            if self.nested { 0.5 } else { 1. },
+                            |window| self.child.prepaint(window, cx),
+                        );
+                    })
+                },
+            );
         }
         fn paint(
             &mut self,
@@ -194,13 +204,20 @@ mod tests {
             window: &mut Window,
             cx: &mut App,
         ) {
-            window.with_element_scale(point(px(0.), px(0.)), self.factor, |window| {
-                window.with_element_scale(
-                    point(px(0.), px(0.)),
-                    if self.nested { 0.5 } else { 1. },
-                    |window| self.child.paint(window, cx),
-                );
-            });
+            window.with_content_mask(
+                self.clipped.then_some(gpui::ContentMask {
+                    bounds: Bounds::new(point(px(32.), px(0.)), gpui::size(px(64.), px(100.))),
+                }),
+                |window| {
+                    window.with_element_scale(point(px(0.), px(0.)), self.factor, |window| {
+                        window.with_element_scale(
+                            point(px(0.), px(0.)),
+                            if self.nested { 0.5 } else { 1. },
+                            |window| self.child.paint(window, cx),
+                        );
+                    })
+                },
+            );
         }
     }
 
@@ -215,6 +232,7 @@ mod tests {
             }),
             factor: 0.5,
             nested: true,
+            clipped: false,
         });
         cx.run_until_parked();
         let bounds = cx.debug_bounds("scaled-target").unwrap();
@@ -251,5 +269,25 @@ mod tests {
             downs.borrow()[1],
             (point(px(300.), px(150.)), point(px(300.), px(150.)))
         );
+    }
+    #[gpui::test]
+    fn scaled_hitboxes_keep_the_parent_clip_in_destination_coordinates(cx: &mut TestAppContext) {
+        let clicks = Rc::new(Cell::new(0));
+        let downs = Rc::new(RefCell::new(Vec::new()));
+        let (_, cx) = cx.add_window_view(|_, cx| Harness {
+            target: cx.new(|_| Target {
+                clicks: clicks.clone(),
+                downs: downs.clone(),
+            }),
+            factor: 0.5,
+            nested: true,
+            clipped: true,
+        });
+        cx.run_until_parked();
+        cx.simulate_click(point(px(60.), px(35.)), Modifiers::none());
+        assert_eq!(clicks.get(), 1);
+        assert_eq!(downs.borrow()[0].0, point(px(240.), px(140.)));
+        cx.simulate_click(point(px(98.), px(35.)), Modifiers::none());
+        assert_eq!(clicks.get(), 1, "the parent's right clip remains at 96px");
     }
 }

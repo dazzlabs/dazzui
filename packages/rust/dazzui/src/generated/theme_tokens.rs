@@ -5,7 +5,7 @@
 
 use crate::tokens::*;
 
-#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
 pub const FONT_UI: &[&str] = &[
     "-apple-system",
     "SF Pro Text",
@@ -15,7 +15,7 @@ pub const FONT_UI: &[&str] = &[
     "sans-serif",
 ];
 
-#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
 pub const FONT_DISPLAY: &[&str] = &[
     "-apple-system",
     "SF Pro Display",
@@ -25,7 +25,7 @@ pub const FONT_DISPLAY: &[&str] = &[
     "sans-serif",
 ];
 
-#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
 pub const FONT_CODE: &[&str] = &["ui-monospace", "SF Mono", "Menlo", "monospace"];
 
 /// Every semantic and component token, resolved for one theme.

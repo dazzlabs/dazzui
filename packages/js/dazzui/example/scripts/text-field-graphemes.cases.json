@@ -1,0 +1,2234 @@
+{
+  "selectionUnit": "UTF-16",
+  "cases": [
+    {
+      "id": "accent",
+      "cluster": "é",
+      "right": [
+        {
+          "value": "XéY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "XéY",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "XéY",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "XéY",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "XéY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "XéY",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "XeY",
+          "start": 2,
+          "end": 2,
+          "reversed": false
+        },
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "XéY",
+        "start": 1,
+        "end": 3,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "XéY",
+        "start": 1,
+        "end": 3,
+        "reversed": false
+      }
+    },
+    {
+      "id": "marks",
+      "cluster": "ạ́",
+      "right": [
+        {
+          "value": "Xạ́Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "Xạ́Y",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "Xạ́Y",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "Xạ́Y",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "Xạ́Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "Xạ́Y",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "XáY",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "XaY",
+          "start": 2,
+          "end": 2,
+          "reversed": false
+        },
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "Xạ́Y",
+        "start": 1,
+        "end": 4,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "Xạ́Y",
+        "start": 1,
+        "end": 4,
+        "reversed": false
+      }
+    },
+    {
+      "id": "family",
+      "cluster": "👨‍👩‍👧‍👦",
+      "right": [
+        {
+          "value": "X👨‍👩‍👧‍👦Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X👨‍👩‍👧‍👦Y",
+          "start": 12,
+          "end": 12,
+          "reversed": false
+        },
+        {
+          "value": "X👨‍👩‍👧‍👦Y",
+          "start": 13,
+          "end": 13,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "X👨‍👩‍👧‍👦Y",
+          "start": 12,
+          "end": 12,
+          "reversed": false
+        },
+        {
+          "value": "X👨‍👩‍👧‍👦Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X👨‍👩‍👧‍👦Y",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "X👨‍👩‍👧‍👦Y",
+        "start": 1,
+        "end": 12,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "X👨‍👩‍👧‍👦Y",
+        "start": 1,
+        "end": 12,
+        "reversed": false
+      }
+    },
+    {
+      "id": "skin",
+      "cluster": "👩🏽‍💻",
+      "right": [
+        {
+          "value": "X👩🏽‍💻Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X👩🏽‍💻Y",
+          "start": 8,
+          "end": 8,
+          "reversed": false
+        },
+        {
+          "value": "X👩🏽‍💻Y",
+          "start": 9,
+          "end": 9,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "X👩🏽‍💻Y",
+          "start": 8,
+          "end": 8,
+          "reversed": false
+        },
+        {
+          "value": "X👩🏽‍💻Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X👩🏽‍💻Y",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "X👩🏽‍💻Y",
+        "start": 1,
+        "end": 8,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "X👩🏽‍💻Y",
+        "start": 1,
+        "end": 8,
+        "reversed": false
+      }
+    },
+    {
+      "id": "flag",
+      "cluster": "🇨🇳",
+      "right": [
+        {
+          "value": "X🇨🇳Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X🇨🇳Y",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        },
+        {
+          "value": "X🇨🇳Y",
+          "start": 6,
+          "end": 6,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "X🇨🇳Y",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        },
+        {
+          "value": "X🇨🇳Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X🇨🇳Y",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "X🇨🇳Y",
+        "start": 1,
+        "end": 5,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "X🇨🇳Y",
+        "start": 1,
+        "end": 5,
+        "reversed": false
+      }
+    },
+    {
+      "id": "flags",
+      "cluster": "🇦🇧🇨",
+      "right": [
+        {
+          "value": "X🇦🇧🇨Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X🇦🇧🇨Y",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        },
+        {
+          "value": "X🇦🇧🇨Y",
+          "start": 7,
+          "end": 7,
+          "reversed": false
+        },
+        {
+          "value": "X🇦🇧🇨Y",
+          "start": 8,
+          "end": 8,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "X🇦🇧🇨Y",
+          "start": 7,
+          "end": 7,
+          "reversed": false
+        },
+        {
+          "value": "X🇦🇧🇨Y",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        },
+        {
+          "value": "X🇦🇧🇨Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X🇦🇧🇨Y",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "X🇦🇧Y",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        },
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "X🇨Y",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "X🇦🇧🇨Y",
+        "start": 5,
+        "end": 7,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "X🇦🇧🇨Y",
+        "start": 1,
+        "end": 5,
+        "reversed": false
+      }
+    },
+    {
+      "id": "keycap",
+      "cluster": "1️⃣",
+      "right": [
+        {
+          "value": "X1️⃣Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X1️⃣Y",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "X1️⃣Y",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "X1️⃣Y",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "X1️⃣Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X1️⃣Y",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "X1️⃣Y",
+        "start": 1,
+        "end": 4,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "X1️⃣Y",
+        "start": 1,
+        "end": 4,
+        "reversed": false
+      }
+    },
+    {
+      "id": "tags",
+      "cluster": "🏴󠁧󠁢󠁿",
+      "right": [
+        {
+          "value": "X🏴󠁧󠁢󠁿Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X🏴󠁧󠁢󠁿Y",
+          "start": 9,
+          "end": 9,
+          "reversed": false
+        },
+        {
+          "value": "X🏴󠁧󠁢󠁿Y",
+          "start": 10,
+          "end": 10,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "X🏴󠁧󠁢󠁿Y",
+          "start": 9,
+          "end": 9,
+          "reversed": false
+        },
+        {
+          "value": "X🏴󠁧󠁢󠁿Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X🏴󠁧󠁢󠁿Y",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "X🏴󠁧󠁢󠁿Y",
+        "start": 1,
+        "end": 9,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "X🏴󠁧󠁢󠁿Y",
+        "start": 1,
+        "end": 9,
+        "reversed": false
+      }
+    },
+    {
+      "id": "indic",
+      "cluster": "क्षि",
+      "right": [
+        {
+          "value": "Xक्षिY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "Xक्षिY",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        },
+        {
+          "value": "Xक्षिY",
+          "start": 6,
+          "end": 6,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "Xक्षिY",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        },
+        {
+          "value": "Xक्षिY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "Xक्षिY",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "Xक्षY",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "Xक्Y",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "XकY",
+          "start": 2,
+          "end": 2,
+          "reversed": false
+        },
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "Xक्षिY",
+        "start": 1,
+        "end": 5,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "Xक्षिY",
+        "start": 1,
+        "end": 5,
+        "reversed": false
+      }
+    },
+    {
+      "id": "indic_joined",
+      "cluster": "क्‍षि",
+      "right": [
+        {
+          "value": "Xक्‍षिY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "Xक्‍षिY",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "Xक्‍षिY",
+          "start": 6,
+          "end": 6,
+          "reversed": false
+        },
+        {
+          "value": "Xक्‍षिY",
+          "start": 7,
+          "end": 7,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "Xक्‍षिY",
+          "start": 6,
+          "end": 6,
+          "reversed": false
+        },
+        {
+          "value": "Xक्‍षिY",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "Xक्‍षिY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "Xक्‍षिY",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "Xक्‍षY",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        },
+        {
+          "value": "Xक्‍Y",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "Xक्Y",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "XकY",
+          "start": 2,
+          "end": 2,
+          "reversed": false
+        },
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XषिY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "Xक्‍षिY",
+        "start": 4,
+        "end": 6,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "Xक्‍षिY",
+        "start": 1,
+        "end": 4,
+        "reversed": false
+      }
+    },
+    {
+      "id": "hangul",
+      "cluster": "각",
+      "right": [
+        {
+          "value": "X각Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X각Y",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "X각Y",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "X각Y",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "X각Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X각Y",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "X가Y",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "XᄀY",
+          "start": 2,
+          "end": 2,
+          "reversed": false
+        },
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "X각Y",
+        "start": 1,
+        "end": 4,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "X각Y",
+        "start": 1,
+        "end": 4,
+        "reversed": false
+      }
+    },
+    {
+      "id": "arabic",
+      "cluster": "نَ",
+      "right": [
+        {
+          "value": "XنَY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "XنَY",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "XنَY",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "XنَY",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "XنَY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "XنَY",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "XنY",
+          "start": 2,
+          "end": 2,
+          "reversed": false
+        },
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "XنَY",
+        "start": 1,
+        "end": 3,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "XنَY",
+        "start": 1,
+        "end": 3,
+        "reversed": false
+      }
+    },
+    {
+      "id": "variation",
+      "cluster": "A️",
+      "right": [
+        {
+          "value": "XA️Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "XA️Y",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "XA️Y",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "XA️Y",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "XA️Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "XA️Y",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "XA️Y",
+        "start": 1,
+        "end": 3,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "XA️Y",
+        "start": 1,
+        "end": 3,
+        "reversed": false
+      }
+    },
+    {
+      "id": "mark_variation",
+      "cluster": "é️",
+      "right": [
+        {
+          "value": "Xé️Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "Xé️Y",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "Xé️Y",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "Xé️Y",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "Xé️Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "Xé️Y",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "XéY",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "XeY",
+          "start": 2,
+          "end": 2,
+          "reversed": false
+        },
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "Xé️Y",
+        "start": 1,
+        "end": 4,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "Xé️Y",
+        "start": 1,
+        "end": 4,
+        "reversed": false
+      }
+    },
+    {
+      "id": "invalid_modifier",
+      "cluster": "A🏽",
+      "right": [
+        {
+          "value": "XA🏽Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "XA🏽Y",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "XA🏽Y",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "XA🏽Y",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "XA🏽Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "XA🏽Y",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "XAY",
+          "start": 2,
+          "end": 2,
+          "reversed": false
+        },
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "XA🏽Y",
+        "start": 1,
+        "end": 4,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "XA🏽Y",
+        "start": 1,
+        "end": 4,
+        "reversed": false
+      }
+    },
+    {
+      "id": "invalid_keycap",
+      "cluster": "A️⃣",
+      "right": [
+        {
+          "value": "XA️⃣Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "XA️⃣Y",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "XA️⃣Y",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "XA️⃣Y",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "XA️⃣Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "XA️⃣Y",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "XA️Y",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "XA️⃣Y",
+        "start": 1,
+        "end": 4,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "XA️⃣Y",
+        "start": 1,
+        "end": 4,
+        "reversed": false
+      }
+    },
+    {
+      "id": "invalid_tag",
+      "cluster": "A󠁧󠁿",
+      "right": [
+        {
+          "value": "XA󠁧󠁿Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "XA󠁧󠁿Y",
+          "start": 6,
+          "end": 6,
+          "reversed": false
+        },
+        {
+          "value": "XA󠁧󠁿Y",
+          "start": 7,
+          "end": 7,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "XA󠁧󠁿Y",
+          "start": 6,
+          "end": 6,
+          "reversed": false
+        },
+        {
+          "value": "XA󠁧󠁿Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "XA󠁧󠁿Y",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "XAY",
+          "start": 2,
+          "end": 2,
+          "reversed": false
+        },
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "XA󠁧󠁿Y",
+        "start": 1,
+        "end": 6,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "XA󠁧󠁿Y",
+        "start": 1,
+        "end": 6,
+        "reversed": false
+      }
+    },
+    {
+      "id": "emoji_mark",
+      "cluster": "👨́",
+      "right": [
+        {
+          "value": "X👨́Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X👨́Y",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "X👨́Y",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "X👨́Y",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "X👨́Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X👨́Y",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "X👨Y",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "X👨́Y",
+        "start": 1,
+        "end": 4,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "X👨́Y",
+        "start": 1,
+        "end": 4,
+        "reversed": false
+      }
+    },
+    {
+      "id": "letter_joined_emoji",
+      "cluster": "a‍👨",
+      "right": [
+        {
+          "value": "Xa‍👨Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "Xa‍👨Y",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        },
+        {
+          "value": "Xa‍👨Y",
+          "start": 6,
+          "end": 6,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "Xa‍👨Y",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        },
+        {
+          "value": "Xa‍👨Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "Xa‍👨Y",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "Xa‍Y",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "XaY",
+          "start": 2,
+          "end": 2,
+          "reversed": false
+        },
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "Xa‍👨Y",
+        "start": 1,
+        "end": 5,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "Xa‍👨Y",
+        "start": 1,
+        "end": 5,
+        "reversed": false
+      }
+    },
+    {
+      "id": "joined_digit",
+      "cluster": "a‍1",
+      "right": [
+        {
+          "value": "Xa‍1Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "Xa‍1Y",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "Xa‍1Y",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "Xa‍1Y",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "Xa‍1Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "Xa‍1Y",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "Xa‍Y",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "XaY",
+          "start": 2,
+          "end": 2,
+          "reversed": false
+        },
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "Xa‍1Y",
+        "start": 1,
+        "end": 4,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "Xa‍1Y",
+        "start": 1,
+        "end": 4,
+        "reversed": false
+      }
+    },
+    {
+      "id": "tamil",
+      "cluster": "க்கி",
+      "right": [
+        {
+          "value": "Xக்கிY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "Xக்கிY",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "Xக்கிY",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        },
+        {
+          "value": "Xக்கிY",
+          "start": 6,
+          "end": 6,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "Xக்கிY",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        },
+        {
+          "value": "Xக்கிY",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "Xக்கிY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "Xக்கிY",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "Xக்கY",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        },
+        {
+          "value": "Xக்Y",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "XகY",
+          "start": 2,
+          "end": 2,
+          "reversed": false
+        },
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XகிY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "Xக்கிY",
+        "start": 3,
+        "end": 5,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "Xக்கிY",
+        "start": 1,
+        "end": 3,
+        "reversed": false
+      }
+    },
+    {
+      "id": "four_flags",
+      "cluster": "🇦🇧🇨🇩",
+      "right": [
+        {
+          "value": "X🇦🇧🇨🇩Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X🇦🇧🇨🇩Y",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        },
+        {
+          "value": "X🇦🇧🇨🇩Y",
+          "start": 9,
+          "end": 9,
+          "reversed": false
+        },
+        {
+          "value": "X🇦🇧🇨🇩Y",
+          "start": 10,
+          "end": 10,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "X🇦🇧🇨🇩Y",
+          "start": 9,
+          "end": 9,
+          "reversed": false
+        },
+        {
+          "value": "X🇦🇧🇨🇩Y",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        },
+        {
+          "value": "X🇦🇧🇨🇩Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X🇦🇧🇨🇩Y",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "X🇦🇧Y",
+          "start": 5,
+          "end": 5,
+          "reversed": false
+        },
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "X🇨🇩Y",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "X🇦🇧🇨🇩Y",
+        "start": 5,
+        "end": 9,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "X🇦🇧🇨🇩Y",
+        "start": 1,
+        "end": 5,
+        "reversed": false
+      }
+    },
+    {
+      "id": "prepend",
+      "cluster": "؀A",
+      "right": [
+        {
+          "value": "X؀AY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X؀AY",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "X؀AY",
+          "start": 4,
+          "end": 4,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "X؀AY",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "X؀AY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X؀AY",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "X؀Y",
+          "start": 3,
+          "end": 3,
+          "reversed": false
+        },
+        {
+          "value": "X؀",
+          "start": 2,
+          "end": 2,
+          "reversed": false
+        },
+        {
+          "value": "X",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "X؀AY",
+        "start": 1,
+        "end": 3,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "X؀AY",
+        "start": 1,
+        "end": 3,
+        "reversed": false
+      }
+    },
+    {
+      "id": "modified_joined",
+      "cluster": "👩️🏽‍👩🏿",
+      "right": [
+        {
+          "value": "X👩️🏽‍👩🏿Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X👩️🏽‍👩🏿Y",
+          "start": 11,
+          "end": 11,
+          "reversed": false
+        },
+        {
+          "value": "X👩️🏽‍👩🏿Y",
+          "start": 12,
+          "end": 12,
+          "reversed": false
+        }
+      ],
+      "left": [
+        {
+          "value": "X👩️🏽‍👩🏿Y",
+          "start": 11,
+          "end": 11,
+          "reversed": false
+        },
+        {
+          "value": "X👩️🏽‍👩🏿Y",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        },
+        {
+          "value": "X👩️🏽‍👩🏿Y",
+          "start": 0,
+          "end": 0,
+          "reversed": false
+        }
+      ],
+      "backspace": [
+        {
+          "value": "XY",
+          "start": 1,
+          "end": 1,
+          "reversed": false
+        }
+      ],
+      "forward": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "selection": {
+        "value": "X👩️🏽‍👩🏿Y",
+        "start": 1,
+        "end": 11,
+        "reversed": true
+      },
+      "selectionRight": {
+        "value": "X👩️🏽‍👩🏿Y",
+        "start": 1,
+        "end": 11,
+        "reversed": false
+      }
+    }
+  ],
+  "rangeCases": [
+    {
+      "id": "accent-base-backspace",
+      "text": "XáY",
+      "selection": [
+        1,
+        2
+      ],
+      "key": "Backspace",
+      "expected": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      }
+    },
+    {
+      "id": "accent-base-delete",
+      "text": "XáY",
+      "selection": [
+        1,
+        2
+      ],
+      "key": "Delete",
+      "expected": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      }
+    },
+    {
+      "id": "accent-mark-backspace",
+      "text": "XáY",
+      "selection": [
+        2,
+        3
+      ],
+      "key": "Backspace",
+      "expected": {
+        "value": "XaY",
+        "start": 2,
+        "end": 2,
+        "reversed": false
+      }
+    },
+    {
+      "id": "accent-mark-delete",
+      "text": "XáY",
+      "selection": [
+        2,
+        3
+      ],
+      "key": "Delete",
+      "expected": {
+        "value": "Xá",
+        "start": 3,
+        "end": 3,
+        "reversed": false
+      }
+    },
+    {
+      "id": "emoji-joiner-backspace",
+      "text": "X👨‍👩‍👧‍👦Y",
+      "selection": [
+        3,
+        4
+      ],
+      "key": "Backspace",
+      "expected": {
+        "value": "XY",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      }
+    },
+    {
+      "id": "emoji-joiner-delete",
+      "text": "X👨‍👩‍👧‍👦Y",
+      "selection": [
+        3,
+        4
+      ],
+      "key": "Delete",
+      "expected": {
+        "value": "X👨‍👩‍👧‍👦",
+        "start": 12,
+        "end": 12,
+        "reversed": false
+      }
+    },
+    {
+      "id": "indic-vowel-backspace",
+      "text": "Xक्षिY",
+      "selection": [
+        4,
+        5
+      ],
+      "key": "Backspace",
+      "expected": {
+        "value": "Xक्षY",
+        "start": 4,
+        "end": 4,
+        "reversed": false
+      }
+    },
+    {
+      "id": "indic-vowel-delete",
+      "text": "Xक्षिY",
+      "selection": [
+        4,
+        5
+      ],
+      "key": "Delete",
+      "expected": {
+        "value": "Xक्षि",
+        "start": 5,
+        "end": 5,
+        "reversed": false
+      }
+    }
+  ],
+  "selectionDirection": "Reversed flag; collapsed DOM none/forward map to the same native insertion point",
+  "maxLengthCases": [
+    {
+      "limit": 3,
+      "input": "12345",
+      "expected": {
+        "value": "123",
+        "start": 3,
+        "end": 3,
+        "reversed": false
+      },
+      "afterBackspace": {
+        "value": "12",
+        "start": 2,
+        "end": 2,
+        "reversed": false
+      },
+      "passwordExpected": {
+        "value": "123",
+        "start": 3,
+        "end": 3,
+        "reversed": false
+      },
+      "passwordAfterBackspace": {
+        "value": "12",
+        "start": 2,
+        "end": 2,
+        "reversed": false
+      }
+    },
+    {
+      "limit": 3,
+      "input": "😀😀",
+      "expected": {
+        "value": "😀",
+        "start": 2,
+        "end": 2,
+        "reversed": false
+      },
+      "afterBackspace": {
+        "value": "",
+        "start": 0,
+        "end": 0,
+        "reversed": false
+      },
+      "passwordExpected": {
+        "value": "😀",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "passwordAfterBackspace": {
+        "value": "",
+        "start": 0,
+        "end": 0,
+        "reversed": false
+      }
+    },
+    {
+      "limit": 1,
+      "input": "😀",
+      "expected": {
+        "value": "",
+        "start": 0,
+        "end": 0,
+        "reversed": false
+      },
+      "afterBackspace": {
+        "value": "",
+        "start": 0,
+        "end": 0,
+        "reversed": false
+      },
+      "passwordExpected": {
+        "value": "",
+        "start": 0,
+        "end": 0,
+        "reversed": false
+      },
+      "passwordAfterBackspace": {
+        "value": "",
+        "start": 0,
+        "end": 0,
+        "reversed": false
+      }
+    },
+    {
+      "limit": 1,
+      "input": "😀A",
+      "expected": {
+        "value": "",
+        "start": 0,
+        "end": 0,
+        "reversed": false
+      },
+      "afterBackspace": {
+        "value": "",
+        "start": 0,
+        "end": 0,
+        "reversed": false
+      },
+      "passwordExpected": {
+        "value": "",
+        "start": 0,
+        "end": 0,
+        "reversed": false
+      },
+      "passwordAfterBackspace": {
+        "value": "",
+        "start": 0,
+        "end": 0,
+        "reversed": false
+      }
+    },
+    {
+      "limit": 3,
+      "input": "A😀B",
+      "expected": {
+        "value": "A😀",
+        "start": 3,
+        "end": 3,
+        "reversed": false
+      },
+      "afterBackspace": {
+        "value": "A",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "passwordExpected": {
+        "value": "A😀",
+        "start": 2,
+        "end": 2,
+        "reversed": false
+      },
+      "passwordAfterBackspace": {
+        "value": "A",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      }
+    },
+    {
+      "limit": 3,
+      "input": "éé",
+      "expected": {
+        "value": "ée",
+        "start": 3,
+        "end": 3,
+        "reversed": false
+      },
+      "afterBackspace": {
+        "value": "é",
+        "start": 2,
+        "end": 2,
+        "reversed": false
+      },
+      "passwordExpected": {
+        "value": "ée",
+        "start": 3,
+        "end": 3,
+        "reversed": false
+      },
+      "passwordAfterBackspace": {
+        "value": "é",
+        "start": 2,
+        "end": 2,
+        "reversed": false
+      }
+    },
+    {
+      "limit": 3,
+      "input": "👨‍👩‍👧‍👦",
+      "expected": {
+        "value": "👨‍",
+        "start": 3,
+        "end": 3,
+        "reversed": false
+      },
+      "afterBackspace": {
+        "value": "👨",
+        "start": 2,
+        "end": 2,
+        "reversed": false
+      },
+      "passwordExpected": {
+        "value": "👨‍",
+        "start": 1,
+        "end": 1,
+        "reversed": false
+      },
+      "passwordAfterBackspace": {
+        "value": "👨",
+        "start": 2,
+        "end": 2,
+        "reversed": false
+      }
+    }
+  ]
+}

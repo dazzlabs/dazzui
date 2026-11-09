@@ -12,6 +12,7 @@ use gpui::{
     VisualTestContext, Window, div, point, prelude::*, px,
 };
 use std::{cell::RefCell, rc::Rc, time::Duration};
+use support::keys;
 use support::paint::PaintProbe;
 gpui::actions!(sidebar_shortcut_tests, [OverrideSidebarKey]);
 struct Harness {
@@ -171,7 +172,7 @@ fn sidebar_input_keeps_small_default_and_editor_callbacks(cx: &mut TestAppContex
     let (view, cx) = setup(cx);
     assert_eq!(bounds(&view, cx, "field").size.height, px(26.));
     click(cx, bounds(&view, cx, "field").center());
-    cx.simulate_keystrokes("cmd-a");
+    cx.simulate_keystrokes(keys("cmd-a", "ctrl-a"));
     cx.simulate_input("héllo");
     cx.run_until_parked();
     assert_eq!(view.read_with(cx, |view, _| view.text.clone()), "héllo");

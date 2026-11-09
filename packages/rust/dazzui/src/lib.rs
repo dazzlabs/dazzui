@@ -9,7 +9,7 @@ pub mod components;
 pub mod foundation;
 mod generated;
 pub mod glyphs;
-#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
 mod platform_fonts;
 pub mod theme;
 pub mod tokens;

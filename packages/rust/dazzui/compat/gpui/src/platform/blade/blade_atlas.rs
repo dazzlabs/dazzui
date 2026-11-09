@@ -94,7 +94,18 @@ impl PlatformAtlas for BladeAtlas {
             let Some((size, bytes)) = build()? else {
                 return Ok(None);
             };
-            let tile = lock.allocate(size, key.texture_kind());
+            let kind = key.texture_kind();
+            let bytes = if matches!(kind, AtlasTextureKind::Polychrome) {
+                // The platform atlas API supplies straight BGRA. Filter in
+                // premultiplied space so transparent texels cannot tint or
+                // darken their visible neighbors during interpolation.
+                let mut bytes = bytes.into_owned();
+                crate::premultiply_alpha(&mut bytes);
+                Cow::Owned(bytes)
+            } else {
+                bytes
+            };
+            let tile = lock.allocate(size, kind);
             lock.upload_texture(tile.texture_id, tile.bounds, &bytes);
             lock.tiles_by_key.insert(key.clone(), tile.clone());
             Ok(Some(tile))

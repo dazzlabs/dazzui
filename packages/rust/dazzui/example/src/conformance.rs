@@ -40,6 +40,7 @@ pub struct Options {
     themes: String,
     scenes: Option<Vec<String>>,
     images: bool,
+    window_capture: bool,
     commit: String,
     motion_time: Option<Duration>,
     reduced_motion: bool,
@@ -47,13 +48,24 @@ pub struct Options {
     modal_index: usize,
     caret_focus: Option<usize>,
     caret_input: Option<String>,
+    caret_click: Option<f32>,
+    caret_click_y: Option<f32>,
+    caret_click_count: usize,
+    caret_drag: Vec<(f32, f32)>,
+    caret_shift_clicks: Vec<(f32, f32)>,
+    caret_replacement: Option<String>,
     caret_keys: Vec<String>,
+    caret_batch_keys: bool,
+    selection_probe: bool,
 }
 
 impl Options {
     /// `--conformance --out <dir> --contract <scenes.json> [--themes …]
-    /// [--scenes …] [--no-images] [--positions] [--caret-focus <index>] [--caret-input <text>]
-    /// [--caret-keys <key,…>] [--commit …]`, or `None` without
+    /// [--scenes …] [--no-images] [--window-capture] [--positions]
+    /// [--caret-focus <index>] [--caret-input <text>]
+    /// [--caret-click <x>] [--caret-click-y <y>] [--caret-click-count <1|2|3>]
+    /// [--caret-drag <x,y;x,y>] [--caret-shift-clicks <x,y;x,y>]
+    /// [--caret-selection-probe] [--caret-batch-keys] [--caret-keys <key,…>] [--caret-replace-selection <text>] [--commit …]`, or `None` without
     /// `--conformance`.
     pub fn parse(args: &[String]) -> Option<Options> {
         if !args.iter().any(|arg| arg == "--conformance") {
@@ -65,6 +77,30 @@ impl Options {
                 .and_then(|i| args.get(i + 1))
                 .cloned()
         };
+        let points = |name: &str| {
+            value(name)
+                .map(|path| {
+                    path.split(';')
+                        .map(|point| {
+                            let (x, y) = point
+                                .split_once(',')
+                                .unwrap_or_else(|| panic!("{name} expects x,y;x,y points"));
+                            let x: f32 = x
+                                .parse()
+                                .unwrap_or_else(|_| panic!("{name} x must be a pixel offset"));
+                            let y: f32 = y
+                                .parse()
+                                .unwrap_or_else(|_| panic!("{name} y must be a pixel offset"));
+                            assert!(
+                                x.is_finite() && y.is_finite(),
+                                "{name} points must be finite"
+                            );
+                            (x, y)
+                        })
+                        .collect()
+                })
+                .unwrap_or_default()
+        };
         Some(Options {
             out: PathBuf::from(value("--out").expect("--out is required")),
             contract: PathBuf::from(value("--contract").expect("--contract is required")),
@@ -73,6 +109,7 @@ impl Options {
                 .filter(|s| !s.is_empty())
                 .map(|s| s.split(',').map(str::to_string).collect()),
             images: !args.iter().any(|arg| arg == "--no-images"),
+            window_capture: args.iter().any(|arg| arg == "--window-capture"),
             commit: value("--commit").unwrap_or_default(),
             motion_time: value("--motion-ms").map(|value| {
                 let milliseconds: f64 = value.parse().expect("--motion-ms must be a number");
@@ -103,6 +140,33 @@ impl Options {
                     .expect("--caret-focus must be an unsigned integer")
             }),
             caret_input: value("--caret-input"),
+            caret_click: value("--caret-click").map(|x| {
+                let x: f32 = x.parse().expect("--caret-click must be a pixel offset");
+                assert!(x.is_finite(), "--caret-click must be finite");
+                x
+            }),
+            caret_click_y: value("--caret-click-y").map(|y| {
+                let y: f32 = y.parse().expect("--caret-click-y must be a pixel offset");
+                assert!(y.is_finite(), "--caret-click-y must be finite");
+                y
+            }),
+            caret_click_count: value("--caret-click-count")
+                .map(|count| {
+                    let count = count
+                        .parse()
+                        .expect("--caret-click-count must be an integer");
+                    assert!(
+                        (1..=3).contains(&count),
+                        "--caret-click-count must be 1, 2 or 3"
+                    );
+                    count
+                })
+                .unwrap_or(1),
+            caret_drag: points("--caret-drag"),
+            caret_shift_clicks: points("--caret-shift-clicks"),
+            caret_replacement: value("--caret-replace-selection"),
+            caret_batch_keys: args.iter().any(|arg| arg == "--caret-batch-keys"),
+            selection_probe: args.iter().any(|arg| arg == "--caret-selection-probe"),
             caret_keys: value("--caret-keys")
                 .map(|keys| keys.split(',').map(str::to_owned).collect())
                 .unwrap_or_default(),
@@ -236,13 +300,13 @@ async fn frame(cx: &mut AsyncApp) {
 async fn settle(
     window: WindowHandle<Stage>,
     cx: &mut AsyncApp,
-    images: bool,
+    presentation: bool,
 ) -> Result<(), String> {
     let mut previous = None;
     for _ in 0..25 {
-        if !images {
+        if !presentation {
             // A compositor can stop requesting presentation for an occluded
-            // window. Box collection still needs a newly laid-out native frame.
+            // window. Readings and renderer capture still need a fresh frame.
             cx.update_window(window.into(), |_, window, cx| window.draw(cx).clear())
                 .map_err(|error| error.to_string())?;
         }
@@ -251,7 +315,14 @@ async fn settle(
         if !frames.contains_key(&FRAME) {
             continue;
         }
-        let snapshot = (frames, specimen::carets());
+        let input = cx
+            .update_window(window.into(), |_, window, cx| {
+                window
+                    .focused_input_snapshot(cx)
+                    .map(|(text, selection)| (text, selection.range, selection.reversed))
+            })
+            .map_err(|error| error.to_string())?;
+        let snapshot = (frames, specimen::carets(), input);
         if previous.as_ref() == Some(&snapshot) {
             return Ok(());
         }
@@ -310,6 +381,20 @@ async fn collect(
 
     for theme_id in options.theme_ids() {
         let entry = Theme::named(&theme_id).ok_or(format!("no theme named {theme_id}"))?;
+        // Isolate actual selection pixels without changing layout or fonts,
+        // just as the browser probe overrides foreground and ::selection ink.
+        let entry: &'static dazzui::tokens::ThemeEntry = if options.selection_probe {
+            let mut tokens = *entry.tokens;
+            tokens.color_content = dazzui::tokens::Color::TRANSPARENT;
+            tokens.focus_ring = dazzui::tokens::Paint::Color(dazzui::tokens::Color(0xff00ffff), 1.);
+            Box::leak(Box::new(dazzui::tokens::ThemeEntry {
+                name: entry.name,
+                dark: entry.dark,
+                tokens: Box::leak(Box::new(tokens)),
+            }))
+        } else {
+            entry
+        };
         let image_dir = options.out.join("images").join(&theme_id);
         if options.images {
             std::fs::create_dir_all(&image_dir).map_err(|e| e.to_string())?;
@@ -371,7 +456,7 @@ async fn collect(
                     cx.notify();
                 })
                 .map_err(|e| e.to_string())?;
-            settle(window, cx, options.images).await?;
+            settle(window, cx, options.images && options.window_capture).await?;
             let height = specimen::frames()
                 .get(&FRAME)
                 .map(|b| f32::from(b.size.height))
@@ -389,7 +474,7 @@ async fn collect(
                 })
                 .map_err(|e| e.to_string())?;
             if resized {
-                settle(window, cx, options.images).await?;
+                settle(window, cx, options.images && options.window_capture).await?;
             }
             if let Some(index) = options.caret_focus {
                 cx.update_window(window.into(), |_, window, _| {
@@ -399,7 +484,7 @@ async fn collect(
                     }
                 })
                 .map_err(|error| error.to_string())?;
-                settle(window, cx, options.images).await?;
+                settle(window, cx, options.images && options.window_capture).await?;
                 cx.update_window(window.into(), |_, window, cx| {
                     let select = if cfg!(target_os = "macos") {
                         "cmd-a"
@@ -411,7 +496,7 @@ async fn collect(
                 .map_err(|error| error.to_string())?;
                 // Keep selection and replacement in distinct native event
                 // turns, committing the current input handler between them.
-                settle(window, cx, options.images).await?;
+                settle(window, cx, options.images && options.window_capture).await?;
                 cx.update_window(window.into(), |_, window, cx| {
                     if let Some(text) = &options.caret_input {
                         window.dispatch_keystroke(
@@ -427,7 +512,127 @@ async fn collect(
                     }
                 })
                 .map_err(|error| error.to_string())?;
-                settle(window, cx, options.images).await?;
+                settle(window, cx, options.images && options.window_capture).await?;
+                // A noncollapsed selection has no caret quad. Retain the
+                // focused control's surface before the first pointer action.
+                let pointer_surface =
+                    if options.caret_click.is_some() || !options.caret_shift_clicks.is_empty() {
+                        specimen::carets()
+                            .into_values()
+                            .find(|trace| {
+                                trace["quads"]
+                                    .as_array()
+                                    .is_some_and(|quads| !quads.is_empty())
+                            })
+                            .ok_or("the focused input did not paint a caret")?["surface"]
+                            .clone()
+                    } else {
+                        Value::Null
+                    };
+                if let Some(x) = options.caret_click {
+                    let surface = &pointer_surface;
+                    let position = point(
+                        px(surface["left"].as_f64().unwrap() as f32 + x),
+                        px(surface["top"].as_f64().unwrap() as f32
+                            + options
+                                .caret_click_y
+                                .unwrap_or(surface["height"].as_f64().unwrap() as f32 / 2.)),
+                    );
+                    cx.update_window(window.into(), |_, window, cx| {
+                        window.dispatch_event(
+                            gpui::PlatformInput::MouseDown(gpui::MouseDownEvent {
+                                button: gpui::MouseButton::Left,
+                                position,
+                                click_count: options.caret_click_count,
+                                ..Default::default()
+                            }),
+                            cx,
+                        );
+                        if options.caret_drag.is_empty() {
+                            window.dispatch_event(
+                                gpui::PlatformInput::MouseUp(gpui::MouseUpEvent {
+                                    button: gpui::MouseButton::Left,
+                                    position,
+                                    click_count: options.caret_click_count,
+                                    ..Default::default()
+                                }),
+                                cx,
+                            );
+                        }
+                    })
+                    .map_err(|error| error.to_string())?;
+                    settle(window, cx, options.images && options.window_capture).await?;
+                    if !options.caret_drag.is_empty() {
+                        let mut release = position;
+                        for &(x, y) in &options.caret_drag {
+                            release = point(
+                                px(surface["left"].as_f64().unwrap() as f32 + x),
+                                px(surface["top"].as_f64().unwrap() as f32 + y),
+                            );
+                            cx.update_window(window.into(), |_, window, cx| {
+                                window.dispatch_event(
+                                    gpui::PlatformInput::MouseMove(gpui::MouseMoveEvent {
+                                        position: release,
+                                        pressed_button: Some(gpui::MouseButton::Left),
+                                        modifiers: Default::default(),
+                                    }),
+                                    cx,
+                                );
+                            })
+                            .map_err(|error| error.to_string())?;
+                            settle(window, cx, options.images && options.window_capture).await?;
+                        }
+                        cx.update_window(window.into(), |_, window, cx| {
+                            window.dispatch_event(
+                                gpui::PlatformInput::MouseUp(gpui::MouseUpEvent {
+                                    position: release,
+                                    button: gpui::MouseButton::Left,
+                                    click_count: options.caret_click_count,
+                                    ..Default::default()
+                                }),
+                                cx,
+                            );
+                        })
+                        .map_err(|error| error.to_string())?;
+                        settle(window, cx, options.images && options.window_capture).await?;
+                    }
+                }
+                if !options.caret_shift_clicks.is_empty() {
+                    let surface = &pointer_surface;
+                    for &(x, y) in &options.caret_shift_clicks {
+                        let position = point(
+                            px(surface["left"].as_f64().unwrap() as f32 + x),
+                            px(surface["top"].as_f64().unwrap() as f32 + y),
+                        );
+                        cx.update_window(window.into(), |_, window, cx| {
+                            let modifiers = gpui::Modifiers {
+                                shift: true,
+                                ..Default::default()
+                            };
+                            window.dispatch_event(
+                                gpui::PlatformInput::MouseDown(gpui::MouseDownEvent {
+                                    position,
+                                    button: gpui::MouseButton::Left,
+                                    click_count: 1,
+                                    modifiers,
+                                    ..Default::default()
+                                }),
+                                cx,
+                            );
+                            window.dispatch_event(
+                                gpui::PlatformInput::MouseUp(gpui::MouseUpEvent {
+                                    position,
+                                    button: gpui::MouseButton::Left,
+                                    click_count: 1,
+                                    modifiers,
+                                }),
+                                cx,
+                            );
+                        })
+                        .map_err(|error| error.to_string())?;
+                        settle(window, cx, options.images && options.window_capture).await?;
+                    }
+                }
                 for key in &options.caret_keys {
                     cx.update_window(window.into(), |_, window, cx| {
                         window.dispatch_keystroke(
@@ -436,10 +641,37 @@ async fn collect(
                         );
                     })
                     .map_err(|error| error.to_string())?;
-                    settle(window, cx, options.images).await?;
+                    if !options.caret_batch_keys {
+                        settle(window, cx, options.images && options.window_capture).await?;
+                    }
                 }
+                if options.caret_batch_keys {
+                    settle(window, cx, options.images && options.window_capture).await?;
+                }
+                if let Some(text) = &options.caret_replacement {
+                    cx.update_window(window.into(), |_, window, cx| {
+                        window.dispatch_keystroke(
+                            gpui::Keystroke {
+                                key: "unidentified".into(),
+                                key_char: Some(text.clone()),
+                                ..Default::default()
+                            },
+                            cx,
+                        );
+                    })
+                    .map_err(|error| error.to_string())?;
+                    settle(window, cx, options.images && options.window_capture).await?;
+                }
+                let snapshot = cx
+                    .update_window(window.into(), |_, window, cx| {
+                        window.focused_input_snapshot(cx)
+                    })
+                    .map_err(|error| error.to_string())?;
                 let traces = specimen::carets();
-                for (index, trace) in traces {
+                for (index, mut trace) in traces {
+                    if let Some((value, selection)) = &snapshot {
+                        trace["input"] = json!({"value": value, "selection": [selection.range.start, selection.range.end], "reversed": selection.reversed});
+                    }
                     if let Some(address) = specimens
                         .get(index)
                         .and_then(|specimen| specimen["address"].as_str())
@@ -472,7 +704,7 @@ async fn collect(
                     .map_err(|e| e.to_string())?;
                 let number = number.ok_or("the window has no native input number")?;
                 modal_click(number, height, bounds.center())?;
-                settle(window, cx, options.images).await?;
+                settle(window, cx, options.images && options.window_capture).await?;
                 let offset = if mode == "close" {
                     let duration = window
                         .update(cx, |_, _, cx| {
@@ -481,9 +713,9 @@ async fn collect(
                         .map_err(|e| e.to_string())?;
                     cx.update(|cx| dazzui::Motion::seek(duration, cx))
                         .map_err(|e| e.to_string())?;
-                    settle(window, cx, options.images).await?;
+                    settle(window, cx, options.images && options.window_capture).await?;
                     modal_escape(number)?;
-                    settle(window, cx, options.images).await?;
+                    settle(window, cx, options.images && options.window_capture).await?;
                     duration
                 } else {
                     Duration::ZERO
@@ -492,7 +724,7 @@ async fn collect(
                     dazzui::Motion::seek(offset + options.motion_time.unwrap_or_default(), cx)
                 })
                 .map_err(|e| e.to_string())?;
-                settle(window, cx, options.images).await?;
+                settle(window, cx, options.images && options.window_capture).await?;
             }
             let frames = specimen::frames();
             let styles = specimen::styles(&specimens);
@@ -509,12 +741,20 @@ async fn collect(
             let mut crops: BTreeMap<usize, String> = BTreeMap::new();
             if options.images {
                 let path = image_dir.join(format!("{file}.png"));
-                let number = window
-                    .update(cx, |_, window, _| window_number(window))
-                    .map_err(|e| e.to_string())?
-                    .ok_or("the window has no number to capture it by")?;
-                capture(number, &path)?;
-                let picture = image::open(&path).map_err(|e| e.to_string())?;
+                let picture = if options.window_capture {
+                    let number = window
+                        .update(cx, |_, window, _| window_number(window))
+                        .map_err(|e| e.to_string())?
+                        .ok_or("the window has no number to capture it by")?;
+                    capture(number, &path)?;
+                    image::open(&path).map_err(|e| e.to_string())?
+                } else {
+                    let pixels = window
+                        .update(cx, |_, window, _| window.capture_scene())
+                        .map_err(|e| e.to_string())?
+                        .map_err(|e| e.to_string())?;
+                    image::DynamicImage::ImageRgba8(pixels)
+                };
                 let scale = picture.width() as f32 / VIEWPORT_WIDTH;
                 let capture_height = if options.modal.is_some() {
                     window
@@ -601,6 +841,7 @@ async fn collect(
         "collected": now(),
         "commit": options.commit,
         "scale": scale,
+        "capture": options.images.then_some(if options.window_capture { "window" } else { "renderer" }),
         // The platform's own UI face, as React's; no embedded test face.
         "font": null,
         "themes": readings_themes,

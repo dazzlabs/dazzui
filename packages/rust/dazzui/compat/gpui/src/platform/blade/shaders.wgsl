@@ -161,6 +161,16 @@ fn to_tile_position(unit_vertex: vec2<f32>, tile: AtlasTile) -> vec2<f32> {
   return (vec2<f32>(tile.bounds.origin) + unit_vertex * vec2<f32>(tile.bounds.size)) / atlas_size;
 }
 
+fn clamp_tile_position(position: vec2<f32>, tile: AtlasTile) -> vec2<f32> {
+    let atlas_size = vec2<f32>(textureDimensions(t_sprite, 0));
+    let origin = vec2<f32>(tile.bounds.origin);
+    let size = vec2<f32>(tile.bounds.size);
+    // Clamp at the fragment, retaining the pixel-center mapping in the
+    // interior while excluding neighboring atlas cells during enlargement.
+    return clamp(position, (origin + 0.5) / atlas_size,
+        (origin + size - 0.5) / atlas_size);
+}
+
 fn distance_from_clip_rect_impl(position: vec2<f32>, clip_bounds: Bounds) -> vec4<f32> {
     let tl = position - clip_bounds.origin;
     let br = clip_bounds.origin + clip_bounds.size - position;
@@ -364,6 +374,17 @@ fn blend_color(color: vec4<f32>, alpha_factor: f32) -> vec4<f32> {
     let alpha = color.a * alpha_factor;
     let multiplier = select(1.0, alpha, globals.premultiplied_alpha != 0u);
     return vec4<f32>(color.rgb * multiplier, alpha);
+}
+
+fn blend_premultiplied_color(color: vec4<f32>, alpha_factor: f32) -> vec4<f32> {
+    let alpha = color.a * alpha_factor;
+    if (globals.premultiplied_alpha != 0u) {
+        return vec4<f32>(color.rgb * alpha_factor, alpha);
+    }
+    if (color.a > 0.0) {
+        return vec4<f32>(color.rgb / color.a, alpha);
+    }
+    return vec4<f32>(0.0);
 }
 
 
@@ -1062,7 +1083,7 @@ fn vs_path(@builtin(vertex_index) vertex_id: u32, @builtin(instance_index) insta
     let device_position = to_device_position(unit_vertex, sprite.bounds);
     // For screen-space intermediate texture, convert screen position to texture coordinates
     let screen_position = sprite.bounds.origin + unit_vertex * sprite.bounds.size;
-    let texture_coords = screen_position / globals.viewport_size;
+    let texture_coords = screen_position;
 
     var out = PathVarying();
     out.position = device_position;
@@ -1073,7 +1094,7 @@ fn vs_path(@builtin(vertex_index) vertex_id: u32, @builtin(instance_index) insta
 
 @fragment
 fn fs_path(input: PathVarying) -> @location(0) vec4<f32> {
-    let sample = textureSample(t_sprite, s_sprite, input.texture_coords);
+    let sample = textureSample(t_sprite, s_sprite, input.texture_coords / vec2<f32>(textureDimensions(t_sprite)));
     return sample;
 }
 
@@ -1122,9 +1143,10 @@ fn fs_underline(input: UnderlineVarying) -> @location(0) vec4<f32> {
     }
 
     let underline = b_underlines[input.underline_id];
+    // blend_color applies the ink alpha; its second argument is coverage.
     if ((underline.wavy & 0xFFu) == 0u)
     {
-        return blend_color(input.color, input.color.a);
+        return blend_color(input.color, 1.0);
     }
 
     let half_thickness = underline.thickness * 0.5;
@@ -1140,7 +1162,7 @@ fn fs_underline(input: UnderlineVarying) -> @location(0) vec4<f32> {
     let distance_from_top_border = distance_in_pixels - half_thickness;
     let distance_from_bottom_border = distance_in_pixels + half_thickness;
     let alpha = saturate(0.5 - max(-distance_from_bottom_border, distance_from_top_border));
-    return blend_color(input.color, alpha * input.color.a);
+    return blend_color(input.color, alpha);
 }
 
 // --- monochrome sprites --- //
@@ -1160,6 +1182,7 @@ struct MonoSpriteVarying {
     @builtin(position) position: vec4<f32>,
     @location(0) tile_position: vec2<f32>,
     @location(1) @interpolate(flat) color: vec4<f32>,
+    @location(2) @interpolate(flat) sprite_id: u32,
     @location(3) clip_distances: vec4<f32>,
 }
 
@@ -1173,13 +1196,15 @@ fn vs_mono_sprite(@builtin(vertex_index) vertex_id: u32, @builtin(instance_index
 
     out.tile_position = to_tile_position(unit_vertex, sprite.tile);
     out.color = hsla_to_rgba(sprite.color);
+    out.sprite_id = instance_id;
     out.clip_distances = distance_from_clip_rect_transformed(unit_vertex, sprite.bounds, sprite.content_mask, sprite.transformation);
     return out;
 }
 
 @fragment
 fn fs_mono_sprite(input: MonoSpriteVarying) -> @location(0) vec4<f32> {
-    let sample = textureSample(t_sprite, s_sprite, input.tile_position).r;
+    let sprite = b_mono_sprites[input.sprite_id];
+    let sample = textureSample(t_sprite, s_sprite, clamp_tile_position(input.tile_position, sprite.tile)).r;
     let alpha_corrected = apply_contrast_and_gamma_correction(sample, input.color.rgb, grayscale_enhanced_contrast, gamma_ratios);
 
     // Alpha clip after using the derivatives.
@@ -1227,13 +1252,13 @@ fn vs_poly_sprite(@builtin(vertex_index) vertex_id: u32, @builtin(instance_index
 
 @fragment
 fn fs_poly_sprite(input: PolySpriteVarying) -> @location(0) vec4<f32> {
-    let sample = textureSample(t_sprite, s_sprite, input.tile_position);
+    let sprite = b_poly_sprites[input.sprite_id];
+    let sample = textureSample(t_sprite, s_sprite, clamp_tile_position(input.tile_position, sprite.tile));
     // Alpha clip after using the derivatives.
     if (any(input.clip_distances < vec4<f32>(0.0))) {
         return vec4<f32>(0.0);
     }
 
-    let sprite = b_poly_sprites[input.sprite_id];
     let distance = quad_sdf(input.position.xy, sprite.bounds, sprite.corner_radii);
 
     var color = sample;
@@ -1241,7 +1266,7 @@ fn fs_poly_sprite(input: PolySpriteVarying) -> @location(0) vec4<f32> {
         let grayscale = dot(color.rgb, GRAYSCALE_FACTORS);
         color = vec4<f32>(vec3<f32>(grayscale), sample.a);
     }
-    return blend_color(color, sprite.opacity * saturate(0.5 - distance));
+    return blend_premultiplied_color(color, sprite.opacity * saturate(0.5 - distance));
 }
 
 // --- surfaces --- //
@@ -1294,3 +1319,165 @@ fn fs_surface(input: SurfaceVarying) -> @location(0) vec4<f32> {
 
     return ycbcr_to_RGB * y_cb_cr;
 }
+
+// Padding-edge curves can be elliptical when adjoining borders differ.
+fn ellipse_corner_distance(delta: vec2<f32>, radii: vec2<f32>, implicit_circle: bool) -> f32 {
+    if (!implicit_circle && radii.x == radii.y) { return length(delta) - radii.x; }
+    let normalized = delta / radii;
+    let implicit = dot(normalized, normalized) - 1.0;
+    let gradient = 2.0 * length(delta / (radii * radii));
+    if (gradient > 0.0) { return implicit / gradient; }
+    return -min(radii.x, radii.y);
+}
+fn elliptical_clip_distance(position: vec2<f32>, bounds: Bounds, rx: Corners, ry: Corners, implicit_circle: bool) -> f32 {
+    let p = position - bounds.origin;
+    let size = bounds.size;
+    var distance = max(max(-p.x, -p.y), max(p.x - size.x, p.y - size.y));
+    var r = vec2<f32>(rx.top_left, ry.top_left);
+    if (all(r > vec2<f32>(0.0)) && p.x < r.x && p.y < r.y) {
+        distance = max(distance, ellipse_corner_distance(p - r, r, implicit_circle));
+    }
+    r = vec2<f32>(rx.top_right, ry.top_right);
+    if (all(r > vec2<f32>(0.0)) && p.x > size.x - r.x && p.y < r.y) {
+        distance = max(distance, ellipse_corner_distance(p - vec2<f32>(size.x - r.x, r.y), r, implicit_circle));
+    }
+    r = vec2<f32>(rx.bottom_right, ry.bottom_right);
+    if (all(r > vec2<f32>(0.0)) && p.x > size.x - r.x && p.y > size.y - r.y) {
+        distance = max(distance, ellipse_corner_distance(p - (size - r), r, implicit_circle));
+    }
+    r = vec2<f32>(rx.bottom_left, ry.bottom_left);
+    if (all(r > vec2<f32>(0.0)) && p.x < r.x && p.y > size.y - r.y) {
+        distance = max(distance, ellipse_corner_distance(p - vec2<f32>(r.x, size.y - r.y), r, implicit_circle));
+    }
+    return distance;
+}
+
+// Isolate a subtree before applying opacity, rounded overflow and a transform.
+struct CompositeParams {
+    bounds: Bounds,
+    content_mask: Bounds,
+    corner_radii: Corners,
+    corner_radii_y: Corners,
+    opacity: f32,
+    pad0: f32,
+    pad1: f32,
+    pad2: f32,
+    transform_row0: vec4<f32>,
+    transform_row1: vec4<f32>,
+    source_origin: vec2<f32>,
+    source_pad: vec2<f32>,
+}
+var<uniform> composite: CompositeParams;
+struct CompositeVarying {
+    @builtin(position) position: vec4<f32>,
+    @location(0) texture_position: vec2<f32>,
+    @location(1) local_position: vec2<f32>,
+    @location(2) clip_distances: vec4<f32>,
+}
+@vertex
+fn vs_composite(@builtin(vertex_index) vertex_id: u32) -> CompositeVarying {
+    let unit = vec2<f32>(f32(vertex_id & 1u), 0.5 * f32(vertex_id & 2u));
+    let screen = composite.bounds.origin + unit * composite.bounds.size;
+    let transformation = TransformationMatrix(mat2x2<f32>(composite.transform_row0.xy, composite.transform_row1.xy), vec2<f32>(composite.transform_row0.z, composite.transform_row1.z));
+    var out: CompositeVarying;
+    out.position = to_device_position_transformed(unit, composite.bounds, transformation);
+    out.texture_position = screen - composite.source_origin;
+    out.local_position = screen;
+    out.clip_distances = distance_from_clip_rect_transformed(unit, composite.bounds, composite.content_mask, transformation);
+    return out;
+}
+@fragment
+fn fs_composite(input: CompositeVarying) -> @location(0) vec4<f32> {
+    let sample = textureSample(t_sprite, s_sprite, input.texture_position / vec2<f32>(textureDimensions(t_sprite)));
+    if (any(input.clip_distances < vec4<f32>(0.0))) {
+        return vec4<f32>(0.0);
+    }
+    let distance = elliptical_clip_distance(input.local_position, composite.bounds, composite.corner_radii, composite.corner_radii_y, false);
+    return sample * (composite.opacity * saturate(0.5 - distance));
+}
+
+// FillRRectOp coverage mesh; see the crate-root LICENSE-SKIA for source licensing.
+struct SolidRRectVertex {
+    position: vec2<f32>,
+    arc: vec2<f32>,
+    gradient: vec2<f32>,
+    color: Hsla,
+    content_mask: Bounds,
+    hardware_derivatives: u32,
+    pad: u32,
+}
+var<storage> b_solid_rrect_vertices: array<SolidRRectVertex>;
+struct SolidCompositeVarying {
+    @builtin(position) position: vec4<f32>,
+    @location(0) arc: vec4<f32>,
+    @location(1) @interpolate(flat) color: vec4<f32>,
+    @location(2) @interpolate(flat) hardware_derivatives: u32,
+    @location(3) clip_distances: vec4<f32>,
+}
+@vertex
+fn vs_solid_composite(@builtin(vertex_index) vertex_id: u32) -> SolidCompositeVarying {
+    let v = b_solid_rrect_vertices[vertex_id];
+    var out: SolidCompositeVarying;
+    out.position = to_device_position_impl(v.position);
+    out.arc = vec4<f32>(v.arc, v.gradient);
+    out.color = hsla_to_rgba(v.color);
+    out.hardware_derivatives = v.hardware_derivatives;
+    out.clip_distances = distance_from_clip_rect_impl(v.position, v.content_mask);
+    return out;
+}
+@fragment
+fn fs_solid_composite(input: SolidCompositeVarying) -> @location(0) vec4<f32> {
+    let fn_value = input.arc.x * (input.arc.x - 2.0) + input.arc.y * input.arc.y;
+    // Derivatives must be evaluated before the nonuniform clip/coverage branch.
+    let width = select(abs(input.arc.z) + abs(input.arc.w), fwidth(fn_value), input.hardware_derivatives != 0u);
+    let coverage = select(saturate(0.5 - fn_value / max(width, 0.000001)), input.arc.y, input.arc.x == 0.0);
+    if (any(input.clip_distances < vec4<f32>(0.0))) { return vec4<f32>(0.0); }
+    let alpha = input.color.a * coverage;
+    return vec4<f32>(input.color.rgb * alpha, alpha);
+}
+
+// Graphite filled rrect coverage; see crate-root LICENSE-SKIA.
+struct GraphiteRRectVertex {
+    position: vec2<f32>,
+    local_position: vec2<f32>,
+    control: vec2<f32>,
+}
+var<storage> b_graphite_rrect_vertices: array<GraphiteRRectVertex>;
+struct GraphiteCompositeVarying {
+    @builtin(position) position: vec4<f32>,
+    @location(0) local_position: vec2<f32>,
+    @location(1) control: vec2<f32>,
+    @location(2) clip_distances: vec4<f32>,
+}
+@vertex
+fn vs_graphite_composite(@builtin(vertex_index) vertex_id: u32) -> GraphiteCompositeVarying {
+    let v = b_graphite_rrect_vertices[vertex_id];
+    var out: GraphiteCompositeVarying;
+    out.position = to_device_position_impl(v.position);
+    out.local_position = v.local_position;
+    out.control = v.control;
+    out.clip_distances = distance_from_clip_rect_impl(v.position, composite.content_mask);
+    return out;
+}
+@fragment
+fn fs_graphite_composite(input: GraphiteCompositeVarying) -> @location(0) vec4<f32> {
+    let source = input.local_position - composite.source_origin;
+    let sample = textureSample(t_sprite, s_sprite, source / vec2<f32>(textureDimensions(t_sprite)));
+    if (any(input.clip_distances < vec4<f32>(0.0))) { return vec4<f32>(0.0); }
+    let scale = composite.transform_row0.x;
+    let distance = -scale * elliptical_clip_distance(input.local_position, composite.bounds,
+        composite.corner_radii, composite.corner_radii_y, true);
+    let narrow = min(1.0, scale * min(composite.bounds.size.x, composite.bounds.size.y));
+    let coverage = select(saturate(narrow * (min(distance + min(input.control.y, 0.0), 1.0)
+        + 1.0 - 0.5 * narrow)), 1.0, input.control.x > 0.0);
+    return sample * (composite.opacity * coverage);
+}
+
+// Rational conic wedges share the native Metal clip tessellation.
+var<storage> b_clip_vertices: array<vec2<f32>>;
+@vertex
+fn vs_clip(@builtin(vertex_index) vertex_id:u32) -> @builtin(position) vec4<f32> {
+    return to_device_position_impl(b_clip_vertices[vertex_id]);
+}
+@fragment
+fn fs_clip() -> @location(0) vec4<f32> { return vec4<f32>(0.0); }

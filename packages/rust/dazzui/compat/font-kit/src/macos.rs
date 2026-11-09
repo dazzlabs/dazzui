@@ -1,10 +1,13 @@
 use std::any::Any;
 
 use core_foundation::{
-    base::TCFType, dictionary::CFDictionary, number::CFNumber, string::CFString,
+    base::TCFType,
+    dictionary::{CFDictionary, CFDictionaryRef},
+    number::CFNumber,
+    string::CFString,
 };
 use core_text::{
-    font,
+    font::{self, CTFontRef},
     font_descriptor::{TraitAccessors, kCTFontVariationAttribute},
 };
 use upstream::{
@@ -12,6 +15,11 @@ use upstream::{
     handle::Handle, matching, properties::Properties, properties::Weight, source::Source,
     sources::core_text::CoreTextSource,
 };
+
+#[link(name = "CoreText", kind = "framework")]
+unsafe extern "C" {
+    fn CTFontCopyVariation(font: CTFontRef) -> CFDictionaryRef;
+}
 
 /// The weight a face draws at, when Core Text carries one on the `wght` axis.
 ///
@@ -23,13 +31,26 @@ use upstream::{
 /// 500. So the axis is what a caller matching weights should read.
 pub fn css_weight(font: &Font) -> Option<f64> {
     let native = font.native_font();
-    let attributes = native.copy_descriptor().attributes();
-    let key = unsafe { CFString::wrap_under_get_rule(kCTFontVariationAttribute) };
-    let variations = attributes.find(&key)?.downcast::<CFDictionary>()?;
-    let axis = CFNumber::from(u32::from_be_bytes(*b"wght") as i64);
-    let value = variations.find(axis.as_CFType().as_CFTypeRef())?;
-    let number = unsafe { CFNumber::wrap_under_get_rule(*value as _) };
-    number.to_f64()
+    let weight_axis = u32::from_be_bytes(*b"wght") as i64;
+    let variations = unsafe { CTFontCopyVariation(native.as_concrete_TypeRef()) };
+    if !variations.is_null() {
+        let variations: CFDictionary<CFNumber, CFNumber> =
+            unsafe { CFDictionary::wrap_under_create_rule(variations) };
+        if let Some(value) = variations.find(&CFNumber::from(weight_axis)) {
+            if let Some(weight) = value.to_f64() {
+                return Some(weight);
+            }
+        }
+    }
+    // A named variable face may sit at its default with an empty variation
+    // dictionary. PingFang Medium, for example, defaults to 500 while its
+    // native trait maps to 400 in the older font-kit inverse mapping.
+    native.get_variation_axes()?.iter().find_map(|axis| {
+        let id = CFString::new("NSCTVariationAxisIdentifier");
+        let default = CFString::new("NSCTVariationAxisDefaultValue");
+        let found = axis.find(&id)?.downcast::<CFNumber>()?.to_i64()?;
+        (found == weight_axis).then(|| axis.find(&default)?.downcast::<CFNumber>()?.to_f64())?
+    })
 }
 
 /// A face's properties with its drawn weight in place of its trait.

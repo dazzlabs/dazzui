@@ -1,7 +1,8 @@
 use crate::{
-    Bounds, DevicePixels, Font, FontFeatures, FontId, FontMetrics, FontRun, FontStyle, FontWeight,
-    GlyphId, LineLayout, Pixels, PlatformTextSystem, Point, RenderGlyphParams, SUBPIXEL_VARIANTS_X,
-    SUBPIXEL_VARIANTS_Y, ShapedGlyph, ShapedRun, SharedString, Size, point, size,
+    Bounds, CaretStop, DevicePixels, Font, FontFeatures, FontId, FontMetrics, FontRun, FontStyle,
+    FontWeight, GlyphId, LineLayout, Pixels, PlatformTextSystem, Point, RenderGlyphParams,
+    SUBPIXEL_VARIANTS_X, SUBPIXEL_VARIANTS_Y, ShapedGlyph, ShapedRun, SharedString, Size, point,
+    size,
 };
 use anyhow::{Context as _, Ok, Result};
 use collections::HashMap;
@@ -35,6 +36,8 @@ impl FontKey {
 
 struct CosmicTextSystemState {
     swash_cache: SwashCache,
+    synthesis_context: swash::scale::ScaleContext,
+    synthesis_images: HashMap<RenderGlyphParams, cosmic_text::SwashImage>,
     font_system: FontSystem,
     scratch: ShapeBuffer,
     /// Contains all already loaded fonts, including all faces. Indexed by `FontId`.
@@ -44,10 +47,13 @@ struct CosmicTextSystemState {
     font_ids_by_family_cache: HashMap<FontKey, SmallVec<[FontId; 4]>>,
 }
 
+#[derive(Clone)]
 struct LoadedFont {
     font: Arc<CosmicTextFont>,
     features: CosmicFontFeatures,
     is_known_emoji_font: bool,
+    synthetic_bold: bool,
+    synthetic_italic: bool,
 }
 
 impl CosmicTextSystem {
@@ -58,6 +64,8 @@ impl CosmicTextSystem {
         Self(RwLock::new(CosmicTextSystemState {
             font_system,
             swash_cache: SwashCache::new(),
+            synthesis_context: swash::scale::ScaleContext::new(),
+            synthesis_images: HashMap::default(),
             scratch: ShapeBuffer::default(),
             loaded_fonts: Vec::new(),
             font_ids_by_family_cache: HashMap::default(),
@@ -83,7 +91,13 @@ impl PlatformTextSystem for CosmicTextSystem {
             .font_system
             .db()
             .faces()
-            .filter_map(|face| face.families.first().map(|family| family.0.clone()))
+            .flat_map(|face| {
+                face.families
+                    .first()
+                    .map(|family| family.0.clone())
+                    .into_iter()
+                    .chain(std::iter::once(face.post_script_name.clone()))
+            })
             .collect_vec();
         result.sort();
         result.dedup();
@@ -116,7 +130,25 @@ impl PlatformTextSystem for CosmicTextSystem {
             font_kit::matching::find_best_match(&candidate_properties, &font_into_properties(font))
                 .context("requested font family contains no font matching the other parameters")?;
 
-        Ok(candidates[ix])
+        let selected = candidates[ix];
+        let face = state
+            .font_system
+            .db()
+            .face(state.loaded_font(selected).font.id())
+            .unwrap();
+        let bold = font.weight.0 >= 600. && face.weight.0 < 600;
+        let italic =
+            font.style != FontStyle::Normal && face.style == cosmic_text::fontdb::Style::Normal;
+        if bold || italic {
+            let mut loaded = state.loaded_font(selected).clone();
+            loaded.synthetic_bold = bold;
+            loaded.synthetic_italic = italic;
+            let id = FontId(state.loaded_fonts.len());
+            state.loaded_fonts.push(loaded);
+            Ok(id)
+        } else {
+            Ok(selected)
+        }
     }
 
     fn font_metrics(&self, font_id: FontId) -> FontMetrics {
@@ -219,7 +251,10 @@ impl CosmicTextSystemState {
             .font_system
             .db()
             .faces()
-            .filter(|face| face.families.iter().any(|family| *name == family.0))
+            .filter(|face| {
+                face.families.iter().any(|family| *name == family.0)
+                    || face.post_script_name == name
+            })
             .map(|face| (face.id, face.post_script_name.clone()))
             .collect::<SmallVec<[_; 4]>>();
 
@@ -230,25 +265,14 @@ impl CosmicTextSystemState {
                 .get_font(font_id)
                 .context("Could not load font")?;
 
-            // HACK: To let the storybook run and render Windows caption icons. We should actually do better font fallback.
-            let allowed_bad_font_names = [
-                "SegoeFluentIcons", // NOTE: Segoe fluent icons postscript name is inconsistent
-                "Segoe Fluent Icons",
-            ];
-
-            if font.as_swash().charmap().map('m') == 0
-                && !allowed_bad_font_names.contains(&postscript_name.as_str())
-            {
-                self.font_system.db_mut().remove_face(font.id());
-                continue;
-            };
-
             let font_id = FontId(self.loaded_fonts.len());
             loaded_font_ids.push(font_id);
             self.loaded_fonts.push(LoadedFont {
                 font,
                 features: features.try_into()?,
                 is_known_emoji_font: check_is_known_emoji_font(&postscript_name),
+                synthetic_bold: false,
+                synthetic_italic: false,
             });
         }
 
@@ -272,27 +296,73 @@ impl CosmicTextSystemState {
         }
     }
 
-    fn raster_bounds(&mut self, params: &RenderGlyphParams) -> Result<Bounds<DevicePixels>> {
-        let font = &self.loaded_fonts[params.font_id.0].font;
-        let subpixel_shift = point(
+    fn raster_image(&mut self, params: &RenderGlyphParams) -> Result<cosmic_text::SwashImage> {
+        let font = self.loaded_fonts[params.font_id.0].clone();
+        let subpixel = point(
             params.subpixel_variant.x as f32 / SUBPIXEL_VARIANTS_X as f32 / params.scale_factor,
             params.subpixel_variant.y as f32 / SUBPIXEL_VARIANTS_Y as f32 / params.scale_factor,
         );
-        let image = self
-            .swash_cache
-            .get_image(
-                &mut self.font_system,
-                CacheKey::new(
-                    font.id(),
-                    params.glyph_id.0 as u16,
-                    (params.font_size * params.scale_factor).into(),
-                    (subpixel_shift.x, subpixel_shift.y.trunc()),
-                    cosmic_text::CacheKeyFlags::empty(),
-                )
-                .0,
+        let logical_size = if bitmap_only(&font.font) {
+            params.font_size
+        } else {
+            (params.font_size * 64.).floor() / 64.
+        };
+        let size = logical_size * params.scale_factor;
+        let image = if (font.synthetic_bold || font.synthetic_italic) && !font.is_known_emoji_font {
+            if let Some(image) = self.synthesis_images.get(params) {
+                return Ok(image.clone());
+            }
+            use swash::{
+                scale::{Render, Source, StrikeWith},
+                zeno::{Angle, Format, Transform, Vector},
+            };
+            let mut scaler = self
+                .synthesis_context
+                .builder(font.font.as_swash())
+                .size(f32::from(size))
+                .hint(true)
+                .build();
+            let image = Render::new(&[
+                Source::ColorOutline(0),
+                Source::ColorBitmap(StrikeWith::BestFit),
+                Source::Outline,
+            ])
+            .format(Format::Alpha)
+            .offset(Vector::new(subpixel.x, subpixel.y.trunc()))
+            .embolden(if font.synthetic_bold {
+                f32::from(size) / 24.
+            } else {
+                0.
+            })
+            .transform(
+                font.synthetic_italic
+                    .then(|| Transform::skew(Angle::from_degrees(14.), Angle::from_degrees(0.))),
             )
-            .clone()
-            .with_context(|| format!("no image for {params:?} in font {font:?}"))?;
+            .render(&mut scaler, params.glyph_id.0 as u16);
+            if let Some(image) = &image {
+                self.synthesis_images.insert(params.clone(), image.clone());
+            }
+            image
+        } else {
+            self.swash_cache
+                .get_image(
+                    &mut self.font_system,
+                    CacheKey::new(
+                        font.font.id(),
+                        params.glyph_id.0 as u16,
+                        size.into(),
+                        (subpixel.x, subpixel.y.trunc()),
+                        cosmic_text::CacheKeyFlags::empty(),
+                    )
+                    .0,
+                )
+                .clone()
+        };
+        image.with_context(|| format!("no image for {params:?}"))
+    }
+
+    fn raster_bounds(&mut self, params: &RenderGlyphParams) -> Result<Bounds<DevicePixels>> {
+        let image = self.raster_image(params)?;
         Ok(Bounds {
             origin: point(image.placement.left.into(), (-image.placement.top).into()),
             size: size(image.placement.width.into(), image.placement.height.into()),
@@ -309,31 +379,19 @@ impl CosmicTextSystemState {
             anyhow::bail!("glyph bounds are empty");
         } else {
             let bitmap_size = glyph_bounds.size;
-            let font = &self.loaded_fonts[params.font_id.0].font;
-            let subpixel_shift = point(
-                params.subpixel_variant.x as f32 / SUBPIXEL_VARIANTS_X as f32 / params.scale_factor,
-                params.subpixel_variant.y as f32 / SUBPIXEL_VARIANTS_Y as f32 / params.scale_factor,
-            );
-            let mut image = self
-                .swash_cache
-                .get_image(
-                    &mut self.font_system,
-                    CacheKey::new(
-                        font.id(),
-                        params.glyph_id.0 as u16,
-                        (params.font_size * params.scale_factor).into(),
-                        (subpixel_shift.x, subpixel_shift.y.trunc()),
-                        cosmic_text::CacheKeyFlags::empty(),
-                    )
-                    .0,
-                )
-                .clone()
-                .with_context(|| format!("no image for {params:?} in font {font:?}"))?;
+            let mut image = self.raster_image(params)?;
 
             if params.is_emoji {
-                // Convert from RGBA to BGRA.
+                // Swash's layered color outlines are premultiplied, while
+                // decoded color bitmaps are straight. The atlas API takes
+                // straight BGRA in both cases, as it does for images.
+                let premultiplied = matches!(image.source, swash::scale::Source::ColorOutline(_));
                 for pixel in image.data.chunks_exact_mut(4) {
-                    pixel.swap(0, 2);
+                    if premultiplied {
+                        crate::swap_rgba_pa_to_bgra(pixel);
+                    } else {
+                        pixel.swap(0, 2);
+                    }
                 }
             }
 
@@ -365,6 +423,8 @@ impl CosmicTextSystemState {
                 font,
                 features: CosmicFontFeatures::new(),
                 is_known_emoji_font: check_is_known_emoji_font(&face.post_script_name),
+                synthetic_bold: false,
+                synthetic_italic: false,
             });
 
             font_id
@@ -373,14 +433,25 @@ impl CosmicTextSystemState {
 
     #[profiling::function]
     fn layout_line(&mut self, text: &str, font_size: Pixels, font_runs: &[FontRun]) -> LineLayout {
+        let bidi = unicode_bidi::BidiInfo::new(text, Some(unicode_bidi::Level::ltr()));
+        // ShapeLine has no paragraph-direction argument. A zero-width LRM
+        // fixes its paragraph base without overriding embedded RTL runs.
+        let prefixed = bidi.has_rtl().then(|| format!("\u{200e}{text}"));
+        let prefix = if prefixed.is_some() {
+            '\u{200e}'.len_utf8()
+        } else {
+            0
+        };
+        let shaped_text = prefixed.as_deref().unwrap_or(text);
         let mut attrs_list = AttrsList::new(&Attrs::new());
         let mut offs = 0;
         for run in font_runs {
             let loaded_font = self.loaded_font(run.font_id);
             let font = self.font_system.db().face(loaded_font.font.id()).unwrap();
 
+            let end = offs + run.len + if offs == 0 { prefix } else { 0 };
             attrs_list.add_span(
-                offs..(offs + run.len),
+                offs..end,
                 &Attrs::new()
                     .metadata(run.font_id.0)
                     .family(Family::Name(&font.families.first().unwrap().0))
@@ -389,12 +460,12 @@ impl CosmicTextSystemState {
                     .weight(font.weight)
                     .font_features(loaded_font.features.clone()),
             );
-            offs += run.len;
+            offs = end;
         }
 
         let line = ShapeLine::new(
             &mut self.font_system,
-            text,
+            shaped_text,
             &attrs_list,
             cosmic_text::Shaping::Advanced,
             4,
@@ -402,17 +473,68 @@ impl CosmicTextSystemState {
         let mut layout_lines = Vec::with_capacity(1);
         line.layout_to_buffer(
             &mut self.scratch,
-            font_size.0,
+            ((font_size * 64.).floor() / 64.).0,
             None, // We do our own wrapping
             cosmic_text::Wrap::None,
             None,
             &mut layout_lines,
             None,
         );
-        let layout = layout_lines.first().unwrap();
+        let layout = layout_lines.first_mut().unwrap();
+        // Bitmap-only fonts carry their own advances at each strike size.
+        // Their hmtx design advances can disagree with those bitmap metrics.
+        // Like FreeType/Skia, scale the strike advance by the requested size,
+        // keeping all following glyphs and bidi insertion edges on that grid.
+        let adjustments = layout
+            .glyphs
+            .iter()
+            .enumerate()
+            .filter(|(_, glyph)| glyph.w > 0.)
+            .filter_map(|(index, glyph)| {
+                let font = self.font_system.get_font(glyph.font_id)?;
+                if !bitmap_only(&font) {
+                    return None;
+                }
+                use skrifa::{FontRef, GlyphId, MetadataProvider, instance::Size};
+                let face = self.font_system.db().face(glyph.font_id)?;
+                let font = FontRef::from_index(font.data(), face.index).ok()?;
+                let bitmap = font
+                    .bitmap_strikes()
+                    .glyph_for_size(Size::new(font_size.0), GlyphId::new(glyph.glyph_id.into()))?;
+                let advance = bitmap.advance? * font_size.0 / bitmap.ppem_x;
+                (bitmap.ppem_x > 0.).then_some((index, glyph.x + glyph.w, advance - glyph.w))
+            })
+            .collect_vec();
+        if !adjustments.is_empty() {
+            let mut widths = vec![0.; layout.glyphs.len()];
+            let mut shifts = adjustments
+                .iter()
+                .map(|&(index, end, delta)| {
+                    widths[index] = delta;
+                    (end, delta)
+                })
+                .collect_vec();
+            shifts.sort_by(|a, b| a.0.total_cmp(&b.0));
+            let mut total = 0.;
+            for (_, shift) in &mut shifts {
+                total += *shift;
+                *shift = total;
+            }
+            for (index, glyph) in layout.glyphs.iter_mut().enumerate() {
+                let after = shifts.partition_point(|(end, _)| *end <= glyph.x);
+                if after > 0 {
+                    glyph.x += shifts[after - 1].1;
+                }
+                glyph.w += widths[index];
+            }
+            layout.w += total;
+        }
 
         let mut runs: Vec<ShapedRun> = Vec::new();
         for glyph in &layout.glyphs {
+            if glyph.end <= prefix && prefix > 0 {
+                continue;
+            }
             let mut font_id = FontId(glyph.metadata);
             let mut loaded_font = self.loaded_font(font_id);
             if loaded_font.font.id() != glyph.font_id {
@@ -428,8 +550,11 @@ impl CosmicTextSystemState {
 
             let shaped_glyph = ShapedGlyph {
                 id: GlyphId(glyph.glyph_id as u32),
-                position: point(glyph.x.into(), glyph.y.into()),
-                index: glyph.start,
+                position: point(
+                    (glyph.x + glyph.font_size * glyph.x_offset).into(),
+                    (glyph.y - glyph.font_size * glyph.y_offset).into(),
+                ),
+                index: glyph.start.saturating_sub(prefix),
                 is_emoji,
             };
 
@@ -446,15 +571,71 @@ impl CosmicTextSystemState {
             }
         }
 
+        let mut carets = Vec::new();
+        if bidi.has_rtl() {
+            let mut clusters = std::collections::BTreeMap::<(usize, usize), (f32, f32, u8)>::new();
+            for glyph in &layout.glyphs {
+                if glyph.end <= prefix {
+                    continue;
+                }
+                let key = (
+                    glyph.start.saturating_sub(prefix),
+                    glyph.end.saturating_sub(prefix),
+                );
+                let entry = clusters.entry(key).or_insert((
+                    glyph.x,
+                    glyph.x + glyph.w,
+                    glyph.level.number(),
+                ));
+                entry.0 = entry.0.min(glyph.x);
+                entry.1 = entry.1.max(glyph.x + glyph.w);
+            }
+            for at in text.char_indices().map(|(at, _)| at).chain([text.len()]) {
+                let edge = |start: usize, end: usize, left: f32, right: f32, level: u8| {
+                    let count = text[start..end].chars().count().max(1);
+                    let fraction = text[start..at].chars().count() as f32 / count as f32;
+                    if level % 2 == 0 {
+                        left + (right - left) * fraction
+                    } else {
+                        right - (right - left) * fraction
+                    }
+                };
+                let (leading, after) = clusters
+                    .iter()
+                    .find(|&(&(start, end), _)| start <= at && at < end)
+                    .map_or((layout.w, 0), |(&(start, end), &(left, right, level))| {
+                        (edge(start, end, left, right, level), level)
+                    });
+                let (trailing, before) = clusters
+                    .iter()
+                    .find(|&(&(start, end), _)| start < at && at <= end)
+                    .map_or((0., 0), |(&(start, end), &(left, right, level))| {
+                        (edge(start, end, left, right, level), level)
+                    });
+                carets.push(CaretStop::new(
+                    at,
+                    leading.into(),
+                    trailing.into(),
+                    before,
+                    after,
+                ));
+            }
+        }
         LineLayout {
             font_size,
             width: layout.w.into(),
             ascent: layout.max_ascent.into(),
             descent: layout.max_descent.into(),
             runs,
+            carets,
             len: text.len(),
         }
     }
+}
+
+fn bitmap_only(font: &CosmicTextFont) -> bool {
+    let tables = font.rustybuzz().tables();
+    tables.glyf.is_none() && tables.cff.is_none() && tables.cff2.is_none()
 }
 
 impl TryFrom<&FontFeatures> for CosmicFontFeatures {
@@ -578,4 +759,122 @@ fn face_info_into_properties(
 fn check_is_known_emoji_font(postscript_name: &str) -> bool {
     // TODO: Include other common emoji fonts
     postscript_name == "NotoColorEmoji"
+}
+
+#[cfg(test)]
+mod native_font_tests {
+    use super::*;
+    use crate::{font, px};
+
+    #[test]
+    fn translucent_color_outline_glyphs_use_straight_bgra_at_the_atlas_boundary() {
+        let system = CosmicTextSystem::new();
+        system
+            .add_fonts(vec![Cow::Borrowed(include_bytes!(
+                "../../../fixtures/colr-alpha.ttf"
+            ))])
+            .unwrap();
+        let id = system.font_id(&font("DazzUIAlphaProbe-Regular")).unwrap();
+        let params = RenderGlyphParams {
+            font_id: id,
+            glyph_id: system.glyph_for_char(id, 'A').unwrap(),
+            font_size: px(24.),
+            subpixel_variant: point(0, 0),
+            scale_factor: 1.,
+            is_emoji: true,
+        };
+        let raw = system.0.write().raster_image(&params).unwrap();
+        assert!(matches!(raw.source, swash::scale::Source::ColorOutline(_)));
+        let raw_ink = raw.data.chunks_exact(4).max_by_key(|p| p[3]).unwrap();
+        assert!((120..=128).contains(&raw_ink[3]));
+        assert_eq!(raw_ink[0], raw_ink[3], "Swash supplies premultiplied red");
+        let bounds = system.glyph_raster_bounds(&params).unwrap();
+        let (_, bytes) = system.rasterize_glyph(&params, bounds).unwrap();
+        let ink = bytes.chunks_exact(4).max_by_key(|p| p[3]).unwrap();
+        assert_eq!(&ink[..3], &[0, 0, 255]);
+        assert_eq!(ink[3], raw_ink[3]);
+    }
+
+    #[test]
+    #[ignore = "requires installed Noto Color Emoji"]
+    fn non_latin_faces_load_without_a_latin_sentinel() {
+        let system = CosmicTextSystem::new();
+        let id = system.font_id(&font("NotoColorEmoji")).unwrap();
+        assert!(system.glyph_for_char(id, '👨').is_some());
+        assert!(system.glyph_for_char(id, 'm').is_none());
+        let line = system.layout_line(
+            "👨",
+            px(24.),
+            &[FontRun {
+                font_id: id,
+                len: "👨".len(),
+            }],
+        );
+        assert!(line.width > px(0.));
+        assert!(!line.runs.is_empty());
+        let pair = system.layout_line(
+            "👨👨",
+            px(24.),
+            &[FontRun {
+                font_id: id,
+                len: "👨👨".len(),
+            }],
+        );
+        assert!((pair.width - line.width * 2.).abs() < px(0.001));
+        let second = pair
+            .runs
+            .iter()
+            .flat_map(|run| &run.glyphs)
+            .find(|glyph| glyph.index == "👨".len())
+            .unwrap();
+        assert!((second.position.x - line.width).abs() < px(0.001));
+    }
+
+    #[test]
+    #[ignore = "requires installed Noto Naskh Arabic"]
+    fn synthetic_bold_keeps_advances_and_adds_ink() {
+        let system = CosmicTextSystem::new();
+        let regular = font("NotoNaskhArabic-Regular");
+        let mut bold = regular.clone();
+        bold.weight = FontWeight(700.);
+        let regular = system.font_id(&regular).unwrap();
+        let bold = system.font_id(&bold).unwrap();
+        assert_ne!(regular, bold);
+        let widths = [regular, bold].map(|id| {
+            system
+                .layout_line(
+                    "م",
+                    px(24.),
+                    &[FontRun {
+                        font_id: id,
+                        len: "م".len(),
+                    }],
+                )
+                .width
+        });
+        assert_eq!(widths[0], widths[1]);
+        let ink: Vec<u64> = [regular, bold]
+            .into_iter()
+            .map(|id| {
+                let params = RenderGlyphParams {
+                    font_id: id,
+                    glyph_id: system.glyph_for_char(id, 'م').unwrap(),
+                    font_size: px(24.),
+                    subpixel_variant: point(0, 0),
+                    scale_factor: 1.,
+                    is_emoji: false,
+                };
+                let bounds = system.glyph_raster_bounds(&params).unwrap();
+                system
+                    .rasterize_glyph(&params, bounds)
+                    .unwrap()
+                    .1
+                    .iter()
+                    .map(|&alpha| u64::from(alpha))
+                    .sum()
+            })
+            .collect();
+        assert!(ink[0] > 0);
+        assert!(ink[1] > ink[0]);
+    }
 }

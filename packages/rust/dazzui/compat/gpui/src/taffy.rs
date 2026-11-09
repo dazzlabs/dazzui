@@ -245,6 +245,32 @@ impl TaffyLayoutEngine {
             .expect(EXPECT_MESSAGE);
     }
 
+    /// Absolute logical bounds before display-pixel rounding. CSS surfaces
+    /// snap these once at paint time, independently of the layout API.
+    pub fn unrounded_layout_bounds(&self, id: LayoutId, scale_factor: f32) -> Bounds<Pixels> {
+        let layout = self.taffy.unrounded_layout(id.into());
+        let mut bounds = Bounds::new(
+            point(
+                Pixels(layout.location.x / scale_factor),
+                Pixels(layout.location.y / scale_factor),
+            ),
+            size(
+                Pixels(layout.size.width / scale_factor),
+                Pixels(layout.size.height / scale_factor),
+            ),
+        );
+        let mut parent = self.taffy.parent(id.into());
+        while let Some(id) = parent {
+            let layout = self.taffy.unrounded_layout(id);
+            bounds.origin += point(
+                Pixels(layout.location.x / scale_factor),
+                Pixels(layout.location.y / scale_factor),
+            );
+            parent = self.taffy.parent(id);
+        }
+        bounds
+    }
+
     pub fn unrounded_layout_size(&self, id: LayoutId, scale_factor: f32) -> Size<Pixels> {
         let layout = self.taffy.unrounded_layout(id.into());
         size(

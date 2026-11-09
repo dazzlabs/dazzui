@@ -359,12 +359,21 @@ Five collectors are written:
   (`example/src/conformance.rs`). Each scene is drawn in a borderless window
   at the display's scale. Its 1024px-wide viewport matches React's browser;
   the 640px scene sits at the top left and the viewport is at least 768px
-  tall. On macOS it is captured with `screencapture` by the window's number
-  and cropped to the scene. Captures convert the display's ICC profile to sRGB
-  before the PNG writer drops the profile during cropping.
-  Linux and Windows collect boxes with `--no-images`;
-  that mode explicitly generates native window frames, so an occluded window
-  does not depend on its compositor requesting presentation. A missing or
+  tall. The default macOS Metal and Linux Blade backends render the submitted
+  scene into an app-owned texture through the same shaders, atlas and compositing passes as
+  presentation. GPU completion precedes readback; the cropped PNG holds
+  straight-alpha sRGB pixels. The display layer also declares sRGB. This path
+  works without Screen Recording and captures the app's scene, excluding OS
+  overlays and compositor effects. `--window-capture` instead uses
+  `screencapture` by window number and converts the display's ICC profile to
+  sRGB before cropping; it requires Screen Recording. Readings identify the
+  source as `capture: "renderer"` or `"window"` (null without images).
+  Blade reads its sRGB surface's 8-bit RGBA/BGRA unorm targets and rejects
+  other formats. Other backends collect boxes with `--no-images`; renderer
+  capture explicitly reports unsupported rather than substituting submitted
+  geometry for pixels.
+  Renderer and box collection explicitly generate native window frames, so an
+  occluded window does not depend on compositor presentation requests. A missing or
   unstable scene frame fails collection. A change from the initial display
   scale also fails collection instead of publishing boxes rounded on
   different pixel grids. Every node codegen addressed is
@@ -388,6 +397,17 @@ Five collectors are written:
   window's platform fonts. Ordinary collection does not record these quads.
   `--caret-input <text>` replaces the focused editor's text before tracing
   the caret at its end, including any scroll needed to reveal it.
+  `--caret-click <x>` clicks that editor at an offset from its surface's left
+  edge after replacement; `--caret-click-count <1|2|3>` chooses the gesture.
+  `--caret-click-y <y>` sets its vertical offset from the surface's top;
+  omitting it uses the vertical center. `--caret-drag <x,y;x,y>` keeps that
+  button held while moving through surface-relative points. Each native
+  movement settles before the next, and the final point releases the button.
+  `--caret-replace-selection <text>` inserts text after that gesture. The
+  double-click cases replace a word with a marker, checking both the resulting
+  value and the collapsed caret without mistaking a selection for a caret.
+  The trace also queries the installed native input
+  handler for its actual value, UTF-16 selection and selection direction.
   `--caret-keys <key,…>` then dispatches navigation keys, settling a native
   frame after each, so wrapped-row Home/End positions can also be checked.
   Selection and replacement occupy separate native event turns, and focused
@@ -400,6 +420,23 @@ Five collectors are written:
   empty/filled multiline text fields, including CJK, Indic and emoji values and an
   overflowing twenty-line value whose caret must remain visible without
   growing the field.
+  `scripts/text-field-resize.test.mjs` checks the actual React textarea's
+  corner drag, including readonly/disabled controls, held-pointer updates,
+  release outside, minimum height, horizontal-only movement, fractional row
+  sizing, rows/size updates and element replacement. Dragging preserves value,
+  selection, focus and change-callback counts; manual scrolling stays put when
+  an offscreen caret is not being edited. GPUI's `tests/text_field_scroll.rs`
+  exercises these interactions through its actual element handlers, plus lost
+  button capture and window deactivation. The resize grip uses browser UI
+  geometry, while the field minimum remains a ds value. These native component
+  regressions use TestAppContext; they do not establish native grip pixel parity.
+  Bidirectional cases cover paragraph-end carets, internal Hebrew positions,
+  mixed Latin/Hebrew clicks and deletion, Arabic vowels and combining marks.
+  Mixed direction runs also check the editor's per-fragment 1/64px layout
+  rounding, independently of the unrounded shaping widths used by canvas.
+  The check compares the input handler's value and selection with the browser
+  as well as the submitted caret geometry: a click at the correct visual
+  position can otherwise hide an incorrect logical insertion point.
   Wrapped-row cases exercise the caret's side of a soft wrap; `--cases <id,…>`
   selects individual cases when investigating a difference.
   It saves the raster references and raw native traces; `--themes all` covers
@@ -407,19 +444,142 @@ Five collectors are written:
   this comparison, including its fractional position; ordinary conformance
   still owns outer-box parity. This checks caret geometry and clipping,
   independently of the ordinary unfocused component readings.
+  `scripts/text-field-graphemes.test.mjs` checks the React package's actual
+  single-line, multiline and password fields against recorded UTF-16 editing
+  traces. GPUI's input tests consume the same adjacent `.cases.json` file.
+  These cover grapheme movement and selection, ordinary mark-by-mark
+  Backspace, joined emoji, flags, keycaps, tag sequences, Indic tailoring and
+  partially selected clusters. Read-only deletion must preserve selection.
+  Selection comparisons use the native API's UTF-16 range and reversed flag;
+  browsers vary between `none` and `forward` for an empty DOM selection.
+  Password checks compare painted browser caret positions with equally long
+  ASCII passwords, while native checks verify both the mask geometry and
+  original input offsets. Masking uses Unicode graphemes; the editing stops
+  use Blink's tailored boundaries, which can differ inside Indic conjuncts.
+  The same fixtures check that input length limits count UTF-16 units and
+  never retain half a surrogate pair, including when a selection is replaced.
+  Password replacement budgets follow Chromium's selected mask positions.
+  The fixture retains Chromium's raw post-truncation password offsets, which
+  may lie inside a surrogate pair; native insertion ranges stay at valid
+  source boundaries, with mask geometry and the following Backspace checked
+  separately.
+  The caret collector's `grapheme-*` cases separately compare real native
+  paint, values and selections with the browser across drawn themes.
+  `scripts/text-field-history.test.mjs` records and checks actual React
+  TextField commands on macOS and Linux. GPUI's `text_input_history` tests
+  replay the same operations and compare every value, UTF-16 selection,
+  direction and focused field. Cases cover physical versus bulk insertion,
+  typing/deletion groups, navigation, paste/cut, IME updates and cancellation,
+  controlled fields, external assignments, readonly changes and length limits.
+  The three raw password insertion checkpoints also retain explicit valid
+  native source ranges under the mask-offset policy above; undo/redo ranges
+  remain exact. The fixture waits for computed layout after each operation.
+  Window history holds weak field targets, restores cross-field focus, removes
+  released editors and retains at most 1000 undo groups. Separate tests verify
+  window isolation, disposal and that history bound. Logical text-node commands
+  retain identity across application value assignments rather than replacing
+  the current value with a stale string snapshot. Paragraph placeholder nodes
+  participate in replay, including readonly edits and later reconnection.
+  Cross-paragraph traces also cover joins, consecutive empty lines, complete
+  replacement, cut, composition over a selection and undo/redo after a fresh
+  edit. Selection anchors retain the identities of line breaks and placeholders;
+  deletion canonicalizes a caret within its surviving text node, so joining a
+  line to a combining mark does not advance it across that node boundary.
+  Number-field checks exercise draft restoration, numeric callbacks, partial
+  input, refused controlled changes and subsequent stepping. A rendered stored
+  number change closes typing as Base UI's hidden native number input does;
+  draft proposals alone do not. Updating a field after stepping must not let
+  stale whole-text replacement commands reconnect the former numeric text.
+  The real-window caret collector's `undo`, `redo`, `typing-undo` and
+  `delete-undo-replace` cases separately compare submitted native caret boxes
+  with React across drawn themes, for text, multiline and search fields.
+  `scripts/text-field-words.test.mjs` and GPUI's input tests share recorded
+  macOS/Linux word-editing traces in `text-field-words.cases.json`: every
+  checkpoint contains the initial UTF-16 position and the resulting value,
+  range and reversed flag for movement, extension and deletion in both
+  directions. They cover combining marks, Indic, CJK, Thai, Lao, apostrophes,
+  decimal numbers, punctuation/emoji runs, Unicode spaces and paragraph
+  boundaries. Word dictionaries use ICU; full stops and colons use Chromium's
+  word-rule tailoring. Windows skips trailing spaces when moving right and
+  still needs its own recorded browser traces. Khmer dictionary differences
+  and font-dependent Myanmar caret normalization remain separate open checks;
+  these fixtures do not establish word-editing parity for those scripts.
+  `text-field-word-selection.test.mjs` checks actual React double-clicks
+  against recorded insertion-point-to-word ranges in its adjacent fixture.
+  GPUI's word-selection tests consume those same ranges. Glyph-relative hit
+  points exercise both halves of clusters; the expected word is looked up by
+  the actual nearest insertion point, since host fonts can cluster a hit
+  differently. Word-drag tests also check keyboard extension after release:
+  macOS word drags produce nondirectional selections, while Linux retains the drag
+  direction even when returning to the initially selected word.
+  `text-field-shift-selection.test.mjs` and GPUI's matching pointer test
+  replay actual React Shift presses, repeated clicks, drags and keyboard
+  interruptions from a shared macOS/Linux fixture. Word and paragraph
+  granularity survives release. macOS chooses the nearer endpoint of the
+  current selection using UTF-16 text distance; directional hosts preserve
+  the original selected unit when crossing the anchor. Ordinary single clicks,
+  navigation and Select All reset granularity. Returning to an empty character
+  selection clears its direction. Cases include Shift-double/triple clicks,
+  readonly and masked fields, wrapped paragraphs and keyboard commands while
+  the pointer remains held. The real-window caret collector's
+  `word-shift-*`, `character-shift-left` and `paragraph-shift-*` cases replace
+  the selected text and compare its value, source selection and painted caret.
+  `--caret-shift-clicks` adds a sequence of Shift presses to that collector;
+  it retains the original control surface before noncollapsed selections
+  remove the caret quad. An explicitly empty `--caret-input` remains an edit.
+  `text-field-paragraph-selection.cases.json` records triple-clicks and
+  paragraph drags on macOS and Linux. It covers line separators, soft wraps,
+  first/middle/final empty lines, trailing separators, Unicode, passwords and
+  read-only fields. React's pointer suite and GPUI's paragraph input tests
+  consume the same selected ranges and following keyboard extensions, with
+  separate platform expectations for drag direction. Real-window paragraph
+  cases replay vertical clicks and drags, then replace the selection with a
+  marker to compare both the resulting text and its painted caret.
   `example/tool/font-metrics.mjs` pairs widths from the example's
-  `font-metrics` binary with browser canvas widths. It creates an unfocused,
-  hidden native window and uses the same text system as normal rendering;
+  `font-metrics` binary with browser canvas widths. It uses the host's real
+  platform text system and an independent layout cache without opening a window;
   build it with `cargo build -p dazzui-example --bins`. Its matrix includes
   fractional sizes, weights, variable advances, kerning, positioned marks,
   Arabic, Indic conjuncts, CJK and emoji. Native JSON retains glyph indices and
   positions, so width and
   positioning differences remain visible rather than becoming test-font
-  assumptions. Runs use `foundation::text_runs`, the same authored fallback
-  resolution as labels and editable text. The report includes requested native
-  run families and the browser's actual platform font names. `--cases` selects
-  named specimens such as `mixed-cjk,cjk,mixed-emoji,emoji`; the default matrix
+  assumptions. Native readings also retain run ascent, descent and line gap,
+  and both insertion positions at bidirectional boundaries. Browser canvas
+  font bounds are diagnostic primary-font metrics; they do not establish
+  fallback inline-box parity. Runs use `foundation::text_runs_with_system`, the
+  same authored fallback resolution as labels and editable text. The report
+  includes requested native run families and the browser's actual platform font names. `--cases` selects
+  named specimens such as `mixed-cjk,cjk,mixed-emoji,emoji,rtl-kerning`; the default matrix
   retains every specimen, including unresolved weight and shaping differences.
+  `--requests-only --out <directory>` writes the same 504 requests without
+  opening a window or loading the JavaScript workspace dependencies. Copy
+  `requests.json` to a host and run `font-metrics <requests.json>`, saving stdout
+  as `native.json`. macOS font probes work through SSH without an Aqua login;
+  available system faces can differ from a logged-in desktop, so compare with
+  the browser in the same font environment. Window rendering and interaction
+  probes still need a desktop session.
+  `node example/tool/font-metrics-browser.mjs --native <native.json>
+  --chrome <chromium-executable> --out <directory>` compares these saved
+  readings with that host's browser using Node 22 or later, without Vite or
+  Playwright. It loads the committed React token stylesheet and uses the
+  reference page's English document language. The report preserves every
+  failure at the same 0.02px width tolerance, plus the actual browser font
+  names and native glyph and caret diagnostics. A passing width report does
+  not prove raster or interaction parity, and a result on one Linux host
+  does not establish the font configuration of another.
+  `node example/tool/font-wrap.mjs --out <directory>` compares soft rows with
+  DOM Range rectangles inside the real browser textarea's anonymous editor.
+  Its 384 requests cover two font faces, fractional sizes, narrow widths,
+  ligatures, contextual Arabic, Indic marks, CJK, emoji and explicit bidi
+  embeddings/overrides. It checks source membership, glyph presence and
+  grapheme edges at the same 0.02px tolerance, retaining all native glyphs,
+  carets and browser rectangles. Zero-ink control-only rows still count toward
+  vertical layout. `--reference <report.json>` can reuse captured browser
+  readings with identical requests in the same font environment; the new
+  report records the reference file's SHA-256. Reused readings do not establish
+  current raster or mouse-interaction parity.
+  For a trusted local probe on a host that disables unprivileged browser
+  sandboxes, `--no-sandbox` applies only to this temporary browser process.
   Custom vector meshes without a styled surface do not retain their source
   radius or stroke, so their surface properties remain unread, as do unknown
   shadows, non-solid fills and ambiguous font weights.

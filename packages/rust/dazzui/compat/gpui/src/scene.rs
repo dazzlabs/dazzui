@@ -4,6 +4,19 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+#[cfg(not(target_os = "windows"))]
+mod graphite_rrect;
+#[cfg(all(
+    not(target_os = "windows"),
+    any(not(target_os = "macos"), feature = "macos-blade")
+))]
+pub(crate) use graphite_rrect::GraphiteRRectVertex;
+
+#[cfg(any(not(target_os = "macos"), feature = "macos-blade"))]
+mod solid_rrect;
+#[cfg(any(not(target_os = "macos"), feature = "macos-blade"))]
+pub(crate) use solid_rrect::SolidRRectVertex;
+
 use crate::{
     AtlasTextureId, AtlasTile, Background, Bounds, ContentMask, Corners, Edges, Hsla, Pixels,
     Point, Radians, ScaledPixels, Size, bounds_tree::BoundsTree, point,
@@ -32,9 +45,7 @@ pub(crate) struct Scene {
     pub(crate) monochrome_sprites: Vec<MonochromeSprite>,
     pub(crate) polychrome_sprites: Vec<PolychromeSprite>,
     pub(crate) surfaces: Vec<PaintSurface>,
-    #[cfg(target_os = "macos")]
     pub(crate) composites: Vec<Composite>,
-    #[cfg(target_os = "macos")]
     has_composites: bool,
 }
 
@@ -50,11 +61,8 @@ impl Scene {
         self.monochrome_sprites.clear();
         self.polychrome_sprites.clear();
         self.surfaces.clear();
-        #[cfg(target_os = "macos")]
-        {
-            self.composites.clear();
-            self.has_composites = false;
-        }
+        self.composites.clear();
+        self.has_composites = false;
     }
 
     pub fn len(&self) -> usize {
@@ -114,7 +122,6 @@ impl Scene {
                 sprite.order = order;
                 self.polychrome_sprites.push(sprite.clone());
             }
-            #[cfg(target_os = "macos")]
             Primitive::Composite(composite) => {
                 composite.order = order;
                 self.composites.push(composite.clone());
@@ -134,17 +141,27 @@ impl Scene {
                 PaintOperation::Primitive(primitive) => self.insert_primitive(primitive.clone()),
                 PaintOperation::StartLayer(bounds) => self.push_layer(*bounds),
                 PaintOperation::EndLayer => self.pop_layer(),
-                #[cfg(target_os = "macos")]
-                PaintOperation::StartComposite(bounds, mask, radii, opacity, transform) => {
-                    self.push_composite(*bounds, mask.clone(), *radii, *opacity, *transform)
-                }
-                #[cfg(target_os = "macos")]
+                PaintOperation::StartComposite(
+                    bounds,
+                    mask,
+                    radii,
+                    radii_y,
+                    opacity,
+                    transform,
+                ) => self.push_elliptical_composite(
+                    *bounds,
+                    mask.clone(),
+                    *radii,
+                    *radii_y,
+                    *opacity,
+                    *transform,
+                ),
                 PaintOperation::EndComposite => self.pop_composite(),
             }
         }
     }
 
-    #[cfg(target_os = "macos")]
+    #[cfg(test)]
     pub fn push_composite(
         &mut self,
         bounds: Bounds<ScaledPixels>,
@@ -153,19 +170,29 @@ impl Scene {
         opacity: f32,
         transform: TransformationMatrix,
     ) {
+        self.push_elliptical_composite(bounds, mask, radii, radii, opacity, transform);
+    }
+
+    pub(crate) fn push_elliptical_composite(
+        &mut self,
+        bounds: Bounds<ScaledPixels>,
+        mask: ContentMask<ScaledPixels>,
+        radii: Corners<ScaledPixels>,
+        radii_y: Corners<ScaledPixels>,
+        opacity: f32,
+        transform: TransformationMatrix,
+    ) {
         self.has_composites = true;
         self.paint_operations.push(PaintOperation::StartComposite(
-            bounds, mask, radii, opacity, transform,
+            bounds, mask, radii, radii_y, opacity, transform,
         ));
     }
 
-    #[cfg(target_os = "macos")]
     pub fn pop_composite(&mut self) {
         self.paint_operations.push(PaintOperation::EndComposite);
     }
 
     pub fn finish(&mut self) {
-        #[cfg(target_os = "macos")]
         if self.has_composites {
             // Keep one flat operation log for cached views' global paint ranges.
             // Only the renderer's batches become a hierarchy of isolated scenes.
@@ -192,11 +219,9 @@ impl Scene {
         self.polychrome_sprites
             .sort_by_key(|sprite| (sprite.order, sprite.tile.tile_id));
         self.surfaces.sort_by_key(|surface| surface.order);
-        #[cfg(target_os = "macos")]
         self.composites.sort_by_key(|composite| composite.order);
     }
 
-    #[cfg(target_os = "macos")]
     fn materialize<'a>(operations: &mut impl Iterator<Item = &'a PaintOperation>) -> Scene {
         let mut scene = Scene::default();
         while let Some(operation) = operations.next() {
@@ -204,18 +229,41 @@ impl Scene {
                 PaintOperation::Primitive(primitive) => scene.insert_primitive(primitive.clone()),
                 PaintOperation::StartLayer(bounds) => scene.push_layer(*bounds),
                 PaintOperation::EndLayer => scene.pop_layer(),
-                PaintOperation::StartComposite(bounds, mask, radii, opacity, transform) => {
-                    let child = Self::materialize(operations);
+                PaintOperation::StartComposite(
+                    bounds,
+                    mask,
+                    radii,
+                    radii_y,
+                    opacity,
+                    transform,
+                ) => {
+                    let mut child = Self::materialize(operations);
                     if child.len() > 0 {
+                        // Rasterize in a local, pixel-aligned texture space. A
+                        // scale can bring negative or off-window source pixels
+                        // into view, so the window is not the source extent.
+                        let source_origin = bounds.origin.map(|v| ScaledPixels(v.0.floor()));
+                        child.translate_rendered(source_origin.map(|v| ScaledPixels(-v.0)));
+                        let painted_bounds = transform
+                            .apply_bounds(bounds.map(|p| Pixels(p.0)))
+                            .map(|p| ScaledPixels(p.0));
+                        // Filled rrect meshes have a half-device-pixel AA
+                        // fringe. Include it in overlap ordering and culling.
+                        let painted_bounds =
+                            if *radii != Corners::default() && *radii_y != Corners::default() {
+                                painted_bounds.dilate(ScaledPixels(0.5))
+                            } else {
+                                painted_bounds
+                            };
                         scene.insert_primitive(Composite {
                             order: 0,
                             bounds: *bounds,
-                            painted_bounds: transform
-                                .apply_bounds(bounds.map(|p| Pixels(p.0)))
-                                .map(|p| ScaledPixels(p.0)),
+                            painted_bounds,
                             transformation: *transform,
+                            source_origin,
                             content_mask: mask.clone(),
                             corner_radii: *radii,
+                            corner_radii_y: *radii_y,
                             opacity: *opacity,
                             scene: std::rc::Rc::new(child),
                         });
@@ -226,6 +274,64 @@ impl Scene {
         }
         scene.finish();
         scene
+    }
+
+    fn translate_rendered(&mut self, offset: Point<ScaledPixels>) {
+        // Only the materialized renderer tree moves. The original operation
+        // log stays in window coordinates for cached paint ranges.
+        macro_rules! translate {
+            ($items:expr) => {
+                for item in $items {
+                    item.bounds.origin += offset;
+                    item.content_mask.bounds.origin += offset;
+                }
+            };
+        }
+        translate!(&mut self.quads);
+        translate!(&mut self.shadows);
+        translate!(&mut self.underlines);
+        translate!(&mut self.polychrome_sprites);
+        translate!(&mut self.surfaces);
+        for path in &mut self.paths {
+            path.bounds.origin += offset;
+            path.content_mask.bounds.origin += offset;
+            for vertex in &mut path.vertices {
+                vertex.xy_position += offset;
+                vertex.content_mask.bounds.origin += offset;
+            }
+        }
+        for sprite in &mut self.monochrome_sprites {
+            sprite.transformation.translation[0] += offset.x.0;
+            sprite.transformation.translation[1] += offset.y.0;
+            sprite.content_mask.bounds.origin += offset;
+        }
+        for composite in &mut self.composites {
+            // Its child already has its own texture coordinates. Move only
+            // this layer's destination and parent clip.
+            composite.transformation.translation[0] += offset.x.0;
+            composite.transformation.translation[1] += offset.y.0;
+            composite.painted_bounds.origin += offset;
+            composite.content_mask.bounds.origin += offset;
+        }
+    }
+
+    /// Shared intermediate extent for this frame, including every source layer.
+    pub(crate) fn intermediate_size(
+        &self,
+        mut minimum: Size<crate::DevicePixels>,
+    ) -> Size<crate::DevicePixels> {
+        for composite in &self.composites {
+            minimum.width.0 = minimum
+                .width
+                .0
+                .max((composite.bounds.right().0.ceil() - composite.source_origin.x.0) as i32);
+            minimum.height.0 = minimum
+                .height
+                .0
+                .max((composite.bounds.bottom().0.ceil() - composite.source_origin.y.0) as i32);
+            minimum = composite.scene.intermediate_size(minimum);
+        }
+        minimum
     }
 
     #[cfg_attr(
@@ -258,7 +364,6 @@ impl Scene {
             surfaces: &self.surfaces,
             surfaces_start: 0,
             surfaces_iter: self.surfaces.iter().peekable(),
-            #[cfg(target_os = "macos")]
             composites_iter: self.composites.iter().peekable(),
         }
     }
@@ -281,7 +386,6 @@ pub(crate) enum PrimitiveKind {
     MonochromeSprite,
     PolychromeSprite,
     Surface,
-    #[cfg(target_os = "macos")]
     Composite,
 }
 
@@ -289,15 +393,14 @@ pub(crate) enum PaintOperation {
     Primitive(Primitive),
     StartLayer(Bounds<ScaledPixels>),
     EndLayer,
-    #[cfg(target_os = "macos")]
     StartComposite(
         Bounds<ScaledPixels>,
         ContentMask<ScaledPixels>,
         Corners<ScaledPixels>,
+        Corners<ScaledPixels>,
         f32,
         TransformationMatrix,
     ),
-    #[cfg(target_os = "macos")]
     EndComposite,
 }
 
@@ -310,7 +413,6 @@ pub(crate) enum Primitive {
     MonochromeSprite(MonochromeSprite),
     PolychromeSprite(PolychromeSprite),
     Surface(PaintSurface),
-    #[cfg(target_os = "macos")]
     Composite(Composite),
 }
 
@@ -324,7 +426,6 @@ impl Primitive {
             Primitive::MonochromeSprite(sprite) => &sprite.bounds,
             Primitive::PolychromeSprite(sprite) => &sprite.bounds,
             Primitive::Surface(surface) => &surface.bounds,
-            #[cfg(target_os = "macos")]
             Primitive::Composite(composite) => &composite.painted_bounds,
         }
     }
@@ -338,7 +439,6 @@ impl Primitive {
             Primitive::MonochromeSprite(sprite) => &sprite.content_mask,
             Primitive::PolychromeSprite(sprite) => &sprite.content_mask,
             Primitive::Surface(surface) => &surface.content_mask,
-            #[cfg(target_os = "macos")]
             Primitive::Composite(composite) => &composite.content_mask,
         }
     }
@@ -373,7 +473,6 @@ struct BatchIterator<'a> {
     surfaces: &'a [PaintSurface],
     surfaces_start: usize,
     surfaces_iter: Peekable<slice::Iter<'a, PaintSurface>>,
-    #[cfg(target_os = "macos")]
     composites_iter: Peekable<slice::Iter<'a, Composite>>,
 }
 
@@ -405,7 +504,6 @@ impl<'a> Iterator for BatchIterator<'a> {
                 PrimitiveKind::Surface,
             ),
         ];
-        #[cfg(target_os = "macos")]
         let mut orders_and_kinds = {
             let mut orders = orders_and_kinds.to_vec();
             orders.push((
@@ -527,7 +625,6 @@ impl<'a> Iterator for BatchIterator<'a> {
                     sprites: &self.polychrome_sprites[sprites_start..sprites_end],
                 })
             }
-            #[cfg(target_os = "macos")]
             PrimitiveKind::Composite => Some(PrimitiveBatch::Composite(
                 self.composites_iter.next().unwrap(),
             )),
@@ -573,7 +670,6 @@ pub(crate) enum PrimitiveBatch<'a> {
         sprites: &'a [PolychromeSprite],
     },
     Surfaces(&'a [PaintSurface]),
-    #[cfg(target_os = "macos")]
     Composite(&'a Composite),
 }
 
@@ -1006,20 +1102,20 @@ impl PathVertex<Pixels> {
 }
 
 /// An isolated scene, sampled once after all of its primitives are composed.
-#[cfg(target_os = "macos")]
 #[derive(Clone)]
 pub(crate) struct Composite {
     pub order: DrawOrder,
     pub bounds: Bounds<ScaledPixels>,
     pub painted_bounds: Bounds<ScaledPixels>,
     pub transformation: TransformationMatrix,
+    pub source_origin: Point<ScaledPixels>,
     pub content_mask: ContentMask<ScaledPixels>,
     pub corner_radii: Corners<ScaledPixels>,
+    pub corner_radii_y: Corners<ScaledPixels>,
     pub opacity: f32,
     pub scene: std::rc::Rc<Scene>,
 }
 
-#[cfg(target_os = "macos")]
 impl Debug for Composite {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Composite")
@@ -1029,16 +1125,304 @@ impl Debug for Composite {
     }
 }
 
-#[cfg(target_os = "macos")]
 impl From<Composite> for Primitive {
     fn from(composite: Composite) -> Self {
         Self::Composite(composite)
     }
 }
 
-#[cfg(all(test, target_os = "macos"))]
+#[cfg(test)]
 mod compositor_tests {
     use super::*;
+
+    #[gpui::test]
+    fn styled_div_paints_its_inner_ellipses_without_a_visible_border(
+        cx: &mut crate::TestAppContext,
+    ) {
+        use crate::{
+            AvailableSpace, IntoElement, ParentElement, Styled, canvas, div, px, rgb, size,
+        };
+        let cx = cx.add_empty_window();
+        cx.simulate_resize(size(px(64.), px(64.)));
+        cx.draw(Point::default(), size(px(64.), px(64.)), |_, _| {
+            canvas(
+                |_, window, cx| {
+                    let mut element = div()
+                        .size(px(48.))
+                        .overflow_hidden()
+                        .rounded(px(16.))
+                        .border_t(px(4.))
+                        .border_r(px(10.))
+                        .border_b(px(8.))
+                        .border_l(px(2.))
+                        .border_color(Hsla::transparent_black())
+                        .child(div().size(px(64.)).flex_shrink_0().bg(rgb(0x00ff00)))
+                        .into_any_element();
+                    element.layout_as_root(
+                        size(
+                            AvailableSpace::Definite(px(64.)),
+                            AvailableSpace::Definite(px(64.)),
+                        ),
+                        window,
+                        cx,
+                    );
+                    element.prepaint_at(point(px(8.), px(8.)), window, cx);
+                    element
+                },
+                |_, mut element, window, cx| {
+                    element.paint(window, cx);
+                    let scale = window.scale_factor();
+                    let scene = &mut window.next_frame.scene;
+                    scene.finish();
+                    let clip = scene.composites.last().expect("rounded overflow layer");
+                    assert_eq!(
+                        clip.bounds,
+                        Bounds::new(point(px(10.), px(12.)), size(px(36.), px(36.))).scale(scale)
+                    );
+                    assert_eq!(
+                        clip.content_mask.bounds,
+                        Bounds::new(Point::default(), size(px(64.), px(64.))).scale(scale),
+                        "the ancestor clip must not truncate the rrect's AA fringe"
+                    );
+                    assert_eq!(clip.corner_radii.top_left, ScaledPixels(14. * scale));
+                    assert_eq!(clip.corner_radii_y.top_left, ScaledPixels(12. * scale));
+                    assert_eq!(clip.corner_radii.bottom_right, ScaledPixels(6. * scale));
+                    assert_eq!(clip.corner_radii_y.bottom_right, ScaledPixels(8. * scale));
+                },
+            )
+            .size_full()
+        });
+    }
+
+    #[gpui::test]
+    fn styled_div_snaps_paint_from_unrounded_layout_once(cx: &mut crate::TestAppContext) {
+        use crate::{
+            AvailableSpace, IntoElement, ParentElement, Styled, canvas, div, px, rgb, size,
+        };
+        let cx = cx.add_empty_window();
+        cx.simulate_resize(size(px(64.), px(64.)));
+        for width in [0.75, 0.1] {
+            cx.draw(Point::default(), size(px(64.), px(64.)), move |_, _| {
+                canvas(
+                    move |_, window, cx| {
+                        let mut element = div()
+                            .size_full()
+                            .child(
+                                div()
+                                    .absolute()
+                                    .left(px(8.25))
+                                    .top(px(8.5))
+                                    .w(px(width))
+                                    .h(px(20.))
+                                    .bg(rgb(0x00ff00)),
+                            )
+                            .into_any_element();
+                        element.layout_as_root(
+                            size(
+                                AvailableSpace::Definite(px(64.)),
+                                AvailableSpace::Definite(px(64.)),
+                            ),
+                            window,
+                            cx,
+                        );
+                        element.prepaint_at(Point::default(), window, cx);
+                        element
+                    },
+                    |_, mut element, window, cx| {
+                        element.paint(window, cx);
+                        let scale = window.scale_factor();
+                        let scene = &window.next_frame.scene;
+                        let green = scene
+                            .quads
+                            .iter()
+                            .find(|q| q.background.solid_color() == Some(rgb(0x00ff00).into()))
+                            .expect("a subpixel CSS box still paints one logical pixel");
+                        assert_eq!(
+                            green.bounds,
+                            Bounds::new(point(px(8.), px(9.)), size(px(1.), px(20.))).scale(scale)
+                        );
+                    },
+                )
+                .size_full()
+            });
+        }
+    }
+
+    #[gpui::test]
+    fn styled_div_snaps_rounded_overflow_from_unrounded_layout(cx: &mut crate::TestAppContext) {
+        use crate::{
+            AvailableSpace, IntoElement, ParentElement, Styled, canvas, div, px, rgb, size,
+        };
+        let cx = cx.add_empty_window();
+        cx.simulate_resize(size(px(64.), px(64.)));
+        cx.draw(Point::default(), size(px(64.), px(64.)), |_, _| {
+            canvas(
+                |_, window, cx| {
+                    let mut element = div()
+                        .size_full()
+                        .child(
+                            div()
+                                .absolute()
+                                .left(px(8.25))
+                                .top(px(8.5))
+                                .size(px(48.))
+                                .overflow_hidden()
+                                .rounded(px(16.))
+                                .border_t(px(4.))
+                                .border_x(px(2.))
+                                .border_b(px(4.))
+                                .child(
+                                    div()
+                                        .absolute()
+                                        .left(px(-2.))
+                                        .top(px(-4.))
+                                        .size(px(48.))
+                                        .bg(rgb(0x00ff00)),
+                                ),
+                        )
+                        .into_any_element();
+                    element.layout_as_root(
+                        size(
+                            AvailableSpace::Definite(px(64.)),
+                            AvailableSpace::Definite(px(64.)),
+                        ),
+                        window,
+                        cx,
+                    );
+                    element.prepaint_at(Point::default(), window, cx);
+                    element
+                },
+                |_, mut element, window, cx| {
+                    element.paint(window, cx);
+                    let scale = window.scale_factor();
+                    let scene = &mut window.next_frame.scene;
+                    scene.finish();
+                    let clip = scene.composites.last().expect("rounded overflow");
+                    assert_eq!(
+                        clip.bounds,
+                        Bounds::new(point(px(10.), px(13.)), size(px(44.), px(40.))).scale(scale)
+                    );
+                },
+            )
+            .size_full()
+        });
+    }
+
+    #[gpui::test]
+    fn styled_div_snaps_cached_views_when_precise_origin_crosses_a_pixel(
+        cx: &mut crate::TestAppContext,
+    ) {
+        use crate::{
+            AnyView, AppContext, Context, Entity, IntoElement, ParentElement, Render,
+            StyleRefinement, Styled, Window, div, px, rgb, size,
+        };
+        use std::{cell::Cell, rc::Rc};
+        struct Leaf(Rc<Cell<u32>>);
+        impl Render for Leaf {
+            fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+                self.0.set(self.0.get() + 1);
+                div().size_full().bg(rgb(0x00ff00))
+            }
+        }
+        struct Parent {
+            x: f32,
+            leaf: Entity<Leaf>,
+        }
+        impl Render for Parent {
+            fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+                let mut style = StyleRefinement::default();
+                style.size.width = Some(px(0.75).into());
+                style.size.height = Some(px(20.).into());
+                div().size_full().child(
+                    div()
+                        .absolute()
+                        .left(px(self.x))
+                        .top(px(8.5))
+                        .w(px(0.75))
+                        .h(px(20.))
+                        .child(AnyView::from(self.leaf.clone()).cached(style)),
+                )
+            }
+        }
+        let renders = Rc::new(Cell::new(0));
+        let leaf = cx.new(|_| Leaf(renders.clone()));
+        let (view, cx) = cx.add_window_view(|_, _| Parent { x: 8.49, leaf });
+        cx.simulate_resize(size(px(64.), px(64.)));
+        cx.run_until_parked();
+        for (x, expected_x) in [(8.49, 8.), (8.51, 9.)] {
+            let before = renders.get();
+            view.update(cx, |view, cx| {
+                view.x = x;
+                cx.notify();
+            });
+            cx.run_until_parked();
+            if x > 8.5 {
+                assert!(
+                    renders.get() > before,
+                    "the same display bounds must not reuse stale CSS paint"
+                );
+            }
+            cx.update(|window, _| {
+                let q = window
+                    .rendered_frame
+                    .scene
+                    .quads
+                    .iter()
+                    .find(|q| q.background.solid_color() == Some(rgb(0x00ff00).into()))
+                    .unwrap();
+                assert_eq!(
+                    q.bounds.origin.x,
+                    px(expected_x).scale(window.scale_factor())
+                );
+                assert_eq!(q.bounds.size.width, px(1.).scale(window.scale_factor()));
+            });
+            let count = renders.get();
+            view.update(cx, |_, cx| cx.notify());
+            cx.run_until_parked();
+            assert_eq!(
+                renders.get(),
+                count,
+                "identical precise geometry still reuses the cache"
+            );
+        }
+    }
+
+    #[gpui::test]
+    fn window_scale_and_nested_opacity_retain_the_inverse_viewport(cx: &mut crate::TestAppContext) {
+        use crate::{Styled, canvas, px, rgb, size};
+        let cx = cx.add_empty_window();
+        cx.simulate_resize(size(px(64.), px(64.)));
+        cx.draw(Point::default(), size(px(64.), px(64.)), |_, _| {
+            canvas(
+                |_, _, _| (),
+                |_, _, window, _| {
+                    window.with_element_scale(point(px(32.), px(32.)), 0.5, |window| {
+                        window.with_element_opacity(Some(0.5), |window| {
+                            window.paint_quad(crate::fill(
+                                Bounds::new(point(px(-16.), px(24.)), size(px(16.), px(16.))),
+                                rgb(0xff0000),
+                            ));
+                        });
+                    });
+                    let scale = window.scale_factor();
+                    let scene = &mut window.next_frame.scene;
+                    scene.finish();
+                    let outer = scene.composites.last().unwrap();
+                    assert_eq!(outer.bounds.origin.x, ScaledPixels(-32. * scale));
+                    assert_eq!(outer.bounds.size.width, ScaledPixels(128. * scale));
+                    let opacity = &outer.scene.composites[0];
+                    assert_eq!(opacity.bounds, outer.bounds);
+                    assert_eq!(opacity.opacity, 0.5);
+                    assert_eq!(opacity.scene.quads.len(), 1);
+                    assert_eq!(
+                        opacity.scene.quads[0].bounds.origin.x,
+                        ScaledPixels(16. * scale)
+                    );
+                },
+            )
+            .size_full()
+        });
+    }
 
     fn bounds() -> Bounds<ScaledPixels> {
         Bounds::new(

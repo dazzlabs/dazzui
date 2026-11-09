@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # The GPUI collector's front door, as `pnpm conformance` calls every
 # collector: --out <dir> [--themes drawn|all|<id,…>] [--scenes <story,…>]
-# [--no-images]. The work is src/conformance.rs, run by the example itself
+# [--no-images] [--window-capture]. Images use the Metal renderer by default;
+# --window-capture uses macOS window capture instead. The work is src/conformance.rs,
 # with --conformance, in a window of its own on this Mac's display.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -12,7 +13,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --out) out="$2"; shift 2 ;;
     --themes|--scenes|--motion-ms|--modal|--modal-index|--caret-focus|--caret-input|--caret-keys) passed+=("$1" "$2"); shift 2 ;;
-    --no-images|--reduced-motion|--positions) passed+=("$1"); shift ;;
+    --no-images|--reduced-motion|--positions|--window-capture) passed+=("$1"); shift ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
 done

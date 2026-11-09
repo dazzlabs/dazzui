@@ -1,2 +1,2 @@
-# No listed geometry differences remain.
-# Native collection still leaves paint and type metrics unread.
+# No listed measured differences remain.
+# Some custom surfaces, shadows and gaps remain unread.

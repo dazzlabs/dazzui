@@ -16,6 +16,7 @@ float4 to_device_position_transformed(float2 unit_vertex, Bounds_ScaledPixels bo
 
 float2 to_tile_position(float2 unit_vertex, AtlasTile tile,
                         constant Size_DevicePixels *atlas_size);
+float2 clamp_tile_position(float2 position, AtlasTile tile, float2 atlas_size);
 float4 distance_from_clip_rect(float2 unit_vertex, Bounds_ScaledPixels bounds,
                                Bounds_ScaledPixels clip_bounds);
 float4 distance_from_clip_rect_transformed(float2 unit_vertex, Bounds_ScaledPixels bounds,
@@ -609,6 +610,7 @@ struct MonochromeSpriteVertexOutput {
   float4 position [[position]];
   float2 tile_position;
   float4 color [[flat]];
+  uint sprite_id [[flat]];
   float4 clip_distance;
 };
 
@@ -616,6 +618,7 @@ struct MonochromeSpriteFragmentInput {
   float4 position [[position]];
   float2 tile_position;
   float4 color [[flat]];
+  uint sprite_id [[flat]];
   float4 clip_distance;
 };
 
@@ -639,6 +642,7 @@ vertex MonochromeSpriteVertexOutput monochrome_sprite_vertex(
       device_position,
       tile_position,
       color,
+      sprite_id,
       {clip_distance.x, clip_distance.y, clip_distance.z, clip_distance.w}};
 }
 
@@ -652,8 +656,9 @@ fragment float4 monochrome_sprite_fragment(
 
   constexpr sampler atlas_texture_sampler(mag_filter::linear,
                                           min_filter::linear);
-  float4 sample =
-      atlas_texture.sample(atlas_texture_sampler, input.tile_position);
+  float2 atlas_size = float2(atlas_texture.get_width(), atlas_texture.get_height());
+  float2 position = clamp_tile_position(input.tile_position, sprites[input.sprite_id].tile, atlas_size);
+  float4 sample = atlas_texture.sample(atlas_texture_sampler, position);
   float4 color = input.color;
   color.a *= sample.a;
   return color;
@@ -702,12 +707,16 @@ fragment float4 polychrome_sprite_fragment(
   PolychromeSprite sprite = sprites[input.sprite_id];
   constexpr sampler atlas_texture_sampler(mag_filter::linear,
                                           min_filter::linear);
-  float4 sample =
-      atlas_texture.sample(atlas_texture_sampler, input.tile_position);
+  float2 atlas_size = float2(atlas_texture.get_width(), atlas_texture.get_height());
+  float2 position = clamp_tile_position(input.tile_position, sprite.tile, atlas_size);
+  float4 sample = atlas_texture.sample(atlas_texture_sampler, position);
   float distance =
       quad_sdf(input.position.xy, sprite.bounds, sprite.corner_radii);
 
   float4 color = sample;
+  // Interpolate premultiplied atlas colors, then feed the straight-alpha
+  // primitive blend pipeline. Applying opacity must not multiply RGB twice.
+  color.rgb = color.a > 0.0 ? color.rgb / color.a : float3(0.0);
   if (sprite.grayscale) {
     float grayscale = 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
     color.r = grayscale;
@@ -818,7 +827,7 @@ vertex PathSpriteVertexOutput path_sprite_vertex(
       to_device_position(unit_vertex, sprite.bounds, viewport_size);
 
   float2 screen_position = float2(sprite.bounds.origin.x, sprite.bounds.origin.y) + unit_vertex * float2(sprite.bounds.size.width, sprite.bounds.size.height);
-  float2 texture_coords = screen_position / float2(viewport_size->width, viewport_size->height);
+  float2 texture_coords = screen_position;
 
   return PathSpriteVertexOutput{
     device_position,
@@ -831,7 +840,8 @@ fragment float4 path_sprite_fragment(
   texture2d<float> intermediate_texture [[texture(SpriteInputIndex_AtlasTexture)]]
 ) {
   constexpr sampler intermediate_texture_sampler(mag_filter::linear, min_filter::linear);
-  return intermediate_texture.sample(intermediate_texture_sampler, input.texture_coords);
+  float2 size = float2(intermediate_texture.get_width(), intermediate_texture.get_height());
+  return intermediate_texture.sample(intermediate_texture_sampler, input.texture_coords / size);
 }
 
 struct SurfaceVertexOutput {
@@ -1026,6 +1036,13 @@ float2 to_tile_position(float2 unit_vertex, AtlasTile tile,
   float2 tile_size = float2(tile.bounds.size.width, tile.bounds.size.height);
   return (tile_origin + unit_vertex * tile_size) /
          float2((float)atlas_size->width, (float)atlas_size->height);
+}
+
+float2 clamp_tile_position(float2 position, AtlasTile tile, float2 atlas_size) {
+  float2 origin = float2(tile.bounds.origin.x, tile.bounds.origin.y);
+  float2 size = float2(tile.bounds.size.width, tile.bounds.size.height);
+  return clamp(position, (origin + 0.5) / atlas_size,
+               (origin + size - 0.5) / atlas_size);
 }
 
 // Selects corner radius based on quadrant.
@@ -1240,6 +1257,34 @@ float4 fill_color(Background background,
 
 // Isolated CSS-style subtree compositing. The render target stores
 // premultiplied color, so opacity scales RGB and alpha together.
+// Padding-edge curves can be elliptical when adjoining borders differ.
+float ellipse_corner_distance(float2 delta, float2 radii, bool implicit_circle) {
+  if (!implicit_circle && radii.x == radii.y) return length(delta) - radii.x;
+  float2 normalized = delta / radii;
+  float implicit = dot(normalized, normalized) - 1.0;
+  float gradient = 2.0 * length(delta / (radii * radii));
+  return gradient > 0.0 ? implicit / gradient : -min(radii.x, radii.y);
+}
+float elliptical_clip_distance(float2 position, Bounds_ScaledPixels bounds,
+                              Corners_ScaledPixels rx, Corners_ScaledPixels ry, bool implicit_circle) {
+  float2 p = position - float2(bounds.origin.x, bounds.origin.y);
+  float2 size = float2(bounds.size.width, bounds.size.height);
+  float distance = max(max(-p.x, -p.y), max(p.x - size.x, p.y - size.y));
+  float2 r = float2(rx.top_left, ry.top_left);
+  if (all(r > 0.0) && p.x < r.x && p.y < r.y)
+    distance = max(distance, ellipse_corner_distance(p - r, r, implicit_circle));
+  r = float2(rx.top_right, ry.top_right);
+  if (all(r > 0.0) && p.x > size.x - r.x && p.y < r.y)
+    distance = max(distance, ellipse_corner_distance(p - float2(size.x - r.x, r.y), r, implicit_circle));
+  r = float2(rx.bottom_right, ry.bottom_right);
+  if (all(r > 0.0) && p.x > size.x - r.x && p.y > size.y - r.y)
+    distance = max(distance, ellipse_corner_distance(p - (size - r), r, implicit_circle));
+  r = float2(rx.bottom_left, ry.bottom_left);
+  if (all(r > 0.0) && p.x < r.x && p.y > size.y - r.y)
+    distance = max(distance, ellipse_corner_distance(p - float2(r.x, size.y - r.y), r, implicit_circle));
+  return distance;
+}
+
 struct CompositeVertexOutput {
   float4 position [[position]];
   float2 texture_position;
@@ -1262,17 +1307,75 @@ vertex CompositeVertexOutput composite_vertex(
   float4 clip = distance_from_clip_rect_transformed(unit, uniforms->bounds, uniforms->content_mask.bounds, uniforms->transformation);
   float2 screen = float2(uniforms->bounds.origin.x, uniforms->bounds.origin.y)
     + unit * float2(uniforms->bounds.size.width, uniforms->bounds.size.height);
-  float2 uv = screen / float2(viewport->width, viewport->height);
+  float2 uv = screen - float2(uniforms->source_origin.x, uniforms->source_origin.y);
   return { to_device_position_transformed(unit, uniforms->bounds, uniforms->transformation, viewport), uv, screen,
     {clip.x, clip.y, clip.z, clip.w} };
 }
+
+// Child blending retains the hardware samples selected by conic clip wedges.
+vertex float4 clip_vertex(
+    uint vertex_id [[vertex_id]],
+    constant float2 *vertices [[buffer(0)]],
+    constant Size_DevicePixels *viewport [[buffer(2)]]) {
+  return float4(vertices[vertex_id] * float2(2. / viewport->width, -2. / viewport->height)
+    + float2(-1., 1.), 0., 1.);
+}
+fragment float4 clip_fragment() { return float4(0.); }
 
 fragment float4 composite_fragment(
     CompositeFragmentInput input [[stage_in]],
     constant CompositeUniforms *uniforms [[buffer(1)]],
     texture2d<float> texture [[texture(0)]]) {
   constexpr sampler sampling(mag_filter::linear, min_filter::linear);
-  float distance = quad_sdf(input.local_position, uniforms->bounds, uniforms->corner_radii);
-  return texture.sample(sampling, input.texture_position)
+  float distance = elliptical_clip_distance(input.local_position, uniforms->bounds, uniforms->corner_radii, uniforms->corner_radii_y, false);
+  float2 size = float2(texture.get_width(), texture.get_height());
+  return texture.sample(sampling, input.texture_position / size)
     * (uniforms->opacity * saturate(0.5 - distance));
+}
+
+// Graphite filled rrect coverage; see crate-root LICENSE-SKIA.
+struct GraphiteRRectVertex {
+  float2 position;
+  float2 local_position;
+  float2 control;
+};
+struct GraphiteCompositeVertexOutput {
+  float4 position [[position]];
+  float2 local_position;
+  float2 control;
+  float clip_distance [[clip_distance]][4];
+};
+struct GraphiteCompositeFragmentInput {
+  float4 position [[position]];
+  float2 local_position;
+  float2 control;
+};
+vertex GraphiteCompositeVertexOutput graphite_composite_vertex(
+    uint vertex_id [[vertex_id]],
+    constant GraphiteRRectVertex *vertices [[buffer(0)]],
+    constant CompositeUniforms *uniforms [[buffer(1)]],
+    constant Size_DevicePixels *viewport [[buffer(2)]]) {
+  GraphiteRRectVertex v = vertices[vertex_id];
+  Bounds_ScaledPixels mask = uniforms->content_mask.bounds;
+  float2 origin = float2(mask.origin.x, mask.origin.y);
+  float4 clip = float4(v.position - origin,
+    origin + float2(mask.size.width, mask.size.height) - v.position);
+  float2 ndc = v.position / float2(viewport->width, viewport->height) * 2.0 - 1.0;
+  return {float4(ndc.x, -ndc.y, 0.0, 1.0), v.local_position, v.control,
+          {clip.x, clip.y, clip.z, clip.w}};
+}
+fragment float4 graphite_composite_fragment(
+    GraphiteCompositeFragmentInput input [[stage_in]],
+    constant CompositeUniforms *uniforms [[buffer(1)]],
+    texture2d<float> texture [[texture(0)]]) {
+  constexpr sampler sampling(mag_filter::linear, min_filter::linear);
+  float scale = uniforms->transformation.rotation_scale[0][0];
+  float distance = -scale * elliptical_clip_distance(input.local_position, uniforms->bounds,
+    uniforms->corner_radii, uniforms->corner_radii_y, true);
+  float narrow = min(1.0, scale * min(uniforms->bounds.size.width, uniforms->bounds.size.height));
+  float coverage = input.control.x > 0.0 ? 1.0 : saturate(narrow *
+    (min(distance + min(input.control.y, 0.0), 1.0) + 1.0 - 0.5 * narrow));
+  float2 source = input.local_position - float2(uniforms->source_origin.x, uniforms->source_origin.y);
+  return texture.sample(sampling, source / float2(texture.get_width(), texture.get_height()))
+    * (uniforms->opacity * coverage);
 }

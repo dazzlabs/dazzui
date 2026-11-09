@@ -1,0 +1,2058 @@
+{
+  "selectionUnit": "UTF-16",
+  "platforms": [
+    "darwin",
+    "linux"
+  ],
+  "browsers": {
+    "darwin": "HeadlessChrome/153.0.8010.12",
+    "linux": "Chrome/153.0.8010.12"
+  },
+  "font": {
+    "size": 12,
+    "lineHeight": 19.2,
+    "width": 74,
+    "height": 150,
+    "inputHeight": 28
+  },
+  "cases": [
+    {
+      "id": "single",
+      "text": "one two three",
+      "multiline": false,
+      "clicks": [
+        {
+          "point": [
+            0,
+            9.6
+          ],
+          "selected": [
+            0,
+            13,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            13,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            9.6
+          ],
+          "selected": [
+            0,
+            13,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            13,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            9.6
+          ],
+          "selected": [
+            0,
+            13,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            13,
+            false
+          ]
+        }
+      ],
+      "drags": []
+    },
+    {
+      "id": "password",
+      "text": "ab cd",
+      "multiline": false,
+      "type": "password",
+      "clicks": [
+        {
+          "point": [
+            0,
+            9.6
+          ],
+          "selected": [
+            0,
+            5,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            5,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            9.6
+          ],
+          "selected": [
+            0,
+            5,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            5,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            9.6
+          ],
+          "selected": [
+            0,
+            5,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            5,
+            false
+          ]
+        }
+      ],
+      "drags": []
+    },
+    {
+      "id": "paragraphs",
+      "text": "one two\nthree\nfour",
+      "multiline": true,
+      "clicks": [
+        {
+          "point": [
+            0,
+            9.6
+          ],
+          "selected": [
+            0,
+            8,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            9,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            9.6
+          ],
+          "selected": [
+            0,
+            8,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            9,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            9.6
+          ],
+          "selected": [
+            0,
+            8,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            9,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            28.8
+          ],
+          "selected": [
+            8,
+            14,
+            false
+          ],
+          "afterShiftRight": [
+            8,
+            15,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            28.8
+          ],
+          "selected": [
+            8,
+            14,
+            false
+          ],
+          "afterShiftRight": [
+            8,
+            15,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            28.8
+          ],
+          "selected": [
+            8,
+            14,
+            false
+          ],
+          "afterShiftRight": [
+            8,
+            15,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            48
+          ],
+          "selected": [
+            14,
+            18,
+            false
+          ],
+          "afterShiftRight": [
+            14,
+            18,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            48
+          ],
+          "selected": [
+            14,
+            18,
+            false
+          ],
+          "afterShiftRight": [
+            14,
+            18,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            48
+          ],
+          "selected": [
+            14,
+            18,
+            false
+          ],
+          "afterShiftRight": [
+            14,
+            18,
+            false
+          ]
+        }
+      ],
+      "drags": [
+        {
+          "from": [
+            20,
+            28.8
+          ],
+          "to": [
+            [
+              20,
+              9.6
+            ]
+          ],
+          "expectations": {
+            "darwin": {
+              "states": [
+                [
+                  8,
+                  14,
+                  false
+                ],
+                [
+                  0,
+                  14,
+                  false
+                ]
+              ],
+              "afterShiftRight": [
+                0,
+                15,
+                false
+              ]
+            },
+            "linux": {
+              "states": [
+                [
+                  8,
+                  14,
+                  false
+                ],
+                [
+                  0,
+                  14,
+                  true
+                ]
+              ],
+              "afterShiftRight": [
+                1,
+                14,
+                true
+              ]
+            }
+          }
+        },
+        {
+          "from": [
+            20,
+            28.8
+          ],
+          "to": [
+            [
+              20,
+              48
+            ]
+          ],
+          "expectations": {
+            "darwin": {
+              "states": [
+                [
+                  8,
+                  14,
+                  false
+                ],
+                [
+                  8,
+                  18,
+                  false
+                ]
+              ],
+              "afterShiftRight": [
+                8,
+                18,
+                false
+              ]
+            },
+            "linux": {
+              "states": [
+                [
+                  8,
+                  14,
+                  false
+                ],
+                [
+                  8,
+                  18,
+                  false
+                ]
+              ],
+              "afterShiftRight": [
+                8,
+                18,
+                false
+              ]
+            }
+          }
+        },
+        {
+          "from": [
+            20,
+            28.8
+          ],
+          "to": [
+            [
+              20,
+              9.6
+            ],
+            [
+              20,
+              28.8
+            ]
+          ],
+          "expectations": {
+            "darwin": {
+              "states": [
+                [
+                  8,
+                  14,
+                  false
+                ],
+                [
+                  0,
+                  14,
+                  false
+                ],
+                [
+                  8,
+                  14,
+                  false
+                ]
+              ],
+              "afterShiftRight": [
+                8,
+                15,
+                false
+              ]
+            },
+            "linux": {
+              "states": [
+                [
+                  8,
+                  14,
+                  false
+                ],
+                [
+                  0,
+                  14,
+                  true
+                ],
+                [
+                  8,
+                  14,
+                  true
+                ]
+              ],
+              "afterShiftRight": [
+                9,
+                14,
+                true
+              ]
+            }
+          }
+        },
+        {
+          "from": [
+            20,
+            28.8
+          ],
+          "to": [
+            [
+              20,
+              48
+            ],
+            [
+              20,
+              28.8
+            ]
+          ],
+          "expectations": {
+            "darwin": {
+              "states": [
+                [
+                  8,
+                  14,
+                  false
+                ],
+                [
+                  8,
+                  18,
+                  false
+                ],
+                [
+                  8,
+                  14,
+                  false
+                ]
+              ],
+              "afterShiftRight": [
+                8,
+                15,
+                false
+              ]
+            },
+            "linux": {
+              "states": [
+                [
+                  8,
+                  14,
+                  false
+                ],
+                [
+                  8,
+                  18,
+                  false
+                ],
+                [
+                  8,
+                  14,
+                  false
+                ]
+              ],
+              "afterShiftRight": [
+                8,
+                15,
+                false
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "soft-wrap",
+      "text": "one two three\nfour",
+      "multiline": true,
+      "clicks": [
+        {
+          "point": [
+            0,
+            9.6
+          ],
+          "selected": [
+            0,
+            14,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            15,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            9.6
+          ],
+          "selected": [
+            0,
+            14,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            15,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            9.6
+          ],
+          "selected": [
+            0,
+            14,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            15,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            28.8
+          ],
+          "selected": [
+            0,
+            14,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            15,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            28.8
+          ],
+          "selected": [
+            0,
+            14,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            15,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            28.8
+          ],
+          "selected": [
+            0,
+            14,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            15,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            48
+          ],
+          "selected": [
+            14,
+            18,
+            false
+          ],
+          "afterShiftRight": [
+            14,
+            18,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            48
+          ],
+          "selected": [
+            14,
+            18,
+            false
+          ],
+          "afterShiftRight": [
+            14,
+            18,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            48
+          ],
+          "selected": [
+            14,
+            18,
+            false
+          ],
+          "afterShiftRight": [
+            14,
+            18,
+            false
+          ]
+        }
+      ],
+      "drags": [
+        {
+          "from": [
+            20,
+            28.8
+          ],
+          "to": [
+            [
+              20,
+              48
+            ],
+            [
+              20,
+              9.6
+            ]
+          ],
+          "expectations": {
+            "darwin": {
+              "states": [
+                [
+                  0,
+                  14,
+                  false
+                ],
+                [
+                  0,
+                  18,
+                  false
+                ],
+                [
+                  0,
+                  14,
+                  false
+                ]
+              ],
+              "afterShiftRight": [
+                0,
+                15,
+                false
+              ]
+            },
+            "linux": {
+              "states": [
+                [
+                  0,
+                  14,
+                  false
+                ],
+                [
+                  0,
+                  18,
+                  false
+                ],
+                [
+                  0,
+                  14,
+                  false
+                ]
+              ],
+              "afterShiftRight": [
+                0,
+                15,
+                false
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "empty-first",
+      "text": "\none\n",
+      "multiline": true,
+      "clicks": [
+        {
+          "point": [
+            0,
+            9.6
+          ],
+          "selected": [
+            0,
+            1,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            2,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            9.6
+          ],
+          "selected": [
+            0,
+            1,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            2,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            9.6
+          ],
+          "selected": [
+            0,
+            1,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            2,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            28.8
+          ],
+          "selected": [
+            1,
+            5,
+            false
+          ],
+          "afterShiftRight": [
+            1,
+            5,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            28.8
+          ],
+          "selected": [
+            1,
+            5,
+            false
+          ],
+          "afterShiftRight": [
+            1,
+            5,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            28.8
+          ],
+          "selected": [
+            1,
+            5,
+            false
+          ],
+          "afterShiftRight": [
+            1,
+            5,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            48
+          ],
+          "selected": [
+            1,
+            5,
+            false
+          ],
+          "afterShiftRight": [
+            1,
+            5,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            48
+          ],
+          "selected": [
+            1,
+            5,
+            false
+          ],
+          "afterShiftRight": [
+            1,
+            5,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            48
+          ],
+          "selected": [
+            1,
+            5,
+            false
+          ],
+          "afterShiftRight": [
+            1,
+            5,
+            false
+          ]
+        }
+      ],
+      "drags": []
+    },
+    {
+      "id": "empty-middle",
+      "text": "one\n\nend\n",
+      "multiline": true,
+      "clicks": [
+        {
+          "point": [
+            0,
+            9.6
+          ],
+          "selected": [
+            0,
+            4,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            5,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            9.6
+          ],
+          "selected": [
+            0,
+            4,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            5,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            9.6
+          ],
+          "selected": [
+            0,
+            4,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            5,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            28.8
+          ],
+          "selected": [
+            4,
+            5,
+            false
+          ],
+          "afterShiftRight": [
+            4,
+            6,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            28.8
+          ],
+          "selected": [
+            4,
+            5,
+            false
+          ],
+          "afterShiftRight": [
+            4,
+            6,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            28.8
+          ],
+          "selected": [
+            4,
+            5,
+            false
+          ],
+          "afterShiftRight": [
+            4,
+            6,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            48
+          ],
+          "selected": [
+            5,
+            9,
+            false
+          ],
+          "afterShiftRight": [
+            5,
+            9,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            48
+          ],
+          "selected": [
+            5,
+            9,
+            false
+          ],
+          "afterShiftRight": [
+            5,
+            9,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            48
+          ],
+          "selected": [
+            5,
+            9,
+            false
+          ],
+          "afterShiftRight": [
+            5,
+            9,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            67.2
+          ],
+          "selected": [
+            5,
+            9,
+            false
+          ],
+          "afterShiftRight": [
+            5,
+            9,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            67.2
+          ],
+          "selected": [
+            5,
+            9,
+            false
+          ],
+          "afterShiftRight": [
+            5,
+            9,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            67.2
+          ],
+          "selected": [
+            5,
+            9,
+            false
+          ],
+          "afterShiftRight": [
+            5,
+            9,
+            false
+          ]
+        }
+      ],
+      "drags": [
+        {
+          "from": [
+            20,
+            48
+          ],
+          "to": [
+            [
+              20,
+              28.8
+            ],
+            [
+              20,
+              9.6
+            ],
+            [
+              20,
+              48
+            ]
+          ],
+          "expectations": {
+            "darwin": {
+              "states": [
+                [
+                  5,
+                  9,
+                  false
+                ],
+                [
+                  4,
+                  9,
+                  false
+                ],
+                [
+                  0,
+                  9,
+                  false
+                ],
+                [
+                  5,
+                  9,
+                  false
+                ]
+              ],
+              "afterShiftRight": [
+                5,
+                9,
+                false
+              ]
+            },
+            "linux": {
+              "states": [
+                [
+                  5,
+                  9,
+                  false
+                ],
+                [
+                  4,
+                  9,
+                  true
+                ],
+                [
+                  0,
+                  9,
+                  true
+                ],
+                [
+                  5,
+                  9,
+                  true
+                ]
+              ],
+              "afterShiftRight": [
+                6,
+                9,
+                true
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "trailing-newline",
+      "text": "one\n",
+      "multiline": true,
+      "clicks": [
+        {
+          "point": [
+            0,
+            9.6
+          ],
+          "selected": [
+            0,
+            4,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            4,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            9.6
+          ],
+          "selected": [
+            0,
+            4,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            4,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            9.6
+          ],
+          "selected": [
+            0,
+            4,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            4,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            28.8
+          ],
+          "selected": [
+            0,
+            4,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            4,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            28.8
+          ],
+          "selected": [
+            0,
+            4,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            4,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            28.8
+          ],
+          "selected": [
+            0,
+            4,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            4,
+            false
+          ]
+        }
+      ],
+      "drags": []
+    },
+    {
+      "id": "trailing-empty",
+      "text": "one\n\n",
+      "multiline": true,
+      "clicks": [
+        {
+          "point": [
+            0,
+            9.6
+          ],
+          "selected": [
+            0,
+            4,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            5,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            9.6
+          ],
+          "selected": [
+            0,
+            4,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            5,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            9.6
+          ],
+          "selected": [
+            0,
+            4,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            5,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            28.8
+          ],
+          "selected": [
+            4,
+            5,
+            false
+          ],
+          "afterShiftRight": [
+            4,
+            5,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            28.8
+          ],
+          "selected": [
+            4,
+            5,
+            false
+          ],
+          "afterShiftRight": [
+            4,
+            5,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            28.8
+          ],
+          "selected": [
+            4,
+            5,
+            false
+          ],
+          "afterShiftRight": [
+            4,
+            5,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            48
+          ],
+          "selected": [
+            4,
+            5,
+            false
+          ],
+          "afterShiftRight": [
+            4,
+            5,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            48
+          ],
+          "selected": [
+            4,
+            5,
+            false
+          ],
+          "afterShiftRight": [
+            4,
+            5,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            48
+          ],
+          "selected": [
+            4,
+            5,
+            false
+          ],
+          "afterShiftRight": [
+            4,
+            5,
+            false
+          ]
+        }
+      ],
+      "drags": []
+    },
+    {
+      "id": "empty",
+      "text": "",
+      "multiline": true,
+      "clicks": [
+        {
+          "point": [
+            0,
+            9.6
+          ],
+          "selected": [
+            0,
+            0,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            0,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            9.6
+          ],
+          "selected": [
+            0,
+            0,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            0,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            9.6
+          ],
+          "selected": [
+            0,
+            0,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            0,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            28.8
+          ],
+          "selected": [
+            0,
+            0,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            0,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            28.8
+          ],
+          "selected": [
+            0,
+            0,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            0,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            28.8
+          ],
+          "selected": [
+            0,
+            0,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            0,
+            false
+          ]
+        }
+      ],
+      "drags": []
+    },
+    {
+      "id": "only-breaks",
+      "text": "\n\n",
+      "multiline": true,
+      "clicks": [
+        {
+          "point": [
+            0,
+            9.6
+          ],
+          "selected": [
+            0,
+            1,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            2,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            9.6
+          ],
+          "selected": [
+            0,
+            1,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            2,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            9.6
+          ],
+          "selected": [
+            0,
+            1,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            2,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            28.8
+          ],
+          "selected": [
+            1,
+            2,
+            false
+          ],
+          "afterShiftRight": [
+            1,
+            2,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            28.8
+          ],
+          "selected": [
+            1,
+            2,
+            false
+          ],
+          "afterShiftRight": [
+            1,
+            2,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            28.8
+          ],
+          "selected": [
+            1,
+            2,
+            false
+          ],
+          "afterShiftRight": [
+            1,
+            2,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            48
+          ],
+          "selected": [
+            1,
+            2,
+            false
+          ],
+          "afterShiftRight": [
+            1,
+            2,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            48
+          ],
+          "selected": [
+            1,
+            2,
+            false
+          ],
+          "afterShiftRight": [
+            1,
+            2,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            48
+          ],
+          "selected": [
+            1,
+            2,
+            false
+          ],
+          "afterShiftRight": [
+            1,
+            2,
+            false
+          ]
+        }
+      ],
+      "drags": []
+    },
+    {
+      "id": "unicode",
+      "text": "世界 😀\nnext\n",
+      "multiline": true,
+      "clicks": [
+        {
+          "point": [
+            0,
+            9.6
+          ],
+          "selected": [
+            0,
+            6,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            7,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            9.6
+          ],
+          "selected": [
+            0,
+            6,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            7,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            9.6
+          ],
+          "selected": [
+            0,
+            6,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            7,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            28.8
+          ],
+          "selected": [
+            6,
+            11,
+            false
+          ],
+          "afterShiftRight": [
+            6,
+            11,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            28.8
+          ],
+          "selected": [
+            6,
+            11,
+            false
+          ],
+          "afterShiftRight": [
+            6,
+            11,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            28.8
+          ],
+          "selected": [
+            6,
+            11,
+            false
+          ],
+          "afterShiftRight": [
+            6,
+            11,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            48
+          ],
+          "selected": [
+            6,
+            11,
+            false
+          ],
+          "afterShiftRight": [
+            6,
+            11,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            48
+          ],
+          "selected": [
+            6,
+            11,
+            false
+          ],
+          "afterShiftRight": [
+            6,
+            11,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            48
+          ],
+          "selected": [
+            6,
+            11,
+            false
+          ],
+          "afterShiftRight": [
+            6,
+            11,
+            false
+          ]
+        }
+      ],
+      "drags": []
+    },
+    {
+      "id": "read-only",
+      "text": "one two\nthree\nfour",
+      "multiline": true,
+      "readOnly": true,
+      "clicks": [
+        {
+          "point": [
+            0,
+            9.6
+          ],
+          "selected": [
+            0,
+            8,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            9,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            9.6
+          ],
+          "selected": [
+            0,
+            8,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            9,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            9.6
+          ],
+          "selected": [
+            0,
+            8,
+            false
+          ],
+          "afterShiftRight": [
+            0,
+            9,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            28.8
+          ],
+          "selected": [
+            8,
+            14,
+            false
+          ],
+          "afterShiftRight": [
+            8,
+            15,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            28.8
+          ],
+          "selected": [
+            8,
+            14,
+            false
+          ],
+          "afterShiftRight": [
+            8,
+            15,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            28.8
+          ],
+          "selected": [
+            8,
+            14,
+            false
+          ],
+          "afterShiftRight": [
+            8,
+            15,
+            false
+          ]
+        },
+        {
+          "point": [
+            0,
+            48
+          ],
+          "selected": [
+            14,
+            18,
+            false
+          ],
+          "afterShiftRight": [
+            14,
+            18,
+            false
+          ]
+        },
+        {
+          "point": [
+            36,
+            48
+          ],
+          "selected": [
+            14,
+            18,
+            false
+          ],
+          "afterShiftRight": [
+            14,
+            18,
+            false
+          ]
+        },
+        {
+          "point": [
+            73,
+            48
+          ],
+          "selected": [
+            14,
+            18,
+            false
+          ],
+          "afterShiftRight": [
+            14,
+            18,
+            false
+          ]
+        }
+      ],
+      "drags": [
+        {
+          "from": [
+            20,
+            28.8
+          ],
+          "to": [
+            [
+              20,
+              9.6
+            ],
+            [
+              20,
+              48
+            ]
+          ],
+          "expectations": {
+            "darwin": {
+              "states": [
+                [
+                  8,
+                  14,
+                  false
+                ],
+                [
+                  0,
+                  14,
+                  false
+                ],
+                [
+                  8,
+                  18,
+                  false
+                ]
+              ],
+              "afterShiftRight": [
+                8,
+                18,
+                false
+              ]
+            },
+            "linux": {
+              "states": [
+                [
+                  8,
+                  14,
+                  false
+                ],
+                [
+                  0,
+                  14,
+                  true
+                ],
+                [
+                  8,
+                  18,
+                  false
+                ]
+              ],
+              "afterShiftRight": [
+                8,
+                18,
+                false
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

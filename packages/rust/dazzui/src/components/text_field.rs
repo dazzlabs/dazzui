@@ -14,6 +14,8 @@ use crate::generated::ThemeTokens;
 use crate::theme::ActiveTheme;
 use crate::tokens::Face;
 
+mod resize;
+
 /// Whether a text control is reporting a problem: React's `TextFieldState`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum FieldState {
@@ -486,6 +488,8 @@ impl RenderOnce for TextField {
         };
         let input = input_state(self.id.clone(), window, cx);
         let focused = input.read(cx).is_focused(window);
+        let resize = resize::state(&self.id, self.multiline, window, cx);
+        let resized_height = resize.read(cx).height;
         let chrome = FieldBox::new(self.size)
             .tint(self.tint)
             .state(state)
@@ -503,7 +507,7 @@ impl RenderOnce for TextField {
             .read_only(self.read_only)
             .disabled(self.disabled)
             .multiline(self.multiline)
-            .scroll_padding(px(t.spacing_2_5))
+            .scroll_padding(gpui::size(px(t.spacing_3), px(t.spacing_2_5)))
             .rows(self.rows);
         if let Some(value) = self.value {
             text = text.value(value);
@@ -522,17 +526,19 @@ impl RenderOnce for TextField {
         }
 
         let disabled = self.disabled;
-        chrome
+        let field = chrome
             .animated_style(div().id(part_id(&self.id, "field")), self.id, t, window, cx)
             // Rows count content lines; padding and border surround them.
             // Preserve fractional leading before resolving the outer box.
             .when(self.multiline, |this| {
-                this.h(px(t.spacing_20.max(
-                    self.rows.max(1) as f32
-                        * self.size.profile(t).content.size
-                        * t.text_field_multiline_leading
-                        + 2. * (t.spacing_2_5 + t.stroke_hairline),
-                )))
+                this.overflow_hidden().h(resized_height.unwrap_or_else(|| {
+                    px(t.spacing_20.max(
+                        self.rows.max(1) as f32
+                            * self.size.profile(t).content.size
+                            * t.text_field_multiline_leading
+                            + 2. * (t.spacing_2_5 + t.stroke_hairline),
+                    ))
+                }))
             })
             .when(self.multiline, |this| {
                 let input = input.downgrade();
@@ -558,6 +564,11 @@ impl RenderOnce for TextField {
                         .ok();
                 })
             })
-            .child(text)
+            .child(text);
+        resize::ResizeField {
+            child: field.into_any_element(),
+            state: self.multiline.then_some(resize),
+            border: px(t.stroke_hairline),
+        }
     }
 }

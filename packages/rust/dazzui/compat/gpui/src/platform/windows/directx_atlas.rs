@@ -82,6 +82,13 @@ impl PlatformAtlas for DirectXAtlas {
             let Some((size, bytes)) = build()? else {
                 return Ok(None);
             };
+            let bytes = if matches!(key.texture_kind(), AtlasTextureKind::Polychrome) {
+                let mut bytes = bytes.into_owned();
+                crate::premultiply_alpha(&mut bytes);
+                std::borrow::Cow::Owned(bytes)
+            } else {
+                bytes
+            };
             let tile = lock
                 .allocate(size, key.texture_kind())
                 .ok_or_else(|| anyhow::anyhow!("failed to allocate"))?;

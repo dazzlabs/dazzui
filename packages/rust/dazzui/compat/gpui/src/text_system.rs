@@ -270,6 +270,11 @@ impl TextSystem {
         self.read_metrics(font_id, |metrics| metrics.descent(font_size))
     }
 
+    /// The font's additional spacing for normal line layout.
+    pub fn line_gap(&self, font_id: FontId, font_size: Pixels) -> Pixels {
+        self.read_metrics(font_id, |metrics| metrics.line_gap(font_size))
+    }
+
     /// Get the recommended baseline offset for the given font and line height.
     pub fn baseline_offset(
         &self,
@@ -346,7 +351,9 @@ pub struct WindowTextSystem {
 }
 
 impl WindowTextSystem {
-    pub(crate) fn new(text_system: Arc<TextSystem>) -> Self {
+    /// Create an independent layout cache over the native text system.
+    /// This also supports font probes without opening a platform window.
+    pub fn new(text_system: Arc<TextSystem>) -> Self {
         Self {
             line_layout_cache: LineLayoutCache::new(text_system.platform_text_system.clone()),
             text_system,

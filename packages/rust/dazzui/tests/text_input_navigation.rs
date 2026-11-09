@@ -89,6 +89,39 @@ fn caret(input: &Entity<InputState>, cx: &mut VisualTestContext) -> Bounds<Pixel
 }
 
 #[gpui::test]
+fn double_clicks_match_browser_words_across_soft_wraps_and_paragraphs(cx: &mut TestAppContext) {
+    let fixtures: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../js/dazzui/example/scripts/text-field-word-selection.cases.json"
+    ))
+    .unwrap();
+    let fixture = &fixtures["wrappedCase"];
+    let (_, input, cx) = setup(cx, fixture["text"].as_str().unwrap());
+    for check in fixture["points"].as_array().unwrap() {
+        let position = gpui::point(
+            px(check[0].as_f64().unwrap() as f32),
+            px(check[1].as_f64().unwrap() as f32),
+        );
+        cx.simulate_event(gpui::MouseDownEvent {
+            position,
+            button: gpui::MouseButton::Left,
+            click_count: 2,
+            ..Default::default()
+        });
+        cx.simulate_event(gpui::MouseUpEvent {
+            position,
+            button: gpui::MouseButton::Left,
+            click_count: 2,
+            ..Default::default()
+        });
+        assert_eq!(
+            input.read_with(cx, |input, _| input.selected_range()),
+            check[2].as_u64().unwrap() as usize..check[3].as_u64().unwrap() as usize,
+            "{check}",
+        );
+    }
+}
+
+#[gpui::test]
 fn vertical_movement_retains_the_column_through_short_rows_and_shift_selections(
     cx: &mut TestAppContext,
 ) {

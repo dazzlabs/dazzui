@@ -11,6 +11,7 @@ use blade_util::{BufferBelt, BufferBeltDescriptor};
 use bytemuck::{Pod, Zeroable};
 #[cfg(target_os = "macos")]
 use media::core_video::CVMetalTextureCache;
+use smallvec::SmallVec;
 use std::sync::Arc;
 
 const MAX_FRAME_TIME_MS: u32 = 10000;
@@ -46,6 +47,89 @@ impl From<Bounds<ScaledPixels>> for PodBounds {
 struct SurfaceParams {
     bounds: PodBounds,
     content_mask: PodBounds,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Pod, Zeroable)]
+struct CompositeParams {
+    bounds: PodBounds,
+    content_mask: PodBounds,
+    corner_radii: [f32; 4],
+    corner_radii_y: [f32; 4],
+    opacity: f32,
+    pad: [f32; 3],
+    transform_row0: [f32; 4],
+    transform_row1: [f32; 4],
+    source_origin: [f32; 2],
+    source_pad: [f32; 2],
+}
+
+#[derive(blade_macros::ShaderData)]
+struct ShaderCompositeData {
+    globals: GlobalParams,
+    composite: CompositeParams,
+    t_sprite: gpu::TextureView,
+    s_sprite: gpu::Sampler,
+}
+
+#[derive(blade_macros::ShaderData)]
+struct ShaderSolidCompositeData {
+    globals: GlobalParams,
+    b_solid_rrect_vertices: gpu::BufferPiece,
+}
+
+#[derive(blade_macros::ShaderData)]
+struct ShaderGraphiteCompositeData {
+    globals: GlobalParams,
+    composite: CompositeParams,
+    t_sprite: gpu::TextureView,
+    s_sprite: gpu::Sampler,
+    b_graphite_rrect_vertices: gpu::BufferPiece,
+}
+
+#[derive(blade_macros::ShaderData)]
+struct ShaderClipData {
+    globals: GlobalParams,
+    b_clip_vertices: gpu::BufferPiece,
+}
+
+#[derive(Clone, Copy)]
+struct ClipTarget {
+    color: gpu::Texture,
+    color_view: gpu::TextureView,
+    stencil: gpu::Texture,
+    stencil_view: gpu::TextureView,
+    size: gpu::Extent,
+}
+
+enum ClipDraw<'a> {
+    Original(PrimitiveBatch<'a>),
+    Folded(crate::Composite),
+}
+
+#[derive(Clone, Copy)]
+enum ScenePipelineMode {
+    Root,
+    Premultiplied,
+    ClipTest,
+    ClipBypass,
+}
+
+macro_rules! scene_pipelines {
+    ($renderer:expr, $mode:expr) => {
+        match $mode {
+            ScenePipelineMode::Root => &$renderer.pipelines,
+            ScenePipelineMode::Premultiplied => &$renderer.offscreen_pipelines,
+            ScenePipelineMode::ClipTest => &$renderer.clip_pipelines.as_ref().unwrap().test,
+            ScenePipelineMode::ClipBypass => &$renderer.clip_pipelines.as_ref().unwrap().bypass,
+        }
+    };
+}
+
+struct CompositeTarget {
+    texture: gpu::Texture,
+    view: gpu::TextureView,
+    size: gpu::Extent,
 }
 
 #[derive(blade_macros::ShaderData)]
@@ -123,6 +207,9 @@ struct PathRasterizationVertex {
 }
 
 struct BladePipelines {
+    graphite_composite: gpu::RenderPipeline,
+    solid_composite: gpu::RenderPipeline,
+    composite: gpu::RenderPipeline,
     quads: gpu::RenderPipeline,
     shadows: gpu::RenderPipeline,
     path_rasterization: gpu::RenderPipeline,
@@ -135,7 +222,27 @@ struct BladePipelines {
 
 impl BladePipelines {
     fn new(gpu: &gpu::Context, surface_info: gpu::SurfaceInfo, path_sample_count: u32) -> Self {
+        Self::with_clip(gpu, surface_info, path_sample_count, None)
+    }
+
+    fn with_clip(
+        gpu: &gpu::Context,
+        surface_info: gpu::SurfaceInfo,
+        path_sample_count: u32,
+        test_clip: Option<bool>,
+    ) -> Self {
         use gpu::ShaderData as _;
+        let depth_stencil = test_clip.map(|test| {
+            clip_depth_stencil(if test {
+                ClipStencilMode::Test
+            } else {
+                ClipStencilMode::Bypass
+            })
+        });
+        let multisample_state = gpu::MultisampleState {
+            sample_count: if test_clip.is_some() { 4 } else { 1 },
+            ..Default::default()
+        };
 
         log::info!(
             "Initializing Blade pipelines for surface {:?}",
@@ -146,7 +253,10 @@ impl BladePipelines {
         });
         shader.check_struct_size::<GlobalParams>();
         shader.check_struct_size::<SurfaceParams>();
+        shader.check_struct_size::<CompositeParams>();
+        shader.check_struct_size::<crate::scene::GraphiteRRectVertex>();
         shader.check_struct_size::<Quad>();
+        shader.check_struct_size::<crate::scene::SolidRRectVertex>();
         shader.check_struct_size::<Shadow>();
         shader.check_struct_size::<PathRasterizationVertex>();
         shader.check_struct_size::<PathSprite>();
@@ -167,6 +277,60 @@ impl BladePipelines {
         }];
 
         Self {
+            graphite_composite: gpu.create_render_pipeline(gpu::RenderPipelineDesc {
+                name: "graphite composite",
+                data_layouts: &[&ShaderGraphiteCompositeData::layout()],
+                vertex: shader.at("vs_graphite_composite"),
+                vertex_fetches: &[],
+                primitive: gpu::PrimitiveState {
+                    topology: gpu::PrimitiveTopology::TriangleStrip,
+                    ..Default::default()
+                },
+                depth_stencil: depth_stencil.clone(),
+                fragment: Some(shader.at("fs_graphite_composite")),
+                color_targets: &[gpu::ColorTargetState {
+                    format: surface_info.format,
+                    blend: Some(gpu::BlendState::PREMULTIPLIED_ALPHA_BLENDING),
+                    write_mask: gpu::ColorWrites::default(),
+                }],
+                multisample_state,
+            }),
+            solid_composite: gpu.create_render_pipeline(gpu::RenderPipelineDesc {
+                name: "solid composite",
+                data_layouts: &[&ShaderSolidCompositeData::layout()],
+                vertex: shader.at("vs_solid_composite"),
+                vertex_fetches: &[],
+                primitive: gpu::PrimitiveState {
+                    topology: gpu::PrimitiveTopology::TriangleList,
+                    ..Default::default()
+                },
+                depth_stencil: depth_stencil.clone(),
+                fragment: Some(shader.at("fs_solid_composite")),
+                color_targets: &[gpu::ColorTargetState {
+                    format: surface_info.format,
+                    blend: Some(gpu::BlendState::PREMULTIPLIED_ALPHA_BLENDING),
+                    write_mask: gpu::ColorWrites::default(),
+                }],
+                multisample_state,
+            }),
+            composite: gpu.create_render_pipeline(gpu::RenderPipelineDesc {
+                name: "composite",
+                data_layouts: &[&ShaderCompositeData::layout()],
+                vertex: shader.at("vs_composite"),
+                vertex_fetches: &[],
+                primitive: gpu::PrimitiveState {
+                    topology: gpu::PrimitiveTopology::TriangleStrip,
+                    ..Default::default()
+                },
+                depth_stencil: depth_stencil.clone(),
+                fragment: Some(shader.at("fs_composite")),
+                color_targets: &[gpu::ColorTargetState {
+                    format: surface_info.format,
+                    blend: Some(gpu::BlendState::PREMULTIPLIED_ALPHA_BLENDING),
+                    write_mask: gpu::ColorWrites::default(),
+                }],
+                multisample_state,
+            }),
             quads: gpu.create_render_pipeline(gpu::RenderPipelineDesc {
                 name: "quads",
                 data_layouts: &[&ShaderQuadsData::layout()],
@@ -176,10 +340,10 @@ impl BladePipelines {
                     topology: gpu::PrimitiveTopology::TriangleStrip,
                     ..Default::default()
                 },
-                depth_stencil: None,
+                depth_stencil: depth_stencil.clone(),
                 fragment: Some(shader.at("fs_quad")),
                 color_targets,
-                multisample_state: gpu::MultisampleState::default(),
+                multisample_state,
             }),
             shadows: gpu.create_render_pipeline(gpu::RenderPipelineDesc {
                 name: "shadows",
@@ -190,10 +354,10 @@ impl BladePipelines {
                     topology: gpu::PrimitiveTopology::TriangleStrip,
                     ..Default::default()
                 },
-                depth_stencil: None,
+                depth_stencil: depth_stencil.clone(),
                 fragment: Some(shader.at("fs_shadow")),
                 color_targets,
-                multisample_state: gpu::MultisampleState::default(),
+                multisample_state,
             }),
             path_rasterization: gpu.create_render_pipeline(gpu::RenderPipelineDesc {
                 name: "path_rasterization",
@@ -232,17 +396,14 @@ impl BladePipelines {
                     topology: gpu::PrimitiveTopology::TriangleStrip,
                     ..Default::default()
                 },
-                depth_stencil: None,
+                depth_stencil: depth_stencil.clone(),
                 fragment: Some(shader.at("fs_path")),
                 color_targets: &[gpu::ColorTargetState {
                     format: surface_info.format,
-                    blend: Some(gpu::BlendState {
-                        color: gpu::BlendComponent::OVER,
-                        alpha: gpu::BlendComponent::ADDITIVE,
-                    }),
+                    blend: Some(gpu::BlendState::PREMULTIPLIED_ALPHA_BLENDING),
                     write_mask: gpu::ColorWrites::default(),
                 }],
-                multisample_state: gpu::MultisampleState::default(),
+                multisample_state,
             }),
             underlines: gpu.create_render_pipeline(gpu::RenderPipelineDesc {
                 name: "underlines",
@@ -253,10 +414,10 @@ impl BladePipelines {
                     topology: gpu::PrimitiveTopology::TriangleStrip,
                     ..Default::default()
                 },
-                depth_stencil: None,
+                depth_stencil: depth_stencil.clone(),
                 fragment: Some(shader.at("fs_underline")),
                 color_targets,
-                multisample_state: gpu::MultisampleState::default(),
+                multisample_state,
             }),
             mono_sprites: gpu.create_render_pipeline(gpu::RenderPipelineDesc {
                 name: "mono-sprites",
@@ -267,10 +428,10 @@ impl BladePipelines {
                     topology: gpu::PrimitiveTopology::TriangleStrip,
                     ..Default::default()
                 },
-                depth_stencil: None,
+                depth_stencil: depth_stencil.clone(),
                 fragment: Some(shader.at("fs_mono_sprite")),
                 color_targets,
-                multisample_state: gpu::MultisampleState::default(),
+                multisample_state,
             }),
             poly_sprites: gpu.create_render_pipeline(gpu::RenderPipelineDesc {
                 name: "poly-sprites",
@@ -281,10 +442,10 @@ impl BladePipelines {
                     topology: gpu::PrimitiveTopology::TriangleStrip,
                     ..Default::default()
                 },
-                depth_stencil: None,
+                depth_stencil: depth_stencil.clone(),
                 fragment: Some(shader.at("fs_poly_sprite")),
                 color_targets,
-                multisample_state: gpu::MultisampleState::default(),
+                multisample_state,
             }),
             surfaces: gpu.create_render_pipeline(gpu::RenderPipelineDesc {
                 name: "surfaces",
@@ -295,15 +456,18 @@ impl BladePipelines {
                     topology: gpu::PrimitiveTopology::TriangleStrip,
                     ..Default::default()
                 },
-                depth_stencil: None,
+                depth_stencil: depth_stencil.clone(),
                 fragment: Some(shader.at("fs_surface")),
                 color_targets,
-                multisample_state: gpu::MultisampleState::default(),
+                multisample_state,
             }),
         }
     }
 
     fn destroy(&mut self, gpu: &gpu::Context) {
+        gpu.destroy_render_pipeline(&mut self.composite);
+        gpu.destroy_render_pipeline(&mut self.graphite_composite);
+        gpu.destroy_render_pipeline(&mut self.solid_composite);
         gpu.destroy_render_pipeline(&mut self.quads);
         gpu.destroy_render_pipeline(&mut self.shadows);
         gpu.destroy_render_pipeline(&mut self.path_rasterization);
@@ -313,6 +477,232 @@ impl BladePipelines {
         gpu.destroy_render_pipeline(&mut self.poly_sprites);
         gpu.destroy_render_pipeline(&mut self.surfaces);
     }
+}
+
+enum ClipStencilMode {
+    Write,
+    Test,
+    Bypass,
+}
+
+fn clip_depth_stencil(mode: ClipStencilMode) -> gpu::DepthStencilState {
+    let face = gpu::StencilFaceState {
+        compare: if matches!(mode, ClipStencilMode::Test) {
+            gpu::CompareFunction::Equal
+        } else {
+            gpu::CompareFunction::Always
+        },
+        pass_op: if matches!(mode, ClipStencilMode::Write) {
+            gpu::StencilOperation::Replace
+        } else {
+            gpu::StencilOperation::Keep
+        },
+        ..Default::default()
+    };
+    gpu::DepthStencilState {
+        format: gpu::TextureFormat::Depth32FloatStencil8Uint,
+        depth_write_enabled: false,
+        depth_compare: gpu::CompareFunction::Always,
+        stencil: gpu::StencilState {
+            front: face,
+            back: face,
+            read_mask: 255,
+            write_mask: if matches!(mode, ClipStencilMode::Write) {
+                255
+            } else {
+                0
+            },
+        },
+        bias: Default::default(),
+    }
+}
+
+struct BladeClipPipelines {
+    test: BladePipelines,
+    bypass: BladePipelines,
+    mask: gpu::RenderPipeline,
+}
+
+impl BladeClipPipelines {
+    fn new(gpu: &gpu::Context, info: gpu::SurfaceInfo, path_samples: u32) -> Self {
+        use gpu::ShaderData as _;
+        let info = gpu::SurfaceInfo {
+            alpha: gpu::AlphaMode::PreMultiplied,
+            ..info
+        };
+        let shader = gpu.create_shader(gpu::ShaderDesc {
+            source: include_str!("shaders.wgsl"),
+        });
+        let mask = gpu.create_render_pipeline(gpu::RenderPipelineDesc {
+            name: "conic clip stencil",
+            data_layouts: &[&ShaderClipData::layout()],
+            vertex: shader.at("vs_clip"),
+            vertex_fetches: &[],
+            primitive: gpu::PrimitiveState {
+                topology: gpu::PrimitiveTopology::TriangleList,
+                ..Default::default()
+            },
+            depth_stencil: Some(clip_depth_stencil(ClipStencilMode::Write)),
+            fragment: Some(shader.at("fs_clip")),
+            color_targets: &[gpu::ColorTargetState {
+                format: info.format,
+                blend: None,
+                write_mask: gpu::ColorWrites::empty(),
+            }],
+            multisample_state: gpu::MultisampleState {
+                sample_count: 4,
+                ..Default::default()
+            },
+        });
+        Self {
+            test: BladePipelines::with_clip(gpu, info, path_samples, Some(true)),
+            bypass: BladePipelines::with_clip(gpu, info, path_samples, Some(false)),
+            mask,
+        }
+    }
+
+    fn destroy(&mut self, gpu: &gpu::Context) {
+        self.test.destroy(gpu);
+        self.bypass.destroy(gpu);
+        gpu.destroy_render_pipeline(&mut self.mask);
+    }
+}
+
+fn graphite_clip_pass(composite: &crate::Composite) -> bool {
+    #[cfg(target_os = "macos")]
+    {
+        return composite.requires_graphite_clip_pass();
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        let _ = composite;
+        false
+    }
+}
+
+fn graphite_clip_samples(composite: Option<&crate::Composite>) -> bool {
+    #[cfg(target_os = "macos")]
+    {
+        return composite.is_some_and(|clip| !clip.can_fold_all_clip_draws());
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        let _ = composite;
+        false
+    }
+}
+
+fn graphite_clip_vertices(composite: &crate::Composite) -> Vec<[f32; 2]> {
+    #[cfg(target_os = "macos")]
+    {
+        return composite
+            .graphite_clip_mesh()
+            .into_iter()
+            .map(|p| [p.x.0, p.y.0])
+            .collect();
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        let _ = composite;
+        unreachable!("Graphite clip pass is macOS-only")
+    }
+}
+
+fn needs_graphite_clipping(scene: &Scene) -> bool {
+    scene
+        .composites
+        .iter()
+        .any(|c| graphite_clip_pass(c) || needs_graphite_clipping(&c.scene))
+}
+
+fn prepare_clip_draws<'a>(
+    batch: PrimitiveBatch<'a>,
+    clip: Option<&crate::Composite>,
+) -> SmallVec<[ClipDraw<'a>; 1]> {
+    let mut result = SmallVec::new();
+    #[cfg(target_os = "macos")]
+    if let Some(clip) = clip {
+        match batch {
+            PrimitiveBatch::Quads(quads) => {
+                let mut start = 0;
+                for (i, q) in quads.iter().enumerate() {
+                    let folded = (q.corner_radii == Default::default()
+                        && q.border_widths == Default::default())
+                    .then(|| {
+                        clip.fold_clip_into(
+                            q.bounds.intersect(&q.content_mask.bounds),
+                            q.clone().into(),
+                        )
+                    })
+                    .flatten();
+                    if let Some(folded) = folded {
+                        if i > start {
+                            result
+                                .push(ClipDraw::Original(PrimitiveBatch::Quads(&quads[start..i])));
+                        }
+                        result.push(ClipDraw::Folded(folded));
+                        start = i + 1;
+                    }
+                }
+                if start < quads.len() {
+                    result.push(ClipDraw::Original(PrimitiveBatch::Quads(&quads[start..])));
+                }
+                return result;
+            }
+            PrimitiveBatch::PolychromeSprites {
+                texture_id,
+                sprites,
+            } => {
+                let mut start = 0;
+                for (i, s) in sprites.iter().enumerate() {
+                    let folded = (s.corner_radii == Default::default())
+                        .then(|| {
+                            clip.fold_clip_into(
+                                s.bounds.intersect(&s.content_mask.bounds),
+                                s.clone().into(),
+                            )
+                        })
+                        .flatten();
+                    if let Some(folded) = folded {
+                        if i > start {
+                            result.push(ClipDraw::Original(PrimitiveBatch::PolychromeSprites {
+                                texture_id,
+                                sprites: &sprites[start..i],
+                            }));
+                        }
+                        result.push(ClipDraw::Folded(folded));
+                        start = i + 1;
+                    }
+                }
+                if start < sprites.len() {
+                    result.push(ClipDraw::Original(PrimitiveBatch::PolychromeSprites {
+                        texture_id,
+                        sprites: &sprites[start..],
+                    }));
+                }
+                return result;
+            }
+            PrimitiveBatch::Composite(c)
+                if c.corner_radii == Default::default()
+                    && c.corner_radii_y == Default::default()
+                    && c.transformation.rotation_scale[0][1] == 0.
+                    && c.transformation.rotation_scale[1][0] == 0. =>
+            {
+                if let Some(folded) = clip.fold_clip_into(
+                    c.painted_bounds.intersect(&c.content_mask.bounds),
+                    c.clone().into(),
+                ) {
+                    result.push(ClipDraw::Folded(folded));
+                    return result;
+                }
+            }
+            _ => {}
+        }
+    }
+    #[cfg(not(target_os = "macos"))]
+    let _ = clip;
+    result.push(ClipDraw::Original(batch));
+    result
 }
 
 pub struct BladeSurfaceConfig {
@@ -326,16 +716,22 @@ pub struct BladeSurfaceConfig {
 // the format and alpha mode.
 pub struct BladeRenderer {
     gpu: Arc<gpu::Context>,
-    surface: gpu::Surface,
+    surface: Option<gpu::Surface>,
+    surface_info: gpu::SurfaceInfo,
     surface_config: gpu::SurfaceConfig,
     command_encoder: gpu::CommandEncoder,
     last_sync_point: Option<gpu::SyncPoint>,
     pipelines: BladePipelines,
+    offscreen_pipelines: BladePipelines,
+    composite_targets: Vec<CompositeTarget>,
+    clip_targets: Vec<Option<ClipTarget>>,
+    clip_pipelines: Option<BladeClipPipelines>,
     instance_belt: BufferBelt,
     atlas: Arc<BladeAtlas>,
     atlas_sampler: gpu::Sampler,
     #[cfg(target_os = "macos")]
     core_video_texture_cache: CVMetalTextureCache,
+    intermediate_size: gpu::Extent,
     path_intermediate_texture: gpu::Texture,
     path_intermediate_texture_view: gpu::TextureView,
     path_intermediate_msaa_texture: Option<gpu::Texture>,
@@ -362,6 +758,21 @@ impl BladeRenderer {
             .create_surface_configured(window, surface_config)
             .map_err(|err| anyhow::anyhow!("Failed to create surface: {err:?}"))?;
 
+        let info = surface.info();
+        Ok(Self::with_surface(
+            context,
+            Some(surface),
+            info,
+            surface_config,
+        ))
+    }
+
+    fn with_surface(
+        context: &BladeContext,
+        surface: Option<gpu::Surface>,
+        surface_info: gpu::SurfaceInfo,
+        surface_config: gpu::SurfaceConfig,
+    ) -> Self {
         let command_encoder = context.gpu.create_command_encoder(gpu::CommandEncoderDesc {
             name: "main",
             buffer_count: 2,
@@ -369,7 +780,7 @@ impl BladeRenderer {
         let rendering_parameters = RenderingParameters::from_env(context);
         let pipelines = BladePipelines::new(
             &context.gpu,
-            surface.info(),
+            surface_info,
             rendering_parameters.path_sample_count,
         );
         let instance_belt = BufferBelt::new(BufferBeltDescriptor {
@@ -388,16 +799,16 @@ impl BladeRenderer {
         let (path_intermediate_texture, path_intermediate_texture_view) =
             create_path_intermediate_texture(
                 &context.gpu,
-                surface.info().format,
-                config.size.width,
-                config.size.height,
+                surface_info.format,
+                surface_config.size.width,
+                surface_config.size.height,
             );
         let (path_intermediate_msaa_texture, path_intermediate_msaa_texture_view) =
             create_msaa_texture_if_needed(
                 &context.gpu,
-                surface.info().format,
-                config.size.width,
-                config.size.height,
+                surface_info.format,
+                surface_config.size.width,
+                surface_config.size.height,
                 rendering_parameters.path_sample_count,
             )
             .unzip();
@@ -410,10 +821,23 @@ impl BladeRenderer {
             .unwrap()
         };
 
-        Ok(Self {
+        let offscreen_pipelines = BladePipelines::new(
+            &context.gpu,
+            gpu::SurfaceInfo {
+                alpha: gpu::AlphaMode::PreMultiplied,
+                ..surface_info
+            },
+            rendering_parameters.path_sample_count,
+        );
+        Self {
             gpu: Arc::clone(&context.gpu),
             surface,
+            surface_info,
             surface_config,
+            offscreen_pipelines,
+            composite_targets: Vec::new(),
+            clip_targets: Vec::new(),
+            clip_pipelines: None,
             command_encoder,
             last_sync_point: None,
             pipelines,
@@ -422,12 +846,13 @@ impl BladeRenderer {
             atlas_sampler,
             #[cfg(target_os = "macos")]
             core_video_texture_cache,
+            intermediate_size: surface_config.size,
             path_intermediate_texture,
             path_intermediate_texture_view,
             path_intermediate_msaa_texture,
             path_intermediate_msaa_texture_view,
             rendering_parameters,
-        })
+        }
     }
 
     fn wait_for_gpu(&mut self) {
@@ -477,37 +902,72 @@ impl BladeRenderer {
         if always_resize || gpu_size != self.surface_config.size {
             self.wait_for_gpu();
             self.surface_config.size = gpu_size;
-            self.gpu
-                .reconfigure_surface(&mut self.surface, self.surface_config);
-            self.gpu.destroy_texture(self.path_intermediate_texture);
-            self.gpu
-                .destroy_texture_view(self.path_intermediate_texture_view);
-            if let Some(msaa_texture) = self.path_intermediate_msaa_texture {
-                self.gpu.destroy_texture(msaa_texture);
+            if let Some(surface) = &mut self.surface {
+                self.gpu.reconfigure_surface(surface, self.surface_config);
+                self.surface_info = surface.info();
             }
-            if let Some(msaa_view) = self.path_intermediate_msaa_texture_view {
-                self.gpu.destroy_texture_view(msaa_view);
-            }
-            let (path_intermediate_texture, path_intermediate_texture_view) =
-                create_path_intermediate_texture(
-                    &self.gpu,
-                    self.surface.info().format,
-                    gpu_size.width,
-                    gpu_size.height,
-                );
-            self.path_intermediate_texture = path_intermediate_texture;
-            self.path_intermediate_texture_view = path_intermediate_texture_view;
-            let (path_intermediate_msaa_texture, path_intermediate_msaa_texture_view) =
-                create_msaa_texture_if_needed(
-                    &self.gpu,
-                    self.surface.info().format,
-                    gpu_size.width,
-                    gpu_size.height,
-                    self.rendering_parameters.path_sample_count,
-                )
-                .unzip();
-            self.path_intermediate_msaa_texture = path_intermediate_msaa_texture;
-            self.path_intermediate_msaa_texture_view = path_intermediate_msaa_texture_view;
+            self.update_intermediate_textures(gpu_size);
+        }
+    }
+
+    fn update_intermediate_textures(&mut self, gpu_size: gpu::Extent) {
+        self.intermediate_size = gpu_size;
+        self.gpu.destroy_texture(self.path_intermediate_texture);
+        self.gpu
+            .destroy_texture_view(self.path_intermediate_texture_view);
+        if let Some(msaa_texture) = self.path_intermediate_msaa_texture {
+            self.gpu.destroy_texture(msaa_texture);
+        }
+        if let Some(msaa_view) = self.path_intermediate_msaa_texture_view {
+            self.gpu.destroy_texture_view(msaa_view);
+        }
+        let (path_intermediate_texture, path_intermediate_texture_view) =
+            create_path_intermediate_texture(
+                &self.gpu,
+                self.surface_info.format,
+                gpu_size.width,
+                gpu_size.height,
+            );
+        self.path_intermediate_texture = path_intermediate_texture;
+        self.path_intermediate_texture_view = path_intermediate_texture_view;
+        let (path_intermediate_msaa_texture, path_intermediate_msaa_texture_view) =
+            create_msaa_texture_if_needed(
+                &self.gpu,
+                self.surface_info.format,
+                gpu_size.width,
+                gpu_size.height,
+                self.rendering_parameters.path_sample_count,
+            )
+            .unzip();
+        self.path_intermediate_msaa_texture = path_intermediate_msaa_texture;
+        self.path_intermediate_msaa_texture_view = path_intermediate_msaa_texture_view;
+    }
+
+    fn prepare_scene(&mut self, scene: &Scene) {
+        if cfg!(target_os = "macos")
+            && self.clip_pipelines.is_none()
+            && (self.gpu.capabilities().sample_count_mask & 4) != 0
+            && needs_graphite_clipping(scene)
+        {
+            self.clip_pipelines = Some(BladeClipPipelines::new(
+                &self.gpu,
+                self.surface_info,
+                self.rendering_parameters.path_sample_count,
+            ));
+        }
+        let size = scene.intermediate_size(crate::size(
+            DevicePixels(self.surface_config.size.width as i32),
+            DevicePixels(self.surface_config.size.height as i32),
+        ));
+        let extent = gpu::Extent {
+            width: size.width.0 as u32,
+            height: size.height.0 as u32,
+            depth: 1,
+        };
+        if extent != self.intermediate_size {
+            self.wait_for_gpu();
+            self.clear_composite_targets();
+            self.update_intermediate_textures(extent);
         }
     }
 
@@ -515,12 +975,27 @@ impl BladeRenderer {
         if transparent != self.surface_config.transparent {
             self.wait_for_gpu();
             self.surface_config.transparent = transparent;
-            self.gpu
-                .reconfigure_surface(&mut self.surface, self.surface_config);
+            if let Some(surface) = &mut self.surface {
+                self.gpu.reconfigure_surface(surface, self.surface_config);
+                self.surface_info = surface.info();
+            }
+            self.clear_composite_targets();
+            if let Some(mut pipelines) = self.clip_pipelines.take() {
+                pipelines.destroy(&self.gpu);
+            }
+            self.offscreen_pipelines.destroy(&self.gpu);
+            self.offscreen_pipelines = BladePipelines::new(
+                &self.gpu,
+                gpu::SurfaceInfo {
+                    alpha: gpu::AlphaMode::PreMultiplied,
+                    ..self.surface_info
+                },
+                self.rendering_parameters.path_sample_count,
+            );
             self.pipelines.destroy(&self.gpu);
             self.pipelines = BladePipelines::new(
                 &self.gpu,
-                self.surface.info(),
+                self.surface_info,
                 self.rendering_parameters.path_sample_count,
             );
         }
@@ -557,7 +1032,7 @@ impl BladeRenderer {
 
     #[cfg(target_os = "macos")]
     pub fn layer_ptr(&self) -> *mut metal::CAMetalLayer {
-        objc2::rc::Retained::as_ptr(&self.surface.metal_layer()) as *mut _
+        objc2::rc::Retained::as_ptr(&self.surface.as_ref().unwrap().metal_layer()) as *mut _
     }
 
     #[profiling::function]
@@ -627,8 +1102,15 @@ impl BladeRenderer {
         self.gpu.destroy_sampler(self.atlas_sampler);
         self.instance_belt.destroy(&self.gpu);
         self.gpu.destroy_command_encoder(&mut self.command_encoder);
+        if let Some(mut pipelines) = self.clip_pipelines.take() {
+            pipelines.destroy(&self.gpu);
+        }
         self.pipelines.destroy(&self.gpu);
-        self.gpu.destroy_surface(&mut self.surface);
+        self.offscreen_pipelines.destroy(&self.gpu);
+        self.clear_composite_targets();
+        if let Some(surface) = &mut self.surface {
+            self.gpu.destroy_surface(surface);
+        }
         self.gpu.destroy_texture(self.path_intermediate_texture);
         self.gpu
             .destroy_texture_view(self.path_intermediate_texture_view);
@@ -640,46 +1122,245 @@ impl BladeRenderer {
         }
     }
 
-    pub fn draw(&mut self, scene: &Scene) {
+    /// Render the same scene encoder to an app-owned texture, without
+    /// compositor overlays or a screen-capture permission.
+    pub fn capture_scene(&mut self, scene: &Scene) -> anyhow::Result<image::RgbaImage> {
+        let size = self.surface_config.size;
+        anyhow::ensure!(size.width > 0 && size.height > 0, "empty scene capture");
+        anyhow::ensure!(
+            matches!(
+                self.surface_info.format,
+                gpu::TextureFormat::Rgba8Unorm | gpu::TextureFormat::Bgra8Unorm
+            ),
+            "unsupported capture format: {:?}",
+            self.surface_info.format
+        );
+        self.wait_for_gpu();
+        let (target, view) = create_path_intermediate_texture(
+            &self.gpu,
+            self.surface_info.format,
+            size.width,
+            size.height,
+        );
+        let stride = (size.width * 4 + 255) & !255;
+        let readback = self.gpu.create_buffer(gpu::BufferDesc {
+            name: "scene capture readback",
+            size: u64::from(stride) * u64::from(size.height),
+            memory: gpu::Memory::Shared,
+        });
+        self.prepare_scene(scene);
         self.command_encoder.start();
         self.atlas.before_frame(&mut self.command_encoder);
-
-        let frame = {
-            profiling::scope!("acquire frame");
-            self.surface.acquire_frame()
+        self.command_encoder.init_texture(target);
+        self.encode_scene(
+            scene,
+            view,
+            self.surface_info.alpha == gpu::AlphaMode::PreMultiplied,
+            0,
+            self.surface_config.size,
+            None,
+        );
+        self.command_encoder
+            .transfer("read scene capture")
+            .copy_texture_to_buffer(target.into(), readback.into(), stride, size);
+        let sync = self.gpu.submit(&mut self.command_encoder);
+        self.instance_belt.flush(&sync);
+        self.atlas.after_frame(&sync);
+        let complete = self.gpu.wait_for(&sync, MAX_FRAME_TIME_MS);
+        // Keep every referenced resource alive until a submitted readback
+        // completes, even when the diagnostic timeout is exceeded.
+        if !complete {
+            log::error!("scene capture exceeded GPU timeout");
+            while !self.gpu.wait_for(&sync, MAX_FRAME_TIME_MS) {}
+        }
+        let bytes = unsafe {
+            std::slice::from_raw_parts(readback.data(), stride as usize * size.height as usize)
         };
-        self.command_encoder.init_texture(frame.texture());
+        let bgra = self.surface_info.format == gpu::TextureFormat::Bgra8Unorm;
+        let mut pixels = Vec::with_capacity((size.width * size.height * 4) as usize);
+        for row in bytes.chunks_exact(stride as usize) {
+            for source in row[..size.width as usize * 4].chunks_exact(4) {
+                let mut pixel = [source[0], source[1], source[2], source[3]];
+                if bgra {
+                    pixel.swap(0, 2);
+                }
+                let alpha = u32::from(pixel[3]);
+                for channel in &mut pixel[..3] {
+                    *channel = if alpha == 0 {
+                        0
+                    } else {
+                        ((u32::from(*channel) * 255 + alpha / 2) / alpha).min(255) as u8
+                    };
+                }
+                pixels.extend_from_slice(&pixel);
+            }
+        }
+        self.gpu.destroy_buffer(readback);
+        self.gpu.destroy_texture_view(view);
+        self.gpu.destroy_texture(target);
+        anyhow::ensure!(complete, "scene capture GPU timeout");
+        image::RgbaImage::from_raw(size.width, size.height, pixels)
+            .ok_or_else(|| anyhow::anyhow!("invalid scene capture dimensions"))
+    }
 
+    fn clear_composite_targets(&mut self) {
+        for target in self.clip_targets.drain(..).flatten() {
+            self.gpu.destroy_texture_view(target.color_view);
+            self.gpu.destroy_texture(target.color);
+            self.gpu.destroy_texture_view(target.stencil_view);
+            self.gpu.destroy_texture(target.stencil);
+        }
+        for target in self.composite_targets.drain(..) {
+            self.gpu.destroy_texture_view(target.view);
+            self.gpu.destroy_texture(target.texture);
+        }
+    }
+
+    fn composite_target(&mut self, depth: usize) -> gpu::TextureView {
+        let size = self.intermediate_size;
+        if self
+            .composite_targets
+            .get(depth)
+            .is_some_and(|target| target.size != size)
+        {
+            self.wait_for_gpu();
+            self.clear_composite_targets();
+        }
+        if depth == self.composite_targets.len() {
+            let (texture, view) = create_path_intermediate_texture(
+                &self.gpu,
+                self.surface_info.format,
+                size.width,
+                size.height,
+            );
+            // Initialize only a newly allocated image. Reused images stay
+            // in GENERAL layout; render-pass barriers order sibling reads
+            // before the next clear without discarding them prematurely.
+            self.command_encoder.init_texture(texture);
+            self.composite_targets.push(CompositeTarget {
+                texture,
+                view,
+                size,
+            });
+        }
+        self.composite_targets[depth].view
+    }
+
+    fn clip_target(&mut self, depth: usize) -> ClipTarget {
+        let size = self.intermediate_size;
+        if self.clip_targets.len() <= depth {
+            self.clip_targets.resize_with(depth + 1, || None);
+        }
+        if let Some(target) = self.clip_targets[depth] {
+            assert_eq!(
+                target.size, size,
+                "clip targets must be resized before recording the frame"
+            );
+            return target;
+        }
+        let (color, color_view) = create_msaa_texture_if_needed(
+            &self.gpu,
+            self.surface_info.format,
+            size.width,
+            size.height,
+            4,
+        )
+        .unwrap();
+        let (stencil, stencil_view) = create_msaa_texture_if_needed(
+            &self.gpu,
+            gpu::TextureFormat::Depth32FloatStencil8Uint,
+            size.width,
+            size.height,
+            4,
+        )
+        .unwrap();
+        self.command_encoder.init_texture(color);
+        self.command_encoder.init_texture(stencil);
+        let target = ClipTarget {
+            color,
+            color_view,
+            stencil,
+            stencil_view,
+            size,
+        };
+        self.clip_targets[depth] = Some(target);
+        target
+    }
+
+    fn encode_scene(
+        &mut self,
+        scene: &Scene,
+        target: gpu::TextureView,
+        premultiplied: bool,
+        depth: usize,
+        viewport: gpu::Extent,
+        clip: Option<&crate::Composite>,
+    ) {
         let globals = GlobalParams {
-            viewport_size: [
-                self.surface_config.size.width as f32,
-                self.surface_config.size.height as f32,
-            ],
-            premultiplied_alpha: match self.surface.info().alpha {
-                gpu::AlphaMode::Ignored | gpu::AlphaMode::PostMultiplied => 0,
-                gpu::AlphaMode::PreMultiplied => 1,
-            },
+            viewport_size: [viewport.width as f32, viewport.height as f32],
+            premultiplied_alpha: u32::from(premultiplied),
             pad: 0,
         };
 
+        let multisampled = graphite_clip_samples(clip) && self.clip_pipelines.is_some();
+        let clip_target = multisampled.then(|| self.clip_target(depth));
+        let color_view = clip_target.map_or(target, |t| t.color_view);
+        let clip_mesh = clip.filter(|_| multisampled).map(graphite_clip_vertices);
+        let clip_buffer = clip_mesh
+            .as_ref()
+            .map(|v| unsafe { self.instance_belt.alloc_typed(v, &self.gpu) });
         let mut pass = self.command_encoder.render(
             "main",
             gpu::RenderTargetSet {
                 colors: &[gpu::RenderTarget {
-                    view: frame.texture_view(),
+                    view: color_view,
                     init_op: gpu::InitOp::Clear(gpu::TextureColor::TransparentBlack),
                     finish_op: gpu::FinishOp::Store,
                 }],
-                depth_stencil: None,
+                depth_stencil: clip_target.map(|t| gpu::RenderTarget {
+                    view: t.stencil_view,
+                    init_op: gpu::InitOp::Clear(gpu::TextureColor::TransparentBlack),
+                    finish_op: gpu::FinishOp::Store,
+                }),
             },
         );
 
+        pass.set_stencil_reference(1);
+        if let Some(buffer) = clip_buffer {
+            let mut encoder = pass.with(&self.clip_pipelines.as_ref().unwrap().mask);
+            encoder.bind(
+                0,
+                &ShaderClipData {
+                    globals,
+                    b_clip_vertices: buffer,
+                },
+            );
+            encoder.draw(0, clip_mesh.as_ref().unwrap().len() as u32, 0, 1);
+        }
         profiling::scope!("render pass");
-        for batch in scene.batches() {
+        for draw in scene
+            .batches()
+            .flat_map(|batch| prepare_clip_draws(batch, clip))
+        {
+            let (batch, bypass) = match draw {
+                ClipDraw::Original(batch) => (batch, false),
+                ClipDraw::Folded(ref composite) => (PrimitiveBatch::Composite(composite), true),
+            };
+            let mode = if multisampled {
+                if bypass {
+                    ScenePipelineMode::ClipBypass
+                } else {
+                    ScenePipelineMode::ClipTest
+                }
+            } else if premultiplied {
+                ScenePipelineMode::Premultiplied
+            } else {
+                ScenePipelineMode::Root
+            };
             match batch {
                 PrimitiveBatch::Quads(quads) => {
                     let instance_buf = unsafe { self.instance_belt.alloc_typed(quads, &self.gpu) };
-                    let mut encoder = pass.with(&self.pipelines.quads);
+                    let mut encoder = pass.with(&scene_pipelines!(self, mode).quads);
                     encoder.bind(
                         0,
                         &ShaderQuadsData {
@@ -692,7 +1373,7 @@ impl BladeRenderer {
                 PrimitiveBatch::Shadows(shadows) => {
                     let instance_buf =
                         unsafe { self.instance_belt.alloc_typed(shadows, &self.gpu) };
-                    let mut encoder = pass.with(&self.pipelines.shadows);
+                    let mut encoder = pass.with(&scene_pipelines!(self, mode).shadows);
                     encoder.bind(
                         0,
                         &ShaderShadowsData {
@@ -709,21 +1390,26 @@ impl BladeRenderer {
                     drop(pass);
                     self.draw_paths_to_intermediate(
                         paths,
-                        self.surface_config.size.width as f32,
-                        self.surface_config.size.height as f32,
+                        self.intermediate_size.width as f32,
+                        self.intermediate_size.height as f32,
                     );
                     pass = self.command_encoder.render(
                         "main",
                         gpu::RenderTargetSet {
                             colors: &[gpu::RenderTarget {
-                                view: frame.texture_view(),
+                                view: color_view,
                                 init_op: gpu::InitOp::Load,
                                 finish_op: gpu::FinishOp::Store,
                             }],
-                            depth_stencil: None,
+                            depth_stencil: clip_target.map(|t| gpu::RenderTarget {
+                                view: t.stencil_view,
+                                init_op: gpu::InitOp::Load,
+                                finish_op: gpu::FinishOp::Store,
+                            }),
                         },
                     );
-                    let mut encoder = pass.with(&self.pipelines.paths);
+                    pass.set_stencil_reference(1);
+                    let mut encoder = pass.with(&scene_pipelines!(self, mode).paths);
                     // When copying paths from the intermediate texture to the drawable,
                     // each pixel must only be copied once, in case of transparent paths.
                     //
@@ -761,7 +1447,7 @@ impl BladeRenderer {
                 PrimitiveBatch::Underlines(underlines) => {
                     let instance_buf =
                         unsafe { self.instance_belt.alloc_typed(underlines, &self.gpu) };
-                    let mut encoder = pass.with(&self.pipelines.underlines);
+                    let mut encoder = pass.with(&scene_pipelines!(self, mode).underlines);
                     encoder.bind(
                         0,
                         &ShaderUnderlinesData {
@@ -778,7 +1464,7 @@ impl BladeRenderer {
                     let tex_info = self.atlas.get_texture_info(texture_id);
                     let instance_buf =
                         unsafe { self.instance_belt.alloc_typed(sprites, &self.gpu) };
-                    let mut encoder = pass.with(&self.pipelines.mono_sprites);
+                    let mut encoder = pass.with(&scene_pipelines!(self, mode).mono_sprites);
                     encoder.bind(
                         0,
                         &ShaderMonoSpritesData {
@@ -801,7 +1487,7 @@ impl BladeRenderer {
                     let tex_info = self.atlas.get_texture_info(texture_id);
                     let instance_buf =
                         unsafe { self.instance_belt.alloc_typed(sprites, &self.gpu) };
-                    let mut encoder = pass.with(&self.pipelines.poly_sprites);
+                    let mut encoder = pass.with(&scene_pipelines!(self, mode).poly_sprites);
                     encoder.bind(
                         0,
                         &ShaderPolySpritesData {
@@ -813,12 +1499,124 @@ impl BladeRenderer {
                     );
                     encoder.draw(0, 4, 0, sprites.len() as u32);
                 }
-                #[cfg(target_os = "macos")]
-                PrimitiveBatch::Composite(_) => {
-                    unreachable!("isolated compositing is only emitted for Metal")
+                PrimitiveBatch::Composite(composite) => {
+                    if let Some(vertices) = composite.solid_rrect_mesh() {
+                        let buffer =
+                            unsafe { self.instance_belt.alloc_typed(&vertices, &self.gpu) };
+                        let mut encoder = pass.with(&scene_pipelines!(self, mode).solid_composite);
+                        encoder.bind(
+                            0,
+                            &ShaderSolidCompositeData {
+                                globals,
+                                b_solid_rrect_vertices: buffer,
+                            },
+                        );
+                        encoder.draw(0, vertices.len() as u32, 0, 1);
+                        continue;
+                    }
+                    drop(pass);
+                    let view = self.composite_target(depth);
+                    let clip_applied =
+                        self.clip_pipelines.is_some() && graphite_clip_pass(composite);
+                    self.encode_scene(
+                        &composite.scene,
+                        view,
+                        true,
+                        depth + 1,
+                        self.intermediate_size,
+                        clip_applied.then_some(composite),
+                    );
+                    pass = self.command_encoder.render(
+                        "resume composite parent",
+                        gpu::RenderTargetSet {
+                            colors: &[gpu::RenderTarget {
+                                view: color_view,
+                                init_op: gpu::InitOp::Load,
+                                finish_op: gpu::FinishOp::Store,
+                            }],
+                            depth_stencil: clip_target.map(|t| gpu::RenderTarget {
+                                view: t.stencil_view,
+                                init_op: gpu::InitOp::Load,
+                                finish_op: gpu::FinishOp::Store,
+                            }),
+                        },
+                    );
+                    pass.set_stencil_reference(1);
+                    let data = ShaderCompositeData {
+                        globals,
+                        composite: CompositeParams {
+                            bounds: composite.bounds.into(),
+                            content_mask: composite.content_mask.bounds.into(),
+                            corner_radii: if clip_applied {
+                                [0.; 4]
+                            } else {
+                                [
+                                    composite.corner_radii.top_left.0,
+                                    composite.corner_radii.top_right.0,
+                                    composite.corner_radii.bottom_right.0,
+                                    composite.corner_radii.bottom_left.0,
+                                ]
+                            },
+                            corner_radii_y: if clip_applied {
+                                [0.; 4]
+                            } else {
+                                [
+                                    composite.corner_radii_y.top_left.0,
+                                    composite.corner_radii_y.top_right.0,
+                                    composite.corner_radii_y.bottom_right.0,
+                                    composite.corner_radii_y.bottom_left.0,
+                                ]
+                            },
+                            source_origin: [
+                                composite.source_origin.x.0,
+                                composite.source_origin.y.0,
+                            ],
+                            source_pad: [0.; 2],
+                            opacity: composite.opacity,
+                            pad: [0.; 3],
+                            transform_row0: [
+                                composite.transformation.rotation_scale[0][0],
+                                composite.transformation.rotation_scale[0][1],
+                                composite.transformation.translation[0],
+                                0.,
+                            ],
+                            transform_row1: [
+                                composite.transformation.rotation_scale[1][0],
+                                composite.transformation.rotation_scale[1][1],
+                                composite.transformation.translation[1],
+                                0.,
+                            ],
+                        },
+                        t_sprite: view,
+                        s_sprite: self.atlas_sampler,
+                    };
+                    if let Some(vertices) = (!clip_applied)
+                        .then(|| composite.graphite_rrect_mesh())
+                        .flatten()
+                    {
+                        let buffer =
+                            unsafe { self.instance_belt.alloc_typed(&vertices, &self.gpu) };
+                        let mut encoder =
+                            pass.with(&scene_pipelines!(self, mode).graphite_composite);
+                        encoder.bind(
+                            0,
+                            &ShaderGraphiteCompositeData {
+                                globals: data.globals,
+                                composite: data.composite,
+                                t_sprite: data.t_sprite,
+                                s_sprite: data.s_sprite,
+                                b_graphite_rrect_vertices: buffer,
+                            },
+                        );
+                        encoder.draw(0, vertices.len() as u32, 0, 1);
+                    } else {
+                        let mut encoder = pass.with(&scene_pipelines!(self, mode).composite);
+                        encoder.bind(0, &data);
+                        encoder.draw(0, 4, 0, 1);
+                    }
                 }
                 PrimitiveBatch::Surfaces(surfaces) => {
-                    let mut _encoder = pass.with(&self.pipelines.surfaces);
+                    let mut _encoder = pass.with(&scene_pipelines!(self, mode).surfaces);
 
                     for surface in surfaces {
                         #[cfg(not(target_os = "macos"))]
@@ -909,6 +1707,44 @@ impl BladeRenderer {
             }
         }
         drop(pass);
+        if let Some(t) = clip_target {
+            let resolve = self.command_encoder.render(
+                "resolve conic clip",
+                gpu::RenderTargetSet {
+                    colors: &[gpu::RenderTarget {
+                        view: t.color_view,
+                        init_op: gpu::InitOp::Load,
+                        finish_op: gpu::FinishOp::ResolveTo(target),
+                    }],
+                    depth_stencil: None,
+                },
+            );
+            drop(resolve);
+        }
+    }
+
+    pub fn draw(&mut self, scene: &Scene) {
+        self.prepare_scene(scene);
+        self.command_encoder.start();
+        self.atlas.before_frame(&mut self.command_encoder);
+
+        let frame = {
+            profiling::scope!("acquire frame");
+            self.surface
+                .as_mut()
+                .expect("onscreen draw requires a surface")
+                .acquire_frame()
+        };
+        self.command_encoder.init_texture(frame.texture());
+
+        self.encode_scene(
+            scene,
+            frame.texture_view(),
+            self.surface_info.alpha == gpu::AlphaMode::PreMultiplied,
+            0,
+            self.surface_config.size,
+            None,
+        );
 
         self.command_encoder.present(frame);
         let sync_point = self.gpu.submit(&mut self.command_encoder);
@@ -1074,3 +1910,7 @@ impl RenderingParameters {
         ]
     }
 }
+
+#[cfg(test)]
+#[path = "../renderer_tests.rs"]
+mod gpu_tests;

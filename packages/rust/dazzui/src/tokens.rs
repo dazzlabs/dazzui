@@ -112,7 +112,7 @@ pub enum Face {
 }
 
 impl Face {
-    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    #[cfg(any(target_os = "linux", target_os = "macos", target_os = "windows"))]
     pub(crate) fn families(self) -> &'static [&'static str] {
         match self {
             Face::Text => crate::generated::FONT_UI,
@@ -127,6 +127,10 @@ impl Face {
         #[cfg(target_os = "macos")]
         if self == Face::Mono {
             return mac_code_family();
+        }
+        #[cfg(target_os = "windows")]
+        if self == Face::Mono {
+            return crate::platform_fonts::code_family();
         }
         #[cfg(target_os = "linux")]
         return crate::platform_fonts::family(self == Face::Mono);

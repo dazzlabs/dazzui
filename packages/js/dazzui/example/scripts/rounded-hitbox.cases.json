@@ -1,0 +1,998 @@
+[
+  {
+    "name": "rounded hidden",
+    "width": 80,
+    "radius": 24,
+    "border": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "overflow": "hidden",
+    "samples": [
+      [
+        25,
+        25,
+        "behind"
+      ],
+      [
+        64,
+        26,
+        "host"
+      ],
+      [
+        31,
+        35,
+        "child"
+      ],
+      [
+        30,
+        35,
+        "host"
+      ],
+      [
+        64,
+        64,
+        "child"
+      ],
+      [
+        31.25,
+        35.5,
+        "child"
+      ],
+      [
+        30.25,
+        34.25,
+        "host"
+      ]
+    ]
+  },
+  {
+    "name": "rounded visible",
+    "width": 80,
+    "radius": 24,
+    "border": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "overflow": "visible",
+    "samples": [
+      [
+        25,
+        25,
+        "behind"
+      ],
+      [
+        29,
+        29,
+        "child"
+      ],
+      [
+        64,
+        26,
+        "host"
+      ],
+      [
+        64,
+        64,
+        "child"
+      ]
+    ]
+  },
+  {
+    "name": "elliptical padding",
+    "width": 48,
+    "radius": 16,
+    "border": [
+      4,
+      10,
+      8,
+      2
+    ],
+    "overflow": "hidden",
+    "samples": [
+      [
+        25,
+        25,
+        "behind"
+      ],
+      [
+        29,
+        32,
+        "child"
+      ],
+      [
+        28,
+        31,
+        "host"
+      ],
+      [
+        40,
+        27,
+        "host"
+      ],
+      [
+        38,
+        40,
+        "child"
+      ],
+      [
+        65,
+        40,
+        "host"
+      ],
+      [
+        60,
+        29,
+        "host"
+      ]
+    ]
+  },
+  {
+    "name": "square border",
+    "width": 80,
+    "radius": 0,
+    "border": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "overflow": "hidden",
+    "samples": [
+      [
+        25,
+        25,
+        "host"
+      ],
+      [
+        31,
+        35,
+        "child"
+      ],
+      [
+        64,
+        26,
+        "host"
+      ],
+      [
+        64,
+        64,
+        "child"
+      ],
+      [
+        23,
+        64,
+        "behind"
+      ],
+      [
+        23.5,
+        64,
+        "host",
+        "behind"
+      ],
+      [
+        104,
+        64,
+        "behind"
+      ],
+      [
+        103.5,
+        64,
+        "host"
+      ]
+    ]
+  },
+  {
+    "name": "single axis",
+    "width": 80,
+    "radius": 24,
+    "border": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "overflow": "clip-x",
+    "samples": [
+      [
+        64,
+        12,
+        "child"
+      ],
+      [
+        25,
+        64,
+        "host"
+      ],
+      [
+        25,
+        25,
+        "behind"
+      ],
+      [
+        29,
+        29,
+        "child"
+      ]
+    ]
+  },
+  {
+    "name": "nested clips",
+    "width": 80,
+    "radius": 24,
+    "border": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "overflow": "hidden",
+    "nested": true,
+    "samples": [
+      [
+        35,
+        35,
+        "host"
+      ],
+      [
+        30,
+        64,
+        "host"
+      ],
+      [
+        48,
+        48,
+        "child"
+      ],
+      [
+        25,
+        25,
+        "behind"
+      ]
+    ]
+  },
+  {
+    "name": "half-scale parent",
+    "width": 80,
+    "radius": 24,
+    "border": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "overflow": "hidden",
+    "factor": 0.5,
+    "samples": [
+      [
+        12.5,
+        12.5,
+        "behind"
+      ],
+      [
+        32,
+        12.5,
+        "host"
+      ],
+      [
+        14,
+        17,
+        "host"
+      ],
+      [
+        32,
+        32,
+        "child"
+      ]
+    ]
+  },
+  {
+    "name": "enlarged parent",
+    "width": 80,
+    "radius": 24,
+    "border": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "overflow": "hidden",
+    "factor": 1.5,
+    "samples": [
+      [
+        37.5,
+        37.5,
+        "behind"
+      ],
+      [
+        96,
+        39,
+        "host"
+      ],
+      [
+        45,
+        52.5,
+        "host"
+      ],
+      [
+        96,
+        96,
+        "child"
+      ]
+    ]
+  },
+  {
+    "name": "scaled child under parent clip",
+    "width": 80,
+    "radius": 24,
+    "border": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "overflow": "hidden",
+    "childFactor": 0.5,
+    "samples": [
+      [
+        30,
+        32,
+        "host"
+      ],
+      [
+        32,
+        40,
+        "child"
+      ],
+      [
+        64,
+        64,
+        "host"
+      ],
+      [
+        25,
+        25,
+        "behind"
+      ]
+    ]
+  },
+  {
+    "name": "fractional (24.25,24.5) 16 hidden 48",
+    "x": 24.25,
+    "y": 24.5,
+    "width": 48,
+    "height": 48,
+    "radius": 16,
+    "border": [
+      4,
+      10,
+      8,
+      2
+    ],
+    "overflow": "hidden",
+    "samples": [
+      [
+        24.25,
+        48,
+        "host"
+      ],
+      [
+        23.5,
+        48,
+        "host",
+        "behind"
+      ],
+      [
+        71.75,
+        48,
+        "host"
+      ],
+      [
+        72,
+        48,
+        "host"
+      ],
+      [
+        27.5,
+        31,
+        "host"
+      ],
+      [
+        28,
+        31,
+        "host"
+      ],
+      [
+        28.25,
+        31.25,
+        "host"
+      ],
+      [
+        29,
+        32,
+        "child"
+      ],
+      [
+        30,
+        30,
+        "host"
+      ],
+      [
+        40,
+        27.5,
+        "host"
+      ],
+      [
+        40,
+        28,
+        "child"
+      ],
+      [
+        40,
+        28.5,
+        "child"
+      ]
+    ]
+  },
+  {
+    "name": "fractional (24.49,24.49) 16 hidden 48",
+    "x": 24.49,
+    "y": 24.49,
+    "width": 48,
+    "height": 48,
+    "radius": 16,
+    "border": [
+      4,
+      10,
+      8,
+      2
+    ],
+    "overflow": "hidden",
+    "samples": [
+      [
+        24.25,
+        48,
+        "host"
+      ],
+      [
+        23.5,
+        48,
+        "host",
+        "behind"
+      ],
+      [
+        71.75,
+        48,
+        "host"
+      ],
+      [
+        72,
+        48,
+        "host"
+      ],
+      [
+        27.5,
+        31,
+        "host"
+      ],
+      [
+        28,
+        31,
+        "host"
+      ],
+      [
+        28.25,
+        31.25,
+        "host"
+      ],
+      [
+        29,
+        32,
+        "child"
+      ],
+      [
+        30,
+        30,
+        "child"
+      ],
+      [
+        40,
+        27.5,
+        "child",
+        "host"
+      ],
+      [
+        40,
+        28,
+        "child"
+      ],
+      [
+        40,
+        28.5,
+        "child"
+      ],
+      [
+        23.4843,
+        48,
+        "behind"
+      ],
+      [
+        23.4844,
+        48,
+        "behind"
+      ],
+      [
+        23.49,
+        48,
+        "behind"
+      ],
+      [
+        72.4843,
+        48,
+        "behind",
+        "host"
+      ],
+      [
+        72.4844,
+        48,
+        "behind",
+        "host"
+      ],
+      [
+        72.49,
+        48,
+        "behind",
+        "host"
+      ]
+    ]
+  },
+  {
+    "name": "fractional (24.51,24.51) 16 hidden 48",
+    "x": 24.51,
+    "y": 24.51,
+    "width": 48,
+    "height": 48,
+    "radius": 16,
+    "border": [
+      4,
+      10,
+      8,
+      2
+    ],
+    "overflow": "hidden",
+    "samples": [
+      [
+        24.25,
+        48,
+        "host"
+      ],
+      [
+        23.5,
+        48,
+        "behind"
+      ],
+      [
+        71.75,
+        48,
+        "host"
+      ],
+      [
+        72,
+        48,
+        "host"
+      ],
+      [
+        27.5,
+        31,
+        "host"
+      ],
+      [
+        28,
+        31,
+        "host"
+      ],
+      [
+        28.25,
+        31.25,
+        "host"
+      ],
+      [
+        29,
+        32,
+        "host"
+      ],
+      [
+        30,
+        30,
+        "host"
+      ],
+      [
+        40,
+        27.5,
+        "host"
+      ],
+      [
+        40,
+        28,
+        "child"
+      ],
+      [
+        40,
+        28.5,
+        "child"
+      ]
+    ]
+  },
+  {
+    "name": "fractional (24.25,24.5) 0 hidden 48",
+    "x": 24.25,
+    "y": 24.5,
+    "width": 48,
+    "height": 48,
+    "radius": 0,
+    "border": [
+      4,
+      10,
+      8,
+      2
+    ],
+    "overflow": "hidden",
+    "samples": [
+      [
+        24.25,
+        48,
+        "host"
+      ],
+      [
+        23.5,
+        48,
+        "host",
+        "behind"
+      ],
+      [
+        71.75,
+        48,
+        "host"
+      ],
+      [
+        72,
+        48,
+        "host"
+      ],
+      [
+        27.5,
+        31,
+        "child"
+      ],
+      [
+        28,
+        31,
+        "child"
+      ],
+      [
+        28.25,
+        31.25,
+        "child"
+      ],
+      [
+        29,
+        32,
+        "child"
+      ],
+      [
+        30,
+        30,
+        "child"
+      ],
+      [
+        40,
+        27.5,
+        "host"
+      ],
+      [
+        40,
+        28,
+        "child"
+      ],
+      [
+        40,
+        28.5,
+        "child"
+      ]
+    ]
+  },
+  {
+    "name": "fractional (24.25,24.5) 16 visible 48",
+    "x": 24.25,
+    "y": 24.5,
+    "width": 48,
+    "height": 48,
+    "radius": 16,
+    "border": [
+      4,
+      10,
+      8,
+      2
+    ],
+    "overflow": "visible",
+    "samples": [
+      [
+        24.25,
+        48,
+        "host"
+      ],
+      [
+        23.5,
+        48,
+        "host",
+        "behind"
+      ],
+      [
+        71.75,
+        48,
+        "host"
+      ],
+      [
+        72,
+        48,
+        "host"
+      ],
+      [
+        27.5,
+        31,
+        "child"
+      ],
+      [
+        28,
+        31,
+        "child"
+      ],
+      [
+        28.25,
+        31.25,
+        "child"
+      ],
+      [
+        29,
+        32,
+        "child"
+      ],
+      [
+        30,
+        30,
+        "child"
+      ],
+      [
+        40,
+        27.5,
+        "host"
+      ],
+      [
+        40,
+        28,
+        "child"
+      ],
+      [
+        40,
+        28.5,
+        "child"
+      ]
+    ]
+  },
+  {
+    "name": "fractional (24.25,24.5) 0 hidden 0.1",
+    "x": 24.25,
+    "y": 24.5,
+    "width": 0.1,
+    "height": 20,
+    "radius": 0,
+    "border": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "overflow": "hidden",
+    "samples": [
+      [
+        23.5,
+        30,
+        "child",
+        "behind"
+      ],
+      [
+        24,
+        30,
+        "child"
+      ],
+      [
+        24.25,
+        30,
+        "child"
+      ],
+      [
+        24.4,
+        30,
+        "behind",
+        "child"
+      ],
+      [
+        24.5,
+        30,
+        "behind",
+        "child"
+      ],
+      [
+        24.75,
+        30,
+        "behind",
+        "child"
+      ],
+      [
+        25,
+        30,
+        "behind"
+      ],
+      [
+        23.249,
+        30,
+        "behind"
+      ],
+      [
+        23.25,
+        30,
+        "behind"
+      ],
+      [
+        24.3436,
+        30,
+        "behind",
+        "child",
+        "child"
+      ],
+      [
+        24.3438,
+        30,
+        "behind",
+        "child"
+      ]
+    ]
+  },
+  {
+    "name": "fractional (24.25,24.5) 0.05 hidden 0.1",
+    "x": 24.25,
+    "y": 24.5,
+    "width": 0.1,
+    "height": 20,
+    "radius": 0.05,
+    "border": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "overflow": "hidden",
+    "samples": [
+      [
+        23.5,
+        30,
+        "child",
+        "behind"
+      ],
+      [
+        24,
+        30,
+        "child"
+      ],
+      [
+        24.25,
+        30,
+        "host",
+        "child"
+      ],
+      [
+        24.4,
+        30,
+        "behind",
+        "child"
+      ],
+      [
+        24.5,
+        30,
+        "behind",
+        "child"
+      ],
+      [
+        24.75,
+        30,
+        "behind",
+        "child"
+      ],
+      [
+        25,
+        30,
+        "behind"
+      ],
+      [
+        23.249,
+        30,
+        "behind"
+      ],
+      [
+        23.25,
+        30,
+        "behind"
+      ],
+      [
+        24.3436,
+        30,
+        "behind",
+        "child",
+        "host"
+      ],
+      [
+        24.3438,
+        30,
+        "behind",
+        "child"
+      ]
+    ]
+  },
+  {
+    "name": "fractional (24.25,24.5) 0.375 hidden 0.75",
+    "x": 24.25,
+    "y": 24.5,
+    "width": 0.75,
+    "height": 20,
+    "radius": 0.375,
+    "border": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "overflow": "hidden",
+    "samples": [
+      [
+        23.5,
+        30,
+        "child",
+        "behind"
+      ],
+      [
+        24,
+        30,
+        "child"
+      ],
+      [
+        24.25,
+        30,
+        "child"
+      ],
+      [
+        24.4,
+        30,
+        "child"
+      ],
+      [
+        24.5,
+        30,
+        "child"
+      ],
+      [
+        24.75,
+        30,
+        "child"
+      ],
+      [
+        25,
+        30,
+        "behind"
+      ]
+    ]
+  }
+]

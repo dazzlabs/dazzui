@@ -45,6 +45,7 @@ pub(crate) struct DirectXRenderer {
     pipelines: DirectXRenderPipelines,
     direct_composition: Option<DirectComposition>,
     font_info: &'static FontInfo,
+    composite_targets: Vec<CompositeTarget>,
 }
 
 /// Direct3D objects
@@ -59,7 +60,7 @@ pub(crate) struct DirectXRendererDevices {
 
 struct DirectXResources {
     // Direct3D rendering objects
-    swap_chain: IDXGISwapChain1,
+    swap_chain: Option<IDXGISwapChain1>,
     render_target: ManuallyDrop<ID3D11Texture2D>,
     render_target_view: [Option<ID3D11RenderTargetView>; 1],
 
@@ -73,9 +74,53 @@ struct DirectXResources {
     width: u32,
     height: u32,
     viewport: [D3D11_VIEWPORT; 1],
+    path_size: Size<DevicePixels>,
+}
+
+struct CompositeTarget {
+    _texture: ID3D11Texture2D,
+    view: [Option<ID3D11RenderTargetView>; 1],
+    source: [Option<ID3D11ShaderResourceView>; 1],
+    size: Size<DevicePixels>,
+}
+
+impl CompositeTarget {
+    fn new(device: &ID3D11Device, size: Size<DevicePixels>) -> Result<Self> {
+        let (texture, source) =
+            create_path_intermediate_texture(device, size.width.0 as u32, size.height.0 as u32)?;
+        let mut view = None;
+        unsafe { device.CreateRenderTargetView(&texture, None, Some(&mut view))? };
+        Ok(Self {
+            _texture: texture,
+            source,
+            view: [view],
+            size,
+        })
+    }
+}
+
+fn viewport(size: Size<DevicePixels>) -> [D3D11_VIEWPORT; 1] {
+    [D3D11_VIEWPORT {
+        Width: size.width.0 as f32,
+        Height: size.height.0 as f32,
+        MaxDepth: 1.,
+        ..Default::default()
+    }]
+}
+
+#[repr(C)]
+struct CompositeInstance {
+    bounds: Bounds<ScaledPixels>,
+    content_mask: ContentMask<ScaledPixels>,
+    corner_radii: Corners<ScaledPixels>,
+    corner_radii_y: Corners<ScaledPixels>,
+    transformation: TransformationMatrix,
+    source_origin: Point<ScaledPixels>,
+    opacity: f32,
 }
 
 struct DirectXRenderPipelines {
+    solid_composite: PipelineState<crate::scene::SolidRRectVertex>,
     shadow_pipeline: PipelineState<Shadow>,
     quad_pipeline: PipelineState<Quad>,
     path_rasterization_pipeline: PipelineState<PathRasterizationSprite>,
@@ -83,6 +128,7 @@ struct DirectXRenderPipelines {
     underline_pipeline: PipelineState<Underline>,
     mono_sprites: PipelineState<MonochromeSprite>,
     poly_sprites: PipelineState<PolychromeSprite>,
+    composite: PipelineState<CompositeInstance>,
 }
 
 struct DirectXGlobalElements {
@@ -150,7 +196,7 @@ impl DirectXRenderer {
             let composition = DirectComposition::new(devices.dxgi_device.as_ref().unwrap(), hwnd)
                 .context("Creating DirectComposition")?;
             composition
-                .set_swap_chain(&resources.swap_chain)
+                .set_swap_chain(resources.swap_chain.as_ref().unwrap())
                 .context("Setting swap chain for DirectComposition")?;
             Some(composition)
         };
@@ -164,6 +210,7 @@ impl DirectXRenderer {
             pipelines,
             direct_composition,
             font_info: Self::get_font_info(),
+            composite_targets: Vec::new(),
         })
     }
 
@@ -171,20 +218,27 @@ impl DirectXRenderer {
         self.atlas.clone()
     }
 
-    fn pre_draw(&self) -> Result<()> {
+    fn update_globals(&self, viewport: [D3D11_VIEWPORT; 1]) -> Result<()> {
         update_buffer(
             &self.devices.device_context,
             self.globals.global_params_buffer[0].as_ref().unwrap(),
             &[GlobalParams {
                 gamma_ratios: self.font_info.gamma_ratios,
-                viewport_size: [
-                    self.resources.viewport[0].Width,
-                    self.resources.viewport[0].Height,
-                ],
+                viewport_size: [viewport[0].Width, viewport[0].Height],
                 grayscale_enhanced_contrast: self.font_info.grayscale_enhanced_contrast,
                 _pad: 0,
+                path_texture_size: [
+                    self.resources.path_size.width.0 as f32,
+                    self.resources.path_size.height.0 as f32,
+                ],
+                _pad2: [0; 2],
             }],
         )?;
+        Ok(())
+    }
+
+    fn pre_draw(&self) -> Result<()> {
+        self.update_globals(self.resources.viewport)?;
         unsafe {
             self.devices.device_context.ClearRenderTargetView(
                 self.resources.render_target_view[0].as_ref().unwrap(),
@@ -202,7 +256,12 @@ impl DirectXRenderer {
 
     #[inline]
     fn present(&mut self) -> Result<()> {
-        let result = unsafe { self.resources.swap_chain.Present(0, DXGI_PRESENT(0)) };
+        let chain = self
+            .resources
+            .swap_chain
+            .as_ref()
+            .context("offscreen targets cannot present")?;
+        let result = unsafe { chain.Present(0, DXGI_PRESENT(0)) };
         result.ok().context("Presenting swap chain failed")
     }
 
@@ -225,6 +284,8 @@ impl DirectXRenderer {
 
     fn handle_device_lost_impl(&mut self, directx_devices: &DirectXDevices) -> Result<()> {
         let disable_direct_composition = self.direct_composition.is_none();
+        let width = self.resources.width;
+        let height = self.resources.height;
 
         unsafe {
             #[cfg(debug_assertions)]
@@ -250,8 +311,8 @@ impl DirectXRenderer {
             .context("Recreating DirectX devices")?;
         let resources = DirectXResources::new(
             &devices,
-            self.resources.width,
-            self.resources.height,
+            width,
+            height,
             self.hwnd,
             disable_direct_composition,
         )?;
@@ -263,7 +324,7 @@ impl DirectXRenderer {
         } else {
             let composition =
                 DirectComposition::new(devices.dxgi_device.as_ref().unwrap(), self.hwnd)?;
-            composition.set_swap_chain(&resources.swap_chain)?;
+            composition.set_swap_chain(resources.swap_chain.as_ref().unwrap())?;
             Some(composition)
         };
 
@@ -274,6 +335,7 @@ impl DirectXRenderer {
         self.globals = globals;
         self.pipelines = pipelines;
         self.direct_composition = direct_composition;
+        self.composite_targets.clear();
 
         unsafe {
             self.devices
@@ -284,7 +346,37 @@ impl DirectXRenderer {
     }
 
     pub(crate) fn draw(&mut self, scene: &Scene) -> Result<()> {
+        self.render_scene(scene)?;
+        self.present()
+    }
+
+    fn render_scene(&mut self, scene: &Scene) -> Result<()> {
+        let needed = scene.intermediate_size(size(
+            DevicePixels(self.resources.width as i32),
+            DevicePixels(self.resources.height as i32),
+        ));
+        if self.resources.path_size != needed {
+            let (texture, source) = create_path_intermediate_texture(
+                &self.devices.device,
+                needed.width.0 as u32,
+                needed.height.0 as u32,
+            )?;
+            let (msaa, view) = create_path_intermediate_msaa_texture_and_view(
+                &self.devices.device,
+                needed.width.0 as u32,
+                needed.height.0 as u32,
+            )?;
+            self.resources.path_intermediate_texture = texture;
+            self.resources.path_intermediate_srv = source;
+            self.resources.path_intermediate_msaa_texture = msaa;
+            self.resources.path_intermediate_msaa_view = view;
+            self.resources.path_size = needed;
+        }
         self.pre_draw()?;
+        self.draw_scene(scene)
+    }
+
+    fn draw_scene(&mut self, scene: &Scene) -> Result<()> {
         for batch in scene.batches() {
             match batch {
                 PrimitiveBatch::Shadows(shadows) => self.draw_shadows(shadows),
@@ -303,6 +395,7 @@ impl DirectXRenderer {
                     sprites,
                 } => self.draw_polychrome_sprites(texture_id, sprites),
                 PrimitiveBatch::Surfaces(surfaces) => self.draw_surfaces(surfaces),
+                PrimitiveBatch::Composite(composite) => self.draw_composite(composite),
             }.context(format!("scene too large: {} paths, {} shadows, {} quads, {} underlines, {} mono, {} poly, {} surfaces",
                     scene.paths.len(),
                     scene.shadows.len(),
@@ -312,7 +405,127 @@ impl DirectXRenderer {
                     scene.polychrome_sprites.len(),
                     scene.surfaces.len(),))?;
         }
-        self.present()
+        Ok(())
+    }
+
+    fn draw_composite(&mut self, composite: &Composite) -> Result<()> {
+        if let Some(vertices) = composite.solid_rrect_mesh() {
+            self.pipelines.solid_composite.update_buffer(
+                &self.devices.device,
+                &self.devices.device_context,
+                &vertices,
+            )?;
+            return self.pipelines.solid_composite.draw(
+                &self.devices.device_context,
+                &self.resources.viewport,
+                &self.globals.global_params_buffer,
+                D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
+                vertices.len() as u32,
+                1,
+            );
+        }
+        let size = self.resources.path_size;
+        let layer = match self.composite_targets.pop() {
+            Some(layer) if layer.size == size => layer,
+            _ => CompositeTarget::new(&self.devices.device, size)?,
+        };
+        // A texture cannot be an SRV and a render target at the same time.
+        unsafe {
+            self.devices
+                .device_context
+                .PSSetShaderResources(0, Some(&[None]));
+            self.devices
+                .device_context
+                .VSSetShaderResources(0, Some(&[None]));
+        }
+        let parent_view =
+            std::mem::replace(&mut self.resources.render_target_view, layer.view.clone());
+        let parent_viewport = self.resources.viewport;
+        self.resources.viewport = viewport(size);
+        let result = self
+            .pre_draw()
+            .and_then(|_| self.draw_scene(&composite.scene));
+        self.resources.render_target_view = parent_view;
+        self.resources.viewport = parent_viewport;
+        self.update_globals(parent_viewport)?;
+        unsafe {
+            self.devices
+                .device_context
+                .OMSetRenderTargets(Some(&self.resources.render_target_view), None);
+        }
+        result?;
+        self.pipelines.composite.update_buffer(
+            &self.devices.device,
+            &self.devices.device_context,
+            &[CompositeInstance {
+                bounds: composite.bounds,
+                content_mask: composite.content_mask.clone(),
+                corner_radii: composite.corner_radii,
+                corner_radii_y: composite.corner_radii_y,
+                transformation: composite.transformation,
+                source_origin: composite.source_origin,
+                opacity: composite.opacity,
+            }],
+        )?;
+        self.pipelines.composite.draw_with_texture(
+            &self.devices.device_context,
+            &layer.source,
+            &self.resources.viewport,
+            &self.globals.global_params_buffer,
+            &self.globals.sampler,
+            1,
+        )?;
+        unsafe {
+            self.devices
+                .device_context
+                .PSSetShaderResources(0, Some(&[None]));
+            self.devices
+                .device_context
+                .VSSetShaderResources(0, Some(&[None]));
+        }
+        self.composite_targets.push(layer);
+        Ok(())
+    }
+
+    pub(crate) fn capture_scene(&mut self, scene: &Scene) -> Result<image::RgbaImage> {
+        self.render_scene(scene)?;
+        let mut desc = D3D11_TEXTURE2D_DESC::default();
+        unsafe { self.resources.render_target.GetDesc(&mut desc) };
+        desc.Usage = D3D11_USAGE_STAGING;
+        desc.BindFlags = 0;
+        desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ.0 as u32;
+        desc.MiscFlags = 0;
+        let mut staging = None;
+        unsafe {
+            self.devices
+                .device
+                .CreateTexture2D(&desc, None, Some(&mut staging))?
+        };
+        let staging = staging.unwrap();
+        let context = &self.devices.device_context;
+        unsafe {
+            context.CopyResource(&staging, &*self.resources.render_target);
+            let mut mapped = D3D11_MAPPED_SUBRESOURCE::default();
+            // A blocking read map waits for GPU completion, including on discrete GPUs.
+            context.Map(&staging, 0, D3D11_MAP_READ, 0, Some(&mut mapped))?;
+            let mut bytes = Vec::with_capacity(desc.Width as usize * desc.Height as usize * 4);
+            for row in 0..desc.Height as usize {
+                let source = std::slice::from_raw_parts(
+                    mapped
+                        .pData
+                        .cast::<u8>()
+                        .add(row * mapped.RowPitch as usize),
+                    desc.Width as usize * 4,
+                );
+                bytes.extend_from_slice(source);
+            }
+            context.Unmap(&staging, 0);
+            for pixel in bytes.chunks_exact_mut(4) {
+                crate::swap_rgba_pa_to_bgra(pixel);
+            }
+            image::RgbaImage::from_raw(desc.Width, desc.Height, bytes)
+                .ok_or_else(|| anyhow::anyhow!("invalid DirectX capture dimensions"))
+        }
     }
 
     pub(crate) fn resize(&mut self, new_size: Size<DevicePixels>) -> Result<()> {
@@ -334,16 +547,17 @@ impl DirectXRenderer {
         // When a graphics device is removed or reset, the desktop resolution often changes, resulting in a window size change.
         // But here we just return the error, because we are handling device lost scenarios elsewhere.
         unsafe {
-            self.resources
-                .swap_chain
-                .ResizeBuffers(
-                    BUFFER_COUNT as u32,
-                    width,
-                    height,
-                    RENDER_TARGET_FORMAT,
-                    DXGI_SWAP_CHAIN_FLAG(0),
-                )
-                .context("Failed to resize swap chain")?;
+            if let Some(chain) = self.resources.swap_chain.as_ref() {
+                chain
+                    .ResizeBuffers(
+                        BUFFER_COUNT as u32,
+                        width,
+                        height,
+                        RENDER_TARGET_FORMAT,
+                        DXGI_SWAP_CHAIN_FLAG(0),
+                    )
+                    .context("Failed to resize swap chain")?;
+            }
         }
 
         self.resources
@@ -402,6 +616,12 @@ impl DirectXRenderer {
 
         // Clear intermediate MSAA texture
         unsafe {
+            self.devices
+                .device_context
+                .PSSetShaderResources(0, Some(&[None]));
+            self.devices
+                .device_context
+                .VSSetShaderResources(0, Some(&[None]));
             self.devices.device_context.ClearRenderTargetView(
                 self.resources.path_intermediate_msaa_view[0]
                     .as_ref()
@@ -431,9 +651,10 @@ impl DirectXRenderer {
             &self.devices.device_context,
             &vertices,
         )?;
+        self.update_globals(viewport(self.resources.path_size))?;
         self.pipelines.path_rasterization_pipeline.draw(
             &self.devices.device_context,
-            &self.resources.viewport,
+            &viewport(self.resources.path_size),
             &self.globals.global_params_buffer,
             D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
             vertices.len() as u32,
@@ -454,6 +675,7 @@ impl DirectXRenderer {
                 .device_context
                 .OMSetRenderTargets(Some(&self.resources.render_target_view), None);
         }
+        self.update_globals(self.resources.viewport)?;
 
         Ok(())
     }
@@ -670,7 +892,24 @@ impl DirectXResources {
                 height,
             )?
         };
+        Self::with_swap_chain(devices, Some(swap_chain), width, height)
+    }
 
+    #[cfg(test)]
+    fn offscreen(
+        devices: &DirectXRendererDevices,
+        width: u32,
+        height: u32,
+    ) -> Result<ManuallyDrop<Self>> {
+        Self::with_swap_chain(devices, None, width, height)
+    }
+
+    fn with_swap_chain(
+        devices: &DirectXRendererDevices,
+        swap_chain: Option<IDXGISwapChain1>,
+        width: u32,
+        height: u32,
+    ) -> Result<ManuallyDrop<Self>> {
         let (
             render_target,
             render_target_view,
@@ -679,7 +918,7 @@ impl DirectXResources {
             path_intermediate_msaa_texture,
             path_intermediate_msaa_view,
             viewport,
-        ) = create_resources(devices, &swap_chain, width, height)?;
+        ) = create_resources(devices, swap_chain.as_ref(), width, height)?;
         set_rasterizer_state(&devices.device, &devices.device_context)?;
 
         Ok(ManuallyDrop::new(Self {
@@ -693,6 +932,7 @@ impl DirectXResources {
             viewport,
             width,
             height,
+            path_size: size(DevicePixels(width as i32), DevicePixels(height as i32)),
         }))
     }
 
@@ -711,7 +951,7 @@ impl DirectXResources {
             path_intermediate_msaa_texture,
             path_intermediate_msaa_view,
             viewport,
-        ) = create_resources(devices, &self.swap_chain, width, height)?;
+        ) = create_resources(devices, self.swap_chain.as_ref(), width, height)?;
         self.render_target = render_target;
         self.render_target_view = render_target_view;
         self.path_intermediate_texture = path_intermediate_texture;
@@ -719,6 +959,7 @@ impl DirectXResources {
         self.path_intermediate_msaa_view = path_intermediate_msaa_view;
         self.path_intermediate_srv = path_intermediate_srv;
         self.viewport = viewport;
+        self.path_size = size(DevicePixels(width as i32), DevicePixels(height as i32));
         Ok(())
     }
 }
@@ -774,8 +1015,23 @@ impl DirectXRenderPipelines {
             16,
             create_blend_state(device)?,
         )?;
+        let composite = PipelineState::new(
+            device,
+            "composite_pipeline",
+            ShaderModule::Composite,
+            1,
+            create_blend_state_for_path_rasterization(device)?,
+        )?;
 
+        let solid_composite = PipelineState::new(
+            device,
+            "solid_composite_pipeline",
+            ShaderModule::SolidComposite,
+            90,
+            create_blend_state_for_path_rasterization(device)?,
+        )?;
         Ok(Self {
+            solid_composite,
             shadow_pipeline,
             quad_pipeline,
             path_rasterization_pipeline,
@@ -783,6 +1039,7 @@ impl DirectXRenderPipelines {
             underline_pipeline,
             mono_sprites,
             poly_sprites,
+            composite,
         })
     }
 }
@@ -828,9 +1085,9 @@ impl DirectXGlobalElements {
         let sampler = unsafe {
             let desc = D3D11_SAMPLER_DESC {
                 Filter: D3D11_FILTER_MIN_MAG_MIP_LINEAR,
-                AddressU: D3D11_TEXTURE_ADDRESS_WRAP,
-                AddressV: D3D11_TEXTURE_ADDRESS_WRAP,
-                AddressW: D3D11_TEXTURE_ADDRESS_WRAP,
+                AddressU: D3D11_TEXTURE_ADDRESS_CLAMP,
+                AddressV: D3D11_TEXTURE_ADDRESS_CLAMP,
+                AddressW: D3D11_TEXTURE_ADDRESS_CLAMP,
                 MipLODBias: 0.0,
                 MaxAnisotropy: 1,
                 ComparisonFunc: D3D11_COMPARISON_ALWAYS,
@@ -857,6 +1114,8 @@ struct GlobalParams {
     viewport_size: [f32; 2],
     grayscale_enhanced_contrast: f32,
     _pad: u32,
+    path_texture_size: [f32; 2],
+    _pad2: [u32; 2],
 }
 
 struct PipelineState<T> {
@@ -1078,7 +1337,7 @@ fn create_swap_chain(
 #[inline]
 fn create_resources(
     devices: &DirectXRendererDevices,
-    swap_chain: &IDXGISwapChain1,
+    swap_chain: Option<&IDXGISwapChain1>,
     width: u32,
     height: u32,
 ) -> Result<(
@@ -1090,8 +1349,15 @@ fn create_resources(
     [Option<ID3D11RenderTargetView>; 1],
     [D3D11_VIEWPORT; 1],
 )> {
-    let (render_target, render_target_view) =
-        create_render_target_and_its_view(swap_chain, &devices.device)?;
+    let (render_target, render_target_view) = if let Some(chain) = swap_chain {
+        create_render_target_and_its_view(chain, &devices.device)?
+    } else {
+        let target = CompositeTarget::new(
+            &devices.device,
+            size(DevicePixels(width as i32), DevicePixels(height as i32)),
+        )?;
+        (ManuallyDrop::new(target._texture), target.view)
+    };
     let (path_intermediate_texture, path_intermediate_srv) =
         create_path_intermediate_texture(&devices.device, width, height)?;
     let (path_intermediate_msaa_texture, path_intermediate_msaa_view) =
@@ -1242,7 +1508,7 @@ fn create_blend_state(device: &ID3D11Device) -> Result<ID3D11BlendState> {
     desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
     desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
     desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-    desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+    desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
     desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL.0 as u8;
     unsafe {
         let mut state = None;
@@ -1282,7 +1548,7 @@ fn create_blend_state_for_path_sprite(device: &ID3D11Device) -> Result<ID3D11Ble
     desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
     desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
     desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-    desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+    desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
     desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL.0 as u8;
     unsafe {
         let mut state = None;
@@ -1409,6 +1675,8 @@ pub(crate) mod shader_resources {
         PathSprite,
         MonochromeSprite,
         PolychromeSprite,
+        Composite,
+        SolidComposite,
         EmojiRasterization,
     }
 
@@ -1478,6 +1746,14 @@ pub(crate) mod shader_resources {
                 ShaderModule::PolychromeSprite => match target {
                     ShaderTarget::Vertex => POLYCHROME_SPRITE_VERTEX_BYTES,
                     ShaderTarget::Fragment => POLYCHROME_SPRITE_FRAGMENT_BYTES,
+                },
+                ShaderModule::SolidComposite => match target {
+                    ShaderTarget::Vertex => SOLID_COMPOSITE_VERTEX_BYTES,
+                    ShaderTarget::Fragment => SOLID_COMPOSITE_FRAGMENT_BYTES,
+                },
+                ShaderModule::Composite => match target {
+                    ShaderTarget::Vertex => COMPOSITE_VERTEX_BYTES,
+                    ShaderTarget::Fragment => COMPOSITE_FRAGMENT_BYTES,
                 },
                 ShaderModule::EmojiRasterization => match target {
                     ShaderTarget::Vertex => EMOJI_RASTERIZATION_VERTEX_BYTES,
@@ -1568,6 +1844,8 @@ pub(crate) mod shader_resources {
                 ShaderModule::PathSprite => "path_sprite",
                 ShaderModule::MonochromeSprite => "monochrome_sprite",
                 ShaderModule::PolychromeSprite => "polychrome_sprite",
+                ShaderModule::Composite => "composite",
+                ShaderModule::SolidComposite => "solid_composite",
                 ShaderModule::EmojiRasterization => "emoji_rasterization",
             }
         }
@@ -1756,3 +2034,7 @@ mod dxgi {
         ))
     }
 }
+
+#[cfg(test)]
+#[path = "../renderer_tests.rs"]
+mod gpu_tests;

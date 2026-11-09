@@ -54,6 +54,11 @@ impl ShapedLine {
             ascent: layout.ascent,
             descent: layout.descent,
             runs: layout.runs.clone(),
+            carets: if len == layout.len {
+                layout.carets.clone()
+            } else {
+                Vec::new()
+            },
             len,
         });
         self
@@ -137,6 +142,22 @@ impl WrappedLine {
         self.layout.len()
     }
 
+    fn row_decorations(&self, range: std::ops::Range<usize>) -> Vec<DecorationRun> {
+        let mut start = 0;
+        self.decoration_runs
+            .iter()
+            .filter_map(|run| {
+                let end = start + run.len as usize;
+                let len = end.min(range.end).saturating_sub(start.max(range.start));
+                start = end;
+                (len > 0).then(|| DecorationRun {
+                    len: len as u32,
+                    ..run.clone()
+                })
+            })
+            .collect()
+    }
+
     /// Paint this line of text to the window.
     pub fn paint(
         &self,
@@ -151,6 +172,23 @@ impl WrappedLine {
             Some(bounds) => Some(bounds.size.width),
             None => self.layout.wrap_width,
         };
+
+        if !self.layout.row_layouts.is_empty() {
+            for (index, row) in self.layout.row_layouts.iter().enumerate() {
+                paint_line(
+                    origin + point(px(0.), line_height * index),
+                    &row.layout,
+                    line_height,
+                    align,
+                    align_width,
+                    &self.row_decorations(row.range.clone()),
+                    &[],
+                    window,
+                    cx,
+                )?;
+            }
+            return Ok(());
+        }
 
         paint_line(
             origin,
@@ -181,6 +219,23 @@ impl WrappedLine {
             Some(bounds) => Some(bounds.size.width),
             None => self.layout.wrap_width,
         };
+
+        if !self.layout.row_layouts.is_empty() {
+            for (index, row) in self.layout.row_layouts.iter().enumerate() {
+                paint_line_background(
+                    origin + point(px(0.), line_height * index),
+                    &row.layout,
+                    line_height,
+                    align,
+                    align_width,
+                    &self.row_decorations(row.range.clone()),
+                    &[],
+                    window,
+                    cx,
+                )?;
+            }
+            return Ok(());
+        }
 
         paint_line_background(
             origin,
@@ -382,17 +437,23 @@ fn paint_line(
 
                 let content_mask = window.content_mask();
                 if max_glyph_bounds.intersects(&content_mask.bounds) {
-                    window.observe_text(run.font_id, layout.font_size, line_height, color, glyph_origin + baseline_offset);
+                    window.observe_text(
+                        run.font_id,
+                        layout.font_size,
+                        line_height,
+                        color,
+                        glyph_origin + baseline_offset + point(px(0.), glyph.position.y),
+                    );
                     if glyph.is_emoji {
                         window.paint_emoji(
-                            glyph_origin + baseline_offset,
+                            glyph_origin + baseline_offset + point(px(0.), glyph.position.y),
                             run.font_id,
                             glyph.id,
                             layout.font_size,
                         )?;
                     } else {
                         window.paint_glyph(
-                            glyph_origin + baseline_offset,
+                            glyph_origin + baseline_offset + point(px(0.), glyph.position.y),
                             run.font_id,
                             glyph.id,
                             layout.font_size,

@@ -498,6 +498,9 @@ pub(crate) trait PlatformWindow: HasWindowHandle + HasDisplayHandle {
     fn on_close(&self, callback: Box<dyn FnOnce()>);
     fn on_appearance_changed(&self, callback: Box<dyn FnMut()>);
     fn draw(&self, scene: &Scene);
+    fn capture_scene(&self, _scene: &Scene) -> anyhow::Result<image::RgbaImage> {
+        anyhow::bail!("scene capture is unavailable on this rendering backend")
+    }
     fn completed_frame(&self) {}
     fn sprite_atlas(&self) -> Arc<dyn PlatformAtlas>;
 
@@ -589,6 +592,17 @@ pub(crate) trait PlatformTextSystem: Send + Sync {
         raster_bounds: Bounds<DevicePixels>,
     ) -> Result<(Size<DevicePixels>, Vec<u8>)>;
     fn layout_line(&self, text: &str, font_size: Pixels, runs: &[FontRun]) -> LineLayout;
+    /// Shape a soft-wrapped source range with its paragraph context. Backends
+    /// without contextual row shaping retain their ordinary wrapping path.
+    fn layout_fragment(
+        &self,
+        _bidi: &unicode_bidi::ParagraphBidiInfo<'_>,
+        _range: std::ops::Range<usize>,
+        _font_size: Pixels,
+        _runs: &[FontRun],
+    ) -> Option<LineLayout> {
+        None
+    }
 }
 
 pub(crate) struct NoopTextSystem;
@@ -706,6 +720,7 @@ impl PlatformTextSystem for NoopTextSystem {
             ascent: font_size * (metrics.ascent / metrics.units_per_em as f32),
             descent: font_size * (metrics.descent / metrics.units_per_em as f32),
             runs,
+            carets: Vec::new(),
             len: text.len(),
         }
     }
@@ -959,6 +974,19 @@ impl PlatformInputHandler {
     #[allow(dead_code)]
     fn apple_press_and_hold_enabled(&mut self) -> bool {
         self.handler.apple_press_and_hold_enabled()
+    }
+
+    pub(crate) fn text_snapshot(
+        &mut self,
+        window: &mut Window,
+        cx: &mut App,
+    ) -> Option<(String, UTF16Selection)> {
+        let selection = self.handler.selected_text_range(true, window, cx)?;
+        let mut adjusted = None;
+        let text = self
+            .handler
+            .text_for_range(0..usize::MAX, &mut adjusted, window, cx)?;
+        Some((text, selection))
     }
 
     pub(crate) fn dispatch_input(&mut self, input: &str, window: &mut Window, cx: &mut App) {

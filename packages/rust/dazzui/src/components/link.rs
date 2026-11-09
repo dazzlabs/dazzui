@@ -7,7 +7,7 @@ use gpui::{
 };
 
 use crate::components::icon::{Icon, icon_slot};
-use crate::foundation::{Tint, focusable};
+use crate::foundation::{Tint, focusable, press::ButtonPress};
 use crate::glyphs;
 use crate::theme::ActiveTheme;
 
@@ -37,6 +37,9 @@ type OnClick = Box<dyn Fn(&ClickEvent, &mut Window, &mut App) + 'static>;
 /// A link: `plain`'s content recipe for its colour, a grade darker on hover,
 /// and none of a button's box. The recipe's surface is deliberately not
 /// painted — a wash behind a run of text would ragged the line.
+/// A supplied href makes it a tab stop. Enter activates on the first keydown,
+/// including modified Enter; Space and autorepeat do not activate a link.
+/// Without href it still receives pointer clicks, like an HTML anchor.
 #[derive(IntoElement)]
 pub struct Link {
     id: ElementId,
@@ -108,6 +111,11 @@ impl RenderOnce for Link {
             .use_keyed_state(self.id.clone(), cx, |_, cx| cx.focus_handle())
             .read(cx)
             .clone();
+        let has_href = self.href.is_some();
+        if !has_href && focus.is_focused(window) {
+            window.blur();
+        }
+        let press = ButtonPress::new(&self.id, &focus, false, window, cx).link();
         let hovered = t.control_color_plain_content_hovered.resolve(ramp);
         let pressed = t.control_color_plain_content_pressed.resolve(ramp);
         let underline = self.underline;
@@ -141,14 +149,15 @@ impl RenderOnce for Link {
                 }
             })
             .active(move |style| style.text_color(pressed));
-        link = focusable(link, &focus, false, window, cx);
+        link = focusable(link, &focus, !has_href, window, cx);
 
         let href = self.href;
-        if let Some(on_click) = self.on_click {
-            link = link.on_click(on_click);
-        } else if let Some(href) = href.filter(|href| href.contains("://")) {
-            link = link.on_click(move |_, _, cx| cx.open_url(&href));
-        }
+        let on_click = self.on_click.or_else(|| {
+            href.filter(|href| href.contains("://")).map(|href| {
+                Box::new(move |_: &ClickEvent, _: &mut Window, cx: &mut App| cx.open_url(&href))
+                    as OnClick
+            })
+        });
 
         // The arrow rides with the text and is never underlined — it is a
         // glyph, not a run.
@@ -170,6 +179,9 @@ impl RenderOnce for Link {
                 child
             }
         });
-        link.child(label.children(children)).children(arrow)
+        press.bind(
+            link.child(label.children(children)).children(arrow),
+            on_click,
+        )
     }
 }

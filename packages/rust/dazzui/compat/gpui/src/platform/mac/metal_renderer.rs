@@ -13,6 +13,7 @@ use cocoa::{
 };
 
 use core_foundation::base::TCFType;
+use core_graphics::color_space::{CGColorSpace, kCGColorSpaceSRGB};
 use core_video::{
     metal_texture::CVMetalTextureGetTexture, metal_texture_cache::CVMetalTextureCache,
     pixel_buffer::kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
@@ -102,15 +103,22 @@ pub(crate) struct MetalRenderer {
     presents_with_transaction: bool,
     command_queue: CommandQueue,
     paths_rasterization_pipeline_state: metal::RenderPipelineState,
-    path_sprites_pipeline_state: metal::RenderPipelineState,
-    shadows_pipeline_state: metal::RenderPipelineState,
-    quads_pipeline_state: metal::RenderPipelineState,
-    underlines_pipeline_state: metal::RenderPipelineState,
-    monochrome_sprites_pipeline_state: metal::RenderPipelineState,
-    polychrome_sprites_pipeline_state: metal::RenderPipelineState,
-    surfaces_pipeline_state: metal::RenderPipelineState,
-    composite_pipeline_state: metal::RenderPipelineState,
+    path_sprites_pipeline_state: ScenePipelineStates,
+    shadows_pipeline_state: ScenePipelineStates,
+    quads_pipeline_state: ScenePipelineStates,
+    underlines_pipeline_state: ScenePipelineStates,
+    monochrome_sprites_pipeline_state: ScenePipelineStates,
+    polychrome_sprites_pipeline_state: ScenePipelineStates,
+    surfaces_pipeline_state: ScenePipelineStates,
+    composite_pipeline_state: ScenePipelineStates,
+    graphite_composite_pipeline_state: ScenePipelineStates,
     composite_textures: Vec<metal::Texture>,
+    clip_targets: Vec<Option<ClipTarget>>,
+    clip_pipeline_state: metal::RenderPipelineState,
+    clip_write_state: metal::DepthStencilState,
+    clip_read_state: metal::DepthStencilState,
+    clip_bypass_state: metal::DepthStencilState,
+    multisampled: bool,
     unit_vertices: metal::Buffer,
     #[allow(clippy::arc_with_non_send_sync)]
     instance_buffer_pool: Arc<Mutex<InstanceBufferPool>>,
@@ -146,7 +154,12 @@ impl MetalRenderer {
         layer.set_pixel_format(MTLPixelFormat::BGRA8Unorm);
         layer.set_opaque(false);
         layer.set_maximum_drawable_count(3);
+        // Shader colors and diagnostic readback are sRGB. Tell the compositor
+        // the same thing so presentation does not depend on the display gamut.
+        let color_space = unsafe { CGColorSpace::create_with_name(kCGColorSpaceSRGB) }
+            .expect("sRGB color space is available");
         unsafe {
+            let _: () = msg_send![&*layer, setColorspace: color_space.as_ptr()];
             let _: () = msg_send![&*layer, setAllowsNextDrawableTimeout: NO];
             let _: () = msg_send![&*layer, setNeedsDisplayOnBoundsChange: YES];
             let _: () = msg_send![
@@ -260,6 +273,19 @@ impl MetalRenderer {
             MTLPixelFormat::BGRA8Unorm,
         );
 
+        let graphite_composite_pipeline_state = build_path_sprite_pipeline_state(
+            &device,
+            &library,
+            "graphite composite",
+            "graphite_composite_vertex",
+            "graphite_composite_fragment",
+            MTLPixelFormat::BGRA8Unorm,
+        );
+        let clip_pipeline_state = build_clip_pipeline_state(&device, &library);
+        let clip_write_state = build_clip_stencil_state(&device, true);
+        let clip_read_state = build_clip_stencil_state(&device, false);
+        let bypass_descriptor = metal::DepthStencilDescriptor::new();
+        let clip_bypass_state = device.new_depth_stencil_state(&bypass_descriptor);
         let command_queue = device.new_command_queue();
         let sprite_atlas = Arc::new(MetalAtlas::new(device.clone()));
         let core_video_texture_cache =
@@ -279,7 +305,14 @@ impl MetalRenderer {
             polychrome_sprites_pipeline_state,
             surfaces_pipeline_state,
             composite_pipeline_state,
+            graphite_composite_pipeline_state,
             composite_textures: Vec::new(),
+            clip_targets: Vec::new(),
+            clip_pipeline_state,
+            clip_write_state,
+            clip_read_state,
+            clip_bypass_state,
+            multisampled: false,
             unit_vertices,
             instance_buffer_pool,
             sprite_atlas,
@@ -383,8 +416,12 @@ impl MetalRenderer {
         loop {
             let mut instance_buffer = self.instance_buffer_pool.lock().acquire(&self.device);
 
-            let command_buffer =
-                self.draw_primitives(scene, &mut instance_buffer, drawable, viewport_size);
+            let command_buffer = self.draw_primitives(
+                scene,
+                &mut instance_buffer,
+                drawable.texture(),
+                viewport_size,
+            );
 
             match command_buffer {
                 Ok(command_buffer) => {
@@ -433,9 +470,20 @@ impl MetalRenderer {
         &mut self,
         scene: &Scene,
         instance_buffer: &mut InstanceBuffer,
-        drawable: &metal::MetalDrawableRef,
+        target: &metal::TextureRef,
         viewport_size: Size<DevicePixels>,
     ) -> Result<metal::CommandBuffer> {
+        let intermediate_size = scene.intermediate_size(viewport_size);
+        if !self
+            .path_intermediate_texture
+            .as_ref()
+            .is_some_and(|texture| {
+                texture.width() == intermediate_size.width.0 as u64
+                    && texture.height() == intermediate_size.height.0 as u64
+            })
+        {
+            self.update_path_intermediate_textures(intermediate_size);
+        }
         let command_queue = self.command_queue.clone();
         let command_buffer = command_queue.new_command_buffer();
         let alpha = if self.layer.is_opaque() { 1. } else { 0. };
@@ -444,17 +492,100 @@ impl MetalRenderer {
             scene,
             instance_buffer,
             &mut instance_offset,
-            drawable.texture(),
+            target,
             viewport_size,
             command_buffer,
             alpha,
             0,
+            None,
         )?;
         instance_buffer.metal_buffer.did_modify_range(NSRange {
             location: 0,
             length: instance_offset as NSUInteger,
         });
         Ok(command_buffer.to_owned())
+    }
+
+    pub fn capture_scene(&mut self, scene: &Scene) -> Result<image::RgbaImage> {
+        let viewport = self.layer.drawable_size();
+        let width = viewport.width.ceil() as u32;
+        let height = viewport.height.ceil() as u32;
+        anyhow::ensure!(
+            width > 0 && height > 0 && width <= i32::MAX as u32 && height <= i32::MAX as u32,
+            "cannot capture an empty or oversized viewport"
+        );
+        let viewport_size = size(DevicePixels(width as i32), DevicePixels(height as i32));
+        let stride = (width as usize * 4).next_multiple_of(256);
+        let byte_len = stride
+            .checked_mul(height as usize)
+            .ok_or_else(|| anyhow::anyhow!("scene capture is too large"))?;
+
+        let descriptor = metal::TextureDescriptor::new();
+        descriptor.set_width(width as u64);
+        descriptor.set_height(height as u64);
+        descriptor.set_pixel_format(self.layer.pixel_format());
+        descriptor.set_storage_mode(metal::MTLStorageMode::Private);
+        descriptor
+            .set_usage(metal::MTLTextureUsage::RenderTarget | metal::MTLTextureUsage::ShaderRead);
+        let target = self.device.new_texture(&descriptor);
+        let readback = self
+            .device
+            .new_buffer(byte_len as u64, MTLResourceOptions::StorageModeShared);
+
+        let (command_buffer, instance_buffer) = loop {
+            let mut instance_buffer = self.instance_buffer_pool.lock().acquire(&self.device);
+            match self.draw_primitives(scene, &mut instance_buffer, &target, viewport_size) {
+                Ok(command_buffer) => break (command_buffer, instance_buffer),
+                Err(error) => {
+                    let mut pool = self.instance_buffer_pool.lock();
+                    let current = pool.buffer_size;
+                    if current >= 256 * 1024 * 1024 {
+                        return Err(error);
+                    }
+                    pool.reset(current * 2);
+                }
+            }
+        };
+        let blit = command_buffer.new_blit_command_encoder();
+        blit.copy_from_texture_to_buffer(
+            &target,
+            0,
+            0,
+            metal::MTLOrigin { x: 0, y: 0, z: 0 },
+            metal::MTLSize {
+                width: width as u64,
+                height: height as u64,
+                depth: 1,
+            },
+            &readback,
+            0,
+            stride as u64,
+            byte_len as u64,
+            metal::MTLBlitOption::None,
+        );
+        blit.end_encoding();
+        command_buffer.commit();
+        command_buffer.wait_until_completed();
+        self.instance_buffer_pool.lock().release(instance_buffer);
+        anyhow::ensure!(
+            command_buffer.status() == metal::MTLCommandBufferStatus::Completed,
+            "scene capture command failed: {:?}",
+            command_buffer.status()
+        );
+
+        // The completed shared buffer is CPU-visible, including on discrete
+        // GPUs. Strip row alignment and convert premultiplied BGRA to RGBA.
+        let bytes =
+            unsafe { std::slice::from_raw_parts(readback.contents().cast::<u8>(), byte_len) };
+        let mut pixels = Vec::with_capacity(width as usize * height as usize * 4);
+        for row in bytes.chunks_exact(stride) {
+            pixels.extend_from_slice(&row[..width as usize * 4]);
+        }
+        for pixel in pixels.chunks_exact_mut(4) {
+            crate::swap_rgba_pa_to_bgra(pixel);
+        }
+        image::RgbaImage::from_raw(width, height, pixels)
+            .ok_or_else(|| anyhow::anyhow!("invalid captured image dimensions"))
     }
 
     fn encode_scene(
@@ -467,133 +598,422 @@ impl MetalRenderer {
         command_buffer: &metal::CommandBufferRef,
         clear_alpha: f64,
         depth: usize,
+        clip: Option<&crate::Composite>,
     ) -> Result<()> {
-        let mut command_encoder =
-            new_command_encoder(command_buffer, target, viewport_size, |attachment| {
-                attachment.set_load_action(metal::MTLLoadAction::Clear);
-                attachment.set_clear_color(metal::MTLClearColor::new(0., 0., 0., clear_alpha));
-            });
-        for batch in scene.batches() {
-            let ok = match batch {
-                PrimitiveBatch::Composite(composite) => {
+        let previous_multisampled = self.multisampled;
+        let clip_target = clip
+            .filter(|clip| !clip.can_fold_all_clip_draws())
+            .map(|_| self.clip_target(depth, viewport_size));
+        self.multisampled = clip_target.is_some();
+        let result = (|| -> Result<()> {
+            let mut command_encoder = new_scene_encoder(
+                command_buffer,
+                target,
+                viewport_size,
+                clip_target.as_ref(),
+                true,
+                |attachment| {
+                    attachment.set_load_action(metal::MTLLoadAction::Clear);
+                    attachment.set_clear_color(metal::MTLClearColor::new(0., 0., 0., clear_alpha));
+                },
+            );
+            if let Some(clip) = clip.filter(|_| clip_target.is_some()) {
+                if !self.draw_clip(
+                    clip,
+                    viewport_size,
+                    command_encoder,
+                    instance_buffer,
+                    instance_offset,
+                ) {
                     command_encoder.end_encoding();
-                    let texture = self.composite_texture(depth, viewport_size);
-                    self.encode_scene(
-                        &composite.scene,
-                        instance_buffer,
-                        instance_offset,
-                        &texture,
-                        viewport_size,
-                        command_buffer,
-                        0.,
-                        depth + 1,
-                    )?;
-                    command_encoder =
-                        new_command_encoder(command_buffer, target, viewport_size, |attachment| {
-                            attachment.set_load_action(metal::MTLLoadAction::Load)
-                        });
-                    self.draw_composite(composite, &texture, viewport_size, command_encoder)
+                    self.multisampled = previous_multisampled;
+                    anyhow::bail!("clip mesh exceeds instance buffer");
                 }
-                PrimitiveBatch::Shadows(shadows) => self.draw_shadows(
-                    shadows,
-                    instance_buffer,
-                    instance_offset,
-                    viewport_size,
-                    command_encoder,
-                ),
-                PrimitiveBatch::Quads(quads) => self.draw_quads(
-                    quads,
-                    instance_buffer,
-                    instance_offset,
-                    viewport_size,
-                    command_encoder,
-                ),
-                PrimitiveBatch::Paths(paths) => {
-                    command_encoder.end_encoding();
-
-                    let did_draw = self.draw_paths_to_intermediate(
-                        paths,
+            }
+            for batch in scene.batches() {
+                let ok = match batch {
+                    PrimitiveBatch::Composite(composite) => {
+                        let folded = clip.and_then(|clip| {
+                            (composite.corner_radii == Default::default()
+                                && composite.corner_radii_y == Default::default()
+                                && composite.transformation.rotation_scale[0][1] == 0.
+                                && composite.transformation.rotation_scale[1][0] == 0.)
+                                .then(|| {
+                                    clip.fold_clip_into(
+                                        composite
+                                            .painted_bounds
+                                            .intersect(&composite.content_mask.bounds),
+                                        composite.clone().into(),
+                                    )
+                                })
+                                .flatten()
+                        });
+                        self.encode_composite_into(
+                            folded.as_ref().unwrap_or(composite),
+                            instance_buffer,
+                            instance_offset,
+                            target,
+                            viewport_size,
+                            command_buffer,
+                            depth,
+                            clip_target.as_ref(),
+                            &mut command_encoder,
+                            folded.is_some(),
+                        )?
+                    }
+                    PrimitiveBatch::Shadows(shadows) => self.draw_shadows(
+                        shadows,
                         instance_buffer,
                         instance_offset,
                         viewport_size,
-                        command_buffer,
-                    );
+                        command_encoder,
+                    ),
+                    PrimitiveBatch::Quads(quads) => {
+                        if clip.is_none() {
+                            self.draw_quads(
+                                quads,
+                                instance_buffer,
+                                instance_offset,
+                                viewport_size,
+                                command_encoder,
+                            )
+                        } else {
+                            let mut run_start = 0;
+                            for (index, quad) in quads.iter().enumerate() {
+                                let folded = clip.and_then(|clip| {
+                                    (quad.corner_radii == Default::default()
+                                        && quad.border_widths == Default::default())
+                                    .then(|| {
+                                        clip.fold_clip_into(
+                                            quad.bounds.intersect(&quad.content_mask.bounds),
+                                            quad.clone().into(),
+                                        )
+                                    })
+                                    .flatten()
+                                });
+                                let Some(folded) = folded else {
+                                    continue;
+                                };
+                                if index > run_start
+                                    && !self.draw_quads(
+                                        &quads[run_start..index],
+                                        instance_buffer,
+                                        instance_offset,
+                                        viewport_size,
+                                        command_encoder,
+                                    )
+                                {
+                                    command_encoder.end_encoding();
+                                    anyhow::bail!("quad batch exceeds instance buffer");
+                                }
+                                let ok = self.encode_composite_into(
+                                    &folded,
+                                    instance_buffer,
+                                    instance_offset,
+                                    target,
+                                    viewport_size,
+                                    command_buffer,
+                                    depth,
+                                    clip_target.as_ref(),
+                                    &mut command_encoder,
+                                    true,
+                                )?;
+                                run_start = index + 1;
+                                if !ok {
+                                    command_encoder.end_encoding();
+                                    anyhow::bail!("quad exceeds instance buffer");
+                                }
+                            }
+                            run_start == quads.len()
+                                || self.draw_quads(
+                                    &quads[run_start..],
+                                    instance_buffer,
+                                    instance_offset,
+                                    viewport_size,
+                                    command_encoder,
+                                )
+                        }
+                    }
+                    PrimitiveBatch::Paths(paths) => {
+                        command_encoder.end_encoding();
 
-                    command_encoder = new_command_encoder(
-                        command_buffer,
-                        target,
-                        viewport_size,
-                        |color_attachment| {
-                            color_attachment.set_load_action(metal::MTLLoadAction::Load);
-                        },
-                    );
-
-                    if did_draw {
-                        self.draw_paths_from_intermediate(
+                        let did_draw = self.draw_paths_to_intermediate(
                             paths,
                             instance_buffer,
                             instance_offset,
-                            viewport_size,
-                            command_encoder,
-                        )
-                    } else {
-                        false
-                    }
-                }
-                PrimitiveBatch::Underlines(underlines) => self.draw_underlines(
-                    underlines,
-                    instance_buffer,
-                    instance_offset,
-                    viewport_size,
-                    command_encoder,
-                ),
-                PrimitiveBatch::MonochromeSprites {
-                    texture_id,
-                    sprites,
-                } => self.draw_monochrome_sprites(
-                    texture_id,
-                    sprites,
-                    instance_buffer,
-                    instance_offset,
-                    viewport_size,
-                    command_encoder,
-                ),
-                PrimitiveBatch::PolychromeSprites {
-                    texture_id,
-                    sprites,
-                } => self.draw_polychrome_sprites(
-                    texture_id,
-                    sprites,
-                    instance_buffer,
-                    instance_offset,
-                    viewport_size,
-                    command_encoder,
-                ),
-                PrimitiveBatch::Surfaces(surfaces) => self.draw_surfaces(
-                    surfaces,
-                    instance_buffer,
-                    instance_offset,
-                    viewport_size,
-                    command_encoder,
-                ),
-            };
-            if !ok {
-                command_encoder.end_encoding();
-                anyhow::bail!(
-                    "scene too large: {} paths, {} shadows, {} quads, {} underlines, {} mono, {} poly, {} surfaces",
-                    scene.paths.len(),
-                    scene.shadows.len(),
-                    scene.quads.len(),
-                    scene.underlines.len(),
-                    scene.monochrome_sprites.len(),
-                    scene.polychrome_sprites.len(),
-                    scene.surfaces.len(),
-                );
-            }
-        }
+                            command_buffer,
+                        );
 
-        command_encoder.end_encoding();
-        Ok(())
+                        command_encoder = new_scene_encoder(
+                            command_buffer,
+                            target,
+                            viewport_size,
+                            clip_target.as_ref(),
+                            false,
+                            |color_attachment| {
+                                color_attachment.set_load_action(metal::MTLLoadAction::Load);
+                            },
+                        );
+
+                        self.apply_clip_test(command_encoder);
+                        if did_draw {
+                            self.draw_paths_from_intermediate(
+                                paths,
+                                instance_buffer,
+                                instance_offset,
+                                viewport_size,
+                                command_encoder,
+                            )
+                        } else {
+                            false
+                        }
+                    }
+                    PrimitiveBatch::Underlines(underlines) => self.draw_underlines(
+                        underlines,
+                        instance_buffer,
+                        instance_offset,
+                        viewport_size,
+                        command_encoder,
+                    ),
+                    PrimitiveBatch::MonochromeSprites {
+                        texture_id,
+                        sprites,
+                    } => self.draw_monochrome_sprites(
+                        texture_id,
+                        sprites,
+                        instance_buffer,
+                        instance_offset,
+                        viewport_size,
+                        command_encoder,
+                    ),
+                    PrimitiveBatch::PolychromeSprites {
+                        texture_id,
+                        sprites,
+                    } => {
+                        if clip.is_none() {
+                            self.draw_polychrome_sprites(
+                                texture_id,
+                                sprites,
+                                instance_buffer,
+                                instance_offset,
+                                viewport_size,
+                                command_encoder,
+                            )
+                        } else {
+                            let mut run_start = 0;
+                            for (index, sprite) in sprites.iter().enumerate() {
+                                let folded = clip.and_then(|clip| {
+                                    (sprite.corner_radii == Default::default())
+                                        .then(|| {
+                                            clip.fold_clip_into(
+                                                sprite
+                                                    .bounds
+                                                    .intersect(&sprite.content_mask.bounds),
+                                                sprite.clone().into(),
+                                            )
+                                        })
+                                        .flatten()
+                                });
+                                let Some(folded) = folded else {
+                                    continue;
+                                };
+                                if index > run_start
+                                    && !self.draw_polychrome_sprites(
+                                        texture_id,
+                                        &sprites[run_start..index],
+                                        instance_buffer,
+                                        instance_offset,
+                                        viewport_size,
+                                        command_encoder,
+                                    )
+                                {
+                                    command_encoder.end_encoding();
+                                    anyhow::bail!("sprite batch exceeds instance buffer");
+                                }
+                                let ok = self.encode_composite_into(
+                                    &folded,
+                                    instance_buffer,
+                                    instance_offset,
+                                    target,
+                                    viewport_size,
+                                    command_buffer,
+                                    depth,
+                                    clip_target.as_ref(),
+                                    &mut command_encoder,
+                                    true,
+                                )?;
+                                run_start = index + 1;
+                                if !ok {
+                                    command_encoder.end_encoding();
+                                    anyhow::bail!("sprite exceeds instance buffer");
+                                }
+                            }
+                            run_start == sprites.len()
+                                || self.draw_polychrome_sprites(
+                                    texture_id,
+                                    &sprites[run_start..],
+                                    instance_buffer,
+                                    instance_offset,
+                                    viewport_size,
+                                    command_encoder,
+                                )
+                        }
+                    }
+                    PrimitiveBatch::Surfaces(surfaces) => self.draw_surfaces(
+                        surfaces,
+                        instance_buffer,
+                        instance_offset,
+                        viewport_size,
+                        command_encoder,
+                    ),
+                };
+                if !ok {
+                    command_encoder.end_encoding();
+                    anyhow::bail!(
+                        "scene too large: {} paths, {} shadows, {} quads, {} underlines, {} mono, {} poly, {} surfaces",
+                        scene.paths.len(),
+                        scene.shadows.len(),
+                        scene.quads.len(),
+                        scene.underlines.len(),
+                        scene.monochrome_sprites.len(),
+                        scene.polychrome_sprites.len(),
+                        scene.surfaces.len(),
+                    );
+                }
+            }
+
+            command_encoder.end_encoding();
+            Ok(())
+        })();
+        self.multisampled = previous_multisampled;
+        result
+    }
+
+    fn encode_composite_into<'a>(
+        &mut self,
+        composite: &crate::Composite,
+        instance_buffer: &mut InstanceBuffer,
+        instance_offset: &mut usize,
+        target: &'a metal::TextureRef,
+        viewport: Size<DevicePixels>,
+        command_buffer: &'a metal::CommandBufferRef,
+        depth: usize,
+        clip_target: Option<&ClipTarget>,
+        encoder: &mut &'a metal::RenderCommandEncoderRef,
+        bypass_parent_stencil: bool,
+    ) -> Result<bool> {
+        encoder.end_encoding();
+        let intermediate = self.path_intermediate_texture.as_ref().unwrap();
+        let source_size = size(
+            DevicePixels(intermediate.width() as i32),
+            DevicePixels(intermediate.height() as i32),
+        );
+        let texture = self.composite_texture(depth, source_size);
+        let clip_applied = composite.requires_graphite_clip_pass();
+        self.encode_scene(
+            &composite.scene,
+            instance_buffer,
+            instance_offset,
+            &texture,
+            source_size,
+            command_buffer,
+            0.,
+            depth + 1,
+            clip_applied.then_some(composite),
+        )?;
+        *encoder = new_scene_encoder(
+            command_buffer,
+            target,
+            viewport,
+            clip_target,
+            false,
+            |attachment| attachment.set_load_action(metal::MTLLoadAction::Load),
+        );
+        if self.multisampled && bypass_parent_stencil {
+            encoder.set_depth_stencil_state(&self.clip_bypass_state);
+        } else {
+            self.apply_clip_test(encoder);
+        }
+        let ok = self.draw_composite(composite, &texture, viewport, encoder, clip_applied);
+        self.apply_clip_test(encoder);
+        Ok(ok)
+    }
+
+    fn clip_target(&mut self, depth: usize, viewport: Size<DevicePixels>) -> ClipTarget {
+        if self.clip_targets.len() <= depth {
+            self.clip_targets.resize_with(depth + 1, || None);
+        }
+        let entry = &mut self.clip_targets[depth];
+        if !entry.as_ref().is_some_and(|target| {
+            target.color.width() == viewport.width.0 as u64
+                && target.color.height() == viewport.height.0 as u64
+        }) {
+            let descriptor = metal::TextureDescriptor::new();
+            descriptor.set_width(viewport.width.0 as u64);
+            descriptor.set_height(viewport.height.0 as u64);
+            descriptor.set_texture_type(metal::MTLTextureType::D2Multisample);
+            descriptor.set_sample_count(PATH_SAMPLE_COUNT as _);
+            descriptor.set_storage_mode(metal::MTLStorageMode::Private);
+            descriptor.set_usage(metal::MTLTextureUsage::RenderTarget);
+            descriptor.set_pixel_format(MTLPixelFormat::BGRA8Unorm);
+            let color = self.device.new_texture(&descriptor);
+            descriptor.set_pixel_format(MTLPixelFormat::Stencil8);
+            let stencil = self.device.new_texture(&descriptor);
+            *entry = Some(ClipTarget { color, stencil });
+        }
+        entry.as_ref().unwrap().clone()
+    }
+
+    fn apply_clip_test(&self, encoder: &metal::RenderCommandEncoderRef) {
+        if self.multisampled {
+            encoder.set_stencil_reference_value(1);
+            encoder.set_depth_stencil_state(&self.clip_read_state);
+        }
+    }
+
+    fn draw_clip(
+        &self,
+        composite: &crate::Composite,
+        viewport: Size<DevicePixels>,
+        encoder: &metal::RenderCommandEncoderRef,
+        instance_buffer: &mut InstanceBuffer,
+        instance_offset: &mut usize,
+    ) -> bool {
+        let vertices = composite.graphite_clip_mesh();
+        align_offset(instance_offset);
+        let byte_len = mem::size_of_val(vertices.as_slice());
+        let end = *instance_offset + byte_len;
+        if end > instance_buffer.size {
+            return false;
+        }
+        unsafe {
+            ptr::copy_nonoverlapping(
+                vertices.as_ptr().cast::<u8>(),
+                instance_buffer
+                    .metal_buffer
+                    .contents()
+                    .cast::<u8>()
+                    .add(*instance_offset),
+                byte_len,
+            );
+        }
+        encoder.set_render_pipeline_state(&self.clip_pipeline_state);
+        encoder.set_stencil_reference_value(1);
+        encoder.set_depth_stencil_state(&self.clip_write_state);
+        encoder.set_vertex_buffer(
+            0,
+            Some(&instance_buffer.metal_buffer),
+            *instance_offset as u64,
+        );
+        encoder.set_vertex_bytes(
+            2,
+            mem::size_of_val(&viewport) as u64,
+            (&viewport as *const Size<DevicePixels>).cast(),
+        );
+        encoder.draw_primitives(metal::MTLPrimitiveType::Triangle, 0, vertices.len() as u64);
+        *instance_offset = end;
+        self.apply_clip_test(encoder);
+        true
     }
 
     fn composite_texture(&mut self, depth: usize, viewport: Size<DevicePixels>) -> metal::Texture {
@@ -627,16 +1047,43 @@ impl MetalRenderer {
         texture: &metal::TextureRef,
         viewport: Size<DevicePixels>,
         encoder: &metal::RenderCommandEncoderRef,
+        clip_applied: bool,
     ) -> bool {
         let uniforms = CompositeUniforms {
             bounds: composite.bounds,
             content_mask: composite.content_mask.clone(),
-            corner_radii: composite.corner_radii,
+            corner_radii: if clip_applied {
+                Default::default()
+            } else {
+                composite.corner_radii
+            },
+            corner_radii_y: if clip_applied {
+                Default::default()
+            } else {
+                composite.corner_radii_y
+            },
             opacity: composite.opacity,
             transformation: composite.transformation,
+            source_origin: composite.source_origin,
         };
-        encoder.set_render_pipeline_state(&self.composite_pipeline_state);
-        encoder.set_vertex_buffer(0, Some(&self.unit_vertices), 0);
+        let mesh = (!clip_applied)
+            .then(|| composite.graphite_rrect_mesh())
+            .flatten();
+        if let Some(vertices) = &mesh {
+            encoder.set_render_pipeline_state(
+                self.graphite_composite_pipeline_state
+                    .get(self.multisampled),
+            );
+            // 73 vertices x 24 bytes fits Metal's 4KB inline-data limit.
+            encoder.set_vertex_bytes(
+                0,
+                mem::size_of_val(vertices.as_slice()) as u64,
+                vertices.as_ptr().cast(),
+            );
+        } else {
+            encoder.set_render_pipeline_state(self.composite_pipeline_state.get(self.multisampled));
+            encoder.set_vertex_buffer(0, Some(&self.unit_vertices), 0);
+        }
         encoder.set_vertex_bytes(
             1,
             mem::size_of_val(&uniforms) as u64,
@@ -653,7 +1100,15 @@ impl MetalRenderer {
             &uniforms as *const _ as *const _,
         );
         encoder.set_fragment_texture(0, Some(texture));
-        encoder.draw_primitives(metal::MTLPrimitiveType::Triangle, 0, 6);
+        if let Some(vertices) = mesh {
+            encoder.draw_primitives(
+                metal::MTLPrimitiveType::TriangleStrip,
+                0,
+                vertices.len() as u64,
+            );
+        } else {
+            encoder.draw_primitives(metal::MTLPrimitiveType::Triangle, 0, 6);
+        }
         true
     }
 
@@ -662,7 +1117,6 @@ impl MetalRenderer {
         paths: &[Path<ScaledPixels>],
         instance_buffer: &mut InstanceBuffer,
         instance_offset: &mut usize,
-        viewport_size: Size<DevicePixels>,
         command_buffer: &metal::CommandBufferRef,
     ) -> bool {
         if paths.is_empty() {
@@ -671,6 +1125,10 @@ impl MetalRenderer {
         let Some(intermediate_texture) = &self.path_intermediate_texture else {
             return false;
         };
+        let viewport_size = size(
+            DevicePixels(intermediate_texture.width() as i32),
+            DevicePixels(intermediate_texture.height() as i32),
+        );
 
         let render_pass_descriptor = metal::RenderPassDescriptor::new();
         let color_attachment = render_pass_descriptor
@@ -756,7 +1214,8 @@ impl MetalRenderer {
         }
         align_offset(instance_offset);
 
-        command_encoder.set_render_pipeline_state(&self.shadows_pipeline_state);
+        command_encoder
+            .set_render_pipeline_state(self.shadows_pipeline_state.get(self.multisampled));
         command_encoder.set_vertex_buffer(
             ShadowInputIndex::Vertices as u64,
             Some(&self.unit_vertices),
@@ -819,7 +1278,7 @@ impl MetalRenderer {
         }
         align_offset(instance_offset);
 
-        command_encoder.set_render_pipeline_state(&self.quads_pipeline_state);
+        command_encoder.set_render_pipeline_state(self.quads_pipeline_state.get(self.multisampled));
         command_encoder.set_vertex_buffer(
             QuadInputIndex::Vertices as u64,
             Some(&self.unit_vertices),
@@ -881,7 +1340,8 @@ impl MetalRenderer {
             return false;
         };
 
-        command_encoder.set_render_pipeline_state(&self.path_sprites_pipeline_state);
+        command_encoder
+            .set_render_pipeline_state(self.path_sprites_pipeline_state.get(self.multisampled));
         command_encoder.set_vertex_buffer(
             SpriteInputIndex::Vertices as u64,
             Some(&self.unit_vertices),
@@ -968,7 +1428,8 @@ impl MetalRenderer {
         }
         align_offset(instance_offset);
 
-        command_encoder.set_render_pipeline_state(&self.underlines_pipeline_state);
+        command_encoder
+            .set_render_pipeline_state(self.underlines_pipeline_state.get(self.multisampled));
         command_encoder.set_vertex_buffer(
             UnderlineInputIndex::Vertices as u64,
             Some(&self.unit_vertices),
@@ -1046,7 +1507,10 @@ impl MetalRenderer {
             DevicePixels(texture.width() as i32),
             DevicePixels(texture.height() as i32),
         );
-        command_encoder.set_render_pipeline_state(&self.monochrome_sprites_pipeline_state);
+        command_encoder.set_render_pipeline_state(
+            self.monochrome_sprites_pipeline_state
+                .get(self.multisampled),
+        );
         command_encoder.set_vertex_buffer(
             SpriteInputIndex::Vertices as u64,
             Some(&self.unit_vertices),
@@ -1111,7 +1575,10 @@ impl MetalRenderer {
             DevicePixels(texture.width() as i32),
             DevicePixels(texture.height() as i32),
         );
-        command_encoder.set_render_pipeline_state(&self.polychrome_sprites_pipeline_state);
+        command_encoder.set_render_pipeline_state(
+            self.polychrome_sprites_pipeline_state
+                .get(self.multisampled),
+        );
         command_encoder.set_vertex_buffer(
             SpriteInputIndex::Vertices as u64,
             Some(&self.unit_vertices),
@@ -1174,7 +1641,8 @@ impl MetalRenderer {
         viewport_size: Size<DevicePixels>,
         command_encoder: &metal::RenderCommandEncoderRef,
     ) -> bool {
-        command_encoder.set_render_pipeline_state(&self.surfaces_pipeline_state);
+        command_encoder
+            .set_render_pipeline_state(self.surfaces_pipeline_state.get(self.multisampled));
         command_encoder.set_vertex_buffer(
             SurfaceInputIndex::Vertices as u64,
             Some(&self.unit_vertices),
@@ -1266,6 +1734,44 @@ impl MetalRenderer {
     }
 }
 
+fn new_scene_encoder<'a>(
+    command_buffer: &'a metal::CommandBufferRef,
+    target: &'a metal::TextureRef,
+    viewport: Size<DevicePixels>,
+    clip_target: Option<&ClipTarget>,
+    clear_stencil: bool,
+    configure: impl Fn(&RenderPassColorAttachmentDescriptorRef),
+) -> &'a metal::RenderCommandEncoderRef {
+    let Some(clip_target) = clip_target else {
+        return new_command_encoder(command_buffer, target, viewport, configure);
+    };
+    let descriptor = metal::RenderPassDescriptor::new();
+    let color = descriptor.color_attachments().object_at(0).unwrap();
+    color.set_texture(Some(&clip_target.color));
+    color.set_resolve_texture(Some(target));
+    color.set_store_action(metal::MTLStoreAction::StoreAndMultisampleResolve);
+    configure(color);
+    let stencil = descriptor.stencil_attachment().unwrap();
+    stencil.set_texture(Some(&clip_target.stencil));
+    stencil.set_load_action(if clear_stencil {
+        metal::MTLLoadAction::Clear
+    } else {
+        metal::MTLLoadAction::Load
+    });
+    stencil.set_store_action(metal::MTLStoreAction::Store);
+    stencil.set_clear_stencil(0);
+    let encoder = command_buffer.new_render_command_encoder(&descriptor);
+    encoder.set_viewport(metal::MTLViewport {
+        originX: 0.,
+        originY: 0.,
+        width: viewport.width.0 as f64,
+        height: viewport.height.0 as f64,
+        znear: 0.,
+        zfar: 1.,
+    });
+    encoder
+}
+
 fn new_command_encoder<'a>(
     command_buffer: &'a metal::CommandBufferRef,
     target: &'a metal::TextureRef,
@@ -1293,72 +1799,124 @@ fn new_command_encoder<'a>(
     command_encoder
 }
 
+struct ScenePipelineStates {
+    single: metal::RenderPipelineState,
+    multisample: metal::RenderPipelineState,
+}
+
+impl ScenePipelineStates {
+    fn get(&self, multisampled: bool) -> &metal::RenderPipelineStateRef {
+        if multisampled {
+            &self.multisample
+        } else {
+            &self.single
+        }
+    }
+}
+
+#[derive(Clone)]
+struct ClipTarget {
+    color: metal::Texture,
+    stencil: metal::Texture,
+}
+
 fn build_pipeline_state(
     device: &metal::DeviceRef,
     library: &metal::LibraryRef,
     label: &str,
-    vertex_fn_name: &str,
-    fragment_fn_name: &str,
-    pixel_format: metal::MTLPixelFormat,
-) -> metal::RenderPipelineState {
-    let vertex_fn = library
-        .get_function(vertex_fn_name, None)
-        .expect("error locating vertex function");
-    let fragment_fn = library
-        .get_function(fragment_fn_name, None)
-        .expect("error locating fragment function");
-
-    let descriptor = metal::RenderPipelineDescriptor::new();
-    descriptor.set_label(label);
-    descriptor.set_vertex_function(Some(vertex_fn.as_ref()));
-    descriptor.set_fragment_function(Some(fragment_fn.as_ref()));
-    let color_attachment = descriptor.color_attachments().object_at(0).unwrap();
-    color_attachment.set_pixel_format(pixel_format);
-    color_attachment.set_blending_enabled(true);
-    color_attachment.set_rgb_blend_operation(metal::MTLBlendOperation::Add);
-    color_attachment.set_alpha_blend_operation(metal::MTLBlendOperation::Add);
-    color_attachment.set_source_rgb_blend_factor(metal::MTLBlendFactor::SourceAlpha);
-    color_attachment.set_source_alpha_blend_factor(metal::MTLBlendFactor::One);
-    color_attachment.set_destination_rgb_blend_factor(metal::MTLBlendFactor::OneMinusSourceAlpha);
-    color_attachment.set_destination_alpha_blend_factor(metal::MTLBlendFactor::OneMinusSourceAlpha);
-
-    device
-        .new_render_pipeline_state(&descriptor)
-        .expect("could not create render pipeline state")
+    vertex: &str,
+    fragment: &str,
+    format: metal::MTLPixelFormat,
+) -> ScenePipelineStates {
+    build_scene_pipeline_states(device, library, label, vertex, fragment, format, false)
 }
 
 fn build_path_sprite_pipeline_state(
     device: &metal::DeviceRef,
     library: &metal::LibraryRef,
     label: &str,
-    vertex_fn_name: &str,
-    fragment_fn_name: &str,
-    pixel_format: metal::MTLPixelFormat,
-) -> metal::RenderPipelineState {
-    let vertex_fn = library
-        .get_function(vertex_fn_name, None)
-        .expect("error locating vertex function");
-    let fragment_fn = library
-        .get_function(fragment_fn_name, None)
-        .expect("error locating fragment function");
+    vertex: &str,
+    fragment: &str,
+    format: metal::MTLPixelFormat,
+) -> ScenePipelineStates {
+    build_scene_pipeline_states(device, library, label, vertex, fragment, format, true)
+}
 
+fn build_scene_pipeline_states(
+    device: &metal::DeviceRef,
+    library: &metal::LibraryRef,
+    label: &str,
+    vertex: &str,
+    fragment: &str,
+    format: metal::MTLPixelFormat,
+    premultiplied: bool,
+) -> ScenePipelineStates {
     let descriptor = metal::RenderPipelineDescriptor::new();
     descriptor.set_label(label);
-    descriptor.set_vertex_function(Some(vertex_fn.as_ref()));
-    descriptor.set_fragment_function(Some(fragment_fn.as_ref()));
-    let color_attachment = descriptor.color_attachments().object_at(0).unwrap();
-    color_attachment.set_pixel_format(pixel_format);
-    color_attachment.set_blending_enabled(true);
-    color_attachment.set_rgb_blend_operation(metal::MTLBlendOperation::Add);
-    color_attachment.set_alpha_blend_operation(metal::MTLBlendOperation::Add);
-    color_attachment.set_source_rgb_blend_factor(metal::MTLBlendFactor::One);
-    color_attachment.set_source_alpha_blend_factor(metal::MTLBlendFactor::One);
-    color_attachment.set_destination_rgb_blend_factor(metal::MTLBlendFactor::OneMinusSourceAlpha);
-    color_attachment.set_destination_alpha_blend_factor(metal::MTLBlendFactor::OneMinusSourceAlpha);
+    descriptor.set_vertex_function(Some(&library.get_function(vertex, None).unwrap()));
+    descriptor.set_fragment_function(Some(&library.get_function(fragment, None).unwrap()));
+    let attachment = descriptor.color_attachments().object_at(0).unwrap();
+    attachment.set_pixel_format(format);
+    attachment.set_blending_enabled(true);
+    attachment.set_rgb_blend_operation(metal::MTLBlendOperation::Add);
+    attachment.set_alpha_blend_operation(metal::MTLBlendOperation::Add);
+    attachment.set_source_rgb_blend_factor(if premultiplied {
+        metal::MTLBlendFactor::One
+    } else {
+        metal::MTLBlendFactor::SourceAlpha
+    });
+    attachment.set_source_alpha_blend_factor(metal::MTLBlendFactor::One);
+    attachment.set_destination_rgb_blend_factor(metal::MTLBlendFactor::OneMinusSourceAlpha);
+    attachment.set_destination_alpha_blend_factor(metal::MTLBlendFactor::OneMinusSourceAlpha);
+    let single = device
+        .new_render_pipeline_state(&descriptor)
+        .expect("scene pipeline");
+    descriptor.set_raster_sample_count(PATH_SAMPLE_COUNT as _);
+    descriptor.set_stencil_attachment_pixel_format(MTLPixelFormat::Stencil8);
+    let multisample = device
+        .new_render_pipeline_state(&descriptor)
+        .expect("multisample scene pipeline");
+    ScenePipelineStates {
+        single,
+        multisample,
+    }
+}
 
+fn build_clip_pipeline_state(
+    device: &metal::DeviceRef,
+    library: &metal::LibraryRef,
+) -> metal::RenderPipelineState {
+    let descriptor = metal::RenderPipelineDescriptor::new();
+    descriptor.set_label("rounded clip stencil");
+    descriptor.set_vertex_function(Some(&library.get_function("clip_vertex", None).unwrap()));
+    descriptor.set_fragment_function(Some(&library.get_function("clip_fragment", None).unwrap()));
+    descriptor.set_raster_sample_count(PATH_SAMPLE_COUNT as _);
+    descriptor.set_stencil_attachment_pixel_format(MTLPixelFormat::Stencil8);
+    let attachment = descriptor.color_attachments().object_at(0).unwrap();
+    attachment.set_pixel_format(MTLPixelFormat::BGRA8Unorm);
+    attachment.set_write_mask(metal::MTLColorWriteMask::empty());
     device
         .new_render_pipeline_state(&descriptor)
-        .expect("could not create render pipeline state")
+        .expect("clip stencil pipeline")
+}
+
+fn build_clip_stencil_state(device: &metal::DeviceRef, write: bool) -> metal::DepthStencilState {
+    let descriptor = metal::DepthStencilDescriptor::new();
+    let stencil = metal::StencilDescriptor::new();
+    stencil.set_stencil_compare_function(if write {
+        metal::MTLCompareFunction::Always
+    } else {
+        metal::MTLCompareFunction::Equal
+    });
+    stencil.set_depth_stencil_pass_operation(if write {
+        metal::MTLStencilOperation::Replace
+    } else {
+        metal::MTLStencilOperation::Keep
+    });
+    stencil.set_write_mask(if write { 255 } else { 0 });
+    descriptor.set_front_face_stencil(Some(&stencil));
+    descriptor.set_back_face_stencil(Some(&stencil));
+    device.new_depth_stencil_state(&descriptor)
 }
 
 fn build_path_rasterization_pipeline_state(
@@ -1469,6 +2027,12 @@ pub struct CompositeUniforms {
     pub bounds: Bounds<ScaledPixels>,
     pub content_mask: ContentMask<ScaledPixels>,
     pub corner_radii: crate::Corners<ScaledPixels>,
+    pub corner_radii_y: crate::Corners<ScaledPixels>,
     pub opacity: f32,
     pub transformation: crate::TransformationMatrix,
+    pub source_origin: Point<ScaledPixels>,
 }
+
+#[cfg(test)]
+#[path = "../renderer_tests.rs"]
+mod gpu_tests;

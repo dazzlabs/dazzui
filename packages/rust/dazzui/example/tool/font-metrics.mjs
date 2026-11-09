@@ -20,6 +20,7 @@ const { values: args } = parseArgs({
       default: join(repo, 'packages/rust/dazzui/target/debug/font-metrics'),
     },
     cases: { type: 'string' },
+    'requests-only': { type: 'boolean' },
   },
 })
 const out = resolve(args.out)
@@ -32,11 +33,18 @@ const texts = [
     'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
   ],
   ['kerning', 'AV WA To Yo Ta Ty Va Vo LT LY PA FA AT AY'],
+  [
+    'rtl-kerning',
+    'abc \u202eAV WA To Yo Ta Ty Va Vo LT LY PA FA AT AY\u202c xyz',
+  ],
   ['combining', 'cafe\u0301 fi\u0301x'],
   ['positioned-marks', 'a\u0323\u0301 a\u0301\u0323 क्षि कर्मि'],
   ['hebrew', 'שלום עולם'],
   ['mixed-bidi', 'abאבcd'],
+  ['rtl-first', 'אבג abc'],
+  ['bidi-positioned-marks', 'אבג a\u0301\u0323'],
   ['arabic', 'مرحبا بالعالم'],
+  ['arabic-marks', 'مَرْحَبًا'],
   ['devanagari', 'नमस्ते दुनिया'],
   ['mixed-cjk', 'DazzUI 世界 end'],
   ['cjk', '世界'],
@@ -66,6 +74,10 @@ const requests = ['text', 'mono'].flatMap(face =>
 )
 const file = join(out, 'requests.json')
 await writeFile(file, JSON.stringify(requests))
+if (args['requests-only']) {
+  console.log(`${requests.length} font requests — ${file}`)
+  process.exit(0)
+}
 const { stdout, stderr } = await promisify(execCallback)(
   resolve(args.binary),
   [file],
@@ -117,9 +129,12 @@ try {
       specimen.style.font = context.font
       specimen.textContent = request.text
       document.body.append(specimen)
+      const measured = context.measureText(request.text)
       return {
         font: context.font,
-        width: context.measureText(request.text).width,
+        width: measured.width,
+        ascent: measured.fontBoundingBoxAscent,
+        descent: measured.fontBoundingBoxDescent,
       }
     })
   }, requests)
@@ -144,6 +159,10 @@ try {
       ...actual.request,
       family: actual.family,
       families: actual.families,
+      runMetrics: actual.runMetrics,
+      nativeCarets: actual.carets,
+      nativeGlyphs: actual.glyphs,
+      browserMetrics: { ascent: browser.ascent, descent: browser.descent },
       browserFont: browser.font,
       browserFonts: platformFonts[index].fonts,
       reference: browser.width,

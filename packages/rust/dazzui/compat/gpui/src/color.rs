@@ -25,11 +25,28 @@ pub fn rgba(hex: u32) -> Rgba {
 /// Swap from RGBA with premultiplied alpha to BGRA
 pub(crate) fn swap_rgba_pa_to_bgra(color: &mut [u8]) {
     color.swap(0, 2);
-    if color[3] > 0 {
-        let a = color[3] as f32 / 255.;
-        color[0] = (color[0] as f32 / a) as u8;
-        color[1] = (color[1] as f32 / a) as u8;
-        color[2] = (color[2] as f32 / a) as u8;
+    unpremultiply_alpha(color);
+}
+
+/// Convert premultiplied RGBA or BGRA to straight alpha without changing channels.
+pub(crate) fn unpremultiply_alpha(color: &mut [u8]) {
+    let alpha = u32::from(color[3]);
+    for channel in &mut color[..3] {
+        *channel = if alpha == 0 {
+            0
+        } else {
+            ((u32::from(*channel) * 255 + alpha / 2) / alpha).min(255) as u8
+        };
+    }
+}
+
+/// Store RGBA/BGRA pixels in premultiplied form before texture interpolation.
+pub(crate) fn premultiply_alpha(bytes: &mut [u8]) {
+    for pixel in bytes.chunks_exact_mut(4) {
+        let alpha = u16::from(pixel[3]);
+        for channel in &mut pixel[..3] {
+            *channel = ((u16::from(*channel) * alpha + 127) / 255) as u8;
+        }
     }
 }
 
@@ -866,6 +883,24 @@ mod tests {
     use serde_json::json;
 
     use super::*;
+
+    #[test]
+    fn unpremultiplication_keeps_saturated_ink_at_every_nonzero_alpha() {
+        for alpha in 1..=255 {
+            let mut red = [alpha, 0, 0, alpha];
+            swap_rgba_pa_to_bgra(&mut red);
+            assert_eq!(red, [0, 0, 255, alpha]);
+            let mut blue = [0, 0, alpha, alpha];
+            swap_rgba_pa_to_bgra(&mut blue);
+            assert_eq!(blue, [255, 0, 0, alpha]);
+        }
+        let mut transparent = [50, 100, 200, 0];
+        swap_rgba_pa_to_bgra(&mut transparent);
+        assert_eq!(transparent, [0, 0, 0, 0]);
+        let mut mixed = [10, 20, 30, 64];
+        swap_rgba_pa_to_bgra(&mut mixed);
+        assert_eq!(mixed, [120, 80, 40, 64]);
+    }
 
     #[test]
     fn test_deserialize_three_value_hex_to_rgba() {

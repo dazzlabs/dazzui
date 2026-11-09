@@ -17,8 +17,10 @@
 //! as actions bound in [`init`]; typed characters arrive through the
 //! platform's input handler, which is what keeps input methods working.
 
+use std::cell::RefCell;
 use std::ops::Range;
 use std::rc::Rc;
+use unicode_segmentation::UnicodeSegmentation;
 
 use gpui::{
     Action, App, Bounds, ClipboardItem, ContentMask, Context, CursorStyle, DispatchPhase, Element,
@@ -31,6 +33,12 @@ use gpui::{
 };
 
 use crate::foundation::scope::scoped;
+
+mod boundary;
+mod history;
+mod word;
+
+use history::Edit;
 
 fn editor_line_height(window: &Window) -> Pixels {
     let style = window.text_style();
@@ -66,9 +74,11 @@ fn row_content_metrics(lines: &[WrappedLine], window: &Window) -> (Pixels, Pixel
     lines.iter().flat_map(|line| line.runs()).fold(
         font_content_metrics(window),
         |(ascent, descent), run| {
+            let gap = system.line_gap(run.font_id, size).round().max(px(0.));
+            let above = (gap / 2.).floor();
             (
-                ascent.max(system.ascent(run.font_id, size).abs().round()),
-                descent.max(system.descent(run.font_id, size).abs().round()),
+                ascent.max(system.ascent(run.font_id, size).abs().round() + above),
+                descent.max(system.descent(run.font_id, size).abs().round() + gap - above),
             )
         },
     )
@@ -90,9 +100,25 @@ enum CaretAffinity {
     Downstream,
 }
 
+#[derive(Clone)]
+enum SelectionDrag {
+    Character(Range<usize>),
+    Word(Range<usize>),
+    Paragraph(Range<usize>),
+}
+
+impl SelectionDrag {
+    fn with_anchor(&self, anchor: Range<usize>) -> Self {
+        match self {
+            Self::Character(_) => Self::Character(anchor),
+            Self::Word(_) => Self::Word(anchor),
+            Self::Paragraph(_) => Self::Paragraph(anchor),
+        }
+    }
+}
+
 fn wrap_index(line: &WrappedLine, row: usize) -> usize {
-    let boundary = line.wrap_boundaries()[row];
-    line.runs()[boundary.run_ix].glyphs[boundary.glyph_ix].index
+    line.wrap_source_index(row)
 }
 
 fn text_position(
@@ -109,6 +135,9 @@ fn text_position(
         }
     }
     let mut position = line.position_for_index(offset, line_height)?;
+    if let Some(x) = bidi_inline_position(line, offset) {
+        position.x = x;
+    }
     if affinity == CaretAffinity::Upstream
         && (0..line.wrap_boundaries().len()).any(|row| wrap_index(line, row) == offset)
     {
@@ -117,6 +146,13 @@ fn text_position(
         position.x = (position.x * 64.).ceil() / 64.;
     }
     Some(position)
+}
+
+fn bidi_inline_position(line: &WrappedLine, offset: usize) -> Option<Pixels> {
+    if !line.wrap_boundaries().is_empty() {
+        return None;
+    }
+    line.unwrapped_layout.inline_x_for_index(offset)
 }
 
 actions!(
@@ -151,6 +187,8 @@ actions!(
         Copy,
         Cut,
         Paste,
+        Undo,
+        Redo,
         Enter,
         ShowCharacterPalette,
     ]
@@ -200,6 +238,8 @@ pub fn init(cx: &mut App) {
         key(format!("{primary}-c"), Copy),
         key(format!("{primary}-x"), Cut),
         key(format!("{primary}-v"), Paste),
+        key(format!("{primary}-z"), Undo),
+        key(format!("{primary}-shift-z"), Redo),
         key("enter", Enter),
         key("shift-enter", Enter),
     ];
@@ -218,6 +258,9 @@ pub fn init(cx: &mut App) {
             key("ctrl-e", LineEnd),
             key("ctrl-cmd-space", ShowCharacterPalette),
         ]);
+    }
+    if !cfg!(target_os = "macos") {
+        bindings.push(key("ctrl-y", Redo));
     }
     cx.bind_keys(bindings);
 }
@@ -252,7 +295,11 @@ const MASK: char = '•';
 /// set it — keeps the entity.
 pub struct InputState {
     focus_handle: FocusHandle,
+    owner: gpui::EntityId,
     content: String,
+    document: history::Document,
+    history: Rc<RefCell<history::History>>,
+    physical_text: Option<String>,
     selected_range: Range<usize>,
     selection_reversed: bool,
     caret_affinity: CaretAffinity,
@@ -260,6 +307,7 @@ pub struct InputState {
     marked_range: Option<Range<usize>>,
     initialized: bool,
     is_selecting: bool,
+    selection_drag: Option<SelectionDrag>,
 
     // Set by the element every frame.
     placeholder: SharedString,
@@ -269,6 +317,7 @@ pub struct InputState {
     disabled: bool,
     max_length: Option<usize>,
     select_on_focus: bool,
+    close_after_edit: bool,
     on_change: Option<OnText>,
     on_submit: Option<OnText>,
     on_blur: Option<OnEvent>,
@@ -304,7 +353,11 @@ pub fn input_state(
 impl InputState {
     pub fn new(window: &mut Window, cx: &mut Context<Self>) -> Self {
         let focus_handle = cx.focus_handle();
+        let history = history::shared(window, cx);
         let subscriptions = vec![
+            cx.on_release(|this, _| {
+                this.history.borrow_mut().remove(this.owner);
+            }),
             cx.on_focus(&focus_handle, window, |this, _, cx| {
                 this.reveal_cursor = true;
                 if this.select_on_focus {
@@ -314,7 +367,10 @@ impl InputState {
                 }
             }),
             cx.on_blur(&focus_handle, window, |this, window, cx| {
+                this.close_history();
+                this.physical_text = None;
                 this.is_selecting = false;
+                this.selection_drag = None;
                 if let Some(on_blur) = this.on_blur.clone() {
                     on_blur(window, cx);
                 }
@@ -323,6 +379,10 @@ impl InputState {
         ];
         InputState {
             focus_handle,
+            owner: cx.entity_id(),
+            document: history::Document::default(),
+            history,
+            physical_text: None,
             content: String::new(),
             selected_range: 0..0,
             selection_reversed: false,
@@ -331,6 +391,7 @@ impl InputState {
             marked_range: None,
             initialized: false,
             is_selecting: false,
+            selection_drag: None,
             placeholder: SharedString::default(),
             multiline: false,
             masked: false,
@@ -338,6 +399,7 @@ impl InputState {
             disabled: false,
             max_length: None,
             select_on_focus: false,
+            close_after_edit: false,
             on_change: None,
             on_submit: None,
             on_blur: None,
@@ -371,6 +433,9 @@ impl InputState {
 
     fn replace_value(&mut self, value: String) {
         if value != self.content {
+            self.selection_drag = None;
+            self.document.reset(&value);
+            self.physical_text = None;
             self.content = value;
             let end = self.content.len();
             self.selected_range = end..end;
@@ -397,6 +462,10 @@ impl InputState {
 
     /// Selects everything.
     pub fn select_all(&mut self, cx: &mut Context<Self>) {
+        if self.selected_range != (0..self.content.len()) || self.selection_reversed {
+            self.close_history();
+        }
+        self.selection_drag = None;
         self.selected_range = 0..self.content.len();
         self.selection_reversed = false;
         self.caret_affinity = CaretAffinity::default();
@@ -409,6 +478,9 @@ impl InputState {
     }
 
     fn emit_change(&self, window: &mut Window, cx: &mut Context<Self>) {
+        if self.close_after_edit && self.marked_range.is_none() {
+            self.close_history();
+        }
         if let Some(on_change) = self.on_change.clone() {
             on_change(&self.content, window, cx);
         }
@@ -425,6 +497,10 @@ impl InputState {
     }
 
     fn move_to(&mut self, offset: usize, cx: &mut Context<Self>) {
+        if self.selected_range != (offset..offset) {
+            self.close_history();
+        }
+        self.selection_drag = None;
         self.selected_range = offset..offset;
         self.selection_reversed = false;
         self.caret_affinity = CaretAffinity::default();
@@ -434,6 +510,10 @@ impl InputState {
     }
 
     fn select_to(&mut self, offset: usize, cx: &mut Context<Self>) {
+        if offset != self.cursor_offset() {
+            self.close_history();
+        }
+        self.selection_drag = None;
         self.caret_affinity = CaretAffinity::default();
         self.preferred_x = None;
         self.reveal_cursor = true;
@@ -450,47 +530,34 @@ impl InputState {
     }
 
     fn previous_boundary(&self, offset: usize) -> usize {
-        self.content[..offset]
-            .char_indices()
-            .next_back()
-            .map(|(index, _)| index)
-            .unwrap_or(0)
+        boundary::previous(&self.content, offset)
     }
 
     fn next_boundary(&self, offset: usize) -> usize {
-        self.content[offset..]
-            .chars()
-            .next()
-            .map(|ch| offset + ch.len_utf8())
-            .unwrap_or(self.content.len())
+        boundary::next(&self.content, offset)
     }
 
-    /// The start of the word before `offset`: skip the gap, then the word. A
-    /// password has no words, only its two ends.
+    /// A password has no words, only its two ends.
     fn previous_word(&self, offset: usize) -> usize {
         if self.masked {
             return 0;
         }
-        let mut chars = self.content[..offset].char_indices().rev().peekable();
-        while chars.next_if(|(_, ch)| !is_word(*ch)).is_some() {}
-        let mut start = chars.peek().map(|(i, ch)| i + ch.len_utf8()).unwrap_or(0);
-        while let Some((index, _)) = chars.next_if(|(_, ch)| is_word(*ch)) {
-            start = index;
+        if self.multiline {
+            let start = self.line_start(offset);
+            let end = self.line_end(offset);
+            if start < end {
+                // Word-left stops at the start of a nonempty paragraph.
+                return start + word::previous(&self.content[start..end], offset - start);
+            }
         }
-        start
+        word::previous(&self.content, offset)
     }
 
     fn next_word(&self, offset: usize) -> usize {
         if self.masked {
             return self.content.len();
         }
-        let mut chars = self.content[offset..].char_indices().peekable();
-        while chars.next_if(|(_, ch)| !is_word(*ch)).is_some() {}
-        while chars.next_if(|(_, ch)| is_word(*ch)).is_some() {}
-        chars
-            .peek()
-            .map(|(i, _)| offset + i)
-            .unwrap_or(self.content.len())
+        word::next(&self.content, offset, cfg!(target_os = "windows"))
     }
 
     fn line_start(&self, offset: usize) -> usize {
@@ -593,31 +660,33 @@ impl InputState {
         if self.masked {
             return 0..self.content.len();
         }
-        let is_word_at = |i: usize| self.content[i..].chars().next().is_some_and(is_word);
-        let mut start = offset;
-        let mut end = offset;
-        if is_word_at(offset) || (offset > 0 && is_word_at(self.previous_boundary(offset))) {
-            while start > 0 && is_word_at(self.previous_boundary(start)) {
-                start = self.previous_boundary(start);
-            }
-            while end < self.content.len() && is_word_at(end) {
-                end = self.next_boundary(end);
-            }
-        } else {
-            end = self.next_boundary(offset);
+        word::range(&self.content, offset)
+    }
+
+    fn paragraph_range(&self, offset: usize) -> Range<usize> {
+        if !self.multiline || self.masked {
+            return 0..self.content.len();
         }
-        start..end
+        // At the final empty line, the browser selects the preceding
+        // paragraph. Its line separator is part of the selected value.
+        let offset = if offset == self.content.len() && self.content.ends_with('\n') {
+            offset - 1
+        } else {
+            offset
+        };
+        let end = self.line_end(offset);
+        self.line_start(offset)..end + usize::from(end < self.content.len())
     }
 
     // Display offsets -----------------------------------------------------
     //
-    // A password is laid out as bullets, which are wider in bytes than what
-    // they stand for, so the layout is addressed in display offsets and the
-    // value in content offsets, and these two convert.
+    // A password draws one bullet per Unicode grapheme. Editing uses Blink's
+    // tailored boundaries, so several editable offsets can share a bullet.
+    // Layout addresses the bullets; input methods address the original value.
 
     fn display_text(&self) -> String {
         if self.masked {
-            self.content.chars().map(|_| MASK).collect()
+            self.content.graphemes(true).map(|_| MASK).collect()
         } else {
             self.content.clone()
         }
@@ -625,8 +694,9 @@ impl InputState {
 
     fn display_offset(&self, offset: usize) -> usize {
         if self.masked {
-            self.content[..offset.min(self.content.len())]
-                .chars()
+            self.content
+                .grapheme_indices(true)
+                .take_while(|(at, _)| *at < offset)
                 .count()
                 * MASK.len_utf8()
         } else {
@@ -637,7 +707,7 @@ impl InputState {
     fn content_offset(&self, offset: usize) -> usize {
         if self.masked {
             self.content
-                .char_indices()
+                .grapheme_indices(true)
                 .nth(offset / MASK.len_utf8())
                 .map(|(i, _)| i)
                 .unwrap_or(self.content.len())
@@ -721,6 +791,7 @@ impl InputState {
         if self.disabled {
             return;
         }
+        self.close_history();
         crate::foundation::pointer_down(window, cx);
         window.focus(&self.focus_handle);
         self.preferred_x = None;
@@ -729,28 +800,39 @@ impl InputState {
             self.display_offset(offset),
             event.position - self.text_origin,
         );
+        self.is_selecting = true;
         match event.click_count {
+            n if n >= 3 => {
+                self.selected_range = self.paragraph_range(offset);
+                self.selection_reversed = false;
+                self.selection_drag = Some(SelectionDrag::Paragraph(self.selected_range.clone()));
+                cx.notify();
+            }
+            _ if event.modifiers.shift => {
+                if self.selection_drag.is_none() {
+                    let anchor = if cfg!(target_os = "macos") {
+                        self.selected_range.clone()
+                    } else {
+                        let anchor = if self.selection_reversed {
+                            self.selected_range.end
+                        } else {
+                            self.selected_range.start
+                        };
+                        anchor..anchor
+                    };
+                    self.selection_drag = Some(SelectionDrag::Character(anchor));
+                }
+                self.extend_pointer_selection(offset, cx);
+            }
             2 => {
                 self.selected_range = self.word_range(offset);
                 self.selection_reversed = false;
-                cx.notify();
-            }
-            n if n >= 3 => {
-                self.selected_range = if self.multiline {
-                    self.line_start(offset)..self.line_end(offset)
-                } else {
-                    0..self.content.len()
-                };
-                self.selection_reversed = false;
+                self.selection_drag = Some(SelectionDrag::Word(self.selected_range.clone()));
                 cx.notify();
             }
             _ => {
-                self.is_selecting = true;
-                if event.modifiers.shift {
-                    self.select_to(offset, cx);
-                } else {
-                    self.move_to(offset, cx);
-                }
+                self.move_to(offset, cx);
+                self.selection_drag = Some(SelectionDrag::Character(offset..offset));
             }
         }
         self.caret_affinity = affinity;
@@ -763,13 +845,80 @@ impl InputState {
                 self.display_offset(offset),
                 event.position - self.text_origin,
             );
-            self.select_to(offset, cx);
+            self.extend_pointer_selection(offset, cx);
             self.caret_affinity = affinity;
         }
     }
 
+    fn extend_pointer_selection(&mut self, offset: usize, cx: &mut Context<Self>) {
+        let drag = match self.selection_drag.clone() {
+            Some(drag) => drag,
+            None if self.selected_range.is_empty() => {
+                // Keyboard movement during a held gesture starts a new drag
+                // at its first subsequent pointer position.
+                self.move_to(offset, cx);
+                self.selection_drag = Some(SelectionDrag::Character(offset..offset));
+                return;
+            }
+            None => {
+                let anchor = if cfg!(target_os = "macos") {
+                    self.selected_range.clone()
+                } else {
+                    let anchor = if self.selection_reversed {
+                        self.selected_range.end
+                    } else {
+                        self.selected_range.start
+                    };
+                    anchor..anchor
+                };
+                let drag = SelectionDrag::Character(anchor);
+                self.selection_drag = Some(drag.clone());
+                drag
+            }
+        };
+        let (anchor, selected) = match drag {
+            SelectionDrag::Character(anchor) => (anchor, offset..offset),
+            SelectionDrag::Word(anchor) => (anchor, self.word_range(offset)),
+            SelectionDrag::Paragraph(anchor) => (anchor, self.paragraph_range(offset)),
+        };
+        if cfg!(target_os = "macos") {
+            // A nondirectional selection replaces its nearer endpoint. Keep
+            // the gesture's original range while held; mouse-up rebases it for
+            // the next Shift press. Directional hosts retain the original unit.
+            let toward_start = offset < anchor.start
+                || offset <= anchor.end
+                    && self.content[anchor.start..offset].encode_utf16().count()
+                        <= self.content[offset..anchor.end].encode_utf16().count();
+            self.selected_range = if toward_start {
+                selected.start..anchor.end
+            } else {
+                anchor.start..selected.end
+            };
+            self.selection_reversed = false;
+        } else if selected.start < anchor.start {
+            self.selected_range = selected.start..anchor.end;
+            self.selection_reversed = true;
+        } else if selected.end > anchor.end {
+            self.selected_range = anchor.start..selected.end;
+            self.selection_reversed = false;
+        } else {
+            self.selected_range = anchor;
+        }
+        if self.selected_range.is_empty() {
+            self.selection_reversed = false;
+        }
+        self.reveal_cursor = true;
+        cx.notify();
+    }
+
     fn mouse_up(&mut self, _: &MouseUpEvent, _: &mut Context<Self>) {
         self.is_selecting = false;
+        if cfg!(target_os = "macos") {
+            self.selection_drag = self
+                .selection_drag
+                .as_ref()
+                .map(|drag| drag.with_anchor(self.selected_range.clone()));
+        }
     }
 
     pub(crate) fn scroll_wheel(
@@ -797,19 +946,55 @@ impl InputState {
 
     // Actions -------------------------------------------------------------
 
-    fn delete_to(&mut self, offset: usize, window: &mut Window, cx: &mut Context<Self>) {
-        if self.selected_range.is_empty() {
-            self.select_to(offset, cx);
+    fn delete_to(
+        &mut self,
+        destination: impl FnOnce(&Self) -> usize,
+        edit: Edit,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        if !self.editable() {
+            return;
         }
-        self.replace_text_in_range(None, "", window, cx);
+        let original = self.selected_range.clone();
+        let reversed = self.selection_reversed;
+        self.selected_range = boundary::ceil(&self.content, original.start)
+            ..boundary::ceil(&self.content, original.end);
+        let range = if self.selected_range.is_empty() {
+            let cursor = self.cursor_offset();
+            let target = destination(self);
+            cursor.min(target)..cursor.max(target)
+        } else {
+            self.selected_range.clone()
+        };
+        self.physical_text = None;
+        if !range.is_empty() && self.valid_replacement(&range, "", TextEditKind::Input) {
+            self.edit_document(range, "", edit, original, reversed, cx);
+            self.selection_drag = None;
+            self.marked_range = None;
+            self.preferred_x = None;
+            self.reveal_cursor = true;
+            cx.notify();
+            self.emit_change(window, cx);
+        }
     }
 
     fn backspace(&mut self, _: &Backspace, window: &mut Window, cx: &mut Context<Self>) {
-        self.delete_to(self.previous_boundary(self.cursor_offset()), window, cx);
+        self.delete_to(
+            |state| boundary::backspace(&state.content, state.cursor_offset()),
+            Edit::Backward,
+            window,
+            cx,
+        );
     }
 
     fn delete(&mut self, _: &Delete, window: &mut Window, cx: &mut Context<Self>) {
-        self.delete_to(self.next_boundary(self.cursor_offset()), window, cx);
+        self.delete_to(
+            |state| state.next_boundary(state.cursor_offset()),
+            Edit::Forward,
+            window,
+            cx,
+        );
     }
 
     fn delete_word_left(
@@ -818,7 +1003,21 @@ impl InputState {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        self.delete_to(self.previous_word(self.cursor_offset()), window, cx);
+        self.delete_to(
+            |state| {
+                let offset = state.cursor_offset();
+                let previous = state.previous_word(offset);
+                if previous == offset {
+                    // Deletion can still remove the preceding line separator.
+                    state.previous_boundary(offset)
+                } else {
+                    previous
+                }
+            },
+            Edit::WordBackward,
+            window,
+            cx,
+        );
     }
 
     fn delete_word_right(
@@ -827,7 +1026,12 @@ impl InputState {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        self.delete_to(self.next_word(self.cursor_offset()), window, cx);
+        self.delete_to(
+            |state| state.next_word(state.cursor_offset()),
+            Edit::WordForward,
+            window,
+            cx,
+        );
     }
 
     fn delete_to_line_start(
@@ -836,7 +1040,12 @@ impl InputState {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        self.delete_to(self.visual_row(self.cursor_offset()).start, window, cx);
+        self.delete_to(
+            |state| state.visual_row(state.cursor_offset()).start,
+            Edit::WordBackward,
+            window,
+            cx,
+        );
     }
 
     fn left(&mut self, _: &Left, _: &mut Window, cx: &mut Context<Self>) {
@@ -981,19 +1190,33 @@ impl InputState {
             cx.write_to_clipboard(ClipboardItem::new_string(
                 self.content[self.selected_range.clone()].to_string(),
             ));
-            self.replace_text_in_range(None, "", window, cx);
+            self.replace_text(None, "", TextEditKind::Input, Some(Edit::Cut), window, cx);
         }
     }
 
     fn paste(&mut self, _: &Paste, window: &mut Window, cx: &mut Context<Self>) {
         if let Some(text) = cx.read_from_clipboard().and_then(|item| item.text()) {
-            self.replace_text(None, &text, TextEditKind::Paste, window, cx);
+            self.replace_text(
+                None,
+                &text,
+                TextEditKind::Paste,
+                Some(Edit::Paste),
+                window,
+                cx,
+            );
         }
     }
 
     fn enter(&mut self, _: &Enter, window: &mut Window, cx: &mut Context<Self>) {
         if self.multiline {
-            self.replace_text_in_range(None, "\n", window, cx);
+            self.replace_text(
+                None,
+                "\n",
+                TextEditKind::Input,
+                Some(Edit::Newline),
+                window,
+                cx,
+            );
         } else if let Some(on_submit) = self.on_submit.clone() {
             on_submit(&self.content, window, cx);
         } else {
@@ -1056,9 +1279,28 @@ impl InputState {
             new_text.replace("\r\n", " ").replace('\n', " ")
         };
         if let Some(max) = self.max_length {
-            let kept = self.content.chars().count() - self.content[range.clone()].chars().count();
-            let room = max.saturating_sub(kept);
-            text = text.chars().take(room).collect();
+            // Chromium budgets a password replacement using its selected
+            // mask positions, while the existing value remains UTF-16 text.
+            let removed = if self.masked {
+                (self.display_offset(range.end) - self.display_offset(range.start))
+                    / MASK.len_utf8()
+            } else {
+                self.content[range.clone()].encode_utf16().count()
+            };
+            let kept = self.content.encode_utf16().count() - removed;
+            let mut room = max.saturating_sub(kept);
+            // HTML maxlength counts UTF-16 units. Stop before a surrogate
+            // pair that will not fit, rather than storing half a character.
+            text = text
+                .chars()
+                .take_while(|ch| {
+                    if ch.len_utf16() > room {
+                        return false;
+                    }
+                    room -= ch.len_utf16();
+                    true
+                })
+                .collect();
         }
         text
     }
@@ -1076,9 +1318,14 @@ impl InputState {
         range_utf16: Option<Range<usize>>,
         new_text: &str,
         kind: TextEditKind,
+        edit: Option<Edit>,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        let physical = self
+            .physical_text
+            .take()
+            .is_some_and(|text| text == new_text);
         if !self.editable() {
             return;
         }
@@ -1093,10 +1340,24 @@ impl InputState {
         {
             return;
         }
-        self.content.replace_range(range.clone(), &text);
-        let cursor = range.start + text.len();
-        self.selected_range = cursor..cursor;
-        self.selection_reversed = false;
+        self.selection_drag = None;
+        let edit = edit.unwrap_or_else(|| {
+            if self.marked_range.is_some() {
+                Edit::Commit
+            } else if physical {
+                Edit::Typing
+            } else {
+                Edit::Insert
+            }
+        });
+        self.edit_document(
+            range,
+            &text,
+            edit,
+            self.selected_range.clone(),
+            self.selection_reversed,
+            cx,
+        );
         self.marked_range = None;
         self.caret_affinity = CaretAffinity::default();
         self.preferred_x = None;
@@ -1104,10 +1365,6 @@ impl InputState {
         cx.notify();
         self.emit_change(window, cx);
     }
-}
-
-fn is_word(ch: char) -> bool {
-    ch.is_alphanumeric() || ch == '_'
 }
 
 impl Focusable for InputState {
@@ -1147,8 +1404,11 @@ impl EntityInputHandler for InputState {
             .map(|range| self.range_to_utf16(range))
     }
 
-    fn unmark_text(&mut self, _: &mut Window, _: &mut Context<Self>) {
-        self.marked_range = None;
+    fn unmark_text(&mut self, _: &mut Window, cx: &mut Context<Self>) {
+        if self.marked_range.take().is_some() {
+            self.close_history();
+            cx.notify();
+        }
     }
 
     fn replace_text_in_range(
@@ -1158,7 +1418,7 @@ impl EntityInputHandler for InputState {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        self.replace_text(range_utf16, new_text, TextEditKind::Input, window, cx);
+        self.replace_text(range_utf16, new_text, TextEditKind::Input, None, window, cx);
     }
 
     fn replace_and_mark_text_in_range(
@@ -1169,6 +1429,7 @@ impl EntityInputHandler for InputState {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        self.physical_text = None;
         if !self.editable() {
             return;
         }
@@ -1181,7 +1442,15 @@ impl EntityInputHandler for InputState {
         if !self.valid_replacement(&range, &text, TextEditKind::Input) {
             return;
         }
-        self.content.replace_range(range.clone(), &text);
+        self.selection_drag = None;
+        self.edit_document(
+            range.clone(),
+            &text,
+            Edit::Composition,
+            self.selected_range.clone(),
+            self.selection_reversed,
+            cx,
+        );
         self.marked_range = (!text.is_empty()).then(|| range.start..range.start + text.len());
         self.selected_range = new_selected_range_utf16
             .as_ref()
@@ -1217,6 +1486,7 @@ impl EntityInputHandler for InputState {
         self.caret_affinity = CaretAffinity::default();
         self.preferred_x = None;
         self.reveal_cursor = true;
+        self.update_history_selection();
         cx.notify();
         self.emit_change(window, cx);
     }
@@ -1234,18 +1504,47 @@ impl EntityInputHandler for InputState {
         } else {
             CaretAffinity::Downstream
         };
-        let start = self.position_with_affinity(self.display_offset(range.start), affinity)?;
-        let end = if range.is_empty() {
+        let mut start = self.position_with_affinity(self.display_offset(range.start), affinity)?;
+        let mut end = if range.is_empty() {
             start
         } else {
             self.position_with_affinity(self.display_offset(range.end), CaretAffinity::Upstream)?
         };
+        if !range.is_empty() {
+            let display = self.display_offset(range.start)..self.display_offset(range.end);
+            let mut base = 0;
+            let mut y = px(0.);
+            for line in &self.lines {
+                let limit = base + line.len();
+                if (base..=limit).contains(&display.start) {
+                    if let Some(rects) = line.selection_rects(
+                        (display.start - base)..(display.end.min(limit) - base),
+                        self.line_height,
+                    ) && let Some(top) = rects.iter().map(|rect| rect.top()).min()
+                    {
+                        let first_row: Vec<_> =
+                            rects.iter().filter(|rect| rect.top() == top).collect();
+                        if let (Some(left), Some(right)) = (
+                            first_row.iter().map(|rect| rect.left()).min(),
+                            first_row.iter().map(|rect| rect.right()).max(),
+                        ) {
+                            start = point(left, y + top);
+                            end = point(right, y + top);
+                        }
+                    }
+                    break;
+                }
+                y += line.size(self.line_height).height;
+                base = limit + 1;
+            }
+        }
         let end = if end.y > start.y {
             point(start.x, start.y)
         } else {
             end
         };
-        let mut origin = self.text_origin + start + point(px(0.), self.caret_top);
+        let mut origin =
+            self.text_origin + point(start.x.min(end.x), start.y) + point(px(0.), self.caret_top);
         if range.is_empty() {
             origin.y = origin.y.round();
             if self.centered {
@@ -1256,7 +1555,7 @@ impl EntityInputHandler for InputState {
         }
         Some(Bounds::new(
             origin,
-            size(end.x - start.x, self.caret_height),
+            size((end.x - start.x).abs(), self.caret_height),
         ))
     }
 
@@ -1296,7 +1595,7 @@ pub struct TextInput {
     placeholder_color: Option<Hsla>,
     selection_color: Option<Hsla>,
     caret_color: Option<Hsla>,
-    scroll_padding: Pixels,
+    scroll_padding: gpui::Size<Pixels>,
     on_change: Option<OnText>,
     on_submit: Option<OnText>,
     on_blur: Option<OnEvent>,
@@ -1323,7 +1622,7 @@ impl TextInput {
             placeholder_color: None,
             selection_color: None,
             caret_color: None,
-            scroll_padding: px(0.),
+            scroll_padding: size(px(0.), px(0.)),
             on_change: None,
             on_submit: None,
             on_blur: None,
@@ -1368,8 +1667,8 @@ impl TextInput {
         self
     }
 
-    /// The field's block padding also belongs to its scroll viewport.
-    pub(crate) fn scroll_padding(mut self, padding: Pixels) -> Self {
+    /// The field's padding also belongs to its textarea scroll viewport.
+    pub(crate) fn scroll_padding(mut self, padding: gpui::Size<Pixels>) -> Self {
         self.scroll_padding = padding;
         self
     }
@@ -1393,7 +1692,7 @@ impl TextInput {
         self
     }
 
-    /// The most characters it holds.
+    /// Limits accepted input in UTF-16 units, as HTML's maxlength does.
     pub fn max_length(mut self, max_length: usize) -> Self {
         self.max_length = Some(max_length);
         self
@@ -1512,7 +1811,17 @@ impl RenderOnce for TextInput {
             }
             state.initialized = true;
             state.placeholder = self.placeholder;
+            state.document.configure(multiline, &state.content);
             state.multiline = multiline;
+            // React restores textarea.defaultValue after an input event. A
+            // nonempty default mutates its outer text child and closes Blink
+            // typing; controlled textareas update that default with the value.
+            state.close_after_edit = multiline
+                && (self.value.as_ref().is_some_and(|value| !value.is_empty())
+                    || self
+                        .default_value
+                        .as_ref()
+                        .is_some_and(|value| !value.is_empty()));
             state.centered = self.centered && !multiline;
             state.masked = self.masked;
             state.read_only = self.read_only;
@@ -1525,6 +1834,7 @@ impl RenderOnce for TextInput {
             state.validate_edit = self.validate_edit;
             if disabled {
                 state.is_selecting = false;
+                state.selection_drag = None;
             }
         });
 
@@ -1598,6 +1908,28 @@ impl RenderOnce for TextInput {
                     .on_action(act(&state, InputState::copy))
                     .on_action(act(&state, InputState::cut))
                     .on_action(act(&state, InputState::paste))
+                    .on_action(act(&state, InputState::undo))
+                    .on_action(act(&state, InputState::redo))
+                    .on_key_down({
+                        let state = state.downgrade();
+                        move |event, _, cx| {
+                            state
+                                .update(cx, |state, _| {
+                                    state.physical_text = event
+                                        .keystroke
+                                        .key_char
+                                        .clone()
+                                        .filter(|_| event.keystroke.key != "unidentified");
+                                })
+                                .ok();
+                        }
+                    })
+                    .on_key_up({
+                        let state = state.downgrade();
+                        move |_, _, cx| {
+                            state.update(cx, |state, _| state.physical_text = None).ok();
+                        }
+                    })
                     .on_action(act(&state, InputState::enter))
                     .on_action(act(&state, InputState::show_character_palette))
             })
@@ -1614,7 +1946,7 @@ struct TextBody {
     placeholder_color: Option<Hsla>,
     selection_color: Option<Hsla>,
     caret_color: Option<Hsla>,
-    scroll_padding: Pixels,
+    scroll_padding: gpui::Size<Pixels>,
 }
 
 struct BodyLayout {
@@ -1824,6 +2156,22 @@ impl Element for TextBody {
         let mut y = px(0.);
         let mut start = 0;
         let row_width = bounds.size.width;
+        let font_size = text_style.font_size.to_pixels(window.rem_size());
+        // A hard separator selects one space advance after its final row,
+        // rather than the remaining width of the textarea viewport.
+        let newline_width = if wraps && !selected.is_empty() {
+            window
+                .text_system()
+                .shape_line(
+                    " ".into(),
+                    font_size,
+                    &super::text_runs(" ", text_style, font_size, window),
+                    None,
+                )
+                .width
+        } else {
+            px(0.)
+        };
         for line in &lines {
             let end = start + line.len();
             let height = line.size(line_height).height;
@@ -1841,14 +2189,48 @@ impl Element for TextBody {
             if !selected.is_empty() && selected.start <= end && selected.end >= start {
                 let from = selected.start.max(start) - start;
                 let to = selected.end.min(end) - start;
-                if let (Some(a), Some(b)) = (
+                if let Some(rects) = line.selection_rects(from..to, line_height) {
+                    selection.extend(
+                        rects
+                            .into_iter()
+                            .map(|rect| Bounds::new(rect.origin + point(px(0.), y), rect.size)),
+                    );
+                    // Crossing a soft break adds a space advance after that
+                    // row's text, as does selecting a hard newline. The next
+                    // row retains its own selection fragments.
+                    let mut separators: Vec<_> = (0..line.wrap_boundaries().len())
+                        .map(|row| wrap_index(line, row))
+                        .filter(|&at| {
+                            let carets = &line.unwrapped_layout.carets;
+                            let before = carets.partition_point(|stop| stop.index < at);
+                            // RTL runs already select their trailing space;
+                            // only an LTR soft break paints an extra advance.
+                            from < at
+                                && to > at
+                                && (before == 0 || carets[before - 1].embedding_level % 2 == 0)
+                        })
+                        .collect();
+                    if selected.end > end && wraps {
+                        separators.push(line.len());
+                    }
+                    for at in separators {
+                        if let Some(tail) =
+                            text_position(line, at, line_height, CaretAffinity::Upstream)
+                        {
+                            selection.push(Bounds::from_corners(
+                                point(tail.x, y + tail.y),
+                                point(tail.x + newline_width, y + tail.y + line_height),
+                            ));
+                        }
+                    }
+                } else if let (Some(a), Some(b)) = (
                     text_position(line, from, line_height, CaretAffinity::Downstream),
                     text_position(line, to, line_height, CaretAffinity::Upstream),
                 ) {
                     // A selection that runs to the end of a line takes in
                     // the newline, as a text view shows it.
                     let tail = if selected.end > end && wraps {
-                        row_width
+                        b.x + newline_width
                     } else {
                         b.x
                     };
@@ -1890,17 +2272,21 @@ impl Element for TextBody {
             px(0.)
         };
         let mut scroll_y = input.scroll_y.min(scroll_max_y);
-        let resized = input.bounds.is_some_and(|last| last.size != bounds.size);
-        if wraps && (input.reveal_cursor || resized) && input.is_focused(window) {
+        // Resize clamps the existing scroll offset without undoing a manual
+        // scroll to expose an offscreen caret. Editing and navigation reveal it.
+        if wraps && input.reveal_cursor && input.is_focused(window) {
             let top = cursor.y + caret_offset(line_height, caret_height, true);
             let bottom = top + caret_height;
-            if bottom - scroll_y > bounds.size.height + self.scroll_padding {
-                scroll_y = bottom.ceil() - bounds.size.height.floor() - self.scroll_padding;
-            } else if top - scroll_y < -self.scroll_padding {
-                scroll_y = if cursor.y == px(0.) {
+            if bottom - scroll_y > bounds.size.height + self.scroll_padding.height {
+                scroll_y = bottom.ceil() - bounds.size.height.floor() - self.scroll_padding.height;
+            } else if top - scroll_y < -self.scroll_padding.height {
+                // Linux's native textarea reveals the caret at the near
+                // scrollport edge, even on its first row. macOS retains the
+                // top padding when revealing that row from below.
+                scroll_y = if cursor.y == px(0.) && !cfg!(target_os = "linux") {
                     px(0.)
                 } else {
-                    (top + self.scroll_padding).floor()
+                    (top + self.scroll_padding.height).floor()
                 };
             }
             scroll_y = scroll_y.clamp(px(0.), scroll_max_y);
@@ -1971,7 +2357,16 @@ impl Element for TextBody {
             }),
             selection: selection
                 .into_iter()
-                .map(|rect| Bounds::new(origin + rect.origin, rect.size))
+                .map(|rect| {
+                    // Blink snaps selection edges to whole CSS pixels before
+                    // device scaling, including fractional line-height rows.
+                    let top_left = origin + rect.origin;
+                    let bottom_right = top_left + point(rect.size.width, rect.size.height);
+                    Bounds::from_corners(
+                        point(top_left.x.round(), top_left.y.round()),
+                        point(bottom_right.x.round(), bottom_right.y.round()),
+                    )
+                })
                 .collect(),
             caret_color,
             selection_color,
@@ -2007,23 +2402,44 @@ impl Element for TextBody {
         let clip_top = if single_line {
             bounds.top().floor()
         } else {
-            bounds.top() - self.scroll_padding
+            bounds.top() - self.scroll_padding.height
         };
         let clip_bottom = if single_line {
             bounds.bottom().ceil()
         } else {
-            bounds.bottom() + self.scroll_padding
+            bounds.bottom() + self.scroll_padding.height
         };
         let clip = Bounds::new(
             point(bounds.left(), clip_top),
             size(bounds.size.width + px(1.), clip_bottom - clip_top),
         );
+        if focused {
+            // Hanging trailing spaces can select into the textarea's inline
+            // padding. Text and caret retain their content viewport below.
+            let selection_clip = Bounds::new(
+                clip.origin,
+                size(
+                    bounds.size.width
+                        + if single_line {
+                            px(1.)
+                        } else {
+                            self.scroll_padding.width.max(px(1.))
+                        },
+                    clip.size.height,
+                ),
+            );
+            window.with_content_mask(
+                Some(ContentMask {
+                    bounds: selection_clip,
+                }),
+                |window| {
+                    for rect in layout.selection.drain(..) {
+                        window.paint_quad(fill(rect, layout.selection_color));
+                    }
+                },
+            );
+        }
         window.with_content_mask(Some(ContentMask { bounds: clip }), |window| {
-            if focused {
-                for rect in layout.selection.drain(..) {
-                    window.paint_quad(fill(rect, layout.selection_color));
-                }
-            }
             let mut origin = layout.origin;
             let paint_line_height = if layout.baseline.is_some() {
                 editor_line_height(window)

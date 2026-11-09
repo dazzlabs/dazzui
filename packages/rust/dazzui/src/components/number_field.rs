@@ -154,6 +154,7 @@ impl NumberFieldCommitReason {
 #[derive(Default)]
 struct Held {
     value: Option<f64>,
+    history_value: Option<Option<f64>>,
     draft: Option<String>,
     // A canceled step or blur can leave visible text without letting that
     // text supply the next step's numeric base.
@@ -508,6 +509,17 @@ impl RenderOnce for NumberField {
                 }
                 held.value = value;
             }
+            // Base UI updates a second native number input for form values.
+            // Rebuilding that input's editor closes the document's open typing
+            // command when its stored number changes, including controlled
+            // acceptance, while refused/partial drafts leave grouping intact.
+            if held
+                .history_value
+                .is_some_and(|previous| previous != held.value)
+            {
+                input.read(cx).close_history();
+            }
+            held.history_value = Some(held.value);
         }
         let rules = Rules {
             min: self.min,

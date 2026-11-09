@@ -348,6 +348,7 @@ enum ElementDrawPhase<RequestLayoutState, PrepaintState> {
         global_id: Option<GlobalElementId>,
         inspector_id: Option<InspectorElementId>,
         bounds: Bounds<Pixels>,
+        unrounded_bounds: Bounds<Pixels>,
         request_layout: RequestLayoutState,
         prepaint: PrepaintState,
     },
@@ -431,15 +432,18 @@ impl<E: Element> Drawable<E> {
                 }
 
                 let bounds = window.layout_bounds(layout_id);
+                let unrounded_bounds = window.unrounded_layout_bounds(layout_id);
                 let node_id = window.next_frame.dispatch_tree.push_node();
-                let prepaint = self.element.prepaint(
-                    global_id.as_ref(),
-                    inspector_id.as_ref(),
-                    bounds,
-                    &mut request_layout,
-                    window,
-                    cx,
-                );
+                let prepaint = window.with_unrounded_bounds(bounds, unrounded_bounds, |window| {
+                    self.element.prepaint(
+                        global_id.as_ref(),
+                        inspector_id.as_ref(),
+                        bounds,
+                        &mut request_layout,
+                        window,
+                        cx,
+                    )
+                });
                 window.next_frame.dispatch_tree.pop_node();
 
                 if global_id.is_some() {
@@ -451,6 +455,7 @@ impl<E: Element> Drawable<E> {
                     global_id,
                     inspector_id,
                     bounds,
+                    unrounded_bounds,
                     request_layout,
                     prepaint,
                 };
@@ -470,6 +475,7 @@ impl<E: Element> Drawable<E> {
                 global_id,
                 inspector_id,
                 bounds,
+                unrounded_bounds,
                 mut request_layout,
                 mut prepaint,
                 ..
@@ -480,15 +486,17 @@ impl<E: Element> Drawable<E> {
                 }
 
                 window.next_frame.dispatch_tree.set_active_node(node_id);
-                self.element.paint(
-                    global_id.as_ref(),
-                    inspector_id.as_ref(),
-                    bounds,
-                    &mut request_layout,
-                    &mut prepaint,
-                    window,
-                    cx,
-                );
+                window.with_unrounded_bounds(bounds, unrounded_bounds, |window| {
+                    self.element.paint(
+                        global_id.as_ref(),
+                        inspector_id.as_ref(),
+                        bounds,
+                        &mut request_layout,
+                        &mut prepaint,
+                        window,
+                        cx,
+                    )
+                });
 
                 if global_id.is_some() {
                     window.element_id_stack.pop();

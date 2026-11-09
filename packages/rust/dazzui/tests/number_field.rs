@@ -1447,3 +1447,93 @@ fn keyboard_scope_uses_updated_rules_and_releases_on_unmount(cx: &mut TestAppCon
     cx.run_until_parked();
     assert!(view.read_with(cx, |view, _| view.changes.is_empty()));
 }
+
+#[gpui::test]
+fn undo_redo_restore_numeric_drafts_without_committing_and_keep_step_authority(
+    cx: &mut TestAppContext,
+) {
+    let undo = if cfg!(target_os = "macos") {
+        "cmd-z"
+    } else {
+        "ctrl-z"
+    };
+    let redo = if cfg!(target_os = "macos") {
+        "cmd-shift-z"
+    } else {
+        "ctrl-shift-z"
+    };
+    for (draft, controlled, expected_changes, stepped) in [
+        ("20", false, vec![Some(20.), Some(12.), Some(20.)], 21.),
+        ("-", false, vec![Some(12.)], 13.),
+        ("20", true, vec![Some(20.), Some(12.), Some(20.)], 21.),
+    ] {
+        let (view, cx) = setup(
+            cx,
+            Options {
+                step: 1.,
+                controlled,
+                ..Default::default()
+            },
+        );
+        fill_value(&view, cx, draft);
+        cx.simulate_keystrokes(undo);
+        assert_eq!(display(&view, cx), "12");
+        cx.simulate_keystrokes(redo);
+        assert_eq!(display(&view, cx), draft);
+        assert_eq!(changes(&view, cx), expected_changes);
+        assert!(commits(&view, cx).is_empty());
+        cx.simulate_keystrokes("up");
+        let display_after_step = if controlled {
+            "12".to_owned()
+        } else {
+            stepped.to_string()
+        };
+        assert_eq!(display(&view, cx), display_after_step);
+        assert_eq!(
+            commits(&view, cx),
+            [(Some(stepped), CommitReason::Keyboard)]
+        );
+        cx.simulate_keystrokes(undo);
+        assert_eq!(display(&view, cx), display_after_step);
+        cx.simulate_keystrokes(redo);
+        assert_eq!(display(&view, cx), display_after_step);
+    }
+    let (view, cx) = setup(
+        cx,
+        Options {
+            step: 1.,
+            ..Default::default()
+        },
+    );
+    type_value(&view, cx, "345");
+    cx.simulate_keystrokes(undo);
+    assert_eq!(display(&view, cx), "34");
+    cx.simulate_keystrokes(redo);
+    assert_eq!(display(&view, cx), "345");
+    cx.simulate_keystrokes("up");
+    assert_eq!(display(&view, cx), "346");
+}
+
+#[gpui::test]
+fn refused_numeric_changes_preserve_the_typing_group(cx: &mut TestAppContext) {
+    let (view, cx) = setup(
+        cx,
+        Options {
+            controlled: true,
+            ..Default::default()
+        },
+    );
+    type_value(&view, cx, "345");
+    cx.simulate_keystrokes(if cfg!(target_os = "macos") {
+        "cmd-z"
+    } else {
+        "ctrl-z"
+    });
+    assert_eq!(display(&view, cx), "12");
+    cx.simulate_keystrokes(if cfg!(target_os = "macos") {
+        "cmd-shift-z"
+    } else {
+        "ctrl-shift-z"
+    });
+    assert_eq!(display(&view, cx), "345");
+}

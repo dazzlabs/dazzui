@@ -211,12 +211,27 @@ impl Element for Specimen {
             let quads: Vec<_> = paint.quads.iter()
                 .filter(|quad| quad.bounds.size.width == gpui::px(1.) && quad.bounds.size.height > gpui::px(5.))
                 .map(|quad| json!({"bounds": box_value(quad.bounds), "clip": box_value(quad.content_mask)})).collect();
-            if !quads.is_empty() {
+            let selection_color = dazzui::components::text_field::selection_color(cx.theme());
+            let selections: Vec<_> = paint
+                .quads
+                .iter()
+                .filter(|quad| quad.background.solid_color() == Some(selection_color))
+                .map(|quad| {
+                    json!({
+                        "bounds": box_value(quad.bounds),
+                        "clip": box_value(quad.content_mask),
+                    })
+                })
+                .collect();
+            // A nonempty source selection can contain only zero-ink controls.
+            // Record empty paint too, rather than dropping its actual surface.
+            {
                 CARETS.with(|carets| {
                     carets.borrow_mut().as_mut().unwrap().insert(self.index, json!({
                         "root": box_value(painted),
                         "surface": box_value(paint.decorated_surface.as_ref().map_or(painted, |surface| surface.bounds)),
                         "quads": quads,
+                        "selections": selections,
                     }));
                 });
             }

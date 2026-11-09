@@ -21,9 +21,11 @@ struct AnyViewState {
 #[derive(Default)]
 struct ViewCacheKey {
     bounds: Bounds<Pixels>,
+    unrounded_bounds: Bounds<Pixels>,
     content_mask: ContentMask<Pixels>,
     text_style: TextStyle,
     input_transform: crate::TransformationMatrix,
+    rounded_input_mask: Option<std::sync::Arc<crate::window::RoundedHitClip>>,
 }
 
 impl<V: Render> Element for Entity<V> {
@@ -203,14 +205,17 @@ impl Element for AnyView {
             window.with_element_state::<AnyViewState, _>(
                 global_id.unwrap(),
                 |element_state, window| {
+                    let unrounded_bounds = window.unrounded_paint_bounds(bounds);
                     let content_mask = window.content_mask();
                     let text_style = window.text_style();
 
                     if let Some(mut element_state) = element_state
                         && element_state.cache_key.bounds == bounds
+                        && element_state.cache_key.unrounded_bounds == unrounded_bounds
                         && element_state.cache_key.content_mask == content_mask
                         && element_state.cache_key.text_style == text_style
                         && element_state.cache_key.input_transform == window.input_transform
+                        && element_state.cache_key.rounded_input_mask == window.rounded_input_mask
                         && !window.dirty_views.contains(&self.entity_id())
                         && !window.refreshing
                     {
@@ -228,8 +233,8 @@ impl Element for AnyView {
                     let prepaint_start = window.prepaint_index();
                     let (mut element, accessed_entities) = cx.detect_accessed_entities(|cx| {
                         let mut element = (self.render)(self, window, cx);
-                        element.layout_as_root(bounds.size.into(), window, cx);
-                        element.prepaint_at(bounds.origin, window, cx);
+                        element.layout_as_root(unrounded_bounds.size.into(), window, cx);
+                        element.prepaint_at(unrounded_bounds.origin, window, cx);
                         element
                     });
 
@@ -244,9 +249,11 @@ impl Element for AnyView {
                             paint_range: PaintIndex::default()..PaintIndex::default(),
                             cache_key: ViewCacheKey {
                                 bounds,
+                                unrounded_bounds,
                                 content_mask,
                                 text_style,
                                 input_transform: window.input_transform,
+                                rounded_input_mask: window.rounded_input_mask.clone(),
                             },
                         },
                     )

@@ -553,55 +553,193 @@ impl Style {
         }
     }
 
-    /// Get the content mask for this element style, based on the given bounds.
-    /// If the element does not hide its overflow, this will return `None`.
+    /// Whether each axis clips after CSS's visible/clip computation.
+    fn overflow_clip_axes(&self) -> Point<bool> {
+        let non_scrollable = |axis| matches!(axis, Overflow::Visible | Overflow::Clip);
+        if non_scrollable(self.overflow.x) && non_scrollable(self.overflow.y) {
+            self.overflow.map(|axis| axis == Overflow::Clip)
+        } else {
+            point(true, true)
+        }
+    }
+
+    /// The padding-edge clip, using the element extent for any visible axis.
+    /// Div supplies its actual parent clip through `overflow_mask_with_parent`.
     pub fn overflow_mask(
         &self,
         bounds: Bounds<Pixels>,
         rem_size: Pixels,
     ) -> Option<ContentMask<Pixels>> {
-        match self.overflow {
-            Point {
-                x: Overflow::Visible,
-                y: Overflow::Visible,
-            } => None,
-            _ => {
-                let mut min = bounds.origin;
-                let mut max = bounds.bottom_right();
+        self.overflow_mask_with_parent(bounds, rem_size, bounds)
+    }
 
-                if self
-                    .border_color
-                    .is_some_and(|color| !color.is_transparent())
-                {
-                    min.x += self.border_widths.left.to_pixels(rem_size);
-                    max.x -= self.border_widths.right.to_pixels(rem_size);
-                    min.y += self.border_widths.top.to_pixels(rem_size);
-                    max.y -= self.border_widths.bottom.to_pixels(rem_size);
-                }
-
-                let bounds = match (
-                    self.overflow.x == Overflow::Visible,
-                    self.overflow.y == Overflow::Visible,
-                ) {
-                    // x and y both visible
-                    (true, true) => return None,
-                    // x visible, y hidden
-                    (true, false) => Bounds::from_corners(
-                        point(min.x, bounds.origin.y),
-                        point(max.x, bounds.bottom_right().y),
-                    ),
-                    // x hidden, y visible
-                    (false, true) => Bounds::from_corners(
-                        point(bounds.origin.x, min.y),
-                        point(bounds.bottom_right().x, max.y),
-                    ),
-                    // both hidden
-                    (false, false) => Bounds::from_corners(min, max),
-                };
-
-                Some(ContentMask { bounds })
-            }
+    /// The padding-edge clip. A visible axis retains its parent's extent.
+    /// Border geometry applies even when its paint is transparent.
+    pub(crate) fn overflow_mask_with_parent(
+        &self,
+        bounds: Bounds<Pixels>,
+        rem_size: Pixels,
+        parent: Bounds<Pixels>,
+    ) -> Option<ContentMask<Pixels>> {
+        let axes = self.overflow_clip_axes();
+        if !axes.x && !axes.y {
+            return None;
         }
+        let border = self.border_widths.to_pixels(rem_size);
+        let min = point(
+            if axes.x {
+                bounds.left() + border.left
+            } else {
+                parent.left()
+            },
+            if axes.y {
+                bounds.top() + border.top
+            } else {
+                parent.top()
+            },
+        );
+        let max = point(
+            if axes.x {
+                bounds.right() - border.right
+            } else {
+                parent.right()
+            },
+            if axes.y {
+                bounds.bottom() - border.bottom
+            } else {
+                parent.bottom()
+            },
+        );
+        Some(ContentMask {
+            bounds: Bounds::from_corners(min, point(max.x.max(min.x), max.y.max(min.y))),
+        })
+    }
+
+    pub(crate) fn border_corner_radii(
+        &self,
+        bounds: Bounds<Pixels>,
+        rem_size: Pixels,
+    ) -> Corners<Pixels> {
+        self.corner_radii
+            .to_pixels(rem_size)
+            .clamp_radii_for_quad_size(bounds.size)
+    }
+
+    /// Inner curves subtract the adjoining horizontal and vertical borders
+    /// independently. Unequal border widths produce quarter ellipses.
+    fn inset_corner_radii(
+        &self,
+        bounds: Bounds<Pixels>,
+        rem_size: Pixels,
+        inner_size: Size<Pixels>,
+    ) -> Corners<Size<Pixels>> {
+        let axes = self.overflow_clip_axes();
+        if !axes.x || !axes.y {
+            return Corners::default();
+        }
+        let outer = self.border_corner_radii(bounds, rem_size);
+        let border = self.border_widths.to_pixels(rem_size);
+        let inner = |radius: Pixels, x: Pixels, y: Pixels| {
+            let radii = size(
+                (radius - x).max(Pixels::ZERO),
+                (radius - y).max(Pixels::ZERO),
+            );
+            if radii.width == Pixels::ZERO || radii.height == Pixels::ZERO {
+                Size::default()
+            } else {
+                radii
+            }
+        };
+        let radii = Corners {
+            top_left: inner(outer.top_left, border.left, border.top),
+            top_right: inner(outer.top_right, border.right, border.top),
+            bottom_right: inner(outer.bottom_right, border.right, border.bottom),
+            bottom_left: inner(outer.bottom_left, border.left, border.bottom),
+        };
+        // Chromium's rounded padding clip constrains both axes together when
+        // an opposite border consumes more space than the inner curves allow.
+        let horizontal = (radii.top_left.width + radii.top_right.width)
+            .max(radii.bottom_left.width + radii.bottom_right.width);
+        let vertical = (radii.top_left.height + radii.bottom_left.height)
+            .max(radii.top_right.height + radii.bottom_right.height);
+        let width = inner_size.width.max(Pixels::ZERO);
+        let height = inner_size.height.max(Pixels::ZERO);
+        let mut factor = 1.0_f32;
+        if horizontal > width {
+            factor = factor.min(width / horizontal);
+        }
+        if vertical > height {
+            factor = factor.min(height / vertical);
+        }
+        radii.map(|r| size(r.width * factor, r.height * factor))
+    }
+
+    /// Blink snaps CSS surfaces in logical pixels before device scaling.
+    /// Preserve the signed fraction and the near-zero exception to its
+    /// minimum-one-pixel rule. See crate-root LICENSE-CHROMIUM.
+    pub(crate) fn pixel_snapped_bounds(bounds: Bounds<Pixels>) -> Bounds<Pixels> {
+        Self::snap_bounds(bounds, true)
+    }
+
+    /// CSS layout rectangles retain LayoutUnit's 1/64px precision for hit tests,
+    /// independently of the integer box used by rounded paint and clip curves.
+    pub(crate) fn layout_unit_bounds(bounds: Bounds<Pixels>) -> Bounds<Pixels> {
+        bounds.map(|v| Pixels((v.0 * 64.).trunc() / 64.))
+    }
+
+    fn snap_bounds(bounds: Bounds<Pixels>, minimum_one: bool) -> Bounds<Pixels> {
+        let fixed = |v: Pixels| Pixels((v.0 * 64.).trunc() / 64.);
+        let round = |v: Pixels| Pixels((v.0 + 0.5).floor());
+        let snap_size = |length: Pixels, origin: Pixels| {
+            let length = fixed(length).max(Pixels::ZERO);
+            let fraction = Pixels(fixed(origin).0.fract());
+            let result = round(fraction + length) - round(fraction);
+            if minimum_one && result == Pixels::ZERO && length.0 > 4. / 64. {
+                Pixels(1.)
+            } else {
+                result
+            }
+        };
+        Bounds::new(
+            bounds.origin.map(|v| round(fixed(v))),
+            size(
+                snap_size(bounds.size.width, bounds.origin.x),
+                snap_size(bounds.size.height, bounds.origin.y),
+            ),
+        )
+    }
+
+    /// Rounded inner clips may collapse to zero even when the background's
+    /// outer box keeps a minimum painted pixel (Blink's allowing-zero rule).
+    pub(crate) fn paint_overflow_mask(
+        &self,
+        bounds: Bounds<Pixels>,
+        rem_size: Pixels,
+        parent: Bounds<Pixels>,
+    ) -> Option<ContentMask<Pixels>> {
+        let axes = self.overflow_clip_axes();
+        if axes.x && axes.y && self.corner_radii.to_pixels(rem_size).max() > Pixels::ZERO {
+            let mut mask = self.overflow_mask_with_parent(bounds, rem_size, parent)?;
+            mask.bounds = Self::snap_bounds(mask.bounds, false);
+            Some(mask)
+        } else {
+            self.overflow_mask_with_parent(Self::pixel_snapped_bounds(bounds), rem_size, parent)
+        }
+    }
+
+    pub(crate) fn paint_overflow_corner_radii(
+        &self,
+        bounds: Bounds<Pixels>,
+        rem_size: Pixels,
+    ) -> Corners<Size<Pixels>> {
+        let Some(mask) = self.paint_overflow_mask(bounds, rem_size, bounds) else {
+            return Corners::default();
+        };
+        self.inset_corner_radii(
+            Self::pixel_snapped_bounds(bounds),
+            rem_size,
+            mask.bounds.size,
+        )
     }
 
     /// Paints the background of an element styled with this style.
@@ -622,11 +760,9 @@ impl Style {
             window.paint_quad(crate::outline(bounds, crate::red(), BorderStyle::default()));
         }
 
+        let bounds = Self::pixel_snapped_bounds(window.unrounded_paint_bounds(bounds));
         let rem_size = window.rem_size();
-        let corner_radii = self
-            .corner_radii
-            .to_pixels(rem_size)
-            .clamp_radii_for_quad_size(bounds.size);
+        let corner_radii = self.border_corner_radii(bounds, rem_size);
 
         window.paint_shadows(bounds, corner_radii, &self.box_shadow);
 
@@ -1300,6 +1436,99 @@ mod tests {
     use super::*;
 
     use util_macros::perf;
+
+    #[test]
+    fn transparent_borders_still_inset_the_overflow_padding_edge() {
+        let style = Style {
+            overflow: point(Overflow::Hidden, Overflow::Hidden),
+            border_color: Some(Hsla::transparent_black()),
+            border_widths: Edges {
+                top: px(4.).into(),
+                right: px(10.).into(),
+                bottom: px(8.).into(),
+                left: px(2.).into(),
+            },
+            ..Default::default()
+        };
+        let bounds = Bounds::new(point(px(8.), px(8.)), size(px(48.), px(48.)));
+        let mask = style.overflow_mask(bounds, px(16.)).unwrap();
+        assert_eq!(
+            mask.bounds,
+            Bounds::new(point(px(10.), px(12.)), size(px(36.), px(36.)))
+        );
+    }
+
+    #[test]
+    fn overflow_curves_subtract_each_adjoining_border_independently() {
+        let style = Style {
+            overflow: point(Overflow::Hidden, Overflow::Hidden),
+            corner_radii: Corners::all(px(16.).into()),
+            border_widths: Edges {
+                top: px(4.).into(),
+                right: px(10.).into(),
+                bottom: px(8.).into(),
+                left: px(2.).into(),
+            },
+            ..Default::default()
+        };
+        let bounds = Bounds::new(point(px(8.), px(8.)), size(px(48.), px(48.)));
+        let radii = style.paint_overflow_corner_radii(bounds, px(16.));
+        assert_eq!(radii.top_left, size(px(14.), px(12.)));
+        assert_eq!(radii.top_right, size(px(6.), px(12.)));
+        assert_eq!(radii.bottom_right, size(px(6.), px(8.)));
+        assert_eq!(radii.bottom_left, size(px(14.), px(8.)));
+        let mut wide_border = style;
+        wide_border.border_widths.left = px(38.).into();
+        wide_border.border_widths.right = px(0.).into();
+        let radii = wide_border.paint_overflow_corner_radii(bounds, px(16.));
+        assert_eq!(radii.top_left, Size::default());
+        assert_eq!(radii.top_right, size(px(10.), px(7.5)));
+        assert_eq!(radii.bottom_right, size(px(10.), px(5.)));
+    }
+
+    #[test]
+    fn overflow_axes_compute_visible_and_clip_before_selecting_curves() {
+        let bounds = Bounds::new(point(px(8.), px(8.)), size(px(48.), px(48.)));
+        let parent = Bounds::new(point(px(-32.), px(-24.)), size(px(128.), px(112.)));
+        for (axes, expected) in [
+            (
+                point(Overflow::Clip, Overflow::Visible),
+                Bounds::new(point(px(12.), px(-24.)), size(px(40.), px(112.))),
+            ),
+            (
+                point(Overflow::Visible, Overflow::Clip),
+                Bounds::new(point(px(-32.), px(12.)), size(px(128.), px(40.))),
+            ),
+            (
+                point(Overflow::Visible, Overflow::Hidden),
+                Bounds::new(point(px(12.), px(12.)), size(px(40.), px(40.))),
+            ),
+            (
+                point(Overflow::Scroll, Overflow::Visible),
+                Bounds::new(point(px(12.), px(12.)), size(px(40.), px(40.))),
+            ),
+        ] {
+            let style = Style {
+                overflow: axes,
+                border_widths: Edges::all(px(4.).into()),
+                corner_radii: Corners::all(px(16.).into()),
+                ..Default::default()
+            };
+            assert_eq!(
+                style
+                    .overflow_mask_with_parent(bounds, px(16.), parent)
+                    .unwrap()
+                    .bounds,
+                expected
+            );
+            let radii = style.paint_overflow_corner_radii(bounds, px(16.));
+            if axes.x == Overflow::Clip || axes.y == Overflow::Clip {
+                assert_eq!(radii, Corners::default());
+            } else {
+                assert_eq!(radii, Corners::all(size(px(12.), px(12.))));
+            }
+        }
+    }
 
     #[perf]
     fn test_basic_highlight_style_combination() {

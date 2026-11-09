@@ -1027,6 +1027,10 @@ impl PlatformWindow for WaylandWindow {
         state.surface.commit();
     }
 
+    fn capture_scene(&self, scene: &Scene) -> anyhow::Result<image::RgbaImage> {
+        self.borrow_mut().renderer.capture_scene(scene)
+    }
+
     fn sprite_atlas(&self) -> Arc<dyn PlatformAtlas> {
         let state = self.borrow();
         state.renderer.sprite_atlas().clone()

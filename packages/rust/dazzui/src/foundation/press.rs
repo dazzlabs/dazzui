@@ -1,4 +1,4 @@
-//! Native button timing: Enter clicks on keydown, Space arms until keyup.
+//! Button and anchor key phases, preserving native activation and cancellation.
 
 use std::{cell::Cell, rc::Rc};
 
@@ -34,6 +34,7 @@ pub(crate) struct ButtonPress {
     disabled: bool,
     native: bool,
     composite: bool,
+    link: bool,
     observer: Option<ActivationObserver>,
 }
 
@@ -75,6 +76,7 @@ impl ButtonPress {
             disabled,
             native: true,
             composite: false,
+            link: false,
             observer,
         }
     }
@@ -92,14 +94,21 @@ impl ButtonPress {
         self
     }
 
+    /// Anchors activate Enter on the initial keydown and leave Space to the page.
+    pub fn link(mut self) -> Self {
+        self.link = true;
+        self
+    }
+
     pub fn pressed(&self, cx: &App) -> bool {
-        self.native && !self.composite && !self.disabled && self.state.read(cx).armed
+        self.native && !self.composite && !self.link && !self.disabled && self.state.read(cx).armed
     }
 
     pub fn bind(self, element: Stateful<Div>, on_click: Option<OnClick>) -> impl IntoElement {
         let bounds = self.bounds;
         let native = self.native;
         let composite = self.composite;
+        let link = self.link;
         let element = if self.disabled {
             element.on_click(|_, _, cx| cx.stop_propagation())
         } else {
@@ -139,6 +148,9 @@ impl ButtonPress {
                     }
                     let stroke = &event.keystroke;
                     if stroke.key == "space" {
+                        if link {
+                            return;
+                        }
                         if composite {
                             window.prevent_default();
                             if let Some(click) = &down {
@@ -161,7 +173,9 @@ impl ButtonPress {
                             }
                         });
                     } else if stroke.key == "enter"
-                        && (!native
+                        && (!link || !event.is_held)
+                        && (link
+                            || !native
                             || (!stroke.modifiers.control
                                 && !stroke.modifiers.alt
                                 && !stroke.modifiers.platform))
@@ -179,7 +193,7 @@ impl ButtonPress {
                     }
                 })
                 .on_key_up(move |event, window, cx| {
-                    if event.keystroke.key != "space" || composite {
+                    if event.keystroke.key != "space" || composite || link {
                         return;
                     }
                     // The browser's native default action also releases
