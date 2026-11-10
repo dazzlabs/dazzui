@@ -101,6 +101,10 @@ struct NativeFontKey {
 struct MacTextSystemState {
     memory_source: MemSource,
     system_source: SystemSource,
+    // Font fallback asks for this list for every label containing a glyph
+    // outside the primary face. CoreText enumerates and sorts the entire
+    // installed collection, so retain the result across layout passes.
+    font_names: Option<Vec<String>>,
     fonts: Vec<FontKitFont>,
     font_selections: HashMap<Font, FontId>,
     font_queries: HashMap<FontId, Font>,
@@ -123,6 +127,7 @@ impl MacTextSystem {
         Self(RwLock::new(MacTextSystemState {
             memory_source: MemSource::empty(),
             system_source: SystemSource::new(),
+            font_names: None,
             fonts: Vec::new(),
             font_selections: HashMap::default(),
             font_queries: HashMap::default(),
@@ -153,17 +158,24 @@ impl PlatformTextSystem for MacTextSystem {
     }
 
     fn all_font_names(&self) -> Vec<String> {
+        if let Some(names) = &self.0.read().font_names {
+            return names.clone();
+        }
+        let mut state = self.0.write();
+        if let Some(names) = &state.font_names {
+            return names.clone();
+        }
         let mut names = Vec::new();
         let collection = core_text::font_collection::create_for_all_families();
-        let Some(descriptors) = collection.get_descriptors() else {
-            return names;
-        };
-        for descriptor in descriptors.into_iter() {
-            names.extend(lenient_font_attributes::family_name(&descriptor));
+        if let Some(descriptors) = collection.get_descriptors() {
+            for descriptor in descriptors.into_iter() {
+                names.extend(lenient_font_attributes::family_name(&descriptor));
+            }
         }
-        if let Ok(fonts_in_memory) = self.0.read().memory_source.all_families() {
+        if let Ok(fonts_in_memory) = state.memory_source.all_families() {
             names.extend(fonts_in_memory);
         }
+        state.font_names = Some(names.clone());
         names
     }
 
@@ -286,6 +298,8 @@ impl PlatformTextSystem for MacTextSystem {
 
 impl MacTextSystemState {
     fn add_fonts(&mut self, fonts: Vec<Cow<'static, [u8]>>) -> Result<()> {
+        // Registration may partially succeed before reporting an error.
+        self.font_names = None;
         let fonts = fonts
             .into_iter()
             .map(|bytes| match bytes {
@@ -1620,6 +1634,9 @@ mod tests {
     #[test]
     fn non_latin_faces_load_without_an_m_sentinel() {
         let system = MacTextSystem::new();
+        let names = system.all_font_names();
+        assert!(!names.iter().any(|name| name == "DazzUI Alpha Probe"));
+        assert_eq!(system.all_font_names(), names);
         system
             .add_fonts(vec![std::borrow::Cow::Borrowed(include_bytes!(
                 "../../../fixtures/colr-alpha.ttf"

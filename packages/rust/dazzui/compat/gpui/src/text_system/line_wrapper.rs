@@ -10,6 +10,10 @@ pub struct LineWrapper {
     pub(crate) font_size: Pixels,
     cached_ascii_char_widths: [Option<Pixels>; 128],
     cached_other_char_widths: HashMap<char, Pixels>,
+    // This wrapper is pooled by font and size. Ellipsis measurement must use
+    // shaped runs, but unchanged labels should not recreate native CTLines
+    // on every hover/layout pass. Bound both entry count and string length.
+    cached_shaped_widths: HashMap<String, Pixels>,
 }
 
 impl LineWrapper {
@@ -27,6 +31,7 @@ impl LineWrapper {
             font_size,
             cached_ascii_char_widths: [None; 128],
             cached_other_char_widths: HashMap::default(),
+            cached_shaped_widths: HashMap::default(),
         }
     }
 
@@ -138,7 +143,11 @@ impl LineWrapper {
         runs: &mut Vec<TextRun>,
     ) -> SharedString {
         let result = truncate_shaped(&line, truncate_width, truncation_suffix, |text| {
-            self.platform_text_system
+            if let Some(width) = self.cached_shaped_widths.get(text) {
+                return *width;
+            }
+            let width = self
+                .platform_text_system
                 .layout_line(
                     text,
                     self.font_size,
@@ -147,7 +156,14 @@ impl LineWrapper {
                         font_id: self.font_id,
                     }],
                 )
-                .width
+                .width;
+            if text.len() <= 1024 {
+                if self.cached_shaped_widths.len() >= 256 {
+                    self.cached_shaped_widths.clear();
+                }
+                self.cached_shaped_widths.insert(text.to_owned(), width);
+            }
+            width
         });
         if let Some(result) = result {
             update_runs_after_truncation(&result, truncation_suffix, runs);
@@ -445,6 +461,46 @@ mod tests {
                     "native font weight {weight}, intrinsic width {width:?}",
                 );
                 assert_eq!(runs[0].len, text.len());
+            }
+        }
+    }
+
+    #[cfg(target_os = "macos")]
+    #[test]
+    fn repeated_native_ellipsis_respects_width_suffix_and_font() {
+        let platform = Arc::new(crate::platform::MacTextSystem::new());
+        let text = "AVATAR 设计部 👩‍👩‍👧‍👦 office";
+        for weight in [400., 600.] {
+            let mut descriptor = font(".SystemUIFont");
+            descriptor.weight = FontWeight(weight);
+            let id = platform.font_id(&descriptor).unwrap();
+            for size in [px(12.), px(18.)] {
+                let mut wrapper = LineWrapper::new(id, size, platform.clone());
+                for _ in 0..3 {
+                    for width in [px(40.), px(200.), px(70.), px(400.)] {
+                        for suffix in ["…", "..."] {
+                            let measured = truncate_shaped(text, width, suffix, |candidate| {
+                                platform
+                                    .layout_line(
+                                        candidate,
+                                        size,
+                                        &[FontRun {
+                                            len: candidate.len(),
+                                            font_id: id,
+                                        }],
+                                    )
+                                    .width
+                            })
+                            .unwrap_or_else(|| text.to_owned());
+                            let mut runs = generate_test_runs(&[text.len()]);
+                            runs[0].font = descriptor.clone();
+                            let shown =
+                                wrapper.truncate_line(text.into(), width, suffix, &mut runs);
+                            assert_eq!(shown.as_ref(), measured);
+                            assert_eq!(runs.iter().map(|run| run.len).sum::<usize>(), shown.len());
+                        }
+                    }
+                }
             }
         }
     }

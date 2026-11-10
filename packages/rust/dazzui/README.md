@@ -151,6 +151,13 @@ the conformance collector reads the actual painted baseline and box origin.
 Ellipsis fitting uses shaped advances at the same layout precision, preserving
 kerning, ligatures and complete grapheme clusters. A fitted label therefore
 retains its full text even when isolated glyph widths would appear too wide.
+On macOS the GPUI adapter caches the available font families, invalidating
+the list when embedded fonts are registered. Fallback labels reuse that list
+instead of repeatedly enumerating Core Text's full font collection. Pooled
+line wrappers also retain bounded shaped-width measurements for ellipsis,
+scoped to the wrapper's font and size. Native shaping, grapheme boundaries,
+kerning and suffix fitting are preserved across redraws.
+
 Plain labels refresh their cached foreground at paint time so hover ink
 reaches the glyphs. Shadows translate CSS blur lengths to GPUI's Gaussian sigma,
 and Slider reads the theme's thumb ink, edge, lift and hover scale. Popup
