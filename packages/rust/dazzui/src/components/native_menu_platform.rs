@@ -216,8 +216,13 @@ mod windowed {
                 x: x.to_f64(),
                 y: anchor.bottom().to_f64(),
             };
+            // Anchored to the content bounds rather than the window object:
+            // that is what the window form resolves to, the rect form has kept
+            // its signature across nativeapi revisions, and a GPUI window is
+            // not the GTK widget the window form looks for on Linux.
+            let bounds = window.content_bounds();
             let Some(strategy) =
-                PositioningStrategy::relative_with_window_and_offset(&window, &offset)
+                PositioningStrategy::relative_with_rect_and_offset(&bounds, &offset)
             else {
                 return false;
             };
