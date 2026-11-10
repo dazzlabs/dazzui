@@ -214,6 +214,7 @@ export const BASE: ThemeData = {
     "segmented-control.inset": 3,
     "shortcut-recorder.reject-duration": 360,
     "shortcut-recorder.width": 132,
+    "sidebar.group-label-height": 24,
     "skeleton.last-line-width": 0.6,
     "skeleton.sweep-duration": 1600,
     "slider.large.thumb": 20,

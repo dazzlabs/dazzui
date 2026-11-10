@@ -276,6 +276,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(17, 28, 46, 0.141176);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -1073,6 +1074,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -1870,6 +1872,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -2667,6 +2670,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -3464,6 +3468,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -4261,6 +4266,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -5058,6 +5064,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -5855,6 +5862,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -6652,6 +6660,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -7449,6 +7458,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -8246,6 +8256,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -9043,6 +9054,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -9840,6 +9852,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -10637,6 +10650,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -11434,6 +11448,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -12231,6 +12246,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -13028,6 +13044,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -13825,6 +13842,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -14622,6 +14640,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -15419,6 +15438,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -16216,6 +16236,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -17013,6 +17034,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -17810,6 +17832,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -18607,6 +18630,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -19404,6 +19428,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -20201,6 +20226,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -20998,6 +21024,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -21795,6 +21822,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -22592,6 +22620,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -23389,6 +23418,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -24186,6 +24216,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -24983,6 +25014,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -25780,6 +25812,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -26577,6 +26610,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -27374,6 +27408,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -28171,6 +28206,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -28968,6 +29004,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -29765,6 +29802,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -30562,6 +30600,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -31359,6 +31398,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -32156,6 +32196,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -32953,6 +32994,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -33750,6 +33792,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -34547,6 +34590,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -35344,6 +35388,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -36141,6 +36186,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -36938,6 +36984,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -37735,6 +37782,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -38532,6 +38580,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -39329,6 +39378,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -40126,6 +40176,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -40923,6 +40974,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -41720,6 +41772,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -42517,6 +42570,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -43314,6 +43368,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -44111,6 +44166,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -44908,6 +44964,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -45705,6 +45762,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -46502,6 +46560,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -47299,6 +47358,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -48096,6 +48156,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -48893,6 +48954,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -49690,6 +49752,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -50487,6 +50550,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -51284,6 +51348,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -52081,6 +52146,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -52878,6 +52944,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -53675,6 +53742,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -54472,6 +54540,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -55269,6 +55338,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.121569);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -56066,6 +56136,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;
@@ -56863,6 +56934,7 @@
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.45098);
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 132px;
+  --sidebar-group-label-height: 24px;
   --skeleton-last-line-width: 0.6;
   --skeleton-sweep-duration: 1600ms;
   --slider-large-thumb: 20px;

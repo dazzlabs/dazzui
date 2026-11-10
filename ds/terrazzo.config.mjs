@@ -210,6 +210,7 @@ export default defineConfig({
     './tokens/component/search-field.yaml',
     './tokens/component/segmented-control.yaml',
     './tokens/component/shortcut-recorder.yaml',
+    './tokens/component/sidebar.yaml',
     './tokens/component/skeleton.yaml',
     './tokens/component/slider.yaml',
     './tokens/component/splitter.yaml',

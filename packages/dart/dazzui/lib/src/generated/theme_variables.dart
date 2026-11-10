@@ -265,6 +265,7 @@ class ThemeVariables {
     this.segmentedControlInset = 3,
     this.shortcutRecorderWidth = 132,
     this.shortcutRecorderRejectDuration = const Duration(microseconds: 360000),
+    this.sidebarGroupLabelHeight = 24,
     this.skeletonSweepDuration = const Duration(microseconds: 1600000),
     this.skeletonLastLineWidth = 0.6,
     this.sliderMediumTrack = 6,
@@ -910,6 +911,9 @@ class ThemeVariables {
   final double shortcutRecorderWidth;
   final Duration shortcutRecorderRejectDuration;
 
+  // Sidebar
+  final double sidebarGroupLabelHeight;
+
   // Skeleton
   /// A slow sweep behind content that has not arrived.
   final Duration skeletonSweepDuration;
@@ -1184,6 +1188,7 @@ class ThemeVariables {
     double? segmentedControlInset,
     double? shortcutRecorderWidth,
     Duration? shortcutRecorderRejectDuration,
+    double? sidebarGroupLabelHeight,
     Duration? skeletonSweepDuration,
     double? skeletonLastLineWidth,
     double? sliderMediumTrack,
@@ -1458,6 +1463,8 @@ class ThemeVariables {
           shortcutRecorderWidth ?? this.shortcutRecorderWidth,
       shortcutRecorderRejectDuration:
           shortcutRecorderRejectDuration ?? this.shortcutRecorderRejectDuration,
+      sidebarGroupLabelHeight:
+          sidebarGroupLabelHeight ?? this.sidebarGroupLabelHeight,
       skeletonSweepDuration:
           skeletonSweepDuration ?? this.skeletonSweepDuration,
       skeletonLastLineWidth:

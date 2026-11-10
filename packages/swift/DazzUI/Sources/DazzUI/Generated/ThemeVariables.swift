@@ -150,6 +150,7 @@ public struct ThemeVariables: Sendable {
     segmentedControlInset: CGFloat = 3.0,
     shortcutRecorderWidth: CGFloat = 132.0,
     shortcutRecorderRejectDuration: Double = 0.36,
+    sidebarGroupLabelHeight: CGFloat = 24.0,
     skeletonSweepDuration: Double = 1.6,
     skeletonLastLineWidth: CGFloat = 0.6,
     sliderMediumTrack: CGFloat = 6.0,
@@ -385,6 +386,7 @@ public struct ThemeVariables: Sendable {
     self.segmentedControlInset = segmentedControlInset
     self.shortcutRecorderWidth = shortcutRecorderWidth
     self.shortcutRecorderRejectDuration = shortcutRecorderRejectDuration
+    self.sidebarGroupLabelHeight = sidebarGroupLabelHeight
     self.skeletonSweepDuration = skeletonSweepDuration
     self.skeletonLastLineWidth = skeletonLastLineWidth
     self.sliderMediumTrack = sliderMediumTrack
@@ -589,6 +591,7 @@ public struct ThemeVariables: Sendable {
   public let segmentedControlInset: CGFloat
   public let shortcutRecorderWidth: CGFloat
   public let shortcutRecorderRejectDuration: Double
+  public let sidebarGroupLabelHeight: CGFloat
   /// A slow sweep behind content that has not arrived.
   public let skeletonSweepDuration: Double
   /// The final paragraph bar occupies three fifths of its measure.
@@ -965,6 +968,7 @@ public struct ThemeVariables: Sendable {
       segmentedControlInset: segmentedControlInset * scale,
       shortcutRecorderWidth: shortcutRecorderWidth * scale,
       shortcutRecorderRejectDuration: shortcutRecorderRejectDuration,
+      sidebarGroupLabelHeight: sidebarGroupLabelHeight * scale,
       skeletonSweepDuration: skeletonSweepDuration,
       skeletonLastLineWidth: skeletonLastLineWidth,
       sliderMediumTrack: sliderMediumTrack * scale,

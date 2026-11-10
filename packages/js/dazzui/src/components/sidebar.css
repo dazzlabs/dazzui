@@ -334,19 +334,45 @@
 }
 
 /* On the rows' own inset, so the label reads as the heading of the labels
-   under it rather than of the column. */
+   under it rather than of the column. The line reserves a step of the control
+   scale — `sidebar.group-label-height` — because the small button a group can
+   carry is taller than the label alone: sized to the label, the button hung
+   over the first row and the section read as cramped wherever it had one. */
 .dz-sidebar__group-label {
   display: flex;
   align-items: center;
   flex-shrink: 0;
+  min-height: var(--sidebar-group-label-height);
   padding-block: var(--spacing-1);
   padding-inline: var(--spacing-2-5);
 }
 
-.dz-sidebar__group-action {
-  position: absolute;
-  inset-block-start: var(--spacing-1);
-  inset-inline-end: var(--spacing-2-5);
+/*
+ * A group with an action heads itself with a row of two columns — the label
+ * taking what is left, the button a column of its own — rather than floating
+ * the button over the label. Both sit on the row's centre and the row is as
+ * tall as whatever the caller passed, so a heading carrying a button needs no
+ * offset of its own and two headings still start together.
+ */
+.dz-sidebar__group:has(> .dz-sidebar__group-action) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.dz-sidebar__group:has(> .dz-sidebar__group-action) > * {
+  grid-column: 1 / -1;
+}
+
+.dz-sidebar__group:has(> .dz-sidebar__group-action) > .dz-sidebar__group-label {
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+
+.dz-sidebar__group:has(> .dz-sidebar__group-action) > .dz-sidebar__group-action {
+  grid-area: 1 / 2;
+  position: static;
+  margin-inline-start: var(--spacing-1);
 }
 
 .dz-sidebar__group-content {

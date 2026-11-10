@@ -1171,6 +1171,7 @@
   --shadow-xs: 0 1px 3px 0 #111c2e24;
   --shortcut-recorder-reject-duration: 360ms;
   --shortcut-recorder-width: 8.25rem;
+  --sidebar-group-label-height: var(--base-control-height-tiny);
   --skeleton-last-line-width: 0.6; /* The final paragraph bar occupies three fifths of its measure. */
   --skeleton-sweep-duration: 1600ms; /* A slow sweep behind content that has not arrived. */
   --slider-large-thumb: var(--spacing-5);

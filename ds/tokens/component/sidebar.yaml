@@ -1,0 +1,11 @@
+sidebar:
+  # The line the group's label sits on — "Library", the heading of a section.
+  # It can carry the small button a group is given ("add", "collapse"), and
+  # that button is taller than the label alone: sized to the label it hung
+  # over the first row, and every section with an action read as cramped. So
+  # the label's line reserves a step of the control scale — the height of the
+  # button it carries — and the label and its button share one centre. A
+  # larger button still grows the line; this is the floor.
+  group-label-height:
+    $type: dimension
+    $value: "{base.control-height.tiny}"
